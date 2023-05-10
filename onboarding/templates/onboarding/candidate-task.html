@@ -1,0 +1,24 @@
+{% if messages %}
+<div class="oh-wrapper">
+    {% for message in messages %}
+    <div class="oh-alert-container">
+        <div class="oh-alert oh-alert--animated {{message.tags}}">
+            {{ message }}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+<select name="task"  class="oh-input w-100" hx-post="{% url 'candidate-task-update' task.id  %}"
+    hx-trigger="change" hx-target="#task{{task.id}}">
+    {% for choice in choices %}
+    {% if choice.0 == task.status %}
+    <option value="{{choice.0}}" selected>{{choice.1}}</option>
+    {% else %}
+    <option value="{{choice.0}}">{{choice.1}}</option>
+    {% endif %}
+    {% endfor %}
+</select>
+
+

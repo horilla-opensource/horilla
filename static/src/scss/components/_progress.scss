@@ -1,0 +1,38 @@
+.oh-progress{
+  background-color: $light-grey;
+  border-radius: 25px;
+  width: 100%;
+  height: 8px;
+  display: block;
+}
+.oh-progress__bar{
+  display: block;
+  height: 100%;
+  border-radius: 25px;
+}
+.oh-progress__bar--secondary, .oh-progress__bar--table-secondary{
+  background-color: $secondary-color;
+}
+.oh-progress--table-secondary{
+  border: 1px solid $secondary-color;
+}
+.oh-progress__bar--table{
+  border-radius: 2px;
+  max-width: 80%;
+}
+.oh-progress--table{
+  height: 25px;
+  border-radius: 5px;
+  background-color: transparent;
+  width: 75%;
+}
+.oh-progress-container{
+  display: flex;
+  align-items: center;
+}
+.oh-progress-container__percentage{
+  font-size: 0.8rem;
+  font-weight: bold;
+  margin-left: 0.7rem;
+  color: $light-text-color;
+}

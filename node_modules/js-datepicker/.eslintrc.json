@@ -1,0 +1,9 @@
+{
+  "parserOptions": {
+    "ecmaVersion": 3
+  },
+  "ignorePatterns": [
+    "webpack.config.js",
+    "test-app.js"
+  ]
+}

@@ -1,0 +1,139 @@
+import selectors from '../selectors'
+
+const { singleDatepickerInput, single } = selectors
+
+describe('Callback functions provided to datepicker', function() {
+  beforeEach(function() {
+    cy.visit('http://localhost:9001')
+
+    /*
+      We can't simply import the datepicker library up at the top because it will not
+      be associated with the correct window object. Instead, we can use a Cypress alias
+      that will expose what we want on `this`, so long as we avoid using arrow functions.
+      This is possible because datepicker is assigned a value on the window object in `sandbox.js`.
+    */
+    cy.window().then(global => cy.wrap(global.datepicker).as('datepicker'))
+  })
+
+  describe('onSelect', function() {
+    it('should be called after a date has been selected', function() {
+      const options = { onSelect: () => {} }
+      const spy = cy.spy(options, 'onSelect')
+      this.datepicker(singleDatepickerInput, options)
+
+      cy.get(singleDatepickerInput).click()
+      cy.get(`${single.squaresContainer} [data-direction="0"]`).first().click().then(() => {
+        expect(spy).to.be.calledOnce
+      })
+    })
+
+    it('should be called with the correct arguments', function() {
+      let picker
+      const today = new Date()
+      const options = {
+        onSelect: (...args) => {
+          expect(args.length, 'onSelect arguments length').to.eq(2)
+          expect(args[0], 'onSelect 1st arg should be the instance').to.eq(picker)
+
+          /*
+            We can't use `instanceof Date` because `Date` is a different constructor
+            than the one on the window object that Cypress uses. Essentially,
+            we're dealing with 2 different window object. So it's easier to just do
+            the whole toString thingy.
+          */
+          expect(({}).toString.call(args[1]), 'onSelect 2nd arg should be a date').to.eq('[object Date]')
+          expect(args[1].getFullYear(), `onSelect 2nd arg year should be today's year`).to.eq(today.getFullYear())
+          expect(args[1].getMonth(), `onSelect 2nd arg month should be today's month`).to.eq(today.getMonth())
+        }
+      }
+
+      picker = this.datepicker(singleDatepickerInput, options)
+      cy.get(singleDatepickerInput).click()
+      cy.get(`${single.squaresContainer} [data-direction="0"]`).first().click()
+    })
+  })
+
+  describe('onShow', function() {
+    it('should be called after the calendar is shown', function() {
+      const options = { onShow: () => {} }
+      const spy = cy.spy(options, 'onShow')
+      this.datepicker(singleDatepickerInput, options)
+
+      expect(options.onShow).not.to.be.called
+      cy.get(singleDatepickerInput).click().then(() => {
+        expect(spy).to.be.calledOnce
+      })
+    })
+
+    it('should be called with the instance as the only argument', function() {
+      let instance
+      const options = {
+        onShow: (...args) => {
+          expect(args.length, 'onShow arguments length').to.eq(1)
+          expect(args[0], 'onShow argument should be the instance').to.eq(instance)
+        }
+      }
+
+      instance = this.datepicker(singleDatepickerInput, options)
+      cy.get(singleDatepickerInput).click()
+    })
+  })
+
+  describe('onHide', function() {
+    it('should be called after the calendar is hidden', function() {
+      const options = { onHide: () => {} }
+      const spy = cy.spy(options, 'onHide')
+      this.datepicker(singleDatepickerInput, options)
+
+      cy.get(singleDatepickerInput).click().then(() => {
+        expect(spy).not.to.be.called
+
+        cy.get('body').click().then(() => {
+          expect(spy).to.be.calledOnce
+        })
+      })
+    })
+
+    it('should be called with the instance as the only argument', function() {
+      let instance
+      const options = {
+        onHide: (...args) => {
+          expect(args.length, 'onHide arguments length').to.eq(1)
+          expect(args[0], 'onHide argument should be the instance').to.eq(instance)
+        }
+      }
+
+      instance = this.datepicker(singleDatepickerInput, options)
+      cy.get(singleDatepickerInput).click()
+    })
+  })
+
+  describe('onMonthChange', function() {
+    it('should be called when the arrows are clicked', function() {
+      const options = { onMonthChange: () => {} }
+      const spy = cy.spy(options, 'onMonthChange')
+      this.datepicker(singleDatepickerInput, options)
+
+      cy.get(singleDatepickerInput).click()
+      cy.get(`${single.controls} .qs-arrow.qs-right`).click()
+      cy.get(`${single.controls} .qs-arrow.qs-left`).click().then(() => {
+        expect(spy).to.be.calledTwice
+      })
+    })
+
+    it('should be called with the datepicker instance as the only argument', function() {
+      let instance
+      const options = {
+        onMonthChange: (...args) => {
+          expect(args.length, 'onMonthChange arguments length').to.eq(1)
+          expect(args[0], 'onMonthChange argument should be the instance').to.eq(instance)
+        }
+      }
+
+      instance = this.datepicker(singleDatepickerInput, options)
+      cy.get(singleDatepickerInput).click()
+      cy.get(`${single.controls} .qs-arrow.qs-right`).click()
+      cy.get(`${single.controls} .qs-arrow.qs-left`).click()
+    })
+  })
+})

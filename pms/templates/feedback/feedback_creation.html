@@ -1,0 +1,138 @@
+{% extends 'index.html' %}
+{% load static i18n %}
+{% load i18n %}
+{% load widget_tweaks %}
+
+{% block styles %}
+<link rel="stylesheet" href="{% static 'css/pms.css' %}" />
+{% endblock styles %}
+
+{% block content %}
+{% if feedback_form.errors %}
+<!-- form errors  -->
+<div class="oh-wrapper">
+    <div class="oh-alert-container">
+
+        {% for error in feedback_form.non_field_errors %}
+        <div class="oh-alert oh-alert--animated oh-alert--danger">
+            {{ error }}
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+<!-- Feedback form'-->
+<main class="oh-onboarding">
+    <div class="oh-onboarding-card">
+        <form action="{%url 'feedback-creation' %}" method="post">
+            {% csrf_token %}
+            <div class="oh-onboarding-card__address-group">
+                <h2 class="oh-onboarding-card__section-title">{% trans "Feedback" %}</h2>
+                <div class="oh-input__group ">
+                    <label class="oh-input__label" for="objective">{% trans "Review Cycle" %}</label>
+                    {{feedback_form.review_cycle}}
+                    {{feedback_form.review_cycle.errors}}
+                </div>
+                <div class="row">
+                    <div class="col-12 col-sm-12 col-md-6 col-lg-6">
+                        <div class="oh-input__group">
+                            <div class="oh-input__group">
+                                <label class="oh-input__label" for="endDate">{% trans "Employee" %}</label>
+                                {{feedback_form.employee_id }}
+                                {{feedback_form.employee_id.errors }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-12 col-md-6 col-lg-6">
+                        <div class="oh-input__group">
+                            <div class="oh-input__group">
+                                <label class="oh-input__label" for="endDate">{% trans "Manager" %}</label>
+                                {{feedback_form.manager_id}}
+                                {{feedback_form.manager_id.errros}}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12 col-sm-12 col-md-6 col-lg-6">
+                        <div class="oh-input__group">
+                            <div class="oh-input__group">
+                                <label class="oh-input__label" for="endDate">{% trans "Subordinates" %}</label>
+                                {{feedback_form.subordinate_id}}
+                                {{feedback_form.subordinate_id.errors}}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-12 col-md-6 col-lg-6">
+                        <div class="oh-input__group">
+                            <div class="oh-input__group">
+                                <label class="oh-input__label" for="endDate">{% trans "Colleague" %}</label>
+                                {{feedback_form.colleague_id}}
+                                {{feedback_form.colleague_id.errors}}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12 col-sm-12 col-md-6 col-lg-4">
+                        <div class="oh-input__group">
+                            <div class="oh-input__group">
+                                <label class="oh-input__label" for="startDate">{% trans "Period" %}</label>
+                                {{feedback_form.period}}
+                                {{feedback_form.period.errors}}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-12 col-md-6 col-lg-4">
+                        <div class="oh-input__group">
+                            <div class="oh-input__group">
+                                <label class="oh-input__label" for="startDate">{% trans "Start Date" %}</label>
+                                {{feedback_form.start_date}}
+                                {{feedback_form.start_date.errors}}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-12 col-md-6 col-lg-4">
+                        <div class="oh-input__group">
+                            <div class="oh-input__group">
+                                <label class="oh-input__label" for="startDate">{% trans "End Date" %}</label>
+                                {{feedback_form.end_date}}
+                                {{feedback_form.end_date.errors}}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+
+                    <div class="col-12 col-sm-12 col-md-6 col-lg-6">
+                        <div class="oh-input__group">
+                            <label class="oh-input__label" for="startDate">{% trans "Question Template" %}</label>
+                            {{feedback_form.question_template_id}}
+                            {{feedback_form.question_template_id.errors}}
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-12 col-md-6 col-lg-6">
+                        <div class="oh-input__group">
+                            <label class="oh-input__label" for="startDate">{% trans "Key Result" %}</label>
+                            <select name="employee_key_results_id" id="id_employee_key_results_id" class="oh-select  oh-select--lg oh-select-no-search w-100 oh-select-2--large" multiple="multiple" style="display: none;">
+                                <option value="">------------------</option>
+                            </select>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            </section>
+            <button type="submit" class=" w-100 oh-btn oh-btn--secondary oh-btn--shadow mt-4 mb-4">
+                {% trans "Save" %}
+            </button>
+        </form>
+    </div>
+</main>
+
+<script src="{% static 'src/feedback/feedback_creation.js' %}"></script> 
+<script src="{% static 'src/period/period.js' %}"></script> 
+
+
+{% endblock%}

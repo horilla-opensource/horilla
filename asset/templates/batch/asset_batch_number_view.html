@@ -1,0 +1,63 @@
+{% extends 'index.html' %}
+{% block content %}
+{% load static i18n %}
+{% load i18n %}
+{% load widget_tweaks %}
+
+<!-- start of messages -->
+{% if messages %}
+<div class="oh-wrapper">
+    {% for message in messages %}
+    <div class="oh-alert-container">
+        <div class="oh-alert oh-alert--animated {{message.tags}}">
+            {{ message }}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+<!-- end of messages -->
+
+<main :class="sidebarOpen ? 'oh-main__sidebar-visible' : ''">
+    <section class="oh-wrapper oh-main__topbar" x-data="{searchShow: false}">
+        <div class="oh-main__titlebar oh-main__titlebar--left">
+            <h1 class="oh-main__titlebar-title fw-bold">{% trans "Asset Batch Number" %}</h1>
+            <a class="oh-main__titlebar-search-toggle" role="button" aria-label="Toggle Search"
+                @click="searchShow = !searchShow">
+                <ion-icon name="search-outline" class="oh-main__titlebar-serach-icon"></ion-icon>
+            </a>
+        </div>
+        <div class="oh-main__titlebar oh-main__titlebar--right">
+            <div class="oh-input-group oh-input__search-group"
+                :class="searchShow ? 'oh-input__search-group--show' : ''">
+                <ion-icon name="search-outline" class="oh-input-group__icon oh-input-group__icon--left"></ion-icon>
+                <input name="search" hx-get="{% url 'asset-batch-number-search' %}" hx-target="#AssetBatchList"
+                    hx-trigger='keyup delay:500ms' type="text" class="oh-input oh-input__icon" aria-label="Search Input"
+                    placeholder="{% trans 'Search' %}" />
+            </div>
+            <div class="oh-main__titlebar-button-container">
+                <div class="oh-btn-group ml-2">
+                    <div>
+                        <a  class="oh-btn oh-btn--secondary oh-btn--shadow" 
+                            data-toggle="oh-modal-toggle"
+                            data-target="#AssetBatchModal" 
+                            hx-get="{% url 'asset-batch-number-creation' %}"
+                            hx-target="#AssetFormTarget"> 
+                            <ion-icon class="me-2" name="add-outline"></ion-icon>{% trans "Create" %}</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <div id="AssetBatchList">
+        <!-- including asset category -->
+        {% include 'batch/asset_batch_number_list.html' %}
+    </div>
+</main>
+
+<div class="oh-modal" id="AssetBatchModal" role="dialog" aria-labelledby="AssetBatchModal" aria-hidden="true">
+    <div class="oh-modal__dialog " style="max-width: 550px;" id="AssetFormTarget">
+    </div>
+</div>
+
+{% endblock %}

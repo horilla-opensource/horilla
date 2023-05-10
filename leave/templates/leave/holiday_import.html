@@ -1,0 +1,8 @@
+{% extends 'index.html' %}{% block  content %}
+<form action="" method="post" enctype="multipart/form-data">
+    {%csrf_token%}
+    <div class="form-group">
+        <input type="file" class="form-control" name='holiday_file'>
+    </div>
+    <input type="submit">
+  </form>{% endblock  %}

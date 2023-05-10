@@ -1,0 +1,24 @@
+{% extends 'index.html' %} {% load i18n %} {% block content %}
+<p class="pb-3">
+</p>
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th scope="col">{% trans "Type" %}</th>
+      <th scope="col">{% trans "Leave days" %}</th>
+      <th scope="col">{% trans "Extra days" %}</th>
+      <th scope="col">{% trans "Total days" %}</th>
+    </tr>
+  </thead>
+   <tbody>
+    {% for leave_assign in data %}
+    <tr>
+      <td>{{leave_assign.leave_type_id}}</td>
+      <td>{{leave_assign.leave_rate}} {{leave_assign.leave_type_id.leave_period_in}}</td>
+      <td>{{leave_assign.extra_rate}} {{leave_assign.leave_type_id.leave_period_in}}</td>
+      <td>{{leave_assign.total_rate}}</td>
+    {% endfor %}
+  </tbody> 
+</table>
+
+{% endblock %}

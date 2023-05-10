@@ -1,0 +1,45 @@
+{% extends "index.html" %}
+{% block content %}
+<style>
+  .card {
+      height: 300px;
+      overflow: hidden;
+  }
+  .card-title {
+      height: 50px;
+      overflow: hidden;
+  }
+  .highlight {
+    border: 10px solid gold;
+  }
+</style>
+
+<h1>Upcoming Birthdays</h1>
+<div class="row">
+  {% for employee in employees %}
+  <div class="col-md-3 mb-3">
+      <div class="card {% if employee.days_until_birthday == 0 %}highlight{% endif %}">
+          <img src="" class="card-img-top" alt="{{ employee.employee_first_name }} {{ employee.employee_last_name }}">
+          <div class="card-body">
+              <h5 class="card-title">{{ employee.employee_first_name }} {{ employee.employee_last_name }}</h5>
+              <p class="card-text">
+                  <strong>DOB:</strong> {{ employee.dob }}<br>
+                  {% if employee.days_until_birthday == 0 %}
+                  <strong>Status:</strong> Today<br>
+                  {% elif employee.days_until_birthday == 1 %}
+                  <strong>Status:</strong> Tomorrow<br>
+                  {% else %}
+                  <strong>Status:</strong> In {{ employee.days_until_birthday }} days<br>
+                  {% endif %}
+              </p>
+          </div>
+      </div>
+  </div>
+  {% endfor %}
+</div>
+
+
+
+
+
+{% endblock %}

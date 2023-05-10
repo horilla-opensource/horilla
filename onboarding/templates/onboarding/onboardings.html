@@ -1,0 +1,107 @@
+{% extends 'index.html' %}
+{% load i18n %}
+{% block content %}
+<div class=" table-body">
+{% for onboarding_stage in onboarding_stages %}
+<h1>{{onboarding_stage.stage_title}}</h1>
+<table class="table table-success table-striped">
+  <thead>
+    <tr>
+      <th scope="col">{% trans "Candidate Name" %}</th>
+      <th scope="col">{% trans "Email" %}</th>
+      <th scope="col">{% trans "Mobile" %}</th>
+      <th scope="col">{% trans "Joining Date" %}</th>
+      <th scope="col">{% trans "Stage" %}</th>
+      {% for onboarding_task in onboarding_tasks %}
+      <th scope="col">{{onboarding_task.task_name}}</th>
+      {% endfor %}
+    </tr>
+  </thead>
+  <tbody>
+    <form>
+      {% csrf_token %}
+      {% for candidate_stage in candidate_stages %}
+      {% if candidate_stage.onboarding_stage_id.id == onboarding_stage.id %}
+
+      <tr>
+        <td>
+          <h2 hidden>{{candidate_stage.candidate_id.id}}</h2>
+          {{candidate_stage.candidate_id.name}}
+        </td>
+        <td>{{candidate_stage.candidate_id.email}}</td>
+        <td>{{candidate_stage.candidate_id.mobile}}</td>
+        <td>{{candidate_stage.candidate_id.scheduled_date}}</td>
+        <td>
+          <select class="form-select stage" aria-label="Default select example" name="stage_id">
+            {% for onboarding_stage in onboarding_stages %}
+            {% if candidate_stage.onboarding_stage_id.id == onboarding_stage.id %}
+            <option value="{{onboarding_stage.id}}" selected>{{onboarding_stage.stage_title}}</option>
+            {% else %}         
+            <option value="{{onboarding_stage.id}}">{{onboarding_stage.stage_title}}</option>
+            {% endif %}
+                           
+            {% endfor %}
+          </select>
+        </td>
+        {% for candidate_stage in candidate_stages %}
+        {% if candidate_stage.onboarding_stage_id.id == onboarding_stage.id %}
+        <input type="text" name="candidate_stage_id" value="{{candidate_stage.id}}" hidden />
+        {% endif %}
+        {% endfor %}
+        {% for onboarding_task in onboarding_tasks %}
+        <td>
+          <h1 hidden>{{onboarding_task.id}}</h1>
+          <select class="form-select task" aria-label="Default select example" name="task">
+            {% for status in statuses %}
+            <option value="{{status.0}}">{{status.1}}</option>
+            {% endfor %}
+          </select>
+        </td>
+        {% endfor %}
+      </tr>
+      {% endif %}
+      {% endfor %}
+    </form>
+  </tbody>
+</table>
+{% endfor %}
+</div>
+
+<script>
+  $(document).ready(function () {
+    $('.task').on('change', function () {
+      $.ajax({
+        type: "post",
+        url: "{% url 'candidate-task'  %}",
+        data: {
+          onboarding_task_id: $(this).parent().find('h1').html(),
+          candidate_id: $(this).parent().parent().find('h2').html(),
+          status: $(this).parent().find('.task').val(),
+          csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+        },
+        success: function (data) {
+          alert(data)
+        }
+
+      });
+    });
+
+    $('.stage').on('change', function () {
+      $.ajax({
+        type: "post",
+        url: "{% url 'candidate-stage-update' %}",
+        data: {
+          onboarding_stage_id: $(this).val(),
+          candidate_id: $(this).parent().parent().find('h2').html(),
+          csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+        },
+        success: function (data) {
+        }
+
+      });
+    });
+
+  });
+
+</script>
+{% endblock content %}

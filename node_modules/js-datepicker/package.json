@@ -1,0 +1,57 @@
+{
+  "name": "js-datepicker",
+  "version": "5.18.2",
+  "description": "Get a date with JavaScript! A datepicker with no dependencies.",
+  "main": "dist/datepicker.min.js",
+  "style": "./src/datepicker.scss",
+  "scripts": {
+    "build": "NODE_OPTIONS=--openssl-legacy-provider webpack --mode production --env.prod",
+    "test": "start-server-and-test start http-get://localhost:9001 start-cypress-test",
+    "start": "webpack-dev-server --mode development --env.dev --progress",
+    "start-cypress-test": "cypress open"
+  },
+  "keywords": [
+    "datepicker",
+    "date range picker",
+    "date range",
+    "date range calendar",
+    "date picker",
+    "date",
+    "picker",
+    "calendar",
+    "javascript",
+    "vanilla"
+  ],
+  "author": "Qodesmith",
+  "email": "theqodesmith@gmail.com",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/qodesmith/datepicker"
+  },
+  "browserslist": [
+    "last 2 versions",
+    "ie >= 9"
+  ],
+  "license": "MIT",
+  "devDependencies": {
+    "@babel/core": "^7.12.10",
+    "@babel/preset-env": "^7.12.11",
+    "@cypress/webpack-preprocessor": "^5.5.0",
+    "autoprefixer": "^10.1.0",
+    "babel-loader": "^8.2.2",
+    "css-loader": "^5.0.1",
+    "cssnano": "^4.1.10",
+    "cypress": "^6.2.0",
+    "eslint": "^7.16.0",
+    "html-webpack-plugin": "^4.5.0",
+    "mini-css-extract-plugin": "^1.3.3",
+    "postcss-loader": "^4.1.0",
+    "sass": "^1.30.0",
+    "sass-loader": "^10.1.0",
+    "start-server-and-test": "^1.11.6",
+    "terser-webpack-plugin": "^3.0.6",
+    "webpack": "^4.41.6",
+    "webpack-cli": "^3.3.12",
+    "webpack-dev-server": "^3.11.0"
+  }
+}

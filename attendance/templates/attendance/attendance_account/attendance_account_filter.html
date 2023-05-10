@@ -1,0 +1,129 @@
+{% load static %}
+{% load i18n %}
+<form hx-get='{% url "attendance-ot-search" %}' hx-swap='innerHTML' hx-target='#ot-table' >
+  <div class="oh-dropdown__filter-body">
+    <div class="oh-accordion">
+    <div class="oh-accordion-header">{% trans "Work Info" %}</div>
+    <div class="oh-accordion-body">
+      <div class="row">
+        <div class="col-sm-12 col-md-12 col-lg-6">
+          <div class="oh-input-group">
+            <label class="oh-label">{% trans "Employee" %}</label>
+            {{f.form.employee_id}}
+          </div>
+          <div class="oh-input-group">
+            <label class="oh-label">{% trans "Department" %}</label>
+            {{f.form.employee_id__employee_work_info__department_id}}
+          </div>
+          <div class="oh-input-group">
+            <label class="oh-label">{% trans "Shift" %}</label>
+            {{f.form.employee_id__employee_work_info__shift_id}}
+          </div>
+          <div class="oh-input-group">
+            <label class="oh-label">{% trans "Reporting Manager" %}</label>
+            {{f.form.employee_id__employee_work_info__reporting_manager_id}}
+          </div>
+          
+
+        </div>
+        <div class="col-sm-12 col-md-12 col-lg-6">
+          <div class="oh-input-group">
+            <label class="oh-label">{% trans "Company" %}</label>
+            {{f.form.employee_id__employee_work_info__company_id}}
+          </div>
+          <div class="oh-input-group">
+            <label class="oh-label">{% trans "Job Position" %}</label>
+            {{f.form.employee_id__employee_work_info__job_position_id}}
+          </div>
+          <div class="oh-input-group">
+            <label class="oh-label">{% trans "Work Type" %}</label>
+            {{f.form.employee_id__employee_work_info__work_type_id}}
+          </div>
+          <div class="oh-input-group">
+            <label class="oh-label">{% trans "Work Location" %}</label>
+            {{f.form.employee_id__employee_work_info__location}}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="oh-accordion">
+    <div class="oh-accordion-header">{% trans "Hour Account" %}</div>
+    <div class="oh-accordion-body">
+      <div class="row">
+        <div class="col-sm-12 col-md-12 col-lg-6">
+          <div class="oh-input-group">
+            <label class="oh-label">{% trans "Month" %}</label>
+            {{f.form.month}}
+          </div>
+          <div class="oh-input-group">
+            <label class="oh-label">{% trans "Overtime" %}</label>
+            {{f.form.overtime}}
+          </div>
+          <div class="oh-input-group">
+            <label class="oh-label">{% trans "Year" %}</label>
+            {{f.form.year}}
+          </div>
+          <div class="oh-input-group">
+            <label class="oh-label">{% trans "Hour Account" %}</label>
+            {{f.form.hour_account}}
+          </div>
+          
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="oh-accordion">
+    <div class="oh-accordion-header">{% trans "Advanced" %}</div>
+    <div class="oh-accordion-body">
+      <div class="row">
+        <div class="col-sm-12 col-md-12 col-lg-6">
+          <div class="oh-input-group">
+            <label class="oh-label">{% trans "Hour Account Greater or Equal" %}</label>
+            {{f.form.hour_account__gte}}
+          </div>
+          <div class="oh-input-group">
+            <label class="oh-label">{% trans "OT Account Greater or Equal" %}</label>
+            {{f.form.hour_account__gte}}
+          </div>
+        </div>
+        <div class="col-sm-12 col-md-12 col-lg-6">
+          <div class="oh-input-group">
+            <label class="oh-label">{% trans "Hour Account Lessthan or Equal" %}</label>
+            {{f.form.hour_account__lte}}
+          </div>          
+          <div class="oh-input-group">
+            <label class="oh-label">{% trans "OT Account Lessthan or Equal" %}</label>
+            {{f.form.overtime__lte}}
+          </div> 
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="oh-accordion">
+    <div class="oh-accordion-header">{% trans "Group By" %}</div>
+    <div class="oh-accordion-body">
+      <div class="row">
+        <div class="col-sm-12 col-md-12 col-lg-6">
+          <div class="oh-input-group">
+            <label class="oh-label">{% trans "Field" %}</label>
+          </div>
+        </div>
+        <div class="col-sm-12 col-md-12 col-lg-6">
+          <div class="oh-input-group">
+              <select class="oh-select mt-1 " id="field" name="field" class="select2-selection select2-selection--single" id="gp">
+              {% for field in gp_fields %}
+                  <option value="{{ field.0 }}">{{ field.1 }}</option>
+              {% endfor %}
+            </select>
+          </div>          
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="oh-dropdown__filter-footer">
+  <button class="oh-btn oh-btn--secondary oh-btn--small w-100">{% trans "Filter" %}</button>
+</div>
+</form>
+

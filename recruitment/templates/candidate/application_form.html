@@ -1,0 +1,253 @@
+{% load static %}
+{% load i18n %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Registration Form</title>
+    <link rel="stylesheet" href="{% static 'build/css/style.min.css' %}" />
+    <style>
+      ul.errorlist {
+      color: #d9534f;
+      background-color: #f0d8d8;
+      border-color: #d6e9c6;padding: 15px; 
+      margin-bottom: 20px;
+      border: 1px solid transparent;
+      border-radius: 4px
+    }
+    ul{
+      list-style-type: none; 
+    }
+    </style>
+  </head>
+  <body>
+    <div id="main">
+      <main class="oh-onboarding">
+        
+        <div class="oh-onboarding-card oh-onboarding-card--top-bar">
+          <div class="oh-onboarding-card__container oh-onboarding-card__container--wide">
+            <form action="" method='post' enctype="multipart/form-data">
+              {% if messages %}
+              <div class="oh-alert-container">
+                  {% for message in messages %}
+                  <div class="oh-alert oh-alert--animated {{message.tags}}">
+                        {{ message }}
+                      </div> 
+                  {% endfor %}
+              </div>
+              {% endif %}
+              {% csrf_token %}
+              <div class="row">
+                <div class="col-sm-12 col-md-2 col-lg-2">
+                  <label class="oh-profile-photo mt-4" for="photo">
+                    <ion-icon
+                      class="oh-profile-photo__icon"
+                      name="person-add-outline"
+                    ></ion-icon>
+                    <input
+                      type="file"
+                      id="photo"
+                      name="profile"
+                      required
+                      class="oh-input w-100 oh-profile-photo__input"
+                    />
+                  </label>
+                </div>
+                <ul id="error-list" class="errorlist" style="display:none;">
+                  <li>{% trans "Please select profile image" %}.</li>
+                </ul>
+                <div class="col-sm-12 col-md-10 col-lg-10">
+                  <div class="oh-input-group">
+                    <label class="oh-label" for="name">{% trans "Name" %}</label>
+                    <input
+                      type="text"
+                      id="name"
+                      name="name"
+                      required
+                      class="oh-input w-100"
+                      placeholder="e.g. Jane Doe"
+                    />
+                    {{form.name.errrors}}
+                  </div>
+                </div>
+
+                <div class="col-sm-12 col-md-6 col-lg-6">
+                  <div class="oh-input-group">
+                    <label class="oh-label" for="portfolio">{% trans "Portfolio" %}</label>
+                    <input
+                      type="text"
+                      id="portfolio"
+                      name="portfolio"
+                      class="oh-input w-100"
+                      placeholder="e.g. https://www.linktoportfolio.com/"
+                      {{form.portfolio.errors}}
+                    />
+                  </div>
+                </div>
+
+                <div class="col-sm-12 col-md-6 col-lg-6">
+                  <div class="oh-input-group">
+                    <label class="oh-label" for="recuitment"
+                      >{% trans "Open Recruitment" %} </label
+                    >
+                    {{form.recruitment_id}}
+                    {{form.recruitment_id.errors}}
+                    
+                  </div>
+                </div>
+
+                <div class="col-sm-12 col-md-6 col-lg-6">
+                  <div class="oh-input-group">
+                    <label class="oh-label" for="email">{% trans "Email" %}</label>
+                    <input
+                      type="email"
+                      id="email"
+                      name="email"
+                      class="oh-input w-100"
+                      requied
+                      placeholder="e.g. janedoe@example.com"
+                    />
+                  </div>
+                  {{form.email.errors}}
+                </div>
+
+                <div class="col-sm-12 col-md-6 col-lg-6">
+                  <div class="oh-input-group">
+                    <label class="oh-label" for="phone">{% trans "Phone" %}</label>
+                    <input
+                      type="text"
+                      id="phone"
+                      class="oh-input w-100"
+                      name="mobile"
+                      placeholder="e.g. +1 245 999 999"
+                    />
+                    {{form.mobile.errors}}
+                  </div>
+                </div>
+
+                <div class="col-sm-12 col-md-6 col-lg-12">
+                  <div class="oh-input-group">
+                    <label class="oh-label" for="resume">{% trans "Resume" %}</label>
+                    <input type="file" id="resume" name="resume" required class="oh-input w-100 px-0" />
+                    {{form.resume.errors}}
+                  </div>
+                </div>
+
+                <div class="col-sm-12 col-md-6 col-lg-12">
+                  <div class="oh-input-group">
+                    <label class="oh-label" for="address">{% trans "Address" %}</label>
+                    <textarea
+                      id="address"
+                      name="address"
+                      class="oh-input oh-input--textarea w-100"
+                    ></textarea>
+                    {{form.address.errors}}
+                  </div>
+                </div>
+
+                <div class="col-sm-12 col-md-6 col-lg-6">
+                  <div class="oh-input-group">
+                    <label class="oh-label" for="id_country">{% trans "Country" %}</label>
+                    <select name="country" id="id_country" class='oh-select oh-select-2'>
+
+                    </select>
+                    {{form.country.errors}}
+                  </div>
+                </div>
+
+                <div class="col-sm-12 col-md-6 col-lg-6">
+                  <div class="oh-input-group">
+                    <label class="oh-label" for="id_state">{% trans "State" %}</label>
+                    <select name="state" id="id_state" class='oh-select oh-select-2'>
+                      
+                    </select>
+                    {{form.state.errors}}
+                  </div>
+                </div>
+
+                <div class="col-sm-12 col-md-6 col-lg-6">
+                  <div class="oh-input-group">
+                    <label class="oh-label" for="city">{% trans "City" %}</label>
+                    <input
+                      type="text"
+                      id="city"
+                      name="city"
+                      class="oh-input w-100"
+                      placeholder="e.g. Kerala"
+                    />
+                    {{form.city.errors}}
+                  </div>
+                </div>
+
+                <div class="col-sm-12 col-md-6 col-lg-6">
+                  <div class="oh-input-group">
+                    <label class="oh-label" for="zip">{% trans "Zip Code" %}</label>
+                    <input
+                      type="text"
+                      id="zip"
+                      name="zip"
+                      class="oh-input w-100"
+                      placeholder="e.g. 611 293"
+                    />
+                    {{form.zip.errors}}
+                  </div>
+                </div>
+
+                <div class="col-sm-12 col-md-6 col-lg-6">
+                  <div class="oh-input-group">
+                    <label class="oh-label" for="gender">{% trans "Gender" %}</label>
+                    {{form.gender}}
+                    {{form.gender.errros}}
+                  </div>
+                </div>
+
+                <div class="col-sm-12 col-md-12 col-lg-12">
+                  <button
+                    type="submit"
+                    class="oh-btn mt-4 oh-btn--secondary  w-100 mb-4"
+                    onclick="validateForm(event)"
+                  >
+                    <ion-icon name="checkmark-outline" class="me-2"></ion-icon>
+                    {% trans "Apply" %}
+                  </button>
+                </div>
+
+                <div class="col-sm-12 col-md-12 col-lg-12">
+                  <p class="small text-muted text-center">&copy; 2023 Horilla. All rights resevered.</p>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </main>
+    </div>
+    <script>
+      {% include 'country.js' %}
+    </script>
+    <script>
+      function validateForm(event) {
+        var fileInput = document.getElementById('photo');
+        var errorList = document.getElementById('error-list');
+        
+        if (!fileInput.value) {
+          event.preventDefault(); // Prevent form submission
+          errorList.style.display = 'block'; // Show error message
+        } else {
+          errorList.style.display = 'none'; // Hide error message
+        }
+      }
+      </script>
+    <script src="{% static 'build/js/web.frontend.min.js' %}"></script>
+    <script
+      type="module"
+      src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"
+    ></script>
+    <script
+      nomodule
+      src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"
+    ></script>
+    <script></script>
+  </body>
+</html>

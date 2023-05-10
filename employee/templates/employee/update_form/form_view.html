@@ -1,0 +1,49 @@
+{% extends 'index.html' %}
+{% load i18n %}
+{% block content %}
+
+<div id="view-container" class="oh-wrapper">
+    <section class="oh-wrapper oh-main__topbar oh-profile-section__topbar" x-data="{searchShow: false}">
+        <div class="oh-main__titlebar oh-main__titlebar--left">
+            <h1 class="oh-main__titlebar-title fw-bold mb-0">{% trans "Edit" %} {{form.instance.employee_first_name}}</h1>
+        </div>
+        <div class="oh-main__titlebar oh-main__titlebar--left d-flex align-items-center">
+            <ul class="oh-general__tabs oh-profile-section__tab">
+                <li class="oh-general__tab">
+                    <a href="#" class="oh-general__tab-link oh-general__tab-link--active" data-action="general-tab" data-target="#personal">{% trans "Personal Info" %}</a>
+                </li>
+                <li class="oh-general__tab">
+                    <a href="#" class="oh-general__tab-link" data-action="general-tab" data-target="#work">{% trans "Work Info" %}</a>
+                </li>
+                <li class="oh-general__tab">
+        <a href="#" class="oh-general__tab-link" data-action="general-tab" data-target="#bank">{% trans "Bank Info" %}</a>
+    </li>
+</ul>
+</div>
+</section>
+{% include 'employee/update_form/personal_info.html' %}
+{% include 'employee/update_form/work_details.html' %}
+{% include 'employee/update_form/bank_details.html' %}
+
+</div>
+<script>
+    {% include 'country.js' %}
+    $(document).ready(function() {
+      $('#id_profile').change(function (e) { 
+
+        const file = this.files[0];
+        const reader = new FileReader();
+    
+        reader.addEventListener("load", function() {
+          const imageUrl = reader.result;
+          $(".preview").attr("src", imageUrl);
+        });
+    
+        reader.readAsDataURL(file);
+      });
+      
+    });
+  </script>
+
+{% endblock content %}
+

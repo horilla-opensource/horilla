@@ -1,0 +1,54 @@
+{% extends "index.html" %}
+{% load i18n %}
+{% block content %}
+
+{% include 'work_type_request/work_type_request_nav.html' %}
+<div id="view-container" class="oh-wrapper">
+    {% include 'work_type_request/htmx/requests.html' %}
+</div>
+
+
+
+<div
+  class="oh-modal"
+  id="workTypeRequestUpdateModal"
+  role="dialog"
+  aria-labelledby="workTypeRequestUpdateModal"
+  aria-hidden="true"
+>
+  <div class="oh-modal__dialog">
+    <div class="oh-modal__dialog-header">
+      <h5 class="oh-modal__dialog-title" id="workTypeRequestUpdateModalLabel"
+        >{% trans "Update Request" %}</span
+      >
+      <button class="oh-modal__close" aria-label="Close">
+        <ion-icon name="close-outline"></ion-icon>
+      </button>
+    </div>
+    
+    <div class="oh-modal__dialog-body" id='workTypeRequestUpdateModalBody'>
+
+    </div>
+   </div>
+  </div>
+</div>
+
+
+
+<script>
+
+  $(document).on('htmx:load',"#view-container",function () {
+    $("[data-toggle='oh-modal-toggle']").on('click',function(){
+      let clickedEl = $(this).closest('[data-toggle = "oh-modal-toggle"]');
+      if (clickedEl != null) {
+      const targetEl = clickedEl.data('target');
+      $(targetEl).addClass('oh-modal--show');
+      }
+  });
+  $('.oh-modal__close').on('click', function(){
+  
+      $('.oh-modal--show').removeClass('oh-modal--show');
+  })
+  });
+</script>
+{% endblock content %}

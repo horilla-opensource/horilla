@@ -1,0 +1,266 @@
+{% extends 'index.html' %}
+{% load static i18n %}
+{% load i18n %}
+{% load widget_tweaks %}
+{% block content %}
+{% load basefilters %}
+
+<main :class="sidebarOpen ? 'oh-main__sidebar-visible' : ''">
+    <section class="oh-wrapper oh-main__topbar" x-data="{searchShow: false}">
+        <div class="oh-main__titlebar oh-main__titlebar--left">
+            <h1 class="oh-main__titlebar-title fw-bold">{% trans "Objectives" %}</h1>
+        </div>
+        {% if perms.pms.view_employeeobjective or request.user|filtersubordinates %}
+        <div class="oh-btn-group ml-2 ">
+            <div class="oh-btn-group" >
+                <form action="{% url 'objective-archive' id=employee_objective.id %}" onsubmit="return confirmSubmit('Do you want archive this Objective ?')" method="post">
+                    {% csrf_token %}
+                    <button class="oh-btn  w-100 "style="background-color: white;!important" title="{% trans 'Archive' %}" ><ion-icon name="archive-sharp"></ion-icon></button>
+                </form>
+                {% if perms.pms.delete_employeeobjective %} 
+                    <form action="{% url 'objective-delete' id=employee_objective.id %}" onsubmit="return confirmSubmit('Do you want Delete this Objective ?')" method="post">
+                        {% csrf_token %}
+                        <button  class="oh-btn oh-btn--danger-outline  w-100" title="{% trans 'Delete' %}" style="background-color: white;!important">
+                            <ion-icon name="trash-outline" role="img" class="md hydrated" aria-label="trash outline"></ion-icon>
+                        </button>
+                    </form>
+                {% endif %}
+              </div>
+        </div>
+        {% endif %}
+    </section>
+    <div class="oh-wrapper">
+        <div class="row">
+            <div class="col-12 col-sm-12 col-md-12 col-lg-12">
+                <div class="oh-card ">
+                    <div class="oh-card__body">
+                        <div class="row d-flex justify-content-between align-items-center">
+                            <div class="col-sm-12 col-md-12 col-lg-9">
+                                <div class="d-flex align-items-center">
+                                    <div class="d-flex align-items-center" x-data="{editableInput: false}">
+                                        <span
+                                            class="oh-card__title oh-card__title--lg oh-input px-0 oh-editable-input oh-editable-input--w-auto me-2">
+                                            {{employee_objective.objective}}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-12 col-md-12 col-lg-3">
+                                <div class="d-flex align-items-center justify-content-between mb-2">
+                                  <small class="oh-text--light">
+                                    <label class="fw-bold oh-text--dark">{% trans "Due" %}:</label>
+                                    {{ current_date|timesince:employee_objective.end_date }}
+                                  </small>
+                                  <!-- checking userlevel   -->
+                                  {% if perms.pms.change_employeeobjective or request.user|filtersubordinates %}
+                                  <button
+                                    class="oh-btn oh-btn--x-small d-flex align-items-center ms-2"
+                                    data-toggle="oh-modal-toggle" data-target="#objectiveModalpopup"
+                                    hx-get="{% url 'objective-update' id=employee_objective.id %}"
+                                    hx-target="#ObjectiveModalFormTarget">
+                                    <ion-icon name="create-outline" class="me-1" ></ion-icon>{% trans "Edit" %}
+                                  </button>
+                                  {% endif %}
+                                </div>
+                                <div class="oh-progress-container">
+                                  <div class="oh-progress" role="progressbar">
+                                    <div class="oh-progress__bar oh-progress__bar--secondary" style="width:  calc({{progress}}% )"></div>
+                                  </div>
+                                  <span class="oh-progress-container__percentage" >{{progress}}%</span>
+                                </div>
+                            </div>
+                            <div class="col-sm-12 col-md-12 col-lg-10">
+                                <div class="d-block mt-3 oh-text--xs oh-text--light">
+                                    {{employee_objective.objective_description}}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mt-4">
+                            <div class="col-6 col-sm-6 col-md-6 col-lg-6">
+                                <label class="oh-label my-2 my-2 me-2" for="status">{% trans "Status" %}</label>
+                                <select
+                                    id="status" class="oh-select oh-select--sm" name="objective_status"
+                                    hx-post="{%url 'objective-detailed-view-objective-status'  id=employee_objective.id %}"
+                                    hx-trigger="change" hx-target="#objective_detailed_view_activity">
+                                    <option value="{{employee_objective.status}}" selected>
+                                        {{employee_objective.get_status_display}}
+                                    </option>
+                                    {%for value,label in objective_key_result_status %}
+                                        {% if employee_objective.status != value %}
+                                            <option value="{{value}}">{% trans label %}</option>
+                                        {% endif%}
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-6 col-sm-6 col-md-6 col-lg-6">
+                                <div class="oh-profile oh-profile--md float-end">
+                                    <div class="oh-profile__avatar mr-1">
+                                        <img src="https://ui-avatars.com/api/?name={{employee_objective.employee_id}}&background=random"
+                                            class="oh-profile__image" alt="Mary Magdalene" />
+                                    </div>
+                                    <span class="oh-profile__name oh-text--dark">{{employee_objective.employee_id}}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12 col-sm-12 col-md-12 col-lg-12">
+                <div class="oh-card my-4">
+                    <div class="oh-card__header d-flex align-items-center justify-content-between">
+                        <div class="d-flex align-items-center">
+                            <span class="oh-card__title oh-card__title--sm fw-bold me-1">{% trans "Key Results" %} </span>
+                            <span class="oh-badge oh-badge--small oh-badge--round oh-badge--danger">{{employee_objective.emp_obj_id.all.count}}</span>
+                        </div>
+                        <!-- checking userlevel   -->
+                        {% if perms.pms.add_employeekeyresult or request.user|filtersubordinates %}
+                        <div>
+                            <a 
+                            href="#" class="oh-btn oh-btn--secondary" role="button" data-toggle="oh-modal-toggle"
+                            data-target="#objectiveModalpopup"
+                            hx-get="{% url 'key-result-creation-htmx' id=employee_objective.id %}"
+                            hx-target="#ObjectiveModalFormTarget">
+                            <ion-icon name="add-circle-outline" class="me-1"></ion-icon>{% trans "Add New" %} 
+                            </a>
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="oh-card__body">
+                        <ul class="oh-list-cards">
+                            {% for employee_key_result in employee_key_results %}
+                            <li class="oh-list-cards__item">
+                                <div class="oh-list-card">
+                                    <div class="oh-list-card__header d-flex align-content-center justify-content-between mb-2">
+                                        <span class="oh-list-card__title">{{employee_key_result.key_result}}</span>
+                                        <div class="d-flex align-items-center justify-content-between mb-2">
+                                            <small class="oh-text--light">
+                                                <label class="fw-bold oh-text--dark">{% trans "Due" %}:</label>
+                                                {{ current_date|timesince:employee_key_result.end_date }}
+                                            </small>
+                                            <!-- checking userlevel   -->
+                                            {% if perms.pms.change_employeekeyresult or request.user|filtersubordinates %}
+                                            <button
+                                                class="oh-btn oh-btn--x-small d-flex align-items-center ms-2 "
+                                                data-toggle="oh-modal-toggle"
+                                                hx-get="{% url 'key-result-update' id=employee_key_result.id %}"
+                                                hx-target="#ObjectiveModalFormTarget"
+                                                data-target="#objectiveModalpopup" >
+                                                <ion-icon name="create-outline" class="me-1" ></ion-icon>
+                                                {% trans "Edit" %}
+                                            </button>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div class="oh-list-card__body">
+                                        <p class="oh-list-card__description oh-text--xs mt-3">
+                                            {{employee_key_result.key_result_description}}
+                                        </p>
+                                        <div class="row mb-3">
+                                            <div class="col-12 col-sm-12 col-md-6 col-lg-4">
+                                                <div class="oh-container oh-container--outline">
+                                                    <label class="oh-input__label oh-text--secondary fw-bold oh-text--xs mb-0 mt-1">
+                                                        {% trans "Start Value" %} 
+                                                    </label>
+                                                    <input 
+                                                        class="oh-input oh-input--small oh-input--block px-0" min="0"
+                                                        value="{{employee_key_result.start_value}} {{employee_key_result.progress_type}}"
+                                                        readonly />
+                                                </div>
+                                            </div>
+                                            <div class="col-12 col-sm-12 col-md-6 col-lg-4">
+                                                <div class="oh-container oh-container--outline ">
+                                                    <label class="oh-input__label oh-text--secondary fw-bold oh-text--xs mb-0 mt-1">
+                                                        {% trans "Current Value" %}
+                                                    </label>
+                                                    <input 
+                                                    type="number" class="oh-table__editable-input "  min="0"
+                                                    max="{{employee_key_result.target_value}}"
+                                                    value="{{employee_key_result.current_value}}"
+                                                    hx-post="{%url 'objective-detailed-view-current-value' kr_id=employee_key_result.id %}"
+                                                    hx-trigger="change"
+                                                    hx-target="#objective_detailed_view_activity"
+                                                    name="current_value" readonly/>
+                                                  
+                                                </div>
+                                            </div>
+                                            <div class="col-12 col-sm-12 col-md-6 col-lg-4">
+                                                <div class="oh-container oh-container--outline">
+                                                    <label class="oh-input__label oh-text--secondary fw-bold oh-text--xs mb-0 mt-1">
+                                                        {% trans "Target Value" %}
+                                                    </label>
+                                                    <input 
+                                                        class="oh-input oh-input--small oh-input--block px-0" min="0"
+                                                        value=" {{employee_key_result.target_value}} {{employee_key_result.progress_type}}"
+                                                        readonly />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="oh-list-card__footer d-flex align-items-center justify-content-between flex-wrap">
+                                        <div class="oh-input-group">
+                                            <label class="oh-label my-2 my-2 me-2" for="status">{% trans "Status" %}</label>
+                                            <select 
+                                                id="status" name="key_result_status"
+                                                hx-post="{%url 'objective-detailed-view-key-result-status'  obj_id=employee_objective.id kr_id=employee_key_result.id %}"
+                                                hx-trigger="change" class="oh-select oh-select--sm"
+                                                hx-target="#objective_detailed_view_activity">
+                                                    <option value="{{employee_key_result.status}}" selected>
+                                                        {{employee_key_result.get_status_display }}
+                                                    </option>
+                                                    {%for value,label in objective_key_result_status%}
+                                                        {% if employee_key_result.status != value %}
+                                                        <option value="{{value}}">{{label}}</option>
+                                                        {% endif%}
+                                                    {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="oh-profile oh-profile--md">
+                                            <div class="oh-profile__avatar mr-1">
+                                                <img src="https://ui-avatars.com/api/?name={{employee_key_result.employee_id}}&background=random"
+                                                    class="oh-profile__image" alt="Rosa Luxemburg" />
+                                            </div>
+                                            <span class="oh-profile__name oh-text--dark">{{employee_key_result.employee_id}}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <!-- activity -->
+            <div class="col-12 col-sm-12 col-md-12 col-lg-12">
+                <div class="oh-card">
+                    <div class="oh-card__header">
+                        <span class="oh-card__title oh-card__title--sm fw-bold me-2">{% trans "Activity" %}</span>
+                    </div>
+                    <div class="oh-card__body mt-2">
+                        <div id="objective_detailed_view_activity">
+                            <!-- this div will update the activity -->
+                            {% include 'okr/objective_detailed_view_activity.html' %}
+                        </div>
+                        <div class="oh-input-group mt-4">
+                            <form hx-post="{%url 'objective-detailed-view-comment' id=employee_objective.id %}" id="commentForm"
+                                hx-target="#objective_detailed_view_activity">
+                                {{comment_form.comment}}
+                                <button type="submit" class="oh-btn oh-btn--small oh-btn--secondary ms-auto" >
+                                    <ion-icon name="chatbox-outline" class="me-2" ></ion-icon>{% trans "Comment" %}
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- end of activity -->
+        </div>
+    </div>
+    <div class="oh-modal" id="objectiveModalpopup" role="dialog" aria-labelledby="objectiveModal" aria-hidden="true">
+        <div class="oh-modal__dialog" id="ObjectiveModalFormTarget">
+        </div>
+    </div>
+</main>
+
+{% endblock %}

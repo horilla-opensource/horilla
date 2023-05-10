@@ -1,0 +1,156 @@
+{% load recruitmentfilters %}
+{% load static %}
+{% load i18n %}
+
+<form method="post" id="candidate-update-form" >
+    {% csrf_token %}
+    <div class="container py-5 h-100">
+      <div class="row d-flex justify-content-center align-items-center h-100">
+        <div class="col-lg-8 col-xl-6">
+          <div class="card rounded-3">
+            <div class="pl-5 mt-5">
+              <img
+                src="/media/{{form.profile|media_path}}"
+                alt="Sample photo"
+                class="rounded-circle img-fluid mr-auto"
+                style="width: 100px; height: 100px"
+              />
+            </div>
+            <div class="card-body pl-5 pr-5 pb-5 pt-3">
+              {% if messages %}
+              <div class="oh-alert-container">
+                  {% for message in messages %}
+                  <div class="oh-alert oh-alert--animated {{message.tags}}">
+                        {{ message }}
+                      </div> 
+                  {% endfor %}
+              </div>
+              {% endif %}
+              <h3 class="mb-4">{% trans "Candidate Info" %}</h3>
+              {{form.name.errors}}
+              <div class="form-outline mb-4">{{form.name}}</div>
+              <div class="row">
+                <div class="col-md-6 mb-4">
+                  <div class="form-outline">
+                    <select
+                      name="recruitment"
+                      id="recruitment"
+                      class="form-control"
+                      required
+                    >
+                      <option value="{{candidate.recruitment_id.id}}">
+                        {{candidate.recruitment_id.job_position_id}}
+                      </option>
+                      {% for recruitment in open_recruitment %}
+                      <option value="{{recruitment.id}}">
+                        {{recruitment.job_position_id}}
+                      </option>
+                      {% endfor %}
+                    </select>
+                  </div>
+                </div>
+                <div class="col-md-6 mb-4">
+                  <select name="stage" id="stage" class="form-control">
+                    <option value="{{candidate.stage_id.id}}">
+                      {{candidate.stage_id}}
+                    </option>
+                    {% for stage in candidate.recruitment_id.stage_set.all %}
+                    <option value="{{stage.id}}">{{stage}}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+              </div>
+              <div>
+                {{form.email.errors}}
+                <div class="form-outline mb-4">{{form.email}}</div>
+                {{form.mobile.errors}}
+                <div class="form-outline mb-4">{{form.mobile}}</div>
+                {{form.referral.errors}}
+                <div class="form-outline mb-4">{{form.referral}}</div>
+              </div>
+              <table>
+                <tr>
+                  <td>
+                    {{form.resume.errors}}
+                    <label class="text-secondary" for="id_{{form.resume.name}}"
+                      >{{form.resume.label}}</label
+                    >
+                  </td>
+                  <td>
+                    {{form.profile.errors}}
+                    <label class="text-secondary" for="id_{{form.profile.name}}"
+                      >{{form.profile.label}}</label
+                    >
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <input
+                      type="file"
+                      name="{{form.resume.name}}"
+                      id="id_{{form.resume.name}}"
+                      class="form-control"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="file"
+                      name="{{form.profile.name}}"
+                      id="id_{{form.profile.name}}"
+                      class="form-control"
+                    />
+                  </td>
+                </tr>
+              </table>
+  
+              <table class="table">
+                <tr>
+                  <td>
+                    <label
+                      class="text-secondary"
+                      for="id_{{form.start_onboard.name}}"
+                      >{{form.start_onboard.label}}</label
+                    >
+                  </td>
+                  <td>
+                    <label class="text-secondary" for="id_{{form.hired.name}}"
+                      >{{form.hired.label}}</label
+                    >
+                  </td>
+                  <td>
+                    <label class="text-secondary" for="id_{{form.canceled.name}}"
+                      >{{form.canceled.label}}</label
+                    >
+                  </td>
+                  <td>
+                    <label class="text-secondary" for="id_{{form.is_active.name}}"
+                      >{{form.is_active.label}}</label
+                    >
+                  </td>
+                </tr>
+                <tr>
+                  <td>{{form.start_onboard}}</td>
+                  <td>{{form.hired}}</td>
+                  <td>{{form.canceled}}</td>
+                  <td>{{form.is_active}}</td>
+                </tr>
+              </table>
+              <button
+                hx-post="{% url 'candidate-update' form.instance.id %}"
+                hx-target="#candidate-update-form"
+                hx-encoding = 'multipart/form-data'
+                type="submit"
+                class="btn btn-success btn-lg ml-auto mr-auto"
+              >
+                {% trans "Submit" %}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+
+<script>
+  {% include 'candidate/stage_change_script.js' %}
+</script>

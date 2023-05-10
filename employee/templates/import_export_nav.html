@@ -1,0 +1,69 @@
+<a href="#" class="oh-navbar__notification-link" @click="open = !open" >
+    <ion-icon name="filter"></ion-icon>
+    </a>
+      <div class="oh-navbar__notification-tray border rounded pr-3 pl-3 pb-2" x-data="{markRead: false, visible: true}" x-show="open"
+      @click.outside="open = false">
+      <div class="oh-navbar__notification-head pl-0">
+        <span class="oh-navbar__notification-head-title">Import-Export</span>
+      </div>
+      <table class="table">
+        <tr>
+            <td>Employee </td>
+            <td><button id='employee-import' data-toggle="modal" data-target="#employeeImport" class='btn btn-outline-success'>Import</button></td>
+            <td><a href="{% url 'employee-export' %}" hx-target="#section"  class='btn btn-outline-success'>Export</a></td>
+        </tr>
+        <tr>
+            <td>Work Info </td>
+            <td><button id='work-info-import' data-toggle="modal" data-target="#workInfoImport" class='btn btn-outline-success'>Import</button></td>
+            <td><a href="{% url 'work-info-export' %}" hx-target="#section"  class='btn btn-outline-success'>Export</a></td>
+        </tr>
+      </table>
+      <script>
+        $('#employee-import').click(function (e) { 
+          $.ajax({
+            type: 'GET',
+            url: '/employee/employee-import',
+            dataType: 'binary',
+            xhrFields: {
+              responseType: 'blob'
+            },
+            success: function(response) {
+              const file = new Blob([response], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+              const url = URL.createObjectURL(file);
+              const link = document.createElement('a');
+              link.href = url;
+              link.download = 'employee_import_template.xlsx';
+              document.body.appendChild(link);
+              link.click();
+            },
+            error: function(xhr, textStatus, errorThrown) {
+              console.error('Error downloading file:', errorThrown);
+            }
+          });
+        });
+      
+        $('#work-info-import').click(function (e) { 
+          $.ajax({
+            type: 'GET',
+            url: '/employee/work-info-import',
+            dataType: 'binary',
+            xhrFields: {
+              responseType: 'blob'
+            },
+            success: function(response) {
+              const file = new Blob([response], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+              const url = URL.createObjectURL(file);
+              const link = document.createElement('a');
+              link.href = url;
+              link.download = 'work_info_template.xlsx';
+              document.body.appendChild(link);
+              link.click();
+            },
+            error: function(xhr, textStatus, errorThrown) {
+              console.error('Error downloading file:', errorThrown);
+            }
+          });
+        });
+      
+            </script>
+    </div>

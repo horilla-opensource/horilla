@@ -1,0 +1,181 @@
+{% extends 'index.html' %}
+{% block content %}
+{% load static %}
+<div class="oh-wrapper">
+    <div class="oh-dashboard row">
+      <div class="oh-dashboard__left col-12 col-sm-12 col-md-12 col-lg-9">
+        <div class="oh-dashboard__cards row">
+          <div class="col-12 col-sm-12 col-md-6 col-lg-4">
+            <div class="oh-card-dashboard oh-card-dashboard oh-card-dashboard--success">
+              <div class="oh-card-dashboard__header">
+                <span class="oh-card-dashboard__title">On Time</span>
+              </div>
+              <div class="oh-card-dashboard__body">
+                <div class="oh-card-dashboard__counts">
+                  <span class="oh-card-dashboard__sign">
+                    {% if on_time < late_come %}
+                    <ion-icon name="caret-down-outline"></ion-icon>
+                    {% else %}
+                    <ion-icon name="caret-up-outline"></ion-icon>
+                    {% endif %}
+                  </span>
+                  <span class="oh-card-dashboard__count">{{on_time}}</span>
+                </div>
+                <span class="oh-badge oh-card-dashboard__badge"
+                  >{{on_time_ratio}}%</span
+                >
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-sm-12 col-md-6 col-lg-4">
+            <div class="oh-card-dashboard oh-card-dashboard--neutral">
+              <div class="oh-card-dashboard__header">
+                <span class="oh-card-dashboard__title"
+                  >Today's Attendances</span
+                >
+              </div>
+              <div class="oh-card-dashboard__body">
+                <div class="oh-card-dashboard__counts">
+                  {% comment %} <span class="oh-card-dashboard__count">100%</span> {% endcomment %}
+                  <span class="oh-card-dashboard__count">{{marked_attendances_ratio}}%</span>
+                </div>
+                <span class="oh-badge oh-card-dashboard__badge"
+                  >{{marked_attendances}}/{{expected_attendances}}</span
+                >
+              </div>
+            </div>
+          </div>        
+          <div class="col-12 col-sm-12 col-md-6 col-lg-4">
+            <div class="oh-card-dashboard oh-card-dashboard--danger">
+              <div class="oh-card-dashboard__header">
+                <span class="oh-card-dashboard__title"
+                  >Late Come</span
+                >
+              </div>
+              <div class="oh-card-dashboard__body">
+                <div class="oh-card-dashboard__counts">
+                  <span class="oh-card-dashboard__sign">
+                    {% if late_come < on_time %}
+                    <ion-icon name="caret-down-outline"></ion-icon>
+                    {% else %}
+                    <ion-icon name="caret-up-outline"></ion-icon>
+                    {% endif %}
+
+                  </span>
+                  <span class="oh-card-dashboard__count">{{late_come}}</span>
+                </div>
+                <span class="oh-badge oh-card-dashboard__badge"
+                  >{{late_come_ratio}}%</span
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="oh-dashboard__movable-cards row mt-4">
+          <div class="col-12 col-sm-12 col-md-12 col-lg-6 oh-card-dashboard--moveable">
+            <div
+              class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent"
+            >
+              <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
+                <span class="oh-card-dashboard__title">Day Analytic</span>
+              </div>
+              <div class="oh-card-dashboard__body">
+                <canvas id="dailyAnalytic"></canvas>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-sm-12 col-md-12 col-lg-6 oh-card-dashboard--moveable">
+            <div
+              class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent"
+            >
+              <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
+                <span class="oh-card-dashboard__title">Overall Conversions</span>
+              </div>
+              <div class="oh-card-dashboard__body">
+                <canvas id="myChart2"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="oh-dashboard__right  col-12 col-sm-12 col-md-12 col-lg-3">
+        <div class="oh-dashboard__events">
+          <div class="oh-dashbaord__events-reel">
+            <div class="oh-dashboard__event oh-dashboard__event--purple">
+              <div class="oh-dasboard__event-photo">
+                <img src="/static/images/upload/userphoto.png" class="oh-dashboard__event-userphoto"/>
+              </div>
+              <div class="oh-dasboard__event-details">
+                <span class="oh-dashboard__event-title">Birthday</span>
+                <span class="oh-dashboard__event-main">Katie Melua</span>
+                <span class="oh-dashboard__event-date">29/03/2023</span>
+              </div>
+            </div>
+
+            <div class="oh-dashboard__event oh-dashboard__event--crimson">
+              <div class="oh-dasboard__event-photo">
+                <img src="/static/images/upload/userphoto.png" class="oh-dashboard__event-userphoto"/>
+              </div>
+
+              <div class="oh-dasboard__event-details">
+                <span class="oh-dashboard__event-title">Birthday</span>
+                <span class="oh-dashboard__event-main">Katie Melua</span>
+                <span class="oh-dashboard__event-date">29/03/2023</span>
+              </div>
+            </div>
+
+            <div class="oh-dashboard__event oh-dashboard__event--purple">
+              <div class="oh-dasboard__event-photo">
+                <img src="/static/images/upload/userphoto.png" class="oh-dashboard__event-userphoto"/>
+              </div>
+              <div class="oh-dasboard__event-details">
+                <span class="oh-dashboard__event-title">Birthday</span>
+                <span class="oh-dashboard__event-main">Katie Melua</span>
+                <span class="oh-dashboard__event-date">29/03/2023</span>
+              </div>
+            </div>
+          </div>
+          <ul class="oh-dashboard__events-nav">
+            <li class="oh-dashboard__events-nav-item oh-dashboard__events-nav-item--active" data-target="0"></li>
+            <li class="oh-dashboard__events-nav-item" data-target="1"></li>
+            <li class="oh-dashboard__events-nav-item" data-target="2"></li>
+          </ul>
+        </div>
+
+        <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent mt-3">
+          <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
+            <span class="oh-card-dashboard__title">On Break</span>
+          </div>
+          
+          <div class="oh-card-dashboard__body">
+            <ul class="oh-card-dashboard__user-list">
+              {% for emp in on_break %}
+              <li class="oh-card-dashboard__user-item">
+                <div class="oh-profile oh-profile--md">
+                  <div class="oh-profile__avatar mr-1">
+                    <img
+                      src="https://ui-avatars.com/api/?name={{emp.employee_id}}&background=random"
+                      class="oh-profile__image"
+                      alt="Amy Winehouse"
+                    />
+                  </div>
+                  <span class="oh-profile__name oh-text--dark"
+                    >{{emp.employee_id}}</span
+                  >
+                </div>
+              </li>
+              {% endfor %}
+
+              
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <script src="{% static 'dashboard/attendanceChart.js' %}"></script>
+
+  {% endblock content %}

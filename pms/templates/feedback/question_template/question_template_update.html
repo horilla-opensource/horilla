@@ -1,0 +1,16 @@
+{% load i18n %}
+<form method="post" action="{% url 'question-template-update' id=question_update_form.instance.id %}">
+  {% csrf_token %}
+  <div class="oh-modal__dialog-body m-2">
+    <div class="oh-input__group">
+      <label class="oh-input__label mt-0" for="keyTitle">{% trans "Title" %}</label>
+      {{question_update_form.question_template }}
+      <!-- <span id="id_question_template_error" style="color: red;"></span> -->
+    </div>
+  </div>
+  <div class="oh-modal__dialog-footer">
+    <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow ">
+      {% trans "Save" %}
+    </button>
+  </div>
+</form>

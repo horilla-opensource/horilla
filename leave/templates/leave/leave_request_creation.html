@@ -1,0 +1,11 @@
+{% extends 'index.html' %}{% load i18n %}{% block content %}
+<p class="pb-3">
+  <a href="/leave/request-view" class="btn btn-danger">{% trans "View" %}</a> {% trans "All Leave Requests" %}
+</p>
+<div class="container ml-5 mr-5 pl-5 pr-5">
+<form action="" method="post" enctype="multipart/form-data">
+  {%csrf_token%} {{form.as_p}}
+  <input type="submit" class="btn btn-danger"/>
+</form>
+</div>
+{% endblock %}

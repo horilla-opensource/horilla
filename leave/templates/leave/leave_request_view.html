@@ -1,0 +1,78 @@
+{% extends 'index.html' %} {% load i18n %} {% block content %}
+<p class="pb-3">
+  <a href="{% url 'request-creation' %}" class="btn btn-primary">{% trans "Create" %}</a> {% trans "New Leave Request" %}
+</p>
+
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th scope="col">{% trans "Employee" %}</th>
+      <th scope="col">{% trans "Type" %}</th>
+      <th scope="col">{% trans "Start Date" %}</th>
+      <th scope="col">{% trans "End Date" %}</th>
+      <th scope="col">{% trans "Available Days" %}</th>
+      <th scope="col">{% trans "Carryforward Days" %}</th>
+      <th scope="col">{% trans "Total Leave Days" %}</th>
+      <th scope="col">{% trans "Requested Days" %}</th>
+      <th scope="col">{% trans "Status" %}</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for leave_request in leave_requests %}
+    <tr>
+      <td>{{leave_request.employee_id}}</td>
+      <td>{{leave_request.leave_type_id}}</td>
+      <td>{{leave_request.start_date|date:'d/m/Y'}}</td>
+      <td>{{leave_request.end_date|date:'d/m/Y'}}</td>
+
+      <td>{% for available_leave in leave_request.employee_id.available_leave.all %}
+        {% if available_leave.leave_type_id.id == leave_request.leave_type_id.id %}
+        {{available_leave.available_days}}
+        {% endif %}
+        {% endfor %}</td>
+
+      <td>{% for available_leave in leave_request.employee_id.available_leave.all %}
+        {% if available_leave.leave_type_id.id == leave_request.leave_type_id.id %}
+        {{available_leave.carryforward_days}}
+        {% endif %}
+        {% endfor %}</td>
+
+
+      <td>{% for available_leave in leave_request.employee_id.available_leave.all %}
+        {% if available_leave.leave_type_id.id == leave_request.leave_type_id.id %}
+        {{available_leave.total_leave_days}}
+        {% endif %}
+        {% endfor %}</td>
+
+      <td>{{leave_request.requested_days}}</td>
+
+      {% for choice in choices %}
+      {% if choice.0 == leave_request.status %}
+      <td>{{choice.1}}</td>
+      {% endif %}
+      {% endfor %}
+
+      {% if leave_request.status != 'approved' and leave_request.status == 'requested' %}
+      <td>
+        <a href="{% url 'request-approve' leave_request.id %}" class="btn btn-success">{% trans "Approve" %}</a>
+      </td>
+      {% endif %}
+      {% if leave_request.status == 'approved' or leave_request.status != 'cancelled'%}
+      <td>
+        <a href="{% url 'request-cancel' leave_request.id %}" class="btn btn-primary">{% trans "Cancel" %}</a>
+      </td>
+      {% endif %}
+
+      {% if leave_request.status != 'cancelled'%}
+      <td>
+        <a href="{% url 'request-update' leave_request.id  %}" class="btn btn-warning">{% trans "Update" %}</a>
+      </td>
+      {% endif %}
+      <td>
+        <a href="{% url 'request-delete' leave_request.id  %}" class="btn btn-danger">{% trans "Delete" %}</a>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

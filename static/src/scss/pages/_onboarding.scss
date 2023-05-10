@@ -1,0 +1,162 @@
+.oh-onboarding{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: calc(100vh - 4rem);
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+    @media (max-width: 767.98px) {
+        align-items: flex-start;
+        height: 100%;
+        margin-top: 2rem;
+    }
+}
+.oh-onboarding-card{
+    background-color: $white;
+    width: 90%;
+    max-width: 800px;
+    padding: 2.5rem;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 3px 0px, rgba(0, 0, 0, 0.06) 0px 1px 2px 0px;
+}
+.oh-onboarding-card--top-bar{
+    position: relative;
+
+    &::before{
+        content: "";
+        left: 0;
+        top: 0;
+        height: 5px;
+        width: 100%;
+        background-color: $secondary-color;
+        position: absolute;
+    }
+}
+.oh-onboarding-card__container {
+    width: 98%;
+    max-width: 350px;
+    margin: 0 auto;
+  }
+  .oh-onboarding-card__container--wide{
+    max-width: 650px;
+  } 
+.oh-onboarding-card__title {
+    font-weight: bold;
+}
+.oh-onboarding-card__title--h1{
+    font-size: 1.75rem;
+}
+.oh-onboarding-card__title--h2{
+    font-size: 1.45rem;
+}
+.oh-onboarding-card__title--h3{
+    font-size: 1.2rem;
+}
+.oh-onboarding-card__lead{
+    font-size: 1.05rem;
+    color: $light-text-color;
+}
+.oh-onboarding-card__button{
+    margin: 0 auto;
+}
+.oh-onboarding-card__lead-image{
+    width: 300px;
+    display: block;
+    height: auto;
+    margin: 0 auto;
+}
+.oh-onboarding-card__steps{
+    list-style-type: none;
+    padding-left: 0;
+    display: flex;
+    align-items: center;
+    margin-bottom: 0;
+}
+.oh-onboarding-card__step{
+    display: flex;
+    align-items: center;
+    margin-right: 1.25rem;
+    flex-shrink: 0;
+    &:last-child{
+        margin-right: 0;
+    }
+    @media (max-width: 575.98px) {
+        display: none;
+        margin-right: 0;
+    }
+}
+.oh-onboarding-card__step--active{
+    .oh-onboarding-card__text{
+        color: $text-color;
+        font-weight: bold;
+    }
+    @media (max-width: 575.98px) {
+        display: flex;
+    }
+}
+.oh-onboarding-card__count{
+    background-color: rgba($secondary-color, 0.1);
+    color: $secondary-color;
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 0.5rem;
+    font-size: 0.75rem;
+}
+.oh-onboarding-card__text{
+    color: $light-text-color;
+    font-size: 0.8rem;
+}
+.oh-onboarding-card__header{
+    border-bottom: 1px solid $border-light-color;
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.oh-onboarding-card__form{
+    width: 98%;
+    max-width: 400px;
+    margin: 0 auto;
+}
+.oh-onboarding-card__greeting{
+    color: $light-text-color;
+    font-size: 1.2rem;
+}
+.oh-onboarding-card__highlight-code{
+    display: block;
+    max-width: 220px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    padding: 1rem 1.25rem;
+    background-color: $border-light-color;
+    border: 1px dashed $border-color;
+}
+.oh-onboarding-card__highlight-label{
+    font-weight: bold;
+}
+.oh-onboarding-card__subtitle{
+    font-size: 0.9rem;
+    color: $light-text-color;
+    display: block;
+}
+.oh-onboarding-card__company-name{
+    font-size: 0.85rem;
+    font-weight: bold;
+}
+.oh-onboarding-card__section-title{
+    font-size: 1.15rem;
+    font-weight: bold;
+}
+.oh-onboarding-card__address-group{
+    margin-top: 2rem;
+    &:first-child{
+        margin-top: 0;
+    }
+}

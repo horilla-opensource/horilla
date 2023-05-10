@@ -1,0 +1,39 @@
+{% extends 'index.html' %}{% load i18n %}{% block content %}
+
+<p class="pb-3">
+  <a href="{% url 'holiday-creation' %}" class="btn btn-primary">{% trans "Create" %}</a> {% trans "New Holiday" %}
+   
+</p>
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th scope="col">{% trans "Holiday" %}</th>
+      <th scope="col">{% trans "Type" %}</th>
+      <th scope="col">{% trans "Start Date" %}</th>
+      <th scope="col">{% trans "End Date" %}</th>
+      
+    </tr>
+  </thead>
+  <tbody>
+    {% for holiday in data %}
+    <tr>
+      <td>{{holiday.name}}</td>
+      <td>{% if holiday.reccuring == True %} {% trans "Reccuring" %} {% else %} {% trans "Non Reccuring" %} {% endif %}</td>
+      <td>{{holiday.start_date}}</td>
+      <td>{{holiday.end_date}}</td>
+      <td>
+        <a href="{% url 'holiday-update' holiday.id %}" class="btn btn-warning"
+          >{% trans "Edit" %}</a
+        >
+      </td>
+      <td>
+        <a href="{% url 'holiday-delete' holiday.id %}" class="btn btn-danger"
+          >{% trans "Delete" %}</a
+        >
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% endblock %}

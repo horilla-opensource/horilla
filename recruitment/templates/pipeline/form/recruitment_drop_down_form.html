@@ -1,0 +1,59 @@
+{% load i18n %}
+<div class="oh-dropdown" x-data="{open: false}">
+  <button class="oh-btn oh-btn--secondary" @click="open = !open">
+    <ion-icon class="me-1" name="add-outline"></ion-icon>{% trans 'Recruitment' %}
+  </button>
+  <div
+    class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4"
+    x-show="open"
+    @click.outside="open = false"
+    style="display: none;"
+  >
+    <form action="" class="" method="post">
+      {% csrf_token %}
+      <div class="oh-input-group">
+        <label for="desc" class="oh-label">{% trans 'Description' %}</label>
+        {{recruitment_form.description}}
+      </div>
+      <div class="oh-input-group">
+        <label for="job-position" class="oh-label">{% trans 'Job Position' %}</label>
+        {{recruitment_form.job_position_id}}
+      </div>
+      <div class="oh-input-group">
+        <label for="vacancy" class="oh-label">{% trans 'Vacancy' %}</label>
+        {{recruitment_form.vacancy}}
+      </div>
+      <div class="oh-input-group">
+        <label for="recruitment-manager" class="oh-label"
+          >{% trans 'Recruitment Manager' %}</label
+        >
+        {{recruitment_form.recruitment_managers}}
+      </div>
+
+      <div class="row">
+        <div class="col-12 col-sm-12 col-md-6">
+          <div class="oh-input-group">
+            <label for="startDate" class="oh-label">{% trans 'Start Date' %}</label>
+            {{recruitment_form.start_date}}
+          </div>
+        </div>
+        <div class="col-12 col-sm-12 col-md-6">
+          <div class="oh-input-group">
+            <label for="endDate" class="oh-label">{% trans 'End Date' %}</label>
+            {{recruitment_form.end_date}}
+          </div>
+        </div>
+        <input type="checkbox" name="is_active" id="" checked hidden />
+      </div>
+      <div class="oh-input-group d-flex align-items-center mt-3"></div>
+
+      <button
+        type="submit"
+        class="oh-btn oh-d-hide oh-btn--small oh-btn--secondary oh-btn--add-advanced-tab w-100 mt-3 mb-2"
+      >
+        <ion-icon class="me-1" name="add-circle-outline"></ion-icon>
+        {% trans 'Add Recruitment' %}
+      </button>
+    </form>
+  </div>
+</div>

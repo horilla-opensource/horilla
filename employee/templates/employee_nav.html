@@ -1,0 +1,214 @@
+{% load static %}
+{% load i18n %}
+<div
+  class="oh-modal"
+  id="workInfoImport"
+  role="dialog"
+  aria-labelledby="workInfoImport"
+  aria-hidden="true"
+>
+  <div class="oh-modal__dialog">
+    <div class="oh-modal__dialog-header">
+      <h2 class="oh-modal__dialog-title" id="workInfoImportLavel">
+        {% trans "Import Employee" %}
+      </h2>
+      <button class="oh-modal__close" aria-label="Close">
+        <ion-icon name="close-outline"></ion-icon>
+      </button>
+      <div class="oh-modal__dialog-body p-0 pt-2" id="workInfoImportModalBody">
+        <form
+          {%
+          comment
+          %}
+          hx-post="{% url 'work-info-import' %}"
+          hx-swap="none"
+          target="_blank"
+          {%
+          endcomment
+          %}
+          id="workInfoImportForm"
+          enctype="multipart/form-data"
+        >
+          <div class="modal-body">
+
+            {% csrf_token %}
+            {% comment %} {% endcomment %}
+            <div class="oh-dropdown__import-form">
+              <label class="oh-dropdown__import-label" for="uploadFile">
+                  <ion-icon name="cloud-upload" class="oh-dropdown__import-form-icon md hydrated" role="img" aria-label="cloud upload"></ion-icon>
+                  <span class="oh-dropdown__import-form-title">{% trans "Upload a File" %}</span>
+                  <span class="oh-dropdown__import-form-text">{% trans "Drag and drop files here" %}</span>
+              </label>
+              <input type="file" name="file" id="workInfoImportFile" /> 
+          </div>
+          </div>
+          <div class="modal-footer d-flex flex-row-reverse">
+            <input
+              type="submit"
+              class="oh-btn oh-btn--secondary"
+              value="Upload"
+            />
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<section class="oh-wrapper oh-main__topbar" x-data="{searchShow: false}">
+  <div class="oh-main__titlebar oh-main__titlebar--left">
+    <a
+      href="{% url 'employee-view' %}"
+      class="oh-main__titlebar-title fw-bold mb-0 text-dark"
+      hx-target="#view-container"
+      style="cursor: pointer"
+      >{% trans "People" %}</a
+    >
+    <a
+      class="oh-main__titlebar-search-toggle"
+      role="button"
+      aria-label="Toggle Search"
+      @click="searchShow = !searchShow"
+    >
+      <ion-icon
+        name="search-outline"
+        class="oh-main__titlebar-serach-icon"
+      ></ion-icon>
+    </a>
+  </div>
+
+  <div class="oh-main__titlebar oh-main__titlebar--right">
+    <div
+      class="oh-input-group oh-input__search-group"
+      :class="searchShow ? 'oh-input__search-group--show' : ''"
+    >
+      <ion-icon
+        name="search-outline"
+        class="oh-input-group__icon oh-input-group__icon--left"
+      ></ion-icon>
+      <input
+        type="search"
+        hx-get="{% url 'search-employee' %}"
+        placeholder="{% trans 'Search' %}"
+        name="search"
+        hx-vals='{"view":"card"}'
+        id="employee-search"
+        hx-trigger="keyup changed delay:.2s"
+        hx-target="#view-container"
+        class="oh-input oh-input__icon"
+        aria-label="Search Input"
+      />
+    </div>
+    <ul class="oh-view-types ml-2" style="margin-bottom: 0">
+      <li class="oh-view-type employee-view-type" data-view="list">
+        <a
+          id='list'
+          hx-get="/employee/employee-view-list"
+          hx-target="#view-container"
+          class="oh-btn oh-btn--view"
+          ><ion-icon name="list-outline"></ion-icon
+        ></a>
+      </li>
+      <li class="oh-view-type employee-view-type" data-view="card">
+        <a
+          id='card'
+          hx-get="/employee/employee-view-card"
+          hx-target="#view-container"
+          class="oh-btn oh-btn--view"
+          ><ion-icon name="grid-outline"></ion-icon
+        ></a>
+      </li>
+    </ul>
+
+    <div class="oh-main__titlebar-button-container">
+      <div class="oh-dropdown" x-data="{open: false}">
+        <button class="oh-btn ml-2" @click="open = !open">
+          <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}
+        </button>
+        <div
+          class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4"
+          x-show="open"
+          @click.outside="open = false"
+          style="display: none;"
+
+        >
+          {% include 'employee_filters.html' %}
+        </div>
+      </div>
+      <div class="oh-btn-group ml-2">
+        <div class="oh-dropdown" x-data="{open: false}">
+          <button
+            class="oh-btn oh-btn--dropdown oh-btn oh-btn--shadow"
+            @click="open = !open"
+            @click.outside="open = false"
+          >
+            {% trans "Actions" %}
+          </button>
+          <div class="oh-dropdown__menu oh-dropdown__menu--right" x-show="open" style="display: none;">
+            <ul class="oh-dropdown__items">
+              <li class="oh-dropdown__item">
+                <a
+                  href="#"
+                  class="oh-dropdown__link"
+                  id="work-info-import"
+                  data-toggle="oh-modal-toggle"
+                  data-target="#workInfoImport"
+                  >{% trans "Import" %}</a
+                >
+              </li>
+              <li class="oh-dropdown__item">
+                <a
+                  href="{% url 'work-info-export' %}"
+                  hx-target="#section"
+                  class="oh-dropdown__link"
+                  >{% trans "Export" %}</a
+                >
+              </li>
+              {% if perms.delete_employee %}
+              <li class="oh-dropdown__item">
+                <a href="#" class="oh-dropdown__link " id="archiveEmployees" 
+                  >{% trans "Archive" %}</a
+                >
+              </li>
+              {% endif %} 
+              {% if perms.delete_employee %}
+              <li class="oh-dropdown__item">
+                <a href="#" class="oh-dropdown__link "  id="unArchiveEmployees" 
+                  >{% trans "Un-Archive" %}</a
+                >
+              </li>
+              {% endif %} 
+              {% if perms.delete_employee %}
+              <li class="oh-dropdown__item">
+                <a
+                  href="#"
+                  class="oh-dropdown__link oh-dropdown__link--danger"
+                  id="deleteEmployees"
+                  >{% trans "Delete" %}</a
+                >
+              </li>
+              {% endif %}
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="oh-btn-group ml-2">
+        {% if perms.employee.add_employee %}
+        <div class="oh-dropdown">
+          <a
+            href='{% url "employee-view-new" %}'
+            class="oh-btn oh-btn--secondary"
+          >
+          <ion-icon name="add-outline"></ion-icon>
+            {% trans "Create" %}
+          </a>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+
+<script src="{% static 'employee/importExport.js' %}"></script>
+<script src="{% static 'employee/search.js' %}"></script>

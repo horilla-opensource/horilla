@@ -1,0 +1,39 @@
+  {% load i18n %}
+  <div id="ack-message-{{cand.id}}" >
+  </div>
+  <form hx-post='{% url "send-acknowledgement" %} ' id = 'ack-form-{{cand.id}}' hx-target="#ack-message-{{cand.id}}" hx-replace-all>
+  <div class="modal-body">
+    <div class="form-group">
+      <label for="to-email"><h6>{% trans "To" %}</h6></label>
+      <input type="email" value="{{cand.email}}"name='to' required class="oh-input w-100" id="to-email" placeholder="Enter email">
+    </div>
+    <div class="form-group">
+      <label for="subject"><h6>{% trans "Subject" %}</h6></label>
+      <input type="text" value="Congratulations..."name='subject' class="oh-input w-100" id="subject" placeholder="Subject">
+    </div>
+    <div class="form-group">
+      <label for="body"><h6>{% trans "Message Body" %}</h6></label>
+      <textarea name="body" required class="oh-input w-100"   id="body" cols="30" rows="2">
+      </textarea>          
+    </div>        
+    <div class="modal-footer d-flex flex-row-reverse mt-3">
+      <input type="submit"   class="oh-btn oh-btn--secondary submit-send" data-message-id="ack-message-{{cand.id}}" name="submit" id="submit" onclick="sendMail()" value="{% trans 'Send Mail' %}">
+    </div>
+  </form>
+
+  
+
+
+<script>
+    button = document.querySelector('.submit-send')
+    button.onclick = function(event) {
+    var element = event.target;
+    messageId = $(element).attr('data-message-id');
+      $(`#${messageId}`).append(`
+      <div class="alert alert-primary m-2" role="alert">
+        Processing...
+        </div>
+        `);
+  };    
+</script>
+  

@@ -1,0 +1,168 @@
+{% load i18n %}
+{% load attendancefilters %}
+{% load basefilters %}
+<div class="oh-sticky-table">
+  <div class="oh-sticky-table__table oh-table__sticky-collaspable-sort">
+    <div class="oh-sticky-table__thead">
+      <div class="oh-sticky-table__tr">
+        <div class="oh-sticky-table__th">{% trans "Employee" %}</div>
+        <div class="oh-sticky-table__th">{% trans "Month" %}</div>
+        <div class="oh-sticky-table__th">{% trans "Year" %}</div>
+        <div class="oh-sticky-table__th">{% trans "Hour Account" %}</div>
+        <div class="oh-sticky-table__th">{% trans "Overtime" %}</div>
+        <div class="oh-sticky-table__th"></div>
+      </div>
+    </div>
+    <!-- grouper -->
+    {% dynamic_regroup accounts by field as accounts_grouper %}
+    {% for attendance_list in accounts_grouper %}
+    <div class="oh-sticky-table__tbody" draggable="true">
+      <div class="oh-sticky-table__tr oh-table__toggle-parent" data-target="{{attendance_list.grouper}}">
+        <div class="oh-sticky-table__sd">
+          <div class="d-flex align-items-center">
+            <button class="oh-btn oh-btn--transparent oh-table__toggle-button"></button>
+            <span class="ms-2">
+              <div class="oh-tabs__input-badge-container">
+                <span class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round mr-1">
+                  {{attendance_list.list|length}}
+                </span>
+                {{attendance_list.grouper}}
+              </div>
+            </span>
+          </div>
+        </div>
+        <div class="oh-sticky-table__td"></div>
+        <div class="oh-sticky-table__td"></div>
+        <div class="oh-sticky-table__td"></div>
+        <div class="oh-sticky-table__td"></div>
+        <div class="oh-sticky-table__td"></div>
+      </div>
+      <!-- data -->
+      {% for ot in attendance_list.list %}
+      <div class="oh-sticky-table__tr oh-table__toggle-child" data-group="{{attendance_list.grouper}}">
+        
+        <div class="oh-sticky-table__sd">
+          <div class="oh-profile oh-profile--md">
+            <div class="oh-profile__avatar mr-1">
+              <img
+                src="https://ui-avatars.com/api/?name={{ot.employee_id.employee_first_name}}+{{ot.employee_id.employee_last_name}}&background=random"
+                class="oh-profile__image"
+                alt="Mary Magdalene"
+              />
+            </div>
+            <span class="oh-profile__name oh-text--dark"
+            >{{ot.employee_id}}</span
+            >
+          </div>
+        </div>
+        <div class="oh-sticky-table__td">{{ot.month|capfirst}}</div>
+          <div class="oh-sticky-table__td">{{ot.year}}</div>
+          <div class="oh-sticky-table__td">{{ot.hour_account}}</div>
+          <div class="oh-sticky-table__td">{{ot.overtime}}</div>
+          <div class="oh-sticky-table__td">
+            <div class="oh-btn-group">
+              {% if perms.recruitment.change_attendanceovertime or request.user|is_reportingmanager %}
+              <a hx-get="{% url 'attendance-overtime-update' ot.id %}" hx-target='#updateAttendanceOTModalBody' data-toggle='oh-modal-toggle' data-target='#updateOtModal'  class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Edit' %}"><ion-icon name="create-outline"></ion-icon></a>
+              {% endif %}
+              {% if perms.recruitment.delete_attendance %}
+              <form hx-post="{% url 'attendance-overtime-delete' ot.id  %}?page={{accounts.number}}" hx-confirm="Are you sure want to delete this attendance?" hx-target="#ot-table" method='post'>
+                {% csrf_token %}
+                <button type='submit' class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"   title="{% trans 'Remove' %}"><ion-icon name="trash-outline"></ion-icon></button>
+              </form>
+              {% endif %}
+            </div>  
+          </div>
+          
+      </div>
+      {% endfor %}
+    </div>   
+    {% endfor %}             
+  </div>
+</div>
+
+
+<div class="oh-pagination">
+  <span
+    class="oh-pagination__page"
+    >
+    {% trans "Page" %} {{ accounts.number }} {% trans "of" %} {{ accounts.paginator.num_pages }}.
+    </span
+  >
+  <nav class="oh-pagination__nav">
+    <div class="oh-pagination__input-container me-3">
+      <span class="oh-pagination__label me-1">{% trans "Page" %}</span>
+      <input
+        type="number"
+        name="page"
+        class="oh-pagination__input"
+        value="{{accounts.number}}"
+        hx-get="{% url 'attendance-ot-search' %}?{{pd}}"
+        hx-target="#ot-table"
+        min="1"
+      />
+      <span class="oh-pagination__label">{% trans "of" %} {{accounts.paginator.num_pages}}</span>
+    </div>
+    <ul class="oh-pagination__items">
+      {% if accounts.has_previous %}
+      <li class="oh-pagination__item oh-pagination__item--wide">
+        <a hx-target='#ot-table' hx-get="{% url 'attendance-ot-search' %}?{{pd}}&page=1" class="oh-pagination__link">{% trans "First" %}</a>
+      </li>
+      <li class="oh-pagination__item oh-pagination__item--wide">
+        <a hx-target='#ot-table' hx-get="{% url 'attendance-ot-search' %}?{{pd}}&page={{ accounts.previous_page_number }}" class="oh-pagination__link">{% trans "Previous" %}</a>
+      </li>
+      {% endif %}
+      {% if accounts.has_next %}
+      <li class="oh-pagination__item oh-pagination__item--wide">
+        <a hx-target='#ot-table' hx-get="{% url 'attendance-ot-search' %}?{{pd}}&page={{ accounts.next_page_number }}" class="oh-pagination__link">{% trans "Next" %}</a>
+      </li>
+      <li class="oh-pagination__item oh-pagination__item--wide">
+        <a hx-target='#ot-table' hx-get="{% url 'attendance-ot-search' %}?{{pd}}&page={{ accounts.paginator.num_pages }}" class="oh-pagination__link">{% trans "Last" %}</a>
+      </li>
+      {% endif %}
+    </ul>
+  </nav>
+</div>
+
+{% if perms.attendance.change_attendanceovertime or request.user|is_reportingmanager %}
+<div
+class="oh-modal"
+id="updateOtModal"
+role="dialog"
+aria-labelledby="updateOtModal"
+aria-hidden="true"
+>
+<div class="oh-modal__dialog">
+  <div class="oh-modal__dialog-header">
+    <h2 class="oh-modal__dialog-title" id="updateOtModalLabel">
+      {% trans "Update Account" %}
+    </h2>
+    <button class="oh-modal__close" aria-label="Close" hx-get="{% url 'attendance-ot-search' %}?{{pd}}&page={{accounts.number}}" hx-target="#ot-table">
+      <ion-icon name="close-outline"></ion-icon>
+    </button>
+    <div class="oh-modal__dialog-body p-0 pt-2" id='updateAttendanceOTModalBody'>
+      
+    </div>
+  </div>
+</div>
+</div>
+{% endif %}
+
+
+
+<script>
+  $(document).load('htmx:afterswap', function () {
+    
+    $('.oh-table__sticky-collaspable-sort').click(function (e) { 
+   e.preventDefault();
+   let clickedEl = $(e.target).closest(".oh-table__toggle-parent");
+   let targetSelector = clickedEl.data("target");
+   let toggleBtn = clickedEl.find(".oh-table__toggle-button");
+   $(`[data-group='${targetSelector}']`).toggleClass(
+     "oh-table__toggle-child--show"
+   );
+   if (toggleBtn) {
+     toggleBtn.toggleClass("oh-table__toggle-button--show");
+   }
+ });
+  });
+</script>

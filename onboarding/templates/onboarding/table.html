@@ -1,0 +1,73 @@
+{% load i18n %}
+<div id="table{{recruitment.id}}">
+    {% for onboarding_stage in onboarding_stages %}
+    {% if recruitment in onboarding_stage.recruitment_id.all %}
+   
+        <h1>{{onboarding_stage}}</h1>
+        <table class="table ">
+            <thead class="thead-dark">
+                <tr>
+                    <th scope="col">{% trans "Name" %}</th>
+                    <th scope="col">{% trans "Email" %}</th>
+                    <th scope="col">{% trans "Joining Date" %}</th>
+                    <th scope="col">{% trans "Portal" %}</th>
+                    <th scope="col">{% trans "Stage" %}</th>
+                    {% for task in recruitment.onboarding_task.all %}
+                    <th scope="col">{{task}}</th>
+                    {% endfor %}
+                    <th scope="col">
+                        <button class="oh-btn oh-btn--secondary oh-btn--shadow" data-toggle="modal" data-target="#task-modal"
+                        hx-get="{% url 'task-form' recruitment.id %}" hx-target="#task">
+                            <ion-icon name="add-outline" class="me-1"></ion-icon>
+                        </button>
+                    </th>
+                </tr>
+            </thead>
+            <tbody class="sortable">
+                {% for candidate in onboarding_stage.candidate.all %}
+                {%if candidate.candidate_id.recruitment_id == recruitment and candidate.candidate_id.hired == True %}
+                <tr>
+                    <td>{{candidate.candidate_id.name}}</td>
+                    <td>{{candidate.candidate_id.email}}</td>
+                    <td>{{candidate.candidate_id.schedule_date.date}}</td>
+                    <td>{{candidate.candidate_id.onboarding_portal.count}}/4</td>
+                    <td><select name="onboarding_stage_id" class="form-select stage" hx-post=""
+                            hx-target="#table{{recruitment.id}}" hx-swap="innerHTML" hx-trigger="change"
+                            hx-vals='{"candidate_id" : "{{candidate.candidate_id.id}}" }'>
+                            {% for onboarding_stage in onboarding_stages %}
+                            {% if recruitment in onboarding_stage.recruitment_id.all %}
+                            {% if candidate.candidate_id.onboarding_stage.onboarding_stage_id == onboarding_stage %}
+                            <option value="{{onboarding_stage.id}}" selected>{{onboarding_stage}}</option>
+                            {% else %}
+                            <option value="{{onboarding_stage.id}}">{{onboarding_stage}}</option>
+                            {% endif %}
+                            {% endif %}
+                            {% endfor %}
+                        </select></td>
+                    {% for task in candidate.candidate_id.candidate_task.all %}
+                    <td><select class="form-select task" aria-label="Default select example"
+                            candidate_task_id="{{task.id}}">
+
+                            {% for choice in choices %}
+                            {% if task.status == choice.0 %}
+                            <option value="{{choice.0}}" selected>{{choice.1}}</option>
+                            {% else %}
+                            <option value="{{choice.0}}">{{choice.1}}</option>
+                            {% endif %}
+                            {% endfor %}
+                        </select></td>
+                    {% endfor %}
+                </tr>
+                {% endif %}
+                {% endfor %}
+            </tbody>
+        </table><br>
+    {% endif %}
+    {% endfor %}
+
+    <!-- Small modal -->
+    <button class="oh-btn oh-btn--secondary oh-btn--shadow" data-toggle="modal" data-target="#stage-modal"
+        hx-get="{% url 'stage-form' recruitment.id %}" hx-target="#stage">
+        <ion-icon name="add-outline" class="me-1"></ion-icon>
+    </button>
+</div>

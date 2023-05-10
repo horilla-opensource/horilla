@@ -1,0 +1,496 @@
+{% load i18n %}
+{% load attendancefilters %}
+{% load basefilters %}
+
+<div class="oh-tabs__content" id="tab_2">
+    <!-- Sticky Table -->
+    <div class="oh-sticky-table">
+      <div class="oh-sticky-table__table oh-table--sortable">
+        <div class="oh-sticky-table__thead">
+          <div class="oh-sticky-table__tr">
+            <div class="oh-sticky-table__th" >
+              <div class="d-flex">
+                <div class="">
+                  <input type="checkbox"  class="oh-input oh-input__checkbox mt-1 mr-2 all-attendances" />
+                </div>
+                <div hx-get="{% url 'attendance-search' %}?{{pd}}&sortby=employee_id__employee_first_name" hx-target="#tab_contents">
+                  {% trans "Employee" %}
+                </div>
+              </div>
+            </div>
+            <div class="oh-sticky-table__th" hx-get="{% url 'attendance-search' %}?{{pd}}&sortby=attendance_date" hx-target="#tab_contents">{% trans "Date" %}</div>
+            <div class="oh-sticky-table__th">{% trans "Day" %}</div>
+            <div class="oh-sticky-table__th" >{% trans "Clock In" %}</div>
+            <div class="oh-sticky-table__th" hx-get="{% url 'attendance-search' %}?{{pd}}&sortby=attendance_clock_in_date" hx-target="#tab_contents">{% trans "In Date" %}</div>
+            <div class="oh-sticky-table__th">{% trans "Clock Out" %}</div>
+            <div class="oh-sticky-table__th" hx-get="{% url 'attendance-search' %}?{{pd}}&sortby=attendance_clock_out_date" hx-target="#tab_contents">{% trans "Out Date" %}</div>
+            <div class="oh-sticky-table__th">{% trans "Shift" %}</div>
+            <div class="oh-sticky-table__th">{% trans "Min Hour" %}</div>
+            <div class="oh-sticky-table__th" hx-get="{% url 'attendance-search' %}?{{pd}}&sortby=at_work_second" hx-target="#tab_contents">{% trans "At Work" %}</div>
+            <div class="oh-sticky-table__th" hx-get="{% url 'attendance-search' %}?{{pd}}&sortby=overtime_second" hx-target="#tab_contents">{% trans "Overtime" %}</div>
+            <div class="oh-sticky-table__th"></div>
+          </div>
+        </div>
+        <div class="oh-sticky-table__tbody">
+          {% for attendance in attendances %}
+          <div class="oh-sticky-table__tr" 
+          draggable="false">
+            <div class="oh-sticky-table__sd">
+              <div class="d-flex">
+
+                <div class="">
+                  <input type="checkbox" id="{{attendance.id}}" class="oh-input attendance-checkbox oh-input__checkbox mt-2 mr-2 all-attendance-row" />
+                </div>
+                <div class="oh-profile oh-profile--md">
+                  <div class="oh-profile__avatar mr-1">
+                    <img
+                    src="https://ui-avatars.com/api/?name={{attendance.employee_id.employee_first_name}}+{{attendance.employee_id.employee_last_name}}&background=random"
+                    class="oh-profile__image"
+                    alt="Mary Magdalene"
+                    />
+                  </div>
+                  <span class="oh-profile__name oh-text--dark"
+                  >{{attendance.employee_id}}</span
+                  >
+                </div>
+              </div>
+            </div>
+            <div class="oh-sticky-table__td">
+              {{attendance.attendance_date}}
+            </div>
+            <div class="oh-sticky-table__td">
+              {{attendance.attendance_day|capfirst}}
+            </div>
+            <div class="oh-sticky-table__td">
+              {{attendance.attendance_clock_in}}
+            </div>
+            <div class="oh-sticky-table__td">
+              {{attendance.attendance_clock_in_date}}
+            </div>
+            <div class="oh-sticky-table__td">
+              {{attendance.attendance_clock_out}}
+            </div>
+            <div class="oh-sticky-table__td">
+              {{attendance.attendance_clock_out_date}}
+            </div>
+            <div class="oh-sticky-table__td">{{attendance.shift_id}}</div>
+            <div class="oh-sticky-table__td">
+              {{attendance.work_type_id}}
+            </div>
+            <div class="oh-sticky-table__td">
+              {{attendance.attendance_worked_hour}}
+            </div>
+            <div class="oh-sticky-table__td">
+              {{attendance.attendance_overtime}}
+            </div>
+            
+            <div class="oh-sticky-table__td">
+                <div class="oh-btn-group">
+                {% if perms.attendance.change_attendance or request.user|is_reportingmanager %}
+                <a hx-get="{% url 'attendance-update' attendance.id %}" hx-target='#updateAttendanceModalBody' hx-swap='innerHTML' data-toggle='oh-modal-toggle' data-target='#updateAttendanceModal'  class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Edit' %}"><ion-icon name="create-outline"></ion-icon></a>
+                {% endif %}
+                {% if perms.attendance.delete_attendance %}
+                <form action="{% url 'attendance-delete' attendance.id  %}" onsubmit="return confirm('{% trans "Are you sure want to delete this attendance?" %}')" hx-target="#tab_contents" method='post'>
+                  {% csrf_token %}
+                  <button type='submit' class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100" title="{% trans 'Remove' %}"><ion-icon name="trash-outline"></ion-icon></button>
+                </form>
+                {% endif %}
+              </div>      
+          </div>
+          </div>
+          {% endfor %}
+          
+        </div>
+      </div>
+    </div>
+    
+ <div class="oh-pagination">
+  <span
+    class="oh-pagination__page"
+    >
+    {% trans "Page" %} {{ attendances.number }} {% trans "of" %} {{ attendances.paginator.num_pages }}.
+    </span
+  >
+  <nav class="oh-pagination__nav">
+    <div class="oh-pagination__input-container me-3">
+      <span class="oh-pagination__label me-1">{% trans "Page" %}</span>
+      <input
+        type="number"
+        name="page"
+        class="oh-pagination__input"
+        value="{{attendances.number}}"
+        hx-get="{% url 'attendance-search' %}?{{pd}}"
+        hx-target="#tab_contents"
+        min="1"
+      />
+      <span class="oh-pagination__label">{% trans "of" %} {{attendances.paginator.num_pages}}</span>
+    </div>
+    <ul class="oh-pagination__items">
+      {% if attendances.has_previous %}
+      <li class="oh-pagination__item oh-pagination__item--wide">
+        <a hx-target='#tab_contents' hx-get="{% url 'attendance-search' %}?{{pd}}&page=1" class="oh-pagination__link">{% trans "First" %}</a>
+      </li>
+      <li class="oh-pagination__item oh-pagination__item--wide">
+        <a hx-target='#tab_contents' hx-get="{% url 'attendance-search' %}?{{pd}}&page={{ attendances.previous_page_number }}" class="oh-pagination__link">{% trans "Previous" %}</a>
+      </li>
+      {% endif %}
+      {% if attendances.has_next %}
+      <li class="oh-pagination__item oh-pagination__item--wide">
+        <a hx-target='#tab_contents' hx-get="{% url 'attendance-search' %}?{{pd}}&page={{ attendances.next_page_number }}" class="oh-pagination__link">{% trans "Next" %}</a>
+      </li>
+      <li class="oh-pagination__item oh-pagination__item--wide">
+        <a hx-target='#tab_contents' hx-get="{% url 'attendance-search' %}?{{pd}}&page={{ attendances.paginator.num_pages }}" class="oh-pagination__link">{% trans "Last" %}</a>
+      </li>
+      {% endif %}
+    </ul>
+  </nav>
+</div>
+
+    <!-- End of Sticky Table -->
+  </div>
+  <div class="oh-tabs__content" id="tab_1">
+    <div class="oh-sticky-table">
+      <div class="oh-sticky-table__table oh-table--sortable">
+        <div class="oh-sticky-table__thead">
+          <div class="oh-sticky-table__tr">
+            <div class="oh-sticky-table__th"  >
+              <div class="d-flex">
+                <div class="">
+                  <input type="checkbox"  class="oh-input oh-input__checkbox mt-1 mr-2 validate" />
+                </div>
+                <div hx-get="{% url 'attendance-search' %}?{{pd}}&sortby=employee_id__employee_first_name" hx-target="#tab_contents">
+                  {% trans "Employee" %}
+                </div>
+              </div>
+            </div>
+            <div class="oh-sticky-table__th" hx-get="{% url 'attendance-search' %}?{{pd}}&sortby=attendance_date" hx-target="#tab_contents">{% trans "Date" %}</div>
+            <div class="oh-sticky-table__th">{% trans "Day" %}</div>
+            <div class="oh-sticky-table__th" >{% trans "Clock In" %}</div>
+            <div class="oh-sticky-table__th" hx-get="{% url 'attendance-search' %}?{{pd}}&sortby=attendance_clock_in_date" hx-target="#tab_contents">{% trans "In Date" %}</div>
+            <div class="oh-sticky-table__th">{% trans "Clock Out" %}</div>
+            <div class="oh-sticky-table__th" hx-get="{% url 'attendance-search' %}?{{pd}}&sortby=attendance_clock_out_date" hx-target="#tab_contents">{% trans "Out Date" %}</div>
+            <div class="oh-sticky-table__th">{% trans "Shift" %}</div>
+            <div class="oh-sticky-table__th">{% trans "Min Hour" %}</div>
+            <div class="oh-sticky-table__th" hx-get="{% url 'attendance-search' %}?{{pd}}&sortby=at_work_second" hx-target="#tab_contents">{% trans "At Work" %}</div>
+            <div class="oh-sticky-table__th" hx-get="{% url 'attendance-search' %}?{{pd}}&sortby=overtime_second" hx-target="#tab_contents">{% trans "Overtime" %}</div>
+            <div class="oh-sticky-table__th"></div>
+            <div class="oh-sticky-table__th"></div>
+
+          </div>
+        </div>
+        {% for attendance in validate_attendances %}
+        <div class="oh-sticky-table__tbody">
+          <div class="oh-sticky-table__tr" 
+          draggable="false">
+            <div class="oh-sticky-table__sd">
+              <div class="d-flex">
+
+                <div class="">
+                  <input type="checkbox" id="{{attendance.id}}" class="oh-input attendance-checkbox oh-input__checkbox mt-2 mr-2 validate-row" />
+                </div>
+                <div class="oh-profile oh-profile--md">
+                  <div class="oh-profile__avatar mr-1">
+                    <img
+                    src="https://ui-avatars.com/api/?name={{attendance.employee_id.employee_first_name}}+{{attendance.employee_id.employee_last_name}}&background=random"
+                    class="oh-profile__image"
+                    alt="Mary Magdalene"
+                    />
+                  </div>
+                  <span class="oh-profile__name oh-text--dark"
+                  >{{attendance.employee_id}}</span
+                  >
+                </div>
+              </div>
+
+            </div>
+            <div class="oh-sticky-table__td">
+              {{attendance.attendance_date}}
+            </div>
+            <div class="oh-sticky-table__td">
+              {{attendance.attendance_day|capfirst}}
+            </div>
+            <div class="oh-sticky-table__td">
+              {{attendance.attendance_clock_in}}
+            </div>
+            <div class="oh-sticky-table__td">
+              {{attendance.attendance_clock_in_date}}
+            </div>
+            <div class="oh-sticky-table__td">
+              {{attendance.attendance_clock_out}}
+            </div>
+            <div class="oh-sticky-table__td">
+              {{attendance.attendance_clock_out_date}}
+            </div>
+            <div class="oh-sticky-table__td">{{attendance.shift_id}}</div>
+            <div class="oh-sticky-table__td">
+              {{attendance.work_type_id}}
+            </div>
+            <div class="oh-sticky-table__td">
+              {{attendance.attendance_worked_hour}}
+            </div>
+            <div class="oh-sticky-table__td">
+              {{attendance.attendance_overtime}}
+            </div>
+            <div class="oh-sticky-table__td">
+              <div class="oh-btn-group">
+                {% if perms.attendance.change_attendance or request.user|is_reportingmanager %}
+                <a hx-get="{% url 'attendance-update' attendance.id %}" hx-target='#updateAttendanceModalBody' hx-swap='innerHTML' data-toggle='oh-modal-toggle' data-target='#updateAttendanceModal'  class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Edit' %}"><ion-icon name="create-outline"></ion-icon></a>
+                {% endif %}
+                {% if perms.attendance.delete_attendance %}
+                <form action="{% url 'attendance-delete' attendance.id  %}" onsubmit="return confirm('{% trans "Are you sure want to delete this attendance?" %}')" hx-target="#tab_contents" method='post'>
+                  {% csrf_token %}
+                  <button type='submit' class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100" title="{% trans 'Remove' %}"><ion-icon name="trash-outline"></ion-icon></button>
+                </form>
+                {% endif %}
+              </div>
+          </div>
+            <div class="oh-sticky-table__td">
+                {% if request.user|is_reportingmanager or perms.attendance.change_attendance %}
+                <a  
+                href = '{% url "validate-this-attendance" attendance.id %}'
+                hx-target='#updateAttendanceBody'
+                class="oh-btn oh-btn--info">
+                {% trans "Validate" %}
+              </a>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    <div class="oh-pagination">
+      <span
+        class="oh-pagination__page"
+        >
+        {% trans "Page" %} {{ validate_attendances.number }} {% trans "of" %} {{ validate_attendances.paginator.num_pages }}.
+        </span
+      >
+      <nav class="oh-pagination__nav">
+        <div class="oh-pagination__input-container me-3">
+          <span class="oh-pagination__label me-1">{% trans "Page" %}</span>
+          <input
+            type="number"
+            name="vpage"
+            class="oh-pagination__input"
+            value="{{validate_attendances.number}}"
+            hx-get="{% url 'attendance-search' %}?{{pd}}"
+            hx-target="#tab_contents"
+            min="1"
+          />
+          <span class="oh-pagination__label">{% trans "of" %} {{validate_attendances.paginator.num_pages}}</span>
+        </div>
+        <ul class="oh-pagination__items">
+          {% if validate_attendances.has_previous %}
+          <li class="oh-pagination__item oh-pagination__item--wide">
+            <a hx-target='#tab_contents' hx-get="{% url 'attendance-search' %}?{{pd}}&vpage=1" class="oh-pagination__link">{% trans "First" %}</a>
+          </li>
+          <li class="oh-pagination__item oh-pagination__item--wide">
+            <a hx-target='#tab_contents' hx-get="{% url 'attendance-search' %}?{{pd}}&vpage={{ validate_attendances.previous_page_number }}" class="oh-pagination__link">{% trans "Previous" %}</a>
+          </li>
+          {% endif %}
+          {% if validate_attendances.has_next %}
+          <li class="oh-pagination__item oh-pagination__item--wide">
+            <a hx-target='#tab_contents' hx-get="{% url 'attendance-search' %}?{{pd}}&vpage={{ validate_attendances.next_page_number }}" class="oh-pagination__link">{% trans "Next" %}</a>
+          </li>
+          <li class="oh-pagination__item oh-pagination__item--wide">
+            <a hx-target='#tab_contents' hx-get="{% url 'attendance-search' %}?{{pd}}&vpage={{ validate_attendances.paginator.num_pages }}" class="oh-pagination__link">{% trans "Last" %}</a>
+          </li>
+          {% endif %}
+        </ul>
+      </nav>
+    </div>
+    
+  </div>
+  <div class="oh-tabs__content" id="tab_3">
+    <div class="oh-sticky-table">
+        <div class="oh-sticky-table__table oh-table--sortable">
+          <div class="oh-sticky-table__thead">
+            <div class="oh-sticky-table__tr">
+              <div class="oh-sticky-table__th" >
+                <div class="d-flex">
+                  <div class="">
+                    <input type="checkbox"  class="oh-input oh-input__checkbox mt-1 mr-2 ot-attendances" />
+                  </div>
+                  <div hx-get="{% url 'attendance-search' %}?{{pd}}&sortby=employee_id__employee_first_name" hx-target="#tab_contents">
+                    {% trans "Employee" %}
+                  </div>
+                </div>
+              </div>
+              <div class="oh-sticky-table__th" hx-get="{% url 'attendance-search' %}?{{pd}}&sortby=attendance_date" hx-target="#tab_contents">{% trans "Date" %}</div>
+              <div class="oh-sticky-table__th">{% trans "Day" %}</div>
+              <div class="oh-sticky-table__th" >{% trans "Clock In" %}</div>
+              <div class="oh-sticky-table__th" hx-get="{% url 'attendance-search' %}?{{pd}}&sortby=attendance_clock_in_date" hx-target="#tab_contents">{% trans "In Date" %}</div>
+              <div class="oh-sticky-table__th">{% trans "Clock Out" %}</div>
+              <div class="oh-sticky-table__th" hx-get="{% url 'attendance-search' %}?{{pd}}&sortby=attendance_clock_out_date" hx-target="#tab_contents">{% trans "Out Date" %}</div>
+              <div class="oh-sticky-table__th">{% trans "Shift" %}</div>
+              <div class="oh-sticky-table__th">{% trans "Min Hour" %}</div>
+              <div class="oh-sticky-table__th" hx-get="{% url 'attendance-search' %}?{{pd}}&sortby=at_work_second" hx-target="#tab_contents">{% trans "At Work" %}</div>
+              <div class="oh-sticky-table__th" hx-get="{% url 'attendance-search' %}?{{pd}}&sortby=overtime_second" hx-target="#tab_contents">{% trans "Overtime" %}</div>
+              <div class="oh-sticky-table__th"></div>
+              <div class="oh-sticky-table__th"></div>
+
+            </div>
+          </div>
+          {% for attendance in overtime_attendances %}
+          <div class="oh-sticky-table__tbody">
+            <div class="oh-sticky-table__tr" 
+            draggable="false">
+              <div class="oh-sticky-table__sd">
+                <div class="d-flex">
+                  <div class="">
+                    <input type="checkbox" id="{{attendance.id}}" class="oh-input attendance-checkbox oh-input__checkbox mt-2 mr-2 ot-attendance-row" />
+                  </div>
+                  <div class="oh-profile oh-profile--md">
+                    <div class="oh-profile__avatar mr-1">
+                      <img
+                      src="https://ui-avatars.com/api/?name={{attendance.employee_id.employee_first_name}}+{{attendance.employee_id.employee_last_name}}&background=random"
+                      class="oh-profile__image"
+                      alt="Mary Magdalene"
+                      />
+                    </div>
+                    <span class="oh-profile__name oh-text--dark"
+                    >{{attendance.employee_id}}</span
+                    >
+                  </div>
+                </div>
+              </div>
+              <div class="oh-sticky-table__td">
+                {{attendance.attendance_date}}
+              </div>
+              <div class="oh-sticky-table__td">
+                {{attendance.attendance_day|capfirst}}
+              </div>
+              <div class="oh-sticky-table__td">
+                {{attendance.attendance_clock_in}}
+              </div>
+              <div class="oh-sticky-table__td">
+                {{attendance.attendance_clock_in_date}}
+              </div>
+              <div class="oh-sticky-table__td">
+                {{attendance.attendance_clock_out}}
+              </div>
+              <div class="oh-sticky-table__td">
+                {{attendance.attendance_clock_out_date}}
+              </div>
+              <div class="oh-sticky-table__td">{{attendance.shift_id}}</div>
+              <div class="oh-sticky-table__td">
+                {{attendance.work_type_id}}
+              </div>
+              <div class="oh-sticky-table__td">
+                {{attendance.attendance_worked_hour}}
+              </div>
+              <div class="oh-sticky-table__td">
+                {{attendance.attendance_overtime}}
+              </div>
+            <div class="oh-sticky-table__td">
+                <a href="{% url 'approve-overtime' attendance.id %}" class="oh-btn oh-btn--info">
+                    {% trans "Approve" %}
+                </a>
+            </div>
+            <div class="oh-sticky-table__td">
+              <div class="oh-btn-group">
+                {% if perms.attendance.change_attendance or request.user|is_reportingmanager %}
+                <a hx-get="{% url 'attendance-update' attendance.id %}" hx-target='#updateAttendanceModalBody' hx-swap='innerHTML' data-toggle='oh-modal-toggle' data-target='#updateAttendanceModal'  class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Edit' %}"><ion-icon name="create-outline"></ion-icon></a>
+                {% endif %}
+                {% if perms.attendance.delete_attendance %}
+                <form action="{% url 'attendance-delete' attendance.id  %}" onsubmit="return confirm('{% trans "Are you sure want to delete this attendance?" %}')" hx-target="#tab_contents" method='post'>
+                  {% csrf_token %}
+                  <button type='submit' class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100" title="{% trans 'Remove' %}"><ion-icon name="trash-outline"></ion-icon></button>
+                </form>
+                {% endif %}
+              </div>
+          </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      <div class="oh-pagination">
+        <span
+          class="oh-pagination__page"
+          >
+          {% trans "Page" %} {{ overtime_attendances.number }} {% trans "of" %} {{ overtime_attendances.paginator.num_pages }}.
+          </span
+        >
+        <nav class="oh-pagination__nav">
+          <div class="oh-pagination__input-container me-3">
+            <span class="oh-pagination__label me-1">{% trans "Page" %}</span>
+            <input
+              type="number"
+              name="opage"
+              class="oh-pagination__input"
+              value="{{overtime_attendances.number}}"
+              hx-get="{% url 'attendance-search' %}?{{pd}}"
+              hx-target="#tab_contents"
+              min="1"
+            />
+            <span class="oh-pagination__label">{% trans "of" %} {{overtime_attendances.paginator.num_pages}}</span>
+          </div>
+          <ul class="oh-pagination__items">
+            {% if overtime_attendances.has_previous %}
+            <li class="oh-pagination__item oh-pagination__item--wide">
+              <a hx-target='#tab_contents' hx-get="{% url 'attendance-search' %}?{{pd}}&opage=1" class="oh-pagination__link">{% trans "First" %}</a>
+            </li>
+            <li class="oh-pagination__item oh-pagination__item--wide">
+              <a hx-target='#tab_contents' hx-get="{% url 'attendance-search' %}?{{pd}}&opage={{ overtime_attendances.previous_page_number }}" class="oh-pagination__link">{% trans "Previous" %}</a>
+            </li>
+            {% endif %}
+            {% if overtime_attendances.has_next %}
+            <li class="oh-pagination__item oh-pagination__item--wide">
+              <a hx-target='#tab_contents' hx-get="{% url 'attendance-search' %}?{{pd}}&opage={{ overtime_attendances.next_page_number }}" class="oh-pagination__link">{% trans "Next" %}</a>
+            </li>
+            <li class="oh-pagination__item oh-pagination__item--wide">
+              <a hx-target='#tab_contents' hx-get="{% url 'attendance-search' %}?{{pd}}&opage={{ overtime_attendances.paginator.num_pages }}" class="oh-pagination__link">{% trans "Last" %}</a>
+            </li>
+            {% endif %}
+          </ul>
+        </nav>
+      </div>
+</div>
+
+{% if perms.attendance.change_attendance or request.user|is_reportingmanager %}
+<div
+class="oh-modal"
+id="updateAttendanceModal"
+role="dialog"
+aria-labelledby="updateAttendanceModal"
+aria-hidden="true"
+>
+<div class="oh-modal__dialog">
+  <div class="oh-modal__dialog-header">
+    <h2 class="oh-modal__dialog-title" id="updateAttendanceModalLabel">
+      {% trans "Edit Attendance" %}
+    </h2>
+    <button class="oh-modal__close" aria-label="Close" >
+      <ion-icon name="close-outline"></ion-icon>
+    </button>
+  </div>
+  <div id="updateAttendanceModalBody">
+    
+  </div>
+</div>
+</div>
+</div>
+{% endif %}
+
+<script>
+    $(document).ready(function () {
+      var activeTab = localStorage.getItem('activeTabAttendance')
+      if (activeTab != null) {
+        var tab  = $(`[data-target="${activeTab}"]`)  
+        var tabContent = $(activeTab)
+        $(tab).attr('class', 'oh-tabs__tab oh-tabs__tab--active');   
+        $(tabContent).attr('class', 'oh-tabs__content oh-tabs__content--active'); 
+      }
+      else{
+        $('[data-target="#tab_1"]').attr('class', 'oh-tabs__tab oh-tabs__tab--active');   
+        $('#tab_1').attr('class', 'oh-tabs__content oh-tabs__content--active'); 
+      }
+      $('.oh-tabs__tab').click(function (e) { 
+        var activeTab = $(this).attr('data-target');
+        localStorage.setItem('activeTabAttendance',activeTab)
+        
+      });
+    });
+  </script>

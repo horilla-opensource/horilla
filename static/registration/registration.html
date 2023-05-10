@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Employee Onboarding - OpenHRMS Dashboard</title>
+    <link rel="stylesheet" href="./../build/css/style.min.css" />
+  </head>
+  <body>
+    <div id="main">
+      <main class="oh-onboarding">
+        <div class="oh-onboarding-card oh-onboarding-card--top-bar">
+          <div class="oh-onboarding-card__container oh-onboarding-card__container--wide">
+            <form>
+              <div class="row">
+                <div class="col-sm-12 col-md-2 col-lg-2">
+                  <label class="oh-profile-photo mt-4" for="photo">
+                    <ion-icon
+                      class="oh-profile-photo__icon"
+                      name="person-add-outline"
+                    ></ion-icon>
+                    <input
+                      type="file"
+                      id="photo"
+                      class="oh-input w-100 oh-profile-photo__input"
+                    />
+                  </label>
+                </div>
+
+                <div class="col-sm-12 col-md-10 col-lg-10">
+                  <div class="oh-input-group">
+                    <label class="oh-label" for="name">Name</label>
+                    <input
+                      type="text"
+                      id="name"
+                      class="oh-input w-100"
+                      placeholder="e.g. Jane Doe"
+                    />
+                  </div>
+                </div>
+
+                <div class="col-sm-12 col-md-6 col-lg-6">
+                  <div class="oh-input-group">
+                    <label class="oh-label" for="portfolio">Portfolio</label>
+                    <input
+                      type="text"
+                      id="portfolio"
+                      class="oh-input w-100"
+                      placeholder="e.g. https://www.linktoportfolio.com/"
+                    />
+                  </div>
+                </div>
+
+                <div class="col-sm-12 col-md-6 col-lg-6">
+                  <div class="oh-input-group">
+                    <label class="oh-label" for="recuitment"
+                      >Recruitment ID</label
+                    >
+                    <select
+                      class="oh-select oh-select--2 oh-select-no-search w-100"
+                      id="recuitment"
+                    >
+                      <option selected disabled>Choose One</option>
+                      <option value="1">One</option>
+                      <option value="2">Two</option>
+                      <option value="3">Three</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="col-sm-12 col-md-6 col-lg-6">
+                  <div class="oh-input-group">
+                    <label class="oh-label" for="email">E-mail</label>
+                    <input
+                      type="email"
+                      id="email"
+                      class="oh-input w-100"
+                      placeholder="e.g. janedoe@example.com"
+                    />
+                  </div>
+                </div>
+
+                <div class="col-sm-12 col-md-6 col-lg-6">
+                  <div class="oh-input-group">
+                    <label class="oh-label" for="phone">Phone</label>
+                    <input
+                      type="text"
+                      id="phone"
+                      class="oh-input w-100"
+                      placeholder="e.g. +1 245 999 999"
+                    />
+                  </div>
+                </div>
+
+                <div class="col-sm-12 col-md-6 col-lg-12">
+                  <div class="oh-input-group">
+                    <label class="oh-label" for="resume">Resume</label>
+                    <input type="file" id="resume" class="oh-input w-100 px-0" />
+                  </div>
+                </div>
+
+                <div class="col-sm-12 col-md-6 col-lg-12">
+                  <div class="oh-input-group">
+                    <label class="oh-label" for="address">Address</label>
+                    <textarea
+                      id="address"
+                      class="oh-input oh-input--textarea w-100"
+                    ></textarea>
+                  </div>
+                </div>
+
+                <div class="col-sm-12 col-md-6 col-lg-6">
+                  <div class="oh-input-group">
+                    <label class="oh-label" for="country">Country</label>
+                    <input
+                      type="text"
+                      id="country"
+                      class="oh-input w-100"
+                      placeholder="e.g. India"
+                    />
+                  </div>
+                </div>
+
+                <div class="col-sm-12 col-md-6 col-lg-6">
+                  <div class="oh-input-group">
+                    <label class="oh-label" for="state">State</label>
+                    <input
+                      type="text"
+                      id="state"
+                      class="oh-input w-100"
+                      placeholder="e.g. Kerala"
+                    />
+                  </div>
+                </div>
+
+                <div class="col-sm-12 col-md-6 col-lg-6">
+                  <div class="oh-input-group">
+                    <label class="oh-label" for="city">City</label>
+                    <input
+                      type="text"
+                      id="city"
+                      class="oh-input w-100"
+                      placeholder="e.g. Kerala"
+                    />
+                  </div>
+                </div>
+
+                <div class="col-sm-12 col-md-6 col-lg-6">
+                  <div class="oh-input-group">
+                    <label class="oh-label" for="zip">Zip Code</label>
+                    <input
+                      type="text"
+                      id="zip"
+                      class="oh-input w-100"
+                      placeholder="e.g. 611 293"
+                    />
+                  </div>
+                </div>
+
+                <div class="col-sm-12 col-md-6 col-lg-6">
+                  <div class="oh-input-group">
+                    <label class="oh-label" for="gender">Gender</label>
+                    <select
+                      class="oh-select oh-select--2 oh-select-no-search w-100"
+                      id="gender"
+                    >
+                      <option selected disabled>Choose One</option>
+                      <option value="1">One</option>
+                      <option value="2">Two</option>
+                      <option value="3">Three</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="col-sm-12 col-md-12 col-lg-12">
+                  <button
+                    href="#"
+                    class="oh-btn oh-onboarding-card__button mt-4 oh-btn--secondary oh-btn--shadow w-100 mb-4"
+                    role="button"
+                  >
+                    <ion-icon name="checkmark-outline" class="me-2"></ion-icon>
+                    Apply
+                  </button>
+                </div>
+
+                <div class="col-sm-12 col-md-12 col-lg-12">
+                  <p class="small text-muted text-center">&copy; 2023 Horilla. All rights resevered.</p>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </main>
+    </div>
+    <script src="./../build/js/web.frontend.min.js"></script>
+    <script
+      type="module"
+      src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"
+    ></script>
+    <script
+      nomodule
+      src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"
+    ></script>
+    <script></script>
+  </body>
+</html>

@@ -1,0 +1,106 @@
+{% load i18n %}
+<div class="oh-general__tab-target oh-profile-section mb-4 d-none" id="work" data-select2-id="select2-data-work">
+    <div class="oh-profile-section__card" data-select2-id="select2-data-29-vht3">
+        <div class="row" data-select2-id="select2-data-27-19z8">
+            <div class="col-12 col-sm-12 col-md-12 col-lg-6" data-select2-id="select2-data-26-o2rs">
+            <div class="oh-input-group" data-select2-id="select2-data-25-5380">
+                <label class="oh-label">{% trans "Job Title" %}</label>
+                {{work_form.job_position_id}}
+            </div>
+            </div>
+            <div class="col-12 col-sm-12 col-md-12 col-lg-6">
+            <div class="oh-input-group">
+                <label class="oh-label">{% trans "Department" %}</label>
+                {{work_form.department_id}}
+            </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12 col-sm-12 col-md-12 col-lg-6">
+            <div class="oh-input-group">
+                <label class="oh-label">{% trans "Shift Information" %}</label>
+                {{work_form.shift_id}}
+            </div>
+            </div>
+            <div class="col-12 col-sm-12 col-md-12 col-lg-6">
+            <div class="oh-input-group">
+                <label class="oh-label">{% trans "Work Type" %}</label>
+                {{work_form.work_type_id}}
+            </div>
+            </div>
+        </div>
+        <div class="row" data-select2-id="select2-data-27-95a0">
+            <div class="col-12 col-sm-12 col-md-12 col-lg-6" data-select2-id="select2-data-26-u84a">
+            <div class="oh-input-group" data-select2-id="select2-data-25-5l0x">
+                <label class="oh-label">{% trans "Employee Type" %}</label>
+                {{work_form.employee_type_id}}
+            </div>
+            </div>
+            <div class="col-12 col-sm-12 col-md-12 col-lg-6">
+            <div class="oh-input-group">
+                <label class="oh-label">{% trans "Job Role" %}</label>
+                {{work_form.job_role_id}}
+            </div>
+            </div>
+        </div>
+        <div class="row" data-select2-id="select2-data-39-3q9c">
+            <div class="col-12 col-sm-12 col-md-12 col-lg-6" data-select2-id="select2-data-38-ofph">
+            <div class="oh-input-group" data-select2-id="select2-data-37-p4f9">
+                <label class="oh-label">{% trans "Reporting Manager" %}</label>
+                {{work_form.reporting_manager_id}}
+            </div>
+            </div>
+            <div class="col-12 col-sm-12 col-md-12 col-lg-6">
+            <div class="oh-input-group">
+                <label class="oh-label">{% trans "Company" %}</label>
+                {{work_form.company_id}}
+            </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12 col-sm-12 col-md-12 col-lg-6">
+            <div class="oh-input-group">
+                <label class="oh-label">{% trans "Work Location" %}</label>
+                {{work_form.location}}
+            </div>
+            </div>
+            <div class="col-12 col-sm-12 col-md-12 col-lg-6">
+            <div class="oh-input-group">
+                <label class="oh-label" for="workEmail">{% trans "Work Email" %}</label>
+                {{work_form.email}}
+            </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12 col-sm-12 col-md-12 col-lg-6">
+            <div class="oh-input-group">
+                <label class="oh-label" for="startDate">{% trans "Joining Date" %}</label>
+                {{work_form.date_joining}}
+            </div>
+            </div>
+            <div class="col-12 col-sm-12 col-md-12 col-lg-6">
+            <div class="oh-input-group">
+                <label class="oh-label" for="endDate">{% trans "Contract End Date" %}</label>
+                {{work_form.contract_end_date}}
+            </div>
+        </div>
+        </div>
+        <div class="row">
+            <div class="col-12 col-sm-12 col-md-12 col-lg-6">
+            <div class="oh-input-group">
+                <label class="oh-label">{% trans "Basic Salary" %}</label>
+                {{work_form.basic_salary}}
+            </div>
+            </div>
+            <div class="col-12 col-sm-12 col-md-12 col-lg-6">
+            <div class="oh-input-group">
+                <label class="oh-label" for="workEmail">{% trans "Salary Per Hour" %}</label>
+                {{work_form.salary_hour}}
+            </div>
+            </div>
+        </div>
+    
+        
+        </form>
+    </div>
+    </div>

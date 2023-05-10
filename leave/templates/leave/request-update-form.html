@@ -1,0 +1,69 @@
+{% load i18n %}
+{% if form.errors %}
+<!-- form errors  -->
+<div class="oh-wrapper">
+    <div class="oh-alert-container">
+
+        {% for error in form.non_field_errors %}
+        <div class="oh-alert oh-alert--animated oh-alert--danger">
+            {{ error }}
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+
+<form  hx-post="{% url 'request-update' id %}"  hx-encoding="multipart/form-data">
+    {% csrf_token %}
+    <div class="oh-modal__dialog-body pb-2" id="updateLeaveType">
+        <label class="oh-label d-block">{% trans "Leave Types" %}</label>
+        {{form.leave_type_id}}
+        {{form.leave_type_id.errors}}
+      </div>
+      <div class="oh-modal__dialog-body pb-2" id="updateEmployee">
+        <label class="oh-label d-block">{% trans "Employees" %}</label>
+        {{form.employee_id}}
+        {{form.employee_id.errors}}
+      </div>
+      <div class="oh-modal__dialog-body pb-2">
+        <label class="oh-label d-block">{% trans "Start Date" %}</label>
+        {{form.start_date}}
+        {{form.start_date.errors}}
+      </div>
+      <div class="oh-modal__dialog-body pb-2" id="updateStartDate">
+        <label class="oh-label d-block">{% trans "Start Date Breakdown" %}</label>
+        {{form.start_date_breakdown}}
+        {{form.start_date_breakdown.errors}}
+      </div>
+      <div class="oh-modal__dialog-body pb-2">
+        <label class="oh-label d-block">{% trans "End Date" %}</label>
+        {{form.end_date}}
+        {{form.end_date.errors}}
+      </div>
+      <div class="oh-modal__dialog-body pb-2" id="updateEndDate">
+        <label class="oh-label d-block">{% trans "End Date Breakdown" %}</label>
+        {{form.end_date_breakdown}}
+        {{form.end_date_breakdown.errors}}
+      </div>
+      <div class="oh-modal__dialog-body pb-2">
+        <label class="oh-label d-block">{% trans "Description" %}</label>
+        {{form.description}}
+        {{form.description.errors}}
+
+      </div>
+      <div class="oh-modal__dialog-body pb-2">
+        <label class="oh-label d-block">{% trans "Attachment" %}</label>
+        {{form.attachment}}
+        {{form.attachment.errors}}
+      </div>
+      <div class="oh-modal__dialog-body pb-2" id="updateStatus">
+        <label class="oh-label d-block">{% trans "Status" %}</label>
+        {{form.status}}
+        {{form.status.errors}}
+      </div>
+      <div class="oh-modal__dialog-footer">
+        <button type="submit" class="oh-btn oh-btn--secondary w-100">
+          {% trans "Apply" %}
+        </button>
+ </form>

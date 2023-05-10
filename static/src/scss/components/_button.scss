@@ -1,0 +1,351 @@
+// -----------------------------------------------------------------------------
+// This file contains all styles related to the button component.
+// -----------------------------------------------------------------------------
+.oh-btn {
+  display: block;
+  border: none;
+  border-radius: 0rem;
+  padding: 0.8rem 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  cursor: pointer;
+  color: $button-text-grey;
+
+  @media (max-width: 575.98px) {
+    font-size: 0.8rem !important ;
+  }
+
+  &:hover {
+    background-color: $dark-button-color;
+  }
+
+  &:focus,
+  &:focus-visible {
+    outline: $brand-color solid 2px;
+    border-radius: 0;
+    border: none;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+.oh-btn--shadow {
+  filter: drop-shadow(0px 1px 4px rgba(0, 0, 0, 0.1));
+}
+.oh-btn--sq-sm {
+  width: 28px;
+  height: 28px;
+}
+
+.oh-btn--transparent {
+  background-color: transparent;
+  color: rgba($text-color, 0.8);
+  &:hover,
+  &:focus,
+  &:focus-visible {
+    background-color: transparent;
+    border: none;
+    color: rgba($text-color, 1);
+  }
+}
+.oh-btn--secondary {
+  background-color: $secondary-color;
+  color: $white;
+  text-decoration: none;
+  &:hover,
+  &:focus,
+  &:focus-visible {
+    background-color: $secondary-color-dark;
+    color: white;
+    text-decoration: none;
+  }
+}
+.oh-btn--secondary-ouline {
+  border: 1px solid $secondary-color;
+  color: $secondary-color;
+  background-color: transparent;
+  &:hover {
+    background-color: $secondary-color;
+    color: $white;
+  }
+  &:focus,
+  &:focus-visible {
+    color: $secondary-color-dark;
+    background-color: transparent;
+    border: 1px solid $secondary-color-dark;
+  }
+}
+.oh-btn--success {
+  background-color: $success-color;
+  color: $white;
+  &:hover,
+  &:focus,
+  &:focus-visible {
+    background-color: $success-color-dark;
+    text-decoration: none;
+  }
+}
+.oh-btn--danger {
+  background-color: $danger-color;
+  color: $white;
+  &:hover,
+  &:focus,
+  &:focus-visible {
+    background-color: $danger-color-dark;
+    text-decoration: none;
+  }
+}
+.oh-btn--danger-outline {
+  color: $danger-color;
+  &:hover,
+  &:focus,
+  &:focus-visible {
+    color: $danger-color-dark;
+    text-decoration: none;
+  }
+}
+.oh-btn--primary {
+  background-color: $brand-color;
+  color: $white;
+  &:hover,
+  &:focus,
+  &:focus-visible {
+    background-color: $brand-color-dark;
+    color: $white;
+    text-decoration: none;
+  }
+}
+.oh-btn--primary-outline {
+  background-color: transparent;
+  border: 1px solid $brand-color;
+  color: $brand-color;
+
+  &:hover,
+  &:focus,
+  &:focus-visible {
+    background-color: $brand-color;
+    color: $white;
+  }
+}
+.oh-btn--secondary-outline {
+  background-color: transparent;
+  border: 1px solid $secondary-color;
+  color: $secondary-color;
+
+  &:hover,
+  &:focus,
+  &:focus-visible {
+    background-color: $secondary-color;
+    color: $white;
+  }
+}
+.oh-btn--warning-outline {
+  background-color: transparent;
+  border: 1px solid $yellow;
+  color: $yellow;
+
+  &:hover,
+  &:focus,
+  &:focus-visible {
+    background-color: $yellow;
+    color: $text-color;
+  }
+}
+.oh-btn--success-outline {
+  background-color: transparent;
+  border: 1px solid $success-color;
+  color: $success-color;
+
+  &:hover,
+  &:focus,
+  &:focus-visible {
+    background-color: $success-color;
+    color: $white;
+  }
+}
+.oh-btn--info-outline {
+  background-color: transparent;
+  border: 1px solid $blue;
+  color: $blue;
+
+  &:hover,
+  &:focus,
+  &:focus-visible {
+    background-color: $blue;
+    color: $white;
+  }
+}
+.oh-btn--info {
+  background-color: $blue;
+  color: $white;
+  &:hover,
+  &:focus,
+  &:focus-visible {
+    background-color: $blue-dark;
+    color: $white;
+    text-decoration: none;
+  }
+}
+.oh-btn--warning {
+  background-color: $yellow;
+  color: $text-color;
+  &:hover,
+  &:focus,
+  &:focus-visible {
+    background-color: $yellow-dark;
+    color: $text-color;
+    text-decoration: none;
+  }
+}
+.oh-btn--dropdown {
+  position: relative;
+
+  &::after {
+    content: url("data:image/svg+xml,%3Csvg width='12' height='12' fill='%23ffffff' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='m4.594 8.912 6.553 7.646a1.126 1.126 0 0 0 1.708 0l6.552-7.646c.625-.73.107-1.857-.854-1.857H5.447c-.961 0-1.48 1.127-.853 1.857Z'%3E%3C/path%3E%3C/svg%3E");
+    position: relative;
+    width: 20px;
+    left: 5px;
+  }
+}
+.oh-input--medium {
+  font-size: 0.9rem;
+  padding: 0.65rem 1rem;
+  height: 40.94px;
+}
+.oh-btn--small {
+  font-size: 0.9rem;
+  padding: 0.65rem 1rem;
+}
+.oh-btn--x-small {
+  font-size: 0.8rem;
+  padding: 0.5rem 0.8rem;
+}
+.oh-btn--f-md {
+  font-size: 1.15rem;
+}
+.oh-btn--w-100-resp {
+  @media (max-width: 767.98px) {
+    width: 100%;
+  }
+}
+.oh-btn--secondary-link {
+  color: $secondary-color;
+  &:hover,
+  &:focus,
+  &:focus-visible {
+    color: $secondary-color-dark;
+    text-decoration: none !important;
+  }
+}
+.oh-btn--danger-link {
+  color: $danger-color;
+  &:hover,
+  &:focus,
+  &:focus-visible {
+    color: $danger-color-dark;
+    text-decoration: none !important;
+  }
+}
+.oh-btn--light {
+  background-color: $background-color;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  color: $secondary-color;
+  &:hover,
+  &:focus,
+  &:focus-visible {
+    text-decoration: none;
+    color: $secondary-color-dark;
+    background-color: $border-light-color;
+  }
+}
+.oh-btn--light-dark-text {
+  background-color: $background-color;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  color: $text-color;
+  &:hover,
+  &:focus,
+  &:focus-visible {
+    text-decoration: none;
+    color: $text-color;
+    background-color: $border-light-color;
+  }
+}
+.oh-btn--light-danger {
+  color: $danger-color;
+  background-color: transparent;
+  &:hover,
+  &:focus,
+  &:focus-visible {
+    text-decoration: none;
+    color: $danger-color-dark;
+  }
+}
+
+.oh-btn--view {
+  background-color: $white-color;
+  border: none;
+  &:hover,
+  &:focus,
+  &:focus-visible {
+    background-color: $background-color;
+    outline: none;
+  }
+}
+.oh-btn--view-active {
+  background-color: $button-light-color;
+  color: $text-color;
+}
+.oh-btn-group {
+  display: flex;
+  align-items: center;
+  border: 1px solid $border-light-color;
+}
+.oh-btn-group > * {
+  border-right: 1px solid $border-light-color;
+  &:last-child {
+    border-right: none;
+  }
+}
+.oh-btn--light-bkg {
+  background-color: $background-color !important;
+  &:hover {
+    background-color: $light-grey !important;
+  }
+}
+.oh-floatin-btn {
+  position: fixed;
+  right: 1.5rem;
+  bottom: 2.5rem;
+  display: flex;
+  align-items: center;
+  border: none;
+  border-radius: 25px;
+  padding: 1rem 1.5rem;
+  background-color: $white;
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 3px 8px;
+  transition: all 0.3s ease-in-out;
+
+  &:hover {
+    transition: all 0.3s ease-in-out;
+  }
+}
+.oh-floatin-btn--success {
+  &:hover {
+    color: $success-color;
+    transition: all 0.3s ease-in-out;
+  }
+}
+.oh-floatin-btn--danger {
+  &:hover {
+    color: $danger-color;
+    transition: all 0.3s ease-in-out;
+  }
+}

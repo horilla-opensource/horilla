@@ -1,0 +1,9 @@
+{% extends 'index.html' %}{% load i18n %}{% block content %}
+<p class="pb-3">
+  <a href="{% url 'request-view' %}" class="btn btn-primary">{% trans "Back" %}</a> {% trans "Back to Leave Request" %}
+</p>
+<form action="" method="post" enctype="multipart/form-data">
+  {%csrf_token%} {{form.as_p}}
+  <input type="submit" value="Submit" class='mt-4 btn btn-success'>
+</form>
+{% endblock %}

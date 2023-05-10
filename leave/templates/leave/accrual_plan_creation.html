@@ -1,0 +1,72 @@
+{% extends 'index.html' %} {% load i18n %} {% block  content%}
+<p class="pb-3">
+    <a href="{% url 'accrual-plan-view' %}" class="btn btn-primary">{% trans "View" %}</a> {% trans "All Accrual Plan" %}
+</p>
+<form action="" method="post">
+  {% csrf_token %}
+    <div class="form-group form-container">{{form}}</div>
+    <input type="submit" value="{% trans 'Submit' %}" id="submit" class='mt-4 btn btn-success'/>
+  </div>
+</form>
+
+<script>
+  $(document).ready(function () {
+    var based_on = $('#id_based_on');
+    var job_position_label = $("label[for='id_job_position_id']");
+    var job_position = $('#id_job_position_id');
+    var job_role_label = $("label[for='id_job_role_id']");
+    var job_role = $('#id_job_role_id');
+    var reset_yes = $('#id_reset_0');
+    var reset_no = $('#id_reset_1')
+    var reset_in_years_label = $("label[for='id_reset_in_years']");
+    var reset_in_years = $('#id_reset_in_years');
+    var carryforward_yes = $('#id_carryforward_0');
+    var carryforward_no = $('#id_carryforward_1')
+    var carryforward_max_label = $("label[for='id_carryforward_max']");
+    var carryforward_max = $('#id_carryforward_max');
+
+
+    job_position_label.hide();
+    job_position.hide();
+    job_role_label.hide();
+    job_role.hide(); 
+    reset_in_years_label.hide(); 
+    reset_in_years.hide();
+    carryforward_max_label.hide();
+    carryforward_max.hide();
+    
+
+    based_on.change(function() {
+      this.value == 'job_position' ? (job_position_label.show(), job_position.show().prop('required', true)) : (job_position_label.hide(), job_position.hide().prop('required', false), job_position.val(''));
+      this.value == 'job_role' ? (job_role_label.show(), job_role.show().prop('required', true)) : (job_role_label.hide(), job_role.hide().prop('required', false), job_role.val('')) 
+    })
+    reset_yes.change(function(){
+      reset_in_years_label.show() 
+      reset_in_years.show().prop('required', true) 
+    })
+    reset_no.change(function(){
+      reset_in_years_label.hide()
+      reset_in_years.hide().prop('required', false)
+      reset_in_years.val('')
+    })
+    carryforward_yes.change(function(){
+     carryforward_max_label.show()
+     carryforward_max.show().prop('required', true) 
+    })
+    carryforward_no.change(function(){
+      carryforward_max_label.hide();
+      carryforward_max.hide().prop('required', false);
+      carryforward_max.val('')
+    })
+    $('#submit').click(function (e) { 
+      var displayNoneElements = $(".form-container").find("*").filter(function() {
+        return $(this).css("display") === "none";
+      });
+      
+      // displayNoneElements.remove();
+    });
+  });
+</script>
+
+{% endblock  %}
+

@@ -1,0 +1,124 @@
+{% load static %}
+{% load i18n %}
+
+<!-- modals -->
+
+<div class="oh-modal" id="sendMailModal" role="dialog" aria-labelledby="sendMailModal" aria-hidden="true">
+    <div class="oh-modal__dialog">
+      <div class="oh-modal__dialog-header">
+        <span class="oh-modal__dialog-title" id="sendMailModalLabel">
+          <h5>{% trans "Send Mail" %}</h5>
+        </span>
+        <button class="oh-modal__close" aria-label="Close">
+          <ion-icon name="close-outline"></ion-icon>
+        </button>
+      </div>
+      <div class="oh-modal__dialog-body" id='mail-content'>
+  
+      </div>
+    </div>
+  </div>
+  
+  
+  <div class="oh-modal" id="addNoteModal" role="dialog" aria-labelledby="addNoteModal" aria-hidden="true">
+    <div class="oh-modal__dialog">
+      <div class="oh-modal__dialog-header">
+        <span class="oh-modal__dialog-title" id="addNoteModalLabel">
+          <h5>{% trans "Add Note" %}</h5>
+        </span>
+        <button class="oh-modal__close" aria-label="Close">
+          <ion-icon name="close-outline"></ion-icon>
+        </button>
+      </div>
+      <div class="oh-modal__dialog-body" id='remark-content'>
+  
+      </div>
+    </div>
+  </div>
+  
+  <div
+    class="oh-modal"
+    id="updateStageModal"
+    role="dialog"
+    aria-labelledby="updateStageModal"
+    aria-hidden="true"
+  >
+    <div class="oh-modal__dialog">
+      <div class="oh-modal__dialog-header">
+        <h5 class="oh-modal__dialog-title" id="updateStageModalLabel"
+          >{% trans "Edit Stage" %}</span
+        >
+        <button class="oh-modal__close" aria-label="Close" >
+          <ion-icon name="close-outline"></ion-icon>
+        </button>
+      </div>
+      <div class="oh-modal__dialog-body" id='stageUpdate'>
+        
+      </div>
+    </div>
+  </div>
+  
+  
+        
+  <div
+  class="oh-modal"
+  id="recruitmentUpdateModal"
+  role="dialog"
+  aria-labelledby="recruitmentUpdateModal"
+  aria-hidden="true"
+  >
+  <div class="oh-modal__dialog">
+    <div class="oh-modal__dialog-header">
+      <h5 class="oh-modal__dialog-title" id="recruitmentUpdateModalLabel"
+        >{% trans "Edit Recruitment" %}</span
+      >
+      <button class="oh-modal__close" aria-label="Close" >
+        <ion-icon name="close-outline"></ion-icon>
+      </button>
+    </div>
+    <div class="oh-modal__dialog-body" id='recruitmentUpdate'>
+      
+    </div>
+  </div>
+  </div>
+  
+  
+  <div
+  class="oh-modal"
+  id="recruitmentCreateModal"
+  role="dialog"
+  aria-labelledby="recruitmentCreateModal"
+  aria-hidden="true"
+  >
+  <div class="oh-modal__dialog">
+    <div class="oh-modal__dialog-header">
+      <h5 class="oh-modal__dialog-title" id="recruitmentCreateModallabel"
+        >{% trans "Add Recruitment" %}</span
+      >
+      <button class="oh-modal__close" aria-label="Close" >
+        <ion-icon name="close-outline"></ion-icon>
+      </button>
+    </div>
+    <div class="oh-modal__dialog-body" id='recruitmentCreateModal'>
+      
+    </div>
+  </div>
+  </div>
+  
+  <div class="oh-modal" id="updateNoteModal" role="dialog" aria-labelledby="updateNoteModal" aria-hidden="true">
+    <div class="oh-modal__dialog" id='modalContent'>
+  
+    </div>
+  </div>
+  
+  <!-- off canvas -->
+  <div class="oh-activity-sidebar" id="activitySidebar">
+  </div>
+
+  
+  
+  <script src="{% static 'pipeline/search.js' %}"></script>
+  <script src="{% static 'pipeline/load.js' %}"></script>
+  <script src="{% static 'pipeline/badge.js' %}"></script>
+  <script src="{% static 'pipeline/pipelineDrag.js' %}"></script>
+  <script src="{% static 'pipeline/activeTab.js' %}"></script>

@@ -1,0 +1,175 @@
+{% load static %}
+{% load i18n %}
+{% if messages %}
+<div class="oh-wrapper">
+    {% for message in messages %}
+    <div class="oh-alert-container">
+        <div class="oh-alert oh-alert--animated {{message.tags}}">
+        {{ message }}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+<div class="row">
+    <div class="col-12 col-sm-12 col-md-12 col-lg-12">
+        <div class="oh-card p-4">
+            <div class="oh-card__body">
+                <div class="oh-sticky-table oh-sticky-table--no-highlight">
+                    <div class="oh-sticky-table__table">
+                      <div class="oh-sticky-table__thead">
+                        <div class="oh-sticky-table__tr">
+                          <div class="oh-sticky-table__th" hx-get="{% url 'recruitment-search' %}?{{pd}}&orderby=job_position_id__job_position" hx-target="#recruitment-container">{% trans "Job Position" %}</div>
+                          <div class="oh-sticky-table__th" hx-get="{% url 'recruitment-search' %}?{{pd}}&orderby=recruitment_managers" hx-target="#recruitment-container">{% trans "Managers" %}</div>
+                          <div class="oh-sticky-table__th" hx-get="{% url 'recruitment-search' %}?{{pd}}&orderby=vacancy" hx-target="#recruitment-container">{% trans "Vacancy" %}</div>
+                          <div class="oh-sticky-table__th" hx-get="{% url 'recruitment-search' %}?{{pd}}&orderby=start_date" hx-target="#recruitment-container">{% trans "Start Date" %}</div>
+                          <div class="oh-sticky-table__th" hx-get="{% url 'recruitment-search' %}?{{pd}}&orderby=end_date" hx-target="#recruitment-container">{% trans "End Date" %}</div>
+                          <div class="oh-sticky-table__th">{% trans "Status" %}</div>
+                          <div class="oh-sticky-table__th">{% trans "Actions" %}</div>
+                        </div>
+                      </div>
+                      <div class="oh-sticky-table__tbody">
+                        {% for rec in data %}
+                        <div class="oh-sticky-table__tr oh-permission-table__tr" data-label='Manager' data-count="{{rec.recruitment_managers.all|length}}">
+                          <div class="oh-sticky-table__sd oh-permission-table--toggle">
+                            <div class="d-flex align-items-center">
+                              <button class="oh-permission-table__collapse me-2">
+                                <ion-icon class="oh-permission-table__collapse-down" title="Reveal" name="chevron-down-outline"></ion-icon>
+                                <ion-icon class="oh-permission-table__collapse-up" title="Collapse" name="chevron-up-outline"></ion-icon>
+                              </button>
+                              <span class="oh-permission-table__user">{{rec.job_position_id}}</span>
+                            </div>
+                          </div>
+                          <div class="oh-sticky-table__td">
+                            {% for manager in rec.recruitment_managers.all %}
+                            <span class="oh-user-panel oh-collapse-panel" data-type="user">
+                              <div class="oh-profile oh-profile--md">
+                                <div class="oh-profile__avatar mr-1">
+                                  <img
+                                  src="https://ui-avatars.com/api/?name={{manager.employee_first_name}}+{{manager.employee_last_name}}&background=random"
+                                  class="oh-profile__image"
+                                  alt="Baby C."
+                                  />
+                                </div>
+                                <span class="oh-profile__name oh-text--dark"
+                                >{{manager.employee_first_name}}.</span
+                                >
+                              </div>
+                              <a hx-post="{% url 'remove-recruitment-manager' manager.id rec.id %}?{{pd}}&page={{data.number}}" hx-target="#recruitment-container"class="oh-user-panel__remove">
+                                <ion-icon name="close-outline"></ion-icon>
+                              </a>
+                            </span>
+                            {% endfor %}
+                          </div>
+                          <div class="oh-sticky-table__td">
+                            {{rec.vacancy}}
+                          </div>
+                          <div class="oh-sticky-table__td">
+                            {{rec.start_date}}
+                          </div>
+                          <div class="oh-sticky-table__td">
+                            {{rec.end_date}}
+                          </div>
+                          <div class="oh-sticky-table__td">
+                            {% if not rec.closed %}
+                            Active
+                            {% else %}
+                            Closed
+                            {% endif %}
+                          </div>
+                          <div class="oh-sticky-table__td">
+                            <div class="oh-btn-group">
+                              {% if perms.recruitment.change_recruitment %}
+                              <a hx-get="{% url 'recruitment-update' rec.id %}" hx-target='#updateFormContainer' hx-swap='innerHTML' data-toggle='oh-modal-toggle' data-target='#updateRecruitmentModal'  class="oh-btn oh-btn--light-bkg w-100" title="Edit"><ion-icon name="create-outline"></ion-icon></a>
+                              {% endif %}
+                              {% if perms.recruitment.delete_recruitment %}
+                              <form action="{% url 'recruitment-delete' rec.id  %}" onsubmit="return confirm('{% trans "Are you sure to delete this recruitment?" %}')" method='post'>
+                                {% csrf_token %}
+                                <button type='submit' class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100" title="Remove"><ion-icon name="trash-outline"></ion-icon></button>
+                              </form>
+                              {% endif %}
+                            </div>
+                          </div>
+                        </div>
+                        {% endfor %}
+                      </div>
+                    </div>
+                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div
+class="oh-modal"
+id="updateRecruitmentModal"
+role="dialog"
+aria-labelledby="updateRecruitmentModal"
+aria-hidden="true"
+>
+<div class="oh-modal__dialog">
+  <div class="oh-modal__dialog-header">
+    <h5 class="oh-modal__dialog-title" id="updateRecruitmentModalLabel"
+      >{% trans "Edit Recruitment" %}</span
+    >
+    <button class="oh-modal__close" aria-label="Close" >
+      <ion-icon name="close-outline"></ion-icon>
+    </button>
+  </div>
+  <div class="oh-modal__dialog-body" id='updateFormContainer'>
+    
+  </div>
+</div>
+</div>
+
+
+
+<div class="oh-pagination">
+  <span
+    class="oh-pagination__page"
+    data-toggle="modal"
+    data-target="#addEmployeeModal"
+    >
+    {% trans "Page" %} {{ data.number }} {% trans "of" %} {{ data.paginator.num_pages }}.
+    </span
+  >
+
+  <nav class="oh-pagination__nav">
+    <div class="oh-pagination__input-container me-3">
+      <span class="oh-pagination__label me-1">{% trans "Page" %}</span>
+
+      <input
+        type="number"
+        name="page"
+        class="oh-pagination__input"
+        value="{{data.number}}"
+        hx-get="{% url 'recruitment-search' %}?{{pd}}" hx-target="#recruitment-container"
+        min="1"
+      />
+      <span class="oh-pagination__label">{% trans "of" %} {{data.paginator.num_pages}}</span>
+    </div>
+
+    <ul class="oh-pagination__items">
+      {% if data.has_previous %}
+      <li class="oh-pagination__item oh-pagination__item--wide">
+        <a hx-target='#recruitment-container' hx-get="{% url 'recruitment-search' %}?{{pd}}&page=1" class="oh-pagination__link">{% trans "First" %}</a>
+      </li>
+      <li class="oh-pagination__item oh-pagination__item--wide">
+        <a hx-target='#recruitment-container' hx-get="{% url 'recruitment-search' %}?{{pd}}&page={{ data.previous_page_number }}" class="oh-pagination__link">{% trans "Previous" %}</a>
+      </li>
+      {% endif %}
+      {% if data.has_next %}
+      <li class="oh-pagination__item oh-pagination__item--wide">
+        <a hx-target='#recruitment-container' hx-get="{% url 'recruitment-search' %}?{{pd}}&page={{ data.next_page_number }}" class="oh-pagination__link">{% trans "Next" %}</a>
+      </li>
+      <li class="oh-pagination__item oh-pagination__item--wide">
+        <a hx-target='#recruitment-container' hx-get="{% url 'recruitment-search' %}?{{pd}}&page={{ data.paginator.num_pages }}" class="oh-pagination__link">{% trans "Last" %}</a>
+      </li>
+      {% endif %}
+
+    </ul>
+  </nav>
+</div>
+

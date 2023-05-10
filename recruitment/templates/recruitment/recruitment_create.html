@@ -1,0 +1,16 @@
+{% extends 'index.html' %}
+{% load i18n %}
+{% block content %}
+<div class="oh-wrapper">
+    <a href ='{% url "recruitment-view" %}' style="width: 200px;" class="oh-btn mb-2 oh-btn--small oh-btn--secondary oh-tabs__action-new-table">
+        <ion-icon class="me-1" name="add-outline"></ion-icon>
+        {% trans "View Recruitments" %}
+      </a>
+<form action="" method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" value="Submit" class='mt-4 oh-btn oh-btn--secondary'>
+</form>
+
+</div>
+{% endblock %}

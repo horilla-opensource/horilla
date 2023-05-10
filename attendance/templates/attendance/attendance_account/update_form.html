@@ -1,0 +1,13 @@
+{% load i18n %}
+<form 
+    id="update-form" 
+    hx-post="{% url 'attendance-overtime-update' form.instance.id %}" 
+    id="update-form" 
+    hx-target = "#updateAttendanceOTModalBody"
+    hx-target="#attendanceAddMessage" 
+    hx-swap = 'innerHTML' >
+      {{form.as_p}}
+      <div class="oh-modal__dialog-footer">
+          <input type="submit" value="{% trans 'Save' %}" class="oh-btn oh-btn--secondary oh-btn--shadow mt-4 pl-5 pr-5">
+        </div>
+</form>

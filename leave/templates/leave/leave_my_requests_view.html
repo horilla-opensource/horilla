@@ -1,0 +1,80 @@
+{% extends 'index.html' %} {% block content %}
+<p class="pb-3">
+  <a href="{% url 'request-creation' %}" class="btn btn-primary">{% trans "Create" %}</a> {% trans "New Leave Request" %}
+</p>
+
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th scope="col">{% trans "Employee" %}</th>
+      <th scope="col">{% trans "Type" %}</th>
+      <th scope="col">{% trans "Start Date" %}</th>
+      <th scope="col">{% trans "End Date" %}</th>
+      <th scope="col">{% trans "Days" %}</th>
+      <th scope="col">{% trans "Extra Days" %}</th>
+      <th scope="col">{% trans "Status" %}</th>
+    </tr>
+  </thead>    
+  <tbody>
+    {% for leave_req in data %}
+    <tr>
+      <td>{{leave_req.employee_id}}</td>
+      <td>{{leave_req.leave_type_id}}</td>
+      <td>{{leave_req.leave_start_date|date:'d/m/Y'}}</td>
+      <td>{{leave_req.leave_end_date|date:'d/m/Y'}}</td>
+      <td>{{leave_req.leave_available_days}}</td>
+      <td>{{leave_req.leave_extra_days}}</td>
+      {% for choice in choices %} {% if choice.0 == leave_req.leave_status%}
+      <td>{{choice.1}}</td>
+      {% endif %} {% endfor %} {% if leave_req.leave_status != 'approved' and leave_req.leave_status != 'approved_with_extra_days' %}
+      {% if leave_req.leave_status != 'cancel' %}
+      <td>
+        <a
+          href="{% url 'request-approve' leave_req.id %}"
+          class="btn btn-success"
+          >{% trans "Approve" %}</a
+        >
+      </td>
+      {% endif %}
+      {% endif %} {% if leave_req.leave_status != 'approved_with_extra_days' and leave_req.leave_status != 'approved'%}
+      {% if leave_req.leave_extra_days != 0 %}
+      {% if leave_req.leave_status != 'cancel' %}
+      <td>
+        <a
+          href="{% url 'request-approve-with-extra-days' leave_req.id %}"
+          class="btn btn-success"
+          >{% trans "Approve" %}<br />{% trans "Extra days" %}</a
+        >
+      </td>
+      {% endif %}
+      {% endif %}
+      {% endif %} 
+      {% if leave_req.leave_status == 'approved_with_extra_days' or leave_req.leave_status == 'approved'%}      
+      <td>
+        <a href="{% url 'request-cancel' leave_req.id%}" class="btn btn-primary"
+          >{% trans "Cancel" %}</a
+        >
+      </td>
+      {% endif %}
+      
+      
+      
+      {% if leave_req.leave_status != 'rejected' and leave_req.leave_status != 'cancel'%}
+      <td>
+        <a href="{% url 'request-reject' leave_req.id %}" class="btn btn-danger"
+          >{% trans "Reject" %}</a
+        >
+      </td>
+      {% endif %}
+      <td>
+        <a
+          href="{% url 'request-view-one' leave_req.id %}"
+          class="btn btn-warning"
+          >{% trans "View" %}</a
+        >
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

@@ -1,0 +1,83 @@
+{% load i18n %}
+<div class="oh-general__tab-target oh-profile-section mb-4 d-none" id="bank">
+    <div class="oh-profile-section__card">
+        <form method='post' action=""  >
+            <div id="bankMessage">
+            </div>
+            {% csrf_token %}
+        <div class="row">
+            <div class="col-12 col-sm-12 col-md-12 col-lg-6">
+            <div class="oh-input-group">
+                <label class="oh-label">{% trans "Bank Name" %}</label>
+                {{bank_form.bank_name}}
+            </div>
+            </div>
+            <div class="col-12 col-sm-12 col-md-12 col-lg-6">
+            <div class="oh-input-group">
+                <label class="oh-label">{% trans "Account Number" %}</label>
+                {{bank_form.account_number}}
+            </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12 col-sm-12 col-md-12 col-lg-6">
+            <div class="oh-input-group">
+                <label class="oh-label">{% trans "Branch" %}</label>
+                {{bank_form.branch}}
+            </div>
+            </div>
+            <div class="col-12 col-sm-12 col-md-12 col-lg-6">
+            <div class="oh-input-group">
+                <label class="oh-label">{% trans "Bank Code" %} #1</label>
+                {{bank_form.any_other_code1}}
+            </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12 col-sm-12 col-md-12 col-lg-12">
+            <div class="oh-input-group">
+                <label class="oh-label">{% trans "Bank Address" %}</label>
+                {{bank_form.address}}
+            </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12 col-sm-12 col-md-12 col-lg-6">
+            <label class="oh-label" for="country">{% trans "Country" %}</label>
+            <select name="country" class="oh-select-2 w-100 country" id="country">
+                <option value="{{bank_form.instance.country}}" selected>{{bank_form.instance.county}}</option>
+            </select>
+            </div>
+            <div class="col-12 col-sm-12 col-md-12 col-lg-6">
+                <div class="oh-input-group">
+                    <label class="oh-label">{% trans "State" %}</label>
+                    <select name="state" class="oh-select-2 w-100 country" id="state">
+                        <option value="{{bank_form.instance.state}}" selected>{{bank_form.instance.state}}</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12 col-sm-12 col-md-12 col-lg-6">
+                <div class="oh-input-group">
+                    <label class="oh-label">{% trans "City" %}</label>
+                    {{bank_form.city}}
+                </div>
+            </div>
+            <div class="col-12 col-sm-12 col-md-12 col-lg-6">
+                <div class="oh-input-group">
+                    <label class="oh-label">{% trans "Bank Code" %} #2</label>
+                    {{bank_form.any_other_code2}}
+                </div>
+            </div>
+        </div>
+        <hr class="mt-5 mb-3">
+        <div class="w-100 d-flex align-items-center justify-content-end">
+            <button type="submit" class="oh-btn oh-btn--secondary oh-btn--w-100-resp">
+            {% trans "Save Changes" %}
+            </button>
+        </div>
+        </form>
+    </div>
+</div>
+</div>

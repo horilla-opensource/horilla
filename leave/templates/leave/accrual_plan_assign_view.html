@@ -1,0 +1,24 @@
+{% extends 'index.html' %}{% load i18n %}{% block  content%}
+<p class="pb-3">
+    <a href="/leave/accrual-plan-view" class="btn btn-primary">{% trans "Back" %}</a> {% trans "View Accrual Plan" %}
+</p>
+<table class="table table-striped">
+    <thead>
+      <tr>
+        <th scope="col"> {% trans "Accrual Plan" %} </th>
+        <th scope="col"> {% trans "Employee" %} </th>
+        <th scope="col"> {% trans "Accrual Rate" %} </th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for accrual in data %}
+      <tr>
+        <td>{{accrual.accrual_plan_id}}</td>
+        <td>{{accrual.employee_id}}</td>
+        <td>{{accrual.accrual_plan_id.accrual_plan_extra_leave_rate}} {{accrual.accrual_plan_id.accrual_plan_extra_leave_rate_in}}</td>
+        <td></td>
+      </tr>    
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}

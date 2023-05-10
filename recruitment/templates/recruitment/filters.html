@@ -1,0 +1,65 @@
+{% load i18n %}
+<form hx-get='{% url "recruitment-search" %}' hx-target='#recruitment-container'>
+  <div class="oh-dropdown__filter-body">
+    <div class="oh-accordion">
+    <div class="oh-accordion-header">{% trans "Recruitment" %}</div>
+    <div class="oh-accordion-body">
+      <div class="row">
+        <div class="col-sm-12 col-md-12 col-lg-6">
+          <div class="oh-input-group">
+              <label class="oh-label">{% trans "Managers" %}</label>
+              {{f.form.recruitment_managers}}
+          </div>
+          <div class="oh-input-group">
+            <label class="oh-label">{% trans "Start Date" %}</label>
+            {{f.form.start_date}}
+          </div>
+          
+        </div>
+
+        <div class="col-sm-12 col-md-12 col-lg-6">
+          <div class="oh-input-group">
+            <label class="oh-label">{% trans "Company" %}</label>
+            {{f.form.company_id}}
+          </div>
+          <div class="oh-input-group">
+            <label class="oh-label">{% trans "End Date" %}</label>
+            {{f.form.end_date}}
+          </div>
+        
+
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  
+  <div class="oh-accordion">
+    <div class="oh-accordion-header">{% trans "Advanced" %}</div>
+    <div class="oh-accordion-body">
+      <div class="row">
+        <div class="col-sm-12 col-md-12 col-lg-6">
+          <div class="oh-input-group">
+            <label class="oh-label">{% trans "Start Date From" %}</label>
+            {{f.form.start_from}}
+          </div>
+          <div class="oh-input-group">
+            <label class="oh-label">{% trans "Is Active" %}?</label>
+            {{f.form.is_active}}
+          </div>
+        </div>
+        <div class="col-sm-12 col-md-12 col-lg-6">
+          <div class="oh-input-group">
+            <label class="oh-label">{% trans "Till End Date" %}</label>
+            {{f.form.end_till}}
+          </div>          
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="oh-dropdown__filter-footer">
+  <button class="oh-btn oh-btn--secondary oh-btn--small w-100">{% trans "Filter" %}</button>
+</div>
+</form>
+

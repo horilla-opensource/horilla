@@ -1,0 +1,59 @@
+{% extends 'settings.html' %}
+{% load i18n %}
+{% block settings %}
+<div class="oh-inner-sidebar-content">
+    {% if perms.base.add_employeeshiftschedule %}
+    <form action="" method="post">
+        {% csrf_token %}
+        <div class="oh-inner-sidebar-content__header">
+            <h2 class="oh-inner-sidebar-content__title">{% trans "Shift Schedule" %}</h2>
+        </div>
+        <div class="oh-inner-sidebar-content__body">
+            <div class="oh-input-group mb-2">
+                <label for="">
+                    {% trans "Shift" %}
+                </label>
+                {{form.shift_id.errors}}
+                {{form.shift_id}}
+            </div>
+            <div class="oh-input-group mb-2">
+                <label for="">
+                   {% trans "Days" %}
+                </label>
+                {{form.day.errors}}
+                {{form.day}}
+            </div>
+            <div class="oh-input-group mb-2">
+                <label for="">
+                    {% trans "Minimum Hour" %}
+                </label>
+                {{form.minimum_working_hour.errors}}
+                {{form.minimum_working_hour}}
+            </div>
+            <div class="oh-input-group mb-2">
+                <label for="">
+                    {% trans "Shift Start Time" %}
+                </label>
+                {{form.start_time.errors}}
+                {{form.start_time}}
+            </div>
+            <div class="oh-input-group mb-2">
+                <label for="">
+                    {% trans "Shift End Time" %}
+                </label>
+                {{form.end_time.errors}}
+                {{form.end_time}}
+            </div>
+        </div>
+        <button type='submit' class="oh-btn oh-btn--secondary mt-2 mr-0 oh-btn--w-100-resp">
+            {% trans "Save Changes" %}
+        </button>
+        <div class="oh-inner-sidebar-content__footer">
+        </div>
+        </div>
+    </form>
+    {% endif %}
+
+    {% include 'base/shift/schedule_view.html' %}
+</div>
+{% endblock settings %}

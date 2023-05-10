@@ -1,0 +1,104 @@
+{% load i18n %}
+<div class="oh-sticky-table">
+    <div class="oh-sticky-table__table">
+        <div class="oh-sticky-table__thead">
+            <div class="oh-sticky-table__tr">
+                <div class="oh-sticky-table__th">
+                    <div class="d-flex">
+                        <div class="">
+                            <input type="checkbox" class="oh-input oh-input__checkbox mt-1 mr-2 all-employee"
+                                id="selectAll" />
+                        </div>
+                        {% trans "Candidate" %}
+                    </div>
+                </div>
+                <div class="oh-sticky-table__th">{% trans "Email" %}</div>
+                <div class="oh-sticky-table__th">{% trans "Date of joining" %}</div>
+                <div class="oh-sticky-table__th">{% trans "Job position" %}</div>
+                <div class="oh-sticky-table__th">{% trans "Recruitment" %}</div>
+                <div class="oh-sticky-table__th">{% trans "Actions" %}</div>
+                
+            </div>
+        </div>
+        {% for candidate in candidates %}
+        <div class="oh-sticky-table__tbody ">
+            <div class="oh-sticky-table__tr ">
+                <div class="oh-sticky-table__sd">
+                    <div class="d-flex">
+                        <div class="">
+                            <input type="checkbox"
+                                class="oh-input employee-checkbox oh-input__checkbox mt-2 mr-2 checkboxAll"
+                                id="{{candidate.id}}" />
+                        </div>
+                        <div class="oh-profile oh-profile--md">
+                            <div class="oh-profile__avatar mr-1">
+                                {% if candidate.profile %}
+                                <img src="{{candidate.profile.url}}" class="oh-profile__image" alt="{{candidate.name}}" />
+                                {% else %}
+                                <img src="https://ui-avatars.com/api/?name={{candidate.name}}&background=random"
+                                    class="oh-profile__image" alt="{{candidate.name}}" />
+                                {% endif %}
+                            </div>
+                            <span class="oh-profile__name oh-text--dark">{{candidate.name}}</span>
+                        </div>
+                    </div>
+                </div>
+                <a style="color: inherit; text-decoration: none" class="oh-sticky-table__td">{{candidate.email}}</a>
+                <a style="color: inherit; text-decoration: none" class="oh-sticky-table__td">{{candidate.joining_date}}</a>
+                <a style="color: inherit; text-decoration: none" class="oh-sticky-table__td">{{candidate.recruitment_id.job_position_id}}</a>
+                <a style="color: inherit; text-decoration: none" class="oh-sticky-table__td">{{candidate.recruitment_id}}</a>
+                <div style="color: inherit; text-decoration: none" class="oh-sticky-table__td">
+                    <div class="oh-btn-group">
+                        <a class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Edit' %}"
+                        href="{% url 'candidate-update' candidate.id %}"><ion-icon name="create-outline"></ion-icon></a>
+                    <a class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100" id="delete-link"
+                        href="{% url 'candidate-delete' candidate.id %}" title="{% trans 'Delete' %}"><ion-icon
+                            name="trash-outline"></ion-icon></a>
+                       
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<div class="oh-pagination">
+    <span class="oh-pagination__page">
+        {% trans "Page" %} {{ candidates.number }} {% trans "of" %} {{ candidates.paginator.num_pages }}.
+    </span>
+    <nav class="oh-pagination__nav">
+        <div class="oh-pagination__input-container me-3">
+            <span class="oh-pagination__label me-1">{% trans "Page" %}</span>
+            <input type="number" name="page" class="oh-pagination__input" value="{{candidates.number}}"
+                hx-get="{% url 'candidate-filter' %}?{{pd}}" hx-target="#candidates" min="1" />
+            <span class="oh-pagination__label">{% trans "of" %} {{candidates.paginator.num_pages}}</span>
+        </div>
+        <ul class="oh-pagination__items">
+            {% if candidates.has_previous %}
+            <li class="oh-pagination__item oh-pagination__item--wide">
+                <a hx-target='#candidates' hx-get="{% url 'candidate-filter' %}?{{pd}}&page=1"
+                    class="oh-pagination__link">{% trans "First" %}</a>
+            </li>
+            <li class="oh-pagination__item oh-pagination__item--wide">
+                <a hx-target='#candidates'
+                    hx-get="{% url 'candidate-filter' %}?{{pd}}&page={{ candidates.previous_page_number }}"
+                    class="oh-pagination__link">{% trans "Previous" %}</a>
+            </li>
+            {% endif %}
+            {% if candidates.has_next %}
+            <li class="oh-pagination__item oh-pagination__item--wide">
+                <a hx-target='#candidates'
+                    hx-get="{% url 'candidate-filter' %}?{{pd}}&page={{ candidates.next_page_number }}"
+                    class="oh-pagination__link">{% trans "Next" %}</a>
+            </li>
+            <li class="oh-pagination__item oh-pagination__item--wide">
+                <a hx-target='#candidates'
+                    hx-get="{% url 'candidate-filter' %}?{{pd}}&page={{ candidates.paginator.num_pages }}"
+                    class="oh-pagination__link">{% trans "Last" %}</a>
+            </li>
+            {% endif %}
+
+        </ul>
+    </nav>
+</div>

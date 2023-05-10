@@ -1,0 +1,7 @@
+{% extends 'index.html' %}
+{% block content %}
+{% include 'attendance/own_attendance/nav.html' %}
+<div id="attendance-container" class='oh-wrapper'>
+  {% include 'attendance/own_attendance/attendances.html' %}
+</div>
+{% endblock content %}

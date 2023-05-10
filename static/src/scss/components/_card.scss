@@ -1,0 +1,222 @@
+.oh-card {
+  padding: 1.15rem;
+  // box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 3px 0px, rgba(0, 0, 0, 0.06) 0px 1px 2px 0px;
+  border-radius: 0rem;
+  border: 1px solid $border-color;
+  background-color: $white;
+}
+.oh-card--margin {
+  margin-top: 2rem;
+}
+.oh-card.p-4 {
+  @media (max-width: 767.98px) {
+    padding: 0 !important;
+  }
+}
+.oh-card--no-shadow {
+  box-shadow: none !important;
+  border: 1px solid $border-light-color !important;
+}
+.oh-card__header {
+  margin-bottom: 0.85rem;
+}
+.oh-card__title--lg {
+  font-size: 1.25rem;
+}
+.oh-card__title--sm {
+  font-size: 0.9rem;
+}
+.oh-card--w-resp-75 {
+  width: 75%;
+  @media (max-width: 991.98px) {
+    width: 100%;
+  }
+}
+
+/* ============================
+        LIST CARDS
+============================= */
+.oh-list-cards {
+  list-style-type: none;
+  padding-left: 0px;
+  margin-bottom: 0px;
+}
+.oh-list-cards__item {
+  padding: 1.25rem;
+  border: 1px solid $border-light-color;
+  margin-top: 0.75rem;
+  margin-bottom: 0.75rem;
+  border-radius: 0rem;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+.oh-list-card__title {
+  font-weight: bold;
+}
+.oh-list-card__description {
+  color: $light-text-color;
+}
+.oh-list-card__footer {
+  border-top: 1px solid $border-light-color;
+  padding-top: 0.8rem;
+}
+.oh-list__actions {
+  padding-top: 1rem;
+  float: right;
+  a {
+    &:first-child {
+      margin-right: 0.5rem;
+    }
+  }
+}
+.oh-card__footer--border-top {
+  border-top: 1px solid $border-light-color;
+}
+/* ============================
+      ACTIVITY LIST CARDS
+============================= */
+.oh-activity-list__photo {
+  border-radius: 50%;
+  overflow: hidden;
+}
+.oh-activity-list {
+  list-style-type: none;
+  padding-left: 0;
+}
+.oh-activity-list__photo--small {
+  width: 30px;
+  height: 30px;
+}
+.oh-activity-list__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.oh-activity-list__item {
+  display: flex;
+  align-items: center;
+  margin-top: 1.15rem;
+  margin-bottom: 1.15rem;
+  &:first-child {
+    margin-top: 0;
+  }
+  &:last-child {
+    margin-bottom: 0;
+  }
+  * {
+    flex-shrink: 0;
+  }
+}
+.oh-activity-list__description {
+  color: $light-text-color;
+  max-width: calc(100% - 32px);
+}
+.oh-activity-list__description strong {
+  color: $dark-grey;
+}
+.oh-card--border {
+  border: 1px solid $border-light-color;
+}
+.oh-activity-list__comment-title {
+  display: flex;
+  align-items: flex-start;
+}
+.oh-activity-list__comment-timestamp {
+  font-size: 0.75rem;
+  display: block;
+}
+.oh-activity-list__comment {
+  display: block;
+}
+.oh-activity-list__comment-container {
+  padding-left: 2.3rem;
+  margin-top: 0.45rem;
+  margin-bottom: 1.35rem;
+}
+/* ============================
+*         ITEM CARD
+============================= */
+.oh-item {
+  display: block;
+}
+.oh-item--border-bottom {
+  padding: 1.25rem;
+  border-bottom: 1px solid $border-light-color;
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+/* ============================
+*      CONTAINER CARD
+============================= */
+.oh-container {
+  width: 100%;
+  padding: 0.75rem;
+}
+.oh-container--outline {
+  border: 1px solid $border-light-color;
+}
+
+.oh-kanban-card {
+  position: relative;
+  border: 1px solid $border-color;
+  background-color: $white;
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+  width: 100%;
+  cursor: pointer;
+
+  &:hover {
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 3px 0px,
+      rgba(0, 0, 0, 0.02) 0px 1px 2px 0px;
+  }
+}
+.oh-kanban-card__profile-container {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  overflow: hidden;
+}
+.oh-kanban-card__profile-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.oh-kanban-card__title {
+  display: block;
+  font-weight: bold;
+  @media (max-width: 575.98px) {
+    font-size: 0.8rem;
+  }
+}
+.oh-kanban-card__subtitle {
+  font-size: 0.85rem;
+  color: $light-text-color;
+  @media (max-width: 575.98px) {
+    font-size: 0.7rem;
+  }
+}
+.oh-kanban-card__avatar {
+  margin-right: 1rem;
+}
+.oh-kanban-card__actions {
+  display: flex;
+  align-items: center;
+}
+.oh-kanban-card__actions > * {
+  margin-right: 0.5rem;
+  flex-shrink: 0;
+  &:last-child {
+    margin-right: 0;
+  }
+}
+.oh-kanban-card__dots {
+  position: absolute;
+  right: 0px;
+  top: 0px;
+}

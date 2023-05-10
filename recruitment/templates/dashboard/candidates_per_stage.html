@@ -1,0 +1,36 @@
+<script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
+
+<canvas id="candidate-chart" width="400" height="200"></canvas>
+<script>
+    var ctx = document.getElementById('candidate-chart').getContext('2d');
+    var chart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: [
+                {% for stage in stages %}
+                    '{{ stage.stage }}',
+                {% endfor %}
+            ],
+            datasets: [{
+                label: 'Candidate Count',
+                data: [
+                    {% for stage in stages %}
+                        {{ stage.candidate_set.count }},
+                    {% endfor %}
+                ],
+                backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                borderColor: 'rgba(255, 99, 132, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        beginAtZero: true
+                    }
+                }]
+            }
+        }
+    });
+</script>

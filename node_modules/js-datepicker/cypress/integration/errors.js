@@ -1,0 +1,457 @@
+import selectors from '../selectors'
+
+const {
+  singleDatepickerInput,
+  daterangeInputStart,
+  daterangeInputEnd,
+} = selectors
+
+function createMyElement({ global, datepicker, shouldThrow }) {
+  class MyElement extends global.HTMLElement {
+    constructor() {
+      super()
+      const shadowRoot = this.attachShadow({ mode: 'open' })
+      this.root = shadowRoot
+      shadowRoot.innerHTML = `
+        <div data-cy="shadow-dom-error-test">
+          <h1>Cypress Single Instance Shadow DOM Error Test</h1>
+          <div>(no styles for this calendar, so the html will explode, lol)</div>
+          <input />
+        </div>
+      `
+
+      // Create the node we'll pass to datepicker.
+      this.input = shadowRoot.querySelector('input')
+    }
+
+    connectedCallback() {
+      if (shouldThrow) {
+        expect(() => datepicker(this.root)).to.throw('Using a shadow DOM as your selector is not supported.')
+      } else {
+        expect(() => datepicker(this.input)).not.to.throw()
+      }
+    }
+  }
+
+  return MyElement
+}
+
+describe('Errors thrown by datepicker', function() {
+  beforeEach(function() {
+    cy.visit('http://localhost:9001')
+
+    /*
+    We can't simply import the datepicker library up at the top because it will not
+    be associated with the correct window object. Instead, we can use a Cypress alias
+    that will expose what we want on `this`, so long as we avoid using arrow functions.
+    This is possible because datepicker is assigned a value on the window object in `sandbox.js`.
+    */
+   cy.window().then(global => cy.wrap(global.datepicker).as('datepicker'))
+  })
+
+  describe('Options', function() {
+    it('should throw if "events" contains something other than date objects', function() {
+      const fxnThatThrows = () => this.datepicker(singleDatepickerInput, { events: [new Date(), Date.now()] })
+      expect(fxnThatThrows).to.throw('"options.events" must only contain valid JavaScript Date objects.')
+    })
+
+    it('should not throw if "events" contains only date objects', function() {
+      const noThrow = () => this.datepicker(singleDatepickerInput, { events: [new Date(), new Date('1/1/2000')] })
+      expect(noThrow).not.to.throw()
+    })
+
+    it(`should throw if "startDate", "dateSelected", "minDate", or "maxDate" aren't date objects`, function() {
+      ['startDate', 'dateSelected', 'minDate', 'maxDate'].forEach(option => {
+        expect(() => this.datepicker(singleDatepickerInput, { [option]: 'nope' }), `${option} - should throw`)
+          .to.throw(`"options.${option}" needs to be a valid JavaScript Date object.`)
+      })
+    })
+
+    it('should not throw if "startDate", "dateSelected", "minDate", and "maxDate" are all date objects', function() {
+      const today = new Date()
+      const noThrow = () => this.datepicker(singleDatepickerInput, {
+        startDate: today,
+        dateSelected: new Date(today.getFullYear(), today.getMonth(), 5),
+        minDate: new Date(today.getFullYear(), today.getMonth(), 2),
+        maxDate: new Date(today.getFullYear(), today.getMonth(), 10),
+      })
+
+      expect(noThrow).not.to.throw()
+    })
+
+    it(`should throw if "disabledDates" doesn't contain only date objects`, function() {
+      expect(() => this.datepicker(singleDatepickerInput, { disabledDates: [new Date(), 55]}))
+        .to.throw('You supplied an invalid date to "options.disabledDates".')
+    })
+
+    it('should not throw if "disabledDates" contains only date objects', function() {
+      const disabledDates = [
+        new Date('1/1/1997'),
+        new Date('1/2/1997'),
+        new Date('1/3/1997'),
+        new Date('1/4/1997'),
+      ]
+      expect(() => this.datepicker(singleDatepickerInput, { disabledDates })).not.to.throw()
+    })
+
+    it('should throw if "disabledDates" contains the same date as "dateSelected"', function() {
+      const disabledDates = [
+        new Date('1/1/1997'),
+        new Date('1/2/1997'),
+        new Date('1/3/1997'),
+        new Date('1/4/1997'),
+      ]
+      expect(() => this.datepicker(singleDatepickerInput, { disabledDates, dateSelected: disabledDates[0] }))
+        .to.throw('"disabledDates" cannot contain the same date as "dateSelected".')
+    })
+
+    it('should throw if "id" is null of undefined', function() {
+      const shouldThrow1 = () => this.datepicker(singleDatepickerInput, { id: null })
+      const shouldThrow2 = () => this.datepicker(singleDatepickerInput, { id: undefined })
+
+      expect(shouldThrow1).to.throw('`id` cannot be `null` or `undefined`')
+      expect(shouldThrow2).to.throw('`id` cannot be `null` or `undefined`')
+    })
+
+    it('should not throw if "id" is not null or undefined', function() {
+      expect(() => this.datepicker(singleDatepickerInput, { id: () => {} })).to.not.throw()
+    })
+
+    it('should throw if more than 2 datepickers try to share an "id"', function() {
+      const id = Date.now()
+      const noThrow1 = () => this.datepicker(daterangeInputStart, { id })
+      const noThrow2 = () => this.datepicker(daterangeInputEnd, { id })
+      const shouldThrow = () => this.datepicker(singleDatepickerInput, { id })
+
+      expect(noThrow1).to.not.throw()
+      expect(noThrow2).to.not.throw()
+      expect(shouldThrow).to.throw('Only two datepickers can share an id.')
+    })
+
+    it(`should throw if "position" isn't one of - 'tr', 'tl', 'br', 'bl', or 'c'`, function() {
+      expect(() => this.datepicker(singleDatepickerInput, { position: 'nope' }))
+        .to.throw('"options.position" must be one of the following: tl, tr, bl, br, or c.')
+    })
+
+    // This test is dependent upon `datepicker.remove()`.
+    it(`should not throw if "position" is one of - 'tr', 'tl', 'br', 'bl', or 'c'`, function() {
+      ['tr', 'tl', 'br', 'bl', 'c'].forEach(position => {
+        let picker
+        const noThrow = () => {
+          picker = this.datepicker(singleDatepickerInput, { position })
+        }
+        expect(noThrow).not.to.throw()
+        picker.remove()
+      })
+    })
+
+    it('should throw if "maxDate" is less than "minDate" by at least a day', function() {
+      const minDate = new Date()
+      const maxDate = new Date(minDate.getFullYear(), minDate.getMonth(), minDate.getDate() - 1)
+
+      expect(() => this.datepicker(singleDatepickerInput, { maxDate, minDate }))
+        .to.throw('"maxDate" in options is less than "minDate".')
+    })
+
+    it('should not throw if "maxDate" is on the same day as "minDate" (even with different times)', function() {
+      const today = new Date()
+      const minDate = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 0, 1) // 1 minute into today.
+      const maxDate = new Date(today.getFullYear(), today.getMonth(), today.getDate()) // 1 minute BEFORE 'minDate', so "technically" less than.
+
+      expect(() => this.datepicker(singleDatepickerInput, { minDate, maxDate })).not.to.throw()
+    })
+
+    // This test is dependent upon `datepicker.remove()`.
+    it('should not throw if "maxDate" is greater than "minDate" by at least a day', function() {
+      let picker
+      const noThrow1 = () => {
+        const minDate = new Date()
+        const maxDate = new Date(minDate.getFullYear(), minDate.getMonth(), minDate.getDate() + 1)
+
+        picker = this.datepicker(singleDatepickerInput, { minDate, maxDate })
+      }
+      const noThrow2 = () => {
+        // 1 millisecond into the previous day. Since datepicker strips time, this should be converted to the very beginning of the day.
+        const minDate = new Date(1980, 1, 1, 0, 0, -1)
+
+        // 1 millisecond ahead of 'minDate' - but these should be internally converted to exactly 1 day apart.
+        const maxDate = new Date(1980, 1, 1)
+
+        this.datepicker(singleDatepickerInput, { minDate, maxDate })
+      }
+
+      expect(noThrow1).not.to.throw()
+      picker.remove()
+      expect(noThrow2).not.to.throw()
+    })
+
+    it('should throw if "dateSelected" is less than "minDate"', function() {
+      const minDate = new Date(2000, 1, 1)
+      const dateSelected = new Date(2000, 1, 0)
+
+      expect(() => this.datepicker(singleDatepickerInput, { minDate, dateSelected }))
+        .to.throw('"dateSelected" in options is less than "minDate".')
+    })
+
+    // This test is dependent upon `datepicker.remove()`.
+    it('should not throw if "dateSelected" is greater than or equal to "minDate"', function() {
+      const minDate = new Date(2000, 1, 1)
+      let picker
+      const noThrow1 = () => {
+        picker = this.datepicker(singleDatepickerInput, { minDate, dateSelected: minDate })
+      }
+      const noThrow2 = () => {
+        const dateSelected = new Date(2000, 1, 2)
+        this.datepicker(singleDatepickerInput, { minDate, dateSelected })
+      }
+
+      expect(noThrow1).not.to.throw()
+      picker.remove()
+      expect(noThrow2).not.to.throw()
+    })
+
+    it('should throw if "dateSelected" is greater than "maxDate"', function() {
+      const maxDate = new Date(1993, 10, 1)
+      const dateSelected = new Date(1993, 10, 2)
+
+      expect(() => this.datepicker(singleDatepickerInput, { maxDate, dateSelected }))
+        .to.throw('"dateSelected" in options is greater than "maxDate".')
+    })
+
+    // This test is dependent upon `datepicker.remove()`.
+    it('should not throw if "dateSelected" is less than or equal to "maxDate"', function() {
+      const maxDate = new Date(2095, 5, 15)
+      let picker
+      const noThrow1 = () => {
+        picker = this.datepicker(singleDatepickerInput, { maxDate, dateSelected: maxDate })
+      }
+      const noThrow2 = () => {
+        const dateSelected = new Date(2095, 5, 5)
+        this.datepicker(singleDatepickerInput, { maxDate, dateSelected })
+      }
+
+      expect(noThrow1).not.to.throw()
+      picker.remove()
+      expect(noThrow2).not.to.throw()
+    })
+
+    it(`should throw if "customDays" isn't an array of 7 strings`, function() {
+      const customDays1 = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
+      const customDays2 = ['a', 'b', 'c', 'd', 'e', 'f']
+      const customDays3 = ['a', 'b', 'c', 'd', 'e', 'f', 5]
+      const customDays4 = []
+      const customDays5 = { not: 'happening' }
+      const customDays6 = () => {}
+
+      [customDays1, customDays2, customDays3, customDays4, customDays5, customDays6].forEach(customDays => {
+        expect(() => this.datepicker(singleDatepickerInput, { customDays }))
+          .to.throw('"customDays" must be an array with 7 strings.')
+      })
+    })
+
+    it('should not throw if "customDays" is an array of 7 strings', function() {
+      const customDays = [1, 2, 3, 4, 5, 6, 7].map(String)
+      expect(() => this.datepicker(singleDatepickerInput, { customDays })).not.to.throw()
+    })
+
+    it(`should throw if "customMonths" or "customOverlayMonths" isn't an array of 12 strings`, function() {
+      const arr1 = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm']
+      const arr2 = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k']
+      const arr3 = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 5]
+      const arr4 = []
+      const obj = { not: 'happening' }
+      const fxn = () => {}
+
+      ['customMonths', 'customOverlayMonths'].forEach(option => {
+        [arr1, arr2, arr3, arr4, obj, fxn].forEach(optionValue => {
+          expect(() => this.datepicker(singleDatepickerInput, { [option]: optionValue }))
+            .to.throw(`"${option}" must be an array with 12 strings.`)
+        })
+      })
+    })
+
+    it('should not throw if "customMonths" and "customOverlayMonths" are arrays of 12 strings', function() {
+      const customMonths = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(String)
+      const customOverlayMonths = customMonths
+
+      expect(() => this.datepicker(singleDatepickerInput, { customMonths, customOverlayMonths }))
+        .not.to.throw()
+    })
+
+    it('should throw if "defaultView" is not the correct value', function() {
+      expect(() => this.datepicker(singleDatepickerInput, {defaultView: 'nope'}))
+        .to.throw('options.defaultView must either be "calendar" or "overlay".')
+    })
+
+    // This test is dependent upon `datepicker.remove()`.
+    it('should not throw if "defaultView" is the correct value', function() {
+      let picker
+      const noThrow1 = () => {
+        picker = this.datepicker(singleDatepickerInput, {defaultView: 'calendar'})
+      }
+      const noThrow2 = () => {
+        picker = this.datepicker(singleDatepickerInput, {defaultView: 'overlay'})
+      }
+
+      expect(noThrow1).not.to.throw()
+      picker.remove()
+      expect(noThrow2).not.to.throw()
+    })
+  })
+
+  describe('General Errors', function() {
+    it('should throw if a shadow DOM is used as the selector', function() {
+      const datepicker = this.datepicker
+
+      cy.window().then(global => {
+        cy.document().then(doc => {
+          const MyElement = createMyElement({ global, datepicker, shouldThrow: true })
+          global.customElements.define('my-element', MyElement)
+
+          const myElement = doc.createElement('my-element')
+          doc.body.prepend(myElement)
+        })
+      })
+    })
+
+    it('should not throw if an element within a shadow DOM is used as the seletor', function() {
+      const datepicker = this.datepicker
+
+      cy.window().then(global => {
+        cy.document().then(doc => {
+          const MyElement = createMyElement({ global, datepicker, shouldThrow: false })
+          global.customElements.define('my-element', MyElement)
+
+          const myElement = doc.createElement('my-element')
+          doc.body.prepend(myElement)
+        })
+      })
+    })
+
+    it('should throw if no selector is provided or the provided selector is not found in the DOM', function() {
+      expect(() => this.datepicker(`#nope-${Math.random()}`)).to.throw('No selector / element found.')
+      expect(() => this.datepicker()).to.throw()
+    })
+
+    it('should throw if we try to use the same selector/element twice', function() {
+      this.datepicker(singleDatepickerInput)
+      expect(() => this.datepicker(singleDatepickerInput)).to.throw('A datepicker already exists on that element.')
+    })
+  })
+
+  describe('Methods', function() {
+    describe('setDate', function() {
+      // This test is dependent upon `datepicker.remove()`.
+      it(`should throw if the first argument isn't a date object`, function() {
+        let picker
+        const toThrow1 = () => {
+          picker = this.datepicker(singleDatepickerInput)
+          picker.setDate('hi')
+        }
+        const toThrow2 = () => {
+          picker = this.datepicker(singleDatepickerInput)
+          picker.setDate(Date.now())
+        }
+
+        expect(toThrow1).to.throw('`setDate` needs a JavaScript Date object.')
+        picker.remove()
+        expect(toThrow2).to.throw('`setDate` needs a JavaScript Date object.')
+      })
+
+      // This test is dependent upon `datepicker.remove()`.
+      it(`should not throw if the first argument is 'null' or 'undefined'`, function() {
+        const picker = this.datepicker(singleDatepickerInput)
+
+        expect(() => picker.setDate(null)).not.to.throw()
+        expect(() => picker.setDate(undefined)).not.to.throw()
+        expect(() => picker.setDate()).not.to.throw()
+      })
+
+      it('should throw if the first argument is a date contained in "disabledDates"', function() {
+        const today = new Date()
+        const disabledDates = [today]
+        const picker = this.datepicker(singleDatepickerInput, { disabledDates })
+
+        expect(() => picker.setDate(today)).to.throw("You can't manually set a date that's disabled.")
+      })
+
+      it('should not throw if the first argument is not a date contained in "disabledDates"', function() {
+        const picker = this.datepicker(singleDatepickerInput, { disabledDates: [] })
+        expect(() => picker.setDate(new Date())).not.to.throw()
+      })
+    })
+
+    describe('setMin', function() {
+      it('should throw if an invalid date is given', function() {
+        const picker = this.datepicker(singleDatepickerInput)
+        expect(() => picker.setMin('not a date!')).to.throw('Invalid date passed to setMin')
+      })
+
+      it('(daterange - first) should throw if new date is > date selected', function() {
+        const dateSelected = new Date()
+        const newDate = new Date(dateSelected.getFullYear(), dateSelected.getMonth(), dateSelected.getDate() + 1)
+        const startPicker = this.datepicker(daterangeInputStart, { dateSelected })
+        this.datepicker(daterangeInputEnd, { dateSelected })
+
+        expect(() => startPicker.setMin(newDate)).to.throw('Out-of-range date passed to setMin')
+      })
+
+      it('(daterange - second) should throw if new date is > date selected', function() {
+        const dateSelected = new Date()
+        const newDate = new Date(dateSelected.getFullYear(), dateSelected.getMonth(), dateSelected.getDate() + 1)
+        this.datepicker(daterangeInputStart, { dateSelected })
+        const endPicker = this.datepicker(daterangeInputEnd, { dateSelected })
+
+        expect(() => endPicker.setMin(newDate)).to.throw('Out-of-range date passed to setMin')
+      })
+
+      it('should throw if new date is > date selected', function() {
+        const dateSelected = new Date()
+        const newDate = new Date(dateSelected.getFullYear(), dateSelected.getMonth(), dateSelected.getDate() + 1)
+        const picker = this.datepicker(singleDatepickerInput, { dateSelected })
+
+        expect(() => picker.setMin(newDate)).to.throw('Out-of-range date passed to setMin')
+      })
+    })
+
+    describe('setMax', function() {
+      it('should throw if an invalid date is given', function() {
+        const picker = this.datepicker(singleDatepickerInput)
+        expect(() => picker.setMax('not a date!')).to.throw('Invalid date passed to setMax')
+      })
+
+      it('(daterange - first) should throw if new date is < date selected', function() {
+        const dateSelected = new Date()
+        const newDate = new Date(dateSelected.getFullYear(), dateSelected.getMonth(), dateSelected.getDate() - 1)
+        const startPicker = this.datepicker(daterangeInputStart, { dateSelected })
+        this.datepicker(daterangeInputEnd, { dateSelected })
+
+        expect(() => startPicker.setMax(newDate)).to.throw('Out-of-range date passed to setMax')
+      })
+
+      it('(daterange - second) should throw if new date is < date selected', function() {
+        const dateSelected = new Date()
+        const newDate = new Date(dateSelected.getFullYear(), dateSelected.getMonth(), dateSelected.getDate() - 1)
+        this.datepicker(daterangeInputStart, { dateSelected })
+        const endPicker = this.datepicker(daterangeInputEnd, { dateSelected })
+
+        expect(() => endPicker.setMax(newDate)).to.throw('Out-of-range date passed to setMax')
+      })
+
+      it('should throw if new date is < date selected', function() {
+        const dateSelected = new Date()
+        const newDate = new Date(dateSelected.getFullYear(), dateSelected.getMonth(), dateSelected.getDate() - 1)
+        const picker = this.datepicker(singleDatepickerInput, { dateSelected })
+
+        expect(() => picker.setMax(newDate)).to.throw('Out-of-range date passed to setMax')
+      })
+    })
+
+    describe('navigate', function() {
+      it('should throw if an invalid date is given', function() {
+        const picker = this.datepicker(singleDatepickerInput)
+        expect(() => picker.navigate('not a date!')).to.throw('Invalid date passed to `navigate`')
+      })
+    })
+  })
+})

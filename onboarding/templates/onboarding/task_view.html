@@ -1,0 +1,39 @@
+{% extends 'index.html' %}
+{% load i18n %}
+{% block content %}
+<p class='pb-3'><a href="{% url 'task-creation' %}" class='btn btn-primary'>Add</a></p>
+<table class="table table-dark table-striped">
+    <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">{% trans "Task" %}</th>
+            <th scope="col">{% trans "Job Position" %}</th>
+            <th scope="col">{% trans "Task Manager" %}</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for onboarding_task in onboarding_tasks %}
+        <tr>
+            <th scope="row">{{forloop.counter}}</th>
+            <td>{{onboarding_task.task_title}}</td>
+            <td>
+                <ul>
+                    {% for recruitment in onboarding_task.recruitment_id.all %}
+                    <li>{{recruitment}}</li>
+                    {% endfor %}
+                </ul>
+            </td>
+            <td>
+                <ul>
+                    {% for employee in onboarding_task.employee_id.all %}
+                    <li>{{employee}} <a href="{% url 'task-employee-remove' onboarding_task.id employee.id %}" class="btn btn-outline-danger">X</a></li>
+                    {% endfor %}
+                </ul>
+            </td>
+            <td><a href="{% url 'task-update' onboarding_task.id %}" class="btn btn-primary">{% trans "Edit" %}</a></td>
+            <td><a href="{% url 'task-delete' onboarding_task.id %}" class="btn  btn-danger">{% trans "Delete" %}</a></td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock content %}

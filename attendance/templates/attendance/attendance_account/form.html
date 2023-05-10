@@ -1,0 +1,8 @@
+
+<form id="add-form" 
+    hx-post="{% url 'attendance-overtime-create' %}" hx-target = "#addAttendanceOtModalBody"hx-target="#attendanceAddMessage" hx-swap = 'innerHTML' method='post'>
+      {{form.as_p}}
+    </div>
+    <div class="oh-modal__dialog-footer">
+      <input type="submit" value='Save' class="oh-btn oh-btn--secondary oh-btn--shadow mt-4 pl-5 pr-5">
+</form>

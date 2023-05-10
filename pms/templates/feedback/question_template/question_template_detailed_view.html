@@ -1,0 +1,137 @@
+{% extends 'index.html' %}
+{% load i18n %}
+{% load widget_tweaks %}
+{% block content %}
+
+<!--start of messages -->
+{% if messages %}
+
+<div class="oh-wrapper">
+    {% for message in messages %}
+    <div class="oh-alert-container">
+        <div class="oh-alert oh-alert--animated {{message.tags}}">
+        {{ message }}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+<!-- end of messages -->
+
+
+<div class="oh-wrapper">
+    <div id="questionView" style="overflow-y: auto; overflow-x: hidden; max-height: 450px;">
+
+        {% include 'feedback/question/question_all.html' %}
+
+    </div>
+    <!--  -->
+    <div>
+
+    <form action="{% url 'question-creation' id=question_template.id %}"  method="post">
+        {% csrf_token %}
+        <div class="row my-4">
+            <div class="col-12 col-sm-12 col-md-12 col-lg-12">
+                <div class="oh-card">
+                    <div class="oh-card__header">
+                        <span class="oh-card__title oh-card__title--sm fw-bold me-2">{% trans "Add A Question" %}
+                            </span>
+                    </div>
+                    <div class="oh-card__body">
+                        <div class="oh-item oh-item--border-bottom oh-section-edit position-relative">
+                            <!-- this id is used to detect the form to validate -->
+                            <div class="row" id="">
+                                <div class="col-sm-12 col-md-12 col-lg-3">
+                                    <label class="oh-label text-muted fw-bold fw-bold">{% trans "Question Type" %}
+                                        </label>
+                                    {{form.question_type}}
+                                    {{form.question_type.errors}}
+                                </div>
+                                <div class="col-sm-12 col-md-12 col-lg-9" id="questionCreationFormCol">
+                                    <label class="oh-label text-muted fw-bold">{% trans "Question" %}</label>
+                                    {{form.question}}
+                                   <!-- <li id="id_question_template_error"></li>  -->
+                                    
+                                </div>
+                                <div x-data="{showAnswers: true}" class="oh-link__expanded d-none">
+                                    <a href="#" class="oh-link oh-link--secondary mt-3"
+                                        @click="showAnswers = !showAnswers" x-show="!showAnswers">
+                                        {% trans "Show Options" %}
+                                        <ion-icon class="ms-1" name="caret-down-outline"></ion-icon>
+                                    </a>
+                                    <a href="#" class="oh-link oh-link--secondary mt-3"
+                                        @click="showAnswers = !showAnswers" x-show="showAnswers">
+                                        {% trans "Hide Options" %}
+                                        <ion-icon class="ms-1" name="caret-up-outline"></ion-icon>
+                                    </a>
+                                    <div class="mt-3" x-show="showAnswers">
+                                        <div class="row">
+                                            <div class="col-12 col-sm-12 col-md-6 col-lg-3">
+                                                <label class="oh-label d-block text-muted fw-bold">{% trans "Option" %}
+                                                    1</label>
+                                                <input type="text" name="option_a"
+                                                    class="oh-input oh-input--res-height w-100"
+                                                    placeholder="Option #1" />
+                                            </div>
+                                            <div class="col-12 col-sm-12 col-md-6 col-lg-3">
+                                                <label class="oh-label d-block text-muted fw-bold">{% trans "Option" %}
+                                                    2</label>
+                                                <input type="text" name="option_b"
+                                                    class="oh-input oh-input--res-height w-100"
+                                                    placeholder="Option #2" />
+                                            </div>
+                                            <div class="col-12 col-sm-12 col-md-6 col-lg-3">
+                                                <label class="oh-label d-block text-muted fw-bold">{% trans "Option" %}
+                                                    3</label>
+                                                <input type="text" name="option_c"
+                                                    class="oh-input oh-input--res-height w-100"
+                                                    placeholder="Option #3" />
+                                            </div>
+                                            <div class="col-12 col-sm-12 col-md-6 col-lg-3">
+                                                <label class="oh-label d-block text-muted fw-bold">{% trans "Option" %}
+                                                    4</label>
+                                                <input type="text" name="option_d"
+                                                    class="oh-input oh-input--res-height w-100"
+                                                    placeholder="Option #4" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="d-flex justify-content-start align-items-center flex-row-reverse mt-4">
+                                    <button type="submit" class="oh-btn oh-btn--secondary">{% trans "Add Question" %}
+                                        </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+</div>
+<!-- 
+<script>
+$(document).ready(function () {
+    $('form').on('submit',function(e){
+    e.preventDefault()
+    var questionValue = $("#questionCreationFormCol #id_question").val()
+
+    var errorElement = $('#questionCreationFormCol #id_question_template_error')
+    
+    if (questionValue.trim() === '') {
+        alert('empty')
+        errorElement.text('This field is required.');
+        errorElement.insertAfter($('#questionCreationFormCol #id_question'));
+    } else {
+        errorElement.text('');
+        errorElement.remove();
+        // Submit the form
+        this.submit();
+    }
+    });
+}); -->
+
+</script>
+{% endblock %}

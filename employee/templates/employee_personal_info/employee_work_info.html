@@ -1,0 +1,172 @@
+{% load recruitmentfilters %}
+{% load i18n %}
+<div>
+    <div class="card rounded-3">
+        <form  enctype="multipart/form-data">
+        <div class="card-body pl-5 pr-5 pb-5 pt-5"> 
+          <h3 class="mb-4">{{form.instance.employee_first_name}}'s {% trans "Work Info" %}</h3>
+          <div class="row">
+                <div class="col-md-6 ">
+                {{work_form.job_position_id.errors}}
+                <div class="form-outline mb-4">{{work_form.job_position_id}}</div>
+                </div>
+                <div class="col-md-6 mb-2">
+                {{work_form.department_id.errors}}
+                <div class="form-outline mb-4">{{work_form.department_id}}</div>            
+                </div>
+                <div class="col-md-6 mb-2">
+                {{work_form.shift_id.errors}}
+                <div class="form-outline mb-4">{{work_form.shift_id}}</div>
+                </div>
+                <div class="col-md-6 mb-2">
+                {{work_form.work_type_id.errors}}
+                <div class="form-outline mb-4">{{work_form.work_type_id}}</div>
+                </div>
+                <div class="col-md-6 mb-2">
+                    <div class="form-outline mb-4">
+                    {{work_form.employee_type_id.errors}}
+                    {{work_form.employee_type_id}}
+                    </div>
+                </div>
+                <div class="col-md-6 mb-2">
+                    <div class="form-outline mb-4">
+                    {{work_form.job_role_id.errors}}
+                    {{work_form.job_role_id}}
+                    </div>
+                </div>
+                <div class="col-md-6 mb-4">
+                    {{work_form.reporting_manager_id.errors}}
+                    {{work_form.reporting_manager_id}}
+                </div>
+                <div class="col-md-6 mb-4">
+                    {{work_form.company_id.errors}}
+                    {{work_form.company_id}}                    
+                </div>
+                <div class="col-md-6 mb-4">
+                    {{work_form.location.errors}}
+                    {{work_form.location}}        
+                </div>
+                <div class="col-md-6 mb-4">
+                    {{work_form.email.errors}}
+                    {{work_form.email}}        
+                </div>
+                <div class="col-md-6 mb-4">
+                    {{work_form.date_joining.errors}}
+                    {{work_form.date_joining}}        
+                </div>
+                <div class="col-md-6 mb-4">
+                    {{work_form.contract_end_date.errors}}
+                    {{work_form.contract_end_date}}        
+                </div>
+                <div class="col-md-6 mb-4">
+                    {{work_form.basic_salary.errors}}
+                    {{work_form.basic_salary}}        
+                </div>
+                <div class="col-md-6 mb-4">
+                    {{work_form.salary_hour.errors}}
+                    {{work_form.salary_hour}}        
+                </div>
+            </div>
+            {% if perms.employee.change_employeeworkinformation %}
+            {% if form.instance.employee_work_info %}
+                <button
+                hx-post="{% url 'employee-work-info-view-update' work_form.instance.id  %}"
+                hx-target = '#section'
+                hx-encoding = 'multipart/form-data'
+                class="btn btn-success btn-lg ml-auto mr-auto"
+                >
+                {% trans "Submit" %}
+                </button>
+            {% else %}
+            <button
+            hx-post="{% url 'employee-work-info-view-create' form.instance.id  %}"
+            hx-target = '#section'
+            hx-encoding = 'multipart/form-data'
+            class="btn btn-success btn-lg ml-auto mr-auto"
+            >
+            {% trans "Submit" %}
+            </button>
+            {% endif %}
+            {% endif %}
+          </div>
+          <div>        
+        </div>      
+        </div>
+        </form>
+    </div>
+
+    <div class="card rounded-3 mt-4">
+        <form  enctype="multipart/form-data">
+            <div class="card-body pl-5 pr-5 pb-5 pt-5"> 
+              <h3 class="mb-4">{{form.instance.employee_first_name}}'s {% trans "Bank Info" %}</h3>
+              <div class="row">
+                    <div class="col-md-6 ">
+                    {{bank_form.bank_name.errors}}
+                    <div class="form-outline mb-4">{{bank_form.bank_name}}</div>
+                    </div>
+                    <div class="col-md-6 mb-2">
+                    {{bank_form.account_number.errors}}
+                    <div class="form-outline mb-4">{{bank_form.account_number}}</div>            
+                    </div>
+                    <div class="col-md-6 mb-2">
+                    {{bank_form.branch.errors}}
+                    <div class="form-outline mb-4">{{bank_form.branch}}</div>
+                    </div>
+                    <div class="col-md-6 mb-2">
+                    {{bank_form.any_other_code1.errors}}
+                    <div class="form-outline mb-4">{{bank_form.any_other_code1}}</div>
+                    </div>
+                </div>
+                <div class="mb-4">
+                    {{bank_form.address.errors}}
+                    {{bank_form.address}}
+
+                </div>
+                <div class="mb-4">
+                    {{bank_form.country.errors}}
+                    {{bank_form.country}}
+
+                </div>
+                <div class="mb-4">
+
+                    {{bank_form.state.errors}}
+                    {{bank_form.state}}
+                </div>
+                <div class="mb-4">
+
+                    {{bank_form.city.errors}}
+                    {{bank_form.city}}
+                </div>
+                <div class="mb-4">
+
+                    {{bank_form.any_other_code2.errors}}
+                    {{bank_form.any_other_code2}}
+                </div>
+                {% if perms.employee.change_employeebankdetails %}
+                {% if form.instance.employee_bank_details %}
+                    <button
+                    hx-post="{% url 'employee-bank-details-view-update' bank_form.instance.id  %}"
+                    hx-target = '#section'
+                    hx-encoding = 'multipart/form-data'
+                    class="btn btn-success btn-lg ml-auto mr-auto"
+                    >
+                    {% trans "Submit" %}
+                    </button>
+                {% else %}
+                <button
+                hx-post="{% url 'employee-bank-details-view-create' form.instance.id  %}"
+                hx-target = '#section'
+                hx-encoding = 'multipart/form-data'
+                class="btn btn-success btn-lg ml-auto mr-auto"
+                >
+                {% trans "Submit" %}
+                </button>
+                {% endif %}
+                {% endif %}
+              </div>
+              <div>        
+            </div>      
+            </div>
+            </form>
+    </div>
+</div>

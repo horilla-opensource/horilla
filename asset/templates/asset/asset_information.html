@@ -1,0 +1,60 @@
+{% load i18n %}
+<div class="oh-modal__section-head">{% trans "Asset Information" %}</div>
+<div class="row">
+  <div class="col-12 col-md-12 col-lg-12">
+    <div class="oh-modal__group mt-2">
+      <label class="oh-modal__label oh-text--small">{% trans "Asset Name" %}</label>
+      <label class="oh-modal__value">{{asset.asset_name}}</label>
+    </div>
+  </div>
+
+  <div class="col-12 col-md-12 col-lg-12 mt-3">
+    <div class="oh-modal__group">
+      <label class="oh-modal__label oh-text--small">{% trans "Description" %}</label>
+      <div class="oh-modal__description">
+        {{asset.asset_description}}
+      </div>
+    </div>
+  </div>
+
+  <div class="col-12 col-md-12 col-lg-6 mt-3">
+    <div class="oh-modal__group">
+      <label class="oh-modal__label oh-text--small">{% trans "Tracking Id" %}</label>
+      <label class="oh-modal__value">{{asset.asset_tracking_id}}</label>
+    </div>
+  </div>
+  <div class="col-12 col-md-12 col-lg-6 mt-3">
+    <div class="oh-modal__group">
+      <label class="oh-modal__label oh-text--small">{% trans "Purchase Date" %}</label>
+      <label class="oh-modal__value">{{asset.asset_purchase_date}}</label>
+    </div>
+  </div>
+
+  <div class="col-12 col-md-12 col-lg-6 mt-3">
+    <div class="oh-modal__group">
+      <label class="oh-modal__label oh-text--small">{% trans "Cost" %}</label>
+      <label class="oh-modal__value">{{asset.asset_purchase_cost}}</label>
+    </div>
+  </div>
+
+  <div class="col-12 col-md-12 col-lg-6 mt-3">
+    <div class="oh-modal__group">
+      <label class="oh-modal__label oh-text--small">{% trans "Status" %}</label>
+      <label class="oh-modal__value">{{asset.get_asset_status_display}}</label>
+    </div>
+  </div>
+
+  <div class="col-12 col-md-12 col-lg-6 mt-3">
+    <div class="oh-modal__group">
+      <label class="oh-modal__label oh-text--small">{% trans "Batch No" %}</label>
+      <label class="oh-modal__value">{{asset.asset_lot_number_id}}</label>
+    </div>
+  </div>
+  <div class="col-12 col-md-12 col-lg-6 mt-3">
+    <div class="oh-modal__group">
+      <label class="oh-modal__label oh-text--small">{% trans "Category" %}</label>
+      <label class="oh-modal__value">{{asset.asset_category_id}}</label>
+    </div>
+  </div>
+
+</div>

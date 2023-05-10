@@ -1,0 +1,29 @@
+{% extends 'settings.html' %}
+{% load i18n %}
+{% block settings %}
+<div class="oh-inner-sidebar-content">
+    
+    <form action="" method="post">
+        {% csrf_token %}
+        <div class="oh-inner-sidebar-content__header">
+            <h2 class="oh-inner-sidebar-content__title">{% trans "Group Permissions" %}</h2>
+        </div>
+        <div class="oh-inner-sidebar-content__body">
+            <div class="oh-input-group">
+                {{form.as_p}}
+            </div>
+            
+        </div>
+        <button type='submit' class="oh-btn oh-btn--secondary mt-2 mr-0 oh-btn--w-100-resp">
+            {% trans "Save Changes" %}
+        </button>
+        <div class="oh-inner-sidebar-content__footer">
+        </div>
+        </div>
+        </form>
+        
+    <div id="permission-container">
+        {% include 'base/auth/group_view.html' %}
+    </div>
+</div>
+{% endblock settings %}

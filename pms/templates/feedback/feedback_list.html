@@ -1,0 +1,365 @@
+{% load i18n %}
+{% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+        <div class="oh-wrapper">
+          <div class="oh-alert-container">
+            <div class="oh-alert oh-alert--animated {{message.tags}}">
+              {{message}}
+            </div>
+          </div>
+        </div>
+            
+        {% endfor %}
+    </ul>
+{% endif %}
+
+
+<div class="oh-tabs__contents">
+  <div class="oh-tabs__content oh-tabs__content" id="tab_1">
+    <!-- Sticky Table for self feedback -->
+    <div class="oh-sticky-table">
+      <div class="oh-sticky-table__table ">
+        <div class="oh-sticky-table__thead">
+          <div class="oh-sticky-table__tr">
+            <div class="oh-sticky-table__th">{% trans "Employee" %}</div>
+            <div class="oh-sticky-table__th">{% trans "Title" %}</div>
+            <div class="oh-sticky-table__th">{% trans "Status" %}</div>
+            <div class="oh-sticky-table__th">{% trans "Due In" %}</div>
+            <div class="oh-sticky-table__th"></div>
+          </div>
+        </div>
+        <div class="oh-sticky-table__tbody">
+
+          {% for feedback in self_feedback.object_list %}
+          <div class="oh-sticky-table__tr">
+            <a href="{% url 'feedback-detailed-view' id=feedback.id %}" style="color: inherit;text-decoration: none;" class="oh-sticky-table__sd">
+              <div class="oh-profile oh-profile--md">
+                <div class="oh-profile__avatar mr-1">
+                  <img src="https://ui-avatars.com/api/?name={{feedback.employee_id}}&background=random" class="oh-profile__image"
+                    alt="{{feedback.employee_id}}" />
+                </div>
+                <span class="oh-profile__name oh-text--dark">{{feedback.employee_id}}</span>
+              </div>
+            </a>
+            <a href="{% url 'feedback-detailed-view' id=feedback.id %}" style="color: inherit;text-decoration: none;"class="oh-sticky-table__td">{{feedback.review_cycle | title}}</a>
+            <a href="{% url 'feedback-detailed-view' id=feedback.id %}" style="color: inherit;text-decoration: none;"class="oh-sticky-table__td">
+              <span class="oh-dot oh-dot--small  me-1 oh-dot--color{{ feedback.status }}"></span>
+              <span>{% trans feedback.status %}</span> 
+            </a>
+            <a href="{% url 'feedback-detailed-view' id=feedback.id %}" style="color: inherit;text-decoration: none;" class="oh-sticky-table__td">{{ current_date|timesince:feedback.end_date }}</a>
+            <div class="oh-sticky-table__td">
+              <div class="oh-btn-group">
+
+                  <a class="oh-btn w-100"  href="{% url 'feedback-answer-get' id=feedback.id %}" title="{% trans 'Answer' %}"><ion-icon name="create-outline"></ion-icon></a>
+                  <a class="oh-btn w-100"  href="{% url 'feedback-answer-view' id=feedback.id %}" title="{% trans 'Answer view' %}"><ion-icon name="eye"></ion-icon></ion-icon></a>
+                  <form action="{% url 'feedback-archive' id=feedback.id %}" method="post"  style="display: contents">
+                  <button class="oh-btn oh-btn--danger-outline  w-100 "  title="{% trans 'Archive' %}" > 
+                     {% csrf_token %}
+                    <ion-icon name="archive-sharp" type="submit"></ion-icon>
+                  </button>
+                  </form>
+                  {% if perms.pms.delete_feedback %} 
+                    <form action="{% url 'feedback-delete' id=feedback.id %}" method="post" onsubmit="return confirm(' Do you want Delete this Feedback ?')" style="display: contents">
+                      {% csrf_token %}
+                      <button  class="oh-btn oh-btn--danger-outline  w-100" title="{% trans 'Delete' %}" > 
+                          <ion-icon name="trash-outline" role="img" class="md hydrated" aria-label="trash outline"></ion-icon>
+                      </button>
+                    </form>
+                  {%endif%}
+              </div>
+            </div>
+          </div>
+          {% endfor%}
+        </div>
+      </div>
+    </div>
+    <!-- End of Sticky Table -->
+
+    <!-- pagination start -->
+    <div class="oh-pagination">
+      <span class="oh-pagination__page" data-toggle="modal" data-target="#addEmployeeModal"></span>
+
+      <nav class="oh-pagination__nav">
+        <div class="oh-pagination__input-container me-3">
+
+          <span class="oh-pagination__label me-1">{% trans "Page" %}</span>
+
+          <input type="number" name="page" class="oh-pagination__input" value="{{self_feedback.number }}" min="1"
+            hx-get="{% url 'feedback-list-search' %}?{{pg}}" hx-target="#feedback_list">
+          <span class="oh-pagination__label">{% trans "of" %} {{ self_feedback.paginator.num_pages }}</span>
+        </div>
+
+        <ul class="oh-pagination__items">
+
+          {% if self_feedback.has_previous %}
+          <li class="oh-pagination__item oh-pagination__item--wide">
+            <a hx-get="{% url 'feedback-list-search' %}?{{pg}}&page=1" class='oh-pagination__link'
+              hx-target="#feedback_list">{% trans "First" %}</a>
+
+          </li>
+          <li class="oh-pagination__item oh-pagination__item--wide">
+            <a hx-get="{% url 'feedback-list-search' %}?{{pg}}&page={{ self_feedback.previous_page_number }}"
+              class='oh-pagination__link' hx-target="#feedback_list">{% trans "Previous" %}</a>
+          </li>
+          {%endif %}
+          {% if self_feedback.has_next %}
+          <li class="oh-pagination__item oh-pagination__item--wide">
+            <a hx-get="{% url 'feedback-list-search' %}?{{pg}}&page={{ self_feedback.next_page_number }}"
+              class='btn btn-outline-secondary' hx-target="#feedback_list">{% trans "Next" %}</a>
+          </li>
+          <li class="oh-pagination__item oh-pagination__item--wide">
+            <a hx-get="{% url 'feedback-list-search' %}?{{pg}}&page={{ self_feedback.paginator.num_pages }}"
+              hx-target="#feedback_list" class="oh-pagination__link">{% trans "Last" %}</a>
+          </li>
+          {% endif %}
+        </ul>
+      </nav>
+    </div>
+    <!-- end of pagination -->
+  </div>
+
+
+  <div class="oh-tabs__content" id="tab_2">
+
+    <!-- Sticky Table for requested feedback -->
+    <div class="oh-sticky-table">
+      <div class="oh-sticky-table__table">
+        <div class="oh-sticky-table__thead">
+          <div class="oh-sticky-table__tr">
+            <div class="oh-sticky-table__th">{% trans "Employee" %}</div>
+            <div class="oh-sticky-table__th">{% trans "Title" %}</div>
+            <div class="oh-sticky-table__th">{% trans "Status" %}</div>
+            <div class="oh-sticky-table__th">{% trans "Due Date" %}</div>
+            <div class="oh-sticky-table__th"></div>
+
+          </div>
+        </div>
+        <div class="oh-sticky-table__tbody">
+
+          {% for feedback in requested_feedback.object_list %}
+          <div class="oh-sticky-table__tr" draggable="true">
+            <a href="{% url 'feedback-detailed-view' id=feedback.id %}" style="color: inherit;text-decoration: none;" class="oh-sticky-table__sd">
+              <div class="oh-profile oh-profile--md">
+                <div class="oh-profile__avatar mr-1">
+                  <img src="https://ui-avatars.com/api/?name={{feedback.employee_id}}&background=random" class="oh-profile__image"
+                    alt="Mary Magdalene" />
+                </div>
+                <span class="oh-profile__name oh-text--dark">{{feedback.employee_id}}</span>
+              </div>
+            </a>
+            <a href="{% url 'feedback-detailed-view' id=feedback.id %}" style="color: inherit;text-decoration: none;" class="oh-sticky-table__td">{{feedback.review_cycle | title}}</a>
+            <a href="{% url 'feedback-detailed-view' id=feedback.id %}" style="color: inherit;text-decoration: none;" class="oh-sticky-table__td">
+              <span class="oh-dot oh-dot--small  me-1 oh-dot--color{{ feedback.status }}"></span>
+              <span>{% trans feedback.status %}</span> 
+              
+            </a>
+            <a href="{% url 'feedback-detailed-view' id=feedback.id %}" style="color: inherit;text-decoration: none;" class="oh-sticky-table__td">{{ current_date|timesince:feedback.end_date }}</a>
+            <div class="oh-sticky-table__td">
+              <div class="oh-btn-group">
+
+                <a class="oh-btn w-100"  href="{% url 'feedback-answer-get' id=feedback.id %}" title="{% trans 'Answer' %}"><ion-icon name="create-outline"></ion-icon></a>
+                <a class="oh-btn w-100"  href="{% url 'feedback-answer-view' id=feedback.id %}" title="{% trans 'Answer view' %}"><ion-icon name="eye"></ion-icon></ion-icon></a>
+                <form action="{% url 'feedback-archive' id=feedback.id %}" method="post"  style="display: contents">
+                <button class="oh-btn oh-btn--danger-outline  w-100 "  title="{% trans 'Archive' %}" > 
+                   {% csrf_token %}
+                  <ion-icon name="archive-sharp" type="submit"></ion-icon>
+                </button>
+                </form>
+                {% if perms.pms.delete_feedback %} 
+                  <form action="{% url 'feedback-delete' id=feedback.id %}" method="post" onsubmit="return confirm('Do you want Delete this Feedback ?')" style="display: contents">
+                    {% csrf_token %}
+                    <button  class="oh-btn oh-btn--danger-outline  w-100" title="{% trans 'Delete' %}" > 
+                        <ion-icon name="trash-outline" role="img" class="md hydrated" aria-label="trash outline"></ion-icon>
+                    </button>
+                  </form>
+                {% endif %}
+            </div>
+            </div>
+          </div>
+          {% endfor%}
+        </div>
+      </div>
+    </div>
+
+
+    <!-- pagination start -->
+    <div class="oh-pagination">
+      <span class="oh-pagination__page" data-toggle="modal" data-target="#addEmployeeModal"></span>
+
+      <nav class="oh-pagination__nav">
+        <div class="oh-pagination__input-container me-3">
+
+          <span class="oh-pagination__label me-1">{% trans "Page" %}</span>
+
+          <input type="number" name="page" class="oh-pagination__input" value="{{requested_feedback.number }}" min="1"
+            hx-get="{% url 'feedback-list-search' %}?{{pg}}" hx-target="#feedback_list">
+          <span class="oh-pagination__label">{% trans "of" %} {{ requested_feedback.paginator.num_pages }}</span>
+        </div>
+
+        <ul class="oh-pagination__items">
+
+          {% if requested_feedback.has_previous %}
+          <li class="oh-pagination__item oh-pagination__item--wide">
+            <a hx-get="{% url 'feedback-list-search' %}?{{pg}}&page=1" class='oh-pagination__link'
+              hx-target="#feedback_list">{% trans "First" %}</a>
+
+          </li>
+          <li class="oh-pagination__item oh-pagination__item--wide">
+            <a hx-get="{% url 'feedback-list-search' %}?{{pg}}&page={{ requested_feedback.previous_page_number }}"
+              class='oh-pagination__link' hx-target="#feedback_list">{% trans "Previous" %}</a>
+          </li>
+          {%endif %}
+          {% if requested_feedback.has_next %}
+          <li class="oh-pagination__item oh-pagination__item--wide">
+            <a hx-get="{% url 'feedback-list-search' %}?{{pg}}&page={{ requested_feedback.next_page_number }}"
+              class='btn btn-outline-secondary' hx-target="#feedback_list">{% trans "Next" %}</a>
+          </li>
+          <li class="oh-pagination__item oh-pagination__item--wide">
+            <a hx-get="{% url 'feedback-list-search' %}?{{pg}}&page={{ requested_feedback.paginator.num_pages }}"
+              hx-target="#feedback_list" class="oh-pagination__link">{% trans "Last" %}</a>
+          </li>
+          {% endif %}
+        </ul>
+      </nav>
+    </div>
+    <!-- end of pagination -->
+
+
+  </div>
+
+
+  <div class="oh-tabs__content" id="tab_3">
+
+
+
+    <!-- Sticky Table for all feedbacks feedback -->
+    <div class="oh-sticky-table">
+      <div class="oh-sticky-table__table ">
+        <div class="oh-sticky-table__thead">
+          <div class="oh-sticky-table__tr">
+            <div class="oh-sticky-table__th">{% trans "Employee" %}</div>
+            <div class="oh-sticky-table__th">{% trans "Title" %}</div>
+            <div class="oh-sticky-table__th">{% trans "Status" %}</div>
+            <div class="oh-sticky-table__th">{% trans "Due In" %}</div>
+            <div class="oh-sticky-table__th"></div>
+
+
+          </div>
+        </div>
+        <div class="oh-sticky-table__tbody">
+
+          {% for feedback in all_feedbacks.object_list %}
+          <div class="oh-sticky-table__tr" draggable="true">
+            <a href="{% url 'feedback-detailed-view' id=feedback.id %}" style="color: inherit;text-decoration: none;" class="oh-sticky-table__sd">
+              <div class="oh-profile oh-profile--md">
+                <div class="oh-profile__avatar mr-1">
+                  <img src="https://ui-avatars.com/api/?name={{feedback.employee_id}}&background=random" class="oh-profile__image"
+                    alt="Mary Magdalene" />
+                </div>
+                <span class="oh-profile__name oh-text--dark">{{feedback.employee_id}}</span>
+              </div>
+            </a>
+            <a href="{% url 'feedback-detailed-view' id=feedback.id %}" style="color: inherit;text-decoration: none;" class="oh-sticky-table__td">{{feedback.review_cycle | title}}</a>
+            <a href="{% url 'feedback-detailed-view' id=feedback.id %}" style="color: inherit;text-decoration: none;" class="oh-sticky-table__td">
+              <span class="oh-dot oh-dot--small  me-1 oh-dot--color{{ feedback.status }}"></span>
+              <span>{% trans feedback.status %}</span> </a>
+            <a href="{% url 'feedback-detailed-view' id=feedback.id %}" style="color: inherit;text-decoration: none;" class="oh-sticky-table__td">{{ current_date|timesince:feedback.end_date }}</a>
+            <div class="oh-sticky-table__td">
+              <div class="oh-btn-group">
+
+                <a class="oh-btn w-100"  href="{% url 'feedback-answer-get' id=feedback.id %}" title="{% trans 'Answer' %}"><ion-icon name="create-outline"></ion-icon></a>
+                <a class="oh-btn w-100"  href="{% url 'feedback-answer-view' id=feedback.id %}" title="{% trans 'Answer view' %}"><ion-icon name="eye"></ion-icon></ion-icon></a>
+                <form action="{% url 'feedback-archive' id=feedback.id %}" method="post"  style="display: contents">
+                <button class="oh-btn oh-btn--danger-outline  w-100 "  title="{% trans 'Archive' %}" > 
+                   {% csrf_token %}
+                  <ion-icon name="archive-sharp" type="submit"></ion-icon>
+                </button>
+                </form>
+                {% if perms.pms.delete_feedback %} 
+                  <form action="{% url 'feedback-delete' id=feedback.id %}" method="post" onsubmit="return confirm('Do you want Delete this Feedback ?')" style="display: contents">
+                    {% csrf_token %}
+                    <button  class="oh-btn oh-btn--danger-outline  w-100" title="{% trans 'Delete' %}" > 
+                        <ion-icon name="trash-outline" role="img" class="md hydrated" aria-label="trash outline"></ion-icon>
+                    </button>
+                  </form>
+                {% endif %}
+            </div>
+            </div>
+          </div>
+          {% endfor%}
+        </div>
+      </div>
+    </div>
+
+    <!-- End of Sticky Table -->
+
+
+    <!-- pagination start -->
+    <div class="oh-pagination">
+      <span class="oh-pagination__page" data-toggle="modal" data-target="#addEmployeeModal"></span>
+
+      <nav class="oh-pagination__nav">
+        <div class="oh-pagination__input-container me-3">
+
+          <span class="oh-pagination__label me-1">{% trans "Page" %}</span>
+
+          <input type="number" name="page" class="oh-pagination__input" value="{{all_feedbacks.number }}" min="1"
+            hx-get="{% url 'feedback-list-search' %}?{{pg}}" hx-target="#feedback_list">
+          <span class="oh-pagination__label">{% trans "of" %} {{ all_feedbacks.paginator.num_pages }}</span>
+        </div>
+
+        <ul class="oh-pagination__items">
+
+          {% if all_feedbacks.has_previous %}
+          <li class="oh-pagination__item oh-pagination__item--wide">
+            <a hx-get="{% url 'feedback-list-search' %}?{{pg}}&page=1" class='oh-pagination__link'
+              hx-target="#feedback_list">{% trans "First" %}</a>
+
+          </li>
+          <li class="oh-pagination__item oh-pagination__item--wide">
+            <a hx-get="{% url 'feedback-list-search' %}?{{pg}}&page={{ all_feedbacks.previous_page_number }}"
+              class='oh-pagination__link' hx-target="#feedback_list">{% trans "Previous" %}</a>
+          </li>
+          {%endif %}
+          {% if all_feedbacks.has_next %}
+          <li class="oh-pagination__item oh-pagination__item--wide">
+            <a hx-get="{% url 'feedback-list-search' %}?{{pg}}&page={{ all_feedbacks.next_page_number }}"
+              class='btn btn-outline-secondary' hx-target="#feedback_list">{% trans "Next" %}</a>
+          </li>
+          <li class="oh-pagination__item oh-pagination__item--wide">
+            <a hx-get="{% url 'feedback-list-search' %}?{{pg}}&page={{ all_feedbacks.paginator.num_pages }}"
+              hx-target="#feedback_list" class="oh-pagination__link">{% trans "Last" %}</a>
+          </li>
+          {% endif %}
+        </ul>
+      </nav>
+    </div>
+    <!-- end of pagination -->
+
+
+  </div>
+</div>
+<script>
+
+  $(document).ready(function () {
+    var activeTab = localStorage.getItem('activeTabFeedback')
+    if (activeTab != null) {
+      var tab = $(`[data-target="${activeTab}"]`)
+      var tabContent = $(activeTab)
+      $(tab).attr('class', 'oh-tabs__tab oh-tabs__tab--active');
+      $(tabContent).attr('class', 'oh-tabs__content oh-tabs__content--active');
+    }
+    else {
+      $('[data-target="#tab_1"]').attr('class', 'oh-tabs__tab oh-tabs__tab--active');
+      $('#tab_1').attr('class', 'oh-tabs__content oh-tabs__content--active');
+    }
+    $('.oh-tabs__tab').click(function (e) {
+      var activeTab = $(this).attr('data-target');
+      localStorage.setItem('activeTabFeedback', activeTab)
+
+    });
+
+   
+  });
+</script>

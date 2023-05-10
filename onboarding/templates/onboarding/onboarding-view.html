@@ -1,0 +1,139 @@
+{% extends 'index.html' %}
+{% block content %}
+{% load static %}
+{% load i18n %}
+{% load recruitmentfilters %}
+{% load onboardingfilters %}
+
+<section class="oh-wrapper oh-main__topbar" x-data="{searchShow: false}">
+    <div class="oh-main__titlebar oh-main__titlebar--left">
+        <h1 class="oh-main__titlebar-title fw-bold">{% trans "Onboarding" %}</h1>
+        <a class="oh-main__titlebar-search-toggle" role="button" aria-label="Toggle Search"
+            @click="searchShow = !searchShow">
+            <ion-icon name="search-outline" class="oh-main__titlebar-serach-icon"></ion-icon>
+        </a>
+    </div>
+    <div class="oh-main__titlebar oh-main__titlebar--right">
+        <div class="oh-input-group oh-input__search-group" :class="searchShow ? 'oh-input__search-group--show' : ''">
+            <ion-icon name="search-outline" class="oh-input-group__icon oh-input-group__icon--left"></ion-icon>
+            <input type="text" id="search" class="oh-input oh-input__icon" aria-label="Search Input" placeholder="{% trans 'Search' %}" />
+        </div>
+    </div>
+</section>
+
+
+<div class="oh-wrapper">
+    <div class="oh-tabs">
+        <ul class="oh-tabs__tablist">
+            {% for recruitment in recruitments %}
+            {% if request.user|task_manages:recruitment or perms.onboarding.view_candidatestage %}
+            <li class="oh-tabs__tab" data-target="#tab_{{recruitment.id}}">
+                {{recruitment}}
+                <span
+                    class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round ms-2 mr-2">{{recruitment.onboardingstage_set.all|length}}</span>
+            </li>
+            {% endif %}
+            {% endfor %}
+        </ul>
+        <div class="oh-tabs__contents">
+            {% for recruitment in recruitments %}
+            {% if request.user|task_manages:recruitment or perms.onboarding.view_candidatestage %}
+
+            <div class="oh-tabs__content " id="tab_{{recruitment.id}}">
+
+                <!-- End of Sticky Table -->
+                <div class="oh-card">
+                    {% if request.user|recruitment_manages:recruitment or perms.onboarding.add_onboardingstage %}
+                    <div class="oh-tabs__action-bar">
+                        <button class="oh-btn oh-btn--small oh-btn--secondary oh-tabs__action-new-table"
+                            data-toggle="oh-modal-toggle" data-target="#editModal1"
+                            hx-get="{% url 'stage-creation' recruitment.id %}" hx-target="#stageForm">
+                            <ion-icon class="me-1 md hydrated" name="add-outline" role="img"
+                                aria-label="add outline"></ion-icon>{% trans "Stage" %}
+                        </button>
+                    </div>
+                    {% endif %}
+                    <div id="onboardingTable{{recruitment.id}}" class="demo">
+                        {% include 'onboarding/onboarding-table.html' %}
+                    </div>
+                </div>
+
+            </div>
+            {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+</div>
+</div>
+<!-- stage-form -->
+<div class="oh-modal" id="editModal1" role="dialog" aria-labelledby="editDialogModal" aria-hidden="true">
+    <div class="oh-modal__dialog oh-modal__dialog--timeoff">
+        <div class="oh-modal__dialog-header">
+            <span class="oh-modal__dialog-title" id="editDialogDialog">{% trans "Create Stage" %}</span>
+            <button class="oh-modal__close" aria-label="Close">
+                <ion-icon name="close-outline"></ion-icon>
+            </button>
+        </div>
+        <div id="stageForm">
+
+
+
+        </div>
+
+
+    </div>
+</div>
+
+<!-- stage-update-form -->
+<div class="oh-modal" id="editModal3" role="dialog" aria-labelledby="editDialogModal" aria-hidden="true">
+    <div class="oh-modal__dialog oh-modal__dialog--timeoff">
+        <div class="oh-modal__dialog-header">
+            <span class="oh-modal__dialog-title" id="editDialogDialog">{% trans "Update Stage" %}</span>
+            <button class="oh-modal__close" aria-label="Close">
+                <ion-icon name="close-outline"></ion-icon>
+            </button>
+        </div>
+        <div id="updateStage">
+
+
+
+        </div>
+
+
+    </div>
+</div>
+
+<!-- task-form -->
+<div class="oh-modal" id="editModal2" role="dialog" aria-labelledby="editDialogModal" aria-hidden="true">
+    <div class="oh-modal__dialog oh-modal__dialog--timeoff">
+        <div class="oh-modal__dialog-header">
+            <span class="oh-modal__dialog-title" id="editDialogDialog">{% trans "Create Task" %}</span>
+            <button class="oh-modal__close" aria-label="Close">
+                <ion-icon name="close-outline"></ion-icon>
+            </button>
+        </div>
+        <div id="taskForm">
+
+        </div>
+    </div>
+</div>
+
+<!-- task-form-update -->
+<div class="oh-modal" id="editModal4" role="dialog" aria-labelledby="editDialogModal" aria-hidden="true">
+    <div class="oh-modal__dialog oh-modal__dialog--timeoff">
+        <div class="oh-modal__dialog-header">
+            <span class="oh-modal__dialog-title" id="editDialogDialog">{% trans "Update Task" %}</span>
+            <button class="oh-modal__close" aria-label="Close">
+                <ion-icon name="close-outline"></ion-icon>
+            </button>
+        </div>
+        <div id="updateTask">
+        </div>
+
+
+    </div>
+</div>
+<script src="{% static 'onboarding_view/activeTab.js' %}"></script>
+<script src="{% static 'onboarding_view/search.js' %}"></script>
+
+{% endblock content %}

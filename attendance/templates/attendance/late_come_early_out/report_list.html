@@ -1,0 +1,94 @@
+{% load i18n %}
+<div div class="oh-sticky-table" >
+    <div class="oh-sticky-table__table oh-table--sortable">
+      <div class="oh-sticky-table__thead">
+        <div class="oh-sticky-table__tr">
+          <div class='oh-sticky-table__th' scope="col" hx-target='#report-container' hx-get="{% url 'late-come-early-out-search' %}?{{pd}}&sortby=employee_id__employee_first_name">{% trans "Employee" %}</div>
+          <div class='oh-sticky-table__th' scope="col" hx-target='#report-container' hx-get="{% url 'late-come-early-out-search' %}?{{pd}}&sortby=type">{% trans "Type" %}</div>
+          <div class='oh-sticky-table__th' scope="col" hx-target='#report-container' hx-get="{% url 'late-come-early-out-search' %}?{{pd}}&sortby=attendance_id__attendance_date">{% trans "Attendance Date" %}</div>
+          <div class='oh-sticky-table__th' scope="col" hx-target='#report-container' hx-get="{% url 'late-come-early-out-search' %}?{{pd}}&sortby=">{% trans "Clock In" %}</div>
+          <div class='oh-sticky-table__th' scope="col" hx-target='#report-container' hx-get="{% url 'late-come-early-out-search' %}?{{pd}}&sortby=attendance_id__attendance_clock_in_date">{% trans "In Date" %}</div>
+          <div class='oh-sticky-table__th' scope="col" hx-target='#report-container' hx-get="{% url 'late-come-early-out-search' %}?{{pd}}&sortby=">{% trans "Clock Out" %}</div>
+          <div class='oh-sticky-table__th' scope="col" hx-target='#report-container' hx-get="{% url 'late-come-early-out-search' %}?{{pd}}&sortby=attendance_id__attendance_clock_out_date">{% trans "Out Date" %}</div>
+          <div class='oh-sticky-table__th' scope="col" hx-target='#report-container' hx-get="{% url 'late-come-early-out-search' %}?{{pd}}&sortby=">{% trans "Min Hour" %}</div>
+          <div class='oh-sticky-table__th' scope="col" hx-target='#report-container' hx-get="{% url 'late-come-early-out-search' %}?{{pd}}&sortby=attendance_id__at_work_second">{% trans "At Work" %}</div>
+        </div>
+      </div>
+      <div class="oh-sticky-table__tbody">
+        {% for late_in_early_out in data %}
+        <div class="oh-sticky-table__tr" draggable="true">
+          <div class="oh-sticky-table__sd">
+            <div class="oh-profile oh-profile--md">
+              <div class="oh-profile__avatar mr-1">
+                <img
+                  src="https://ui-avatars.com/api/?name={{late_in_early_out.employee_id.employee_first_name}}+{{late_in_early_out.employee_id.employee_last_name}}&background=random"
+                  class="oh-profile__image"
+                  alt="Mary Magdalene"
+                />
+              </div>
+              <span class="oh-profile__name oh-text--dark"
+                >{{late_in_early_out.employee_id}}</span
+              >
+            </div>
+          </div>
+          <div class='oh-sticky-table__td'>
+            {% if late_in_early_out.type == 'late_come' %}
+            {% trans "Late Come" %}
+            {% else %}
+            {% trans "Early Out" %}
+            {% endif %}
+          </div>
+          <div class='oh-sticky-table__td'>{{late_in_early_out.attendance_id.attendance_date}}</div>
+          <div class='oh-sticky-table__td'>{{late_in_early_out.attendance_id.attendance_clock_in}}</div>
+          <div class='oh-sticky-table__td'>{{late_in_early_out.attendance_id.attendance_clock_in_date}}</div>
+          <div class='oh-sticky-table__td'>{{late_in_early_out.attendance_id.attendance_clock_out}}</div>
+          <div class='oh-sticky-table__td'>{{late_in_early_out.attendance_id.attendance_clock_out_date}}</div>
+          <div class='oh-sticky-table__td'>{{late_in_early_out.attendance_id.minimum_hour}}</div>
+          <div class='oh-sticky-table__td'>{{late_in_early_out.attendance_id.attendance_worked_hour}}</div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+    <div class="oh-pagination">
+      <span
+        class="oh-pagination__page"
+        >
+        {% trans "Page" %} {{ data.number }} {% trans "of" %} {{ data.paginator.num_pages }}.
+        </span
+      >
+      <nav class="oh-pagination__nav">
+        <div class="oh-pagination__input-container me-3">
+          <span class="oh-pagination__label me-1">{% trans "Page" %}</span>
+          <input
+            type="number"
+            name="page"
+            class="oh-pagination__input"
+            value="{{data.number}}"
+            hx-get="{% url 'late-come-early-out-search' %}?{{pd}}"
+            hx-target="#report-container"
+            min="1"
+          />
+          <span class="oh-pagination__label">{% trans "of" %} {{data.paginator.num_pages}}</span>
+        </div>
+        <ul class="oh-pagination__items">
+          {% if data.has_previous %}
+          <li class="oh-pagination__item oh-pagination__item--wide">
+            <a hx-target='#report-container' hx-get="{% url 'late-come-early-out-search' %}?{{pd}}&page=1" class="oh-pagination__link">{% trans "First" %}</a>
+          </li>
+          <li class="oh-pagination__item oh-pagination__item--wide">
+            <a hx-target='#report-container' hx-get="{% url 'late-come-early-out-search' %}?{{pd}}&page={{ data.previous_page_number }}" class="oh-pagination__link">{% trans "Previous" %}</a>
+          </li>
+          {% endif %}
+          {% if data.has_next %}
+          <li class="oh-pagination__item oh-pagination__item--wide">
+            <a hx-target='#report-container' hx-get="{% url 'late-come-early-out-search' %}?{{pd}}&page={{ data.next_page_number }}" class="oh-pagination__link">{% trans "Next" %}</a>
+          </li>
+          <li class="oh-pagination__item oh-pagination__item--wide">
+            <a hx-target='#report-container' hx-get="{% url 'late-come-early-out-search' %}?{{pd}}&page={{ data.paginator.num_pages }}" class="oh-pagination__link">{% trans "Last" %}</a>
+          </li>
+          {% endif %}
+        </ul>
+      </nav>
+    </div>

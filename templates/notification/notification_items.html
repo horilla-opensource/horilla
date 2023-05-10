@@ -1,0 +1,33 @@
+{% if messages %}
+    <div class="oh-alert-container">
+        {% for message in messages %}
+        <div class="oh-alert oh-alert--animated {{message.tags}}">
+              {{ message }}
+        </div> 
+        {% endfor %}
+    </div>
+    {% endif %}
+<ul class="oh-navbar__nofication-list"> 
+    {% for notification in notifications %}
+    <a class="oh-navbar__notification-item" href="{{notification.data.redirect}}#">
+      <div>
+        {% if notification.unread %}
+        <span class="oh-navbar__notification-dot oh-navbar__notification-dot--green"
+          :class="markRead ? '': 'oh-navbar__notification-dot--unread'">
+        </span>
+        {% endif %}
+
+      </div>
+      <div>
+        <p class="oh-navbar__notification-text"
+          :class="markRead ? '': 'oh-navbar__notification-text--unread' ">{{ notification.verb }} </p>
+        <span class="oh-navbar__notification-date">{{ notification.timesince }} ago by {{ notification.actor.employee_first_name }}</span>
+      </div>
+      <div>
+        <div class="oh-navbar__notification-image">
+          <ion-icon name="{{notification.data.icon}}"></ion-icon>
+        </div>
+      </div>
+    </a>
+    {% endfor %}
+  </ul>

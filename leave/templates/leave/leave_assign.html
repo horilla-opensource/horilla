@@ -1,0 +1,19 @@
+{% extends 'index.html' %} {% load static %} {% load i18n %} {% block content %}
+<p class="pb-3">
+  <a href="/leave/assign-view" class="btn btn-primary">{% trans "View" %}</a> {% trans "View Leave Available Leave" %}  
+</p>
+<div class="container">
+<form action="" method="post">
+  {% csrf_token %}
+    {{form}}
+    <p></p>
+    <input type="submit" class="btn btn-primary"/>
+</form>
+</div>
+<script
+      src="https://code.jquery.com/jquery-3.6.1.min.js"
+      integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ="
+      crossorigin="anonymous"
+    ></script>
+<script src="{% static 'leave/leave_assign.js' %}"></script>
+{%endblock%}

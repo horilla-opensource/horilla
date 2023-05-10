@@ -1,0 +1,31 @@
+{% extends 'index.html' %} 
+{% block content %}
+{% load static %}
+{% load i18n %}
+{% include 'attendance/attendance/attendance_nav.html' %}
+<div class="oh-wrapper" id='attendance-container'>
+  <div class="oh-tabs">
+    <ul class="oh-tabs__tablist">
+      <li class="oh-tabs__tab" data-target="#tab_1">
+        {% trans "Validate Attendances" %}
+
+      </li>
+      <li class="oh-tabs__tab oh-tabs__tab" data-target="#tab_3">
+        {% trans "OT Attendances" %}
+
+      </li>
+      <li class="oh-tabs__tab" data-target="#tab_2">
+        {% trans "Validated Attendances" %}
+      </li>
+    </ul>
+    <div class="oh-tabs__contents" id='tab_contents'>
+      {% include 'attendance/attendance/tab_content.html' %}
+    </div>
+  </div>
+</div>
+
+
+
+
+
+{% endblock content %}
