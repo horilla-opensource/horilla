@@ -125,7 +125,7 @@ For installing the python dependencies required for the project, run the followi
  ```
 3. Set up the database by running the following commands:
 ```bash
-python manage makemigrations
+python manage.py makemigrations
 python manage.py migrate
 ```
 4. Create an admin employee account:
