@@ -1,0 +1,245 @@
+@use "sass:map";
+// -----------------------------------------------------------------------------
+// This file contains all application-wide Sass variables.
+// -----------------------------------------------------------------------------
+
+
+/// Regular font family
+/// @type List
+$text-font-stack: 'Poppins', 'Open Sans', 'Helvetica Neue Light', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif !default;
+
+/// Code (monospace) font family
+/// @type List
+$code-font-stack: 'Courier New', 'DejaVu Sans Mono', 'Bitstream Vera Sans Mono', 'Monaco', monospace !default;
+
+
+
+
+
+/// Copy text color
+/// @type Color
+$text-color: #1c1c1c !default;
+
+/// Copy text color
+/// @type Color
+$background-color: hsl(0, 0%, 97.5%) !default;
+
+/// Main brand light color
+/// @type Color
+$brand-color-light: hsl(0, 0%, 20%) !default;
+
+/// Main brand color
+/// @type Color
+$brand-color: hsl(0, 0%, 13%) !default; 
+
+/// Main brand color dark
+/// @type Color
+$brand-color-dark: hsl(0, 0%, 12%) !default; 
+
+/// Sidebar color
+/// @type Color
+$sidebar-color: hsl(192, 15%, 94%) !default;
+
+/// Brand color dark
+/// @type Color
+$brand-color-dark:  hsl(245, 100%, 8%)!default;
+
+/// Secondary color
+/// @type Color
+$secondary-color: hsl(8, 77%, 56%) !default;
+
+/// Secondary color dark
+/// @type Color
+$secondary-color-dark: hsl(8, 61%, 50%) !default;
+
+/// White  color
+/// @type Color
+$white-color: hsl(0, 0%, 100%) !default;
+
+
+/// Danger color
+/// @type Color
+$danger-color: hsl(1, 100%, 61%);
+
+/// Danger dark color
+/// @type Color
+$danger-color-dark: hsl(1, 64%, 49%);
+
+/// Warning color
+/// @type Color
+$warning-color: hsl(37, 90%, 51%);
+
+/// Warning dark color
+/// @type Color
+$warning-color-dark: hsl(37, 90%, 47%);
+
+
+
+/// Border color
+/// @type Color 
+$border-color: hsl(213, 22%, 84%) !default;
+
+/// Border light color
+/// @type Color 
+$border-light-color: hsl(213, 22%, 93%) !default;
+
+/// Button light color
+/// @type Color 
+$button-light-color: hsl(0, 0%, 93%) !default;
+
+/// Input placeholder
+/// @type Color
+$placeholder-color: hsl(215, 18%, 64%) !default;
+
+/// Table color
+/// @type Color
+$table-text-color: hsl(0, 0%, 37%) !default;
+
+/// Light Text color
+/// @type Color
+$light-text-color: hsl(0, 0%, 45%)!default;
+
+/// Light button color
+/// @type Color
+$light-button-color: hsl(0, 0%, 95%) !default;
+
+/// Dark button color
+/// @type Color
+$dark-button-color: hsl(0, 0%, 90%) !default;
+
+/// Light grey table
+/// @type Color
+$light-grey-table: hsl(0, 0%, 98%) !default;
+
+/// Light grey
+/// @type Color
+$light-grey: hsl(0, 0%, 96%) !default;
+
+/// Medium grey
+/// @type Color
+$mid-grey: rgb(153, 153, 153) !default;
+/// icon grey
+/// @type Color
+$icon-grey: hsl(220, 2%, 39%) !default;
+
+/// Dark grey
+/// @type Color
+$dark-grey: hsl(0, 0%, 27%) !default;
+
+/// Button text grey
+/// @type Color
+$button-text-grey: hsl(219, 9%, 29%) !default;
+
+/// White
+/// @type Color
+$white: hsl(0, 0%, 100%) !default;
+
+/// White
+/// @type Color
+$black: hsl(0, 0%, 0%) !default;
+
+/// Blue
+/// @type Color
+$blue: hsl(204, 70%, 53%) !default;
+
+/// Blue Dark
+/// @type Color
+$blue-dark: hsl(204, 62%, 48%) !default;
+
+/// Orange
+/// @type Orange
+$orange: hsl(19, 85%, 63%) !default;
+
+/// Yellow
+/// @type Color
+$yellow: hsl(40, 91%, 60%) !default;
+
+/// Yellow Dark
+/// @type Color
+$yellow-dark: #dda735 !default;
+
+/// Success
+/// @type Color
+$green: hsl(121, 47%, 61%) !default;
+
+/// Success
+/// @type Color
+$success-color: hsl(148, 71%, 44%) !default;
+
+/// Success
+/// @type Color
+$success-color-dark: hsl(148, 70%, 40%) !default;
+
+
+/// Alert Colors
+
+/// Danger Bg
+/// @type Color
+$alert-color-bg-danger: hsl(0, 75%, 97%) !default;
+/// Danger border
+/// @type Color
+$alert-color-border-danger: hsl(357, 72%, 89%) !default;
+/// Danger Hlt
+/// @type Color
+$alert-color-hlt-danger: hsl(0, 71%, 54%) !default;
+
+/// Warning Bg
+/// @type Color
+$alert-color-bg-warning: hsl(48, 100%, 94%) !default;
+/// Warning border
+/// @type Color
+$alert-color-border-warning: hsl(46, 97%, 88%) !default;
+/// Warning Hlt
+/// @type Color
+$alert-color-hlt-warning: hsl(44, 89%, 62%) !default;
+
+/// Info Bg
+/// @type Color
+$alert-color-bg-info: hsl(212, 89%, 96%) !default;
+/// Info border
+/// @type Color
+$alert-color-border-info: hsl(218, 75%, 87%) !default;
+/// Info Hlt
+/// @type Color
+$alert-color-hlt-info: hsl(225, 72%, 48%) !default;
+
+/// Success Bg
+/// @type Color
+$alert-color-bg-success: hsl(137, 78%, 93%) !default;
+/// Success border
+/// @type Color
+$alert-color-border-success: hsl(136, 51%, 84%) !default;
+/// Success Hlt
+/// @type Color
+$alert-color-hlt-success: hwb(119 28% 36%) !default;
+
+/// Container's maximum width
+/// @type Length
+$max-width: 1180px !default;
+
+
+
+
+
+/// Breakpoints map
+/// @prop {String} keys - Keys are identifiers mapped to a given length
+/// @prop {Map} values - Values are actual breakpoints expressed in pixels
+$breakpoints: (
+  'x-small': 0px,
+  'small': 576px,
+  'medium': 768px,
+  'large': 992px,
+  'x-large': 1200px,
+  'xx-large': 1400px
+) !default;
+
+
+
+
+
+
+/// Relative or absolute URL where all assets are served from
+/// @type String
+/// @example scss - When using a CDN
+///   $base-url: 'https://cdn.example.com/assets/';
+$base-url: '/assets/' !default;

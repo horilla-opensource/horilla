@@ -1,0 +1,128 @@
+{% load i18n %}
+{% if messages %}
+  <div class="oh-alert-container">
+    {% for message in messages %}
+    <div class="oh-alert oh-alert--animated {{message.tags}}">
+      {{ message }}
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %} 
+  {% if recruitment_form.errors %}
+  <!-- form errors  -->
+  <div class="oh-wrapper">
+    <div class="oh-alert-container">
+      {% for field in recruitment_form %}
+      {% if field.errors %}
+      <div class="oh-alert oh-alert--animated oh-alert--danger">
+        {{ field.label }}: {{ field.errors|join:", " }}
+      </div>
+      {% endif %}
+      {% endfor %}
+      {% for error in recruitment_form.non_field_errors %}
+      <div class="oh-alert oh-alert--animated oh-alert--danger">
+        {{ error }}
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  {% if stage_form.errors %}
+  <!-- form errors  -->
+  <div class="oh-wrapper">
+    <div class="oh-alert-container">
+      {% for field in stage_form %}
+      {% if field.errors %}
+      <div class="oh-alert oh-alert--animated oh-alert--danger">
+        {{ field.label }}: {{ field.errors|join:", " }}
+      </div>
+      {% endif %}
+      {% endfor %}
+      {% for error in stage_form.non_field_errors %}
+      <div class="oh-alert oh-alert--animated oh-alert--danger">
+        {{ error }}
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  {% if candidate_form.errors %}
+  <!-- form errors  -->
+  <div class="oh-wrapper">
+    <div class="oh-alert-container">
+      {% for field in candidate_form %}
+      {% if field.errors %}
+      <div class="oh-alert oh-alert--animated oh-alert--danger">
+        {{ field.label }}: {{ field.errors|join:", " }}
+      </div>
+      {% endif %}
+      {% endfor %}
+      {% for error in candidate_form.non_field_errors %}
+      <div class="oh-alert oh-alert--animated oh-alert--danger">
+        {{ error }}
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+<section
+class="oh-wrapper oh-main__topbar"
+x-data="{searchShow: false}"
+>
+<div class="oh-main__titlebar oh-main__titlebar--left">
+  <div class="oh-main__titlebar-title fw-bold mb-0 text-dark"  style="cursor:pointer;">{% trans "Recruitments" %}</div>
+</div>
+
+<div class="oh-main__titlebar oh-main__titlebar--right">
+  
+  <div
+    class="oh-input-group oh-input__search-group"
+    :class="searchShow ? 'oh-input__search-group--show' : ''"
+  >
+  <ion-icon
+  name="search-outline"
+  class="oh-input-group__icon oh-input-group__icon--left"
+></ion-icon>
+<input
+  type="search"
+  id = "pipelineSearch" 
+  placeholder="{% trans 'Search' %}" 
+  name='search'
+  class="oh-input oh-input__icon"
+  aria-label="Search Input"
+/>
+  </div>
+  <ul class="oh-view-types ml-2" style="margin-bottom: 0;">
+    <li class="oh-view-type candidate-view-type" data-view='list'>
+      <a href="{% url 'pipeline' %}"  hx-target='#section' class="oh-btn oh-btn--view "
+        ><ion-icon name="list-outline"></ion-icon
+      ></a>
+    </li>
+    <li class="oh-view-type candidate-view-type" data-view='card'>
+      <a href="{% url 'pipeline' %}?view=card" hx-target='#section' class="oh-btn oh-btn--view"
+        ><ion-icon name="grid-outline"></ion-icon
+      ></a>
+    </li>
+  </ul>
+
+  <div class="oh-main__titlebar-button-container">
+
+    {% if perms.recruitment.add_recruitment %}
+    {% include 'pipeline/form/recruitment_drop_down_form.html' %}
+    {% endif %}
+    
+    
+  </div>
+</div>
+</section>
+<script>
+  $('#candidate-search').keyup(function (e) { 
+      $('.candidate-view-type').attr('hx-vals',`{"search":"${$(this).val()}"}`)
+    });
+    $('.candidate-view-type').click(function (e) { 
+      let view = $(this).attr('data-view');
+      $('#candidate-search').attr('hx-vals',`{"view":"${view}"}`);
+    });
+</script>

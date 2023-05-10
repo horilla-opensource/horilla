@@ -1,0 +1,46 @@
+
+{% extends 'index.html' %}
+{% load i18n %}
+{% block content %}
+
+  <main class="oh-auth">
+    <div class="oh-auth-card">
+      <h1 class="oh-onboarding-card__title oh-onboarding-card__title--h2 text-center my-3">{% trans "Email Configuration" %}</h1>
+      <p class="text-muted text-center">{% trans "Configure your email server." %}</p>
+      <form method='post' class="oh-form-group">
+          {% csrf_token %}
+          <div class="oh-input-group">
+            <label class="oh-label" for="email_host">{% trans "Email Host" %}</label>
+            <input type="text" name="email_host" class="oh-input w-100" value="{{ settings.EMAIL_HOST }}" />
+          </div>
+          <div class="oh-input-group">
+            <label class="oh-label" for="email_port">{% trans "Email Port" %}</label>
+            <input type="text" name="email_port" class="oh-input w-100" value="{{ settings.EMAIL_PORT }}" />
+          </div>
+          <div class="oh-input-group">
+            <label class="oh-label" for="email_username">{% trans "Email Username" %}</label>
+            <input type="text" name="email_username" class="oh-input w-100" value="{{ settings.EMAIL_HOST_USER }}" />
+          </div>
+          <div class="oh-input-group">
+            <label class="oh-label" for="email_password">{% trans "Email Password" %}</label>
+            <input type="text" name="email_password" class="oh-input w-100" value="{{ settings.EMAIL_HOST_PASSWORD }}" />
+          </div>
+          <div class="oh-input-group">
+            <label class="oh-label" for="email_use_tls">{% trans "Use Tls" %}</label>
+            <div class="oh-switch">
+              <input type="text" name="email_use_tls"class="oh-input w-100"  value="{{ settings.EMAIL_HOST_PASSWORD }}" />
+            </div>
+          </div>
+        <button
+        type='submit'
+        class="oh-btn oh-onboarding-card__button mt-4 oh-btn--secondary oh-btn--shadow w-100 mb-4"
+        role="button"
+      >
+      <ion-icon class="me-2" name="lock-closed-outline"></ion-icon>
+        {% trans "Configure" %}
+      </button>
+      </form>
+    </div>
+</main>
+
+{% endblock content %}

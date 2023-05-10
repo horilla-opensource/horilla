@@ -1,0 +1,33 @@
+.fc .fc-button{
+    border-radius: 0 !important;
+}
+.fc .fc-button-primary{
+    background-color: $brand-color !important;
+    border-color: $brand-color-dark !important;
+}
+.fc .fc-button-primary.fc-button-active{
+    background-color: rgba($brand-color, 0.7) !important;
+    border-color: rgba($brand-color, 0.7) !important;
+
+    &:focus, &:focus-visible{
+        outline: none;
+        border: none;
+        box-shadow: none;
+    }
+}
+.fc-event{
+    border-radius: 0 !important;
+}
+
+@media (max-width: 679px){
+    .fc .fc-toolbar.fc-header-toolbar{
+        display: grid;
+        grid-template-columns: auto 1fr;
+        justify-content: space-between;
+        gap: 5px;
+    }
+    .fc .fc-toolbar-title{
+        font-size: 1.25rem;
+        text-align: right;
+    }
+}

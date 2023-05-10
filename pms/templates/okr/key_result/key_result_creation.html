@@ -1,0 +1,138 @@
+{% extends 'index.html' %}
+{% load widget_tweaks %}
+{% load static i18n %}
+{% load i18n %}
+
+{% block styles %}
+<link rel="stylesheet" href="{% static 'css/pms.css' %}" />
+{% endblock styles %}
+{% block content %}
+
+{% if messages %}
+<!-- form errors  -->
+<div class="oh-wrapper">
+  <div class="oh-alert-container">
+    {% for message in messages %}
+    <div class="oh-alert oh-alert--animated {{message.tags}}">
+      {{message}}
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+
+{% if key_result_form.errors %}
+<!-- form errors  -->
+<div class="oh-wrapper">
+    <div class="oh-alert-container">
+        {% for error in key_result_form.non_field_errors %}
+        <div class="oh-alert oh-alert--animated oh-alert--danger">
+            {{ error }}
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+
+<main class="oh-onboarding">
+    <div class="oh-onboarding-card">
+        {% if objective_id %}
+        <!-- if the objective for individual -->
+        <form method="post" action="{% url 'key-result-creation' obj_id=objective_id obj_type='individual' %}">
+        {% elif objective_ids %}
+        <!-- if the objective for multiple -->
+        <form method="post" action="{% url 'key-result-creation' obj_id=objective_ids obj_type='multiple' %}">
+        {% endif %}
+            {% csrf_token %}
+            <div class="oh-onboarding-card__address-group">
+                <h2 class="oh-onboarding-card__section-title">{% trans "Key Result" %}</h2>
+                <div class="row">
+                    <div class="col-sm-12 col-md-12 col-lg-12">
+                        <div class="oh-input__group ">
+                            <label class="oh-input__label" for="objective">{% trans "Title" %}</label>
+                            {{key_result_form.key_result}}
+                            {{key_result_form.key_result.errors}}
+                        </div>
+                        <div class="oh-input__group">
+                            <label class="oh-input__label" for="lastname">{% trans "Description" %}</label>
+                            {{key_result_form.key_result_description}}
+                            {{key_result_form.key_result_description.errors}}
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12 col-sm-12 col-md-4 col-lg-4">
+                        <div class="oh-input__group">
+                            <label class="oh-input__label" for="keyType">{% trans "Key Results" %}
+                                type</label>
+                            {{key_result_form.progress_type}}
+                            {{key_result_form.progress_type.errors}}
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-12 col-md-4 col-lg-4">
+                        <div class="oh-input__group">
+                            <label class="oh-input__label" for="startDate">{% trans "Current Value" %}
+                                </label>
+                            {{key_result_form.current_value}}
+                            {{key_result_form.current_value.errors}}
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-12 col-md-4 col-lg-4">
+                        <div class="oh-input__group">
+                            <label class="oh-input__label" for="endDate">{% trans "Target Value" %}
+                                </label>
+                            {{key_result_form.target_value}}
+                            {{key_result_form.target_value.errors}}
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12 col-sm-12 col-md-4 col-lg-4">
+                        <div class="oh-input__group">
+                            <label class="oh-input__label" for="keyType">{% trans "Period" %}</label>
+                            {{key_result_form.period}}
+                            {{key_result_form.period.errors}}
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-12 col-md-4 col-lg-4">
+                        <div class="oh-input__group">
+                            <label class="oh-input__label" for="startDate">{% trans "Start Date" %} </label>
+                            {{key_result_form.start_date}}
+                            {{key_result_form.start_date.errors}}
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-12 col-md-4 col-lg-4">
+                        <div class="oh-input__group">
+                            <label class="oh-input__label" for="endDate">{% trans "End Date" %} </label>
+                            {{key_result_form.end_date}}
+                            {{key_result_form.end_date.errors}}
+                        </div>
+                    </div>
+                </div>
+                {% if objective_id %}
+                <!-- if the objective for individual -->
+                <div class="row">
+                    <div class="col-12 col-sm-12 col-md-12 col-lg-12">
+                        <div class="oh-input__group me-2">
+                            <label class="oh-input__label" for="startDate">{% trans "Employee" %} </label>
+                            {% render_field key_result_form.employee_id|attr:"required:true" %}
+                            {{ key_result_form.employee_id.errors}}
+                        </div>
+                    </div>
+                </div>
+                {% elif objective_ids %}
+                    <!-- if the objective for multiple -->
+                {% endif %}
+            </div>
+            <button  type="submit"
+                class="oh-btn oh-onboarding-card__button mt-4 oh-btn--secondary oh-btn--shadow w-100 mb-4"
+                role="button">
+                {% trans "Save" %}
+            </button>
+        </form>
+    </div>
+</main>
+
+<script src="{% static 'src/period/period.js' %}"></script> 
+{% endblock %}

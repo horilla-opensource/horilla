@@ -1,0 +1,40 @@
+{% if messages %}
+    <div class="oh-alert-container">
+        {% for message in messages %}
+        <div class="oh-alert oh-alert--animated {{message.tags}}">
+              {{ message }}
+        </div> 
+        {% endfor %}
+    </div>
+    {% endif %}
+<ol class="oh-activity-sidebar__qa-list" role="list">
+    {% for notification in notifications %}
+    <li class="oh-activity-sidebar__qa-item">
+        <div class="d-flex justify-content-between">
+        
+            <span class="oh-activity-sidebar__q">
+                {{forloop.counter}}. 
+                {% if notification.unread %}
+                <span style="width: 10px;height: 10px;border-radius: 100%; background-color: hsl(8deg,77%,56%);display: inline-block;right: 5px;"></span>
+                {% endif %}
+                {{notification.verb}}
+            </span>
+        <ion-icon name="close-outline" hx-target="#allNotificationBody" hx-post="{% url 'delete-notifications' notification.id %}" role="img" aria-label="close outline"></ion-icon>
+    </div>
+        <span class="oh-activity-sidebar__a">
+        {{ notification.timesince }} ago by <img src="https://ui-avatars.com/api/?name={{notification.actor}}&amp;background=random" style="width: 1.5em; border-radius: 100%;" alt="User"> {{notification.actor}} 
+    </span>
+    </li>
+    {% endfor %}
+
+</ol>
+
+<script>
+    $(document).ready(function () {
+      $('#notificationClose').attr('class', 'oh-activity-sidebar__header-icon me-2 oh-activity-sidebar__close md hydrated');
+    });
+    $('#notificationClose').click(function (e) { 
+      $('#allNotifications').removeClass('oh-activity-sidebar--show');        
+    });
+     
+  </script>

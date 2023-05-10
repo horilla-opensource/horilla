@@ -1,0 +1,103 @@
+{% extends 'index.html' %}
+{% load i18n %}
+{% block content %}
+
+{% if form.errors %}
+<!-- form errors  -->
+<div class="oh-wrapper">
+    <div class="oh-alert-container">
+
+        {% for error in form.non_field_errors %}
+        <div class="oh-alert oh-alert--animated oh-alert--danger">
+            {{ error }}
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+<section class="oh-wrapper oh-main__topbar " x-data="{searchShow: false} ">
+    <div class="oh-main__titlebar oh-main__titlebar--left">
+        <form action="{% url 'candidates-view' %}">
+            <button class="oh-btn oh-btn--secondary oh-btn--shadow">
+                {% trans "View candidates" %}
+            </button>
+        </form>
+    </div>
+</section >
+
+<div class="oh-wrapper d-flex justify-content-center">
+    <div class="oh-onboarding-card ">
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="oh-onboarding-card__address-group">
+                <h2 class="oh-onboarding-card__section-title">{% trans "Candidate Details" %}</h2>
+                <div class="row">
+                    <div class="col-sm-12 col-md-12 col-lg-6">
+                        <div class="oh-input-group">
+                            <label for="" class="oh-label">{% trans "Full Name" %}</label>
+                            {{form.name}}
+                            {{form.name.errors}}
+                        </div>
+                    </div>
+                    <div class="col-sm-12 col-md-12 col-lg-6">
+                        <div class="oh-input-group">
+                            <label for="" class="oh-label">{% trans "Profile Picture" %}</label>
+                            {{form.profile}}
+                            {{form.profile.errors}}
+                        </div>
+                    </div>
+
+                    <div class="col-sm-12 col-md-12 col-lg-12">
+                        <div class="oh-input-group">
+                            <label for="" class="oh-label">{% trans "Recruitment" %}</label>
+                            {{form.recruitment_id}}
+                            {{form.recruitment_id.errors}}
+                        </div>
+
+                    </div>
+
+                    <div class="col-sm-12 col-md-12 col-lg-6">
+                        <div class="oh-input-group">
+                            <label for="" class="oh-label">{% trans "Email" %}</label>
+                            {{form.email}}
+                            {{form.email.errors}}
+                        </div>
+                    </div>
+                    <div class="col-sm-12 col-md-12 col-lg-6">
+                        <div class="oh-input-group">
+                            <label for="" class="oh-label">{% trans "Mobile" %}</label>
+                            {{form.mobile}}
+                            {{form.mobile.errors}}
+                        </div>
+                    </div>
+
+                    <div class="col-sm-12 col-md-12  col-lg-6">
+                        <div class="oh-input-group">
+                            <label for="" class="oh-label">{% trans "Joining Date" %}</label>
+                            {{form.joining_date}}
+                            {{form.joining_date.errors}}
+                        </div>
+                    </div>
+                    <div class="col-sm-12 col-md-12  col-lg-6">
+                        <div class="oh-input-group">
+                            <label for="" class="oh-label">{% trans "Gender" %}</label>
+                            {{form.gender}}
+                            {{form.gender.errors}}
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <button href="#" class="oh-btn oh-onboarding-card__button mt-4 oh-btn--secondary oh-btn--shadow w-100 mb-4"
+                role="button">
+                {% trans "Update" %}
+            </button>
+        </form>
+
+    </div>
+
+</div>
+{% endblock content %}

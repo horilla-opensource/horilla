@@ -1,0 +1,25 @@
+.oh-feedback-card__name-container, .oh-feedback-card__actions{
+    display: flex;
+    flex-direction: column;
+}
+.oh-feedback-card__details{
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+.oh-feedback-card__profile-container{
+    display: flex;
+}
+.oh-feedback-card__feedback-status{
+    font-size: 0.85rem;
+    font-weight: bold;
+}
+.oh-feedback-card__name{
+    font-size: 1.15rem;
+    font-weight: bold;
+}
+.oh-feedback-care__header{
+    padding-bottom: 0.75rem;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid $border-light-color;
+}

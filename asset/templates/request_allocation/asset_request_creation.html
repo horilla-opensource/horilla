@@ -1,0 +1,38 @@
+{% load i18n %}
+<h5 >{% trans "Asset Request" %}</h5>
+{% if asset_request_form.errors %}
+<div class="oh-wrapper">
+    {% for error in asset_request_form.non_field_errors %}
+    <div class="oh-alert-container">
+        <div class="oh-alert oh-alert--animated oh-alert--danger">
+        {{ error }}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+<form hx-post="{%url 'asset-request-creation' %}" hx-target="#asset-request-allocation-modal-target">
+    {% csrf_token %}
+    <div class="m-3">
+        <div class="oh-input__group ">
+            <label class="oh-input__label" for="objective">{% trans "Requesting User" %}</label>
+            {{asset_request_form.requested_employee_id}}
+            {{asset_request_form.requested_employee_id.errors}}
+        </div>
+        <div class="oh-input__group ">
+            <label class="oh-input__label" for="objective">{% trans "Asset Category" %}</label>
+            {{asset_request_form.asset_category_id}}
+            {{asset_request_form.asset_category_id.errors}}
+        </div>
+        <div class="oh-input__group ">
+            <label class="oh-input__label" for="objective">{% trans "Description" %}</label>
+            {{asset_request_form.description}}
+            {{asset_request_form.description.errors}}
+        </div>
+    </div>
+    <div class="oh-modal__dialog-footer">
+        <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow ">
+            {% trans "Save" %}
+        </button>
+    </div>
+</form>

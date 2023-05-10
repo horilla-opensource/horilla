@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Reset Password - OpenHRMS Dashboard</title>
+    <link rel="stylesheet" href="./../build/css/style.min.css" />
+  </head>
+  <body>
+    <div id="main">
+      <main class="oh-auth">
+          <div class="oh-auth-card">
+            <h1 class="oh-onboarding-card__title oh-onboarding-card__title--h2 text-center my-3">Reset Password</h1>
+            <p class="text-muted text-center">Enter your new password to reset</p>
+            <div class="oh-form-group">
+              <div class="oh-input-group">
+                <label class="oh-label" for="password">New Password</label>
+                <div class="oh-password-input-container">
+                  <input
+                    type="password"
+                    id="password"
+                    class="oh-input oh-input--password w-100"
+                    placeholder="Use alphanumeric characters"
+                  />
+                  <button
+                    class="oh-btn oh-btn--transparent oh-password-input--toggle"
+                  >
+                    <ion-icon
+                      class="oh-passowrd-input__show-icon"
+                      title="Show Password"
+                      name="eye-outline"
+                    ></ion-icon>
+                    <ion-icon
+                      class="oh-passowrd-input__hide-icon d-none"
+                      title="Hide Password"
+                      name="eye-off-outline"
+                    ></ion-icon>
+                  </button>
+                </div>
+              </div>
+              
+              <div class="oh-input-group">
+                <label class="oh-label" for="confirmPassword">Confirm New Password</label>
+                <div class="oh-password-input-container">
+                  <input
+                    type="password"
+                    id="confirmPassword"
+                    class="oh-input oh-input--password w-100"
+                    placeholder="Use alphanumeric characters"
+                  />
+                  <button
+                    class="oh-btn oh-btn--transparent oh-password-input--toggle"
+                  >
+                    <ion-icon
+                      class="oh-passowrd-input__show-icon"
+                      title="Show Password"
+                      name="eye-outline"
+                    ></ion-icon>
+                    <ion-icon
+                      class="oh-passowrd-input__hide-icon d-none"
+                      title="Hide Password"
+                      name="eye-off-outline"
+                    ></ion-icon>
+                  </button>
+                </div>
+              </div>
+
+              <button
+              href="#"
+              class="oh-btn oh-onboarding-card__button mt-4 oh-btn--secondary oh-btn--shadow w-100 mb-4"
+              role="button"
+            >
+             Reset my password
+            </button>
+            </div>
+          </div>
+      </main>
+    </div>
+    <script src="./../build/js/web.frontend.min.js"></script>
+    <script
+      type="module"
+      src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"
+    ></script>
+    <script
+      nomodule
+      src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"
+    ></script>
+    <script></script>
+  </body>
+</html>

@@ -1,0 +1,161 @@
+{% extends 'index.html' %}
+{% block content %}
+{% load mathfilters %}
+{% load static %}
+<div class="oh-wrapper">
+  <div class="oh-dashboard row">
+    <div class="oh-dashboard__left col-12 col-sm-12 col-md-12 col-lg-9">
+      <div class="oh-dashboard__cards row">
+        <div class="col-12 col-sm-12 col-md-6 col-lg-4">
+          <div class="oh-card-dashboard oh-card-dashboard oh-card-dashboard--success">
+            <div class="oh-card-dashboard__header">
+              <span class="oh-card-dashboard__title">Active Employees</span>
+            </div>
+            <div class="oh-card-dashboard__body">
+              <div class="oh-card-dashboard__counts">
+                <span class="oh-card-dashboard__sign"><ion-icon name="accessibility"></ion-icon></span>
+                </span>
+                <span class="oh-card-dashboard__count">{{active_employees}}</span>
+              </div>
+              <span class="oh-badge oh-card-dashboard__badge">{{active_ratio}}%</span>
+            </div>
+          </div>
+        </div>
+        <div class="col-12 col-sm-12 col-md-6 col-lg-4">
+          <div class="oh-card-dashboard oh-card-dashboard--neutral">
+            <div class="oh-card-dashboard__header">
+              <span class="oh-card-dashboard__title">Total Employees</span>
+            </div>
+            <div class="oh-card-dashboard__body">
+              <div class="oh-card-dashboard__counts">
+                <span class="oh-card-dashboard__count">{{total_employees}}</span>
+              </div>
+              <span class="oh-badge oh-card-dashboard__badge">100%</span>
+            </div>
+          </div>
+        </div>
+        <div class="col-12 col-sm-12 col-md-6 col-lg-4">
+          <div class="oh-card-dashboard oh-card-dashboard--danger">
+            <div class="oh-card-dashboard__header">
+              <span class="oh-card-dashboard__title">Incactive Employees</span>
+            </div>
+            <div class="oh-card-dashboard__body">
+              <div class="oh-card-dashboard__counts">
+                <span class="oh-card-dashboard__sign"><ion-icon name="accessibility"></ion-icon></span>
+                <span class="oh-card-dashboard__count">{{inactive_employees}}</span>
+              </div>
+              <span class="oh-badge oh-card-dashboard__badge">{{inactive_ratio}}%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="oh-dashboard__movable-cards row mt-4">
+
+
+        <div class="col-12 col-sm-12 col-md-12 col-lg-6 oh-card-dashboard--moveable">
+          <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent">
+            <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
+              <span class="oh-card-dashboard__title">Employee Chart</span>
+            </div>
+            <div class="oh-card-dashboard__body">
+              <canvas id="totalEmployees"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12 col-sm-12 col-md-12 col-lg-6 oh-card-dashboard--moveable">
+          <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent">
+            <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
+              <span class="oh-card-dashboard__title">Gender Chart</span>
+            </div>
+            <div class="oh-card-dashboard__body">
+              <canvas id="genderChart"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12 col-sm-12 col-md-12 col-lg-6 oh-card-dashboard--moveable">
+          <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent">
+            <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
+              <span class="oh-card-dashboard__title">Department Chart</span>
+            </div>
+            <div class="oh-card-dashboard__body">
+              <canvas id="departmentChart"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="oh-dashboard__right  col-12 col-sm-12 col-md-12 col-lg-3">
+      <div class="oh-dashboard__events">
+        <div class="oh-dashbaord__events-reel">
+          {% for employee in birthdays %}
+          <div class="oh-dashboard__event">
+            <div class="oh-dasboard__event-photo">
+              {% if employee.employee_profile %}
+              <img src="/media/{{employee.employee_profile}}" class="oh-kanban-card__profile-image" alt="Username" />
+              {% else %}
+              <img
+                src="https://ui-avatars.com/api/?name={{employee.employee_first_name}}+{{employee.employee_last_name}}&background=random"
+                class="oh-kanban-card__profile-image" alt="Username" />
+              {% endif %}
+            </div>
+            <div class="oh-dasboard__event-details">
+              <span class="oh-dashboard__event-title">Birthday</span>
+              <span class="oh-dashboard__event-main">{{employee}}</span>
+              <span class="oh-dashboard__event-date">{{employee.dob}},
+                {% if employee.days_until_birthday == 0 %}
+                Today
+                {% elif employee.days_until_birthday == 1 %}
+                Tomorrow<br>
+                {% else %}
+                In {{ employee.days_until_birthday }} days<br>
+                {% endif %}</span>
+            </div>
+          </div>
+          {% endfor %}
+
+
+
+        </div>
+        <ul class="oh-dashboard__events-nav">
+          {% for emp in birthdays %}
+          {% if forloop.counter == 1 %}
+          <li class="oh-dashboard__events-nav-item oh-dashboard__events-nav-item--active"
+            data-target="{{forloop.counter|add:'-1'}}"></li>
+          {% else %}
+          <li class="oh-dashboard__events-nav-item" data-target="{{forloop.counter|add:'-1'}}"></li>
+          {% endif %}
+          {% endfor %}
+        </ul>
+      </div>
+      <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent mt-3">
+        <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
+          <span class="oh-card-dashboard__title">Candidate on Onboard</span>
+        </div>
+        <div class="oh-card-dashboard__body">
+          <ul class="oh-card-dashboard__user-list">
+            <li class="oh-card-dashboard__user-item">
+              <div class="oh-profile oh-profile--md">
+                <div class="oh-profile__avatar mr-1">
+                  <img src="https://ui-avatars.com/api/?name=A B&background=random" class="oh-profile__image"
+                    alt="{{cand}}" />
+                </div>
+                <span class="oh-profile__name oh-text--dark">Aliza B</span>
+              </div>
+            </li>
+
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="{% static 'dashboard/employeeChart.js' %}"></script>
+
+
+{% endblock content %}

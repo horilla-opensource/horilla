@@ -1,0 +1,85 @@
+{% load i18n %}
+<div id="activity-table"> 
+<div class="oh-sticky-table" >
+    <div class="oh-sticky-table__table oh-table--sortable">
+      <div class="oh-sticky-table__thead">
+        <div class="oh-sticky-table__tr">
+          <div class="oh-sticky-table__th"hx-target='#activity-table' hx-get="{% url 'attendance-activity-search' %}?{{pd}}&orderby=employee_id__employee_first_name">{% trans "Employee" %}</div>
+          <div class='oh-sticky-table__th'hx-target='#activity-table' hx-get="{% url 'attendance-activity-search' %}?{{pd}}&orderby=attendance_date">{% trans "Attendnace Date" %}</div>
+          <div class='oh-sticky-table__th'hx-target='#activity-table' hx-get="{% url 'attendance-activity-search' %}?{{pd}}&orderby=clock_in_date">{% trans "In Date" %}</div>
+          <div class='oh-sticky-table__th'hx-target='#activity-table' hx-get="{% url 'attendance-activity-search' %}?{{pd}}&orderby=">{% trans "Clock In" %}</div>
+          <div class='oh-sticky-table__th'hx-target='#activity-table' hx-get="{% url 'attendance-activity-search' %}?{{pd}}&orderby=">{% trans "Clock Out" %}</div>
+          <div class='oh-sticky-table__th'hx-target='#activity-table' hx-get="{% url 'attendance-activity-search' %}?{{pd}}&orderby=clock_out_date">{% trans "Out Date" %}</div>
+        </div>
+      </div>
+      <div class="oh-sticky-table__tbody">
+        {% for activity in data %}
+          <div class="oh-sticky-table__tr" draggable="true">
+              <div class="oh-sticky-table__sd">
+                  <div class="oh-profile oh-profile--md">
+                      <div class="oh-profile__avatar mr-1">
+                          <img
+                    src="https://ui-avatars.com/api/?name={{activity.employee_id.employee_first_name}}+{{activity.employee_id.employee_last_name}}&background=random"
+                    class="oh-profile__image"
+                    alt="Mary Magdalene"
+                  />
+              </div>
+                <span class="oh-profile__name oh-text--dark"
+                >{{activity.employee_id}}</span
+                >
+              </div>
+          </div>
+          <div class="oh-sticky-table__td">{{activity.attendance_date}}</div>
+          <div class="oh-sticky-table__td">{{activity.clock_in_date}}</div>
+          <div class="oh-sticky-table__td">{{activity.clock_in}}</div>
+          <div class="oh-sticky-table__td">{{activity.clock_out}}</div>
+          <div class="oh-sticky-table__td">{{activity.clock_out_date}}</div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+</div>
+<div class="oh-pagination">
+  <span
+    class="oh-pagination__page"
+    >
+    {% trans "Page" %} {{ data.number }} {% trans "of" %} {{ data.paginator.num_pages }}.
+    </span
+  >
+  <nav class="oh-pagination__nav">
+    <div class="oh-pagination__input-container me-3">
+      <span class="oh-pagination__label me-1">{% trans "Page" %}</span>
+      <input
+        type="number"
+        name="page"
+        class="oh-pagination__input"
+        value="{{data.number}}"
+        hx-get="{% url 'attendance-activity-search' %}?{{pd}}"
+        hx-target="#activity-table"
+        min="1"
+      />
+      <span class="oh-pagination__label">{% trans "of" %} {{data.paginator.num_pages}}</span>
+    </div>
+    <ul class="oh-pagination__items">
+      {% if data.has_previous %}
+      <li class="oh-pagination__item oh-pagination__item--wide">
+        <a hx-target='#activity-table' hx-get="{% url 'attendance-activity-search' %}?{{pd}}&page=1" class="oh-pagination__link">{% trans "First" %}</a>
+      </li>
+      <li class="oh-pagination__item oh-pagination__item--wide">
+        <a hx-target='#activity-table' hx-get="{% url 'attendance-activity-search' %}?{{pd}}&page={{ data.previous_page_number }}" class="oh-pagination__link">{% trans "Previous" %}</a>
+      </li>
+      {% endif %}
+      {% if data.has_next %}
+      <li class="oh-pagination__item oh-pagination__item--wide">
+        <a hx-target='#activity-table' hx-get="{% url 'attendance-activity-search' %}?{{pd}}&page={{ data.next_page_number }}" class="oh-pagination__link">{% trans "Next" %}</a>
+      </li>
+      <li class="oh-pagination__item oh-pagination__item--wide">
+        <a hx-target='#activity-table' hx-get="{% url 'attendance-activity-search' %}?{{pd}}&page={{ data.paginator.num_pages }}" class="oh-pagination__link">{% trans "Last" %}</a>
+      </li>
+      {% endif %}
+    </ul>
+  </nav>
+</div>
+</div>
+

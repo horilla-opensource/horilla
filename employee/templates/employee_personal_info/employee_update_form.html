@@ -1,0 +1,24 @@
+{% load recruitmentfilters %}
+{% csrf_token %}
+
+<div class="container">
+    {% if messages %}
+    <div class="oh-alert-container">
+        {% for message in messages %}
+        <div class="oh-alert oh-alert--animated {{message.tags}}">
+            {{ message }}
+            </div> 
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="row">
+        
+        <div class="col-6">
+            {% include 'employee_personal_info/employee_personal_info.html' %}
+        </div>
+        <div class="col-6">
+            {% include 'employee_personal_info/employee_work_info.html' %}
+        </div>
+    </div>
+</div>

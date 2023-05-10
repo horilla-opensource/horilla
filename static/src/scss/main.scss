@@ -1,0 +1,57 @@
+@charset "UTF-8";
+
+// 1. Configuration and helpers
+@import
+  'abstracts/variables',
+  'abstracts/functions',
+  'abstracts/mixins';
+
+// 2. Vendors
+@import
+  'vendors/normalize',
+  'vendors/bootstrap/bootstrap';
+
+// 3. Base stuff
+@import
+  'base/base',
+  'base/fonts',
+  'base/typography',
+  'base/helpers';
+
+// 4. Layout-related sections
+@import
+  'layout/header',
+  'layout/general',
+  'layout/footer';
+
+// 5. Components
+@import
+  "components/accordion",
+  "components/alert", 
+  "components/badges",
+  "components/button", 
+  "components/card",
+  "components/dropdown",
+  "components/input",
+  "components/kanban",
+  "components/modal",
+  "components/pagination",
+  "components/profile",
+  "components/progress",
+  "components/sidebar",
+  "components/table",
+  "components/tabs",
+  "components/timeoff",
+  "components/tooltip";
+
+// 6. Page-specific styles
+@import
+  'pages/dashboard', 'pages/profile', 'pages/onboarding', 'pages/feedback', 'pages/auth',  'pages/auth';
+
+// 7. Themes
+@import
+  'themes/default';
+
+// 7. Overrides
+@import
+  'overrides/datepicker', 'overrides/fullcalendar';

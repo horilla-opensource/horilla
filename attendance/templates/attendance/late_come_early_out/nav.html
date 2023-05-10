@@ -1,0 +1,95 @@
+{% load i18n %}
+<section class="oh-wrapper oh-main__topbar "  x-data="{searchShow: false}">
+  <div class="oh-main__titlebar oh-main__titlebar--left">
+    <h1 class="oh-main__titlebar-title fw-bold">
+        <a href="{% url 'late-come-early-out-view' %}" class='text-dark'>
+            {% trans "Late Come/Early Out" %}
+        </a>
+        
+      </h1>
+    <a
+      class="oh-main__titlebar-search-toggle"
+      role="button"
+      aria-label="Toggle Search"
+      @click="searchShow = !searchShow"
+    >
+      <ion-icon
+        name="search-outline"
+        class="oh-main__titlebar-serach-icon"
+      ></ion-icon>
+    </a>
+  </div>
+  <div class="oh-main__titlebar oh-main__titlebar--right">
+    <div
+      class="oh-input-group oh-input__search-group"
+      :class="searchShow ? 'oh-input__search-group--show' : ''"
+    >
+      <ion-icon
+        name="search-outline"
+        class="oh-input-group__icon oh-input-group__icon--left"
+      ></ion-icon>
+      <input
+        type="text"
+        class="oh-input oh-input__icon"
+        aria-label="Search Input"
+        id="report-search"
+        name='search'
+        placeholder="{% trans 'Search' %}"
+        hx-get="{% url 'late-come-early-out-search' %}" 
+        hx-trigger="keyup changed delay:500ms, search" 
+        hx-target="#report-container" 
+        hx-swap="innerHTML"
+      />
+    </div>
+    <div class="oh-main__titlebar-button-container">
+      <div class="oh-dropdown" x-data="{open: false}">
+        <button class="oh-btn ml-2" @click="open = !open">
+          <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}
+        </button>
+        <div
+          class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4"
+          x-show="open"
+          @click.outside="open = false"
+          style="display: none;"
+        >
+          {% include 'attendance/late_come_early_out/late_come_early_out_filters.html' %}
+        </div>
+      </div>
+      <div class="oh-btn-group ml-2">
+        {% comment %} <div class="oh-dropdown" x-data="{open: false}">
+          <button
+            class="oh-btn oh-btn--dropdown oh-btn--secondary oh-btn--shadow"
+            @click="open = !open"
+            @click.outside="open = false"
+          >
+            Actions
+          </button>
+          <div class="oh-dropdown__menu oh-dropdown__menu--right" x-show="open">
+            <ul class="oh-dropdown__items">
+              <li class="oh-dropdown__item">
+                <a href="#" class="oh-dropdown__link">Arrange</a>
+              </li>
+              <li class="oh-dropdown__item">
+                <a href="#" class="oh-dropdown__link">Forward</a>
+              </li>
+              <li class="oh-dropdown__item">
+                <a href="#" class="oh-dropdown__link">Archive</a>
+              </li>
+              <li class="oh-dropdown__item">
+                <a href="#" class="oh-dropdown__link oh-dropdown__link--danger"
+                  >Delete</a
+                >
+              </li>
+            </ul>
+          </div>
+        </div> {% endcomment %}
+      </div>
+    </div>
+  </div>
+  <script>
+    $('#attendance-search').keydown(function (e) { 
+      var val = $(this).val();
+      $('.pg').attr('hx-vals', `{"search":${val}}`);
+    });
+  </script>
+</section>

@@ -1,0 +1,17 @@
+{% load i18n %}
+<div id="view-container">
+{% if messages %}
+<div class="oh-alert-container">
+    {% for message in messages %}
+    <div class="oh-alert oh-alert--animated {{message.tags}}">
+          {{ message }}
+        </div> 
+    {% endfor %}
+</div>
+{% endif %}
+
+  <form action="{% url 'work-type-request' %}" method="post">
+    {% csrf_token %} {{form}}
+    <input type="submit" value="{% trans 'Submit' %}" class="mt-4 btn oh-btn--secondary" />
+  </form>
+</div>

@@ -1,0 +1,56 @@
+{% load i18n %}
+{% if messages %}
+<div class="oh-wrapper">
+    {% for message in messages %}
+    <div class="oh-alert-container">
+        <div class="oh-alert oh-alert--animated {{message.tags}}">
+            {{ message }}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+<ul class="oh-activity-list " style="height: 300px; overflow: auto;">
+    <li class="oh-activity-list__comment-item">
+        <!-- comment section  -->
+        {% for comment in comments %}
+        <div class="oh-activity-list__comment-title">
+            <div class="oh-activity-list__photo oh-activity-list__photo--small me-2">
+                <img src="https://ui-avatars.com/api/?name={{comment.employee_id}}&background=random"
+                    class="oh-activity-list__image" alt="Simone de Beauvoir" />
+            </div>
+            <small class="oh-activity-list__description">
+                <span><strong>{{comment.employee_id}}</strong> {% trans "added a comment" %}</span>
+                <span class="oh-activity-list__comment-timestamp">{{comment.created_at}}</span>
+            </small>
+        </div>
+        <div class="oh-activity-list__comment-container">
+            <p class="oh-activity-list__comment">
+                {{comment.comment}}
+            </p>
+        </div>
+        {% endfor %}
+        <!-- end of comment  -->
+    </li>
+    <!-- history section -->
+    {% for history_object in historys %}
+        {% for history in history_object.delta.changes %}
+        <li class="oh-activity-list__item">
+            <div class="oh-activity-list__photo oh-activity-list__photo--small me-2">
+                <img src="https://ui-avatars.com/api/?name={{history_object.changed_user}}&background=random"
+                    class="oh-activity-list__image" alt="Albert Camus" />
+            </div>
+            <small class="oh-activity-list__description"><strong>{{history_object.changed_user}} </strong> 
+                {% trans "updated key result" %}
+                <strong>{{history.field |title|cut:'_'}}</strong> {% trans "from" %}
+                <strong>{{history.old}}</strong> to <strong>{{history.new}}</strong></small>
+        </li>
+        <li>
+            <small>
+                {{history_object.changed_date}}
+            </small>
+        </li>
+        {% endfor %}
+    {% endfor %}
+</ul>

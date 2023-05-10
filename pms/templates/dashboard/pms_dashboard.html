@@ -1,0 +1,129 @@
+{% extends 'index.html' %}
+{% block content %}
+{% load static i18n %}
+{% load i18n %}
+
+<!-- End of Navigation -->
+<main :class="sidebarOpen ? 'oh-main__sidebar-visible' : ''">
+    <div class="oh-wrapper">
+        <div class="oh-dashboard row">
+            <div class="oh-dashboard__left col-12 col-sm-12 col-md-12 col-lg-9">
+                <div class="oh-dashboard__cards row">
+                    <div class="col-12 col-sm-12 col-md-6 col-lg-4">
+                        <div class="oh-card-dashboard oh-card-dashboard oh-card-dashboard--success">
+                            <div class="oh-card-dashboard__header">
+                                <span class="oh-card-dashboard__title">{% trans "Total OKR" %}</span>
+                            </div>
+                            <div class="oh-card-dashboard__body">
+                                <a href="{% url 'objective-list-view' %}" style="text-decoration: none;" class="oh-card-dashboard__counts">
+                                    <span class="oh-card-dashboard__count">{{count_objective}}</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-12 col-md-6 col-lg-4">
+                        <div class="oh-card-dashboard oh-card-dashboard--neutral">
+                            <div class="oh-card-dashboard__header">
+                                <span class="oh-card-dashboard__title">{% trans "Total Key Results" %}</span>
+                            </div>
+                            <div class="oh-card-dashboard__body">
+                                <a href="{% url 'objective-list-view' %}" style="text-decoration: none;" class="oh-card-dashboard__counts">
+                                    <span class="oh-card-dashboard__count">{{count_key_result}}</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-12 col-md-6 col-lg-4">
+                        <div class="oh-card-dashboard oh-card-dashboard--danger">
+                            <div href="{% url 'objective-list-view' %}" style="text-decoration: none;" class="oh-card-dashboard__header">
+                                <span class="oh-card-dashboard__title">{% trans "Total Feedbacks" %}</span>
+                            </div>
+                            <div class="oh-card-dashboard__body">
+                                <a href="{% url 'feedback-view' %}" style="text-decoration: none;" class="oh-card-dashboard__counts">
+                                    <span class="oh-card-dashboard__count">{{count_feedback}}</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="oh-dashboard__movable-cards row mt-4">
+                    <div class="col-12 col-sm-12 col-md-12 col-lg-6 oh-card-dashboard--moveable">
+                        <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent">
+                            <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
+                                <span class="oh-card-dashboard__title">{% trans "Objective Status" %}</span>
+                                <span class="oh-card-dashboard__title float-end" id="objective-status-chart"><ion-icon name="caret-forward"></ion-icon></span>
+
+                            </div>
+                            <div class="oh-card-dashboard__body">
+                                <canvas id="objectiveChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-12 col-md-12 col-lg-6 oh-card-dashboard--moveable">
+                        <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent">
+                            <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
+                                <span class="oh-card-dashboard__title">{% trans "Key Result Status" %}</span>
+                                <span class="oh-card-dashboard__title float-end" id="key-result-status-chart"><ion-icon name="caret-forward"></ion-icon></span>
+                            </div>
+                            <div class="oh-card-dashboard__body">
+                                <canvas id="keyResultChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-12 col-md-12 col-lg-6 oh-card-dashboard--moveable">
+                        <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent">
+                            <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
+                                <span class="oh-card-dashboard__title">{% trans "Feedack Status" %}</span>
+                                <span class="oh-card-dashboard__title float-end" id="feedback-status-chart"><ion-icon name="caret-forward"></ion-icon></span>
+                            </div>
+                            <div class="oh-card-dashboard__body">
+                                <canvas id="feedbackChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="oh-dashboard__right  col-12 col-sm-12 col-md-12 col-lg-3">
+                <div class="oh-dashboard__events">
+                   
+                    <ul class="oh-dashboard__events-nav">
+                        <li class="oh-dashboard__events-nav-item oh-dashboard__events-nav-item--active" data-target="0">
+                        </li>
+                        <li class="oh-dashboard__events-nav-item" data-target="1"></li>
+                        <li class="oh-dashboard__events-nav-item" data-target="2"></li>
+                    </ul>
+                </div>
+
+                <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent mt-3">
+                    <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
+                        <span class="oh-card-dashboard__title"> {% trans "OKR At-Risk" %}</span>
+                    </div>
+                    <div class="oh-card-dashboard__body">
+                        <ul class="oh-card-dashboard__user-list">
+                           {% for okr in okr_at_risk %}
+                           <li class="oh-card-dashboard__user-item">
+                            <a href="{%url 'objective-detailed-view'  emp_obj_id=okr.id %}">
+                               <div class="oh-profile oh-profile--md">
+                                   <div class="oh-profile__avatar mr-1">
+                                       <img src="https://ui-avatars.com/api/?name=Beth+Gibbons&background=random"
+                                       class="oh-profile__image" alt="Beth Gibbons" />
+                                    </div>
+                                    <span class="oh-profile__name oh-text--dark">{{okr.employee_id}}</span>
+                                </div>
+                            </a>
+                            </li>
+                            {% endfor %}
+                             
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="{%static 'src/dashboard/pmsChart.js' %}"></script>
+{% endblock %}

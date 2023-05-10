@@ -1,0 +1,93 @@
+{% load i18n %}
+<div class="row">
+    <div class="col-12 col-sm-12 col-md-12 col-lg-12">
+        <div class="oh-card p-4">
+            <div class="oh-card__body">
+                <div class="oh-sticky-table oh-sticky-table--no-highlight">
+                    <div class="oh-sticky-table__table">
+                      <div class="oh-sticky-table__thead">
+                        <div class="oh-sticky-table__tr">
+                          <div class="oh-sticky-table__th">{% trans "Employee" %}</div>
+                          <div class="oh-sticky-table__th">{% trans "Permissions" %}</div>
+                        </div>
+                      </div>
+                      <div class="oh-sticky-table__tbody">
+                        {% for employee in employees %}
+                        <div class="oh-sticky-table__tr oh-permission-table__tr oh-permission-table--collapsed" data-label="Permissions" data-count="{{employee.employee_user_id.user_permissions.all|length}}">
+                          <div class="oh-sticky-table__sd oh-permission-table--toggle">
+                            <div class="d-flex align-items-center">
+                              <button class="oh-permission-table__collapse me-2">
+                                <ion-icon class="oh-permission-table__collapse-down" title="{% trans 'Reveal' %}" name="chevron-down-outline"></ion-icon>
+                                <ion-icon class="oh-permission-table__collapse-up" title="{% trans 'Collapse' %}" name="chevron-up-outline"></ion-icon>
+                              </button>
+                              <span class="oh-permission-table__user">{{employee}}.</span>
+                            </div>
+                          </div>
+                          <div class="oh-sticky-table__td">
+                            {% for permission in employee.employee_user_id.get_user_permissions %}                            
+                              <span class="oh-permission-panel oh-collapse-panel" data-label="Permissions" data-count="{{employee.employee_user_id.get_user_permissions|length}}">
+                              {{permission}}
+                              {% if perms.change_permissions %}
+                              <form hx-post="{% url 'remove-permission' permission employee.employee_user_id.id %}?page={{pd}}" hx-target='#view-container'>
+                                {% csrf_token %}
+                                <button type='submit' class="oh-permission-panel__remove">
+                                  <ion-icon name="close-outline"></ion-icon>
+                                </button>
+                                </form>
+                              {% endif %}
+                            </span>
+                            {% endfor %}
+                          </div>                        
+                        </div>
+                        {% endfor %}
+                      </div>
+                    </div>
+                  </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+  
+  
+<div class="oh-pagination">
+  <span class="oh-pagination__page">
+    {% trans "Page" %} {{ employees.number }} {% trans "of" %} {{ employees.paginator.num_pages }}.
+  </span>
+  <nav class="oh-pagination__nav">
+    <div class="oh-pagination__input-container me-3">
+      <span class="oh-pagination__label me-1">{% trans "Page" %}</span>
+      <input type="number" name="page" class="oh-pagination__input" value="{{employees.number}}"
+        hx-get="{% url 'permission-search' %}?{{pd}}" hx-target="#view-container" min="1" />
+      <span class="oh-pagination__label">{% trans "of" %} {{employees.paginator.num_pages}}</span>
+    </div>
+    <ul class="oh-pagination__items">
+      {% if employees.has_previous %}
+      <li class="oh-pagination__item oh-pagination__item--wide">
+        <a hx-target='#view-container' hx-get="{% url 'permission-search' %}?{{pd}}&page=1"
+          class="oh-pagination__link">{% trans "First" %}</a>
+      </li>
+      <li class="oh-pagination__item oh-pagination__item--wide">
+        <a hx-target='#view-container'
+          hx-get="{% url 'permission-search' %}?{{pd}}&page={{ employees.previous_page_number }}"
+          class="oh-pagination__link">{% trans "Previous" %}</a>
+      </li>
+      {% endif %}
+      {% if employees.has_next %}
+      <li class="oh-pagination__item oh-pagination__item--wide">
+        <a hx-target='#view-container'
+          hx-get="{% url 'permission-search' %}?{{pd}}&page={{ employees.next_page_number }}"
+          class="oh-pagination__link">{% trans "Next" %}</a>
+      </li>
+      <li class="oh-pagination__item oh-pagination__item--wide">
+        <a hx-target='#view-container'
+          hx-get="{% url 'permission-search' %}?{{pd}}&page={{ employees.paginator.num_pages }}"
+          class="oh-pagination__link">{% trans "Last" %}</a>
+      </li>
+      {% endif %}
+    </ul>
+  </nav>
+</div>
+

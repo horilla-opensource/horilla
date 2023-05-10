@@ -1,0 +1,78 @@
+.oh-badge{
+  display: inline-block;
+  padding: 0.25rem;
+  text-align: center;
+}
+.oh-badge--small{
+  width: 22px;
+  height: 22px;
+  font-size: 0.75rem;
+}
+.oh-badge--round{
+  display: flex;
+  justify-content: center;
+  // align-items: center;
+  border-radius: 50%;
+}
+.oh-tabs__input-badge-container{
+  display: flex;
+  align-items: center;
+}
+// Colors
+.oh-badge--danger{
+  background-color: $danger-color;
+  color: $white-color;
+}
+.oh-badge--secondary{
+  background-color: $secondary-color;
+  color: $white-color;
+}
+
+
+/* ==============================
+*            DOTS
+* ============================= */
+.oh-dot{
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.oh-dot--small{
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.oh-dot--danger{
+  background-color: $danger-color;
+}
+.oh-dot--success{
+  background-color: $success-color;
+}
+.oh-dot--info{
+  background-color: $blue;
+}
+.oh-dot--warning{
+  background-color: $yellow;
+}
+
+/* ==============================
+*       CHECKPOINT BADGE
+* ============================= */
+.oh-checkpoint-badge{
+  border: 2px solid;
+  display: inline-block;
+  border-radius: 4px;
+  padding: 0.3rem 0.5rem;
+  font-weight: bold;
+  margin-left: auto;
+  margin-right: auto;
+  font-size: 0.8rem;
+}
+
+.oh-checkpoint-badge--secondary{
+  color: $secondary-color;
+  border-color: $secondary-color;
+}

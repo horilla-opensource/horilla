@@ -1,0 +1,52 @@
+{% load i18n %}
+<form method="post" hx-post="{% url 'rotating-work-type-assign-update' update_form.instance.id %}" hx-target="#rotatingWorkTypeAssignUpdateModalLabel"id="rotating-work-type-assign-update-form" >
+    {% csrf_token %}
+    <div class="oh-inner-sidebar-content__header"></div>
+    {{update_form}}
+    <button
+      type="submit"
+      class="oh-btn oh-btn--secondary mt-2 mr-0 oh-btn--w-100-resp"
+    >
+      {% trans "Save Changes" %}
+    </button>
+    <div class="oh-inner-sidebar-content__footer"></div>
+</form>
+
+<script>
+    $(document).ready(function () {
+      function hidBasedOn(basedOn,parent) {
+      if (basedOn == "after") {
+        parent.find("label[for='id_rotate_after_day']").show();
+        parent.find("#id_rotate_after_day").show();
+
+        parent.find("label[for='id_rotate_every_weekend']").hide();
+        parent.find("#id_rotate_every_weekend").hide();
+        parent.find("label[for='id_rotate_every']").hide();
+        parent.find("#id_rotate_every").hide();
+      } else if (basedOn == "weekly") {
+        parent.find("label[for='id_rotate_every_weekend']").show();
+        parent.find("#id_rotate_every_weekend").show();
+
+        parent.find("label[for='id_rotate_after_day']").hide();
+        parent.find("#id_rotate_after_day").hide();
+        parent.find("label[for='id_rotate_every']").hide();
+        parent.find("#id_rotate_every").hide();
+      } else if (basedOn == "monthly") {
+        parent.find("label[for='id_rotate_every']").show();
+        parent.find("#id_rotate_every").show();
+
+        parent.find("label[for='id_rotate_after_day']").hide();
+        parent.find("#id_rotate_after_day").hide();
+        parent.find("label[for='id_rotate_every_weekend']").hide();
+        parent.find("#id_rotate_every_weekend").hide();
+      }
+    }
+    var basedOn = $("#rotating-work-type-assign-update-form #id_based_on");
+    var parent = $("#rotating-work-type-assign-update-form")
+    hidBasedOn(basedOn.val(),parent);
+
+    basedOn.on('change',function (e) {
+      hidBasedOn(basedOn.val(),parent);
+    });
+    });
+</script>

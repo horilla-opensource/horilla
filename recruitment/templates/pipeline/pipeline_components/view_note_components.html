@@ -1,0 +1,7 @@
+{% load i18n %}
+<div class="w-75 float-left" id='note-content{{note.id}}'>
+    <div>{{note}}</div>
+    <div class="text-black-50 border-bottom pb-1">
+        {% trans "by" %} {{note.updated_by}} @{{note.stage_id}}
+    </div>
+</div>

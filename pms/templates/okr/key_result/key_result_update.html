@@ -1,0 +1,106 @@
+{% load i18n %}
+<!-- form  non field errors  --> 
+{% if key_result_form.errors %}
+<div class="oh-wrapper">
+    <div class="oh-alert-container">
+
+        {% for error in key_result_form.non_field_errors %}
+        <div class="oh-alert oh-alert--animated oh-alert--danger">
+            {{ error }}
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+
+<!-- for editing key result -->
+<div class="oh-modal__dialog-header">
+    <h5 class="oh-modal__dialog-title" id="addEmployeeModalLabel">{% trans "Update Key Results" %}</h5>
+    <button type="button" class="oh-modal__close reloadButton" aria-label="Close">
+        <ion-icon name="close-outline"></ion-icon>
+    </button>
+</div>
+<form hx-post="{% url 'key-result-update' id=key_result_id %}" hx-target="#ObjectiveModalFormTarget">
+<div class="oh-modal__dialog-body">
+
+    <div class="oh-input__group">
+        <label class="oh-input__label mt-0" for="keyTitle">{% trans "Title" %}</label>
+
+        {{ key_result_form.key_result }}
+       
+        {{ key_result_form.key_result.errors }}
+
+
+    </div>
+    <div class="oh-input__group">
+        <label class="oh-input__label" for="keyDesc">{% trans "Description" %}</label>
+        {{ key_result_form.key_result_description }}
+    </div>
+    <div class="row">
+        <div class="col-12 col-sm-12 col-md-4 col-lg-4">
+            <div class="oh-input__group">
+                <label class="oh-input__label" for="keyDesc">{% trans "Key Results" %}
+                    type</label>
+                {{key_result_form.progress_type}}
+                {{key_result_form.progress_type.errors}}
+            </div>
+        </div>
+        <div class="col-12 col-sm-12 col-md-8 col-lg-8">
+            <div class="d-flex align-items-center">
+                <div class="oh-input__group me-2">
+                    <label class="oh-input__label" for="keyDesc">{% trans "Current Value" %}
+                        </label>
+                    {{key_result_form.current_value}}
+                    {{key_result_form.current_value.errors}}
+                </div>
+                <div class="oh-input__group">
+                    <label class="oh-input__label" for="keyDesc">{% trans "Target Value" %}
+                        </label>
+                    {{key_result_form.target_value}}
+                    {{key_result_form.target_value.errors}}
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+
+
+        <div class="col-6 col-sm-6 col-md- col-lg-6">
+            <div class="oh-input__group">
+                <label class="oh-input__label" for="startDate">{% trans "Start Date" %}
+                    </label>
+                {{key_result_form.start_date}}
+                {{key_result_form.start_date.errors}}
+
+            </div>
+        </div>
+        <div class="col-6 col-sm-6 col-md-6 col-lg-6">
+            <div class="oh-input__group">
+                <label class="oh-input__label" for="endDate">{% trans "End Date" %} </label>
+                {{key_result_form.end_date}}
+                {{key_result_form.end_date.errors}}
+
+            </div>
+        </div>
+
+
+    </div>
+    <div class="col-12 col-sm-12 col-md-12 col-lg-12">
+        <div class="oh-input__group">
+            <label class="oh-input__label" for="endDate">{% trans "Employee" %}</label>
+            {{key_result_form.employee_id}}
+           
+            {{key_result_form.employee_id.errors}}
+
+        </div>
+    </div>
+    
+</div>
+<div class="oh-modal__dialog-footer">
+    <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow ">
+        {% trans "Save" %}
+    </button>
+</div>
+</form>

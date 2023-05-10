@@ -1,0 +1,34 @@
+{% extends 'index.html' %} {% load i18n %} {% block content %}
+<p class="pb-3">
+  <a href="/leave/holiday-view" class="btn btn-primary">{% trans "View" %}</a> {% trans "View All Holiday" %} 
+</p>
+<form action="" method="post">
+  {%csrf_token%} {{form.as_p}}
+  <input type="submit" class="btn btn-success" />
+</form>
+
+
+<script>
+  $(document).ready(function () {
+    // Get references to the start and end date fields
+    var $startDate = $('#id_start_date');
+    var $endDate = $('#id_end_date');
+
+    // Attach an event listener to the start date field
+    $startDate.on('change', function () {
+      // Get the value of the start date field
+      var startDateVal = $startDate.val();
+      // Set the min attribute of the end date field to the value of the start date field
+      $endDate.attr('min', startDateVal);
+    });
+
+    $endDate.on('change', function () {
+      // Get the value of the end date field
+      var endDateVal = $endDate.val();
+      // Set the max attribute of the start date field to the value of the end date field
+      $startDate.attr('max', endDateVal);
+    });
+
+  });
+</script>
+{% endblock %}

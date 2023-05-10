@@ -1,0 +1,233 @@
+{% extends 'index.html' %} {% block content %} {% load mathfilters %} 
+{% load static %}
+<div class="oh-wrapper">
+  <div class="oh-dashboard row">
+    <div class="oh-dashboard__left col-12 col-sm-12 col-md-12 col-lg-9">
+      <div class="oh-dashboard__cards row">
+        <div class="col-12 col-sm-12 col-md-6 col-lg-4">
+          <div
+            class="oh-card-dashboard oh-card-dashboard oh-card-dashboard--success"
+          >
+            <div class="oh-card-dashboard__header">
+              <span class="oh-card-dashboard__title">Hired Candidates</span>
+            </div>
+            <div class="oh-card-dashboard__body">
+              <div class="oh-card-dashboard__counts">
+                <span class="oh-card-dashboard__sign"
+                  ><ion-icon name="caret-up-outline"></ion-icon
+                ></span>
+                <span class="oh-card-dashboard__count"
+                  >{{total_hired_candidates}}</span
+                >
+              </div>
+              <span class="oh-badge oh-card-dashboard__badge"
+                >{{hire_ratio}}%</span
+              >
+            </div>
+          </div>
+        </div>
+        <div class="col-12 col-sm-12 col-md-6 col-lg-4">
+          <div class="oh-card-dashboard oh-card-dashboard--neutral">
+            <div class="oh-card-dashboard__header">
+              <span class="oh-card-dashboard__title">Conversion Rate</span>
+            </div>
+            <div class="oh-card-dashboard__body">
+              <div class="oh-card-dashboard__counts">
+                <span class="oh-card-dashboard__count">{{hire_ratio}}%</span>
+              </div>
+              <span class="oh-badge oh-card-dashboard__badge"
+                >{{100|sub:hire_ratio}}%</span
+              >
+            </div>
+          </div>
+        </div>
+        <div class="col-12 col-sm-12 col-md-6 col-lg-4">
+          <div class="oh-card-dashboard oh-card-dashboard--danger">
+            <div class="oh-card-dashboard__header">
+              <span class="oh-card-dashboard__title">Total Candidates</span>
+            </div>
+            <div class="oh-card-dashboard__body">
+              <div class="oh-card-dashboard__counts">
+                <span class="oh-card-dashboard__sign"
+                  ><ion-icon name="accessibility"></ion-icon
+                ></span>
+                <span class="oh-card-dashboard__count"
+                  >{{total_candidates}}</span
+                >
+              </div>
+              <span class="oh-badge oh-card-dashboard__badge">100%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="oh-dashboard__movable-cards row mt-4">
+        <div
+          class="col-12 col-sm-12 col-md-12 col-lg-6 oh-card-dashboard--moveable"
+        >
+          <div
+            class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent"
+          >
+            <div
+              class="oh-card-dashboard__header oh-card-dashboard__header--divider"
+            >
+              <span class="oh-card-dashboard__title">Candidate per Stage</span>
+            </div>
+            <div class="oh-card-dashboard__body">
+              <canvas id="recruitmentChart1"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <div
+          class="col-12 col-sm-12 col-md-12 col-lg-6 oh-card-dashboard--moveable"
+        >
+          <div
+            class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent"
+          >
+            <div
+              class="oh-card-dashboard__header oh-card-dashboard__header--divider"
+            >
+              <span class="oh-card-dashboard__title">Overall Performance</span>
+            </div>
+            <div class="oh-card-dashboard__body">
+              <canvas id="myChart1"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <div
+          class="col-12 col-sm-12 col-md-12 col-lg-6 oh-card-dashboard--moveable"
+        >
+          <div
+            class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent"
+          >
+            <div
+              class="oh-card-dashboard__header oh-card-dashboard__header--divider"
+            >
+              <span class="oh-card-dashboard__title">Overall Conversions</span>
+            </div>
+            <div class="oh-card-dashboard__body">
+              <canvas id="myChart2"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="oh-dashboard__right col-12 col-sm-12 col-md-12 col-lg-3">
+      <div class="oh-dashboard__events">
+        <div class="oh-dashbaord__events-reel">
+          <div class="oh-dashboard__event oh-dashboard__event--purple">
+            <div class="oh-dasboard__event-photo">
+              <img
+                src="/static/images/upload/userphoto.png"
+                class="oh-dashboard__event-userphoto"
+              />
+            </div>
+            <div class="oh-dasboard__event-details">
+              <span class="oh-dashboard__event-title">Birthday</span>
+              <span class="oh-dashboard__event-main">Katie Melua</span>
+              <span class="oh-dashboard__event-date">29/03/2023</span>
+            </div>
+          </div>
+
+          <div class="oh-dashboard__event oh-dashboard__event--crimson">
+            <div class="oh-dasboard__event-photo">
+              <img
+                src="/static/images/upload/userphoto.png"
+                class="oh-dashboard__event-userphoto"
+              />
+            </div>
+
+            <div class="oh-dasboard__event-details">
+              <span class="oh-dashboard__event-title">Birthday</span>
+              <span class="oh-dashboard__event-main">Katie Melua</span>
+              <span class="oh-dashboard__event-date">29/03/2023</span>
+            </div>
+          </div>
+
+          <div class="oh-dashboard__event oh-dashboard__event--purple">
+            <div class="oh-dasboard__event-photo">
+              <img
+                src="/static/images/upload/userphoto.png"
+                class="oh-dashboard__event-userphoto"
+              />
+            </div>
+            <div class="oh-dasboard__event-details">
+              <span class="oh-dashboard__event-title">Birthday</span>
+              <span class="oh-dashboard__event-main">Katie Melua</span>
+              <span class="oh-dashboard__event-date">29/03/2023</span>
+            </div>
+          </div>
+        </div>
+        <ul class="oh-dashboard__events-nav">
+          <li
+            class="oh-dashboard__events-nav-item oh-dashboard__events-nav-item--active"
+            data-target="0"
+          ></li>
+          <li class="oh-dashboard__events-nav-item" data-target="1"></li>
+          <li class="oh-dashboard__events-nav-item" data-target="2"></li>
+        </ul>
+      </div>
+
+      <div
+        class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent mt-3"
+      >
+        <div
+          class="oh-card-dashboard__header oh-card-dashboard__header--divider"
+        >
+          <span class="oh-card-dashboard__title">Candidate on Onboard</span>
+        </div>
+        <div class="oh-card-dashboard__body">
+          <ul class="oh-card-dashboard__user-list">
+            {% for cand in onboard_candidates %}
+            <li class="oh-card-dashboard__user-item">
+              <div class="oh-profile oh-profile--md">
+                <div class="oh-profile__avatar mr-1">
+                  <img
+                    src="https://ui-avatars.com/api/?name={{cand}}&background=random"
+                    class="oh-profile__image"
+                    alt="{{cand}}"
+                  />
+                </div>
+                <span class="oh-profile__name oh-text--dark">{{cand}}</span>
+              </div>
+            </li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script src="{% static 'dashboard/recruitmentChart.js' %}"></script>
+
+{% comment %}
+<script>
+  var myChart2 = document.getElementById("myChart2");
+
+  var marksData = {
+    labels: ["English", "Maths", "Physics", "Chemistry", "Biology", "History"],
+    datasets: [
+      {
+        label: "Student A",
+        backgroundColor: "rgba(200,0,0,0.2)",
+        data: [65, 75, 70, 80, 60, 80],
+      },
+      {
+        label: "Student B",
+        backgroundColor: "rgba(0,0,200,0.2)",
+        data: [54, 65, 60, 70, 70, 75],
+      },
+    ],
+  };
+
+  var radarChart = new Chart(myChart2, {
+    type: "radar",
+    data: marksData,
+  });
+</script>
+{% endcomment %} {% endblock content %}

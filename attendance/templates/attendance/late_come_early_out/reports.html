@@ -1,0 +1,11 @@
+{% extends 'index.html' %}
+{% block content %}
+
+{% include 'attendance/late_come_early_out/nav.html' %}
+<div class="oh-wrapper">
+    <di id='report-container'>
+    {% include 'attendance/late_come_early_out/report_list.html' %}
+    </di>
+</div>
+
+{% endblock %}

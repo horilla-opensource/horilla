@@ -1,0 +1,55 @@
+{% load i18n %}
+{% if messages %}
+<div class="oh-wrapper">
+    {% for message in messages %}
+    <div class="oh-alert-container">
+        <div class="oh-alert oh-alert--animated {{message.tags}}">
+        {{ message }}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+<span class="oh-activity-sidebar__header float-left" >
+    <ion-icon
+      name="chevron-back-outline"
+      class="oh-activity-sidebar__header-icon me-2 oh-activity-sidebar__close"
+      id="close"
+      data-target="#activitySidebar"
+    ></ion-icon>
+</span>
+    <span class="oh-activity-sidebar__title">{{cand}}'s {% trans "Notes" %} </span>
+  <div class="oh-activity-sidebar__body">
+    <ol class="oh-activity-sidebar__qa-list" role="list">
+        {% for note in cand.stagenote_set.all %}
+      <li class="oh-activity-sidebar__qa-item" >
+        <div class="d-flex justify-content-between">
+          <span class="oh-activity-sidebar__q"
+          data-toggle='oh-modal-toggle' data-target='#updateNoteModal' hx-get="{% url 'note-update' note.id %}" hx-target='#modalContent'
+            >{{forloop.counter}}. {{note.title}}</span
+          >
+          {% if perms.recruitment.delete_stagenote %}
+          <ion-icon name="close-outline" hx-target='#activitySidebar' hx-post="{% url 'note-delete' note.id %}"></ion-icon>
+          {% endif %}
+        </div>
+        <span 
+        data-toggle='oh-modal-toggle' data-target='#updateNoteModal' hx-get="{% url 'note-update' note.id %}" hx-target='#modalContent'
+          >{{note.description}}</span
+        >
+        <span class="oh-activity-sidebar__a">
+            {% trans "by" %} <img src="https://ui-avatars.com/api/?name={{note.updated_by.employee_first_name}}+{{note.updated_by.employee_last_name}}&amp;background=random" style="width: 1.5em; border-radius: 100%;" alt="User"> {{note.updated_by}} @{{note.stage_id}}
+        </span>
+      </li>
+      {% endfor %}
+    </ol>
+  </div>
+
+  <script>
+    $(document).ready(function () {
+      $('#close').attr('class', 'oh-activity-sidebar__header-icon me-2 oh-activity-sidebar__close md hydrated');
+    });
+    $('#close').click(function (e) { 
+      $('#activitySidebar').removeClass('oh-activity-sidebar--show');        
+    });
+    
+  </script>

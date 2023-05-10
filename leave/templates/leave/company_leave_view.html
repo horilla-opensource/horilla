@@ -1,0 +1,40 @@
+{% extends 'index.html' %} {% load i18n %} {% block content %}
+<p class="pb-3">
+    <a href="{% url 'company-leave-creation' %}" class="btn btn-primary">{% trans "Create" %}</a> {% trans "New Leave Request" %}
+</p>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th scope="col">{% trans "Week" %}</th>
+            <th scope="col">{% trans "Week Day" %}</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for company_leave in company_leaves %}
+        <tr>
+            {% if company_leave.based_on_week != None %}
+            {% for week in weeks %}
+            {% if week.0 == company_leave.based_on_week %}
+            <td>{{week.1}}</td>
+            {% endif %}
+            {% endfor %}
+            {% else %}
+            <td>All</td>
+            {% endif %}    
+            {% for week_day in week_days %}
+            {% if week_day.0 == company_leave.based_on_week_day %}
+            <td>{{week_day.1}}</td>
+            {% endif %}
+            {% endfor %}
+            <td>
+                <a href="{% url 'company-leave-update' company_leave.id %}" class="btn btn-warning">{% trans "Edit" %}</a>
+            </td>
+            <td>
+                <a href="{% url 'company-leave-delete' company_leave.id %}" class="btn btn-danger">{% trans "Delete" %}</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

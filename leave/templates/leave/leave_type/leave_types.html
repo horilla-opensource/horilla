@@ -1,0 +1,81 @@
+{% load i18n %}
+<div class="oh-layout--grid-3" >
+{% for leave_type in leave_types %}
+      <div class="oh-kanban-card">
+        <div class="oh-kanban-card__avatar">
+          <div class="oh-kanban-card__profile-container">
+            {% if leave_type.icon %}
+            <img src="{{leave_type.icon.url}}" class="oh-kanban-card__profile-image" alt="Username" />
+            {% else %}
+            <img src="https://ui-avatars.com/api/?name={{leave_type.name}}&background=random"
+              class="oh-kanban-card__profile-image" alt="Username" />
+            {% endif %}
+          </div>
+        </div>
+        <div class="oh-kanban-card__details">
+          <span class="oh-kanban-card__title">{{leave_type.name}}</span>
+        </div>
+        <div class="oh-kanban-card__dots">
+          <div class="oh-dropdown" x-data="{show: false}">
+            <button class="oh-btn oh-btn--transparent text-muted p-3" @click="show = !show">
+              <ion-icon name="ellipsis-vertical-sharp"></ion-icon>
+            </button>
+            <div class="oh-dropdown__menu oh-dropdown__menu--dark-border oh-dropdown__menu--right" x-show="show" style="display: none;"
+              @click.outside="show = false">
+              <ul class="oh-dropdown__items">
+                <li class="oh-dropdown__item">
+                  <a href="#" class="oh-dropdown__link" data-toggle="oh-modal-toggle" data-target="#editModal"
+                    hx-get="{% url 'assign-one' leave_type.id %}" hx-target="#leaveForm">{% trans "Assign Leave" %}</a>
+                </li>
+                <li class="oh-dropdown__item">
+                  <a href="{% url 'type-update' leave_type.id %}" class="oh-dropdown__link">{% trans "Edit" %}</a>
+                </li>
+                <li class="oh-dropdown__item">
+                  <a href="{% url 'type-delete' leave_type.id %}" id="delete-link"  class="oh-dropdown__link">{% trans "Delete" %}</a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+{% endfor %}
+</div>
+<div class="oh-pagination">
+  <span class="oh-pagination__page">
+      {% trans "Page" %} {{ leave_types.number }} {% trans "of" %} {{ leave_types.paginator.num_pages }}.
+  </span>
+  <nav class="oh-pagination__nav">
+      <div class="oh-pagination__input-container me-3">
+          <span class="oh-pagination__label me-1">{% trans "Page" %}</span>
+          <input type="number" name="page" class="oh-pagination__input" value="{{leave_types.number}}"
+              hx-get="{% url 'type-filter' %}?{{pd}}" hx-target="#leaveTypes" min="1" />
+          <span class="oh-pagination__label">{% trans "of" %} {{leave_types.paginator.num_pages}}</span>
+      </div>
+      <ul class="oh-pagination__items">
+          {% if leave_types.has_previous %}
+          <li class="oh-pagination__item oh-pagination__item--wide">
+              <a hx-target='#leaveTypes' hx-get="{% url 'type-filter' %}?{{pd}}&page=1"
+                  class="oh-pagination__link">{% trans "First" %}</a>
+          </li>
+          <li class="oh-pagination__item oh-pagination__item--wide">
+              <a hx-target='#leaveTypes'
+                  hx-get="{% url 'type-filter' %}?{{pd}}&page={{ leave_types.previous_page_number }}"
+                  class="oh-pagination__link">{% trans "Previous" %}</a>
+          </li>
+          {% endif %}
+          {% if leave_types.has_next %}
+          <li class="oh-pagination__item oh-pagination__item--wide">
+              <a hx-target='#leaveTypes'
+                  hx-get="{% url 'type-filter' %}?{{pd}}&page={{ leave_types.next_page_number }}"
+                  class="oh-pagination__link">{% trans "Next" %}</a>
+          </li>
+          <li class="oh-pagination__item oh-pagination__item--wide">
+              <a hx-target='#leaveTypes'
+                  hx-get="{% url 'type-filter' %}?{{pd}}&page={{ leave_types.paginator.num_pages }}"
+                  class="oh-pagination__link">{% trans "Last" %}</a>
+          </li>
+          {% endif %}
+
+      </ul>
+  </nav>
+</div>

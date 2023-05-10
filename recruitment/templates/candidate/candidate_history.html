@@ -1,0 +1,34 @@
+{% load recruitmentfilters %}
+<h1>{{history.0.name}} history</h1>
+<table class='table table-striped'>
+    <tr>
+        <th>Stage</th>
+        <th>Scheduled</th>
+        <th>Updated at</th>
+        <th>Changed by</th>
+    </tr>
+    {% for candidate_history in history %}
+    {% if candidate_history.stage_id != None %}
+    <tr>
+        <td>{{candidate_history.stage_id}}</td>
+        <td>
+            {% if candidate_history.schedule_date != None %}
+            {{candidate_history.schedule_date}}
+            {% endif %}
+        </td>
+        <td>
+            {% if candidate_history.history_date == None %}
+            {{candidate_history.history_date}}
+            {% else %}
+            {{candidate_history.history_date}}
+            
+            {% endif %}
+            
+        </td>
+        <td>
+            {{candidate_history.history_user_id|employee}}
+        </td>
+    </tr>
+    {% endif %}
+    {% endfor %}
+</table>    

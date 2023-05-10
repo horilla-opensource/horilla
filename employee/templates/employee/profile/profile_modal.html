@@ -1,0 +1,50 @@
+{% load i18n %}
+<div
+class="oh-modal"
+id="uploadPhotoModal"
+role="dialog"
+aria-labelledby="uploadPhotoModal"
+aria-hidden="true"
+>
+<div class="oh-modal__dialog">
+  <div class="oh-modal__dialog-header">
+    <span class="oh-modal__dialog-title" id="uploadPhotoModalLabel"
+      >{% trans "Upload Photo" %}</span
+    >
+    <button class="oh-modal__close" aria-label="Close">
+      <ion-icon name="close-outline"></ion-icon>
+    </button>
+  </div>
+  <div class="oh-modal__dialog-body">
+    <div class="oh-profile-section__image-container">
+      <form hx-post="{% url 'update-own-profile-image' %}"  method='post' id="file-form">
+        {% csrf_token %}
+        <div class="oh-profile-section__modal-avatar">
+          {% if form.instance.employee_profile %}
+          <img
+          src="/media/{{form.instance.employee_profile}}"
+          class="oh-profile-section__modal-image preview"
+          alt="Username"
+          />
+          {% else %}
+          <img
+          src="https://ui-avatars.com/api/?name={{form.instance.employee_first_name}}+{{form.instance.employee_last_name}}&background=random"
+          class="oh-profile-section__modal-image preview"
+          alt="Username"
+          />
+          {% endif %}
+        </div>
+        <input type="file" name='employee_profile' id="id_employee_profile" class="oh-input oh-input--file oh-input--file-sm mt-4" />
+        <div class="d-flex justify-content-between w-100 align-items-center mt-4">
+          <button class="oh-btn oh-btn--light-danger mr-1" hx-target='#personalMessage' hx-delete="{% url 'remove-own-profile-image' %}"><ion-icon class="me-1" name="trash-outline"></ion-icon>{% trans "Delete Image" %}</button>
+          <button
+          type="submit"
+          class="oh-btn oh-btn--secondary oh-btn--shadow"
+          >
+          {% trans "Update Image" %}
+        </button>
+      </div>
+    </form>
+    </div>
+  </div>
+</div>

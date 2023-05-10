@@ -1,0 +1,44 @@
+{% load i18n %}
+<form action="{% url 'stage-update-pipeline' form.instance.id %}" method='post'>
+<div>
+    {% csrf_token %}
+    <div class="row" id='stageUpdateFormHx'>
+        <div class="col-12 col-sm-12 col-md-12 col-lg-6">
+            <label class="oh-label" for="">{% trans "Stage" %}</label>
+            {{form.stage}}
+            {{form.stage.errors}}
+        </div>
+        <div class="col-12 col-sm-12 col-md-12 col-lg-6">
+            <label class="oh-label" for="">{% trans "Recruitment" %}</label>
+            {{form.recruitment_id}}
+            {{form.recruitment_id.errors}}
+        </div>
+        <div class="col-12 col-sm-12 col-md-12 col-lg-6">
+            <label class="oh-label" for="">{% trans "Stage Managers" %}</label>
+            {{form.stage_managers}}
+            {{form.stage_managers.errors}}
+        </div>
+        <div class="col-12 col-sm-12 col-md-12 col-lg-6">
+            <label class="oh-label" for="">{% trans "Stage Type" %}</label>
+            {{form.stage_type}}
+            {{form.stage_type.errors}}
+        </div>
+    </div>
+</div>
+<div class="d-flex flex-row-reverse w-100 align-items-right mt-4">
+    <button
+    type="submit"
+    class="oh-btn oh-btn--secondary  pl-5 pr-5"
+    >
+    {% trans "Save" %}
+  </button>
+</div>
+</form>
+
+<script>
+   $(document).on('htmx:load', function () {
+    {% include 'select2.js' %}
+    $('#stageUpdateFormHx .col-12 .oh-select').select2()
+   });
+</script>
+

@@ -1,0 +1,122 @@
+{% load assets_custom_filter %}
+{% load static i18n %}
+{% load i18n %}
+
+<!-- start of messages -->
+{% if messages %}
+<div class="oh-wrapper">
+    {% for message in messages %}
+    <div class="oh-alert-container">
+        <div class="oh-alert oh-alert--animated {{message.tags}}" >
+            {{ message }}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+<!-- end of messages -->
+<!-- new acordian  -->
+
+  <div class="oh-card" id="assetFiltered">
+    <div class="oh-accordion-meta">
+      <div class="">
+        {% for asset_category in asset_categorys %}
+        <div 
+          class="oh-accordion-meta__header oh-accordion-meta__header--custom" 
+          data-target="#assetCategory{{asset_category.id}}" 
+          hx-get="{%url 'asset-list' id=asset_category.id %}" 
+          hx-target="#assetList{{asset_category.id}}">
+            <div class="d-flex">
+                <span 
+                  class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round ms-2 mr-2" 
+                  id="asset-count{{asset_category.id}}" 
+                  data-category-id="{{asset_category.id}}">
+                  {{asset_category.asset_set.count}}
+                </span>  
+              <span class="oh-accordion-meta__title">{{asset_category}}</span>
+         </div>
+
+          <div class="oh-accordion-meta__actions" id="assetActions">
+            <div class="oh-dropdown" x-data="{open: false}" >
+              <button class="oh-btn oh-stop-prop oh-accordion-meta__btn" @click="open = !open"
+                @click.outside="open = false">
+                {% trans "Actions" %}
+                <ion-icon class="ms-2 oh-accordion-meta__btn-icon" name="caret-down-outline"></ion-icon>
+              </button>
+              <div class="oh-dropdown__menu oh-dropdown__menu--right" x-show="open"  style="display: none;">
+                <ul class="oh-dropdown__items">
+                  <li class="oh-dropdown__item">
+                    <a href="#" class="oh-dropdown__link asset-create" data-toggle="oh-modal-toggle"
+                      data-target="#AssetCategoryModal" hx-get="{% url 'asset-creation' id=asset_category.id %}?{{pg}}"
+                      hx-target="#AssetModal" data-category-id="{{asset_category.id}}">{% trans "Create" %}</a>
+                  </li>
+                  <li class="oh-dropdown__item">
+                    <a href="#" class="oh-dropdown__link " data-toggle="oh-modal-toggle"
+                      data-target="#AssetCategoryModal" hx-get="{% url 'asset-category-update' id=asset_category.id %}?{{pg}}"
+                      hx-target="#AssetModal">{% trans "Update" %}</a>
+                  </li>
+                  <li class="oh-dropdown__item">
+                    <a hx-post="{% url 'asset-category-delete' id=asset_category.id %}?{{pg}}"
+                      class="oh-dropdown__link oh-dropdown__link--danger "
+                      hx-target="#assetCategoryList"
+                      hx-confirm="Do you want to delete Asset Category?">{% trans "Delete" %}</a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="oh-accordion-meta__body d-none" id="assetCategory{{asset_category.id}}">
+          <!-- htmx asset list loading here -->
+          <div class="oh-sticky-table oh-sticky-table--no-overflow mb-5" id="assetList{{asset_category.id}}">
+          </div>
+        </div>
+        {% endfor %}
+
+        <!-- pagination start -->
+        <div class="oh-pagination">
+          <span class="oh-pagination__page" data-toggle="modal" data-target="#addEmployeeModal"></span>
+          <nav class="oh-pagination__nav">
+            <div class="oh-pagination__input-container me-3">
+              <span class="oh-pagination__label me-1">{% trans "Page" %} </span>
+              <input type="number" name="page" class="oh-pagination__input" value="{{asset_categorys.number }}" min="1"
+                hx-get="{% url 'asset-category-view-search-filter' %}" hx-target="#assetCategoryList">
+              <span class="oh-pagination__label">{% trans "of" %} {{ asset_categorys.paginator.num_pages }}</span>
+            </div>
+            <ul class="oh-pagination__items">
+              {% if asset_categorys.has_previous %}
+              <li class="oh-pagination__item oh-pagination__item--wide">
+                <a hx-get="{% url 'asset-category-view-search-filter' %}?{{pg}}&page=1" class='oh-pagination__link'
+                  hx-target="#assetCategoryList">{% trans "First" %}</a>
+              </li>
+              <li class="oh-pagination__item oh-pagination__item--wide">
+                <a hx-get="{% url 'asset-category-view-search-filter' %}?{{pg}}&page={{ asset_categorys.previous_page_number }}"
+                  class='oh-pagination__link' hx-target="#assetCategoryList">{% trans "Previous" %}</a>
+              </li>
+              {%endif %}
+              {% if asset_categorys.has_next %}
+              <li class="oh-pagination__item oh-pagination__item--wide">
+                <a hx-get="{% url 'asset-category-view-search-filter' %}?{{pg}}&page={{ asset_categorys.next_page_number}}"
+                  class='btn btn-outline-secondary' hx-target="#assetCategoryList">{% trans "Next" %}</a>
+              </li>
+              <li class="oh-pagination__item oh-pagination__item--wide">
+                <a hx-get="{% url 'asset-category-view-search-filter' %}?{{pg}}&page={{ asset_categorys.paginator.num_pages }}"
+                  hx-target="#assetCategoryList" class="oh-pagination__link">{% trans "Last" %}</a>
+              </li>
+              {% endif %}
+            </ul>
+          </nav>
+        </div>
+        <!-- end of pagination -->
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  // action button seperating from the acordion
+  $('#assetActions').on('click',function (e) {
+        e.stopPropagation();
+    });
+</script>
+
+

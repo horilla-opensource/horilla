@@ -1,0 +1,31 @@
+{% load static i18n %}
+{% load i18n %}
+<div class="oh-modal__dialog-header">
+    <span class="oh-modal__dialog-title" id="addEmployeeObjectiveModalLabel">
+        <h5>{% trans "Batch Number" %}</h5>
+    </span>
+    <button type="button" class="oh-modal__close" data-dismiss="oh-modal" aria-label="Close"
+        hx-get="{%url 'asset-batch-number-search'%}" hx-target=#AssetBatchList>
+        <ion-icon name="close-outline"></ion-icon>
+    </button>
+</div>
+<form hx-post="{%url 'asset-batch-number-creation' %}" hx-target="#AssetFormTarget">
+    {% csrf_token %}
+    <div class="oh-modal__dialog-body">
+        <div class="oh-input__group ">
+            <label class="oh-input__label" for="objective">{% trans "Batch Number" %}</label>
+            {{asset_batch_form.lot_number}}
+            {{asset_batch_form.lot_number.errors}}
+        </div>
+        <div class="oh-input__group ">
+            <label class="oh-input__label" for="objective">{% trans "Description" %}</label>
+            {{asset_batch_form.lot_description}}
+            {{asset_batch_form.lot_description.errors}}
+        </div>
+        <div class="oh-modal__dialog-footer">
+            <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow ">
+                {% trans "Save" %}
+            </button>
+        </div>
+    </div>
+</form>

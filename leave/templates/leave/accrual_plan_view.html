@@ -1,0 +1,37 @@
+{% extends 'index.html' %}{% load i18n %}{% block content %}
+<p class="pb-3">
+  <a href="{% url 'accrual-plan-creation' %}" class="btn btn-primary">{% trans "Create" %}</a> {% trans "Accrual Plan" %}
+</p>
+<table class="table table-striped">
+  <thead>           
+    <tr>
+      <th scope="col">{% trans "Accrual" %}</th>
+      <th scope="col">{% trans "Leave Type" %}</th>
+      <th scope="col">{% trans "Based on" %}</th>
+      <th scope="col">{% trans "Extra Leave" %}</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for accrual_plan in accrual_plans %}
+    <tr>
+      <td>{{accrual_plan.name}}</td>
+      <td>{{accrual_plan.leave_type_id}}</td>
+      {% for choice in choices %} {% if choice.0 == accrual_plan.based_on %}
+      <td>{{choice.1}}</td>
+      {% endif %} {% endfor %}
+      <td>{{accrual_plan.extra_leave}} {{accrual_plan.extra_leave_in}}</td>
+    
+      <td>
+        <a href="{% url 'accrual-plan-update' accrual_plan.id %}" class="btn btn-warning"
+          >{% trans "Edit" %}</a
+        >
+      </td>
+      <td>
+        <a href="{% url 'accrual-plan-delete' accrual_plan.id %}" class="btn btn-danger">{% trans "Delete" %}</a
+        >
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

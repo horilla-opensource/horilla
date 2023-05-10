@@ -1,0 +1,49 @@
+{% load i18n %}
+{% if messages %}
+<div class="oh-alert-container">
+    {% for message in messages %}
+    <div class="oh-alert oh-alert--animated {{message.tags}}">
+          {{ message }}
+        </div> 
+    {% endfor %}
+</div>
+{% endif %}
+<form method="post" hx-post="{% url 'rec-stage-update' form.instance.id %}">
+    {% csrf_token %}
+    <div>
+        {% csrf_token %}
+        <div class="row" id='stageFormUpdate'>
+            <div class="col-12 col-sm-12 col-md-12 col-lg-6">
+                <label class="oh-label" for="">{% trans "Stage" %}</label>
+                {{form.stage}}
+                {{form.stage.errors}}
+            </div>
+            <div class="col-12 col-sm-12 col-md-12 col-lg-6">
+                <label class="oh-label" for="">{% trans "Recruitment" %}</label>
+                {{form.recruitment_id}}
+                {{form.recruitment_id.errors}}
+            </div>
+            <div class="col-12 col-sm-12 col-md-12 col-lg-6">
+                <label class="oh-label" for="">{% trans "Stage Managers" %}</label>
+                {{form.stage_managers}}
+                {{form.stage_managers.errors}}
+            </div>
+            <div class="col-12 col-sm-12 col-md-12 col-lg-6">
+                <label class="oh-label" for="">{% trans "Stage Type" %}</label>
+                {{form.stage_type}}
+                {{form.stage_type.errors}}
+            </div>
+            <div class="col-12 col-sm-12 col-md-12 col-lg-6">
+                <label class="oh-label" for="">{% trans "Is Active" %}?</label>
+                <div class="oh-switch">
+                    {{form.is_active}}
+                    {{form.is_active.errors}}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <input type="submit" value="Submit" class='mt-4 oh-btn oh-btn--secondary'>
+</form>
+
+

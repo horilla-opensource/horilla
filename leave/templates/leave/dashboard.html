@@ -1,0 +1,251 @@
+{% extends 'index.html' %}
+{% block content %}
+<div class="oh-wrapper">
+    <div class="oh-dashboard row">
+        <div class="oh-dashboard__left col-12 col-sm-12 col-md-12 col-lg-9">
+            <div class="oh-dashboard__cards row">
+                <div class="col-12 col-sm-12 col-md-6 col-lg-4">
+                    <div class="oh-card-dashboard oh-card-dashboard oh-card-dashboard--success">
+                        <div class="oh-card-dashboard__header">
+                            <span class="oh-card-dashboard__title">New Requests</span>
+                        </div>
+                        <div class="oh-card-dashboard__body">
+                            <div class="oh-card-dashboard__counts">
+                                {% if requests > 0 %}
+                                <span class="oh-card-dashboard__sign"><ion-icon
+                                        name="caret-up-outline"></ion-icon></span>
+                                {% endif %}
+                                <span class="oh-card-dashboard__count">{{requests}}</span>
+                            </div>
+                            {% if requests > 0 %}
+                            <span class="oh-badge oh-card-dashboard__badge">{{request_perc}}%</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-sm-12 col-md-6 col-lg-4">
+                    <div class="oh-card-dashboard oh-card-dashboard--neutral">
+                        <div class="oh-card-dashboard__header">
+                            <span class="oh-card-dashboard__title">Approved Requests</span>
+                        </div>
+                        <div class="oh-card-dashboard__body">
+                            <div class="oh-card-dashboard__counts">
+                                <span class="oh-card-dashboard__count">{{approved_requests}}</span>
+                            </div>
+                            <span class="oh-badge oh-card-dashboard__badge">0.00%</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-sm-12 col-md-6 col-lg-4">
+                    <div class="oh-card-dashboard oh-card-dashboard--danger">
+                        <div class="oh-card-dashboard__header">
+                            <span class="oh-card-dashboard__title">Rejected Requests</span>
+                        </div>
+                        <div class="oh-card-dashboard__body">
+                            <div class="oh-card-dashboard__counts">
+                                <span class="oh-card-dashboard__sign"><ion-icon
+                                        name="caret-down-outline"></ion-icon></span>
+                                <span class="oh-card-dashboard__count">{{rejected_requests}}</span>
+                            </div>
+                            <span class="oh-badge oh-card-dashboard__badge">3.00%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="oh-dashboard__movable-cards row mt-4">
+                <div class="col-12 col-sm-12 col-md-12 col-lg-6 oh-card-dashboard--moveable">
+                    <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent">
+                        <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
+                            <span class="oh-card-dashboard__title">Todays Leave</span>
+                        </div>
+                        <div class="oh-card-dashboard__body">
+                            <canvas id="myChart1"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 col-sm-12 col-md-12 col-lg-6 oh-card-dashboard--moveable">
+                    <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent">
+                        <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
+                            <span class="oh-card-dashboard__title">Overall Conversions</span>
+                        </div>
+                        <div class="oh-card-dashboard__body">
+                            <canvas id="myChart2"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div> 
+        <div class="oh-dashboard__right  col-12 col-sm-12 col-md-12 col-lg-3">
+            <div class="oh-dashboard__events">
+                <div class="oh-dashbaord__events-reel">
+                    <div class="oh-dashboard__event oh-dashboard__event--purple">
+                        <div class="oh-dasboard__event-photo">
+                            <img src="/static/images/upload/userphoto.png" class="oh-dashboard__event-userphoto" />
+                        </div>
+                        <div class="oh-dasboard__event-details">
+                            <span class="oh-dashboard__event-title">Birthday</span>
+                            <span class="oh-dashboard__event-main">Katie Melua</span>
+                            <span class="oh-dashboard__event-date">29/03/2023</span>
+                        </div>
+                    </div>
+
+                    <div class="oh-dashboard__event oh-dashboard__event--crimson">
+                        <div class="oh-dasboard__event-photo">
+                            <img src="/static/images/upload/userphoto.png" class="oh-dashboard__event-userphoto" />
+                        </div>
+
+                        <div class="oh-dasboard__event-details">
+                            <span class="oh-dashboard__event-title">Birthday</span>
+                            <span class="oh-dashboard__event-main">Katie Melua</span>
+                            <span class="oh-dashboard__event-date">29/03/2023</span>
+                        </div>
+                    </div>
+
+                    <div class="oh-dashboard__event oh-dashboard__event--purple">
+                        <div class="oh-dasboard__event-photo">
+                            <img src="/static/images/upload/userphoto.png" class="oh-dashboard__event-userphoto" />
+                        </div>
+                        <div class="oh-dasboard__event-details">
+                            <span class="oh-dashboard__event-title">Birthday</span>
+                            <span class="oh-dashboard__event-main">Katie Melua</span>
+                            <span class="oh-dashboard__event-date">29/03/2023</span>
+                        </div>
+                    </div>
+                </div>
+                <ul class="oh-dashboard__events-nav">
+                    <li class="oh-dashboard__events-nav-item oh-dashboard__events-nav-item--active" data-target="0">
+                    </li>
+                    <li class="oh-dashboard__events-nav-item" data-target="1"></li>
+                    <li class="oh-dashboard__events-nav-item" data-target="2"></li>
+                </ul>
+            </div>
+
+            <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent mt-3">
+                <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
+                    <span class="oh-card-dashboard__title">On Leave</span>
+                </div>
+                <div class="oh-card-dashboard__body">
+                    <ul class="oh-card-dashboard__user-list">
+                        <li class="oh-card-dashboard__user-item">
+                            <div class="oh-profile oh-profile--md">
+                                <div class="oh-profile__avatar mr-1">
+                                    <img src="https://ui-avatars.com/api/?name=Amy+Winehouse&background=random"
+                                        class="oh-profile__image" alt="Amy Winehouse" />
+                                </div>
+                                <span class="oh-profile__name oh-text--dark">Amy Winehouse</span>
+                            </div>
+                        </li>
+                        <li class="oh-card-dashboard__user-item">
+                            <div class="oh-profile oh-profile--md">
+                                <div class="oh-profile__avatar mr-1">
+                                    <img src="https://ui-avatars.com/api/?name=Natalia+Lafourcade&background=random"
+                                        class="oh-profile__image" alt="Natalia Lafourcade" />
+                                </div>
+                                <span class="oh-profile__name oh-text--dark">Natalia Lafourcade</span>
+                            </div>
+                        </li>
+                        <li class="oh-card-dashboard__user-item">
+                            <div class="oh-profile oh-profile--md">
+                                <div class="oh-profile__avatar mr-1">
+                                    <img src="https://ui-avatars.com/api/?name=Googoosh&background=random"
+                                        class="oh-profile__image" alt="Googoosh" />
+                                </div>
+                                <span class="oh-profile__name oh-text--dark">Googoosh</span>
+                            </div>
+                        </li>
+                        <li class="oh-card-dashboard__user-item">
+                            <div class="oh-profile oh-profile--md">
+                                <div class="oh-profile__avatar mr-1">
+                                    <img src="https://ui-avatars.com/api/?name=Che+Noir&background=random"
+                                        class="oh-profile__image" alt="Che Noir" />
+                                </div>
+                                <span class="oh-profile__name oh-text--dark">Che Noir</span>
+                            </div>
+                        </li>
+                        <li class="oh-card-dashboard__user-item">
+                            <div class="oh-profile oh-profile--md">
+                                <div class="oh-profile__avatar mr-1">
+                                    <img src="https://ui-avatars.com/api/?name=Kacey+Musgraves&background=random"
+                                        class="oh-profile__image" alt="Kacey Musgraves" />
+                                </div>
+                                <span class="oh-profile__name oh-text--dark">Kacey Musgraves</span>
+                            </div>
+                        </li>
+                        <li class="oh-card-dashboard__user-item">
+                            <div class="oh-profile oh-profile--md">
+                                <div class="oh-profile__avatar mr-1">
+                                    <img src="https://ui-avatars.com/api/?name=Billie+Holiday&background=random"
+                                        class="oh-profile__image" alt="Billie Holiday" />
+                                </div>
+                                <span class="oh-profile__name oh-text--dark">Billie Holiday</span>
+                            </div>
+                        </li>
+                        <li class="oh-card-dashboard__user-item">
+                            <div class="oh-profile oh-profile--md">
+                                <div class="oh-profile__avatar mr-1">
+                                    <img src="https://ui-avatars.com/api/?name=Nina+Simone&background=random"
+                                        class="oh-profile__image" alt="Nina Simone" />
+                                </div>
+                                <span class="oh-profile__name oh-text--dark">Nina Simone</span>
+                            </div>
+                        </li>
+                        <li class="oh-card-dashboard__user-item">
+                            <div class="oh-profile oh-profile--md">
+                                <div class="oh-profile__avatar mr-1">
+                                    <img src="https://ui-avatars.com/api/?name=Carolina+Polachek&background=random"
+                                        class="oh-profile__image" alt="Caroline Polachek" />
+                                </div>
+                                <span class="oh-profile__name oh-text--dark">Carloine Polachek</span>
+                            </div>
+                        </li>
+                        <li class="oh-card-dashboard__user-item">
+                            <div class="oh-profile oh-profile--md">
+                                <div class="oh-profile__avatar mr-1">
+                                    <img src="https://ui-avatars.com/api/?name=Beth+Gibbons&background=random"
+                                        class="oh-profile__image" alt="Beth Gibbons" />
+                                </div>
+                                <span class="oh-profile__name oh-text--dark">Beth Gibbons</span>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    $(document).ready(function () {
+
+        var myChart1 = document.getElementById("myChart1");
+        $.ajax({
+            type: "GET",
+            url: "{% url 'todays-leave' %}",
+            dataType: "json",
+            success: function (response) {
+                console.log(response.background_color)
+                const data = {
+                    labels: response.labels,
+                    datasets: [{
+                        label: 'Leave count',
+                        data: response.data,
+                        backgroundColor: response.background_color,
+
+                    }]
+                };
+
+                var rankData = new Chart(myChart1, {
+                    type: 'pie',
+                    data: data,
+                });
+            }
+        });
+
+
+    })
+</script>
+{% endblock %}

@@ -1,0 +1,87 @@
+{% load recruitmentfilters %}
+{% load i18n %}
+<div>
+
+  <form  id='employee-update-form' enctype="multipart/form-data">
+    <div class="card rounded-3">
+      <div class="pl-5 mt-5">
+          <img
+            src="/media/{{form.employee_profile|media_path}}"
+            alt="Sample photo"
+            class="rounded-circle img-fluid mr-auto"
+            style="width: 100px; height: 100px"
+            />
+          </div>
+      <div class="card-body pl-5 pr-5 pb-5 pt-5">
+        <h3 class="mb-4">{{form.instance.employee_first_name}}'s {% trans "Info" %}</h3>
+        
+        <div class="row">
+            <div class="col-md-6 ">
+              {{form.employee_first_name.errors}}
+                <div class="form-outline mb-4">{{form.employee_first_name}}</div>
+            </div>
+            
+            <div class="col-md-6">
+              {{form.employee_last_name.errors}}
+
+              <div class="form-outline mb-4">{{form.employee_last_name}}</div>            
+          </div>
+          <div class="col-md-6">
+            {{form.email.errors}}
+            <div class="form-outline mb-4">{{form.email}}</div>
+          </div>
+          <div class="col-md-6">
+            {{form.phone.errors}}
+            <div class="form-outline mb-4">{{form.phone}}</div>
+          </div>
+          <div class="col-md-6">
+            {{form.dob.errors}}
+            <div class="form-outline mb-4">{{form.dob}}</div>
+          </div>
+          <div class="col-md-6">
+            {{form.gender.errors}}
+            <div class="form-outline mb-4">{{form.gender}}</div>
+          </div>
+        </div>
+        <div>
+            
+            
+            {{form.address.errors}}
+            <div class="form-outline mb-4">{{form.address}}</div>
+            {{form.country.errors}}
+            <div class="form-outline mb-4">{{form.country}}</div>
+            
+            
+            {{form.qualification.errors}}
+            <div class="form-outline mb-4">{{form.qualification}}</div>
+            {{form.experience.errors}}
+            <div class="form-outline mb-4">{{form.experience}}</div>
+            {{form.martial_status.errors}}
+            <div class="form-outline mb-4">{{form.martial_status}}</div>
+            {{form.children.errors}}
+            <div class="form-outline mb-4">{{form.children}}</div>
+            {{form.employee_profile.errors}}
+            <label class="text-secondary" for="id_{{form.employee_profile.name}}">{{form.employee_profile.label}}</label>
+            <input
+              type="file"
+              name="{{form.profile.name}}"
+              id="id_{{form.profile.name}}"
+              class="form-control  mb-4"
+            />
+            <label for="id_{{form.is_active.name}}">{{form.is_active.label}}</label>
+            {{form.is_active}}
+        </div>
+        {% if perms.employee.change_employee %}
+        <button
+        hx-post="{% url 'employee-update' form.instance.id  %}"
+        hx-target = '#section'
+        hx-encoding = 'multipart/form-data'
+        class="btn btn-success btn-lg ml-auto mr-auto"
+        >
+        {% trans "Submit" %}
+      </button>
+      {% endif %}        
+      </div>
+      </div>
+  </form>
+  </div>

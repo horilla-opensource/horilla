@@ -1,0 +1,38 @@
+{% extends 'settings.html' %}
+{% load i18n %}
+{% block settings %}
+<div class="oh-inner-sidebar-content">
+    {% if perms.base.add_jobposition %}
+    <form action="" method="post">
+        {% csrf_token %}
+        <div class="oh-inner-sidebar-content__header">
+            <h2 class="oh-inner-sidebar-content__title">{% trans "Job Position" %}</h2>
+        </div>
+        <div class="oh-inner-sidebar-content__body">
+            <div class="oh-input-group mb-2">
+                <label for="">
+                    {% trans "Department" %}
+                </label>
+                {{form.department_id.errors}}
+                {{form.department_id}}
+            </div>
+            <div class="oh-input-group mb-2">
+                <label for="">
+                    {% trans "Job Position" %}
+                </label>
+                {{form.job_position.errors}}
+                {{form.job_position}}
+            </div>
+        </div>
+        <button type='submit' class="oh-btn oh-btn--secondary mt-2 mr-0 oh-btn--w-100-resp">
+            {% trans "Save Changes" %}
+        </button>
+        <div class="oh-inner-sidebar-content__footer">
+        </div>
+    </div>
+    </form>
+    {% endif %}
+
+    {% include 'base/job_position/job_position_view.html' %}
+</div>
+{% endblock settings %}

@@ -1,0 +1,134 @@
+{% load i18n %}
+{% load attendancefilters %}
+<div class="oh-sticky-table">
+  <div class="oh-sticky-table__table oh-table__sticky-collaspable-sort">
+    <div class="oh-sticky-table__thead">
+      <div class="oh-sticky-table__tr">
+        <div class='oh-sticky-table__th' scope="col">{% trans "Employee" %}</div>
+          <div class='oh-sticky-table__th' scope="col">{% trans "Type" %}</div>
+          <div class='oh-sticky-table__th' scope="col">{% trans "Attendance Date" %}</div>
+          <div class='oh-sticky-table__th' scope="col">{% trans "Clock In" %}</div>
+          <div class='oh-sticky-table__th' scope="col">{% trans "In Date" %}</div>
+          <div class='oh-sticky-table__th' scope="col">{% trans "Clock Out" %}</div>
+          <div class='oh-sticky-table__th' scope="col">{% trans "Out Date" %}</div>
+          <div class='oh-sticky-table__th' scope="col">{% trans "Min Hour" %}</div>
+          <div class='oh-sticky-table__th' scope="col">{% trans "At Work" %}</div>
+      </div>
+    </div>
+    <!-- grouper -->
+    {% dynamic_regroup data by field as reports_grouper %}
+    {% for attendance_list in reports_grouper %}
+    <div class="oh-sticky-table__tbody" draggable="true">
+      <div class="oh-sticky-table__tr oh-table__toggle-parent" data-target="{{attendance_list.grouper}}">
+        <div class="oh-sticky-table__sd">
+          <div class="d-flex align-items-center">
+            <button class="oh-btn oh-btn--transparent oh-table__toggle-button"></button>
+            <span class="ms-2">
+              <div class="oh-tabs__input-badge-container">
+                <span class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round mr-1">
+                  {{attendance_list.list|length}}
+                </span>
+                {{attendance_list.grouper}}
+              </div>
+            </span>
+          </div>
+        </div>
+        <div class="oh-sticky-table__td"></div>
+        <div class="oh-sticky-table__td"></div>
+        <div class="oh-sticky-table__td"></div>
+        <div class="oh-sticky-table__td"></div>
+        <div class="oh-sticky-table__td"></div>
+        <div class="oh-sticky-table__td"></div>
+        <div class="oh-sticky-table__td"></div>
+        <div class="oh-sticky-table__td"></div>
+      </div>
+      <!-- data -->
+      {% for late_in_early_out in attendance_list.list %}
+      <div class="oh-sticky-table__tr oh-table__toggle-child" data-group="{{attendance_list.grouper}}">
+        
+        <div class="oh-sticky-table__sd">
+          <div class="oh-profile oh-profile--md">
+            <div class="oh-profile__avatar mr-1">
+              <img
+                src="https://ui-avatars.com/api/?name={{late_in_early_out.employee_id.employee_first_name}}+{{late_in_early_out.employee_id.employee_last_name}}&background=random"
+                class="oh-profile__image"
+                alt="Mary Magdalene"
+              />
+            </div>
+            <span class="oh-profile__name oh-text--dark"
+              >{{late_in_early_out.employee_id}}</span
+            >
+          </div>
+        </div>
+        <div class='oh-sticky-table__td'>{{late_in_early_out.type}}</div>
+        <div class='oh-sticky-table__td'>{{late_in_early_out.attendance_id.attendance_date}}</div>
+        <div class='oh-sticky-table__td'>{{late_in_early_out.attendance_id.attendance_clock_in}}</div>
+        <div class='oh-sticky-table__td'>{{late_in_early_out.attendance_id.attendance_clock_in_date}}</div>
+        <div class='oh-sticky-table__td'>{{late_in_early_out.attendance_id.attendance_clock_out}}</div>
+        <div class='oh-sticky-table__td'>{{late_in_early_out.attendance_id.attendance_clock_out_date}}</div>
+        <div class='oh-sticky-table__td'>{{late_in_early_out.attendance_id.minimum_hour}}</div>
+        <div class='oh-sticky-table__td'>{{late_in_early_out.attendance_id.attendance_worked_hour}}</div>
+
+          
+      </div>
+      {% endfor %}
+    </div>   
+    {% endfor %}             
+  </div>
+</div>
+
+<div class="oh-pagination">
+  <span
+    class="oh-pagination__page"
+    >
+    {% trans "Page" %} {{ data.number }} {% trans "of" %} {{ data.paginator.num_pages }}.
+    </span
+  >
+  <nav class="oh-pagination__nav">
+    <div class="oh-pagination__input-container me-3">
+      <span class="oh-pagination__label me-1">{% trans "Page" %}</span>
+      <input
+        type="number"
+        name="page"
+        class="oh-pagination__input"
+        value="{{data.number}}"
+        hx-get="{% url 'late-come-early-out-search' %}?{{pd}}"
+        hx-target="#report-container"
+        min="1"
+      />
+      <span class="oh-pagination__label">{% trans "of" %} {{data.paginator.num_pages}}</span>
+    </div>
+    <ul class="oh-pagination__items">
+      {% if data.has_previous %}
+      <li class="oh-pagination__item oh-pagination__item--wide">
+        <a hx-target='#report-container' hx-get="{% url 'late-come-early-out-search' %}?{{pd}}&page=1" class="oh-pagination__link">{% trans "First" %}</a>
+      </li>
+      <li class="oh-pagination__item oh-pagination__item--wide">
+        <a hx-target='#report-container' hx-get="{% url 'late-come-early-out-search' %}?{{pd}}&page={{ data.previous_page_number }}" class="oh-pagination__link">{% trans "Previous" %}</a>
+      </li>
+      {% endif %}
+      {% if data.has_next %}
+      <li class="oh-pagination__item oh-pagination__item--wide">
+        <a hx-target='#report-container' hx-get="{% url 'late-come-early-out-search' %}?{{pd}}&page={{ data.next_page_number }}" class="oh-pagination__link">{% trans "Next" %}</a>
+      </li>
+      <li class="oh-pagination__item oh-pagination__item--wide">
+        <a hx-target='#report-container' hx-get="{% url 'late-come-early-out-search' %}?{{pd}}&page={{ data.paginator.num_pages }}" class="oh-pagination__link">{% trans "Last" %}</a>
+      </li>
+      {% endif %}
+    </ul>
+  </nav>
+</div>
+<script>
+     $('.oh-table__sticky-collaspable-sort').click(function (e) { 
+    e.preventDefault();
+    let clickedEl = $(e.target).closest(".oh-table__toggle-parent");
+    let targetSelector = clickedEl.data("target");
+    let toggleBtn = clickedEl.find(".oh-table__toggle-button");
+    $(`[data-group='${targetSelector}']`).toggleClass(
+      "oh-table__toggle-child--show"
+    );
+    if (toggleBtn) {
+      toggleBtn.toggleClass("oh-table__toggle-button--show");
+    }
+  });
+</script>

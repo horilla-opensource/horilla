@@ -1,0 +1,195 @@
+{% extends 'index.html' %} 
+{% load static i18n %}
+{% load widget_tweaks %}
+{% load basefilters %}
+
+  
+{% block styles %}
+<link rel="stylesheet" href="{% static 'css/pms.css' %}" />
+
+{% endblock styles %}
+
+{% block content %}
+
+{% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+        <div class="oh-wrapper">
+          <div class="oh-alert-container">
+            <div class="oh-alert oh-alert--animated {{message.tags}}">
+              {{message}}
+            </div>
+          </div>
+        </div>
+            
+        {% endfor %}
+    </ul>
+{% endif %}
+
+
+<main :class="sidebarOpen ? 'oh-main__sidebar-visible' : ''">
+  <section class="oh-wrapper oh-main__topbar" x-data="{searchShow: false}">
+    <div class="oh-main__titlebar oh-main__titlebar--left">
+      <h1 class="oh-main__titlebar-title fw-bold">{% trans "Feedbacks" %}</h1>
+      <a class="oh-main__titlebar-search-toggle" role="button" aria-label="Toggle Search"
+        @click="searchShow = !searchShow">
+        <ion-icon name="search-outline" class="oh-main__titlebar-serach-icon"></ion-icon>
+      </a>
+    </div>
+ 
+    <div class="oh-main__titlebar oh-main__titlebar--right">
+      <div class="oh-input-group oh-input__search-group" :class="searchShow ? 'oh-input__search-group--show' : ''">
+        <ion-icon name="search-outline" class="oh-input-group__icon oh-input-group__icon--left"></ion-icon>
+        <input name="search" hx-get="{% url 'feedback-list-search' %}" hx-target="#feedback_list" hx-trigger='keyup delay:500ms' type="text" class="oh-input oh-input__icon" aria-label="Search Input"
+        placeholder="{% trans 'Search' %}" />
+      </div>
+      <div class="oh-main__titlebar-button-container">
+        
+          <div class="oh-dropdown" x-data="{open: false}">
+            <button class="oh-btn ml-2" @click="open = !open">
+              <ion-icon name="filter" class="mr-1"></ion-icon>Filter
+            </button>
+            <div class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4" x-show="open"
+              @click.outside="open = false" style="display: none;">
+              <form hx-get="{% url 'feedback-list-search' %}" hx-target="#feedback_list" hx-swap="innerHTML"
+                method="get">
+  
+                <div class="oh-dropdown__filter-body">
+  
+                  <div class="oh-accordion">
+                    <div class="oh-accordion-header">{% trans "Feedback" %}</div>
+                    <div class="oh-accordion-body">
+                      <div class="row">
+                        <div class="col-sm-12 col-md-12 col-lg-6">
+                          <div class="oh-input-group">
+                            <label class="oh-label">{% trans "Feedback Title" %}</label>
+                            {{feedback_filter_form.review_cycle}}
+                          </div>
+                          <div class="oh-input-group">
+                            <label class="oh-label">{% trans "Status" %} </label>
+                            {{feedback_filter_form.status}}
+                          </div>
+                        </div>
+                        <div class="col-sm-12 col-md-12 col-lg-6">
+                          <div class="oh-input-group">
+                            <label class="oh-label">{% trans "Employee" %}</label>
+                            {{feedback_filter_form.employee_id}}
+                          </div>
+                          <div class="oh-input-group">
+                            <label class="oh-label">{% trans "Manager" %} </label>
+                            {{feedback_filter_form.manager_id}}
+                          </div>
+                        </div>
+                        <div class="col-sm-12 col-md-12 col-lg-6">
+                          <div class="oh-input-group">
+                            <label class="oh-label">{% trans "Colleague" %} </label>
+                            {{feedback_filter_form.colleague_id}}
+                          </div>
+                          <div class="oh-input-group">
+                            <label class="oh-label">{% trans "Start Date" %}</label>
+                            {{feedback_filter_form.start_date}}
+                          </div>
+                        </div>
+                        <div class="col-sm-12 col-md-12 col-lg-6">
+                          <div class="oh-input-group">
+                            <label class="oh-label">{% trans "Subordinate" %}</label>
+                            {{feedback_filter_form.subordinate_id}}
+                          </div>
+                          <div class="oh-input-group">
+                            <label class="oh-label">{% trans "End Date" %}</label>
+                            {{feedback_filter_form.end_date}}
+                          </div>
+  
+                        </div>
+                        <div class="col-sm-12 col-md-12 col-lg-6">
+                          <div class="oh-input-group">
+                            <label class="oh-label">{% trans "Archive" %}</label>
+                            {{feedback_filter_form.archive}}
+                          </div>
+                        
+  
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="oh-accordion">
+                    <div class="oh-accordion-header">{% trans "Advanced" %}</div>
+                    <div class="oh-accordion-body">
+                      <div class="row">
+                        <div class="col-sm-12 col-md-12 col-lg-6">
+                          <div class="oh-input-group">
+                            <a hx-get="{%url 'feedback-list-search' %}?created_at_date_range=today"  hx-target="#feedback_list" class="oh-btn oh-btn--secondary oh-btn--small w-100">{% trans "Today" %}</a>
+                          </div>
+                        </div>
+                        <div class="col-sm-12 col-md-12 col-lg-6">
+                          <div class="oh-input-group">
+                            <a hx-get="{%url 'feedback-list-search' %}?created_at_date_range=yesterday" hx-target="#feedback_list" class="oh-btn oh-btn--secondary oh-btn--small w-100">{% trans "Yesterday" %}</a>
+                          </div>
+                        </div>
+                        <div class="col-sm-12 col-md-12 col-lg-6">
+                          <div class="oh-input-group">
+                            <a hx-get="{%url 'feedback-list-search' %}?created_at_date_range=week"  hx-target="#feedback_list" class="oh-btn oh-btn--secondary oh-btn--small w-100">{% trans "This Week" %}</a>
+                          </div>
+                        </div>
+                        <div class="col-sm-12 col-md-12 col-lg-6">
+                          <div class="oh-input-group">
+                            <a hx-get="{%url 'feedback-list-search' %}?created_at_date_range=month"  hx-target="#feedback_list" class="oh-btn oh-btn--secondary oh-btn--small w-100">{% trans "This Month" %}</a>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="oh-dropdown__filter-footer">
+                  <button class="oh-btn oh-btn--secondary oh-btn--small w-100">{% trans "Filter" %}</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        <!-- checking  user permission for objective creation -->
+      {% if perms.pms.view_questiontemplate or request.user|filtersubordinates %}
+        <div class="oh-btn-group ml-2">
+          <div class="oh-dropdown" x-data="{open: false}">
+              <a  href="{% url 'feedback-creation' %}" class="oh-btn oh-btn--secondary" role="button">
+                <ion-icon class="me-2 md hydrated" name="add-outline" role="img" aria-label="add outline"></ion-icon>
+                {% trans "Create" %}</a>
+           
+          </div>
+        </div>
+      {% endif %}
+      </div>
+    </div>
+  </section>
+
+  <div class="oh-wrapper">
+    <div class="oh-tabs">
+      <ul class="oh-tabs__tablist">
+        <li class="oh-tabs__tab oh-tabs__tab" data-target="#tab_1">
+          {% trans "Self Feedback" %}
+          <span class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round ms-2 mr-2" id="" data-category-id="1">{{self_feedback|length}}</span>
+        </li>
+        <li class="oh-tabs__tab" data-target="#tab_2">
+          {% trans "Requested Feedback" %}
+          <span class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round ms-2 mr-2" id="" data-category-id="1">{{requested_feedback|length}}</span>
+        </li>
+        <!-- normal user can't view all objective  -->
+        {% if perms.pms.view_feedback or request.user|filtersubordinates %}
+        <li class="oh-tabs__tab" data-target="#tab_3">
+          {% trans "All Feedback" %}
+          <span class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round ms-2 mr-2" id="" data-category-id="1">{{all_feedbacks|length}}</span>
+        </li>
+        {% endif %}
+
+      </ul>
+      <div id="feedback_list">
+
+        {% include 'feedback/feedback_list.html' %}
+      </div>
+    </div>
+  </div>
+</main>
+
+
+
+{% endblock content %}
+

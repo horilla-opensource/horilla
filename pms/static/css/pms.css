@@ -1,0 +1,26 @@
+
+.oh-dot--colorOn {
+    background-color: hsl(148deg, 71%, 44%)
+}
+.oh-dot--colorBehind {
+    background-color: hsl(40deg, 91%, 60%)
+}
+
+.oh-dot--colorAt {
+    background-color: hsl(1deg, 100%, 61%)
+}
+.oh-dot--colorClosed {
+    background-color: hsl(204deg, 70%, 53%)
+}
+
+.oh-dot--colorNot {
+    background-color: hsla(270, 5%, 48%, 0.709)
+}
+
+.oh-select--lg--custom{
+    padding-top: 10px;
+    padding-right: 20px;
+    padding-bottom: 38px;
+    padding-left: 5px; 
+}
+

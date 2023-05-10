@@ -1,0 +1,91 @@
+{% load i18n %}
+<div class="row">
+    <div class="col-12 col-sm-12 col-md-12 col-lg-12">
+        <div class="oh-card p-4">
+            <div class="oh-card__body">
+                <div class="oh-sticky-table oh-sticky-table--no-highlight">
+                    <div class="oh-sticky-table__table">
+                      <div class="oh-sticky-table__thead">
+                        <div class="oh-sticky-table__tr">
+                          <div class="oh-sticky-table__th">{% trans "Employee" %}</div>
+                          <div class="oh-sticky-table__th">{% trans "Groups" %}</div>
+                        </div>
+                      </div>
+                      <div class="oh-sticky-table__tbody">
+                      {% for gp in groups %}
+                        <div class="oh-sticky-table__tr oh-permission-table__tr oh-permission-table--collapsed">
+                          <div class="oh-sticky-table__sd oh-permission-table--toggle">
+                            <div class="d-flex align-items-center">
+                              <button class="oh-permission-table__collapse me-2">
+                                <ion-icon class="oh-permission-table__collapse-down" title="{% trans 'Reveal' %}" name="chevron-down-outline"></ion-icon>
+                                <ion-icon class="oh-permission-table__collapse-up" title="{% trans 'Collapse' %}" name="chevron-up-outline"></ion-icon>
+                              </button>
+                              <span class="oh-permission-table__user">{{gp}}.</span>
+                            </div>
+                          </div>
+                          <div class="oh-sticky-table__td">
+                            {% for user in gp.user_set.all %}
+                              <span class="oh-user-panel oh-collapse-panel" data-type="user">
+                                <div class="oh-profile oh-profile--md">
+                                  <div class="oh-profile__avatar mr-1">
+                                    <img
+                                    src="https://ui-avatars.com/api/?name={{user.employee_get.employee_first_name}}+{{user.employee_get.employee_last_name}}&background=random"
+                                    class="oh-profile__image"
+                                    alt="Baby C."
+                                    />
+                                  </div>
+                                  <span class="oh-profile__name oh-text--dark"
+                                  >{{user.employee_get}}</span
+                                  >
+                                </div>
+                                {% if perms.change_group %}
+                                <form action="{% url 'group-remove-user' user.id gp.id %}" method='post'>
+                                  {% csrf_token %}
+                                  <button type='submit'  class="oh-user-panel__remove">
+                                    <ion-icon name="close-outline"></ion-icon>
+                                  </button>
+                                  
+                                  </form>
+                                {% endif %}
+                              </span>
+                              {% endfor %}
+                          </div>                        
+                        </div>
+                        {% endfor %}
+                      </div>
+                    </div>
+                  </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div class="current container">
+  {% trans "Page" %} {{ groups.number }} {% trans "of" %} {{ groups.paginator.num_pages }}.
+  </div>
+  <div class="pagination container">
+  <span class="step-links">
+    {% if groups.has_previous %}
+    <a hx-target='#view-container' class='btn btn-outline-info' hx-get="{% url 'user-group-assign-view' %}?{{pd}}&page=1">&laquo; {% trans "First" %}</a>
+    <a hx-target='#view-container' class='btn btn-outline-info' hx-get="{% url 'user-group-assign-view' %}?{{pd}}&page={{ groups.previous_page_number }}">{% trans "Previous" %}</a>
+    {% endif %}
+    
+    
+    {% if groups.has_next %}
+    <a hx-target='#view-container' class='btn btn-outline-info' hx-get="{% url 'user-group-assign-view' %}?{{pd}}&page={{ groups.next_page_number }}">{% trans "Next" %}</a>
+    <a hx-target='#view-container' class='btn btn-outline-info' hx-get="{% url 'user-group-assign-view' %}?{{pd}}&page={{ groups.paginator.num_pages }}">{% trans "Last" %} &raquo;</a>
+    {% endif %}
+  </span>
+  
+
+
+
+  <script>
+    $(document).ready(function () {
+      $('.oh-sticky-table__sd.oh-permission-table--toggle').click(function (e) { 
+        $('.oh-sticky-table__tr.oh-permission-table__tr').toggleClass('oh-permission-table--collapsed');
+      });
+  }); 
+</script>

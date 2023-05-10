@@ -1,0 +1,11 @@
+{% load i18n %}
+<form class="oh-kanban__edit-modal-form">
+    <div class="oh-modal__dialog-body pb-2">
+        <label class="oh-label d-block">{% trans "Description" %}</label>
+        <textarea class="oh-input w-100" placeholder="Description"></textarea>
+    </div>
+    <div class="oh-modal__dialog-footer">
+        <button type="submit" class="oh-btn oh-btn--secondary w-100">
+            {% trans "Apply" %}
+        </button>
+</form>

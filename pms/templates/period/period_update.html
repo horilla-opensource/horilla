@@ -1,0 +1,52 @@
+{% load i18n %}
+{% if form.errors %}
+<!-- form non field errors  -->
+<div class="oh-wrapper">
+    <div class="oh-alert-container">
+        {% for error in form.non_field_errors %}
+        <div class="oh-alert oh-alert--animated oh-alert--danger">
+            {{ error }}
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+<span class="oh-modal__dialog-title" id="addEmployeeModalLabel">{% trans "Update Period" %}</span>
+<form hx-post="{% url 'period-update' id=form.instance.id %}" hx-target="#periodModalTarget"> 
+    {% csrf_token %}
+  <section>
+    <div id="periodContainer">
+      <div class="my-3" id="keyResultCard">
+        <div class="">
+          <div class="oh-input__group">
+            <label class="oh-input__label mt-0" for="keyTitle">{% trans "Title" %}</label>
+            {{ form.period_name }}
+            {{ form.period_name.errors }}
+    
+          </div>
+          <div class="row">
+            <div class="col-12 col-sm-12 col-md-6 col-lg-6">
+              <div class="oh-input__group">
+                <label class="oh-input__label" for="keyType">{% trans "Start Date" %}</label>
+                {{form.start_date}}
+                {{form.start_date.errors}}
+              </div>
+            </div>
+            <div class="col-12 col-sm-12 col-md-6 col-lg-6">
+              <div class="oh-input__group">
+                <label class="oh-input__label" for="keyType">{% trans "End Date" %}</label>
+                {{form.end_date}}
+                {{form.end_date.errors}}
+              </div>
+            </div>
+          </div>
+        </div>
+  
+      </div>
+      <div class="oh-modal__dialog-footer">
+        <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow ">
+          {% trans "Save" %} 
+        </button>
+      </div>
+    </section>
+  </form>

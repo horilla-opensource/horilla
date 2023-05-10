@@ -1,0 +1,13 @@
+{% extends 'index.html' %} {% load i18n %} {% block  content%}
+<p class="pb-3">
+    <a href="{% url 'company-leave-view' %}" class="btn btn-primary">{% trans "View" %}</a> {% trans "View All Company Leave" %}
+</p>
+<form action="" method="post">
+  {% csrf_token %}
+    {{form}}
+    <input type="submit" value="{% trans 'Submit' %}" id="submit" class='mt-4 btn btn-success'/>
+  </div>
+</form>
+
+{% endblock  %}
+

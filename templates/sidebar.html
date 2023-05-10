@@ -1,0 +1,321 @@
+{% load static %} 
+{% load i18n %}
+{% load attendancefilters %} 
+{% load recruitmentfilters %}
+{% load onboardingfilters %}
+{% load basefilters %} <script>
+   function activeNav(id) {
+     const navElement = $(`#${id}`)
+     const activeNavElement = navElement.after()
+   }
+ </script>
+ <div class="oh-sidebar" style='position: -webkit-sticky;
+   position: sticky;top : 0;'>
+   <div class="oh-sidebar__company">
+      <span class="mr-2"> {% if request.user.employee_get.employee_work_info.company_id.icon == None %} <img src="https://ui-avatars.com/api/?name=C&background=random" style="width: 40px; border-radius: 5px;" /> {% else %} <img src="/media/{{request.user.employee_get.employee_work_info.company_id.icon}}" style="width: 40px; border-radius: 5px;" /> {% endif %} </span>
+      <div class="oh-sidebar__company-details">
+         <span class="oh-sidebar__company-title">{{request.user.employee_get.employee_work_info.company_id}}.</span>
+         <a href="#" class="oh-sidebar__company-link">{% trans "My Company" %}</a>
+      </div>
+      {% comment %} <button class="oh-btn oh-btn--transparent oh-btn--sq-sm">
+      <img src="{% static 'images/ui/dots-v.svg' %}" />
+      </button> {% endcomment %}
+   </div>
+   <div class="oh-sidebar__menu">
+      <ul class="oh-sidebar__menu-items">
+         <li class="oh-sidebar__menu-item" x-data="{ isOpen: getOpenState('dashboardNav') }">
+            <a href="{%url 'home-page' %}" onclick="window.location.href=this.href; return false;" class="oh-sidebar__menu-link" data-id="dashboardNav" x-on:click.prevent="isOpen = !isOpen; saveOpenState('dashboardNav', isOpen)" x-bind:class="isOpen ? 'oh-sidebar__menu-link--active' : ''">
+               <div class="oh-sidebar__menu-icon">
+                  <img src="{% static 'images/ui/dashboard.svg' %}" alt="Dashboard" width="24" height="24" />
+               </div>
+               <span >{% trans "Dashboard" %}</span>
+            </a>
+            {% comment %} <div class="oh-sidebar__submenu" id="dashboardNav" style="display: none;">
+               <ul class="oh-sidebar__submenu-items"></ul>
+            </div> {% endcomment %}
+         </li>
+         {% if request.user|is_stagemanager or 'recruitment' in perms %}
+         <li class="oh-sidebar__menu-item" x-data="{ isOpen: getOpenState('recNav') }">
+            <a class="oh-sidebar__menu-link" data-id="recNav" x-on:click.prevent="isOpen = !isOpen; saveOpenState('recNav', isOpen)" x-bind:class="isOpen ? 'oh-sidebar__menu-link--active' : ''" style="cursor:pointer">
+               <div class="oh-sidebar__menu-icon">
+                  <img src="{% static 'images/ui/recruitment.svg' %}" alt="Dashboard" width="24" height="24" />
+               </div>
+               <span>{% trans "Recruitments" %}</span>
+            </a>
+            <div class="oh-sidebar__submenu" id="recNav" x-show="isOpen" x-transition style="display: none;">
+               <ul class="oh-sidebar__submenu-items">
+                  {% if perms.recruitment.view_recruitment or request.user|is_stagemanager %} 
+                  <li class="oh-sidebar__submenu-item">
+                     <a class="oh-sidebar__submenu-link" href="/recruitment/pipeline" class="oh-sidebar__submenu-link">{% trans "Recruitment Pipeline" %}</a>
+                  </li>
+                  {% endif %} {% if perms.recruitment.view_candidate %} 
+                  <li class="oh-sidebar__submenu-item">
+                     <a class="oh-sidebar__submenu-link" href="/recruitment/candidate-view" class="oh-sidebar__submenu-link">{% trans "Candidate" %}</a>
+                  </li>
+                  {% endif %} {% if perms.recruitment.view_recruitment %} 
+                  <li class="oh-sidebar__submenu-item">
+                     <a class="oh-sidebar__submenu-link" href="/recruitment/recruitment-view" class="oh-sidebar__submenu-link">{% trans "Recruitment" %}</a>
+                  </li>
+                  {% endif %} {% if perms.recruitment.view_stage %} 
+                  <li class="oh-sidebar__submenu-item">
+                     <a class="oh-sidebar__submenu-link" href="/recruitment/stage-view" class="oh-sidebar__submenu-link">{% trans "Stages" %}</a>
+                  </li>
+                  {% endif %} 
+               </ul>
+            </div>
+         </li>
+         {% endif %}
+         {% if request.user|is_taskmanager or 'recruitment' in perms or 'onboarding' in perms %}
+         <li class="oh-sidebar__menu-item" x-data="{ isOpen: getOpenState('onboardingNav') }">
+            <a class="oh-sidebar__menu-link" data-id="onboardingNav" x-on:click.prevent="isOpen = !isOpen; saveOpenState('onboardingNav', isOpen)" x-bind:class="isOpen ? 'oh-sidebar__menu-link--active' : ''" style="cursor: pointer">
+               <div class="oh-sidebar__menu-icon">
+                  <img src="{% static 'images/ui/rocket.svg' %}" alt="Dashboard" width="24" height="24" />
+               </div>
+               <span>{% trans "Onboarding" %}</span>
+            </a>
+            <div class="oh-sidebar__submenu" id="onboardingNav" style="display: none;" x-show="isOpen" x-transition style="display: none;">
+               <ul class="oh-sidebar__submenu-items">
+                  {% if request.user|is_taskmanager or perms.onboarding.view_candidatestage %}
+                  <li class="oh-sidebar__submenu-item">
+                     <a href="{% url 'onboarding-view' %}" class="oh-sidebar__submenu-link">{% trans "Onboarding View" %}</a>
+                  </li>
+                  {% endif %}
+                  {% if perms.recruitment.view_candidate %}
+                  <li class="oh-sidebar__submenu-item">
+                     <a href="{% url 'candidates-view' %}" class="oh-sidebar__submenu-link">{% trans "Candidate View" %}</a>
+                  </li>
+                  {% endif %}
+               </ul>
+            </div>
+         </li>
+         {% endif %}
+         <li class="oh-sidebar__menu-item" x-data="{ isOpen: getOpenState('employeeNav') }">
+            <a class="oh-sidebar__menu-link" data-id="employeeNav" x-on:click.prevent="isOpen = !isOpen; saveOpenState('employeeNav', isOpen)" x-bind:class="isOpen ? 'oh-sidebar__menu-link--active' : ''" style="cursor:pointer">
+               <div class="oh-sidebar__menu-icon">
+                  <img src="{% static 'images/ui/employees.svg' %}" alt="Dashboard" width="24" height="24" />
+               </div>
+               <span>{% trans "Employees" %}</span>
+            </a>
+            <div class="oh-sidebar__submenu" id="employeeNav" x-show="isOpen" x-transition style="display: none;">
+               <ul class="oh-sidebar__submenu-items">
+                  <li class="oh-sidebar__submenu-item">
+                     <a class="oh-sidebar__submenu-link" href="/employee/employee-profile">{% trans "Profile" %}</a>
+                  </li>
+                  {% if perms.employee.view_employee or request.user|is_reportingmanager%} 
+                  <li class="oh-sidebar__submenu-item">
+                     <a class="oh-sidebar__submenu-link" href="/employee/employee-view">{% trans "Employee" %}</a>
+                  </li>
+                  {% endif %} 
+                  <li class="oh-sidebar__submenu-item">
+                     <a class="oh-sidebar__submenu-link" href="{% url 'shift-request-view' %}">{% trans "Shift Request" %}</a>
+                  </li>
+                  <li class="oh-sidebar__submenu-item">
+                     <a class="oh-sidebar__submenu-link" href="{% url 'work-type-request-view' %}">{% trans "Work Type Request" %}</a>
+                  </li>
+                  {% if perms.view_rotatingshiftassign or request.user|is_reportingmanager%}
+                  <li class="oh-sidebar__submenu-item">
+                     <a class="oh-sidebar__submenu-link" href="{% url 'rotating-shift-assign' %}">{% trans "Rotating Shift Assign" %}</a>
+                  </li>
+                  {% endif %}
+                  {% if perms.view_rotatingworktypeassign or request.user|is_reportingmanager %}
+                  <li class="oh-sidebar__submenu-item">
+                     <a class="oh-sidebar__submenu-link" href="{% url 'rotating-work-type-assign' %}">{% trans "Rotating Work Type Assign" %}</a>
+                  </li>
+                  {% endif %}
+               </ul>
+            </div>
+         </li>
+         <li class="oh-sidebar__menu-item" x-data="{ isOpen: getOpenState('attendanceNav') }">
+            <a class="oh-sidebar__menu-link" data-id="attendanceNav" x-on:click.prevent="isOpen = !isOpen; saveOpenState('attendanceNav', isOpen)" x-bind:class="isOpen ? 'oh-sidebar__menu-link--active' : ''" style="cursor:pointer">
+               <div class="oh-sidebar__menu-icon">
+                  <img src="{% static 'images/ui/attendances.svg' %}" alt="Dashboard" width="24" height="24" />
+               </div>
+               <span>{% trans "Attendances" %}</span>
+            </a>
+            <div class="oh-sidebar__submenu" id="attendanceNav" x-show="isOpen" x-transition style="display: none;">
+               <ul class="oh-sidebar__submenu-items">
+                  {% if perms.attendance.view_attendance or request.user|is_reportingmanager %} 
+                  <li class="oh-sidebar__submenu-item">
+                     <a class="oh-sidebar__submenu-link" href="/attendance/attendance-view">{% trans "Attendance" %}</a>
+                  </li>
+                  {% endif %} {% if perms.attendance.view_attendanceovertime or request.user|is_reportingmanager %} 
+                  <li class="oh-sidebar__submenu-item">
+                     <a class="oh-sidebar__submenu-link" href="/attendance/attendance-overtime-view">{% trans "Hour Account" %}</a>
+                  </li>
+                  {% endif %} {% if perms.attendance.view_attendanceactivity %} 
+                  <li class="oh-sidebar__submenu-item">
+                     <a class="oh-sidebar__submenu-link" href="/attendance/attendance-activity-view">{% trans "Attendance Activity" %}</a>
+                  </li>
+                  {% endif %} {% if perms.attendance.view_attendancelatecomeearlyout or request.user|is_reportingmanager %} 
+                  <li class="oh-sidebar__submenu-item">
+                     <a class="oh-sidebar__submenu-link" href="/attendance/late-come-early-out-view">{% trans "Late Come Ealry Out" %}</a>
+                  </li>
+                  {% endif %} 
+                  <li class="oh-sidebar__submenu-item">
+                     <a class="oh-sidebar__submenu-link" href="/attendance/view-my-attendance">{% trans "My Attendance" %}</a>
+                  </li>
+               </ul>
+            </div>
+         </li>
+         <li class="oh-sidebar__menu-item" x-data="{ isOpen: getOpenState('leaveNav') }">
+            <a class="oh-sidebar__menu-link" data-id="leaveNav" x-on:click.prevent="isOpen = !isOpen; saveOpenState('leaveNav', isOpen)" x-bind:class="isOpen ? 'oh-sidebar__menu-link--active' : ''" style="cursor:pointer">
+               <div class="oh-sidebar__menu-icon">
+                  <img src="{% static 'images/ui/leave.svg' %}" alt="Dashboard" width="24" height="24" />
+               </div>
+               <span>{% trans "Leave" %}</span>
+            </a>
+            <div class="oh-sidebar__submenu" id="leaveNav" x-show="isOpen" x-transition style="display: none;">
+               <ul class="oh-sidebar__submenu-items">
+                  <li class="oh-sidebar__submenu-item">
+                     <a href="{% url 'user-leave' %}" class="oh-sidebar__submenu-link">{% trans "My Leaves" %}</a>
+                  </li>
+                  <li class="oh-sidebar__submenu-item">
+                     <a href="{% url 'user-request-view' %}" class="oh-sidebar__submenu-link">{% trans "My Leave Requests" %}</a>
+                  </li>
+                  {% if perms.leave.view_leavetype %}
+                  <li class="oh-sidebar__submenu-item">
+                     <a href="{% url 'type-view' %}" class="oh-sidebar__submenu-link">{% trans "Leave Types" %}</a>
+                  </li>
+                  {% endif %}
+                  {% if perms.leave.view_availableleave or request.user|is_reportingmanager %}
+                  <li class="oh-sidebar__submenu-item">
+                     <a href="{% url 'assign-view' %}" class="oh-sidebar__submenu-link">{% trans "Assigned Leaves" %}</a>
+                  </li>
+                  {% endif %}
+                  {% if perms.leave.view_leaverequest or request.user|is_reportingmanager %}
+                  <li class="oh-sidebar__submenu-item">
+                     <a href="{% url 'request-view' %}" class="oh-sidebar__submenu-link">{% trans "Leave Requests" %}</a>
+                  </li>
+                  {% endif %}
+                  {% if perms.leave.view_holiday %}
+                  <li class="oh-sidebar__submenu-item">
+                     <a href="{% url 'holiday-view' %}" class="oh-sidebar__submenu-link">{% trans "Holidays" %}</a>
+                  </li>
+                  {% endif %}
+                  {% if perms.leave.view_companyleave%}
+                  <li class="oh-sidebar__submenu-item">
+                     <a href="{% url 'company-leave-view' %}" class="oh-sidebar__submenu-link">{% trans "Company Leaves" %}</a>
+                  </li>
+                  {% endif %}
+               </ul>
+            </div>
+         </li>
+         <li class="oh-sidebar__menu-item" x-data="{ isOpen: getOpenState('pmsNav') }">
+            <a class="oh-sidebar__menu-link" data-id="pmsNav" x-on:click.prevent="isOpen = !isOpen; saveOpenState('pmsNav', isOpen)" x-bind:class="isOpen ? 'oh-sidebar__menu-link--active' : ''" style="cursor:pointer">
+               <div class="oh-sidebar__menu-icon">
+                  <img src="{% static 'images/ui/pms.svg' %}" alt="Dashboard" width="24" height="24" />
+               </div>
+               <span>{% trans "PMS" %}</span>
+            </a>
+            <div class="oh-sidebar__submenu" id="pmsNav" x-show="isOpen" x-transition style="display: none;">
+               <ul class="oh-sidebar__submenu-items">
+                  <li class="oh-sidebar__submenu-item">
+                     <a href="{% url 'dashboard-view'  %}" class="oh-sidebar__submenu-link">{% trans "Dashboard" %}</a>
+                  </li>
+                  <li class="oh-sidebar__submenu-item">
+                     <a href="{% url 'objective-list-view' %}" class="oh-sidebar__submenu-link">{% trans "OKR" %}</a>
+                  </li>
+                  <li class="oh-sidebar__submenu-item">
+                     <a href="{% url 'feedback-view'  %}" class="oh-sidebar__submenu-link">{% trans "360 Feedback" %}</a>
+                  </li>
+                  {% if perms.pms.view_period or request.user|is_reportingmanager %} 
+                  <li class="oh-sidebar__submenu-item">
+                     <a href="{% url 'period-view'  %}" class="oh-sidebar__submenu-link">Period</a>
+                  </li>
+                  {% endif %} {% if perms.pms.view_questiontemplate or request.user|is_reportingmanager %} 
+                  <li class="oh-sidebar__submenu-item">
+                     <a href="{% url 'question-template-view'  %}" class="oh-sidebar__submenu-link">{% trans "Question Template" %}</a>
+                  </li>
+                  {% endif %}
+               </ul>
+            </div>
+         </li>
+         <li class="oh-sidebar__menu-item" x-data="{ isOpen: getOpenState('assetNav') }">
+            <a class="oh-sidebar__menu-link" data-id="assetNav" x-on:click.prevent="isOpen = !isOpen; saveOpenState('assetNav', isOpen)" x-bind:class="isOpen ? 'oh-sidebar__menu-link--active' : ''" style="cursor:pointer">
+               <div class="oh-sidebar__menu-icon">
+                  <img src="{% static 'images/ui/assets.svg' %}" alt="Dashboard" width="24" height="24" />
+               </div>
+               <span>{% trans "Assets" %}</span>
+            </a>
+            <div class="oh-sidebar__submenu" id="assetNav" x-show="isOpen" x-transition style="display: none;">
+               <ul class="oh-sidebar__submenu-items">
+                {% if perms.asset.view_assetcategory  %} 
+                  <li class="oh-sidebar__submenu-item">
+                     <a href="{%url 'asset-category-view' %}" class="oh-sidebar__submenu-link">{% trans "Asset view" %}</a>
+                  </li>
+               {%endif%}
+                  <li class="oh-sidebar__submenu-item">
+                     <a href="{%url 'asset-request-allocation-view' %}" class="oh-sidebar__submenu-link">{% trans "Request and Allocation" %}</a>
+                  </li>
+               </ul>
+            </div>
+         </li>
+      </ul>
+   </div>
+ </div>
+ 
+ <script>
+   
+   $("#sidebar").mouseover(function(e){
+      e.preventDefault();
+      var sidebarContainer = $(".oh-wrapper-main");
+      if (sidebarContainer.hasClass("oh-wrapper-main--closed")) {
+         sidebarContainer.removeClass("oh-wrapper-main--closed");
+      }
+   });
+
+   $("#sidebar").mouseleave(function(e){
+      var sidebarContainer = $(".oh-wrapper-main");
+      if (sidebarContainer.hasClass("oh-wrapper-main--closed")) {
+         sidebarContainer.removeClass("oh-wrapper-main--closed");
+       } else {
+         if (sidebarContainer.hasClass("toggle-clicked")){
+           sidebarContainer.addClass("oh-wrapper-main--closed");
+         }
+       }
+   });
+
+   $('.oh-sidebar__menu-link').click(function (e) { 
+     e.preventDefault();
+     const currentActiveNav = $('.oh-sidebar__menu-link--active');
+     $(currentActiveNav).removeClass('oh-sidebar__menu-link--active');
+     const activeSubMenuId = $(currentActiveNav).attr('data-id');
+     $(`#${activeSubMenuId}`).attr('style', 'display:none;');
+     // Get the JSON object from local storage
+      const menuStates = JSON.parse(localStorage.getItem('menuStates'));
+
+      // Update the value of a key to false
+      menuStates[activeSubMenuId] = false;
+
+      // Save the updated object to local storage
+      localStorage.setItem('menuStates', JSON.stringify(menuStates));
+     
+     $(this).toggleClass('oh-sidebar__menu-link--active');
+     const submenuId = $(this).attr('data-id');
+     const submenu = $(`#${submenuId}`)
+     if (submenu.attr('style')) {
+         submenu.removeAttr('style');
+     } else {
+         submenu.attr('style', 'display:none;');
+     }
+   });
+   function getOpenState(id) {
+      const menuStates = JSON.parse(localStorage.getItem('menuStates') || '{}');
+      return menuStates[id] || false;
+    }
+    
+    function saveOpenState(id, isOpen) {
+      const menuStates = JSON.parse(localStorage.getItem('menuStates') || '{}');
+      menuStates[id] = isOpen;
+      localStorage.setItem('menuStates', JSON.stringify(menuStates));
+    }
+    
+    function getActiveState(id) {
+      const activeMenu = JSON.parse(localStorage.getItem('activeMenu') || '{}');
+      return activeMenu === id;
+    }
+    
+    function setActiveState(id) {
+      localStorage.setItem('activeMenu', id);
+    }
+</script>

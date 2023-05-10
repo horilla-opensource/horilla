@@ -1,0 +1,48 @@
+{% extends 'settings.html' %}
+{% load i18n %}
+{% block settings %}
+<div class="oh-inner-sidebar-content">
+    
+    <form action="" method="post">
+        {% csrf_token %}
+        <div class="oh-inner-sidebar-content__header">
+            <h2 class="oh-inner-sidebar-content__title">{% trans "Group Assign" %}</h2>
+        </div>
+        <div class="oh-inner-sidebar-content__body">
+            <div class="oh-input-group">
+                {{form.as_p}}
+            </div>
+            
+        </div>
+        <button type='submit' class="oh-btn oh-btn--secondary mt-2 mr-0 oh-btn--w-100-resp">
+            {% trans "Save Changes" %}
+        </button>
+        <div class="oh-inner-sidebar-content__footer">
+        </div>
+        </div>
+        </form>
+        <div class="oh-table-controls">
+            <div
+              class="oh-input-group"
+            >
+              <ion-icon
+                name="search-outline"
+                class="oh-input-group__icon oh-input-group__icon--left"
+              ></ion-icon>
+              <input
+                hx-get="{% url 'user-group-assign-view' %}"
+                hx-target='#view-container'
+                hx-trigger = "keyup changed delay:.2s"
+                name="search"
+                type="text"
+                class="oh-input oh-input__icon oh-input--medium"
+                aria-label="Search Input"
+                placeholder="{% trans 'Search' %}"
+              />
+            </div>
+        </div>
+    <div id="view-container">
+        {% include 'base/auth/group_assign_view.html' %}
+    </div>
+</div>
+{% endblock settings %}

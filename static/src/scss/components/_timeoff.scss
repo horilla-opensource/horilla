@@ -1,0 +1,131 @@
+.oh-timeoff-card {
+  display: flex;
+  align-items: center;
+  @media (max-width: 991.98px) {
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+}
+.oh-timeoff-card__icon-container {
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: $secondary-color;
+  margin-right: 1.5rem;
+}
+.oh-timeoff-card__icon {
+  color: $white;
+  font-size: 2rem;
+}
+.oh-timeoff-card__title {
+  display: block;
+  font-weight: bold;
+  font-size: 1.15rem;
+  width: 100%;
+}
+.oh-timeoff-card__stat-container,
+.oh-timeoff-modal__stats-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  margin-top: 0.35rem;
+}
+.oh-timeoff-card__stat,
+.oh-timeoff-modal__stat {
+  margin-right: 1.75rem;
+  &:last-child {
+    margin-right: 0;
+  }
+}
+.oh-timeoff-card__stat-title,
+.oh-timeoff-modal__stat-title {
+  display: block;
+  font-size: 0.8rem;
+  color: $light-text-color;
+  margin-bottom: 0.25rem;
+}
+.oh-timeoff-card__stat-count {
+  font-size: 1.05rem;
+  font-weight: bold;
+}
+.oh-timeoff-modal__download-link {
+  width: 100%;
+  background: $border-light-color;
+  padding: 1rem;
+  margin-top: 1.25rem;
+  display: flex;
+  align-items: center;
+  color: $dark-grey;
+
+  &:hover,&:focus, &:focus-visible{
+    text-decoration: none;
+    background-color: $border-color;
+  }
+}
+.oh-timeoff-modal__profile-content{
+  .oh-profile__image{
+    width: 64px;
+    height: 64px;
+    object-fit: cover;
+    object-position: center;
+  }
+}
+// .oh-timeoff__date-container .qs-datepicker-container{
+//     box-shadow: none !important;
+//     border: none !important;
+//     position: relative;
+//     width: 100%;
+// }
+.oh-timeoff__date-container {
+  display: flex;
+  align-items: center;
+  input {
+    &:first-child {
+      border-right: 0;
+    }
+  }
+}
+.oh-timeoff-modal__stats-container {
+  width: 100%;
+}
+.oh-timeoff-modal__profile-content {
+  margin-bottom: 1rem;
+  width: 100%;
+}
+.oh-timeoff-modal__profile-info {
+  display: flex;
+  flex-direction: column;
+}
+.oh-timeoff-modal__stat-count {
+  font-size: 0.9rem;
+}
+.oh-timeoff-modal__stat-description {
+  overflow-y: auto;
+  max-height: 100px;
+}
+.oh-timeoff-modal__footer {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  padding-top: 1rem;
+  padding-bottom: 1.25rem;
+}
+.oh-timeoff-modal__footer > * {
+  margin-right: 5px;
+  &:last-child {
+    margin-right: 0;
+  }
+}
+.oh-timeoff-modal__user{
+  font-size: 1.2rem;
+  margin-top: 0.75rem;
+}
+.oh-timeoff-modal__body{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.oh-timeoff-modal__position{
+  color: rgba($light-text-color, 0.8);
+}

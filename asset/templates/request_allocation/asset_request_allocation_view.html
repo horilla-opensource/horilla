@@ -1,0 +1,228 @@
+{% extends 'index.html' %} {% block content %}
+{% load static i18n %}
+{% load i18n %}
+{% load mathfilters %}
+{% load widget_tweaks %}
+
+<main :class="sidebarOpen ? 'oh-main__sidebar-visible' : ''">
+    <section class="oh-wrapper oh-main__topbar" x-data="{searchShow: false}">
+        <div class="oh-main__titlebar oh-main__titlebar--left">
+            <h1 class="oh-main__titlebar-title fw-bold">{% trans "Asset" %}</h1>
+
+            <a class="oh-main__titlebar-search-toggle" role="button" aria-label="Toggle Search"
+                @click="searchShow = !searchShow">
+                <ion-icon name="search-outline" class="oh-main__titlebar-serach-icon"></ion-icon>
+            </a>
+        </div>
+
+        <div class="oh-main__titlebar oh-main__titlebar--right">
+            <div class="oh-input-group oh-input__search-group"
+                :class="searchShow ? 'oh-input__search-group--show' : ''">
+                <ion-icon name="search-outline" class="oh-input-group__icon oh-input-group__icon--left"></ion-icon>
+                <input name="search" hx-get="{% url 'asset-request-allocation-view-search-filter' %}"
+                    hx-target="#asset_request_allocation_list" hx-trigger='keyup delay:500ms' type="text"
+                    class="oh-input oh-input__icon" aria-label="Search Input" placeholder="{% trans 'Search' %}" />
+            </div>
+            <div class="oh-main__titlebar-button-container">
+
+                <div class="oh-dropdown" x-data="{open: false}">
+                    <button class="oh-btn ml-2" @click="open = !open">
+                        <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}
+                    </button>
+                    <div class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4" x-show="open"
+                        @click.outside="open = false" style="display: none;">
+                        <form hx-get="{% url 'asset-request-allocation-view-search-filter' %}"
+                            hx-target="#asset_request_allocation_list">
+
+                            <div class="oh-dropdown__filter-body">
+
+                                <div class="oh-accordion">
+                                    <div class="oh-accordion-header">{% trans "Asset" %}</div>
+                                    <div class="oh-accordion-body">
+                                        <div class="row">
+                                            <div class="col-sm-12 col-md-12 col-lg-12">
+                                                <div class="oh-input-group">
+                                                    <label class="oh-label">{% trans "Asset Name" %}</label>
+                                                    {{assets_filter_form.asset_id__asset_name}}
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-12 col-md-12 col-lg-12">
+                                                <div class="oh-input-group">
+                                                    <label class="oh-label">{% trans "Status" %}</label>
+                                                    {{assets_filter_form.asset_id__asset_status}}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="oh-accordion">
+                                    <div class="oh-accordion-header">{% trans "Asset Request" %}</div>
+                                    <div class="oh-accordion-body">
+                                        <div class="row">
+                                            <div class="col-sm-12 col-md-12 col-lg-6">
+                                                <div class="oh-input-group">
+                                                    <label class="oh-label">{% trans "Requested Employee" %}</label>
+                                                    {{asset_request_filter_form.requested_employee_id}}
+                                                </div>
+                                                <div class="oh-input-group">
+                                                    <label class="oh-label">{% trans "Asset Category" %}</label>
+                                                    {{asset_request_filter_form.asset_category_id}}
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-12 col-md-12 col-lg-6">
+                                                <div class="oh-input-group">
+                                                    <label class="oh-label">{% trans "Asset Request Date" %}</label>
+                                                    {{ asset_request_filter_form.asset_request_date|attr:"type:date" }}
+                                                </div>
+                                                <div class="oh-input-group">
+                                                    <label class="oh-label">{% trans "Status" %}</label>
+                                                    {{asset_request_filter_form.asset_request_status}}
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-12 col-md-12 col-lg-12">
+                                                <div class="oh-input-group">
+                                                    <label class="oh-label">{% trans "Description" %}</label>
+                                                    {{ asset_request_filter_form.description| attr:"class:oh-input oh-input--textarea oh-input--block" }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="oh-accordion">
+                                    <div class="oh-accordion-header">{% trans "Asset Allocation" %}</div>
+                                    <div class="oh-accordion-body">
+                                        <div class="row">
+                                            <div class="col-sm-12 col-md-12 col-lg-6">
+                                                <div class="oh-input-group">
+                                                    <label class="oh-label">{% trans "Allocated User" %}</label>
+                                                    {{asset_allocation_filter_form.assigned_to_employee_id}}
+                                                </div>
+                                                <div class="oh-input-group">
+                                                    <label class="oh-label">{% trans "Asset" %}</label>
+                                                    {{asset_allocation_filter_form.asset_id}}
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-12 col-md-12 col-lg-6">
+                                                <div class="oh-input-group">
+                                                    <label class="oh-label">{% trans "Asset Allocated Date" %}</label>
+                                                    {{ asset_allocation_filter_form.assigned_date | attr:"type:date" }}
+                                                </div>
+                                                <div class="oh-input-group">
+                                                    <label class="oh-label">{% trans "Status" %}</label>
+                                                    {{asset_allocation_filter_form.return_status}}
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-12 col-md-12 col-lg-6">
+                                                <div class="oh-input-group">
+                                                    <label class="oh-label">{% trans "Return Date" %}</label>
+                                                    {{ asset_allocation_filter_form.assigned_date | attr:"type:date" }}
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-12 col-md-12 col-lg-6">
+                                                <div class="oh-input-group">
+                                                    <label class="oh-label">{% trans "Allocated By" %}</label>
+                                                    {{asset_allocation_filter_form.assigned_by_employee_id}}
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-12 col-md-12 col-lg-12">
+                                                <div class="oh-input-group">
+                                                    <label class="oh-label">{% trans "Return Condition" %}</label>
+                                                    {{ asset_allocation_filter_form.return_condition| attr:"class:oh-input oh-input--textarea oh-input--block" }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="oh-dropdown__filter-footer">
+                                <button class="oh-btn oh-btn--secondary oh-btn--small w-100">{% trans "Filter" %}</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="oh-wrapper">
+        <div class="oh-tabs">
+            <ul class="oh-tabs__tablist">
+                <li class="oh-tabs__tab " data-target="#tab_3">
+                    {% trans "Asset" %}
+
+                </li>
+                <li class="oh-tabs__tab " data-target="#tab_1">
+                    {% trans "Asset Request" %}
+                    <a href="#" class="link-danger oh-btn oh-btn--secondary-outline" role="" data-toggle="oh-modal-toggle"
+                        data-target="#asset-request-allocation-modal" hx-get="{%url 'asset-request-creation'%}" hx-target="#asset-request-allocation-modal-target">
+                        <ion-icon name="add-outline" role="img" class="md hydrated" aria-label="add outline"></ion-icon>
+                    </a>
+                </li>
+                {% if perms.asset.view_assetassignment %} 
+                <li class="oh-tabs__tab" data-target="#tab_2">
+                    {% trans "Asset Allocation" %}
+                    <a href="#" class="oh-btn oh-btn--secondary-outline" role="button" data-toggle="oh-modal-toggle"
+                        data-target="#asset-request-allocation-modal" hx-get="{%url 'asset-allocate-creation' %}" hx-target="#asset-request-allocation-modal-target">
+                        <ion-icon name="add-outline" role="img" class="md hydrated" aria-label="add outline"></ion-icon>
+                    </a>
+                </li>
+                {% endif %} 
+            </ul>
+            <div id="asset_request_allocation_list">
+                {% include 'request_allocation/asset_request_allocation_list.html' %}
+            </div>
+        </div>
+
+    </div>
+</main>
+
+<!-- asset request and allocation modal start -->
+<div class="oh-modal" id="asset-request-allocation-modal" role="dialog" aria-labelledby="AssetRequestModal" aria-hidden="true">
+
+    <div class="oh-modal__dialog " style="max-width:550px">
+        <div class="oh-modal__dialog-header">
+            <button type="button" class="oh-modal__close" aria-label="Close">
+                <ion-icon name="close-outline"></ion-icon>
+            </button>
+        </div>
+     
+        <!-- htmx form -->
+        <div class="oh-modal__dialog-body" id="asset-request-allocation-modal-target"> 
+               
+        </div>
+    </div>
+</div>
+<!-- end  of  asset request modal start -->
+<!-- 
+
+<script>
+    $(document).on('htmx:load','#asset-request-allocation-modal-target',function () {
+        {% include "select2.js" %}
+        // select2 for modal
+        var selectEl = $('#asset-request-allocation-modal-target').find('.oh-select')
+        selectEl.select2()
+            
+    });
+    $(document).on('htmx:load','#asset_request_allocation_list',function () {
+        // modal js after pagination
+        $("[data-toggle='oh-modal-toggle']").on('click', function () {
+
+        let clickedEl = $(this).closest('[data-toggle = "oh-modal-toggle"]');
+        if (clickedEl != null) {
+            const targetEl = clickedEl.data('target');
+            $(targetEl).addClass('oh-modal--show');
+        }
+        });
+
+        $('.oh-modal__close').on('click', function () {
+        $('.oh-modal--show').removeClass('oh-modal--show');
+        });
+        $('.oh-accordion-meta__header').on('click',function(){
+
+        })
+            
+    });
+</script> -->
+
+
+{% endblock content %}
