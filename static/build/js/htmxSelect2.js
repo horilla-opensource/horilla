@@ -4133,5 +4133,9 @@ $(document).on("htmx:afterSettle", function (e) {
     }
   });
 
+  $(`#${targetId} .oh-sticky-table__tr.oh-table__toggle-parent`).on("click",function(e){
+    $(this).parent().find(".oh-table__toggle-child").toggleClass("oh-table__toggle-child--show")
+  })
+
 
 });

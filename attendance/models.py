@@ -101,6 +101,16 @@ class Attendance(models.Model):
         self.overtime_second = strtime_seconds(self.attendance_overtime)
         self.attendance_day = EmployeeShiftDay.objects.get(day = self.attendance_date.strftime('%A').lower())
         prev_attendance_approved = False
+
+        condition = AttendanceValidationCondition.objects.first()
+        if condition is not None:
+            overtime_cutoff = condition.overtime_cutoff
+            cutoff_seconds = strtime_seconds(overtime_cutoff)
+            overtime = self.overtime_second
+            if overtime > cutoff_seconds:
+                self.overtime_second = cutoff_seconds
+            self.attendance_overtime = format_time(cutoff_seconds)
+        
         if self.pk is not None:
             # Get the previous values of the boolean field
             prev_state = Attendance.objects.get(pk=self.pk)
