@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Phone Number Validation</title>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script>
+    $(document).ready(function() {
+      $('#phone').on('input', function() {
+        var phoneNumber = $(this).val();
+        var regex = /^\+(?:[0-9] ?){6,14}[0-9]$/;
+
+        if (regex.test(phoneNumber)) {
+          $('#phone-validation').text('Valid phone number').css('color', 'green');
+        } else {
+          $('#phone-validation').text('Invalid phone number').css('color', 'red');
+        }
+      });
+    });
+  </script>
+</head>
+<body>
+  <label for="phone">Phone Number (including country code):</label>
+  <input type="text" id="phone">
+  <br><br>
+  <span id="phone-validation"></span>
+</body>
+</html>

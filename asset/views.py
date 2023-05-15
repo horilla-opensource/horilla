@@ -417,7 +417,7 @@ def asset_request_approve(request, id):
             asset_request.asset_request_status = 'Approved'
             asset_request.save()
             messages.success(request,_('Asset request approved successfully!.'))
-            notify.send(request.user.employee_get, recipient=form.assigned_to_employee_id.employee_user_id, verb='Your asset request appoved!.',redirect='/asset/asset-request-allocation-view',icon='bag-check')
+            notify.send(request.user.employee_get, recipient=form.assigned_to_employee_id.employee_user_id, verb='Your asset request approved!.',redirect='/asset/asset-request-allocation-view',icon='bag-check')
             response = render(request,'request_allocation/asset_approve.html',{'asset_allocation_form':form,'id':id})
             return HttpResponse(response.content.decode('utf-8') +'<script>location.reload();</script>')
         context['asset_allocation_form'] = form

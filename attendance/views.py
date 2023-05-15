@@ -325,6 +325,8 @@ def attendance_update(request, id):
     return render(request, 'attendance/attendance/update_form.html', {'form': form, })
 
 
+
+
 @login_required
 @permission_required('attendance.delete_attendance')
 @require_http_methods(['POST'])
@@ -748,7 +750,7 @@ def clock_in(request):
         mid_day_sec = strtime_seconds('12:00')
         minimum_hour, start_time_sec, end_time_sec = shift_schedule_today(
             day=day, shift=shift)
-        if start_time_sec >= end_time_sec:
+        if start_time_sec > end_time_sec:
             # night shift
             """
             Night shift in open hrms consider a 24 hours from noon to next day noon,
