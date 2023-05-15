@@ -10,7 +10,14 @@ from django.utils.translation import gettext_lazy as _
 
 def reporting_manager_validator(value):
     return value
-
+def validate_dob(value):
+    """
+    Validate that the date of birth is in the past.
+    """
+    today = date.today()
+    if value is not None:
+        if value >= today:
+            raise ValidationError("Date of birth must be in the past.")
 
 class Employee(models.Model):
     choice_gender = [
@@ -95,6 +102,11 @@ class Employee(models.Model):
             user.user_permissions.add(view_ownprofile)
             user.user_permissions.add(change_ownprofile)
             return self.save()
+        
+    def clean(self,*args, **kwargs):
+        validate_dob(self.dob)
+        super().clean()
+
 
 class EmployeeWorkInformation(models.Model):
     employee_id = models.OneToOneField(

@@ -109,7 +109,7 @@ class Attendance(models.Model):
             overtime = self.overtime_second
             if overtime > cutoff_seconds:
                 self.overtime_second = cutoff_seconds
-            self.attendance_overtime = format_time(cutoff_seconds)
+                self.attendance_overtime = format_time(cutoff_seconds)
         
         if self.pk is not None:
             # Get the previous values of the boolean field
@@ -135,6 +135,18 @@ class Attendance(models.Model):
         attendance_account.save()
         super(Attendance, self).save(*args, **kwargs)
            
+    def delete(self, *args, **kwargs):
+            # Custom delete logic
+            # Perform additional operations before deleting the object
+            try:
+                AttendanceActivity.objects.filter(attendance_date=self.attendance_date,employee_id=self.employee_id).delete()
+            except:
+                pass
+            # Call the superclass delete() method to delete the object
+            super(Attendance, self).delete(*args, **kwargs)
+
+            # Perform additional operations after deleting the object
+            
 
     def create_ot(self):
         '''
