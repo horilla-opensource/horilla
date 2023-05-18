@@ -52,7 +52,8 @@ class Employee(models.Model):
 
 
     def __str__(self) -> str:
-        return f'{self.employee_first_name} {self.employee_last_name}'
+        last_name = self.employee_last_name if self.employee_last_name is not None else ''
+        return f'{self.employee_first_name} {last_name}'
 
     class Meta:
         unique_together = ('employee_first_name', 'employee_last_name')
@@ -100,21 +101,21 @@ class EmployeeWorkInformation(models.Model):
     employee_id = models.OneToOneField(
         Employee, on_delete=models.CASCADE, null=True,related_name='employee_work_info')
     job_position_id = models.ForeignKey(
-        JobPosition, on_delete=models.DO_NOTHING, null=True, )
-    department_id = models.ForeignKey(Department, on_delete=models.DO_NOTHING,null=True,blank=True)
+        JobPosition, on_delete=models.DO_NOTHING, null=True,verbose_name="Job Position")
+    department_id = models.ForeignKey(Department, on_delete=models.DO_NOTHING,null=True,blank=True,verbose_name="Department")
     work_type_id = models.ForeignKey(
-        WorkType, on_delete=models.DO_NOTHING, null=True, blank=True)
+        WorkType, on_delete=models.DO_NOTHING, null=True, blank=True,verbose_name="Work Type")
     employee_type_id = models.ForeignKey(
-        EmployeeType, on_delete=models.CASCADE, null=True, blank=True)
-    job_role_id = models.ForeignKey(JobRole,on_delete=models.DO_NOTHING,null=True,blank=True)
+        EmployeeType, on_delete=models.CASCADE, null=True, blank=True,verbose_name="Employee Type")
+    job_role_id = models.ForeignKey(JobRole,on_delete=models.DO_NOTHING,null=True,blank=True,verbose_name="Job Role")
     reporting_manager_id = models.ForeignKey(
-        Employee, on_delete=models.DO_NOTHING, blank=True, null=True, related_name='reporting_manager', )
+        Employee, on_delete=models.DO_NOTHING, blank=True, null=True, related_name='reporting_manager',verbose_name="Reporting Manager")
     company_id = models.ForeignKey(
-        Company, on_delete=models.CASCADE, blank=True, null=True, )
+        Company, on_delete=models.CASCADE, blank=True, null=True,verbose_name="Company")
     location = models.CharField(max_length=50,blank=True)
     email = models.EmailField(max_length=254,blank=True,null=True)
     mobile = models.CharField(max_length=254,blank=True,null=True)
-    shift_id = models.ForeignKey(EmployeeShift,on_delete=models.DO_NOTHING,null=True)
+    shift_id = models.ForeignKey(EmployeeShift,on_delete=models.DO_NOTHING,null=True,verbose_name="Shift")
     date_joining = models.DateField(null=True, blank=True)
     contract_end_date = models.DateField(blank=True,null=True)
     basic_salary = models.IntegerField(null=True,blank=True, default=0)
@@ -150,8 +151,8 @@ class EmployeeBankDetails(models.Model):
     country = models.CharField(max_length=50, blank=True, null=True)
     state = models.CharField(max_length=50, blank=True)
     city = models.CharField(max_length=50, blank=True)
-    any_other_code1 = models.CharField(max_length=50)
-    any_other_code2 = models.CharField(max_length=50,null=True, blank=True)
+    any_other_code1 = models.CharField(max_length=50,verbose_name="Bank Code #1")
+    any_other_code2 = models.CharField(max_length=50,null=True, blank=True,verbose_name="Bank Code #2")
     additional_info = models.JSONField(null=True,blank=True)
 
     def __str__(self) -> str:

@@ -2,6 +2,7 @@ from datetime import date, datetime, timedelta
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
+from django.utils.translation import get_language,activate
 from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from horilla.decorators import permission_required, login_required, hx_request_required, manager_can_enter
 from base.methods import filtersubordinates, choosesubordinates, sortby
@@ -323,6 +324,8 @@ def attendance_update(request, id):
                 request, 'attendance/attendance/update_form.html', {'form': form})
             return HttpResponse(response.content.decode('utf-8') + '<script>location.reload();</script>')
     return render(request, 'attendance/attendance/update_form.html', {'form': form, })
+
+
 
 
 @login_required
@@ -748,7 +751,7 @@ def clock_in(request):
         mid_day_sec = strtime_seconds('12:00')
         minimum_hour, start_time_sec, end_time_sec = shift_schedule_today(
             day=day, shift=shift)
-        if start_time_sec >= end_time_sec:
+        if start_time_sec > end_time_sec:
             # night shift
             """
             Night shift in open hrms consider a 24 hours from noon to next day noon,
@@ -780,7 +783,9 @@ def clock_in(request):
         )
         return HttpResponse(
             """
-              <button class="oh-btn oh-btn--warning-outline " hx-get="/attendance/clock-out"  hx-target='#attendance-activity-container' hx-swap='innerHTML'><ion-icon class="oh-navbar__clock-icon mr-2 text-warning" name="exit-outline"></ion-icon>{check_out}</button>
+              <button class="oh-btn oh-btn--warning-outline " hx-get="/attendance/clock-out"  hx-target='#attendance-activity-container' hx-swap='innerHTML'><ion-icon class="oh-navbar__clock-icon mr-2 text-warning" name="exit-outline"></ion-icon>
+               <span class="hr-check-in-out-text">{check_out}</span>
+              </button>
             """.format(check_out=_('Check-Out'))
 
         )
@@ -900,7 +905,9 @@ def clock_out(request):
         employee=employee, date_today=date_today, now=now)
     return HttpResponse(
         """
-              <button class="oh-btn oh-btn--success-outline " hx-get="/attendance/clock-in" hx-target='#attendance-activity-container' hx-swap='innerHTML'><ion-icon class="oh-navbar__clock-icon mr-2 text-success" name="enter-outline"></ion-icon>{check_in}</button>
+              <button class="oh-btn oh-btn--success-outline " hx-get="/attendance/clock-in" hx-target='#attendance-activity-container' hx-swap='innerHTML'><ion-icon class="oh-navbar__clock-icon mr-2 text-success" name="enter-outline"></ion-icon>
+               <span class="hr-check-in-out-text">{check_in}</span>
+              </button>
             """.format(check_in=_('Check-In'))
 
     )
@@ -1055,7 +1062,7 @@ def validate_this_attendance(request, id):
         attendance.save()
         messages.success(request, _('Attendance validated.'))
         notify.send(request.user.employee_get, recipient=attendance.employee_id.employee_user_id,
-                    verb=f"Your attendance for the date {attendance.attendance_date} is validated", redirect="/attendance/view-my-attendance", icon="checkmark")
+                    verb = f"Your attendance for the date {attendance.attendance_date} is validated", redirect="/attendance/view-my-attendance", icon="checkmark")
         return HttpResponseRedirect(request. META. get('HTTP_REFERER', '/'))
     return HttpResponse('You Dont Have Permission')
 

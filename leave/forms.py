@@ -128,20 +128,20 @@ class LeaveRequestCreationForm(ModelForm):
         )
 
         if not start_date <= end_date:
-            raise forms.ValidationError("End date should not be less than start date.")
+            raise forms.ValidationError(_("End date should not be less than start date."))
         
         if not AvailableLeave.objects.filter(employee_id=employee_id, leave_type_id=leave_type_id).exists():
-            raise forms.ValidationError("Employee has no leave type..")
+            raise forms.ValidationError(_("Employee has no leave type.."))
 
         if overlapping_requests.exists():
-            raise forms.ValidationError("Employee has already a leave request for this date range..")
+            raise forms.ValidationError(_("Employee has already a leave request for this date range.."))
         
         available_leave = AvailableLeave.objects.get(employee_id=employee_id, leave_type_id=leave_type_id)
         total_leave_days = available_leave.available_days + available_leave.carryforward_days
         requested_days = (end_date - start_date).days +  1
 
         if not requested_days <= total_leave_days:
-            raise forms.ValidationError("Employee doesn't have enough leave days..")
+            raise forms.ValidationError(_("Employee doesn't have enough leave days.."))
 
 
         return cleaned_data
@@ -161,17 +161,17 @@ class LeaveRequestUpdationForm(ModelForm):
         leave_type_id = cleaned_data.get('leave_type_id')
 
         if not start_date <= end_date:
-            raise forms.ValidationError("End date should not be less than start date.")
+            raise forms.ValidationError(_("End date should not be less than start date."))
         
         if not AvailableLeave.objects.filter(employee_id=employee_id, leave_type_id=leave_type_id).exists():
-            raise forms.ValidationError("Employee has no leave type..")
+            raise forms.ValidationError(_("Employee has no leave type.."))
         
         available_leave = AvailableLeave.objects.get(employee_id=employee_id, leave_type_id=leave_type_id)
         total_leave_days = available_leave.available_days + available_leave.carryforward_days
         requested_days = (end_date - start_date).days +  1
         
         if not requested_days <= total_leave_days:
-            raise forms.ValidationError("Employee doesn't have enough leave days..")
+            raise forms.ValidationError(_("Employee doesn't have enough leave days.."))
 
         return cleaned_data
     class Meta:
@@ -268,7 +268,7 @@ class UserLeaveRequestForm(ModelForm):
         end_date = cleaned_data.get('end_date')
 
         if not start_date <= end_date:
-            raise forms.ValidationError("End date should not be less than start date.")
+            raise forms.ValidationError(_("End date should not be less than start date."))
 
         return cleaned_data
 

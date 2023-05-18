@@ -1,7 +1,5 @@
 
 
-$(document).ready(function () {
-    
 const objectiveChart = document.getElementById('objectiveChart');
 
 // data dictionary 
@@ -183,5 +181,3 @@ $('#feedback-status-chart').click(function (e) {
 })
 
 
-    
-});

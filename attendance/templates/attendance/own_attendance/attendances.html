@@ -11,6 +11,7 @@
           <div class="oh-sticky-table__th" hx-target='#attendance-container' hx-get="{% url 'own-attendance-filter' %}?{{pd}}&orderby=">{% trans "Clock Out" %}</div>
           <div class="oh-sticky-table__th" hx-target='#attendance-container' hx-get="{% url 'own-attendance-filter' %}?{{pd}}&orderby=attendance_clock_out_date">{% trans "Out Date" %}</div>
           <div class="oh-sticky-table__th" hx-target='#attendance-container' hx-get="{% url 'own-attendance-filter' %}?{{pd}}&orderby=">{% trans "Shift" %}</div>
+          <div class="oh-sticky-table__th" hx-target='#attendance-container' hx-get="{% url 'own-attendance-filter' %}?{{pd}}&orderby=">{% trans "Work Type" %}</div>
           <div class="oh-sticky-table__th" hx-target='#attendance-container' hx-get="{% url 'own-attendance-filter' %}?{{pd}}&orderby=">{% trans "Min Hour" %}</div>
           <div class="oh-sticky-table__th" hx-target='#attendance-container' hx-get="{% url 'own-attendance-filter' %}?{{pd}}&orderby=at_work_second">{% trans "At Work" %}</div>
           <div class="oh-sticky-table__th" hx-target='#attendance-container' hx-get="{% url 'own-attendance-filter' %}?{{pd}}&orderby=overtime_second">{% trans "Overtime" %}</div>
@@ -56,6 +57,9 @@
           <div class="oh-sticky-table__td">{{attendance.shift_id}}</div>
           <div class="oh-sticky-table__td">
             {{attendance.work_type_id}}
+          </div>
+          <div class="oh-sticky-table__td">
+            {{attendance.minimum_hour}}
           </div>
           <div class="oh-sticky-table__td">
               {{attendance.attendance_worked_hour}}

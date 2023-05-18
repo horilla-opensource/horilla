@@ -95,7 +95,7 @@
           <div class="col-12 col-sm-12 col-md-12 col-lg-6">
             <label class="oh-label" for="country">{% trans "Country" %}</label>
             <select name="country" id="id_country" class="oh-select oh-select-2">
-
+              <option value="{{form.instance.country}}" selected>{{form.instance.country}}</option>
             </select>
             {{form.country.errors}}
             <span class="dropdown-wrapper" aria-hidden="true"></span>
@@ -105,7 +105,7 @@
             <label class="oh-label d-block" for="state">{% trans "State" %}</label>
             {{form.state.errors}}
             <select name="state" id="id_state" class="oh-select oh-select-2">
-
+              <option value="{{form.instance.state}}" selected>{{form.instance.state}}</option>
             </select>
           </div>
         </div>

@@ -14,14 +14,16 @@ class ModelForm(forms.ModelForm):
         for field_name, field in self.fields.items():
             widget = field.widget
             if isinstance(widget, (forms.NumberInput, forms.EmailInput,forms.TextInput)):
-                field.widget.attrs.update({'class': 'oh-input w-100','placeholder':field.label})
+                label=_(field.label.title())
+                field.widget.attrs.update({'class': 'oh-input w-100','placeholder':label})
             elif isinstance(widget,(forms.Select,)):
                 label = ''
                 if field.label is not None:
-                    label = field.label.replace('id',' ')
-                field.empty_label = f'---Choose {label}---'
+                    label = _(field.label)
+                field.empty_label = _("---Choose {label}---").format(label=label)
                 self.fields[field_name].widget.attrs.update({'class':'oh-select oh-select-2 w-100','id': uuid.uuid4(),'style':'height:50px;border-radius:0;'})
             elif isinstance(widget,(forms.Textarea)):
+                label = _(field.label.title())
                 field.widget.attrs.update({'class': 'oh-input w-100','placeholder':field.label,'rows':2,'cols':40})
             elif isinstance(widget, (forms.CheckboxInput,forms.CheckboxSelectMultiple,)):
                 field.widget.attrs.update({'class': 'oh-switch__checkbox'})
@@ -157,7 +159,7 @@ class AttendanceActivityForm(ModelForm):
 
 class MonthSelectField(forms.ChoiceField):
     def __init__(self, *args, **kwargs):
-        choices = [(month_name[i].lower(), month_name[i]) for i in range(1, 13)]
+        choices = [(month_name[i].lower(), _(month_name[i].capitalize())) for i in range(1, 13)]
         super(MonthSelectField, self).__init__(choices=choices, *args, **kwargs)
 
 

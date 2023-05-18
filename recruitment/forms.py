@@ -11,19 +11,20 @@ class ModelForm(forms.ModelForm):
         for field_name, field in self.fields.items():
             widget = field.widget
             if isinstance(widget, (forms.NumberInput, forms.EmailInput, forms.TextInput, forms.FileInput)):
+                label = _(field.label)
                 field.widget.attrs.update(
-                    {'class': 'oh-input w-100', 'placeholder': field.label})
+                    {'class': 'oh-input w-100', 'placeholder': label})
             elif isinstance(widget, forms.URLInput):
                 field.widget.attrs.update(
                     {'class': 'oh-input w-100', 'placeholder': field.label})
             elif isinstance(widget, (forms.Select,)):
-                label = field.label.replace('id', ' ')
-                field.empty_label = f'---Choose {label}---'
+                field.empty_label = _('---Choose {label}---').format(label=_(field.label))
                 self.fields[field_name].widget.attrs.update(
                     {'id': uuid.uuid4, 'class': 'oh-select oh-select-2 w-100', 'style': 'height:50px;'})
             elif isinstance(widget, (forms.Textarea)):
+                label = _(field.label)
                 field.widget.attrs.update(
-                    {'class': 'oh-input w-100', 'placeholder': field.label, 'rows': 2, 'cols': 40})
+                    {'class': 'oh-input w-100', 'placeholder': label, 'rows': 2, 'cols': 40})
             elif isinstance(widget, (forms.CheckboxInput, forms.CheckboxSelectMultiple,)):
                 field.widget.attrs.update({'class': 'oh-switch__checkbox '})
 
@@ -36,10 +37,10 @@ class RegistrationForm(forms.ModelForm):
             if isinstance(widget, (forms.Select,)):
                 label = ''
                 if field.label is not None:
-                    label = field.label.replace('id', ' ')
-                field.empty_label = f'---Choose {label}---'
+                    label = _(field.label)
+                field.empty_label = _('---Choose {label}---').format(label=label)
                 self.fields[field_name].widget.attrs.update(
-                    {'id': uuid.uuid4, 'class': 'oh-select-2 oh-select--sm w-100'})
+                        {'id': uuid.uuid4, 'class': 'oh-select-2 oh-select--sm w-100'})
             elif isinstance(widget, (forms.TextInput)):
                 field.widget.attrs.update({'class': 'oh-input w-100', })
             elif isinstance(widget, (forms.CheckboxInput, forms.CheckboxSelectMultiple,)):
@@ -53,16 +54,20 @@ class DropDownForm(forms.ModelForm):
         for field_name, field in self.fields.items():
             widget = field.widget
             if isinstance(widget, (forms.NumberInput, forms.EmailInput, forms.TextInput, forms.FileInput, forms.URLInput)):
-                field.widget.attrs.update(
-                    {'class': 'oh-input oh-input--small oh-table__add-new-row d-block w-100', 'placeholder': field.label})
+                if field.label is not None:
+                    label = _(field.label)
+                    field.widget.attrs.update(
+                        {'class': 'oh-input oh-input--small oh-table__add-new-row d-block w-100', 'placeholder': label})
             elif isinstance(widget, (forms.Select,)):
                 #     label = field.label.replace('id','')
                 #     field.empty_label = f'---Choose {label}---'
                 self.fields[field_name].widget.attrs.update(
                     {'class': 'oh-select-2 oh-select--xs-forced ', 'id': uuid.uuid4(), })
             elif isinstance(widget, (forms.Textarea)):
-                field.widget.attrs.update(
-                    {'class': 'oh-input oh-input--small oh-input--textarea', 'placeholder': field.label, 'rows': 1, 'cols': 40})
+                if field.label is not None:
+                    label = _(field.label)
+                    field.widget.attrs.update(
+                        {'class': 'oh-input oh-input--small oh-input--textarea', 'placeholder': label, 'rows': 1, 'cols': 40})
             elif isinstance(widget, (forms.CheckboxInput, forms.CheckboxSelectMultiple,)):
                 field.widget.attrs.update({'class': 'oh-switch__checkbox '})
           

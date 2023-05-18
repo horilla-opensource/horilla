@@ -116,22 +116,22 @@ class ModelForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         for field_name, field in self.fields.items():
             widget = field.widget
-            if isinstance(widget, (forms.NumberInput, forms.EmailInput, forms.TextInput, forms.FileInput)):
-                field.widget.attrs.update(
-                    {'class': 'oh-input w-100', 'placeholder': field.label})
-            elif isinstance(widget, (forms.Select,)):
-                label = ''
+            if isinstance(widget,(forms.NumberInput, forms.EmailInput, forms.TextInput, forms.FileInput)):
                 if field.label is not None:
-                    label = field.label.replace('id', ' ')
-                field.empty_label = f'---Choose {label}---'
+                    label = _(field.label.title())
                 field.widget.attrs.update(
-                    {'class': 'oh-select oh-select-2 select2-hidden-accessible'})
+                    {"class": "oh-input w-100", "placeholder": label})
+            elif isinstance(widget, (forms.Select,)):
+                label = ""
+                if field.label is not None:
+                    label = _(field.label)
+                field.empty_label = _("---Choose {label}---").format(label=label)
+                field.widget.attrs.update(
+                    {"class": "oh-select oh-select-2 select2-hidden-accessible"})
             elif isinstance(widget, (forms.Textarea)):
-                field.widget.attrs.update(
-                    {'class': 'oh-input w-100', 'placeholder': field.label, 'rows': 2, 'cols': 40})
-            elif isinstance(widget, (forms.CheckboxInput, forms.CheckboxSelectMultiple,)):
-                field.widget.attrs.update(
-                    {'class': 'oh-switch__checkbox w-100'})
+                field.widget.attrs.update({"class": "oh-input w-100","placeholder": _(field.label),"rows": 2,"cols": 40,})
+            elif isinstance(widget,(forms.CheckboxInput,forms.CheckboxSelectMultiple,)):
+                field.widget.attrs.update({"class": "oh-switch__checkbox"})
 
 
 class Form(forms.Form):
@@ -140,20 +140,20 @@ class Form(forms.Form):
         for field_name, field in self.fields.items():
             widget = field.widget
             if isinstance(widget, (forms.NumberInput, forms.EmailInput, forms.TextInput)):
-                field.widget.attrs.update(
-                    {'class': 'oh-input w-100', 'placeholder': field.label})
+                label = _(field.label)
+                field.widget.attrs.update({"class": "oh-input w-100", "placeholder": label})
             elif isinstance(widget, (forms.Select,)):
-                label = ''
+                label = ""
                 if field.label is not None:
-                    label = field.label.replace('id', ' ')
-                field.empty_label = f'---Choose {label}---'
-                field.widget.attrs.update(
-                    {'class': 'oh-select oh-select-2 select2-hidden-accessible'})
+                    label = field.label.replace("id", " ")
+                field.empty_label = _("---Choose {label}---").format(label=label)
+                field.widget.attrs.update({"class": "oh-select oh-select-2 select2-hidden-accessible"})
             elif isinstance(widget, (forms.Textarea)):
-                field.widget.attrs.update(
-                    {'class': 'oh-input w-100', 'placeholder': field.label, 'rows': 2, 'cols': 40})
-            elif isinstance(widget, (forms.CheckboxInput, forms.CheckboxSelectMultiple,)):
-                field.widget.attrs.update({'class': 'oh-switch__checkbox'})
+                label = _(field.label)
+                field.widget.attrs.update({"class": "oh-input w-100","placeholder": label,"rows": 2,"cols": 40,})
+            elif isinstance(widget,(forms.CheckboxInput,forms.CheckboxSelectMultiple,)):
+                field.widget.attrs.update({"class": "oh-switch__checkbox"})
+
 
 
 class UserGroupForm(ModelForm):
