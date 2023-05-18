@@ -117,7 +117,7 @@ def recruitment(request):
                 managers = recruitment.recruitment_managers.select_related(
                     'employee_user_id')
                 users = [employee.employee_user_id for employee in managers]
-                notify.send(request.user.employee_get, recipient=users, verb=f"You are chosen as one of recruitment manager",
+                notify.send(request.user.employee_get, recipient=users, verb="You are chosen as one of recruitment manager",
                             icon="people-circle", redirect="/recruitment/pipeline")
             except Exception as e:
                 pass

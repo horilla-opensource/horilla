@@ -52,7 +52,7 @@ def attendance_date_validate(date):
 
 
 class AttendanceActivity(models.Model):
-    employee_id = models.ForeignKey(Employee,on_delete=models.CASCADE, related_name='employee_attendance_activities')
+    employee_id = models.ForeignKey(Employee,on_delete=models.CASCADE, related_name='employee_attendance_activities',verbose_name="Employee")
     attendance_date = models.DateField(null=True, validators=[attendance_date_validate])
     clock_in_date=models.DateField(null=True)
     shift_day = models.ForeignKey(EmployeeShiftDay,null=True,on_delete=models.DO_NOTHING)
@@ -67,10 +67,10 @@ class AttendanceActivity(models.Model):
 
 class Attendance(models.Model):
     employee_id = models.ForeignKey(
-        Employee, on_delete=models.CASCADE, null=True, related_name='employee_attendances')
+        Employee, on_delete=models.CASCADE, null=True, related_name='employee_attendances',verbose_name="Employee")
     shift_id = models.ForeignKey(
-        EmployeeShift, on_delete=models.DO_NOTHING,null=True)
-    work_type_id = models.ForeignKey(WorkType,null=True,blank=True,on_delete=models.DO_NOTHING)
+        EmployeeShift, on_delete=models.DO_NOTHING,null=True,verbose_name="Shift")
+    work_type_id = models.ForeignKey(WorkType,null=True,blank=True,on_delete=models.DO_NOTHING,verbose_name="Work Type")
     attendance_date = models.DateField(null=False,validators=[attendance_date_validate])
     attendance_day = models.ForeignKey(EmployeeShiftDay,on_delete=models.DO_NOTHING,null= True)
     attendance_clock_in = models.TimeField(null=True)
@@ -109,7 +109,7 @@ class Attendance(models.Model):
             overtime = self.overtime_second
             if overtime > cutoff_seconds:
                 self.overtime_second = cutoff_seconds
-            self.attendance_overtime = format_time(cutoff_seconds)
+                self.attendance_overtime = format_time(cutoff_seconds)
         
         if self.pk is not None:
             # Get the previous values of the boolean field
@@ -135,6 +135,18 @@ class Attendance(models.Model):
         attendance_account.save()
         super(Attendance, self).save(*args, **kwargs)
            
+    def delete(self, *args, **kwargs):
+            # Custom delete logic
+            # Perform additional operations before deleting the object
+            try:
+                AttendanceActivity.objects.filter(attendance_date=self.attendance_date,employee_id=self.employee_id).delete()
+            except:
+                pass
+            # Call the superclass delete() method to delete the object
+            super(Attendance, self).delete(*args, **kwargs)
+
+            # Perform additional operations after deleting the object
+            
 
     def create_ot(self):
         '''
@@ -161,7 +173,7 @@ class Attendance(models.Model):
         return employee_ot
 
 class AttendanceOverTime(models.Model):
-    employee_id = models.ForeignKey(Employee,on_delete=models.CASCADE,related_name='employee_overtime')
+    employee_id = models.ForeignKey(Employee,on_delete=models.CASCADE,related_name='employee_overtime',verbose_name="Employee")
     month = models.CharField(max_length=10)
     month_sequence = models.PositiveSmallIntegerField(default=0)
     year = models.CharField(default=datetime.now().strftime('%Y'),null=True,max_length=10)
@@ -192,7 +204,7 @@ class AttendanceLateComeEarlyOut(models.Model):
     ]
 
     attendance_id = models.ForeignKey(Attendance,on_delete=models.CASCADE,related_name='late_come_early_out')
-    employee_id = models.ForeignKey(Employee,on_delete=models.DO_NOTHING,null=True,related_name='late_come_early_out')
+    employee_id = models.ForeignKey(Employee,on_delete=models.DO_NOTHING,null=True,related_name='late_come_early_out',verbose_name="Employee")
     type = models.CharField(max_length=20,choices=choices)
     class Meta:
         unique_together = [('attendance_id'),('type')]

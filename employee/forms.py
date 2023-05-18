@@ -7,6 +7,8 @@ from django.core.exceptions import ValidationError
 import json
 from django.db.models import Q
 from django.utils.translation import gettext_lazy as _
+import re
+import datetime
 
 
 class ModelForm(forms.ModelForm):
@@ -14,13 +16,15 @@ class ModelForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         for field_name, field in self.fields.items():
             widget = field.widget
-            if isinstance(widget, (forms.NumberInput, forms.EmailInput,forms.TextInput)):
-                field.widget.attrs.update({'class': 'oh-input w-100','placeholder':field.label})
+            if isinstance(widget, (forms.NumberInput, forms.EmailInput, forms.TextInput, forms.FileInput)):
+                label = _(field.label.title())
+                field.widget.attrs.update(
+                    {'class': 'oh-input w-100', 'placeholder': label})
             elif isinstance(widget,(forms.Select,)):
                 label = ''
                 if field.label is not None:
-                    label = field.label.replace('id','')
-                field.empty_label = f'---Choose {label}---'
+                    label = _(field.label)
+                field.empty_label = _('---Choose {label}---').format(label=label)
                 field.widget.attrs.update({'class': 'oh-select oh-select-2 select2-hidden-accessible'})
             elif isinstance(widget,(forms.Textarea)):
                 field.widget.attrs.update({'class': 'oh-input w-100','placeholder':field.label,'rows':2,'cols':40})
@@ -69,18 +73,20 @@ class EmployeeForm(ModelForm):
         else:
             self.initial = {"badge_id":self.get_next_badge_id()}
 
-        for field in self.fields:            
-            self.fields[field].widget.attrs['placeholder'] = self.fields[field].label
-        self.fields['employee_last_name'].required = False
-
         
     def get_next_badge_id(self):
         try:
-            total_employee_count = Employee.objects.filter(~Q(badge_id=None)).count()
+            # total_employee_count = Employee.objects.count()
+            badge_ids = Employee.objects.filter(~Q(badge_id=None)).order_by('-badge_id')
+            greatest_id = badge_ids.first().badge_id
+            match = re.findall(r'\d+', greatest_id[::-1])
+            total_employee_count = 0
+            if match:
+                total_employee_count = int(match[0][::-1])            
         except:
             total_employee_count = 0
         try:
-            string = Employee.objects.filter(~Q(badge_id=None)).order_by('-id').last().badge_id
+            string = Employee.objects.filter(~Q(badge_id=None)).order_by('-badge_id').last().badge_id
         except:
             string = "DUDE"
         # Find the index of the last integer group in the string
@@ -111,7 +117,11 @@ class EmployeeForm(ModelForm):
             qs = Employee.objects.filter(badge_id=badge_id).exclude(pk=self.instance.pk if self.instance else None)
             if qs.exists():
                 raise forms.ValidationError(_("Badge ID must be unique."))
+            if not re.search(r'\d', badge_id):
+                raise forms.ValidationError(_("Badge ID must contain at least one digit."))
+
         return badge_id
+    
         
     
 class EmployeeWorkInformationForm(ModelForm):
@@ -166,8 +176,8 @@ class EmployeeBankDetailsForm(ModelForm):
         super(EmployeeBankDetailsForm, self).__init__(*args, **kwargs)
         for visible in self.visible_fields():
             visible.field.widget.attrs['class'] = 'oh-input w-100'
-        for field in self.fields:            
-            self.fields[field].widget.attrs['placeholder'] = self.fields[field].label
+        # for field in self.fields:            
+        #     self.fields[field].widget.attrs['placeholder'] = self.fields[field].label
         
         # self.fields['reporting_manager_id'].widget.attrs.update({'class': 'oh-select oh-select-2 select2-hidden-accessible'})
 

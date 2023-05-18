@@ -24,10 +24,10 @@ def validate_image(value):
 class Recruitment(models.Model):
     description = models.TextField(null=True)
     job_position_id = models.ForeignKey(
-        JobPosition, on_delete=models.CASCADE,  null=False, db_constraint=False, related_name='recruitment')
+        JobPosition, on_delete=models.CASCADE,  null=False, db_constraint=False, related_name='recruitment',verbose_name="Job Position")
     vacancy = models.IntegerField(blank=True, null=True)
     recruitment_managers = models.ManyToManyField(Employee)
-    company_id = models.ForeignKey(Company,on_delete=models.DO_NOTHING,null=True,blank=True)
+    company_id = models.ForeignKey(Company,on_delete=models.DO_NOTHING,null=True,blank=True,verbose_name="Company")
     start_date = models.DateField(default=django.utils.timezone.now)
     end_date = models.DateField(blank=True, null=True)
     closed = models.BooleanField(default=False)
@@ -50,7 +50,7 @@ class Stage(models.Model):
         ('hired',_('Hired')),
     ]
     recruitment_id= models.ForeignKey(
-        Recruitment, on_delete=models.CASCADE,related_name='stage_set')
+        Recruitment, on_delete=models.CASCADE,related_name='stage_set',verbose_name="Recruitment")
     stage_managers= models.ManyToManyField(Employee,blank=True)
     stage = models.CharField(max_length=50 )
     stage_type = models.CharField(max_length=20,choices=stage_types,default='interview')
@@ -70,8 +70,8 @@ class Candidate(models.Model):
     name = models.CharField(max_length=100,null=True)
     profile = models.ImageField(upload_to='recruitment/profile',null=True,validators=[validate_image,])
     portfolio = models.URLField(max_length=200,blank=True)
-    recruitment_id = models.ForeignKey(Recruitment, on_delete=models.CASCADE, blank=True, null=True,related_name='candidate')
-    stage_id = models.ForeignKey(Stage,on_delete=models.CASCADE,null=True)
+    recruitment_id = models.ForeignKey(Recruitment, on_delete=models.CASCADE, blank=True, null=True,related_name='candidate',verbose_name="Recruitment")
+    stage_id = models.ForeignKey(Stage,on_delete=models.CASCADE,null=True,verbose_name="Stage")
     schedule_date = models.DateTimeField(blank=True,null=True)
     email = models.EmailField(max_length=254,)
     mobile = models.CharField(max_length=15, blank=True)

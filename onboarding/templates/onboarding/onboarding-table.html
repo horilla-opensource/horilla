@@ -117,8 +117,7 @@
                             </div>
                             <div class="oh-sticky-table__td">{{candidate.candidate_id.email}}</div>
                             <div class="oh-sticky-table__td">{{candidate.candidate_id.mobile}}</div>
-                            <div class="oh-sticky-table__td">
-                                {{candidate.candidate_id.schedule_date.date}}</div>
+                            <div class="oh-sticky-table__td">{{candidate.candidate_id.joining_date}}</div>
                             <div class="oh-sticky-table__td">
                                 {% if request.user|stage_manages:stage or perms.onboarding.change_candidatestage %}
                                 <select id="" class="oh-input w-100" name="stage"

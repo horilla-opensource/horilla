@@ -20,6 +20,12 @@ from notifications.signals import notify
 from django.utils.translation import gettext as _
 
 
+
+def custom404(request,exception):
+   
+    return render(request,'404.html')
+
+
 # Create your views here.
 def is_reportingmanger(request, instance):
     """
@@ -1458,7 +1464,7 @@ def work_type_request_approve(request, id):
         work_type_request.save()
         messages.success(request, _('Work type request has been approved.'))
         notify.send(request.user.employee_get, recipient=work_type_request.employee_id.employee_user_id,
-                    verb='Your work type request has been Approved.', redirect='/', icon='checkmark')
+                    verb='Your work type request has been approved.', redirect='/', icon='checkmark')
 
         return HttpResponseRedirect(request. META. get('HTTP_REFERER', '/'))
     return HttpResponse('You Do nt Have Permission')
@@ -1486,7 +1492,7 @@ def work_type_request_bulk_approve(request):
             work_type_request.save()
             messages.success(request, _('Work type request has been approved.'))
             notify.send(request.user.employee_get, recipient=work_type_request.employee_id.employee_user_id,
-                        verb='Your work type request has been Approved.', redirect='/', icon='checkmark')
+                        verb='Your work type request has been approved.', redirect='/', icon='checkmark')
     return HttpResponseRedirect(request. META. get('HTTP_REFERER', '/'))
 
 

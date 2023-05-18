@@ -234,6 +234,9 @@ def employee_view_update(request, id):
         if request.POST:
             if request.POST.get('employee_first_name') is not None:
                 form = EmployeeForm(request.POST, instance=employee)
+                print("----------")
+                print(request.POST)
+                print("----------")
                 if form.is_valid():
                     form.save()
                     messages.success(

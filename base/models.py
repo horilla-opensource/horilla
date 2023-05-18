@@ -31,7 +31,7 @@ class Company(models.Model):
     state = models.CharField(max_length=50)
     city = models.CharField(max_length=50)
     zip = models.CharField(max_length=20)
-    icon = models.FileField(upload_to='base/icon',null=True)
+    icon = models.FileField(upload_to='base/icon',null=True,)
     class Meta:
         unique_together = ['company','address']
 
@@ -50,13 +50,13 @@ class Department(models.Model):
 class JobPosition(models.Model):
     job_position = models.CharField(max_length=50, blank=False, null=False, unique=True)
     department_id = models.ForeignKey(
-        Department, on_delete=models.CASCADE, blank=True, related_name='job_position')
+        Department, on_delete=models.CASCADE, blank=True, related_name='job_position', verbose_name='Department')
     def __str__(self):
         return self.job_position
 
 
 class JobRole(models.Model):
-    job_position_id = models.ForeignKey(JobPosition, on_delete=models.CASCADE)
+    job_position_id = models.ForeignKey(JobPosition, on_delete=models.CASCADE, verbose_name='Job Position')
     job_role = models.CharField(max_length=50,blank=False,null=True)
     class Meta:
         unique_together = ('job_position_id','job_role')
@@ -70,9 +70,9 @@ class WorkType(models.Model):
 
 class RotatingWorkType(models.Model):
     name = models.CharField(max_length=50)
-    work_type1 = models.ForeignKey(WorkType,on_delete=models.CASCADE,related_name='work_type1')
-    work_type2 = models.ForeignKey(WorkType,on_delete=models.CASCADE,related_name='work_type2')
-    employee_id = models.ManyToManyField('employee.Employee', through='RotatingWorkTypeAssign')
+    work_type1 = models.ForeignKey(WorkType,on_delete=models.CASCADE,related_name='work_type1',verbose_name=_('Work Type 1'))
+    work_type2 = models.ForeignKey(WorkType,on_delete=models.CASCADE,related_name='work_type2',verbose_name=_('Work Type 2'))
+    employee_id = models.ManyToManyField('employee.Employee', through='RotatingWorkTypeAssign',verbose_name="Employee")
 
     def __str__(self) -> str:
         return self.name
@@ -101,8 +101,8 @@ BASED_ON = [
 
 class RotatingWorkTypeAssign(models.Model):
     
-    employee_id = models.ForeignKey('employee.Employee',on_delete=models.CASCADE,null=True)
-    rotating_work_type_id = models.ForeignKey(RotatingWorkType,on_delete=models.CASCADE)
+    employee_id = models.ForeignKey('employee.Employee',on_delete=models.CASCADE,null=True,verbose_name="Employee")
+    rotating_work_type_id = models.ForeignKey(RotatingWorkType,on_delete=models.CASCADE,verbose_name='Rotating Work Type')
     next_change_date = models.DateField(null=True)
     start_date = models.DateField(default= django.utils.timezone.now)
     based_on = models.CharField(max_length=10,choices=BASED_ON,null=False,blank=False)
@@ -152,9 +152,8 @@ class EmployeeShift(models.Model):
 class EmployeeShiftSchedule(models.Model):
     day = models.ForeignKey(EmployeeShiftDay,
                             on_delete=models.CASCADE,related_name='day_schedule')
-    
     shift_id = models.ForeignKey(
-        EmployeeShift, on_delete=models.CASCADE)
+        EmployeeShift, on_delete=models.CASCADE,verbose_name='Shift')
     minimum_working_hour = models.CharField(default='08:15',max_length=5,validators=[validate_time_format])
     start_time = models.TimeField(null=True)
     end_time = models.TimeField(null=True) 
@@ -169,9 +168,9 @@ class EmployeeShiftSchedule(models.Model):
 
 class RotatingShift(models.Model):
     name =models.CharField(max_length=50)
-    employee_id = models.ManyToManyField('employee.Employee',through='RotatingShiftAssign')
-    shift1 = models.ForeignKey(EmployeeShift,related_name='shift1',on_delete=models.CASCADE)
-    shift2 = models.ForeignKey(EmployeeShift,related_name='shift2',on_delete=models.CASCADE)
+    employee_id = models.ManyToManyField('employee.Employee',through='RotatingShiftAssign',verbose_name='Employee')
+    shift1 = models.ForeignKey(EmployeeShift,related_name='shift1',on_delete=models.CASCADE,verbose_name=_('Shift 1'))
+    shift2 = models.ForeignKey(EmployeeShift,related_name='shift2',on_delete=models.CASCADE,verbose_name=_('Shift 2'))
 
     def __str__(self) -> str:
         return self.name
@@ -183,8 +182,8 @@ class RotatingShift(models.Model):
 class RotatingShiftAssign(models.Model):
 
     # employee_id = models.OneToOneField('employee.Employee',on_delete=models.CASCADE)
-    employee_id = models.ForeignKey('employee.Employee',on_delete=models.CASCADE)
-    rotating_shift_id = models.ForeignKey(RotatingShift,on_delete=models.CASCADE)
+    employee_id = models.ForeignKey('employee.Employee',on_delete=models.CASCADE,verbose_name='Employee')
+    rotating_shift_id = models.ForeignKey(RotatingShift,on_delete=models.CASCADE,verbose_name='Rotating Shift')
     next_change_date = models.DateField(null=True)
     start_date = models.DateField(default=django.utils.timezone.now)
     based_on = models.CharField(max_length=10,choices=BASED_ON,null=False,blank=False)
@@ -214,10 +213,10 @@ class WorkTypeRequest(models.Model):
         
         super(WorkTypeRequest,self).save(*args, **kwargs)
 
-    employee_id = models.ForeignKey('employee.Employee',on_delete=models.CASCADE,null=True,related_name='work_type_request')
+    employee_id = models.ForeignKey('employee.Employee',on_delete=models.CASCADE,null=True,related_name='work_type_request',verbose_name='Employee')
     requested_date = models.DateField(null=True,default=django.utils.timezone.now)
     requested_till = models.DateField(null=True,blank=True,default=django.utils.timezone.now)
-    work_type_id = models.ForeignKey(WorkType,on_delete=models.CASCADE,related_name='requested_work_type')
+    work_type_id = models.ForeignKey(WorkType,on_delete=models.CASCADE,related_name='requested_work_type',verbose_name='Work Type')
     previous_work_type_id = models.ForeignKey(WorkType,on_delete=models.DO_NOTHING,null=True,blank=True,related_name='previous_work_type')
     description = models.TextField(null=True)
     approved = models.BooleanField(default=False)
@@ -239,10 +238,10 @@ class WorkTypeRequest(models.Model):
 
 class ShiftRequest(models.Model):
 
-    employee_id = models.ForeignKey('employee.Employee',on_delete=models.CASCADE,null=True,related_name='shift_request')
+    employee_id = models.ForeignKey('employee.Employee',on_delete=models.CASCADE,null=True,related_name='shift_request',verbose_name='Employee')
     requested_date = models.DateField(null=True,default=django.utils.timezone.now)
     requested_till = models.DateField(null=True,blank=True,default=django.utils.timezone.now)
-    shift_id = models.ForeignKey(EmployeeShift,on_delete=models.CASCADE,related_name='requested_shift')    
+    shift_id = models.ForeignKey(EmployeeShift,on_delete=models.CASCADE,related_name='requested_shift',verbose_name='Shift')    
     previous_shift_id = models.ForeignKey(EmployeeShift,on_delete=models.DO_NOTHING,null=True,blank=True,related_name='previous_shift')
     description = models.TextField(null=True)
     approved = models.BooleanField(default=False)

@@ -21,6 +21,8 @@
       list-style-type: none; 
     }
     </style>
+  <script src="{% static '/jquery/jquery.min.js' %}"></script>
+
   </head>
   <body>
     <div id="main">
@@ -225,6 +227,7 @@
     </div>
     <script>
       {% include 'country.js' %}
+      {% include 'select2.js' %}
     </script>
     <script>
       function validateForm(event) {

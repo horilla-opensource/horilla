@@ -63,7 +63,7 @@ def stage_save(form, recruitment, request, id):
     notify.send(
         request.user.employee_get,
         recipient=users,
-        verb="You are choosen as onboarding stage manager",
+        verb="You are chosen as onboarding stage manager",
         icon="people-circle",
         redirect="/onboarding/onboarding-view",
     )
@@ -100,7 +100,7 @@ def stage_update(request, stage_id, recruitment_id):
             notify.send(
                 request.user.employee_get,
                 recipient=users,
-                verb="You are choosen as onboarding stage manager",
+                verb="You are chosen as onboarding stage manager",
                 icon="people-circle",
                 redirect="/onboarding/onboarding-view",
             )
@@ -166,7 +166,7 @@ def task_creation(request, id):
             notify.send(
                 request.user.employee_get,
                 recipient=users,
-                verb="You are choosen as onboarding task manager",
+                verb="You are chosen as onboarding task manager",
                 icon="people-circle",
                 redirect="/onboarding/onboarding-view",
             )
@@ -203,7 +203,7 @@ def task_update(request, task_id, recruitment_id):
             notify.send(
                 request.user.employee_get,
                 recipient=users,
-                verb="You are choosen as onboarding task manager",
+                verb="You are chosen as onboarding task manager",
                 icon="people-circle",
                 redirect="/onboarding/onboarding-view",
             )
