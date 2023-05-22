@@ -73,7 +73,7 @@
             {% if perms.base.change_worktyperequest and work_type_request.approved == False or request.user|is_reportingmanager %}
             {% if work_type_request.canceled %}
             <button disabled class='oh-btn oh-btn--primary w-100'>{% trans "Canceled" %}</button></td>
-            {% elif request.user.employee_get == work_type_request.employee_id%}
+            {% elif request.user.employee_get == work_type_request.employee_id and not perms.base.change_worktyperequest %}
             <button class='oh-btn oh-btn--info w-100' disabled>{% trans "Approve" %}</button></td>
             {% else %}
             <a href="/work-type-request-approve/{{work_type_request.id}}/" class='oh-btn oh-btn--info'>{% trans "Approve" %}</a></td>
