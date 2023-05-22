@@ -70,16 +70,15 @@
           </div>
           <div class="oh-sticky-table__td"> 
             {% if shift_request.approved == False %}
-            {% if perms.base.change_shiftrequest and shift_request.approved == False or request.user|is_reportingmanager %}
-            {% if shift_request.canceled %}
-            <button disabled class='oh-btn oh-btn--primary w-100'>{% trans "Canceled" %}</button></td>
-            {% elif request.user.employee_get == shift_request.employee_id%}
-            <button class='oh-btn oh-btn--info w-100' disabled>{% trans "Approve" %}</button></td>
-            {% else %}
-            <a href="/shift-request-approve/{{shift_request.id}}/" class='oh-btn oh-btn--info'>{% trans "Approve" %}</a></td>
-            
-            {% endif %}
-            {% endif %}
+              {% if perms.base.change_shiftrequest and shift_request.approved == False or request.user|is_reportingmanager %}
+                {% if shift_request.canceled %}
+                  <button disabled class='oh-btn oh-btn--primary w-100'>{% trans "Canceled" %}</button></td>
+                {% elif request.user.employee_get == shift_request.employee_id and not perms.base.change_shiftrequest %}
+                  <button class='oh-btn oh-btn--info w-100' disabled>{% trans "Approve" %}</button></td>
+                {% else %}
+                  <a href="/shift-request-approve/{{shift_request.id}}/" class='oh-btn oh-btn--info'>{% trans "Approve" %}</a></td>
+                {% endif %}
+              {% endif %}
             {% elif shift_request.approved == True %}
             <button type = 'button' class='oh-btn oh-btn--info w-100' disabled>{% trans "Approved" %}</button>
             {% endif %}

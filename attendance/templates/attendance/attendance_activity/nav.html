@@ -54,20 +54,6 @@
           {% include 'attendance/attendance_activity/activity_filters.html' %}
         </div>
       </div>
-      <div class="oh-btn-group ml-2">
-        <div class="oh-dropdown" x-data="{open: false}">
-          <button
-            class="oh-btn oh-btn--dropdown oh-btn--secondary oh-btn--shadow"
-            @click="open = !open"
-            @click.outside="open = false"
-          >
-            {% trans "Actions" %}
-          </button>
-          <div class="oh-dropdown__menu oh-dropdown__menu--right" x-show="open" style="display: none;">
-            
-          </div>
-        </div>
-      </div>
     </div>
   </div>
   <script>
