@@ -877,6 +877,8 @@ def candidate_update(request, id):
             if candidate.stage_id is None:
                 candidate.stage_id = Stage.objects.filter(
                     recruitment_id=candidate.recruitment_id, stage_type="initial").first()
+            if candidate.stage_id.recruitment_id != candidate.recruitment_id:
+                candidate.stage_id = candidate.recruitment_id.stage_set.filter(stage_type="initial").first()
             candidate.save()
             messages.success(request, _('Candidate Updated Successfully.'))
             return redirect('/recruitment/candidate-view')
