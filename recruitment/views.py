@@ -1024,7 +1024,7 @@ def send_acknowledgement(request):
 
         <div class="oh-alert-container">
             <div class="oh-alert oh-alert--animated oh-alert--success">
-                Mail sended.
+                Mail send.
             </div>
         </div>
     """)
