@@ -1,4 +1,24 @@
 {% load i18n %}
+<style>
+  .count-span{
+    width: 100%;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    padding: 0.5rem 0rem;
+    font-style: italic;
+    color: hsl(0deg,0%,37%);
+    width: 100%;
+  }
+</style>
+<script>
+  $(document).ready(function () {
+    $("[data-toggle-count]").click(function (e) { 
+      e.preventDefault();
+      span = $(this).parent().find(".count-span").toggle()
+    });
+  });
+</script>
       {% if messages %}
       <div class="oh-wrapper">
           {% for message in messages %}
@@ -27,8 +47,8 @@
                               </div>
                               <div class="oh-sticky-table__tbody">
                                 {% for stage in data %}
-                                <div class="oh-sticky-table__tr oh-permission-table__tr" data-label="Manager" data-count="{{stage.stage_managers.all|length}}">
-                                  <div class="oh-sticky-table__sd oh-permission-table--toggle">
+                                <div class="oh-sticky-table__tr oh-permission-table__tr oh-permission-table--collapsed">
+                                  <div class="oh-sticky-table__sd oh-permission-table--toggle" data-toggle-count>
                                     <div class="d-flex align-items-center">
                                       <button class="oh-permission-table__collapse me-2">
                                         <ion-icon class="oh-permission-table__collapse-down" title="Reveal" name="chevron-down-outline"></ion-icon>
@@ -48,8 +68,8 @@
                                           alt="Baby C."
                                           />
                                         </div>
-                                        <span class="oh-profile__name oh-text--dark"
-                                        >{{manager.employee_first_name}}.</span
+                                        <span class="oh-profile__name oh-text--dark" title="{{manager}}"
+                                        >{{manager.employee_first_name|truncatechars:6}}.</span
                                         >
                                       </div>
                                       <button hx-post="{% url 'rec-remove-stage-manager' manager.id stage.id %}?{{pd}}&page={{data.number}}" hx-target='#stage-container' class="oh-user-panel__remove">
@@ -58,6 +78,8 @@
                                       </button>
                                     </span>
                                     {% endfor %}
+                                    <span class="count-span">{{stage.stage_managers.all|length}} Managers</span>
+
                                   </div>
                                   <div class="oh-sticky-table__td">
                                     {{stage.stage_type}}

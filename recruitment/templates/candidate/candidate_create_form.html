@@ -4,6 +4,7 @@
 {% load i18n %}
 {% comment %} {% include 'candidate/candidate_nav.html' %} {% endcomment %}
 
+{{form.load}}
 <div class="oh-wrapper mt-5" id='section' data-select2-id="select2-data-40-yu7x">
   <form data-select2-id="select2-data-47-5jxy" method="post" enctype="multipart/form-data">
     <div class="oh-general__tab-target oh-profile-section mb-4" id="personal" data-select2-id="select2-data-personal">
@@ -58,12 +59,19 @@
           </div>
         </div>
         <div class="row">
-          <div class="col-12 col-sm-12 col-md-12 col-lg-12">
+          <div class="col-12 col-sm-12 col-md-12 col-lg-6">
             <label class="oh-label" for="recruitment">{% trans "Recruitment" %}</label>
             <div id="select2-container">
               {{form.recruitment_id}}
             </div>
             {{form.recruitment_id.errors}}
+          </div>
+          <div class="col-12 col-sm-12 col-md-12 col-lg-6">
+            <label class="oh-label" for="recruitment">{% trans "Job Position" %}</label>
+            <div id="select2-container">
+              {{form.job_position_id}}
+            </div>
+            {{form.job_position_id.errors}}
           </div>
           {% comment %} <div class="col-12 col-sm-12 col-md-12 col-lg-6">
             <label class="oh-label" for="stage">{% trans "Stage" %}</label>
@@ -184,6 +192,7 @@
           </div>
   </form>
 </div>
+
 <script>
   {% include 'country.js' %}
 </script>

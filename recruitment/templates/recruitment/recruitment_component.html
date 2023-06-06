@@ -11,6 +11,26 @@
     {% endfor %}
 </div>
 {% endif %}
+<style>
+  .count-span{
+    width: 100%;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    padding: 0.5rem 0rem;
+    font-style: italic;
+    color: hsl(0deg,0%,37%);
+    width: 100%;
+  }
+</style>
+<script>
+  $(document).ready(function () {
+    $("[data-toggle-count]").click(function (e) { 
+      e.preventDefault();
+      span = $(this).parent().find(".count-span").toggle()
+    });
+  });
+</script>
 <div class="row">
     <div class="col-12 col-sm-12 col-md-12 col-lg-12">
         <div class="oh-card p-4">
@@ -19,8 +39,9 @@
                     <div class="oh-sticky-table__table">
                       <div class="oh-sticky-table__thead">
                         <div class="oh-sticky-table__tr">
-                          <div class="oh-sticky-table__th" hx-get="{% url 'recruitment-search' %}?{{pd}}&orderby=job_position_id__job_position" hx-target="#recruitment-container">{% trans "Job Position" %}</div>
+                          <div class="oh-sticky-table__th" hx-get="{% url 'recruitment-search' %}?{{pd}}&orderby=title" hx-target="#recruitment-container">{% trans "Recruitment" %}</div>
                           <div class="oh-sticky-table__th" hx-get="{% url 'recruitment-search' %}?{{pd}}&orderby=recruitment_managers" hx-target="#recruitment-container">{% trans "Managers" %}</div>
+                          <div class="oh-sticky-table__th" hx-get="{% url 'recruitment-search' %}?{{pd}}&orderby=open_positions" hx-target="#recruitment-container">{% trans "Open Jobs" %}</div>
                           <div class="oh-sticky-table__th" hx-get="{% url 'recruitment-search' %}?{{pd}}&orderby=vacancy" hx-target="#recruitment-container">{% trans "Vacancy" %}</div>
                           <div class="oh-sticky-table__th" hx-get="{% url 'recruitment-search' %}?{{pd}}&orderby=start_date" hx-target="#recruitment-container">{% trans "Start Date" %}</div>
                           <div class="oh-sticky-table__th" hx-get="{% url 'recruitment-search' %}?{{pd}}&orderby=end_date" hx-target="#recruitment-container">{% trans "End Date" %}</div>
@@ -30,16 +51,17 @@
                       </div>
                       <div class="oh-sticky-table__tbody">
                         {% for rec in data %}
-                        <div class="oh-sticky-table__tr oh-permission-table__tr" data-label='Manager' data-count="{{rec.recruitment_managers.all|length}}">
-                          <div class="oh-sticky-table__sd oh-permission-table--toggle">
+                        <div class="oh-sticky-table__tr oh-permission-table__tr oh-permission-table--collapsed" >
+                          <div class="oh-sticky-table__sd oh-permission-table--toggle" data-toggle-count>
                             <div class="d-flex align-items-center">
                               <button class="oh-permission-table__collapse me-2">
                                 <ion-icon class="oh-permission-table__collapse-down" title="Reveal" name="chevron-down-outline"></ion-icon>
                                 <ion-icon class="oh-permission-table__collapse-up" title="Collapse" name="chevron-up-outline"></ion-icon>
                               </button>
-                              <span class="oh-permission-table__user">{{rec.job_position_id}}</span>
+                              <span class="oh-permission-table__user">{{rec}}</span>
                             </div>
                           </div>
+
                           <div class="oh-sticky-table__td">
                             {% for manager in rec.recruitment_managers.all %}
                             <span class="oh-user-panel oh-collapse-panel" data-type="user">
@@ -51,8 +73,8 @@
                                   alt="Baby C."
                                   />
                                 </div>
-                                <span class="oh-profile__name oh-text--dark"
-                                >{{manager.employee_first_name}}.</span
+                                <span class="oh-profile__name oh-text--dark" title="{{manager}}"
+                                >{{manager.employee_first_name|truncatechars:4}}</span
                                 >
                               </div>
                               <a hx-post="{% url 'remove-recruitment-manager' manager.id rec.id %}?{{pd}}&page={{data.number}}" hx-target="#recruitment-container"class="oh-user-panel__remove">
@@ -60,6 +82,31 @@
                               </a>
                             </span>
                             {% endfor %}
+                            <span class="count-span">{{rec.recruitment_managers.all|length}} Managers</span>
+                            
+                          </div>
+                          <div class="oh-sticky-table__td">
+                            {% for jb in rec.open_positions.all %}
+                            <span class="oh-user-panel oh-collapse-panel" data-type="user">
+                              <div class="oh-profile oh-profile--md">
+                                <div class="oh-profile__avatar mr-1">
+                                  <img
+                                  src="https://ui-avatars.com/api/?name={{jb.job_position}}&background=random"
+                                  class="oh-profile__image"
+                                  alt="Baby C."
+                                  />
+                                </div>
+                                <span class="oh-profile__name oh-text--dark" title="{{jb}}"
+                                >{{jb.job_position|truncatechars:5}}.</span
+                                >
+                              </div>
+                              {% comment %} <a hx-post="{% url 'remove-job' jb.id rec.id %}?{{pd}}&page={{data.number}}" hx-target="#recruitment-container"class="oh-user-panel__remove">
+                                <ion-icon name="close-outline"></ion-icon>
+                              </a> {% endcomment %}
+                            </span>
+                            {% endfor %}
+                            <span class="count-span">{{rec.open_positions.all|length}} Jobs</span>
+
                           </div>
                           <div class="oh-sticky-table__td">
                             {{rec.vacancy}}
@@ -72,7 +119,7 @@
                           </div>
                           <div class="oh-sticky-table__td">
                             {% if not rec.closed %}
-                            {% trans "Active" %}
+                            {% trans "Open" %}
                             {% else %}
                             {% trans "Closed" %}
                             {% endif %}

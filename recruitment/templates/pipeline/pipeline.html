@@ -139,17 +139,21 @@
               <div class="oh-sticky-table__table oh-table__movable">
                 <div class="oh-sticky-table__thead">
                   <div class="oh-sticky-table__tr oh-table-config__tr">
-                    <div class="oh-sticky-table__th oh-table-config__th">
+                    <div class="oh-sticky-table__th oh-table-config__th" style="width: 235px;">
                       <span> {% trans "Candidate" %} </span>
                     </div>
+
                     <div class="oh-sticky-table__th oh-table-config__th">
                       <span> {% trans "Email" %} </span>
+                    </div>
+                    <div class="oh-sticky-table__th oh-table-config__th">
+                      <span> {% trans "Job Position" %} </span>
                     </div>
                     <div class="oh-sticky-table__th oh-table-config__th">
                       <span> {% trans "Contact" %} </span>
                     </div>
                     <div class="oh-sticky-table__th oh-table-config__th"></div>
-                    <div class="oh-sticky-table__th oh-table-config__th"></div>
+                    <div class="oh-sticky-table__th oh-table-config__th" style="width: 200px;" ></div>
                   </div>
                 </div>
                 <div
@@ -170,10 +174,10 @@
                   >
                     <a
                       class="oh-sticky-table__sd oh-table-config__td"
-                      style="text-decoration: none"
+                      style="text-decoration: none;width: 400px !important;"
                       href="{% url 'candidate-view-individual' cand.id %}"
                     >
-                      <ion-icon name="reorder-two-outline"></ion-icon>
+                      <ion-icon name="move"></ion-icon>
                       <div class="oh-profile oh-profile--md">
                         <div class="oh-profile__avatar mr-1">
                           <img
@@ -182,17 +186,22 @@
                             alt="User"
                           />
                         </div>
-                        <span>{{cand}} </span>
+                        <span title="{{cand}}">{{cand|truncatechars:15}} </span>
                       </div>
                     </a>
 
-                    <div class="oh-sticky-table__sd oh-table-config__td">
+                    <div class="oh-sticky-table__td oh-table-config__td">
                       {{cand.email}}
                     </div>
-                    <div class="oh-sticky-table__sd oh-table-config__td">
+                    <div class="oh-sticky-table__td oh-table-config__td">
+                      <span title="{{cand.job_position_id}}">
+                        {{cand.job_position_id|truncatechars:21}}
+                      </span>
+                    </div>
+                    <div class="oh-sticky-table__td oh-table-config__td">
                       {{cand.mobile}}
                     </div>
-                    <div class="oh-sticky-table__sd oh-table-config__td">
+                    <div class="oh-sticky-table__td oh-table-config__td">
                       <select
                         name=""
                         id="stageChange{{cand.id}}"
@@ -207,8 +216,8 @@
                         {% endif %} {% endfor %}
                       </select>
                     </div>
-                    <div class="oh-sticky-table__sd oh-table-config__td">
-                      <div class="oh-btn-group">
+                    <div class="oh-sticky-table__td oh-table-config__td" >
+                      <div class="oh-btn-group" >
                         <button
                           type="button"
                           hx-get='{% url "send-mail" cand.id %}'
@@ -218,6 +227,7 @@
                           class="oh-btn oh-btn--light"
                           data-toggle="oh-modal-toggle"
                           data-target="#sendMailModal"
+                          style="flex: 1 0 auto; width:20px;height: 40.68px; padding: 0;"
                         >
                           <ion-icon name="mail-open-outline"></ion-icon>
                         </button>
@@ -230,6 +240,7 @@
                           class="oh-btn oh-btn--light"
                           data-toggle="oh-modal-toggle"
                           data-target="#addNoteModal"
+                          style="flex: 1 0 auto; width:20px;height: 40.68px; padding: 0;"
                         >
                           <ion-icon name="newspaper-outline"></ion-icon>
                         </button>
@@ -242,6 +253,7 @@
                           data-target="#activitySidebar"
                           hx-swap="innerHTML"
                           class="oh-btn oh-btn--light oh-activity-sidebar__open"
+                          style="flex: 1 0 auto; width:20px;height: 40.68px; padding: 0;"
                         >
                           <ion-icon name="eye-outline"></ion-icon>
                         </button>
@@ -252,6 +264,7 @@
                           target="_blank"
                           title="Resume"
                           rel="noopener noreferrer"
+                          style="flex: 1 0 auto; width:20px;height: 40.68px; padding: 0;"
                           ><ion-icon name="document-outline"></ion-icon
                         ></a>
                       </div>
