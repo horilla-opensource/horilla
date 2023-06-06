@@ -46,13 +46,14 @@
                         <div class="oh-sticky-table__tr">
                             <div class="oh-sticky-table__th">{% trans "Candidate" %}</div>
                             <div class="oh-sticky-table__th">{% trans "Email" %}</div>
+                            <div class="oh-sticky-table__th">{% trans "Job Position" %}</div>
                             <div class="oh-sticky-table__th">{% trans "Mobile" %}</div>
                             <div class="oh-sticky-table__th">{% trans "Joining Date" %}</div>
                             <div class="oh-sticky-table__th">{% trans "Stage" %}</div>
                             {% for task in recruitment.onboarding_task.all %}
-                            <div class="oh-sticky-table__th">
+                            <div class="oh-sticky-table__th" style="width: 250px;">
                                 <div class="d-flex align-items-center justify-content-between">
-                                    <span>{{task}} </span>
+                                    <span title="{{task}}">{{task|truncatechars:20}} </span>
                                     {% if request.user|stage_manages:stage or perms.onboarding.change_onboardingtask or perms.onboarding.delete_onboardingtask %}
                                     <div class="oh-dropdown" x-data="{open: false}">
                                         <button class="oh-btn oh-stop-prop oh-btn--transparent oh-accordion-meta__btn"
@@ -116,11 +117,15 @@
                                 </div>
                             </div>
                             <div class="oh-sticky-table__td">{{candidate.candidate_id.email}}</div>
+                            <div class="oh-sticky-table__td">{{candidate.candidate_id.job_position_id}}</div>
                             <div class="oh-sticky-table__td">{{candidate.candidate_id.mobile}}</div>
                             <div class="oh-sticky-table__td">{{candidate.candidate_id.joining_date}}</div>
                             <div class="oh-sticky-table__td">
                                 {% if request.user|stage_manages:stage or perms.onboarding.change_candidatestage %}
-                                <select id="" class="oh-input w-100" name="stage"
+                                <select id="" class="w-100" style="
+                                border: 1px solid hsl(213deg,22%,84%);
+                                padding: 0.3rem 0.8rem 0.3rem 0.3rem;
+                                border-radius: 0rem;" name="stage"
                                     hx-post="{% url 'candidate-stage-update' candidate.candidate_id.id recruitment.id %}"
                                     hx-trigger="change" hx-target="#onboardingTable{{recruitment.id}}">
                                     {% for stage in recruitment.onboardingstage_set.all %}

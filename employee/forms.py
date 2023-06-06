@@ -1,93 +1,159 @@
+"""
+forms.py
+
+This module contains the form classes used in the application.
+
+Each form represents a specific functionality or data input in the 
+application. They are responsible for validating
+and processing user input data.
+
+Classes:
+- YourForm: Represents a form for handling specific data input.
+
+Usage:
 from django import forms
-from django.contrib.auth.models import User
-from employee.models import Employee, EmployeeWorkInformation, EmployeeBankDetails
-from django.forms import DateInput,TextInput
-from django.db import models
-from django.core.exceptions import ValidationError
-import json
-from django.db.models import Q
-from django.utils.translation import gettext_lazy as _
+
+class YourForm(forms.Form):
+    field_name = forms.CharField()
+
+    def clean_field_name(self):
+        # Custom validation logic goes here
+        pass
+"""
 import re
-import datetime
+from django import forms
+from django.db.models import Q
+from django.contrib.auth.models import User
+from django.forms import DateInput, TextInput
+from django.utils.translation import gettext_lazy as trans
+from employee.models import Employee, EmployeeWorkInformation, EmployeeBankDetails
 
 
 class ModelForm(forms.ModelForm):
+    """
+    Overriding django default model form to apply some styles
+    """
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        for field_name, field in self.fields.items():
+        for _, field in self.fields.items():
             widget = field.widget
-            if isinstance(widget, (forms.NumberInput, forms.EmailInput, forms.TextInput, forms.FileInput)):
-                label = _(field.label.title())
+            if isinstance(
+                widget,
+                (forms.NumberInput, forms.EmailInput, forms.TextInput, forms.FileInput),
+            ):
+                label = trans(field.label.title())
                 field.widget.attrs.update(
-                    {'class': 'oh-input w-100', 'placeholder': label})
-            elif isinstance(widget,(forms.Select,)):
-                label = ''
+                    {"class": "oh-input w-100", "placeholder": label}
+                )
+            elif isinstance(widget, (forms.Select,)):
+                label = ""
                 if field.label is not None:
-                    label = _(field.label)
-                field.empty_label = _('---Choose {label}---').format(label=label)
-                field.widget.attrs.update({'class': 'oh-select oh-select-2 select2-hidden-accessible'})
-            elif isinstance(widget,(forms.Textarea)):
-                field.widget.attrs.update({'class': 'oh-input w-100','placeholder':field.label,'rows':2,'cols':40})
-            elif isinstance(widget, (forms.CheckboxInput,forms.CheckboxSelectMultiple,)):
-                field.widget.attrs.update({'class': 'oh-switch__checkbox'})
-                
+                    label = trans(field.label)
+                field.empty_label = trans("---Choose {label}---").format(label=label)
+                field.widget.attrs.update(
+                    {"class": "oh-select oh-select-2 select2-hidden-accessible"}
+                )
+            elif isinstance(widget, (forms.Textarea)):
+                field.widget.attrs.update(
+                    {
+                        "class": "oh-input w-100",
+                        "placeholder": field.label,
+                        "rows": 2,
+                        "cols": 40,
+                    }
+                )
+            elif isinstance(
+                widget,
+                (
+                    forms.CheckboxInput,
+                    forms.CheckboxSelectMultiple,
+                ),
+            ):
+                field.widget.attrs.update({"class": "oh-switch__checkbox"})
+
 
 class UserForm(ModelForm):
+    """
+    Form for User model
+    """
+
     class Meta:
-        fields = ('groups',)
+        """
+        Meta class to add the additional info
+        """
+
+        fields = ("groups",)
         model = User
 
-    def __init__(self, *args, **kwargs):
-        super(UserForm, self).__init__(*args, **kwargs)
-        
 
 class UserPermissionForm(ModelForm):
+    """
+    Form for User model
+    """
+
     class Meta:
-        fields = ('groups','user_permissions')
+        """
+        Meta class to add the additional info
+        """
+
+        fields = ("groups", "user_permissions")
         model = User
 
-    def __init__(self, *args, **kwargs):
-        super(UserPermissionForm, self).__init__(*args, **kwargs)
-        
 
 class EmployeeForm(ModelForm):
-    class Meta:
-        model = Employee
-        fields = '__all__'
-        exclude = ('employee_user_id',)
-        widgets = {
-            'dob': TextInput(attrs={'type': 'date','id':'dob'}),
+    """
+    Form for Employee model
+    """
 
+    class Meta:
+        """
+        Meta class to add the additional info
+        """
+
+        model = Employee
+        fields = "__all__"
+        exclude = ("employee_user_id",)
+        widgets = {
+            "dob": TextInput(attrs={"type": "date", "id": "dob"}),
         }
+
     def __init__(self, *args, **kwargs):
-        super(EmployeeForm, self).__init__(*args, **kwargs)
-        if instance := kwargs.get('instance'):
-            '''
-            django forms not showing value inside the date, time html element. 
-            so here overriding default forms instance method to set initial value
-            '''
+        super().__init__(*args, **kwargs)
+        if instance := kwargs.get("instance"):
+            # ----
+            # django forms not showing value inside the date, time html element.
+            # so here overriding default forms instance method to set initial value
+            # ----
             initial = {}
             if instance.dob is not None:
-                    initial['dob'] = instance.dob.strftime('%H:%M')
-            kwargs['initial']=initial
+                initial["dob"] = instance.dob.strftime("%H:%M")
+            kwargs["initial"] = initial
         else:
-            self.initial = {"badge_id":self.get_next_badge_id()}
+            self.initial = {"badge_id": self.get_next_badge_id()}
 
-        
     def get_next_badge_id(self):
+        """
+        This method is used to generate badge id
+        """
         try:
             # total_employee_count = Employee.objects.count()
-            badge_ids = Employee.objects.filter(~Q(badge_id=None)).order_by('-badge_id')
+            badge_ids = Employee.objects.filter(~Q(badge_id=None)).order_by("-badge_id")
             greatest_id = badge_ids.first().badge_id
-            match = re.findall(r'\d+', greatest_id[::-1])
+            match = re.findall(r"\d+", greatest_id[::-1])
             total_employee_count = 0
             if match:
-                total_employee_count = int(match[0][::-1])            
-        except:
+                total_employee_count = int(match[0][::-1])
+        except Exception:
             total_employee_count = 0
         try:
-            string = Employee.objects.filter(~Q(badge_id=None)).order_by('-badge_id').last().badge_id
-        except:
+            string = (
+                Employee.objects.filter(~Q(badge_id=None))
+                .order_by("-badge_id")
+                .last()
+                .badge_id
+            )
+        except Exception:
             string = "DUDE"
         # Find the index of the last integer group in the string
         integer_group_index = None
@@ -99,109 +165,130 @@ class EmployeeForm(ModelForm):
 
         if integer_group_index is None:
             # There is no integer group in the string, so just append #01
-            return string + '#01'
-        else:
-            # Extract the integer group from the string
-            integer_group = string[integer_group_index:]
-            prefix = string[:integer_group_index]
+            return string + "#01"
+        # Extract the integer group from the string
+        integer_group = string[integer_group_index:]
+        prefix = string[:integer_group_index]
 
-            # Set the integer group to the total number of employees plus one
-            new_integer_group = str(total_employee_count + 1).zfill(len(integer_group))
+        # Set the integer group to the total number of employees plus one
+        new_integer_group = str(total_employee_count + 1).zfill(len(integer_group))
 
-            # Return the new string
-            return prefix + new_integer_group
-        
+        # Return the new string
+        return prefix + new_integer_group
+
     def clean_badge_id(self):
-        badge_id = self.cleaned_data['badge_id']
+        """
+        This method is used to clean the badge id
+        """
+        badge_id = self.cleaned_data["badge_id"]
         if badge_id:
-            qs = Employee.objects.filter(badge_id=badge_id).exclude(pk=self.instance.pk if self.instance else None)
-            if qs.exists():
-                raise forms.ValidationError(_("Badge ID must be unique."))
-            if not re.search(r'\d', badge_id):
-                raise forms.ValidationError(_("Badge ID must contain at least one digit."))
-
+            queryset = Employee.objects.filter(badge_id=badge_id).exclude(
+                pk=self.instance.pk if self.instance else None
+            )
+            if queryset.exists():
+                raise forms.ValidationError(trans("Badge ID must be unique."))
+            if not re.search(r"\d", badge_id):
+                raise forms.ValidationError(
+                    trans("Badge ID must contain at least one digit.")
+                )
         return badge_id
-    
-        
-    
+
+
 class EmployeeWorkInformationForm(ModelForm):
-    employees =  Employee.objects.filter(employee_work_info=None)
+    """
+    Form for EmployeeWorkInformation model
+    """
+
+    employees = Employee.objects.filter(employee_work_info=None)
     employee_id = forms.ModelChoiceField(queryset=employees)
+
     class Meta:
+        """
+        Meta class to add the additional info
+        """
+
         model = EmployeeWorkInformation
-        fields = '__all__'
+        fields = "__all__"
         widgets = {
-            'date_joining': DateInput(attrs={'type': 'date'}),
-            'contract_end_date': DateInput(attrs={'type': 'date'}),
+            "date_joining": DateInput(attrs={"type": "date"}),
+            "contract_end_date": DateInput(attrs={"type": "date"}),
         }
 
-    def __init__(self, *args,disable=False, **kwargs):
-        super(EmployeeWorkInformationForm, self).__init__(*args, **kwargs)
-        for field in self.fields:            
-            self.fields[field].widget.attrs['placeholder'] = self.fields[field].label
+    def __init__(self, *args, disable=False, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field in self.fields:
+            self.fields[field].widget.attrs["placeholder"] = self.fields[field].label
             if disable:
                 self.fields[field].disabled = True
-        
 
     def clean(self):
         cleaned_data = super().clean()
-        if 'employee_id' in self.errors:
-            del self.errors['employee_id']
-        
+        if "employee_id" in self.errors:
+            del self.errors["employee_id"]
+        return cleaned_data
 
 
 class EmployeeWorkInformationUpdateForm(ModelForm):
+    """
+    Form for EmployeeWorkInformation model
+    """
+
     class Meta:
+        """
+        Meta class to add the additional info
+        """
+
         model = EmployeeWorkInformation
-        fields = '__all__'
-        exclude = ('employee_id',)
+        fields = "__all__"
+        exclude = ("employee_id",)
 
         widgets = {
-            'date_joining': DateInput(attrs={'type': 'date'}),
-            'contract_end_date': DateInput(attrs={'type': 'date'}),
+            "date_joining": DateInput(attrs={"type": "date"}),
+            "contract_end_date": DateInput(attrs={"type": "date"}),
         }
 
-    def __init__(self, *args, **kwargs):
-        super(EmployeeWorkInformationUpdateForm, self).__init__(*args, **kwargs)
-    
 
 class EmployeeBankDetailsForm(ModelForm):
-    address = forms.CharField(widget=forms.Textarea(attrs={'rows': 2, 'cols': 40}))
+    """
+    Form for EmployeeBankDetails model
+    """
+
+    address = forms.CharField(widget=forms.Textarea(attrs={"rows": 2, "cols": 40}))
 
     class Meta:
-        model = EmployeeBankDetails
-        fields = '__all__'
-        exclude = ['employee_id',]
-    def __init__(self, *args, **kwargs):
-        super(EmployeeBankDetailsForm, self).__init__(*args, **kwargs)
-        for visible in self.visible_fields():
-            visible.field.widget.attrs['class'] = 'oh-input w-100'
-        # for field in self.fields:            
-        #     self.fields[field].widget.attrs['placeholder'] = self.fields[field].label
-        
-        # self.fields['reporting_manager_id'].widget.attrs.update({'class': 'oh-select oh-select-2 select2-hidden-accessible'})
+        """
+        Meta class to add the additional info
+        """
 
-        
+        model = EmployeeBankDetails
+        fields = "__all__"
+        exclude = [
+            "employee_id",
+        ]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for visible in self.visible_fields():
+            visible.field.widget.attrs["class"] = "oh-input w-100"
+
+
 class EmployeeBankDetailsUpdateForm(ModelForm):
+    """
+    Form for EmployeeBankDetails model
+    """
+
     class Meta:
+        """
+        Meta class to add the additional info
+        """
+
         model = EmployeeBankDetails
-        fields = '__all__'
-        exclude = ('employee_id',)
+        fields = "__all__"
+        exclude = ("employee_id",)
 
     def __init__(self, *args, **kwargs):
-        super(EmployeeBankDetailsUpdateForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         for visible in self.visible_fields():
-            visible.field.widget.attrs['class'] = 'oh-input w-100'
-        for field in self.fields:            
-            self.fields[field].widget.attrs['placeholder'] = self.fields[field].label
-
-class EmployeeProfileBankDetailsForm(ModelForm):
-    class Meta:
-        model = EmployeeBankDetails
-        fields = '__all__'
-        exclude = ('employee_id',)
-
-    def __init__(self, *args, **kwargs):
-        super(EmployeeProfileBankDetailsForm, self).__init__(*args, **kwargs)
-        for visible in self.visible_fields():
-            visible.field.widget.attrs['class'] = 'oh-input w-100'
+            visible.field.widget.attrs["class"] = "oh-input w-100"
+        for field in self.fields:
+            self.fields[field].widget.attrs["placeholder"] = self.fields[field].label

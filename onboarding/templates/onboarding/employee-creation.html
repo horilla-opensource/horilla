@@ -28,7 +28,7 @@
     <main class="oh-onboarding">
       <div class="oh-onboarding-card">
         <div class="oh-onboarding-card__header">
-          <span class="oh-onboarding-card__company-name">Acme, Inc.</span>
+          <span class="oh-onboarding-card__company-name">{{employee}}</span>
           <ul class="oh-onboarding-card__steps">
             <li class="oh-onboarding-card__step">
               <div class="oh-onboarding-card__count">1</div>
@@ -84,17 +84,14 @@
               <div class="col-sm-12 col-md-12 col-lg-12 ">
                 <div class="oh-input-group">
                   <label for="" class="oh-label">{% trans "Country" %}</label>
-                  <select name="country" id="id_country" class="oh-select oh-select-2">
-
+                  <select name="country" id="id_country" data-selected="{{form.initial.country}}" class="oh-select oh-select-2">
                   </select>
-                  {{form.country.errors}}
                 </div>
               </div>
               <div class="col-sm-12 col-md-12 col-lg-12 ">
                 <div class="oh-input-group">
                   <label for="" class="oh-label">{% trans "State" %}</label>
-                  <select name="state" id="id_state" class="oh-select oh-select-2">
-
+                  <select name="state" id="id_state" data-selected="{{form.initial.country}}" class="oh-select oh-select-2">
                   </select>
                   {{form.state.errors}}
                 </div>

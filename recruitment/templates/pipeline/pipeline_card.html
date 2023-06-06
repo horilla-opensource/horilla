@@ -92,24 +92,36 @@
                 <form action="" class="" method="post" enctype="multipart/form-data">
                   {% csrf_token %}
                   <div class="oh-input-group">
-                    <label for="desc" class="oh-label">{% trans "Name" %}</label>
+                    <label for="id_name"  class="oh-label">{% trans 'Name' %}</label>
                     {{candidate_form.name}}
                   </div>
                   <div class="oh-input-group">
-                    <label for="job-position" class="oh-label">{% trans "Email" %}</label>
+                    <label for="id_email" class="oh-label">{% trans 'Email' %}</label>
                     {{candidate_form.email}}
                   </div>
+                  {% if rec.is_event_based %}
+                    <div class="oh-input-group">
+                      <label for="job-position" class="oh-label">{% trans 'Job Position' %}</label>
+                      <select name="job_position_id" id="id_job_position_id">
+                        {% for jp in rec.open_positions.all %}
+                        <option value="{{jp.id}}">{{jp}}</option>
+                        {% endfor %}
+                      </select>
+                    </div>
+                  {% endif %}
                   <div class="oh-input-group">
-                    <label for="job-position" class="oh-label">{% trans "Phone" %}</label>
+                    <label for="job-position" class="oh-label">{% trans 'Phone' %}</label>
                     {{candidate_form.mobile}}
-                  </div>
-                  <div class="oh-input-group">
-                    <label for="job-position" class="oh-label">{% trans "Resume" %}</label>
-                    {{candidate_form.resume}}
-                  </div>
-                  <div class="oh-input-group">
-                    <label for="job-position" class="oh-label">{% trans "Profile" %}</label>
-                    {{candidate_form.profile}}
+                  </div>        
+                  <div class="row">
+                    <div class="col-12 col-sm-12 col-md-6 col-lg-6">
+                      <label for="job-position" class="oh-label">{% trans 'Profile' %}</label>
+                      {{candidate_form.profile}}
+                    </div>
+                    <div class="col-12 col-sm-12 col-md-6 col-lg-6">
+                      <label for="job-position" class="oh-label">{% trans 'Resume' %}</label>
+                      {{candidate_form.resume}}
+                    </div>
                   </div>
                   <input type="hidden" name="recruitment_id" id="" value="{{rec.id}}" />
                   <input type="hidden" name="stage_id" id="" value="{{stage.id}}" />
