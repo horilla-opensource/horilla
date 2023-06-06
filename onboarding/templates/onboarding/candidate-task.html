@@ -10,7 +10,10 @@
 </div>
 {% endif %}
 
-<select name="task"  class="oh-input w-100" hx-post="{% url 'candidate-task-update' task.id  %}"
+<select name="task"  class="w-100" style="
+border: 1px solid hsl(213deg,22%,84%);
+padding: 0.3rem 0.8rem 0.3rem 0.3rem;
+border-radius: 0rem;" hx-post="{% url 'candidate-task-update' task.id  %}"
     hx-trigger="change" hx-target="#task{{task.id}}">
     {% for choice in choices %}
     {% if choice.0 == task.status %}
