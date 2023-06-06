@@ -4042,6 +4042,9 @@ $(document).on("htmx:afterSwap", function (evt) {
 
 $(document).on("htmx:afterSettle", function (e) {
   var targetId = e.detail.target.id;
+  if (targetId=="") {
+    targetId="someDemoId"
+  }
   $(`#${targetId} .oh-accordion-header`).on("click", function (e) {
     e.preventDefault();
     $(this).parent().toggleClass("oh-accordion--show");
@@ -4137,5 +4140,9 @@ $(document).on("htmx:afterSettle", function (e) {
     $(this).parent().find(".oh-table__toggle-child").toggleClass("oh-table__toggle-child--show")
   })
 
+  $(`#${targetId} [data-toggle-count]`).click(function (e) { 
+    e.preventDefault();
+    span = $(this).parent().find(".count-span").toggle()
+  });
 
 });
