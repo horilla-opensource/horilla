@@ -77,7 +77,7 @@
           </div>
           <div class="oh-input-group">
             <label class="oh-label">{% trans "In Time" %}</label>
-            {{f.form.attendance_clock_out}}
+            {{f.form.attendance_clock_in}}
           </div>     
           <div class="oh-input-group">
             <label class="oh-label">{% trans "OT Approved?" %}</label>
@@ -98,11 +98,11 @@
           </div>
           <div class="oh-input-group">
             <label class="oh-label">{% trans "In From" %}</label>
-            {{f.form.attendance_clock_in__lte}}
+            {{f.form.attendance_clock_in__gte}}
           </div>
           <div class="oh-input-group">
             <label class="oh-label">{% trans "Out From" %}</label>
-            {{f.form.attendance_clock_out__lte}}
+            {{f.form.attendance_clock_out__gte}}
           </div>
           <div class="oh-input-group">
             <label class="oh-label">{% trans "At Work Greater or Equal" %}</label>
