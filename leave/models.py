@@ -149,6 +149,8 @@ class LeaveRequest(models.Model):
     end_date_breakdown = models.CharField(
         max_length=30, choices=BREAKDOWN, default='full_day')
     requested_days = models.FloatField(blank=True, null=True)
+    requested_date = models.DateField(default=timezone.now)
+    created_by = models.ForeignKey(Employee, on_delete=models.PROTECT, blank=True, null=True, related_name='leave_request_created')
     description = models.TextField()
     attachment = models.FileField(
         null=True, blank=True, upload_to='leave/leave_attachment')

@@ -1,3 +1,4 @@
+import contextlib
 from django.shortcuts import render, redirect
 from horilla.decorators import login_required, hx_request_required
 from .forms import *
@@ -183,17 +184,19 @@ def leave_request_creation(request):
                         leave_request.requested_days
                     leave_request.approved_available_days = leave_request.requested_days
                 leave_request.status = "approved"
+                leave_request.created_by = request.user.employee_get
                 available_leave.save()
             leave_request.save()
             messages.success(request, _(
                 'Leave request created successfully..'))
-            notify.send(
-                request.user.employee_get,
-                recipient=leave_request.employee_id.employee_work_info.reporting_manager_id.employee_user_id,
-                verb=f"New leave request created for {leave_request.employee_id}.",
-                icon="people-circle",
-                redirect="/leave/request-view",
-            )
+            with contextlib.suppress(Exception):
+                notify.send(
+                    request.user.employee_get,
+                    recipient=leave_request.employee_id.employee_work_info.reporting_manager_id.employee_user_id,
+                    verb=f"New leave request created for {leave_request.employee_id}.",
+                    icon="people-circle",
+                    redirect="/leave/request-view",
+                )
             response = render(
                 request, 'leave/leave-request-form.html', {'form': form})
             return HttpResponse(response.content.decode('utf-8') + '<script>location.reload();</script>')
@@ -288,13 +291,14 @@ def leave_request_update(request, id):
             leave_request = form.save()
             messages.info(request, _(
                 "Leave request is updated successfully.."))
-            notify.send(
-                request.user.employee_get,
-                recipient=leave_request.employee_id.employee_work_info.reporting_manager_id.employee_user_id,
-                verb=f"Leave request updated for {leave_request.employee_id}.",
-                icon="people-circle",
-                redirect="/leave/request-view",
-            )
+            with contextlib.suppress(Exception):
+                notify.send(
+                    request.user.employee_get,
+                    recipient=leave_request.employee_id.employee_work_info.reporting_manager_id.employee_user_id,
+                    verb=f"Leave request updated for {leave_request.employee_id}.",
+                    icon="people-circle",
+                    redirect="/leave/request-view",
+                )
             response = render(
                 request, "leave/request-update-form.html", {
                     "form": form, "id": id}
@@ -358,13 +362,14 @@ def leave_request_approve(request, id):
     available_leave.save()
     leave_request.save()
     messages.success(request, _("Leave request approved successfully.."))
-    notify.send(
-        request.user.employee_get,
-        recipient=leave_request.employee_id.employee_user_id,
-        verb="Your Leave request has been approved",
-        icon="people-circle",
-        redirect="/leave/user-request-view",
-    )
+    with contextlib.suppress(Exception):
+        notify.send(
+            request.user.employee_get,
+            recipient=leave_request.employee_id.employee_user_id,
+            verb="Your Leave request has been approved",
+            icon="people-circle",
+            redirect="/leave/user-request-view",
+        )
     return redirect(leave_request_view)
 
 
@@ -396,13 +401,14 @@ def leave_request_cancel(request, id):
     leave_request.save()
     available_leave.save()
     messages.success(request, _("Leave request cancelled successfully.."))
-    notify.send(
-        request.user.employee_get,
-        recipient=leave_request.employee_id.employee_user_id,
-        verb="Your Leave request has been cancelled",
-        icon="people-circle",
-        redirect="/leave/user-request-view",
-    )
+    with contextlib.suppress(Exception):
+        notify.send(
+            request.user.employee_get,
+            recipient=leave_request.employee_id.employee_user_id,
+            verb="Your Leave request has been cancelled",
+            icon="people-circle",
+            redirect="/leave/user-request-view",
+        )
     return redirect(leave_request_view)
 
 
@@ -457,13 +463,14 @@ def leave_assign_one(request, id):
                 ).save()
                 messages.success(request, _(
                     "Leave type assign is successfull.."))
-                notify.send(
-                    request.user.employee_get,
-                    recipient=employee.employee_user_id,
-                    verb="New leave type is assigned to you",
-                    icon="people-circle",
-                    redirect="/leave/user-leave",
-                )
+                with contextlib.suppress(Exception):
+                    notify.send(
+                        request.user.employee_get,
+                        recipient=employee.employee_user_id,
+                        verb="New leave type is assigned to you",
+                        icon="people-circle",
+                        redirect="/leave/user-leave",
+                    )
             else:
                 messages.info(
                     request, _(
@@ -575,13 +582,14 @@ def leave_assign(request):
                                 request, _(
                                     "Leave type assign is successfull..")
                             )
-                            notify.send(
-                                request.user.employee_get,
-                                recipient=employee.employee_user_id,
-                                verb="New leave type is assigned to you",
-                                icon="people-circle",
-                                redirect="/leave/user-leave",
-                            )
+                            with contextlib.suppress(Exception):
+                                notify.send(
+                                    request.user.employee_get,
+                                    recipient=employee.employee_user_id,
+                                    verb="New leave type is assigned to you",
+                                    icon="people-circle",
+                                    redirect="/leave/user-leave",
+                                )
                         else:
                             messages.info(
                                 request,
@@ -620,13 +628,14 @@ def available_leave_update(request, id):
             available_leave = form.save()
             messages.info(request, _(
                 "Available leaves updated successfully..."))
-            notify.send(
-                request.user.employee_get,
-                recipient=available_leave.employee_id.employee_user_id,
-                verb=f"Your {available_leave.leave_type_id} leave type updated.",
-                icon="people-circle",
-                redirect="/leave/user-leave",
-            )
+            with contextlib.suppress(Exception):
+                notify.send(
+                    request.user.employee_get,
+                    recipient=available_leave.employee_id.employee_user_id,
+                    verb=f"Your {available_leave.leave_type_id} leave type updated.",
+                    icon="people-circle",
+                    redirect="/leave/user-leave",
+                )
         response = render(
             request, "leave/available-update-form.html", {
                 "form": form, "id": id}
@@ -990,17 +999,19 @@ def user_leave_request(request, id):
                             leave_request.requested_days
                         leave_request.approved_available_days = leave_request.requested_days
                     leave_request.status = "approved"
+                    leave_request.created_by = employee
                     available_leave.save()
                 leave_request.save()
                 messages.success(request, _(
                     'Leave request created successfully..'))
-                notify.send(
-                    request.user.employee_get,
-                    recipient=leave_request.employee_id.employee_work_info.reporting_manager_id.employee_user_id,
-                    verb="You have a new leave request to validate.",
-                    icon="people-circle",
-                    redirect="/leave/user-request-view",
-                )
+                with contextlib.suppress(Exception):
+                    notify.send(
+                        request.user.employee_get,
+                        recipient=leave_request.employee_id.employee_work_info.reporting_manager_id.employee_user_id,
+                        verb="You have a new leave request to validate.",
+                        icon="people-circle",
+                        redirect="/leave/user-request-view",
+                    )
                 response = render(
                     request, 'leave/user-request-form.html', {'form': form, 'id': id})
                 return HttpResponse(response.content.decode('utf-8') + '<script>location. reload();</script>')
