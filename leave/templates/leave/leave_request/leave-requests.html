@@ -27,9 +27,9 @@
         </div>
         <div class="oh-sticky-table__tbody">
             {% for leave_request in leave_requests %}
-            <div class="oh-sticky-table__tr" draggable="true">
-                <div class="oh-sticky-table__sd" data-toggle="oh-modal-toggle" data-target="#tableTimeOff"
-                    hx-get="{% url 'one-request-view' leave_request.id %}" hx-target="#requestView">
+            <div class="oh-sticky-table__tr" draggable="true" data-toggle="oh-modal-toggle" data-target="#tableTimeOff"
+            hx-get="{% url 'one-request-view' leave_request.id %}" hx-target="#requestView">
+                <div class="oh-sticky-table__sd" >
                     <div class="oh-profile oh-profile--md">
                         <div class="oh-profile__avatar mr-1">
                             {% if leave_request.employee_id.employee_profile %}
@@ -49,25 +49,34 @@
                 <div class="oh-sticky-table__td">{{leave_request.requested_days}}</div>
                 <div class="oh-sticky-table__td">{{leave_request.get_status_display}}</div>
                 <div class="oh-sticky-table__td">
-                    {% if leave_request.status != 'cancelled' %}
                     <div class="oh-btn-group">
-                        {% if leave_request.status != 'approved' and leave_request.status == 'requested' %}
+                        {% if leave_request.status != 'approved' %}
                         <a type="submit" href="{% url 'request-approve' leave_request.id %}" title="{% trans 'Approve' %}"
                             class="oh-btn oh-btn--success w-100">
                             <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
                         </a>
+                        {% else %}
+                        <a type="submit" href="{% url 'request-approve' leave_request.id %}" title="{% trans 'Approve' %}"
+                            class="oh-btn oh-btn--success oh-btn--disabled
+                            w-100" onclick="event.preventDefault()">
+                            <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
+                        </a>
                         {% endif %}
-                        {% if leave_request.status == 'approved' or leave_request.status != 'cancelled'%}
-
+                        {% if leave_request.status != 'cancelled' %}
                         <a type="submit" href="{% url 'request-cancel' leave_request.id %}" title="{% trans 'Cancel' %}"
                             class="oh-btn oh-btn--danger w-100">
                             <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
 
                         </a>
+                        {% else %}
+                        <a type="submit" href="{% url 'request-cancel' leave_request.id %}" title="{% trans 'Cancel' %}"
+                            class="oh-btn oh-btn--danger oh-btn--disabled
+                            w-100"  onclick="event.preventDefault()">
+                            <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
 
+                        </a>
                         {% endif %}
                     </div>
-                    {% endif %}
                 </div>
                 <div class="oh-sticky-table__td">
                     <div class="oh-btn-group">
