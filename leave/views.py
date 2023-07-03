@@ -911,7 +911,7 @@ def company_leave_update(request, id):
         if form.is_valid():
             form.save()
             messages.info(request, _("Company leave updated successfully.."))
-            response = render(
+            response = render( 
                 request,
                 "leave/company-leave-update-form.html",
                 {"form": form, "id": id},
@@ -922,7 +922,7 @@ def company_leave_update(request, id):
             )
     return render(
         request, "leave/company-leave-update-form.html", {
-            "form": form, "id": id}
+            "form": form, "id": id} 
     )
 
 
@@ -975,10 +975,10 @@ def user_leave_request(request, id):
                                                            start_date__lte=end_date, end_date__gte=start_date
                                                            )
         if overlapping_requests.exists():
-            form.add_error(
+            form.add_error( 
                 None, _("There is already a leave request for this date range.."))
         elif requested_days <= available_total_leave:
-            if form.is_valid():
+            if form.is_valid():   
                 leave_request = form.save(commit=False)
                 leave_request.leave_type_id = leave_type
                 leave_request.employee_id = employee
@@ -1004,7 +1004,7 @@ def user_leave_request(request, id):
                 leave_request.save()
                 messages.success(request, _(
                     'Leave request created successfully..'))
-                with contextlib.suppress(Exception):
+                with contextlib.suppress(Exception): 
                     notify.send(
                         request.user.employee_get,
                         recipient=leave_request.employee_id.employee_work_info.reporting_manager_id.employee_user_id,
@@ -1036,22 +1036,27 @@ def user_request_update(request, id):
     POST : return user leave request view template
     """
     leave_request = LeaveRequest.objects.get(id=id)
-    form = UserLeaveRequestForm(instance=leave_request)
-    if request.method == "POST":
-        form = UserLeaveRequestForm(
-            request.POST, request.FILES, instance=leave_request)
-        if form.is_valid():
-            form.save()
-            messages.info(request, _("Leave request updated successfully.."))
-            response = render(
-                request, "leave/user-request-update.html", {
-                    "form": form, "id": id}
-            )
-            return HttpResponse(
-                response.content.decode("utf-8")
-                + "<script>location. reload();</script>"
-            )
-    return render(request, "leave/user-request-update.html", {"form": form, "id": id})
+    try:
+        if request.user.employee_get == leave_request.employee_id:
+            form = UserLeaveRequestForm(instance=leave_request)
+            if request.method == "POST":
+                form = UserLeaveRequestForm(
+                    request.POST, request.FILES, instance=leave_request)
+                if form.is_valid():
+                    form.save()
+                    messages.info(request, _("Leave request updated successfully.."))
+                    response = render(
+                        request, "leave/user-request-update.html", {
+                            "form": form, "id": id}
+                    )
+                    return HttpResponse(
+                        response.content.decode("utf-8")
+                        + "<script>location. reload();</script>"
+                    )
+            return render(request, "leave/user-request-update.html", {"form": form, "id": id})
+    except Exception as e:
+        messages.error(request, _("User has no leave request.."))
+        
 
 
 @login_required
@@ -1066,9 +1071,16 @@ def user_request_delete(request, id):
     Returns:
     GET : return user leave request view template
     """
-    LeaveRequest.objects.get(id=id).delete()
-    messages.success(request, _("Leave request deleted successfully.."))
-    return redirect(user_request_view)
+    leave_request = LeaveRequest.objects.get(id=id)
+    try:
+        if request.user.employee_get == leave_request.employee_id:
+            LeaveRequest.objects.get(id=id).delete()
+            messages.success(request, _("Leave request deleted successfully.."))
+            return redirect(user_request_view)
+    except Exception as e:
+        messages.error(request, _("User has no leave request.."))
+        return redirect('/')
+        
 
 
 @login_required
@@ -1094,12 +1106,14 @@ def user_leave_view(request):
             "leave/user-leave-view.html",
             {
                 "user_leaves": page_obj,
-                "form": assigned_leave_filter.form,
+                "form": assigned_leave_filter.form,      
                 "pd": previous_data,
             },
         )
     except Exception:
-        return HttpResponse("User is not an employee")
+        messages.error(request, _("User is not an employee.."))
+        return redirect('/')
+
 
 
 @login_required
@@ -1114,17 +1128,21 @@ def user_leave_filter(request):
     Returns:
     GET : return user assigned leave types view template
     """
-    employee = request.user.employee_get
-    queryset = employee.available_leave.all()
-    previous_data = request.environ["QUERY_STRING"]
-    page_number = request.GET.get("page")
-    assigned_leave_filter = AssignedLeavefilter(request.GET, queryset).qs
-    page_obj = paginator_qry(assigned_leave_filter, page_number)
-    return render(
-        request,
-        "leave/user_leave/user-leave.html",
-        {"user_leaves": page_obj, "pd": previous_data},
-    )
+    try:
+        employee = request.user.employee_get
+        queryset = employee.available_leave.all()
+        previous_data = request.environ["QUERY_STRING"]
+        page_number = request.GET.get("page")
+        assigned_leave_filter = AssignedLeavefilter(request.GET, queryset).qs
+        page_obj = paginator_qry(assigned_leave_filter, page_number)
+        return render(
+            request,
+            "leave/user_leave/user-leave.html",
+            {"user_leaves": page_obj, "pd": previous_data}, 
+        )
+    except Exception as e:
+        messages.error(request, _("User is not an employee.."))
+        return redirect('/')
 
 
 @login_required
@@ -1138,21 +1156,27 @@ def user_request_view(request):
     Returns:
     GET : return user leave request view template
     """
-    user = request.user.employee_get
-    queryset = user.leaverequest_set.all()
-    previous_data = request.environ["QUERY_STRING"]
-    page_number = request.GET.get("page")
-    page_obj = paginator_qry(queryset, page_number)
-    user_request_filter = userLeaveRequestFilter()
-    return render(
-        request,
-        "leave/user-request-view.html",
-        {
-            "leave_requests": page_obj,
-            "form": user_request_filter.form,
-            "pd": previous_data,
-        },
-    )
+    try:
+        user = request.user.employee_get
+        queryset = user.leaverequest_set.all()
+        previous_data = request.environ["QUERY_STRING"]
+        page_number = request.GET.get("page")
+        page_obj = paginator_qry(queryset, page_number)
+        user_request_filter = userLeaveRequestFilter()
+        return render(
+            request,
+            "leave/user-request-view.html",
+            {
+                "leave_requests": page_obj,
+                "form": user_request_filter.form,
+                "pd": previous_data,
+            },
+        )
+    except Exception as e:
+        messages.error(request, _("User is not an employee.."))
+        return redirect('/')
+
+
 
 
 @login_required
@@ -1167,20 +1191,26 @@ def user_request_filter(request):
     Returns:
     GET : return user leave request view template
     """
-    user = request.user.employee_get
-    queryset = user.leaverequest_set.all()
-    previous_data = request.environ["QUERY_STRING"]
-    page_number = request.GET.get("page")
-    user_request_filter = userLeaveRequestFilter(request.GET, queryset).qs
-    page_obj = paginator_qry(user_request_filter, page_number)
-    return render(
-        request,
-        "leave/user-requests.html",
-        {"leave_requests": page_obj, "pd": previous_data},
-    )
+    try:
+        user = request.user.employee_get
+        queryset = user.leaverequest_set.all()
+        previous_data = request.environ["QUERY_STRING"]
+        page_number = request.GET.get("page")
+        user_request_filter = userLeaveRequestFilter(request.GET, queryset).qs
+        page_obj = paginator_qry(user_request_filter, page_number)
+        return render(
+            request,
+            "leave/user-requests.html",
+            {"leave_requests": page_obj, "pd": previous_data},
+        )
+    except Exception as e:
+        messages.error(request, _("User is not an employee.."))
+        return redirect('/')
+            
 
 
 @login_required
+@hx_request_required
 def user_request_one(request, id):
     """
     function used to view one user leave request.
@@ -1192,10 +1222,15 @@ def user_request_one(request, id):
     GET : return one user leave request view template
     """
     leave_request = LeaveRequest.objects.get(id=id)
-    return render(
-        request, "leave/user-request-one.html", {
-            "leave_request": leave_request}
-    )
+    try:
+        if request.user.employee_get == leave_request.employee_id:
+            return render(
+                request, "leave/user-request-one.html", {
+                    "leave_request": leave_request}
+            )
+    except Exception as e:
+        messages.error(request, _('User has no leave request..'))
+        return redirect('/')
 
 
 @login_required
