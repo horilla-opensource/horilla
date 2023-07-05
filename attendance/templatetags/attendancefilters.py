@@ -6,6 +6,7 @@ This module is used to write custom template filters.
 """
 from itertools import groupby
 from django import template
+from django.forms.widgets import SelectMultiple
 from django.template import TemplateSyntaxError
 from django.template.defaultfilters import register
 from attendance.views import strtime_seconds
@@ -172,3 +173,18 @@ def any_permission(user, app_label):
         bool: True if any permission on the module
     """
     return user.has_module_perms(app_label)
+
+
+@register.filter
+def is_select_multiple(widget):
+    """
+    Custom template filter to check if a widget is an instance of SelectMultiple.
+
+    Usage:
+    {% load custom_filters %}
+
+    {% if field.field.widget|is_select_multiple %}
+        <!-- Your code here -->
+    {% endif %}
+    """
+    return isinstance(widget, SelectMultiple)

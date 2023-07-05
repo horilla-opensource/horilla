@@ -7,8 +7,8 @@
           <div class="oh-sticky-table__th"hx-target='#activity-table' hx-get="{% url 'attendance-activity-search' %}?{{pd}}&orderby=employee_id__employee_first_name">{% trans "Employee" %}</div>
           <div class='oh-sticky-table__th'hx-target='#activity-table' hx-get="{% url 'attendance-activity-search' %}?{{pd}}&orderby=attendance_date">{% trans "Attendnace Date" %}</div>
           <div class='oh-sticky-table__th'hx-target='#activity-table' hx-get="{% url 'attendance-activity-search' %}?{{pd}}&orderby=clock_in_date">{% trans "In Date" %}</div>
-          <div class='oh-sticky-table__th'hx-target='#activity-table' hx-get="{% url 'attendance-activity-search' %}?{{pd}}&orderby=">{% trans "Clock In" %}</div>
-          <div class='oh-sticky-table__th'hx-target='#activity-table' hx-get="{% url 'attendance-activity-search' %}?{{pd}}&orderby=">{% trans "Clock Out" %}</div>
+          <div class='oh-sticky-table__th'hx-target='#activity-table' hx-get="{% url 'attendance-activity-search' %}?{{pd}}&orderby=">{% trans "Check In" %}</div>
+          <div class='oh-sticky-table__th'hx-target='#activity-table' hx-get="{% url 'attendance-activity-search' %}?{{pd}}&orderby=">{% trans "Check Out" %}</div>
           <div class='oh-sticky-table__th'hx-target='#activity-table' hx-get="{% url 'attendance-activity-search' %}?{{pd}}&orderby=clock_out_date">{% trans "Out Date" %}</div>
         </div>
       </div>

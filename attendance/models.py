@@ -69,6 +69,7 @@ class AttendanceActivity(models.Model):
     """
     AttendanceActivity model
     """
+
     employee_id = models.ForeignKey(
         Employee,
         on_delete=models.CASCADE,
@@ -88,6 +89,7 @@ class AttendanceActivity(models.Model):
         """
         Meta class to add some additional options
         """
+
         ordering = ["-attendance_date", "employee_id__employee_first_name", "clock_in"]
 
 
@@ -95,6 +97,7 @@ class Attendance(models.Model):
     """
     Attendance model_
     """
+
     employee_id = models.ForeignKey(
         Employee,
         on_delete=models.CASCADE,
@@ -143,6 +146,7 @@ class Attendance(models.Model):
         """
         Meta class to add some additional options
         """
+
         unique_together = ("employee_id", "attendance_date")
         permissions = [
             ("change_validateattendance", "Validate Attendance"),
@@ -253,11 +257,40 @@ class Attendance(models.Model):
         employee_ot.save()
         return employee_ot
 
+    def clean(self, *args, **kwargs):
+        super().clean(*args, **kwargs)
+        now = datetime.now().time()
+        today = datetime.today().date()
+        out_time = self.attendance_clock_out
+        if self.attendance_clock_in_date < self.attendance_date:
+            raise ValidationError(
+                {
+                    "attendance_clock_in_date": \
+                        "Attendance check-in date never smaller than attendance date"
+                }
+            )
+        if self.attendance_clock_out_date < self.attendance_clock_in_date:
+            raise ValidationError(
+                {
+                    "attendance_clock_out_date": \
+                        "Attendance check-out date never smaller than attendance check-in date"
+                }
+            )
+        if self.attendance_clock_out_date >= today:
+            if out_time > now:
+                raise ValidationError(
+                    {"attendance_clock_out": "Check out time not allow in the future"}
+                )
+        print("----------------------")
+        print(now)
+        print("----------------------")
+
 
 class AttendanceOverTime(models.Model):
     """
     AttendanceOverTime model
     """
+
     employee_id = models.ForeignKey(
         Employee,
         on_delete=models.CASCADE,
@@ -288,6 +321,7 @@ class AttendanceOverTime(models.Model):
         """
         Meta class to add some additional options
         """
+
         unique_together = [("employee_id"), ("month"), ("year")]
         ordering = ["-year", "-month_sequence"]
 
@@ -317,6 +351,7 @@ class AttendanceLateComeEarlyOut(models.Model):
     """
     AttendanceLateComeEarlyOut model
     """
+
     choices = [
         ("late_come", _("Late Come")),
         ("early_out", _("Early Out")),
@@ -338,6 +373,7 @@ class AttendanceLateComeEarlyOut(models.Model):
         """
         Meta class to add some additional options
         """
+
         unique_together = [("attendance_id"), ("type")]
 
     def __str__(self) -> str:
@@ -349,6 +385,7 @@ class AttendanceValidationCondition(models.Model):
     """
     AttendanceValidationCondition model
     """
+
     validation_at_work = models.CharField(
         default="09:00", max_length=10, validators=[validate_time_format]
     )

@@ -20,9 +20,10 @@ class YourForm(forms.Form):
         # Custom validation logic goes here
         pass
 """
-import uuid
+import uuid, datetime
 from calendar import month_name
 from django import forms
+from django.template.loader import render_to_string
 from django.utils.translation import gettext_lazy as _
 from django.core.exceptions import ValidationError
 from django.forms import DateTimeInput
@@ -132,6 +133,14 @@ class AttendanceUpdateForm(ModelForm):
             kwargs["initial"] = initial
         super().__init__(*args, **kwargs)
 
+    def as_p(self, *args, **kwargs):
+        """
+        Render the form fields as HTML table rows with Bootstrap styling.
+        """
+        context = {"form": self}
+        table_html = render_to_string("attendance_form.html", context)
+        return table_html
+
 
 class AttendanceForm(ModelForm):
     """
@@ -166,6 +175,14 @@ class AttendanceForm(ModelForm):
         }
 
     def __init__(self, *args, **kwargs):
+        initial = {
+            "attendance_clock_out_date": datetime.datetime.today()
+            .date()
+            .strftime("%Y-%m-%d"),
+            "attendance_clock_out": datetime.datetime.today()
+            .time()
+            .strftime("%H:%M"),
+        }
         if instance := kwargs.get("instance"):
             # django forms not showing value inside the date, time html element.
             # so here overriding default forms instance method to set initial value
@@ -183,7 +200,7 @@ class AttendanceForm(ModelForm):
                 initial[
                     "attendance_clock_out_date"
                 ] = instance.attendance_clock_out_date.strftime("%Y-%m-%d")
-            kwargs["initial"] = initial
+        kwargs["initial"] = initial
         super().__init__(*args, **kwargs)
         self.fields["employee_id"].widget.attrs.update({"id": str(uuid.uuid4())})
         self.fields["shift_id"].widget.attrs.update({"id": str(uuid.uuid4())})
@@ -200,6 +217,14 @@ class AttendanceForm(ModelForm):
         if commit:
             instance.save()
         return instance
+
+    def as_p(self, *args, **kwargs):
+        """
+        Render the form fields as HTML table rows with Bootstrap styling.
+        """
+        context = {"form": self}
+        table_html = render_to_string("attendance_form.html", context)
+        return table_html
 
     def clean_employee_id(self):
         """
