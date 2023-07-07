@@ -1361,7 +1361,7 @@ def dashboard_employee(request):
     """
     labels = [
         "Active",
-        "In-Avtive",
+        "In-Active",
     ]
     employees = Employee.objects.all()
     employees = filtersubordinates(request, employees, "employee.view_employee")
