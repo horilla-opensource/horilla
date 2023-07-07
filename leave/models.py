@@ -121,9 +121,9 @@ class AvailableLeave(models.Model):
         LeaveType, on_delete=models.CASCADE, related_name='employee_available_leave', blank=True, null=True)
     employee_id = models.ForeignKey(
         Employee, on_delete=models.DO_NOTHING, related_name='available_leave')
-    available_days = models.IntegerField(default=0)
-    carryforward_days = models.IntegerField(default=0)
-    total_leave_days = models.IntegerField(default=0)
+    available_days = models.FloatField(default=0)
+    carryforward_days = models.FloatField(default=0)
+    total_leave_days = models.FloatField(default=0)
     assigned_date = models.DateField(default=timezone.now)
 
     class Meta:
@@ -156,8 +156,8 @@ class LeaveRequest(models.Model):
         null=True, blank=True, upload_to='leave/leave_attachment')
     status = models.CharField(
         max_length=30, choices=LEAVE_STATUS, default='requested')
-    approved_available_days = models.IntegerField(default=0)
-    approved_carryforward_days = models.IntegerField(default=0)
+    approved_available_days = models.FloatField(default=0)
+    approved_carryforward_days = models.FloatField(default=0)
     created_at = models.DateTimeField(auto_now="True")
 
 
@@ -235,12 +235,22 @@ class LeaveRequest(models.Model):
 
 
     def save(self, *args, **kwargs):  
-        self.requested_days = (self.end_date - self.start_date).days + 1
-        if self.start_date_breakdown in ["first_half", "second_half"]:
-            self.requested_days = self.requested_days - 0.5
+        if self.start_date == self.end_date:
+            if self.start_date_breakdown == 'full_day' and self.end_date_breakdown == 'full_day':
+                self.requested_days = 1
+            else:
+                self.requested_days = 0.5
+        else:
+            start_days = 0
+            end_days = 0   
+            if self.start_date_breakdown != 'full_day':
+                start_days = 0.5
 
-        if self.end_date_breakdown in ["first_half", "second_half"]:
-            self.requested_days = self.requested_days - 0.5
+            if self.end_date_breakdown != 'full_day':
+                end_days = 0.5
+
+            self.requested_days = (self.end_date - self.start_date).days + start_days + end_days
+
 
         if self.leave_type_id.exclude_company_leave == 'yes' and self.leave_type_id.exclude_holiday == 'yes':
             self.exclude_all_leaves()

@@ -123,6 +123,8 @@ class LeaveRequestCreationForm(ModelForm):
         end_date = cleaned_data.get('end_date')
         employee_id = cleaned_data.get('employee_id')
         leave_type_id = cleaned_data.get('leave_type_id')
+        start_date_breakdown = cleaned_data.get('start_date_breakdown')
+        end_date_breakdown = cleaned_data.get('end_date_breakdown')
         overlapping_requests = LeaveRequest.objects.filter(employee_id=employee_id,
             start_date__lte=end_date, end_date__gte=start_date
         )
@@ -138,8 +140,20 @@ class LeaveRequestCreationForm(ModelForm):
         
         available_leave = AvailableLeave.objects.get(employee_id=employee_id, leave_type_id=leave_type_id)
         total_leave_days = available_leave.available_days + available_leave.carryforward_days
-        requested_days = (end_date - start_date).days +  1
+        if start_date == end_date:
+            if start_date_breakdown == 'full_day' and end_date_breakdown == 'full_day':
+                requested_days = 1
+            else:
+                requested_days = 0.5
+        else:
+            start_days = 0
+            end_days = 0   
+            if start_date_breakdown != 'full_day':
+                start_days = 0.5
 
+            if end_date_breakdown != 'full_day':
+                end_days = 0.5
+            requested_days = (end_date - start_date).days + start_days + end_days - 1 
         if not requested_days <= total_leave_days:
             raise forms.ValidationError(_("Employee doesn't have enough leave days.."))
 

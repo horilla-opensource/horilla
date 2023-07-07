@@ -869,13 +869,10 @@ def company_leave_filter(request):
     Returns:
     GET : return company leave view template
     """
-    print(request.GET)
     queryset = CompanyLeave.objects.all()
     previous_data = request.environ["QUERY_STRING"]
     page_number = request.GET.get("page")
-    print('queryset', queryset)
     company_leave_filter = CompanyLeavefilter(request.GET, queryset).qs
-    print('company_leave_filter', company_leave_filter)
     page_obj = paginator_qry(company_leave_filter, page_number)
     return render(
         request,
@@ -965,7 +962,22 @@ def user_leave_request(request, id):
         start_date = datetime.strptime(
             request.POST.get('start_date'), "%Y-%m-%d")
         end_date = datetime.strptime(request.POST.get('end_date'), "%Y-%m-%d")
-        requested_days = (end_date - start_date).days + 1
+        start_date_breakdown = request.POST.get('start_date_breakdown')
+        end_date_breakdown = request.POST.get('end_date_breakdown')
+        if start_date == end_date:
+            if start_date_breakdown == 'full_day' and end_date_breakdown == 'full_day':
+                requested_days = 1
+            else:
+                requested_days = 0.5
+        else:
+            start_days = 0
+            end_days = 0   
+            if start_date_breakdown != 'full_day':
+                start_days = 0.5
+
+            if end_date_breakdown != 'full_day':
+                end_days = 0.5
+            requested_days = (end_date - start_date).days + start_days + end_days
         leave_type = LeaveType.objects.get(id=id)
         available_leave = AvailableLeave.objects.get(
             employee_id=employee, leave_type_id=leave_type)
