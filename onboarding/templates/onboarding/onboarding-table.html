@@ -1,5 +1,14 @@
 {% load onboardingfilters %} {% load i18n %}
 {% for stage in recruitment.onboardingstage_set.all %}
+{% if messages %}
+    <div class="oh-alert-container">
+        {% for message in messages %}
+        <div class="oh-alert oh-alert--animated {{message.tags}}">
+              {{ message }}
+        </div> 
+        {% endfor %}
+    </div>
+    {% endif %}
 <div class="oh-accordion-meta">
     <div class="oh-accordion-meta__item">
         <div class="oh-accordion-meta__header oh-accordion-meta__header--show">

@@ -125,6 +125,42 @@
                </ul>
             </div>
          </li>
+         <li class="oh-sidebar__menu-item" x-data="{ isOpen: getOpenState('payRollNav') }">
+            <a class="oh-sidebar__menu-link" data-id="payRollNav" x-on:click.prevent="isOpen = !isOpen; saveOpenState('payRollNav', isOpen)" x-bind:class="isOpen ? 'oh-sidebar__menu-link--active' : ''" style="cursor:pointer">
+               <div class="oh-sidebar__menu-icon">
+                  <img src="{% static 'images/ui/wallet-outline.svg' %}" style="filter: invert(1);" alt="Dashboard" width="24" height="24" />
+               </div>
+               <span>{% trans "Payroll" %}</span>
+            </a>
+            <div class="oh-sidebar__submenu" id="payRollNav" x-show="isOpen" x-transition style="display: none;">
+               <ul class="oh-sidebar__submenu-items">
+               {% if perms.payroll.view_allowance  %} 
+                  <li class="oh-sidebar__submenu-item">
+                     <a href="{%url 'view-contract' %}" class="oh-sidebar__submenu-link">{% trans "Contract" %}</a>
+                  </li>
+               {%endif%}
+               {% if perms.payroll.view_allowance  %} 
+                  <li class="oh-sidebar__submenu-item">
+                     <a href="{%url 'view-allowance' %}" class="oh-sidebar__submenu-link">{% trans "Allowance view" %}</a>
+                  </li>
+               {%endif%}
+               {% if perms.payroll.view_deduction  %} 
+                  <li class="oh-sidebar__submenu-item">
+                     <a href="{%url 'view-deduction' %}" class="oh-sidebar__submenu-link">{% trans "Deduction view" %}</a>
+                  </li>
+               {%endif%}
+                  <li class="oh-sidebar__submenu-item">
+                     <a href="{%url 'view-payslip' %}" class="oh-sidebar__submenu-link">{% trans "Payslip" %}</a>
+                  </li>
+               {% if perms.payroll.view_deduction  %} 
+                  <li class="oh-sidebar__submenu-item">
+                     <a href="{%url 'filing-status-view' %}" class="oh-sidebar__submenu-link">{% trans "Federal Tax" %}</a>
+                  </li>
+               {%endif%}
+                  
+               </ul>
+            </div>
+         </li>
          <li class="oh-sidebar__menu-item" x-data="{ isOpen: getOpenState('attendanceNav') }">
             <a class="oh-sidebar__menu-link" data-id="attendanceNav" x-on:click.prevent="isOpen = !isOpen; saveOpenState('attendanceNav', isOpen)" x-bind:class="isOpen ? 'oh-sidebar__menu-link--active' : ''" style="cursor:pointer">
                <div class="oh-sidebar__menu-icon">
@@ -205,7 +241,7 @@
                <div class="oh-sidebar__menu-icon">
                   <img src="{% static 'images/ui/pms.svg' %}" alt="Dashboard" width="24" height="24" />
                </div>
-               <span>{% trans "Performance" %}</span>
+               <span>{% trans "PMS" %}</span>
             </a>
             <div class="oh-sidebar__submenu" id="pmsNav" x-show="isOpen" x-transition style="display: none;">
                <ul class="oh-sidebar__submenu-items">
@@ -250,6 +286,7 @@
                </ul>
             </div>
          </li>
+         
       </ul>
    </div>
  </div>

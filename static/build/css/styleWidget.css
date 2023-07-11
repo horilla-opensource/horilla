@@ -1,0 +1,21 @@
+
+
+[data-widget="style-widget"] + .select2-container{
+    width: 100% !important;
+}
+[data-widget="style-widget"] + .select2-container .select2-selection {
+    height: 50px !important; /* Adjust the height value as needed */
+}
+
+
+[data-widget="style-widget"]:not(input[type="checkbox"]){
+    border:1px solid hsl(213deg,22%,84%);
+    border-radius:0rem;
+    padding:0.8rem 1.25rem;
+    color: #1c1c1c;
+    width: 100%;
+}
+
+input[type="checkbox"][data-widget="style-widget"]{
+    width: 100%;
+}

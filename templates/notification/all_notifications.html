@@ -1,3 +1,4 @@
+{% load i18n %}
 {% if messages %}
     <div class="oh-alert-container">
         {% for message in messages %}
@@ -17,12 +18,12 @@
                 {% if notification.unread %}
                 <span style="width: 10px;height: 10px;border-radius: 100%; background-color: hsl(8deg,77%,56%);display: inline-block;right: 5px;"></span>
                 {% endif %}
-                {{notification.verb}}
+                {% trans notification.verb %}
             </span>
         <ion-icon name="close-outline" hx-target="#allNotificationBody" hx-post="{% url 'delete-notifications' notification.id %}" role="img" aria-label="close outline"></ion-icon>
     </div>
         <span class="oh-activity-sidebar__a">
-        {{ notification.timesince }} ago by <img src="https://ui-avatars.com/api/?name={{notification.actor}}&amp;background=random" style="width: 1.5em; border-radius: 100%;" alt="User"> {{notification.actor}} 
+        {{ notification.timesince }} {% trans "ago by" %}<img src="https://ui-avatars.com/api/?name={{notification.actor}}&amp;background=random" style="width: 1.5em; border-radius: 100%;" alt="User"> {{notification.actor}} 
     </span>
     </li>
     {% endfor %}

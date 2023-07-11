@@ -1,3 +1,4 @@
+{% load i18n %}
 {% if messages %}
     <div class="oh-alert-container">
         {% for message in messages %}
@@ -20,8 +21,8 @@
       </div>
       <div>
         <p class="oh-navbar__notification-text"
-          :class="markRead ? '': 'oh-navbar__notification-text--unread' ">{{ notification.verb }} </p>
-        <span class="oh-navbar__notification-date">{{ notification.timesince }} ago by {{ notification.actor.employee_first_name }}</span>
+          :class="markRead ? '': 'oh-navbar__notification-text--unread' ">{% trans notification.verb %}</p>
+        <span class="oh-navbar__notification-date">{{ notification.timesince }} {% trans "ago by" %} {{ notification.actor.employee_first_name }}</span>
       </div>
       <div>
         <div class="oh-navbar__notification-image">
