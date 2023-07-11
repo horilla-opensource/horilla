@@ -1,0 +1,102 @@
+{% load i18n %}
+{% if messages %}
+<div class="oh-alert-container">
+    {% for message in messages %}
+    <div class="oh-alert oh-alert--animated {{message.tags}}">
+          {{ message }}
+    </div> 
+    {% endfor %}
+</div>
+{% endif %}
+<div class="oh-card" id="">
+  <div class="oh-accordion-meta">
+    <div class="">
+      {% for filing_status in status %}
+      <div
+        class="oh-accordion-meta__header oh-accordion-meta__header--custom"
+        data-target="#filingStatus{{filing_status.id}}"
+        hx-get="{%url 'tax-bracket-list' filing_status_id=filing_status.id %}"
+        hx-target="#taxbracketList{{filing_status.id}}"
+      >
+        <div class="d-flex">
+          <span class="oh-accordion-meta__title">{{filing_status}}</span>
+        </div>
+
+        <div class="oh-accordion-meta__actions" id="">
+          <div class="oh-dropdown" x-data="{open: false}">
+            <button
+              class="oh-btn oh-stop-prop oh-accordion-meta__btn"
+              @click="open = !open"
+              @click.outside="open = false"
+            >
+              {% trans "Actions" %}
+              <ion-icon
+                class="ms-2 oh-accordion-meta__btn-icon"
+                name="caret-down-outline"
+              ></ion-icon>
+            </button>
+            <div
+              class="oh-dropdown__menu oh-dropdown__menu--right"
+              x-show="open"
+              style="display: none"
+            >
+              <ul class="oh-dropdown__items">
+                <li class="oh-dropdown__item">
+                  <a
+                    class="oh-dropdown__link oh-dropdown__link"
+                    data-toggle="oh-modal-toggle"
+                    data-target="#TaxBracketModal"
+                    hx-get="{% url 'tax-bracket-create' filing_status_id=filing_status.id %}"
+                    onclick="event.stopPropagation()"
+                    hx-target="#TaxBracketFormTarget"
+                    >{% trans "Create" %}
+                  </a>
+                </li>
+                <li class="oh-dropdown__item">
+                  <a
+                    class="oh-dropdown__link oh-dropdown__link"
+                    data-toggle="oh-modal-toggle"
+                    data-target="#FilingStatusModal"
+                    hx-get="{% url 'filing-status-update' filing_status_id=filing_status.id %}"
+                    onclick="event.stopPropagation()"
+                    hx-target="#FilingStatusFormTarget"
+                  >
+                    {% trans "Update" %}</a
+                  >
+                </li>
+                <li class="oh-dropdown__item">
+                  <a
+                    onclick="event.stopPropagation()"
+                    hx-post="{% url 'filing-status-delete' filing_status_id=filing_status.id %}"
+                    hx-target="#FilingStatusList"
+                    class="oh-dropdown__link oh-dropdown__link--danger"
+                    >{% trans "Delete" %}</a
+                  >
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="oh-accordion-meta__body d-none"
+        id="filingStatus{{filing_status.id}}"
+      >
+        <!-- htmx tax bracket loading here -->
+        <div
+          class="oh-sticky-table oh-sticky-table--no-overflow mb-5"
+          id="taxbracketList{{filing_status.id}}"
+        ></div>
+      </div>
+      {% endfor %}
+      <script>
+        $(document).ready(function () {
+          $(".oh-accordion-meta__header").click(function () {
+            var target = $(this).data("target");
+            $(target).toggleClass("d-none");
+          });
+        });
+      </script>
+    </div>
+  </div>
+</div>

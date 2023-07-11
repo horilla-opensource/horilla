@@ -1,0 +1,153 @@
+{% load i18n %} {% load yes_no %}
+<div class="oh-sticky-table">
+  <div class="oh-sticky-table__table oh-table--sortable">
+    <div class="oh-sticky-table__thead">
+      <div class="oh-sticky-table__tr">
+        <div class="oh-sticky-table__th">
+          <div class="d-flex">
+            <div class="">
+              <input
+                type="checkbox"
+                class="oh-input oh-input__checkbox mt-1 mr-2 all-candidate"
+              />
+            </div>
+            <div
+              hx-target="#section"
+              hx-get="{% url 'search-candidate' %}?{{pd}}&orderby=name&view=list"
+            >
+              {% trans "Deduction" %}
+            </div>
+          </div>
+        </div>
+        <div class="oh-sticky-table__th">{% trans "Specific Employees" %}</div>
+        <div class="oh-sticky-table__th">{% trans "Excluded Employees" %}</div>
+        <div class="oh-sticky-table__th">{% trans "Is Pretax" %}</div>
+        <div class="oh-sticky-table__th">{% trans "Is Condition Based" %}</div>
+        <div class="oh-sticky-table__th">{% trans "Condition" %}</div>
+        <div class="oh-sticky-table__th">{% trans "Is Fixed" %}</div>
+        <div class="oh-sticky-table__th">{% trans "Amount" %}</div>
+        <div class="oh-sticky-table__th">{% trans "Based On" %}</div>
+        <div class="oh-sticky-table__th">{% trans "Rate" %}</div>
+        <div class="oh-sticky-table__th"></div>
+      </div>
+    </div>
+    {% for deduction in deductions %}
+    <div class="oh-sticky-table__tbody ui-sortable" draggable="true" data-toggle="oh-modal-toggle" data-target="#DeductionModal" hx-get="{% url 'single-deduction-view' deduction.id %}" hx-target = "#OneDeductionTarget">
+      <div class="oh-sticky-table__tr ui-sortable-handle">
+        <div class="oh-sticky-table__sd">{{deduction.title}}</div>
+        <div class="oh-sticky-table__td">
+          {% for employee in deduction.specific_employees.all%} 
+            {{employee}}<br />
+          {% endfor %}
+        </div>
+        <div class="oh-sticky-table__td">
+          {% for employee in deduction.exclude_employees.all%} 
+            {{employee}}<br />
+          {% endfor %}
+        </div>
+        <div class="oh-sticky-table__td">
+          {{deduction.is_pretax|yesno|capfirst}}
+        </div>
+        <div class="oh-sticky-table__td">
+          {{deduction.is_condition_based|yesno|capfirst}}
+        </div>
+        <div class="oh-sticky-table__td">
+          {% if deduction.field %} {{deduction.get_field_display}}
+            {{deduction.get_condition_display}} {{deduction.value}} 
+          {% endif %}
+        </div>
+        <div class="oh-sticky-table__td">
+          {{deduction.is_fixed|yesno|capfirst}}
+        </div>
+        <div class="oh-sticky-table__td">
+          {% if deduction.amount %}
+            {{deduction.amount}}
+          {% endif %}
+        </div>
+        <div class="oh-sticky-table__td">
+          {% if deduction.based_on %} 
+            {{deduction.get_based_on_display}}
+          {% endif%}
+        </div>
+        <div class="oh-sticky-table__td">
+          {% if deduction.based_on %}
+            {{deduction.rate}}
+          {% endif %}
+        </div>
+        <div class="oh-sticky-table__td">
+          <div class="oh-btn-group">
+            <a
+              onclick="event.stopPropagation();"
+              class="oh-btn oh-btn--light-bkg w-100"
+              href="{% url 'update-deduction' deduction.id %}"
+            >
+              <ion-icon
+                name="create-outline"
+                role="img"
+                class="md hydrated"
+                style="color: blue"
+                aria-label="create outline"
+              ></ion-icon>
+            </a>
+            <a
+              class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+              href="{% url 'delete-deduction' deduction.id %}"
+              onclick = "event.preventDefault();event.stopPropagation(); confirm(`{% trans 'Do you want to delete this Deduction?' %}`)"
+
+            >
+              <ion-icon
+                name="trash-outline"
+                role="img"
+                class="md hydrated"
+                aria-label="trash outline"
+              ></ion-icon>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+<div class="oh-pagination">
+  <span
+    class="oh-pagination__page"
+    >
+    {% trans "Page" %} {{ deductions.number }} {% trans "of" %} {{ deductions.paginator.num_pages }}.
+    </span
+  >
+  <nav class="oh-pagination__nav">
+    <div class="oh-pagination__input-container me-3">
+      <span class="oh-pagination__label me-1">{% trans "Page" %}</span>
+      <input
+        type="number"
+        name="page"
+        class="oh-pagination__input"
+        value="{{deductions.number}}"
+        hx-get="{% url 'filter-deduction' %}?{{pd}}"
+        hx-target="#payroll-deduction-container"
+        min="1"
+      />
+      <span class="oh-pagination__label">{% trans "of" %} {{deductions.paginator.num_pages}}</span>
+    </div>
+    <ul class="oh-pagination__items">
+      {% if deductions.has_previous %}
+      <li class="oh-pagination__item oh-pagination__item--wide">
+        <a hx-target='#payroll-deduction-container' hx-get="{% url 'filter-deduction' %}?{{pd}}&page=1" class="oh-pagination__link">{% trans "First" %}</a>
+      </li>
+      <li class="oh-pagination__item oh-pagination__item--wide">
+        <a hx-target='#payroll-deduction-container' hx-get="{% url 'filter-deduction' %}?{{pd}}&page={{ deductions.previous_page_number }}" class="oh-pagination__link">{% trans "Previous" %}</a>
+      </li>
+      {% endif %}
+      {% if deductions.has_next %}
+      <li class="oh-pagination__item oh-pagination__item--wide">
+        <a hx-target='#payroll-deduction-container' hx-get="{% url 'filter-deduction' %}?{{pd}}&page={{ deductions.next_page_number }}" class="oh-pagination__link">{% trans "Next" %}</a>
+      </li>
+      <li class="oh-pagination__item oh-pagination__item--wide">
+        <a hx-target='#payroll-deduction-container' hx-get="{% url 'filter-deduction' %}?{{pd}}&page={{ deductions.paginator.num_pages }}" class="oh-pagination__link">{% trans "Last" %}</a>
+      </li>
+      {% endif %}
+
+    </ul>
+  </nav>
+</div>

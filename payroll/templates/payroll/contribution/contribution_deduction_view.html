@@ -1,0 +1,69 @@
+{% extends 'index.html' %} {% block content %} {% load i18n %}
+<main :class="sidebarOpen ? 'oh-main__sidebar-visible' : ''">
+  <section class="oh-wrapper oh-main__topbar" x-data="{searchShow: false}">
+    <div class="oh-main__titlebar oh-main__titlebar--left">
+      <h1 class="oh-main__titlebar-title fw-bold">
+        {% trans "Contribution Deduction" %}
+      </h1>
+      <a
+        class="oh-main__titlebar-search-toggle"
+        role="button"
+        aria-label="Toggle Search"
+        @click="searchShow = !searchShow"
+      >
+        <ion-icon
+          name="search-outline"
+          class="oh-main__titlebar-serach-icon"
+        ></ion-icon>
+      </a>
+    </div>
+    <div class="oh-main__titlebar oh-main__titlebar--right">
+      <div class="oh-main__titlebar-button-container">
+        <div class="oh-btn-group ml-2">
+          <div>
+            <a
+              class="oh-btn oh-btn--secondary oh-btn--shadow"
+              data-toggle="oh-modal-toggle"
+              data-target="#ContributionDeductionModal"
+              hx-get="{% url 'create-contribution-deduction' %}"
+              hx-target="#ContributionDeductionFormTarget"
+            >
+              <ion-icon class="me-2" name="add-outline"></ion-icon>{% trans "Create" %}</a
+            >
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <div id="ContributionDeductionList" class="oh-wrapper">
+    <!-- including contribution deduction list -->
+    {% include 'payroll/contribution/contribution_deduction_list.html' %}
+  </div>
+</main>
+<div
+  class="oh-modal"
+  id="ContributionDeductionModal"
+  role="dialog"
+  aria-labelledby="ContributionDeductionModal"
+  aria-hidden="true"
+>
+  <div
+    class="oh-modal__dialog"
+    style="max-width: 550px"
+    id="ContributionDeductionFormTarget"
+  ></div>
+</div>
+<div
+  class="oh-modal"
+  id="ContributionDeductionAssignModal"
+  role="dialog"
+  aria-labelledby="ContributionDeductionAssignModal"
+  aria-hidden="true"
+>
+  <div
+    class="oh-modal__dialog"
+    style="max-width: 550px"
+    id="ContributionDeductionAssignFormTarget"
+  ></div>
+</div>
+{% endblock content %}

@@ -1,0 +1,54 @@
+{% extends 'index.html' %} {% block content %} {% load i18n %}
+<main :class="sidebarOpen ? 'oh-main__sidebar-visible' : ''">
+  <section class="oh-wrapper oh-main__topbar" x-data="{searchShow: false}">
+    <div class="oh-main__titlebar oh-main__titlebar--left">
+      <div>
+        <a
+          class="oh-btn oh-btn--light-bkg w-100"
+          href="{% url 'view-contribution-deduction' %}"
+        >
+          <ion-icon name="arrow-back-outline"></ion-icon>
+        </a>
+      </div>
+    </div>
+    <div class="oh-main__titlebar oh-main__titlebar--right">
+      <div class="oh-main__titlebar-button-container">
+        <div class="oh-btn-group ml-2"></div>
+      </div>
+    </div>
+  </section>
+  <div class="oh-wrapper">
+    <div class="oh-sticky-table__table">
+      <div class="oh-sticky-table__thead">
+        <div class="oh-sticky-table__tr">
+          <div class="oh-sticky-table__th">{% trans "Employee" %}</div>
+          <div class="oh-sticky-table__th">{% trans "Assigned Date" %}</div>
+          <div class="oh-sticky-table__th"></div>
+        </div>
+      </div>
+      <div class="oh-sticky-table__tbody">
+        {% for employee_contribution in employee_contribution_list %} 
+          {% for employee in employee_contribution.employee_id.all %}
+            <div class="oh-sticky-table__tr" draggable="true">
+              <div class="oh-sticky-table__td">{{employee}}</div>
+              <div class="oh-sticky-table__td">
+                {{employee_contribution.assign_date}}
+              </div>
+              <div class="oh-sticky-table__td">
+                <div class="oh-btn-group">
+                  <a
+                  class="oh-btn oh-btn--light-bkg w-100"
+                  href="{% url 'unassign-contribution-deduction'  contribution_deduction_id=employee_contribution.contribution_deduction_id.id employee_id=employee.id %}"
+                >
+                <ion-icon name="person-remove-sharp"></ion-icon>
+                </a>
+                </div>
+              </div>
+            </div>
+          {% endfor %} 
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</main>
+{% endblock content %}

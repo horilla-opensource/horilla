@@ -1,0 +1,107 @@
+{% load i18n %}
+<div class="oh-sticky-table">
+  <div class="oh-sticky-table__table oh-table--sortable">
+    <div class="oh-sticky-table__thead">
+      <div class="oh-sticky-table__tr">
+        <div class="oh-sticky-table__th">{% trans "Employee" %}</div>
+        <div class="oh-sticky-table__th">{% trans "Period" %}</div>
+        <div class="oh-sticky-table__th">{% trans "Status" %}</div>
+        <div class="oh-sticky-table__th">{% trans "Gross Pay" %}</div>
+        <div class="oh-sticky-table__th">{% trans "Deduction" %}</div>
+        <div class="oh-sticky-table__th">{% trans "Net Pay" %}</div>
+        <div class="oh-sticky-table__th"></div>
+      </div>
+    </div>
+  <div class="oh-sticky-table__tbody">
+    {% for payslip in payslips %}
+    <div class="oh-sticky-table__tr" draggable="true">
+      <div class="oh-sticky-table__td">
+        <div class="oh-profile oh-profile--md">
+          <div class="oh-profile__avatar mr-1">
+            <img
+              src="https://ui-avatars.com/api/?name={{payslip.employee_id.employee_first_name}}+{{payslip.employee_id.employee_last_name}}&background=random"
+              class="oh-profile__image"
+              alt="Username"
+            />
+          </div>
+          <span class="oh-profile__name oh-text--dark">{{payslip.employee_id}}</span>
+        </div>
+        
+      </div>
+      <div class="oh-sticky-table__td">
+        {{payslip.start_date}} - {{payslip.end_date}}
+      </div>
+      <div class="oh-sticky-table__td">
+        {{payslip.get_status_display}}
+      </div>
+      <div class="oh-sticky-table__td">
+        {{currency}} {{payslip.gross_pay|floatformat:2}}
+      </div>
+      <div class="oh-sticky-table__td">
+        {{currency}} {{payslip.deduction|floatformat:2}}
+      </div>
+      <div class="oh-sticky-table__td">
+        {{currency}} {{payslip.net_pay|floatformat:2}}
+      </div>
+      <div class="oh-sticky-table__td">
+        <div class="oh-btn-group">
+          <a href="{% url 'view-created-payslip' payslip.id %}" type="button"  class="oh-btn oh-btn--light-bkg w-50"> <ion-icon name="eye-outline"></ion-icon></a>
+          <div>
+            {% if perms.payroll.change_payslip %}
+              <form action="{% url 'delete-payslip' payslip.id %}" onsubmit="return confirm('{% trans "Are you sure you want to delete this payslip?" %}');" method='post'>
+                {% csrf_token %} 
+                <button type='submit' class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100" title="{% trans 'Remove' %}"><ion-icon name="trash-outline"></ion-icon></button>
+              </form>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+</div>
+<div class="oh-pagination">
+  <span
+    class="oh-pagination__page"
+    >
+    {% trans "Page" %} {{ payslips.number }} {% trans "of" %} {{ payslips.paginator.num_pages }}.
+    </span
+  >
+  <nav class="oh-pagination__nav">
+    <div class="oh-pagination__input-container me-3">
+      <span class="oh-pagination__label me-1">{% trans "Page" %}</span>
+      <input
+        type="number"
+        name="page"
+        class="oh-pagination__input"
+        value="{{payslips.number}}"
+        hx-get="{% url 'filter-payslip' %}?{{pd}}"
+        hx-target="#payroll-payslip-container"
+        min="1"
+      />
+      <span class="oh-pagination__label">{% trans "of" %} {{payslips.paginator.num_pages}}</span>
+    </div>
+    <ul class="oh-pagination__items">
+      {% if payslips.has_previous %}
+      <li class="oh-pagination__item oh-pagination__item--wide">
+        <a hx-target='#payroll-payslip-container' hx-get="{% url 'filter-payslip' %}?{{pd}}&page=1" class="oh-pagination__link">{% trans "First" %}</a>
+      </li>
+      <li class="oh-pagination__item oh-pagination__item--wide">
+        <a hx-target='#payroll-payslip-container' hx-get="{% url 'filter-payslip' %}?{{pd}}&page={{ payslips.previous_page_number }}" class="oh-pagination__link">{% trans "Previous" %}</a>
+      </li>
+      {% endif %}
+      {% if payslips.has_next %}
+      <li class="oh-pagination__item oh-pagination__item--wide">
+        <a hx-target='#payroll-payslip-container' hx-get="{% url 'filter-payslip' %}?{{pd}}&page={{ payslips.next_page_number }}" class="oh-pagination__link">{% trans "Next" %}</a>
+      </li>
+      <li class="oh-pagination__item oh-pagination__item--wide">
+        <a hx-target='#payroll-payslip-container' hx-get="{% url 'filter-payslip' %}?{{pd}}&page={{ payslips.paginator.num_pages }}" class="oh-pagination__link">{% trans "Last" %}</a>
+      </li>
+      {% endif %}
+    </ul>
+  </nav>
+</div>
+
+
+

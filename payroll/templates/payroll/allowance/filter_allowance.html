@@ -1,0 +1,58 @@
+{% load static %} 
+{% load i18n %}
+
+<form
+  hx-get='{% url "filter-allowance" %}'
+  id="filterForm"
+  hx-swap="innerHTML"
+  hx-target="#payroll-allowance-container"
+>
+  <div class="oh-dropdown__filter-body">
+    <div class="oh-accordion">
+      <div class="oh-accordion-header">{% trans "Allowance" %}</div>
+      <div class="oh-accordion-body">
+        <div class="row">
+          <div class="col-sm-6">
+            <div class="oh-input-group">
+              <label class="oh-label">{% trans "Taxable" %}</label>
+              {{ f.form.is_taxable }}
+            </div>
+          </div>
+          <div class="col-sm-6">
+            <div class="oh-input-group">
+              <label class="oh-label">{% trans "Condition Based" %}</label>
+              {{ f.form.is_condition_based }}
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-6">
+            <div class="oh-input-group">
+              <label class="oh-label">{% trans "Fixed" %}</label>
+              {{ f.form.is_fixed }}
+            </div>
+          </div>
+          <div class="col-sm-6">
+            <div class="oh-input-group">
+              <label class="oh-label">{% trans "Based" %}</label>
+              {{ f.form.based_on }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% comment %} {{f.form}} {% endcomment %}
+  </div>
+  <div class="oh-dropdown__filter-footer">
+    <button class="oh-btn oh-btn--secondary oh-btn--small w-100" id="filterSubmit">
+      {% trans "Filter" %}
+    </button>
+  </div>
+</form>
+
+<script>
+  $("#filterForm").submit(function (e) {
+    // var formData = $(this).serialize();
+    // $('#field').attr('hx-vals',`{'data':${formData}}` );
+  });
+</script>

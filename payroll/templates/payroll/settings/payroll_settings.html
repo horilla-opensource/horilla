@@ -1,0 +1,13 @@
+{% extends 'settings.html' %} {% block settings %}{% load i18n %}
+
+<form action="{% url 'payroll-settings' %}" method="post">
+  {% csrf_token %} {{form}}
+  <button
+    type="submit"
+    class="oh-btn oh-btn--secondary mt-2 mr-0 oh-btn--w-100-resp"
+  >
+    {% trans "Save Changes" %}
+  </button>
+  <div class="oh-inner-sidebar-content__footer"></div>
+</form>
+{% endblock settings %}

@@ -1,0 +1,132 @@
+{% comment %} {{form.as_custom}} {% endcomment %}
+{{form.style}}
+{{form.as_custom}}
+<script>
+    $(document).ready(function () {
+        function conditionalVisibility() {
+          if (!$("#id_is_condition_based").is(":checked")) {
+            $("#id_field, #id_value, #id_condition").hide();
+            $("[for='id_field'], [for='id_value'], [for='id_condition']").hide();
+          } else {
+            $("#id_field, #id_value, #id_condition").show();
+            $("[for='id_field'], [for='id_value'], [for='id_condition']").show();
+          }
+      
+          if (!$("#id_is_fixed").is(":checked")) {
+            $("#id_based_on, #id_rate").show();
+            $("[for='id_based_on'], [for='id_rate']").show();
+            $("#id_amount").hide();
+            $("[for='id_amount']").hide();
+          } else {
+            $("#id_based_on, #id_rate").hide();
+            $("[for='id_based_on'], [for='id_rate']").hide();
+            $("#id_amount").show();
+            $("[for='id_amount']").show();
+          }
+          if (
+            $("#id_based_on").val() == "attendance" &&
+            !$("#id_is_fixed").is(":checked")
+          ) {
+            $(
+              "#id_per_attendance_fixed_amount, [for='id_per_attendance_fixed_amount']"
+            ).show();
+          } else {
+            $(
+              "#id_per_attendance_fixed_amount, [for='id_per_attendance_fixed_amount']"
+            ).hide();
+          }
+      
+          if (
+            $("#id_based_on").val() == "shift_id" &&
+            !$("#id_is_fixed").is(":checked")
+          ) {
+            $(
+              "#id_shift_id, [for='id_shift_id'],#id_shift_per_attendance_amount, [for='id_shift_per_attendance_amount']"
+            ).show();
+          } else {
+            $(
+              "#id_shift_id, [for='id_shift_id'],#id_shift_per_attendance_amount, [for='id_shift_per_attendance_amount']"
+            ).hide();
+          }
+      
+          if (
+            $("#id_based_on").val() == "work_type_id" &&
+            !$("#id_is_fixed").is(":checked")
+          ) {
+            $(
+              "#id_work_type_id, [for='id_work_type_id'],#id_work_type_per_attendance_amount, [for='id_work_type_per_attendance_amount']"
+            ).show();
+          } else {
+            $(
+              "#id_work_type_id, [for='id_work_type_id'],#id_work_type_per_attendance_amount, [for='id_work_type_per_attendance_amount']"
+            ).hide();
+          }
+      
+          if (
+            $("#id_based_on").val() == "overtime" &&
+            !$("#id_is_fixed").is(":checked")
+          ) {
+            $("#id_amount_per_one_hr, [for='id_amount_per_one_hr']").show();
+          } else {
+            $("#id_amount_per_one_hr, [for='id_amount_per_one_hr']").hide();
+          }
+      
+          if ($("#id_based_on").val() == "basic_pay") {
+            if (!$("#id_is_fixed").is(":checked")) {
+              $("#id_rate, [for='id_rate']").show();
+            } else {
+              $("#id_rate, [for='id_rate']").hide();
+            }
+          } else {
+            $("#id_rate, [for='id_rate']").hide();
+          }
+      
+          if ($("#id_include_active_employees").is(":checked")) {
+            $(
+              "#id_specific_employees, [for=id_specific_employees],#id_is_condition_based, [for=id_is_condition_based]"
+            ).hide();
+            $(
+              "#id_field,[for=id_field], #id_condition,[for=id_condition], #id_value,[for=id_value]"
+            ).hide();
+          } else {
+            $(
+              "#id_specific_employees, [for=id_specific_employees],#id_is_condition_based, [for=id_is_condition_based]"
+            ).show();
+            if ($("#id_is_condition_based").is(":checked")) {
+              $(
+                "#id_field,[for=id_field], #id_condition,[for=id_condition], #id_value,[for=id_value]"
+              ).show();
+            }
+          }
+          if (
+            $("#id_is_condition_based").is(":checked") ||
+            $("#id_include_active_employees").is(":checked")
+          ) {
+            $("#id_exclude_employees, [for=id_exclude_employees]").show();
+          } else {
+            $("#id_exclude_employees, [for=id_exclude_employees]").hide();
+          }
+          if ($("#id_is_condition_based").is(":checked")) {
+            $("#id_specific_employees,[for=id_specific_employees]").hide();
+          }
+      
+          if ($("#id_has_max_limit").is(":checked")) {
+            $("#id_maximum_amount, [for=id_maximum_amount]").show();
+            $("#id_maximum_unit,[for=id_maximum_unit]").show();
+          } else {
+            $("#id_maximum_amount, [for=id_maximum_amount]").hide();
+            $("#id_maximum_unit,[for=id_maximum_unit]").hide();
+          }
+          var opt = ["attendance", "shift_id", "overtime", "work_type_id"];
+          if (!$("#id_is_fixed").is(":checked") && opt.includes($("#id_based_on").val())) {
+            $("#id_maximum_unit,[for=id_maximum_unit]").hide();
+          }
+        }
+        conditionalVisibility();
+        $("select, [type=checkbox]").change(function (e) {
+          e.preventDefault();
+          conditionalVisibility();
+        });
+      });
+      
+</script>
