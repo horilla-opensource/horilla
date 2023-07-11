@@ -125,7 +125,7 @@
                </ul>
             </div>
          </li>
-         <li class="oh-sidebar__menu-item" x-data="{ isOpen: getOpenState('payRollNav') }">
+         {% comment %} <li class="oh-sidebar__menu-item" x-data="{ isOpen: getOpenState('payRollNav') }">
             <a class="oh-sidebar__menu-link" data-id="payRollNav" x-on:click.prevent="isOpen = !isOpen; saveOpenState('payRollNav', isOpen)" x-bind:class="isOpen ? 'oh-sidebar__menu-link--active' : ''" style="cursor:pointer">
                <div class="oh-sidebar__menu-icon">
                   <img src="{% static 'images/ui/wallet-outline.svg' %}" style="filter: invert(1);" alt="Dashboard" width="24" height="24" />
@@ -160,7 +160,7 @@
                   
                </ul>
             </div>
-         </li>
+         </li> {% endcomment %}
          <li class="oh-sidebar__menu-item" x-data="{ isOpen: getOpenState('attendanceNav') }">
             <a class="oh-sidebar__menu-link" data-id="attendanceNav" x-on:click.prevent="isOpen = !isOpen; saveOpenState('attendanceNav', isOpen)" x-bind:class="isOpen ? 'oh-sidebar__menu-link--active' : ''" style="cursor:pointer">
                <div class="oh-sidebar__menu-icon">
