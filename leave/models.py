@@ -1,4 +1,5 @@
 from django.db import models
+from .methods import calculate_requested_days
 from recruitment.models import JobPosition
 from base.models import JobRole
 from employee.models import Employee
@@ -235,23 +236,7 @@ class LeaveRequest(models.Model):
 
 
     def save(self, *args, **kwargs):  
-        if self.start_date == self.end_date:
-            if self.start_date_breakdown == 'full_day' and self.end_date_breakdown == 'full_day':
-                self.requested_days = 1
-            else:
-                self.requested_days = 0.5
-        else:
-            start_days = 0
-            end_days = 0   
-            if self.start_date_breakdown != 'full_day':
-                start_days = 0.5
-
-            if self.end_date_breakdown != 'full_day':
-                end_days = 0.5
-
-            self.requested_days = (self.end_date - self.start_date).days + start_days + end_days
-
-
+        self.requested_days = calculate_requested_days(self.start_date, self.end_date, self.start_date_breakdown, self.end_date_breakdown)
         if self.leave_type_id.exclude_company_leave == 'yes' and self.leave_type_id.exclude_holiday == 'yes':
             self.exclude_all_leaves()
         else:

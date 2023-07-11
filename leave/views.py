@@ -11,6 +11,12 @@ from django.db.models import Q
 from datetime import datetime, timedelta, date
 from django.utils import timezone
 from base.models import *
+from .methods import (
+    calculate_requested_days,
+    leave_requested_dates,
+    holiday_dates_list,
+    company_leave_dates_list,
+)
 import random
 from django.core.paginator import Paginator
 from django.db.models.functions import TruncYear
@@ -30,7 +36,7 @@ def leave_type_creation(request):
     Parameters:
     request (HttpRequest): The HTTP request object.
 
-    Returns:  
+    Returns:
     GET : return leave type creation template
     POST : return leave view
     """
@@ -149,7 +155,7 @@ def leave_type_delete(request, id):
 
 @login_required
 @hx_request_required
-@manager_can_enter('leave.add_leaverequest')
+@manager_can_enter("leave.add_leaverequest")
 def leave_request_creation(request):
     """
     function used to create leave request.
@@ -162,33 +168,40 @@ def leave_request_creation(request):
     POST : return leave request view
     """
     form = LeaveRequestCreationForm()
-    form = choosesubordinates(request, form, 'leave.add_leaverequest')
-    if request.method == 'POST':
+    form = choosesubordinates(request, form, "leave.add_leaverequest")
+    if request.method == "POST":
         form = LeaveRequestCreationForm(request.POST, request.FILES)
-        form = choosesubordinates(request, form, 'leave.add_leaverequest')
+        form = choosesubordinates(request, form, "leave.add_leaverequest")
         if form.is_valid():
             leave_request = form.save()
             if leave_request.leave_type_id.require_approval == "no":
                 employee_id = leave_request.employee_id
                 leave_type_id = leave_request.leave_type_id
                 available_leave = AvailableLeave.objects.get(
-                    leave_type_id=leave_type_id, employee_id=employee_id)
+                    leave_type_id=leave_type_id, employee_id=employee_id
+                )
                 if leave_request.requested_days > available_leave.available_days:
-                    leave = leave_request.requested_days - available_leave.available_days
-                    leave_request.approved_available_days = available_leave.available_days
+                    leave = (
+                        leave_request.requested_days - available_leave.available_days
+                    )
+                    leave_request.approved_available_days = (
+                        available_leave.available_days
+                    )
                     available_leave.available_days = 0
-                    available_leave.carryforward_days = available_leave.carryforward_days - leave
+                    available_leave.carryforward_days = (
+                        available_leave.carryforward_days - leave
+                    )
                     leave_request.approved_carryforward_days = leave
                 else:
-                    available_leave.available_days = available_leave.available_days - \
-                        leave_request.requested_days
+                    available_leave.available_days = (
+                        available_leave.available_days - leave_request.requested_days
+                    )
                     leave_request.approved_available_days = leave_request.requested_days
                 leave_request.status = "approved"
                 leave_request.created_by = request.user.employee_get
                 available_leave.save()
             leave_request.save()
-            messages.success(request, _(
-                'Leave request created successfully..'))
+            messages.success(request, _("Leave request created successfully.."))
             with contextlib.suppress(Exception):
                 notify.send(
                     request.user.employee_get,
@@ -197,10 +210,11 @@ def leave_request_creation(request):
                     icon="people-circle",
                     redirect="/leave/request-view",
                 )
-            response = render(
-                request, 'leave/leave-request-form.html', {'form': form})
-            return HttpResponse(response.content.decode('utf-8') + '<script>location.reload();</script>')
-    return render(request, 'leave/leave-request-form.html', {'form': form})
+            response = render(request, "leave/leave-request-form.html", {"form": form})
+            return HttpResponse(
+                response.content.decode("utf-8") + "<script>location.reload();</script>"
+            )
+    return render(request, "leave/leave-request-form.html", {"form": form})
 
 
 @login_required
@@ -289,8 +303,7 @@ def leave_request_update(request, id):
         form = choosesubordinates(request, form, "leave.add_leaverequest")
         if form.is_valid():
             leave_request = form.save()
-            messages.info(request, _(
-                "Leave request is updated successfully.."))
+            messages.info(request, _("Leave request is updated successfully.."))
             with contextlib.suppress(Exception):
                 notify.send(
                     request.user.employee_get,
@@ -300,12 +313,10 @@ def leave_request_update(request, id):
                     redirect="/leave/request-view",
                 )
             response = render(
-                request, "leave/request-update-form.html", {
-                    "form": form, "id": id}
+                request, "leave/request-update-form.html", {"form": form, "id": id}
             )
             return HttpResponse(
-                response.content.decode("utf-8") +
-                "<script>location.reload();</script>"
+                response.content.decode("utf-8") + "<script>location.reload();</script>"
             )
     return render(request, "leave/request-update-form.html", {"form": form, "id": id})
 
@@ -347,29 +358,33 @@ def leave_request_approve(request, id):
     available_leave = AvailableLeave.objects.get(
         leave_type_id=leave_type_id, employee_id=employee_id
     )
-    if leave_request.requested_days > available_leave.available_days:
-        leave = leave_request.requested_days - available_leave.available_days
-        leave_request.approved_available_days = available_leave.available_days
-        available_leave.available_days = 0
-        available_leave.carryforward_days = available_leave.carryforward_days - leave
-        leave_request.approved_carryforward_days = leave
+    total_available_leave = available_leave.available_days + available_leave.carryforward_days
+    if total_available_leave >= leave_request.requested_days:
+        if leave_request.requested_days > available_leave.available_days:
+            leave = leave_request.requested_days - available_leave.available_days
+            leave_request.approved_available_days = available_leave.available_days
+            available_leave.available_days = 0
+            available_leave.carryforward_days = available_leave.carryforward_days - leave
+            leave_request.approved_carryforward_days = leave
+        else:
+            available_leave.available_days = (
+                available_leave.available_days - leave_request.requested_days
+            )
+            leave_request.approved_available_days = leave_request.requested_days
+        leave_request.status = "approved"
+        available_leave.save()
+        leave_request.save()
+        messages.success(request, _("Leave request approved successfully.."))
+        with contextlib.suppress(Exception):
+            notify.send(
+                request.user.employee_get,
+                recipient=leave_request.employee_id.employee_user_id,
+                verb="Your Leave request has been approved",
+                icon="people-circle",
+                redirect="/leave/user-request-view",
+            )
     else:
-        available_leave.available_days = (
-            available_leave.available_days - leave_request.requested_days
-        )
-        leave_request.approved_available_days = leave_request.requested_days
-    leave_request.status = "approved"
-    available_leave.save()
-    leave_request.save()
-    messages.success(request, _("Leave request approved successfully.."))
-    with contextlib.suppress(Exception):
-        notify.send(
-            request.user.employee_get,
-            recipient=leave_request.employee_id.employee_user_id,
-            verb="Your Leave request has been approved",
-            icon="people-circle",
-            redirect="/leave/user-request-view",
-        )
+        messages.error(request,f"{employee_id} dont have enough leave days to approve the request..")
     return redirect(leave_request_view)
 
 
@@ -426,8 +441,7 @@ def one_request_view(request, id):
     """
     leave_request = LeaveRequest.objects.get(id=id)
     return render(
-        request, "leave/one-request-view.html", {
-            "leave_request": leave_request}
+        request, "leave/one-request-view.html", {"leave_request": leave_request}
     )
 
 
@@ -461,8 +475,7 @@ def leave_assign_one(request, id):
                     employee_id=employee,
                     available_days=leave_type.total_days,
                 ).save()
-                messages.success(request, _(
-                    "Leave type assign is successfull.."))
+                messages.success(request, _("Leave type assign is successfull.."))
                 with contextlib.suppress(Exception):
                     notify.send(
                         request.user.employee_get,
@@ -473,16 +486,13 @@ def leave_assign_one(request, id):
                     )
             else:
                 messages.info(
-                    request, _(
-                        "leave type is already assigned to the employee..")
+                    request, _("leave type is already assigned to the employee..")
                 )
         response = render(
-            request, "leave/leave-assign-one-form.html", {
-                "form": form, "id": id}
+            request, "leave/leave-assign-one-form.html", {"form": form, "id": id}
         )
         return HttpResponse(
-            response.content.decode("utf-8") +
-            "<script>location.reload();</script>"
+            response.content.decode("utf-8") + "<script>location.reload();</script>"
         )
     return render(request, "leave/leave-assign-one-form.html", {"form": form, "id": id})
 
@@ -500,8 +510,7 @@ def leave_assign_view(request):
     GET : return leave assigned view template
     """
     queryset = AvailableLeave.objects.all()
-    queryset = filtersubordinates(
-        request, queryset, "leave.view_availableleave")
+    queryset = filtersubordinates(request, queryset, "leave.view_availableleave")
     previous_data = request.environ["QUERY_STRING"]
     page_number = request.GET.get("page")
     page_obj = paginator_qry(queryset, page_number)
@@ -531,8 +540,7 @@ def leave_assign_filter(request):
     GET : return leave type assigned view template
     """
     queryset = AvailableLeave.objects.all()
-    queryset = filtersubordinates(
-        request, queryset, "leave.view_availableleave")
+    queryset = filtersubordinates(request, queryset, "leave.view_availableleave")
     assigned_leave_filter = AssignedLeavefilter(request.GET, queryset).qs
     previous_data = request.environ["QUERY_STRING"]
     page_number = request.GET.get("page")
@@ -579,8 +587,7 @@ def leave_assign(request):
                                 available_days=leave_type.total_days,
                             ).save()
                             messages.success(
-                                request, _(
-                                    "Leave type assign is successfull..")
+                                request, _("Leave type assign is successfull..")
                             )
                             with contextlib.suppress(Exception):
                                 notify.send(
@@ -599,8 +606,7 @@ def leave_assign(request):
             request, "leave/leave-assign-form.html", {"form": form, "id": id}
         )
         return HttpResponse(
-            response.content.decode("utf-8") +
-            "<script>location. reload();</script>"
+            response.content.decode("utf-8") + "<script>location. reload();</script>"
         )
     return render(request, "leave/leave-assign-form.html", {"form": form})
 
@@ -626,8 +632,7 @@ def available_leave_update(request, id):
         form = AvailableLeaveUpdateForm(request.POST, instance=leave_assign)
         if form.is_valid():
             available_leave = form.save()
-            messages.info(request, _(
-                "Available leaves updated successfully..."))
+            messages.info(request, _("Available leaves updated successfully..."))
             with contextlib.suppress(Exception):
                 notify.send(
                     request.user.employee_get,
@@ -637,12 +642,10 @@ def available_leave_update(request, id):
                     redirect="/leave/user-leave",
                 )
         response = render(
-            request, "leave/available-update-form.html", {
-                "form": form, "id": id}
+            request, "leave/available-update-form.html", {"form": form, "id": id}
         )
         return HttpResponse(
-            response.content.decode("utf-8") +
-            "<script>location. reload();</script>"
+            response.content.decode("utf-8") + "<script>location. reload();</script>"
         )
     return render(request, "leave/available-update-form.html", {"form": form, "id": id})
 
@@ -685,8 +688,7 @@ def holiday_creation(request):
         if form.is_valid():
             form.save()
             messages.success(request, _("New holiday created successfully.."))
-            response = render(
-                request, "leave/holiday-form.html", {"form": form})
+            response = render(request, "leave/holiday-form.html", {"form": form})
             return HttpResponse(
                 response.content.decode("utf-8")
                 + "<script>location. reload();</script>"
@@ -766,8 +768,7 @@ def holiday_update(request, id):
             form.save()
             messages.info(request, _("Holiday updated successfully.."))
             response = render(
-                request, "leave/holiday-update-form.html", {
-                    "form": form, "id": id}
+                request, "leave/holiday-update-form.html", {"form": form, "id": id}
             )
             return HttpResponse(
                 response.content.decode("utf-8")
@@ -813,11 +814,9 @@ def company_leave_creation(request):
         form = CompanyLeaveForm(request.POST)
         if form.is_valid():
             form.save()
-            messages.success(request, _(
-                "New company leave created successfully.."))
+            messages.success(request, _("New company leave created successfully.."))
             response = render(
-                request, "leave/company-leave-creation-form.html", {
-                    "form": form}
+                request, "leave/company-leave-creation-form.html", {"form": form}
             )
             return HttpResponse(
                 response.content.decode("utf-8")
@@ -908,7 +907,7 @@ def company_leave_update(request, id):
         if form.is_valid():
             form.save()
             messages.info(request, _("Company leave updated successfully.."))
-            response = render( 
+            response = render(
                 request,
                 "leave/company-leave-update-form.html",
                 {"form": form, "id": id},
@@ -918,8 +917,7 @@ def company_leave_update(request, id):
                 + "<script>location. reload();</script>"
             )
     return render(
-        request, "leave/company-leave-update-form.html", {
-            "form": form, "id": id} 
+        request, "leave/company-leave-update-form.html", {"form": form, "id": id}
     )
 
 
@@ -949,7 +947,7 @@ def user_leave_request(request, id):
 
     Parameters:
     request (HttpRequest): The HTTP request object.
-    id : leave type id 
+    id : leave type id
 
     Returns:
     GET : return user leave request creation form template
@@ -957,40 +955,60 @@ def user_leave_request(request, id):
     """
     employee = request.user.employee_get
     form = UserLeaveRequestForm(employee=employee)
-    if request.method == 'POST':
+    if request.method == "POST":
         form = UserLeaveRequestForm(request.POST, request.FILES)
-        start_date = datetime.strptime(
-            request.POST.get('start_date'), "%Y-%m-%d")
-        end_date = datetime.strptime(request.POST.get('end_date'), "%Y-%m-%d")
-        start_date_breakdown = request.POST.get('start_date_breakdown')
-        end_date_breakdown = request.POST.get('end_date_breakdown')
-        if start_date == end_date:
-            if start_date_breakdown == 'full_day' and end_date_breakdown == 'full_day':
-                requested_days = 1
-            else:
-                requested_days = 0.5
-        else:
-            start_days = 0
-            end_days = 0   
-            if start_date_breakdown != 'full_day':
-                start_days = 0.5
-
-            if end_date_breakdown != 'full_day':
-                end_days = 0.5
-            requested_days = (end_date - start_date).days + start_days + end_days
+        start_date = datetime.strptime(request.POST.get("start_date"), "%Y-%m-%d")
+        end_date = datetime.strptime(request.POST.get("end_date"), "%Y-%m-%d")
+        start_date_breakdown = request.POST.get("start_date_breakdown")
+        end_date_breakdown = request.POST.get("end_date_breakdown")
         leave_type = LeaveType.objects.get(id=id)
         available_leave = AvailableLeave.objects.get(
-            employee_id=employee, leave_type_id=leave_type)
-        available_total_leave = available_leave.available_days + \
-            available_leave.carryforward_days
-        overlapping_requests = LeaveRequest.objects.filter(employee_id=employee,
-                                                           start_date__lte=end_date, end_date__gte=start_date
-                                                           )
+            employee_id=employee, leave_type_id=leave_type
+        )
+        available_total_leave = (
+            available_leave.available_days + available_leave.carryforward_days
+        )
+        requested_days = calculate_requested_days(
+            start_date, end_date, start_date_breakdown, end_date_breakdown
+        )
+        requested_dates = leave_requested_dates(start_date, end_date)
+        requested_dates = [date.date() for date in requested_dates]
+        holidays = Holiday.objects.all()
+        holiday_dates = holiday_dates_list(holidays)
+        company_leaves = CompanyLeave.objects.all()
+        company_leave_dates = company_leave_dates_list(company_leaves, start_date)
+        if (
+            leave_type.exclude_company_leave == "yes"
+            and leave_type.exclude_holiday == "yes"
+        ):
+            total_leaves = list(set(holiday_dates + company_leave_dates))
+            total_leave_count = sum(
+                requested_date in total_leaves for requested_date in requested_dates
+            )
+            requested_days = requested_days - total_leave_count
+        else:
+            holiday_count = 0
+            if leave_type.exclude_holiday == "yes":
+                for requested_date in requested_dates:
+                    if requested_date in holiday_dates:
+                        holiday_count += 1
+                requested_days = requested_days - holiday_count
+            if leave_type.exclude_company_leave == "yes":
+                company_leave_count = sum(
+                    requested_date in company_leave_dates
+                    for requested_date in requested_dates
+                )
+                requested_days = requested_days - company_leave_count
+
+        overlapping_requests = LeaveRequest.objects.filter(
+            employee_id=employee, start_date__lte=end_date, end_date__gte=start_date
+        ).exclude(status="cancelled")
         if overlapping_requests.exists():
-            form.add_error( 
-                None, _("There is already a leave request for this date range.."))
+            form.add_error(
+                None, _("There is already a leave request for this date range..")
+            )
         elif requested_days <= available_total_leave:
-            if form.is_valid():   
+            if form.is_valid():
                 leave_request = form.save(commit=False)
                 leave_request.leave_type_id = leave_type
                 leave_request.employee_id = employee
@@ -999,24 +1017,35 @@ def user_leave_request(request, id):
                     employee_id = leave_request.employee_id
                     leave_type_id = leave_request.leave_type_id
                     available_leave = AvailableLeave.objects.get(
-                        leave_type_id=leave_type_id, employee_id=employee_id)
+                        leave_type_id=leave_type_id, employee_id=employee_id
+                    )
                     if leave_request.requested_days > available_leave.available_days:
-                        leave = leave_request.requested_days - available_leave.available_days
-                        leave_request.approved_available_days = available_leave.available_days
+                        leave = (
+                            leave_request.requested_days
+                            - available_leave.available_days
+                        )
+                        leave_request.approved_available_days = (
+                            available_leave.available_days
+                        )
                         available_leave.available_days = 0
-                        available_leave.carryforward_days = available_leave.carryforward_days - leave
+                        available_leave.carryforward_days = (
+                            available_leave.carryforward_days - leave
+                        )
                         leave_request.approved_carryforward_days = leave
                     else:
-                        available_leave.available_days = available_leave.available_days - \
+                        available_leave.available_days = (
+                            available_leave.available_days
+                            - leave_request.requested_days
+                        )
+                        leave_request.approved_available_days = (
                             leave_request.requested_days
-                        leave_request.approved_available_days = leave_request.requested_days
+                        )
                     leave_request.status = "approved"
                     leave_request.created_by = employee
                     available_leave.save()
                 leave_request.save()
-                messages.success(request, _(
-                    'Leave request created successfully..'))
-                with contextlib.suppress(Exception): 
+                messages.success(request, _("Leave request created successfully.."))
+                with contextlib.suppress(Exception):
                     notify.send(
                         request.user.employee_get,
                         recipient=leave_request.employee_id.employee_work_info.reporting_manager_id.employee_user_id,
@@ -1025,12 +1054,17 @@ def user_leave_request(request, id):
                         redirect="/leave/user-request-view",
                     )
                 response = render(
-                    request, 'leave/user-request-form.html', {'form': form, 'id': id})
-                return HttpResponse(response.content.decode('utf-8') + '<script>location. reload();</script>')
+                    request, "leave/user-request-form.html", {"form": form, "id": id}
+                )
+                return HttpResponse(
+                    response.content.decode("utf-8")
+                    + "<script>location. reload();</script>"
+                )
         else:
             form.add_error(
-                None, _('You dont have enough leave days to make the request..'))
-    return render(request, 'leave/user-request-form.html', {'form': form, 'id': id})
+                None, _("You dont have enough leave days to make the request..")
+            )
+    return render(request, "leave/user-request-form.html", {"form": form, "id": id})
 
 
 @login_required
@@ -1053,22 +1087,77 @@ def user_request_update(request, id):
             form = UserLeaveRequestForm(instance=leave_request)
             if request.method == "POST":
                 form = UserLeaveRequestForm(
-                    request.POST, request.FILES, instance=leave_request)
+                    request.POST, request.FILES, instance=leave_request
+                )
                 if form.is_valid():
-                    form.save()
-                    messages.info(request, _("Leave request updated successfully.."))
-                    response = render(
-                        request, "leave/user-request-update.html", {
-                            "form": form, "id": id}
+                    leave_request = form.save(commit=False)
+                    start_date = leave_request.start_date
+                    end_date = leave_request.end_date
+                    start_date_breakdown = leave_request.start_date_breakdown
+                    end_date_breakdown = leave_request.end_date_breakdown
+                    leave_type = leave_request.leave_type_id
+                    employee = request.user.employee_get
+                    available_leave = AvailableLeave.objects.get(
+                        employee_id=employee, leave_type_id=leave_type
                     )
-                    return HttpResponse(
-                        response.content.decode("utf-8")
-                        + "<script>location. reload();</script>"
+                    available_total_leave = (
+                        available_leave.available_days
+                        + available_leave.carryforward_days
                     )
-            return render(request, "leave/user-request-update.html", {"form": form, "id": id})
+                    requested_days = calculate_requested_days(
+                        start_date, end_date, start_date_breakdown, end_date_breakdown
+                    )
+                    requested_dates = leave_requested_dates(start_date, end_date)
+                    holidays = Holiday.objects.all()
+                    holiday_dates = holiday_dates_list(holidays)
+                    company_leaves = CompanyLeave.objects.all()
+                    company_leave_dates = company_leave_dates_list(company_leaves, start_date)
+                    if (
+                        leave_type.exclude_company_leave == "yes"
+                        and leave_type.exclude_holiday == "yes"
+                    ):
+                        total_leaves = list(set(holiday_dates + company_leave_dates))
+                        total_leave_count = sum(
+                            requested_date in total_leaves for requested_date in requested_dates
+                        )
+                        requested_days = requested_days - total_leave_count
+                    else:
+                        holiday_count = 0
+                        if leave_type.exclude_holiday == "yes":
+                            for requested_date in requested_dates:
+                                if requested_date in holiday_dates:
+                                    holiday_count += 1
+                            requested_days = requested_days - holiday_count
+                        if leave_type.exclude_company_leave == "yes":
+                            company_leave_count = sum(
+                                requested_date in company_leave_dates
+                                for requested_date in requested_dates
+                            )
+                            requested_days = requested_days - company_leave_count
+                    if requested_days <= available_total_leave:
+                        leave_request.save()
+                        messages.info(
+                            request, _("Leave request updated successfully..")
+                        )
+                        response = render(
+                            request,
+                            "leave/user-request-update.html",
+                            {"form": form, "id": id},
+                        )
+                        return HttpResponse(
+                            response.content.decode("utf-8")
+                            + "<script>location. reload();</script>"
+                        )
+                    else:
+                        form.add_error(
+                            None,
+                            _("You dont have enough leave days to make the request.."),
+                        )
+            return render(
+                request, "leave/user-request-update.html", {"form": form, "id": id}
+            )
     except Exception as e:
         messages.error(request, _("User has no leave request.."))
-        
 
 
 @login_required
@@ -1091,8 +1180,7 @@ def user_request_delete(request, id):
             return redirect(user_request_view)
     except Exception as e:
         messages.error(request, _("User has no leave request.."))
-        return redirect('/')
-        
+        return redirect("/")
 
 
 @login_required
@@ -1118,14 +1206,13 @@ def user_leave_view(request):
             "leave/user-leave-view.html",
             {
                 "user_leaves": page_obj,
-                "form": assigned_leave_filter.form,      
+                "form": assigned_leave_filter.form,
                 "pd": previous_data,
             },
         )
     except Exception:
         messages.error(request, _("User is not an employee.."))
-        return redirect('/')
-
+        return redirect("/")
 
 
 @login_required
@@ -1150,11 +1237,11 @@ def user_leave_filter(request):
         return render(
             request,
             "leave/user_leave/user-leave.html",
-            {"user_leaves": page_obj, "pd": previous_data}, 
+            {"user_leaves": page_obj, "pd": previous_data},
         )
     except Exception as e:
         messages.error(request, _("User is not an employee.."))
-        return redirect('/')
+        return redirect("/")
 
 
 @login_required
@@ -1186,9 +1273,7 @@ def user_request_view(request):
         )
     except Exception as e:
         messages.error(request, _("User is not an employee.."))
-        return redirect('/')
-
-
+        return redirect("/")
 
 
 @login_required
@@ -1217,8 +1302,7 @@ def user_request_filter(request):
         )
     except Exception as e:
         messages.error(request, _("User is not an employee.."))
-        return redirect('/')
-            
+        return redirect("/")
 
 
 @login_required
@@ -1237,12 +1321,11 @@ def user_request_one(request, id):
     try:
         if request.user.employee_get == leave_request.employee_id:
             return render(
-                request, "leave/user-request-one.html", {
-                    "leave_request": leave_request}
+                request, "leave/user-request-one.html", {"leave_request": leave_request}
             )
     except Exception as e:
-        messages.error(request, _('User has no leave request..'))
-        return redirect('/')
+        messages.error(request, _("User has no leave request.."))
+        return redirect("/")
 
 
 @login_required

@@ -8,7 +8,6 @@ today = datetime.now()
 def leave_reset():      
     from leave.models import LeaveType
     leave_types = LeaveType.objects.filter(reset=True)
-
     #Looping through filtered leave types with reset is true
     for leave_type in leave_types:
         reset_based = leave_type.reset_based
@@ -30,7 +29,6 @@ def leave_reset():
             if reset_day == "last day":
                 reset_day = calendar.monthrange(today.year, int(reset_month))[1]
             reset_date = date(today.year,int(reset_month),int(reset_day))
-
         #Checking that reset date is today
         if reset_date == today.date():     
 
@@ -70,7 +68,7 @@ def leave_reset():
                     available_leave.carryforward_days = 0
 
                 available_leave.available_days = leave_type.total_days
-                available_leave.extra_days = leave_type.exceed_days
+                # available_leave.carryforward_days = leave_type.exceed_day
                 available_leave.save()   
 
 
