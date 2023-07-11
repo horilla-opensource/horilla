@@ -18,7 +18,7 @@ from employee.models import Employee
 
 def strtime_seconds(time):
     """
-    this method is used reconvert time in H:M formate string back to seconds and return it
+    this method is used to reconvert time in H:M formate string back to seconds and return it
     args:
         time : time in H:M format
     """
@@ -27,7 +27,8 @@ def strtime_seconds(time):
 
 
 def format_time(seconds):
-    """this method is used to formate seconds to H:M and return it
+    """
+    This method is used to formate seconds to H:M and return it
     args:
         seconds : seconds
     """
@@ -121,26 +122,40 @@ class Attendance(models.Model):
     attendance_day = models.ForeignKey(
         EmployeeShiftDay, on_delete=models.DO_NOTHING, null=True
     )
-    attendance_clock_in = models.TimeField(null=True)
-    attendance_clock_in_date = models.DateField(null=True)
-    attendance_clock_out = models.TimeField(
-        null=True,
+    attendance_clock_in = models.TimeField(
+        null=True, verbose_name="Check-in", help_text="First Check-in Time"
     )
-    attendance_clock_out_date = models.DateField(null=True)
+    attendance_clock_in_date = models.DateField(null=True, verbose_name="Check-in date")
+    attendance_clock_out = models.TimeField(
+        null=True, verbose_name="check-out", help_text="Last Check-out Time"
+    )
+    attendance_clock_out_date = models.DateField(
+        null=True, verbose_name="Check-out date"
+    )
     attendance_worked_hour = models.CharField(
-        null=True, default="00:00", max_length=10, validators=[validate_time_format]
+        null=True,
+        default="00:00",
+        max_length=10,
+        validators=[validate_time_format],
+        verbose_name="At work",
     )
     minimum_hour = models.CharField(
         max_length=10, default="00:00", validators=[validate_time_format]
     )
     attendance_overtime = models.CharField(
-        default="00:00", validators=[validate_time_format], max_length=10
+        default="00:00",
+        validators=[validate_time_format],
+        max_length=10,
+        verbose_name="Overtime",
     )
-    attendance_overtime_approve = models.BooleanField(default=False)
+    attendance_overtime_approve = models.BooleanField(
+        default=False, verbose_name="Overtime approved"
+    )
     attendance_validated = models.BooleanField(default=False)
     at_work_second = models.IntegerField(null=True, blank=True)
     overtime_second = models.IntegerField(null=True, blank=True)
     approved_overtime_second = models.IntegerField(default=0)
+    objects = models.Manager()
 
     class Meta:
         """
@@ -163,8 +178,15 @@ class Attendance(models.Model):
             {self.employee_id.employee_last_name} - {self.attendance_date}"
 
     def save(self, *args, **kwargs):
-        self.at_work_second = strtime_seconds(self.attendance_worked_hour)
-        self.overtime_second = strtime_seconds(self.attendance_overtime)
+        minimum_hour = self.minimum_hour
+        self_at_work = self.attendance_worked_hour
+        self.attendance_overtime = format_time(
+            max(0, (strtime_seconds(self_at_work) - strtime_seconds(minimum_hour)))
+        )
+        self_overtime = self.attendance_overtime
+
+        self.at_work_second = strtime_seconds(self_at_work)
+        self.overtime_second = strtime_seconds(self_overtime)
         self.attendance_day = EmployeeShiftDay.objects.get(
             day=self.attendance_date.strftime("%A").lower()
         )
@@ -177,7 +199,7 @@ class Attendance(models.Model):
             overtime = self.overtime_second
             if overtime > cutoff_seconds:
                 self.overtime_second = cutoff_seconds
-                self.attendance_overtime = format_time(cutoff_seconds)
+                self_overtime = format_time(cutoff_seconds)
 
         if self.pk is not None:
             # Get the previous values of the boolean field
@@ -265,15 +287,13 @@ class Attendance(models.Model):
         if self.attendance_clock_in_date < self.attendance_date:
             raise ValidationError(
                 {
-                    "attendance_clock_in_date": \
-                        "Attendance check-in date never smaller than attendance date"
+                    "attendance_clock_in_date": "Attendance check-in date never smaller than attendance date"
                 }
             )
         if self.attendance_clock_out_date < self.attendance_clock_in_date:
             raise ValidationError(
                 {
-                    "attendance_clock_out_date": \
-                        "Attendance check-out date never smaller than attendance check-in date"
+                    "attendance_clock_out_date": "Attendance check-out date never smaller than attendance check-in date"
                 }
             )
         if self.attendance_clock_out_date >= today:
@@ -281,9 +301,6 @@ class Attendance(models.Model):
                 raise ValidationError(
                     {"attendance_clock_out": "Check out time not allow in the future"}
                 )
-        print("----------------------")
-        print(now)
-        print("----------------------")
 
 
 class AttendanceOverTime(models.Model):

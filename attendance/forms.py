@@ -20,6 +20,7 @@ class YourForm(forms.Form):
         # Custom validation logic goes here
         pass
 """
+from typing import Any, Dict
 import uuid, datetime
 from calendar import month_name
 from django import forms
@@ -34,6 +35,7 @@ from attendance.models import (
     AttendanceActivity,
     AttendanceLateComeEarlyOut,
     AttendanceValidationCondition,
+    strtime_seconds,
 )
 
 
@@ -141,6 +143,20 @@ class AttendanceUpdateForm(ModelForm):
         table_html = render_to_string("attendance_form.html", context)
         return table_html
 
+    def clean(self) -> Dict[str, Any]:
+        super().clean()
+        overtime = strtime_seconds(self.cleaned_data["attendance_overtime"])
+        minimum_hour = strtime_seconds(self.cleaned_data["minimum_hour"])
+        at_work = strtime_seconds(self.cleaned_data["attendance_worked_hour"])
+        if overtime > 0 and (at_work - minimum_hour) != overtime:
+            raise ValidationError(
+                {
+                    "attendance_overtime": "OT will calculate automatically, So set it to 00:00 or \
+                        manually add the OT"
+                }
+            )
+        return
+
 
 class AttendanceForm(ModelForm):
     """
@@ -149,6 +165,7 @@ class AttendanceForm(ModelForm):
 
     employee_id = forms.ModelMultipleChoiceField(
         queryset=Employee.objects.filter(employee_work_info__isnull=False),
+        label="Employees",
     )
 
     class Meta:
@@ -179,9 +196,7 @@ class AttendanceForm(ModelForm):
             "attendance_clock_out_date": datetime.datetime.today()
             .date()
             .strftime("%Y-%m-%d"),
-            "attendance_clock_out": datetime.datetime.today()
-            .time()
-            .strftime("%H:%M"),
+            "attendance_clock_out": datetime.datetime.today().time().strftime("%H:%M"),
         }
         if instance := kwargs.get("instance"):
             # django forms not showing value inside the date, time html element.
@@ -225,6 +240,20 @@ class AttendanceForm(ModelForm):
         context = {"form": self}
         table_html = render_to_string("attendance_form.html", context)
         return table_html
+
+    def clean(self) -> Dict[str, Any]:
+        super().clean()
+        overtime = strtime_seconds(self.cleaned_data["attendance_overtime"])
+        minimum_hour = strtime_seconds(self.cleaned_data["minimum_hour"])
+        at_work = strtime_seconds(self.cleaned_data["attendance_worked_hour"])
+        if overtime > 0 and (at_work - minimum_hour) != overtime:
+            raise ValidationError(
+                {
+                    "attendance_overtime": "OT will calculate automatically, So set it to 00:00 or \
+                        manually add the OT"
+                }
+            )
+        return
 
     def clean_employee_id(self):
         """

@@ -5,17 +5,17 @@
     <div class="row">
       <div class="col-12">{{form.non_field_errors}}</div>
 
+      {{form.non_field_errors}}
       {% for field in form.visible_fields %}
       {% if field.field.widget|is_select_multiple %}
       <label
-          class="oh-label"
-          for="id_{{ field.name }}"
-          title="{{ field.help_text|safe }}"
-          >{{ field.label }}</label
-        >
+      class="oh-label"
+      for="id_{{ field.name }}"
+      title="{{ field.help_text|safe }}"
+      >{{ field.label }}</label
+      >
       {{ field|add_class:"form-control" }}
-      {{field.errors}}
-
+      
       {% else %}
       <div class="col-12 col-md-6">
         <label
@@ -23,15 +23,16 @@
           for="id_{{ field.name }}"
           title="{{ field.help_text|safe }}"
           >{{ field.label }}</label
-        >
-        {% if field.field.widget.input_type == "checkbox" %}
-        <div class="oh-switch" style="width: 30px">
-          {{ field|add_class:"oh-switch__checkbox" }}
-        </div>
-        {% else %} 
-        {{ field|add_class:"form-control" }} 
-        {% endif %}
-        {{field.errors}}
+          >
+          {% if field.field.widget.input_type == "checkbox" %}
+          <div class="oh-switch" style="width: 30px">
+            {{ field|add_class:"oh-switch__checkbox" }}
+
+          </div>
+          {% else %} 
+          {{ field|add_class:"form-control" }} 
+          {% endif %}
+          {{field.errors}}
       </div>
       {% endif %}
       {% endfor %}
