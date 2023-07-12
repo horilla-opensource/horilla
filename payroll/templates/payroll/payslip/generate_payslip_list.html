@@ -102,17 +102,17 @@
                   value="{{data.employee.id}}"
                 />
                 <input
-                  type="text"
+                  type="date"
                   name="start_date"
                   hidden
-                  value="{{start_date}}"
+                  value="{{data.start_date|date:"Y-m-d"}}"
                   id=""
                 />
                 <input
-                  type="text"
+                  type="date"
                   name="end_date"
                   hidden
-                  value="{{end_date}}"
+                  value="{{data.end_date|date:"Y-m-d"}}"
                   id=""
                 />
                 <button type="submit" class="oh-btn oh-btn--light-bkg w-100">
