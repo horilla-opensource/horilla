@@ -65,6 +65,7 @@ class Recruitment(models.Model):
     end_date = models.DateField(blank=True, null=True)
     closed = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
+    objects = models.Manager()
 
     class Meta:
         """
@@ -129,6 +130,7 @@ class Stage(models.Model):
     )
     sequence = models.IntegerField(null=True)
     is_active = models.BooleanField(default=True)
+    objects = models.Manager()
 
     def __str__(self):
         return f"{self.stage}"
@@ -202,6 +204,8 @@ class Candidate(models.Model):
     history = HistoricalRecords(
         related_name="candidate_history",
     )
+    sequence = models.IntegerField(null=True,default=0)
+    objects = models.Manager()
 
     def __str__(self):
         return f"{self.name}"
@@ -233,6 +237,7 @@ class Candidate(models.Model):
             ("view_history", "View Candidate History"),
             ("archive_candidate", "Archive Candidate"),
         )
+        ordering = ["sequence"]
 
 
 class StageNote(models.Model):
@@ -245,6 +250,7 @@ class StageNote(models.Model):
     description = models.TextField()
     stage_id = models.ForeignKey(Stage, on_delete=models.CASCADE)
     updated_by = models.ForeignKey(Employee, on_delete=models.CASCADE)
+    objects = models.Manager()
 
     def __str__(self) -> str:
         return f"{self.description}"

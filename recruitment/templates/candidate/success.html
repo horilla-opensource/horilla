@@ -9,15 +9,6 @@
     <link rel="stylesheet" href="{% static '/build/css/style.min.css' %}" />
   </head>
   <body>
-    {% if messages %}
-    <div class="oh-alert-container">
-      {% for message in messages %}
-      <div class="oh-alert oh-alert--animated {{message.tags}}">
-        {{ message }}
-      </div>
-      {% endfor %}
-    </div>
-    {% endif %}
     <div id="main">
       <main class="oh-onboarding">
         <div class="oh-onboarding-card oh-onboarding-card--top-bar">
@@ -44,10 +35,10 @@
               <div class="oh-onboarding__title-container">
                 <h1 class="oh-onboarding__title">Registration Success</h1>
                 <p class="oh-onboarding__content">
-                  Your details have been registered successfully. Feel free to
-                  close this window.
+                  Your details have been registered successfully. Feel
+                  free to close this window.
                 </p>
-                <a href="{% url 'application-form' %}" class="oh-btn oh-btn--secondary">Submit another response</a>
+                <!-- <a href="#" class="oh-btn oh-btn--secondary">Return home</a> -->
               </div>
             </div>
           </div>

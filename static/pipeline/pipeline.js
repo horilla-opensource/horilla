@@ -99,6 +99,9 @@ function getCookie(name) {
   
   $("[data-container='candidate']").on('DOMNodeInserted', function (e) { 
     var candidate = $(e.target);
+    console.log("--------------------------------------------------------------");
+    console.log(candidate);
+    console.log("--------------------------------------------------------------");
     var stageId = $(this).attr('data-stage-id');
     candidateId = $(candidate).attr('data-candidate-id');
     if (candidateId != null) {  

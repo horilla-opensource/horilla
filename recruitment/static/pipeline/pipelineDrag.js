@@ -96,9 +96,38 @@ function getCookie(name) {
     window['stages'] = []
   
   });
+
+  function countSequence(element) {
+    // let childs = element.parent().find(".change-cand")
+    let childs = $(".change-cand")
+    let data = {}
+    $.each(childs, function (index, elem) { 
+       $(elem).attr("data-sequence", index + 1);
+       data[elem.getAttribute("data-candidate-id")] = index + 1
+    });
+    $.ajax({
+      type: "post",
+      url: "/recruitment/candidate-sequence-update",
+      data: {
+        csrfmiddlewaretoken:getCookie("csrftoken"),
+        sequenceData:JSON.stringify(data),
+      },
+      dataType: "dataType",
+      success: function (response) {
+        $("#ohMessages").append(`
+            <div class="oh-alert-container">
+                  <div class="oh-alert oh-alert--animated oh-alert--${response.type}">
+                    ${response.message}
+            </div>`);
+      }
+    });
+
+  }
   
   $("[data-container='candidate']").on('DOMNodeInserted', function (e) { 
     var candidate = $(e.target);
+    setInterval(countSequence(candidate),500)
+    // countSequence(candidate)
     var stageId = $(this).attr('data-stage-id');
     candidateId = $(candidate).attr('data-candidate-id');
     if (candidateId != null) {  
@@ -111,6 +140,8 @@ function getCookie(name) {
          },
          success: function (response) {
            var candidateId = $(this).attr('data-candidate-id');
+            setInterval(countSequence(candidate),500)
+
           //  console.log(response);
            $("#ohMessages").append(`
             <div class="oh-alert-container">
