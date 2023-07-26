@@ -30,7 +30,7 @@ class ModelForm(forms.ModelForm):
             if isinstance(
                 input_widget, (forms.NumberInput, forms.EmailInput, forms.TextInput)
             ):
-                label = _(field.label.title())
+                label = _(field.label)
                 input_widget.attrs.update(
                     {"class": "oh-input w-100", "placeholder": label}
                 )
@@ -51,7 +51,7 @@ class ModelForm(forms.ModelForm):
                 input_widget.attrs.update(
                     {
                         "class": "oh-input w-100",
-                        "placeholder": field.label,
+                        "placeholder": label,
                         "rows": 2,
                         "cols": 40,
                     }

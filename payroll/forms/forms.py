@@ -2,6 +2,7 @@
 forms.py
 """
 from django import forms
+from django.utils.translation import gettext_lazy as trans
 from django.template.loader import render_to_string
 from payroll.models.models import WorkRecord
 from payroll.models.models import Contract
@@ -22,18 +23,20 @@ class ModelForm(forms.ModelForm):
             elif isinstance(
                 widget, (forms.NumberInput, forms.EmailInput, forms.TextInput)
             ):
+                label = trans(field.label)
                 field.widget.attrs.update(
-                    {"class": "oh-input w-100", "placeholder": field.label}
+                    {"class": "oh-input w-100", "placeholder": label}
                 )
             elif isinstance(widget, (forms.Select,)):
                 field.widget.attrs.update(
                     {"class": "oh-select oh-select-2 select2-hidden-accessible"}
                 )
             elif isinstance(widget, (forms.Textarea)):
+                label = trans(field.label)
                 field.widget.attrs.update(
                     {
                         "class": "oh-input w-100",
-                        "placeholder": field.label,
+                        "placeholder": label,
                         "rows": 2,
                         "cols": 40,
                     }
@@ -52,7 +55,7 @@ class ContractForm(ModelForm):
     """
     ContactForm
     """
-    verbose_name = "Contract"
+    verbose_name = trans("Contract")
     class Meta:
         """
         Meta class for additional options

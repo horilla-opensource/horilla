@@ -22,10 +22,10 @@
   <div class="oh-main__titlebar oh-main__titlebar--right">
     <h1 class="oh-main__titlebar-title fw-bold">
       <select name="status" class="oh-select" id="id_status">
-        <option value="draft" selected>Draft</option>
-        <option value="review_ongoing">Review Ongoing</option>
-        <option value="confirmed">Confirmed</option>
-        <option value="paid">Paid</option>
+        <option value="draft" selected>{% trans "Draft" %}</option>
+        <option value="review_ongoing">{% trans "Review Ongoing" %}</option>
+        <option value="confirmed">{% trans "Confirmed" %}</option>
+        <option value="paid">{% trans "Paid" %}</option>
       </select>
     </h1>
   </div>
@@ -102,17 +102,17 @@
                   value="{{data.employee.id}}"
                 />
                 <input
-                  type="date"
+                  type="text"
                   name="start_date"
                   hidden
-                  value="{{data.start_date|date:"Y-m-d"}}"
+                  value="{{start_date}}"
                   id=""
                 />
                 <input
-                  type="date"
+                  type="text"
                   name="end_date"
                   hidden
-                  value="{{data.end_date|date:"Y-m-d"}}"
+                  value="{{end_date}}"
                   id=""
                 />
                 <button type="submit" class="oh-btn oh-btn--light-bkg w-100">

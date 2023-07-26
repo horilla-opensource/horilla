@@ -5,6 +5,7 @@ of form fields and widgets for the corresponding models in the payroll managemen
 import uuid
 import datetime
 from django import forms
+from django.utils.translation import gettext_lazy as _
 from django.template.loader import render_to_string
 from base.forms import ModelForm
 from employee.models import Employee
@@ -21,7 +22,7 @@ class AllowanceForm(forms.ModelForm):
 
     load = forms.CharField(widget=widget.AllowanceConditionalVisibility, required=False)
     style = forms.CharField(required=False)
-    verbose_name = "Allowance"
+    verbose_name = _("Allowance")
 
     class Meta:
         """
@@ -63,7 +64,7 @@ class DeductionForm(forms.ModelForm):
 
     load = forms.CharField(widget=widget.DeductionConditionalVisibility, required=False)
     style = forms.CharField(required=False)
-    verbose_name = "Deduction"
+    verbose_name = _("Deduction")
 
 
     class Meta:

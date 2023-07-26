@@ -9,6 +9,7 @@ import math
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.text import format_lazy
+from django.utils.translation import gettext_lazy as _
 
 from payroll.models.models import FilingStatus
 
@@ -36,11 +37,13 @@ class TaxBracket(models.Model):
     """
 
     filing_status_id = models.ForeignKey(
-        FilingStatus, on_delete=models.CASCADE, verbose_name="Filing Status"
+        FilingStatus,
+        on_delete=models.CASCADE,
+        verbose_name=_("Filing status"),
     )
-    min_income = models.FloatField(null=False, blank=False)
-    max_income = models.FloatField(null=True, blank=True)
-    tax_rate = models.FloatField(null=False, blank=False, default=0.0)
+    min_income = models.FloatField(null=False, blank=False,verbose_name=_("Min. Income"))
+    max_income = models.FloatField(null=True, blank=True,verbose_name=_("Max. Income"))
+    tax_rate = models.FloatField(null=False, blank=False, default=0.0,verbose_name=_("Tax Rate"))
 
     objects = models.Manager()
 
@@ -111,6 +114,6 @@ class FederalTax(models.Model):
     """
 
     filing_status_id = models.ForeignKey(
-        FilingStatus, models.CASCADE, verbose_name="Filing Status"
+        FilingStatus, models.CASCADE, verbose_name=_("Filing Status")
     )
     taxable_gross = models.IntegerField(null=False, blank=False)

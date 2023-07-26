@@ -1,11 +1,12 @@
 {% extends 'index.html' %}
+{% load i18n %}
 
 {% block content %}
 <div class="oh-wrapper">
     <form action="" method="post">
         {% csrf_token %}
         {{contract_form.as_p}}
-        <button>save</button>
+        <button>{% trans "save" %}</button>
     </form>
         
     

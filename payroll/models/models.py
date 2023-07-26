@@ -7,6 +7,7 @@ from django import forms
 from django.db import models
 from django.dispatch import receiver
 from django.core.exceptions import ValidationError
+from django.utils.translation import gettext_lazy as _
 from django.db.models.signals import pre_save, pre_delete
 from django.http import QueryDict
 from employee.models import EmployeeWorkInformation
@@ -60,19 +61,27 @@ class FilingStatus(models.Model):
     """
 
     based_on_choice = [
-        ("basic_pay", "Basic Pay"),
-        ("gross_pay", "Gross Pay"),
-        ("taxable_gross_pay", "Taxable Gross Pay"),
+        ("basic_pay", _("Basic Pay")),
+        ("gross_pay", _("Gross Pay")),
+        ("taxable_gross_pay", _("Taxable Gross Pay")),
     ]
-    filing_status = models.CharField(max_length=30, blank=False)
+    filing_status = models.CharField(
+        max_length=30,
+        blank=False,
+        verbose_name=_("Filing status"),
+    )
     based_on = models.CharField(
         max_length=255,
         choices=based_on_choice,
         null=False,
         blank=False,
         default="taxable_gross_pay",
+        verbose_name=_("Based on"),
     )
-    description = models.TextField(blank=True)
+    description = models.TextField(
+        blank=True,
+        verbose_name=_("Description"),
+    )
 
     objects = models.Manager()
 
@@ -86,37 +95,41 @@ class Contract(models.Model):
     """
 
     COMPENSATION_CHOICES = (
-        ("salary", "Salary"),
-        ("hourly", "Hourly"),
-        ("commission", "Commission"),
+        ("salary", _("Salary")),
+        ("hourly", _("Hourly")),
+        ("commission", _("Commission")),
     )
 
     PAY_FREQUENCY_CHOICES = (
-        ("weekly", "Weekly"),
-        ("monthly", "Monthly"),
-        ("semi_monthly", "Semi-Monthly"),
+        ("weekly", _("Weekly")),
+        ("monthly", _("Monthly")),
+        ("semi_monthly", _("Semi-Monthly")),
     )
-    WAGE_CHOICES = (("hourly", "Hourly"), ("daily", "Daily"), ("monthly", "Monthly"))
+    WAGE_CHOICES = (
+        ("hourly", _("Hourly")),
+        ("daily", _("Daily")),
+        ("monthly", _("Monthly")),
+    )
     CONTRACT_STATUS_CHOICES = (
-        ("draft", "Draft"),
-        ("active", "Active"),
-        ("expired", "Expired"),
-        ("terminated", "Terminated"),
+        ("draft", _("Draft")),
+        ("active", _("Active")),
+        ("expired", _("Expired")),
+        ("terminated", _("Terminated")),
     )
 
-    contract_name = models.CharField(max_length=250, help_text="Contract Title")
+    contract_name = models.CharField(max_length=250, help_text=_("Contract Title"))
     employee_id = models.ForeignKey(
         Employee,
         on_delete=models.CASCADE,
         related_name="contract_set",
-        verbose_name="Employee",
+        verbose_name=_("Employee"),
     )
     contract_start_date = models.DateField()
     contract_end_date = models.DateField(null=True, blank=True)
     wage_type = models.CharField(
         choices=WAGE_CHOICES, max_length=250, default="monthly"
     )
-    wage = models.FloatField(verbose_name="Basic Salary", null=True, default=0)
+    wage = models.FloatField(verbose_name=_("Basic Salary"), null=True, default=0)
     calculate_daily_leave_amount = models.BooleanField(default=True)
     deduction_for_one_leave_amount = models.FloatField(null=True, blank=True, default=0)
     deduct_leave_from_basic_pay = models.BooleanField(default=True)
@@ -181,7 +194,7 @@ class Contract(models.Model):
         if self.contract_end_date is not None:
             if self.contract_end_date < self.contract_start_date:
                 raise ValidationError(
-                    {"contract_end_date": "End date must be greater than start date"}
+                    {"contract_end_date": _("End date must be greater than start date")}
                 )
         if (
             self.contract_status == "active"
@@ -193,7 +206,7 @@ class Contract(models.Model):
             >= 1
         ):
             raise forms.ValidationError(
-                "An active contract already exists for this employee."
+                _("An active contract already exists for this employee.")
             )
         if (
             self.contract_status == "draft"
@@ -205,14 +218,14 @@ class Contract(models.Model):
             >= 1
         ):
             raise forms.ValidationError(
-                "A draft contract already exists for this employee."
+                _("A draft contract already exists for this employee.")
             )
 
         if self.wage_type in ["daily", "monthly"]:
             if not self.calculate_daily_leave_amount:
                 if self.deduction_for_one_leave_amount is None:
                     raise ValidationError(
-                        {"deduction_for_one_leave_amount": "This field is required"}
+                        {"deduction_for_one_leave_amount": _("This field is required")}
                     )
 
     def save(self, *args, **kwargs):
@@ -245,7 +258,7 @@ class Contract(models.Model):
             >= 1
         ):
             raise forms.ValidationError(
-                "An active contract already exists for this employee."
+                _("An active contract already exists for this employee.")
             )
 
         if (
@@ -258,7 +271,7 @@ class Contract(models.Model):
             >= 1
         ):
             raise forms.ValidationError(
-                "A draft contract already exists for this employee."
+                _("A draft contract already exists for this employee.")
             )
 
         super().save(*args, **kwargs)
@@ -278,18 +291,18 @@ class WorkRecord(models.Model):
     """
 
     choices = [
-        ("FDP", "Present"),
-        ("HDP", "Half Day Present"),
-        ("ABS", "Absent"),
-        ("HD", "Holiday/Company Leave"),
-        ("CONF", "Conflict"),
-        ("DFT", "Draft"),
+        ("FDP", _("Present")),
+        ("HDP", _("Half Day Present")),
+        ("ABS", _("Absent")),
+        ("HD", _("Holiday/Company Leave")),
+        ("CONF", _("Conflict")),
+        ("DFT", _("Draft")),
     ]
 
     record_name = models.CharField(max_length=250, null=True, blank=True)
     work_record_type = models.CharField(max_length=5, null=True, choices=choices)
     employee_id = models.ForeignKey(
-        Employee, on_delete=models.CASCADE, verbose_name="Employee"
+        Employee, on_delete=models.CASCADE, verbose_name=_("Employee")
     )
     date = models.DateField(null=True, blank=True)
     at_work = models.CharField(
@@ -330,7 +343,7 @@ class WorkRecord(models.Model):
     def clean(self):
         super().clean()
         if not 0.0 <= self.day_percentage <= 1.0:
-            raise ValidationError("Day percentage must be between 0.0 and 1.0")
+            raise ValidationError(_("Day percentage must be between 0.0 and 1.0"))
 
     def __str__(self):
         return (
@@ -364,9 +377,9 @@ class OverrideAttendance(Attendance):
             or instance.attendance_validated is False
             else status
         )
-        message = "Validate the attendance" if status == "CONF" else "Validated"
+        message = _("Validate the attendance") if status == "CONF" else _("Validated")
         message = (
-            "Incomplete minimum hour"
+            _("Incomplete minimum hour")
             if status == "HDP" and min_hour_second / 2 > at_work_second
             else message
         )
@@ -470,7 +483,7 @@ class OverrideLeaveRequest(LeaveRequest):
                 work_entry.work_record_type = status
                 work_entry.date = date
                 work_entry.message = (
-                    "Validated" if status == "ABS" else "Half day need to validate"
+                    "Validated" if status == "ABS" else _("Half day need to validate")
                 )
                 work_entry.save()
 
@@ -513,9 +526,9 @@ def rate_validator(value):
     Percentage validator
     """
     if value < 0:
-        raise ValidationError("Rate must be greater than 0")
+        raise ValidationError(_("Rate must be greater than 0"))
     if value > 100:
-        raise ValidationError("Rate must be less than 100")
+        raise ValidationError(_("Rate must be less than 100"))
 
 
 def min_zero(value):
@@ -523,29 +536,37 @@ def min_zero(value):
     The minimum value zero validation method
     """
     if value < 0:
-        raise ValidationError("Value must be greater than zero")
+        raise ValidationError(_("Value must be greater than zero"))
 
 
 CONDITION_CHOICE = [
-    ("equal", "Equal (==)"),
-    ("notequal", "Not Equal (!=)"),
-    ("lt", "Less Than (<)"),
-    ("gt", "Greater Than (>)"),
-    ("le", "Less Than or Equal To (<=)"),
-    ("ge", "Greater Than or Equal To (>=)"),
-    ("icontains", "Contains"),
+    ("equal", _("Equal (==)")),
+    ("notequal", _("Not Equal (!=)")),
+    ("lt", _("Less Than (<)")),
+    ("gt", _("Greater Than (>)")),
+    ("le", _("Less Than or Equal To (<=)")),
+    ("ge", _("Greater Than or Equal To (>=)")),
+    ("icontains", _("Contains")),
+]
+IF_CONDITION_CHOICE = [
+    ("equal", _("Equal (==)")),
+    ("notequal", _("Not Equal (!=)")),
+    ("lt", _("Less Than (<)")),
+    ("gt", _("Greater Than (>)")),
+    ("le", _("Less Than or Equal To (<=)")),
+    ("ge", _("Greater Than or Equal To (>=)")),
 ]
 FIELD_CHOICE = [
-    ("children", "Children"),
-    ("marital_status", "Marital Status"),
-    ("experience", "Experience"),
-    ("employee_work_info__experience", "Company Experience"),
-    ("gender", "Gender"),
-    ("country", "Country"),
-    ("state", "State"),
-    ("contract_set__pay_frequency", "Pay Frequency"),
-    ("contract_set__wage_type", "Wage Type"),
-    ("contract_set__department__department", "Department on Contract"),
+    ("children", _("Children")),
+    ("marital_status", _("Marital Status")),
+    ("experience", _("Experience")),
+    ("employee_work_info__experience", _("Company Experience")),
+    ("gender", _("Gender")),
+    ("country", _("Country")),
+    ("state", _("State")),
+    ("contract_set__pay_frequency", _("Pay Frequency")),
+    ("contract_set__wage_type", _("Wage Type")),
+    ("contract_set__department__department", _("Department on Contract")),
 ]
 
 
@@ -555,57 +576,64 @@ class Allowance(models.Model):
     """
 
     exceed_choice = [
-        ("ignore", "Exclude the allowance"),
-        ("max_amount", "Provide max amount"),
+        ("ignore", _("Exclude the allowance")),
+        ("max_amount", _("Provide max amount")),
     ]
 
     based_on_choice = [
-        ("basic_pay", "Basic Pay"),
-        ("attendance", "Attendance"),
-        ("shift_id", "Shift"),
-        ("overtime", "Overtime"),
-        ("work_type_id", "Work Type"),
+        ("basic_pay", _("Basic Pay")),
+        ("attendance", _("Attendance")),
+        ("shift_id", _("Shift")),
+        ("overtime", _("Overtime")),
+        ("work_type_id", _("Work Type")),
     ]
 
     if_condition_choice = [
-        ("basic_pay", "Basic Pay"),
+        ("basic_pay", _("Basic Pay")),
     ]
     title = models.CharField(
-        max_length=255, null=False, blank=False, help_text="Title of the allowance"
+        max_length=255, null=False, blank=False, help_text=_("Title of the allowance")
     )
     one_time_date = models.DateField(
         null=True,
         blank=True,
-        help_text="The one-time allowance in which the allowance will apply to the payslips \
-            if the date between the payslip period",
+        help_text=_(
+            "The one-time allowance in which the allowance will apply to the payslips \
+            if the date between the payslip period"
+        ),
     )
     include_active_employees = models.BooleanField(
         default=False,
-        verbose_name="Include all active employees",
-        help_text="Target allowance to all active employees in the company",
+        verbose_name=_("Include all active employees"),
+        help_text=_("Target allowance to all active employees in the company"),
     )
     specific_employees = models.ManyToManyField(
         Employee,
-        verbose_name="Employees Specific",
+        verbose_name=_("Employees Specific"),
         blank=True,
         related_name="allowance_specific",
-        help_text="Target allowance to the specific employees",
+        help_text=_("Target allowance to the specific employees"),
     )
     exclude_employees = models.ManyToManyField(
         Employee,
-        verbose_name="Exclude Employees",
+        verbose_name=_("Exclude Employees"),
         related_name="allowance_excluded",
         blank=True,
-        help_text="To ignore the allowance to the employees when target them by all employees \
-            or through condition-based",
+        help_text=_(
+            "To ignore the allowance to the employees when target them by all employees \
+            or through condition-based"
+        ),
     )
     is_taxable = models.BooleanField(
-        default=True, help_text="This field is used to calculate the taxable allowances"
+        default=True,
+        help_text=_("This field is used to calculate the taxable allowances"),
     )
     is_condition_based = models.BooleanField(
         default=False,
-        help_text="This field is used to target allowance \
-        to the specific employees when the condition satisfies with the employee's information",
+        help_text=_(
+            "This field is used to target allowance \
+        to the specific employees when the condition satisfies with the employee's information"
+        ),
     )
     # If condition based
     field = models.CharField(
@@ -613,7 +641,7 @@ class Allowance(models.Model):
         choices=FIELD_CHOICE,
         null=True,
         blank=True,
-        help_text="The related field of the employees",
+        help_text=_("The related field of the employees"),
     )
     condition = models.CharField(
         max_length=255, choices=CONDITION_CHOICE, null=True, blank=True
@@ -622,17 +650,17 @@ class Allowance(models.Model):
         max_length=255,
         null=True,
         blank=True,
-        help_text="The value must be like the data stored in the database",
+        help_text=_("The value must be like the data stored in the database"),
     )
 
     is_fixed = models.BooleanField(
-        default=True, help_text="To specify, the allowance is fixed or not"
+        default=True, help_text=_("To specify, the allowance is fixed or not")
     )
     amount = models.FloatField(
         null=True,
         blank=True,
         validators=[min_zero],
-        help_text="Fixed amount for this allowance",
+        help_text=_("Fixed amount for this allowance"),
     )
     # If is fixed is false
     based_on = models.CharField(
@@ -641,7 +669,9 @@ class Allowance(models.Model):
         choices=based_on_choice,
         null=True,
         blank=True,
-        help_text="If the allowance is not fixed then specifies how the allowance provided",
+        help_text=_(
+            "If the allowance is not fixed then specifies how the allowance provided"
+        ),
     )
     rate = models.FloatField(
         null=True,
@@ -649,7 +679,7 @@ class Allowance(models.Model):
         validators=[
             rate_validator,
         ],
-        help_text="The percentage of based on",
+        help_text=_("The percentage of based on"),
     )
     # If based on attendance
     per_attendance_fixed_amount = models.FloatField(
@@ -657,7 +687,7 @@ class Allowance(models.Model):
         blank=True,
         default=0.00,
         validators=[min_zero],
-        help_text="The attendance fixed amount for one validated attendance",
+        help_text=_("The attendance fixed amount for one validated attendance"),
     )
     # If based on shift
     shift_id = models.ForeignKey(
@@ -665,48 +695,52 @@ class Allowance(models.Model):
         on_delete=models.DO_NOTHING,
         null=True,
         blank=True,
-        verbose_name="Shift",
+        verbose_name=_("Shift"),
     )
     shift_per_attendance_amount = models.FloatField(
         null=True,
         default=0.00,
         blank=True,
         validators=[min_zero],
-        help_text="The fixed amount for one validated attendance with that shift",
+        help_text=_("The fixed amount for one validated attendance with that shift"),
     )
     amount_per_one_hr = models.FloatField(
         null=True,
         default=0.00,
         blank=True,
         validators=[min_zero],
-        help_text="The fixed amount for one hour overtime that are validated \
-            and approved the overtime attendance",
+        help_text=_(
+            "The fixed amount for one hour overtime that are validated \
+            and approved the overtime attendance"
+        ),
     )
     work_type_id = models.ForeignKey(
         WorkType,
         on_delete=models.DO_NOTHING,
         null=True,
         blank=True,
-        verbose_name="Work Type",
+        verbose_name=_("Work Type"),
     )
     work_type_per_attendance_amount = models.FloatField(
         null=True,
         default=0.00,
         blank=True,
         validators=[min_zero],
-        help_text="The fixed amount for one validated attendance with that work type",
+        help_text=_(
+            "The fixed amount for one validated attendance with that work type"
+        ),
     )
     # for apply only
     has_max_limit = models.BooleanField(
         default=False,
-        verbose_name="Has max limit for allowance",
-        help_text="Limit the allowance amount",
+        verbose_name=_("Has max limit for allowance"),
+        help_text=_("Limit the allowance amount"),
     )
     maximum_amount = models.FloatField(
         null=True,
         blank=True,
         validators=[min_zero],
-        help_text="The maximum amount for the allowance",
+        help_text=_("The maximum amount for the allowance"),
     )
     maximum_unit = models.CharField(
         max_length=20,
@@ -715,7 +749,7 @@ class Allowance(models.Model):
         choices=[
             (
                 "month_working_days",
-                "For working days on month",
+                _("For working days on month"),
             ),
             # ("monthly_working_days", "For working days on month"),
         ],
@@ -725,15 +759,17 @@ class Allowance(models.Model):
         max_length=10,
         choices=if_condition_choice,
         default="basic_pay",
-        help_text="The pay head for the if condition",
+        help_text=_("The pay head for the if condition"),
     )
     if_condition = models.CharField(
         max_length=10,
-        choices=CONDITION_CHOICE,
+        choices=IF_CONDITION_CHOICE,
         default="gt",
-        help_text="Apply for those, if the pay-head conditions satisfy",
+        help_text=_("Apply for those, if the pay-head conditions satisfy"),
     )
-    if_amount = models.FloatField(default=0.00, help_text="The amount of the pay-head")
+    if_amount = models.FloatField(
+        default=0.00, help_text=_("The amount of the pay-head")
+    )
     objects = models.Manager()
 
     class Meta:
@@ -759,7 +795,7 @@ class Allowance(models.Model):
             "work_type_id",
             "work_type_per_attendance_amount",
         ]
-        verbose_name = "Allowance"
+        verbose_name = _("Allowance")
 
     def reset_based_on(self):
         """Reset the this fields when is_fixed attribute is true"""
@@ -788,27 +824,31 @@ class Allowance(models.Model):
         if self.is_condition_based:
             if not self.field or not self.value or not self.condition:
                 raise ValidationError(
-                    "If condition based, all fields (field, value, condition) must be filled."
+                    _(
+                        "If condition based, all fields (field, value, condition) must be filled."
+                    )
                 )
         if self.based_on == "attendance" and not self.per_attendance_fixed_amount:
             raise ValidationError(
                 {
-                    "based_on": "If based on is attendance, \
+                    "based_on": _(
+                        "If based on is attendance, \
                         then per attendance fixed amount must be filled."
+                    )
                 }
             )
         if self.based_on == "shift_id" and not self.shift_id:
-            raise ValidationError("If based on is shift, then shift must be filled.")
+            raise ValidationError(_("If based on is shift, then shift must be filled."))
         if self.based_on == "work_type_id" and not self.work_type_id:
             raise ValidationError(
-                "If based on is work type, then work type must be filled."
+                _("If based on is work type, then work type must be filled.")
             )
 
         if self.is_fixed and self.amount < 0:
-            raise ValidationError({"amount": "Amount should be greater than zero."})
+            raise ValidationError({"amount": _("Amount should be greater than zero.")})
 
         if self.has_max_limit and self.maximum_amount is None:
-            raise ValidationError({"maximum_amount": "This field is required"})
+            raise ValidationError({"maximum_amount": _("This field is required")})
 
         if not self.has_max_limit:
             self.maximum_amount = None
@@ -819,7 +859,7 @@ class Allowance(models.Model):
             self.amount = None
         if self.is_fixed:
             if self.amount is None:
-                raise ValidationError({"amount": "This field is required"})
+                raise ValidationError({"amount": _("This field is required")})
             self.reset_based_on()
 
     def __str__(self) -> str:
@@ -832,64 +872,73 @@ class Deduction(models.Model):
     """
 
     if_condition_choice = [
-        ("basic_pay", "Basic Pay"),
-        ("gross_pay", "Gross Pay"),
+        ("basic_pay", _("Basic Pay")),
+        ("gross_pay", _("Gross Pay")),
     ]
 
     based_on_choice = [
-        ("basic_pay", "Basic Pay"),
-        ("gross_pay", "Gross Pay"),
-        ("taxable_gross_pay", "Taxable Gross Pay"),
-        ("net_pay", "Net Pay"),
+        ("basic_pay", _("Basic Pay")),
+        ("gross_pay", _("Gross Pay")),
+        ("taxable_gross_pay", _("Taxable Gross Pay")),
+        ("net_pay", _("Net Pay")),
     ]
 
     exceed_choice = [
-        ("ignore", "Exclude the deduction"),
-        ("max_amount", "Provide max amount"),
+        ("ignore", _("Exclude the deduction")),
+        ("max_amount", _("Provide max amount")),
     ]
 
-    title = models.CharField(max_length=255, help_text="Title of the deduction")
+    title = models.CharField(max_length=255, help_text=_("Title of the deduction"))
     one_time_date = models.DateField(
         null=True,
         blank=True,
-        help_text="The one-time deduction in which the deduction will apply to the payslips \
-            if the date between the payslip period",
+        help_text=_(
+            "The one-time deduction in which the deduction will apply to the payslips \
+            if the date between the payslip period"
+        ),
     )
     include_active_employees = models.BooleanField(
         default=False,
-        verbose_name="Include all active employees",
-        help_text="Target deduction to all active employees in the company",
+        verbose_name=_("Include all active employees"),
+        help_text=_("Target deduction to all active employees in the company"),
     )
     specific_employees = models.ManyToManyField(
         Employee,
-        verbose_name="Employees Specific",
+        verbose_name=_("Employees Specific"),
         related_name="deduction_specific",
-        help_text="Target deduction to the specific employees",
+        help_text=_("Target deduction to the specific employees"),
         blank=True,
     )
     exclude_employees = models.ManyToManyField(
         Employee,
-        verbose_name="Exclude Employees",
+        verbose_name=_("Exclude Employees"),
         related_name="deduction_exclude",
         blank=True,
-        help_text="To ignore the deduction to the employees when target them by all employees \
-            or through condition-based",
+        help_text=_(
+            "To ignore the deduction to the employees when target them by all employees \
+            or through condition-based"
+        ),
     )
 
     is_tax = models.BooleanField(
-        default=False, help_text="To specify the deduction is tax or normal deduction"
+        default=False,
+        help_text=_("To specify the deduction is tax or normal deduction"),
     )
 
     is_pretax = models.BooleanField(
         default=True,
-        help_text="To find taxable gross, \
-            taxable_gross = (basic_pay + taxable_deduction)-pre_tax_deductions ",
+        help_text=_(
+            "To find taxable gross, \
+            taxable_gross = (basic_pay + taxable_deduction)-pre_tax_deductions "
+        ),
     )
 
     is_condition_based = models.BooleanField(
         default=False,
-        help_text="This field is used to target deduction \
-        to the specific employees when the condition satisfies with the employee's information",
+        help_text=_(
+            "This field is used to target deduction \
+        to the specific employees when the condition satisfies with the employee's information"
+        ),
     )
     # If condition based then must fill field, value, and condition,
     field = models.CharField(
@@ -897,7 +946,7 @@ class Deduction(models.Model):
         choices=FIELD_CHOICE,
         null=True,
         blank=True,
-        help_text="The related field of the employees",
+        help_text=_("The related field of the employees"),
     )
     condition = models.CharField(
         max_length=255, choices=CONDITION_CHOICE, null=True, blank=True
@@ -906,7 +955,7 @@ class Deduction(models.Model):
         max_length=255,
         null=True,
         blank=True,
-        help_text="The value must be like the data stored in the database",
+        help_text=_("The value must be like the data stored in the database"),
     )
     update_compensation = models.CharField(
         null=True,
@@ -915,31 +964,35 @@ class Deduction(models.Model):
         choices=[
             (
                 "basic_pay",
-                "Basic pay",
+                _("Basic pay"),
             ),
-            ("gross_pay", "Gross Pay"),
-            ("net_pay", "Net Pay"),
+            ("gross_pay", _("Gross Pay")),
+            ("net_pay", _("Net Pay")),
         ],
-        help_text="Update compensation is used to update \
-                   pay-head before any other deduction calculation starts",
+        help_text=_(
+            "Update compensation is used to update \
+                   pay-head before any other deduction calculation starts"
+        ),
     )
     is_fixed = models.BooleanField(
         default=True,
-        help_text="To specify, the deduction is fixed or not",
+        help_text=_("To specify, the deduction is fixed or not"),
     )
     # If fixed amount then fill amount
     amount = models.FloatField(
         null=True,
         blank=True,
         validators=[min_zero],
-        help_text="Fixed amount for this deduction",
+        help_text=_("Fixed amount for this deduction"),
     )
     based_on = models.CharField(
         max_length=255,
         choices=based_on_choice,
         null=True,
         blank=True,
-        help_text="If the deduction is not fixed then specifies how the deduction provided",
+        help_text=_(
+            "If the deduction is not fixed then specifies how the deduction provided"
+        ),
     )
     rate = models.FloatField(
         null=True,
@@ -948,8 +1001,8 @@ class Deduction(models.Model):
         validators=[
             rate_validator,
         ],
-        verbose_name="Employee rate",
-        help_text="The percentage of based on",
+        verbose_name=_("Employee rate"),
+        help_text=_("The percentage of based on"),
     )
 
     employer_rate = models.FloatField(
@@ -960,14 +1013,14 @@ class Deduction(models.Model):
     )
     has_max_limit = models.BooleanField(
         default=False,
-        verbose_name="Has max limit for deduction",
-        help_text="Limit the deduction",
+        verbose_name=_("Has max limit for deduction"),
+        help_text=_("Limit the deduction"),
     )
     maximum_amount = models.FloatField(
         null=True,
         blank=True,
         validators=[min_zero],
-        help_text="The maximum amount for the deduction",
+        help_text=_("The maximum amount for the deduction"),
     )
 
     maximum_unit = models.CharField(
@@ -975,24 +1028,26 @@ class Deduction(models.Model):
         null=True,
         default="month_working_days",
         choices=[
-            ("month_working_days", "For working days on month"),
+            ("month_working_days", _("For working days on month")),
             # ("monthly_working_days", "For working days on month"),
         ],
-        help_text="The maximum amount for ?",
+        help_text=_("The maximum amount for ?"),
     )
     if_choice = models.CharField(
         max_length=10,
         choices=if_condition_choice,
         default="basic_pay",
-        help_text="The pay head for the if condition",
+        help_text=_("The pay head for the if condition"),
     )
     if_condition = models.CharField(
         max_length=10,
-        choices=CONDITION_CHOICE,
+        choices=IF_CONDITION_CHOICE,
         default="gt",
-        help_text="Apply for those, if the pay-head conditions satisfy",
+        help_text=_("Apply for those, if the pay-head conditions satisfy"),
     )
-    if_amount = models.FloatField(default=0.00, help_text="The amount of the pay-head")
+    if_amount = models.FloatField(
+        default=0.00, help_text=_("The amount of the pay-head")
+    )
 
     objects = models.Manager()
 
@@ -1003,15 +1058,19 @@ class Deduction(models.Model):
             self.is_pretax = False
         if self.is_pretax and self.based_on in ["taxable_gross_pay"]:
             raise ValidationError(
-                {"based_on": " Don't choose taxable gross pay when pretax is enabled."}
+                {
+                    "based_on": _(
+                        " Don't choose taxable gross pay when pretax is enabled."
+                    )
+                }
             )
         if self.is_pretax and self.based_on in ["net_pay"]:
             raise ValidationError(
-                {"based_on": " Don't choose net pay when pretax is enabled."}
+                {"based_on": _(" Don't choose net pay when pretax is enabled.")}
             )
         if self.is_tax and self.based_on in ["net_pay"]:
             raise ValidationError(
-                {"based_on": " Don't choose net pay when the tax is enabled."}
+                {"based_on": _(" Don't choose net pay when the tax is enabled.")}
             )
         if not self.is_fixed:
             self.amount = None
@@ -1021,20 +1080,22 @@ class Deduction(models.Model):
         self.clean_condition_based_on()
         if self.has_max_limit:
             if self.maximum_amount is None:
-                raise ValidationError({"maximum_amount": "This fields required"})
+                raise ValidationError({"maximum_amount": _("This fields required")})
 
         if self.is_condition_based:
             if not self.field or not self.value or not self.condition:
                 raise ValidationError(
                     {
-                        "is_condition_based": "If condition based, all fields \
+                        "is_condition_based": _(
+                            "If condition based, all fields \
                             (field, value, condition) must be filled."
+                        )
                     }
                 )
         if self.update_compensation is None:
             if self.is_fixed:
                 if self.amount is None:
-                    raise ValidationError({"amount": "This field is required"})
+                    raise ValidationError({"amount": _("This field is required")})
 
     def clean_condition_based_on(self):
         """
@@ -1055,14 +1116,14 @@ class Payslip(models.Model):
     """
 
     status_choices = [
-        ("draft", "Draft"),
-        ("review_ongoing", "Review Ongoing"),
-        ("confirmed", "Confirmed"),
-        ("paid", "Paid"),
+        ("draft", _("Draft")),
+        ("review_ongoing", _("Review Ongoing")),
+        ("confirmed", _("Confirmed")),
+        ("paid", _("Paid")),
     ]
     reference = models.CharField(max_length=255, unique=False)
     employee_id = models.ForeignKey(
-        Employee, on_delete=models.CASCADE, verbose_name="Employee"
+        Employee, on_delete=models.CASCADE, verbose_name=_("Employee")
     )
     start_date = models.DateField()
     end_date = models.DateField()
@@ -1086,13 +1147,15 @@ class Payslip(models.Model):
         if self.end_date <= self.start_date:
             raise ValidationError(
                 {
-                    "end_date": "The end date must be greater than or equal to the start date"
+                    "end_date": _(
+                        "The end date must be greater than or equal to the start date"
+                    )
                 }
             )
         if self.end_date > today:
-            raise ValidationError("The end date cannot be in the future.")
+            raise ValidationError(_("The end date cannot be in the future."))
         if self.start_date > today:
-            raise ValidationError("The start date cannot be in the future.")
+            raise ValidationError(_("The start date cannot be in the future."))
 
     def save(self, *args, **kwargs):
         if (
@@ -1103,10 +1166,10 @@ class Payslip(models.Model):
             ).count()
             > 1
         ):
-            raise ValidationError("Employee ,start and end date must be unique")
+            raise ValidationError(_("Employee ,start and end date must be unique"))
 
         if not isinstance(self.pay_head_data, (QueryDict, dict)):
-            raise ValidationError("The data must be in dictionary or querydict type")
+            raise ValidationError(_("The data must be in dictionary or querydict type"))
 
         super().save(*args, **kwargs)
 

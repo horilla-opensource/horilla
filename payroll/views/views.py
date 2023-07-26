@@ -16,6 +16,7 @@ from payroll.models.models import Contract
 from payroll.forms.forms import ContractForm, WorkRecordForm
 from payroll.models.tax_models import PayrollSettings
 from payroll.forms.component_forms import PayrollSettingsForm
+from django.utils.translation import gettext_lazy as _
 from payroll.filters import ContractFilter
 from payroll.methods.methods import paginator_qry
 
@@ -42,7 +43,7 @@ def contract_create(request):
         form = ContractForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
-            messages.success(request, "Contract Created")
+            messages.success(request, _("Contract Created"))
             return redirect(contract_view)
     return render(request, "payroll/common/form.html", {"form": form})
 
@@ -68,7 +69,7 @@ def contract_update(request, contract_id):
         contract_form = ContractForm(request.POST, request.FILES, instance=contract)
         if contract_form.is_valid():
             contract_form.save()
-            messages.success(request, "Contract updated")
+            messages.success(request, _("Contract updated"))
             return redirect(contract_view)
     return render(
         request,
@@ -93,7 +94,7 @@ def contract_delete(request, contract_id):
 
     """
     Contract.objects.get(id=contract_id).delete()
-    messages.success(request, "Contract deleted")
+    messages.success(request, _("Contract deleted"))
     return redirect(contract_view)
 
 
@@ -229,7 +230,7 @@ def settings(request):
         form = PayrollSettingsForm(request.POST, instance=instance)
         if form.is_valid():
             form.save()
-            messages.success(request, "Payroll settings updated.")
+            messages.success(request, _("Payroll settings updated."))
     return render(request, "payroll/settings/payroll_settings.html", {"form": form})
 
 
@@ -338,9 +339,9 @@ def delete_payslip(request, payslip_id):
     """
     try:
         Payslip.objects.get(id=payslip_id).delete()
-        messages.success(request, "Payslip deleted")
+        messages.success(request, _("Payslip deleted"))
     except:
-        messages.error(request, "Something went wrong")
+        messages.error(request, _("Something went wrong"))
     return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 
 
