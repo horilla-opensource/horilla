@@ -1,0 +1,28 @@
+{% load i18n %}
+<div class="oh-modal__dialog-header">
+  <span class="oh-modal__dialog-title" id="addEmployeeObjectiveModalLabel">
+    <h5>{% trans "Filing Status" %}</h5>
+  </span>
+  <button
+    type="button"
+    class="oh-modal__close"
+    data-dismiss="oh-modal"
+    aria-label="Close"
+    data-toggle="oh-modal-toggle"
+    hx-target="#FilingStatusFormTarget"
+    onclick="location.reload()"
+  >
+    <ion-icon name="close-outline"></ion-icon>
+  </button> 
+  <form
+    hx-post="{%url 'create-filing-status' %}"
+    hx-target="#FilingStatusFormTarget"
+  >
+    {% csrf_token %} {{ form.as_p }}
+    <div class="oh-modal__dialog-footer">
+      <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow">
+        {% trans "Save" %}
+      </button>
+    </div>
+  </form>
+</div>

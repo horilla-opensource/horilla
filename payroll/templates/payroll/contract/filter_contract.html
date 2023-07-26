@@ -1,0 +1,71 @@
+{% load static %} 
+{% load i18n %}
+
+<form
+  hx-get='{% url "contract-filter" %}'
+  id="filterForm"
+  hx-swap="innerHTML"
+  hx-target="#payroll-contract-container"
+>
+  <div class="oh-dropdown__filter-body">
+    <div class="oh-accordion">
+      <div class="oh-accordion-header">{% trans "Contract" %}</div>
+      <div class="oh-accordion-body">
+        <div class="row">
+          <div class="col-sm-6">
+            <div class="oh-input-group">
+              <label class="oh-label">{% trans "Start Date" %}</label>
+              {{ f.form.contract_start_date }}
+            </div>
+          </div>
+          <div class="col-sm-6">
+            <div class="oh-input-group">
+              <label class="oh-label">{% trans "End Date" %}</label>
+              {{ f.form.contract_end_date }}
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-6">
+            <div class="oh-input-group">
+              <label class="oh-label">{% trans "Wage Type" %}</label>
+              {{ f.form.wage_type }}
+            </div>
+          </div>
+          <div class="col-sm-6">
+            <div class="oh-input-group">
+              <label class="oh-label">{% trans "Filing Status" %}</label>
+              {{ f.form.filing_status }}
+            </div>
+          </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-6">
+              <div class="oh-input-group">
+                <label class="oh-label">{% trans "Pay Frequency" %}</label>
+                {{ f.form.pay_frequency }}
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="oh-input-group">
+                <label class="oh-label">{% trans "Status" %}</label>
+                {{ f.form.contract_status }}
+              </div>
+            </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="oh-dropdown__filter-footer">
+    <button class="oh-btn oh-btn--secondary oh-btn--small w-100" id="filterSubmit">
+      {% trans "Filter" %}
+    </button>
+  </div>
+</form>
+
+<script>
+  $("#filterForm").submit(function (e) {
+    var formData = $(this).serialize();
+    $('#field').attr('hx-vals',`{'data':${formData}}` );
+  });
+</script>

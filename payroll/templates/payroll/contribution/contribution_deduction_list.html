@@ -1,0 +1,81 @@
+{% load i18n %}
+<div class="oh-sticky-table__table">
+  <div class="oh-sticky-table__thead">
+    <div class="oh-sticky-table__tr">
+      <div class="oh-sticky-table__th">
+        {% trans "Contribution Deduction" %}
+      </div>
+      <div class="oh-sticky-table__th">{% trans "Deduct From" %}</div>
+      <div class="oh-sticky-table__th">{% trans "Employee Contribution" %}</div>
+      <div class="oh-sticky-table__th">{% trans "Employer Contribution" %}</div>
+      <div class="oh-sticky-table__th"></div>
+    </div>
+  </div>
+  <div class="oh-sticky-table__tbody">
+    {% for contribution_deduction in contribution_deductions %}
+    <div class="oh-sticky-table__tr" draggable="true">
+      <div class="oh-sticky-table__td">{{ contribution_deduction.name }}</div>
+      <div class="oh-sticky-table__td">
+        {{ contribution_deduction.get_deduct_from_display }}
+      </div>
+      <div class="oh-sticky-table__td">
+        {{ contribution_deduction.employee_contribution|stringformat:".2f" }}%
+      </div>
+      <div class="oh-sticky-table__td">
+        {{ contribution_deduction.employer_contribution|stringformat:".2f" }}%
+      </div>
+      <div class="oh-sticky-table__td">
+        <div class="oh-btn-group">
+          <a
+            class="oh-btn oh-btn--light-bkg w-100"
+            href="{% url 'contribution-deduction-employees' contribution_deduction.id%}"
+          >
+            <ion-icon name="eye-outline"></ion-icon>
+          </a>
+          <a
+            hx-post="{% url 'assign-contribution-deduction' contribution_deduction.id%}"
+            data-toggle="oh-modal-toggle"
+            data-target="#ContributionDeductionAssignModal"
+            class="oh-btn oh-btn--light-bkg w-100"
+            style="color: blue"
+            onclick="event.stopPropagation()"
+            hx-target="#ContributionDeductionAssignFormTarget"
+            title="Assign"
+          >
+            <ion-icon name="person-add"></ion-icon>
+          </a>
+          <a
+            class="oh-btn oh-btn--light-bkg w-100"
+            data-toggle="oh-modal-toggle"
+            data-target="#ContributionDeductionModal"
+            hx-get="{% url 'update-contribution-deduction' contribution_deduction_id=contribution_deduction.id %}"
+            onclick="event.stopPropagation()"
+            hx-target="#ContributionDeductionFormTarget"
+          >
+            <ion-icon
+              name="create-outline"
+              role="img"
+              class="md hydrated"
+              aria-label="create outline"
+            ></ion-icon>
+          </a>
+          <a
+            hx-post="{% url 'delete-contribution-deduction' contribution_deduction_id=contribution_deduction.id %}"
+            data-toggle="oh-modal-toggle"
+            hx-target="#ContributionDeductionList"
+            class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+            onclick="event.stopPropagation()"
+          >
+            <ion-icon
+              name="trash-outline"
+              role="img"
+              class="md hydrated"
+              aria-label="trash outline"
+            ></ion-icon>
+          </a>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>

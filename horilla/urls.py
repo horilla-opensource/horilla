@@ -31,6 +31,7 @@ urlpatterns = [
     path('pms/',include('pms.urls')),
     path('asset/',include('asset.urls')),
     path('attendance/',include('attendance.urls')), 
+    path('payroll/',include('payroll.urls.urls')), 
     re_path('^inbox/notifications/', include(notifications.urls, namespace='notifications')),
     path('i18n/', include('django.conf.urls.i18n')),
 

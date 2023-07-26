@@ -1,0 +1,109 @@
+{% extends 'index.html' %} {% block content %} {% load i18n %} {% load yes_no %}
+<section class="oh-wrapper oh-main__topbar" x-data="{searchShow: false}">
+  <div class="oh-main__titlebar oh-main__titlebar--left">
+    <h1 class="oh-main__titlebar-title fw-bold">{% trans "Allowances" %}</h1>
+    <a
+      class="oh-main__titlebar-search-toggle"
+      role="button"
+      aria-label="Toggle Search"
+      @click="searchShow = !searchShow"
+    >
+      <ion-icon
+        name="search-outline"
+        class="oh-main__titlebar-serach-icon md hydrated"
+        role="img"
+        aria-label="search outline"
+      ></ion-icon>
+    </a>
+  </div>
+  <div class="oh-main__titlebar oh-main__titlebar--right">
+    <div
+      class="oh-input-group oh-input__search-group"
+      :class="searchShow ? 'oh-input__search-group--show' : ''"
+    >
+      <ion-icon
+        name="search-outline"
+        class="oh-input-group__icon oh-input-group__icon--left"
+      ></ion-icon>
+      <input
+        type="text"
+        class="oh-input oh-input__icon"
+        aria-label="Search Input"
+        id="filter-allowance"
+        name="search"
+        placeholder="{% trans 'Search' %}"
+        hx-get="{% url 'filter-allowance' %}"
+        hx-trigger="keyup changed delay:500ms, search"
+        hx-target="#payroll-allowance-container"
+        hx-swap="innerHTML"
+      />
+    </div>
+    <div class="oh-dropdown" x-data="{open: false}">
+      <button class="oh-btn ml-2" @click="open = !open">
+        <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}
+      </button>
+      <div
+        class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4"
+        x-show="open"
+        @click.outside="open = false"
+        style="display: none"
+      >
+      {% include 'payroll/allowance/filter_allowance.html' %}
+    </div>
+    </div>
+    <div class="oh-main__titlebar-button-container">
+      <div class="oh-btn-group ml-2">
+        <div>
+          <a
+            class="oh-btn oh-btn--secondary oh-btn--shadow"
+            {% comment %} data-toggle="oh-modal-toggle" {% endcomment %}
+            data-target="#allowanceModal"
+            href="{% url 'create-allowance' %}"
+            {% comment %} hx-get="{% url 'hx-create-allowance' %}" {% endcomment %}
+            {% comment %} hx-target="#allowanceModalBody" {% endcomment %}
+          >
+            <ion-icon
+              class="me-2 md hydrated"
+              name="add-outline"
+              role="img"
+              aria-label="add outline"
+            ></ion-icon
+            >{% trans "Create" %}</a
+          >
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<div id="payroll-allowance-container" class="oh-wrapper">
+  {% include 'payroll/allowance/list_allowance.html' %}
+</div>
+<div class="oh-modal" id="AllowanceModal" role="dialog" aria-labelledby="AllowanceModal" aria-hidden="true">
+  <div class="oh-modal__dialog" style="max-width: 550px" id="OneAllowanceTarget"></div>
+</div>
+
+
+<div
+  class="oh-modal"
+  id="allowanceModal"
+  role="dialog"
+  aria-labelledby="allowanceModal"
+  aria-hidden="true"
+>
+  <div class="oh-modal__dialog">
+    <div class="oh-modal__dialog-header">
+      <h2 class="oh-modal__dialog-title" id="addEmployeeModalLabel">
+        {% trans "Add Allowance" %}
+      </h2>
+      <button
+        class="oh-modal__close"
+        aria-label="Close"
+        
+      >
+        <ion-icon name="close-outline"></ion-icon>
+      </button>
+    </div>
+    <div class="oh-modal__dialog-body" id="allowanceModalBody"></div>
+  </div>
+</div>
+{% endblock content %}

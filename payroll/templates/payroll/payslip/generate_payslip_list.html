@@ -1,0 +1,151 @@
+{% extends 'index.html' %} {% block content %} {% load i18n %} {% load yes_no %}
+
+<section class="oh-wrapper oh-main__topbar" x-data="{searchShow: false}">
+  <div class="oh-main__titlebar oh-main__titlebar--left">
+    <h1 class="oh-main__titlebar-title fw-bold">
+      {% trans "Payroll" %} - {{ start_date }} to {{ end_date }}
+    </h1>
+    <a
+      class="oh-main__titlebar-search-toggle"
+      role="button"
+      aria-label="Toggle Search"
+      @click="searchShow = !searchShow"
+    >
+      <ion-icon
+        name="search-outline"
+        class="oh-main__titlebar-serach-icon md hydrated"
+        role="img"
+        aria-label="search outline"
+      ></ion-icon>
+    </a>
+  </div>
+  <div class="oh-main__titlebar oh-main__titlebar--right">
+    <h1 class="oh-main__titlebar-title fw-bold">
+      <select name="status" class="oh-select" id="id_status">
+        <option value="draft" selected>{% trans "Draft" %}</option>
+        <option value="review_ongoing">{% trans "Review Ongoing" %}</option>
+        <option value="confirmed">{% trans "Confirmed" %}</option>
+        <option value="paid">{% trans "Paid" %}</option>
+      </select>
+    </h1>
+  </div>
+</section>
+<div class="oh-wrapper">
+  <div class="oh-sticky-table">
+    <div class="oh-sticky-table__table oh-table--sortable">
+      <div class="oh-sticky-table__thead">
+        <div class="oh-sticky-table__tr">
+          <div class="oh-sticky-table__th">
+            <div class="d-flex">
+              <div class="">
+                <input
+                  type="checkbox"
+                  class="oh-input oh-input__checkbox mt-1 mr-2 all-candidate"
+                />
+              </div>
+              <div
+                hx-target="#section"
+                hx-get="{% url 'search-candidate' %}?{{pd}}&orderby=name&view=list"
+              >
+                {% trans "Employee" %}
+              </div>
+            </div>
+          </div>
+          <div class="oh-sticky-table__th">{% trans "Gross Pay" %}</div>
+          <div class="oh-sticky-table__th">{% trans "Deductions" %}</div>
+          <div class="oh-sticky-table__th">{% trans "Net Pay" %}</div>
+          <div class="oh-sticky-table__th"></div>
+        </div>
+      </div>
+      <div class="oh-sticky-table__tbody ui-sortable">
+        {% for data in payslip_data %}
+        <div class="oh-sticky-table__tr ui-sortable-handle">
+          <div class="oh-sticky-table__sd">
+            <div class="oh-profile oh-profile--md">
+              <div class="oh-profile__avatar mr-1">
+                {% if data.employee.employee_profile %}
+                <img
+                  src="/media/{{payslip.employee_id.employee_profile}}"
+                  class="oh-profile__image"
+                  alt="Username"
+                />
+                {% else %}
+                <img
+                  src="https://ui-avatars.com/api/?name={{data.employee.employee_first_name}}+{{data.employee.employee_last_name}}&background=random"
+                  class="oh-profile__image"
+                  alt="Username"
+                />
+                {% endif %}
+              </div>
+              <span class="oh-profile__name oh-text--dark"
+                >{{data.employee}}</span
+              >
+            </div>
+          </div>
+          <div class="oh-sticky-table__td">
+            {{currency}} {{data.gross_pay|floatformat:2}}
+          </div>
+          <div class="oh-sticky-table__td">
+            {{currency}} {{data.total_deductions|floatformat:2}}
+          </div>
+          <div class="oh-sticky-table__td">
+            {{currency}} {{data.net_pay|floatformat:2}}
+          </div>
+          <div class="oh-sticky-table__td">
+            <div class="oh-btn-group" >
+              <form action="{% url 'create-payslip' %}" style="display: inline;" method="post">
+                {% csrf_token %}
+                <input
+                  type="text"
+                  hidden
+                  name="employee_id"
+                  value="{{data.employee.id}}"
+                />
+                <input
+                  type="text"
+                  name="start_date"
+                  hidden
+                  value="{{start_date}}"
+                  id=""
+                />
+                <input
+                  type="text"
+                  name="end_date"
+                  hidden
+                  value="{{end_date}}"
+                  id=""
+                />
+                <button type="submit" class="oh-btn oh-btn--light-bkg w-100">
+                  <ion-icon
+                    name="eye-outline"
+                    role="img"
+                    class="md hydrated"
+                    style="color: blue"
+                    aria-label="create outline"
+                  ></ion-icon>
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  var allEmployeePayData = {{json_data|safe}}
+  $("#id_status").change(function (e) {
+    e.preventDefault();
+    var status = $(this).val();
+    $.ajax({
+      type: "get",
+      url: "{% url 'bulk-payslip-status-update' %}",
+      data: {"json_data":JSON.stringify(allEmployeePayData),"status":status},
+      dataType: "dataType",
+      success: function (response) {
+      }
+    });
+  });
+</script>
+{% endblock content %}

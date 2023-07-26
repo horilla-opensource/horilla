@@ -1,0 +1,101 @@
+{% load i18n %} {% load yes_no %}
+<div class="oh-modal__dialog-header">
+  <span class="oh-modal__dialog-title" id="addEmployeeObjectiveModalLabel">
+    <h5 style="margin-bottom: 20px;">{{deduction.title}}</h5>
+  </span>
+  <button
+    type="button"
+    class="oh-modal__close"
+    data-dismiss="oh-modal"
+    aria-label="Close"
+    data-toggle="oh-modal-toggle"
+    hx-target="#OneAllowanceTarget"
+  >
+    <ion-icon name="close-outline"></ion-icon>
+  </button>
+    <div class="oh-timeoff-modal__stats-container mb-3">
+      {% if deduction.is_tax %}
+        <div class="oh-timeoff-modal__stat">
+            <span class="oh-timeoff-modal__stat-title">{% trans "Tax" %}</span>
+            <span class="oh-timeoff-modal__stat-count">{{deduction.is_tax|yesno|capfirst}}</span>
+        </div>
+      {% else %}
+        <div class="oh-timeoff-modal__stat">
+          <span class="oh-timeoff-modal__stat-title">{% trans "Pretax" %}</span>
+          <span class="oh-timeoff-modal__stat-count">{{deduction.is_pretax|yesno|capfirst}}</span>
+        </div>
+      {% endif %}
+      <div class="oh-timeoff-modal__stat" style="margin-left: 20px;">
+          <span class="oh-timeoff-modal__stat-title">{% trans "One Time deduction" %}</span>
+          {% if deduction.one_time_date %}
+            <span class="oh-timeoff-modal__stat-count">{% trans "On" %} {{deduction.one_time_date}}</span>
+          {% else %}
+            <span class="oh-timeoff-modal__stat-count">{% trans "No" %}</span>
+          {% endif %}
+      </div>
+    </div>
+    <div class="oh-timeoff-modal__stats-container mt-3 mb-3">
+        <div class="oh-timeoff-modal__stat">
+            <span class="oh-timeoff-modal__stat-title">{% trans "Condition Based" %}</span>
+            {% if deduction.is_condition_based %}
+              <span class="oh-timeoff-modal__stat-count">{{deduction.get_field_display}} {{deduction.get_condition_display}} {{deduction.value}}</span>
+            {% else %}
+            <span class="oh-timeoff-modal__stat-count">{% trans "No" %}</span>
+            {% endif %}
+        </div>
+        <div class="oh-timeoff-modal__stat" style="margin-left: 20px;">
+                <span class="oh-timeoff-modal__stat-title">{% trans "Amount" %}</span>
+                {% if deduction.update_compensation %}
+                    {% if deduction.is_fixed %}
+                        <span class="oh-timeoff-modal__stat-count">{{deduction.amount}}{{currency}} Deduct From {{deduction.get_update_compensation_display}}</span>
+                    {% else %}
+                        <span class="oh-timeoff-modal__stat-count">{{deduction.rate}}% {% trans "of" %} {{deduction.get_update_compensation_display}}</span>
+                    {% endif %}
+                {% else %}
+                    {% if deduction.is_fixed %}
+                        <span class="oh-timeoff-modal__stat-count">{{deduction.amount}}{{currency}}</span>
+                    {% else %}
+                        <span class="oh-timeoff-modal__stat-count">{% trans "Employer Rate :" %} {{deduction.employer_rate}}% {% trans "of" %} {{deduction.get_based_on_display}}</span>    
+                        <span class="oh-timeoff-modal__stat-count">{% trans "Employee Rate :" %} {{deduction.rate}}% {% trans "of" %} {{deduction.get_based_on_display}}</span>
+                    {% endif %}
+                {% endif %}
+        </div>
+    </div>
+    <div class="oh-timeoff-modal__stats-container mt-3 mb-3">
+        <div class="oh-timeoff-modal__stat">
+            <span class="oh-timeoff-modal__stat-title">{% trans "Has Maximum Limit" %}</span>
+            {% if deduction.has_max_limit %}
+                <span class="oh-timeoff-modal__stat-count">{{deduction.maximum_amount}} {{currency}} {% trans "For working days on a month" %}</span>
+            {% else %}
+                <span class="oh-timeoff-modal__stat-count">{% trans "No" %}</span>
+            {% endif %}
+        </div>
+        <div class="oh-timeoff-modal__stat" style="margin-left: 20px;">
+            <span class="oh-timeoff-modal__stat-title">{% trans "Deduction Eligibility" %}</span>
+            <span class="oh-timeoff-modal__stat-count">If {{deduction.get_if_choice_display}} {{deduction.get_if_condition_display}} {{deduction.if_amount}}</span>
+        </div>
+    </div>
+    <div class="oh-modal__button-container text-center">
+       <div class="oh-btn-group">
+
+         <a href="{% url 'update-deduction' deduction.id %}" class="oh-btn oh-btn--info" style="width: 50%;">
+           <ion-icon
+           name="create-outline"
+           role="img"
+           class="md hydrated"
+           aria-label="create outline"
+           ></ion-icon>{% trans "Edit" %}
+          </a>
+          <a href="{% url 'delete-deduction' deduction.id %}" class="oh-btn oh-btn--danger"style="width: 50%;">
+            <ion-icon
+            name="trash-outline"
+            role="img"
+            class="md hydrated"
+            aria-label="create outline"
+            ></ion-icon>{% trans "Delete" %}
+          </a>
+        </div>
+      </div>
+</div>
+
+

@@ -1,0 +1,82 @@
+{% extends 'index.html' %} {% block content %} {% load i18n %} {% load yes_no %}
+<section class="oh-wrapper oh-main__topbar" x-data="{searchShow: false}">
+  <div class="oh-main__titlebar oh-main__titlebar--left">
+    <h1 class="oh-main__titlebar-title fw-bold">{% trans "Deductions" %}</h1>
+    <a
+      class="oh-main__titlebar-search-toggle"
+      role="button"
+      aria-label="Toggle Search"
+      @click="searchShow = !searchShow"
+    >
+      <ion-icon
+        name="search-outline"
+        class="oh-main__titlebar-serach-icon md hydrated"
+        role="img"
+        aria-label="search outline"
+      ></ion-icon>
+    </a>
+  </div>
+  <div class="oh-main__titlebar oh-main__titlebar--right">
+    <div
+      class="oh-input-group oh-input__search-group"
+      :class="searchShow ? 'oh-input__search-group--show' : ''"
+    >
+      <ion-icon
+        name="search-outline"
+        class="oh-input-group__icon oh-input-group__icon--left"
+      ></ion-icon>
+      <input
+        type="text"
+        class="oh-input oh-input__icon"
+        aria-label="Search Input"
+        id="filter-deduction"
+        name="search"
+        placeholder="{% trans 'Search' %}"
+        hx-get="{% url 'filter-deduction' %}"
+        hx-trigger="keyup changed delay:500ms, search"
+        hx-target="#payroll-deduction-container"
+        hx-swap="innerHTML"
+      />
+    </div>
+    <div class="oh-dropdown" x-data="{open: false}">
+      <button class="oh-btn ml-2" @click="open = !open">
+        <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}
+      </button>
+      <div
+        class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4"
+        x-show="open"
+        @click.outside="open = false"
+        style="display: none"
+      >
+        {% include 'payroll/deduction/filter_deduction.html' %}
+      </div>
+    </div>
+    <div class="oh-main__titlebar-button-container">
+      <div class="oh-btn-group ml-2">
+        <div>
+          <a
+            class="oh-btn oh-btn--secondary oh-btn--shadow"
+            data-toggle="oh-modal-toggle"
+            data-target="#deductionModal"
+            href="{% url 'create-deduction' %}"
+          >
+            <ion-icon
+              class="me-2 md hydrated"
+              name="add-outline"
+              role="img"
+              aria-label="add outline"
+            ></ion-icon
+            >{% trans "Create" %}</a
+          >
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<div id="payroll-deduction-container" class="oh-wrapper">
+  {% include 'payroll/deduction/list_deduction.html' %}
+</div>
+<div class="oh-modal" id="DeductionModal" role="dialog" aria-labelledby="DeductionModal" aria-hidden="true">
+  <div class="oh-modal__dialog" style="max-width: 600px" id="OneDeductionTarget"></div>
+</div>
+{% endblock content %}

@@ -1,0 +1,189 @@
+{% extends 'index.html' %} {% block content %}{% load i18n %}
+
+<div
+  class="oh-modal"
+  id="individualPayslipModal"
+  role="dialog"
+  aria-labelledby="individualPayslipModal"
+  aria-hidden="true"
+>
+  <div class="oh-modal__dialog">
+    <div class="oh-modal__dialog-header">
+      <h1 class="oh-modal__dialog-title" id="addEmployeeModalLabel">
+        {% trans "Create Payslip" %}
+        <div class="oh-payslip__header mt-3 mb-0">
+        </div>
+      </h1>
+      <button class="oh-modal__close" aria-label="Close">
+        <ion-icon name="close-outline"></ion-icon>
+      </button>
+    </div>
+    <div class="oh-modal__dialog-body" id="individualPayslipModal">
+        <form action="{% url 'create-payslip' %}" class="" method="post">
+          {% csrf_token %} {{individual_form}}
+          <div class="oh-modal__dialog-footer mt-4">
+            <input type="submit" value="Create Payslip" class="oh-btn oh-btn--secondary oh-btn--shadow">
+        </div>
+        </form>
+    </div>
+  </div>
+</div>
+
+
+<div
+  class="oh-modal"
+  id="bulkPayslipModal"
+  role="dialog"
+  aria-labelledby="bulkPayslipModal"
+  aria-hidden="true"
+>
+  <div class="oh-modal__dialog">
+    <div class="oh-modal__dialog-header">
+      <h1 class="oh-modal__dialog-title" id="addEmployeeModalLabel">
+        {% trans "Bulk Payslip" %}
+        <div class="oh-payslip__header mt-3 mb-0">
+        </div>
+      </h1>
+      <button class="oh-modal__close" aria-label="Close">
+        <ion-icon name="close-outline"></ion-icon>
+      </button>
+    </div>
+    <div class="oh-modal__dialog-body" id="bulkPayslipModal">
+        <form action="{% url 'generate-payslip' %}" class="" method="post">
+          {% csrf_token %} {{bulk_form}}
+          <div class="oh-modal__dialog-footer mt-4">
+            <input type="submit" value="Generate Payslips" class="oh-btn oh-btn--secondary oh-btn--shadow">
+        </div>
+        </form>
+    </div>
+  </div>
+</div>
+<section class="oh-wrapper oh-main__topbar" x-data="{searchShow: false}">
+  <div class="oh-main__titlebar oh-main__titlebar--left">
+    <h1 class="oh-main__titlebar-title fw-bold">{% trans "Payslip" %}</h1>
+    <a
+      class="oh-main__titlebar-search-toggle"
+      role="button"
+      aria-label="Toggle Search"
+      @click="searchShow = !searchShow"
+    >
+      <ion-icon
+        name="search-outline"
+        class="oh-main__titlebar-serach-icon md hydrated"
+        role="img"
+        aria-label="search outline"
+      ></ion-icon>
+    </a>
+  </div>
+  <div class="oh-main__titlebar-button-container">
+    {% if perms.payroll.view_payslip %}
+    <div
+      class="oh-input-group oh-input__search-group"
+      :class="searchShow ? 'oh-input__search-group--show' : ''"
+    >
+      <ion-icon
+        name="search-outline"
+        class="oh-input-group__icon oh-input-group__icon--left"
+      ></ion-icon>
+      <input
+        type="text"
+        class="oh-input oh-input__icon"
+        aria-label="Search Input"
+        id="filter-allowance"
+        name="search"
+        placeholder="{% trans 'Search' %}"
+        hx-get="{% url 'filter-payslip' %}"
+        hx-trigger="keyup changed delay:500ms, search"
+        hx-target="#payroll-payslip-container"
+        hx-swap="innerHTML"
+      />
+    </div>
+    {% endif %}
+    {% if perms.payroll.view_payslip %}
+    <div class="oh-dropdown" x-data="{open: false}">
+      <button class="oh-btn ml-2" @click="open = !open">
+        <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}
+      </button>
+      <div
+        class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4"
+        x-show="open"
+        @click.outside="open = false"
+        style="display: none"
+      >
+        {% include 'payroll/payslip/filter_payslips.html' %}
+      </div>
+    </div>
+    {% endif %}
+    {% if perms.payroll.add_payslip %}
+    <div class="oh-main__titlebar-button-container">
+      <div class="oh-btn-group ml-2">
+        <div>
+          <a
+            class="oh-btn oh-btn--secondary oh-btn--shadow"
+            data-toggle="oh-modal-toggle"
+            data-target="#bulkPayslipModal"
+          >
+            <ion-icon
+              class="me-2 md hydrated"
+              name="add-outline"
+              role="img"
+              aria-label="add outline"
+            ></ion-icon
+            >{% trans "Generate" %}</a
+          >
+        </div>
+      </div>
+    </div>
+    {% endif %}
+    {% if perms.payroll.add_payslip %}
+    <div class="oh-btn-group ml-2">
+      <div>
+        <a
+          class="oh-btn oh-btn--secondary oh-btn--shadow"
+          data-toggle="oh-modal-toggle"
+          data-target="#individualPayslipModal"
+        >
+          <ion-icon
+            class="me-2 md hydrated"
+            name="add-outline"
+            role="img"
+            aria-label="add outline"
+          ></ion-icon
+          >{% trans "Create" %}</a
+        >
+      </div>
+    </div>
+    {% endif %}
+  </div>
+</section>
+<div id="payroll-payslip-container" class="oh-wrapper">
+  {% include 'payroll/payslip/list_payslips.html' %}
+</div>
+<script>
+  $(document).ready(function () {
+    $("form").submit(function (e) {
+      e.preventDefault()
+      
+      var form = $(this); // Get the form element
+      var formData = form.serialize(); // Serialize the form data as a URL-encoded string
+
+      $(".errorlist").remove()
+      $.ajax({
+        type: "get",
+        url: "{% url 'validate-start-date' %}",
+        data: formData,
+        success: function (response) {
+          form.prepend(response.message);
+          if (response.valid) {
+            form[0].submit();
+          }
+
+
+
+
+        }
+      });
+    });
+  });
+</script>
+{% endblock content %}

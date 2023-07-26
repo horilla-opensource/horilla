@@ -1,0 +1,131 @@
+{% load i18n %} {% load yes_no %}
+<div class="oh-modal__dialog-header">
+  <span class="oh-modal__dialog-title" id="addEmployeeObjectiveModalLabel">
+    <h5 style="margin-bottom: 20px;">{{contract.contract_name}}</h5>
+  </span>
+  <button
+    type="button"
+    class="oh-modal__close"
+    data-dismiss="oh-modal"
+    aria-label="Close"
+    data-toggle="oh-modal-toggle"
+    hx-target="#OneContractTarget"
+  >
+    <ion-icon name="close-outline"></ion-icon>
+  </button>
+    <div class="oh-timeoff-modal__stats-container mb-3">
+      <div class="oh-timeoff-modal__stat">
+          <span class="oh-timeoff-modal__stat-title">{% trans "Employee" %}</span>
+          <span class="oh-timeoff-modal__stat-count">{{contract.employee_id}}</span>
+      </div>
+      <div class="oh-timeoff-modal__stat" style="margin-left: 20px;">
+          <span class="oh-timeoff-modal__stat-title">{% trans "Status" %}</span>
+          <span class="oh-timeoff-modal__stat-count">{{contract.get_contract_status_display}}</span>
+      </div>
+    </div>
+    <div class="oh-timeoff-modal__stats-container mt-3 mb-3">
+        <div class="oh-timeoff-modal__stat">
+            <span class="oh-timeoff-modal__stat-title">{% trans "Start Date" %}</span>
+            <span class="oh-timeoff-modal__stat-count">{{contract.contract_start_date}}</span>
+        </div>
+        <div class="oh-timeoff-modal__stat" style="margin-left: 20px;">
+            <span class="oh-timeoff-modal__stat-title">{% trans "End Date" %}</span>
+            <span class="oh-timeoff-modal__stat-count">{{contract.contract_end_date}}</span>
+        </div>
+    </div>
+    <div class="oh-timeoff-modal__stats-container mt-3 mb-3">
+        <div class="oh-timeoff-modal__stat">
+            <span class="oh-timeoff-modal__stat-title">{% trans "Wage Type" %}</span>
+            <span class="oh-timeoff-modal__stat-count">{{contract.get_wage_type_display}}</span>
+        </div>
+        <div class="oh-timeoff-modal__stat" style="margin-left: 20px;">
+            <span class="oh-timeoff-modal__stat-title">{% trans "Wage" %}</span>
+            <span class="oh-timeoff-modal__stat-count">{{contract.wage}}</span>
+        </div>
+    </div>
+    <div class="oh-timeoff-modal__stats-container mt-3 mb-3">
+        <div class="oh-timeoff-modal__stat">
+            {% if contract.calculate_daily_leave_amount %}
+                <span class="oh-timeoff-modal__stat-title">{% trans "Calculate Leave Amount" %}</span>
+                <span class="oh-timeoff-modal__stat-count">{{contract.calculate_daily_leave_amount|yesno|capfirst}}</span>
+            {% else %}
+                <span class="oh-timeoff-modal__stat-title">{% trans "Deduction Amount For One Leave" %}</span>
+                <span class="oh-timeoff-modal__stat-count">{{contract.deduction_for_one_leave_amount}}</span>
+            {% endif %}
+        </div>
+        <div class="oh-timeoff-modal__stat" style="margin-left: 20px;">
+            <span class="oh-timeoff-modal__stat-title">{% trans "Deduct From Basic Pay" %}</span>
+            <span class="oh-timeoff-modal__stat-count">{{contract.deduct_leave_from_basic_pay|yesno|capfirst}}</span>
+        </div>
+    </div>
+    <div class="oh-timeoff-modal__stats-container mt-3 mb-3">
+        <div class="oh-timeoff-modal__stat">
+            <span class="oh-timeoff-modal__stat-title">{% trans "Department" %}</span>
+            <span class="oh-timeoff-modal__stat-count">{{contract.department}}</span>
+        </div>
+        <div class="oh-timeoff-modal__stat" style="margin-left: 20px;">
+            <span class="oh-timeoff-modal__stat-title">{% trans "Job Position" %}</span>
+            <span class="oh-timeoff-modal__stat-count">{{contract.job_position}}</span>
+        </div>
+    </div>
+    <div class="oh-timeoff-modal__stats-container mt-3 mb-3">
+        <div class="oh-timeoff-modal__stat">
+            <span class="oh-timeoff-modal__stat-title">{% trans "Job Role" %}</span>
+            <span class="oh-timeoff-modal__stat-count">{{contract.job_role}}</span>
+        </div>
+        <div class="oh-timeoff-modal__stat" style="margin-left: 20px;">
+            <span class="oh-timeoff-modal__stat-title">{% trans "Shift" %}</span>
+            <span class="oh-timeoff-modal__stat-count">{{contract.shift}}</span>
+        </div>
+    </div>
+    <div class="oh-timeoff-modal__stats-container mt-3 mb-3">
+        <div class="oh-timeoff-modal__stat">
+            <span class="oh-timeoff-modal__stat-title">{% trans "Work Type" %}</span>
+            <span class="oh-timeoff-modal__stat-count">{{contract.work_type}}</span>
+        </div>
+        <div class="oh-timeoff-modal__stat" style="margin-left: 20px;">
+            <span class="oh-timeoff-modal__stat-title">{% trans "Filing Status" %}</span>
+            <span class="oh-timeoff-modal__stat-count">{{contract.filing_status}}</span>
+        </div>
+    </div>
+    <div class="oh-timeoff-modal__stats-container mt-3 mb-3">
+        <div class="oh-timeoff-modal__stat">
+            <span class="oh-timeoff-modal__stat-title">{% trans "Pay Frequency" %}</span>
+            <span class="oh-timeoff-modal__stat-count">{{contract.get_pay_frequency_display}}</span>
+        </div>
+        <div class="oh-timeoff-modal__stat" style="margin-left: 20px;">
+            <span class="oh-timeoff-modal__stat-title">{% trans "Document" %}</span>
+            {% if contract.contract_document %}
+                <a href="{{ contract.contract_document.url }}" target="_blank">{{ contract.contract_document.name }}</a>
+            {% endif %}
+        </div>
+    </div>
+    <div class="mt-3 mb-5" style="width:100%;">
+        <div class="oh-timeoff-modal__stat">
+            <span class="oh-timeoff-modal__stat-title">{% trans "Note" %}</span>
+            <span class="oh-timeoff-modal__stat-count">{{contract.note}}</span>
+        </div>
+    </div>
+    <div class="oh-modal__button-container text-center">
+       <div class="oh-btn-group">
+         <a href="{% url 'update-contract' contract.id %}" class="oh-btn oh-btn--info" style="width: 50%;">
+           <ion-icon
+           name="create-outline"
+           role="img"
+           class="md hydrated"
+           aria-label="create outline"
+           ></ion-icon>{% trans "Edit" %}
+          </a>
+          <a href="{% url 'delete-contract' contract.id %}" class="oh-btn oh-btn--danger"style="width: 50%;">
+            <ion-icon
+            name="trash-outline"
+            role="img"
+            class="md hydrated"
+            aria-label="create outline"
+            ></ion-icon>{% trans "Delete" %}
+           </a>
+        </div>
+    </div>
+</div>
+
+
