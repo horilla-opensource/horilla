@@ -42,7 +42,7 @@
                 {% if own_objective.archive %}
                   <form action="{%url 'objective-archive' id=own_objective.id %}?{{pg}}"  onsubmit="return confirm('Do you want un-archive this OKR ?')" method="post" style="display: contents">
                     {% csrf_token %}
-                      <button class="oh-btn oh-btn--danger-outline w-100  " title="{% trans 'Archive' %}"><ion-icon name="archive-sharp" role="img" class="md hydrated" aria-label="archive sharp"></ion-icon></button>
+                      <button class="oh-btn oh-btn--danger-outline w-100  " title="{% trans 'Un-archive' %}"><ion-icon name="archive-sharp" role="img" class="md hydrated" aria-label="archive sharp"></ion-icon></button>
                   </form>
                 {% else %}
                   <form action="{%url 'objective-archive' id=own_objective.id %}?{{pg}}"  onsubmit="return confirm('Do you want archive this OKR ?')" method="post" style="display: contents">
@@ -144,7 +144,7 @@
                 {% if all_objective.archive %}
                   <form action="{%url 'objective-archive' id=all_objective.id %}?{{pg}}"  onsubmit="return confirm('Do you want un-archive this OKR ?')" method="post" style="display: contents">
                     {% csrf_token %}
-                      <button class="oh-btn oh-btn--danger-outline w-100  " title="{% trans 'Archive' %}"><ion-icon name="archive-sharp" role="img" class="md hydrated" aria-label="archive sharp"></ion-icon></button>
+                      <button class="oh-btn oh-btn--danger-outline w-100  " title="{% trans 'Un-archive' %}"><ion-icon name="archive-sharp" role="img" class="md hydrated" aria-label="archive sharp"></ion-icon></button>
                   </form>
                 {% else %}
                   <form action="{%url 'objective-archive' id=all_objective.id %}?{{pg}}"  onsubmit="return confirm('Do you want archive this OKR ?')" method="post" style="display: contents">

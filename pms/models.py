@@ -22,13 +22,13 @@ class EmployeeObjective(models.Model):
 
     """ this is a EmployObjective model used for creating Employee objectives  """
 
-    STATUS_CHOICES = [
+    STATUS_CHOICES = (
         ('On Track', _('On Track')),
         ('Behind', _('Behind')),
         ('Closed', _('Closed')),
         ('At Risk', _('At Risk')),
         ('Not Started', _('Not Started')),
-    ]
+    )
     objective = models.CharField(null=False, blank=False, max_length=100)
     objective_description = models.TextField(blank=False, null=False)
     created_at = models.DateField(auto_now_add=True)
@@ -134,11 +134,11 @@ class QuestionOptions(models.Model):
 class Feedback(models.Model):
     """feedback model for creating feedback """
     STATUS_CHOICES = (
-        ('On Track', 'On Track'),
-        ('Behind', 'Behind'   ),
-        ('Closed', 'Closed'  ),
-        ('At Risk', 'At Risk' ),
-        ('Not Started', 'Not Started')
+        ('On Track', _('On Track')),
+        ('Behind', _('Behind')   ),
+        ('Closed', _('Closed')  ),
+        ('At Risk', _('At Risk') ),
+        ('Not Started', _('Not Started'))
     )
     review_cycle = models.CharField(max_length=100, null=False, blank=False)
     manager_id = models.ForeignKey(Employee, related_name='feedback_manager', on_delete=models.DO_NOTHING, null=True, blank=False)

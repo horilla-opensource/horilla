@@ -54,7 +54,11 @@
                   <a class="oh-btn w-100"  href="{% url 'feedback-answer-get' id=feedback.id %}" title="{% trans 'Answer' %}"><ion-icon name="create-outline"></ion-icon></a>
                   <a class="oh-btn w-100"  href="{% url 'feedback-answer-view' id=feedback.id %}" title="{% trans 'Answer view' %}"><ion-icon name="eye"></ion-icon></ion-icon></a>
                   <form action="{% url 'feedback-archive' id=feedback.id %}" method="post"  style="display: contents">
-                  <button class="oh-btn oh-btn--danger-outline  w-100 "  title="{% trans 'Archive' %}" > 
+                    {% if feedback.archive == True %}
+                      <button class="oh-btn oh-btn--danger-outline  w-100 "  title="{% trans 'Un-archive' %}" >
+                    {% else %}
+                      <button class="oh-btn oh-btn--danger-outline  w-100 "  title="{% trans 'Archive' %}" >
+                    {% endif %}
                      {% csrf_token %}
                     <ion-icon name="archive-sharp" type="submit"></ion-icon>
                   </button>
@@ -161,7 +165,11 @@
                 <a class="oh-btn w-100"  href="{% url 'feedback-answer-get' id=feedback.id %}" title="{% trans 'Answer' %}"><ion-icon name="create-outline"></ion-icon></a>
                 <a class="oh-btn w-100"  href="{% url 'feedback-answer-view' id=feedback.id %}" title="{% trans 'Answer view' %}"><ion-icon name="eye"></ion-icon></ion-icon></a>
                 <form action="{% url 'feedback-archive' id=feedback.id %}" method="post"  style="display: contents">
-                <button class="oh-btn oh-btn--danger-outline  w-100 "  title="{% trans 'Archive' %}" > 
+                  {% if feedback.archive == True %}
+                    <button class="oh-btn oh-btn--danger-outline  w-100 "  title="{% trans 'Un-archive' %}" >
+                  {% else %}
+                    <button class="oh-btn oh-btn--danger-outline  w-100 "  title="{% trans 'Archive' %}" >
+                  {% endif %}
                    {% csrf_token %}
                   <ion-icon name="archive-sharp" type="submit"></ion-icon>
                 </button>
@@ -271,7 +279,11 @@
                 <a class="oh-btn w-100"  href="{% url 'feedback-answer-get' id=feedback.id %}" title="{% trans 'Answer' %}"><ion-icon name="create-outline"></ion-icon></a>
                 <a class="oh-btn w-100"  href="{% url 'feedback-answer-view' id=feedback.id %}" title="{% trans 'Answer view' %}"><ion-icon name="eye"></ion-icon></ion-icon></a>
                 <form action="{% url 'feedback-archive' id=feedback.id %}" method="post"  style="display: contents">
-                <button class="oh-btn oh-btn--danger-outline  w-100 "  title="{% trans 'Archive' %}" > 
+                  {% if feedback.archive == True %}
+                    <button class="oh-btn oh-btn--danger-outline  w-100 "  title="{% trans 'Un-archive' %}" >
+                  {% else %}
+                    <button class="oh-btn oh-btn--danger-outline  w-100 "  title="{% trans 'Archive' %}" >
+                  {% endif %} 
                    {% csrf_token %}
                   <ion-icon name="archive-sharp" type="submit"></ion-icon>
                 </button>

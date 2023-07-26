@@ -1167,6 +1167,10 @@ def validate_bulk_attendance(request):
             request.user.employee_get,
             recipient=attendance.employee_id.employee_user_id,
             verb=f"Your attendance for the date {attendance.attendance_date} is validated",
+            verb_ar=f"تم التحقق من حضورك في تاريخ {attendance.attendance_date}",
+            verb_de=f"Ihre Anwesenheit für das Datum {attendance.attendance_date} wurde bestätigt",
+            verb_es=f"Se ha validado su asistencia para la fecha {attendance.attendance_date}",
+            verb_fr=f"Votre présence pour la date {attendance.attendance_date} est validée",
             redirect="/attendance/view-my-attendance",
             icon="checkmark",
         )
@@ -1192,6 +1196,10 @@ def validate_this_attendance(request, obj_id):
             request.user.employee_get,
             recipient=attendance.employee_id.employee_user_id,
             verb=f"Your attendance for the date {attendance.attendance_date} is validated",
+            verb_ar=f"تم تحقيق حضورك في تاريخ {attendance.attendance_date}",
+            verb_de=f"Deine Anwesenheit für das Datum {attendance.attendance_date} ist bestätigt.",
+            verb_es=f"Se valida tu asistencia para la fecha {attendance.attendance_date}.",
+            verb_fr=f"Votre présence pour la date {attendance.attendance_date} est validée.",
             redirect="/attendance/view-my-attendance",
             icon="checkmark",
         )
@@ -1221,6 +1229,10 @@ def revalidate_this_attendance(request, obj_id):
                 ),
                 verb=f"{attendance.employee_id} requested revalidation for \
                     {attendance.attendance_date} attendance",
+                verb_ar=f"{attendance.employee_id} طلب إعادة التحقق من حضور تاريخ {attendance.attendance_date}",
+                verb_de=f"{attendance.employee_id} beantragte eine Neubewertung der Teilnahme am {attendance.attendance_date}",
+                verb_es=f"{attendance.employee_id} solicitó la validación nuevamente para la asistencia del {attendance.attendance_date}",
+                verb_fr=f"{attendance.employee_id} a demandé une revalidation pour la présence du {attendance.attendance_date}",
                 redirect="/attendance/view-my-attendance",
                 icon="refresh",
             )
@@ -1244,6 +1256,10 @@ def approve_overtime(request, obj_id):
             request.user.employee_get,
             recipient=attendance.employee_id.employee_user_id,
             verb=f"Your {attendance.attendance_date}'s attendance overtime approved.",
+            verb_ar=f"تمت الموافقة على إضافة ساعات العمل الإضافية لتاريخ {attendance.attendance_date}.",
+            verb_de=f"Die Überstunden für den {attendance.attendance_date} wurden genehmigt.",
+            verb_es=f"Se ha aprobado el tiempo extra de asistencia para el {attendance.attendance_date}.",
+            verb_fr=f"Les heures supplémentaires pour la date {attendance.attendance_date} ont été approuvées.",
             redirect="/attendance/attendance-overtime-view",
             icon="checkmark",
         )
@@ -1267,6 +1283,10 @@ def approve_bulk_overtime(request):
             request.user.employee_get,
             recipient=attendance.employee_id.employee_user_id,
             verb=f"Overtime approved for {attendance.attendance_date}'s attendance",
+            verb_ar=f"تمت الموافقة على العمل الإضافي لحضور تاريخ {attendance.attendance_date}",
+            verb_de=f"Überstunden für die Anwesenheit am {attendance.attendance_date} genehmigt",
+            verb_es=f"Horas extra aprobadas para la asistencia del {attendance.attendance_date}",
+            verb_fr=f"Heures supplémentaires approuvées pour la présence du {attendance.attendance_date}",
             redirect="/attendance/attendance-overtime-view",
             icon="checkmark",
         )
@@ -1427,9 +1447,9 @@ def dashboard_attendance(request):
         JsonResponse: returns data set as json
     """
     labels = [
-        "On Time",
-        "Late Come",
-        "On Break",
+        _("On Time"),
+        _("Late Come"),
+        _("On Break"),
     ]
     data_set = []
     departments = Department.objects.all()

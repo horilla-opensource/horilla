@@ -1,6 +1,7 @@
 {% load static %}
 {% load basefilters %}
 {% load recruitmentfilters %}
+{% load i18n %}
 <div id="mainNav"></div>
 <!-- End of Navigation -->
 <style>
@@ -17,7 +18,7 @@
           <div class="col-12 col-sm-12 col-md-6 col-lg-4">
             <div class="oh-card-dashboard oh-card-dashboard--success">
               <div class="oh-card-dashboard__header">
-                <span class="oh-card-dashboard__title">New Joining Today</span>
+                <span class="oh-card-dashboard__title">{% trans "New Joining Today" %}</span>
               </div>
               <div class="oh-card-dashboard__body">
                 <div class="oh-card-dashboard__counts">
@@ -31,7 +32,7 @@
           <div class="col-12 col-sm-12 col-md-6 col-lg-4">
             <div class="oh-card-dashboard oh-card-dashboard oh-card-dashboard--warning">
               <div class="oh-card-dashboard__header">
-                <span class="oh-card-dashboard__title">New Joining This Week</span>
+                <span class="oh-card-dashboard__title">{% trans "New Joining This Week" %}</span>
               </div>
               <div class="oh-card-dashboard__body">
                 <div class="oh-card-dashboard__counts">
@@ -45,7 +46,7 @@
           <div class="col-12 col-sm-12 col-md-6 col-lg-4">
             <div class="oh-card-dashboard oh-card-dashboard--neutral">
               <div class="oh-card-dashboard__header">
-                <span class="oh-card-dashboard__title">Total Strength</span>
+                <span class="oh-card-dashboard__title">{% trans "Total Strength" %}</span>
               </div>
               <div class="oh-card-dashboard__body">
                 <div class="oh-card-dashboard__counts">
@@ -62,12 +63,12 @@
           <div class="col-12 col-sm-12 col-md-12 col-lg-4 oh-card-dashboard--moveable">
             <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent">
               <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
-                <span class="oh-card-dashboard__title">Overall Leave</span>
+                <span class="oh-card-dashboard__title">{% trans "Overall Leave" %}</span>
                 <select class="oh-select oh-select--sm float-end" name="" id="overAllLeaveSelect">
-                  <option value="today" selected>Today</option>
-                  <option value="week">This Week</option>
-                  <option value="month">This Month</option>
-                  <option value="year">This Year</option>
+                  <option value="today" selected>{% trans "Today" %}</option>
+                  <option value="week">{% trans "This Week" %}</option>
+                  <option value="month">{% trans "This Month" %}</option>
+                  <option value="year">{% trans "This Year" %}</option>
                 </select>
               </div>
               <div class="oh-card-dashboard__body">
@@ -78,7 +79,7 @@
           <div class="col-12 col-sm-12 col-md-12 col-lg-8 oh-card-dashboard--moveable">
             <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent">
               <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
-                <span class="oh-card-dashboard__title">Hired Candidates</span>
+                <span class="oh-card-dashboard__title">{% trans "Hired Candidates" %}</span>
               </div>
               <div class="oh-card-dashboard__body">
                 <canvas id="hiredCandidate"></canvas>
@@ -88,7 +89,7 @@
           <div class="col-12 col-sm-12 col-md-12 col-lg-8 oh-card-dashboard--moveable">
             <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent">
               <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
-                <span class="oh-card-dashboard__title">Candidate Started Onboarding</span>
+                <span class="oh-card-dashboard__title">{% trans "Candidate Started Onboarding" %}</span>
               </div>
               <div class="oh-card-dashboard__body">
                 <canvas id="onboardCandidate"></canvas>
@@ -99,7 +100,7 @@
           <div class="col-12 col-sm-12 col-md-12 col-lg-4 oh-card-dashboard--moveable">
             <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent">
               <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
-                <span class="oh-card-dashboard__title">Daily Attendance Analytic</span>
+                <span class="oh-card-dashboard__title">{% trans "Daily Attendance Analytic" %}</span>
               </div>
               <div class="oh-card-dashboard__body">
                 <canvas id="dailyAnalytic"></canvas>
@@ -112,7 +113,7 @@
           <div class="col-12 col-sm-12 col-md-12 col-lg-4 oh-card-dashboard--moveable">
             <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent">
               <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
-                <span class="oh-card-dashboard__title">Employees Chart</span>
+                <span class="oh-card-dashboard__title">{% trans "Employees Chart" %}</span>
               </div>
               <div class="oh-card-dashboard__body">
                 <canvas id="totalEmployees"></canvas>
@@ -125,7 +126,7 @@
           <div class="col-12 col-sm-12 col-md-12 col-lg-4 oh-card-dashboard--moveable">
             <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent">
               <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
-                <span class="oh-card-dashboard__title">Department Chart</span>
+                <span class="oh-card-dashboard__title">{% trans "Department Chart" %}</span>
               </div>
               <div class="oh-card-dashboard__body">
                 <canvas id="departmentChart"></canvas>
@@ -137,7 +138,7 @@
           <div class="col-12 col-sm-12 col-md-12 col-lg-4 oh-card-dashboard--moveable">
             <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent">
               <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
-                <span class="oh-card-dashboard__title">Gender Chart</span>
+                <span class="oh-card-dashboard__title">{% trans "Gender Chart" %}</span>
               </div>
               <div class="oh-card-dashboard__body">
                 <canvas id="genderChart"></canvas>
@@ -149,7 +150,7 @@
           <div class="col-12 col-sm-12 col-md-12 col-lg-8 oh-card-dashboard--moveable">
             <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent">
               <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
-                <span class="oh-card-dashboard__title">Recruitment Analytic</span>
+                <span class="oh-card-dashboard__title">{% trans "Recruitment Analytic" %}</span>
               </div>
               <div class="oh-card-dashboard__body">
                 <canvas id="recruitmentChart1"></canvas>
@@ -161,7 +162,7 @@
           <div class="col-12 col-sm-12 col-md-12 col-lg-4 oh-card-dashboard--moveable">
             <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent">
               <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
-                <span class="oh-card-dashboard__title">Objective status</span>
+                <span class="oh-card-dashboard__title">{% trans "Objective status" %}</span>
               </div>
               <div class="oh-card-dashboard__body">
                 <canvas id="objectiveChart"></canvas>
@@ -171,7 +172,7 @@
           <div class="col-12 col-sm-12 col-md-12 col-lg-4 oh-card-dashboard--moveable">
             <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent">
               <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
-                <span class="oh-card-dashboard__title">Key result status</span>
+                <span class="oh-card-dashboard__title">{% trans "Key result status" %}</span>
               </div>
               <div class="oh-card-dashboard__body">
                 <canvas id="keyResultChart"></canvas>
@@ -181,7 +182,7 @@
           <div class="col-12 col-sm-12 col-md-12 col-lg-6 oh-card-dashboard--moveable">
               <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent">
                   <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
-                      <span class="oh-card-dashboard__title">Feedack Status</span>
+                      <span class="oh-card-dashboard__title">{% trans "Feedack Status" %}</span>
                       <span class="oh-card-dashboard__title float-end" id="feedback-status-chart"><ion-icon name="caret-forward"></ion-icon></span>
                   </div>
                   <div class="oh-card-dashboard__body">
@@ -206,7 +207,7 @@
 
         <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent mt-3">
           <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
-            <span class="oh-card-dashboard__title">On Leave</span>
+            <span class="oh-card-dashboard__title">{% trans "On Leave" %}</span>
           </div>
           <div class="oh-card-dashboard__body">
             <ul class="oh-card-dashboard__user-list" id="leaveEmployee">

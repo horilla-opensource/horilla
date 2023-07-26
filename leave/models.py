@@ -97,6 +97,7 @@ class Holiday(models.Model):
     start_date = models.DateField()
     end_date = models.DateField(null=True, blank=True)
     recurring = models.BooleanField(default=False)
+    objects = models.Manager()
 
     def __str__(self):
         return self.name
@@ -109,6 +110,7 @@ class CompanyLeave(models.Model):
     based_on_week = models.CharField(
         max_length=100, choices=WEEKS, blank=True, null=True)
     based_on_week_day = models.CharField(max_length=100, choices=WEEK_DAYS)
+    objects = models.Manager()
 
     class Meta:
         unique_together = ('based_on_week', 'based_on_week_day')

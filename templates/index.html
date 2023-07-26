@@ -5,7 +5,7 @@
 <html>
   {% get_current_language_bidi as LANGUAGE_BIDI %}
   {% get_current_language as LANGUAGE_CODE %}
-  <html dir="{% if LANGUAGE_BIDI %}rtl{% else %}ltr{% endif %}" lang="{{ LANGUAGE_CODE }}">
+  {% comment %} <html dir="{% if LANGUAGE_BIDI %}rtl{% else %}ltr{% endif %}" lang="{{ LANGUAGE_CODE }}"> {% endcomment %}
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -139,6 +139,37 @@
             </div>
             {% endif %}
             {% include 'notification/notification.html' %}
+            <div class="oh-dropdown" x-data="{open: false}" @click="open = !open">
+              <div class="oh-navbar__action-icons">
+                  <a href="#" class="oh-navbar__action-icons-link">
+                      <ion-icon name="globe-outline" class="oh-navbar__icon"></ion-icon>
+                  </a>
+                  <div class="oh-dropdown__menu oh-dropdown__menu--right" x-show="open" @click.outside="open = false">
+                      <ul class="oh-dropdown__items">
+                          {% get_available_languages as LANGUAGES %}
+                          {% for language in LANGUAGES %}
+                          <li class="oh-dropdown__item">
+                              <a href="{% url 'set_language' %}" class="oh-dropdown__link"
+                                 onclick="event.preventDefault(); document.getElementById('language-form-{{ language.0 }}').submit();">
+                                  <img src="/static/images/ui/{{ language.0 }}.png" class="oh-dropdown__lang-icon"/>{{ language.1 }}{% if language.0 == LANGUAGE_CODE %}      
+                                  <ion-icon name="checkmark-circle-outline" style="
+                                  position: relative;
+                                  top: 3.3px;
+                                  color: green;
+                                  font-size: 1.2em;
+                              }"></ion-icon>
+                                  {% endif %}
+                              </a>
+                              <form id="language-form-{{ language.0 }}" action="{% url 'set_language' %}" method="post" style="display: none;">
+                                  {% csrf_token %}
+                                  <input type="hidden" name="language" value="{{ language.0 }}">
+                              </form>
+                          </li>
+                          {% endfor %}
+                      </ul>
+                  </div>
+              </div>
+            </div>          
             {% comment %} <div class="oh-navbar__action-icons"> 
               <form action="{% url 'set_language' %}" method="post" style="text-align: center;">
                  {% csrf_token %}
@@ -148,7 +179,7 @@
                      {% get_language_info_list for LANGUAGES as languages %}
                      {% for language in languages %}
                      <option value="{{ language.code }}" {% if language.code == LANGUAGE_CODE %} selected{% endif %}>
-                         {{ language.name}}
+                         {{ language.name_local}}
                      </option>
                      {% endfor %}
                  </select>

@@ -55,6 +55,8 @@ INSTALLED_APPS = [
     'onboarding',
     'asset',
     'attendance',
+    'payroll',
+
     'widget_tweaks',
     "django_apscheduler",
 
@@ -184,8 +186,8 @@ LOGIN_URL = '/login'
 EMAIL_USE_TLS = True  
 EMAIL_HOST = 'smtp.gmail.com'  
 EMAIL_PORT = 587  
-EMAIL_HOST_USER = '<email_address>'  
-EMAIL_HOST_PASSWORD = '<password>'  
+EMAIL_HOST_USER = 'samplemail13456@gmail.com'  
+EMAIL_HOST_PASSWORD = 'ysfkxwmjxmbmfkrr'  
 SIMPLE_HISTORY_REVERT_DISABLED=True
 
 
@@ -199,16 +201,16 @@ DJANGO_NOTIFICATIONS_CONFIG = {
 
 X_FRAME_OPTIONS = 'SAMEORIGIN'
 
+LANGUAGE_CODE = 'en-us'
+
 LANGUAGES = (
     ('en', 'English (US)'),
     ('de', 'Deutsche'),
-    ('es','Spanish'),
+    ('es','Español'),
     ('fr','France'),
     ('ar', 'عربى'),
 
 )
-
-LANGUAGE_CODE = 'en-us'
 
 LOCALE_PATHS = [
     join(BASE_DIR, 'horilla', 'locale'),

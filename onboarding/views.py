@@ -94,6 +94,10 @@ def stage_save(form, recruitment, request, rec_id):
         request.user.employee_get,
         recipient=users,
         verb="You are chosen as onboarding stage manager",
+        verb_ar="لقد تم اختيارك كمدير مرحلة التدريب.",
+        verb_de="Sie wurden als Onboarding-Stage-Manager ausgewählt.",
+        verb_es="Ha sido seleccionado/a como responsable de etapa de incorporación.",
+        verb_fr="Vous avez été choisi(e) en tant que responsable de l'étape d'intégration.",
         icon="people-circle",
         redirect="/onboarding/onboarding-view",
     )
@@ -133,6 +137,10 @@ def stage_update(request, stage_id, recruitment_id):
                 request.user.employee_get,
                 recipient=users,
                 verb="You are chosen as onboarding stage manager",
+                verb_ar="لقد تم اختيارك كمدير مرحلة التدريب.",
+                verb_de="Sie wurden als Onboarding-Stage-Manager ausgewählt.",
+                verb_es="Ha sido seleccionado/a como responsable de etapa de incorporación.",
+                verb_fr="Vous avez été choisi(e) en tant que responsable de l'étape d'intégration.",
                 icon="people-circle",
                 redirect="/onboarding/onboarding-view",
             )
@@ -207,7 +215,11 @@ def task_creation(request, obj_id):
             notify.send(
                 request.user.employee_get,
                 recipient=users,
-                verb="You are chosen as onboarding task manager",
+                verb="You are chosen as an onboarding task manager",
+                verb_ar="لقد تم اختيارك كمدير مهام التدريب.",
+                verb_de="Sie wurden als Onboarding-Aufgabenmanager ausgewählt.",
+                verb_es="Ha sido seleccionado/a como responsable de tareas de incorporación.",
+                verb_fr="Vous avez été choisi(e) en tant que responsable des tâches d'intégration.",
                 icon="people-circle",
                 redirect="/onboarding/onboarding-view",
             )
@@ -246,7 +258,11 @@ def task_update(request, task_id, recruitment_id):
             notify.send(
                 request.user.employee_get,
                 recipient=users,
-                verb="You are chosen as onboarding task manager",
+                verb="You are chosen as an onboarding task manager",
+                verb_ar="لقد تم اختيارك كمدير مهام التدريب.",
+                verb_de="Sie wurden als Onboarding-Aufgabenmanager ausgewählt.",
+                verb_es="Ha sido seleccionado/a como responsable de tareas de incorporación.",
+                verb_fr="Vous avez été choisi(e) en tant que responsable des tâches d'intégration.",
                 icon="people-circle",
                 redirect="/onboarding/onboarding-view",
             )
@@ -740,6 +756,10 @@ def candidate_task_update(request, obj_id):
         recipient=users,
         verb=f"The task {candidate_task.onboarding_task_id} of\
             {candidate_task.candidate_id} was updated to {candidate_task.status}.",
+        verb_ar=f"تم تحديث المهمة {candidate_task.onboarding_task_id} للمرشح {candidate_task.candidate_id} إلى {candidate_task.status}.",
+        verb_de=f"Die Aufgabe {candidate_task.onboarding_task_id} des Kandidaten {candidate_task.candidate_id} wurde auf {candidate_task.status} aktualisiert.",
+        verb_es=f"La tarea {candidate_task.onboarding_task_id} del candidato {candidate_task.candidate_id} se ha actualizado a {candidate_task.status}.",
+        verb_fr=f"La tâche {candidate_task.onboarding_task_id} du candidat {candidate_task.candidate_id} a été mise à jour à {candidate_task.status}.",
         icon="people-circle",
         redirect="/onboarding/onboarding-view",
     )
@@ -787,6 +807,10 @@ def candidate_stage_update(request, candidate_id, recruitment_id):
         recipient=users,
         verb=f"The stage of {candidate_stage.candidate_id} \
             was updated to {candidate_stage.onboarding_stage_id}.",
+        verb_ar=f"تم تحديث مرحلة المرشح {candidate_stage.candidate_id} إلى {candidate_stage.onboarding_stage_id}.",
+        verb_de=f"Die Phase des Kandidaten {candidate_stage.candidate_id} wurde auf {candidate_stage.onboarding_stage_id} aktualisiert.",
+        verb_es=f"La etapa del candidato {candidate_stage.candidate_id} se ha actualizado a {candidate_stage.onboarding_stage_id}.",
+        verb_fr=f"L'étape du candidat {candidate_stage.candidate_id} a été mise à jour à {candidate_stage.onboarding_stage_id}.",
         icon="people-circle",
         redirect="/onboarding/onboarding-view",
     )

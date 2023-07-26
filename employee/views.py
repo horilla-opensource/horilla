@@ -242,9 +242,6 @@ def employee_view_update(request, obj_id):
         if request.POST:
             if request.POST.get("employee_first_name") is not None:
                 form = EmployeeForm(request.POST, instance=employee)
-                print("----------")
-                print(request.POST)
-                print("----------")
                 if form.is_valid():
                     form.save()
                     messages.success(
@@ -265,6 +262,10 @@ def employee_view_update(request, obj_id):
                         request.user.employee_get,
                         recipient=instance.employee_id.employee_user_id,
                         verb="Your work details has been updated.",
+                        verb_ar="تم تحديث تفاصيل عملك.",
+                        verb_de="Ihre Arbeitsdetails wurden aktualisiert.",
+                        verb_es="Se han actualizado los detalles de su trabajo.",
+                        verb_fr="Vos informations professionnelles ont été mises à jour.",
                         redirect="/employee/employee-profile",
                         icon="briefcase",
                     )
@@ -411,7 +412,7 @@ def employee_update_personal_info(request, obj_id=None):
     form = EmployeeForm(request.POST, instance=employee)
     if form.is_valid():
         form.save()
-        if id is None:
+        if obj_id is None:
             messages.success(request, _("New Employee Added."))
             form = EmployeeForm(request.POST, instance=form.instance)
             work_form = EmployeeWorkInformationForm(
@@ -438,7 +439,7 @@ def employee_update_personal_info(request, obj_id=None):
                 
         """
         )
-    if id is None:
+    if obj_id is None:
         return render(
             request,
             "employee/create_form/form_view.html",
@@ -563,7 +564,7 @@ def employee_card(request):
     """
     previous_data = request.environ["QUERY_STRING"]
     search = request.GET.get("search")
-    if isinstance(search,type(None)):
+    if isinstance(search, type(None)):
         search = ""
     employees = filtersubordinatesemployeemodel(
         request, Employee.objects.all(), "employee.view_employee"
@@ -602,7 +603,7 @@ def employee_list(request):
     """
     previous_data = request.environ["QUERY_STRING"]
     search = request.GET.get("search")
-    if isinstance(search,type(None)):
+    if isinstance(search, type(None)):
         search = ""
     if request.GET.get("is_active") is None:
         filter_obj = EmployeeFilter(
@@ -1140,7 +1141,7 @@ def work_info_import(request):
                         employee_type_obj.employee_type = employee_type
                         employee_type_obj.save()
                     manager_fname, manager_lname = "", ""
-                    if isinstance(reporting_manager,str) and " " in reporting_manager:
+                    if isinstance(reporting_manager, str) and " " in reporting_manager:
                         manager_fname, manager_lname = reporting_manager.split(" ", 1)
                     reporting_manager_obj = Employee.objects.filter(
                         employee_first_name=manager_fname,
@@ -1360,8 +1361,8 @@ def dashboard_employee(request):
     Active and in-active employee dashboard
     """
     labels = [
-        "Active",
-        "In-Active",
+        _("Active"),
+        _("In-Active"),
     ]
     employees = Employee.objects.all()
     employees = filtersubordinates(request, employees, "employee.view_employee")
@@ -1386,7 +1387,7 @@ def dashboard_employee_gender(request):
     """
     This method is used to filter out gender vise employees
     """
-    labels = [" Male", "Female", "Others"]
+    labels = [_("Male"), _("Female"), _("Others")]
     employees = Employee.objects.all()
     employees = filtersubordinates(request, employees, "employee.view_employee")
 
