@@ -38,6 +38,7 @@ from django.db.utils import IntegrityError
 from django.db.models import Q
 from django.utils.translation import gettext_lazy as _
 from notifications.signals import notify
+from urllib.parse import parse_qs
 
 
 @login_required
@@ -216,6 +217,9 @@ def objecitve_filter_pagination(request, objective_own, objective_all):
     objectives_own = objective_paginator_own.get_page(page_number)
     objectives_all = objective_paginator_all.get_page(page_number)
     now = datetime.datetime.now()
+    data_dict = parse_qs(previous_data)
+
+    # Print the dictionary
     context = {
         "superuser": "true",
         "own_objectives": objectives_own,
@@ -223,6 +227,7 @@ def objecitve_filter_pagination(request, objective_own, objective_all):
         "objective_filer_form": objective_filter_own.form,
         "pg": previous_data,
         "current_date": now,
+        "filter_dict": data_dict,
     }
     return context
 
@@ -903,6 +908,7 @@ def filter_pagination_feedback(
     feedbacks_requested = feedback_paginator_requested.get_page(page_number)
     feedbacks_all = feedback_paginator_all.get_page(page_number)
     now = datetime.datetime.now()
+    data_dict = parse_qs(previous_data)
 
     context = {
         "superuser": "true",
@@ -912,6 +918,7 @@ def filter_pagination_feedback(
         "feedback_filter_form": feedback_filter_own.form,
         "pg": previous_data,
         "current_date": now,
+        "filter_dict": data_dict,
     }
     return context
 
@@ -1564,6 +1571,7 @@ def question_template_delete(request, id):
         messages.info(request, _("This template is using in a feedback"))
         return redirect(question_template_view)
     question_template.delete()
+    messages.success(request, "The question template is deleted successfully !.")
     return redirect(question_template_view)
 
 
@@ -1731,7 +1739,7 @@ def dashboard_objective_status(request):
             ).count()
             # if not objectives_count:
 
-            data.setdefault("objective_label", []).append(status[1])
+            data.setdefault("objective_label", []).append(status[0])
             data.setdefault("objective_value", []).append(objectives_count)
         return JsonResponse(data)
 
@@ -1748,7 +1756,7 @@ def dashboard_key_result_status(request):
             key_results_count = filtersubordinates(
                 request, queryset=key_results, perm="pms.view_employeekeyresult"
             ).count()
-            data.setdefault("key_result_label", []).append(i[1])
+            data.setdefault("key_result_label", []).append(i[0])
             data.setdefault("key_result_value", []).append(key_results_count)
         return JsonResponse(data)
 
@@ -1765,7 +1773,7 @@ def dashboard_feedback_status(request):
             feedback_count = filtersubordinates(
                 request, queryset=feedbacks, perm="pms.view_feedback"
             ).count()
-            data.setdefault("feedback_label", []).append(i[1])
+            data.setdefault("feedback_label", []).append(i[0])
             data.setdefault("feedback_value", []).append(feedback_count)
         return JsonResponse(data)
 

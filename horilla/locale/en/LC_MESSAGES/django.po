@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-07-17 09:40+0530\n"
+"POT-Creation-Date: 2023-07-27 14:12+0530\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -177,14 +177,14 @@ msgstr ""
 #: .\pms\templates\feedback\feedback_detailed_view.html:139
 #: .\pms\templates\feedback\feedback_detailed_view.html:210
 #: .\pms\templates\feedback\feedback_detailed_view.html:267
-#: .\pms\templates\feedback\feedback_list.html:27
-#: .\pms\templates\feedback\feedback_list.html:136
-#: .\pms\templates\feedback\feedback_list.html:251
+#: .\pms\templates\feedback\feedback_list.html:48
+#: .\pms\templates\feedback\feedback_list.html:157
+#: .\pms\templates\feedback\feedback_list.html:272
 #: .\pms\templates\feedback\feedback_list_view.html:69
 #: .\pms\templates\okr\objective_detailed_view.html:80
 #: .\pms\templates\okr\objective_detailed_view.html:203
-#: .\pms\templates\okr\objective_list.html:12
-#: .\pms\templates\okr\objective_list.html:116
+#: .\pms\templates\okr\objective_list.html:43
+#: .\pms\templates\okr\objective_list.html:239
 #: .\pms\templates\okr\objective_list_view.html:64
 #: .\recruitment\templates\recruitment\recruitment_component.html:48
 msgid "Status"
@@ -384,11 +384,11 @@ msgstr ""
 #: .\payroll\templates\payroll\deduction\list_deduction.html:121
 #: .\payroll\templates\payroll\payslip\list_payslips.html:68
 #: .\payroll\templates\payroll\payslip\list_payslips.html:73
-#: .\pms\templates\feedback\feedback_list.html:90
-#: .\pms\templates\feedback\feedback_list.html:201
-#: .\pms\templates\feedback\feedback_list.html:317
-#: .\pms\templates\okr\objective_list.html:74
-#: .\pms\templates\okr\objective_list.html:175
+#: .\pms\templates\feedback\feedback_list.html:111
+#: .\pms\templates\feedback\feedback_list.html:222
+#: .\pms\templates\feedback\feedback_list.html:338
+#: .\pms\templates\okr\objective_list.html:173
+#: .\pms\templates\okr\objective_list.html:369
 #: .\recruitment\templates\candidate\candidate_card.html:91
 #: .\recruitment\templates\candidate\candidate_card.html:96
 #: .\recruitment\templates\candidate\candidate_list.html:117
@@ -474,11 +474,11 @@ msgstr ""
 #: .\payroll\templates\payroll\deduction\view_single_deduction.html:59
 #: .\payroll\templates\payroll\payslip\list_payslips.html:68
 #: .\payroll\templates\payroll\payslip\list_payslips.html:83
-#: .\pms\templates\feedback\feedback_list.html:94
-#: .\pms\templates\feedback\feedback_list.html:205
-#: .\pms\templates\feedback\feedback_list.html:321
-#: .\pms\templates\okr\objective_list.html:77
-#: .\pms\templates\okr\objective_list.html:178
+#: .\pms\templates\feedback\feedback_list.html:115
+#: .\pms\templates\feedback\feedback_list.html:226
+#: .\pms\templates\feedback\feedback_list.html:342
+#: .\pms\templates\okr\objective_list.html:184
+#: .\pms\templates\okr\objective_list.html:380
 #: .\recruitment\templates\candidate\candidate_card.html:91
 #: .\recruitment\templates\candidate\candidate_card.html:107
 #: .\recruitment\templates\candidate\candidate_list.html:117
@@ -529,11 +529,11 @@ msgstr ""
 #: .\payroll\templates\payroll\contract\contract_list.html:92
 #: .\payroll\templates\payroll\deduction\list_deduction.html:136
 #: .\payroll\templates\payroll\payslip\list_payslips.html:88
-#: .\pms\templates\feedback\feedback_list.html:102
-#: .\pms\templates\feedback\feedback_list.html:213
-#: .\pms\templates\feedback\feedback_list.html:329
-#: .\pms\templates\okr\objective_list.html:83
-#: .\pms\templates\okr\objective_list.html:184
+#: .\pms\templates\feedback\feedback_list.html:123
+#: .\pms\templates\feedback\feedback_list.html:234
+#: .\pms\templates\feedback\feedback_list.html:350
+#: .\pms\templates\okr\objective_list.html:194
+#: .\pms\templates\okr\objective_list.html:390
 #: .\recruitment\templates\candidate\candidate_card.html:113
 #: .\recruitment\templates\candidate\candidate_list.html:132
 #: .\recruitment\templates\recruitment\recruitment_component.html:205
@@ -580,11 +580,11 @@ msgstr ""
 #: .\payroll\templates\payroll\contract\contract_list.html:95
 #: .\payroll\templates\payroll\deduction\list_deduction.html:139
 #: .\payroll\templates\payroll\payslip\list_payslips.html:91
-#: .\pms\templates\feedback\feedback_list.html:107
-#: .\pms\templates\feedback\feedback_list.html:218
-#: .\pms\templates\feedback\feedback_list.html:334
-#: .\pms\templates\okr\objective_list.html:87
-#: .\pms\templates\okr\objective_list.html:188
+#: .\pms\templates\feedback\feedback_list.html:128
+#: .\pms\templates\feedback\feedback_list.html:239
+#: .\pms\templates\feedback\feedback_list.html:355
+#: .\pms\templates\okr\objective_list.html:202
+#: .\pms\templates\okr\objective_list.html:398
 #: .\recruitment\templates\candidate\candidate_card.html:116
 #: .\recruitment\templates\candidate\candidate_list.html:137
 #: .\recruitment\templates\recruitment\recruitment_component.html:208
@@ -631,11 +631,11 @@ msgstr ""
 #: .\payroll\templates\payroll\contract\contract_list.html:100
 #: .\payroll\templates\payroll\deduction\list_deduction.html:144
 #: .\payroll\templates\payroll\payslip\list_payslips.html:96
-#: .\pms\templates\feedback\feedback_list.html:113
-#: .\pms\templates\feedback\feedback_list.html:224
-#: .\pms\templates\feedback\feedback_list.html:340
-#: .\pms\templates\okr\objective_list.html:93
-#: .\pms\templates\okr\objective_list.html:194
+#: .\pms\templates\feedback\feedback_list.html:134
+#: .\pms\templates\feedback\feedback_list.html:245
+#: .\pms\templates\feedback\feedback_list.html:361
+#: .\pms\templates\okr\objective_list.html:211
+#: .\pms\templates\okr\objective_list.html:407
 #: .\recruitment\templates\candidate\candidate_card.html:121
 #: .\recruitment\templates\candidate\candidate_list.html:143
 #: .\recruitment\templates\recruitment\recruitment_component.html:213
@@ -682,11 +682,11 @@ msgstr ""
 #: .\payroll\templates\payroll\contract\contract_list.html:103
 #: .\payroll\templates\payroll\deduction\list_deduction.html:147
 #: .\payroll\templates\payroll\payslip\list_payslips.html:99
-#: .\pms\templates\feedback\feedback_list.html:117
-#: .\pms\templates\feedback\feedback_list.html:228
-#: .\pms\templates\feedback\feedback_list.html:344
-#: .\pms\templates\okr\objective_list.html:97
-#: .\pms\templates\okr\objective_list.html:198
+#: .\pms\templates\feedback\feedback_list.html:138
+#: .\pms\templates\feedback\feedback_list.html:249
+#: .\pms\templates\feedback\feedback_list.html:365
+#: .\pms\templates\okr\objective_list.html:219
+#: .\pms\templates\okr\objective_list.html:415
 #: .\recruitment\templates\candidate\candidate_card.html:124
 #: .\recruitment\templates\candidate\candidate_list.html:148
 #: .\recruitment\templates\recruitment\recruitment_component.html:216
@@ -762,13 +762,13 @@ msgstr ""
 #: .\payroll\templates\payroll\deduction\view_single_deduction.html:95
 #: .\payroll\templates\payroll\tax\filing_status_list.html:73
 #: .\pms\templates\feedback\feedback_detailed_view.html:49
-#: .\pms\templates\feedback\feedback_list.html:69
-#: .\pms\templates\feedback\feedback_list.html:180
-#: .\pms\templates\feedback\feedback_list.html:294
+#: .\pms\templates\feedback\feedback_list.html:90
+#: .\pms\templates\feedback\feedback_list.html:201
+#: .\pms\templates\feedback\feedback_list.html:315
 #: .\pms\templates\feedback\question\question_all.html:98
 #: .\pms\templates\okr\objective_detailed_view.html:23
-#: .\pms\templates\okr\objective_list.html:56
-#: .\pms\templates\okr\objective_list.html:158
+#: .\pms\templates\okr\objective_list.html:146
+#: .\pms\templates\okr\objective_list.html:342
 #: .\recruitment\templates\candidate\candidate_card.html:69
 #: .\recruitment\templates\candidate\candidate_nav.html:118
 #: .\recruitment\templates\pipeline\pipeline.html:120
@@ -991,6 +991,7 @@ msgstr ""
 #: .\payroll\templates\payroll\deduction\view_deduction.html:43
 #: .\payroll\templates\payroll\payslip\filter_payslips.html:132
 #: .\payroll\templates\payroll\payslip\view_payslips.html:105
+#: .\pms\templates\feedback\feedback_list_view.html:50
 #: .\pms\templates\feedback\feedback_list_view.html:144
 #: .\pms\templates\okr\objective_list_view.html:44
 #: .\pms\templates\okr\objective_list_view.html:135
@@ -1285,9 +1286,9 @@ msgstr ""
 #: .\payroll\templates\payroll\payslip\list_payslips.html:6
 #: .\pms\templates\feedback\feedback_creation.html:41
 #: .\pms\templates\feedback\feedback_detailed_view.html:82
-#: .\pms\templates\feedback\feedback_list.html:25
-#: .\pms\templates\feedback\feedback_list.html:134
-#: .\pms\templates\feedback\feedback_list.html:249
+#: .\pms\templates\feedback\feedback_list.html:46
+#: .\pms\templates\feedback\feedback_list.html:155
+#: .\pms\templates\feedback\feedback_list.html:270
 #: .\pms\templates\feedback\feedback_list_view.html:75
 #: .\pms\templates\feedback\feedback_update.html:26
 #: .\pms\templates\okr\key_result\key_result_creation.html:118
@@ -1313,7 +1314,7 @@ msgstr ""
 #: .\attendance\templates\attendance\attendance_account\group_by.html:11
 #: .\attendance\templates\attendance\attendance_account\nav.html:33
 #: .\attendance\templates\attendance\attendance_account\overtime_list.html:10
-#: .\templates\sidebar.html:182
+#: .\templates\sidebar.html:181
 msgid "Hour Account"
 msgstr ""
 
@@ -1572,7 +1573,7 @@ msgstr ""
 
 #: .\attendance\templates\attendance\attendance\attendance_filters.html:53
 #: .\attendance\templates\attendance\own_attendance\filters.html:20
-#: .\payroll\models\models.py:585 .\templates\sidebar.html:178
+#: .\payroll\models\models.py:585 .\templates\sidebar.html:177
 msgid "Attendance"
 msgstr ""
 
@@ -1727,7 +1728,7 @@ msgid "Add Attendances"
 msgstr ""
 
 #: .\attendance\templates\attendance\attendance\attendance_nav.html:34
-#: .\templates\sidebar.html:172
+#: .\templates\sidebar.html:171
 msgid "Attendances"
 msgstr ""
 
@@ -1925,7 +1926,7 @@ msgstr ""
 
 #: .\attendance\templates\attendance\attendance_activity\activity_filters.html:53
 #: .\attendance\templates\attendance\attendance_activity\nav.html:6
-#: .\templates\sidebar.html:186
+#: .\templates\sidebar.html:185
 msgid "Attendance Activity"
 msgstr ""
 
@@ -2445,13 +2446,13 @@ msgstr ""
 #: .\employee\templates\employee_personal_info\employee_card.html:58
 #: .\employee\templates\employee_personal_info\employee_list.html:166
 #: .\pms\templates\feedback\feedback_detailed_view.html:41
-#: .\pms\templates\feedback\feedback_list.html:60
-#: .\pms\templates\feedback\feedback_list.html:171
-#: .\pms\templates\feedback\feedback_list.html:285
+#: .\pms\templates\feedback\feedback_list.html:81
+#: .\pms\templates\feedback\feedback_list.html:192
+#: .\pms\templates\feedback\feedback_list.html:306
 #: .\pms\templates\feedback\feedback_list_view.html:106
 #: .\pms\templates\okr\objective_detailed_view.html:18
-#: .\pms\templates\okr\objective_list.html:50
-#: .\pms\templates\okr\objective_list.html:152
+#: .\pms\templates\okr\objective_list.html:126
+#: .\pms\templates\okr\objective_list.html:322
 #: .\pms\templates\okr\objective_list_view.html:94
 #: .\recruitment\templates\candidate\candidate_card.html:57
 #: .\recruitment\templates\candidate\candidate_nav.html:97
@@ -2483,9 +2484,9 @@ msgstr ""
 #: .\base\templates\base\rotating_shift\rotating_shift_view.html:6
 #: .\base\templates\base\rotating_work_type\rotating_work_type_assign_view.html:21
 #: .\base\templates\base\rotating_work_type\rotating_work_type_view.html:6
-#: .\pms\templates\feedback\feedback_list.html:26
-#: .\pms\templates\feedback\feedback_list.html:135
-#: .\pms\templates\feedback\feedback_list.html:250
+#: .\pms\templates\feedback\feedback_list.html:47
+#: .\pms\templates\feedback\feedback_list.html:156
+#: .\pms\templates\feedback\feedback_list.html:271
 #: .\pms\templates\feedback\question_template\question_template_update.html:6
 #: .\pms\templates\feedback\question_template\question_template_view.html:50
 #: .\pms\templates\feedback\question_template\question_template_view.html:101
@@ -3819,7 +3820,7 @@ msgstr ""
 
 #: .\employee\templates\employee\profile\profile_view.html:99
 #: .\employee\templates\employee\view\individual.html:103
-#: .\templates\sidebar.html:204
+#: .\templates\sidebar.html:203
 msgid "Leave"
 msgstr ""
 
@@ -4327,7 +4328,7 @@ msgid "Based On Week Day"
 msgstr ""
 
 #: .\leave\templates\leave\company-leave-view.html:18
-#: .\templates\sidebar.html:236
+#: .\templates\sidebar.html:235
 msgid "Company Leaves"
 msgstr ""
 
@@ -4385,7 +4386,7 @@ msgstr ""
 msgid "Recurring"
 msgstr ""
 
-#: .\leave\templates\leave\holiday-view.html:19 .\templates\sidebar.html:231
+#: .\leave\templates\leave\holiday-view.html:19 .\templates\sidebar.html:230
 msgid "Holidays"
 msgstr ""
 
@@ -4560,7 +4561,7 @@ msgstr ""
 
 #: .\leave\templates\leave\leave-type-view.html:20
 #: .\leave\templates\leave\request-update-form.html:20
-#: .\templates\sidebar.html:216
+#: .\templates\sidebar.html:215
 msgid "Leave Types"
 msgstr ""
 
@@ -4664,7 +4665,7 @@ msgstr ""
 msgid "Rejected Requests"
 msgstr ""
 
-#: .\leave\templates\leave\request-view.html:67 .\templates\sidebar.html:226
+#: .\leave\templates\leave\request-view.html:67 .\templates\sidebar.html:225
 msgid "Leave Requests"
 msgstr ""
 
@@ -4687,7 +4688,7 @@ msgid "User Leave"
 msgstr ""
 
 #: .\leave\templates\leave\user-request-view.html:19
-#: .\templates\sidebar.html:212
+#: .\templates\sidebar.html:211
 msgid "My Leave Requests"
 msgstr ""
 
@@ -5761,6 +5762,7 @@ msgstr ""
 
 #: .\payroll\templates\payroll\contract\contract_list.html:6
 #: .\payroll\templates\payroll\contract\filter_contract.html:12
+#: .\templates\sidebar.html:141
 msgid "Contract"
 msgstr ""
 
@@ -5861,6 +5863,7 @@ msgstr ""
 #: .\payroll\templates\payroll\payslip\filter_payslips.html:11
 #: .\payroll\templates\payroll\payslip\individual_payslip.html:23
 #: .\payroll\templates\payroll\payslip\view_payslips.html:63
+#: .\templates\sidebar.html:155
 msgid "Payslip"
 msgstr ""
 
@@ -5906,6 +5909,7 @@ msgid "Net Pay Greater or Equal"
 msgstr ""
 
 #: .\payroll\templates\payroll\payslip\generate_payslip_list.html:6
+#: .\templates\sidebar.html:135
 msgid "Payroll"
 msgstr ""
 
@@ -5942,6 +5946,7 @@ msgid "Loss of Pay"
 msgstr ""
 
 #: .\payroll\templates\payroll\payslip\individual_payslip.html:155
+#: .\templates\sidebar.html:159
 msgid "Federal Tax"
 msgstr ""
 
@@ -5973,7 +5978,7 @@ msgstr ""
 #: .\pms\templates\feedback\feedback_creation.html:81
 #: .\pms\templates\okr\key_result\key_result_creation.html:93
 #: .\pms\templates\okr\objective_creation.html:58
-#: .\pms\templates\period\period_view.html:23 .\templates\sidebar.html:262
+#: .\pms\templates\period\period_view.html:23 .\templates\sidebar.html:261
 msgid "Period"
 msgstr ""
 
@@ -6242,7 +6247,7 @@ msgstr ""
 #: .\pms\templates\feedback\question_template\question_template_view.html:23
 #: .\pms\templates\feedback\question_template\question_template_view.html:92
 #: .\pms\templates\feedback\question_template\question_template_view.html:120
-#: .\templates\sidebar.html:266
+#: .\templates\sidebar.html:265
 msgid "Question Template"
 msgstr ""
 
@@ -6271,34 +6276,34 @@ msgstr ""
 msgid "Update Feedback"
 msgstr ""
 
-#: .\pms\templates\feedback\feedback_list.html:28
-#: .\pms\templates\feedback\feedback_list.html:252
-#: .\pms\templates\okr\objective_list.html:11
-#: .\pms\templates\okr\objective_list.html:115
+#: .\pms\templates\feedback\feedback_list.html:49
+#: .\pms\templates\feedback\feedback_list.html:273
+#: .\pms\templates\okr\objective_list.html:42
+#: .\pms\templates\okr\objective_list.html:238
 msgid "Due In"
 msgstr ""
 
-#: .\pms\templates\feedback\feedback_list.html:54
-#: .\pms\templates\feedback\feedback_list.html:165
-#: .\pms\templates\feedback\feedback_list.html:279
+#: .\pms\templates\feedback\feedback_list.html:75
+#: .\pms\templates\feedback\feedback_list.html:186
+#: .\pms\templates\feedback\feedback_list.html:300
 msgid "Answer"
 msgstr ""
 
-#: .\pms\templates\feedback\feedback_list.html:55
-#: .\pms\templates\feedback\feedback_list.html:166
-#: .\pms\templates\feedback\feedback_list.html:280
+#: .\pms\templates\feedback\feedback_list.html:76
+#: .\pms\templates\feedback\feedback_list.html:187
+#: .\pms\templates\feedback\feedback_list.html:301
 msgid "Answer view"
 msgstr ""
 
-#: .\pms\templates\feedback\feedback_list.html:58
-#: .\pms\templates\feedback\feedback_list.html:169
-#: .\pms\templates\feedback\feedback_list.html:283
-#: .\pms\templates\okr\objective_list.html:45
-#: .\pms\templates\okr\objective_list.html:147
+#: .\pms\templates\feedback\feedback_list.html:79
+#: .\pms\templates\feedback\feedback_list.html:190
+#: .\pms\templates\feedback\feedback_list.html:304
+#: .\pms\templates\okr\objective_list.html:106
+#: .\pms\templates\okr\objective_list.html:302
 msgid "Un-archive"
 msgstr ""
 
-#: .\pms\templates\feedback\feedback_list.html:137
+#: .\pms\templates\feedback\feedback_list.html:158
 msgid "Due Date"
 msgstr ""
 
@@ -6465,13 +6470,13 @@ msgstr ""
 msgid "from"
 msgstr ""
 
-#: .\pms\templates\okr\objective_list.html:9
-#: .\pms\templates\okr\objective_list.html:113
+#: .\pms\templates\okr\objective_list.html:40
+#: .\pms\templates\okr\objective_list.html:236
 msgid "Owner"
 msgstr ""
 
-#: .\pms\templates\okr\objective_list.html:10
-#: .\pms\templates\okr\objective_list.html:114
+#: .\pms\templates\okr\objective_list.html:41
+#: .\pms\templates\okr\objective_list.html:237
 #: .\pms\templates\okr\objective_list_view.html:55
 #: .\pms\templates\okr\objective_list_view.html:60
 #: .\pms\templates\okr\objective_update.html:28
@@ -6506,168 +6511,168 @@ msgstr ""
 msgid "Update Period"
 msgstr ""
 
-#: .\pms\views.py:78
+#: .\pms\views.py:79
 msgid "Objective created"
 msgstr ""
 
-#: .\pms\views.py:123
+#: .\pms\views.py:124
 msgid "Objectives created"
 msgstr ""
 
-#: .\pms\views.py:165
+#: .\pms\views.py:166
 #, python-format
 msgid "Objective %(objective)s Updated"
 msgstr ""
 
-#: .\pms\views.py:191
+#: .\pms\views.py:192
 #, python-format
 msgid "Objective %(objective)s deleted"
 msgstr ""
 
-#: .\pms\views.py:487
+#: .\pms\views.py:492
 #, python-format
 msgid "Objective %(objective)s status updated"
 msgstr ""
 
-#: .\pms\views.py:509
+#: .\pms\views.py:514
 msgid "Status has been updated"
 msgstr ""
 
-#: .\pms\views.py:533
+#: .\pms\views.py:538
 #, python-format
 msgid "Current value of %(employee_key_result)s updated"
 msgstr ""
 
-#: .\pms\views.py:538
+#: .\pms\views.py:543
 msgid "Current value is greater than target value"
 msgstr ""
 
-#: .\pms\views.py:540
+#: .\pms\views.py:545
 msgid "Error occurred during current value updation"
 msgstr ""
 
-#: .\pms\views.py:557
+#: .\pms\views.py:562
 msgid "Objective un-archived successfully!."
 msgstr ""
 
-#: .\pms\views.py:561
+#: .\pms\views.py:566
 msgid "Objective archived successfully!."
 msgstr ""
 
-#: .\pms\views.py:599 .\pms\views.py:651
+#: .\pms\views.py:604 .\pms\views.py:656
 msgid "Key result created"
 msgstr ""
 
-#: .\pms\views.py:624
+#: .\pms\views.py:629
 msgid "Key results created"
 msgstr ""
 
-#: .\pms\views.py:686
+#: .\pms\views.py:691
 msgid "Key result updated"
 msgstr ""
 
-#: .\pms\views.py:784
+#: .\pms\views.py:789
 msgid "Feedback created successfully."
 msgstr ""
 
-#: .\pms\views.py:1080
+#: .\pms\views.py:1087
 msgid "You are not allowed to answer"
 msgstr ""
 
-#: .\pms\views.py:1095
+#: .\pms\views.py:1102
 msgid "Feedback already answered"
 msgstr ""
 
-#: .\pms\views.py:1146
+#: .\pms\views.py:1153
 #, python-format
 msgid "Feedback %(review_cycle)s has been answered successfully!."
 msgstr ""
 
-#: .\pms\views.py:1171
+#: .\pms\views.py:1178
 msgid "Feedback is not answered yet"
-msgstr ""
-
-#: .\pms\views.py:1199
-#, python-format
-msgid "Feedback %(review_cycle)s deleted successfully!"
 msgstr ""
 
 #: .\pms\views.py:1206
 #, python-format
+msgid "Feedback %(review_cycle)s deleted successfully!"
+msgstr ""
+
+#: .\pms\views.py:1213
+#, python-format
 msgid "Feedback %(review_cycle)s is ongoing you  you can archive it!"
 msgstr ""
 
-#: .\pms\views.py:1226
+#: .\pms\views.py:1233
 msgid "Feedback is already started"
 msgstr ""
 
-#: .\pms\views.py:1232
+#: .\pms\views.py:1239
 #, python-format
 msgid "Feedback status updated to  %(status)s"
 msgstr ""
 
-#: .\pms\views.py:1237
+#: .\pms\views.py:1244
 #, python-format
 msgid "Error occurred during status update to %(status)s"
 msgstr ""
 
-#: .\pms\views.py:1254
+#: .\pms\views.py:1261
 msgid "Feedback un-archived successfully!."
 msgstr ""
 
-#: .\pms\views.py:1258
+#: .\pms\views.py:1265
 msgid "Feedback archived successfully!."
 msgstr ""
 
-#: .\pms\views.py:1278
+#: .\pms\views.py:1285
 msgid "Completed"
 msgstr ""
 
-#: .\pms\views.py:1278
+#: .\pms\views.py:1285
 msgid "Not-completed"
 msgstr ""
 
-#: .\pms\views.py:1301
+#: .\pms\views.py:1308
 msgid "Question template is used in feedback."
 msgstr ""
 
-#: .\pms\views.py:1321 .\pms\views.py:1323
+#: .\pms\views.py:1328 .\pms\views.py:1330
 msgid "Question created successfully."
 msgstr ""
 
-#: .\pms\views.py:1326
+#: .\pms\views.py:1333
 msgid "Error occurred during question creation!"
 msgstr ""
 
-#: .\pms\views.py:1396 .\pms\views.py:1403
+#: .\pms\views.py:1403 .\pms\views.py:1410
 msgid "Question updated successfully."
 msgstr ""
 
-#: .\pms\views.py:1437
+#: .\pms\views.py:1444
 msgid "Question deleted successfully!"
 msgstr ""
 
-#: .\pms\views.py:1443
+#: .\pms\views.py:1450
 msgid "Failed to delete question: Question template is in use."
 msgstr ""
 
-#: .\pms\views.py:1543
+#: .\pms\views.py:1550
 msgid "Question template updated"
 msgstr ""
 
-#: .\pms\views.py:1564
+#: .\pms\views.py:1571
 msgid "This template is using in a feedback"
 msgstr ""
 
-#: .\pms\views.py:1600
+#: .\pms\views.py:1608
 msgid "Period creation was Successful "
 msgstr ""
 
-#: .\pms\views.py:1628
+#: .\pms\views.py:1636
 msgid "Period updated  Successfully. "
 msgstr ""
 
-#: .\pms\views.py:1651
+#: .\pms\views.py:1659
 msgid "Period deleted successfully."
 msgstr ""
 
@@ -7169,11 +7174,11 @@ msgstr ""
 msgid "All Notifications"
 msgstr ""
 
-#: .\templates\index.html:168
+#: .\templates\index.html:200
 msgid "My Profile"
 msgstr ""
 
-#: .\templates\index.html:174
+#: .\templates\index.html:206
 msgid "Logout"
 msgstr ""
 
@@ -7282,7 +7287,7 @@ msgstr ""
 msgid "My Company"
 msgstr ""
 
-#: .\templates\sidebar.html:32 .\templates\sidebar.html:252
+#: .\templates\sidebar.html:32 .\templates\sidebar.html:251
 msgid "Dashboard"
 msgstr ""
 
@@ -7302,42 +7307,50 @@ msgstr ""
 msgid "Candidate View"
 msgstr ""
 
-#: .\templates\sidebar.html:190
+#: .\templates\sidebar.html:146
+msgid "Allowance view"
+msgstr ""
+
+#: .\templates\sidebar.html:151
+msgid "Deduction view"
+msgstr ""
+
+#: .\templates\sidebar.html:189
 msgid "Late Come Early Out"
 msgstr ""
 
-#: .\templates\sidebar.html:194
+#: .\templates\sidebar.html:193
 msgid "My Attendance"
 msgstr ""
 
-#: .\templates\sidebar.html:209
+#: .\templates\sidebar.html:208
 msgid "My Leaves"
 msgstr ""
 
-#: .\templates\sidebar.html:221
+#: .\templates\sidebar.html:220
 msgid "Assigned Leaves"
 msgstr ""
 
-#: .\templates\sidebar.html:247
+#: .\templates\sidebar.html:246
 msgid "PMS"
 msgstr ""
 
-#: .\templates\sidebar.html:255
+#: .\templates\sidebar.html:254
 msgid "OKR"
 msgstr ""
 
-#: .\templates\sidebar.html:258
+#: .\templates\sidebar.html:257
 msgid "360 Feedback"
 msgstr ""
 
-#: .\templates\sidebar.html:277
+#: .\templates\sidebar.html:276
 msgid "Assets"
 msgstr ""
 
-#: .\templates\sidebar.html:283
+#: .\templates\sidebar.html:282
 msgid "Asset view"
 msgstr ""
 
-#: .\templates\sidebar.html:287
+#: .\templates\sidebar.html:286
 msgid "Request and Allocation"
 msgstr ""
