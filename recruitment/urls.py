@@ -138,4 +138,5 @@ urlpatterns = [
     path("dashboard-pipeline", views.dashboard_pipeline, name="recruitment-pipeline"),
     path("get-open-positions", views.get_open_position, name="get-open-position"),
     path("candidate-sequence-update", views.candidate_sequence_update, name="candidate-sequence-update"),
+    path("stage-sequence-update",views.stage_sequence_update,name="stage-sequence-update")
 ]

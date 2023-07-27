@@ -26,7 +26,7 @@
 {% if request.user|stage_manages:rec or perms.recruitment.view_stage %}
 <div class="oh-tabs__content " id="tab_rec_{{rec.id}}">
   <div class="ui-sortable">
-    <div class="oh-kanban ui-sortable">
+    <div class="oh-kanban ui-sortable drop-target">
     {% for stage in rec.stage_set.all|dictsort:"sequence" %}
 
     <div
@@ -39,7 +39,6 @@
     >
       <div class="oh-kanban__section-head stage" style="cursor: pointer;" data-recruitment-id='{{rec.id}}'>
         <div class="d-flex">
-
           <span class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round ms-2 mr-2" data-rec-stage-badge="{{rec.id}}"  id="stageCount{{stage.id}}">{{stage.candidate_set.all|length}}</span>
           <span class="oh-kanban__section-title" data-type="label"
           ><input
@@ -52,7 +51,8 @@
           hx-swap='none'
           style="width: 160px;"
           readonly=""
-        /></span>
+        />
+      </span>
         </div>
 
         <div class="oh-kanban__head-actions oh-kanban__dropdown" >          
@@ -284,6 +284,7 @@
 </div>
 
 {% include 'pipeline/footer_components.html' %}
+<script src="{% static 'kanban/stageSequence.js' %}"></script>
 
 
 

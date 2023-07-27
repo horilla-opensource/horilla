@@ -14,7 +14,7 @@
 {% for rec in recruitment %}
 <div class="oh-tabs__content " id="tab_rec_{{rec.id}}">
   <div class="ui-sortable">
-    <div class="oh-kanban ui-sortable">
+    <div class="oh-kanban ui-sortable" id="stageDropTarget">
     {% for stage in rec.stage_set.all|dictsort:"sequence" %}
     <div
       class="oh-kanban__section "

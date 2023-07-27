@@ -1318,3 +1318,20 @@ def candidate_sequence_update(request):
         cand.save()
 
     return JsonResponse({"message": "Sequence updated", "type": "info"})
+
+
+@login_required
+@recruitment_manager_can_enter("recruitment.change_stage")
+def stage_sequence_update(request):
+    """
+    This method is used to update the sequence of the stages
+    """
+    sequence_data = json.loads(request.POST["sequence"])
+    print('---------------')
+    print(sequence_data)
+    print('---------------')
+    for stage_id, seq in sequence_data.items():
+        stage = Stage.objects.get(id=stage_id)
+        stage.sequence = seq
+        stage.save()
+    return JsonResponse({"type":"success","message":"Stage sequence updated"})

@@ -128,7 +128,7 @@ class Stage(models.Model):
     stage_type = models.CharField(
         max_length=20, choices=stage_types, default="interview"
     )
-    sequence = models.IntegerField(null=True)
+    sequence = models.IntegerField(null=True,default=0)
     is_active = models.BooleanField(default=True)
     objects = models.Manager()
 
@@ -142,6 +142,8 @@ class Stage(models.Model):
 
         permissions = (("archive_Stage", "Archive Stage"),)
         unique_together = ["recruitment_id", "stage"]
+        ordering = ["sequence"]
+
 
 
 class Candidate(models.Model):
