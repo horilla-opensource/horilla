@@ -296,15 +296,18 @@ For more details:
 - Attendance
 - Leave
 - Asset
+- Payroll
 - Performance Management System
 
 ### **Roadmap**
 
-- Payroll (On the way..Coming Soon)
 
-- Calendar App
 
-- Project Management
+- Calendar App - Development Under Process
+
+- Project Management - Development Under Process
+
+- Chat App - Development Under Process
 
 - More to come.....
 
