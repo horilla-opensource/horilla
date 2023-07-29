@@ -987,7 +987,7 @@ msgstr "Asset Genehmigung"
 #: .\asset\templates\request_allocation\asset_approve.html:7
 #: .\asset\templates\request_allocation\asset_request_creation.html:18
 msgid "Requesting User"
-msgstr "Anfordernder Benutzer"
+msgstr "Anfragender Benutzer"
 
 #: .\asset\templates\request_allocation\asset_request_allocation_list.html:37
 #: .\asset\templates\request_allocation\asset_request_allocation_list.html:306
@@ -997,11 +997,11 @@ msgstr "Rücknahme"
 
 #: .\asset\templates\request_allocation\asset_request_allocation_list.html:90
 msgid "Request User"
-msgstr "Benutzer anfordern"
+msgstr "Benutzer anfragen"
 
 #: .\asset\templates\request_allocation\asset_request_allocation_list.html:92
 msgid "Request Date"
-msgstr "Anforderungsdatum"
+msgstr "Anfragedatum"
 
 #: .\asset\templates\request_allocation\asset_request_allocation_list.html:145
 #: .\asset\templates\request_allocation\asset_request_allocation_list.html:207
@@ -1477,7 +1477,7 @@ msgstr "Berufliche Stellung"
 #: .\employee\templates\employee_personal_info\employee_list.html:31
 #: .\templates\settings.html:44
 msgid "Work Type"
-msgstr "Arbeitsweise
+msgstr "Arbeitsweise"
 
 #: .\attendance\templates\attendance\attendance\attendance_filters.html:43
 #: .\attendance\templates\attendance\attendance_account\attendance_account_filter.html:43
@@ -1673,7 +1673,7 @@ msgstr "Anwesenheiten bestätigen"
 
 #: .\attendance\templates\attendance\attendance\attendance_view.html:14
 msgid "OT Attendances"
-msgstr "Im Laufe der ZeitAnwesenheiten"
+msgstr "Überstunden Anwesenheiten"
 
 #: .\attendance\templates\attendance\attendance\attendance_view.html:18
 msgid "Validated Attendances"
@@ -2291,7 +2291,7 @@ msgstr "Sind Sie sicher, dass Sie diese Jobrolle löschen möchten?"
 #: .\base\templates\base\rotating_work_type\filters.html:28
 #: .\templates\settings.html:62
 msgid "Rotating Shift"
-msgstr "Rotierende Schicht"
+msgstr "Wechselchicht"
 
 #: .\base\templates\base\rotating_shift\filters.html:18
 #: .\base\templates\base\rotating_shift\rotating_shift_assign_view.html:24
@@ -5799,7 +5799,7 @@ msgstr "Kandidaten Ansicht"
 
 #: .\templates\sidebar.html:153
 msgid "Late Come Ealry Out"
-msgstr "Spät kommen / Früh gehen"
+msgstr "Spät kommen/Früh gehen"
 
 #: .\templates\sidebar.html:157
 msgid "My Attendance"
@@ -5842,7 +5842,7 @@ msgstr "Anfrage und Zuteilung"
 #~ msgstr "--- Chousse {label}---"
 
 #~ msgid "Job role"
-#~ msgstr "Stellenb Rolle"
+#~ msgstr "Stellen Rolle"
 
 #~ msgid "Any Other Code"
 #~ msgstr "Jeder Andere Code"
