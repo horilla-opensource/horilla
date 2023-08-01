@@ -236,6 +236,7 @@ class CandidateCreationForm(ModelForm):
             "scheduled_for",
             "schedule_date",
             "joining_date",
+            "sequence",
             "stage_id",
         )
         widgets = {
@@ -309,6 +310,8 @@ class ApplicationForm(RegistrationForm):
             "is_active",
             "canceled",
             "joining_date",
+            "sequence",
+            
         )
         widgets = {
             "recruitment_id": forms.TextInput(
