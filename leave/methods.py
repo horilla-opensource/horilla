@@ -87,9 +87,9 @@ def company_leave_dates_list(company_leaves,start_date):
                     calendar.setfirstweekday(0)
                     month_calendar = calendar.monthcalendar(year, month)
                     for week in month_calendar:
-                        if week[int(based_on_week_day)] != 0:
+                        if week[int(based_on_week_day)-1] != 0:
                             date = datetime.strptime(
-                                f"{year}-{month:02}-{week[int(based_on_week_day)]:02}", '%Y-%m-%d').date()
+                                f"{year}-{month:02}-{week[int(based_on_week_day)-1]:02}", '%Y-%m-%d').date()
                             if date not in company_leave_dates:
                                 company_leave_dates.append(date)
         return company_leave_dates

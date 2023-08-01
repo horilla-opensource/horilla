@@ -42,6 +42,8 @@ x-data="{searchShow: false}"
     />
   </div>
   <div class="oh-main__titlebar-button-container">
+    {% if 'employee' in perms or request.user|is_reportingmanager %}
+
     <div class="oh-btn-group ml-2">
       <div class="oh-dropdown" x-data="{open: false}">
         <button
@@ -82,6 +84,7 @@ x-data="{searchShow: false}"
         </div>
       </div>
     </div>
+    {% endif %}
     <div class="oh-dropdown" x-data="{open: false}">
       <button class="oh-btn ml-2" @click="open = !open">
         <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}

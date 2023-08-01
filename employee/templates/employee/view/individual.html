@@ -143,7 +143,7 @@
                           <span>{% trans "Date of Birth" %}</span>
                         </span>
                         <span class="oh-profile__info-value"
-                          >{{employee.dob}}</span
+                          >{% if employee.dob %}{{employee.dob}}{% endif %}</span
                         >
                       </li>
                       <li class="oh-profile__card-info-item">
@@ -154,7 +154,7 @@
                           <span>{% trans "Gender" %}</span>
                         </span>
                         <span class="oh-profile__info-value"
-                          >{{employee.gender|capfirst}}</span
+                          >{% trans employee.get_gender_display %}</span
                         >
                       </li>
                       <li class="oh-profile__card-info-item">
@@ -199,7 +199,7 @@
                           <span>{% trans "Experience" %}</span>
                         </span>
                         <span class="oh-profile__info-value">
-                          {{employee.experience}}
+                          {% if employee.experience %}{{employee.experience}}{% endif %}
                         </span>
                       </li>
                       <li class="oh-profile__card-info-item">
@@ -207,7 +207,7 @@
                           <ion-icon name="link-outline"></ion-icon>
                           <span>{% trans "Maritial Status" %}</span>
                         </span>
-                        <span class="oh-profile__info-value"> {{employee.marital_status}} </span>
+                        <span class="oh-profile__info-value">   {{employee.get_marital_status_display}}</span>
                       </li>
                       <li class="oh-profile__card-info-item">
                         <span class="oh-profile__info-label mb-1">
@@ -216,7 +216,7 @@
                           ></ion-icon>
                           <span>{% trans "Children" %}</span>
                         </span>
-                        <span class="oh-profile__info-value"> {{employee.children}} </span>
+                        <span class="oh-profile__info-value"> {{employee.children}}</span>
                       </li>
                       <li class="oh-profile__card-info-item">
                         <span class="oh-profile__info-label mb-1">

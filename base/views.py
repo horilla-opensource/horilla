@@ -1104,7 +1104,6 @@ def employee_shift_create(request):
         if form.is_valid():
             form.save()
             form = EmployeeShiftForm()
-
             messages.success(
                 request, _("Employee Shift has been created successfully!")
             )
@@ -1125,7 +1124,7 @@ def employee_shift_update(request, id):
     form = EmployeeShiftForm(instance=employee_shift)
     if request.method == "POST":
         form = EmployeeShiftForm(request.POST, instance=employee_shift)
-        if form.is_valid:
+        if form.is_valid():
             form.save()
             messages.success(request, _("Shift updated"))
             return redirect(employee_shift_create)

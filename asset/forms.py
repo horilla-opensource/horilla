@@ -49,6 +49,8 @@ class AssetForm(ModelForm):
                 return_status__isnull=True
             ):
                 raise ValidationError('Asset in use you can"t change the status')
+            if Asset.objects.filter(asset_tracking_id=self.data["asset_tracking_id"]).exclude(id=instance.pk).exists():
+             raise ValidationError({"asset_tracking_id":'Already asset with this tracking id exists.'})
 class AssetCategoryForm(ModelForm):
     class Meta:
         model = AssetCategory

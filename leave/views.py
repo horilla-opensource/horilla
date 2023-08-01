@@ -1,30 +1,69 @@
+# Standard library imports
 import contextlib
-from django.shortcuts import render, redirect
-from horilla.decorators import login_required, hx_request_required
-from .forms import *
-from .models import *
+from datetime import datetime, timedelta, date
+
+# Third-party imports
 from django.http import JsonResponse, HttpResponse
-from employee.models import Employee
-from .filters import *
 from django.contrib import messages
 from django.db.models import Q
-from datetime import datetime, timedelta, date
-from django.utils import timezone
-from base.models import *
+from django.core.paginator import Paginator
+from django.db.models.functions import TruncYear
+from django.utils.translation import gettext_lazy as _
+from notifications.signals import notify
+from django.shortcuts import render, redirect
+
+# Django imports (grouped together)
+from django.utils.translation import gettext_lazy as _
+
+# Local imports (grouped together)
+from horilla.decorators import (
+    login_required,
+    hx_request_required,
+    permission_required,
+    manager_can_enter,
+)
+from base.models import Department
+from base.methods import filtersubordinates, choosesubordinates
+from employee.models import Employee
+
+from .forms import (
+    LeaveTypeForm,
+    UpdateLeaveTypeForm,
+    LeaveRequestCreationForm,
+    LeaveRequestUpdationForm,
+    LeaveOneAssignForm,
+    AvailableLeaveForm,
+    AvailableLeaveUpdateForm,
+    HolidayForm,
+    CompanyLeaveForm,
+    UserLeaveRequestForm,
+)
+
+from .models import (
+    LeaveType,
+    AvailableLeave,
+    LeaveRequest,
+    Holiday,
+    CompanyLeave,
+    WEEKS,
+    WEEK_DAYS,
+)
+
+from .filters import (
+    LeaveTypeFilter,
+    AssignedLeavefilter,
+    LeaveRequestFilter,
+    HolidayFilter,
+    userLeaveRequestFilter,
+    CompanyLeavefilter,
+)
+
 from .methods import (
     calculate_requested_days,
     leave_requested_dates,
     holiday_dates_list,
     company_leave_dates_list,
 )
-import random
-from django.core.paginator import Paginator
-from django.db.models.functions import TruncYear
-from horilla.decorators import permission_required
-from horilla.decorators import manager_can_enter
-from base.methods import filtersubordinates, choosesubordinates
-from django.utils.translation import gettext_lazy as _
-from notifications.signals import notify
 
 
 @login_required
@@ -366,17 +405,22 @@ def leave_request_approve(request, id):
     available_leave = AvailableLeave.objects.get(
         leave_type_id=leave_type_id, employee_id=employee_id
     )
-    total_available_leave = available_leave.available_days + available_leave.carryforward_days
+    total_available_leave = (
+        available_leave.available_days + available_leave.carryforward_days
+    )
     if total_available_leave >= leave_request.requested_days:
         if leave_request.requested_days > available_leave.available_days:
             leave = leave_request.requested_days - available_leave.available_days
             leave_request.approved_available_days = available_leave.available_days
             available_leave.available_days = 0
-            available_leave.carryforward_days = available_leave.carryforward_days - leave
+            available_leave.carryforward_days = (
+                available_leave.carryforward_days - leave
+            )
             leave_request.approved_carryforward_days = leave
         else:
+            available_days = available_leave.available_days
             available_leave.available_days = (
-                available_leave.available_days - leave_request.requested_days
+                available_days - leave_request.requested_days
             )
             leave_request.approved_available_days = leave_request.requested_days
         leave_request.status = "approved"
@@ -396,7 +440,10 @@ def leave_request_approve(request, id):
                 redirect="/leave/user-request-view",
             )
     else:
-        messages.error(request,f"{employee_id} dont have enough leave days to approve the request..")
+        messages.error(
+            request,
+            f"{employee_id} dont have enough leave days to approve the request..",
+        )
     return redirect(leave_request_view)
 
 
@@ -1040,10 +1087,12 @@ def user_leave_request(request, id):
                 leave_request = form.save(commit=False)
                 leave_request.leave_type_id = leave_type
                 leave_request.employee_id = employee
-                leave_request.save()
+                leave_request.requested_days = requested_days
+                leave_request.end_date_breakdown = end_date_breakdown
                 if leave_request.leave_type_id.require_approval == "no":
                     employee_id = leave_request.employee_id
                     leave_type_id = leave_request.leave_type_id
+                    leave_request.requested_days = requested_days
                     available_leave = AvailableLeave.objects.get(
                         leave_type_id=leave_type_id, employee_id=employee_id
                     )
@@ -1143,14 +1192,17 @@ def user_request_update(request, id):
                     holidays = Holiday.objects.all()
                     holiday_dates = holiday_dates_list(holidays)
                     company_leaves = CompanyLeave.objects.all()
-                    company_leave_dates = company_leave_dates_list(company_leaves, start_date)
+                    company_leave_dates = company_leave_dates_list(
+                        company_leaves, start_date
+                    )
                     if (
                         leave_type.exclude_company_leave == "yes"
                         and leave_type.exclude_holiday == "yes"
                     ):
                         total_leaves = list(set(holiday_dates + company_leave_dates))
                         total_leave_count = sum(
-                            requested_date in total_leaves for requested_date in requested_dates
+                            requested_date in total_leaves
+                            for requested_date in requested_dates
                         )
                         requested_days = requested_days - total_leave_count
                     else:
