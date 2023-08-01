@@ -144,7 +144,7 @@
                   <a href="#" class="oh-navbar__action-icons-link">
                       <ion-icon name="globe-outline" class="oh-navbar__icon"></ion-icon>
                   </a>
-                  <div class="oh-dropdown__menu oh-dropdown__menu--right" x-show="open" @click.outside="open = false">
+                  <div class="oh-dropdown__menu oh-dropdown__menu--right" x-show="open" @click.outside="open = false" style="display:none;">
                       <ul class="oh-dropdown__items">
                           {% get_available_languages as LANGUAGES %}
                           {% for language in LANGUAGES %}
