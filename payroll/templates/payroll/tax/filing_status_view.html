@@ -1,6 +1,15 @@
 {% extends 'index.html' %}
 {% block content %}
 {% load i18n %}
+{% if messages %}
+<div class="oh-alert-container">
+    {% for message in messages %}
+    <div class="oh-alert oh-alert--animated {{message.tags}}">
+          {{ message }}
+    </div> 
+    {% endfor %}
+</div>
+{% endif %}
 <main :class="sidebarOpen ? 'oh-main__sidebar-visible' : ''">
   <section class="oh-wrapper oh-main__topbar" x-data="{searchShow: false}">
       <div class="oh-main__titlebar oh-main__titlebar--left">

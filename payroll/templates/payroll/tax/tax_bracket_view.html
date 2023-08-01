@@ -1,4 +1,13 @@
 {% load i18n %}
+{% if messages %}
+<div class="oh-alert-container">
+    {% for message in messages %}
+    <div class="oh-alert oh-alert--animated {{message.tags}}">
+          {{ message }}
+    </div> 
+    {% endfor %}
+</div>
+{% endif %}
 <div class="oh-sticky-table__table">
   <div class="oh-sticky-table__thead">
     <div class="oh-sticky-table__tr">

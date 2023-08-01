@@ -9,6 +9,7 @@ from django.utils import timezone
 from django.shortcuts import render, redirect
 from django.http import JsonResponse, HttpResponseRedirect
 from django.contrib import messages
+from django.utils.translation import gettext_lazy as _
 from horilla.decorators import login_required, permission_required
 from employee.models import Employee, EmployeeWorkInformation
 from payroll.models.models import Payslip, WorkRecord
@@ -16,7 +17,6 @@ from payroll.models.models import Contract
 from payroll.forms.forms import ContractForm, WorkRecordForm
 from payroll.models.tax_models import PayrollSettings
 from payroll.forms.component_forms import PayrollSettingsForm
-from django.utils.translation import gettext_lazy as _
 from payroll.filters import ContractFilter
 from payroll.methods.methods import paginator_qry
 

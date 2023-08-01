@@ -61,9 +61,9 @@ def get_company_leave_dates(year):
                 calendar.setfirstweekday(0)
                 month_calendar = calendar.monthcalendar(year, month)
                 for week in month_calendar:
-                    if week[int(based_on_week_day)] != 0:
+                    if week[int(based_on_week_day) - 1] != 0:
                         leave_date = datetime.strptime(
-                            f"{year}-{month:02}-{week[int(based_on_week_day)]:02}",
+                            f"{year}-{month:02}-{week[int(based_on_week_day)-1]:02}",
                             "%Y-%m-%d",
                         ).date()
                         if leave_date not in company_leave_dates:
@@ -185,6 +185,9 @@ def get_leaves(employee, start_date, end_date):
     paid_leave_dates = []
     unpaid_leave_dates = []
     company_leave_dates = get_working_days(start_date, end_date)["company_leave_dates"]
+    print("----------------------")
+    print(company_leave_dates)
+    print("----------------------")
 
     if approved_leaves.exists():
         for instance in approved_leaves:
