@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-07-27 14:12+0530\n"
+"POT-Creation-Date: 2023-08-01 12:27+0530\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -22,25 +22,25 @@ msgstr ""
 msgid "A powerful laptop for business use."
 msgstr "Un ordinateur portable puissant pour une utilisation professionnelle."
 
-#: .\asset\forms.py:57
+#: .\asset\forms.py:59
 msgid "Computers."
 msgstr "Des ordinateurs."
 
-#: .\asset\forms.py:58
+#: .\asset\forms.py:60
 msgid "A category for all types of laptops."
 msgstr "Une catégorie pour tous les types d'ordinateurs portables."
 
-#: .\asset\forms.py:70
+#: .\asset\forms.py:72
 msgid "Requesting a laptop for software development purposes."
 msgstr ""
 "Demande d'un ordinateur portable à des fins de développement de logiciels."
 
-#: .\asset\forms.py:107
+#: .\asset\forms.py:109
 msgid "ohn returns the laptop. However, it has suffered minor damage."
 msgstr ""
 "Ohn ramène l'ordinateur portable. Cependant, il a subi des dommages mineurs."
 
-#: .\asset\forms.py:119
+#: .\asset\forms.py:121
 msgid ""
 "A batch of 50 laptops, consisting of Lenovo ThinkPad T480s and Dell XPS 13."
 msgstr ""
@@ -71,15 +71,15 @@ msgstr "Majeurs Dommages"
 msgid "Healthy"
 msgstr "Bonne Santé"
 
-#: .\asset\models.py:57 .\leave\models.py:39
+#: .\asset\models.py:57 .\leave\models.py:94
 msgid "Requested"
 msgstr "Demandée"
 
 #: .\asset\models.py:58 .\base\templates\shift_request\htmx\requests.html:83
-#: .\base\templates\shift_request\shift_request_nav.html:159
+#: .\base\templates\shift_request\shift_request_nav.html:162
 #: .\base\templates\work_type_request\htmx\requests.html:84
-#: .\base\templates\work_type_request\work_type_request_nav.html:157
-#: .\leave\models.py:40
+#: .\base\templates\work_type_request\work_type_request_nav.html:159
+#: .\leave\models.py:95
 msgid "Approved"
 msgstr "Approuvé"
 
@@ -123,7 +123,7 @@ msgstr "Actif Nom"
 #: .\pms\templates\okr\key_result\key_result_creation.html:58
 #: .\pms\templates\okr\key_result\key_result_creation_htmx.html:40
 #: .\pms\templates\okr\key_result\key_result_update.html:37
-#: .\recruitment\forms.py:188 .\recruitment\forms.py:349
+#: .\recruitment\forms.py:188 .\recruitment\forms.py:352
 #: .\recruitment\templates\pipeline\form\recruitment_drop_down_form.html:39
 #: .\recruitment\templates\pipeline\form\recruitment_update.html:24
 #: .\recruitment\templates\recruitment\recruitment_form.html:11
@@ -221,10 +221,10 @@ msgstr "Groupe Numéro"
 #: .\payroll\templates\payroll\contribution\contribution_deduction_assign.html:28
 #: .\payroll\templates\payroll\contribution\contribution_deduction_creation.html:24
 #: .\payroll\templates\payroll\contribution\contribution_deduction_edit.html:24
-#: .\payroll\templates\payroll\tax\filing_status_creation.html:24
-#: .\payroll\templates\payroll\tax\filing_status_edit.html:27
-#: .\payroll\templates\payroll\tax\tax_bracket_creation.html:24
-#: .\payroll\templates\payroll\tax\tax_bracket_edit.html:24
+#: .\payroll\templates\payroll\tax\filing_status_creation.html:33
+#: .\payroll\templates\payroll\tax\filing_status_edit.html:35
+#: .\payroll\templates\payroll\tax\tax_bracket_creation.html:33
+#: .\payroll\templates\payroll\tax\tax_bracket_edit.html:33
 #: .\pms\templates\feedback\answer\feedback_answer.html:183
 #: .\pms\templates\feedback\feedback_creation.html:128
 #: .\pms\templates\feedback\feedback_update.html:103
@@ -276,21 +276,21 @@ msgid "Asset"
 msgstr "Actif"
 
 #: .\asset\templates\asset\asset_list.html:56
-#: .\asset\templates\asset\asset_list.html:74
+#: .\asset\templates\asset\asset_list.html:75
 #: .\asset\templates\batch\asset_batch_number_list.html:24
-#: .\asset\templates\category\asset_category.html:56
+#: .\asset\templates\category\asset_category.html:58
 #: .\leave\templates\leave\leave-type-update.html:178
 #: .\leave\templates\leave\leave_request_view.html:68
 #: .\onboarding\templates\onboarding\candidate-update.html:96
 #: .\onboarding\templates\onboarding\stage-update.html:28
 #: .\onboarding\templates\onboarding\task-update.html:28
-#: .\payroll\templates\payroll\tax\filing_status_list.html:64
+#: .\payroll\templates\payroll\tax\filing_status_list.html:61
 #: .\pms\templates\feedback\question_template\question_template_view.html:74
 #: .\pms\templates\period\period_view.html:63
 msgid "Update"
 msgstr "Mise à jour"
 
-#: .\asset\templates\asset\asset_list.html:82
+#: .\asset\templates\asset\asset_list.html:83
 #: .\attendance\templates\attendance\attendance\group_by.html:118
 #: .\attendance\templates\attendance\attendance\group_by.html:281
 #: .\attendance\templates\attendance\attendance\group_by.html:444
@@ -317,9 +317,9 @@ msgstr "Mise à jour"
 msgid "Remove"
 msgstr "Supprimer"
 
-#: .\asset\templates\asset\asset_list.html:99
+#: .\asset\templates\asset\asset_list.html:100
 #: .\asset\templates\batch\asset_batch_number_list.html:49
-#: .\asset\templates\category\asset_category.html:81
+#: .\asset\templates\category\asset_category.html:80
 #: .\asset\templates\request_allocation\asset_request_allocation_list.html:51
 #: .\asset\templates\request_allocation\asset_request_allocation_list.html:233
 #: .\asset\templates\request_allocation\asset_request_allocation_list.html:421
@@ -404,9 +404,9 @@ msgstr "Supprimer"
 msgid "Page"
 msgstr "Page"
 
-#: .\asset\templates\asset\asset_list.html:102
+#: .\asset\templates\asset\asset_list.html:103
 #: .\asset\templates\batch\asset_batch_number_list.html:52
-#: .\asset\templates\category\asset_category.html:84
+#: .\asset\templates\category\asset_category.html:83
 #: .\asset\templates\request_allocation\asset_request_allocation_list.html:54
 #: .\asset\templates\request_allocation\asset_request_allocation_list.html:236
 #: .\asset\templates\request_allocation\asset_request_allocation_list.html:424
@@ -494,9 +494,9 @@ msgstr "Page"
 msgid "of"
 msgstr "de"
 
-#: .\asset\templates\asset\asset_list.html:108
+#: .\asset\templates\asset\asset_list.html:109
 #: .\asset\templates\batch\asset_batch_number_list.html:58
-#: .\asset\templates\category\asset_category.html:90
+#: .\asset\templates\category\asset_category.html:89
 #: .\asset\templates\request_allocation\asset_request_allocation_list.html:60
 #: .\asset\templates\request_allocation\asset_request_allocation_list.html:242
 #: .\asset\templates\request_allocation\asset_request_allocation_list.html:430
@@ -545,9 +545,9 @@ msgstr "de"
 msgid "First"
 msgstr "D'abord"
 
-#: .\asset\templates\asset\asset_list.html:112
+#: .\asset\templates\asset\asset_list.html:113
 #: .\asset\templates\batch\asset_batch_number_list.html:62
-#: .\asset\templates\category\asset_category.html:94
+#: .\asset\templates\category\asset_category.html:93
 #: .\asset\templates\request_allocation\asset_request_allocation_list.html:64
 #: .\asset\templates\request_allocation\asset_request_allocation_list.html:246
 #: .\asset\templates\request_allocation\asset_request_allocation_list.html:434
@@ -596,9 +596,9 @@ msgstr "D'abord"
 msgid "Previous"
 msgstr "Précédent"
 
-#: .\asset\templates\asset\asset_list.html:118
+#: .\asset\templates\asset\asset_list.html:119
 #: .\asset\templates\batch\asset_batch_number_list.html:68
-#: .\asset\templates\category\asset_category.html:100
+#: .\asset\templates\category\asset_category.html:99
 #: .\asset\templates\request_allocation\asset_request_allocation_list.html:70
 #: .\asset\templates\request_allocation\asset_request_allocation_list.html:252
 #: .\asset\templates\request_allocation\asset_request_allocation_list.html:440
@@ -647,9 +647,9 @@ msgstr "Précédent"
 msgid "Next"
 msgstr "Suivant"
 
-#: .\asset\templates\asset\asset_list.html:122
+#: .\asset\templates\asset\asset_list.html:123
 #: .\asset\templates\batch\asset_batch_number_list.html:72
-#: .\asset\templates\category\asset_category.html:104
+#: .\asset\templates\category\asset_category.html:103
 #: .\asset\templates\request_allocation\asset_request_allocation_list.html:74
 #: .\asset\templates\request_allocation\asset_request_allocation_list.html:256
 #: .\asset\templates\request_allocation\asset_request_allocation_list.html:444
@@ -738,12 +738,11 @@ msgid "Batch Description is not added"
 msgstr "La description du lot n'est pas ajoutée"
 
 #: .\asset\templates\batch\asset_batch_number_list.html:33
-#: .\asset\templates\category\asset_category.html:62
 #: .\attendance\templates\attendance\attendance\attendance_nav.html:107
 #: .\base\templates\base\rotating_shift\rotating_shift_assign_nav.html:90
 #: .\base\templates\base\rotating_work_type\rotating_work_type_assign_nav.html:88
-#: .\base\templates\shift_request\shift_request_nav.html:77
-#: .\base\templates\work_type_request\work_type_request_nav.html:75
+#: .\base\templates\shift_request\shift_request_nav.html:79
+#: .\base\templates\work_type_request\work_type_request_nav.html:76
 #: .\employee\templates\employee_nav.html:189
 #: .\employee\templates\employee_personal_info\employee_card.html:72
 #: .\leave\templates\leave\accrual_plan_view.html:30
@@ -764,7 +763,7 @@ msgstr "La description du lot n'est pas ajoutée"
 #: .\payroll\templates\payroll\allowance\view_single_allowance.html:92
 #: .\payroll\templates\payroll\contract\contract_single_view.html:125
 #: .\payroll\templates\payroll\deduction\view_single_deduction.html:95
-#: .\payroll\templates\payroll\tax\filing_status_list.html:73
+#: .\payroll\templates\payroll\tax\filing_status_list.html:70
 #: .\pms\templates\feedback\feedback_detailed_view.html:49
 #: .\pms\templates\feedback\feedback_list.html:90
 #: .\pms\templates\feedback\feedback_list.html:201
@@ -828,12 +827,12 @@ msgid "Search"
 msgstr "Chercher"
 
 #: .\asset\templates\batch\asset_batch_number_view.html:46
-#: .\asset\templates\category\asset_category.html:51
+#: .\asset\templates\category\asset_category.html:52
 #: .\asset\templates\category\asset_category_view.html:230
 #: .\attendance\templates\attendance\attendance\attendance_nav.html:121
 #: .\attendance\templates\attendance\attendance_account\nav.html:94
-#: .\base\templates\shift_request\shift_request_nav.html:216
-#: .\base\templates\work_type_request\work_type_request_nav.html:215
+#: .\base\templates\shift_request\shift_request_nav.html:219
+#: .\base\templates\work_type_request\work_type_request_nav.html:217
 #: .\employee\templates\employee_nav.html:205
 #: .\leave\templates\leave\accrual_plan_view.html:3
 #: .\leave\templates\leave\company-leave-view.html:73
@@ -854,8 +853,8 @@ msgstr "Chercher"
 #: .\payroll\templates\payroll\contribution\contribution_deduction_view.html:31
 #: .\payroll\templates\payroll\deduction\view_deduction.html:69
 #: .\payroll\templates\payroll\payslip\view_payslips.html:152
-#: .\payroll\templates\payroll\tax\filing_status_list.html:52
-#: .\payroll\templates\payroll\tax\filing_status_view.html:31
+#: .\payroll\templates\payroll\tax\filing_status_list.html:49
+#: .\payroll\templates\payroll\tax\filing_status_view.html:40
 #: .\pms\templates\feedback\feedback_list_view.html:155
 #: .\pms\templates\feedback\question_template\question_template_view.html:37
 #: .\pms\templates\okr\objective_list_view.html:146
@@ -870,8 +869,8 @@ msgstr "Créer"
 #: .\attendance\templates\attendance\attendance\attendance_nav.html:90
 #: .\base\templates\base\rotating_shift\rotating_shift_assign_nav.html:61
 #: .\base\templates\base\rotating_work_type\rotating_work_type_assign_nav.html:59
-#: .\base\templates\shift_request\shift_request_nav.html:52
-#: .\base\templates\work_type_request\work_type_request_nav.html:50
+#: .\base\templates\shift_request\shift_request_nav.html:54
+#: .\base\templates\work_type_request\work_type_request_nav.html:51
 #: .\employee\templates\employee_nav.html:147
 #: .\leave\templates\leave\company_leave\company-leave.html:8
 #: .\leave\templates\leave\holiday\holiday.html:10
@@ -880,7 +879,7 @@ msgstr "Créer"
 #: .\leave\templates\leave\user-requests.html:23
 #: .\onboarding\templates\onboarding\candidates.html:22
 #: .\onboarding\templates\onboarding\onboarding-table.html:26
-#: .\payroll\templates\payroll\tax\filing_status_list.html:32
+#: .\payroll\templates\payroll\tax\filing_status_list.html:29
 #: .\recruitment\templates\candidate\candidate_nav.html:86
 #: .\recruitment\templates\recruitment\recruitment_component.html:49
 msgid "Actions"
@@ -896,8 +895,8 @@ msgstr "Actifs Création Catégorie"
 #: .\leave\templates\leave\leave-type-creation.html:38
 #: .\leave\templates\leave\leave-type-update.html:40
 #: .\leave\templates\leave\leave-type-view.html:48
-#: .\onboarding\templates\onboarding\table.html:10 .\recruitment\forms.py:246
-#: .\recruitment\forms.py:383
+#: .\onboarding\templates\onboarding\table.html:10 .\recruitment\forms.py:247
+#: .\recruitment\forms.py:386
 #: .\recruitment\templates\candidate\application_form.html:118
 #: .\recruitment\templates\pipeline\form\candidate_drop_down_form.html:18
 #: .\recruitment\templates\pipeline\pipeline_card.html:95
@@ -965,10 +964,10 @@ msgstr "Achated Date"
 #: .\base\templates\base\rotating_shift\rotating_shift_assign_nav.html:43
 #: .\base\templates\base\rotating_work_type\filters.html:100
 #: .\base\templates\base\rotating_work_type\rotating_work_type_assign_nav.html:41
-#: .\base\templates\shift_request\shift_request_nav.html:87
-#: .\base\templates\shift_request\shift_request_nav.html:204
-#: .\base\templates\work_type_request\work_type_request_nav.html:85
-#: .\base\templates\work_type_request\work_type_request_nav.html:201
+#: .\base\templates\shift_request\shift_request_nav.html:90
+#: .\base\templates\shift_request\shift_request_nav.html:207
+#: .\base\templates\work_type_request\work_type_request_nav.html:87
+#: .\base\templates\work_type_request\work_type_request_nav.html:203
 #: .\employee\templates\employee_filters.html:103
 #: .\employee\templates\employee_nav.html:128
 #: .\leave\templates\leave\assign-view.html:34
@@ -1079,9 +1078,9 @@ msgstr "Rejeter"
 
 #: .\asset\templates\request_allocation\asset_request_allocation_list.html:184
 #: .\base\templates\shift_request\htmx\requests.html:24
-#: .\base\templates\shift_request\shift_request_nav.html:155
+#: .\base\templates\shift_request\shift_request_nav.html:158
 #: .\base\templates\work_type_request\htmx\requests.html:24
-#: .\base\templates\work_type_request\work_type_request_nav.html:153
+#: .\base\templates\work_type_request\work_type_request_nav.html:155
 msgid "Requested Date"
 msgstr "Demandée Date"
 
@@ -1131,97 +1130,97 @@ msgstr "l'Actif Alloué Date"
 msgid "Allocated By"
 msgstr "Attribué Par"
 
-#: .\asset\views.py:56
+#: .\asset\views.py:64
 msgid "Asset created successfully"
 msgstr "Actif créé avec succès"
 
-#: .\asset\views.py:103
+#: .\asset\views.py:111
 msgid "Asset Updated"
 msgstr "Actif mis à jour"
 
-#: .\asset\views.py:161 .\asset\views.py:175
+#: .\asset\views.py:172 .\asset\views.py:189
 msgid "Asset is in use"
 msgstr "L'actif est en cours d'utilisation"
 
-#: .\asset\views.py:165 .\asset\views.py:179
+#: .\asset\views.py:177 .\asset\views.py:194
 msgid "Asset is used in allocation!."
 msgstr "L'actif est utilisé dans l'allocation !."
 
-#: .\asset\views.py:169 .\asset\views.py:182
+#: .\asset\views.py:182 .\asset\views.py:198
 msgid "Asset deleted successfully"
 msgstr "Actif supprimé avec succès"
 
-#: .\asset\views.py:251
+#: .\asset\views.py:272
 msgid "Asset category created successfully"
 msgstr "Catégorie d'actif créée avec succès"
 
-#: .\asset\views.py:278
+#: .\asset\views.py:299
 msgid "Asset category updated successfully"
 msgstr "Catégorie d'actif mise à jour avec succès"
 
-#: .\asset\views.py:305
+#: .\asset\views.py:326
 #, python-format
 msgid "There are assets in use in the %(asset_category)s category."
 msgstr ""
 "Il y a des actifs en cours d'utilisation dans la catégorie %(asset_category)s"
 
-#: .\asset\views.py:311
+#: .\asset\views.py:332
 msgid "Asset Category Deleted"
 msgstr "Catégorie d'actif supprimée"
 
-#: .\asset\views.py:401
+#: .\asset\views.py:428
 msgid "Asset request created!"
 msgstr "Demande d'élément créée !"
 
-#: .\asset\views.py:444
+#: .\asset\views.py:469
 msgid "Asset request approved successfully!."
 msgstr "Demande d'actif approuvée avec succès !."
 
-#: .\asset\views.py:484
+#: .\asset\views.py:508
 msgid "Asset request rejected"
 msgstr "Demande d'élément rejetée"
 
-#: .\asset\views.py:518
+#: .\asset\views.py:538
 msgid "Asset allocated successfully!."
 msgstr "Actif alloué avec succès !."
 
-#: .\asset\views.py:551
+#: .\asset\views.py:571
 msgid "Asset Return Successful !."
 msgstr "Retour d'actif réussi !."
 
-#: .\asset\views.py:562
+#: .\asset\views.py:582
 msgid "Asset Return Successful!."
 msgstr "Retour d'actif réussi !."
 
-#: .\asset\views.py:704
+#: .\asset\views.py:724
 msgid "Successfully imported Assets"
 msgstr "Actifs importés avec succès"
 
-#: .\asset\views.py:706
+#: .\asset\views.py:726
 msgid "File Error"
 msgstr "Erreur de fichier"
 
-#: .\asset\views.py:746
+#: .\asset\views.py:766
 msgid "There are no assets to export."
 msgstr "Il n'y a aucun actif à exporter."
 
-#: .\asset\views.py:841
+#: .\asset\views.py:842
 msgid "Batch number created successfully."
 msgstr "Numéro de lot créé avec succès."
 
-#: .\asset\views.py:909
+#: .\asset\views.py:910
 msgid "Batch updated successfully."
 msgstr "Lot mis à jour avec succès."
 
-#: .\asset\views.py:931
+#: .\asset\views.py:932
 msgid "Batch number in-use"
 msgstr "Numéro de lot en cours d'utilisation"
 
-#: .\asset\views.py:934
+#: .\asset\views.py:935
 msgid "Batch number deleted"
 msgstr "Numéro de lot supprimé"
 
-#: .\attendance\forms.py:62 .\base\forms.py:159 .\base\forms.py:203
+#: .\attendance\forms.py:62 .\base\forms.py:160 .\base\forms.py:204
 #: .\payroll\forms\tax_forms.py:41 .\recruitment\forms.py:53
 #: .\recruitment\forms.py:96
 #, python-brace-format
@@ -1241,7 +1240,7 @@ msgstr "Employé non choisi"
 #: .\attendance\templates\attendance\attendance_account\attendance_account_filter.html:56
 #: .\attendance\templates\attendance\attendance_account\group_by.html:9
 #: .\attendance\templates\attendance\attendance_account\overtime_list.html:8
-#: .\leave\models.py:28
+#: .\leave\models.py:80
 msgid "Month"
 msgstr "Mois"
 
@@ -1270,9 +1269,9 @@ msgstr "Mois"
 #: .\base\templates\base\rotating_work_type\filters.html:14
 #: .\base\templates\base\rotating_work_type\rotating_work_type_assign_view.html:17
 #: .\base\templates\shift_request\htmx\requests.html:18
-#: .\base\templates\shift_request\shift_request_nav.html:104
+#: .\base\templates\shift_request\shift_request_nav.html:107
 #: .\base\templates\work_type_request\htmx\requests.html:18
-#: .\base\templates\work_type_request\work_type_request_nav.html:102
+#: .\base\templates\work_type_request\work_type_request_nav.html:104
 #: .\employee\templates\employee_filters.html:5
 #: .\employee\templates\employee_personal_info\employee_list.html:21
 #: .\leave\templates\leave\accrual_plan_assign_view.html:9
@@ -1309,7 +1308,7 @@ msgstr "Employé"
 #: .\attendance\templates\attendance\attendance_account\attendance_account_filter.html:64
 #: .\attendance\templates\attendance\attendance_account\group_by.html:10
 #: .\attendance\templates\attendance\attendance_account\overtime_list.html:9
-#: .\leave\models.py:28
+#: .\leave\models.py:80
 msgid "Year"
 msgstr "Année"
 
@@ -1358,11 +1357,11 @@ msgstr "Heures supplémentaires maximales autorisées par jour"
 msgid "Invalid format, it should be HH:MM format"
 msgstr "Format invalide, il devrait être au format HH:MM"
 
-#: .\attendance\models.py:52 .\base\models.py:26
+#: .\attendance\models.py:52
 msgid "Invalid time"
 msgstr "Heure invalide"
 
-#: .\attendance\models.py:54 .\base\models.py:28
+#: .\attendance\models.py:54
 msgid "Invalid format"
 msgstr "Format invalide"
 
@@ -1391,8 +1390,8 @@ msgstr "Vous ne pouvez pas ajouter plus de conditions."
 #: .\attendance\templates\attendance\late_come_early_out\late_come_early_out_filters.html:6
 #: .\base\templates\base\rotating_shift\filters.html:44
 #: .\base\templates\base\rotating_work_type\filters.html:44
-#: .\base\templates\shift_request\shift_request_nav.html:99
-#: .\base\templates\work_type_request\work_type_request_nav.html:97
+#: .\base\templates\shift_request\shift_request_nav.html:102
+#: .\base\templates\work_type_request\work_type_request_nav.html:99
 #: .\employee\templates\employee\update_form\form_view.html:16
 #: .\employee\templates\employee_filters.html:41
 #: .\employee\templates\employee_personal_info\employee_work_info.html:7
@@ -1409,8 +1408,8 @@ msgstr "Travail Info"
 #: .\base\templates\base\job_position\job_position_view.html:10
 #: .\base\templates\base\rotating_shift\filters.html:53
 #: .\base\templates\base\rotating_work_type\filters.html:53
-#: .\base\templates\shift_request\shift_request_nav.html:126
-#: .\base\templates\work_type_request\work_type_request_nav.html:124
+#: .\base\templates\shift_request\shift_request_nav.html:129
+#: .\base\templates\work_type_request\work_type_request_nav.html:126
 #: .\employee\templates\employee\profile\profile_view.html:258
 #: .\employee\templates\employee\profile\work_info.html:13
 #: .\employee\templates\employee\update_form\work_details.html:17
@@ -1418,8 +1417,8 @@ msgstr "Travail Info"
 #: .\employee\templates\employee_filters.html:50
 #: .\employee\templates\employee_personal_info\employee_list.html:29
 #: .\payroll\templates\payroll\contract\contract_single_view.html:63
-#: .\payroll\templates\payroll\payslip\individual_payslip.html:50
-#: .\pms\forms.py:37 .\pms\templates\okr\objective_creation.html:94
+#: .\payroll\templates\payroll\payslip\individual_payslip.html:57
+#: .\pms\forms.py:49 .\pms\templates\okr\objective_creation.html:94
 #: .\recruitment\templates\candidate\filters.html:94
 #: .\recruitment\templates\candidate\individual.html:200
 #: .\recruitment\templates\stage\filters.html:18 .\templates\settings.html:32
@@ -1444,8 +1443,8 @@ msgstr "Département"
 #: .\base\templates\base\shift\shift.html:9
 #: .\base\templates\base\shift\shift.html:14
 #: .\base\templates\base\shift\shift_view.html:6
-#: .\base\templates\shift_request\shift_request_nav.html:112
-#: .\base\templates\work_type_request\work_type_request_nav.html:110
+#: .\base\templates\shift_request\shift_request_nav.html:115
+#: .\base\templates\work_type_request\work_type_request_nav.html:112
 #: .\employee\templates\employee_filters.html:54
 #: .\employee\templates\employee_personal_info\employee_list.html:30
 #: .\payroll\models\models.py:586 .\payroll\models\models.py:698
@@ -1459,8 +1458,8 @@ msgstr "Quarts Info"
 #: .\attendance\templates\attendance\late_come_early_out\late_come_early_out_filters.html:23
 #: .\base\templates\base\rotating_shift\filters.html:63
 #: .\base\templates\base\rotating_work_type\filters.html:63
-#: .\base\templates\shift_request\shift_request_nav.html:138
-#: .\base\templates\work_type_request\work_type_request_nav.html:136
+#: .\base\templates\shift_request\shift_request_nav.html:141
+#: .\base\templates\work_type_request\work_type_request_nav.html:138
 #: .\employee\templates\employee\profile\profile_view.html:287
 #: .\employee\templates\employee\profile\work_info.html:49
 #: .\employee\templates\employee\update_form\work_details.html:53
@@ -1479,8 +1478,8 @@ msgstr "Rapports Responsable"
 #: .\base\templates\base\company\company_view.html:6
 #: .\base\templates\base\rotating_shift\filters.html:49
 #: .\base\templates\base\rotating_work_type\filters.html:49
-#: .\base\templates\shift_request\shift_request_nav.html:116
-#: .\base\templates\work_type_request\work_type_request_nav.html:114
+#: .\base\templates\shift_request\shift_request_nav.html:119
+#: .\base\templates\work_type_request\work_type_request_nav.html:116
 #: .\employee\templates\employee\profile\profile_view.html:353
 #: .\employee\templates\employee\profile\work_info.html:55
 #: .\employee\templates\employee\update_form\work_details.html:59
@@ -1507,18 +1506,18 @@ msgstr "Entreprise"
 #: .\base\templates\base\job_role\job_role_view.html:10
 #: .\base\templates\base\rotating_shift\filters.html:67
 #: .\base\templates\base\rotating_work_type\filters.html:67
-#: .\base\templates\shift_request\shift_request_nav.html:108
-#: .\base\templates\work_type_request\work_type_request_nav.html:106
+#: .\base\templates\shift_request\shift_request_nav.html:111
+#: .\base\templates\work_type_request\work_type_request_nav.html:108
 #: .\employee\templates\employee\profile\profile_view.html:326
 #: .\employee\templates\employee\view\individual.html:330
 #: .\employee\templates\employee_filters.html:65
 #: .\employee\templates\employee_personal_info\employee_list.html:28
-#: .\leave\models.py:36
+#: .\leave\models.py:90
 #: .\onboarding\templates\onboarding\candidate-filter.html:22
 #: .\onboarding\templates\onboarding\onboarding-table.html:58
 #: .\onboarding\templates\onboarding\task_view.html:10
 #: .\payroll\templates\payroll\contract\contract_single_view.html:67
-#: .\pms\templates\okr\objective_creation.html:89 .\recruitment\forms.py:386
+#: .\pms\templates\okr\objective_creation.html:89 .\recruitment\forms.py:389
 #: .\recruitment\templates\candidate\candidate_create_form.html:71
 #: .\recruitment\templates\candidate\candidate_list.html:30
 #: .\recruitment\templates\candidate\filters.html:62
@@ -1553,8 +1552,8 @@ msgstr "Poste"
 #: .\base\templates\base\work_type\work_type.html:9
 #: .\base\templates\base\work_type\work_type.html:14
 #: .\base\templates\base\work_type\work_type_view.html:6
-#: .\base\templates\shift_request\shift_request_nav.html:134
-#: .\base\templates\work_type_request\work_type_request_nav.html:132
+#: .\base\templates\shift_request\shift_request_nav.html:137
+#: .\base\templates\work_type_request\work_type_request_nav.html:134
 #: .\employee\templates\employee\profile\profile_view.html:335
 #: .\employee\templates\employee\profile\work_info.html:27
 #: .\employee\templates\employee\update_form\work_details.html:31
@@ -1639,8 +1638,8 @@ msgstr "Aufiltemps Approuvé?"
 #: .\attendance\templates\attendance\own_attendance\filters.html:55
 #: .\base\templates\base\rotating_shift\filters.html:79
 #: .\base\templates\base\rotating_work_type\filters.html:79
-#: .\base\templates\shift_request\shift_request_nav.html:183
-#: .\base\templates\work_type_request\work_type_request_nav.html:180
+#: .\base\templates\shift_request\shift_request_nav.html:186
+#: .\base\templates\work_type_request\work_type_request_nav.html:182
 #: .\employee\templates\employee_filters.html:77
 #: .\payroll\templates\payroll\payslip\filter_payslips.html:38
 #: .\pms\templates\feedback\feedback_list_view.html:116
@@ -1779,7 +1778,7 @@ msgstr "Date"
 #: .\attendance\templates\attendance\attendance\tab_content.html:171
 #: .\attendance\templates\attendance\attendance\tab_content.html:329
 #: .\attendance\templates\attendance\own_attendance\attendances.html:8
-#: .\leave\models.py:28
+#: .\leave\models.py:80
 msgid "Day"
 msgstr "Jour"
 
@@ -2009,7 +2008,7 @@ msgstr "Au du temps Couper/Jour"
 #: .\leave\templates\leave\leave_my_requests_view.html:10
 #: .\leave\templates\leave\leave_request_view.html:10
 #: .\leave\templates\leave\leave_type_view.html:10
-#: .\payroll\templates\payroll\payslip\individual_payslip.html:230
+#: .\payroll\templates\payroll\payslip\individual_payslip.html:237
 #: .\recruitment\templates\stage\stage_component.html:43
 msgid "Type"
 msgstr "Type"
@@ -2116,6 +2115,14 @@ msgstr "À temps"
 msgid "On Break"
 msgstr "En Pause"
 
+#: .\base\models.py:26
+msgid "Invalid time, excepted HH:MM"
+msgstr "Heure invalide, sauf HH:MM"
+
+#: .\base\models.py:28
+msgid "Invalid format,  excepted HH:MM"
+msgstr "Heure invalide, sauf HH:MM"
+
 #: .\base\models.py:134
 #: .\base\templates\base\rotating_work_type\rotating_work_type_view.html:7
 msgid "Work Type 1"
@@ -2134,31 +2141,31 @@ msgstr "Choisir un type de travail différent"
 msgid "Last Day"
 msgstr "Dernier jour"
 
-#: .\base\models.py:158 .\leave\models.py:50
+#: .\base\models.py:158 .\leave\models.py:110
 msgid "Monday"
 msgstr "Lundi"
 
-#: .\base\models.py:159 .\leave\models.py:51
+#: .\base\models.py:159 .\leave\models.py:111
 msgid "Tuesday"
 msgstr "Mardi"
 
-#: .\base\models.py:160 .\leave\models.py:52
+#: .\base\models.py:160 .\leave\models.py:112
 msgid "Wednesday"
 msgstr "Mercredi"
 
-#: .\base\models.py:161 .\leave\models.py:53
+#: .\base\models.py:161 .\leave\models.py:113
 msgid "Thursday"
 msgstr "Jeudi"
 
-#: .\base\models.py:162 .\leave\models.py:54
+#: .\base\models.py:162 .\leave\models.py:114
 msgid "Friday"
 msgstr "Vendredi"
 
-#: .\base\models.py:163 .\leave\models.py:55
+#: .\base\models.py:163 .\leave\models.py:115
 msgid "Saturday"
 msgstr "Samedi"
 
-#: .\base\models.py:164 .\leave\models.py:56
+#: .\base\models.py:164 .\leave\models.py:116
 msgid "Sunday"
 msgstr "Dimanche"
 
@@ -2172,7 +2179,7 @@ msgstr "Après"
 msgid "Weekend"
 msgstr "Weekend"
 
-#: .\base\models.py:169 .\leave\models.py:20 .\payroll\models\models.py:105
+#: .\base\models.py:169 .\leave\models.py:26 .\payroll\models\models.py:105
 #: .\payroll\models\models.py:111
 msgid "Monthly"
 msgstr "Moisly"
@@ -2264,7 +2271,7 @@ msgstr "Hq"
 #: .\onboarding\forms.py:256
 #: .\onboarding\templates\onboarding\employee-bank-details.html:93
 #: .\onboarding\templates\onboarding\employee-creation.html:79
-#: .\recruitment\forms.py:249
+#: .\recruitment\forms.py:250
 #: .\recruitment\templates\candidate\application_form.html:223
 #: .\recruitment\templates\candidate\candidate_create_form.html:99
 #: .\recruitment\templates\candidate\individual.html:138
@@ -2325,7 +2332,7 @@ msgstr "Ville"
 #: .\base\templates\base\company\company.html:46
 #: .\base\templates\base\company\company_view.html:12 .\onboarding\forms.py:259
 #: .\onboarding\templates\onboarding\employee-creation.html:101
-#: .\recruitment\forms.py:250
+#: .\recruitment\forms.py:251
 msgid "Zip"
 msgstr "Code postal"
 
@@ -2368,12 +2375,12 @@ msgstr "Etes-vous sûr de vouloir supprimer ce emploi poste ?"
 #: .\base\templates\base\job_role\job_role.html:9
 #: .\base\templates\base\job_role\job_role.html:21
 #: .\base\templates\base\job_role\job_role_view.html:11
-#: .\base\templates\shift_request\shift_request_nav.html:130
-#: .\base\templates\work_type_request\work_type_request_nav.html:128
+#: .\base\templates\shift_request\shift_request_nav.html:133
+#: .\base\templates\work_type_request\work_type_request_nav.html:130
 #: .\employee\templates\employee\profile\work_info.html:41
 #: .\employee\templates\employee\update_form\work_details.html:45
 #: .\employee\templates\employee_personal_info\employee_list.html:32
-#: .\leave\models.py:36
+#: .\leave\models.py:90
 #: .\payroll\templates\payroll\contract\contract_single_view.html:73
 #: .\templates\settings.html:41
 msgid "Job Role"
@@ -2421,8 +2428,8 @@ msgstr "suivante travail par roulement"
 
 #: .\base\templates\base\rotating_shift\filters.html:85
 #: .\base\templates\base\rotating_work_type\filters.html:85
-#: .\base\templates\shift_request\shift_request_nav.html:120
-#: .\base\templates\work_type_request\work_type_request_nav.html:118
+#: .\base\templates\shift_request\shift_request_nav.html:123
+#: .\base\templates\work_type_request\work_type_request_nav.html:120
 #: .\employee\templates\employee\create_form\personal_info.html:180
 #: .\employee\templates\employee\profile\personal_info.html:141
 #: .\employee\templates\employee\update_form\personal_info.html:164
@@ -2722,7 +2729,7 @@ msgid "Configure"
 msgstr "Configurer"
 
 #: .\base\templates\shift_request\htmx\requests.html:22
-#: .\base\templates\shift_request\shift_request_nav.html:170
+#: .\base\templates\shift_request\shift_request_nav.html:173
 msgid "Requested Shift"
 msgstr "Demandé Quart"
 
@@ -2742,10 +2749,10 @@ msgstr ""
 
 #: .\base\templates\shift_request\htmx\requests.html:75
 #: .\base\templates\shift_request\htmx\requests.html:88
-#: .\base\templates\shift_request\shift_request_nav.html:163
+#: .\base\templates\shift_request\shift_request_nav.html:166
 #: .\base\templates\work_type_request\htmx\requests.html:75
 #: .\base\templates\work_type_request\htmx\requests.html:89
-#: .\base\templates\work_type_request\work_type_request_nav.html:161
+#: .\base\templates\work_type_request\work_type_request_nav.html:163
 #: .\recruitment\templates\candidate\candidate_create_form.html:140
 msgid "Canceled"
 msgstr "Annulé"
@@ -2789,18 +2796,18 @@ msgstr "Soumettre"
 msgid "Shift Requests"
 msgstr "Quart Demandes"
 
-#: .\base\templates\shift_request\shift_request_nav.html:60
-#: .\base\templates\work_type_request\work_type_request_nav.html:58
+#: .\base\templates\shift_request\shift_request_nav.html:62
+#: .\base\templates\work_type_request\work_type_request_nav.html:59
 msgid "Approve Requests"
 msgstr "Approuver les demandes"
 
-#: .\base\templates\shift_request\shift_request_nav.html:67
-#: .\base\templates\work_type_request\work_type_request_nav.html:65
+#: .\base\templates\shift_request\shift_request_nav.html:69
+#: .\base\templates\work_type_request\work_type_request_nav.html:66
 msgid "Cancel Requests"
 msgstr "Annuler les demandes"
 
-#: .\base\templates\shift_request\shift_request_nav.html:142
-#: .\base\templates\work_type_request\work_type_request_nav.html:140
+#: .\base\templates\shift_request\shift_request_nav.html:145
+#: .\base\templates\work_type_request\work_type_request_nav.html:142
 #: .\employee\templates\employee\create_form\personal_info.html:102
 #: .\employee\templates\employee\profile\personal_info.html:66
 #: .\employee\templates\employee\profile\profile_view.html:151
@@ -2818,28 +2825,28 @@ msgstr "Annuler les demandes"
 msgid "Gender"
 msgstr "Genre"
 
-#: .\base\templates\shift_request\shift_request_nav.html:150
-#: .\base\templates\shift_request\shift_request_nav.html:235
+#: .\base\templates\shift_request\shift_request_nav.html:153
+#: .\base\templates\shift_request\shift_request_nav.html:238
 #: .\templates\sidebar.html:112
 msgid "Shift Request"
 msgstr "Quart Demande"
 
-#: .\base\templates\shift_request\shift_request_nav.html:174
+#: .\base\templates\shift_request\shift_request_nav.html:177
 msgid "Previous Shift"
 msgstr "Précédent Quart"
 
-#: .\base\templates\shift_request\shift_request_nav.html:188
-#: .\base\templates\work_type_request\work_type_request_nav.html:185
+#: .\base\templates\shift_request\shift_request_nav.html:191
+#: .\base\templates\work_type_request\work_type_request_nav.html:187
 msgid "Requested Date From"
 msgstr "Date demandée du"
 
-#: .\base\templates\shift_request\shift_request_nav.html:195
-#: .\base\templates\work_type_request\work_type_request_nav.html:192
+#: .\base\templates\shift_request\shift_request_nav.html:198
+#: .\base\templates\work_type_request\work_type_request_nav.html:194
 msgid "Requested Date Till"
 msgstr "Demandée Date Jusqu'à"
 
-#: .\base\templates\shift_request\shift_request_nav.html:258
-#: .\base\templates\work_type_request\work_type_request_nav.html:254
+#: .\base\templates\shift_request\shift_request_nav.html:261
+#: .\base\templates\work_type_request\work_type_request_nav.html:256
 #: .\recruitment\templates\pipeline\pipeline_components\add_note.html:10
 #: .\recruitment\templates\recruitment\recruitment_form.html:88
 #: .\recruitment\templates\stage\stage_form.html:40
@@ -2854,7 +2861,7 @@ msgid "Update Request"
 msgstr "Demande de mise à jour"
 
 #: .\base\templates\work_type_request\htmx\requests.html:22
-#: .\base\templates\work_type_request\work_type_request_nav.html:167
+#: .\base\templates\work_type_request\work_type_request_nav.html:169
 msgid "Requested Work Type"
 msgstr "demandé Travail Type"
 
@@ -2870,13 +2877,13 @@ msgstr "Êtes-vous sûr de vouloir supprimer cette demande de type de travail ?
 msgid "Work Type Requests"
 msgstr "Demandes de type de travail"
 
-#: .\base\templates\work_type_request\work_type_request_nav.html:148
-#: .\base\templates\work_type_request\work_type_request_nav.html:235
+#: .\base\templates\work_type_request\work_type_request_nav.html:150
+#: .\base\templates\work_type_request\work_type_request_nav.html:237
 #: .\templates\sidebar.html:115
 msgid "Work Type Request"
 msgstr "Demande de type de travail"
 
-#: .\base\templates\work_type_request\work_type_request_nav.html:171
+#: .\base\templates\work_type_request\work_type_request_nav.html:173
 msgid "Previous Work Type"
 msgstr "Précédent Travail Type"
 
@@ -3225,6 +3232,18 @@ msgstr "DEMANDES QUART TRAVAIL"
 msgid "WORK TYPE REQUESTS"
 msgstr "DEMANDES TYPE TRAVAIL"
 
+#: .\base\translator.py:92
+msgid "Single"
+msgstr "Seul"
+
+#: .\base\translator.py:93
+msgid "Married"
+msgstr "Marié"
+
+#: .\base\translator.py:94
+msgid "Divorced"
+msgstr "Divorcé"
+
 #: .\base\views.py:113
 msgid "Invalid username or password."
 msgstr "Nom d'utilisateur ou mot de passe invalide."
@@ -3370,17 +3389,17 @@ msgstr "Type de travail rotatif attribué."
 msgid "Rotating work type assign updated."
 msgstr "Attribuer un type de travail rotatif mis à jour."
 
-#: .\base\views.py:926 .\base\views.py:950 .\base\views.py:1437
-#: .\base\views.py:1461 .\employee\views.py:734
+#: .\base\views.py:926 .\base\views.py:950 .\base\views.py:1436
+#: .\base\views.py:1460 .\employee\views.py:734
 msgid "un-archived"
 msgstr "un-archivé"
 
-#: .\base\views.py:929 .\base\views.py:953 .\base\views.py:1441
-#: .\base\views.py:1464 .\employee\views.py:732
+#: .\base\views.py:929 .\base\views.py:953 .\base\views.py:1440
+#: .\base\views.py:1463 .\employee\views.py:732
 msgid "archived"
 msgstr "archivé"
 
-#: .\base\views.py:934 .\base\views.py:1445
+#: .\base\views.py:934 .\base\views.py:1444
 #, python-brace-format
 msgid "Rotating shift assign is {message}"
 msgstr "L'affectation travail par roulement rotative est {message}"
@@ -3429,162 +3448,162 @@ msgstr "Employé supprimé"
 msgid "This Employee type already in use."
 msgstr "Ce type d'employé est déjà utilisé."
 
-#: .\base\views.py:1109
+#: .\base\views.py:1108
 msgid "Employee Shift has been created successfully!"
 msgstr "Employee Shift a été créé avec succès !"
 
-#: .\base\views.py:1130
+#: .\base\views.py:1129
 msgid "Shift updated"
 msgstr "Shift mise à jour"
 
-#: .\base\views.py:1148
+#: .\base\views.py:1147
 msgid "Employee shift deleted."
 msgstr "Quart d'employé supprimé."
 
-#: .\base\views.py:1151
+#: .\base\views.py:1150
 msgid "This shift already in use."
 msgstr "Cette travail par roulement est déjà utilisée."
 
-#: .\base\views.py:1170
+#: .\base\views.py:1169
 msgid "Employee Shift Schedule has been created successfully!"
 msgstr "L'horaire de shift des employés a été créé avec succès !"
 
-#: .\base\views.py:1193
+#: .\base\views.py:1192
 msgid "Shift schedule created."
 msgstr "Horaire de travail créé."
 
-#: .\base\views.py:1209
+#: .\base\views.py:1208
 msgid "Shift schedule deleted."
 msgstr "Horaire de shift supprimé."
 
-#: .\base\views.py:1212
+#: .\base\views.py:1211
 msgid "You cannot delete this schedule"
 msgstr "Vous ne pouvez pas supprimer ce planning"
 
-#: .\base\views.py:1229
+#: .\base\views.py:1228
 msgid "Rotating shift created."
 msgstr "tournant shift mis à jour."
 
-#: .\base\views.py:1253
+#: .\base\views.py:1252
 msgid "Rotating shift updated."
 msgstr "Rotational Shift Attribuer"
 
-#: .\base\views.py:1279
+#: .\base\views.py:1278
 msgid "Rotating shift deleted."
 msgstr "shift rotatif supprimé."
 
-#: .\base\views.py:1282
+#: .\base\views.py:1281
 msgid "You cannot delete this rotating shift"
 msgstr "Vous ne pouvez pas supprimer ce quart de travail rotatif"
 
-#: .\base\views.py:1344
+#: .\base\views.py:1343
 msgid "Rotating shift assigned."
 msgstr "shift rotatif attribué."
 
-#: .\base\views.py:1403
+#: .\base\views.py:1402
 msgid "Rotating shift assign updated."
 msgstr "Affectation d'équipe rotative mise à jour."
 
-#: .\base\views.py:1479
+#: .\base\views.py:1478
 #, python-brace-format
 msgid "Rotating shift for {employee} is {message}"
 msgstr "Shift tournante pour {employee} est {message}"
 
-#: .\base\views.py:1486
+#: .\base\views.py:1485
 #, python-brace-format
 msgid "Rotating shift for {employee} is already exists"
 msgstr "Le quart de travail rotatif pour {employee} existe déjà"
 
-#: .\base\views.py:1507
+#: .\base\views.py:1506
 #, python-brace-format
 msgid "{employee} assign deleted."
 msgstr "{employee} assignation supprimée."
 
-#: .\base\views.py:1514
+#: .\base\views.py:1513
 #, python-brace-format
 msgid "You cannot delete {rshift_assign}"
 msgstr "Vous ne pouvez pas supprimer {rshift_assign}"
 
-#: .\base\views.py:1533
+#: .\base\views.py:1532
 msgid "Rotating shift assign deleted."
 msgstr "Affectation d'équipe rotative supprimée."
 
-#: .\base\views.py:1536
+#: .\base\views.py:1535
 msgid "You cannot delete this rotating shift assign."
 msgstr ""
 "Vous ne pouvez pas supprimer cette affectation de quart de travail rotatif."
 
-#: .\base\views.py:1554
+#: .\base\views.py:1553
 msgid "Employee permission assigned."
 msgstr "Autorisation d'employé attribuée."
 
-#: .\base\views.py:1706
+#: .\base\views.py:1705
 msgid "Work type request added."
 msgstr "Demande de type de travail ajoutée."
 
-#: .\base\views.py:1738 .\base\views.py:1777
+#: .\base\views.py:1737 .\base\views.py:1776
 msgid "Work type request has been canceled."
 msgstr "La demande de type de travail a été annulée."
 
-#: .\base\views.py:1811 .\base\views.py:1852
+#: .\base\views.py:1810 .\base\views.py:1851
 msgid "Work type request has been approved."
 msgstr "La demande de type de travail a été approuvée."
 
-#: .\base\views.py:1892 .\base\views.py:2096
+#: .\base\views.py:1891 .\base\views.py:2095
 msgid "Request Updated Successfully"
 msgstr "Demande mise à jour avec succès"
 
-#: .\base\views.py:1914 .\base\views.py:1949
+#: .\base\views.py:1913 .\base\views.py:1948
 msgid "Work type request deleted."
 msgstr "Demande de type de travail supprimée."
 
-#: .\base\views.py:1928
+#: .\base\views.py:1927
 msgid "You cannot delete this work type request."
 msgstr "Vous ne pouvez pas supprimer cette demande de type de travail."
 
-#: .\base\views.py:1966
+#: .\base\views.py:1965
 #, python-brace-format
 msgid "You cannot delete {employee} work type request for the date {date}."
 msgstr ""
 "Vous ne pouvez pas supprimer la demande de type de travail {employee} pour "
 "la date {date}."
 
-#: .\base\views.py:2012
+#: .\base\views.py:2011
 msgid "Request Added"
 msgstr "Demande ajoutée"
 
-#: .\base\views.py:2127 .\base\views.py:2168
+#: .\base\views.py:2126 .\base\views.py:2167
 msgid "Shift request canceled"
 msgstr "Demande de quart de travail annulée"
 
-#: .\base\views.py:2206 .\base\views.py:2249
+#: .\base\views.py:2205 .\base\views.py:2248
 msgid "Shift has been approved."
 msgstr "travail par roulement a été approuvé."
 
-#: .\base\views.py:2278 .\base\views.py:2315
+#: .\base\views.py:2277 .\base\views.py:2314
 msgid "Shift request deleted."
 msgstr "Demande de quart de travail supprimée."
 
-#: .\base\views.py:2293
+#: .\base\views.py:2292
 msgid "You cannot delete this shift request."
 msgstr "Vous ne pouvez pas supprimer cette demande travail par roulement."
 
-#: .\base\views.py:2332
+#: .\base\views.py:2331
 #, python-brace-format
 msgid "You cannot delete {employee} shift request for the date {date}."
 msgstr ""
 "Vous pouvez  pas supprimer demande {employee} quart travail pore la date "
 "{date}."
 
-#: .\base\views.py:2362
+#: .\base\views.py:2361
 msgid "Unread notifications removed."
 msgstr "Notifications non lues supprimées."
 
-#: .\base\views.py:2380
+#: .\base\views.py:2379
 msgid "Notification deleted."
 msgstr "Notification supprimée."
 
-#: .\base\views.py:2396
+#: .\base\views.py:2395
 msgid "Notifications marked as read"
 msgstr "Notifications marquées comme lues"
 
@@ -3641,8 +3660,8 @@ msgstr "Dernier Nom"
 #: .\onboarding\templates\onboarding\candidates.html:18
 #: .\onboarding\templates\onboarding\onboarding-table.html:57
 #: .\onboarding\templates\onboarding\onboardings.html:11
-#: .\onboarding\templates\onboarding\table.html:11 .\recruitment\forms.py:247
-#: .\recruitment\forms.py:384
+#: .\onboarding\templates\onboarding\table.html:11 .\recruitment\forms.py:248
+#: .\recruitment\forms.py:387
 #: .\recruitment\templates\candidate\application_form.html:152
 #: .\recruitment\templates\candidate\candidate_create_form.html:52
 #: .\recruitment\templates\candidate\candidate_list.html:27
@@ -4113,11 +4132,11 @@ msgstr "Coordonnées bancaires mises à jour avec succès"
 msgid "In-Active"
 msgstr "In-Active"
 
-#: .\employee\views.py:1390 .\recruitment\models.py:152
+#: .\employee\views.py:1390 .\recruitment\models.py:154
 msgid "Male"
 msgstr "Mâle"
 
-#: .\employee\views.py:1390 .\recruitment\models.py:152
+#: .\employee\views.py:1390 .\recruitment\models.py:154
 msgid "Female"
 msgstr "Femme"
 
@@ -4159,68 +4178,68 @@ msgstr "L'employé n'a pas assez de jours de congé"
 msgid "End date should not be earlier than the start date."
 msgstr "La date de fin ne doit pas être antérieure à la date de début."
 
-#: .\leave\models.py:15
+#: .\leave\models.py:18
 msgid "Full Day"
 msgstr "Complet Journée"
 
-#: .\leave\models.py:16
+#: .\leave\models.py:19
 msgid "First Half"
 msgstr "Première moitié"
 
-#: .\leave\models.py:16
+#: .\leave\models.py:20
 msgid "Second Half"
 msgstr "Deuxième moitié"
 
-#: .\leave\models.py:19
+#: .\leave\models.py:25
 msgid "Yearly"
 msgstr "Annéely"
 
-#: .\leave\models.py:20 .\payroll\models\models.py:104
+#: .\leave\models.py:27 .\payroll\models\models.py:104
 msgid "Weekly"
 msgstr "Hebdomadaire"
 
-#: .\leave\models.py:30 .\payroll\models\models.py:1122
+#: .\leave\models.py:82 .\payroll\models\models.py:1122
 #: .\payroll\templates\payroll\payslip\generate_payslip_list.html:28
 msgid "Paid"
 msgstr "Payé"
 
-#: .\leave\models.py:30
+#: .\leave\models.py:82
 msgid "Unpaid"
 msgstr "Non payé"
 
-#: .\leave\models.py:32
+#: .\leave\models.py:85
 msgid "No Carry Forward"
 msgstr "Non Reporter"
 
-#: .\leave\models.py:32 .\leave\templates\leave\leave_type_view.html:13
+#: .\leave\models.py:86 .\leave\templates\leave\leave_type_view.html:13
 msgid "Carry Forward"
 msgstr "Carry Forward"
 
-#: .\leave\models.py:33
+#: .\leave\models.py:87
 msgid "Carry Forward with Expire"
 msgstr "Carryforward Avec Expire"
 
-#: .\leave\models.py:40
+#: .\leave\models.py:96
 msgid "Cancelled"
 msgstr "Annulé"
 
-#: .\leave\models.py:43
+#: .\leave\models.py:101
 msgid "First Week"
 msgstr "Première semaine"
 
-#: .\leave\models.py:44
+#: .\leave\models.py:102
 msgid "Second Week"
 msgstr "Deuxième semaine"
 
-#: .\leave\models.py:45
+#: .\leave\models.py:103
 msgid "Third Week"
 msgstr "Troisième semaine"
 
-#: .\leave\models.py:46
+#: .\leave\models.py:104
 msgid "Fourth Week"
 msgstr "Quatrième semaine"
 
-#: .\leave\models.py:47
+#: .\leave\models.py:105
 msgid "Fifth Week"
 msgstr "Cinquième semaine"
 
@@ -4726,100 +4745,100 @@ msgstr "Carryforward Congé Jours"
 msgid "View Leave Request"
 msgstr "Afficher Demande Congé"
 
-#: .\leave\views.py:48
+#: .\leave\views.py:87
 msgid "New leave type Created.."
 msgstr "Nouveau congé  type de créé."
 
-#: .\leave\views.py:133
+#: .\leave\views.py:172
 msgid "Leave type is updated successfully.."
 msgstr "Type congé est mis à jour avec succès"
 
-#: .\leave\views.py:152
+#: .\leave\views.py:191
 msgid "Leave type deleted successfully.."
 msgstr "Laissez type supprimé avec succès..."
 
-#: .\leave\views.py:204 .\leave\views.py:1075
+#: .\leave\views.py:243 .\leave\views.py:1124
 msgid "Leave request created successfully.."
 msgstr "Demande de congé créée avec succès...."
 
-#: .\leave\views.py:310
+#: .\leave\views.py:349
 msgid "Leave request is updated successfully.."
 msgstr "Demande de congé est mise à jour avec succès..."
 
-#: .\leave\views.py:346 .\leave\views.py:1211
+#: .\leave\views.py:385 .\leave\views.py:1263
 msgid "Leave request deleted successfully.."
 msgstr "Demande de congé supprimée avec succès..."
 
-#: .\leave\views.py:385
+#: .\leave\views.py:429
 msgid "Leave request approved successfully.."
 msgstr "Demande de congé approuvée avec succès.."
 
-#: .\leave\views.py:430
+#: .\leave\views.py:477
 msgid "Leave request cancelled successfully.."
 msgstr "Demande de congé annulée avec succès..."
 
-#: .\leave\views.py:494 .\leave\views.py:610
+#: .\leave\views.py:541 .\leave\views.py:657
 msgid "Leave type assign is successfull.."
 msgstr "Type congé attribuer  réussi..."
 
-#: .\leave\views.py:509
+#: .\leave\views.py:556
 msgid "leave type is already assigned to the employee.."
 msgstr "Type de congé est déjà affecté au salarié..."
 
-#: .\leave\views.py:627
+#: .\leave\views.py:674
 msgid "Leave type is already assigned to the employee.."
 msgstr "Type de congé est déjà attribué à l'employé."
 
-#: .\leave\views.py:659
+#: .\leave\views.py:706
 msgid "Available leaves updated successfully..."
 msgstr "Disponibles congé mis à jour avec succès..."
 
-#: .\leave\views.py:695
+#: .\leave\views.py:742
 msgid "Assigned leave is successfully deleted.."
 msgstr "Congé attribué a été supprimé avec succès"
 
-#: .\leave\views.py:718
+#: .\leave\views.py:765
 msgid "New holiday created successfully.."
 msgstr "Nouveau jour férié créé avec succès..."
 
-#: .\leave\views.py:797
+#: .\leave\views.py:844
 msgid "Holiday updated successfully.."
 msgstr "Jour férié mis à jour avec succès..."
 
-#: .\leave\views.py:822
+#: .\leave\views.py:869
 msgid "Holiday deleted successfully.."
 msgstr "Jour férié supprimé avec succès.."
 
-#: .\leave\views.py:845
+#: .\leave\views.py:892
 msgid "New company leave created successfully.."
 msgstr "Nouveau congé d'entreprise créé avec succès...."
 
-#: .\leave\views.py:937
+#: .\leave\views.py:984
 msgid "Company leave updated successfully.."
 msgstr "Congé d'entreprise mis à jour avec succès..."
 
-#: .\leave\views.py:966
+#: .\leave\views.py:1013
 msgid "Company leave deleted successfully.."
 msgstr "Congé d'entreprise supprimé avec succès.."
 
-#: .\leave\views.py:1036
+#: .\leave\views.py:1083
 msgid "There is already a leave request for this date range.."
 msgstr "Il y a déjà une demande de congé pour cette plage de dates.."
 
-#: .\leave\views.py:1097 .\leave\views.py:1186
+#: .\leave\views.py:1146 .\leave\views.py:1238
 msgid "You dont have enough leave days to make the request.."
 msgstr "Vous n'avez pas assez de jours de congés pour faire la demande..."
 
-#: .\leave\views.py:1172
+#: .\leave\views.py:1224
 msgid "Leave request updated successfully.."
 msgstr "Demande de congé mise à jour avec succès..."
 
-#: .\leave\views.py:1192 .\leave\views.py:1214 .\leave\views.py:1359
+#: .\leave\views.py:1244 .\leave\views.py:1266 .\leave\views.py:1411
 msgid "User has no leave request.."
 msgstr "L'utilisateur n'a pas de demande de congé."
 
-#: .\leave\views.py:1246 .\leave\views.py:1275 .\leave\views.py:1307
-#: .\leave\views.py:1336
+#: .\leave\views.py:1298 .\leave\views.py:1327 .\leave\views.py:1359
+#: .\leave\views.py:1388
 msgid "User is not an employee.."
 msgstr "L'utilisateur n'est pas un employé.."
 
@@ -4834,7 +4853,7 @@ msgstr "Nom et Prénom"
 #: .\onboarding\templates\onboarding\candidate-update.html:69
 #: .\onboarding\templates\onboarding\onboarding-table.html:59
 #: .\onboarding\templates\onboarding\onboardings.html:12
-#: .\recruitment\forms.py:248 .\recruitment\forms.py:385
+#: .\recruitment\forms.py:249 .\recruitment\forms.py:388
 msgid "Mobile"
 msgstr "Mobile"
 
@@ -4922,7 +4941,7 @@ msgid "Joining Till"
 msgstr "Rejoindre jusqu'à"
 
 #: .\onboarding\templates\onboarding\candidates-view.html:20
-#: .\templates\dashboard.html:82
+#: .\templates\dashboard.html:85
 msgid "Hired Candidates"
 msgstr "Embauché Candidats"
 
@@ -4945,7 +4964,7 @@ msgstr "Candidat"
 msgid "Date of joining"
 msgstr "Date d'adhésion"
 
-#: .\onboarding\templates\onboarding\candidates.html:20 .\pms\forms.py:36
+#: .\onboarding\templates\onboarding\candidates.html:20 .\pms\forms.py:48
 msgid "Job position"
 msgstr "Poste"
 
@@ -5000,7 +5019,7 @@ msgstr "Suivante étape "
 #: .\onboarding\templates\onboarding\onboarding-view.html:52
 #: .\onboarding\templates\onboarding\onboardings.html:14
 #: .\onboarding\templates\onboarding\table.html:14 .\recruitment\forms.py:205
-#: .\recruitment\forms.py:411 .\recruitment\templates\candidate\filters.html:90
+#: .\recruitment\forms.py:414 .\recruitment\templates\candidate\filters.html:90
 #: .\recruitment\templates\pipeline\form\stage_drop_down_form.html:8
 #: .\recruitment\templates\pipeline\form\stage_drop_down_form.html:18
 #: .\recruitment\templates\pipeline\form\stage_update.html:7
@@ -5204,7 +5223,6 @@ msgstr "Quotidien"
 #: .\payroll\models\models.py:114 .\payroll\models\models.py:299
 #: .\payroll\models\models.py:1119
 #: .\payroll\templates\payroll\payslip\generate_payslip_list.html:25
-#: .\payroll\templates\payroll\payslip\individual_payslip.html:11
 msgid "Draft"
 msgstr "Brouillons"
 
@@ -5634,13 +5652,11 @@ msgstr ""
 
 #: .\payroll\models\models.py:1120
 #: .\payroll\templates\payroll\payslip\generate_payslip_list.html:26
-#: .\payroll\templates\payroll\payslip\individual_payslip.html:13
 msgid "Review Ongoing"
 msgstr "Révision en cours"
 
 #: .\payroll\models\models.py:1121
 #: .\payroll\templates\payroll\payslip\generate_payslip_list.html:27
-#: .\payroll\templates\payroll\payslip\individual_payslip.html:14
 msgid "Confirmed"
 msgstr "Confirmé"
 
@@ -5665,19 +5681,19 @@ msgid "The data must be in dictionary or querydict type"
 msgstr "Les données doivent être de type dictionnaire ou requête"
 
 #: .\payroll\models\tax_models.py:44
-#: .\payroll\templates\payroll\tax\tax_bracket_view.html:6
+#: .\payroll\templates\payroll\tax\tax_bracket_view.html:15
 #: .\payroll\templates\payroll\tax\taxbracket.html:6
 msgid "Min. Income"
 msgstr "Min. Revenu"
 
 #: .\payroll\models\tax_models.py:45
-#: .\payroll\templates\payroll\tax\tax_bracket_view.html:7
+#: .\payroll\templates\payroll\tax\tax_bracket_view.html:16
 #: .\payroll\templates\payroll\tax\taxbracket.html:7
 msgid "Max. Income"
 msgstr "Max. Revenu"
 
 #: .\payroll\models\tax_models.py:46
-#: .\payroll\templates\payroll\tax\tax_bracket_view.html:5
+#: .\payroll\templates\payroll\tax\tax_bracket_view.html:14
 #: .\payroll\templates\payroll\tax\taxbracket.html:8
 msgid "Tax Rate"
 msgstr "Taux d'imposition"
@@ -5686,9 +5702,9 @@ msgstr "Taux d'imposition"
 #: .\payroll\templates\payroll\contract\contract_list.html:12
 #: .\payroll\templates\payroll\contract\contract_single_view.html:87
 #: .\payroll\templates\payroll\contract\filter_contract.html:37
-#: .\payroll\templates\payroll\tax\filing_status_creation.html:4
-#: .\payroll\templates\payroll\tax\filing_status_edit.html:4
-#: .\payroll\templates\payroll\tax\filing_status_view.html:7
+#: .\payroll\templates\payroll\tax\filing_status_creation.html:13
+#: .\payroll\templates\payroll\tax\filing_status_edit.html:13
+#: .\payroll\templates\payroll\tax\filing_status_view.html:16
 #: .\payroll\templates\payroll\tax\taxbracket.html:5
 msgid "Filing Status"
 msgstr "Statut de dépôt"
@@ -5748,8 +5764,8 @@ msgstr "Est corrigé"
 #: .\payroll\templates\payroll\allowance\view_single_allowance.html:40
 #: .\payroll\templates\payroll\deduction\list_deduction.html:28
 #: .\payroll\templates\payroll\deduction\view_single_deduction.html:47
-#: .\payroll\templates\payroll\payslip\individual_payslip.html:81
-#: .\payroll\templates\payroll\payslip\individual_payslip.html:114
+#: .\payroll\templates\payroll\payslip\individual_payslip.html:88
+#: .\payroll\templates\payroll\payslip\individual_payslip.html:121
 msgid "Amount"
 msgstr "Montant"
 
@@ -5763,7 +5779,7 @@ msgid "Do you want to delete this Allowance?"
 msgstr "Voulez-vous supprimer cette allocation ?"
 
 #: .\payroll\templates\payroll\allowance\view_allowance.html:4
-#: .\payroll\templates\payroll\payslip\individual_payslip.html:80
+#: .\payroll\templates\payroll\payslip\individual_payslip.html:87
 msgid "Allowances"
 msgstr "Allocations"
 
@@ -5883,7 +5899,7 @@ msgstr "Voulez-vous supprimer cette déduction ?"
 
 #: .\payroll\templates\payroll\deduction\view_deduction.html:4
 #: .\payroll\templates\payroll\payslip\generate_payslip_list.html:55
-#: .\payroll\templates\payroll\payslip\individual_payslip.html:113
+#: .\payroll\templates\payroll\payslip\individual_payslip.html:120
 msgid "Deductions"
 msgstr "Déductions"
 
@@ -5908,7 +5924,7 @@ msgid "Deduction Eligibility"
 msgstr "Admissibilité à la déduction"
 
 #: .\payroll\templates\payroll\payslip\filter_payslips.html:11
-#: .\payroll\templates\payroll\payslip\individual_payslip.html:23
+#: .\payroll\templates\payroll\payslip\individual_payslip.html:30
 #: .\payroll\templates\payroll\payslip\view_payslips.html:63
 #: .\templates\sidebar.html:155
 msgid "Payslip"
@@ -5960,64 +5976,60 @@ msgstr "Salaire net supérieur ou égal"
 msgid "Payroll"
 msgstr "Paie"
 
-#: .\payroll\templates\payroll\payslip\individual_payslip.html:15
-msgid "paid"
-msgstr "payé"
-
-#: .\payroll\templates\payroll\payslip\individual_payslip.html:37
+#: .\payroll\templates\payroll\payslip\individual_payslip.html:44
 msgid "Employee Details"
 msgstr "Détails de l'employé"
 
-#: .\payroll\templates\payroll\payslip\individual_payslip.html:40
+#: .\payroll\templates\payroll\payslip\individual_payslip.html:47
 msgid "Employee ID"
 msgstr "Identifiant de l'employé"
 
-#: .\payroll\templates\payroll\payslip\individual_payslip.html:46
+#: .\payroll\templates\payroll\payslip\individual_payslip.html:53
 msgid "Employee Name"
 msgstr "Nom de l'employé"
 
-#: .\payroll\templates\payroll\payslip\individual_payslip.html:57
+#: .\payroll\templates\payroll\payslip\individual_payslip.html:64
 msgid "Bank Acc./Cheque No."
 msgstr "N° compte bancaire/chèque"
 
-#: .\payroll\templates\payroll\payslip\individual_payslip.html:67
+#: .\payroll\templates\payroll\payslip\individual_payslip.html:74
 msgid "Employee Net Pay"
 msgstr "Salaire net des employés"
 
-#: .\payroll\templates\payroll\payslip\individual_payslip.html:102
+#: .\payroll\templates\payroll\payslip\individual_payslip.html:109
 msgid "Total Gross Pay"
 msgstr "Salaire brut total"
 
-#: .\payroll\templates\payroll\payslip\individual_payslip.html:119
+#: .\payroll\templates\payroll\payslip\individual_payslip.html:126
 msgid "Loss of Pay"
 msgstr "Perte de salaire"
 
-#: .\payroll\templates\payroll\payslip\individual_payslip.html:155
+#: .\payroll\templates\payroll\payslip\individual_payslip.html:162
 #: .\templates\sidebar.html:159
 msgid "Federal Tax"
 msgstr "Impôt fédéral"
 
-#: .\payroll\templates\payroll\payslip\individual_payslip.html:193
+#: .\payroll\templates\payroll\payslip\individual_payslip.html:200
 msgid "Total Net Payable"
 msgstr "Total net à payer"
 
-#: .\payroll\templates\payroll\payslip\individual_payslip.html:195
+#: .\payroll\templates\payroll\payslip\individual_payslip.html:202
 msgid "Gross Earnings - Total Deductions"
 msgstr "Gains bruts - Total des déductions"
 
-#: .\payroll\templates\payroll\payslip\individual_payslip.html:225
+#: .\payroll\templates\payroll\payslip\individual_payslip.html:232
 msgid "Type A"
 msgstr "Type A"
 
-#: .\payroll\templates\payroll\payslip\individual_payslip.html:227
+#: .\payroll\templates\payroll\payslip\individual_payslip.html:234
 msgid "Type B"
 msgstr "Type B"
 
-#: .\payroll\templates\payroll\payslip\individual_payslip.html:232
+#: .\payroll\templates\payroll\payslip\individual_payslip.html:239
 msgid "Option #1"
 msgstr "Option #1"
 
-#: .\payroll\templates\payroll\payslip\individual_payslip.html:233
+#: .\payroll\templates\payroll\payslip\individual_payslip.html:240
 msgid "Option #2"
 msgstr "Option #2"
 
@@ -6045,8 +6057,8 @@ msgstr "Bulletin de paie en vrac"
 msgid "Generate"
 msgstr "Générer"
 
-#: .\payroll\templates\payroll\tax\tax_bracket_creation.html:4
-#: .\payroll\templates\payroll\tax\tax_bracket_edit.html:4
+#: .\payroll\templates\payroll\tax\tax_bracket_creation.html:13
+#: .\payroll\templates\payroll\tax\tax_bracket_edit.html:13
 msgid "Tax Bracket"
 msgstr "Tranche d'imposition"
 
@@ -6078,6 +6090,38 @@ msgstr "P"
 msgid "record_type_name"
 msgstr "nom_type_enregistrement"
 
+#: .\payroll\views\tax_views.py:59
+msgid "Filing status created."
+msgstr "Statut de déclaration fiscale créé."
+
+#: .\payroll\views\tax_views.py:94
+msgid "Filing status updated."
+msgstr "Statut de déclaration fiscale mis à jour."
+
+#: .\payroll\views\tax_views.py:121
+msgid "Filing status deleted."
+msgstr "Statut de déclaration fiscale supprimé."
+
+#: .\payroll\views\tax_views.py:123
+msgid "This filing status assigned to employees"
+msgstr "Ce statut fiscal est attribué aux employés"
+
+#: .\payroll\views\tax_views.py:177 .\payroll\views\tax_views.py:210
+msgid "The maximum income will be infinite"
+msgstr "Le revenu maximum sera infini"
+
+#: .\payroll\views\tax_views.py:180
+msgid "Tax bracket created."
+msgstr "La tranche d'imposition a été créée."
+
+#: .\payroll\views\tax_views.py:214
+msgid "Tax bracket updated."
+msgstr "La tranche d'imposition a été mise à jour."
+
+#: .\payroll\views\tax_views.py:235
+msgid "Tax bracket deleted."
+msgstr "La tranche d'imposition a été supprimée."
+
 #: .\payroll\views\views.py:46
 msgid "Contract Created"
 msgstr "Contrat créé"
@@ -6102,11 +6146,11 @@ msgstr "Fiche de paie supprimée"
 msgid "Something went wrong"
 msgstr "Quelque chose s'est mal passé"
 
-#: .\pms\forms.py:35
+#: .\pms\forms.py:47
 msgid "Individual"
 msgstr "Individuel"
 
-#: .\pms\forms.py:306
+#: .\pms\forms.py:564
 msgid "Add a comment..."
 msgstr "Ajouté un commentaire"
 
@@ -6180,7 +6224,7 @@ msgid "Key Result Status"
 msgstr "Clé Résultat Statut"
 
 #: .\pms\templates\dashboard\pms_dashboard.html:77
-#: .\templates\dashboard.html:185
+#: .\templates\dashboard.html:195
 msgid "Feedack Status"
 msgstr "Retour Statut"
 
@@ -6368,7 +6412,7 @@ msgstr "Subalterne"
 
 #: .\pms\templates\feedback\feedback_list_view.html:121
 #: .\pms\templates\okr\objective_list_view.html:112
-#: .\templates\dashboard.html:68
+#: .\templates\dashboard.html:69
 msgid "Today"
 msgstr "Aujourd'hui"
 
@@ -6379,13 +6423,13 @@ msgstr "Hier"
 
 #: .\pms\templates\feedback\feedback_list_view.html:131
 #: .\pms\templates\okr\objective_list_view.html:122
-#: .\templates\dashboard.html:69
+#: .\templates\dashboard.html:70
 msgid "This Week"
 msgstr "Cette Semaine"
 
 #: .\pms\templates\feedback\feedback_list_view.html:136
 #: .\pms\templates\okr\objective_list_view.html:127
-#: .\templates\dashboard.html:70
+#: .\templates\dashboard.html:71
 msgid "This Month"
 msgstr "Cette Mois"
 
@@ -6727,7 +6771,7 @@ msgstr "Période mise à jour avec succès."
 msgid "Period deleted successfully."
 msgstr "Période supprimée avec succès."
 
-#: .\recruitment\forms.py:188 .\recruitment\forms.py:349
+#: .\recruitment\forms.py:188 .\recruitment\forms.py:352
 #: .\recruitment\templates\pipeline\form\recruitment_drop_down_form.html:49
 #: .\recruitment\templates\pipeline\form\recruitment_update.html:66
 #: .\recruitment\templates\recruitment\recruitment_component.html:45
@@ -6752,7 +6796,7 @@ msgstr "Entretien"
 msgid "Hired"
 msgstr "Embauchéd"
 
-#: .\recruitment\models.py:152
+#: .\recruitment\models.py:154
 msgid "Other"
 msgstr "Autre"
 
@@ -7035,113 +7079,117 @@ msgstr "Voir Recrutements"
 msgid "View Stages"
 msgstr "Voir Étapes"
 
-#: .\recruitment\views.py:124 .\recruitment\views.py:330
+#: .\recruitment\views.py:124 .\recruitment\views.py:318
 msgid "Recruitment added."
 msgstr "Recrutement ajouté."
 
-#: .\recruitment\views.py:166
+#: .\recruitment\views.py:162
 msgid "Recruitment manager removed successfully."
 msgstr "Recrutement manager supprimé avec succès."
 
-#: .\recruitment\views.py:246
+#: .\recruitment\views.py:238
 msgid "Recruitment Updated."
 msgstr "Recrutement mis à jour."
 
-#: .\recruitment\views.py:300
+#: .\recruitment\views.py:288
 msgid "Recruitment deleted successfully."
 msgstr "Recrutement supprimé avec succès."
 
-#: .\recruitment\views.py:303
+#: .\recruitment\views.py:291
 msgid "You cannot delete this recruitment"
 msgstr "Vous ne pouvez pas supprimer ce recrutement"
 
-#: .\recruitment\views.py:373 .\recruitment\views.py:933
+#: .\recruitment\views.py:353 .\recruitment\views.py:895
 msgid "Candidate added."
 msgstr "Candidat ajouté."
 
-#: .\recruitment\views.py:383 .\recruitment\views.py:745
+#: .\recruitment\views.py:363 .\recruitment\views.py:715
 msgid "Stage added."
 msgstr "Stage ajoutée."
 
-#: .\recruitment\views.py:401
+#: .\recruitment\views.py:378
 msgid "You dont have access"
 msgstr "Vous n'avez pas accès"
 
-#: .\recruitment\views.py:456 .\recruitment\views.py:855
+#: .\recruitment\views.py:433 .\recruitment\views.py:817
 msgid "Stage updated."
 msgstr "Stage mis à jour."
 
-#: .\recruitment\views.py:489
+#: .\recruitment\views.py:462
 msgid "Recruitment updated."
 msgstr "Recrutement mis à jour."
 
-#: .\recruitment\views.py:529
+#: .\recruitment\views.py:498
 msgid "Recruitment deleted."
 msgstr "Recrutement supprimé."
 
-#: .\recruitment\views.py:532
+#: .\recruitment\views.py:501
 msgid "Recruitment already in use."
 msgstr "Recrutement déjà en usage."
 
-#: .\recruitment\views.py:551
-msgid "No change detected."
-msgstr "Aucun changement détecté."
+#: .\recruitment\views.py:520
+msgid "Sequence updated."
+msgstr "Séquence mise à jour."
 
-#: .\recruitment\views.py:589
+#: .\recruitment\views.py:555
 msgid "Candidate stage updated"
 msgstr "Étape de candidature mise à jour"
 
-#: .\recruitment\views.py:609
+#: .\recruitment\views.py:558
+msgid "Something went wrong, Try agian."
+msgstr "Une erreur s'est produite, réessayez."
+
+#: .\recruitment\views.py:579
 msgid "Note added successfully.."
 msgstr "Note ajoutée avec succès.."
 
-#: .\recruitment\views.py:654
+#: .\recruitment\views.py:624
 msgid "Note updated successfully..."
 msgstr "Note mise à jour avec succès..."
 
-#: .\recruitment\views.py:676 .\recruitment\views.py:698
+#: .\recruitment\views.py:646 .\recruitment\views.py:668
 msgid "Note deleted"
 msgstr "Note supprimée"
 
-#: .\recruitment\views.py:679 .\recruitment\views.py:701
+#: .\recruitment\views.py:649 .\recruitment\views.py:671
 msgid "You cannot delete this note."
 msgstr "Vous ne pouvez pas supprimer cette note."
 
-#: .\recruitment\views.py:828
+#: .\recruitment\views.py:790
 msgid "Stage manager removed successfully."
 msgstr "Stage manager supprimé avec succès."
 
-#: .\recruitment\views.py:903
+#: .\recruitment\views.py:865
 msgid "Stage deleted successfully."
 msgstr "Stage supprimé avec succès."
 
-#: .\recruitment\views.py:906
+#: .\recruitment\views.py:868
 msgid "You cannot delete this stage"
 msgstr "Vous ne pouvez pas supprimer cette stage"
 
-#: .\recruitment\views.py:1104
+#: .\recruitment\views.py:1066
 msgid "Candidate Updated Successfully."
 msgstr "Candidat mis à jour avec succès."
 
-#: .\recruitment\views.py:1120
+#: .\recruitment\views.py:1082
 msgid "Candidate deleted successfully."
 msgstr "Candidat supprimé avec succès."
 
-#: .\recruitment\views.py:1123
+#: .\recruitment\views.py:1085
 msgid "You cannot delete this candidate"
 msgstr "Vous ne pouvez pas supprimer ce candidat"
 
-#: .\recruitment\views.py:1153
+#: .\recruitment\views.py:1115
 #, python-format
 msgid "%(candidate_obj)s deleted."
 msgstr "%(candidate_obj)s supprimé"
 
-#: .\recruitment\views.py:1158
+#: .\recruitment\views.py:1120
 #, python-format
 msgid "You cannot delete %(candidate_obj)s"
 msgstr "Vous ne pouvez pas supprimer %(candidate_obj)s"
 
-#: .\recruitment\views.py:1219
+#: .\recruitment\views.py:1181
 msgid "Application saved."
 msgstr "Application enregistrée"
 
@@ -7157,47 +7205,47 @@ msgstr "Nouveaux joindre cette semaine"
 msgid "Total Strength"
 msgstr "Force totale"
 
-#: .\templates\dashboard.html:66
+#: .\templates\dashboard.html:67
 msgid "Overall Leave"
 msgstr "total Congé"
 
-#: .\templates\dashboard.html:71
+#: .\templates\dashboard.html:72
 msgid "This Year"
 msgstr "Cette année"
 
-#: .\templates\dashboard.html:92
+#: .\templates\dashboard.html:95
 msgid "Candidate Started Onboarding"
 msgstr "candidat commencé l'intégration"
 
-#: .\templates\dashboard.html:103
+#: .\templates\dashboard.html:108
 msgid "Daily Attendance Analytic"
 msgstr "Analyse des présences quotidiennes"
 
-#: .\templates\dashboard.html:116
+#: .\templates\dashboard.html:121
 msgid "Employees Chart"
 msgstr "graphique Employé :"
 
-#: .\templates\dashboard.html:129
+#: .\templates\dashboard.html:134
 msgid "Department Chart"
 msgstr "graphique Département"
 
-#: .\templates\dashboard.html:141
+#: .\templates\dashboard.html:146
 msgid "Gender Chart"
 msgstr "graphique Genre"
 
-#: .\templates\dashboard.html:153
+#: .\templates\dashboard.html:158
 msgid "Recruitment Analytic"
 msgstr "Analyse de recrutement"
 
-#: .\templates\dashboard.html:165
+#: .\templates\dashboard.html:171
 msgid "Objective status"
 msgstr "Objectif Statut"
 
-#: .\templates\dashboard.html:175
+#: .\templates\dashboard.html:183
 msgid "Key result status"
 msgstr "Clé Résultat Statut"
 
-#: .\templates\dashboard.html:211
+#: .\templates\dashboard.html:223
 msgid "On Leave"
 msgstr "en congé"
 
@@ -7406,6 +7454,15 @@ msgstr "l'actif Vue"
 msgid "Request and Allocation"
 msgstr "Demande et Allocation"
 
+#~ msgid "None"
+#~ msgstr "Aucun"
+
+#~ msgid "paid"
+#~ msgstr "payé"
+
+#~ msgid "No change detected."
+#~ msgstr "Aucun changement détecté."
+
 #~ msgid "Min Income"
 #~ msgstr "Min. Revenu"
 
@@ -7435,15 +7492,6 @@ msgstr "Demande et Allocation"
 
 #~ msgid "Badge ID must contain at least one digit."
 #~ msgstr "L'identifiant du badge doit contenir au moins un chiffre."
-
-#~ msgid "Single"
-#~ msgstr "Seul"
-
-#~ msgid "Married"
-#~ msgstr "Marié"
-
-#~ msgid "Divorced"
-#~ msgstr "Divorcé"
 
 #~ msgid "Employee added."
 #~ msgstr "Employé ajouté."
