@@ -205,6 +205,9 @@ def objecitve_filter_pagination(request, objective_own, objective_all):
     """
     previous_data = request.environ["QUERY_STRING"]
     initial_data = {"archive": False}  # set initial value of archive filter to False
+    if request.GET.get("status") !="Closed":
+        objective_own = objective_own.exclude(status="Closed")
+        objective_all = objective_all.exclude(status="Closed")
     objective_filter_own = ObjectiveFilter(
         request.GET or initial_data, queryset=objective_own
     )
