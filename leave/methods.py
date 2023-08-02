@@ -71,17 +71,10 @@ def company_leave_dates_list(company_leaves,start_date):
                 if based_on_week != None:
                     # Set Sunday as the first day of the week
                     calendar.setfirstweekday(6)
-                    month_calendar = calendar.monthcalendar(year, month)
-                    weeks = month_calendar[int(based_on_week)]
-                    weekdays_in_weeks = [day for day in weeks if day != 0]
-                    for day in weekdays_in_weeks:
-                        date = datetime.strptime(
-                            f"{year}-{month:02}-{day:02}", '%Y-%m-%d').date()
-                        if (
-                            date.weekday() == int(based_on_week_day)
-                            and date not in company_leave_dates
-                        ):
-                            company_leave_dates.append(date)
+                    month_calendar = calendar.monthcalendar(year, 7)
+                    weeks = month_calendar[based_on_week]
+                    day = weeks[based_on_week_day]
+                    company_leave_dates.append(date(year=year, month=7, day=day))
                 else:
                     # Set Monday as the first day of the week
                     calendar.setfirstweekday(0)
@@ -92,4 +85,4 @@ def company_leave_dates_list(company_leaves,start_date):
                                 f"{year}-{month:02}-{week[int(based_on_week_day)-1]:02}", '%Y-%m-%d').date()
                             if date not in company_leave_dates:
                                 company_leave_dates.append(date)
-        return company_leave_dates
+        return list(set(company_leave_dates))
