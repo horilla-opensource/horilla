@@ -104,52 +104,58 @@ class Attendance(models.Model):
         on_delete=models.CASCADE,
         null=True,
         related_name="employee_attendances",
-        verbose_name="Employee",
     )
     shift_id = models.ForeignKey(
-        EmployeeShift, on_delete=models.DO_NOTHING, null=True, verbose_name="Shift"
+        EmployeeShift, on_delete=models.DO_NOTHING, null=True, verbose_name=_("Shift")
     )
     work_type_id = models.ForeignKey(
         WorkType,
         null=True,
         blank=True,
         on_delete=models.DO_NOTHING,
-        verbose_name="Work Type",
+        verbose_name=_("Work Type"),
     )
     attendance_date = models.DateField(
-        null=False, validators=[attendance_date_validate]
+        null=False,
+        validators=[attendance_date_validate],
+        verbose_name=_("Attendance date"),
     )
     attendance_day = models.ForeignKey(
         EmployeeShiftDay, on_delete=models.DO_NOTHING, null=True
     )
     attendance_clock_in = models.TimeField(
-        null=True, verbose_name="Check-in", help_text="First Check-in Time"
+        null=True, verbose_name=_("Check-in"), help_text="First Check-in Time"
     )
-    attendance_clock_in_date = models.DateField(null=True, verbose_name="Check-in date")
+    attendance_clock_in_date = models.DateField(
+        null=True, verbose_name=_("Check-in date")
+    )
     attendance_clock_out = models.TimeField(
-        null=True, verbose_name="check-out", help_text="Last Check-out Time"
+        null=True, verbose_name=_("Check-out"), help_text="Last Check-out Time"
     )
     attendance_clock_out_date = models.DateField(
-        null=True, verbose_name="Check-out date"
+        null=True, verbose_name=_("Check-out date")
     )
     attendance_worked_hour = models.CharField(
         null=True,
         default="00:00",
         max_length=10,
         validators=[validate_time_format],
-        verbose_name="At work",
+        verbose_name=_("At work"),
     )
     minimum_hour = models.CharField(
-        max_length=10, default="00:00", validators=[validate_time_format]
+        max_length=10,
+        default="00:00",
+        validators=[validate_time_format],
+        verbose_name=_("Minimum hour"),
     )
     attendance_overtime = models.CharField(
         default="00:00",
         validators=[validate_time_format],
         max_length=10,
-        verbose_name="Overtime",
+        verbose_name=_("Overtime"),
     )
     attendance_overtime_approve = models.BooleanField(
-        default=False, verbose_name="Overtime approved"
+        default=False, verbose_name=_("Overtime approved")
     )
     attendance_validated = models.BooleanField(default=False)
     at_work_second = models.IntegerField(null=True, blank=True)
