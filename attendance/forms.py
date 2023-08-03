@@ -52,6 +52,9 @@ class ModelForm(forms.ModelForm):
                 widget, (forms.NumberInput, forms.EmailInput, forms.TextInput)
             ):
                 label = _(field.label.title())
+                print('---------------------------------------------------------------')
+                print(label)
+                print('---------------------------------------------------------------')
                 field.widget.attrs.update(
                     {"class": "oh-input w-100", "placeholder": label}
                 )
@@ -165,7 +168,7 @@ class AttendanceForm(ModelForm):
 
     employee_id = forms.ModelMultipleChoiceField(
         queryset=Employee.objects.filter(employee_work_info__isnull=False),
-        label="Employees",
+        label=_("Employees"),
     )
 
     class Meta:

@@ -883,7 +883,7 @@ def onboard_candidate_chart(_):
         background_color.append(f"rgba({red}, {green}, {blue}, 0.2")
         border_color.append(f"rgb({red}, {green}, {blue})")
         labels.append(
-            f"{recruitment.job_position_id.job_position} | {recruitment.start_date}"
+            f"{recruitment.title} | {recruitment.start_date}"
         )
         data.append(
             recruitment.candidate.filter(hired=True, start_onboard=True).count()

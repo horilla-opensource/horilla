@@ -60,7 +60,7 @@
               {{attendance.attendance_date}}
             </div>
             <div class="oh-sticky-table__td">
-              {{attendance.attendance_day|capfirst}}
+              {{attendance.attendance_day.get_day_display }}
             </div>
             <div class="oh-sticky-table__td">
               {{attendance.attendance_clock_in}}
@@ -212,7 +212,7 @@
               {{attendance.attendance_date}}
             </div>
             <div class="oh-sticky-table__td">
-              {{attendance.attendance_day|capfirst}}
+              {{attendance.attendance_day.get_day_display }}
             </div>
             <div class="oh-sticky-table__td">
               {{attendance.attendance_clock_in}}
@@ -368,7 +368,7 @@
                 {{attendance.attendance_date}}
               </div>
               <div class="oh-sticky-table__td">
-                {{attendance.attendance_day|capfirst}}
+                {{attendance.attendance_day.get_day_display }}
               </div>
               <div class="oh-sticky-table__td">
                 {{attendance.attendance_clock_in}}

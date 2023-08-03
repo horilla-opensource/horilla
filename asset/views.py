@@ -171,12 +171,11 @@ def asset_delete(request, id):
         if status == "In use":
             messages.info(request, _("Asset is in use"))
             return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
-            
+
         elif asset_allocation:
             # if this asset is used in any allocation
             messages.error(request, _("Asset is used in allocation!."))
             return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
-            
 
         asset.delete()
         messages.success(request, _("Asset deleted successfully"))
@@ -188,16 +187,15 @@ def asset_delete(request, id):
             # if asset under the category
             messages.info(request, _("Asset is in use"))
             return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
-            
+
         elif asset_allocation:
             # if this asset is used in any allocation
             messages.error(request, _("Asset is used in allocation!."))
             return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
-            
+
         asset.delete()
         messages.success(request, _("Asset deleted successfully"))
     return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
-    
 
 
 @login_required
@@ -471,6 +469,10 @@ def asset_request_approve(request, id):
                 request.user.employee_get,
                 recipient=form.assigned_to_employee_id.employee_user_id,
                 verb="Your asset request approved!.",
+                verb_ar="تم الموافقة على طلب الأصول الخاص بك!",
+                verb_de="Ihr Antragsantrag wurde genehmigt!",
+                verb_es="¡Su solicitud de activo ha sido aprobada!",
+                verb_fr="Votre demande d'actif a été approuvée !",
                 redirect="/asset/asset-request-allocation-view",
                 icon="bag-check",
             )
@@ -510,6 +512,10 @@ def asset_request_reject(request, id):
         request.user.employee_get,
         recipient=asset_request.requested_employee_id.employee_user_id,
         verb="Your asset request rejected!.",
+        verb_ar="تم رفض طلب الأصول الخاص بك!",
+        verb_de="Ihr Antragsantrag wurde abgelehnt!",
+        verb_es="¡Se ha rechazado su solicitud de activo!",
+        verb_fr="Votre demande d'actif a été rejetée !",
         redirect="/asset/asset-request-allocation-view",
         icon="bag-check",
     )
@@ -779,23 +785,23 @@ def asset_export_excel(request):
         "asset_status": [],
         "asset_lot_number_id": [],
     }
-    
+
     fields_to_check = [
-    "asset_name",
-    "asset_description",
-    "asset_tracking_id",
-    "asset_purchase_date",
-    "asset_purchase_cost",
-    "asset_category_id",
-    "asset_status",
-    "asset_lot_number_id",
+        "asset_name",
+        "asset_description",
+        "asset_tracking_id",
+        "asset_purchase_date",
+        "asset_purchase_cost",
+        "asset_category_id",
+        "asset_status",
+        "asset_lot_number_id",
     ]
 
     for asset in queryset:
         for field in fields_to_check:
-        # Get the value of the field for the current asset
+            # Get the value of the field for the current asset
             value = getattr(asset, field)
-    
+
             # Append the value if it exists, or append None if it's None
             data[field].append(value if value is not None else None)
 

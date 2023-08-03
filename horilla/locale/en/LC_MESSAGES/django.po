@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-08-01 12:27+0530\n"
+"POT-Creation-Date: 2023-08-02 12:41+0530\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1215,23 +1215,31 @@ msgstr ""
 msgid "Batch number deleted"
 msgstr ""
 
-#: .\attendance\forms.py:62 .\base\forms.py:160 .\base\forms.py:204
+#: .\attendance\forms.py:65 .\base\forms.py:160 .\base\forms.py:204
 #: .\payroll\forms\tax_forms.py:41 .\recruitment\forms.py:53
 #: .\recruitment\forms.py:96
 #, python-brace-format
 msgid "---Choose {label}---"
 msgstr ""
 
-#: .\attendance\forms.py:270
+#: .\attendance\forms.py:171 .\leave\templates\leave\leave-assign-form.html:22
+#: .\leave\templates\leave\leave-assign-one-form.html:18
+#: .\leave\templates\leave\leave-request-form.html:22
+#: .\leave\templates\leave\request-update-form.html:25
+#: .\templates\sidebar.html:99
+msgid "Employees"
+msgstr ""
+
+#: .\attendance\forms.py:273
 #, python-format
 msgid "Attendance for the date is already exist for %(emp)s"
 msgstr ""
 
-#: .\attendance\forms.py:275
+#: .\attendance\forms.py:278
 msgid "Employee not chosen"
 msgstr ""
 
-#: .\attendance\forms.py:333
+#: .\attendance\forms.py:336
 #: .\attendance\templates\attendance\attendance_account\attendance_account_filter.html:56
 #: .\attendance\templates\attendance\attendance_account\group_by.html:9
 #: .\attendance\templates\attendance\attendance_account\overtime_list.html:8
@@ -1239,7 +1247,7 @@ msgstr ""
 msgid "Month"
 msgstr ""
 
-#: .\attendance\forms.py:344
+#: .\attendance\forms.py:347
 #: .\attendance\templates\attendance\attendance\attendance_filters.html:11
 #: .\attendance\templates\attendance\attendance\group_by.html:14
 #: .\attendance\templates\attendance\attendance\group_by.html:180
@@ -1299,7 +1307,7 @@ msgstr ""
 msgid "Employee"
 msgstr ""
 
-#: .\attendance\forms.py:345
+#: .\attendance\forms.py:348
 #: .\attendance\templates\attendance\attendance_account\attendance_account_filter.html:64
 #: .\attendance\templates\attendance\attendance_account\group_by.html:10
 #: .\attendance\templates\attendance\attendance_account\overtime_list.html:9
@@ -1307,7 +1315,7 @@ msgstr ""
 msgid "Year"
 msgstr ""
 
-#: .\attendance\forms.py:346
+#: .\attendance\forms.py:349
 #: .\attendance\templates\attendance\attendance_account\attendance_account_filter.html:51
 #: .\attendance\templates\attendance\attendance_account\attendance_account_filter.html:68
 #: .\attendance\templates\attendance\attendance_account\group_by.html:11
@@ -1317,7 +1325,7 @@ msgstr ""
 msgid "Hour Account"
 msgstr ""
 
-#: .\attendance\forms.py:347
+#: .\attendance\forms.py:350 .\attendance\models.py:155
 #: .\attendance\templates\attendance\attendance\group_by.html:25
 #: .\attendance\templates\attendance\attendance\group_by.html:191
 #: .\attendance\templates\attendance\attendance\group_by.html:353
@@ -1332,17 +1340,17 @@ msgstr ""
 msgid "Overtime"
 msgstr ""
 
-#: .\attendance\forms.py:386
+#: .\attendance\forms.py:389
 msgid ""
 "Do not Auto Validate Attendance if an Employee                     Works "
 "More Than this Amount of Duration"
 msgstr ""
 
-#: .\attendance\forms.py:389
+#: .\attendance\forms.py:392
 msgid "Minimum Hour to Approve Overtime"
 msgstr ""
 
-#: .\attendance\forms.py:390
+#: .\attendance\forms.py:393
 msgid "Maximum Allowed Overtime Per Day"
 msgstr ""
 
@@ -1362,18 +1370,109 @@ msgstr ""
 msgid "You cannot choose a future date."
 msgstr ""
 
-#: .\attendance\models.py:373
+#: .\attendance\models.py:109
+#: .\attendance\templates\attendance\attendance\attendance_filters.html:19
+#: .\attendance\templates\attendance\attendance\group_by.html:21
+#: .\attendance\templates\attendance\attendance\group_by.html:187
+#: .\attendance\templates\attendance\attendance\group_by.html:349
+#: .\attendance\templates\attendance\attendance\tab_content.html:27
+#: .\attendance\templates\attendance\attendance\tab_content.html:176
+#: .\attendance\templates\attendance\attendance\tab_content.html:334
+#: .\attendance\templates\attendance\attendance_account\attendance_account_filter.html:19
+#: .\attendance\templates\attendance\attendance_activity\activity_filters.html:19
+#: .\attendance\templates\attendance\late_come_early_out\late_come_early_out_filters.html:19
+#: .\attendance\templates\attendance\own_attendance\attendances.html:13
+#: .\base\templates\base\rotating_shift\filters.html:57
+#: .\base\templates\base\rotating_work_type\filters.html:57
+#: .\base\templates\base\shift\schedule.html:14
+#: .\base\templates\base\shift\schedule_view.html:10
+#: .\base\templates\base\shift\shift.html:9
+#: .\base\templates\base\shift\shift.html:14
+#: .\base\templates\base\shift\shift_view.html:6
+#: .\base\templates\shift_request\shift_request_nav.html:115
+#: .\base\templates\work_type_request\work_type_request_nav.html:112
+#: .\employee\templates\employee_filters.html:54
+#: .\employee\templates\employee_personal_info\employee_list.html:30
+#: .\payroll\models\models.py:586 .\payroll\models\models.py:698
+#: .\payroll\templates\payroll\contract\contract_single_view.html:77
+msgid "Shift"
+msgstr ""
+
+#: .\attendance\models.py:116
+#: .\attendance\templates\attendance\attendance\attendance_filters.html:39
+#: .\attendance\templates\attendance\attendance\group_by.html:22
+#: .\attendance\templates\attendance\attendance\group_by.html:188
+#: .\attendance\templates\attendance\attendance\group_by.html:350
+#: .\attendance\templates\attendance\attendance\tab_content.html:28
+#: .\attendance\templates\attendance\attendance\tab_content.html:177
+#: .\attendance\templates\attendance\attendance\tab_content.html:335
+#: .\attendance\templates\attendance\attendance_account\attendance_account_filter.html:39
+#: .\attendance\templates\attendance\attendance_activity\activity_filters.html:39
+#: .\attendance\templates\attendance\late_come_early_out\late_come_early_out_filters.html:39
+#: .\attendance\templates\attendance\own_attendance\attendances.html:14
+#: .\base\templates\base\rotating_shift\filters.html:71
+#: .\base\templates\base\rotating_work_type\filters.html:71
+#: .\base\templates\base\work_type\work_type.html:9
+#: .\base\templates\base\work_type\work_type.html:14
+#: .\base\templates\base\work_type\work_type_view.html:6
+#: .\base\templates\shift_request\shift_request_nav.html:137
+#: .\base\templates\work_type_request\work_type_request_nav.html:134
+#: .\employee\templates\employee\profile\profile_view.html:335
+#: .\employee\templates\employee\profile\work_info.html:27
+#: .\employee\templates\employee\update_form\work_details.html:31
+#: .\employee\templates\employee\view\individual.html:339
+#: .\employee\templates\employee_filters.html:69
+#: .\employee\templates\employee_personal_info\employee_list.html:31
+#: .\payroll\models\models.py:588 .\payroll\models\models.py:722
+#: .\payroll\templates\payroll\contract\contract_single_view.html:83
+#: .\templates\settings.html:44
+msgid "Work Type"
+msgstr ""
+
+#: .\attendance\models.py:121
+msgid "Attendance date"
+msgstr ""
+
+#: .\attendance\models.py:127
+msgid "Check-in"
+msgstr ""
+
+#: .\attendance\models.py:130
+msgid "Check-in date"
+msgstr ""
+
+#: .\attendance\models.py:133
+msgid "Check-out"
+msgstr ""
+
+#: .\attendance\models.py:136
+msgid "Check-out date"
+msgstr ""
+
+#: .\attendance\models.py:143
+msgid "At work"
+msgstr ""
+
+#: .\attendance\models.py:149
+msgid "Minimum hour"
+msgstr ""
+
+#: .\attendance\models.py:158 .\attendance\views.py:1281
+msgid "Overtime approved"
+msgstr ""
+
+#: .\attendance\models.py:379
 #: .\attendance\templates\attendance\late_come_early_out\report_list.html:36
 #: .\attendance\views.py:1451
 msgid "Late Come"
 msgstr ""
 
-#: .\attendance\models.py:374
+#: .\attendance\models.py:380
 #: .\attendance\templates\attendance\late_come_early_out\report_list.html:38
 msgid "Early Out"
 msgstr ""
 
-#: .\attendance\models.py:422
+#: .\attendance\models.py:428
 msgid "You cannot add more conditions."
 msgstr ""
 
@@ -1416,33 +1515,6 @@ msgstr ""
 #: .\recruitment\templates\candidate\individual.html:200
 #: .\recruitment\templates\stage\filters.html:18 .\templates\settings.html:32
 msgid "Department"
-msgstr ""
-
-#: .\attendance\templates\attendance\attendance\attendance_filters.html:19
-#: .\attendance\templates\attendance\attendance\group_by.html:21
-#: .\attendance\templates\attendance\attendance\group_by.html:187
-#: .\attendance\templates\attendance\attendance\group_by.html:349
-#: .\attendance\templates\attendance\attendance\tab_content.html:27
-#: .\attendance\templates\attendance\attendance\tab_content.html:176
-#: .\attendance\templates\attendance\attendance\tab_content.html:334
-#: .\attendance\templates\attendance\attendance_account\attendance_account_filter.html:19
-#: .\attendance\templates\attendance\attendance_activity\activity_filters.html:19
-#: .\attendance\templates\attendance\late_come_early_out\late_come_early_out_filters.html:19
-#: .\attendance\templates\attendance\own_attendance\attendances.html:13
-#: .\base\templates\base\rotating_shift\filters.html:57
-#: .\base\templates\base\rotating_work_type\filters.html:57
-#: .\base\templates\base\shift\schedule.html:14
-#: .\base\templates\base\shift\schedule_view.html:10
-#: .\base\templates\base\shift\shift.html:9
-#: .\base\templates\base\shift\shift.html:14
-#: .\base\templates\base\shift\shift_view.html:6
-#: .\base\templates\shift_request\shift_request_nav.html:115
-#: .\base\templates\work_type_request\work_type_request_nav.html:112
-#: .\employee\templates\employee_filters.html:54
-#: .\employee\templates\employee_personal_info\employee_list.html:30
-#: .\payroll\models\models.py:586 .\payroll\models\models.py:698
-#: .\payroll\templates\payroll\contract\contract_single_view.html:77
-msgid "Shift"
 msgstr ""
 
 #: .\attendance\templates\attendance\attendance\attendance_filters.html:23
@@ -1527,36 +1599,6 @@ msgstr ""
 #: .\recruitment\templates\recruitment\recruitment_update_form.html:63
 #: .\recruitment\templates\stage\filters.html:38
 msgid "Job Position"
-msgstr ""
-
-#: .\attendance\templates\attendance\attendance\attendance_filters.html:39
-#: .\attendance\templates\attendance\attendance\group_by.html:22
-#: .\attendance\templates\attendance\attendance\group_by.html:188
-#: .\attendance\templates\attendance\attendance\group_by.html:350
-#: .\attendance\templates\attendance\attendance\tab_content.html:28
-#: .\attendance\templates\attendance\attendance\tab_content.html:177
-#: .\attendance\templates\attendance\attendance\tab_content.html:335
-#: .\attendance\templates\attendance\attendance_account\attendance_account_filter.html:39
-#: .\attendance\templates\attendance\attendance_activity\activity_filters.html:39
-#: .\attendance\templates\attendance\late_come_early_out\late_come_early_out_filters.html:39
-#: .\attendance\templates\attendance\own_attendance\attendances.html:14
-#: .\base\templates\base\rotating_shift\filters.html:71
-#: .\base\templates\base\rotating_work_type\filters.html:71
-#: .\base\templates\base\work_type\work_type.html:9
-#: .\base\templates\base\work_type\work_type.html:14
-#: .\base\templates\base\work_type\work_type_view.html:6
-#: .\base\templates\shift_request\shift_request_nav.html:137
-#: .\base\templates\work_type_request\work_type_request_nav.html:134
-#: .\employee\templates\employee\profile\profile_view.html:335
-#: .\employee\templates\employee\profile\work_info.html:27
-#: .\employee\templates\employee\update_form\work_details.html:31
-#: .\employee\templates\employee\view\individual.html:339
-#: .\employee\templates\employee_filters.html:69
-#: .\employee\templates\employee_personal_info\employee_list.html:31
-#: .\payroll\models\models.py:588 .\payroll\models\models.py:722
-#: .\payroll\templates\payroll\contract\contract_single_view.html:83
-#: .\templates\settings.html:44
-msgid "Work Type"
 msgstr ""
 
 #: .\attendance\templates\attendance\attendance\attendance_filters.html:43
@@ -2094,10 +2136,6 @@ msgstr ""
 
 #: .\attendance\views.py:1165 .\attendance\views.py:1194
 msgid "Attendance validated."
-msgstr ""
-
-#: .\attendance\views.py:1281
-msgid "Overtime approved"
 msgstr ""
 
 #: .\attendance\views.py:1450
@@ -2942,292 +2980,296 @@ msgstr ""
 msgid "EMPLOYEE"
 msgstr ""
 
-#: .\base\translator.py:20 .\base\translator.py:90
+#: .\base\translator.py:20
+msgid "PAYROLL"
+msgstr ""
+
+#: .\base\translator.py:21 .\base\translator.py:91
 msgid "ATTENDANCE"
 msgstr ""
 
-#: .\base\translator.py:21
+#: .\base\translator.py:22
 msgid "LEAVE"
 msgstr ""
 
-#: .\base\translator.py:22 .\base\translator.py:91
+#: .\base\translator.py:23 .\base\translator.py:92
 msgid "ASSET"
 msgstr ""
 
-#: .\base\translator.py:23
+#: .\base\translator.py:24
 msgid "Your asset request approved!."
 msgstr ""
 
-#: .\base\translator.py:24
+#: .\base\translator.py:25
 msgid "Your asset request rejected!."
 msgstr ""
 
-#: .\base\translator.py:25
+#: .\base\translator.py:26
 msgid "You are added to rotating work type"
 msgstr ""
 
-#: .\base\translator.py:26
+#: .\base\translator.py:27
 msgid "You are added to rotating shift"
 msgstr ""
 
-#: .\base\translator.py:27
+#: .\base\translator.py:28
 msgid "Your work type request has been canceled."
 msgstr ""
 
-#: .\base\translator.py:28
+#: .\base\translator.py:29
 msgid "Your work type request has been approved."
 msgstr ""
 
-#: .\base\translator.py:29
+#: .\base\translator.py:30
 msgid "Your work type request has been deleted."
 msgstr ""
 
-#: .\base\translator.py:30
+#: .\base\translator.py:31
 msgid "Your shift request has been canceled."
 msgstr ""
 
-#: .\base\translator.py:31
+#: .\base\translator.py:32
 msgid "Your shift request has been approved."
 msgstr ""
 
-#: .\base\translator.py:32
+#: .\base\translator.py:33
 msgid "Your shift request has been deleted."
 msgstr ""
 
-#: .\base\translator.py:33
+#: .\base\translator.py:34
 msgid "Your work details has been updated."
 msgstr ""
 
-#: .\base\translator.py:34
+#: .\base\translator.py:35
 msgid "You have a new leave request to validate."
 msgstr ""
 
-#: .\base\translator.py:35
+#: .\base\translator.py:36
 msgid "New leave type is assigned to you"
 msgstr ""
 
-#: .\base\translator.py:36
+#: .\base\translator.py:37
 msgid "Your Leave request has been cancelled"
 msgstr ""
 
-#: .\base\translator.py:37
+#: .\base\translator.py:38
 msgid "Your Leave request has been approved"
 msgstr ""
 
-#: .\base\translator.py:38
+#: .\base\translator.py:39
 msgid "You are chosen as onboarding stage manager"
 msgstr ""
 
-#: .\base\translator.py:39
+#: .\base\translator.py:40
 msgid "You are chosen as onboarding task manager"
 msgstr ""
 
-#: .\base\translator.py:40
+#: .\base\translator.py:41
 msgid "You got an OKR!."
 msgstr ""
 
-#: .\base\translator.py:41
+#: .\base\translator.py:42
 msgid "You have received feedback!"
 msgstr ""
 
-#: .\base\translator.py:42
+#: .\base\translator.py:43
 msgid "You have been assigned as a manager in a feedback!"
 msgstr ""
 
-#: .\base\translator.py:43
+#: .\base\translator.py:44
 msgid "You have been assigned as a subordinate in a feedback!"
 msgstr ""
 
-#: .\base\translator.py:44
+#: .\base\translator.py:45
 msgid "You have been assigned as a colleague in a feedback!"
 msgstr ""
 
-#: .\base\translator.py:45
+#: .\base\translator.py:46
 msgid "You are chosen as one of recruitment manager"
 msgstr ""
 
-#: .\base\translator.py:46
+#: .\base\translator.py:47
 msgid "Your attendance for the date "
 msgstr ""
 
-#: .\base\translator.py:47
+#: .\base\translator.py:48
 msgid " is validated"
 msgstr ""
 
-#: .\base\translator.py:48
+#: .\base\translator.py:49
 msgid "Select"
 msgstr ""
 
-#: .\base\translator.py:49
+#: .\base\translator.py:50
 msgid "January"
 msgstr ""
 
-#: .\base\translator.py:50
+#: .\base\translator.py:51
 msgid "February"
 msgstr ""
 
-#: .\base\translator.py:51
+#: .\base\translator.py:52
 msgid "March"
 msgstr ""
 
-#: .\base\translator.py:52
+#: .\base\translator.py:53
 msgid "April"
 msgstr ""
 
-#: .\base\translator.py:53
+#: .\base\translator.py:54
 msgid "May"
 msgstr ""
 
-#: .\base\translator.py:54
+#: .\base\translator.py:55
 msgid "June"
 msgstr ""
 
-#: .\base\translator.py:55
+#: .\base\translator.py:56
 msgid "July"
 msgstr ""
 
-#: .\base\translator.py:56
+#: .\base\translator.py:57
 msgid "August"
 msgstr ""
 
-#: .\base\translator.py:57
+#: .\base\translator.py:58
 msgid "September"
 msgstr ""
 
-#: .\base\translator.py:58
+#: .\base\translator.py:59
 msgid "October"
 msgstr ""
 
-#: .\base\translator.py:59
+#: .\base\translator.py:60
 msgid "November"
 msgstr ""
 
-#: .\base\translator.py:60
+#: .\base\translator.py:61
 msgid "December"
 msgstr ""
 
-#: .\base\translator.py:61
+#: .\base\translator.py:62
 msgid "One time date"
 msgstr ""
 
-#: .\base\translator.py:62
+#: .\base\translator.py:63
 msgid "Is condition based"
 msgstr ""
 
-#: .\base\translator.py:63
+#: .\base\translator.py:64
 msgid "Is taxable"
 msgstr ""
 
-#: .\base\translator.py:64
+#: .\base\translator.py:65
 msgid "Is fixed"
 msgstr ""
 
-#: .\base\translator.py:65
+#: .\base\translator.py:66
 msgid "Value"
 msgstr ""
 
-#: .\base\translator.py:66
+#: .\base\translator.py:67
 msgid "If choice"
 msgstr ""
 
-#: .\base\translator.py:67 .\base\translator.py:84
+#: .\base\translator.py:68 .\base\translator.py:85
 msgid "Is tax"
 msgstr ""
 
-#: .\base\translator.py:68
+#: .\base\translator.py:69
 msgid "If amount"
 msgstr ""
 
-#: .\base\translator.py:69
+#: .\base\translator.py:70
 msgid "If condition"
 msgstr ""
 
-#: .\base\translator.py:70
+#: .\base\translator.py:71
 msgid "Employer rate"
 msgstr ""
 
-#: .\base\translator.py:71
+#: .\base\translator.py:72
 msgid "Contract name"
 msgstr ""
 
-#: .\base\translator.py:72
+#: .\base\translator.py:73
 msgid "Contract start date"
 msgstr ""
 
-#: .\base\translator.py:73
+#: .\base\translator.py:74
 msgid "Contract end date"
 msgstr ""
 
-#: .\base\translator.py:74
+#: .\base\translator.py:75
 msgid "Wage type"
 msgstr ""
 
-#: .\base\translator.py:75
+#: .\base\translator.py:76
 msgid "Calculate daily leave amount"
 msgstr ""
 
-#: .\base\translator.py:76
+#: .\base\translator.py:77
 msgid "Deduction for one leave amount"
 msgstr ""
 
-#: .\base\translator.py:77
+#: .\base\translator.py:78
 msgid "Deduct leave from basic pay"
 msgstr ""
 
-#: .\base\translator.py:78
+#: .\base\translator.py:79
 msgid "Job role"
 msgstr ""
 
-#: .\base\translator.py:79
+#: .\base\translator.py:80
 msgid "Work type"
 msgstr ""
 
-#: .\base\translator.py:80
+#: .\base\translator.py:81
 msgid "Pay frequency"
 msgstr ""
 
-#: .\base\translator.py:81 .\payroll\models\models.py:71
+#: .\base\translator.py:82 .\payroll\models\models.py:71
 #: .\payroll\models\tax_models.py:42
 msgid "Filing status"
 msgstr ""
 
-#: .\base\translator.py:82
+#: .\base\translator.py:83
 msgid "Contract status"
 msgstr ""
 
-#: .\base\translator.py:83
+#: .\base\translator.py:84
 msgid "Contract document"
 msgstr ""
 
-#: .\base\translator.py:85
+#: .\base\translator.py:86
 msgid "Update compensation"
 msgstr ""
 
-#: .\base\translator.py:86
+#: .\base\translator.py:87
 msgid "Is pretax"
 msgstr ""
 
-#: .\base\translator.py:87
+#: .\base\translator.py:88
 msgid "DASHBOARD"
 msgstr ""
 
-#: .\base\translator.py:88
+#: .\base\translator.py:89
 msgid "SHIFT REQUESTS"
 msgstr ""
 
-#: .\base\translator.py:89
+#: .\base\translator.py:90
 msgid "WORK TYPE REQUESTS"
 msgstr ""
 
-#: .\base\translator.py:92
+#: .\base\translator.py:93
 msgid "Single"
 msgstr ""
 
-#: .\base\translator.py:93
+#: .\base\translator.py:94
 msgid "Married"
 msgstr ""
 
-#: .\base\translator.py:94
+#: .\base\translator.py:95
 msgid "Divorced"
 msgstr ""
 
@@ -4445,14 +4487,6 @@ msgstr ""
 #: .\leave\templates\leave\leave-assign-form.html:17
 #: .\leave\templates\leave\leave-request-form.html:17
 msgid "Leave types"
-msgstr ""
-
-#: .\leave\templates\leave\leave-assign-form.html:22
-#: .\leave\templates\leave\leave-assign-one-form.html:18
-#: .\leave\templates\leave\leave-request-form.html:22
-#: .\leave\templates\leave\request-update-form.html:25
-#: .\templates\sidebar.html:99
-msgid "Employees"
 msgstr ""
 
 #: .\leave\templates\leave\leave-request-form.html:32
@@ -6178,7 +6212,7 @@ msgstr ""
 
 #: .\pms\templates\dashboard\pms_dashboard.html:77
 #: .\templates\dashboard.html:195
-msgid "Feedack Status"
+msgid "Feedback Status"
 msgstr ""
 
 #: .\pms\templates\dashboard\pms_dashboard.html:100
@@ -6573,150 +6607,150 @@ msgstr ""
 msgid "Objective %(objective)s deleted"
 msgstr ""
 
-#: .\pms\views.py:492
+#: .\pms\views.py:495
 #, python-format
 msgid "Objective %(objective)s status updated"
 msgstr ""
 
-#: .\pms\views.py:514
+#: .\pms\views.py:517
 msgid "Status has been updated"
 msgstr ""
 
-#: .\pms\views.py:538
+#: .\pms\views.py:541
 #, python-format
 msgid "Current value of %(employee_key_result)s updated"
 msgstr ""
 
-#: .\pms\views.py:543
+#: .\pms\views.py:546
 msgid "Current value is greater than target value"
 msgstr ""
 
-#: .\pms\views.py:545
+#: .\pms\views.py:548
 msgid "Error occurred during current value updation"
 msgstr ""
 
-#: .\pms\views.py:562
+#: .\pms\views.py:565
 msgid "Objective un-archived successfully!."
 msgstr ""
 
-#: .\pms\views.py:566
+#: .\pms\views.py:569
 msgid "Objective archived successfully!."
 msgstr ""
 
-#: .\pms\views.py:604 .\pms\views.py:656
+#: .\pms\views.py:607 .\pms\views.py:659
 msgid "Key result created"
 msgstr ""
 
-#: .\pms\views.py:629
+#: .\pms\views.py:632
 msgid "Key results created"
 msgstr ""
 
-#: .\pms\views.py:691
+#: .\pms\views.py:694
 msgid "Key result updated"
 msgstr ""
 
-#: .\pms\views.py:789
+#: .\pms\views.py:792
 msgid "Feedback created successfully."
 msgstr ""
 
-#: .\pms\views.py:1087
+#: .\pms\views.py:1090
 msgid "You are not allowed to answer"
 msgstr ""
 
-#: .\pms\views.py:1102
+#: .\pms\views.py:1105
 msgid "Feedback already answered"
 msgstr ""
 
-#: .\pms\views.py:1153
+#: .\pms\views.py:1156
 #, python-format
 msgid "Feedback %(review_cycle)s has been answered successfully!."
 msgstr ""
 
-#: .\pms\views.py:1178
+#: .\pms\views.py:1181
 msgid "Feedback is not answered yet"
 msgstr ""
 
-#: .\pms\views.py:1206
+#: .\pms\views.py:1209
 #, python-format
 msgid "Feedback %(review_cycle)s deleted successfully!"
 msgstr ""
 
-#: .\pms\views.py:1213
+#: .\pms\views.py:1216
 #, python-format
 msgid "Feedback %(review_cycle)s is ongoing you  you can archive it!"
 msgstr ""
 
-#: .\pms\views.py:1233
+#: .\pms\views.py:1236
 msgid "Feedback is already started"
 msgstr ""
 
-#: .\pms\views.py:1239
+#: .\pms\views.py:1242
 #, python-format
 msgid "Feedback status updated to  %(status)s"
 msgstr ""
 
-#: .\pms\views.py:1244
+#: .\pms\views.py:1247
 #, python-format
 msgid "Error occurred during status update to %(status)s"
 msgstr ""
 
-#: .\pms\views.py:1261
+#: .\pms\views.py:1264
 msgid "Feedback un-archived successfully!."
 msgstr ""
 
-#: .\pms\views.py:1265
+#: .\pms\views.py:1268
 msgid "Feedback archived successfully!."
 msgstr ""
 
-#: .\pms\views.py:1285
+#: .\pms\views.py:1288
 msgid "Completed"
 msgstr ""
 
-#: .\pms\views.py:1285
+#: .\pms\views.py:1288
 msgid "Not-completed"
 msgstr ""
 
-#: .\pms\views.py:1308
+#: .\pms\views.py:1311
 msgid "Question template is used in feedback."
 msgstr ""
 
-#: .\pms\views.py:1328 .\pms\views.py:1330
+#: .\pms\views.py:1331 .\pms\views.py:1333
 msgid "Question created successfully."
 msgstr ""
 
-#: .\pms\views.py:1333
+#: .\pms\views.py:1336
 msgid "Error occurred during question creation!"
 msgstr ""
 
-#: .\pms\views.py:1403 .\pms\views.py:1410
+#: .\pms\views.py:1406 .\pms\views.py:1413
 msgid "Question updated successfully."
 msgstr ""
 
-#: .\pms\views.py:1444
+#: .\pms\views.py:1447
 msgid "Question deleted successfully!"
 msgstr ""
 
-#: .\pms\views.py:1450
+#: .\pms\views.py:1453
 msgid "Failed to delete question: Question template is in use."
 msgstr ""
 
-#: .\pms\views.py:1550
+#: .\pms\views.py:1553
 msgid "Question template updated"
 msgstr ""
 
-#: .\pms\views.py:1571
+#: .\pms\views.py:1574
 msgid "This template is using in a feedback"
 msgstr ""
 
-#: .\pms\views.py:1608
+#: .\pms\views.py:1611
 msgid "Period creation was Successful "
 msgstr ""
 
-#: .\pms\views.py:1636
+#: .\pms\views.py:1639
 msgid "Period updated  Successfully. "
 msgstr ""
 
-#: .\pms\views.py:1659
+#: .\pms\views.py:1662
 msgid "Period deleted successfully."
 msgstr ""
 
