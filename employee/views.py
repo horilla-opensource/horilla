@@ -55,7 +55,10 @@ from employee.models import Employee, EmployeeWorkInformation, EmployeeBankDetai
 
 
 # Create your views here.
-
+@login_required
+def get_language_code(request):
+    language_code = request.LANGUAGE_CODE
+    return JsonResponse({"language_code": language_code})
 
 @login_required
 def employee_profile(request):

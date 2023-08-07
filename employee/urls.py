@@ -7,6 +7,7 @@ from django.urls import path
 from employee import views
 
 urlpatterns = [
+    path("get-language-code/", views.get_language_code, name="get-language-code"),
     path("employee-profile", views.employee_profile, name="employee-profile"),
     path(
         "employee-view/<int:obj_id>/",
