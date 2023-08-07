@@ -6,10 +6,10 @@ This module is used to write custom template filters.
 """
 from itertools import groupby
 from django import template
-from django.forms.widgets import SelectMultiple
+from django.forms.widgets import SelectMultiple, Textarea
 from django.template import TemplateSyntaxError
 from django.template.defaultfilters import register
-from attendance.views import strtime_seconds
+from attendance.views.views import strtime_seconds
 from attendance.models import AttendanceValidationCondition
 
 
@@ -188,3 +188,18 @@ def is_select_multiple(widget):
     {% endif %}
     """
     return isinstance(widget, SelectMultiple)
+
+
+@register.filter
+def is_text_area(widget):
+    """
+    Custom template filter to check if a widget is an instance of SelectMultiple.
+
+    Usage:
+    {% load custom_filters %}
+
+    {% if field.field.widget|Textarea %}
+        <!-- Your code here -->
+    {% endif %}
+    """
+    return isinstance(widget, Textarea)
