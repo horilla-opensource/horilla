@@ -172,23 +172,26 @@
                <ul class="oh-sidebar__submenu-items">
                   {% if perms.attendance.view_attendance or request.user|is_reportingmanager %} 
                   <li class="oh-sidebar__submenu-item">
-                     <a class="oh-sidebar__submenu-link" href="/attendance/attendance-view">{% trans "Attendance" %}</a>
+                     <a class="oh-sidebar__submenu-link" href="{% url 'attendance-view' %}">{% trans "Attendance" %}</a>
+                  </li>
+                  <li class="oh-sidebar__submenu-item">
+                     <a class="oh-sidebar__submenu-link" href="{% url 'request-attendance-view' %}">{% trans "Attendance Requests" %}</a>
                   </li>
                   {% endif %} {% if perms.attendance.view_attendanceovertime or request.user|is_reportingmanager %} 
                   <li class="oh-sidebar__submenu-item">
-                     <a class="oh-sidebar__submenu-link" href="/attendance/attendance-overtime-view">{% trans "Hour Account" %}</a>
+                     <a class="oh-sidebar__submenu-link" href="{% url 'attendance-overtime-view' %}">{% trans "Hour Account" %}</a>
                   </li>
                   {% endif %} {% if perms.attendance.view_attendanceactivity %} 
                   <li class="oh-sidebar__submenu-item">
-                     <a class="oh-sidebar__submenu-link" href="/attendance/attendance-activity-view">{% trans "Attendance Activity" %}</a>
+                     <a class="oh-sidebar__submenu-link" href="{% url 'attendance-activity-view' %}">{% trans "Attendance Activity" %}</a>
                   </li>
                   {% endif %} {% if perms.attendance.view_attendancelatecomeearlyout or request.user|is_reportingmanager %} 
                   <li class="oh-sidebar__submenu-item">
-                     <a class="oh-sidebar__submenu-link" href="/attendance/late-come-early-out-view">{% trans "Late Come Early Out" %}</a>
+                     <a class="oh-sidebar__submenu-link" href="{% url 'late-come-early-out-view' %}">{% trans "Late Come Early Out" %}</a>
                   </li>
                   {% endif %} 
                   <li class="oh-sidebar__submenu-item">
-                     <a class="oh-sidebar__submenu-link" href="/attendance/view-my-attendance">{% trans "My Attendance" %}</a>
+                     <a class="oh-sidebar__submenu-link" href="{% url 'view-my-attendance' %}">{% trans "My Attendance" %}</a>
                   </li>
                </ul>
             </div>
