@@ -8,6 +8,8 @@ from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 from django.db import models
 from simple_history.models import HistoricalRecords
+from django.template import defaultfilters
+
 
 # Create your models here.
 
@@ -81,7 +83,7 @@ class JobPosition(models.Model):
         on_delete=models.CASCADE,
         blank=True,
         related_name="job_position",
-        verbose_name="Department",
+        verbose_name=_("Department"),
     )
     objects = models.Manager()
 
@@ -93,7 +95,7 @@ class JobRole(models.Model):
     """JobRole model"""
 
     job_position_id = models.ForeignKey(
-        JobPosition, on_delete=models.CASCADE, verbose_name="Job Position"
+        JobPosition, on_delete=models.CASCADE, verbose_name=_("Job Position")
     )
     job_role = models.CharField(max_length=50, blank=False, null=True)
     objects = models.Manager()
@@ -140,7 +142,9 @@ class RotatingWorkType(models.Model):
         verbose_name=_("Work Type 2"),
     )
     employee_id = models.ManyToManyField(
-        "employee.Employee", through="RotatingWorkTypeAssign", verbose_name="Employee"
+        "employee.Employee",
+        through="RotatingWorkTypeAssign",
+        verbose_name=_("Employee"),
     )
     objects = models.Manager()
 
@@ -179,17 +183,19 @@ class RotatingWorkTypeAssign(models.Model):
         "employee.Employee",
         on_delete=models.CASCADE,
         null=True,
-        verbose_name="Employee",
+        verbose_name=_("Employee"),
     )
     rotating_work_type_id = models.ForeignKey(
-        RotatingWorkType, on_delete=models.CASCADE, verbose_name="Rotating Work Type"
+        RotatingWorkType, on_delete=models.CASCADE, verbose_name=_("Rotating work type")
     )
     next_change_date = models.DateField(null=True)
     start_date = models.DateField(default=django.utils.timezone.now)
     based_on = models.CharField(
         max_length=10, choices=BASED_ON, null=False, blank=False
     )
-    rotate_after_day = models.IntegerField(default=7)
+    rotate_after_day = models.IntegerField(
+        default=7, verbose_name=_("Rotate after day")
+    )
     rotate_every_weekend = models.CharField(
         max_length=10, default="monday", choices=DAY, blank=True, null=True
     )
@@ -246,7 +252,7 @@ class EmployeeShiftDay(models.Model):
     objects = models.Manager()
 
     def __str__(self) -> str:
-        return str(self.day)
+        return str(_(self.day))
 
 
 class EmployeeShift(models.Model):
@@ -261,7 +267,11 @@ class EmployeeShift(models.Model):
     )
     days = models.ManyToManyField(EmployeeShiftDay, through="EmployeeShiftSchedule")
     weekly_full_time = models.CharField(
-        max_length=6, default="40:00", null=True, blank=True,validators=[validate_time_format]
+        max_length=6,
+        default="40:00",
+        null=True,
+        blank=True,
+        validators=[validate_time_format],
     )
     full_time = models.CharField(
         max_length=6, default="200:00", validators=[validate_time_format]
@@ -281,13 +291,14 @@ class EmployeeShiftSchedule(models.Model):
         EmployeeShiftDay, on_delete=models.CASCADE, related_name="day_schedule"
     )
     shift_id = models.ForeignKey(
-        EmployeeShift, on_delete=models.CASCADE, verbose_name="Shift"
+        EmployeeShift, on_delete=models.CASCADE, verbose_name=_("Shift")
     )
     minimum_working_hour = models.CharField(
         default="08:15", max_length=5, validators=[validate_time_format]
     )
     start_time = models.TimeField(null=True)
     end_time = models.TimeField(null=True)
+    is_night_shift = models.BooleanField(default=False)
     objects = models.Manager()
 
     class Meta:
@@ -300,6 +311,11 @@ class EmployeeShiftSchedule(models.Model):
     def __str__(self) -> str:
         return f"{self.shift_id.employee_shift} {self.day}"
 
+    def save(self, *args, **kwargs):
+        if self.start_time and self.end_time:
+            self.is_night_shift = self.start_time > self.end_time
+        super().save(*args, **kwargs)
+
 
 class RotatingShift(models.Model):
     """
@@ -308,7 +324,7 @@ class RotatingShift(models.Model):
 
     name = models.CharField(max_length=50)
     employee_id = models.ManyToManyField(
-        "employee.Employee", through="RotatingShiftAssign", verbose_name="Employee"
+        "employee.Employee", through="RotatingShiftAssign", verbose_name=_("Employee")
     )
     shift1 = models.ForeignKey(
         EmployeeShift,
@@ -338,13 +354,15 @@ class RotatingShiftAssign(models.Model):
     """
 
     employee_id = models.ForeignKey(
-        "employee.Employee", on_delete=models.CASCADE, verbose_name="Employee"
+        "employee.Employee", on_delete=models.CASCADE, verbose_name=_("Employee")
     )
     rotating_shift_id = models.ForeignKey(
-        RotatingShift, on_delete=models.CASCADE, verbose_name="Rotating Shift"
+        RotatingShift, on_delete=models.CASCADE, verbose_name=_("Rotating Shift")
     )
     next_change_date = models.DateField(null=True)
-    start_date = models.DateField(default=django.utils.timezone.now)
+    start_date = models.DateField(
+        default=django.utils.timezone.now,
+    )
     based_on = models.CharField(
         max_length=10, choices=BASED_ON, null=False, blank=False
     )
@@ -396,7 +414,7 @@ class WorkTypeRequest(models.Model):
         on_delete=models.CASCADE,
         null=True,
         related_name="work_type_request",
-        verbose_name="Employee",
+        verbose_name=_("Employee"),
     )
     requested_date = models.DateField(null=True, default=django.utils.timezone.now)
     requested_till = models.DateField(
@@ -406,7 +424,7 @@ class WorkTypeRequest(models.Model):
         WorkType,
         on_delete=models.CASCADE,
         related_name="requested_work_type",
-        verbose_name="Work Type",
+        verbose_name=_("Work Type"),
     )
     previous_work_type_id = models.ForeignKey(
         WorkType,
@@ -455,7 +473,7 @@ class ShiftRequest(models.Model):
         on_delete=models.CASCADE,
         null=True,
         related_name="shift_request",
-        verbose_name="Employee",
+        verbose_name=_("Employee"),
     )
     requested_date = models.DateField(null=True, default=django.utils.timezone.now)
     requested_till = models.DateField(
@@ -465,7 +483,7 @@ class ShiftRequest(models.Model):
         EmployeeShift,
         on_delete=models.CASCADE,
         related_name="requested_shift",
-        verbose_name="Shift",
+        verbose_name=_("Shift"),
     )
     previous_shift_id = models.ForeignKey(
         EmployeeShift,

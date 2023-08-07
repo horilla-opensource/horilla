@@ -63,18 +63,7 @@
               </div>
             </div>
             <div class="oh-sticky-table__td">{{rshift.rotating_shift_id}}</div>
-            <div class="oh-sticky-table__td">{% trans rshift.based_on|capfirst %}</div>
-            <div class="oh-sticky-table__td">
-              {% if rshift.based_on == 'after' %} 
-              {% trans "After" %}
-              {{rshift.rotate_after_day}} 
-              {% trans "Days" %} 
-              {% elif rshift.based_on == 'weekly' %} 
-              {% trans "Every" %} {% trans rshift.rotate_every_weekend|capfirst %} 
-              {% elif rshift.based_on == 'monthly'%}
-               {% trans "Date" %} {{rshift.rotate_every}} 
-              {% endif %}
-            </div>
+            <div class="oh-sticky-table__td">{{rshift.get_based_on_display }}</div>
             <div class="oh-sticky-table__td">{{rshift.start_date}}</div>
             <div class="oh-sticky-table__td">{{rshift.current_shift}}</div>
             <div class="oh-sticky-table__td">{{rshift.next_change_date}}</div>

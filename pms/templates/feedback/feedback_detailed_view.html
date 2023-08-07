@@ -37,14 +37,14 @@
     <div class="oh-main__titlebar oh-main__titlebar--right">
       <div class="oh-btn-group m-2">
         <div class="oh-btn-group" >
-          <form action="{% url 'feedback-archive' id=feedback.id %}" method="post" onsubmit="return confirm('Do you want archive this Feedback ?')" >
+          <form action="{% url 'feedback-archive' id=feedback.id %}" method="post" onsubmit="return confirm('{% trans "Do you want archive this Feedback ?" %}')" >
           <button class="oh-btn  w-100 "  title="{% trans 'Archive' %}" style="background-color: white;!important"> 
              {% csrf_token %}
             <ion-icon name="archive-sharp" type="submit"></ion-icon>
           </button>
           </form>
           {% if perms.pms.delete_feedback  %}
-            <form action="{% url 'feedback-delete' id=feedback.id %}" method="post" onsubmit="return confirm('Do you want Delete this Feedback ?')">
+            <form action="{% url 'feedback-delete' id=feedback.id %}" method="post" onsubmit="return confirm('{% trans "Do you want Delete this Feedback ?" %}')">
               {% csrf_token %}
               <button  class="oh-btn oh-btn--danger-outline  w-100" title="{% trans 'Delete' %}" style="background-color: white;!important"> 
                   <ion-icon name="trash-outline" role="img" class="md hydrated" aria-label="trash outline"></ion-icon>

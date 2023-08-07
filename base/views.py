@@ -12,6 +12,7 @@ from django.views.decorators.http import require_http_methods
 from django.core.paginator import Paginator
 from django.core.mail import send_mail
 from django.utils.translation import gettext as _
+from django.utils.translation import get_language
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import Group, User, Permission
@@ -965,14 +966,14 @@ def rotating_work_type_assign_bulk_archive(request):
         if not flag:
             messages.success(
                 request,
-                _("Rotating shift for {employee_id} is {message}").format(
+                _("Rotating work type for {employee_id} is {message}").format(
                     employee_id=rwork_type_assign.employee_id, message=message
                 ),
             )
         else:
             messages.error(
                 request,
-                _("Rotating shift for {employee_id} is already exists").format(
+                _("Rotating work type for {employee_id} is already exists").format(
                     employee_id=rwork_type_assign.employee_id,
                 ),
             )
@@ -1969,7 +1970,11 @@ def work_type_request_bulk_delete(request):
                 ),
             )
     return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
-
+    
+@login_required
+def get_language_code(request):
+    language_code = request.LANGUAGE_CODE
+    return JsonResponse({"language_code": language_code})
 
 @login_required
 def shift_request(request):
