@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-08-04 14:35+0530\n"
+"POT-Creation-Date: 2023-08-07 14:18+0530\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -352,6 +352,10 @@ msgstr ""
 #: .\attendance\templates\attendance\late_come_early_out\report_list.html:63
 #: .\attendance\templates\attendance\own_attendance\attendances.html:88
 #: .\attendance\templates\attendance\own_attendance\attendances.html:93
+#: .\attendance\templates\requests\attendance\request_lines.html:118
+#: .\attendance\templates\requests\attendance\request_lines.html:123
+#: .\attendance\templates\requests\attendance\request_lines.html:255
+#: .\attendance\templates\requests\attendance\request_lines.html:260
 #: .\base\templates\base\auth\group_assign_view.html:66
 #: .\base\templates\base\auth\permission_view.html:57
 #: .\base\templates\base\auth\permission_view.html:61
@@ -439,6 +443,10 @@ msgstr ""
 #: .\attendance\templates\attendance\late_come_early_out\report_list.html:73
 #: .\attendance\templates\attendance\own_attendance\attendances.html:88
 #: .\attendance\templates\attendance\own_attendance\attendances.html:103
+#: .\attendance\templates\requests\attendance\request_lines.html:118
+#: .\attendance\templates\requests\attendance\request_lines.html:133
+#: .\attendance\templates\requests\attendance\request_lines.html:255
+#: .\attendance\templates\requests\attendance\request_lines.html:270
 #: .\base\templates\base\auth\group_assign_view.html:66
 #: .\base\templates\base\auth\permission_view.html:57
 #: .\base\templates\base\auth\permission_view.html:64
@@ -516,6 +524,8 @@ msgstr ""
 #: .\attendance\templates\attendance\late_come_early_out\group_by.html:104
 #: .\attendance\templates\attendance\late_come_early_out\report_list.html:78
 #: .\attendance\templates\attendance\own_attendance\attendances.html:108
+#: .\attendance\templates\requests\attendance\request_lines.html:138
+#: .\attendance\templates\requests\attendance\request_lines.html:275
 #: .\base\templates\base\auth\group_assign_view.html:71
 #: .\base\templates\base\auth\permission_view.html:70
 #: .\base\templates\base\rotating_shift\rotating_shift_assign_view.html:154
@@ -567,6 +577,8 @@ msgstr ""
 #: .\attendance\templates\attendance\late_come_early_out\group_by.html:107
 #: .\attendance\templates\attendance\late_come_early_out\report_list.html:81
 #: .\attendance\templates\attendance\own_attendance\attendances.html:111
+#: .\attendance\templates\requests\attendance\request_lines.html:141
+#: .\attendance\templates\requests\attendance\request_lines.html:278
 #: .\base\templates\base\auth\group_assign_view.html:72
 #: .\base\templates\base\auth\permission_view.html:75
 #: .\base\templates\base\rotating_shift\rotating_shift_assign_view.html:162
@@ -618,6 +630,8 @@ msgstr ""
 #: .\attendance\templates\attendance\late_come_early_out\group_by.html:112
 #: .\attendance\templates\attendance\late_come_early_out\report_list.html:86
 #: .\attendance\templates\attendance\own_attendance\attendances.html:116
+#: .\attendance\templates\requests\attendance\request_lines.html:146
+#: .\attendance\templates\requests\attendance\request_lines.html:283
 #: .\base\templates\base\auth\group_assign_view.html:77
 #: .\base\templates\base\auth\permission_view.html:82
 #: .\base\templates\base\rotating_shift\rotating_shift_assign_view.html:170
@@ -669,6 +683,8 @@ msgstr ""
 #: .\attendance\templates\attendance\late_come_early_out\group_by.html:115
 #: .\attendance\templates\attendance\late_come_early_out\report_list.html:89
 #: .\attendance\templates\attendance\own_attendance\attendances.html:119
+#: .\attendance\templates\requests\attendance\request_lines.html:149
+#: .\attendance\templates\requests\attendance\request_lines.html:286
 #: .\base\templates\base\auth\group_assign_view.html:78
 #: .\base\templates\base\auth\permission_view.html:87
 #: .\base\templates\base\rotating_shift\rotating_shift_assign_view.html:178
@@ -839,7 +855,6 @@ msgstr ""
 #: .\asset\templates\category\asset_category_view.html:230
 #: .\attendance\templates\attendance\attendance\attendance_nav.html:121
 #: .\attendance\templates\attendance\attendance_account\nav.html:94
-#: .\attendance\templates\requests\attendance\nav.html:113
 #: .\base\templates\shift_request\shift_request_nav.html:219
 #: .\base\templates\work_type_request\work_type_request_nav.html:217
 #: .\employee\templates\employee_nav.html:205
@@ -973,6 +988,8 @@ msgstr ""
 #: .\attendance\templates\attendance\late_come_early_out\nav.html:47
 #: .\attendance\templates\attendance\own_attendance\filters.html:4
 #: .\attendance\templates\attendance\own_attendance\filters.html:139
+#: .\attendance\templates\requests\attendance\filter.html:161
+#: .\attendance\templates\requests\attendance\nav.html:128
 #: .\base\templates\base\rotating_shift\filters.html:99
 #: .\base\templates\base\rotating_shift\rotating_shift_assign_nav.html:43
 #: .\base\templates\base\rotating_work_type\filters.html:100
@@ -1236,7 +1253,7 @@ msgstr ""
 msgid "Batch number deleted"
 msgstr ""
 
-#: .\attendance\forms.py:63 .\base\forms.py:161 .\base\forms.py:205
+#: .\attendance\forms.py:63 .\base\forms.py:162 .\base\forms.py:206
 #: .\payroll\forms\tax_forms.py:41 .\recruitment\forms.py:53
 #: .\recruitment\forms.py:96
 #, python-brace-format
@@ -1256,7 +1273,7 @@ msgstr ""
 msgid "Attendance for the date is already exist for %(emp)s"
 msgstr ""
 
-#: .\attendance\forms.py:290 .\base\forms.py:764
+#: .\attendance\forms.py:290 .\base\forms.py:765
 msgid "Employee not chosen"
 msgstr ""
 
@@ -1286,8 +1303,9 @@ msgstr ""
 #: .\attendance\templates\attendance\late_come_early_out\late_come_early_out_filters.html:11
 #: .\attendance\templates\attendance\late_come_early_out\report_list.html:6
 #: .\attendance\templates\attendance\own_attendance\attendances.html:6
-#: .\attendance\templates\requests\attendance\view-requests.html:44
-#: .\attendance\templates\requests\attendance\view-requests.html:148
+#: .\attendance\templates\requests\attendance\filter.html:11
+#: .\attendance\templates\requests\attendance\request_lines.html:10
+#: .\attendance\templates\requests\attendance\request_lines.html:160
 #: .\base\models.py:147 .\base\models.py:186 .\base\models.py:327
 #: .\base\models.py:357 .\base\models.py:417 .\base\models.py:476
 #: .\base\templates\base\auth\group_assign_view.html:10
@@ -1350,7 +1368,7 @@ msgstr ""
 msgid "Hour Account"
 msgstr ""
 
-#: .\attendance\forms.py:362 .\attendance\models.py:161
+#: .\attendance\forms.py:362 .\attendance\models.py:162
 #: .\attendance\templates\attendance\attendance\group_by.html:25
 #: .\attendance\templates\attendance\attendance\group_by.html:191
 #: .\attendance\templates\attendance\attendance\group_by.html:353
@@ -1361,8 +1379,8 @@ msgstr ""
 #: .\attendance\templates\attendance\attendance_account\group_by.html:12
 #: .\attendance\templates\attendance\attendance_account\overtime_list.html:11
 #: .\attendance\templates\attendance\own_attendance\attendances.html:17
-#: .\attendance\templates\requests\attendance\view-requests.html:55
-#: .\attendance\templates\requests\attendance\view-requests.html:159
+#: .\attendance\templates\requests\attendance\request_lines.html:21
+#: .\attendance\templates\requests\attendance\request_lines.html:171
 #: .\payroll\models\models.py:587
 msgid "Overtime"
 msgstr ""
@@ -1381,24 +1399,24 @@ msgstr ""
 msgid "Maximum Allowed Overtime Per Day"
 msgstr ""
 
-#: .\attendance\models.py:46 .\base\forms.py:44 .\base\forms.py:50
-#: .\base\forms.py:52 .\base\models.py:22
+#: .\attendance\models.py:47 .\base\forms.py:45 .\base\forms.py:51
+#: .\base\forms.py:53 .\base\models.py:22
 msgid "Invalid format, it should be HH:MM format"
 msgstr ""
 
-#: .\attendance\models.py:52
+#: .\attendance\models.py:53
 msgid "Invalid time"
 msgstr ""
 
-#: .\attendance\models.py:54
+#: .\attendance\models.py:55
 msgid "Invalid format"
 msgstr ""
 
-#: .\attendance\models.py:66
+#: .\attendance\models.py:67
 msgid "You cannot choose a future date."
 msgstr ""
 
-#: .\attendance\models.py:115
+#: .\attendance\models.py:116
 #: .\attendance\templates\attendance\attendance\attendance_filters.html:19
 #: .\attendance\templates\attendance\attendance\group_by.html:21
 #: .\attendance\templates\attendance\attendance\group_by.html:187
@@ -1410,8 +1428,9 @@ msgstr ""
 #: .\attendance\templates\attendance\attendance_activity\activity_filters.html:19
 #: .\attendance\templates\attendance\late_come_early_out\late_come_early_out_filters.html:19
 #: .\attendance\templates\attendance\own_attendance\attendances.html:13
-#: .\attendance\templates\requests\attendance\view-requests.html:51
-#: .\attendance\templates\requests\attendance\view-requests.html:155
+#: .\attendance\templates\requests\attendance\filter.html:19
+#: .\attendance\templates\requests\attendance\request_lines.html:17
+#: .\attendance\templates\requests\attendance\request_lines.html:167
 #: .\base\models.py:294 .\base\models.py:486
 #: .\base\templates\base\rotating_shift\filters.html:57
 #: .\base\templates\base\rotating_work_type\filters.html:57
@@ -1429,7 +1448,7 @@ msgstr ""
 msgid "Shift"
 msgstr ""
 
-#: .\attendance\models.py:122
+#: .\attendance\models.py:123
 #: .\attendance\templates\attendance\attendance\attendance_filters.html:39
 #: .\attendance\templates\attendance\attendance\group_by.html:22
 #: .\attendance\templates\attendance\attendance\group_by.html:188
@@ -1441,8 +1460,9 @@ msgstr ""
 #: .\attendance\templates\attendance\attendance_activity\activity_filters.html:39
 #: .\attendance\templates\attendance\late_come_early_out\late_come_early_out_filters.html:39
 #: .\attendance\templates\attendance\own_attendance\attendances.html:14
-#: .\attendance\templates\requests\attendance\view-requests.html:52
-#: .\attendance\templates\requests\attendance\view-requests.html:156
+#: .\attendance\templates\requests\attendance\filter.html:39
+#: .\attendance\templates\requests\attendance\request_lines.html:18
+#: .\attendance\templates\requests\attendance\request_lines.html:168
 #: .\base\models.py:427 .\base\templates\base\rotating_shift\filters.html:71
 #: .\base\templates\base\rotating_work_type\filters.html:71
 #: .\base\templates\base\work_type\work_type.html:9
@@ -1462,50 +1482,50 @@ msgstr ""
 msgid "Work Type"
 msgstr ""
 
-#: .\attendance\models.py:127
+#: .\attendance\models.py:128
 msgid "Attendance date"
 msgstr ""
 
-#: .\attendance\models.py:133
+#: .\attendance\models.py:134
 msgid "Check-in"
 msgstr ""
 
-#: .\attendance\models.py:136
+#: .\attendance\models.py:137
 msgid "Check-in date"
 msgstr ""
 
-#: .\attendance\models.py:139
+#: .\attendance\models.py:140
 msgid "Check-out"
 msgstr ""
 
-#: .\attendance\models.py:142
+#: .\attendance\models.py:143
 msgid "Check-out date"
 msgstr ""
 
-#: .\attendance\models.py:149
+#: .\attendance\models.py:150
 msgid "At work"
 msgstr ""
 
-#: .\attendance\models.py:155
+#: .\attendance\models.py:156
 msgid "Minimum hour"
 msgstr ""
 
-#: .\attendance\models.py:164 .\attendance\views\views.py:787
+#: .\attendance\models.py:165 .\attendance\views\views.py:787
 msgid "Overtime approved"
 msgstr ""
 
-#: .\attendance\models.py:409
+#: .\attendance\models.py:420
 #: .\attendance\templates\attendance\late_come_early_out\report_list.html:36
 #: .\attendance\views\dashboard.py:177
 msgid "Late Come"
 msgstr ""
 
-#: .\attendance\models.py:410
+#: .\attendance\models.py:421
 #: .\attendance\templates\attendance\late_come_early_out\report_list.html:38
 msgid "Early Out"
 msgstr ""
 
-#: .\attendance\models.py:458
+#: .\attendance\models.py:469
 msgid "You cannot add more conditions."
 msgstr ""
 
@@ -1513,6 +1533,7 @@ msgstr ""
 #: .\attendance\templates\attendance\attendance_account\attendance_account_filter.html:6
 #: .\attendance\templates\attendance\attendance_activity\activity_filters.html:6
 #: .\attendance\templates\attendance\late_come_early_out\late_come_early_out_filters.html:6
+#: .\attendance\templates\requests\attendance\filter.html:6
 #: .\base\templates\base\rotating_shift\filters.html:44
 #: .\base\templates\base\rotating_work_type\filters.html:44
 #: .\base\templates\shift_request\shift_request_nav.html:102
@@ -1527,6 +1548,7 @@ msgstr ""
 #: .\attendance\templates\attendance\attendance_account\attendance_account_filter.html:15
 #: .\attendance\templates\attendance\attendance_activity\activity_filters.html:15
 #: .\attendance\templates\attendance\late_come_early_out\late_come_early_out_filters.html:15
+#: .\attendance\templates\requests\attendance\filter.html:15
 #: .\base\models.py:86 .\base\templates\base\department\department.html:9
 #: .\base\templates\base\department\department_view.html:6
 #: .\base\templates\base\job_position\job_position.html:14
@@ -1554,6 +1576,7 @@ msgstr ""
 #: .\attendance\templates\attendance\attendance_account\attendance_account_filter.html:23
 #: .\attendance\templates\attendance\attendance_activity\activity_filters.html:23
 #: .\attendance\templates\attendance\late_come_early_out\late_come_early_out_filters.html:23
+#: .\attendance\templates\requests\attendance\filter.html:23
 #: .\base\templates\base\rotating_shift\filters.html:63
 #: .\base\templates\base\rotating_work_type\filters.html:63
 #: .\base\templates\shift_request\shift_request_nav.html:141
@@ -1571,6 +1594,7 @@ msgstr ""
 #: .\attendance\templates\attendance\attendance_account\attendance_account_filter.html:31
 #: .\attendance\templates\attendance\attendance_activity\activity_filters.html:31
 #: .\attendance\templates\attendance\late_come_early_out\late_come_early_out_filters.html:31
+#: .\attendance\templates\requests\attendance\filter.html:31
 #: .\base\templates\base\company\company.html:9
 #: .\base\templates\base\company\company.html:13
 #: .\base\templates\base\company\company_view.html:6
@@ -1597,6 +1621,7 @@ msgstr ""
 #: .\attendance\templates\attendance\attendance_account\attendance_account_filter.html:35
 #: .\attendance\templates\attendance\attendance_activity\activity_filters.html:35
 #: .\attendance\templates\attendance\late_come_early_out\late_come_early_out_filters.html:35
+#: .\attendance\templates\requests\attendance\filter.html:35
 #: .\base\models.py:98 .\base\templates\base\job_position\job_position.html:9
 #: .\base\templates\base\job_position\job_position.html:21
 #: .\base\templates\base\job_position\job_position_view.html:11
@@ -1638,6 +1663,7 @@ msgstr ""
 #: .\attendance\templates\attendance\attendance_account\attendance_account_filter.html:43
 #: .\attendance\templates\attendance\attendance_activity\activity_filters.html:43
 #: .\attendance\templates\attendance\late_come_early_out\late_come_early_out_filters.html:43
+#: .\attendance\templates\requests\attendance\filter.html:43
 #: .\employee\templates\employee\profile\profile_view.html:297
 #: .\employee\templates\employee\profile\work_info.html:63
 #: .\employee\templates\employee\update_form\work_details.html:67
@@ -1647,6 +1673,7 @@ msgstr ""
 
 #: .\attendance\templates\attendance\attendance\attendance_filters.html:53
 #: .\attendance\templates\attendance\own_attendance\filters.html:20
+#: .\attendance\templates\requests\attendance\filter.html:53
 #: .\payroll\models\models.py:585 .\templates\sidebar.html:177
 msgid "Attendance"
 msgstr ""
@@ -1657,18 +1684,21 @@ msgstr ""
 #: .\attendance\templates\attendance\late_come_early_out\late_come_early_out_filters.html:62
 #: .\attendance\templates\attendance\late_come_early_out\report_list.html:8
 #: .\attendance\templates\attendance\own_attendance\filters.html:25
+#: .\attendance\templates\requests\attendance\filter.html:58
 msgid "Attendance Date"
 msgstr ""
 
 #: .\attendance\templates\attendance\attendance\attendance_filters.html:62
 #: .\attendance\templates\attendance\late_come_early_out\late_come_early_out_filters.html:80
 #: .\attendance\templates\attendance\own_attendance\filters.html:29
+#: .\attendance\templates\requests\attendance\filter.html:62
 msgid "In Time"
 msgstr ""
 
 #: .\attendance\templates\attendance\attendance\attendance_filters.html:66
 #: .\attendance\templates\attendance\late_come_early_out\late_come_early_out_filters.html:70
 #: .\attendance\templates\attendance\own_attendance\filters.html:33
+#: .\attendance\templates\requests\attendance\filter.html:66
 msgid "Validated?"
 msgstr ""
 
@@ -1684,20 +1714,23 @@ msgstr ""
 #: .\attendance\templates\attendance\late_come_early_out\report_list.html:13
 #: .\attendance\templates\attendance\own_attendance\attendances.html:15
 #: .\attendance\templates\attendance\own_attendance\filters.html:39
-#: .\attendance\templates\requests\attendance\view-requests.html:53
-#: .\attendance\templates\requests\attendance\view-requests.html:157
+#: .\attendance\templates\requests\attendance\filter.html:72
+#: .\attendance\templates\requests\attendance\request_lines.html:19
+#: .\attendance\templates\requests\attendance\request_lines.html:169
 msgid "Min Hour"
 msgstr ""
 
 #: .\attendance\templates\attendance\attendance\attendance_filters.html:76
 #: .\attendance\templates\attendance\late_come_early_out\late_come_early_out_filters.html:66
 #: .\attendance\templates\attendance\own_attendance\filters.html:43
+#: .\attendance\templates\requests\attendance\filter.html:76
 msgid "Out Time"
 msgstr ""
 
 #: .\attendance\templates\attendance\attendance\attendance_filters.html:80
 #: .\attendance\templates\attendance\late_come_early_out\late_come_early_out_filters.html:84
 #: .\attendance\templates\attendance\own_attendance\filters.html:47
+#: .\attendance\templates\requests\attendance\filter.html:80
 msgid "OT Approved?"
 msgstr ""
 
@@ -1706,6 +1739,7 @@ msgstr ""
 #: .\attendance\templates\attendance\attendance_activity\activity_filters.html:81
 #: .\attendance\templates\attendance\late_come_early_out\late_come_early_out_filters.html:92
 #: .\attendance\templates\attendance\own_attendance\filters.html:55
+#: .\attendance\templates\requests\attendance\filter.html:88
 #: .\base\templates\base\rotating_shift\filters.html:79
 #: .\base\templates\base\rotating_work_type\filters.html:79
 #: .\base\templates\shift_request\shift_request_nav.html:186
@@ -1722,6 +1756,7 @@ msgstr ""
 #: .\attendance\templates\attendance\attendance_activity\activity_filters.html:86
 #: .\attendance\templates\attendance\late_come_early_out\late_come_early_out_filters.html:97
 #: .\attendance\templates\attendance\own_attendance\filters.html:60
+#: .\attendance\templates\requests\attendance\filter.html:93
 msgid "Attendance From"
 msgstr ""
 
@@ -1729,6 +1764,7 @@ msgstr ""
 #: .\attendance\templates\attendance\attendance_activity\activity_filters.html:90
 #: .\attendance\templates\attendance\late_come_early_out\late_come_early_out_filters.html:101
 #: .\attendance\templates\attendance\own_attendance\filters.html:64
+#: .\attendance\templates\requests\attendance\filter.html:97
 msgid "In From"
 msgstr ""
 
@@ -1736,12 +1772,14 @@ msgstr ""
 #: .\attendance\templates\attendance\attendance_activity\activity_filters.html:94
 #: .\attendance\templates\attendance\late_come_early_out\late_come_early_out_filters.html:105
 #: .\attendance\templates\attendance\own_attendance\filters.html:68
+#: .\attendance\templates\requests\attendance\filter.html:101
 msgid "Out From"
 msgstr ""
 
 #: .\attendance\templates\attendance\attendance\attendance_filters.html:105
 #: .\attendance\templates\attendance\late_come_early_out\late_come_early_out_filters.html:109
 #: .\attendance\templates\attendance\own_attendance\filters.html:72
+#: .\attendance\templates\requests\attendance\filter.html:105
 msgid "At Work Greater or Equal"
 msgstr ""
 
@@ -1749,6 +1787,7 @@ msgstr ""
 #: .\attendance\templates\attendance\attendance_activity\activity_filters.html:98
 #: .\attendance\templates\attendance\late_come_early_out\late_come_early_out_filters.html:113
 #: .\attendance\templates\attendance\own_attendance\filters.html:76
+#: .\attendance\templates\requests\attendance\filter.html:109
 msgid "OT Greater or Equal"
 msgstr ""
 
@@ -1756,6 +1795,7 @@ msgstr ""
 #: .\attendance\templates\attendance\attendance_activity\activity_filters.html:104
 #: .\attendance\templates\attendance\late_come_early_out\late_come_early_out_filters.html:119
 #: .\attendance\templates\attendance\own_attendance\filters.html:82
+#: .\attendance\templates\requests\attendance\filter.html:115
 msgid "Attendance Till"
 msgstr ""
 
@@ -1763,6 +1803,7 @@ msgstr ""
 #: .\attendance\templates\attendance\attendance_activity\activity_filters.html:108
 #: .\attendance\templates\attendance\late_come_early_out\late_come_early_out_filters.html:123
 #: .\attendance\templates\attendance\own_attendance\filters.html:86
+#: .\attendance\templates\requests\attendance\filter.html:119
 msgid "In Till"
 msgstr ""
 
@@ -1770,18 +1811,21 @@ msgstr ""
 #: .\attendance\templates\attendance\attendance_activity\activity_filters.html:112
 #: .\attendance\templates\attendance\late_come_early_out\late_come_early_out_filters.html:127
 #: .\attendance\templates\attendance\own_attendance\filters.html:90
+#: .\attendance\templates\requests\attendance\filter.html:123
 msgid "Out Till"
 msgstr ""
 
 #: .\attendance\templates\attendance\attendance\attendance_filters.html:127
 #: .\attendance\templates\attendance\late_come_early_out\late_come_early_out_filters.html:131
 #: .\attendance\templates\attendance\own_attendance\filters.html:94
+#: .\attendance\templates\requests\attendance\filter.html:127
 msgid "At Work Less Than or Equal"
 msgstr ""
 
 #: .\attendance\templates\attendance\attendance\attendance_filters.html:131
 #: .\attendance\templates\attendance\late_come_early_out\late_come_early_out_filters.html:135
 #: .\attendance\templates\attendance\own_attendance\filters.html:98
+#: .\attendance\templates\requests\attendance\filter.html:131
 msgid "OT Less Than or Equal"
 msgstr ""
 
@@ -1789,6 +1833,7 @@ msgstr ""
 #: .\attendance\templates\attendance\attendance_account\attendance_account_filter.html:104
 #: .\attendance\templates\attendance\attendance_activity\activity_filters.html:120
 #: .\attendance\templates\attendance\late_come_early_out\late_come_early_out_filters.html:143
+#: .\attendance\templates\requests\attendance\filter.html:139
 msgid "Group By"
 msgstr ""
 
@@ -1796,6 +1841,7 @@ msgstr ""
 #: .\attendance\templates\attendance\attendance_account\attendance_account_filter.html:109
 #: .\attendance\templates\attendance\attendance_activity\activity_filters.html:125
 #: .\attendance\templates\attendance\late_come_early_out\late_come_early_out_filters.html:148
+#: .\attendance\templates\requests\attendance\filter.html:144
 msgid "Field"
 msgstr ""
 
@@ -1836,8 +1882,8 @@ msgstr ""
 #: .\attendance\templates\attendance\attendance\tab_content.html:170
 #: .\attendance\templates\attendance\attendance\tab_content.html:328
 #: .\attendance\templates\attendance\own_attendance\attendances.html:7
-#: .\attendance\templates\requests\attendance\view-requests.html:45
-#: .\attendance\templates\requests\attendance\view-requests.html:149
+#: .\attendance\templates\requests\attendance\request_lines.html:11
+#: .\attendance\templates\requests\attendance\request_lines.html:161
 msgid "Date"
 msgstr ""
 
@@ -1848,8 +1894,8 @@ msgstr ""
 #: .\attendance\templates\attendance\attendance\tab_content.html:171
 #: .\attendance\templates\attendance\attendance\tab_content.html:329
 #: .\attendance\templates\attendance\own_attendance\attendances.html:8
-#: .\attendance\templates\requests\attendance\view-requests.html:46
-#: .\attendance\templates\requests\attendance\view-requests.html:150
+#: .\attendance\templates\requests\attendance\request_lines.html:12
+#: .\attendance\templates\requests\attendance\request_lines.html:162
 #: .\leave\models.py:80
 msgid "Day"
 msgstr ""
@@ -1864,8 +1910,8 @@ msgstr ""
 #: .\attendance\templates\attendance\late_come_early_out\group_by.html:10
 #: .\attendance\templates\attendance\late_come_early_out\report_list.html:9
 #: .\attendance\templates\attendance\own_attendance\attendances.html:9
-#: .\attendance\templates\requests\attendance\view-requests.html:47
-#: .\attendance\templates\requests\attendance\view-requests.html:151
+#: .\attendance\templates\requests\attendance\request_lines.html:13
+#: .\attendance\templates\requests\attendance\request_lines.html:163
 msgid "Clock In"
 msgstr ""
 
@@ -1881,8 +1927,8 @@ msgstr ""
 #: .\attendance\templates\attendance\late_come_early_out\group_by.html:11
 #: .\attendance\templates\attendance\late_come_early_out\report_list.html:10
 #: .\attendance\templates\attendance\own_attendance\attendances.html:10
-#: .\attendance\templates\requests\attendance\view-requests.html:48
-#: .\attendance\templates\requests\attendance\view-requests.html:152
+#: .\attendance\templates\requests\attendance\request_lines.html:14
+#: .\attendance\templates\requests\attendance\request_lines.html:164
 msgid "In Date"
 msgstr ""
 
@@ -1896,8 +1942,8 @@ msgstr ""
 #: .\attendance\templates\attendance\late_come_early_out\group_by.html:12
 #: .\attendance\templates\attendance\late_come_early_out\report_list.html:11
 #: .\attendance\templates\attendance\own_attendance\attendances.html:11
-#: .\attendance\templates\requests\attendance\view-requests.html:49
-#: .\attendance\templates\requests\attendance\view-requests.html:153
+#: .\attendance\templates\requests\attendance\request_lines.html:15
+#: .\attendance\templates\requests\attendance\request_lines.html:165
 msgid "Clock Out"
 msgstr ""
 
@@ -1913,8 +1959,8 @@ msgstr ""
 #: .\attendance\templates\attendance\late_come_early_out\group_by.html:13
 #: .\attendance\templates\attendance\late_come_early_out\report_list.html:12
 #: .\attendance\templates\attendance\own_attendance\attendances.html:12
-#: .\attendance\templates\requests\attendance\view-requests.html:50
-#: .\attendance\templates\requests\attendance\view-requests.html:154
+#: .\attendance\templates\requests\attendance\request_lines.html:16
+#: .\attendance\templates\requests\attendance\request_lines.html:166
 msgid "Out Date"
 msgstr ""
 
@@ -1927,8 +1973,8 @@ msgstr ""
 #: .\attendance\templates\attendance\late_come_early_out\group_by.html:15
 #: .\attendance\templates\attendance\late_come_early_out\report_list.html:14
 #: .\attendance\templates\attendance\own_attendance\attendances.html:16
-#: .\attendance\templates\requests\attendance\view-requests.html:54
-#: .\attendance\templates\requests\attendance\view-requests.html:158
+#: .\attendance\templates\requests\attendance\request_lines.html:20
+#: .\attendance\templates\requests\attendance\request_lines.html:170
 msgid "At Work"
 msgstr ""
 
@@ -2108,8 +2154,17 @@ msgstr ""
 msgid "My Attendances"
 msgstr ""
 
-#: .\attendance\templates\requests\attendance\nav.html:13
+#: .\attendance\templates\requests\attendance\nav.html:24
 msgid "Update Attendances Request"
+msgstr ""
+
+#: .\attendance\templates\requests\attendance\nav.html:47
+#: .\attendance\templates\requests\attendance\nav.html:70
+msgid "Validate Attendances Request"
+msgstr ""
+
+#: .\attendance\templates\requests\attendance\nav.html:89
+msgid "All Attendances"
 msgstr ""
 
 #: .\attendance\views\clock_in_out.py:184 .\templates\index.html:126
@@ -2197,62 +2252,86 @@ msgstr ""
 msgid "Attendance validated."
 msgstr ""
 
-#: .\base\forms.py:458 .\base\forms.py:876 .\payroll\models\models.py:228
+#: .\base\forms.py:459 .\base\forms.py:877 .\payroll\models\models.py:228
 #: .\payroll\models\models.py:851 .\payroll\models\models.py:862
 #: .\payroll\models\models.py:1098
 msgid "This field is required"
 msgstr ""
 
-#: .\base\forms.py:759
+#: .\base\forms.py:760
 #, python-brace-format
 msgid "Shift schedule is already exist for {day}"
 msgstr ""
 
-#: .\base\forms.py:814
+#: .\base\forms.py:815
 msgid "Start date"
 msgstr ""
 
 #: .\base\forms.py:1124
-msgid "New password"
+msgid "Old password"
 msgstr ""
 
 #: .\base\forms.py:1129
-msgid "Enter Strong Password"
+msgid "Enter Old Password"
 msgstr ""
 
 #: .\base\forms.py:1133
-msgid "Enter your new password."
+msgid "Enter your old password."
+msgstr ""
+
+#: .\base\forms.py:1136 .\base\forms.py:1199
+msgid "New password"
 msgstr ""
 
 #: .\base\forms.py:1141
+msgid "Enter New Password"
+msgstr ""
+
+#: .\base\forms.py:1147 .\base\forms.py:1211
+msgid "New password confirmation"
+msgstr ""
+
+#: .\base\forms.py:1152 .\base\forms.py:1216
 msgid "Re-Enter Password"
 msgstr ""
 
-#: .\base\forms.py:1145
+#: .\base\forms.py:1185
+msgid "New password and confirm password do not match"
+msgstr ""
+
+#: .\base\forms.py:1204
+msgid "Enter Strong Password"
+msgstr ""
+
+#: .\base\forms.py:1208
+msgid "Enter your new password."
+msgstr ""
+
+#: .\base\forms.py:1220
 msgid "Enter the same password as before, for verification."
 msgstr ""
 
-#: .\base\forms.py:1154
+#: .\base\forms.py:1229
 msgid "Password must contain at least 8 characters."
 msgstr ""
 
-#: .\base\forms.py:1157
+#: .\base\forms.py:1232
 msgid "Password must contain at least one uppercase letter."
 msgstr ""
 
-#: .\base\forms.py:1161
+#: .\base\forms.py:1236
 msgid "Password must contain at least one lowercase letter."
 msgstr ""
 
-#: .\base\forms.py:1164
+#: .\base\forms.py:1239
 msgid "Password must contain at least one digit."
 msgstr ""
 
-#: .\base\forms.py:1169
+#: .\base\forms.py:1244
 msgid "Password must contain at least one special character."
 msgstr ""
 
-#: .\base\forms.py:1183
+#: .\base\forms.py:1258
 msgid "Password must be same."
 msgstr ""
 
@@ -2410,6 +2489,34 @@ msgstr ""
 
 #: .\base\templates\base\auth\group_view.html:48
 msgid "Are you sure you want to delete this group?"
+msgstr ""
+
+#: .\base\templates\base\auth\password_change_form.html:14
+#: .\templates\index.html:187
+msgid "Change Password"
+msgstr ""
+
+#: .\base\templates\base\auth\password_change_form.html:25
+msgid "Old Password"
+msgstr ""
+
+#: .\base\templates\base\auth\password_change_form.html:46
+#: .\templates\reset_password.html:35
+msgid "New Password"
+msgstr ""
+
+#: .\base\templates\base\auth\password_change_form.html:67
+#: .\onboarding\templates\onboarding\user-creation.html:98
+msgid "Confirm Password"
+msgstr ""
+
+#: .\base\templates\base\auth\password_change_form.html:92
+msgid "Save Password"
+msgstr ""
+
+#: .\base\templates\base\auth\password_change_form.html:98
+#: .\templates\login.html:66
+msgid "Forgot password"
 msgstr ""
 
 #: .\base\templates\base\company\company.html:18
@@ -3390,361 +3497,369 @@ msgstr ""
 msgid "Rotate every"
 msgstr ""
 
-#: .\base\views.py:114
+#: .\base\views.py:113
 msgid "Invalid username or password."
 msgstr ""
 
-#: .\base\views.py:117
+#: .\base\views.py:116
 msgid "Login Success"
 msgstr ""
 
-#: .\base\views.py:154
+#: .\base\views.py:153
 msgid "No email found."
 msgstr ""
 
-#: .\base\views.py:178
+#: .\base\views.py:177
 #, python-brace-format
 msgid "Link sended to {recipient}"
 msgstr ""
 
-#: .\base\views.py:194
+#: .\base\views.py:193
 msgid "Password reset success"
 msgstr ""
 
-#: .\base\views.py:257
+#: .\base\views.py:197
+msgid "Link Expired..."
+msgstr ""
+
+#: .\base\views.py:214
+msgid "Password changed successfully"
+msgstr ""
+
+#: .\base\views.py:276
 msgid "User group created."
 msgstr ""
 
-#: .\base\views.py:275
+#: .\base\views.py:294
 msgid "User group assigned."
 msgstr ""
 
-#: .\base\views.py:362
+#: .\base\views.py:381
 msgid "User group updated."
 msgstr ""
 
-#: .\base\views.py:381
+#: .\base\views.py:400
 msgid "User group deleted."
 msgstr ""
 
-#: .\base\views.py:384
+#: .\base\views.py:403
 msgid "You cannot delete this user group."
 msgstr ""
 
-#: .\base\views.py:403
+#: .\base\views.py:422
 msgid "Company has been created successfully!"
 msgstr ""
 
-#: .\base\views.py:427
+#: .\base\views.py:446
 msgid "Company updated"
 msgstr ""
 
-#: .\base\views.py:446
+#: .\base\views.py:465
 msgid "Company deleted."
 msgstr ""
 
-#: .\base\views.py:449
+#: .\base\views.py:468
 msgid "This company already in use"
 msgstr ""
 
-#: .\base\views.py:467
+#: .\base\views.py:486
 msgid "Department has been created successfully!"
 msgstr ""
 
-#: .\base\views.py:490
+#: .\base\views.py:509
 msgid "Department updated."
 msgstr ""
 
-#: .\base\views.py:510
+#: .\base\views.py:529
 msgid "Department deleted."
 msgstr ""
 
-#: .\base\views.py:513
+#: .\base\views.py:532
 msgid "Department already in use."
 msgstr ""
 
-#: .\base\views.py:531
+#: .\base\views.py:550
 msgid "Job Position has been created successfully!"
 msgstr ""
 
-#: .\base\views.py:555
+#: .\base\views.py:574
 msgid "Job position updated."
 msgstr ""
 
-#: .\base\views.py:575
+#: .\base\views.py:594
 msgid "Job Position Deleted."
 msgstr ""
 
-#: .\base\views.py:578
+#: .\base\views.py:597
 msgid "This job position already in use."
 msgstr ""
 
-#: .\base\views.py:597
+#: .\base\views.py:616
 msgid "Job role has been created successfully!"
 msgstr ""
 
-#: .\base\views.py:621
+#: .\base\views.py:640
 msgid "Job role updated."
 msgstr ""
 
-#: .\base\views.py:638
+#: .\base\views.py:657
 msgid "Job Role Deleted."
 msgstr ""
 
-#: .\base\views.py:641
+#: .\base\views.py:660
 msgid "This job role already in use."
 msgstr ""
 
-#: .\base\views.py:660
+#: .\base\views.py:679
 msgid "Work Type has been created successfully!"
 msgstr ""
 
-#: .\base\views.py:685
+#: .\base\views.py:704
 msgid "Work type updated."
 msgstr ""
 
-#: .\base\views.py:705
+#: .\base\views.py:724
 msgid "Work type deleted."
 msgstr ""
 
-#: .\base\views.py:708
+#: .\base\views.py:727
 msgid "This work type already in use."
 msgstr ""
 
-#: .\base\views.py:726
+#: .\base\views.py:745
 msgid "Rotating work type created."
 msgstr ""
 
-#: .\base\views.py:751
+#: .\base\views.py:770
 msgid "Rotating work type updated."
 msgstr ""
 
-#: .\base\views.py:772
+#: .\base\views.py:791
 msgid "Rotating work type deleted."
 msgstr ""
 
-#: .\base\views.py:775
+#: .\base\views.py:794
 msgid "This rotating work type already in use."
 msgstr ""
 
-#: .\base\views.py:836
+#: .\base\views.py:855
 msgid "Rotating work type assigned."
 msgstr ""
 
-#: .\base\views.py:896
+#: .\base\views.py:915
 msgid "Rotating work type assign updated."
 msgstr ""
 
-#: .\base\views.py:927 .\base\views.py:951 .\base\views.py:1437
-#: .\base\views.py:1461 .\employee\views.py:737
+#: .\base\views.py:946 .\base\views.py:970 .\base\views.py:1456
+#: .\base\views.py:1480 .\employee\views.py:737
 msgid "un-archived"
 msgstr ""
 
-#: .\base\views.py:930 .\base\views.py:954 .\base\views.py:1441
-#: .\base\views.py:1464 .\employee\views.py:735
+#: .\base\views.py:949 .\base\views.py:973 .\base\views.py:1460
+#: .\base\views.py:1483 .\employee\views.py:735
 msgid "archived"
 msgstr ""
 
-#: .\base\views.py:935 .\base\views.py:1445
+#: .\base\views.py:954 .\base\views.py:1464
 #, python-brace-format
 msgid "Rotating shift assign is {message}"
 msgstr ""
 
-#: .\base\views.py:969
+#: .\base\views.py:988
 #, python-brace-format
 msgid "Rotating work type for {employee_id} is {message}"
 msgstr ""
 
-#: .\base\views.py:976
+#: .\base\views.py:995
 #, python-brace-format
 msgid "Rotating work type for {employee_id} is already exists"
 msgstr ""
 
-#: .\base\views.py:997
+#: .\base\views.py:1016
 #, python-brace-format
 msgid "{employee} deleted."
 msgstr ""
 
-#: .\base\views.py:1002
+#: .\base\views.py:1021
 #, python-brace-format
 msgid "You cannot delete {rwork_type_assign}"
 msgstr ""
 
-#: .\base\views.py:1021
+#: .\base\views.py:1040
 msgid "Rotating work type assign deleted."
 msgstr ""
 
-#: .\base\views.py:1024
+#: .\base\views.py:1043
 msgid "You cannot delete this rotating work type."
 msgstr ""
 
-#: .\base\views.py:1042
+#: .\base\views.py:1061
 msgid "Employee type created."
 msgstr ""
 
-#: .\base\views.py:1067
+#: .\base\views.py:1086
 msgid "Employee type updated."
 msgstr ""
 
-#: .\base\views.py:1087
+#: .\base\views.py:1106
 msgid "Employee type deleted."
 msgstr ""
 
-#: .\base\views.py:1090
+#: .\base\views.py:1109
 msgid "This Employee type already in use."
 msgstr ""
 
-#: .\base\views.py:1109
+#: .\base\views.py:1128
 msgid "Employee Shift has been created successfully!"
 msgstr ""
 
-#: .\base\views.py:1130
+#: .\base\views.py:1149
 msgid "Shift updated"
 msgstr ""
 
-#: .\base\views.py:1148
+#: .\base\views.py:1167
 msgid "Employee shift deleted."
 msgstr ""
 
-#: .\base\views.py:1151
+#: .\base\views.py:1170
 msgid "This shift already in use."
 msgstr ""
 
-#: .\base\views.py:1170
+#: .\base\views.py:1189
 msgid "Employee Shift Schedule has been created successfully!"
 msgstr ""
 
-#: .\base\views.py:1193
+#: .\base\views.py:1212
 msgid "Shift schedule created."
 msgstr ""
 
-#: .\base\views.py:1209
+#: .\base\views.py:1228
 msgid "Shift schedule deleted."
 msgstr ""
 
-#: .\base\views.py:1212
+#: .\base\views.py:1231
 msgid "You cannot delete this schedule"
 msgstr ""
 
-#: .\base\views.py:1229
+#: .\base\views.py:1248
 msgid "Rotating shift created."
 msgstr ""
 
-#: .\base\views.py:1253
+#: .\base\views.py:1272
 msgid "Rotating shift updated."
 msgstr ""
 
-#: .\base\views.py:1279
+#: .\base\views.py:1298
 msgid "Rotating shift deleted."
 msgstr ""
 
-#: .\base\views.py:1282
+#: .\base\views.py:1301
 msgid "You cannot delete this rotating shift"
 msgstr ""
 
-#: .\base\views.py:1344
+#: .\base\views.py:1363
 msgid "Rotating shift assigned."
 msgstr ""
 
-#: .\base\views.py:1403
+#: .\base\views.py:1422
 msgid "Rotating shift assign updated."
 msgstr ""
 
-#: .\base\views.py:1479
+#: .\base\views.py:1498
 #, python-brace-format
 msgid "Rotating shift for {employee} is {message}"
 msgstr ""
 
-#: .\base\views.py:1486
+#: .\base\views.py:1505
 #, python-brace-format
 msgid "Rotating shift for {employee} is already exists"
 msgstr ""
 
-#: .\base\views.py:1507
+#: .\base\views.py:1526
 #, python-brace-format
 msgid "{employee} assign deleted."
 msgstr ""
 
-#: .\base\views.py:1514
+#: .\base\views.py:1533
 #, python-brace-format
 msgid "You cannot delete {rshift_assign}"
 msgstr ""
 
-#: .\base\views.py:1533
+#: .\base\views.py:1552
 msgid "Rotating shift assign deleted."
 msgstr ""
 
-#: .\base\views.py:1536
+#: .\base\views.py:1555
 msgid "You cannot delete this rotating shift assign."
 msgstr ""
 
-#: .\base\views.py:1554
+#: .\base\views.py:1573
 msgid "Employee permission assigned."
 msgstr ""
 
-#: .\base\views.py:1706
+#: .\base\views.py:1729
 msgid "Work type request added."
 msgstr ""
 
-#: .\base\views.py:1738 .\base\views.py:1777
+#: .\base\views.py:1761 .\base\views.py:1800
 msgid "Work type request has been canceled."
 msgstr ""
 
-#: .\base\views.py:1811 .\base\views.py:1852
+#: .\base\views.py:1834 .\base\views.py:1875
 msgid "Work type request has been approved."
 msgstr ""
 
-#: .\base\views.py:1892 .\base\views.py:2100
+#: .\base\views.py:1915 .\base\views.py:2125
 msgid "Request Updated Successfully"
 msgstr ""
 
-#: .\base\views.py:1914 .\base\views.py:1949
+#: .\base\views.py:1937 .\base\views.py:1972
 msgid "Work type request deleted."
 msgstr ""
 
-#: .\base\views.py:1928
+#: .\base\views.py:1951
 msgid "You cannot delete this work type request."
 msgstr ""
 
-#: .\base\views.py:1966
+#: .\base\views.py:1989
 #, python-brace-format
 msgid "You cannot delete {employee} work type request for the date {date}."
 msgstr ""
 
-#: .\base\views.py:2016
+#: .\base\views.py:2041
 msgid "Request Added"
 msgstr ""
 
-#: .\base\views.py:2131 .\base\views.py:2172
+#: .\base\views.py:2156 .\base\views.py:2197
 msgid "Shift request canceled"
 msgstr ""
 
-#: .\base\views.py:2210 .\base\views.py:2253
+#: .\base\views.py:2235 .\base\views.py:2278
 msgid "Shift has been approved."
 msgstr ""
 
-#: .\base\views.py:2282 .\base\views.py:2319
+#: .\base\views.py:2307 .\base\views.py:2344
 msgid "Shift request deleted."
 msgstr ""
 
-#: .\base\views.py:2297
+#: .\base\views.py:2322
 msgid "You cannot delete this shift request."
 msgstr ""
 
-#: .\base\views.py:2336
+#: .\base\views.py:2361
 #, python-brace-format
 msgid "You cannot delete {employee} shift request for the date {date}."
 msgstr ""
 
-#: .\base\views.py:2366
+#: .\base\views.py:2391
 msgid "Unread notifications removed."
 msgstr ""
 
-#: .\base\views.py:2384
+#: .\base\views.py:2409
 msgid "Notification deleted."
 msgstr ""
 
-#: .\base\views.py:2400
+#: .\base\views.py:2425
 msgid "Notifications marked as read"
 msgstr ""
 
@@ -5230,10 +5345,6 @@ msgstr ""
 #: .\onboarding\templates\onboarding\user-creation.html:86
 #: .\templates\login.html:32
 msgid "Password"
-msgstr ""
-
-#: .\onboarding\templates\onboarding\user-creation.html:98
-msgid "Confirm Password"
 msgstr ""
 
 #: .\onboarding\views.py:91
@@ -7451,11 +7562,11 @@ msgstr ""
 msgid "All Notifications"
 msgstr ""
 
-#: .\templates\index.html:200
+#: .\templates\index.html:184
 msgid "My Profile"
 msgstr ""
 
-#: .\templates\index.html:206
+#: .\templates\index.html:193
 msgid "Logout"
 msgstr ""
 
@@ -7469,10 +7580,6 @@ msgstr ""
 
 #: .\templates\login.html:64
 msgid "Secure Sign-in"
-msgstr ""
-
-#: .\templates\login.html:66
-msgid "Forgot password"
 msgstr ""
 
 #: .\templates\notification\all_notifications.html:26
@@ -7510,10 +7617,6 @@ msgstr ""
 
 #: .\templates\reset_password.html:31
 msgid "Enter your new password to reset"
-msgstr ""
-
-#: .\templates\reset_password.html:35
-msgid "New Password"
 msgstr ""
 
 #: .\templates\reset_password.html:57

@@ -8,6 +8,7 @@ from typing import Any, Dict
 import uuid
 import datetime
 from datetime import timedelta
+from django.contrib.auth import authenticate
 from django import forms
 from django.contrib.auth.models import Group, Permission
 from django.forms import DateInput
@@ -1115,6 +1116,80 @@ class WorkTypeRequestForm(ModelForm):
         return super().save(commit)
 
 
+from django.contrib.auth.models import User
+
+
+class ChangePasswordForm(forms.Form):
+    old_password = forms.CharField(
+        label=_("Old password"),
+        strip=False,
+        widget=forms.PasswordInput(
+            attrs={
+                "autocomplete": "new-password",
+                "placeholder": _("Enter Old Password"),
+                "class": "oh-input oh-input--password w-100 mb-2",
+            }
+        ),
+        help_text=_("Enter your old password."),
+    )
+    new_password = forms.CharField(
+        label=_("New password"),
+        strip=False,
+        widget=forms.PasswordInput(
+            attrs={
+                "autocomplete": "new-password",
+                "placeholder": _("Enter New Password"),
+                "class": "oh-input oh-input--password w-100 mb-2",
+            }
+        ),
+    )
+    confirm_password = forms.CharField(
+        label=_("New password confirmation"),
+        strip=False,
+        widget=forms.PasswordInput(
+            attrs={
+                "autocomplete": "new-password",
+                "placeholder": _("Re-Enter Password"),
+                "class": "oh-input oh-input--password w-100 mb-2",
+            }
+        ),
+    )
+
+    def __init__(self, user, *args, **kwargs):
+        self.user = user
+        super(ChangePasswordForm, self).__init__(*args, **kwargs)
+
+    def clean_old_password(self):
+        old_password = self.cleaned_data.get("old_password")
+        if not self.user.check_password(old_password):
+            raise forms.ValidationError("Incorrect old password.")
+        return old_password
+
+    def clean_new_password(self):
+        new_password = self.cleaned_data.get("new_password")
+        if self.user.check_password(new_password):
+            raise forms.ValidationError(
+                "New password must be different from the old password."
+            )
+
+        return new_password
+
+    def clean(self):
+        cleaned_data = super().clean()
+        new_password = cleaned_data.get("new_password")
+        confirm_password = cleaned_data.get("confirm_password")
+        if new_password and confirm_password and new_password != confirm_password:
+            raise ValidationError(
+                {
+                    "new_password": _(
+                        "New password and confirm password do not match"
+                    )
+                }
+            )
+
+        return cleaned_data
+
+
 class ResetPasswordForm(forms.Form):
     """
     ResetPasswordForm
@@ -1133,7 +1208,7 @@ class ResetPasswordForm(forms.Form):
         help_text=_("Enter your new password."),
     )
     confirm_password = forms.CharField(
-        label="New password confirmation",
+        label=_("New password confirmation"),
         strip=False,
         widget=forms.PasswordInput(
             attrs={

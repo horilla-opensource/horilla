@@ -11,6 +11,8 @@ urlpatterns = [
 
     path('reset-password/<uuid>/', views.reset_password,name='reset-password'),
     
+    path('change-password', views.change_password,name='change-password'),
+    
     path('logout', views.logout_user,name='logout'),
 
     path('settings', views.common_settings,name='settings'),

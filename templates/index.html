@@ -170,21 +170,6 @@
                   </div>
               </div>
             </div>          
-            {% comment %} <div class="oh-navbar__action-icons"> 
-              <form action="{% url 'set_language' %}" method="post" style="text-align: center;">
-                 {% csrf_token %}
-                 <input name="next" id="trans" type="hidden" value="/" onload="currenturl">
-                 <select name="language" class="oh-select w-100 mt-1" onchange="this.form.submit()">
-                     {% get_available_languages as LANGUAGES %}
-                     {% get_language_info_list for LANGUAGES as languages %}
-                     {% for language in languages %}
-                     <option value="{{ language.code }}" {% if language.code == LANGUAGE_CODE %} selected{% endif %}>
-                         {{ language.name_local}}
-                     </option>
-                     {% endfor %}
-                 </select>
-               </form>
-            </div> {% endcomment %}
             <div class="oh-dropdown" x-data="{open: false}">
               <div class="oh-navbar__user-info" @click="open = !open" @click.outside="open = false">
                 <div class="oh-navbar__user-photo">
@@ -196,6 +181,9 @@
                 <ul class="oh-dropdown__items">
                   <li class="oh-dropdown__item">
                     <a href="/employee/employee-profile" class="oh-dropdown__link">{% trans "My Profile" %}</a>
+                  </li>
+                  <li class="oh-dropdown__item">
+                    <a href="/change-password" class="oh-dropdown__link">{% trans "Change Password" %}</a>
                   </li>
                 </ul>
                 <hr />

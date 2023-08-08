@@ -5,14 +5,12 @@ This module is used to map url pattens with django views or methods
 """
 import uuid
 import json
-from notifications.models import Notification
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.views.decorators.http import require_http_methods
 from django.core.paginator import Paginator
 from django.core.mail import send_mail
 from django.utils.translation import gettext as _
-from django.utils.translation import get_language
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import Group, User, Permission
@@ -43,6 +41,7 @@ from base.forms import (
     AssignUserGroup,
     AssignPermission,
     ResetPasswordForm,
+    ChangePasswordForm,
 )
 from base.models import (
     Company,
@@ -195,8 +194,28 @@ def reset_password(request, uuid):
             reset_ids.remove({"uuid": uuid, "user": user})
             return redirect("/login")
     if user is None:
-        return HttpResponse("Link Expired...")
+        return HttpResponse(_("Link Expired..."))
     return render(request, "reset_password.html", {"form": form})
+
+
+@login_required
+def change_password(request):
+    user = request.user
+    form = ChangePasswordForm(user=user)
+    if request.method == "POST":
+        response = render(request, "base/auth/password_change.html", {"form": form})
+        form = ChangePasswordForm(user, request.POST)
+        if form.is_valid():
+            new_password = form.cleaned_data["new_password"]
+            user.set_password(new_password)
+            user.save()
+            user = authenticate(request, username=user.username, password=new_password)
+            login(request, user)
+            messages.success(request, _("Password changed successfully"))
+            return HttpResponse(
+                response.content.decode("utf-8") + "<script>location.reload();</script>"
+            )
+    return render(request, "base/auth/password_change.html", {"form": form})
 
 
 def logout_user(request):
@@ -1694,10 +1713,14 @@ def work_type_request(request):
                         instance.employee_id.employee_work_info.reporting_manager_id.employee_user_id
                     ),
                     verb=f"You have new work type request to validate for {instance.employee_id}",
-                    verb_ar=f"لديك طلب نوع وظيفة جديد للتحقق من {instance.employee_id}",
-                    verb_de=f"Sie haben eine neue Arbeitstypanfrage zur Validierung für {instance.employee_id}",
-                    verb_es=f"Tiene una nueva solicitud de tipo de trabajo para validar para {instance.employee_id}",
-                    verb_fr=f"Vous avez une nouvelle demande de type de travail à valider pour {instance.employee_id}",
+                    verb_ar=f"لديك طلب نوع وظيفة جديد للتحقق من \
+                            {instance.employee_id}",
+                    verb_de=f"Sie haben eine neue Arbeitstypanfrage zur \
+                            Validierung für {instance.employee_id}",
+                    verb_es=f"Tiene una nueva solicitud de tipo de trabajo para \
+                            validar para {instance.employee_id}",
+                    verb_fr=f"Vous avez une nouvelle demande de type de travail\
+                            à valider pour {instance.employee_id}",
                     icon="information",
                     redirect="/shift-requests/shift-request-view",
                 )
@@ -1970,11 +1993,13 @@ def work_type_request_bulk_delete(request):
                 ),
             )
     return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
-    
+
+
 @login_required
 def get_language_code(request):
     language_code = request.LANGUAGE_CODE
     return JsonResponse({"language_code": language_code})
+
 
 @login_required
 def shift_request(request):
@@ -2380,7 +2405,7 @@ def delete_notification(request, id):
     This method is used to delete notification
     """
     try:
-        notification = request.user.notifications.get(id=id).delete()
+        request.user.notifications.get(id=id).delete()
         messages.success(request, _("Notification deleted."))
     except Exception as e:
         messages.error(request, e)
