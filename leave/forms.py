@@ -30,19 +30,21 @@ class ModelForm(forms.ModelForm):
                 field.widget.attrs.update({"class": "oh-input oh-calendar-input w-100"})
             elif isinstance(
                 widget, (forms.NumberInput, forms.EmailInput, forms.TextInput)
-            ):
+            ):  
+                placeholder = _(field.label)
                 field.widget.attrs.update(
-                    {"class": "oh-input w-100", "placeholder": field.label}
+                    {"class": "oh-input w-100", "placeholder": placeholder}
                 )
             elif isinstance(widget, (forms.Select,)):
                 field.widget.attrs.update(
                     {"class": "oh-select oh-select-2 select2-hidden-accessible"}
                 )
             elif isinstance(widget, (forms.Textarea)):
+                placeholder = _(field.label)
                 field.widget.attrs.update(
                     {
                         "class": "oh-input w-100",
-                        "placeholder": field.label,
+                        "placeholder": placeholder,
                         "rows": 2,
                         "cols": 40,
                     }

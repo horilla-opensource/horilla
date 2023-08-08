@@ -96,7 +96,7 @@
                 {% if own_objective.archive %}
                 <form
                   action="{%url 'objective-archive' id=own_objective.id %}?{{pg}}"
-                  onsubmit="return confirm('Do you want un-archive this OKR ?')"
+                  onsubmit="return confirm('{% trans "Do you want un-archive this OKR ?" %}')"
                   method="post"
                   style="display: contents"
                 >
@@ -116,7 +116,7 @@
                 {% else %}
                 <form
                   action="{%url 'objective-archive' id=own_objective.id %}?{{pg}}"
-                  onsubmit="return confirm('Do you want archive this OKR ?')"
+                  onsubmit="return confirm('{% trans "Do you want archive this OKR ?" %}')"
                   method="post"
                   style="display: contents"
                 >
@@ -136,7 +136,7 @@
                 {% endif %} {% if perms.pms.delete_employeeobjective %}
                 <form
                   action="{% url 'objective-delete' id=own_objective.id %}"
-                  onsubmit="return confirm('Do you want Delete this OKR ?')"
+                  onsubmit="return confirm('{% trans "Do you want Delete this OKR ?" %}')"
                   method="post"
                   style="display: contents"
                 >
@@ -292,7 +292,7 @@
                 {% if all_objective.archive %}
                 <form
                   action="{%url 'objective-archive' id=all_objective.id %}?{{pg}}"
-                  onsubmit="return confirm('Do you want un-archive this OKR ?')"
+                  onsubmit="return confirm('{% trans "Do you want un-archive this OKR ?" %}')"
                   method="post"
                   style="display: contents"
                 >
@@ -312,7 +312,7 @@
                 {% else %}
                 <form
                   action="{%url 'objective-archive' id=all_objective.id %}?{{pg}}"
-                  onsubmit="return confirm('Do you want archive this OKR ?')"
+                  onsubmit="return confirm('{% trans "Do you want archive this OKR ?" %}')"
                   method="post"
                   style="display: contents"
                 >
@@ -332,7 +332,7 @@
                 {% endif %} {% if perms.pms.delete_employeeobjective %}
                 <form
                   action="{% url 'objective-delete' id=all_objective.id %}"
-                  onsubmit="return confirm('Do you want delete this OKR ?')"
+                  onsubmit="return confirm('{% trans "Do you want delete this OKR ?" %}')"
                   method="post"
                   style="display: contents"
                 >

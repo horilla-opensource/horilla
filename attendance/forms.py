@@ -20,8 +20,8 @@ class YourForm(forms.Form):
         # Custom validation logic goes here
         pass
 """
-from typing import Any, Dict
 import uuid, datetime
+from typing import Any, Dict
 from calendar import month_name
 from django import forms
 from django.template.loader import render_to_string
@@ -52,9 +52,7 @@ class ModelForm(forms.ModelForm):
                 widget, (forms.NumberInput, forms.EmailInput, forms.TextInput)
             ):
                 label = _(field.label.title())
-                print('---------------------------------------------------------------')
-                print(label)
-                print('---------------------------------------------------------------')
+
                 field.widget.attrs.update(
                     {"class": "oh-input w-100", "placeholder": label}
                 )
@@ -88,6 +86,14 @@ class ModelForm(forms.ModelForm):
                 ),
             ):
                 field.widget.attrs.update({"class": "oh-switch__checkbox"})
+            if isinstance(widget, forms.DateInput):
+                field.widget = forms.DateInput(
+                    attrs={"type": "date", "class": "oh-input w-100"}
+                )
+            if isinstance(widget, forms.TimeInput):
+                field.widget = forms.DateInput(
+                    attrs={"type": "time", "class": "oh-input w-100"}
+                )
 
 
 class AttendanceUpdateForm(ModelForm):
@@ -106,7 +112,10 @@ class AttendanceUpdateForm(ModelForm):
             "overtime_second",
             "at_work_second",
             "attendance_day",
+            "request_description",
             "approved_overtime_second",
+            "request_type",
+            "requested_data",
         ]
         model = Attendance
         widgets = {
@@ -184,7 +193,10 @@ class AttendanceForm(ModelForm):
             "at_work_second",
             "overtime_second",
             "attendance_day",
+            "request_description",
             "approved_overtime_second",
+            "request_type",
+            "requested_data",
         )
         widgets = {
             "attendance_clock_in": DateTimeInput(attrs={"type": "time"}),
@@ -393,3 +405,60 @@ class AttendanceValidationConditionForm(ModelForm):
             "overtime_cutoff": _("Maximum Allowed Overtime Per Day"),
         }
         fields = "__all__"
+
+
+class AttendanceRequestForm(ModelForm):
+    """
+    AttendanceRequestForm
+    """
+
+    def __init__(self, *args, **kwargs):
+        if instance := kwargs.get("instance"):
+            # django forms not showing value inside the date, time html element.
+            # so here overriding default forms instance method to set initial value
+            initial = {
+                "attendance_date": instance.attendance_date.strftime("%Y-%m-%d"),
+                "attendance_clock_in": instance.attendance_clock_in.strftime("%H:%M"),
+                "attendance_clock_in_date": instance.attendance_clock_in_date.strftime(
+                    "%Y-%m-%d"
+                ),
+            }
+            if instance.attendance_clock_out_date is not None:
+                initial[
+                    "attendance_clock_out"
+                ] = instance.attendance_clock_out.strftime("%H:%M")
+                initial[
+                    "attendance_clock_out_date"
+                ] = instance.attendance_clock_out_date.strftime("%Y-%m-%d")
+            kwargs["initial"] = initial
+        super().__init__(*args, **kwargs)
+
+    class Meta:
+        """
+        Meta class for additional options
+        """
+
+        model = Attendance
+        fields = [
+            "attendance_date",
+            "attendance_clock_in",
+            "shift_id",
+            "work_type_id",
+            "attendance_clock_in_date",
+            "attendance_clock_out",
+            "attendance_clock_out_date",
+            "attendance_worked_hour",
+            "request_description",
+        ]
+
+    def as_p(self, *args, **kwargs):
+        """
+        Render the form fields as HTML table rows with Bootstrap styling.
+        """
+        context = {"form": self}
+        table_html = render_to_string("attendance_form.html", context)
+        return table_html
+
+    def save(self, commit: bool = ...) -> Any:
+        # No need to save the changes to the actual modal instance
+        return super().save(False)

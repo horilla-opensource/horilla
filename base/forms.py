@@ -8,11 +8,13 @@ from typing import Any, Dict
 import uuid
 import datetime
 from datetime import timedelta
+from django.contrib.auth import authenticate
 from django import forms
 from django.contrib.auth.models import Group, Permission
 from django.forms import DateInput
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext as _
+from django.utils.translation import gettext_lazy as _trans
 from employee.models import Employee
 from base.models import (
     Company,
@@ -40,21 +42,21 @@ def validate_time_format(value):
     this method is used to validate the format of duration like fields.
     """
     if len(value) > 6:
-        raise ValidationError("Invalid format, it should be HH:MM format")
-    try:        
+        raise ValidationError(_("Invalid format, it should be HH:MM format"))
+    try:
         hour, minute = value.split(":")
         hour = int(hour)
         minute = int(minute)
         if len(str(hour)) > 3 or minute not in range(60):
-            raise ValidationError("Invalid format, it should be HH:MM format")
+            raise ValidationError(_("Invalid format, it should be HH:MM format"))
     except ValueError as error:
-        raise ValidationError("Invalid format, it should be HH:MM format") from error
+        raise ValidationError(_("Invalid format, it should be HH:MM format")) from error
 
 
 BASED_ON = [
-    ("after", "After"),
-    ("weekly", "Weekend"),
-    ("monthly", "Monthly"),
+    ("after", _trans("After")),
+    ("weekly", _trans("Weekend")),
+    ("monthly", _trans("Monthly")),
 ]
 
 
@@ -366,20 +368,22 @@ class RotatingWorkTypeForm(ModelForm):
         }
 
 
-class RotatingWorkTypeAssignForm(forms.ModelForm):
+class RotatingWorkTypeAssignForm(ModelForm):
     """
     RotatingWorkTypeAssign model's form
     """
 
     employee_id = forms.ModelMultipleChoiceField(
-        label="Employee",
+        label=_trans("Employee"),
         queryset=Employee.objects.filter(employee_work_info__isnull=False),
     )
-    based_on = forms.ChoiceField(choices=BASED_ON, initial="daily")
-    rotate_after_day = forms.IntegerField(
-        initial=5,
+    based_on = forms.ChoiceField(
+        choices=BASED_ON, initial="daily", label=_trans("Based on")
     )
-    start_date = forms.DateField(initial=datetime.date.today, widget=forms.DateInput)
+    rotate_after_day = forms.IntegerField(initial=5, label=_trans("Rotate after day"))
+    start_date = forms.DateField(
+        initial=datetime.date.today, widget=forms.DateInput, label=_trans("Start date")
+    )
 
     class Meta:
         """
@@ -393,7 +397,9 @@ class RotatingWorkTypeAssignForm(forms.ModelForm):
             "start_date": DateInput(attrs={"type": "date"}),
         }
         labels = {
-            "rotating_work_type_id": "Rotating work type",
+            "is_active": _trans("Is Active"),
+            "rotate_every_weekend": _trans("Rotate every weekend"),
+            "rotate_every": _trans("Rotate every"),
         }
 
     def __init__(self, *args, **kwargs):
@@ -450,7 +456,7 @@ class RotatingWorkTypeAssignForm(forms.ModelForm):
         if employee_ids:
             return employee_ids[0]
         else:
-            return ValidationError("This field is required")
+            return ValidationError(_("This field is required"))
 
     def clean(self):
         cleaned_data = super().clean()
@@ -531,6 +537,14 @@ class RotatingWorkTypeAssignUpdateForm(forms.ModelForm):
         exclude = ("next_change_date", "current_work_type", "next_work_type")
         widgets = {
             "start_date": DateInput(attrs={"type": "date"}),
+        }
+        labels = {
+            "start_date": _trans("Start date"),
+            "rotate_after_day": _trans("Rotate after day"),
+            "rotate_every_weekend": _trans("Rotate every weekend"),
+            "rotate_every": _trans("Rotate every"),
+            "based_on": _trans("Based on"),
+            "is_active": _trans("Is Active"),
         }
 
     def __init__(self, *args, **kwargs):
@@ -649,6 +663,7 @@ class EmployeeShiftForm(ModelForm):
         validate_time_format(full_time)
         return super().clean()
 
+
 class EmployeeShiftScheduleUpdateForm(ModelForm):
     """
     EmployeeShiftSchedule model's form
@@ -696,6 +711,7 @@ class EmployeeShiftScheduleForm(ModelForm):
 
         model = EmployeeShiftSchedule
         fields = "__all__"
+        exclude = ["is_night_shift"]
         widgets = {
             "start_time": DateInput(attrs={"type": "time"}),
             "end_time": DateInput(attrs={"type": "time"}),
@@ -740,9 +756,13 @@ class EmployeeShiftScheduleForm(ModelForm):
                 day=day, shift_id=self.data["shift_id"]
             ).first()
             if attendance is not None:
-                raise ValidationError(f"Shift schedule is already exist for {day}")
+                raise ValidationError(
+                    _("Shift schedule is already exist for {day}").format(
+                        day=_(day.day)
+                    )
+                )
         if days.first() is None:
-            raise ValidationError("Employee not chosen")
+            raise ValidationError(_("Employee not chosen"))
 
         return days.first()
 
@@ -768,14 +788,16 @@ class RotatingShiftAssignForm(forms.ModelForm):
     """
 
     employee_id = forms.ModelMultipleChoiceField(
-        label="Employee",
+        label=_trans("Employee"),
         queryset=Employee.objects.filter(employee_work_info__isnull=False),
     )
-    based_on = forms.ChoiceField(choices=BASED_ON, initial="daily")
-    rotate_after_day = forms.IntegerField(
-        initial=5,
+    based_on = forms.ChoiceField(
+        choices=BASED_ON, initial="daily", label=_trans("Based on")
     )
-    start_date = forms.DateField(initial=datetime.date.today, widget=forms.DateInput)
+    rotate_after_day = forms.IntegerField(initial=5, label=_trans("Rotate after day"))
+    start_date = forms.DateField(
+        initial=datetime.date.today, widget=forms.DateInput, label=_trans("Start date")
+    )
 
     class Meta:
         """
@@ -789,7 +811,11 @@ class RotatingShiftAssignForm(forms.ModelForm):
             "start_date": DateInput(attrs={"type": "date"}),
         }
         labels = {
-            "rotating_shift_id": "Rotating shift",
+            "rotating_shift_id": _trans("Rotating Shift"),
+            "start_date": _("Start date"),
+            "is_active": _trans("Is Active"),
+            "rotate_every_weekend": _trans("Rotate every weekend"),
+            "rotate_every": _trans("Rotate every"),
         }
 
     def __init__(self, *args, **kwargs):
@@ -848,7 +874,7 @@ class RotatingShiftAssignForm(forms.ModelForm):
         if employee_ids:
             return employee_ids[0]
         else:
-            return ValidationError("This field is required")
+            return ValidationError(_("This field is required"))
 
     def clean(self):
         cleaned_data = super().clean()
@@ -910,7 +936,7 @@ class RotatingShiftAssignForm(forms.ModelForm):
             rotating_shift_assign.save()
 
 
-class RotatingShiftAssignUpdateForm(forms.ModelForm):
+class RotatingShiftAssignUpdateForm(ModelForm):
     """
     RotatingShiftAssign model's form
     """
@@ -925,6 +951,14 @@ class RotatingShiftAssignUpdateForm(forms.ModelForm):
         exclude = ("next_change_date", "current_shift", "next_shift")
         widgets = {
             "start_date": DateInput(attrs={"type": "date"}),
+        }
+        labels = {
+            "start_date": _trans("Start date"),
+            "rotate_after_day": _trans("Rotate after day"),
+            "rotate_every_weekend": _trans("Rotate every weekend"),
+            "rotate_every": _trans("Rotate every"),
+            "based_on": _trans("Based on"),
+            "is_active": _trans("Is Active"),
         }
 
     def __init__(self, *args, **kwargs):
@@ -1029,7 +1063,11 @@ class ShiftRequestForm(ModelForm):
             "requested_date": DateInput(attrs={"type": "date"}),
             "requested_till": DateInput(attrs={"type": "date"}),
         }
-        labels = {"employee_id": "Employee", "shift_id": "Shift"}
+        labels = {
+            "description": _trans("Description"),
+            "requested_date": _trans("Requested Date"),
+            "requested_till": _trans("Requested Till"),
+        }
 
     def save(self, commit: bool = ...):
         if not self.instance.approved:
@@ -1063,7 +1101,11 @@ class WorkTypeRequestForm(ModelForm):
             "requested_date": DateInput(attrs={"type": "date"}),
             "requested_till": DateInput(attrs={"type": "date"}),
         }
-        labels = {"employee_id": "Employee", "work_type_id": "Work type"}
+        labels = {
+            "requested_date": _trans("Requested Date"),
+            "requested_till": _trans("Requested Till"),
+            "description": _trans("Description"),
+        }
 
     def save(self, commit: bool = ...):
         if not self.instance.approved:
@@ -1074,34 +1116,108 @@ class WorkTypeRequestForm(ModelForm):
         return super().save(commit)
 
 
+from django.contrib.auth.models import User
+
+
+class ChangePasswordForm(forms.Form):
+    old_password = forms.CharField(
+        label=_("Old password"),
+        strip=False,
+        widget=forms.PasswordInput(
+            attrs={
+                "autocomplete": "new-password",
+                "placeholder": _("Enter Old Password"),
+                "class": "oh-input oh-input--password w-100 mb-2",
+            }
+        ),
+        help_text=_("Enter your old password."),
+    )
+    new_password = forms.CharField(
+        label=_("New password"),
+        strip=False,
+        widget=forms.PasswordInput(
+            attrs={
+                "autocomplete": "new-password",
+                "placeholder": _("Enter New Password"),
+                "class": "oh-input oh-input--password w-100 mb-2",
+            }
+        ),
+    )
+    confirm_password = forms.CharField(
+        label=_("New password confirmation"),
+        strip=False,
+        widget=forms.PasswordInput(
+            attrs={
+                "autocomplete": "new-password",
+                "placeholder": _("Re-Enter Password"),
+                "class": "oh-input oh-input--password w-100 mb-2",
+            }
+        ),
+    )
+
+    def __init__(self, user, *args, **kwargs):
+        self.user = user
+        super(ChangePasswordForm, self).__init__(*args, **kwargs)
+
+    def clean_old_password(self):
+        old_password = self.cleaned_data.get("old_password")
+        if not self.user.check_password(old_password):
+            raise forms.ValidationError("Incorrect old password.")
+        return old_password
+
+    def clean_new_password(self):
+        new_password = self.cleaned_data.get("new_password")
+        if self.user.check_password(new_password):
+            raise forms.ValidationError(
+                "New password must be different from the old password."
+            )
+
+        return new_password
+
+    def clean(self):
+        cleaned_data = super().clean()
+        new_password = cleaned_data.get("new_password")
+        confirm_password = cleaned_data.get("confirm_password")
+        if new_password and confirm_password and new_password != confirm_password:
+            raise ValidationError(
+                {
+                    "new_password": _(
+                        "New password and confirm password do not match"
+                    )
+                }
+            )
+
+        return cleaned_data
+
+
 class ResetPasswordForm(forms.Form):
     """
     ResetPasswordForm
     """
 
     password = forms.CharField(
-        label="New password",
+        label=_("New password"),
         strip=False,
         widget=forms.PasswordInput(
             attrs={
                 "autocomplete": "new-password",
-                "placeholder": "Enter Strong Password",
+                "placeholder": _("Enter Strong Password"),
                 "class": "oh-input oh-input--password w-100 mb-2",
             }
         ),
-        help_text="Enter your new password.",
+        help_text=_("Enter your new password."),
     )
     confirm_password = forms.CharField(
-        label="New password confirmation",
+        label=_("New password confirmation"),
         strip=False,
         widget=forms.PasswordInput(
             attrs={
                 "autocomplete": "new-password",
-                "placeholder": "Re-Enter Password",
+                "placeholder": _("Re-Enter Password"),
                 "class": "oh-input oh-input--password w-100 mb-2",
             }
         ),
-        help_text="Enter the same password as before, for verification.",
+        help_text=_("Enter the same password as before, for verification."),
     )
 
     def clean_password(self):
@@ -1110,22 +1226,22 @@ class ResetPasswordForm(forms.Form):
         password = self.cleaned_data.get("password")
         try:
             if len(password) < 7:
-                raise ValidationError("Password must contain at least 8 characters.")
+                raise ValidationError(_("Password must contain at least 8 characters."))
             elif not any(char.isupper() for char in password):
                 raise ValidationError(
-                    "Password must contain at least one uppercase letter."
+                    _("Password must contain at least one uppercase letter.")
                 )
             elif not any(char.islower() for char in password):
                 raise ValidationError(
-                    "Password must contain at least one lowercase letter."
+                    _("Password must contain at least one lowercase letter.")
                 )
             elif not any(char.isdigit() for char in password):
-                raise ValidationError("Password must contain at least one digit.")
+                raise ValidationError(_("Password must contain at least one digit."))
             elif all(
                 char not in "!@#$%^&*()_+-=[]{}|;:,.<>?'\"`~\\/" for char in password
             ):
                 raise ValidationError(
-                    "Password must contain at least one special character."
+                    _("Password must contain at least one special character.")
                 )
         except ValidationError as error:
             raise forms.ValidationError(list(error)[0])
@@ -1139,7 +1255,7 @@ class ResetPasswordForm(forms.Form):
         confirm_password = self.cleaned_data.get("confirm_password")
         if password == confirm_password:
             return confirm_password
-        raise forms.ValidationError("Password must be same.")
+        raise forms.ValidationError(_("Password must be same."))
 
     def save(self, *args, user=None, **kwargs):
         """

@@ -81,7 +81,7 @@ class Employee(models.Model):
     emergency_contact_relation = models.CharField(max_length=20, null=True, blank=True)
     is_active = models.BooleanField(default=True)
     additional_info = models.JSONField(null=True, blank=True)
-
+    objects = models.Manager()
     def __str__(self) -> str:
         last_name = (
             self.employee_last_name if self.employee_last_name is not None else ""

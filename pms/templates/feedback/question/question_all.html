@@ -95,7 +95,7 @@
                                                 <!-- delete object form  -->
                                                 {% csrf_token %}
                                                 <a type="submit" href="{% url 'question-delete' id=form.instance.id %}"
-                                                      class="oh-btn oh-btn--danger-link oh-section-edit--delete deleteRow" onclick="return confirm('Do you want to delete the question?')">{% trans "Delete" %}</a>
+                                                      class="oh-btn oh-btn--danger-link oh-section-edit--delete deleteRow" onclick="return confirm('{% trans "Do you want to delete the question?" %}')">{% trans "Delete" %}</a>
                                                 <a href="#"
                                                       class="oh-btn oh-btn--light me-2 oh-section-edit--cancel">{% trans "Cancel" %}</a>
 

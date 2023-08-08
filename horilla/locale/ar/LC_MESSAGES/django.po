@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-08-02 12:41+0530\n"
+"POT-Creation-Date: 2023-08-07 14:18+0530\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -109,7 +109,8 @@ msgstr "اسم الأصول "
 #: .\asset\templates\request_allocation\asset_request_creation.html:28
 #: .\base\templates\shift_request\htmx\requests.html:26
 #: .\base\templates\work_type_request\htmx\requests.html:26
-#: .\leave\forms.py:414 .\leave\templates\leave\leave-request-form.html:47
+#: .\base\translator.py:96 .\leave\forms.py:416
+#: .\leave\templates\leave\leave-request-form.html:47
 #: .\leave\templates\leave\one-request-view.html:55
 #: .\leave\templates\leave\request-update-form.html:50
 #: .\leave\templates\leave\user-request-form.html:37
@@ -273,7 +274,7 @@ msgid "Asset"
 msgstr "الأصول"
 
 #: .\asset\templates\asset\asset_list.html:56
-#: .\asset\templates\asset\asset_list.html:75
+#: .\asset\templates\asset\asset_list.html:74
 #: .\asset\templates\batch\asset_batch_number_list.html:24
 #: .\asset\templates\category\asset_category.html:58
 #: .\leave\templates\leave\leave-type-update.html:178
@@ -287,6 +288,12 @@ msgstr "الأصول"
 msgid "Update"
 msgstr "تحديث"
 
+#: .\asset\templates\asset\asset_list.html:63
+#: .\asset\templates\asset\asset_list.html:81
+msgid "Do you want to delete this asset?"
+msgstr "هل تريد حذف هذا الأصل؟"
+
+#: .\asset\templates\asset\asset_list.html:65
 #: .\asset\templates\asset\asset_list.html:83
 #: .\attendance\templates\attendance\attendance\group_by.html:118
 #: .\attendance\templates\attendance\attendance\group_by.html:281
@@ -300,9 +307,9 @@ msgstr "تحديث"
 #: .\base\templates\base\company\company_view.html:55
 #: .\base\templates\base\department\department_view.html:26
 #: .\base\templates\base\employee_type\type_view.html:25
-#: .\base\templates\base\rotating_shift\rotating_shift_assign_view.html:123
+#: .\base\templates\base\rotating_shift\rotating_shift_assign_view.html:112
 #: .\base\templates\base\rotating_shift\rotating_shift_view.html:38
-#: .\base\templates\base\rotating_work_type\rotating_work_type_assign_view.html:116
+#: .\base\templates\base\rotating_work_type\rotating_work_type_assign_view.html:111
 #: .\base\templates\base\rotating_work_type\rotating_work_type_view.html:38
 #: .\base\templates\base\shift\shift_view.html:33
 #: .\base\templates\base\work_type\work_type_view.html:26
@@ -346,13 +353,17 @@ msgstr "يزيل"
 #: .\attendance\templates\attendance\late_come_early_out\report_list.html:63
 #: .\attendance\templates\attendance\own_attendance\attendances.html:88
 #: .\attendance\templates\attendance\own_attendance\attendances.html:93
+#: .\attendance\templates\requests\attendance\request_lines.html:118
+#: .\attendance\templates\requests\attendance\request_lines.html:123
+#: .\attendance\templates\requests\attendance\request_lines.html:255
+#: .\attendance\templates\requests\attendance\request_lines.html:260
 #: .\base\templates\base\auth\group_assign_view.html:66
 #: .\base\templates\base\auth\permission_view.html:57
 #: .\base\templates\base\auth\permission_view.html:61
-#: .\base\templates\base\rotating_shift\rotating_shift_assign_view.html:140
-#: .\base\templates\base\rotating_shift\rotating_shift_assign_view.html:144
+#: .\base\templates\base\rotating_shift\rotating_shift_assign_view.html:129
+#: .\base\templates\base\rotating_shift\rotating_shift_assign_view.html:133
+#: .\base\templates\base\rotating_work_type\rotating_work_type_assign_view.html:127
 #: .\base\templates\base\rotating_work_type\rotating_work_type_assign_view.html:132
-#: .\base\templates\base\rotating_work_type\rotating_work_type_assign_view.html:137
 #: .\base\templates\shift_request\htmx\requests.html:106
 #: .\base\templates\shift_request\htmx\requests.html:110
 #: .\base\templates\work_type_request\htmx\requests.html:107
@@ -433,13 +444,17 @@ msgstr "صفحة"
 #: .\attendance\templates\attendance\late_come_early_out\report_list.html:73
 #: .\attendance\templates\attendance\own_attendance\attendances.html:88
 #: .\attendance\templates\attendance\own_attendance\attendances.html:103
+#: .\attendance\templates\requests\attendance\request_lines.html:118
+#: .\attendance\templates\requests\attendance\request_lines.html:133
+#: .\attendance\templates\requests\attendance\request_lines.html:255
+#: .\attendance\templates\requests\attendance\request_lines.html:270
 #: .\base\templates\base\auth\group_assign_view.html:66
 #: .\base\templates\base\auth\permission_view.html:57
 #: .\base\templates\base\auth\permission_view.html:64
-#: .\base\templates\base\rotating_shift\rotating_shift_assign_view.html:140
-#: .\base\templates\base\rotating_shift\rotating_shift_assign_view.html:155
-#: .\base\templates\base\rotating_work_type\rotating_work_type_assign_view.html:132
-#: .\base\templates\base\rotating_work_type\rotating_work_type_assign_view.html:148
+#: .\base\templates\base\rotating_shift\rotating_shift_assign_view.html:129
+#: .\base\templates\base\rotating_shift\rotating_shift_assign_view.html:144
+#: .\base\templates\base\rotating_work_type\rotating_work_type_assign_view.html:127
+#: .\base\templates\base\rotating_work_type\rotating_work_type_assign_view.html:143
 #: .\base\templates\shift_request\htmx\requests.html:106
 #: .\base\templates\shift_request\htmx\requests.html:113
 #: .\base\templates\work_type_request\htmx\requests.html:107
@@ -510,10 +525,12 @@ msgstr "ل"
 #: .\attendance\templates\attendance\late_come_early_out\group_by.html:104
 #: .\attendance\templates\attendance\late_come_early_out\report_list.html:78
 #: .\attendance\templates\attendance\own_attendance\attendances.html:108
+#: .\attendance\templates\requests\attendance\request_lines.html:138
+#: .\attendance\templates\requests\attendance\request_lines.html:275
 #: .\base\templates\base\auth\group_assign_view.html:71
 #: .\base\templates\base\auth\permission_view.html:70
-#: .\base\templates\base\rotating_shift\rotating_shift_assign_view.html:165
-#: .\base\templates\base\rotating_work_type\rotating_work_type_assign_view.html:158
+#: .\base\templates\base\rotating_shift\rotating_shift_assign_view.html:154
+#: .\base\templates\base\rotating_work_type\rotating_work_type_assign_view.html:153
 #: .\base\templates\shift_request\htmx\requests.html:119
 #: .\base\templates\work_type_request\htmx\requests.html:120
 #: .\employee\templates\employee_personal_info\employee_card.html:110
@@ -561,10 +578,12 @@ msgstr "أولاً"
 #: .\attendance\templates\attendance\late_come_early_out\group_by.html:107
 #: .\attendance\templates\attendance\late_come_early_out\report_list.html:81
 #: .\attendance\templates\attendance\own_attendance\attendances.html:111
+#: .\attendance\templates\requests\attendance\request_lines.html:141
+#: .\attendance\templates\requests\attendance\request_lines.html:278
 #: .\base\templates\base\auth\group_assign_view.html:72
 #: .\base\templates\base\auth\permission_view.html:75
-#: .\base\templates\base\rotating_shift\rotating_shift_assign_view.html:173
-#: .\base\templates\base\rotating_work_type\rotating_work_type_assign_view.html:166
+#: .\base\templates\base\rotating_shift\rotating_shift_assign_view.html:162
+#: .\base\templates\base\rotating_work_type\rotating_work_type_assign_view.html:161
 #: .\base\templates\shift_request\htmx\requests.html:124
 #: .\base\templates\work_type_request\htmx\requests.html:125
 #: .\employee\templates\employee_personal_info\employee_card.html:113
@@ -612,10 +631,12 @@ msgstr "سابق"
 #: .\attendance\templates\attendance\late_come_early_out\group_by.html:112
 #: .\attendance\templates\attendance\late_come_early_out\report_list.html:86
 #: .\attendance\templates\attendance\own_attendance\attendances.html:116
+#: .\attendance\templates\requests\attendance\request_lines.html:146
+#: .\attendance\templates\requests\attendance\request_lines.html:283
 #: .\base\templates\base\auth\group_assign_view.html:77
 #: .\base\templates\base\auth\permission_view.html:82
-#: .\base\templates\base\rotating_shift\rotating_shift_assign_view.html:181
-#: .\base\templates\base\rotating_work_type\rotating_work_type_assign_view.html:175
+#: .\base\templates\base\rotating_shift\rotating_shift_assign_view.html:170
+#: .\base\templates\base\rotating_work_type\rotating_work_type_assign_view.html:170
 #: .\base\templates\shift_request\htmx\requests.html:131
 #: .\base\templates\work_type_request\htmx\requests.html:132
 #: .\employee\templates\employee_personal_info\employee_card.html:118
@@ -663,10 +684,12 @@ msgstr "التالي"
 #: .\attendance\templates\attendance\late_come_early_out\group_by.html:115
 #: .\attendance\templates\attendance\late_come_early_out\report_list.html:89
 #: .\attendance\templates\attendance\own_attendance\attendances.html:119
+#: .\attendance\templates\requests\attendance\request_lines.html:149
+#: .\attendance\templates\requests\attendance\request_lines.html:286
 #: .\base\templates\base\auth\group_assign_view.html:78
 #: .\base\templates\base\auth\permission_view.html:87
-#: .\base\templates\base\rotating_shift\rotating_shift_assign_view.html:189
-#: .\base\templates\base\rotating_work_type\rotating_work_type_assign_view.html:183
+#: .\base\templates\base\rotating_shift\rotating_shift_assign_view.html:178
+#: .\base\templates\base\rotating_work_type\rotating_work_type_assign_view.html:178
 #: .\base\templates\shift_request\htmx\requests.html:136
 #: .\base\templates\work_type_request\htmx\requests.html:137
 #: .\employee\templates\employee_personal_info\employee_card.html:121
@@ -734,7 +757,12 @@ msgstr "رقم الدفعة"
 msgid "Batch Description is not added"
 msgstr "لم يتم إضافة وصف الدفعة"
 
+#: .\asset\templates\batch\asset_batch_number_list.html:29
+msgid "Do you want to delete this batch number ?"
+msgstr "هل تريد حذف رقم الدفعة هذا؟"
+
 #: .\asset\templates\batch\asset_batch_number_list.html:33
+#: .\asset\templates\category\asset_category.html:61
 #: .\attendance\templates\attendance\attendance\attendance_nav.html:107
 #: .\base\templates\base\rotating_shift\rotating_shift_assign_nav.html:90
 #: .\base\templates\base\rotating_work_type\rotating_work_type_assign_nav.html:88
@@ -882,13 +910,17 @@ msgstr "يخلق"
 msgid "Actions"
 msgstr "أجراءات"
 
+#: .\asset\templates\category\asset_category.html:61
+msgid "Do you want to delete this category?"
+msgstr "هل تريد حذف هذه الفئة؟"
+
 #: .\asset\templates\category\asset_category_creation.html:32
 msgid "Asset Category Creation"
 msgstr "إنشاء فئة الأصول"
 
 #: .\asset\templates\category\asset_category_creation.html:39
 #: .\asset\templates\category\asset_category_update.html:36
-#: .\leave\forms.py:111 .\leave\forms.py:383
+#: .\leave\forms.py:113 .\leave\forms.py:385
 #: .\leave\templates\leave\leave-type-creation.html:38
 #: .\leave\templates\leave\leave-type-update.html:40
 #: .\leave\templates\leave\leave-type-view.html:48
@@ -957,6 +989,8 @@ msgstr "تاريخ الشراء"
 #: .\attendance\templates\attendance\late_come_early_out\nav.html:47
 #: .\attendance\templates\attendance\own_attendance\filters.html:4
 #: .\attendance\templates\attendance\own_attendance\filters.html:139
+#: .\attendance\templates\requests\attendance\filter.html:161
+#: .\attendance\templates\requests\attendance\nav.html:128
 #: .\base\templates\base\rotating_shift\filters.html:99
 #: .\base\templates\base\rotating_shift\rotating_shift_assign_nav.html:43
 #: .\base\templates\base\rotating_work_type\filters.html:100
@@ -1135,95 +1169,99 @@ msgstr "تم إنشاء الأصل بنجاح"
 msgid "Asset Updated"
 msgstr "تم تحديث الأصل"
 
-#: .\asset\views.py:172 .\asset\views.py:189
+#: .\asset\views.py:172 .\asset\views.py:188
 msgid "Asset is in use"
 msgstr "الأصل قيد الاستخدام"
 
-#: .\asset\views.py:177 .\asset\views.py:194
+#: .\asset\views.py:177 .\asset\views.py:193
 msgid "Asset is used in allocation!."
 msgstr "الأصل يستخدم في التخصيص !."
 
-#: .\asset\views.py:182 .\asset\views.py:198
+#: .\asset\views.py:181 .\asset\views.py:197
 msgid "Asset deleted successfully"
 msgstr "تم حذف الأصل بنجاح"
 
-#: .\asset\views.py:272
+#: .\asset\views.py:270
 msgid "Asset category created successfully"
 msgstr "تم إنشاء فئة الأصول بنجاح"
 
-#: .\asset\views.py:299
+#: .\asset\views.py:297
 msgid "Asset category updated successfully"
 msgstr "تم تحديث فئة الأصول بنجاح"
 
-#: .\asset\views.py:326
+#: .\asset\views.py:324
 #, python-format
 msgid "There are assets in use in the %(asset_category)s category."
 msgstr "هناك %(asset_category)s أصول قيد الاستخدام في هذه الفئة."
 
-#: .\asset\views.py:332
+#: .\asset\views.py:330
 msgid "Asset Category Deleted"
 msgstr "تم حذف فئة الأصول"
 
-#: .\asset\views.py:428
+#: .\asset\views.py:426
 msgid "Asset request created!"
 msgstr "تم إنشاء طلب الأصل!"
 
-#: .\asset\views.py:469
+#: .\asset\views.py:467
 msgid "Asset request approved successfully!."
 msgstr "تمت الموافقة على طلب الأصل بنجاح !."
 
-#: .\asset\views.py:508
+#: .\asset\views.py:510
 msgid "Asset request rejected"
 msgstr "تم رفض طلب الأصل"
 
-#: .\asset\views.py:538
+#: .\asset\views.py:544
 msgid "Asset allocated successfully!."
 msgstr "تم تخصيص الأصول بنجاح !."
 
-#: .\asset\views.py:571
+#: .\asset\views.py:577
 msgid "Asset Return Successful !."
 msgstr "تمت إعادة الأصول بنجاح!."
 
-#: .\asset\views.py:582
+#: .\asset\views.py:588
 msgid "Asset Return Successful!."
 msgstr "تمت إعادة الأصول بنجاح !."
 
-#: .\asset\views.py:724
+#: .\asset\views.py:730
 msgid "Successfully imported Assets"
 msgstr "تم استيراد الأصول بنجاح"
 
-#: .\asset\views.py:726
+#: .\asset\views.py:732
 msgid "File Error"
 msgstr "خطأ في الملف"
 
-#: .\asset\views.py:766
+#: .\asset\views.py:772
 msgid "There are no assets to export."
 msgstr "لا توجد أصول للتصدير."
 
-#: .\asset\views.py:842
+#: .\asset\views.py:848
 msgid "Batch number created successfully."
 msgstr "تم إنشاء رقم الدفعة بنجاح."
 
-#: .\asset\views.py:910
+#: .\asset\views.py:911
+msgid "This batch number is already in-use"
+msgstr "رقم الدفعة هذا قيد الاستخدام بالفعل"
+
+#: .\asset\views.py:916
 msgid "Batch updated successfully."
 msgstr "تم تحديث الدفعة بنجاح."
 
-#: .\asset\views.py:932
+#: .\asset\views.py:938
 msgid "Batch number in-use"
 msgstr "رقم الدفعة قيد الاستخدام"
 
-#: .\asset\views.py:935
+#: .\asset\views.py:941
 msgid "Batch number deleted"
 msgstr "تم حذف رقم الدفعة"
 
-#: .\attendance\forms.py:65 .\base\forms.py:160 .\base\forms.py:204
+#: .\attendance\forms.py:63 .\base\forms.py:162 .\base\forms.py:206
 #: .\payroll\forms\tax_forms.py:41 .\recruitment\forms.py:53
 #: .\recruitment\forms.py:96
 #, python-brace-format
 msgid "---Choose {label}---"
 msgstr "--- اختر {label} ---"
 
-#: .\attendance\forms.py:171 .\leave\templates\leave\leave-assign-form.html:22
+#: .\attendance\forms.py:180 .\leave\templates\leave\leave-assign-form.html:22
 #: .\leave\templates\leave\leave-assign-one-form.html:18
 #: .\leave\templates\leave\leave-request-form.html:22
 #: .\leave\templates\leave\request-update-form.html:25
@@ -1231,16 +1269,16 @@ msgstr "--- اختر {label} ---"
 msgid "Employees"
 msgstr "موظفين"
 
-#: .\attendance\forms.py:273
+#: .\attendance\forms.py:285
 #, python-format
 msgid "Attendance for the date is already exist for %(emp)s"
 msgstr "الحضور لهذا التاريخ موجود بالفعل لـ %(emp)s"
 
-#: .\attendance\forms.py:278
+#: .\attendance\forms.py:290 .\base\forms.py:765
 msgid "Employee not chosen"
 msgstr "لم يتم اختيار الموظف"
 
-#: .\attendance\forms.py:336
+#: .\attendance\forms.py:348
 #: .\attendance\templates\attendance\attendance_account\attendance_account_filter.html:56
 #: .\attendance\templates\attendance\attendance_account\group_by.html:9
 #: .\attendance\templates\attendance\attendance_account\overtime_list.html:8
@@ -1248,7 +1286,7 @@ msgstr "لم يتم اختيار الموظف"
 msgid "Month"
 msgstr "شهر"
 
-#: .\attendance\forms.py:347
+#: .\attendance\forms.py:359
 #: .\attendance\templates\attendance\attendance\attendance_filters.html:11
 #: .\attendance\templates\attendance\attendance\group_by.html:14
 #: .\attendance\templates\attendance\attendance\group_by.html:180
@@ -1266,6 +1304,11 @@ msgstr "شهر"
 #: .\attendance\templates\attendance\late_come_early_out\late_come_early_out_filters.html:11
 #: .\attendance\templates\attendance\late_come_early_out\report_list.html:6
 #: .\attendance\templates\attendance\own_attendance\attendances.html:6
+#: .\attendance\templates\requests\attendance\filter.html:11
+#: .\attendance\templates\requests\attendance\request_lines.html:10
+#: .\attendance\templates\requests\attendance\request_lines.html:160
+#: .\base\models.py:147 .\base\models.py:186 .\base\models.py:327
+#: .\base\models.py:357 .\base\models.py:417 .\base\models.py:476
 #: .\base\templates\base\auth\group_assign_view.html:10
 #: .\base\templates\base\auth\permission_view.html:10
 #: .\base\templates\base\rotating_shift\filters.html:14
@@ -1308,7 +1351,7 @@ msgstr "شهر"
 msgid "Employee"
 msgstr "موظف"
 
-#: .\attendance\forms.py:348
+#: .\attendance\forms.py:360
 #: .\attendance\templates\attendance\attendance_account\attendance_account_filter.html:64
 #: .\attendance\templates\attendance\attendance_account\group_by.html:10
 #: .\attendance\templates\attendance\attendance_account\overtime_list.html:9
@@ -1316,7 +1359,7 @@ msgstr "موظف"
 msgid "Year"
 msgstr "شهر"
 
-#: .\attendance\forms.py:349
+#: .\attendance\forms.py:361
 #: .\attendance\templates\attendance\attendance_account\attendance_account_filter.html:51
 #: .\attendance\templates\attendance\attendance_account\attendance_account_filter.html:68
 #: .\attendance\templates\attendance\attendance_account\group_by.html:11
@@ -1326,7 +1369,7 @@ msgstr "شهر"
 msgid "Hour Account"
 msgstr "ساعة حساب"
 
-#: .\attendance\forms.py:350 .\attendance\models.py:155
+#: .\attendance\forms.py:362 .\attendance\models.py:162
 #: .\attendance\templates\attendance\attendance\group_by.html:25
 #: .\attendance\templates\attendance\attendance\group_by.html:191
 #: .\attendance\templates\attendance\attendance\group_by.html:353
@@ -1337,11 +1380,13 @@ msgstr "ساعة حساب"
 #: .\attendance\templates\attendance\attendance_account\group_by.html:12
 #: .\attendance\templates\attendance\attendance_account\overtime_list.html:11
 #: .\attendance\templates\attendance\own_attendance\attendances.html:17
+#: .\attendance\templates\requests\attendance\request_lines.html:21
+#: .\attendance\templates\requests\attendance\request_lines.html:171
 #: .\payroll\models\models.py:587
 msgid "Overtime"
 msgstr "متأخر  بعد فوات الوقت"
 
-#: .\attendance\forms.py:389
+#: .\attendance\forms.py:401
 msgid ""
 "Do not Auto Validate Attendance if an Employee                     Works "
 "More Than this Amount of Duration"
@@ -1349,31 +1394,32 @@ msgstr ""
 "لا تقم بالتحقق التلقائي من الحضور إذا كان الموظف يعمل أكثر من هذا المقدار من "
 "المدة"
 
-#: .\attendance\forms.py:392
+#: .\attendance\forms.py:404
 msgid "Minimum Hour to Approve Overtime"
 msgstr "الحد الأدنى للساعة للموافقة على العمل الإضافي"
 
-#: .\attendance\forms.py:393
+#: .\attendance\forms.py:405
 msgid "Maximum Allowed Overtime Per Day"
 msgstr "الحد الأقصى المسموح به للعمل الإضافي في اليوم"
 
-#: .\attendance\models.py:46 .\base\models.py:20
+#: .\attendance\models.py:47 .\base\forms.py:45 .\base\forms.py:51
+#: .\base\forms.py:53 .\base\models.py:22
 msgid "Invalid format, it should be HH:MM format"
 msgstr "تنسيق غير صالح ، يجب أن يكون تنسيق الساعة: الدقيقة"
 
-#: .\attendance\models.py:52
+#: .\attendance\models.py:53
 msgid "Invalid time"
 msgstr "الوقت غير صحيح"
 
-#: .\attendance\models.py:54
+#: .\attendance\models.py:55
 msgid "Invalid format"
 msgstr "تنسيق غير صالح"
 
-#: .\attendance\models.py:66
+#: .\attendance\models.py:67
 msgid "You cannot choose a future date."
 msgstr "لا يمكنك اختيار تاريخ في المستقبل."
 
-#: .\attendance\models.py:109
+#: .\attendance\models.py:116
 #: .\attendance\templates\attendance\attendance\attendance_filters.html:19
 #: .\attendance\templates\attendance\attendance\group_by.html:21
 #: .\attendance\templates\attendance\attendance\group_by.html:187
@@ -1385,6 +1431,10 @@ msgstr "لا يمكنك اختيار تاريخ في المستقبل."
 #: .\attendance\templates\attendance\attendance_activity\activity_filters.html:19
 #: .\attendance\templates\attendance\late_come_early_out\late_come_early_out_filters.html:19
 #: .\attendance\templates\attendance\own_attendance\attendances.html:13
+#: .\attendance\templates\requests\attendance\filter.html:19
+#: .\attendance\templates\requests\attendance\request_lines.html:17
+#: .\attendance\templates\requests\attendance\request_lines.html:167
+#: .\base\models.py:294 .\base\models.py:486
 #: .\base\templates\base\rotating_shift\filters.html:57
 #: .\base\templates\base\rotating_work_type\filters.html:57
 #: .\base\templates\base\shift\schedule.html:14
@@ -1401,7 +1451,7 @@ msgstr "لا يمكنك اختيار تاريخ في المستقبل."
 msgid "Shift"
 msgstr "يحول"
 
-#: .\attendance\models.py:116
+#: .\attendance\models.py:123
 #: .\attendance\templates\attendance\attendance\attendance_filters.html:39
 #: .\attendance\templates\attendance\attendance\group_by.html:22
 #: .\attendance\templates\attendance\attendance\group_by.html:188
@@ -1413,7 +1463,10 @@ msgstr "يحول"
 #: .\attendance\templates\attendance\attendance_activity\activity_filters.html:39
 #: .\attendance\templates\attendance\late_come_early_out\late_come_early_out_filters.html:39
 #: .\attendance\templates\attendance\own_attendance\attendances.html:14
-#: .\base\templates\base\rotating_shift\filters.html:71
+#: .\attendance\templates\requests\attendance\filter.html:39
+#: .\attendance\templates\requests\attendance\request_lines.html:18
+#: .\attendance\templates\requests\attendance\request_lines.html:168
+#: .\base\models.py:427 .\base\templates\base\rotating_shift\filters.html:71
 #: .\base\templates\base\rotating_work_type\filters.html:71
 #: .\base\templates\base\work_type\work_type.html:9
 #: .\base\templates\base\work_type\work_type.html:14
@@ -1432,50 +1485,50 @@ msgstr "يحول"
 msgid "Work Type"
 msgstr "نوع العمل"
 
-#: .\attendance\models.py:121
+#: .\attendance\models.py:128
 msgid "Attendance date"
 msgstr "تاريخ حضور"
 
-#: .\attendance\models.py:127
+#: .\attendance\models.py:134
 msgid "Check-in"
 msgstr "تحقق في"
 
-#: .\attendance\models.py:130
+#: .\attendance\models.py:137
 msgid "Check-in date"
 msgstr "تاريخ تحقق في"
 
-#: .\attendance\models.py:133
+#: .\attendance\models.py:140
 msgid "Check-out"
 msgstr "الدفع"
 
-#: .\attendance\models.py:136
+#: .\attendance\models.py:143
 msgid "Check-out date"
 msgstr "تاريخ الدفع"
 
-#: .\attendance\models.py:143
+#: .\attendance\models.py:150
 msgid "At work"
 msgstr "في العمل"
 
-#: .\attendance\models.py:149
+#: .\attendance\models.py:156
 msgid "Minimum hour"
 msgstr "الحد الأدنى للساعة"
 
-#: .\attendance\models.py:158 .\attendance\views.py:1281
+#: .\attendance\models.py:165 .\attendance\views\views.py:787
 msgid "Overtime approved"
 msgstr "تمت الموافقة على العمل الإضافي"
 
-#: .\attendance\models.py:379
+#: .\attendance\models.py:420
 #: .\attendance\templates\attendance\late_come_early_out\report_list.html:36
-#: .\attendance\views.py:1451
+#: .\attendance\views\dashboard.py:177
 msgid "Late Come"
 msgstr "يأتي متأخر"
 
-#: .\attendance\models.py:380
+#: .\attendance\models.py:421
 #: .\attendance\templates\attendance\late_come_early_out\report_list.html:38
 msgid "Early Out"
 msgstr "إيرل أوت"
 
-#: .\attendance\models.py:428
+#: .\attendance\models.py:469
 msgid "You cannot add more conditions."
 msgstr "لا يمكنك إضافة المزيد من الشروط."
 
@@ -1483,6 +1536,7 @@ msgstr "لا يمكنك إضافة المزيد من الشروط."
 #: .\attendance\templates\attendance\attendance_account\attendance_account_filter.html:6
 #: .\attendance\templates\attendance\attendance_activity\activity_filters.html:6
 #: .\attendance\templates\attendance\late_come_early_out\late_come_early_out_filters.html:6
+#: .\attendance\templates\requests\attendance\filter.html:6
 #: .\base\templates\base\rotating_shift\filters.html:44
 #: .\base\templates\base\rotating_work_type\filters.html:44
 #: .\base\templates\shift_request\shift_request_nav.html:102
@@ -1497,7 +1551,8 @@ msgstr "معلومات العمل"
 #: .\attendance\templates\attendance\attendance_account\attendance_account_filter.html:15
 #: .\attendance\templates\attendance\attendance_activity\activity_filters.html:15
 #: .\attendance\templates\attendance\late_come_early_out\late_come_early_out_filters.html:15
-#: .\base\templates\base\department\department.html:9
+#: .\attendance\templates\requests\attendance\filter.html:15
+#: .\base\models.py:86 .\base\templates\base\department\department.html:9
 #: .\base\templates\base\department\department_view.html:6
 #: .\base\templates\base\job_position\job_position.html:14
 #: .\base\templates\base\job_position\job_position_view.html:10
@@ -1524,6 +1579,7 @@ msgstr "قسم"
 #: .\attendance\templates\attendance\attendance_account\attendance_account_filter.html:23
 #: .\attendance\templates\attendance\attendance_activity\activity_filters.html:23
 #: .\attendance\templates\attendance\late_come_early_out\late_come_early_out_filters.html:23
+#: .\attendance\templates\requests\attendance\filter.html:23
 #: .\base\templates\base\rotating_shift\filters.html:63
 #: .\base\templates\base\rotating_work_type\filters.html:63
 #: .\base\templates\shift_request\shift_request_nav.html:141
@@ -1541,6 +1597,7 @@ msgstr "مدير التقارير"
 #: .\attendance\templates\attendance\attendance_account\attendance_account_filter.html:31
 #: .\attendance\templates\attendance\attendance_activity\activity_filters.html:31
 #: .\attendance\templates\attendance\late_come_early_out\late_come_early_out_filters.html:31
+#: .\attendance\templates\requests\attendance\filter.html:31
 #: .\base\templates\base\company\company.html:9
 #: .\base\templates\base\company\company.html:13
 #: .\base\templates\base\company\company_view.html:6
@@ -1567,7 +1624,8 @@ msgstr "شركة"
 #: .\attendance\templates\attendance\attendance_account\attendance_account_filter.html:35
 #: .\attendance\templates\attendance\attendance_activity\activity_filters.html:35
 #: .\attendance\templates\attendance\late_come_early_out\late_come_early_out_filters.html:35
-#: .\base\templates\base\job_position\job_position.html:9
+#: .\attendance\templates\requests\attendance\filter.html:35
+#: .\base\models.py:98 .\base\templates\base\job_position\job_position.html:9
 #: .\base\templates\base\job_position\job_position.html:21
 #: .\base\templates\base\job_position\job_position_view.html:11
 #: .\base\templates\base\job_role\job_role.html:14
@@ -1608,6 +1666,7 @@ msgstr "المناصب الوظيفية"
 #: .\attendance\templates\attendance\attendance_account\attendance_account_filter.html:43
 #: .\attendance\templates\attendance\attendance_activity\activity_filters.html:43
 #: .\attendance\templates\attendance\late_come_early_out\late_come_early_out_filters.html:43
+#: .\attendance\templates\requests\attendance\filter.html:43
 #: .\employee\templates\employee\profile\profile_view.html:297
 #: .\employee\templates\employee\profile\work_info.html:63
 #: .\employee\templates\employee\update_form\work_details.html:67
@@ -1617,6 +1676,7 @@ msgstr "مكان العمل"
 
 #: .\attendance\templates\attendance\attendance\attendance_filters.html:53
 #: .\attendance\templates\attendance\own_attendance\filters.html:20
+#: .\attendance\templates\requests\attendance\filter.html:53
 #: .\payroll\models\models.py:585 .\templates\sidebar.html:177
 msgid "Attendance"
 msgstr "حضور"
@@ -1627,18 +1687,21 @@ msgstr "حضور"
 #: .\attendance\templates\attendance\late_come_early_out\late_come_early_out_filters.html:62
 #: .\attendance\templates\attendance\late_come_early_out\report_list.html:8
 #: .\attendance\templates\attendance\own_attendance\filters.html:25
+#: .\attendance\templates\requests\attendance\filter.html:58
 msgid "Attendance Date"
 msgstr "تاريخ حضور"
 
 #: .\attendance\templates\attendance\attendance\attendance_filters.html:62
 #: .\attendance\templates\attendance\late_come_early_out\late_come_early_out_filters.html:80
 #: .\attendance\templates\attendance\own_attendance\filters.html:29
+#: .\attendance\templates\requests\attendance\filter.html:62
 msgid "In Time"
 msgstr "وقت في"
 
 #: .\attendance\templates\attendance\attendance\attendance_filters.html:66
 #: .\attendance\templates\attendance\late_come_early_out\late_come_early_out_filters.html:70
 #: .\attendance\templates\attendance\own_attendance\filters.html:33
+#: .\attendance\templates\requests\attendance\filter.html:66
 msgid "Validated?"
 msgstr "التحقق من صحة؟"
 
@@ -1654,18 +1717,23 @@ msgstr "التحقق من صحة؟"
 #: .\attendance\templates\attendance\late_come_early_out\report_list.html:13
 #: .\attendance\templates\attendance\own_attendance\attendances.html:15
 #: .\attendance\templates\attendance\own_attendance\filters.html:39
+#: .\attendance\templates\requests\attendance\filter.html:72
+#: .\attendance\templates\requests\attendance\request_lines.html:19
+#: .\attendance\templates\requests\attendance\request_lines.html:169
 msgid "Min Hour"
 msgstr "الحد الأدنى للساعة"
 
 #: .\attendance\templates\attendance\attendance\attendance_filters.html:76
 #: .\attendance\templates\attendance\late_come_early_out\late_come_early_out_filters.html:66
 #: .\attendance\templates\attendance\own_attendance\filters.html:43
+#: .\attendance\templates\requests\attendance\filter.html:76
 msgid "Out Time"
 msgstr "وقت خروج"
 
 #: .\attendance\templates\attendance\attendance\attendance_filters.html:80
 #: .\attendance\templates\attendance\late_come_early_out\late_come_early_out_filters.html:84
 #: .\attendance\templates\attendance\own_attendance\filters.html:47
+#: .\attendance\templates\requests\attendance\filter.html:80
 msgid "OT Approved?"
 msgstr "تمت الموافقة على العمل الإضافي؟"
 
@@ -1674,6 +1742,7 @@ msgstr "تمت الموافقة على العمل الإضافي؟"
 #: .\attendance\templates\attendance\attendance_activity\activity_filters.html:81
 #: .\attendance\templates\attendance\late_come_early_out\late_come_early_out_filters.html:92
 #: .\attendance\templates\attendance\own_attendance\filters.html:55
+#: .\attendance\templates\requests\attendance\filter.html:88
 #: .\base\templates\base\rotating_shift\filters.html:79
 #: .\base\templates\base\rotating_work_type\filters.html:79
 #: .\base\templates\shift_request\shift_request_nav.html:186
@@ -1690,6 +1759,7 @@ msgstr "متقدم"
 #: .\attendance\templates\attendance\attendance_activity\activity_filters.html:86
 #: .\attendance\templates\attendance\late_come_early_out\late_come_early_out_filters.html:97
 #: .\attendance\templates\attendance\own_attendance\filters.html:60
+#: .\attendance\templates\requests\attendance\filter.html:93
 msgid "Attendance From"
 msgstr "الحضور من"
 
@@ -1697,6 +1767,7 @@ msgstr "الحضور من"
 #: .\attendance\templates\attendance\attendance_activity\activity_filters.html:90
 #: .\attendance\templates\attendance\late_come_early_out\late_come_early_out_filters.html:101
 #: .\attendance\templates\attendance\own_attendance\filters.html:64
+#: .\attendance\templates\requests\attendance\filter.html:97
 msgid "In From"
 msgstr "في من"
 
@@ -1704,12 +1775,14 @@ msgstr "في من"
 #: .\attendance\templates\attendance\attendance_activity\activity_filters.html:94
 #: .\attendance\templates\attendance\late_come_early_out\late_come_early_out_filters.html:105
 #: .\attendance\templates\attendance\own_attendance\filters.html:68
+#: .\attendance\templates\requests\attendance\filter.html:101
 msgid "Out From"
 msgstr "من خارج"
 
 #: .\attendance\templates\attendance\attendance\attendance_filters.html:105
 #: .\attendance\templates\attendance\late_come_early_out\late_come_early_out_filters.html:109
 #: .\attendance\templates\attendance\own_attendance\filters.html:72
+#: .\attendance\templates\requests\attendance\filter.html:105
 msgid "At Work Greater or Equal"
 msgstr "وقت العمل أكبر من أو يساوي"
 
@@ -1717,6 +1790,7 @@ msgstr "وقت العمل أكبر من أو يساوي"
 #: .\attendance\templates\attendance\attendance_activity\activity_filters.html:98
 #: .\attendance\templates\attendance\late_come_early_out\late_come_early_out_filters.html:113
 #: .\attendance\templates\attendance\own_attendance\filters.html:76
+#: .\attendance\templates\requests\attendance\filter.html:109
 msgid "OT Greater or Equal"
 msgstr "أكبر من أو يساوي"
 
@@ -1724,6 +1798,7 @@ msgstr "أكبر من أو يساوي"
 #: .\attendance\templates\attendance\attendance_activity\activity_filters.html:104
 #: .\attendance\templates\attendance\late_come_early_out\late_come_early_out_filters.html:119
 #: .\attendance\templates\attendance\own_attendance\filters.html:82
+#: .\attendance\templates\requests\attendance\filter.html:115
 msgid "Attendance Till"
 msgstr "حضور"
 
@@ -1731,6 +1806,7 @@ msgstr "حضور"
 #: .\attendance\templates\attendance\attendance_activity\activity_filters.html:108
 #: .\attendance\templates\attendance\late_come_early_out\late_come_early_out_filters.html:123
 #: .\attendance\templates\attendance\own_attendance\filters.html:86
+#: .\attendance\templates\requests\attendance\filter.html:119
 msgid "In Till"
 msgstr "في حتى"
 
@@ -1738,18 +1814,21 @@ msgstr "في حتى"
 #: .\attendance\templates\attendance\attendance_activity\activity_filters.html:112
 #: .\attendance\templates\attendance\late_come_early_out\late_come_early_out_filters.html:127
 #: .\attendance\templates\attendance\own_attendance\filters.html:90
+#: .\attendance\templates\requests\attendance\filter.html:123
 msgid "Out Till"
 msgstr "حتى خارج"
 
 #: .\attendance\templates\attendance\attendance\attendance_filters.html:127
 #: .\attendance\templates\attendance\late_come_early_out\late_come_early_out_filters.html:131
 #: .\attendance\templates\attendance\own_attendance\filters.html:94
+#: .\attendance\templates\requests\attendance\filter.html:127
 msgid "At Work Less Than or Equal"
 msgstr "في العمل أقل من أو يساوي"
 
 #: .\attendance\templates\attendance\attendance\attendance_filters.html:131
 #: .\attendance\templates\attendance\late_come_early_out\late_come_early_out_filters.html:135
 #: .\attendance\templates\attendance\own_attendance\filters.html:98
+#: .\attendance\templates\requests\attendance\filter.html:131
 msgid "OT Less Than or Equal"
 msgstr "العمل الإضافي أقل من أو يساوي"
 
@@ -1757,6 +1836,7 @@ msgstr "العمل الإضافي أقل من أو يساوي"
 #: .\attendance\templates\attendance\attendance_account\attendance_account_filter.html:104
 #: .\attendance\templates\attendance\attendance_activity\activity_filters.html:120
 #: .\attendance\templates\attendance\late_come_early_out\late_come_early_out_filters.html:143
+#: .\attendance\templates\requests\attendance\filter.html:139
 msgid "Group By"
 msgstr "مجموعة من"
 
@@ -1764,6 +1844,7 @@ msgstr "مجموعة من"
 #: .\attendance\templates\attendance\attendance_account\attendance_account_filter.html:109
 #: .\attendance\templates\attendance\attendance_activity\activity_filters.html:125
 #: .\attendance\templates\attendance\late_come_early_out\late_come_early_out_filters.html:148
+#: .\attendance\templates\requests\attendance\filter.html:144
 msgid "Field"
 msgstr "مجال"
 
@@ -1804,8 +1885,8 @@ msgstr "تم التحقق من صحتها الحضور"
 #: .\attendance\templates\attendance\attendance\tab_content.html:170
 #: .\attendance\templates\attendance\attendance\tab_content.html:328
 #: .\attendance\templates\attendance\own_attendance\attendances.html:7
-#: .\base\templates\base\rotating_shift\rotating_shift_assign_view.html:75
-#: .\base\templates\base\rotating_work_type\rotating_work_type_assign_view.html:69
+#: .\attendance\templates\requests\attendance\request_lines.html:11
+#: .\attendance\templates\requests\attendance\request_lines.html:161
 msgid "Date"
 msgstr "تاريخ"
 
@@ -1816,6 +1897,8 @@ msgstr "تاريخ"
 #: .\attendance\templates\attendance\attendance\tab_content.html:171
 #: .\attendance\templates\attendance\attendance\tab_content.html:329
 #: .\attendance\templates\attendance\own_attendance\attendances.html:8
+#: .\attendance\templates\requests\attendance\request_lines.html:12
+#: .\attendance\templates\requests\attendance\request_lines.html:162
 #: .\leave\models.py:80
 msgid "Day"
 msgstr "يوم"
@@ -1830,6 +1913,8 @@ msgstr "يوم"
 #: .\attendance\templates\attendance\late_come_early_out\group_by.html:10
 #: .\attendance\templates\attendance\late_come_early_out\report_list.html:9
 #: .\attendance\templates\attendance\own_attendance\attendances.html:9
+#: .\attendance\templates\requests\attendance\request_lines.html:13
+#: .\attendance\templates\requests\attendance\request_lines.html:163
 msgid "Clock In"
 msgstr "مدار الساعة في"
 
@@ -1845,6 +1930,8 @@ msgstr "مدار الساعة في"
 #: .\attendance\templates\attendance\late_come_early_out\group_by.html:11
 #: .\attendance\templates\attendance\late_come_early_out\report_list.html:10
 #: .\attendance\templates\attendance\own_attendance\attendances.html:10
+#: .\attendance\templates\requests\attendance\request_lines.html:14
+#: .\attendance\templates\requests\attendance\request_lines.html:164
 msgid "In Date"
 msgstr "في موعد"
 
@@ -1858,6 +1945,8 @@ msgstr "في موعد"
 #: .\attendance\templates\attendance\late_come_early_out\group_by.html:12
 #: .\attendance\templates\attendance\late_come_early_out\report_list.html:11
 #: .\attendance\templates\attendance\own_attendance\attendances.html:11
+#: .\attendance\templates\requests\attendance\request_lines.html:15
+#: .\attendance\templates\requests\attendance\request_lines.html:165
 msgid "Clock Out"
 msgstr "ساعة خارج"
 
@@ -1873,6 +1962,8 @@ msgstr "ساعة خارج"
 #: .\attendance\templates\attendance\late_come_early_out\group_by.html:13
 #: .\attendance\templates\attendance\late_come_early_out\report_list.html:12
 #: .\attendance\templates\attendance\own_attendance\attendances.html:12
+#: .\attendance\templates\requests\attendance\request_lines.html:16
+#: .\attendance\templates\requests\attendance\request_lines.html:166
 msgid "Out Date"
 msgstr "خارج تاريخ"
 
@@ -1885,6 +1976,8 @@ msgstr "خارج تاريخ"
 #: .\attendance\templates\attendance\late_come_early_out\group_by.html:15
 #: .\attendance\templates\attendance\late_come_early_out\report_list.html:14
 #: .\attendance\templates\attendance\own_attendance\attendances.html:16
+#: .\attendance\templates\requests\attendance\request_lines.html:20
+#: .\attendance\templates\requests\attendance\request_lines.html:170
 msgid "At Work"
 msgstr "في العمل"
 
@@ -2064,184 +2157,294 @@ msgstr "إعادة التحقق"
 msgid "My Attendances"
 msgstr "حضوري"
 
-#: .\attendance\views.py:225
+#: .\attendance\templates\requests\attendance\nav.html:24
+msgid "Update Attendances Request"
+msgstr "طلب تحديث الحضور"
+
+#: .\attendance\templates\requests\attendance\nav.html:47
+#: .\attendance\templates\requests\attendance\nav.html:70
+msgid "Validate Attendances Request"
+msgstr "التحقق من صحة طلب الحضور"
+
+#: .\attendance\templates\requests\attendance\nav.html:89
+msgid "All Attendances"
+msgstr "جميع الحضور"
+
+#: .\attendance\views\clock_in_out.py:184 .\templates\index.html:126
+msgid "Check-Out"
+msgstr "الدفع"
+
+#: .\attendance\views\clock_in_out.py:320 .\templates\index.html:130
+msgid "Check-In"
+msgstr "تحقق في"
+
+#: .\attendance\views\dashboard.py:176
+msgid "On Time"
+msgstr "في الوقت المحدد"
+
+#: .\attendance\views\dashboard.py:178
+msgid "On Break"
+msgstr "في استراحة"
+
+#: .\attendance\views\views.py:145
 msgid "Attendance added."
 msgstr "تمت إضافة الحضور."
 
-#: .\attendance\views.py:371
+#: .\attendance\views\views.py:229
 msgid "Attendance Updated."
 msgstr "تم تحديث الحضور."
 
-#: .\attendance\views.py:415
+#: .\attendance\views\views.py:273
 msgid "Attendance deleted."
 msgstr "تم حذف الحضور."
 
-#: .\attendance\views.py:418
+#: .\attendance\views\views.py:276
 msgid "You cannot delete this attendance"
 msgstr "لا يمكنك حذف هذا الحضور"
 
-#: .\attendance\views.py:452
+#: .\attendance\views\views.py:310
 msgid "Attendance Deleted"
 msgstr "تم حذف الحضور"
 
-#: .\attendance\views.py:457
+#: .\attendance\views\views.py:315
 #, python-format
 msgid "You cannot delete this %(attendance)s"
 msgstr "لا يمكنك حذف هذا %(attendance)s"
 
-#: .\attendance\views.py:536
+#: .\attendance\views\views.py:361
 msgid "Attendance account added."
 msgstr "تمت إضافة حساب الحضور."
 
-#: .\attendance\views.py:622
+#: .\attendance\views\views.py:415
 msgid "Attendance account updated successfully."
 msgstr "تم تحديث حساب الحضور بنجاح..."
 
-#: .\attendance\views.py:647
+#: .\attendance\views\views.py:440
 msgid "OT account deleted."
 msgstr "تم حذف حساب العمل الإضافي."
 
-#: .\attendance\views.py:650
+#: .\attendance\views\views.py:443
 msgid "You cannot delete this attendance OT"
 msgstr "لا يمكنك حذف هذا الحضور الإضافي"
 
-#: .\attendance\views.py:718
+#: .\attendance\views\views.py:479
 msgid "Attendance activity deleted"
 msgstr "تم حذف نشاط الحضور"
 
-#: .\attendance\views.py:721
+#: .\attendance\views\views.py:482
 msgid "You cannot delete this activity"
 msgstr "لا يمكنك حذف هذا النشاط"
 
-#: .\attendance\views.py:893 .\templates\index.html:126
-msgid "Check-Out"
-msgstr "الدفع"
-
-#: .\attendance\views.py:1013 .\templates\index.html:130
-msgid "Check-In"
-msgstr "تحقق في"
-
-#: .\attendance\views.py:1085
+#: .\attendance\views\views.py:591
 msgid "Late-in early-out deleted"
 msgstr "يأتي في وقت متأخر الخروج المبكر حذف"
 
-#: .\attendance\views.py:1088
+#: .\attendance\views\views.py:594
 msgid "You cannot delete this Late-in early-out"
 msgstr "لا يمكنك حذف هذا في وقت متأخر يخرج مبكرا"
 
-#: .\attendance\views.py:1145
+#: .\attendance\views\views.py:651
 msgid "validation condition deleted."
 msgstr "تم حذف شرط التحقق من الصحة."
 
-#: .\attendance\views.py:1148
+#: .\attendance\views\views.py:654
 msgid "You cannot delete this validation condition."
 msgstr "لا يمكنك حذف شرط التحقق هذا. "
 
-#: .\attendance\views.py:1165 .\attendance\views.py:1194
+#: .\attendance\views\views.py:671 .\attendance\views\views.py:700
 msgid "Attendance validated."
 msgstr "التحقق من صحة الحضور."
 
-#: .\attendance\views.py:1450
-msgid "On Time"
-msgstr "في الوقت المحدد"
+#: .\base\forms.py:459 .\base\forms.py:877 .\payroll\models\models.py:228
+#: .\payroll\models\models.py:851 .\payroll\models\models.py:862
+#: .\payroll\models\models.py:1098
+msgid "This field is required"
+msgstr "هذه الخانة مطلوبه"
 
-#: .\attendance\views.py:1452
-msgid "On Break"
-msgstr "في استراحة"
+#: .\base\forms.py:760
+#, python-brace-format
+msgid "Shift schedule is already exist for {day}"
+msgstr "جدول التحول موجود بالفعل لـ {day}"
 
-#: .\base\models.py:26
+#: .\base\forms.py:815
+msgid "Start date"
+msgstr "تاريخ البدء"
+
+#: .\base\forms.py:1124
+msgid "Old password"
+msgstr "كلمة المرور القديمة"
+
+#: .\base\forms.py:1129
+msgid "Enter Old Password"
+msgstr "أدخل كلمة المرور القديمة"
+
+#: .\base\forms.py:1133
+msgid "Enter your old password."
+msgstr "أدخل كلمة مرورك القديمة."
+
+#: .\base\forms.py:1136 .\base\forms.py:1199
+msgid "New password"
+msgstr "كلمة المرور الجديدة"
+
+#: .\base\forms.py:1141
+msgid "Enter New Password"
+msgstr "أدخل كلمة مرور جديدة"
+
+#: .\base\forms.py:1147 .\base\forms.py:1211
+msgid "New password confirmation"
+msgstr "تأكيد كلمة السر الجديدة"
+
+#: .\base\forms.py:1152 .\base\forms.py:1216
+msgid "Re-Enter Password"
+msgstr "إعادة إدخال كلمة المرور"
+
+#: .\base\forms.py:1185
+msgid "New password and confirm password do not match"
+msgstr "كلمة المرور الجديدة وتأكيد كلمة المرور غير متطابقين"
+
+#: .\base\forms.py:1204
+msgid "Enter Strong Password"
+msgstr "أدخل كلمة مرور قوية"
+
+#: .\base\forms.py:1208
+msgid "Enter your new password."
+msgstr "أدخل كلمة المرور الجديدة."
+
+#: .\base\forms.py:1220
+msgid "Enter the same password as before, for verification."
+msgstr "أدخل نفس كلمة المرور السابقة للتحقق منها."
+
+#: .\base\forms.py:1229
+msgid "Password must contain at least 8 characters."
+msgstr "يجب أن تحتوي كلمة المرور على 8 أحرف على الأقل."
+
+#: .\base\forms.py:1232
+msgid "Password must contain at least one uppercase letter."
+msgstr "يجب أن تحتوي كلمة المرور على حرف كبير واحد على الأقل."
+
+#: .\base\forms.py:1236
+msgid "Password must contain at least one lowercase letter."
+msgstr "يجب أن تحتوي كلمة المرور على حرف صغير واحد على الأقل."
+
+#: .\base\forms.py:1239
+msgid "Password must contain at least one digit."
+msgstr "يجب أن تحتوي كلمة المرور على رقم واحد على الأقل."
+
+#: .\base\forms.py:1244
+msgid "Password must contain at least one special character."
+msgstr "يجب أن تحتوي كلمة المرور على حرف خاص واحد على الأقل."
+
+#: .\base\forms.py:1258
+msgid "Password must be same."
+msgstr "يجب أن تكون كلمة المرور نفسها."
+
+#: .\base\models.py:28
 msgid "Invalid time, excepted HH:MM"
 msgstr "الوقت غير صالح ، باستثناء 01:30"
 
-#: .\base\models.py:28
+#: .\base\models.py:30
 msgid "Invalid format,  excepted HH:MM"
 msgstr "الوقت غير صالح ، باستثناء 01:30"
 
-#: .\base\models.py:134
+#: .\base\models.py:136
 #: .\base\templates\base\rotating_work_type\rotating_work_type_view.html:7
 msgid "Work Type 1"
 msgstr "1 نوع العمل"
 
-#: .\base\models.py:140
+#: .\base\models.py:142
 #: .\base\templates\base\rotating_work_type\rotating_work_type_view.html:8
 msgid "Work Type 2"
 msgstr "2 نوع العمل"
 
-#: .\base\models.py:152
+#: .\base\models.py:156
 msgid "Choose different work type"
 msgstr "اختر نوع عمل مختلف"
 
-#: .\base\models.py:156
+#: .\base\models.py:160
 msgid "Last Day"
 msgstr "اخر موعد"
 
-#: .\base\models.py:158 .\leave\models.py:110
+#: .\base\models.py:162 .\leave\models.py:110
 msgid "Monday"
 msgstr "الاثنين"
 
-#: .\base\models.py:159 .\leave\models.py:111
+#: .\base\models.py:163 .\leave\models.py:111
 msgid "Tuesday"
 msgstr "يوم الثلاثاء"
 
-#: .\base\models.py:160 .\leave\models.py:112
+#: .\base\models.py:164 .\leave\models.py:112
 msgid "Wednesday"
 msgstr "الأربعاء"
 
-#: .\base\models.py:161 .\leave\models.py:113
+#: .\base\models.py:165 .\leave\models.py:113
 msgid "Thursday"
 msgstr "يوم الخميس"
 
-#: .\base\models.py:162 .\leave\models.py:114
+#: .\base\models.py:166 .\leave\models.py:114
 msgid "Friday"
 msgstr "جمعة"
 
-#: .\base\models.py:163 .\leave\models.py:115
+#: .\base\models.py:167 .\leave\models.py:115
 msgid "Saturday"
 msgstr "السبت"
 
-#: .\base\models.py:164 .\leave\models.py:116
+#: .\base\models.py:168 .\leave\models.py:116
 msgid "Sunday"
 msgstr "الأحد"
 
-#: .\base\models.py:167
-#: .\base\templates\base\rotating_shift\rotating_shift_assign_view.html:69
-#: .\base\templates\base\rotating_work_type\rotating_work_type_assign_view.html:68
+#: .\base\models.py:171
 msgid "After"
 msgstr "بعد"
 
-#: .\base\models.py:168
+#: .\base\models.py:172
 msgid "Weekend"
 msgstr "عطلة نهاية الاسبوع"
 
-#: .\base\models.py:169 .\leave\models.py:26 .\payroll\models\models.py:105
+#: .\base\models.py:173 .\leave\models.py:26 .\payroll\models\models.py:105
 #: .\payroll\models\models.py:111
 msgid "Monthly"
 msgstr "شهريا"
 
-#: .\base\models.py:223 .\base\models.py:384
+#: .\base\models.py:189
+msgid "Rotating work type"
+msgstr "نوع العمل المتناوب"
+
+#: .\base\models.py:197
+msgid "Rotate after day"
+msgstr "تناوب بعد يوم"
+
+#: .\base\models.py:229 .\base\models.py:402
 msgid "Only one active record allowed per employee"
 msgstr "يُسمح بسجل نشط واحد فقط لكل موظف"
 
-#: .\base\models.py:225 .\base\models.py:386 .\base\models.py:441
-#: .\base\models.py:500
+#: .\base\models.py:231 .\base\models.py:404 .\base\models.py:459
+#: .\base\models.py:518
 msgid "Date must be greater than or equal to today"
 msgstr "يجب أن يكون التاريخ أكبر من أو يساوي اليوم"
 
-#: .\base\models.py:317
+#: .\base\models.py:333
 #: .\base\templates\base\rotating_shift\rotating_shift_view.html:7
 msgid "Shift 1"
 msgstr "التحول 1"
 
-#: .\base\models.py:323
+#: .\base\models.py:339
 #: .\base\templates\base\rotating_shift\rotating_shift_view.html:8
 msgid "Shift 2"
 msgstr "التحول 2"
 
-#: .\base\models.py:332
+#: .\base\models.py:348
 msgid "Choose different shifts"
 msgstr "اختر مناوبات مختلفة"
 
-#: .\base\models.py:444 .\base\models.py:503
+#: .\base\models.py:360 .\base\templates\base\rotating_shift\filters.html:9
+#: .\base\templates\base\rotating_shift\filters.html:28
+#: .\base\templates\base\rotating_shift\rotating_shift.html:10
+#: .\base\templates\base\rotating_work_type\filters.html:28
+#: .\templates\settings.html:62
+msgid "Rotating Shift"
+msgstr "تناوب التحول"
+
+#: .\base\models.py:462 .\base\models.py:521
 msgid "End date must be greater than or equal to start date"
 msgstr "يجب أن يكون تاريخ الانتهاء أكبر من تاريخ البدء أو مساويًا له"
 
@@ -2290,6 +2493,34 @@ msgstr "أذونات"
 #: .\base\templates\base\auth\group_view.html:48
 msgid "Are you sure you want to delete this group?"
 msgstr "هل أنت متأكد أنك تريد حذف هذه المجموعة؟"
+
+#: .\base\templates\base\auth\password_change_form.html:14
+#: .\templates\index.html:187
+msgid "Change Password"
+msgstr "تغيير كلمة المرور"
+
+#: .\base\templates\base\auth\password_change_form.html:25
+msgid "Old Password"
+msgstr "كلمة المرور القديمة"
+
+#: .\base\templates\base\auth\password_change_form.html:46
+#: .\templates\reset_password.html:35
+msgid "New Password"
+msgstr "كلمة المرور الجديدة"
+
+#: .\base\templates\base\auth\password_change_form.html:67
+#: .\onboarding\templates\onboarding\user-creation.html:98
+msgid "Confirm Password"
+msgstr "تأكيد كلمة المرور"
+
+#: .\base\templates\base\auth\password_change_form.html:92
+msgid "Save Password"
+msgstr "حفظ كلمة المرور"
+
+#: .\base\templates\base\auth\password_change_form.html:98
+#: .\templates\login.html:66
+msgid "Forgot password"
+msgstr "هل نسيت كلمة السر"
 
 #: .\base\templates\base\company\company.html:18
 msgid "Hq"
@@ -2424,14 +2655,6 @@ msgstr "مسمى وظيفي"
 msgid "Are you sure you want to delete this job role?"
 msgstr "هل أنت متأكد أنك تريد حذف هذا الدور الوظيفي؟"
 
-#: .\base\templates\base\rotating_shift\filters.html:9
-#: .\base\templates\base\rotating_shift\filters.html:28
-#: .\base\templates\base\rotating_shift\rotating_shift.html:10
-#: .\base\templates\base\rotating_work_type\filters.html:28
-#: .\templates\settings.html:62
-msgid "Rotating Shift"
-msgstr "تناوب التحول"
-
 #: .\base\templates\base\rotating_shift\filters.html:18
 #: .\base\templates\base\rotating_shift\rotating_shift_assign_view.html:24
 #: .\base\templates\base\rotating_work_type\filters.html:18
@@ -2487,9 +2710,9 @@ msgid "Rotating Shift Assign Update"
 msgstr "تناوب التحول تخصيص التحديث"
 
 #: .\base\templates\base\rotating_shift\rotating_shift_assign_nav.html:71
-#: .\base\templates\base\rotating_shift\rotating_shift_assign_view.html:102
+#: .\base\templates\base\rotating_shift\rotating_shift_assign_view.html:91
 #: .\base\templates\base\rotating_work_type\rotating_work_type_assign_nav.html:69
-#: .\base\templates\base\rotating_work_type\rotating_work_type_assign_view.html:95
+#: .\base\templates\base\rotating_work_type\rotating_work_type_assign_view.html:90
 #: .\employee\templates\employee_nav.html:172
 #: .\employee\templates\employee_personal_info\employee_card.html:58
 #: .\employee\templates\employee_personal_info\employee_list.html:166
@@ -2509,9 +2732,9 @@ msgid "Archive"
 msgstr "أرشيف"
 
 #: .\base\templates\base\rotating_shift\rotating_shift_assign_nav.html:80
-#: .\base\templates\base\rotating_shift\rotating_shift_assign_view.html:108
+#: .\base\templates\base\rotating_shift\rotating_shift_assign_view.html:97
 #: .\base\templates\base\rotating_work_type\rotating_work_type_assign_nav.html:78
-#: .\base\templates\base\rotating_work_type\rotating_work_type_assign_view.html:101
+#: .\base\templates\base\rotating_work_type\rotating_work_type_assign_view.html:96
 #: .\employee\templates\employee_nav.html:179
 #: .\employee\templates\employee_personal_info\employee_card.html:62
 #: .\employee\templates\employee_personal_info\employee_list.html:179
@@ -2606,37 +2829,20 @@ msgstr "استدارة"
 msgid "Start Date"
 msgstr "تاريخ البدء"
 
-#: .\base\templates\base\rotating_shift\rotating_shift_assign_view.html:71
-#: .\base\templates\base\rotating_work_type\rotating_work_type_assign_view.html:69
-#: .\base\templates\base\shift\schedule.html:21
-#: .\base\templates\base\shift\schedule_view.html:11
-#: .\leave\templates\leave\leave_my_request_view.html:13
-#: .\leave\templates\leave\leave_my_requests_view.html:13
-#: .\leave\templates\leave\leave_type_view.html:12
-#: .\leave\templates\leave\one-request-view.html:34
-#: .\leave\templates\leave\user-request-one.html:33
-msgid "Days"
-msgstr "أيام"
-
-#: .\base\templates\base\rotating_shift\rotating_shift_assign_view.html:73
-#: .\base\templates\base\rotating_work_type\rotating_work_type_assign_view.html:69
-msgid "Every"
-msgstr "كل"
-
-#: .\base\templates\base\rotating_shift\rotating_shift_assign_view.html:99
+#: .\base\templates\base\rotating_shift\rotating_shift_assign_view.html:88
 msgid "Do you Want to archive this rotating shift assign?"
 msgstr "هل تريد أرشفة تعيين التحول الدوراني هذا؟"
 
-#: .\base\templates\base\rotating_shift\rotating_shift_assign_view.html:100
-#: .\base\templates\base\rotating_work_type\rotating_work_type_assign_view.html:94
+#: .\base\templates\base\rotating_shift\rotating_shift_assign_view.html:89
+#: .\base\templates\base\rotating_work_type\rotating_work_type_assign_view.html:89
 msgid "False"
 msgstr "خطأ شنيع"
 
-#: .\base\templates\base\rotating_shift\rotating_shift_assign_view.html:106
+#: .\base\templates\base\rotating_shift\rotating_shift_assign_view.html:95
 msgid "Do you Want to un-archive this rotating shift assign?"
 msgstr "هل تريد إلغاء أرشفة تعيين التحول الدوراني هذا؟"
 
-#: .\base\templates\base\rotating_shift\rotating_shift_assign_view.html:116
+#: .\base\templates\base\rotating_shift\rotating_shift_assign_view.html:105
 msgid "Are you sure you want to delete this rotating shift assign?"
 msgstr "هل أنت متأكد أنك تريد حذف هذا التناوب التناوب تعيين؟"
 
@@ -2668,15 +2874,15 @@ msgstr "نوع الوظيفة الحالية"
 msgid "Next Work Type"
 msgstr "نوع العمل التالي"
 
-#: .\base\templates\base\rotating_work_type\rotating_work_type_assign_view.html:92
+#: .\base\templates\base\rotating_work_type\rotating_work_type_assign_view.html:87
 msgid "Do you Want to archive this rotating work type assign?"
 msgstr "هل تريد أرشفة تعيين نوع العمل الدوار هذا؟"
 
-#: .\base\templates\base\rotating_work_type\rotating_work_type_assign_view.html:99
+#: .\base\templates\base\rotating_work_type\rotating_work_type_assign_view.html:94
 msgid "Do you Want to un-archive this rotating work type assign?"
 msgstr "هل تريد إلغاء أرشفة تعيين نوع العمل المتناوب هذا؟"
 
-#: .\base\templates\base\rotating_work_type\rotating_work_type_assign_view.html:109
+#: .\base\templates\base\rotating_work_type\rotating_work_type_assign_view.html:104
 msgid "Are you sure you want to delete this rotating work type assign?"
 msgstr "هل أنت متأكد أنك تريد حذف تعيين نوع العمل الدوار هذا؟"
 
@@ -2687,6 +2893,16 @@ msgstr "هل أنت متأكد أنك تريد حذف نوع العمل الدو
 #: .\base\templates\base\shift\schedule.html:9
 msgid "Shift Schedule"
 msgstr "جدول المناوبة"
+
+#: .\base\templates\base\shift\schedule.html:21
+#: .\base\templates\base\shift\schedule_view.html:11
+#: .\leave\templates\leave\leave_my_request_view.html:13
+#: .\leave\templates\leave\leave_my_requests_view.html:13
+#: .\leave\templates\leave\leave_type_view.html:12
+#: .\leave\templates\leave\one-request-view.html:34
+#: .\leave\templates\leave\user-request-one.html:33
+msgid "Days"
+msgstr "أيام"
 
 #: .\base\templates\base\shift\schedule.html:28
 msgid "Minimum Hour"
@@ -3276,6 +3492,14 @@ msgstr "متزوج"
 msgid "Divorced"
 msgstr "مُطلّق"
 
+#: .\base\translator.py:97
+msgid "Rotate every weekend"
+msgstr "تناوب في نهاية كل أسبوع"
+
+#: .\base\translator.py:98
+msgid "Rotate every"
+msgstr "تناوب كل"
+
 #: .\base\views.py:113
 msgid "Invalid username or password."
 msgstr "خطأ في اسم المستخدم أو كلمة مرور."
@@ -3297,340 +3521,348 @@ msgstr "تم إرسال الرابط إلى {recipient}"
 msgid "Password reset success"
 msgstr "نجاح إعادة تعيين كلمة المرور"
 
-#: .\base\views.py:256
+#: .\base\views.py:197
+msgid "Link Expired..."
+msgstr "انتهت صلاحية الرابط..."
+
+#: .\base\views.py:214
+msgid "Password changed successfully"
+msgstr "تم تغيير الرقم السري بنجاح"
+
+#: .\base\views.py:276
 msgid "User group created."
 msgstr "تم إنشاء مجموعة المستخدمين."
 
-#: .\base\views.py:274
+#: .\base\views.py:294
 msgid "User group assigned."
 msgstr "تم تعيين مجموعة المستخدمين."
 
-#: .\base\views.py:361
+#: .\base\views.py:381
 msgid "User group updated."
 msgstr "تم تحديث مجموعة المستخدمين."
 
-#: .\base\views.py:380
+#: .\base\views.py:400
 msgid "User group deleted."
 msgstr "تم حذف مجموعة المستخدمين."
 
-#: .\base\views.py:383
+#: .\base\views.py:403
 msgid "You cannot delete this user group."
 msgstr "لا يمكنك حذف مجموعة المستخدم هذه."
 
-#: .\base\views.py:402
+#: .\base\views.py:422
 msgid "Company has been created successfully!"
 msgstr "تم إنشاء الشركة بنجاح!"
 
-#: .\base\views.py:426
+#: .\base\views.py:446
 msgid "Company updated"
 msgstr "تم تحديث الشركة"
 
-#: .\base\views.py:445
+#: .\base\views.py:465
 msgid "Company deleted."
 msgstr "تم حذف الشركة."
 
-#: .\base\views.py:448
+#: .\base\views.py:468
 msgid "This company already in use"
 msgstr "هذه الشركة قيد الاستخدام بالفعل"
 
-#: .\base\views.py:466
+#: .\base\views.py:486
 msgid "Department has been created successfully!"
 msgstr "تم إنشاء الإدارات  بنجاح!"
 
-#: .\base\views.py:489
+#: .\base\views.py:509
 msgid "Department updated."
 msgstr "الإدارات المحدثة"
 
-#: .\base\views.py:509
+#: .\base\views.py:529
 msgid "Department deleted."
 msgstr "تم حذف الإدارات."
 
-#: .\base\views.py:512
+#: .\base\views.py:532
 msgid "Department already in use."
 msgstr "الإدارات قيد الاستخدام بالفعل."
 
-#: .\base\views.py:530
+#: .\base\views.py:550
 msgid "Job Position has been created successfully!"
 msgstr "موضع تم  إنشاء  الو ظيفة بنجاح!"
 
-#: .\base\views.py:554
+#: .\base\views.py:574
 msgid "Job position updated."
 msgstr "تم تحديث موضع الوظيفة."
 
-#: .\base\views.py:574
+#: .\base\views.py:594
 msgid "Job Position Deleted."
 msgstr "تم حذف موضع الوظيفة."
 
-#: .\base\views.py:577
+#: .\base\views.py:597
 msgid "This job position already in use."
 msgstr "هذا المنصب الوظيفي قيد الاستخدام بالفعل."
 
-#: .\base\views.py:596
+#: .\base\views.py:616
 msgid "Job role has been created successfully!"
 msgstr " تم  إنشاء دور الوظائف بنجاح!"
 
-#: .\base\views.py:620
+#: .\base\views.py:640
 msgid "Job role updated."
 msgstr "نجاح تحديث الملف الشخصي."
 
-#: .\base\views.py:637
+#: .\base\views.py:657
 msgid "Job Role Deleted."
 msgstr "تم حذف الدور الوظيفي."
 
-#: .\base\views.py:640
+#: .\base\views.py:660
 msgid "This job role already in use."
 msgstr "هذا الدور الوظيفي قيد الاستخدام بالفعل."
 
-#: .\base\views.py:659
+#: .\base\views.py:679
 msgid "Work Type has been created successfully!"
 msgstr "تم إنشاء نوع العمل بنجاح!"
 
-#: .\base\views.py:684
+#: .\base\views.py:704
 msgid "Work type updated."
 msgstr "تم تحديث نوع العمل."
 
-#: .\base\views.py:704
+#: .\base\views.py:724
 msgid "Work type deleted."
 msgstr "تم حذف نوع العمل."
 
-#: .\base\views.py:707
+#: .\base\views.py:727
 msgid "This work type already in use."
 msgstr "نوع العمل هذا قيد الاستخدام بالفعل."
 
-#: .\base\views.py:725
+#: .\base\views.py:745
 msgid "Rotating work type created."
 msgstr "تم إنشاء نوع العمل المتناوب."
 
-#: .\base\views.py:750
+#: .\base\views.py:770
 msgid "Rotating work type updated."
 msgstr "تم تحديث نوع العمل المتناوب."
 
-#: .\base\views.py:771
+#: .\base\views.py:791
 msgid "Rotating work type deleted."
 msgstr "تم حذف نوع العمل المتناوب."
 
-#: .\base\views.py:774
+#: .\base\views.py:794
 msgid "This rotating work type already in use."
 msgstr "نوع العمل المتناوب هذا قيد الاستخدام بالفعل."
 
-#: .\base\views.py:835
+#: .\base\views.py:855
 msgid "Rotating work type assigned."
 msgstr "المعين التناوب نوع العمل ."
 
-#: .\base\views.py:895
+#: .\base\views.py:915
 msgid "Rotating work type assign updated."
 msgstr "تناوب تعيين نوع العمل المحدث."
 
-#: .\base\views.py:926 .\base\views.py:950 .\base\views.py:1436
-#: .\base\views.py:1460 .\employee\views.py:734
+#: .\base\views.py:946 .\base\views.py:970 .\base\views.py:1456
+#: .\base\views.py:1480 .\employee\views.py:737
 msgid "un-archived"
 msgstr "إلغاء الأرشفة"
 
-#: .\base\views.py:929 .\base\views.py:953 .\base\views.py:1440
-#: .\base\views.py:1463 .\employee\views.py:732
+#: .\base\views.py:949 .\base\views.py:973 .\base\views.py:1460
+#: .\base\views.py:1483 .\employee\views.py:735
 msgid "archived"
 msgstr "أرشيف"
 
-#: .\base\views.py:934 .\base\views.py:1444
+#: .\base\views.py:954 .\base\views.py:1464
 #, python-brace-format
 msgid "Rotating shift assign is {message}"
 msgstr "التناوب تعيين التحول هو {message}"
 
-#: .\base\views.py:968
+#: .\base\views.py:988
 #, python-brace-format
-msgid "Rotating shift for {employee_id} is {message}"
-msgstr "مناوبة {employee_id} هي {message}"
+msgid "Rotating work type for {employee_id} is {message}"
+msgstr "نوع العمل المتناوب لـ {employee_id} هو {message}"
 
-#: .\base\views.py:975
+#: .\base\views.py:995
 #, python-brace-format
-msgid "Rotating shift for {employee_id} is already exists"
-msgstr "المناوبة الدورية لـ {employee_id} موجودة بالفعل"
+msgid "Rotating work type for {employee_id} is already exists"
+msgstr "نوع العمل المتناوب لـ {employee_id} موجود بالفعل"
 
-#: .\base\views.py:996
+#: .\base\views.py:1016
 #, python-brace-format
 msgid "{employee} deleted."
 msgstr "تم حذف {employee}."
 
-#: .\base\views.py:1001
+#: .\base\views.py:1021
 #, python-brace-format
 msgid "You cannot delete {rwork_type_assign}"
 msgstr "لا يمكنك حذف {rwork_type_assign}"
 
-#: .\base\views.py:1020
+#: .\base\views.py:1040
 msgid "Rotating work type assign deleted."
 msgstr "تم حذف تعيين نوع العمل المتناوب."
 
-#: .\base\views.py:1023
+#: .\base\views.py:1043
 msgid "You cannot delete this rotating work type."
 msgstr "لا يمكنك حذف نوع العمل الدوار هذا."
 
-#: .\base\views.py:1041
+#: .\base\views.py:1061
 msgid "Employee type created."
 msgstr "تم إنشاء نوع الموظف."
 
-#: .\base\views.py:1066
+#: .\base\views.py:1086
 msgid "Employee type updated."
 msgstr "تم تحديث نوع الموظف."
 
-#: .\base\views.py:1086
+#: .\base\views.py:1106
 msgid "Employee type deleted."
 msgstr "تم حذف نوع الموظف."
 
-#: .\base\views.py:1089
+#: .\base\views.py:1109
 msgid "This Employee type already in use."
 msgstr "نوع الموظف هذا قيد الاستخدام بالفعل."
 
-#: .\base\views.py:1108
+#: .\base\views.py:1128
 msgid "Employee Shift has been created successfully!"
 msgstr "تم إنشاء وردية الموظف بنجاح!"
 
-#: .\base\views.py:1129
+#: .\base\views.py:1149
 msgid "Shift updated"
 msgstr "تم تحديث وردية الوظيفة."
 
-#: .\base\views.py:1147
+#: .\base\views.py:1167
 msgid "Employee shift deleted."
 msgstr "تم حذف مناوبة الموظف."
 
-#: .\base\views.py:1150
+#: .\base\views.py:1170
 msgid "This shift already in use."
 msgstr "هذا التحول قيد الاستخدام بالفعل."
 
-#: .\base\views.py:1169
+#: .\base\views.py:1189
 msgid "Employee Shift Schedule has been created successfully!"
 msgstr "تم إنشاء جدول التحول بنجاح!."
 
-#: .\base\views.py:1192
+#: .\base\views.py:1212
 msgid "Shift schedule created."
 msgstr "تم إنشاء جدول التحول بنجاح!"
 
-#: .\base\views.py:1208
+#: .\base\views.py:1228
 msgid "Shift schedule deleted."
 msgstr "تم حذف جدول التحول."
 
-#: .\base\views.py:1211
+#: .\base\views.py:1231
 msgid "You cannot delete this schedule"
 msgstr "لا يمكنك حذف هذا الجدول الزمني"
 
-#: .\base\views.py:1228
+#: .\base\views.py:1248
 msgid "Rotating shift created."
 msgstr "تم إنشاء التحول الدوراني."
 
-#: .\base\views.py:1252
+#: .\base\views.py:1272
 msgid "Rotating shift updated."
 msgstr "تم تحديث التحول الدوراني."
 
-#: .\base\views.py:1278
+#: .\base\views.py:1298
 msgid "Rotating shift deleted."
 msgstr "تم حذف المناوبة الدورية."
 
-#: .\base\views.py:1281
+#: .\base\views.py:1301
 msgid "You cannot delete this rotating shift"
 msgstr "لا يمكنك حذف هذا التناوب وردية"
 
-#: .\base\views.py:1343
+#: .\base\views.py:1363
 msgid "Rotating shift assigned."
 msgstr "تناوب وردية معينة."
 
-#: .\base\views.py:1402
+#: .\base\views.py:1422
 msgid "Rotating shift assign updated."
 msgstr "تم تحديث تعيين التحول الدوراني."
 
-#: .\base\views.py:1478
+#: .\base\views.py:1498
 #, python-brace-format
 msgid "Rotating shift for {employee} is {message}"
 msgstr "مناوبة {employee} هي {message}"
 
-#: .\base\views.py:1485
+#: .\base\views.py:1505
 #, python-brace-format
 msgid "Rotating shift for {employee} is already exists"
 msgstr "المناوبة الدورية لـ {employee} موجودة بالفعل"
 
-#: .\base\views.py:1506
+#: .\base\views.py:1526
 #, python-brace-format
 msgid "{employee} assign deleted."
 msgstr "تم حذف تعيين {employee}."
 
-#: .\base\views.py:1513
+#: .\base\views.py:1533
 #, python-brace-format
 msgid "You cannot delete {rshift_assign}"
 msgstr "لا يمكنك حذف {rshift_assign}"
 
-#: .\base\views.py:1532
+#: .\base\views.py:1552
 msgid "Rotating shift assign deleted."
 msgstr "تم حذف تعيين وردية الدوران."
 
-#: .\base\views.py:1535
+#: .\base\views.py:1555
 msgid "You cannot delete this rotating shift assign."
 msgstr "لا يمكنك حذف هذا التناوب التناوب تعيين."
 
-#: .\base\views.py:1553
+#: .\base\views.py:1573
 msgid "Employee permission assigned."
 msgstr "تم تعيين إذن الموظف."
 
-#: .\base\views.py:1705
+#: .\base\views.py:1729
 msgid "Work type request added."
 msgstr "تمت إضافة طلب نوع العمل."
 
-#: .\base\views.py:1737 .\base\views.py:1776
+#: .\base\views.py:1761 .\base\views.py:1800
 msgid "Work type request has been canceled."
 msgstr "تم إلغاء طلب نوع الوظيفة.."
 
-#: .\base\views.py:1810 .\base\views.py:1851
+#: .\base\views.py:1834 .\base\views.py:1875
 msgid "Work type request has been approved."
 msgstr "تمت الموافقة على طلب نوع العمل."
 
-#: .\base\views.py:1891 .\base\views.py:2095
+#: .\base\views.py:1915 .\base\views.py:2125
 msgid "Request Updated Successfully"
 msgstr "تم تحديث الطلب بنجاح"
 
-#: .\base\views.py:1913 .\base\views.py:1948
+#: .\base\views.py:1937 .\base\views.py:1972
 msgid "Work type request deleted."
 msgstr "تم حذف طلب نوع العمل."
 
-#: .\base\views.py:1927
+#: .\base\views.py:1951
 msgid "You cannot delete this work type request."
 msgstr "لا يمكنك حذف طلب نوع العمل هذا."
 
-#: .\base\views.py:1965
+#: .\base\views.py:1989
 #, python-brace-format
 msgid "You cannot delete {employee} work type request for the date {date}."
 msgstr "لا يمكنك حذف طلب نوع الوظيفة {date} للتاريخ {employee}."
 
-#: .\base\views.py:2011
+#: .\base\views.py:2041
 msgid "Request Added"
 msgstr "تمت إضافة الطلب"
 
-#: .\base\views.py:2126 .\base\views.py:2167
+#: .\base\views.py:2156 .\base\views.py:2197
 msgid "Shift request canceled"
 msgstr "تم إلغاء طلب التحول"
 
-#: .\base\views.py:2205 .\base\views.py:2248
+#: .\base\views.py:2235 .\base\views.py:2278
 msgid "Shift has been approved."
 msgstr "تمت الموافقة على التحول."
 
-#: .\base\views.py:2277 .\base\views.py:2314
+#: .\base\views.py:2307 .\base\views.py:2344
 msgid "Shift request deleted."
 msgstr "تم حذف طلب التحول."
 
-#: .\base\views.py:2292
+#: .\base\views.py:2322
 msgid "You cannot delete this shift request."
 msgstr "لا يمكنك حذف طلب التحول هذا."
 
-#: .\base\views.py:2331
+#: .\base\views.py:2361
 #, python-brace-format
 msgid "You cannot delete {employee} shift request for the date {date}."
 msgstr "لا يمكنك حذف طلب مناوبة {date} للتاريخ {employee}."
 
-#: .\base\views.py:2361
+#: .\base\views.py:2391
 msgid "Unread notifications removed."
 msgstr "تمت إزالة الإخطارات غير المقروءة."
 
-#: .\base\views.py:2379
+#: .\base\views.py:2409
 msgid "Notification deleted."
 msgstr "تم حذف الإخطار."
 
-#: .\base\views.py:2395
+#: .\base\views.py:2425
 msgid "Notifications marked as read"
 msgstr "تم وضع علامة مقروءة على الإخطارات"
 
@@ -3859,7 +4091,7 @@ msgstr "معلومات البنك"
 
 #: .\employee\templates\employee\profile\profile_view.html:30
 #: .\employee\templates\employee\view\individual.html:34
-#: .\employee\views.py:1364 .\payroll\models\models.py:115
+#: .\employee\views.py:1367 .\payroll\models\models.py:115
 msgid "Active"
 msgstr "نشيط"
 
@@ -4069,105 +4301,105 @@ msgstr "هل أنت متأكد من أنك تريد حذف هذا الموظف؟
 msgid "Info"
 msgstr "معلومات ق"
 
-#: .\employee\views.py:89 .\employee\views.py:156
+#: .\employee\views.py:92 .\employee\views.py:159
 msgid "Profile updated."
 msgstr "نجاح تحديث الملف الشخصي."
 
-#: .\employee\views.py:97
+#: .\employee\views.py:100
 msgid "Bank details updated."
 msgstr "تم تحديث التفاصيل المصرفية."
 
-#: .\employee\views.py:138
+#: .\employee\views.py:141
 msgid "Bank details updated"
 msgstr "تم تحديث التفاصيل المصرفية."
 
-#: .\employee\views.py:248
+#: .\employee\views.py:251
 msgid "Employee personal information updated."
 msgstr "تم تحديث المعلومات الشخصية للموظف."
 
-#: .\employee\views.py:272
+#: .\employee\views.py:275
 msgid "Employee work information updated."
 msgstr "تم تحديث معلومات عمل الموظف."
 
-#: .\employee\views.py:284
+#: .\employee\views.py:287
 msgid "Employee bank details updated."
 msgstr "تم تحديث تفاصيل بنك الموظف..."
 
-#: .\employee\views.py:307 .\employee\views.py:329
+#: .\employee\views.py:310 .\employee\views.py:332
 msgid "Profile image updated."
 msgstr "تم تحديث صورة الملف الشخصي.."
 
-#: .\employee\views.py:309
+#: .\employee\views.py:312
 msgid "No image chosen."
 msgstr "لم يتم اختيار أي صورة."
 
-#: .\employee\views.py:349 .\employee\views.py:380
+#: .\employee\views.py:352 .\employee\views.py:383
 msgid "No profile image to remove."
 msgstr "لا توجد صورة للملف الشخصي لإزالتها."
 
-#: .\employee\views.py:362 .\employee\views.py:394
+#: .\employee\views.py:365 .\employee\views.py:397
 msgid "Profile image removed."
 msgstr "لا توجد صورة للملف الشخصي لإزالتها."
 
-#: .\employee\views.py:416
+#: .\employee\views.py:419
 msgid "New Employee Added."
 msgstr "تمت إضافة موظف جديد."
 
-#: .\employee\views.py:660
+#: .\employee\views.py:663
 msgid "Employee updated."
 msgstr "تم تحديث الموظف."
 
-#: .\employee\views.py:683
+#: .\employee\views.py:686
 msgid "Employee deleted"
 msgstr "تم حذف الموظف"
 
-#: .\employee\views.py:686
+#: .\employee\views.py:689
 msgid "You cannot delete this user/employee"
 msgstr "لا يمكنك حذف هذا المستخدم / الموظف"
 
-#: .\employee\views.py:704
+#: .\employee\views.py:707
 #, python-format
 msgid "%(employee)s deleted."
 msgstr "%(employee)s تم الحذف."
 
-#: .\employee\views.py:709
+#: .\employee\views.py:712
 #, python-format
 msgid "You cannot delete %(employee)s."
 msgstr "لا يمكنك الحذف %(employee)s."
 
-#: .\employee\views.py:753
+#: .\employee\views.py:756
 msgid "Employee archived"
 msgstr "تمت أرشفة الموظف"
 
-#: .\employee\views.py:813
+#: .\employee\views.py:816
 msgid "Created work information"
 msgstr "معلومات العمل التي تم إنشاؤها"
 
-#: .\employee\views.py:842
+#: .\employee\views.py:845
 msgid "Work Information Updated Successfully"
 msgstr "تم تحديث معلومات العمل بنجاح"
 
-#: .\employee\views.py:872
+#: .\employee\views.py:875
 msgid "Bank Details Created Successfully"
 msgstr "تم إنشاء التفاصيل المصرفية بنجاح.."
 
-#: .\employee\views.py:899
+#: .\employee\views.py:902
 msgid "Bank Details Updated Successfully"
 msgstr "تم تحديث تفاصيل البنك بنجاح.."
 
-#: .\employee\views.py:1365
+#: .\employee\views.py:1368
 msgid "In-Active"
 msgstr "غير نشط"
 
-#: .\employee\views.py:1390 .\recruitment\models.py:154
+#: .\employee\views.py:1393 .\recruitment\models.py:154
 msgid "Male"
 msgstr "ذكر"
 
-#: .\employee\views.py:1390 .\recruitment\models.py:154
+#: .\employee\views.py:1393 .\recruitment\models.py:154
 msgid "Female"
 msgstr "أنثى"
 
-#: .\employee\views.py:1390
+#: .\employee\views.py:1393
 msgid "Others"
 msgstr "آحرون"
 
@@ -4185,23 +4417,23 @@ msgstr "نعم"
 msgid "No"
 msgstr "لا"
 
-#: .\leave\forms.py:190 .\leave\forms.py:275 .\leave\forms.py:423
+#: .\leave\forms.py:192 .\leave\forms.py:277 .\leave\forms.py:425
 msgid "End date should not be less than start date."
 msgstr "يجب ألا يكون تاريخ الانتهاء أقل من تاريخ البدء.."
 
-#: .\leave\forms.py:196 .\leave\forms.py:281
+#: .\leave\forms.py:198 .\leave\forms.py:283
 msgid "Employee has no leave type.."
 msgstr "الموظف ليس لديه نوع إجازة .."
 
-#: .\leave\forms.py:200 .\leave\forms.py:284
+#: .\leave\forms.py:202 .\leave\forms.py:286
 msgid "Employee has already a leave request for this date range.."
 msgstr "الموظف لديه بالفعل طلب إجازة لهذا النطاق الزمني .."
 
-#: .\leave\forms.py:240 .\leave\forms.py:323
+#: .\leave\forms.py:242 .\leave\forms.py:325
 msgid "Employee doesn't have enough leave days.."
 msgstr "الموظف ليس لديه أيام إجازة كافية .."
 
-#: .\leave\forms.py:374
+#: .\leave\forms.py:376
 msgid "End date should not be earlier than the start date."
 msgstr "يجب ألا يكون تاريخ الانتهاء قبل تاريخ البدء."
 
@@ -4349,6 +4581,16 @@ msgstr "تحديث يترك المتاحة"
 #: .\leave\templates\leave\leave_type\leave_types.html:28
 msgid "Assign Leave"
 msgstr "إجازة أسند "
+
+#: .\leave\templates\leave\assign-view.html:143
+#: .\leave\templates\leave\company-leave-view.html:145
+#: .\leave\templates\leave\holiday-view.html:165
+#: .\leave\templates\leave\leave-type-view.html:127
+#: .\leave\templates\leave\request-view.html:245
+#: .\leave\templates\leave\user-request-view.html:157
+#: .\onboarding\templates\onboarding\candidates-view.html:145
+msgid "Are you sure you want to delete?"
+msgstr "هل أنت متأكد أنك تريد حذف؟"
 
 #: .\leave\templates\leave\available-update-form.html:18
 #: .\leave\templates\leave\leave_assign\assigned-leave.html:9
@@ -4595,7 +4837,7 @@ msgstr "ترحيل إلى الأمام تنتهي"
 #: .\leave\templates\leave\leave-type-creation.html:151
 #: .\leave\templates\leave\leave-type-update.html:153
 msgid "Require Approval"
-msgstr "Require Approval"
+msgstr "تتطلب الموافقة"
 
 #: .\leave\templates\leave\leave-type-creation.html:158
 #: .\leave\templates\leave\leave-type-update.html:160
@@ -5108,10 +5350,6 @@ msgstr "المصادقة "
 msgid "Password"
 msgstr "كلمة المرور"
 
-#: .\onboarding\templates\onboarding\user-creation.html:98
-msgid "Confirm Password"
-msgstr "تأكيد كلمة المرور"
-
 #: .\onboarding\views.py:91
 msgid "New stage created successfully.."
 msgstr "تم إنشاء مرحلة جديدة بنجاح .."
@@ -5268,11 +5506,6 @@ msgstr "عقد نشط موجود بالفعل لهذا الموظف."
 #: .\payroll\models\models.py:221 .\payroll\models\models.py:274
 msgid "A draft contract already exists for this employee."
 msgstr "يوجد مسودة عقد بالفعل لهذا الموظف."
-
-#: .\payroll\models\models.py:228 .\payroll\models\models.py:851
-#: .\payroll\models\models.py:862 .\payroll\models\models.py:1098
-msgid "This field is required"
-msgstr "هذه الخانة مطلوبه"
 
 #: .\payroll\models\models.py:294
 msgid "Present"
@@ -6093,7 +6326,7 @@ msgstr ""
 
 #: .\payroll\templates\payroll\work_record\work_record_view.html:10
 msgid "record_type_name"
-msgstr "اسم نوع_السجل"
+msgstr "اسم نوع_لسجل"
 
 #: .\payroll\views\tax_views.py:59
 msgid "Filing status created."
@@ -6154,6 +6387,34 @@ msgstr "هناك خطأ ما"
 #: .\pms\forms.py:47
 msgid "Individual"
 msgstr "فردي"
+
+#: .\pms\forms.py:109 .\pms\templates\okr\objective_list.html:41
+#: .\pms\templates\okr\objective_list.html:237
+#: .\pms\templates\okr\objective_list_view.html:55
+#: .\pms\templates\okr\objective_list_view.html:60
+#: .\pms\templates\okr\objective_update.html:28
+msgid "Objective"
+msgstr "موضوعي"
+
+#: .\pms\forms.py:114
+msgid "Objective description goes here."
+msgstr "وصف موضوعي يذهب هنا."
+
+#: .\pms\forms.py:231 .\pms\forms.py:359
+msgid "Enter a title"
+msgstr "أدخل عنوانًا"
+
+#: .\pms\forms.py:238
+msgid "Enter a description"
+msgstr "أدخل وصفًا"
+
+#: .\pms\forms.py:458
+msgid "For Developer"
+msgstr "للمطور"
+
+#: .\pms\forms.py:477
+msgid "Enter question"
+msgstr "أدخل السؤال"
 
 #: .\pms\forms.py:564
 msgid "Add a comment..."
@@ -6347,6 +6608,17 @@ msgstr "زميل"
 msgid "Question Template"
 msgstr "نموذج السؤال"
 
+#: .\pms\templates\feedback\feedback_detailed_view.html:40
+msgid "Do you want archive this Feedback ?"
+msgstr "هل تريد أرشفة هذه الملاحظات؟"
+
+#: .\pms\templates\feedback\feedback_detailed_view.html:47
+#: .\pms\templates\feedback\feedback_list.html:88
+#: .\pms\templates\feedback\feedback_list.html:199
+#: .\pms\templates\feedback\feedback_list.html:313
+msgid "Do you want Delete this Feedback ?"
+msgstr "هل تريد حذف هذه الملاحظات؟"
+
 #: .\pms\templates\feedback\feedback_detailed_view.html:84
 #: .\pms\templates\feedback\feedback_detailed_view.html:140
 #: .\pms\templates\feedback\feedback_detailed_view.html:211
@@ -6489,6 +6761,10 @@ msgstr "إخفاء الخيارات"
 msgid "Option"
 msgstr "خيار"
 
+#: .\pms\templates\feedback\question\question_all.html:98
+msgid "Do you want to delete the question?"
+msgstr "هل تريد حذف السؤال؟"
+
 #: .\pms\templates\feedback\question_template\question_template_detailed_view.html:37
 msgid "Add A Question"
 msgstr "أضف سؤالا"
@@ -6538,6 +6814,14 @@ msgstr "أهداف وصف"
 msgid "Objective Type"
 msgstr "نوع الهدف "
 
+#: .\pms\templates\okr\objective_detailed_view.html:16
+msgid "Do you want archive this Objective ?"
+msgstr "هل تريد أرشفة هذا الهدف؟"
+
+#: .\pms\templates\okr\objective_detailed_view.html:21
+msgid "Do you want Delete this Objective ?"
+msgstr "هل تريد حذف هذا الهدف؟"
+
 #: .\pms\templates\okr\objective_detailed_view.html:125
 msgid "Add New"
 msgstr "اضف جديد"
@@ -6571,13 +6855,23 @@ msgstr "من"
 msgid "Owner"
 msgstr "مالك"
 
-#: .\pms\templates\okr\objective_list.html:41
-#: .\pms\templates\okr\objective_list.html:237
-#: .\pms\templates\okr\objective_list_view.html:55
-#: .\pms\templates\okr\objective_list_view.html:60
-#: .\pms\templates\okr\objective_update.html:28
-msgid "Objective"
-msgstr "موضوعي"
+#: .\pms\templates\okr\objective_list.html:99
+#: .\pms\templates\okr\objective_list.html:295
+msgid "Do you want un-archive this OKR ?"
+msgstr "هل تريد إلغاء أرشفة نتيجة مفتاح الهدف هذه؟"
+
+#: .\pms\templates\okr\objective_list.html:119
+#: .\pms\templates\okr\objective_list.html:315
+msgid "Do you want archive this OKR ?"
+msgstr "هل تريد أرشفة نتيجة مفتاح الهدف هذه"
+
+#: .\pms\templates\okr\objective_list.html:139
+msgid "Do you want Delete this OKR ?"
+msgstr "هل تريد حذف نتيجة مفتاح الهدف هذه؟"
+
+#: .\pms\templates\okr\objective_list.html:335
+msgid "Do you want delete this OKR ?"
+msgstr "هل تريد حذف نتيجة مفتاح الهدف هذه؟"
 
 #: .\pms\templates\okr\objective_list_view.html:74
 msgid "Created"
@@ -6671,6 +6965,14 @@ msgstr "تم تحديث النتيجة الرئيسية"
 msgid "Feedback created successfully."
 msgstr "تم إنشاء الملاحظات بنجاح."
 
+#: .\pms\views.py:856
+msgid "Ongoing feedback is not editable!."
+msgstr "التعليقات الجارية غير قابلة للتعديل !."
+
+#: .\pms\views.py:866
+msgid "Feedback updated successfully!."
+msgstr "تم تحديث التعليقات بنجاح !."
+
 #: .\pms\views.py:1090
 msgid "You are not allowed to answer"
 msgstr "لا يسمح لك بالإجابة"
@@ -6759,6 +7061,10 @@ msgstr "تم تحديث نموذج السؤال"
 #: .\pms\views.py:1574
 msgid "This template is using in a feedback"
 msgstr "هذا النموذج يستخدم في ردود الفعل"
+
+#: .\pms\views.py:1577
+msgid "The question template is deleted successfully !."
+msgstr "تم حذف قالب السؤال بنجاح!"
 
 #: .\pms\views.py:1611
 msgid "Period creation was Successful "
@@ -7080,117 +7386,117 @@ msgstr "منظر التوظيف"
 msgid "View Stages"
 msgstr "مراحل"
 
-#: .\recruitment\views.py:124 .\recruitment\views.py:318
+#: .\recruitment\views.py:124 .\recruitment\views.py:334
 msgid "Recruitment added."
 msgstr "تمت إضافة التوظيف."
 
-#: .\recruitment\views.py:162
+#: .\recruitment\views.py:166
 msgid "Recruitment manager removed successfully."
 msgstr "تمت إزالة مدير التوظيف بنجاح."
 
-#: .\recruitment\views.py:238
+#: .\recruitment\views.py:247
 msgid "Recruitment Updated."
 msgstr "تم تحديث التوظيف."
 
-#: .\recruitment\views.py:288
+#: .\recruitment\views.py:304
 msgid "Recruitment deleted successfully."
 msgstr " التوظيف بنجاح تم الحذف."
 
-#: .\recruitment\views.py:291
+#: .\recruitment\views.py:307
 msgid "You cannot delete this recruitment"
 msgstr "يمكنك لا حذف هذا التوظيف"
 
-#: .\recruitment\views.py:353 .\recruitment\views.py:895
+#: .\recruitment\views.py:380 .\recruitment\views.py:955
 msgid "Candidate added."
 msgstr "المرشح  إضافةتمت  ."
 
-#: .\recruitment\views.py:363 .\recruitment\views.py:715
+#: .\recruitment\views.py:390 .\recruitment\views.py:767
 msgid "Stage added."
 msgstr "تمت إضافة المرحلة."
 
-#: .\recruitment\views.py:378
+#: .\recruitment\views.py:409
 msgid "You dont have access"
 msgstr "ليس لديك حق الوصول"
 
-#: .\recruitment\views.py:433 .\recruitment\views.py:817
+#: .\recruitment\views.py:464 .\recruitment\views.py:877
 msgid "Stage updated."
 msgstr "تم تحديث المرحلة."
 
-#: .\recruitment\views.py:462
+#: .\recruitment\views.py:502
 msgid "Recruitment updated."
 msgstr "تم تحديث التوظيف.."
 
-#: .\recruitment\views.py:498
+#: .\recruitment\views.py:545
 msgid "Recruitment deleted."
 msgstr "تم حذف التوظيف."
 
-#: .\recruitment\views.py:501
+#: .\recruitment\views.py:548
 msgid "Recruitment already in use."
 msgstr "التوظيف قيد الاستخدام بالفعل"
 
-#: .\recruitment\views.py:520
+#: .\recruitment\views.py:567
 msgid "Sequence updated."
 msgstr "تم تحديث التسلسل."
 
-#: .\recruitment\views.py:555
+#: .\recruitment\views.py:607
 msgid "Candidate stage updated"
 msgstr "تم تحديث مرحلة المرشح"
 
-#: .\recruitment\views.py:558
+#: .\recruitment\views.py:610
 msgid "Something went wrong, Try agian."
 msgstr "حدث خطأ ما ، حاول مرة أخرى."
 
-#: .\recruitment\views.py:579
+#: .\recruitment\views.py:631
 msgid "Note added successfully.."
 msgstr "تمت إضافة الملاحظة بنجاح.."
 
-#: .\recruitment\views.py:624
+#: .\recruitment\views.py:676
 msgid "Note updated successfully..."
 msgstr "تم تحديث الملاحظة بنجاح ....."
 
-#: .\recruitment\views.py:646 .\recruitment\views.py:668
+#: .\recruitment\views.py:698 .\recruitment\views.py:720
 msgid "Note deleted"
 msgstr "تم حذف الملاحظة"
 
-#: .\recruitment\views.py:649 .\recruitment\views.py:671
+#: .\recruitment\views.py:701 .\recruitment\views.py:723
 msgid "You cannot delete this note."
 msgstr "لا يمكنك حذف هذه الملاحظة"
 
-#: .\recruitment\views.py:790
+#: .\recruitment\views.py:850
 msgid "Stage manager removed successfully."
 msgstr "تمت إزالة مدير المرحلة بنجاح ...."
 
-#: .\recruitment\views.py:865
+#: .\recruitment\views.py:925
 msgid "Stage deleted successfully."
 msgstr " تم حذف المرحلة بنجاح..."
 
-#: .\recruitment\views.py:868
+#: .\recruitment\views.py:928
 msgid "You cannot delete this stage"
 msgstr "لا يمكنك حذف هذه المرحلة"
 
-#: .\recruitment\views.py:1066
+#: .\recruitment\views.py:1126
 msgid "Candidate Updated Successfully."
 msgstr "المرشح شانجد  بنجاح.."
 
-#: .\recruitment\views.py:1082
+#: .\recruitment\views.py:1142
 msgid "Candidate deleted successfully."
 msgstr "تم حذف المرشح المرشح عن..."
 
-#: .\recruitment\views.py:1085
+#: .\recruitment\views.py:1145
 msgid "You cannot delete this candidate"
 msgstr "لا يمكنك حذف هذا المرشح"
 
-#: .\recruitment\views.py:1115
+#: .\recruitment\views.py:1175
 #, python-format
 msgid "%(candidate_obj)s deleted."
 msgstr "تم الحذف.  %(candidate_obj)s"
 
-#: .\recruitment\views.py:1120
+#: .\recruitment\views.py:1180
 #, python-format
 msgid "You cannot delete %(candidate_obj)s"
 msgstr "لا يمكنك الحذف %(candidate_obj)s"
 
-#: .\recruitment\views.py:1181
+#: .\recruitment\views.py:1241
 msgid "Application saved."
 msgstr "تم حفظ التطبيق."
 
@@ -7274,11 +7580,11 @@ msgstr "يتأكد"
 msgid "All Notifications"
 msgstr "جميع الإخطارات"
 
-#: .\templates\index.html:200
+#: .\templates\index.html:184
 msgid "My Profile"
 msgstr "ملفي"
 
-#: .\templates\index.html:206
+#: .\templates\index.html:193
 msgid "Logout"
 msgstr "تسجيل خروج"
 
@@ -7293,10 +7599,6 @@ msgstr "الرجاء تسجيل الدخول للوصول إلى لوحة الق
 #: .\templates\login.html:64
 msgid "Secure Sign-in"
 msgstr "تسجيل الدخول الآمن"
-
-#: .\templates\login.html:66
-msgid "Forgot password"
-msgstr "هل نسيت كلمة السر"
 
 #: .\templates\notification\all_notifications.html:26
 #: .\templates\notification\notification_items.html:35
@@ -7334,10 +7636,6 @@ msgstr "إعادة تعيين كلمة المرور"
 #: .\templates\reset_password.html:31
 msgid "Enter your new password to reset"
 msgstr "أدخل كلمة المرور الجديدة لإعادة تعيينها"
-
-#: .\templates\reset_password.html:35
-msgid "New Password"
-msgstr "كلمة المرور الجديدة"
 
 #: .\templates\reset_password.html:57
 msgid "Confirm New Password"
@@ -7455,10 +7753,8 @@ msgstr "عرض الأصول"
 msgid "Request and Allocation"
 msgstr "الطلب والتخصيص"
 
-#, fuzzy
-#~| msgid "Feedback Status"
-#~ msgid "Feedack Status"
-#~ msgstr "حالة التعليقات"
+#~ msgid "Every"
+#~ msgstr "كل"
 
 #~ msgid "None"
 #~ msgstr "فارغ"
@@ -7469,44 +7765,11 @@ msgstr "الطلب والتخصيص"
 #~ msgid "No change detected."
 #~ msgstr "لم يتم الكشف عن أي تغيير"
 
-#, fuzzy
-#~| msgid "Min. Income"
-#~ msgid "Min Income"
-#~ msgstr "الحد الأدنى للدخل"
-
-#, fuzzy
-#~| msgid "Max. Income"
-#~ msgid "Max Income"
-#~ msgstr "حد الدخل"
-
-#, fuzzy
-#~| msgid "Min. Income"
-#~ msgid "Min income"
-#~ msgstr "الحد الأدنى للدخل"
-
-#, fuzzy
-#~| msgid "Max. Income"
-#~ msgid "Max income"
-#~ msgstr "حد الدخل"
-
-#, fuzzy
-#~| msgid "Tax Rate"
-#~ msgid "Tax rate"
-#~ msgstr "معدل الضريبة"
-
-#, fuzzy
-#~| msgid "Is Taxable"
-#~ msgid "Is Tax"
-#~ msgstr "خاضع للضريبة"
-
 #~ msgid "month_working_days"
 #~ msgstr "الشهر_العمل_الأيام"
 
 #~ msgid "Badge ID must be unique."
 #~ msgstr "يجب أن يكون معرف الشارة فريدًا."
-
-#~ msgid "Badge ID must contain at least one digit."
-#~ msgstr "يجب أن يحتوي معرف الشارة على رقم واحد على الأقل."
 
 #~ msgid "Employee added."
 #~ msgstr "تمت إضافة الموظف."
@@ -7517,46 +7780,11 @@ msgstr "الطلب والتخصيص"
 #~ msgid "Your attendance for the date"
 #~ msgstr "تم التحقق من صحة حضورك لتاريخ {}"
 
-#, fuzzy
-#~| msgid "You dont have access"
-#~ msgid "You Don't Have Permission"
-#~ msgstr "ليس لديك حق الوصول"
-
-#, fuzzy
-#~| msgid "Year"
-#~ msgid "ar"
-#~ msgstr "شهر"
-
-#, fuzzy
-#~| msgid "Code"
-#~ msgid "de"
-#~ msgstr "شفرة"
-
-#, fuzzy
-#~| msgid "Send"
-#~ msgid "en"
-#~ msgstr "يرسل"
-
-#, fuzzy
-#~| msgid "Yes"
-#~ msgid "es"
-#~ msgstr "نعم"
-
-#, fuzzy
-#~| msgid "from"
-#~ msgid "fr"
-#~ msgstr "من"
-
 #~ msgid "Asset Lot Number"
 #~ msgstr "الأصول عدد الكثير "
 
 #~ msgid "User Name"
 #~ msgstr "اسم المستخدم"
-
-#, fuzzy
-#~| msgid "Choose Recruitment"
-#~ msgid "Choose File"
-#~ msgstr "اختر التوظيف"
 
 #~ msgid "Late Come Ealry Out"
 #~ msgstr "في وقت متأخر تعال مبكرا"
@@ -7567,18 +7795,8 @@ msgstr "الطلب والتخصيص"
 #~ msgid "Company Information"
 #~ msgstr "معلومات الشركة"
 
-#, fuzzy
-#~| msgid "Icon"
-#~ msgid "Icons"
-#~ msgstr "أيقونة"
-
 #~ msgid "In-use"
 #~ msgstr "في الاستخدام"
-
-#, fuzzy
-#~| msgid "Job Position"
-#~ msgid "Job Positoin"
-#~ msgstr "المناصب الوظيفية"
 
 #~ msgid "Fill"
 #~ msgstr "يملأ"
@@ -7606,11 +7824,6 @@ msgstr "الطلب والتخصيص"
 
 #~ msgid "Over Time"
 #~ msgstr "متأخر , بعد فوات الوقت"
-
-#, fuzzy
-#~| msgid "Approve"
-#~ msgid "Approval Person"
-#~ msgstr "يعتمد"
 
 #~ msgid "Complete"
 #~ msgstr "مكتمل"

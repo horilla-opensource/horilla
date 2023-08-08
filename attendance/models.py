@@ -4,14 +4,15 @@ models.py
 This module is used to register models for recruitment app
 
 """
+import json
 import contextlib
-
 from datetime import datetime
 from django.db import models
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 from base.models import EmployeeShift, EmployeeShiftDay, WorkType
 from employee.models import Employee
+from attendance.methods.differentiate import get_diff_dict
 
 # Create your models here.
 
@@ -99,6 +100,12 @@ class Attendance(models.Model):
     Attendance model_
     """
 
+    status = [
+        ("create_request", "Create Request"),
+        ("update_request", "Update Request"),
+        ("revalidate_request", "Re-validate Request"),
+    ]
+
     employee_id = models.ForeignKey(
         Employee,
         on_delete=models.CASCADE,
@@ -162,6 +169,11 @@ class Attendance(models.Model):
     overtime_second = models.IntegerField(null=True, blank=True)
     approved_overtime_second = models.IntegerField(default=0)
     objects = models.Manager()
+    is_validate_request = models.BooleanField(default=False)
+    is_validate_request_approved = models.BooleanField(default=False)
+    request_description = models.TextField(null=True)
+    request_type = models.CharField(max_length=18, null=True, choices=status)
+    requested_data = models.JSONField(null=True)
 
     class Meta:
         """
@@ -182,6 +194,19 @@ class Attendance(models.Model):
     def __str__(self) -> str:
         return f"{self.employee_id.employee_first_name} \
             {self.employee_id.employee_last_name} - {self.attendance_date}"
+
+    def requested_fields(self):
+        """
+        This method will returns the value difference fields
+        """
+        keys = []
+        if self.requested_data is not None:
+            data = json.loads(self.requested_data)
+            diffs = get_diff_dict(self.serialize(), data)
+            keys = diffs.keys()
+        return keys
+
+    # return f"Attendance ID: {self.id}"  # Adjust the representation as needed
 
     def save(self, *args, **kwargs):
         minimum_hour = self.minimum_hour
@@ -236,6 +261,27 @@ class Attendance(models.Model):
         attendance_account.overtime = format_time(total_ot_seconds)
         attendance_account.save()
         super().save(*args, **kwargs)
+
+    def serialize(self):
+        """
+        Used to serialize attendance instance
+        """
+        # Return a dictionary containing the data you want to store
+        # strftime("%d %b %Y") date
+        # strftime("%I:%M %p") time
+        serialized_data = {
+            "employee_id": self.employee_id.id,
+            "attendance_date": str(self.attendance_date),
+            "attendance_clock_in_date": str(self.attendance_clock_in_date),
+            "attendance_clock_in": str(self.attendance_clock_in),
+            "attendance_clock_out": str(self.attendance_clock_out),
+            "attendance_clock_out_date": str(self.attendance_clock_out_date),
+            "shift_id": self.shift_id.id,
+            "work_type_id": self.work_type_id.id,
+            "attendance_worked_hour": self.attendance_worked_hour,
+            # Add other fields you want to store
+        }
+        return serialized_data
 
     def delete(self, *args, **kwargs):
         # Custom delete logic

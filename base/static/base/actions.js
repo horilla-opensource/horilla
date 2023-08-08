@@ -1,3 +1,49 @@
+var archiveMessages = {
+  ar: "هل ترغب حقًا في أرشفة كل الحضور المحدد؟",
+  de: "Möchten Sie wirklich alle ausgewählten Anwesenheiten archivieren?",
+  es: "Realmente quieres archivar todas las asistencias seleccionadas?",
+  en: "Do you really want to archive all the selected allocations?",
+  fr: "Voulez-vous vraiment archiver toutes les présences sélectionnées?",
+};
+
+var unarchiveMessages = {
+  ar: "هل ترغب حقًا في إلغاء أرشفة كل الحضور المحددة؟",
+  de: "Möchten Sie wirklich alle ausgewählten archivierten Zuweisungen wiederherstellen?",
+  es: "Realmente quieres desarchivar todas las asignaciones seleccionadas?",
+  en: "Do you really want to un-archive all the selected allocations?",
+  fr: "Voulez-vous vraiment désarchiver toutes les allocations sélectionnées?",
+};
+
+var deleteMessages = {
+  ar: "هل ترغب حقًا في حذف كل الحجوزات المحددة؟",
+  de: "Möchten Sie wirklich alle ausgewählten Zuweisungen löschen?",
+  es: "Realmente quieres eliminar todas las asignaciones seleccionadas?",
+  en: "Do you really want to delete all the selected allocations?",
+  fr: "Voulez-vous vraiment supprimer toutes les allocations sélectionnées?",
+};
+
+var approveMessages = {
+  ar: "هل ترغب حقًا في الموافقة على جميع الطلبات المحددة؟",
+  de: "Möchten Sie wirklich alle ausgewählten Anfragen genehmigen?",
+  es: "Realmente quieres aprobar todas las solicitudes seleccionadas?",
+  en: "Do you really want to approve all the selected requests?",
+  fr: "Voulez-vous vraiment approuver toutes les demandes sélectionnées?",
+};
+var cancelMessages = {
+  ar: "هل ترغب حقًا في إلغاء جميع الطلبات المحددة؟",
+  de: "Möchten Sie wirklich alle ausgewählten Anfragen stornieren?",
+  es: "Realmente quieres cancelar todas las solicitudes seleccionadas?",
+  en: "Do you really want to cancel all the selected requests?",
+  fr: "Voulez-vous vraiment annuler toutes les demandes sélectionnées?",
+};
+var requestDeleteMessages = {
+  ar: "هل ترغب حقًا في حذف جميع الطلبات المحددة؟",
+  de: "Möchten Sie wirklich alle ausgewählten Anfragen löschen?",
+  es: "Realmente quieres eliminar todas las solicitudes seleccionadas?",
+  en: "Do you really want to delete all the selected requests?",
+  fr: "Voulez-vous vraiment supprimer toutes les demandes sélectionnées?",
+};
+
 function getCookie(name) {
   let cookieValue = null;
   if (document.cookie && document.cookie !== "") {
@@ -13,6 +59,18 @@ function getCookie(name) {
   }
   return cookieValue;
 }
+
+function getCurrentLanguageCode(callback) {
+  $.ajax({
+    type: "GET",
+    url: "get-language-code/",
+    success: function (response) {
+      var languageCode = response.language_code;
+      callback(languageCode); // Pass the language code to the callback
+    },
+  });
+}
+
 $(".all-rshift").change(function (e) {
   var is_checked = $(this).is(":checked");
   if (is_checked) {
@@ -24,87 +82,98 @@ $(".all-rshift").change(function (e) {
 
 $("#archiveRotatingShiftAssign").click(function (e) {
   e.preventDefault();
-  var choice = originalConfirm(
-    "Do you want to archive these selected allocations?"
-  );
-  if (choice) {
-    var checkedRows = $(".all-rshift-row").filter(":checked");
-    ids = [];
-    checkedRows.each(function () {
-      ids.push($(this).attr("id"));
-    });
-    $.ajax({
-      type: "POST",
-      url: "/rotating-shift-assign-bulk-archive?is_active=False",
-      data: {
-        csrfmiddlewaretoken: getCookie("csrftoken"),
-        ids: JSON.stringify(ids),
-      },
-      success: function (response, textStatus, jqXHR) {
-        if (jqXHR.status === 200) {
-          location.reload(); // Reload the current page
-        } else {
-          // console.log("Unexpected HTTP status:", jqXHR.status);
-        }
-      },
-    });
-  }
+  var languageCode = null;
+  getCurrentLanguageCode(function (code) {
+    languageCode = code;
+    var confirmMessage = archiveMessages[languageCode];
+    choice = originalConfirm(confirmMessage);
+    if (choice) {
+      var checkedRows = $(".all-rshift-row").filter(":checked");
+      ids = [];
+      checkedRows.each(function () {
+        ids.push($(this).attr("id"));
+      });
+      $.ajax({
+        type: "POST",
+        url: "/rotating-shift-assign-bulk-archive?is_active=False",
+        data: {
+          csrfmiddlewaretoken: getCookie("csrftoken"),
+          ids: JSON.stringify(ids),
+        },
+        success: function (response, textStatus, jqXHR) {
+          if (jqXHR.status === 200) {
+            location.reload(); // Reload the current page
+          } else {
+            // console.log("Unexpected HTTP status:", jqXHR.status);
+          }
+        },
+      });
+    }
+  });
 });
+
 $("#unArchiveRotatingShiftAssign").click(function (e) {
   e.preventDefault();
-  var choice = originalConfirm(
-    "Do you want to un-archive these selected allocations?"
-  );
-  if (choice) {
-    var checkedRows = $(".all-rshift-row").filter(":checked");
-    ids = [];
-    checkedRows.each(function () {
-      ids.push($(this).attr("id"));
-    });
-    $.ajax({
-      type: "POST",
-      url: "/rotating-shift-assign-bulk-archive?is_active=True",
-      data: {
-        csrfmiddlewaretoken: getCookie("csrftoken"),
-        ids: JSON.stringify(ids),
-      },
-      success: function (response, textStatus, jqXHR) {
-        if (jqXHR.status === 200) {
-          location.reload(); // Reload the current page
-        } else {
-          // console.log("Unexpected HTTP status:", jqXHR.status);
-        }
-      },
-    });
-  }
+  var languageCode = null;
+  getCurrentLanguageCode(function (code) {
+    languageCode = code;
+    var confirmMessage = unarchiveMessages[languageCode];
+    choice = originalConfirm(confirmMessage);
+    if (choice) {
+      var checkedRows = $(".all-rshift-row").filter(":checked");
+      ids = [];
+      checkedRows.each(function () {
+        ids.push($(this).attr("id"));
+      });
+      $.ajax({
+        type: "POST",
+        url: "/rotating-shift-assign-bulk-archive?is_active=True",
+        data: {
+          csrfmiddlewaretoken: getCookie("csrftoken"),
+          ids: JSON.stringify(ids),
+        },
+        success: function (response, textStatus, jqXHR) {
+          if (jqXHR.status === 200) {
+            location.reload(); // Reload the current page
+          } else {
+            // console.log("Unexpected HTTP status:", jqXHR.status);
+          }
+        },
+      });
+    }
+  });
 });
+
 $("#deleteRotatingShiftAssign").click(function (e) {
   e.preventDefault();
-  var choice = originalConfirm(
-    "Do you want to delete these selected allocations?"
-  );
-  if (choice) {
-    var checkedRows = $(".all-rshift-row").filter(":checked");
-    ids = [];
-    checkedRows.each(function () {
-      ids.push($(this).attr("id"));
-    });
-    $.ajax({
-      type: "POST",
-      url: "/rotating-shift-assign-bulk-delete",
-      data: {
-        csrfmiddlewaretoken: getCookie("csrftoken"),
-        ids: JSON.stringify(ids),
-      },
-      success: function (response, textStatus, jqXHR) {
-        if (jqXHR.status === 200) {
-          location.reload(); // Reload the current page
-        } else {
-          // console.log("Unexpected HTTP status:", jqXHR.status);
-        }
-      },
-    });
-  }
+  var languageCode = null;
+  getCurrentLanguageCode(function (code) {
+    languageCode = code;
+    var confirmMessage = deleteMessages[languageCode];
+    var choice = originalConfirm(confirmMessage);
+    if (choice) {
+      var checkedRows = $(".all-rshift-row").filter(":checked");
+      ids = [];
+      checkedRows.each(function () {
+        ids.push($(this).attr("id"));
+      });
+      $.ajax({
+        type: "POST",
+        url: "/rotating-shift-assign-bulk-delete",
+        data: {
+          csrfmiddlewaretoken: getCookie("csrftoken"),
+          ids: JSON.stringify(ids),
+        },
+        success: function (response, textStatus, jqXHR) {
+          if (jqXHR.status === 200) {
+            location.reload(); // Reload the current page
+          } else {
+            // console.log("Unexpected HTTP status:", jqXHR.status);
+          }
+        },
+      });
+    }
+  });
 });
 
 $(".all-rwork-type").change(function (e) {
@@ -118,89 +187,100 @@ $(".all-rwork-type").change(function (e) {
 
 $("#archiveRotatingWorkTypeAssign").click(function (e) {
   e.preventDefault();
-  var choice = originalConfirm(
-    "Do you want to archive these selected allocations?"
-  );
-  if (choice) {
-    var checkedRows = $(".all-rwork-type-row").filter(":checked");
-    ids = [];
-    checkedRows.each(function () {
-      ids.push($(this).attr("id"));
-    });
-    $.ajax({
-      type: "POST",
-      url: "/rotating-work-type-assign-bulk-archive?is_active=False",
-      data: {
-        csrfmiddlewaretoken: getCookie("csrftoken"),
-        ids: JSON.stringify(ids),
-      },
-      success: function (response, textStatus, jqXHR) {
-        if (jqXHR.status === 200) {
-          location.reload(); // Reload the current page
-        } else {
-          // console.log("Unexpected HTTP status:", jqXHR.status);
-        }
-      },
-    });
-  }
+  var languageCode = null;
+  getCurrentLanguageCode(function (code) {
+    languageCode = code;
+    var confirmMessage = archiveMessages[languageCode];
+    var choice = originalConfirm(confirmMessage);
+    if (choice) {
+      var checkedRows = $(".all-rwork-type-row").filter(":checked");
+      ids = [];
+      checkedRows.each(function () {
+        ids.push($(this).attr("id"));
+      });
+      $.ajax({
+        type: "POST",
+        url: "/rotating-work-type-assign-bulk-archive?is_active=False",
+        data: {
+          csrfmiddlewaretoken: getCookie("csrftoken"),
+          ids: JSON.stringify(ids),
+        },
+        success: function (response, textStatus, jqXHR) {
+          if (jqXHR.status === 200) {
+            location.reload(); // Reload the current page
+          } else {
+            // console.log("Unexpected HTTP status:", jqXHR.status);
+          }
+        },
+      });
+    }
+  });
 });
+
 $("#unArchiveRotatingWorkTypeAssign").click(function (e) {
   e.preventDefault();
-  var choice = originalConfirm(
-    "Do you want to un-archive these selected allocations?"
-  );
-  if (choice) {
-    var checkedRows = $(".all-rwork-type-row").filter(":checked");
-    ids = [];
-    checkedRows.each(function () {
-      ids.push($(this).attr("id"));
-    });
+  var languageCode = null;
+  getCurrentLanguageCode(function (code) {
+    languageCode = code;
+    var confirmMessage = unarchiveMessages[languageCode];
+    var choice = originalConfirm(confirmMessage);
+    if (choice) {
+      var checkedRows = $(".all-rwork-type-row").filter(":checked");
+      ids = [];
+      checkedRows.each(function () {
+        ids.push($(this).attr("id"));
+      });
 
-    $.ajax({
-      type: "POST",
-      url: "/rotating-work-type-assign-bulk-archive?is_active=True",
-      data: {
-        csrfmiddlewaretoken: getCookie("csrftoken"),
-        ids: JSON.stringify(ids),
-      },
-      success: function (response, textStatus, jqXHR) {
-        if (jqXHR.status === 200) {
-          location.reload(); // Reload the current page
-        } else {
-          // console.log("Unexpected HTTP status:", jqXHR.status);
-        }
-      },
-    });
-  }
+      $.ajax({
+        type: "POST",
+        url: "/rotating-work-type-assign-bulk-archive?is_active=True",
+        data: {
+          csrfmiddlewaretoken: getCookie("csrftoken"),
+          ids: JSON.stringify(ids),
+        },
+        success: function (response, textStatus, jqXHR) {
+          if (jqXHR.status === 200) {
+            location.reload(); // Reload the current page
+          } else {
+            // console.log("Unexpected HTTP status:", jqXHR.status);
+          }
+        },
+      });
+    }
+  });
 });
+
 $("#deleteRotatingWorkTypeAssign").click(function (e) {
   e.preventDefault();
-  var choice = originalConfirm(
-    "Do you want to delete these selected allocations?"
-  );
-  if (choice) {
-    var checkedRows = $(".all-rwork-type-row").filter(":checked");
-    ids = [];
-    checkedRows.each(function () {
-      ids.push($(this).attr("id"));
-    });
+  var languageCode = null;
+  getCurrentLanguageCode(function (code) {
+    languageCode = code;
+    var confirmMessage = deleteMessages[languageCode];
+    var choice = originalConfirm(confirmMessage);
+    if (choice) {
+      var checkedRows = $(".all-rwork-type-row").filter(":checked");
+      ids = [];
+      checkedRows.each(function () {
+        ids.push($(this).attr("id"));
+      });
 
-    $.ajax({
-      type: "POST",
-      url: "/rotating-work-type-assign-bulk-delete",
-      data: {
-        csrfmiddlewaretoken: getCookie("csrftoken"),
-        ids: JSON.stringify(ids),
-      },
-      success: function (response, textStatus, jqXHR) {
-        if (jqXHR.status === 200) {
-          location.reload(); // Reload the current page
-        } else {
-          // console.log("Unexpected HTTP status:", jqXHR.status);
-        }
-      },
-    });
-  }
+      $.ajax({
+        type: "POST",
+        url: "/rotating-work-type-assign-bulk-delete",
+        data: {
+          csrfmiddlewaretoken: getCookie("csrftoken"),
+          ids: JSON.stringify(ids),
+        },
+        success: function (response, textStatus, jqXHR) {
+          if (jqXHR.status === 200) {
+            location.reload(); // Reload the current page
+          } else {
+            // console.log("Unexpected HTTP status:", jqXHR.status);
+          }
+        },
+      });
+    }
+  });
 });
 
 $(".all-shift-requests").change(function (e) {
@@ -214,92 +294,101 @@ $(".all-shift-requests").change(function (e) {
 
 $("#approveShiftRequest").click(function (e) {
   e.preventDefault();
-  var choice = originalConfirm(
-    "Do you want to approve these selected requests?"
-  );
-  if (choice) {
-    var checkedRows = $(".all-shift-requests-row").filter(":checked");
-    ids = [];
-    checkedRows.each(function () {
-      ids.push($(this).attr("id"));
-    });
+  var languageCode = null;
+  getCurrentLanguageCode(function (code) {
+    languageCode = code;
+    var confirmMessage = approveMessages[languageCode];
+    var choice = originalConfirm(confirmMessage);
+    if (choice) {
+      var checkedRows = $(".all-shift-requests-row").filter(":checked");
+      ids = [];
+      checkedRows.each(function () {
+        ids.push($(this).attr("id"));
+      });
 
-    $.ajax({
-      type: "POST",
-      url: "/shift-request-bulk-approve",
-      data: {
-        csrfmiddlewaretoken: getCookie("csrftoken"),
-        ids: JSON.stringify(ids),
-      },
-      success: function (response, textStatus, jqXHR) {
-        if (jqXHR.status === 200) {
-          location.reload(); // Reload the current page
-        } else {
-          // console.log("Unexpected HTTP status:", jqXHR.status);
-        }
-      },
-    });
-  }
+      $.ajax({
+        type: "POST",
+        url: "/shift-request-bulk-approve",
+        data: {
+          csrfmiddlewaretoken: getCookie("csrftoken"),
+          ids: JSON.stringify(ids),
+        },
+        success: function (response, textStatus, jqXHR) {
+          if (jqXHR.status === 200) {
+            location.reload(); // Reload the current page
+          } else {
+            // console.log("Unexpected HTTP status:", jqXHR.status);
+          }
+        },
+      });
+    }
+  });
 });
 
 $("#cancelShiftRequest").click(function (e) {
   e.preventDefault();
-  var choice = originalConfirm(
-    "Do you want to cancel these selected requests?"
-  );
-  if (choice) {
-    var checkedRows = $(".all-shift-requests-row").filter(":checked");
-    ids = [];
-    checkedRows.each(function () {
-      ids.push($(this).attr("id"));
-    });
+  var languageCode = null;
+  getCurrentLanguageCode(function (code) {
+    languageCode = code;
+    var confirmMessage = cancelMessages[languageCode];
+    var choice = originalConfirm(confirmMessage);
+    if (choice) {
+      var checkedRows = $(".all-shift-requests-row").filter(":checked");
+      ids = [];
+      checkedRows.each(function () {
+        ids.push($(this).attr("id"));
+      });
 
-    $.ajax({
-      type: "POST",
-      url: "/shift-request-bulk-cancel",
-      data: {
-        csrfmiddlewaretoken: getCookie("csrftoken"),
-        ids: JSON.stringify(ids),
-      },
-      success: function (response, textStatus, jqXHR) {
-        if (jqXHR.status === 200) {
-          location.reload(); // Reload the current page
-        } else {
-          // console.log("Unexpected HTTP status:", jqXHR.status);
-        }
-      },
-    });
-  }
+      $.ajax({
+        type: "POST",
+        url: "/shift-request-bulk-cancel",
+        data: {
+          csrfmiddlewaretoken: getCookie("csrftoken"),
+          ids: JSON.stringify(ids),
+        },
+        success: function (response, textStatus, jqXHR) {
+          if (jqXHR.status === 200) {
+            location.reload(); // Reload the current page
+          } else {
+            // console.log("Unexpected HTTP status:", jqXHR.status);
+          }
+        },
+      });
+    }
+  });
 });
 
 $("#deleteShiftRequest").click(function (e) {
   e.preventDefault();
-  var choice = originalConfirm(
-    "Do you want to delete these selected requests?"
-  );
-  if (choice) {
-    var checkedRows = $(".all-shift-requests-row").filter(":checked");
-    ids = [];
-    checkedRows.each(function () {
-      ids.push($(this).attr("id"));
-    });
+  var languageCode = null;
+  getCurrentLanguageCode(function (code) {
+    languageCode = code;
+    var confirmMessage = requestDeleteMessages[languageCode];
+    var choice = originalConfirm(confirmMessage);
+    if (choice) {
+      var checkedRows = $(".all-shift-requests-row").filter(":checked");
+      ids = [];
+      checkedRows.each(function () {
+        ids.push($(this).attr("id"));
+      });
 
-    $.ajax({
-      type: "POST",
-      url: "/shift-request-bulk-delete",
-      data: {
-        csrfmiddlewaretoken: getCookie("csrftoken"),
-        ids: JSON.stringify(ids),
-      },
-      success: function (response, textStatus, jqXHR) {
-        if (jqXHR.status === 200) {
-          location.reload(); // Reload the current page
-        } else {
-          // console.log("Unexpected HTTP status:", jqXHR.status);
-        }
-      },
-    });
-  }
+      $.ajax({
+        type: "POST",
+        url: "/shift-request-bulk-delete",
+        data: {
+          csrfmiddlewaretoken: getCookie("csrftoken"),
+          ids: JSON.stringify(ids),
+        },
+        success: function (response, textStatus, jqXHR) {
+          if (jqXHR.status === 200) {
+            location.reload(); // Reload the current page
+          } else {
+            // console.log("Unexpected HTTP status:", jqXHR.status);
+          }
+        },
+      });
+    }
+  });
 });
 
 $(".all-work-type-requests").change(function (e) {
@@ -312,91 +401,100 @@ $(".all-work-type-requests").change(function (e) {
 });
 
 $("#approveWorkTypeRequest").click(function (e) {
-  var choice = originalConfirm(
-    "Do you want to approve these selected requests?"
-  );
-  if (choice) {
-    e.preventDefault();
-    var checkedRows = $(".all-work-type-requests-row").filter(":checked");
-    ids = [];
-    checkedRows.each(function () {
-      ids.push($(this).attr("id"));
-    });
+  var languageCode = null;
+  getCurrentLanguageCode(function (code) {
+    languageCode = code;
+    var confirmMessage = approveMessages[languageCode];
+    var choice = originalConfirm(confirmMessage);
+    if (choice) {
+      e.preventDefault();
+      var checkedRows = $(".all-work-type-requests-row").filter(":checked");
+      ids = [];
+      checkedRows.each(function () {
+        ids.push($(this).attr("id"));
+      });
 
-    $.ajax({
-      type: "POST",
-      url: "/work-type-request-bulk-approve",
-      data: {
-        csrfmiddlewaretoken: getCookie("csrftoken"),
-        ids: JSON.stringify(ids),
-      },
-      success: function (response, textStatus, jqXHR) {
-        if (jqXHR.status === 200) {
-          location.reload(); // Reload the current page
-        } else {
-          // console.log("Unexpected HTTP status:", jqXHR.status);
-        }
-      },
-    });
-  }
+      $.ajax({
+        type: "POST",
+        url: "/work-type-request-bulk-approve",
+        data: {
+          csrfmiddlewaretoken: getCookie("csrftoken"),
+          ids: JSON.stringify(ids),
+        },
+        success: function (response, textStatus, jqXHR) {
+          if (jqXHR.status === 200) {
+            location.reload(); // Reload the current page
+          } else {
+            // console.log("Unexpected HTTP status:", jqXHR.status);
+          }
+        },
+      });
+    }
+  });
 });
 
 $("#deleteWorkTypeRequest").click(function (e) {
-  var choice = originalConfirm(
-    "Do you want to delete these selected requests?"
-  );
-  if (choice) {
-    e.preventDefault();
-    var checkedRows = $(".all-work-type-requests-row").filter(":checked");
-    ids = [];
-    checkedRows.each(function () {
-      ids.push($(this).attr("id"));
-    });
+  var languageCode = null;
+  getCurrentLanguageCode(function (code) {
+    languageCode = code;
+    var confirmMessage = requestDeleteMessages[languageCode];
+    var choice = originalConfirm(confirmMessage);
+    if (choice) {
+      e.preventDefault();
+      var checkedRows = $(".all-work-type-requests-row").filter(":checked");
+      ids = [];
+      checkedRows.each(function () {
+        ids.push($(this).attr("id"));
+      });
 
-    $.ajax({
-      type: "POST",
-      url: "/work-type-request-bulk-delete",
-      data: {
-        csrfmiddlewaretoken: getCookie("csrftoken"),
-        ids: JSON.stringify(ids),
-      },
-      success: function (response, textStatus, jqXHR) {
-        if (jqXHR.status === 200) {
-          location.reload(); // Reload the current page
-        } else {
-          // console.log("Unexpected HTTP status:", jqXHR.status);
-        }
-      },
-    });
-  }
+      $.ajax({
+        type: "POST",
+        url: "/work-type-request-bulk-delete",
+        data: {
+          csrfmiddlewaretoken: getCookie("csrftoken"),
+          ids: JSON.stringify(ids),
+        },
+        success: function (response, textStatus, jqXHR) {
+          if (jqXHR.status === 200) {
+            location.reload(); // Reload the current page
+          } else {
+            // console.log("Unexpected HTTP status:", jqXHR.status);
+          }
+        },
+      });
+    }
+  });
 });
 
 $("#cancelWorkTypeRequest").click(function (e) {
   e.preventDefault();
-  var choice = originalConfirm(
-    "Do you want to cancel these selected requests?"
-  );
-  if (choice) {
-    var checkedRows = $(".all-work-type-requests-row").filter(":checked");
-    ids = [];
-    checkedRows.each(function () {
-      ids.push($(this).attr("id"));
-    });
+  var languageCode = null;
+  getCurrentLanguageCode(function (code) {
+    languageCode = code;
+    var confirmMessage = cancelMessages[languageCode];
+    var choice = originalConfirm(confirmMessage);
+    if (choice) {
+      var checkedRows = $(".all-work-type-requests-row").filter(":checked");
+      ids = [];
+      checkedRows.each(function () {
+        ids.push($(this).attr("id"));
+      });
 
-    $.ajax({
-      type: "POST",
-      url: "/work-type-request-bulk-cancel",
-      data: {
-        csrfmiddlewaretoken: getCookie("csrftoken"),
-        ids: JSON.stringify(ids),
-      },
-      success: function (response, textStatus, jqXHR) {
-        if (jqXHR.status === 200) {
-          location.reload(); // Reload the current page
-        } else {
-          // console.log("Unexpected HTTP status:", jqXHR.status);
-        }
-      },
-    });
-  }
+      $.ajax({
+        type: "POST",
+        url: "/work-type-request-bulk-cancel",
+        data: {
+          csrfmiddlewaretoken: getCookie("csrftoken"),
+          ids: JSON.stringify(ids),
+        },
+        success: function (response, textStatus, jqXHR) {
+          if (jqXHR.status === 200) {
+            location.reload(); // Reload the current page
+          } else {
+            // console.log("Unexpected HTTP status:", jqXHR.status);
+          }
+        },
+      });
+    }
+  });
 });
