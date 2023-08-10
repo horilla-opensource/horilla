@@ -853,7 +853,7 @@ def feedback_update(request, id):
     feedback_started = Answer.objects.filter(feedback_id=feedback)
     context = {"feedback_form": form}
     if feedback_started:
-        messages.error(request, "Ongoing feedback is not editable!.")
+        messages.error(request, _("Ongoing feedback is not editable!."))
         response = render(request, "feedback/feedback_update.html", context)
         return HttpResponse(
             response.content.decode("utf-8") + "<script>location.reload();</script>"
@@ -863,7 +863,7 @@ def feedback_update(request, id):
         form = FeedbackForm(request.POST, instance=feedback)
         if form.is_valid():
             form = form.save()
-            messages.info(request, "Feedback updated successfully!.")
+            messages.info(request, _("Feedback updated successfully!."))
             send_feedback_notifications(request, form)
             response = render(request, "feedback/feedback_update.html", context)
             return HttpResponse(
@@ -1574,7 +1574,7 @@ def question_template_delete(request, id):
         messages.info(request, _("This template is using in a feedback"))
         return redirect(question_template_view)
     question_template.delete()
-    messages.success(request, "The question template is deleted successfully !.")
+    messages.success(request, _("The question template is deleted successfully !."))
     return redirect(question_template_view)
 
 

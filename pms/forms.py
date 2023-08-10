@@ -106,12 +106,12 @@ class ObjectiveForm(forms.ModelForm):
         exclude = ["status"]
         widgets = {
             "objective": forms.TextInput(
-                attrs={"class": "oh-input oh-input--block", "placeholder": "Objective"}
+                attrs={"class": "oh-input oh-input--block", "placeholder": _("Objective")}
             ),
             "objective_description": forms.Textarea(
                 attrs={
                     "class": "oh-input oh-input--textarea oh-input--block",
-                    "placeholder": "Objective description goes here.",
+                    "placeholder": _("Objective description goes here."),
                     "rows": 3,
                     "cols": 40,
                 }
@@ -228,14 +228,14 @@ class KeyResultForm(forms.ModelForm):
         widgets = {
             "key_result": forms.TextInput(
                 attrs={
-                    "placeholder": "Enter a title",
+                    "placeholder": _("Enter a title"),
                     "class": "oh-input w-100",
                     "required": True,
                 }
             ),
             "key_result_description": forms.Textarea(
                 attrs={
-                    "placeholder": "Enter a description",
+                    "placeholder": _("Enter a description"),
                     "class": "oh-input oh-input--textarea w-100",
                     "required": True,
                     "rows": 3,
@@ -356,7 +356,7 @@ class FeedbackForm(forms.ModelForm):
 
         widgets = {
             "review_cycle": forms.TextInput(
-                attrs={"placeholder": "Enter a title", "class": "oh-input w-100"}
+                attrs={"placeholder": _("Enter a title"), "class": "oh-input w-100"}
             ),
             "start_date": forms.DateInput(
                 attrs={"type": "date", "class": "oh-input  w-100"}
@@ -455,7 +455,7 @@ class QuestionTemplateForm(forms.ModelForm):
         widget=forms.TextInput(
             attrs={
                 "class": "oh-input oh-input--small oh-input--res-height w-100",
-                "placeholder": "For Developer",
+                "placeholder": _("For Developer"),
             }
         )
     )
@@ -474,7 +474,7 @@ class QuestionForm(forms.ModelForm):
         widget=forms.TextInput(
             attrs={
                 "class": "oh-input oh-input--small oh-input--res-height w-100",
-                "placeholder": "Enter question",
+                "placeholder": _("Enter question"),
             }
         ),
         required=True,

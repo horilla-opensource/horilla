@@ -908,7 +908,7 @@ def asset_batch_update(request, id):
             {"readonly": "readonly"}
         )
         context["asset_batch_update_form"] = asset_batch_form
-        context["in_use_message"] = "This batch number is already in-use"
+        context["in_use_message"] = _("This batch number is already in-use")
     if request.method == "POST":
         asset_batch_form = AssetBatchForm(request.POST, instance=asset_batch_number)
         if asset_batch_form.is_valid():

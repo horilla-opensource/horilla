@@ -1,0 +1,33 @@
+{% extends 'index.html' %} {% block content %} {% load i18n %}
+<style>
+  .row-status--purple {
+    border-left: 4px solid rgba(128, 128, 128, 0.482);
+    border-radius: 5px;
+  }
+  .row-status--cyan {
+    border-left: 4px solid cyan;
+    border-radius: 5px;
+  }
+  .row-status--yellow {
+    border-left: 4px solid yellowgreen;
+    border-radius: 5px;
+  }
+  .diff-cell{
+    background: rgba(255, 166, 0, 0.158);
+  }
+</style>
+
+{% include 'requests/attendance/nav.html' %}
+<div class="oh-wrapper ">
+  <div class="oh-tabs">
+    <ul class="oh-tabs__tablist">
+      <li class="oh-tabs__tab oh-tabs__tab--active" data-target="#tab_1">
+        Requested Attendances
+      </li>
+      <li class="oh-tabs__tab" data-target="#tab_2">
+        Attendances
+      </li>
+    </ul>  {% include "requests/attendance/request_lines.html" %}
+</div>
+
+{% endblock content %}

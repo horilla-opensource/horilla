@@ -13,12 +13,12 @@
         {% if perms.pms.view_employeeobjective or request.user|filtersubordinates %}
         <div class="oh-btn-group ml-2 ">
             <div class="oh-btn-group" >
-                <form action="{% url 'objective-archive' id=employee_objective.id %}" onsubmit="return confirmSubmit('Do you want archive this Objective ?')" method="post">
+                <form action="{% url 'objective-archive' id=employee_objective.id %}" onsubmit="return confirmSubmit('{% trans "Do you want archive this Objective ?" %}')" method="post">
                     {% csrf_token %}
                     <button class="oh-btn  w-100 "style="background-color: white;!important" title="{% trans 'Archive' %}" ><ion-icon name="archive-sharp"></ion-icon></button>
                 </form>
                 {% if perms.pms.delete_employeeobjective %} 
-                    <form action="{% url 'objective-delete' id=employee_objective.id %}" onsubmit="return confirmSubmit('Do you want Delete this Objective ?')" method="post">
+                    <form action="{% url 'objective-delete' id=employee_objective.id %}" onsubmit="return confirmSubmit('{% trans "Do you want Delete this Objective ?" %}')" method="post">
                         {% csrf_token %}
                         <button  class="oh-btn oh-btn--danger-outline  w-100" title="{% trans 'Delete' %}" style="background-color: white;!important">
                             <ion-icon name="trash-outline" role="img" class="md hydrated" aria-label="trash outline"></ion-icon>

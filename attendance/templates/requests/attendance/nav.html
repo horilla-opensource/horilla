@@ -1,0 +1,142 @@
+{% load i18n %}
+{% load basefilters %}
+<style>
+  .oh-modal_close--custom {
+    border: none;
+    background: none;
+    font-size: 1.5rem;
+    opacity: 0.7;
+    position: absolute;
+    top: 25px;
+    right: 15px;
+  }
+</style>
+<div
+  class="oh-modal"
+  id="updateAttendanceRequest"
+  role="dialog"
+  aria-labelledby="updateAttendanceRequest"
+  aria-hidden="true"
+>
+  <div class="oh-modal__dialog">
+    <div class="oh-modal__dialog-header">
+      <h2 class="oh-modal__dialog-title" id="addEmployeeModalLabel">
+        {% trans "Update Attendances Request" %}
+      </h2>
+      <button class="oh-modal__close" aria-label="Close">
+        <ion-icon name="close-outline"></ion-icon>
+      </button>
+    </div>
+    <div
+      class="oh-modal__dialog-body"
+      id="updateAttendanceRequestModalBody"
+    ></div>
+  </div>
+</div>
+
+<div
+  class="oh-modal"
+  id="validateAttendanceRequest"
+  role="dialog"
+  aria-labelledby="validateAttendanceRequest"
+  aria-hidden="true"
+>
+  <div class="oh-modal__dialog">
+    <div class="oh-modal__dialog-header">
+      <h2 class="oh-modal__dialog-title" id="addEmployeeModalLabel">
+        {% trans "Validate Attendances Request" %}
+      </h2>
+      <button class="oh-modal__close" aria-label="Close">
+        <ion-icon name="close-outline"></ion-icon>
+      </button>
+    </div>
+    <div
+      class="oh-modal__dialog-body"
+      id="validateAttendanceRequestModalBody"
+    ></div>
+  </div>
+</div>
+
+<div
+  class="oh-modal"
+  id="editValidateAttendanceRequest"
+  role="dialog"
+  aria-labelledby="editValidateAttendanceRequest"
+  aria-hidden="true"
+>
+  <div class="oh-modal__dialog">
+    <div class="oh-modal__dialog-header">
+      <h2 class="oh-modal__dialog-title" id="addEmployeeModalLabel">
+        {% trans "Validate Attendances Request" %}
+      </h2>
+      <button
+        class="oh-modal_close--custom"
+        onclick="event.stopPropagation(); var modalElement = this.closest('.oh-modal'); modalElement.classList.toggle('oh-modal--show');"
+      >
+        <ion-icon name="close-outline"></ion-icon>
+      </button>
+    </div>
+    <div
+      class="oh-modal__dialog-body"
+      id="editValidateAttendanceRequestModalBody"
+    ></div>
+  </div>
+</div>
+
+<section class="oh-wrapper oh-main__topbar" x-data="{searchShow: false}">
+  <div class="oh-main__titlebar oh-main__titlebar--left">
+    <h1 class="oh-main__titlebar-title fw-bold">
+      {% trans "All Attendances" %}
+    </h1>
+    <a
+      class="oh-main__titlebar-search-toggle"
+      role="button"
+      aria-label="Toggle Search"
+      @click="searchShow = !searchShow"
+    >
+      <ion-icon
+        name="search-outline"
+        class="oh-main__titlebar-serach-icon"
+      ></ion-icon>
+    </a>
+  </div>
+  <div class="oh-main__titlebar oh-main__titlebar--right">
+    {% if perms.attendance.view_attendance or request.user|is_reportingmanager  %}
+    <div
+    class="oh-input-group oh-input__search-group"
+    :class="searchShow ? 'oh-input__search-group--show' : ''"
+    >
+    <ion-icon
+    name="search-outline"
+    class="oh-input-group__icon oh-input-group__icon--left"
+    ></ion-icon>
+    <input
+    type="text"
+    class="oh-input oh-input__icon"
+    aria-label="Search Input"
+    placeholder="Search"
+    hx-target="#view-container"
+    hx-get="{% url 'search-attendance-requests' %}"
+    name="search"
+    hx-trigger="keyup changed delay:.2s"
+    
+    />
+  </div>
+  <div class="oh-main__titlebar-button-container">
+    <div class="oh-dropdown" x-data="{open: false}">
+      <button class="oh-btn ml-2" @click="open = !open">
+        <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}
+      </button>
+      <div
+      class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4"
+      x-show="open"
+      @click.outside="open = false"
+          style="display: none;"
+          >
+          {% include 'requests/attendance/filter.html' %}
+        </div>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+</section>
