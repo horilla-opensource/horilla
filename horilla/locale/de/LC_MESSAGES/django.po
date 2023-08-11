@@ -2229,14 +2229,6 @@ msgstr "Anwesenheitsaktivität gelöscht"
 msgid "You cannot delete this activity"
 msgstr "Sie können diese Aktivität nicht löschen"
 
-#: .\attendance\views.py:893 .\templates\index.html:126
-msgid "Check-Out"
-msgstr "Check-Aus"
-
-#: .\attendance\views.py:1013 .\templates\index.html:130
-msgid "Check-In"
-msgstr "Check-In"
-
 #: .\attendance\views.py:1085
 #: .\attendance\views\views.py:591
 msgid "Late-in early-out deleted"
@@ -2658,6 +2650,7 @@ msgstr "Job Rolle"
 msgid "Are you sure you want to delete this job role?"
 msgstr "Sind Sie sicher, dass Sie diese Job Rolle löschen möchten?"
 
+<<<<<<< HEAD
 
 #: .\base\templates\base\rotating_shift\filters.html:9
 #: .\base\templates\base\rotating_shift\filters.html:28
@@ -2667,6 +2660,8 @@ msgstr "Sind Sie sicher, dass Sie diese Job Rolle löschen möchten?"
 msgid "Rotating Shift"
 msgstr "Wechselschicht"
 
+=======
+>>>>>>> cdf948e ([TASK] Resovled duplicates in language file)
 #: .\base\templates\base\rotating_shift\filters.html:18
 #: .\base\templates\base\rotating_shift\rotating_shift_assign_view.html:24
 #: .\base\templates\base\rotating_work_type\filters.html:18
