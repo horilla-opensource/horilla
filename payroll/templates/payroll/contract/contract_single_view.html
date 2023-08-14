@@ -103,9 +103,10 @@
     <div class="mt-3 mb-5" style="width:100%;">
         <div class="oh-timeoff-modal__stat">
             <span class="oh-timeoff-modal__stat-title">{% trans "Note" %}</span>
-            <span class="oh-timeoff-modal__stat-count">{{contract.note}}</span>
+            <span class="oh-timeoff-modal__stat-count">{{contract.note}} </span>
         </div>
     </div>
+    {% if dashboard != "dashboard" %}
     <div class="oh-modal__button-container text-center">
        <div class="oh-btn-group">
          <a href="{% url 'update-contract' contract.id %}" class="oh-btn oh-btn--info" style="width: 50%;">
@@ -126,6 +127,7 @@
            </a>
         </div>
     </div>
+    {% endif %}
 </div>
 
 

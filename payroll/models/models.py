@@ -1144,7 +1144,7 @@ class Payslip(models.Model):
     def clean(self):
         super().clean()
         today = date.today()
-        if self.end_date < self.start_date:
+        if self.end_date <= self.start_date:
             raise ValidationError(
                 {
                     "end_date": _(

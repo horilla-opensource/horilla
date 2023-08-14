@@ -1,8 +1,11 @@
-{% load i18n %} {% if messages %}
+{% load i18n %}
+{% if messages %}
 <div class="oh-alert-container">
-  {% for message in messages %}
-  <div class="oh-alert oh-alert--animated {{message.tags}}">{{ message }}</div>
-  {% endfor %}
+    {% for message in messages %}
+    <div class="oh-alert oh-alert--animated {{message.tags}}">
+          {{ message }}
+    </div> 
+    {% endfor %}
 </div>
 {% endif %}
 <div class="oh-card" id="">
@@ -91,7 +94,6 @@
           $(".oh-accordion-meta__header").click(function () {
             var target = $(this).data("target");
             $(target).toggleClass("d-none");
-            $(this).toggleClass("oh-accordion-meta__header--show");
           });
         });
       </script>
