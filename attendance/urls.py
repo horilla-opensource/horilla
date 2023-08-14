@@ -188,6 +188,11 @@ urlpatterns = [
     path(
         "cancel-validate-attendance-request/<int:attendance_id>/",
         attendance.views.requests.cancel_attendance_request,
-        name="cancel-validate-attendance-request"
-    )
+        name="cancel-validate-attendance-request",
+    ),
+    path(
+        "request-new-attendance",
+        attendance.views.requests.request_new,
+        name="request-new-attendance",
+    ),
 ]

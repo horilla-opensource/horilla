@@ -1,6 +1,8 @@
 {% load i18n %}{% load widget_tweaks %} {% load attendancefilters %}
 
 <div class="oh-general__tab-target oh-profile-section" id="personal">
+  <form hx-post="{% url 'request-new-attendance' %}" hx-target="#newAttendanceRequestModalBody"  method="post">
+  {% csrf_token %}
   <div class="oh-profile-section__card">
     <div class="row">
       <div class="col-12">{{form.non_field_errors}}</div>
@@ -47,8 +49,9 @@
         type="submit"
         class="oh-btn oh-btn--secondary mt-2 mr-0 pl-4 pr-5 oh-btn--w-100-resp"
       >
-        {% trans "Save" %}
+        {% trans "Request" %}
       </button>
+    </form>
     </div>
   </div>
 </div>

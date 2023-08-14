@@ -76,7 +76,7 @@ class AttendanceActivity(models.Model):
         Employee,
         on_delete=models.CASCADE,
         related_name="employee_attendance_activities",
-        verbose_name="Employee",
+        verbose_name=_("Employee"),
     )
     attendance_date = models.DateField(null=True, validators=[attendance_date_validate])
     clock_in_date = models.DateField(null=True)
@@ -101,9 +101,9 @@ class Attendance(models.Model):
     """
 
     status = [
-        ("create_request", "Create Request"),
-        ("update_request", "Update Request"),
-        ("revalidate_request", "Re-validate Request"),
+        ("create_request", _("Create Request")),
+        ("update_request", _("Update Request")),
+        ("revalidate_request", _("Re-validate Request")),
     ]
 
     employee_id = models.ForeignKey(
@@ -111,6 +111,7 @@ class Attendance(models.Model):
         on_delete=models.CASCADE,
         null=True,
         related_name="employee_attendances",
+        verbose_name=_("Employee"),
     )
     shift_id = models.ForeignKey(
         EmployeeShift, on_delete=models.DO_NOTHING, null=True, verbose_name=_("Shift")
@@ -164,16 +165,24 @@ class Attendance(models.Model):
     attendance_overtime_approve = models.BooleanField(
         default=False, verbose_name=_("Overtime approved")
     )
-    attendance_validated = models.BooleanField(default=False)
+    attendance_validated = models.BooleanField(
+        default=False, verbose_name=_("Attendance validated")
+    )
     at_work_second = models.IntegerField(null=True, blank=True)
     overtime_second = models.IntegerField(null=True, blank=True)
     approved_overtime_second = models.IntegerField(default=0)
     objects = models.Manager()
-    is_validate_request = models.BooleanField(default=False)
-    is_validate_request_approved = models.BooleanField(default=False)
+    is_validate_request = models.BooleanField(
+        default=False, verbose_name=_("Is validate request")
+    )
+    is_validate_request_approved = models.BooleanField(
+        default=False, verbose_name=_("Is validate request approved")
+    )
     request_description = models.TextField(null=True)
-    request_type = models.CharField(max_length=18, null=True, choices=status)
-    requested_data = models.JSONField(null=True)
+    request_type = models.CharField(
+        max_length=18, null=True, choices=status, default="update_request"
+    )
+    requested_data = models.JSONField(null=True, editable=False)
 
     class Meta:
         """
@@ -279,6 +288,7 @@ class Attendance(models.Model):
             "shift_id": self.shift_id.id,
             "work_type_id": self.work_type_id.id,
             "attendance_worked_hour": self.attendance_worked_hour,
+            "minimum_hour": self.minimum_hour,
             # Add other fields you want to store
         }
         return serialized_data
@@ -364,7 +374,7 @@ class AttendanceOverTime(models.Model):
         Employee,
         on_delete=models.CASCADE,
         related_name="employee_overtime",
-        verbose_name="Employee",
+        verbose_name=_("Employee"),
     )
     month = models.CharField(max_length=10)
     month_sequence = models.PositiveSmallIntegerField(default=0)
@@ -434,7 +444,7 @@ class AttendanceLateComeEarlyOut(models.Model):
         on_delete=models.DO_NOTHING,
         null=True,
         related_name="late_come_early_out",
-        verbose_name="Employee",
+        verbose_name=_("Employee"),
     )
     type = models.CharField(max_length=20, choices=choices)
 

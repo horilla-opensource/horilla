@@ -20,6 +20,7 @@ class YourForm(forms.Form):
         # Custom validation logic goes here
         pass
 """
+import json
 import uuid, datetime
 from typing import Any, Dict
 from calendar import month_name
@@ -69,11 +70,11 @@ class ModelForm(forms.ModelForm):
                     }
                 )
             elif isinstance(widget, (forms.Textarea)):
-                label = _(field.label.title())
+                label = _(field.label)
                 field.widget.attrs.update(
                     {
                         "class": "oh-input w-100",
-                        "placeholder": field.label,
+                        "placeholder": label,
                         "rows": 2,
                         "cols": 40,
                     }
@@ -235,6 +236,7 @@ class AttendanceForm(ModelForm):
         self.fields["employee_id"].widget.attrs.update({"id": str(uuid.uuid4())})
         self.fields["shift_id"].widget.attrs.update({"id": str(uuid.uuid4())})
         self.fields["work_type_id"].widget.attrs.update({"id": str(uuid.uuid4())})
+
 
     def save(self, commit=True):
         instance = super().save(commit=False)
@@ -448,6 +450,7 @@ class AttendanceRequestForm(ModelForm):
             "attendance_clock_out",
             "attendance_clock_out_date",
             "attendance_worked_hour",
+            "minimum_hour",
             "request_description",
         ]
 
@@ -462,3 +465,82 @@ class AttendanceRequestForm(ModelForm):
     def save(self, commit: bool = ...) -> Any:
         # No need to save the changes to the actual modal instance
         return super().save(False)
+
+
+class NewRequestForm(AttendanceRequestForm):
+    """
+    NewRequestForm class
+    """
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # Add the new model choice field to the form at the beginning
+        old_dict = self.fields
+        new_dict = {
+            "employee_id": forms.ModelChoiceField(
+                queryset=Employee.objects.all(),
+                label=_("Employee"),
+                widget=forms.Select(attrs={"class": "oh-select oh-select-2 w-100"}),
+            ),
+        }
+        self.fields["request_description"].label = _("Request description")
+        new_dict.update(old_dict)
+        self.fields = new_dict
+
+    def as_p(self, *args, **kwargs):
+        """
+        Render the form fields as HTML table rows with Bootstrap styling.
+        """
+        context = {"form": self}
+        form_html = render_to_string(
+            "requests/attendance/request_new_form.html", context
+        )
+        return form_html
+
+    def clean(self) -> Dict[str, Any]:
+        super().clean()
+
+        employee = self.cleaned_data["employee_id"]
+        attendance_date = self.cleaned_data["attendance_date"]
+        attendances = Attendance.objects.filter(
+            employee_id=employee, attendance_date=attendance_date
+        )
+        data = {
+            "employee_id": employee,
+            "attendance_date": attendance_date,
+            "attendance_clock_in_date": self.cleaned_data["attendance_clock_in_date"],
+            "attendance_clock_in": self.cleaned_data["attendance_clock_in"],
+            "attendance_clock_out": self.cleaned_data["attendance_clock_out"],
+            "attendance_clock_out_date": self.cleaned_data["attendance_clock_out_date"],
+            "shift_id": self.cleaned_data["shift_id"],
+            "work_type_id": self.cleaned_data["work_type_id"],
+            "attendance_worked_hour": self.cleaned_data["attendance_worked_hour"],
+            "minimum_hour": self.data["minimum_hour"],
+        }
+        if attendances.exists():
+            data["employee_id"] = employee.id
+            data["attendance_date"] = str(attendance_date)
+            data["attendance_clock_in_date"] = self.data["attendance_clock_in_date"]
+            data["attendance_clock_in"] = self.data["attendance_clock_in"]
+            data["attendance_clock_out"] = self.data["attendance_clock_out"]
+            data["attendance_clock_out_date"] = self.data["attendance_clock_out_date"]
+            data["work_type_id"] = self.data["work_type_id"]
+            data["shift_id"] = self.data["shift_id"]
+            attendance = attendances.first()
+            attendance.requested_data = json.dumps(data)
+            attendance.is_validate_request = True
+            if attendance.request_type != "create_request":
+                attendance.request_type = "update_request"
+            attendance.request_description = self.data["request_description"]
+            attendance.save()
+            self.new_instance = None
+            return
+
+        new_instance = Attendance(**data)
+        new_instance.is_validate_request = True
+        new_instance.attendance_validated = False
+        new_instance.request_description = self.data["request_description"]
+        new_instance.request_type = "create_request"
+        self.new_instance = new_instance
+        return
