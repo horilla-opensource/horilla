@@ -5,12 +5,20 @@ This module is used to map url path with view methods.
 """
 
 from django.urls import path
-from recruitment import views
+from recruitment.views import views
+import recruitment.views.actions
+import recruitment.views.dashboard
+import recruitment.views.search
+import recruitment.views.surveys
 
 urlpatterns = [
     path("recruitment-create", views.recruitment, name="recruitment-create"),
     path("recruitment-view", views.recruitment_view, name="recruitment-view"),
-    path("recruitment-search", views.recruitment_search, name="recruitment-search"),
+    path(
+        "recruitment-search",
+        recruitment.views.search.recruitment_search,
+        name="recruitment-search",
+    ),
     path(
         "recruitment-update/<int:rec_id>/",
         views.recruitment_update,
@@ -23,19 +31,19 @@ urlpatterns = [
     ),
     path(
         "recruitment-update-delete/<int:rec_id>/",
-        views.recruitment_delete_pipeline,
+        recruitment.views.actions.recruitment_delete_pipeline,
         name="recruitment-delete-pipeline",
     ),
     path(
         "recruitment-delete/<int:rec_id>/",
-        views.recruitment_delete,
+        recruitment.views.actions.recruitment_delete,
         name="recruitment-delete",
     ),
     path("pipeline", views.recruitment_pipeline, name="pipeline"),
     path("pipeline-card", views.recruitment_pipeline_card, name="pipeline-card"),
     path(
         "pipeline-search-candidate",
-        views.pipeline_candidate_search,
+        recruitment.views.search.pipeline_candidate_search,
         name="pipeline-search-candidate",
     ),
     path(
@@ -45,7 +53,7 @@ urlpatterns = [
     ),
     path("stage-create", views.stage, name="rec-stage-create"),
     path("stage-view", views.stage_view, name="rec-stage-view"),
-    path("stage-search", views.stage_search, name="stage-search"),
+    path("stage-search", recruitment.views.search.stage_search, name="stage-search"),
     path("stage-update/<int:stage_id>/", views.stage_update, name="rec-stage-update"),
     path(
         "stage-update-pipeline/<int:stage_id>/",
@@ -53,17 +61,23 @@ urlpatterns = [
         name="stage-update-pipeline",
     ),
     path(
-        "stage-name-update/<int:stage_id>/", views.stage_name_update, name="stage-name-update"
+        "stage-name-update/<int:stage_id>/",
+        views.stage_name_update,
+        name="stage-name-update",
     ),
-    path("stage-delete/<int:stage_id>/", views.stage_delete, name="rec-stage-delete"),
+    path(
+        "stage-delete/<int:stage_id>/",
+        recruitment.views.actions.stage_delete,
+        name="rec-stage-delete",
+    ),
     path(
         "remove-stage-manager/<int:mid>/<int:sid>/",
-        views.remove_stage_manager,
+        recruitment.views.actions.remove_stage_manager,
         name="rec-remove-stage-manager",
     ),
     path(
         "remove-recruitment-manager/<int:mid>/<int:rid>/",
-        views.remove_recruitment_manager,
+        recruitment.views.actions.remove_recruitment_manager,
         name="remove-recruitment-manager",
     ),
     path("candidate-create", views.candidate, name="candidate-create"),
@@ -79,10 +93,14 @@ urlpatterns = [
     ),
     path("view-note/<int:cand_id>/", views.view_note, name="view-note"),
     path("note-update/<int:note_id>/", views.note_update, name="note-update"),
-    path("note-delete/<int:note_id>/", views.note_delete, name="note-delete"),
+    path(
+        "note-delete/<int:note_id>/",
+        recruitment.views.actions.note_delete,
+        name="note-delete",
+    ),
     path(
         "stage-note-delete/<int:note_id>/",
-        views.candidate_remark_delete,
+        recruitment.views.actions.candidate_remark_delete,
         name="stage-note-delete",
     ),
     path("add-note/<int:cand_id>/", views.add_note, name="add-note"),
@@ -91,10 +109,14 @@ urlpatterns = [
     path("candidate-view", views.candidate_view, name="candidate-view"),
     path(
         "candidate-filter-view",
-        views.candidate_filter_view,
+        recruitment.views.search.candidate_filter_view,
         name="candidate-filter-view",
     ),
-    path("search-candidate", views.candidate_search, name="search-candidate"),
+    path(
+        "search-candidate",
+        recruitment.views.search.candidate_search,
+        name="search-candidate",
+    ),
     path("candidate-view-list", views.candidate_view_list, name="candidate-view-list"),
     path("candidate-view-card", views.candidate_view_card, name="candidate-view-card"),
     path(
@@ -109,34 +131,89 @@ urlpatterns = [
     ),
     path(
         "candidate-delete/<int:cand_id>/",
-        views.candidate_delete,
+        recruitment.views.actions.candidate_delete,
         name="rec-candidate-delete",
     ),
     path(
         "candidate-archive/<int:cand_id>/",
-        views.candidate_archive,
+        recruitment.views.actions.candidate_archive,
         name="rec-candidate-archive",
     ),
     path(
         "candidate-bulk-delete",
-        views.candidate_bulk_delete,
+        recruitment.views.actions.candidate_bulk_delete,
         name="candidate-bulk-delete",
     ),
     path(
         "candidate-bulk-archive",
-        views.candidate_bulk_archive,
+        recruitment.views.actions.candidate_bulk_archive,
         name="candidate-bulk-archive",
     ),
     path(
-        "candidate-history/<int:cand_id>/", views.candidate_history, name="candidate-history"
+        "candidate-history/<int:cand_id>/",
+        views.candidate_history,
+        name="candidate-history",
     ),
     path("application-form", views.application_form, name="application-form"),
     path(
         "send-acknowledgement", views.send_acknowledgement, name="send-acknowledgement"
     ),
-    path("dashboard", views.dashboard, name="recruitment-dashboard"),
-    path("dashboard-pipeline", views.dashboard_pipeline, name="recruitment-pipeline"),
-    path("get-open-positions", views.get_open_position, name="get-open-position"),
-    path("candidate-sequence-update", views.candidate_sequence_update, name="candidate-sequence-update"),
-    path("stage-sequence-update",views.stage_sequence_update,name="stage-sequence-update")
+    path(
+        "dashboard", recruitment.views.dashboard.dashboard, name="recruitment-dashboard"
+    ),
+    path(
+        "dashboard-pipeline",
+        recruitment.views.dashboard.dashboard_pipeline,
+        name="recruitment-pipeline",
+    ),
+    path(
+        "get-open-positions",
+        recruitment.views.dashboard.get_open_position,
+        name="get-open-position",
+    ),
+    path(
+        "candidate-sequence-update",
+        views.candidate_sequence_update,
+        name="candidate-sequence-update",
+    ),
+    path(
+        "stage-sequence-update",
+        views.stage_sequence_update,
+        name="stage-sequence-update",
+    ),
+    path(
+        "recruitment-application-survey",
+        recruitment.views.surveys.survey_form,
+        name="recruitment-application-survey",
+    ),
+    path(
+        "recruitment-survey-question-template-view",
+        recruitment.views.surveys.view_question_template,
+        name="recruitment-survey-question-template-view",
+    ),
+    path(
+        "recruitment-survey-question-template-create",
+        recruitment.views.surveys.create_question_template,
+        name="recruitment-survey-question-template-create",
+    ),
+    path(
+        "recruitment-survey-question-template-edit/<int:survey_id>/",
+        recruitment.views.surveys.update_question_template,
+        name="recruitment-survey-question-template-edit",
+    ),
+    path(
+        "recruitment-survey-question-template-delete/<int:survey_id>/",
+        recruitment.views.surveys.delete_survey_question,
+        name="recruitment-survey-question-template-delete",
+    ),
+    path(
+        "candidate-survey",
+        recruitment.views.surveys.candidate_survey,
+        name="candidate-survey",
+    ),
+    path(
+        "filter-survey",
+        recruitment.views.search.filter_survey,
+        name="rec-filter-survey",
+    ),
 ]

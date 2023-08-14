@@ -1,5 +1,5 @@
 {% load i18n %}
-<form hx-post="{% url 'rec-stage-create' %}" hx-target='#stageCreateModalBody'>
+<form hx-post="{% url 'rec-stage-create' %}" class='oh-general__tab-target oh-profile-section' hx-target='#stageCreateModalBody'>
 <div>
     {% csrf_token %}
     <div class="row" id='stageFormCreate'>

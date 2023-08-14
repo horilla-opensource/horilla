@@ -1,0 +1,51 @@
+{% load i18n %}
+<form hx-get="{% url 'rec-filter-survey' %}" hx-target="#view-container">
+  <div class="oh-dropdown__filter-body">
+    <div class="oh-accordion">
+      <div class="oh-accordion-header">{% trans "Surevey Filter" %}</div>
+      <div class="oh-accordion-body">
+        <div class="row">
+          <div class="col-sm-12 col-md-12 col-lg-12">
+            <div class="oh-input-group">
+              <label class="oh-label">{% trans "Question" %}</label>
+              {{f.form.question}}
+            </div>
+          </div>
+          <div class="col-sm-12 col-md-12 col-lg-6">
+            <div class="oh-input-group">
+              <label class="oh-label">{% trans "Recruitment" %}</label>
+              {{f.form.recruitment_ids}}
+            </div>
+          </div>
+          <div class="col-sm-12 col-md-12 col-lg-6">
+            <div class="oh-input-group">
+              <label class="oh-label">{% trans "Job Position" %}</label>
+              {{f.form.job_position_ids}}
+            </div>
+          </div>
+
+          <div class="col-sm-12 col-md-12 col-lg-6">
+            <div class="oh-input-group">
+              <label class="oh-label">{% trans "Options" %}</label>
+              {{f.form.options}}
+            </div>
+          </div>
+          <div class="col-sm-12 col-md-12 col-lg-6">
+            <div class="oh-input-group">
+              <label class="oh-label">{% trans "Question Type" %}</label>
+              {{f.form.type}}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="oh-dropdown__filter-footer">
+    <button
+      class="oh-btn oh-btn--secondary oh-btn--small w-100"
+      id="filterSubmit"
+    >
+      {% trans "Filter" %}
+    </button>
+  </div>
+</form>

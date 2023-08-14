@@ -11,6 +11,7 @@
   hx-post="{% url 'recruitment-update-pipeline' form.instance.id %}"
   hx-target="#recruitmentUpdate"
   method="post"
+  class="oh-general__tab-target oh-profile-section"
 >
   {% csrf_token %}
   <div>
