@@ -1,20 +1,17 @@
-from typing import Any
-from django.forms import ModelForm
-from django.template.loader import render_to_string
-from .models import *
-from django.forms import DateInput
-from django.forms.widgets import TextInput
+import re
 from django import forms
+from django.forms import ModelForm
+from django.forms.widgets import TextInput
+from django.core.exceptions import ValidationError
+from django.utils.translation import gettext_lazy as _
 from employee.models import Employee
+from .models import LeaveType, LeaveRequest, AvailableLeave, Holiday, CompanyLeave
 from .methods import (
     calculate_requested_days,
     leave_requested_dates,
     holiday_dates_list,
     company_leave_dates_list,
 )
-from django.core.exceptions import ValidationError
-from django.utils.translation import gettext_lazy as _
-import re
 
 
 CHOICES = [("yes", _("Yes")), ("no", _("No"))]
@@ -30,21 +27,19 @@ class ModelForm(forms.ModelForm):
                 field.widget.attrs.update({"class": "oh-input oh-calendar-input w-100"})
             elif isinstance(
                 widget, (forms.NumberInput, forms.EmailInput, forms.TextInput)
-            ):  
-                placeholder = _(field.label)
+            ):
                 field.widget.attrs.update(
-                    {"class": "oh-input w-100", "placeholder": placeholder}
+                    {"class": "oh-input w-100", "placeholder": field.label}
                 )
             elif isinstance(widget, (forms.Select,)):
                 field.widget.attrs.update(
                     {"class": "oh-select oh-select-2 select2-hidden-accessible"}
                 )
             elif isinstance(widget, (forms.Textarea)):
-                placeholder = _(field.label)
                 field.widget.attrs.update(
                     {
                         "class": "oh-input w-100",
-                        "placeholder": placeholder,
+                        "placeholder": field.label,
                         "rows": 2,
                         "cols": 40,
                     }
@@ -363,7 +358,6 @@ class HolidayForm(ModelForm):
         widget=forms.DateInput(attrs={"type": "date"}),
     )
     end_date = forms.DateField(
-        required=False,
         widget=forms.DateInput(attrs={"type": "date"}),
     )
 

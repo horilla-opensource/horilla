@@ -1,9 +1,3 @@
-"""
-scheduler.py
-
-Used to register the scheduled tasks.
-"""
-
 from apscheduler.schedulers.background import BackgroundScheduler
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
@@ -25,7 +19,6 @@ def leave_reset():
         for available_leave in available_leaves:
             reset_date = available_leave.reset_date
             expired_date = available_leave.expired_date
-
             if reset_date == today_date:
                 available_leave.update_carryforward(available_leave=available_leave)
                 # new_reset_date = available_leave.set_reset_date(assigned_date=today_date,available_leave = available_leave)

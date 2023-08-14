@@ -1,6 +1,9 @@
+"""
+Module for registering LeaveType, LeaveRequest, AvailableLeave, Holiday, and CompanyLeave
+models with the Django admin site.
+"""
 from django.contrib import admin
-from .models import *
-
+from .models import LeaveType, LeaveRequest, AvailableLeave, Holiday, CompanyLeave
 
 
 # Register your models here.
@@ -9,4 +12,3 @@ admin.site.register(LeaveRequest)
 admin.site.register(AvailableLeave)
 admin.site.register(Holiday)
 admin.site.register(CompanyLeave)
-
