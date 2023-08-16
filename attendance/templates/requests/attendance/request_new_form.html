@@ -1,0 +1,57 @@
+{% load i18n %}{% load widget_tweaks %} {% load attendancefilters %}
+
+<div class="oh-general__tab-target oh-profile-section" id="personal">
+  <form hx-post="{% url 'request-new-attendance' %}" hx-target="#newAttendanceRequestModalBody"  method="post">
+  {% csrf_token %}
+  <div class="oh-profile-section__card">
+    <div class="row">
+      <div class="col-12">{{form.non_field_errors}}</div>
+
+      {{form.non_field_errors}}
+      {% for field in form.visible_fields %}
+      {% if field.field.widget|is_select_multiple or field.field.widget|is_text_area %}
+      <label
+      class="oh-label"
+      for="id_{{ field.name }}"
+      title="{{ field.help_text|safe }}"
+      >{{ field.label }}</label
+      >
+      <div style="width: 100%; padding: 12px;">
+
+        {{ field|add_class:"form-control" }}
+      </div>
+      
+      {% else %}
+      <div class="col-12 col-md-6">
+        <label
+          class="oh-label"
+          for="id_{{ field.name }}"
+          title="{{ field.help_text|safe }}"
+          >{{ field.label }}</label
+          >
+          {% if field.field.widget.input_type == "checkbox" %}
+          <div class="oh-switch" style="width: 30px">
+            {{ field|add_class:"oh-switch__checkbox" }}
+
+          </div>
+          {% else %} 
+          {{ field|add_class:"form-control" }} 
+          {% endif %}
+          {{field.errors}}
+      </div>
+      {% endif %}
+      {% endfor %}
+
+    </div>
+
+    <div class="d-flex flex-row-reverse">
+      <button
+        type="submit"
+        class="oh-btn oh-btn--secondary mt-2 mr-0 pl-4 pr-5 oh-btn--w-100-resp"
+      >
+        {% trans "Request" %}
+      </button>
+    </form>
+    </div>
+  </div>
+</div>

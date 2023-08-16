@@ -2,7 +2,7 @@
 <form action="{% url 'stage-update-pipeline' form.instance.id %}" method='post'>
 <div>
     {% csrf_token %}
-    <div class="row" id='stageUpdateFormHx'>
+    <div class="row" id='stageUpdateFormHx' class='oh-general__tab-target oh-profile-section'>
         <div class="col-12 col-sm-12 col-md-12 col-lg-6">
             <label class="oh-label" for="">{% trans "Stage" %}</label>
             {{form.stage}}

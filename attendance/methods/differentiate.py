@@ -66,17 +66,23 @@ def get_diff_dict(first_dict, other_dict, model=None):
             value = first_dict[key]
             other_value = other_dict[key]
             if isinstance(field, models.DateField):
-                value = datetime.strptime(value, "%Y-%m-%d").strftime("%d %b %Y")
-                other_value = datetime.strptime(other_value, "%Y-%m-%d").strftime(
-                    "%d %b %Y"
-                )
+                if value is not None:
+                    value = datetime.strptime(value, "%Y-%m-%d").strftime("%d %b %Y")
+                if other_value is not None:
+                    other_value = datetime.strptime(other_value, "%Y-%m-%d").strftime(
+                        "%d %b %Y"
+                    )
             elif isinstance(field, models.TimeField):
-                value = datetime.strptime(value, "%H:%M:%S").strftime("%I:%M %p")
-                other_value = datetime.strptime(other_value, "%H:%M:%S").strftime(
-                    "%I:%M %p"
-                )
+                if value is not None:
+                    value = datetime.strptime(value, "%H:%M:%S").strftime("%I:%M %p")
+                if other_value is not None:
+                    other_value = datetime.strptime(other_value, "%H:%M:%S").strftime(
+                        "%I:%M %p"
+                    )
             elif isinstance(field, models.ForeignKey):
-                value = field.related_model.objects.get(id=value)
-                other_value = field.related_model.objects.get(id=other_value)
+                if value is not None:
+                    value = field.related_model.objects.get(id=value)
+                if other_value is not None:
+                    other_value = field.related_model.objects.get(id=other_value)
             difference[verb_key] = (value, other_value)
     return difference

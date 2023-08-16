@@ -1,0 +1,55 @@
+{% load widget_tweaks %} {% load attendancefilters %}
+<style>
+    .question-container{
+        padding: 0px;
+    }
+</style>
+<div class="oh-general__tab-target oh-profile-section" id="personal">
+  <div class="oh-profile-section__card">
+    <div class="row">
+      <div class="col-12">{{form.non_field_errors}}</div>
+
+      {% for question in questions %}
+      <div class="question-container mt-3">
+        {{question.question}}
+      </div>
+      {% if question.type == "textarea" %}
+      <textarea name="{{question.question}}" class="mb-3 oh-input" id="id_{{question.id}}" style="height: 75px;" cols="50" rows="10">
+      </textarea>
+      {% elif question.type == "options" %}
+      <select name="{{question.question}}" class="oh-select w-100" style="height:55px ;" id="id_{{question.id}}">
+        {% for choice in question.choices %}
+        <option value="{{choice}}">{{choice}}</option>
+        {% endfor %}
+      </select>
+      {% elif question.type == "multiple" %}
+      <select name="{{question.question}}" class="oh-select w-100" style="height:55px ;" id="id_{{question.id}}" multiple>
+        {% for choice in question.choices %}
+        <option value="{{choice}}">{{choice}}</option>
+        {% endfor %}
+      </select>      {% elif question.type == "percentage" %}
+      <input type="number" class="oh-input" id="id_{{question.id}}" min="0" max="100" name="{{question.question}}">
+      {% elif question.type == "rating" %}
+      {% include "rating_input.html" %}
+      {% elif question.type == "checkbox" %}
+      <div class="oh-switch mb-3 p-0">
+      <input type="{{question.type}}" class="oh-switch__checkbox oh-switch__checkbox" name="{{question.question}}" id="id_{{question.id}}">
+      </div>
+      {% else %}
+      <input type="{{question.type}}" class="oh-input w-100 mb-3"  name="{{question.question}}" id="id_{{question.id}}">
+      {% endif %}
+
+      {% endfor %}
+
+    </div>
+
+    <div class="d-flex flex-row-reverse">
+      <button
+        type="submit"
+        class="oh-btn oh-btn--secondary mt-2 mr-0 pl-4 pr-5 oh-btn--w-100-resp"
+      >
+        Save
+      </button>
+    </div>
+  </div>
+</div>

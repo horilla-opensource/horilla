@@ -7,7 +7,7 @@
         <ion-icon class="me-1" name="add-outline"></ion-icon>
         {% trans "View Stages" %}
       </a>
-<form method="post">
+<form method="post" class="oh-general__tab-target oh-profile-section">
     {% csrf_token %}
     {{ form.as_p }}
     <input type="submit" value="Submit" class='mt-4 oh-btn oh-btn--secondary'>

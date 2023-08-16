@@ -6,7 +6,7 @@ This page is used to register filter for recruitment models
 """
 import django_filters
 from django import forms
-from recruitment.models import Candidate, Recruitment, Stage
+from recruitment.models import Candidate, Recruitment, Stage, RecruitmentSurvey
 
 # from django.forms.widgets import Boo
 
@@ -27,16 +27,24 @@ class FilterSet(django_filters.FilterSet):
         super().__init__(*args, **kwargs)
         for _, filter_widget in self.filters.items():
             widget = filter_widget.field.widget
-            if isinstance(widget, (forms.NumberInput, forms.EmailInput, forms.TextInput)):
+            if isinstance(
+                widget, (forms.NumberInput, forms.EmailInput, forms.TextInput)
+            ):
                 widget.attrs.update({"class": "oh-input w-100"})
             elif isinstance(widget, (forms.Select,)):
-                widget.attrs.update({"class": "oh-select oh-select-2 select2-hidden-accessible"})
+                widget.attrs.update(
+                    {"class": "oh-select oh-select-2 select2-hidden-accessible"}
+                )
             elif isinstance(widget, (forms.Textarea)):
                 widget.attrs.update({"class": "oh-input w-100"})
-            elif isinstance(widget, (forms.CheckboxInput, forms.CheckboxSelectMultiple)):
+            elif isinstance(
+                widget, (forms.CheckboxInput, forms.CheckboxSelectMultiple)
+            ):
                 widget.attrs.update({"class": "oh-switch__checkbox"})
             elif isinstance(widget, (forms.ModelChoiceField)):
-                widget.attrs.update({"class": "oh-select oh-select-2 select2-hidden-accessible"})
+                widget.attrs.update(
+                    {"class": "oh-select oh-select-2 select2-hidden-accessible"}
+                )
 
 
 class CandidateFilter(FilterSet):
@@ -71,6 +79,7 @@ class CandidateFilter(FilterSet):
         """
         Meta class to add the additional info
         """
+
         model = Candidate
         fields = [
             "recruitment_id",
@@ -198,6 +207,7 @@ class StageFilter(FilterSet):
         """
         Meta class to add the additional info
         """
+
         model = Stage
         fields = [
             "recruitment_id",
@@ -235,3 +245,32 @@ class StageFilter(FilterSet):
             )
 
         return queryset | stage_queryset
+
+
+class SurveyFilter(FilterSet):
+    """
+    SurveyFIlter
+    """
+
+    options = django_filters.CharFilter(
+        lookup_expr="icontains",
+        label="Options",
+        field_name="options",
+    )
+
+    question = django_filters.CharFilter(
+        lookup_expr="icontains",
+        label="Question",
+        field_name="question",
+    )
+
+    class Meta:
+        """
+        class Meta for additional options
+        """
+
+        model = RecruitmentSurvey
+        fields = "__all__"
+        exclude = [
+            "sequence",
+        ]

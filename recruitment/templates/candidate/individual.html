@@ -94,6 +94,15 @@
                 >{% trans "Resume" %}</a
               >
             </li>
+            <li class="oh-general__tab">
+              <a
+                href="#"
+                class="oh-general__tab-link"
+                data-action="general-tab"
+                data-target="#survey"
+                >{% trans "Survey" %}</a
+              >
+            </li>
             
           </ul>
 
@@ -274,9 +283,18 @@
         </div>
         <div
         class="oh-general__tab-target oh-profile__info-tab  mb-4 d-none"
-        id="timesheet"
+        id="survey"
       >
       <!-- #3 -->
+      {% for surveys in candidate.recruitmentsurveyanswer_set.all %}
+      {% for question,answer in surveys.answer.items %}
+      {% if question != "csrfmiddlewaretoken" %}
+      <div>
+        {{question}}---{{answer}}
+      </div>
+      {% endif %}
+      {% endfor %}
+      {% endfor %}
       </div>
 
         </div>

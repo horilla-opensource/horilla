@@ -10,10 +10,8 @@ django.shortcuts module.
 
 """
 import math
-from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.contrib import messages
-from django.utils.translation import gettext_lazy as _
 from horilla.decorators import permission_required, login_required
 from payroll.models.tax_models import (
     TaxBracket,
@@ -56,7 +54,6 @@ def create_filing_status(request):
         filing_status_form = FilingStatusForm(request.POST)
         if filing_status_form.is_valid():
             filing_status_form.save()
-            messages.success(request, _("Filing status created."))
             return redirect("create-filing-status")
     return render(
         request,
@@ -84,17 +81,7 @@ def update_filing_status(request, filing_status_id):
         tax_bracket_form = FilingStatusForm(request.POST, instance=filing_status)
         if tax_bracket_form.is_valid():
             tax_bracket_form.save()
-            response = render(
-                request,
-                "payroll/tax/filing_status_edit.html",
-                {
-                    "form": filing_status_form,
-                },
-            )
-            messages.success(request, _("Filing status updated."))
-            return HttpResponse(
-                response.content.decode("utf-8") + "<script>location.reload();</script>"
-            )
+            return redirect(update_filing_status, filing_status_id=filing_status_id)
     return render(
         request,
         "payroll/tax/filing_status_edit.html",
@@ -118,9 +105,9 @@ def filing_status_delete(request, filing_status_id):
     try:
         filing_status = FilingStatus.objects.get(id=filing_status_id)
         filing_status.delete()
-        messages.info(request, _("Filing status deleted."))
+        messages.info(request, "Filing status successfully deleted.")
     except:
-        messages.error(request, _("This filing status assigned to employees"))
+        messages.error(request, "This filing status assigned to employees")
 
     status = FilingStatus.objects.all()
     context = {"status": status}
@@ -174,10 +161,9 @@ def create_tax_bracket(request, filing_status_id):
         if tax_bracket_form.is_valid():
             max_income = tax_bracket_form.cleaned_data.get("max_income")
             if not max_income:
-                messages.info(request, _("The maximum income will be infinite"))
+                messages.info(request, "The maximum income will be infinite")
                 tax_bracket_form.instance.max_income = math.inf
             tax_bracket_form.save()
-            messages.success(request, _("Tax bracket created."))
             return redirect(create_tax_bracket, filing_status_id=filing_status_id)
 
         context["form"] = tax_bracket_form
@@ -198,30 +184,25 @@ def update_tax_bracket(request, tax_bracket_id):
     """
     tax_bracket = TaxBracket.objects.get(id=tax_bracket_id)
     tax_bracket_form = TaxBracketForm(instance=tax_bracket)
-    context = {
-        "form": tax_bracket_form,
-    }
 
     if request.method == "POST":
         tax_bracket_form = TaxBracketForm(request.POST, instance=tax_bracket)
         if tax_bracket_form.is_valid():
             max_income = tax_bracket_form.cleaned_data.get("max_income")
             if not max_income:
-                messages.info(request, _("The maximum income will be infinite"))
+                messages.info(request, "The maximum income will be infinite")
                 tax_bracket_form.instance.max_income = math.inf
             tax_bracket_form.save()
-            response = render(request, "payroll/tax/filing_status_edit.html", context)
-            messages.success(request, _("Tax bracket updated."))
-            return HttpResponse(
-                response.content.decode("utf-8") + "<script>location.reload();</script>"
-            )
 
+    context = {
+        "form": tax_bracket_form,
+    }
     return render(request, "payroll/tax/tax_bracket_edit.html", context)
 
 
 @login_required
 @permission_required("payroll.delete_taxbracket")
-def delete_tax_bracket(request, tax_bracket_id):
+def delete_tax_bracket(_request, tax_bracket_id):
     """
     Delete an existing tax bracket record.
 
@@ -232,7 +213,6 @@ def delete_tax_bracket(request, tax_bracket_id):
     """
     tax_bracket = TaxBracket.objects.get(id=tax_bracket_id)
     tax_bracket.delete()
-    messages.success(request, _("Tax bracket deleted."))
     return redirect(
         "tax-bracket-list", filing_status_id=tax_bracket.filing_status_id.id
     )
@@ -273,6 +253,5 @@ def create_federal_tax(request):
                     federal_tax += tax_amount
                     remaining_income -= taxable_amount
             federal_tax_form.save()
-            messages.success(request, "Federal tax created.")
             return redirect("create-federal-tax")
     return render(request, "payroll/tax/federal_tax.html", context)

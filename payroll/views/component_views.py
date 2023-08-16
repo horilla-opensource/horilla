@@ -463,6 +463,7 @@ def validate_start_date(request):
     """
     This method to validate the contract start date and the pay period start date
     """
+    print("hitting.....")
     start_date = request.GET.get("start_date")
     end_date = request.GET.get("end_date")
     employee_id = request.GET.getlist("employee_id")

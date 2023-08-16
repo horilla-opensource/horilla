@@ -21,10 +21,21 @@ class YourForm(forms.Form):
         pass
 """
 
+from typing import Any, Dict, Mapping, Optional, Type, Union
 import uuid
 from django import forms
+from django.forms.utils import ErrorList
+from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
-from recruitment.models import Stage, Recruitment, Candidate, StageNote, JobPosition
+from django.template.loader import render_to_string
+from recruitment.models import (
+    Stage,
+    Recruitment,
+    Candidate,
+    StageNote,
+    JobPosition,
+    RecruitmentSurvey,
+)
 from recruitment import widgets
 
 
@@ -187,6 +198,14 @@ class RecruitmentCreationForm(ModelForm):
         }
         labels = {"description": _("Description"), "vacancy": _("Vacancy")}
 
+    def as_p(self, *args, **kwargs):
+        """
+        Render the form fields as HTML table rows with Bootstrap styling.
+        """
+        context = {"form": self}
+        table_html = render_to_string("attendance_form.html", context)
+        return table_html
+
 
 class StageCreationForm(ModelForm):
     """
@@ -311,7 +330,6 @@ class ApplicationForm(RegistrationForm):
             "canceled",
             "joining_date",
             "sequence",
-            
         )
         widgets = {
             "recruitment_id": forms.TextInput(
@@ -444,3 +462,81 @@ class StageNoteForm(ModelForm):
         super().__init__(*args, **kwargs)
         field = self.fields["candidate_id"]
         field.widget = field.hidden_widget()
+
+
+class QuestionForm(ModelForm):
+    """
+    QuestionForm
+    """
+
+    recruitment = forms.ModelMultipleChoiceField(
+        queryset=Recruitment.objects.filter(is_active=True),
+        required=False,
+        label="Recruitment",
+    )
+    job_positions = forms.ModelMultipleChoiceField(
+        queryset=JobPosition.objects.all(), required=False, label="Job Positions"
+    )
+
+    class Meta:
+        """
+        Class Meta for additional options
+        """
+
+        model = RecruitmentSurvey
+        fields = "__all__"
+        exclude = [
+            "recruitment_ids",
+            "job_position_ids",
+        ]
+
+    def as_p(self, *args, **kwargs):
+        """
+        Render the form fields as HTML table rows with Bootstrap styling.
+        """
+        context = {"form": self}
+        table_html = render_to_string(
+            "survey/question-template-organized-form.html", context
+        )
+        return table_html
+
+    def clean(self):
+        super().clean()
+        recruitment = self.cleaned_data["recruitment"]
+        jobs = self.cleaned_data["job_positions"]
+        qtype = self.cleaned_data["type"]
+        options = self.cleaned_data["options"]
+        if not (recruitment.exists() or jobs.exists()):
+            raise ValidationError(
+                "Choose any recruitment or job positions to apply this question"
+            )
+        self.recruitment = recruitment
+        self.job_positions = jobs
+
+        if qtype in ["options", "multiple"] and (options is None or options == ""):
+            raise ValidationError({"options": "Options field is required"})
+
+        return
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["type"].widget.attrs.update(
+            {"class": " w-100", "style": "border:solid 1px #6c757d52;height:50px;"}
+        )
+        self.fields["options"].required = False
+
+
+class SurveyForm(forms.Form):
+    """
+    SurveyTemplateForm
+    """
+
+    def __init__(self, recruitment, *args, **kwargs) -> None:
+        super().__init__(recruitment, *args, **kwargs)
+        questions = recruitment.recruitmentsurvey_set.all()
+        context = {"form": self, "questions": questions}
+        form = render_to_string("survey_form.html", context)
+        self.form = form
+        return
+        # for question in questions:
+        #     self

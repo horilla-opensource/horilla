@@ -1,0 +1,43 @@
+{% load static %}
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Registration Form</title>
+    <link rel="stylesheet" href="{% static 'build/css/style.min.css' %}" />
+    <style>
+      ul.errorlist {
+        color: #d9534f;
+        background-color: #f0d8d8;
+        border-color: #d6e9c6;
+        padding: 15px;
+        margin-bottom: 20px;
+        border: 1px solid transparent;
+        border-radius: 4px;
+      }
+      ul {
+        list-style-type: none;
+      }
+    </style>
+    <script src="{% static '/jquery/jquery.min.js' %}"></script>
+  </head>
+  <body>
+    {% block content %}
+    {% endblock content %}
+
+    <script src="{% static 'build/js/web.frontend.min.js' %}"></script>
+    <script
+      type="module"
+      src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"
+    ></script>
+    <script
+      nomodule
+      src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"
+    ></script>
+    <script></script>
+  </body>
+</html>
+
+  </body>
+</html>

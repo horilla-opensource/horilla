@@ -6,20 +6,13 @@
         <div class="oh-payslip__title oh-payslip__title--h2">
           <select name="status" class="oh-select" id="id_status">
             {% if payslip.status %}
-              {% for status_tuple in payslip.status_choices %}
-              {% if payslip.status == status_tuple.0 %}
-              <option value="{{payslip.status}}" selected>{{payslip.get_status_display}}</option>
-              {% else %}
-              <option value="{{status_tuple.0}}" >{{status_tuple.1}}</option>
-              {% endif %}
-              {% endfor %}
+            <option value="{{payslip.status}}" selected>{{payslip.get_status_display}}</option>
             {% else %}
-            <option value="draft" selected>Draft</option>
-            <option value="review_ongoing" >Review Ongoing</option>
-            <option value="confirmed" >Confirmed</option>
-            <option value="paid" >Paid</option>
+            <option value="draft" selected>{% trans "Draft" %}</option>
             {% endif %}
-
+            <option value="review_ongoing">{% trans "Review Ongoing" %}</option>
+            <option value="confirmed">{% trans "Confirmed" %}</option>
+            <option value="paid">{% trans "paid" %}</option>
           </select>
         </div>
       </div>

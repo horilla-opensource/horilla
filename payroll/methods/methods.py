@@ -38,31 +38,37 @@ def get_company_leave_dates(year):
     company_leaves = CompanyLeave.objects.all()
     company_leave_dates = []
     for company_leave in company_leaves:
-        based_on_week = int(company_leave.based_on_week) if company_leave.based_on_week is not None else None
-        based_on_week_day = int(company_leave.based_on_week_day) 
-        # based_on_week_day = 0 if based_on_week_day > 7 else based_on_week_day
-
+        based_on_week = company_leave.based_on_week
+        based_on_week_day = company_leave.based_on_week_day
         for month in range(1, 13):
             if based_on_week is not None:
                 # Set Sunday as the first day of the week
                 calendar.setfirstweekday(6)
-                month_calendar = calendar.monthcalendar(year, 7)
-                weeks = month_calendar[based_on_week]
-                day = weeks[based_on_week_day]
-                company_leave_dates.append(date(year=year, month=7, day=day))
+                month_calendar = calendar.monthcalendar(year, month)
+                weeks = month_calendar[int(based_on_week)]
+                weekdays_in_weeks = [day for day in weeks if day != 0]
+                for day in weekdays_in_weeks:
+                    leave_date = datetime.strptime(
+                        f"{year}-{month:02}-{day:02}", "%Y-%m-%d"
+                    ).date()
+                    if (
+                        leave_date.weekday() == int(based_on_week_day)
+                        and leave_date not in company_leave_dates
+                    ):
+                        company_leave_dates.append(leave_date)
             else:
                 # Set Monday as the first day of the week
                 calendar.setfirstweekday(0)
                 month_calendar = calendar.monthcalendar(year, month)
                 for week in month_calendar:
-                    if week[int(based_on_week_day) - 1] != 0:
+                    if week[int(based_on_week_day)] != 0:
                         leave_date = datetime.strptime(
-                            f"{year}-{month:02}-{week[int(based_on_week_day)-1]:02}",
+                            f"{year}-{month:02}-{week[int(based_on_week_day)]:02}",
                             "%Y-%m-%d",
                         ).date()
                         if leave_date not in company_leave_dates:
                             company_leave_dates.append(leave_date)
-    return list(set(company_leave_dates))
+    return company_leave_dates
 
 
 def get_date_range(start_date, end_date):

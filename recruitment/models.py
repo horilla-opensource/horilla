@@ -4,7 +4,10 @@ models.py
 This module is used to register models for recruitment app
 
 """
+import re
 import os
+import json
+from django import forms
 import django
 from django.db import models
 from django.core.exceptions import ValidationError
@@ -14,6 +17,24 @@ from employee.models import Employee
 from base.models import JobPosition, Company
 
 # Create your models here.
+
+
+def validate_mobile(value):
+    """
+    This method is used to validate the mobile number using regular expression
+    """
+    pattern = r"^\+[0-9 ]+$|^[0-9 ]+$"
+
+    if re.match(pattern, value) is None:
+        if "+" in value:
+            raise forms.ValidationError(
+                "Invalid input: Plus symbol (+) should only appear at the beginning \
+                    or no other characters allowed."
+            )
+        else:
+            raise forms.ValidationError(
+                "Invalid input: Only digits and spaces are allowed."
+            )
 
 
 def validate_pdf(value):
@@ -39,7 +60,18 @@ class Recruitment(models.Model):
 
     title = models.CharField(max_length=30, null=True, blank=True)
     description = models.TextField(null=True)
-    is_event_based = models.BooleanField(default=False)
+    is_event_based = models.BooleanField(
+        default=False, help_text="To start bulk recruitment form multiple job positions"
+    )
+    closed = models.BooleanField(
+        default=False,
+        help_text="To close the recruitment, If closed then not visible on pipeline view.",
+    )
+    is_active = models.BooleanField(
+        default=True,
+        help_text="To archive and un-archive a recruitment, if active is false then it \
+            will not appear on recruitment list view.",
+    )
     open_positions = models.ManyToManyField(
         JobPosition, related_name="open_positions", blank=True
     )
@@ -63,8 +95,6 @@ class Recruitment(models.Model):
     )
     start_date = models.DateField(default=django.utils.timezone.now)
     end_date = models.DateField(blank=True, null=True)
-    closed = models.BooleanField(default=False)
-    is_active = models.BooleanField(default=True)
     objects = models.Manager()
 
     class Meta:
@@ -96,6 +126,10 @@ class Recruitment(models.Model):
     def clean(self):
         if self.title is None:
             raise ValidationError({"title": "This field is required"})
+        if self.start_date is not None and self.start_date > self.end_date:
+            raise ValidationError(
+                {"start_date": "Start date cannot be greater than end date."}
+            )
         if not self.is_event_based and self.job_position_id is None:
             raise ValidationError({"job_position_id": "This field is required"})
         return super().clean()
@@ -128,7 +162,7 @@ class Stage(models.Model):
     stage_type = models.CharField(
         max_length=20, choices=stage_types, default="interview"
     )
-    sequence = models.IntegerField(null=True,default=0)
+    sequence = models.IntegerField(null=True, default=0)
     is_active = models.BooleanField(default=True)
     objects = models.Manager()
 
@@ -143,7 +177,6 @@ class Stage(models.Model):
         permissions = (("archive_Stage", "Archive Stage"),)
         unique_together = ["recruitment_id", "stage"]
         ordering = ["sequence"]
-
 
 
 class Candidate(models.Model):
@@ -177,7 +210,13 @@ class Candidate(models.Model):
         max_length=254,
         unique=True,
     )
-    mobile = models.CharField(max_length=15, blank=True)
+    mobile = models.CharField(
+        max_length=15,
+        blank=True,
+        validators=[
+            validate_mobile,
+        ],
+    )
     resume = models.FileField(
         upload_to="recruitment/resume",
         validators=[
@@ -206,7 +245,7 @@ class Candidate(models.Model):
     history = HistoricalRecords(
         related_name="candidate_history",
     )
-    sequence = models.IntegerField(null=True,default=0)
+    sequence = models.IntegerField(null=True, default=0)
     objects = models.Manager()
 
     def __str__(self):
@@ -256,3 +295,79 @@ class StageNote(models.Model):
 
     def __str__(self) -> str:
         return f"{self.description}"
+
+
+class RecruitmentSurvey(models.Model):
+    """
+    RecruitmentSurvey model
+    """
+
+    question_types = [
+        ("checkbox", "Yes/No"),
+        ("options", "Choices"),
+        ("multiple", "Multiple Choice"),
+        ("text", "Text"),
+        ("number", "Number"),
+        ("percentage", "Percentage"),
+        ("date", "Date"),
+        ("textarea", "Textarea"),
+        ("file", "File Upload"),
+        ("rating", "Rating"),
+    ]
+    question = models.TextField(null=False)
+    recruitment_ids = models.ManyToManyField(Recruitment,verbose_name="Recruitment")
+    job_position_ids = models.ManyToManyField(
+        JobPosition,
+        verbose_name="Job Positions"
+    )
+    sequence = models.IntegerField(null=True, default=0)
+    type = models.CharField(
+        max_length=15,
+        choices=question_types,
+    )
+    options = models.TextField(
+        null=True, default="", help_text="Separate choices by ', '"
+    )
+
+
+    def __str__(self) -> str:
+        return str(self.question)
+
+    def choices(self):
+        """
+        Used to split the choices
+        """
+        return self.options.split(", ")
+
+
+class RecruitmentSurveyAnswer(models.Model):
+    """
+    RecruitmentSurveyAnswer
+    """
+
+    candidate_id = models.ForeignKey(Candidate, on_delete=models.CASCADE)
+    recruitment_id = models.ForeignKey(
+        Recruitment, on_delete=models.CASCADE, verbose_name="Recruitment", null=True
+    )
+    job_position_id = models.ForeignKey(
+        JobPosition, on_delete=models.CASCADE, verbose_name="Job position", null=True
+    )
+    answer_json = models.JSONField()
+    attachment = models.FileField(
+        upload_to="recruitment_attachment", null=True, blank=True
+    )
+
+
+    @property
+    def answer(self):
+        """
+        Used to convert the json to dict
+        """
+        # Convert the JSON data to a dictionary
+        try:
+            return json.loads(self.answer_json)
+        except json.JSONDecodeError:
+            return {}  # Return an empty dictionary if JSON is invalid or empty
+
+    def __str__(self) -> str:
+        return f"{self.candidate_id.name}-{self.recruitment_id}"

@@ -57,35 +57,35 @@
                     </div>
                   </div>
                 
-                  <div class="oh-sticky-table__td {% if 'attendance_date' in attendance.requested_fields %} diff-cell{% endif %}" >
+                  <div class="oh-sticky-table__td {% if 'attendance_date' in attendance.requested_fields or attendance.request_type == 'create_request' %} diff-cell{% endif %}" >
                     {{attendance.attendance_date}}
                   </div>
-                  <div class="oh-sticky-table__td {% if 'attendance_day' in attendance.requested_fields %} diff-cell{% endif %}" >
+                  <div class="oh-sticky-table__td {% if 'attendance_day' in attendance.requested_fields or attendance.request_type == 'create_request' %} diff-cell{% endif %}" >
                     {{attendance.attendance_day|capfirst}}
                   </div>
-                  <div class="oh-sticky-table__td {% if 'atteendance_clock_in' in attendance.requested_fields %} diff-cell{% endif %}" >
+                  <div class="oh-sticky-table__td {% if 'atteendance_clock_in' in attendance.requested_fields or attendance.request_type == 'create_request' %} diff-cell{% endif %}" >
                     {{attendance.attendance_clock_in}}
                   </div>
-                  <div class="oh-sticky-table__td {% if 'attendance_clock_in_date' in attendance.requested_fields %} diff-cell{% endif %}" >
+                  <div class="oh-sticky-table__td {% if 'attendance_clock_in_date' in attendance.requested_fields or attendance.request_type == 'create_request' %} diff-cell{% endif %}" >
                     {{attendance.attendance_clock_in_date}}
                   </div>
-                  <div class="oh-sticky-table__td {% if 'attendance_clock_out' in attendance.requested_fields %} diff-cell{% endif %}" >
+                  <div class="oh-sticky-table__td {% if 'attendance_clock_out' in attendance.requested_fields or attendance.request_type == 'create_request' %} diff-cell{% endif %}" >
                     {{attendance.attendance_clock_out}}
                   </div>
-                  <div class="oh-sticky-table__td {% if 'attendance_clock_out_date' in attendance.requested_fields %} diff-cell{% endif %}" >
+                  <div class="oh-sticky-table__td {% if 'attendance_clock_out_date' in attendance.requested_fields or attendance.request_type == 'create_request' %} diff-cell{% endif %}" >
                     {{attendance.attendance_clock_out_date}}
                   </div>
-                  <div class="oh-sticky-table__td {% if 'shift_id' in attendance.requested_fields %} diff-cell{% endif %}" >{{attendance.shift_id}}</div>
-                  <div class="oh-sticky-table__td {% if 'work_type_id' in attendance.requested_fields %} diff-cell{% endif %}" >
+                  <div class="oh-sticky-table__td {% if 'shift_id' in attendance.requested_fields or attendance.request_type == 'create_request' %} diff-cell{% endif %}" >{{attendance.shift_id}}</div>
+                  <div class="oh-sticky-table__td {% if 'work_type_id' in attendance.requested_fields or attendance.request_type == 'create_request' %} diff-cell{% endif %}" >
                     {{attendance.work_type_id}}
                   </div>
-                  <div class="oh-sticky-table__td {% if 'minimum_hour' in attendance.requested_fields %} diff-cell{% endif %}" >
+                  <div class="oh-sticky-table__td {% if 'minimum_hour' in attendance.requested_fields or attendance.request_type == 'create_request' %} diff-cell{% endif %}" >
                     {{attendance.minimum_hour}}
                   </div>
-                  <div class="oh-sticky-table__td {% if 'attendance_worked_hour' in attendance.requested_fields %} diff-cell{% endif %}" >
+                  <div class="oh-sticky-table__td {% if 'attendance_worked_hour' in attendance.requested_fields or attendance.request_type == 'create_request' %} diff-cell{% endif %}" >
                     {{attendance.attendance_worked_hour}}
                   </div>
-                  <div class="oh-sticky-table__td {% if 'attendance_overtime' in attendance.requested_fields %} diff-cell{% endif %}" >
+                  <div class="oh-sticky-table__td {% if 'attendance_overtime' in attendance.requested_fields or attendance.request_type == 'create_request' %} diff-cell{% endif %}" >
                     {{attendance.attendance_overtime}}
                   </div>
                   <div class="oh-sticky-table__td oh-sticky-table__right">
@@ -109,7 +109,7 @@
                         type="submit"
                         class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
                         title="Re-validate Request"
-                        onclick="return confirm('Are you sure want to cancel the request?')"
+                        onclick="return confirm('{% trans "Are you sure want to cancel the request?" %}')"
                         href="{% url 'cancel-validate-attendance-request' attendance.id %}"
                       >
                       <ion-icon name="close-circle-outline"></ion-icon>

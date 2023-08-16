@@ -5,7 +5,7 @@
   {% endfor %}
 </div>
 {% endif %}
-<form hx-post="{% url 'recruitment-update' form.instance.id %}">
+<form hx-post="{% url 'recruitment-update' form.instance.id %}" class='oh-general__tab-target oh-profile-section'>
   {% csrf_token %}
   <div>
     {% csrf_token %}
@@ -19,7 +19,7 @@
         {{form.description}} {{form.description.errors}}
       </div>
       <div class="col-12 col-sm-12 col-md-12 col-lg-4">
-        <label class="oh-label" for="id_is_event_based"
+        <label class="oh-label" for="id_is_event_based" title="{{form.is_event_based.help_text|safe}}" 
           >{% trans "Is Event Based?" %}</label
         >
         <div
@@ -30,7 +30,7 @@
         </div>
       </div>
       <div class="col-12 col-sm-12 col-md-12 col-lg-4">
-        <label class="oh-label" for="id_closed">{% trans "Is Closed?" %}</label>
+        <label class="oh-label" for="id_closed" title="{{form.closed.help_text|safe}}" >{% trans "Is Closed?" %}</label>
         <div
           class="w-100 d-flex"
           style="align-items: center; justify-content: center !important"
@@ -39,7 +39,7 @@
         </div>
       </div>
       <div class="col-12 col-sm-12 col-md-12 col-lg-4">
-        <label class="oh-label" for="id_is_active"
+        <label class="oh-label" for="id_is_active" title="{{form.is_active.help_text|safe}}" 
           >{% trans "Is Active?" %}</label
         >
         <div
@@ -94,6 +94,7 @@
 
 <script>
   $(document).ready(function () {
+    $("#recruitmentUpdateContainer #id_description").hide();
     function togglePosition() {
       if ($("#updateFormContainer #id_is_event_based").is(":checked")) {
         $("#updateFormContainer #jobPositionUpdateContainer").hide();
