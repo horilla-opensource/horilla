@@ -154,7 +154,7 @@ urlpatterns = [
         views.candidate_history,
         name="candidate-history",
     ),
-    path("application-form", views.application_form, name="application-form"),
+    path("application-form", recruitment.views.surveys.application_form, name="application-form"),
     path(
         "send-acknowledgement", views.send_acknowledgement, name="send-acknowledgement"
     ),

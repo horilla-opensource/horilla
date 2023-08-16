@@ -25,7 +25,6 @@ from notifications.signals import notify
 from horilla import settings
 from horilla.decorators import permission_required, login_required, hx_request_required
 from recruitment.views.paginator_qry import paginator_qry
-from recruitment.views.surveys import candidate_survey
 from recruitment.models import Recruitment, Candidate, Stage, StageNote
 from recruitment.filters import CandidateFilter, RecruitmentFilter, StageFilter
 from recruitment.methods import recruitment_manages
@@ -34,7 +33,6 @@ from recruitment.forms import (
     RecruitmentCreationForm,
     CandidateCreationForm,
     StageCreationForm,
-    ApplicationForm,
     RecruitmentDropDownForm,
     StageDropDownForm,
     CandidateDropDownForm,
@@ -838,31 +836,6 @@ def candidate_history(request, cand_id):
         "candidate/candidate_history.html",
         {"history": candidate_history_queryset},
     )
-
-
-def application_form(request):
-    """
-    This method renders candidate form to create candidate
-    """
-    form = ApplicationForm()
-    if request.POST:
-        form = ApplicationForm(request.POST, request.FILES)
-        if form.is_valid():
-            candidate_obj = form.save(commit=False)
-            recruitment_obj = candidate_obj.recruitment_id
-            stages = recruitment_obj.stage_set.all()
-            if stages.filter(stage_type="initial").exists():
-                candidate_obj.stage_id = stages.filter(stage_type="initial").first()
-            else:
-                candidate_obj.stage_id = stages.order_by("sequence").first()
-            # candidate_obj.save()
-            messages.success(request, _("Application saved."))
-            request.session["candidate"] = serializers.serialize("json", [candidate_obj])
-            return redirect(candidate_survey)
-        form.fields[
-            "job_position_id"
-        ].queryset = form.instance.recruitment_id.open_positions.all()
-    return render(request, "candidate/application_form.html", {"form": form})
 
 
 @login_required

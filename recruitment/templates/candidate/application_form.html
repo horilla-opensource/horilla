@@ -106,11 +106,12 @@
                   </div>
                 </div>
 
+                {% if not request.GET.recruitmentId %}
                 <div class="col-sm-12 col-md-6 col-lg-6">
                   <div class="oh-input-group">
                     <label class="oh-label" for="recuitment"
-                      >{% trans "Open Recruitment" %}
-                    </label>
+                    >{% trans "Open Recruitment" %}
+                  </label>
                     {{form.recruitment_id}}
                     {{form.recruitment_id.errors}}
                   </div>
@@ -118,11 +119,26 @@
                 <div class="col-sm-12 col-md-6 col-lg-6">
                   <div class="oh-input-group">
                     <label class="oh-label" for="recuitment"
-                      >{% trans "Choose Open Position" %}
-                    </label>
-                    {{form.job_position_id}} {{form.job_position_id.errors}}
+                    >{% trans "Choose Open Position" %}
+                  </label>
+                  {{form.job_position_id}} {{form.job_position_id.errors}}
                   </div>
                 </div>
+                {% else %}
+                <input type="text" name="recruitment_id" hidden value="{{recruitment.id}}">
+                <div class="oh-input-group">
+                  <label class="oh-label" for="recuitment"
+                  >{% trans "Choose Job Position" %}
+                </label>
+                
+                <select name="job_position_id" class="oh-select oh-select2 w-100" style="height: 50px;">
+                  {% for job in recruitment.open_positions.all %}
+                  <option value="{{job.id}}">{{job.job_position}}</option>
+                  {% endfor %}
+                </select>
+                </div>
+                {% endif %}
+
                 <div class="col-sm-12 col-md-6 col-lg-6">
                   <div class="oh-input-group">
                     <label class="oh-label" for="email"
@@ -291,10 +307,9 @@
           </div>
         </div>
         
-        <div class="oh-onboarding-preview " >
-          <div class="oh-onboarding-preview__content oh-onboarding-card--top-bar" id="recruitmentInfoBody" style="border-bottom: solid rgba(128, 128, 128, 0.281) 1px;">
-          </div>
-          <div class="oh-onboarding-preview__content oh-onboarding-card--top-bar" id="recruitmentSurveyBody" style="border-bottom: solid rgba(128, 128, 128, 0.281) 1px;">
+        <div class="oh-onboarding-preview oh-onboarding-card--top-bar" >
+          {{recruitment.description|safe}}
+          <div class="oh-onboarding-preview__content" id="recruitmentInfoBody" style="border-bottom: solid rgba(128, 128, 128, 0.281) 1px;">
           </div>
         </div>
       </main>

@@ -29,7 +29,17 @@
       e.preventDefault();
       span = $(this).parent().find(".count-span").toggle()
     });
-  });
+
+  })
+  function copyLink(link){
+    var $temp = $("<input>");
+    var $url = $(location).attr('href');
+    $("body").append($temp);
+    $temp.val(link).select();
+    document.execCommand("copy");
+    $temp.remove();
+    alert("Linke copied")    
+  }
 </script>
 <div class="row">
     <div class="col-12 col-sm-12 col-md-12 col-lg-12">
@@ -126,11 +136,14 @@
                           </div>
                           <div class="oh-sticky-table__td">
                             <div class="oh-btn-group">
+                              <a href="#" class="oh-btn oh-btn--light-bkg w-100" onclick="copyLink(window.location.origin+'/recruitment/application-form?recruitmentId={{rec.id}}')">
+                                <ion-icon name="share-social-outline"></ion-icon>
+                              </a>
                               {% if perms.recruitment.change_recruitment %}
                               <a hx-get="{% url 'recruitment-update' rec.id %}" hx-target='#updateFormContainer' hx-swap='innerHTML' data-toggle='oh-modal-toggle' data-target='#updateRecruitmentModal'  class="oh-btn oh-btn--light-bkg w-100" title="Edit"><ion-icon name="create-outline"></ion-icon></a>
                               {% endif %}
                               {% if perms.recruitment.delete_recruitment %}
-                              <form action="{% url 'recruitment-delete' rec.id  %}" onsubmit="return confirm('{% trans "Are you sure to delete this recruitment?" %}')" method='post'>
+                              <form action="{% url 'recruitment-delete' rec.id  %}" onsubmit="return confirm(`{% trans 'Are you sure to delete this recruitment?' %})" method='post'>
                                 {% csrf_token %}
                                 <button type='submit' class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100" title="Remove"><ion-icon name="trash-outline"></ion-icon></button>
                               </form>

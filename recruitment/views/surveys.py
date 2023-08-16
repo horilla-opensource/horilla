@@ -4,12 +4,14 @@ surveys.py
 This module is used to write views related to the survey features
 """
 import json
+from django.core import serializers
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.http import HttpResponse
+from django.utils.translation import gettext_lazy as _
 from horilla.decorators import login_required, permission_required
 from recruitment.models import Recruitment
-from recruitment.forms import SurveyForm, QuestionForm
+from recruitment.forms import ApplicationForm, SurveyForm, QuestionForm
 from recruitment.models import (
     RecruitmentSurvey,
     Candidate,
@@ -77,7 +79,10 @@ def view_question_template(request):
     return render(
         request,
         "survey/view-question-templates.html",
-        {"questions": paginator_qry(questions,request.GET.get('page')), "f": filter_obj},
+        {
+            "questions": paginator_qry(questions, request.GET.get("page")),
+            "f": filter_obj,
+        },
     )
 
 
@@ -145,3 +150,40 @@ def delete_survey_question(request, survey_id):
     RecruitmentSurvey.objects.get(id=survey_id).delete()
     messages.success(request, "Question was deleted successfully")
     return redirect(view_question_template)
+
+
+def application_form(request):
+    """
+    This method renders candidate form to create candidate
+    """
+    form = ApplicationForm()
+    recruitment = None
+    recruitment_id = request.GET.get("recruitmentId")
+    if recruitment_id is not None:
+        recruitment = Recruitment.objects.filter(id=recruitment_id)
+        if recruitment.exists():
+            recruitment = recruitment.first()
+    if request.POST:
+        form = ApplicationForm(request.POST, request.FILES)
+        if form.is_valid():
+            candidate_obj = form.save(commit=False)
+            recruitment_obj = candidate_obj.recruitment_id
+            stages = recruitment_obj.stage_set.all()
+            if stages.filter(stage_type="initial").exists():
+                candidate_obj.stage_id = stages.filter(stage_type="initial").first()
+            else:
+                candidate_obj.stage_id = stages.order_by("sequence").first()
+            # candidate_obj.save()
+            messages.success(request, _("Application saved."))
+            request.session["candidate"] = serializers.serialize(
+                "json", [candidate_obj]
+            )
+            return redirect(candidate_survey)
+        form.fields[
+            "job_position_id"
+        ].queryset = form.instance.recruitment_id.open_positions.all()
+    return render(
+        request,
+        "candidate/application_form.html",
+        {"form": form, "recruitment": recruitment},
+    )
