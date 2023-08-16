@@ -55,10 +55,12 @@ class ModelForm(forms.ModelForm):
                     {"class": "oh-select oh-select-2 select2-hidden-accessible"}
                 )
             elif isinstance(widget, (forms.Textarea)):
+                if field.label is not None:
+                    label = trans(field.label)
                 field.widget.attrs.update(
                     {
                         "class": "oh-input w-100",
-                        "placeholder": field.label,
+                        "placeholder": label,
                         "rows": 2,
                         "cols": 40,
                     }

@@ -92,66 +92,71 @@
           </div>
       </div>
       <div class="row">
-          <div class="col-12 col-sm-12 col-md-12 col-lg-6">
-              <label class="oh-label d-block" for="state">{% trans "Zip Code" %}</label>
-              {{form.zip}}
-              {{form.zip.errors}}
-          </div>
-          <div class="col-12 col-sm-12 col-md-12 col-lg-6">
-          <label class="oh-label d-block" for="state">{% trans "Emergency Contact" %}</label>
-          {{form.emergency_contact}}
-      {{form.emergency_contact.errors}}
-          </div>
-      </div>
-      <div class="row">
-          <div class="col-12 col-sm-12 col-md-12 col-lg-6">
-              <label class="oh-label d-block" for="emergencyContactName">{% trans "Contact Name" %}</label>
-              {{form.emergency_contact_name}}
-              {{form.emergency_contact_name.errors}}
-          </div>
-          <div class="col-12 col-sm-12 col-md-12 col-lg-6">
-          <label class="oh-label d-block" for="emergencyContactRelation">{% trans "Emergency Contact Relation" %}</label>
-          {{form.emergency_contact_relation}}
-      {{form.emergency_contact_relation.errors}}
-          </div>
-      </div>
-      <div class="row">
-          <div class="col-12 col-sm-12 col-md-12 col-lg-6">
-
-              <label class="oh-label d-block" for="marital_status">{% trans "Maritial Status" %}</label>
-              {{form.marital_status}}
-              {{form.marital_status.errors}}
-          </div>
-          <div class="col-12 col-sm-12 col-md-12 col-lg-6">
-              <label class="oh-label d-block" for="children">{% trans "Children" %}</label>
-              {{form.children}}
-              {{form.children.errors}}
-          </div>
-      </div>
-
-
-      <div class="row">
-          <div class="col-12 col-sm-12 col-md-12 col-lg-6">
+        <div class="col-12 col-sm-12 col-md-12 col-lg-6">
+            <label class="oh-label d-block" for="state">{% trans "City" %}</label>
+            {{form.city}}
+            {{form.city.errors}}
+        </div>
+        <div class="col-12 col-sm-12 col-md-12 col-lg-6">
+            <label class="oh-label d-block" for="state">{% trans "Zip Code" %}</label>
+            {{form.zip}}
+            {{form.zip.errors}}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12 col-sm-12 col-md-12 col-lg-6">
+            <label class="oh-label d-block" for="state">{% trans "Emergency Contact" %}</label>
+            {{form.emergency_contact}}
+            {{form.emergency_contact.errors}}
+        </div>
+        <div class="col-12 col-sm-12 col-md-12 col-lg-6">
+            <label class="oh-label d-block" for="emergencyContactName">{% trans "Contact Name" %}</label>
+            {{form.emergency_contact_name}}
+            {{form.emergency_contact_name.errors}}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12 col-sm-12 col-md-12 col-lg-6">
+            <label class="oh-label d-block" for="emergencyContactRelation">{% trans "Emergency Contact Relation" %}</label>
+            {{form.emergency_contact_relation}}
+            {{form.emergency_contact_relation.errors}}
+        </div>
+        <div class="col-12 col-sm-12 col-md-12 col-lg-6">
           <label class="oh-label d-block" for="experience">{% trans "Experience" %}</label>
           {{form.experience}}
-      {{form.experience.errors}}
-          </div>
-          
-          <div class="col-12 col-sm-12 col-md-12 col-lg-2">
+          {{form.experience.errors}}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12 col-sm-12 col-md-12 col-lg-6">
+
+            <label class="oh-label d-block" for="marital_status">{% trans "Maritial Status" %}</label>
+            {{form.marital_status}}
+            {{form.marital_status.errors}}
+        </div>
+        <div class="col-12 col-sm-12 col-md-12 col-lg-6">
+          <label class="oh-label d-block" for="children">{% trans "Children" %}</label>
+          {{form.children}}
+          {{form.children.errors}}
+        </div>
+    </div>
+
+
+    <div class="row">
+        <div class="col-12 col-sm-12 col-md-12 col-lg-2">
           <label class="oh-label me-2" for="isActive">{% trans "Is Active" %}?</label>
           <div class="oh-switch">
               {{form.is_active}}
               {{form.is_active.errors}}
           </div>
-          </div>
-      </div>
-  
-      <hr class="mt-5 mb-3">
-      <div class="w-100 d-flex align-items-center justify-content-end">
-          <button type="submit" class="oh-btn oh-btn--secondary oh-btn--w-100-resp">
-          {% trans "Save Changes" %}
-          </button>
-      </div>
+        </div>
+    </div>
+      <hr class="mt-5 mb-3 d-flex flex-row-reverse w-100">
+      <div class="col-lg-4 ">
+        <button type="submit" class="oh-btn oh-btn--secondary">
+            {% trans "Save Changes" %}
+        </button>
+    </div>
       </form>
   </div>
 </div>
