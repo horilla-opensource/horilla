@@ -10,6 +10,15 @@
   </head>
   <body>
     <div id="main">
+      {% if messages %}
+    <div class="oh-alert-container">
+        {% for message in messages %}
+        <div class="oh-alert oh-alert--animated {{message.tags}}">
+              {{ message }}
+        </div> 
+        {% endfor %}
+    </div>
+    {% endif %}
       <main class="oh-onboarding">
         <div class="oh-onboarding-card oh-onboarding-card--top-bar">
           <div

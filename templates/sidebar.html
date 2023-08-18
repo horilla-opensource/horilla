@@ -46,19 +46,25 @@
                <ul class="oh-sidebar__submenu-items">
                   {% if perms.recruitment.view_recruitment or request.user|is_stagemanager %} 
                   <li class="oh-sidebar__submenu-item">
-                     <a class="oh-sidebar__submenu-link" href="/recruitment/pipeline" class="oh-sidebar__submenu-link">{% trans "Recruitment Pipeline" %}</a>
+                     <a class="oh-sidebar__submenu-link" href="{% url 'pipeline' %}" class="oh-sidebar__submenu-link">{% trans "Recruitment Pipeline" %}</a>
                   </li>
-                  {% endif %} {% if perms.recruitment.view_candidate %} 
+                  {% endif %}
+                  {% if perms.recruitment.view_recruitmentsurvey %} 
                   <li class="oh-sidebar__submenu-item">
-                     <a class="oh-sidebar__submenu-link" href="/recruitment/candidate-view" class="oh-sidebar__submenu-link">{% trans "Candidate" %}</a>
+                     <a class="oh-sidebar__submenu-link" href="{% url 'recruitment-survey-question-template-view' %}" class="oh-sidebar__submenu-link">{% trans "Recruitment Survey" %}</a>
+                  </li>
+                  {% endif %}
+                  {% if perms.recruitment.view_candidate %} 
+                  <li class="oh-sidebar__submenu-item">
+                     <a class="oh-sidebar__submenu-link" href="{% url 'candidate-view' %}" class="oh-sidebar__submenu-link">{% trans "Candidate" %}</a>
                   </li>
                   {% endif %} {% if perms.recruitment.view_recruitment %} 
                   <li class="oh-sidebar__submenu-item">
-                     <a class="oh-sidebar__submenu-link" href="/recruitment/recruitment-view" class="oh-sidebar__submenu-link">{% trans "Recruitment" %}</a>
+                     <a class="oh-sidebar__submenu-link" href="{% url 'recruitment-view' %}" class="oh-sidebar__submenu-link">{% trans "Recruitment" %}</a>
                   </li>
                   {% endif %} {% if perms.recruitment.view_stage %} 
                   <li class="oh-sidebar__submenu-item">
-                     <a class="oh-sidebar__submenu-link" href="/recruitment/stage-view" class="oh-sidebar__submenu-link">{% trans "Stages" %}</a>
+                     <a class="oh-sidebar__submenu-link" href="{% url 'rec-stage-view' %}" class="oh-sidebar__submenu-link">{% trans "Stages" %}</a>
                   </li>
                   {% endif %} 
                </ul>
@@ -134,6 +140,9 @@
             </a>
             <div class="oh-sidebar__submenu" id="payRollNav" x-show="isOpen" x-transition style="display: none;">
                <ul class="oh-sidebar__submenu-items">
+                  <li class="oh-sidebar__submenu-item">
+                     <a href="{%url 'view-payroll-dashboard' %}" class="oh-sidebar__submenu-link">{% trans "Dashboard" %}</a>
+                  </li>
                {% if perms.payroll.view_allowance  %} 
                   <li class="oh-sidebar__submenu-item">
                      <a href="{%url 'view-contract' %}" class="oh-sidebar__submenu-link">{% trans "Contract" %}</a>

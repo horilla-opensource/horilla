@@ -1,5 +1,16 @@
 {% extends 'index.html' %}
 {% block content %}
+<style>
+  .hired-cand{
+    border-left: solid 4px yellowgreen !important;
+    border-radius: 4px 0 0 4px;
+  }
+  .candidate{
+    border-left: solid 4px rgba(128, 128, 128, 0.482);
+    border-radius: 4px 0 0 4px;
+
+  }
+</style>
 <div class="oh-wrapper">
   {% include 'candidate/candidate_nav.html' %}
   <div id="section" hx-target="#section" hx-swap="innerHTML">

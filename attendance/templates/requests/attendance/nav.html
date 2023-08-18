@@ -1,5 +1,4 @@
-{% load i18n %}
-{% load basefilters %}
+{% load i18n %} {% load basefilters %}
 <style>
   .oh-modal_close--custom {
     border: none;
@@ -30,6 +29,29 @@
     <div
       class="oh-modal__dialog-body"
       id="updateAttendanceRequestModalBody"
+    ></div>
+  </div>
+</div>
+
+<div
+  class="oh-modal"
+  id="newAttendanceRequest"
+  role="dialog"
+  aria-labelledby="newAttendanceRequest"
+  aria-hidden="true"
+>
+  <div class="oh-modal__dialog">
+    <div class="oh-modal__dialog-header">
+      <h2 class="oh-modal__dialog-title" id="addEmployeeModalLabel">
+        {% trans "New Attendances Request" %}
+      </h2>
+      <button class="oh-modal__close" aria-label="Close">
+        <ion-icon name="close-outline"></ion-icon>
+      </button>
+    </div>
+    <div
+      class="oh-modal__dialog-body"
+      id="newAttendanceRequestModalBody"
     ></div>
   </div>
 </div>
@@ -101,42 +123,50 @@
     </a>
   </div>
   <div class="oh-main__titlebar oh-main__titlebar--right">
-    {% if perms.attendance.view_attendance or request.user|is_reportingmanager  %}
+    {% if perms.attendance.view_attendance or request.user|is_reportingmanager %}
     <div
-    class="oh-input-group oh-input__search-group"
-    :class="searchShow ? 'oh-input__search-group--show' : ''"
+      class="oh-input-group oh-input__search-group"
+      :class="searchShow ? 'oh-input__search-group--show' : ''"
     >
-    <ion-icon
-    name="search-outline"
-    class="oh-input-group__icon oh-input-group__icon--left"
-    ></ion-icon>
-    <input
-    type="text"
-    class="oh-input oh-input__icon"
-    aria-label="Search Input"
-    placeholder="Search"
-    hx-target="#view-container"
-    hx-get="{% url 'search-attendance-requests' %}"
-    name="search"
-    hx-trigger="keyup changed delay:.2s"
-    
-    />
-  </div>
-  <div class="oh-main__titlebar-button-container">
-    <div class="oh-dropdown" x-data="{open: false}">
-      <button class="oh-btn ml-2" @click="open = !open">
-        <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}
-      </button>
-      <div
-      class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4"
-      x-show="open"
-      @click.outside="open = false"
-          style="display: none;"
-          >
+      <ion-icon
+        name="search-outline"
+        class="oh-input-group__icon oh-input-group__icon--left"
+      ></ion-icon>
+      <input
+        type="text"
+        class="oh-input oh-input__icon"
+        aria-label="Search Input"
+        placeholder={% trans "Search" %}
+        hx-target="#view-container"
+        hx-get="{% url 'search-attendance-requests' %}"
+        name="search"
+        hx-trigger="keyup changed delay:.2s"
+      />
+    </div>
+    <div class="oh-main__titlebar-button-container">
+      <div class="oh-dropdown" x-data="{open: false}">
+        <button class="oh-btn ml-2" @click="open = !open">
+          <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}
+        </button>
+        <div
+          class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4"
+          x-show="open"
+          @click.outside="open = false"
+          style="display: none"
+        >
           {% include 'requests/attendance/filter.html' %}
         </div>
       </div>
     </div>
     {% endif %}
+    <button
+      class="oh-btn oh-btn--secondary ml-2"
+      data-toggle="oh-modal-toggle"
+      data-target="#newAttendanceRequest"
+      hx-get="{% url 'request-new-attendance' %}"
+      hx-target="#newAttendanceRequestModalBody"
+    >
+      <ion-icon name="add-sharp" class="mr-1"></ion-icon>{% trans "New Request" %}
+    </button>
   </div>
 </section>

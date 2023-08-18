@@ -1,6 +1,6 @@
 $(document).ready(function () {
   //Todays leave count department wise chart
-  var myChart1 = document.getElementById("overAllLeave").getContext("2d");
+  var myChart1 = document.getElementById("leaveEmployee");
   var overAllLeave = new Chart(myChart1, {
     type: 'doughnut',
     data: {

@@ -1,7 +1,7 @@
   {% load i18n %}
   <div id="ack-message-{{cand.id}}" >
   </div>
-  <form hx-post='{% url "send-acknowledgement" %} ' id = 'ack-form-{{cand.id}}' hx-target="#ack-message-{{cand.id}}" hx-replace-all>
+  <form hx-post='{% url "send-acknowledgement" %} ' class="oh-general__tab-target oh-profile-section" id = 'ack-form-{{cand.id}}' hx-target="#ack-message-{{cand.id}}" hx-replace-all>
   <div class="modal-body">
     <div class="form-group">
       <label for="to-email"><h6>{% trans "To" %}</h6></label>

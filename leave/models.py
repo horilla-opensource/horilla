@@ -1,16 +1,11 @@
-"""
-models.py
-
-This module is used to regster models for the leave app
-"""
 import calendar
 from datetime import datetime, timedelta
+from django.db import models
+from django.utils import timezone
 from dateutil.relativedelta import relativedelta
 from django.utils.translation import gettext_lazy as _
-from django.utils import timezone
-from django.db import models
 from employee.models import Employee
-from leave.methods import calculate_requested_days
+from .methods import calculate_requested_days
 
 
 # Create your models here.
@@ -27,22 +22,22 @@ RESET_BASED = [
     ("weekly", _("Weekly")),
 ]
 MONTHS = [
-    ("1", "Jan"),
-    ("2", "Feb"),
-    ("3", "Mar"),
-    ("4", "Apr"),
-    ("5", "May"),
-    ("6", "Jun"),
-    ("7", "Jul"),
-    ("8", "Aug"),
-    ("9", "Sep"),
-    ("10", "Oct"),
-    ("11", "Nov"),
-    ("12", "Dec"),
+    ("1", _("Jan")),
+    ("2", _("Feb")),
+    ("3", _("Mar")),
+    ("4", _("Apr")),
+    ("5", _("May")),
+    ("6", _("Jun")),
+    ("7", _("Jul")),
+    ("8", _("Aug")),
+    ("9", _("Sep")),
+    ("10", _("Oct")),
+    ("11", _("Nov")),
+    ("12", _("Dec")),
 ]
 
 DAYS = [
-    ("last day", "Last Day"),
+    ("last day", _("Last Day")),
     ("1", "1st"),
     ("2", "2nd"),
     ("3", "3rd"),
@@ -102,18 +97,18 @@ WEEKS = [
     ("1", _("Second Week")),
     ("2", _("Third Week")),
     ("3", _("Fourth Week")),
-    ("5", _("Fifth Week")),
+    ("4", _("Fifth Week")),
 ]
 
 
 WEEK_DAYS = [
-    ("1", _("Monday")),
-    ("2", _("Tuesday")),
-    ("3", _("Wednesday")),
-    ("4", _("Thursday")),
-    ("5", _("Friday")),
-    ("6", _("Saturday")),
-    ("7", _("Sunday")),
+    ("0", _("Monday")),
+    ("1", _("Tuesday")),
+    ("2", _("Wednesday")),
+    ("3", _("Thursday")),
+    ("4", _("Friday")),
+    ("5", _("Saturday")),
+    ("6", _("Sunday")),
 ]
 
 
@@ -150,6 +145,7 @@ class LeaveType(models.Model):
     )
     exclude_company_leave = models.CharField(max_length=30, choices=CHOICES)
     exclude_holiday = models.CharField(max_length=30, choices=CHOICES)
+    objects = models.Manager()
 
     def __str__(self):
         return self.name
@@ -197,6 +193,7 @@ class AvailableLeave(models.Model):
     assigned_date = models.DateField(default=timezone.now)
     reset_date = models.DateField(blank=True, null=True)
     expired_date = models.DateField(blank=True, null=True)
+    objects = models.Manager()
 
     class Meta:
         unique_together = ("leave_type_id", "employee_id")
@@ -221,45 +218,61 @@ class AvailableLeave(models.Model):
         available_leave.save()
 
     # Setting the reset date for carryforward leaves
-    def set_reset_date(self,assigned_date,available_leave):
-        if available_leave.leave_type_id.reset_based == 'monthly': 
-            reset_day = available_leave.leave_type_id.reset_day  
-            if reset_day == 'last day' :
-                target_reset_date = assigned_date + relativedelta(months=0,day=31)
-                if assigned_date < target_reset_date:
-                    reset_date = target_reset_date
-                else: 
-                    reset_date = assigned_date + relativedelta(months=1,day=31)
-                   
-            else:  
-                target_reset_date = assigned_date + relativedelta(months=0,day=int(reset_day))
-                if assigned_date < target_reset_date:
-                    reset_date = target_reset_date
-                else: 
-                    reset_date = assigned_date + relativedelta(months=1,day=int(reset_day))
-        elif available_leave.leave_type_id.reset_based == 'weekly':
-            target_reset_date = 7 - (assigned_date.isoweekday() - int(available_leave.leave_type_id.reset_weekend))
-            if target_reset_date != 7 :
-                reset_date = assigned_date + relativedelta(days=(target_reset_date % 7))
+    def set_reset_date(self, assigned_date, available_leave):
+        if available_leave.leave_type_id.reset_based == "monthly":
+            reset_day = available_leave.leave_type_id.reset_day
+            if reset_day == "last day":
+                temp_date = assigned_date + relativedelta(months=0, day=31)
+                if assigned_date < temp_date:
+                    reset_date = temp_date
+                else:
+                    reset_date = assigned_date + relativedelta(months=1, day=31)
+
+            else:
+                temp_date = assigned_date + relativedelta(months=0, day=int(reset_day))
+                if assigned_date < temp_date:
+                    reset_date = temp_date
+                else:
+                    reset_date = assigned_date + relativedelta(
+                        months=1, day=int(reset_day)
+                    )
+
+        elif available_leave.leave_type_id.reset_based == "weekly":
+            temp = 7 - (
+                assigned_date.isoweekday()
+                - int(available_leave.leave_type_id.reset_weekend)
+                - 1
+            )
+            if temp != 7:
+                reset_date = assigned_date + relativedelta(days=(temp % 7))
             else:
                 reset_date = assigned_date + relativedelta(days=7)
         else:
             reset_month = int(available_leave.leave_type_id.reset_month)
-            reset_day = available_leave.leave_type_id.reset_day   
+            reset_day = available_leave.leave_type_id.reset_day
 
-            if reset_day == 'last day' :
-                target_reset_date = assigned_date + relativedelta(years=0,month = reset_month,day=31)
-                if assigned_date < target_reset_date:
-                    reset_date = target_reset_date
-                else: 
-                    reset_date = assigned_date + relativedelta(years=1,month = reset_month,day=31)            
-            else:
-                target_reset_date = assigned_date + relativedelta(years=0,month = reset_month,day=int(reset_day))
-                if assigned_date < target_reset_date:
-                    reset_date = target_reset_date
+            if reset_day == "last day":
+                temp_date = assigned_date + relativedelta(
+                    years=0, month=reset_month, day=31
+                )
+                if assigned_date < temp_date:
+                    reset_date = temp_date
                 else:
-                    # nth_day = int(reset_day) 
-                    reset_date = assigned_date + relativedelta(years=1,month=reset_month,day=int(reset_day))    
+                    reset_date = assigned_date + relativedelta(
+                        years=1, month=reset_month, day=31
+                    )
+            else:
+                temp_date = assigned_date + relativedelta(
+                    years=0, month=reset_month, day=int(reset_day)
+                )
+                if assigned_date < temp_date:
+                    reset_date = temp_date
+                else:
+                    # nth_day = int(reset_day)
+                    reset_date = assigned_date + relativedelta(
+                        years=1, month=reset_month, day=int(reset_day)
+                    )
+
         return reset_date
 
     # Setting the expiration date for carryforward leaves
@@ -324,6 +337,7 @@ class LeaveRequest(models.Model):
     approved_available_days = models.FloatField(default=0)
     approved_carryforward_days = models.FloatField(default=0)
     created_at = models.DateTimeField(auto_now="True")
+    objects = models.Manager()
 
     def __str__(self):
         return f"{self.employee_id} | {self.leave_type_id} | {self.status}"
@@ -373,23 +387,31 @@ class LeaveRequest(models.Model):
                 if based_on_week != None:
                     # Set Sunday as the first day of the week
                     calendar.setfirstweekday(6)
-                    month_calendar = calendar.monthcalendar(year, 7)
-                    weeks = month_calendar[based_on_week]
-                    day = weeks[based_on_week_day]
-                    company_leave_dates.append(date(year=year, month=7, day=day))
+                    month_calendar = calendar.monthcalendar(year, month)
+                    weeks = month_calendar[int(based_on_week)]
+                    weekdays_in_weeks = [day for day in weeks if day != 0]
+                    for day in weekdays_in_weeks:
+                        date = datetime.strptime(
+                            f"{year}-{month:02}-{day:02}", "%Y-%m-%d"
+                        ).date()
+                        if (
+                            date.weekday() == int(based_on_week_day)
+                            and date not in company_leave_dates
+                        ):
+                            company_leave_dates.append(date)
                 else:
                     # Set Monday as the first day of the week
                     calendar.setfirstweekday(0)
                     month_calendar = calendar.monthcalendar(year, month)
                     for week in month_calendar:
-                        if week[int(based_on_week_day) - 1] != 0:
+                        if week[int(based_on_week_day)] != 0:
                             date = datetime.strptime(
-                                f"{year}-{month:02}-{week[int(based_on_week_day) - 1]:02}",
+                                f"{year}-{month:02}-{week[int(based_on_week_day)]:02}",
                                 "%Y-%m-%d",
                             ).date()
                             if date not in company_leave_dates:
                                 company_leave_dates.append(date)
-        return list(set(company_leave_dates))
+        return company_leave_dates
 
     def save(self, *args, **kwargs):
         self.requested_days = calculate_requested_days(

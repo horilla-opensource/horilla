@@ -1,3 +1,181 @@
-{% extends 'index.html' %} {% block content %}
+{% extends 'index.html' %} 
+{% block content %}
+{% load static i18n %}
+{% load i18n %}
 
+<!-- End of Navigation -->
+<main :class="sidebarOpen ? 'oh-main__sidebar-visible' : ''">
+    <div class="oh-wrapper">
+        <div class="d-none mt-5" id="back_button" style="width:10%">
+            <a href={% url 'view-payroll-dashboard' %}
+              class="oh-btn oh-btn--secondary oh-btn--shadow ms-3"
+            >
+              <ion-icon
+                class="me-2 md hydrated"
+                name="arrow-back-outline"
+                role="img"
+                aria-label="arrow-back-outline"
+              ></ion-icon
+              >{% trans "Back" %}</a
+            >
+        </div>
+        <div class="oh-dashboard row" id="dashboard">
+            <div class="oh-dashboard__left col-12 col-sm-12 col-md-12 col-lg-12">
+                <div class="oh-dashboard__cards row">
+                    <div class="col-12 col-sm-12 col-md-6 col-lg-4 filter">
+                        <div class="oh-card-dashboard oh-card-dashboard oh-card-dashboard--success" 
+                            hx-get="/payroll/filter-payslip?status=paid"
+                            hx-target="#dashboard">
+                            <div class="oh-card-dashboard__header">
+                                <span class="oh-card-dashboard__title">{% trans "Paid" %}</span>
+                            </div>
+                            <div class="oh-card-dashboard__body">
+                                    <span class="oh-card-dashboard__count">{{paid|length}}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-12 col-md-6 col-lg-4 filter">
+                        <div class="oh-card-dashboard oh-card-dashboard--warning"
+                            hx-get="/payroll/filter-payslip?status=confirmed"
+                            hx-target="#dashboard"
+                        >
+                            <div class="oh-card-dashboard__header">
+                                <span class="oh-card-dashboard__title">{% trans "Posted" %}</span>
+                            </div>
+                            <div class="oh-card-dashboard__body">
+                                <a href="#" style="text-decoration: none;" class="oh-card-dashboard__counts">
+                                    <span class="oh-card-dashboard__count">{{posted|length}}</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-12 col-md-6 col-lg-4 filter">
+                        <div class="oh-card-dashboard oh-card-dashboard--danger"
+                            hx-get="/payroll/filter-payslip?status=review_ongoing"
+                            hx-target="#dashboard"
+                        >
+                            <div style="text-decoration: none;" class="oh-card-dashboard__header">
+                                <span class="oh-card-dashboard__title">{% trans "Review Ongoing" %}</span>
+                            </div>
+                            <div class="oh-card-dashboard__body">
+                                <a style="text-decoration: none;" class="oh-card-dashboard__counts">
+                                    <span class="oh-card-dashboard__count"> {{review_ongoing|length}} </span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="oh-btn-group ms-2 mt-3 justify-content-between">
+                    <div>
+                        <label for="monthYearField" class="text-danger fw-bold">{% trans "Select Month and Year:" %}</label>
+                        <input class="oh-select p-3 m-1" type="month" id="monthYearField" name="monthYearField"> 
+                    </div>
+                    
+                    <div class="oh-main__titlebar-button-container">
+
+                        <div class="oh-dropdown" x-data="{open: false}">
+                          <button class="oh-btn oh-btn--secondary oh-btn--shadow ml-2" @click="open = !open">
+                            <ion-icon name="download-outline" class="mr-1"></ion-icon>{% trans "Export" %}
+                          </button>
+                          <div
+                          class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4"
+                          x-show="open"
+                          @click.outside="open = false"
+                          style="display: none;"
+                          >
+                          
+                          <div class="row">
+                            <div class="col-sm-12 col-md-12 col-lg-6">
+                              <div class="oh-input-group">
+                                <label class="oh-label">{% trans "Start Date From" %}</label>
+                                <input class="mb-3 oh-select p-3" type="date" name="start_date" id="start_date">
+                              </div>
+                            </div>
+                            <div class="col-sm-12 col-md-12 col-lg-6">
+                              <div class="oh-input-group">
+                                <label class="oh-label">{% trans "End Date" %}</label>
+                                <input class="mb-3 oh-select p-3" type="date" name="end_date" id="end_date">
+                              </div>
+                            </div>
+                            <div class="col-sm-12 col-md-12 col-lg-6 w-100">
+                                <div class="oh-input-group">
+                                  <label class="oh-label">{% trans "Employee" %}</label>
+                                  <select class="mb-3 select2-selection select2-selection--single p-3 w-100 " type="text" name="end_date" id="select_employee"><select>
+                                </div>
+                            </div>
+                            <div class="" >
+                                <a
+                                  class="oh-btn oh-btn--secondary oh-btn--shadow" id="export"
+                                >
+                                  <ion-icon
+                                    class="me-2 md hydrated"
+                                    name="download-outline"
+                                    role="img"
+                                    aria-label="download-outline"
+                                  ></ion-icon
+                                  >{% trans "Export" %}</a
+                                >
+                              </div>
+                          </div>
+                          </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="oh-dashboard__movable-cards row mt-4">
+                    <div class="col-12 col-sm-12 col-md-12 col-lg-6 oh-card-dashboard--moveable mb-4">
+                        <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent">
+                            <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
+                                <span class="oh-card-dashboard__title" id="employee-previous"><ion-icon name="caret-back-outline"></ion-icon></span>
+                                <span class="oh-card-dashboard__title">{% trans "Employee Payslips" %}</span>
+                                <span class="oh-card-dashboard__title float-end" id="payroll-employee-next"><ion-icon name="caret-forward"></ion-icon></span>
+
+                            </div>
+                            <div class="oh-card-dashboard__body" id="employee_canvas_body">
+                                <canvas id="employeeChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-12 col-md-12 col-lg-6 oh-card-dashboard--moveable">
+                        <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent">
+                            <h6 class="ms-4 m-2 fw-bold">{% trans "Total Payslips Genarated :" %}  <b><span class="payslip-number"></span></b></h6>
+                            <h6 class="ms-4 m-2 fw-bold">{% trans "Total Amount :" %} <b>₹ <span class="payslip-amount"></span></b></h6>
+                            <h5 class="ms-4 m-2 fw-bold" style="color:#9C4000">{% trans "Department Total Amount" %}</h5>
+                            <hr class="line">
+                            <ul id="department_total" style="height: 260px; overflow-y: auto; list-style: disc;"></ul>
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-12 col-md-12 col-lg-6 oh-card-dashboard--moveable">
+                        <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent">
+                            <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
+                                <span class="oh-card-dashboard__title">{% trans "Department Chart" %}</span>
+                            </div>
+                            <div class="oh-card-dashboard__body" id="department_canvas_body" style="width: 50%; margin: 0 auto;">
+                                <canvas id="departmentChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-12 col-md-12 col-lg-6 oh-card-dashboard--moveable">
+                        <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent">
+                            <h4 class="ms-4 m-2 fw-bold text-danger">{% trans "Contracts ending this month" %}  <b><span class=""></span></b></h4>
+                            <h6 class="ms-4 fw-bold" >{% trans "Number of contracts expiring this month :" %} <b class="contract-number"></b></h6>
+                            <hr class="line">
+                            <ul id="contract_ending" style="height: 200px; overflow-y: auto; list-style: disc;">
+
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="oh-modal" id="ContractModal" role="dialog" aria-labelledby="ContractModal" aria-hidden="true">
+        <div class="oh-modal__dialog" style="max-width: 550px" id="contract_target"></div>
+    </div>
+</main>
+
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="{% static 'payroll/dashboard.js' %}"></script>
 {% endblock content %}

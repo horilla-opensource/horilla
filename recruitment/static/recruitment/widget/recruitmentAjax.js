@@ -50,5 +50,13 @@ $(document).ready(function () {
         $("#recruitmentInfoBody").html(formattedDescription);
       },
     });
+    // $.ajax({
+    //   type: "GET",
+    //   url: "/recruitment/recruitment-application-survey",
+    //   data: {recId:recId},
+    //   success: function (response) {
+    //     $("#recruitmentSurveyBody").html(response);
+    //   }
+    // });
   });
 });

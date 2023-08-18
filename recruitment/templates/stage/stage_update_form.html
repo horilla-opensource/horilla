@@ -8,7 +8,7 @@
     {% endfor %}
 </div>
 {% endif %}
-<form method="post" hx-post="{% url 'rec-stage-update' form.instance.id %}">
+<form method="post" class='oh-general__tab-target oh-profile-section' hx-post="{% url 'rec-stage-update' form.instance.id %}">
     {% csrf_token %}
     <div>
         {% csrf_token %}

@@ -1,69 +1,30 @@
-# Standard library imports
 import contextlib
-from datetime import datetime, timedelta, date
-
-# Third-party imports
+from django.shortcuts import render, redirect
+from horilla.decorators import login_required, hx_request_required
+from .forms import *
+from .models import *
 from django.http import JsonResponse, HttpResponse
+from employee.models import Employee
+from .filters import *
 from django.contrib import messages
 from django.db.models import Q
-from django.core.paginator import Paginator
-from django.db.models.functions import TruncYear
-from django.utils.translation import gettext_lazy as _
-from notifications.signals import notify
-from django.shortcuts import render, redirect
-
-# Django imports (grouped together)
-from django.utils.translation import gettext_lazy as _
-
-# Local imports (grouped together)
-from horilla.decorators import (
-    login_required,
-    hx_request_required,
-    permission_required,
-    manager_can_enter,
-)
-from base.models import Department
-from base.methods import filtersubordinates, choosesubordinates
-from employee.models import Employee
-
-from .forms import (
-    LeaveTypeForm,
-    UpdateLeaveTypeForm,
-    LeaveRequestCreationForm,
-    LeaveRequestUpdationForm,
-    LeaveOneAssignForm,
-    AvailableLeaveForm,
-    AvailableLeaveUpdateForm,
-    HolidayForm,
-    CompanyLeaveForm,
-    UserLeaveRequestForm,
-)
-
-from .models import (
-    LeaveType,
-    AvailableLeave,
-    LeaveRequest,
-    Holiday,
-    CompanyLeave,
-    WEEKS,
-    WEEK_DAYS,
-)
-
-from .filters import (
-    LeaveTypeFilter,
-    AssignedLeavefilter,
-    LeaveRequestFilter,
-    HolidayFilter,
-    userLeaveRequestFilter,
-    CompanyLeavefilter,
-)
-
+from datetime import datetime, timedelta, date
+from django.utils import timezone
+from base.models import *
 from .methods import (
     calculate_requested_days,
     leave_requested_dates,
     holiday_dates_list,
     company_leave_dates_list,
 )
+import random
+from django.core.paginator import Paginator
+from django.db.models.functions import TruncYear
+from horilla.decorators import permission_required
+from horilla.decorators import manager_can_enter
+from base.methods import filtersubordinates, choosesubordinates
+from django.utils.translation import gettext_lazy as _
+from notifications.signals import notify
 
 
 @login_required
@@ -247,7 +208,7 @@ def leave_request_creation(request):
                     recipient=leave_request.employee_id.employee_work_info.reporting_manager_id.employee_user_id,
                     verb=f"New leave request created for {leave_request.employee_id}.",
                     verb_ar=f"تم إنشاء طلب إجازة جديد لـ {leave_request.employee_id}.",
-                    verb_de=f"Neuer Urlaubsantrag für {leave_request.employee_id} erstellt.",
+                    verb_de=f"Neuer Urlaubsantrag erstellt für {leave_request.employee_id}.",
                     verb_es=f"Nueva solicitud de permiso creada para {leave_request.employee_id}.",
                     verb_fr=f"Nouvelle demande de congé créée pour {leave_request.employee_id}.",
                     icon="people-circle",
@@ -353,7 +314,7 @@ def leave_request_update(request, id):
                     recipient=leave_request.employee_id.employee_work_info.reporting_manager_id.employee_user_id,
                     verb=f"Leave request updated for {leave_request.employee_id}.",
                     verb_ar=f"تم تحديث طلب الإجازة لـ {leave_request.employee_id}.",
-                    verb_de=f"Urlaubsantrag für {leave_request.employee_id} aktualisiert.",
+                    verb_de=f"Urlaubsantrag aktualisiert für {leave_request.employee_id}.",
                     verb_es=f"Solicitud de permiso actualizada para {leave_request.employee_id}.",
                     verb_fr=f"Demande de congé mise à jour pour {leave_request.employee_id}.",
                     icon="people-circle",
@@ -418,10 +379,8 @@ def leave_request_approve(request, id):
             )
             leave_request.approved_carryforward_days = leave
         else:
-            available_days = available_leave.available_days
-            available_leave.available_days = (
-                available_days - leave_request.requested_days
-            )
+            temp = available_leave.available_days
+            available_leave.available_days = temp - leave_request.requested_days
             leave_request.approved_available_days = leave_request.requested_days
         leave_request.status = "approved"
         available_leave.save()
@@ -432,10 +391,10 @@ def leave_request_approve(request, id):
                 request.user.employee_get,
                 recipient=leave_request.employee_id.employee_user_id,
                 verb="Your Leave request has been approved",
-                verb_ar="تمت الموافقة على طلب الإجازة الخاص بك.",
-                verb_de="Ihr Urlaubsantrag wurde genehmigt.",
-                verb_es="Se ha aprobado su solicitud de permiso.",
-                verb_fr="Votre demande de congé a été approuvée.",
+                verb_ar="تمت الموافقة على طلب الإجازة الخاص بك",
+                verb_de="Ihr Urlaubsantrag wurde genehmigt",
+                verb_es="Se ha aprobado su solicitud de permiso",
+                verb_fr="Votre demande de congé a été approuvée",
                 icon="people-circle",
                 redirect="/leave/user-request-view",
             )
@@ -480,10 +439,10 @@ def leave_request_cancel(request, id):
             request.user.employee_get,
             recipient=leave_request.employee_id.employee_user_id,
             verb="Your Leave request has been cancelled",
-            verb_ar="تم إلغاء طلب الإجازة الخاص بك.",
-            verb_de="Ihr Urlaubsantrag wurde storniert.",
-            verb_es="Se ha cancelado su solicitud de permiso.",
-            verb_fr="Votre demande de congé a été annulée.",
+            verb_ar="تم إلغاء طلب الإجازة الخاص بك",
+            verb_de="Ihr Urlaubsantrag wurde storniert",
+            verb_es="Se ha cancelado su solicitud de permiso",
+            verb_fr="Votre demande de congé a été annulée",
             icon="people-circle",
             redirect="/leave/user-request-view",
         )
@@ -544,10 +503,10 @@ def leave_assign_one(request, id):
                         request.user.employee_get,
                         recipient=employee.employee_user_id,
                         verb="New leave type is assigned to you",
-                        verb_ar="تم تعيين نوع إجازة جديد لك.",
-                        verb_de="Ihnen wurde ein neuer Urlaubstyp zugewiesen.",
-                        verb_es="Se le ha asignado un nuevo tipo de permiso.",
-                        verb_fr="Un nouveau type de congé vous a été attribué.",
+                        verb_ar="تم تعيين نوع إجازة جديد لك",
+                        verb_de="Ihnen wurde ein neuer Urlaubstyp zugewiesen",
+                        verb_es="Se le ha asignado un nuevo tipo de permiso",
+                        verb_fr="Un nouveau type de congé vous a été attribué",
                         icon="people-circle",
                         redirect="/leave/user-leave",
                     )
@@ -581,7 +540,7 @@ def leave_assign_view(request):
     previous_data = request.environ["QUERY_STRING"]
     page_number = request.GET.get("page")
     page_obj = paginator_qry(queryset, page_number)
-    assigned_leave_filter = AssignedLeavefilter()
+    assigned_leave_filter = AssignedLeaveFilter()
     return render(
         request,
         "leave/assign-view.html",
@@ -608,7 +567,7 @@ def leave_assign_filter(request):
     """
     queryset = AvailableLeave.objects.all()
     queryset = filtersubordinates(request, queryset, "leave.view_availableleave")
-    assigned_leave_filter = AssignedLeavefilter(request.GET, queryset).qs
+    assigned_leave_filter = AssignedLeaveFilter(request.GET, queryset).qs
     previous_data = request.environ["QUERY_STRING"]
     page_number = request.GET.get("page")
     page_obj = paginator_qry(assigned_leave_filter, page_number)
@@ -661,10 +620,10 @@ def leave_assign(request):
                                     request.user.employee_get,
                                     recipient=employee.employee_user_id,
                                     verb="New leave type is assigned to you",
-                                    verb_ar="تم تعيين نوع إجازة جديد لك.",
-                                    verb_de="Ihnen wurde ein neuer Urlaubstyp zugewiesen.",
-                                    verb_es="Se te ha asignado un nuevo tipo de permiso.",
-                                    verb_fr="Un nouveau type de congé vous a été attribué.",
+                                    verb_ar="تم تعيين نوع إجازة جديد لك",
+                                    verb_de="Ihnen wurde ein neuer Urlaubstyp zugewiesen",
+                                    verb_es="Se le ha asignado un nuevo tipo de permiso",
+                                    verb_fr="Un nouveau type de congé vous a été attribué",
                                     icon="people-circle",
                                     redirect="/leave/user-leave",
                                 )
@@ -709,7 +668,7 @@ def available_leave_update(request, id):
                     request.user.employee_get,
                     recipient=available_leave.employee_id.employee_user_id,
                     verb=f"Your {available_leave.leave_type_id} leave type updated.",
-                    verb_ar=f"تم تحديث نوع إجازتك {available_leave.leave_type_id}.",
+                    verb_ar=f"تم تحديث نوع الإجازة {available_leave.leave_type_id} الخاص بك.",
                     verb_de=f"Ihr Urlaubstyp {available_leave.leave_type_id} wurde aktualisiert.",
                     verb_es=f"Se ha actualizado su tipo de permiso {available_leave.leave_type_id}.",
                     verb_fr=f"Votre type de congé {available_leave.leave_type_id} a été mis à jour.",
@@ -916,7 +875,7 @@ def company_leave_view(request):
     previous_data = request.environ["QUERY_STRING"]
     page_number = request.GET.get("page")
     page_obj = paginator_qry(queryset, page_number)
-    company_leave_filter = CompanyLeavefilter()
+    company_leave_filter = CompanyLeaveFilter()
     return render(
         request,
         "leave/company-leave-view.html",
@@ -946,7 +905,7 @@ def company_leave_filter(request):
     queryset = CompanyLeave.objects.all()
     previous_data = request.environ["QUERY_STRING"]
     page_number = request.GET.get("page")
-    company_leave_filter = CompanyLeavefilter(request.GET, queryset).qs
+    company_leave_filter = CompanyLeaveFilter(request.GET, queryset).qs
     page_obj = paginator_qry(company_leave_filter, page_number)
     return render(
         request,
@@ -1087,12 +1046,10 @@ def user_leave_request(request, id):
                 leave_request = form.save(commit=False)
                 leave_request.leave_type_id = leave_type
                 leave_request.employee_id = employee
-                leave_request.requested_days = requested_days
-                leave_request.end_date_breakdown = end_date_breakdown
+                leave_request.save()
                 if leave_request.leave_type_id.require_approval == "no":
                     employee_id = leave_request.employee_id
                     leave_type_id = leave_request.leave_type_id
-                    leave_request.requested_days = requested_days
                     available_leave = AvailableLeave.objects.get(
                         leave_type_id=leave_type_id, employee_id=employee_id
                     )
@@ -1127,9 +1084,9 @@ def user_leave_request(request, id):
                         request.user.employee_get,
                         recipient=leave_request.employee_id.employee_work_info.reporting_manager_id.employee_user_id,
                         verb="You have a new leave request to validate.",
-                        verb_ar="لديك طلب إجازة جديد يحتاج إلى التحقق منه.",
+                        verb_ar="لديك طلب إجازة جديد يجب التحقق منه.",
                         verb_de="Sie haben eine neue Urlaubsanfrage zur Validierung.",
-                        verb_es="Tiene una nueva solicitud de permiso para validar.",
+                        verb_es="Tiene una nueva solicitud de permiso que debe validar.",
                         verb_fr="Vous avez une nouvelle demande de congé à valider.",
                         icon="people-circle",
                         redirect="/leave/user-request-view",
@@ -1284,7 +1241,7 @@ def user_leave_view(request):
         previous_data = request.environ["QUERY_STRING"]
         page_number = request.GET.get("page")
         page_obj = paginator_qry(queryset, page_number)
-        assigned_leave_filter = AssignedLeavefilter()
+        assigned_leave_filter = AssignedLeaveFilter()
         return render(
             request,
             "leave/user-leave-view.html",
@@ -1316,7 +1273,7 @@ def user_leave_filter(request):
         queryset = employee.available_leave.all()
         previous_data = request.environ["QUERY_STRING"]
         page_number = request.GET.get("page")
-        assigned_leave_filter = AssignedLeavefilter(request.GET, queryset).qs
+        assigned_leave_filter = AssignedLeaveFilter(request.GET, queryset).qs
         page_obj = paginator_qry(assigned_leave_filter, page_number)
         return render(
             request,
@@ -1345,7 +1302,7 @@ def user_request_view(request):
         previous_data = request.environ["QUERY_STRING"]
         page_number = request.GET.get("page")
         page_obj = paginator_qry(queryset, page_number)
-        user_request_filter = userLeaveRequestFilter()
+        user_request_filter = UserLeaveRequestFilter()
         return render(
             request,
             "leave/user-request-view.html",
@@ -1377,7 +1334,7 @@ def user_request_filter(request):
         queryset = user.leaverequest_set.all()
         previous_data = request.environ["QUERY_STRING"]
         page_number = request.GET.get("page")
-        user_request_filter = userLeaveRequestFilter(request.GET, queryset).qs
+        user_request_filter = UserLeaveRequestFilter(request.GET, queryset).qs
         page_obj = paginator_qry(user_request_filter, page_number)
         return render(
             request,

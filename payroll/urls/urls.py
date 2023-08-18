@@ -59,4 +59,34 @@ urlpatterns = [
         views.contract_info_initial,
         name="contract-info-initial",
     ),
+    path(
+        "view-payroll-dashboard",
+        views.view_payroll_dashboard,
+        name="view-payroll-dashboard",
+    ),
+    path(
+        "dashboard-employee-chart",
+        views.dashboard_employee_chart,
+        name="dashboard-employee-chart",
+    ),
+    path(
+        "dashboard-payslip-details",
+        views.payslip_details,
+        name="dashboard-payslip-details",
+    ),
+    path(
+        "dashboard-department-chart",
+        views.dashboard_department_chart,
+        name="dashboard-department-chart",
+    ),
+    path(
+        "dashboard-contract-ending",
+        views.contract_ending,
+        name="dashboard-contract-ending",
+    ),
+    path(
+        "dashboard-export/<str:date>",
+        views.payslip_export,
+        name="dashboard-export",
+    ),
 ]

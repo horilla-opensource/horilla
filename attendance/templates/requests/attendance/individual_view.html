@@ -1,10 +1,11 @@
+{% load i18n %}{% load l10n %}
 {% load basefilters %}
 <div class="oh-modal__button-container text-center">
   <div class="oh-btn-group d-flex flex-row-reverse">
     {% if request.user|is_reportingmanager or request.user.has_perm.attendance.change_attendance %}
     <a href="{% url 'approve-validate-attendance-request' attendance.id %}" class="oh-btn oh-btn--success" style="width: 20%">
       <ion-icon name="checkmark-outline"></ion-icon>
-      Approve
+      {% trans "Approve" %}
     </a>
     {% endif %}
   </div>
@@ -12,19 +13,19 @@
 
 <table class="table w-100 mt-3 mb-5">
     <tr>
-        <th>Field</th>
-        <th style="border-bottom: solid orange 4px;">Current Value</th>
-        <th style="border-bottom: solid green 4px;">Requested Value</th>
+        <th>{% trans "Field" %}</th>
+        <th style="border-bottom: solid orange 4px;">{% trans "Current Value" %}</th>
+        <th style="border-bottom: solid green 4px;">{% trans "Requested Value" %}</th>
     </tr>
     {% for key, diff in data.items %}
     <tr>
         <td class="pt-2 pb-2">{{key}}</td>
-        <td class="p-2 ml-2">{{diff.0}}</td>
+        <td class="p-2 ml-2">{% if diff.0 %}{{diff.0}}{% endif %}</td>
         <td class="p-2 ml-2">{{diff.1}}</td>
     </tr>
     {% endfor %}
     <tr>
-        <th>Description</th>
+        <th>{% trans "Description" %}</th>
     </tr>
     <tr >
         <td>
@@ -37,12 +38,12 @@
 
     <a href="{% url 'cancel-validate-attendance-request' attendance.id %}"  data-toggle="oh-modal-toggle" class="oh-btn oh-btn--secondary" style="width: 50%">
       <ion-icon name="close-circle-outline"></ion-icon>
-      Cancel
+      {% trans "Cancel" %}
     </a>
     {% if request.user|is_reportingmanager or request.user.has_perm.attendance.change_attendance %}
     <a hx-get="{% url 'edit-validate-attendance' attendance.id %}" hx-target="#editValidateAttendanceRequestModalBody" data-target="#editValidateAttendanceRequest" data-toggle="oh-modal-toggle" class="oh-btn oh-btn--info" style="width: 50%">
       <ion-icon name="create-outline"></ion-icon>
-      Edit
+      {% trans "Edit" %}
     </a>
     {% endif %}
   </div>

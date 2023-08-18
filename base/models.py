@@ -254,7 +254,7 @@ class EmployeeShiftDay(models.Model):
     def __str__(self) -> str:
         return str(_(self.day))
 
-
+from django.utils.translation import gettext_lazy as _
 class EmployeeShift(models.Model):
     """
     EmployeeShift model
