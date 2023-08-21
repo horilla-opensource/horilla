@@ -1,28 +1,46 @@
+"""
+Models for Asset Management System
+
+This module defines Django models to manage assets, their categories, assigning, and requests
+within an Asset Management System.
+"""
 from django.db import models
-from django.contrib.auth.models import User
-from employee.models import Employee
-from datetime import datetime
-import django
+from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
+from employee.models import Employee
 
 
 class AssetCategory(models.Model):
+    """
+    Represents a category for different types of assets.
+    """
+
     asset_category_name = models.CharField(max_length=255, unique=True)
     asset_category_description = models.TextField()
+    objects = models.Manager()
 
     def __str__(self):
         return f"{self.asset_category_name}"
 
 
 class AssetLot(models.Model):
+    """
+    Represents a lot associated with a collection of assets.
+    """
+
     lot_number = models.CharField(max_length=30, null=False, blank=False, unique=True)
     lot_description = models.TextField(null=True, blank=True)
+    objects = models.Manager()
 
     def __str__(self):
         return f"{self.lot_number}"
 
 
 class Asset(models.Model):
+    """
+    Represents a asset with various attributes.
+    """
+
     ASSET_STATUS = [
         ("In use", _("In use")),
         ("Available", _("Available")),
@@ -40,12 +58,33 @@ class Asset(models.Model):
     asset_lot_number_id = models.ForeignKey(
         AssetLot, on_delete=models.CASCADE, null=True, blank=True
     )
+    objects = models.Manager()
 
     def __str__(self):
         return f"{self.asset_name}-{self.asset_tracking_id}"
 
+    def clean(self):
+        existing_asset = Asset.objects.filter(
+            asset_tracking_id=self.asset_tracking_id
+        ).exclude(
+            id=self.pk
+        )  # Exclude the current instance if updating
+        if existing_asset.exists():
+            raise ValidationError(
+                {
+                    "asset_description": _(
+                        "An asset with this tracking ID already exists."
+                    )
+                }
+            )
+        return super().clean()
+
 
 class AssetAssignment(models.Model):
+    """
+    Represents the allocation and return of assets to and from employees.
+    """
+
     STATUS = [
         ("Minor damage", _("Minor damage")),
         ("Major damage", _("Major damage")),
@@ -66,9 +105,14 @@ class AssetAssignment(models.Model):
     return_status = models.CharField(
         choices=STATUS, max_length=30, null=True, blank=True
     )
+    objects = models.Manager()
 
 
 class AssetRequest(models.Model):
+    """
+    Represents a request for assets made by employees.
+    """
+
     STATUS = [
         ("Requested", _("Requested")),
         ("Approved", _("Approved")),
@@ -87,3 +131,4 @@ class AssetRequest(models.Model):
     asset_request_status = models.CharField(
         max_length=30, choices=STATUS, default="Requested", null=True, blank=True
     )
+    objects = models.Manager()
