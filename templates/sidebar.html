@@ -44,6 +44,9 @@
             </a>
             <div class="oh-sidebar__submenu" id="recNav" x-show="isOpen" x-transition style="display: none;">
                <ul class="oh-sidebar__submenu-items">
+                  <li class="oh-sidebar__submenu-item">
+                     <a href="{%url 'recruitment-dashboard' %}" class="oh-sidebar__submenu-link">{% trans "Dashboard" %}</a>
+                  </li>
                   {% if perms.recruitment.view_recruitment or request.user|is_stagemanager %} 
                   <li class="oh-sidebar__submenu-item">
                      <a class="oh-sidebar__submenu-link" href="{% url 'pipeline' %}" class="oh-sidebar__submenu-link">{% trans "Recruitment Pipeline" %}</a>

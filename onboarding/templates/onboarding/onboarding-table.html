@@ -38,7 +38,7 @@
                             {% if request.user|stage_manages:stage or perms.onboarding.delete_onboardingstage %}
                             <li class="oh-dropdown__item">
                                 <a href="{% url 'stage-delete' stage.id %}"
-                                    onclick="return confirm('Do you want to delete this stage?')"
+                                    onclick="return confirm('{% trans "Do you want to delete this stage?" %}')"
                                     class="oh-dropdown__link oh-dropdown__link--danger">{% trans "Delete" %}</a>
                             </li>
                             {% endif %}
@@ -116,10 +116,10 @@
                                     <div class="oh-profile__avatar mr-1">
                                         {% if candidate.candidate_id.profile %}
                                         <img src="{{candidate.candidate_id.profile.url}}"
-                                            class="oh-profile__image" alt="Mary Magdalene" />
+                                            class="oh-profile__image" alt="" />
                                         {% else %}
                                         <img src="https://ui-avatars.com/api/?name={{candidate.candidate_id}}&background=random"
-                                            class="oh-profile__image" alt="Mary Magdalene" />
+                                            class="oh-profile__image" alt="" />
                                         {% endif %}
                                     </div>
                                     <span class="oh-profile__name oh-text--dark">{{candidate.candidate_id}}</span>
