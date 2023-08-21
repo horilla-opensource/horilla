@@ -21,10 +21,8 @@ class YourForm(forms.Form):
         pass
 """
 
-from typing import Any, Dict, Mapping, Optional, Type, Union
 import uuid
 from django import forms
-from django.forms.utils import ErrorList
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 from django.template.loader import render_to_string

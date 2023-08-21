@@ -154,7 +154,11 @@ urlpatterns = [
         views.candidate_history,
         name="candidate-history",
     ),
-    path("application-form", recruitment.views.surveys.application_form, name="application-form"),
+    path(
+        "application-form",
+        recruitment.views.surveys.application_form,
+        name="application-form",
+    ),
     path(
         "send-acknowledgement", views.send_acknowledgement, name="send-acknowledgement"
     ),
@@ -170,6 +174,16 @@ urlpatterns = [
         "get-open-positions",
         recruitment.views.dashboard.get_open_position,
         name="get-open-position",
+    ),
+    path(
+        "dashboard-hiring",
+        recruitment.views.dashboard.dashboard_hiring,
+        name="dashboard-hiring",
+    ),
+    path(
+        "dashboard-vacancy",
+        recruitment.views.dashboard.dashboard_vacancy,
+        name="dashboard-vacancy",
     ),
     path(
         "candidate-sequence-update",

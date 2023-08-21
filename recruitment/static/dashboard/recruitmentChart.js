@@ -26,7 +26,7 @@ $(document).ready(function () {
     },
   });
 
-  $('.oh-card-dashboard__title').click(function (e) { 
+  $('#chart1').click(function (e) { 
     var chartType = myChart.config.type
     if (chartType === 'line') {
       chartType = 'bar';

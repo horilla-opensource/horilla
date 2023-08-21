@@ -15,5 +15,6 @@ class RecruitmentConfig(AppConfig):
         default_auto_field (str): The default auto field to use for model field IDs.
         name (str): The name of the app.
     """
-    default_auto_field = 'django.db.models.BigAutoField'
-    name = 'recruitment'
+
+    default_auto_field = "django.db.models.BigAutoField"
+    name = "recruitment"

@@ -1,10 +1,47 @@
 {% extends 'index.html' %} {% block content %} {% load mathfilters %} 
-{% load static %}
+{% load static %} {% load i18n %}
+
 <div class="oh-wrapper">
   <div class="oh-dashboard row">
-    <div class="oh-dashboard__left col-12 col-sm-12 col-md-12 col-lg-9">
+    <div class="oh-dashboard__left col-12 col-sm-12 col-md-12 col-lg-12">
+
       <div class="oh-dashboard__cards row">
         <div class="col-12 col-sm-12 col-md-6 col-lg-4">
+          <div class="oh-card-dashboard oh-card-dashboard--warning">
+            <div class="oh-card-dashboard__header">
+              <span class="oh-card-dashboard__title">Openings</span>
+            </div>
+            <div class="oh-card-dashboard__body">
+              <div class="oh-card-dashboard__counts">
+                <span class="oh-card-dashboard__sign"
+                  ><ion-icon name="people"></ion-icon></span>
+                <span class="oh-card-dashboard__count"
+                  >{{total_vacancy}}</span
+                >
+              </div>
+              <span class="oh-badge oh-card-dashboard__badge">100%</span>
+            </div>
+          </div>
+        </div>
+        <div class="col-12 col-sm-12 col-md-6 col-lg-4  ">
+          <div class="oh-card-dashboard oh-card-dashboard--danger">
+            <div class="oh-card-dashboard__header">
+              <span class="oh-card-dashboard__title">Total Applicants</span>
+            </div>
+            <div class="oh-card-dashboard__body">
+              <div class="oh-card-dashboard__counts">
+                <span class="oh-card-dashboard__sign"
+                  ><ion-icon name="accessibility"></ion-icon
+                ></span>
+                <span class="oh-card-dashboard__count"
+                  >{{total_candidates}}</span
+                >
+              </div>
+              <span class="oh-badge oh-card-dashboard__badge">100%</span>
+            </div>
+          </div>
+        </div>
+        <div class="col-12 col-sm-12 col-md-6 col-lg-4  ">
           <div
             class="oh-card-dashboard oh-card-dashboard oh-card-dashboard--success"
           >
@@ -21,49 +58,100 @@
                 >
               </div>
               <span class="oh-badge oh-card-dashboard__badge"
-                >{{hire_ratio}}%</span
+                >{{conversion_ratio}}%</span
               >
             </div>
           </div>
         </div>
-        <div class="col-12 col-sm-12 col-md-6 col-lg-4">
-          <div class="oh-card-dashboard oh-card-dashboard--neutral">
-            <div class="oh-card-dashboard__header">
-              <span class="oh-card-dashboard__title">Conversion Rate</span>
-            </div>
-            <div class="oh-card-dashboard__body">
-              <div class="oh-card-dashboard__counts">
-                <span class="oh-card-dashboard__count">{{hire_ratio}}%</span>
+        
+      </div>
+
+
+      <div class='d-flex'>
+
+        <div class="d-grid w-75">
+
+          <div class="col-12 col-sm-12 col-md-6 col-lg-12 mt-4">
+            <div class="oh-card-dashboard oh-card-dashboard--neutral">
+              <div class="oh-card-dashboard__header">
+                <span class="oh-card-dashboard__title">Conversion Rate</span>
               </div>
-              <span class="oh-badge oh-card-dashboard__badge"
-                >{{100|sub:hire_ratio}}%</span
-              >
-            </div>
-          </div>
-        </div>
-        <div class="col-12 col-sm-12 col-md-6 col-lg-4">
-          <div class="oh-card-dashboard oh-card-dashboard--danger">
-            <div class="oh-card-dashboard__header">
-              <span class="oh-card-dashboard__title">Total Candidates</span>
-            </div>
-            <div class="oh-card-dashboard__body">
-              <div class="oh-card-dashboard__counts">
-                <span class="oh-card-dashboard__sign"
-                  ><ion-icon name="accessibility"></ion-icon
-                ></span>
-                <span class="oh-card-dashboard__count"
-                  >{{total_candidates}}</span
+              <div class="oh-card-dashboard__body">
+                <div class="oh-card-dashboard__counts">
+                  <span class="oh-card-dashboard__count">{{conversion_ratio}}%</span>
+                </div>
+                <span class="oh-badge oh-card-dashboard__badge"
+                  >{{100|sub:conversion_ratio}}%</span
                 >
               </div>
-              <span class="oh-badge oh-card-dashboard__badge">100%</span>
             </div>
           </div>
+
+          <div class="col-12 col-sm-12 col-md-6 col-lg-12 mt-4">
+            <div class="oh-card-dashboard oh-card-dashboard--success">
+              <div class="oh-card-dashboard__header">
+                <span class="oh-card-dashboard__title">Offer Acceptance Rate (OAR)</span>
+              </div>
+              <div class="oh-card-dashboard__body">
+                <div class="oh-card-dashboard__counts">
+                  <span class="oh-card-dashboard__count">{{acceptance_ratio}}%</span>
+                </div>
+                <span class="oh-badge oh-card-dashboard__badge"
+                  >{{100|sub:acceptance_ratio}}%</span
+                >
+              </div>
+            </div>
+          </div>
+
         </div>
+
+        <div class="ms-4 d-flex" style="width:153%">
+          
+          <div class="oh-card-dashboard--moveable mt-4">
+            <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent">
+              <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
+                <span class="oh-card-dashboard__title">Open Positions By Department</span>
+              </div>
+              <div class="oh-card-dashboard__body" style="width:400px; height:260px">
+                <canvas id="vacancy" style="margin:0 auto;"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent mt-4 ms-4" style="height:94%;">
+            <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
+              <span class="oh-card-dashboard__title">Candidate on Onboard</span>
+              <span class="oh-card-dashboard__title float-end"><a href="{% url 'onboarding-view' %}" style="text-decoration:none; color:orange;">view all</a></span>
+            </div>
+            <div class="oh-card-dashboard__body">
+              <ul class="oh-card-dashboard__user-list">
+                {% for cand in onboard_candidates %}
+                <li class="oh-card-dashboard__user-item">
+                  <div class="oh-profile oh-profile--md">
+                    <div class="oh-profile__avatar mr-1">
+                      <img
+                        src="https://ui-avatars.com/api/?name={{cand}}&background=random"
+                        class="oh-profile__image"
+                        alt="{{cand}}"
+                      />
+                    </div>
+                    <span class="oh-profile__name oh-text--dark">{{cand}}</span>
+                  </div>
+                  <p class="oh-profile__name float-end mt-1 me-3">- {{cand.job_position_id}}</p>
+                </li>
+                {% endfor %}
+              </ul>
+            </div>
+          </div>
+
+        </div>
+        
       </div>
 
+      
       <div class="oh-dashboard__movable-cards row mt-4">
         <div
-          class="col-12 col-sm-12 col-md-12 col-lg-6 oh-card-dashboard--moveable"
+          class="col-12 col-sm-12 col-md-12 col-lg-5 oh-card-dashboard--moveable"
         >
           <div
             class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent"
@@ -71,132 +159,105 @@
             <div
               class="oh-card-dashboard__header oh-card-dashboard__header--divider"
             >
-              <span class="oh-card-dashboard__title">Candidate per Stage</span>
+              <span class="oh-card-dashboard__title">Candidates Per Stage</span>
+              <span class="oh-card-dashboard__title float-end" id="chart1"><ion-icon name="caret-forward"></ion-icon></span>
             </div>
             <div class="oh-card-dashboard__body">
-              <canvas id="recruitmentChart1"></canvas>
+              <canvas id="recruitmentChart1" width="400" height="290"></canvas>
             </div>
           </div>
         </div>
 
         <div
-          class="col-12 col-sm-12 col-md-12 col-lg-6 oh-card-dashboard--moveable"
+          class="col-12 col-sm-12 col-md-12 col-lg-7 oh-card-dashboard--moveable"
         >
           <div
             class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent"
           >
-            <div
-              class="oh-card-dashboard__header oh-card-dashboard__header--divider"
-            >
-              <span class="oh-card-dashboard__title">Overall Performance</span>
+            <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
+              
+              <span class="oh-card-dashboard__title">Joinings Per Month</span>
+              <span class="oh-card-dashboard__title float-end" id="chart2"><ion-icon name="caret-forward"></ion-icon></span>
+
+              <select class="oh-card-dashboard__body float-end me-3" id="year">
+                {% comment %} <option value="">Year</option> {% endcomment %}
+              </select>
+
             </div>
-            <div class="oh-card-dashboard__body">
-              <canvas id="myChart1"></canvas>
+            <div class="oh-card-dashboard__body" id="hiringChart">
+              <canvas id="hiring"></canvas>
             </div>
           </div>
         </div>
 
-        <div
-          class="col-12 col-sm-12 col-md-12 col-lg-6 oh-card-dashboard--moveable"
-        >
-          <div
-            class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent"
-          >
-            <div
-              class="oh-card-dashboard__header oh-card-dashboard__header--divider"
-            >
-              <span class="oh-card-dashboard__title">Overall Conversions</span>
-            </div>
-            <div class="oh-card-dashboard__body">
-              <canvas id="myChart2"></canvas>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="oh-dashboard__right col-12 col-sm-12 col-md-12 col-lg-3">
-      <div class="oh-dashboard__events">
-        <div class="oh-dashbaord__events-reel">
-          <div class="oh-dashboard__event oh-dashboard__event--purple">
-            <div class="oh-dasboard__event-photo">
-              <img
-                src="/static/images/upload/userphoto.png"
-                class="oh-dashboard__event-userphoto"
-              />
-            </div>
-            <div class="oh-dasboard__event-details">
-              <span class="oh-dashboard__event-title">Birthday</span>
-              <span class="oh-dashboard__event-main">Katie Melua</span>
-              <span class="oh-dashboard__event-date">29/03/2023</span>
-            </div>
-          </div>
-
-          <div class="oh-dashboard__event oh-dashboard__event--crimson">
-            <div class="oh-dasboard__event-photo">
-              <img
-                src="/static/images/upload/userphoto.png"
-                class="oh-dashboard__event-userphoto"
-              />
-            </div>
-
-            <div class="oh-dasboard__event-details">
-              <span class="oh-dashboard__event-title">Birthday</span>
-              <span class="oh-dashboard__event-main">Katie Melua</span>
-              <span class="oh-dashboard__event-date">29/03/2023</span>
-            </div>
-          </div>
-
-          <div class="oh-dashboard__event oh-dashboard__event--purple">
-            <div class="oh-dasboard__event-photo">
-              <img
-                src="/static/images/upload/userphoto.png"
-                class="oh-dashboard__event-userphoto"
-              />
-            </div>
-            <div class="oh-dasboard__event-details">
-              <span class="oh-dashboard__event-title">Birthday</span>
-              <span class="oh-dashboard__event-main">Katie Melua</span>
-              <span class="oh-dashboard__event-date">29/03/2023</span>
-            </div>
-          </div>
-        </div>
-        <ul class="oh-dashboard__events-nav">
-          <li
-            class="oh-dashboard__events-nav-item oh-dashboard__events-nav-item--active"
-            data-target="0"
-          ></li>
-          <li class="oh-dashboard__events-nav-item" data-target="1"></li>
-          <li class="oh-dashboard__events-nav-item" data-target="2"></li>
-        </ul>
       </div>
 
-      <div
-        class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent mt-3"
-      >
-        <div
-          class="oh-card-dashboard__header oh-card-dashboard__header--divider"
-        >
-          <span class="oh-card-dashboard__title">Candidate on Onboard</span>
-        </div>
-        <div class="oh-card-dashboard__body">
-          <ul class="oh-card-dashboard__user-list">
-            {% for cand in onboard_candidates %}
-            <li class="oh-card-dashboard__user-item">
-              <div class="oh-profile oh-profile--md">
-                <div class="oh-profile__avatar mr-1">
-                  <img
-                    src="https://ui-avatars.com/api/?name={{cand}}&background=random"
-                    class="oh-profile__image"
-                    alt="{{cand}}"
-                  />
+      <div class="d-flex mb-4">
+
+        <div style="width: 75%; height: 100%; overflow: hidden;">
+          <div>
+            <div class="oh-card-dashboard__header mt-4">
+              <span class="oh-card-dashboard__title">Current Hiring Pipeline</span>
+          </div>
+          <div class="oh-sticky-table float-start ms-0">
+            <div class="oh-sticky-table__table">
+              <div class="oh-sticky-table__thead">
+                <div class="oh-sticky-table__tr">
+                  <div class="oh-sticky-table__th" style="width: 40%;">{% trans "Job Positions" %}</div>
+                  <div class="oh-sticky-table__th" style="width: 15%;">{% trans "Initial" %}</div>
+                  <div class="oh-sticky-table__th" style="width: 15%;">{% trans "Test" %}</div>
+                  <div class="oh-sticky-table__th" style="width: 15%;">{% trans "Interview" %}</div>
+                  <div class="oh-sticky-table__th" style="width: 15%;">{% trans "Hired" %}</div>
                 </div>
-                <span class="oh-profile__name oh-text--dark">{{cand}}</span>
               </div>
-            </li>
-            {% endfor %}
-          </ul>
+              <div class="oh-sticky-table__tbody">
+
+                {% for job_item in job_data %}
+                
+                <div class="oh-sticky-table__tr">
+                  <div class="oh-sticky-table__sd">{{ job_item.0 }}</div>
+                  <div class="oh-sticky-table__td">{{ job_item.1 }}</div>
+                  <div class="oh-sticky-table__td">{{ job_item.2 }}</div>
+                  <div class="oh-sticky-table__td">{{ job_item.3 }}</div>
+                  <div class="oh-sticky-table__td">{{ job_item.4 }}</div>
+                </div>
+
+                {% endfor %}
+              </div>
+            </div>
+          </div>
+          </div>
         </div>
+            
+        <div style="width: 60%; height: 100%; overflow: hidden;">
+          <div class="oh-card-dashboard__header mt-4 ms-4">
+            <span class="oh-card-dashboard__title">Ongoing Recruitments & Hiring Managers</span>
+          </div>
+          <div class="oh-sticky-table float-start ms-4">
+            <div class="oh-sticky-table__table">
+              <div class="oh-sticky-table__thead">
+                <div class="oh-sticky-table__tr">
+                  <div class="oh-sticky-table__th" style="width: 20%;">{% trans "Recruitment" %}</div>
+                  <div class="oh-sticky-table__th" style="width: 20%;">{% trans "Manager" %}</div>
+                </div>
+              </div>
+              <div class="oh-sticky-table__tbody">
+
+                {% for recruitment_title, managers in recruitment_manager_mapping.items %}
+                
+                <div class="oh-sticky-table__tr">
+                  <div class="oh-sticky-table__sd">{{ recruitment_title }}</div>
+                  <div class="oh-sticky-table__td">{{ managers|join:",  " }}</div>
+                </div>
+
+                {% endfor %}
+              </div>
+            </div>
+          </div>
+        </div>
+              
       </div>
+
     </div>
   </div>
 </div>
@@ -204,30 +265,26 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script src="{% static 'dashboard/recruitmentChart.js' %}"></script>
+<script src="{% static 'dashboard/joiningChart.js' %}"></script>
+<script src="{% static 'dashboard/vacancyChart.js' %}"></script>
 
-{% comment %}
+
+
 <script>
-  var myChart2 = document.getElementById("myChart2");
+  var selectyear = document.getElementById("year");
+  var currentYear = new Date().getFullYear();
 
-  var marksData = {
-    labels: ["English", "Maths", "Physics", "Chemistry", "Biology", "History"],
-    datasets: [
-      {
-        label: "Student A",
-        backgroundColor: "rgba(200,0,0,0.2)",
-        data: [65, 75, 70, 80, 60, 80],
-      },
-      {
-        label: "Student B",
-        backgroundColor: "rgba(0,0,200,0.2)",
-        data: [54, 65, 60, 70, 70, 75],
-      },
-    ],
-  };
-
-  var radarChart = new Chart(myChart2, {
-    type: "radar",
-    data: marksData,
-  });
+  // Populate the dropdown with years from 2000 to the current year
+  for (var year = 2000; year <= currentYear; year++) {
+    var option = document.createElement("option");
+    option.value = year;
+    option.text = year;
+    // Set the default value to the current year
+    if (year === currentYear) {
+      option.selected = true;
+    }
+    selectyear.appendChild(option);
+  }
 </script>
-{% endcomment %} {% endblock content %}
+
+{% endblock content %}

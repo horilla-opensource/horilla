@@ -34,7 +34,7 @@
                 data-target="#updateSurvey"
                 hx-target="#updateSurveyModalBody"
                 class="oh-dropdown__link"
-                >Edit</a
+                >{% trans "Edit" %}</a
               >
             </li>
             <li class="oh-dropdown__item">
@@ -42,7 +42,7 @@
                 href="{% url 'recruitment-survey-question-template-delete' question.id %}"
                 onclick="return confirm('Are you sure want to delete?')"
                 class="text-danger"
-                >Delete</a
+                >{% trans "Delete" %}</a
               >
             </li>
           </ul>
