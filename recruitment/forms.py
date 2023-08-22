@@ -470,10 +470,10 @@ class QuestionForm(ModelForm):
     recruitment = forms.ModelMultipleChoiceField(
         queryset=Recruitment.objects.filter(is_active=True),
         required=False,
-        label="Recruitment",
+        label=_("Recruitment"),
     )
     job_positions = forms.ModelMultipleChoiceField(
-        queryset=JobPosition.objects.all(), required=False, label="Job Positions"
+        queryset=JobPosition.objects.all(), required=False, label=_("Job Positions")
     )
 
     class Meta:
@@ -487,6 +487,12 @@ class QuestionForm(ModelForm):
             "recruitment_ids",
             "job_position_ids",
         ]
+        labels = {
+            "question":_("Question"),
+            "sequence":_("Sequence"),
+            "type":_("Type"),
+            "options":_("Options"),
+        }
 
     def as_p(self, *args, **kwargs):
         """

@@ -106,10 +106,11 @@ def candidate_survey(request):
             with default_storage.open(attachment_path, "wb+") as destination:
                 for chunk in attachment.chunks():
                     destination.write(chunk)
+            answer.attachment = attachment_path
+            answer_data[key] = [attachment_path]
         answer.answer_json = json.dumps(answer_data)
         answer.save()
         messages.success(request, "Your answers are submitted.")
-        pass
         return render(request, "candidate/success.html")
     return render(
         request,

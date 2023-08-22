@@ -9,7 +9,7 @@
         <div class="col-12 col-sm-12 col-md-6 col-lg-4">
           <div class="oh-card-dashboard oh-card-dashboard--warning">
             <div class="oh-card-dashboard__header">
-              <span class="oh-card-dashboard__title">Openings</span>
+              <span class="oh-card-dashboard__title">{% trans "Openings" %}</span>
             </div>
             <div class="oh-card-dashboard__body">
               <div class="oh-card-dashboard__counts">
@@ -26,7 +26,7 @@
         <div class="col-12 col-sm-12 col-md-6 col-lg-4  ">
           <div class="oh-card-dashboard oh-card-dashboard--danger">
             <div class="oh-card-dashboard__header">
-              <span class="oh-card-dashboard__title">Total Applicants</span>
+              <span class="oh-card-dashboard__title">{% trans "Total Applicants" %}</span>
             </div>
             <div class="oh-card-dashboard__body">
               <div class="oh-card-dashboard__counts">
@@ -46,7 +46,7 @@
             class="oh-card-dashboard oh-card-dashboard oh-card-dashboard--success"
           >
             <div class="oh-card-dashboard__header">
-              <span class="oh-card-dashboard__title">Hired Candidates</span>
+              <span class="oh-card-dashboard__title">{% trans "Hired Candidates" %}</span>
             </div>
             <div class="oh-card-dashboard__body">
               <div class="oh-card-dashboard__counts">
@@ -74,7 +74,7 @@
           <div class="col-12 col-sm-12 col-md-6 col-lg-12 mt-4">
             <div class="oh-card-dashboard oh-card-dashboard--neutral">
               <div class="oh-card-dashboard__header">
-                <span class="oh-card-dashboard__title">Conversion Rate</span>
+                <span class="oh-card-dashboard__title">{% trans "Conversion Rate" %}</span>
               </div>
               <div class="oh-card-dashboard__body">
                 <div class="oh-card-dashboard__counts">
@@ -90,7 +90,7 @@
           <div class="col-12 col-sm-12 col-md-6 col-lg-12 mt-4">
             <div class="oh-card-dashboard oh-card-dashboard--success">
               <div class="oh-card-dashboard__header">
-                <span class="oh-card-dashboard__title">Offer Acceptance Rate (OAR)</span>
+                <span class="oh-card-dashboard__title">{% trans "Offer Acceptance Rate (OAR)" %}</span>
               </div>
               <div class="oh-card-dashboard__body">
                 <div class="oh-card-dashboard__counts">
@@ -110,7 +110,7 @@
           <div class="oh-card-dashboard--moveable mt-4">
             <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent">
               <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
-                <span class="oh-card-dashboard__title">Open Positions By Department</span>
+                <span class="oh-card-dashboard__title">{% trans "Open Positions By Department" %}</span>
               </div>
               <div class="oh-card-dashboard__body" style="width:400px; height:260px">
                 <canvas id="vacancy" style="margin:0 auto;"></canvas>
@@ -120,8 +120,8 @@
 
           <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent mt-4 ms-4" style="height:94%;">
             <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
-              <span class="oh-card-dashboard__title">Candidate on Onboard</span>
-              <span class="oh-card-dashboard__title float-end"><a href="{% url 'onboarding-view' %}" style="text-decoration:none; color:orange;">view all</a></span>
+              <span class="oh-card-dashboard__title">{% trans "Candidate on Onboard" %}</span>
+              <span class="oh-card-dashboard__title float-end"><a href="{% url 'onboarding-view' %}" style="text-decoration:none; color:orange;">{% trans "View all" %}</a></span>
             </div>
             <div class="oh-card-dashboard__body">
               <ul class="oh-card-dashboard__user-list">
@@ -159,7 +159,7 @@
             <div
               class="oh-card-dashboard__header oh-card-dashboard__header--divider"
             >
-              <span class="oh-card-dashboard__title">Candidates Per Stage</span>
+              <span class="oh-card-dashboard__title">{% trans "Candidates Per Stage" %}</span>
               <span class="oh-card-dashboard__title float-end" id="chart1"><ion-icon name="caret-forward"></ion-icon></span>
             </div>
             <div class="oh-card-dashboard__body">
@@ -176,7 +176,7 @@
           >
             <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
               
-              <span class="oh-card-dashboard__title">Joinings Per Month</span>
+              <span class="oh-card-dashboard__title">{% trans "Joinings Per Month" %}</span>
               <span class="oh-card-dashboard__title float-end" id="chart2"><ion-icon name="caret-forward"></ion-icon></span>
 
               <select class="oh-card-dashboard__body float-end me-3" id="year">
@@ -197,7 +197,7 @@
         <div style="width: 75%; height: 100%; overflow: hidden;">
           <div>
             <div class="oh-card-dashboard__header mt-4">
-              <span class="oh-card-dashboard__title">Current Hiring Pipeline</span>
+              <span class="oh-card-dashboard__title">{% trans "Current Hiring Pipeline" %}</span>
           </div>
           <div class="oh-sticky-table float-start ms-0">
             <div class="oh-sticky-table__table">
@@ -231,7 +231,7 @@
             
         <div style="width: 60%; height: 100%; overflow: hidden;">
           <div class="oh-card-dashboard__header mt-4 ms-4">
-            <span class="oh-card-dashboard__title">Ongoing Recruitments & Hiring Managers</span>
+            <span class="oh-card-dashboard__title">{% trans "Ongoing Recruitments & Hiring Managers" %}</span>
           </div>
           <div class="oh-sticky-table float-start ms-4">
             <div class="oh-sticky-table__table">

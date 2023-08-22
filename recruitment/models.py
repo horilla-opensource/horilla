@@ -310,16 +310,16 @@ class RecruitmentSurvey(models.Model):
     """
 
     question_types = [
-        ("checkbox", "Yes/No"),
-        ("options", "Choices"),
-        ("multiple", "Multiple Choice"),
-        ("text", "Text"),
-        ("number", "Number"),
-        ("percentage", "Percentage"),
-        ("date", "Date"),
-        ("textarea", "Textarea"),
-        ("file", "File Upload"),
-        ("rating", "Rating"),
+        ("checkbox", _("Yes/No")),
+        ("options", _("Choices")),
+        ("multiple", _("Multiple Choice")),
+        ("text", _("Text")),
+        ("number", _("Number")),
+        ("percentage", _("Percentage")),
+        ("date", _("Date")),
+        ("textarea", _("Textarea")),
+        ("file", _("File Upload")),
+        ("rating", _("Rating")),
     ]
     question = models.TextField(null=False)
     recruitment_ids = models.ManyToManyField(Recruitment, verbose_name="Recruitment")
@@ -330,7 +330,7 @@ class RecruitmentSurvey(models.Model):
         choices=question_types,
     )
     options = models.TextField(
-        null=True, default="", help_text="Separate choices by ', '"
+        null=True, default="", help_text=_("Separate choices by ',  '")
     )
 
     def __str__(self) -> str:
