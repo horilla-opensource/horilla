@@ -5,14 +5,14 @@
 <div id="mainNav"></div>
 <!-- End of Navigation -->
 <style>
-  .oh-card-dashboard--moveable{
+  .oh-card-dashboard--moveable {
     padding: 0 10px 20px 10px;
   }
 </style>
 <main>
   <div class="oh-wrapper">
     <div class="oh-dashboard row">
-      <div class="oh-dashboard__left col-12 col-sm-12 col-md-12 col-lg-9">
+      <div class="oh-dashboard__left col-12 col-sm-12 col-md-12 col-lg-9" >
         {% if perms.employee.view_employee %}
         <div class="oh-dashboard__cards row">
           <div class="col-12 col-sm-12 col-md-6 col-lg-4">
@@ -55,13 +55,13 @@
                 <span class="oh-badge oh-card-dashboard__badge" id="totalEmployeesCountPerc">100%</span>
               </div>
             </div>
-          </div>          
+          </div>
         </div>
         {% endif %}
 
-        <div class="oh-dashboard__movable-cards row mt-4">
+        <div class="oh-dashboard__movable-cards row mt-4" id="tileContainer">
           {% if pers.leave.veiw_leaverequest %}
-          <div class="col-12 col-sm-12 col-md-12 col-lg-4 oh-card-dashboard--moveable">
+          <div class="col-12 col-sm-12 col-md-12 col-lg-4 oh-card-dashboard--moveable" id="movable1">
             <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent">
               <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
                 <span class="oh-card-dashboard__title">{% trans "Overall Leave" %}</span>
@@ -79,7 +79,7 @@
           </div>
           {% endif %}
           {% if pers.candidate.view_candidate or request.user|is_stagemanager %}
-          <div class="col-12 col-sm-12 col-md-12 col-lg-8 oh-card-dashboard--moveable">
+          <div class="col-12 col-sm-12 col-md-12 col-lg-8 oh-card-dashboard--moveable" id="movable2">
             <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent">
               <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
                 <span class="oh-card-dashboard__title">{% trans "Hired Candidates" %}</span>
@@ -89,7 +89,7 @@
               </div>
             </div>
           </div>
-          <div class="col-12 col-sm-12 col-md-12 col-lg-8 oh-card-dashboard--moveable">
+          <div class="col-12 col-sm-12 col-md-12 col-lg-8 oh-card-dashboard--moveable" id="movable3">
             <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent">
               <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
                 <span class="oh-card-dashboard__title">{% trans "Candidate Started Onboarding" %}</span>
@@ -102,7 +102,7 @@
           {% endif %}
 
           {% if request.user|is_reportingmanager or perms.attendance.view_attendance %}
-          <div class="col-12 col-sm-12 col-md-12 col-lg-4 oh-card-dashboard--moveable">
+          <div class="col-12 col-sm-12 col-md-12 col-lg-4 oh-card-dashboard--moveable" id="movable4">
             <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent">
               <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
                 <span class="oh-card-dashboard__title">{% trans "Daily Attendance Analytic" %}</span>
@@ -115,7 +115,7 @@
           {% endif %}
 
           {% if request.user|is_reportingmanager or perms.attendance.view_employee %}
-          <div class="col-12 col-sm-12 col-md-12 col-lg-4 oh-card-dashboard--moveable">
+          <div class="col-12 col-sm-12 col-md-12 col-lg-4 oh-card-dashboard--moveable" id="movable5">
             <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent">
               <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
                 <span class="oh-card-dashboard__title">{% trans "Employees Chart" %}</span>
@@ -128,7 +128,7 @@
           {% endif %}
 
           {% if perms.employee.view_employee or request.user|is_reportingmanager %}
-          <div class="col-12 col-sm-12 col-md-12 col-lg-4 oh-card-dashboard--moveable">
+          <div class="col-12 col-sm-12 col-md-12 col-lg-4 oh-card-dashboard--moveable" id="movable6">
             <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent">
               <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
                 <span class="oh-card-dashboard__title">{% trans "Department Chart" %}</span>
@@ -140,7 +140,7 @@
           </div>
           {% endif %}
           {% if perms.employee.view_employee or request.user|is_reportingmanager %}
-          <div class="col-12 col-sm-12 col-md-12 col-lg-4 oh-card-dashboard--moveable">
+          <div class="col-12 col-sm-12 col-md-12 col-lg-4 oh-card-dashboard--moveable" id="movable7">
             <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent">
               <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
                 <span class="oh-card-dashboard__title">{% trans "Gender Chart" %}</span>
@@ -152,7 +152,7 @@
           </div>
           {% endif %}
           {% if request.user|is_stagemanager or perms.recruitment.view_recruitment %}
-          <div class="col-12 col-sm-12 col-md-12 col-lg-8 oh-card-dashboard--moveable">
+          <div class="col-12 col-sm-12 col-md-12 col-lg-8 oh-card-dashboard--moveable" id="movable8">
             <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent">
               <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
                 <span class="oh-card-dashboard__title">{% trans "Recruitment Analytic" %}</span>
@@ -163,9 +163,9 @@
             </div>
           </div>
           {% endif %}
-          
+
           {% if perms.pms.view_employeeobjective or request.user|is_reportingmanager %}
-          <div class="col-12 col-sm-12 col-md-12 col-lg-4 oh-card-dashboard--moveable">
+          <div class="col-12 col-sm-12 col-md-12 col-lg-4 oh-card-dashboard--moveable" id="movable9">
             <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent">
               <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
                 <span class="oh-card-dashboard__title">{% trans "Objective status" %}</span>
@@ -176,8 +176,8 @@
             </div>
             {% endif %}
           </div>
-          {% if perms.pms.view_employeekeyresult or request.user|is_reportingmanager  %}
-          <div class="col-12 col-sm-12 col-md-12 col-lg-4 oh-card-dashboard--moveable">
+          {% if perms.pms.view_employeekeyresult or request.user|is_reportingmanager %}
+          <div class="col-12 col-sm-12 col-md-12 col-lg-4 oh-card-dashboard--moveable" id="movable10">
             <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent">
               <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
                 <span class="oh-card-dashboard__title">{% trans "Key result status" %}</span>
@@ -189,49 +189,50 @@
           </div>
           {% endif %}
           {% if perms.pms.view_feedback or request.user|is_reportingmanager %}
-          <div class="col-12 col-sm-12 col-md-12 col-lg-6 oh-card-dashboard--moveable">
-              <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent">
-                  <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
-                      <span class="oh-card-dashboard__title">{% trans "Feedback Status" %}</span>
-                      <span class="oh-card-dashboard__title float-end" id="feedback-status-chart"><ion-icon name="caret-forward"></ion-icon></span>
-                  </div>
-                  <div class="oh-card-dashboard__body">
-                    <canvas id="feedbackChart"></canvas>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          {% endif %}
-          {% if perms.leave.view_leaverequest or request.user|is_reportingmanager%}
-          <div class="oh-dashboard__right  col-12 col-sm-12 col-md-12 col-lg-3">
-            <div class="oh-dashboard__events">
-              <div class="oh-dashbaord__events-reel w-100" id='birthdayContainer'>
-                
-              </div>
-              <ul class="oh-dashboard__events-nav" id="birthdayDots">
-                {% comment %} <li class="oh-dashboard__events-nav-item oh-dashboard__events-nav-item--active"
-                data-target="0"></li>
-                <li class="oh-dashboard__events-nav-item" data-target="1"></li>
-                <li class="oh-dashboard__events-nav-item" data-target="2"></li> {% endcomment %}
-              </ul>
-            </div>
-            
-            <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent mt-3">
+          <div class="col-12 col-sm-12 col-md-12 col-lg-6 oh-card-dashboard--moveable" id="movable11">
+            <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent">
               <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
-                <span class="oh-card-dashboard__title">{% trans "On Leave" %}</span>
+                <span class="oh-card-dashboard__title">{% trans "Feedback Status" %}</span>
+                <span class="oh-card-dashboard__title float-end" id="feedback-status-chart"><ion-icon
+                    name="caret-forward"></ion-icon></span>
               </div>
               <div class="oh-card-dashboard__body">
-                <ul class="oh-card-dashboard__user-list" id="leaveEmployee">
-                  
-                </ul>
+                <canvas id="feedbackChart"></canvas>
               </div>
             </div>
           </div>
-          {% endif %}
         </div>
       </div>
+      {% endif %}
+      {% if perms.leave.view_leaverequest or request.user|is_reportingmanager%}
+      <div class="oh-dashboard__right  col-12 col-sm-12 col-md-12 col-lg-3">
+        <div class="oh-dashboard__events">
+          <div class="oh-dashbaord__events-reel w-100" id='birthdayContainer'>
+
+          </div>
+          <ul class="oh-dashboard__events-nav" id="birthdayDots">
+            {% comment %} <li class="oh-dashboard__events-nav-item oh-dashboard__events-nav-item--active"
+              data-target="0"></li>
+            <li class="oh-dashboard__events-nav-item" data-target="1"></li>
+            <li class="oh-dashboard__events-nav-item" data-target="2"></li> {% endcomment %}
+          </ul>
+        </div>
+
+        <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent mt-3">
+          <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
+            <span class="oh-card-dashboard__title">{% trans "On Leave" %}</span>
+          </div>
+          <div class="oh-card-dashboard__body">
+            <ul class="oh-card-dashboard__user-list" id="leaveEmployee">
+
+            </ul>
+          </div>
+        </div>
+      </div>
+      {% endif %}
     </div>
+  </div>
+  </div>
   </div>
 </main>
 </div>
@@ -259,3 +260,40 @@
 
 {% comment %} pms chart {% endcomment %}
 <script src="{% static 'src/dashboard/pmsChart.js' %}"></script>
+<script>
+  $(document).ready(function () {
+    function orderDashboardTile() {
+      var orderIds = JSON.parse(localStorage.getItem("tileOrder"))
+      const parentContainer = $("#tileContainer")
+      if (orderIds != null) {
+        const sortedElements = [];
+
+        // Loop through the desired order of IDs
+        for (const id of orderIds) {
+          const element = $('#' + id);
+          if (element.length) {
+            sortedElements.push(element);
+          }
+        }
+
+        // Clear the parent container
+        parentContainer.empty();
+
+        // Append the sorted elements to the parent container
+        for (const element of sortedElements) {
+          parentContainer.append(element);
+        }
+      }
+    }
+    orderDashboardTile()
+    $(".oh-card-dashboard--moveable").mouseup(function () {
+      var tileOrder = []
+      setTimeout((e)=> {
+        $.each($(".oh-card-dashboard--moveable"), function (indexInArray, valueOfElement) { 
+          tileOrder.push($(valueOfElement).attr("id"))
+        });
+        localStorage.setItem("tileOrder", JSON.stringify(tileOrder));
+      },0)
+    });
+  });
+</script>
