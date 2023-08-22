@@ -1372,7 +1372,7 @@ def dashboard_employee(request):
     response = {
         "dataSet": [
             {
-                "label": "Employees",
+                "label": _("Employees"),
                 "data": [
                     len(employees.filter(is_active=True)),
                     len(employees.filter(is_active=False)),
@@ -1397,7 +1397,7 @@ def dashboard_employee_gender(request):
     response = {
         "dataSet": [
             {
-                "label": "Employees",
+                "label": _("Employees"),
                 "data": [
                     len(employees.filter(gender="male")),
                     len(employees.filter(gender="female")),

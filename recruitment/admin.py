@@ -4,7 +4,13 @@ admin.py
 This page is used to register the model with admins site.
 """
 from django.contrib import admin
-from recruitment.models import Stage, Recruitment, Candidate, RecruitmentSurvey,RecruitmentSurveyAnswer
+from recruitment.models import (
+    Stage,
+    Recruitment,
+    Candidate,
+    RecruitmentSurvey,
+    RecruitmentSurveyAnswer,
+)
 
 
 # Register your models here.

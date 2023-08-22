@@ -3,11 +3,9 @@ views.py
 
 This module is used to define the method for the path in the urls
 """
-import random
 from collections import defaultdict
 import pandas as pd
 import json
-import xlsxwriter
 from datetime import datetime, timedelta
 from django.utils import timezone
 from django.shortcuts import render, redirect
@@ -15,6 +13,7 @@ from django.http import HttpResponse, JsonResponse, HttpResponseRedirect
 from django.contrib import messages
 from django.db.models import Q
 from horilla.decorators import login_required, permission_required
+from base.methods import generate_colors
 from employee.models import Employee, EmployeeWorkInformation
 from payroll.models.models import Payslip, WorkRecord
 from payroll.models.models import Contract
@@ -25,6 +24,8 @@ from django.utils.translation import gettext_lazy as _
 from payroll.filters import ContractFilter
 from payroll.methods.methods import paginator_qry
 
+# Create your views here.
+
 status_choices = {
     "draft": "Draft",
     "review_ongoing": "Review Ongoing",
@@ -33,48 +34,12 @@ status_choices = {
 }
 
 
-# Create your views here.
-def random_color_generator():
-    r = random.randint(0, 255)
-    g = random.randint(0, 255)
-    b = random.randint(0, 255)
-    if r == g or g == b or b == r:
-        random_color_generator()
-    return f"rgba({r}, {g}, {b} , 0.7)"
-
-
-# color_palette=[]
-# Function to generate distinct colors for each project
-def generate_colors(num_colors):
-    # Define a color palette with distinct colors
-    color_palette = [
-        "rgba(255, 99, 132, 1)",  # Red
-        "rgba(54, 162, 235, 1)",  # Blue
-        "rgba(94, 167, 115, 1)",  # Green
-        "rgba(255, 206, 86, 1)",  # Yellow
-        "rgba(153, 102, 255, 1)",  # Purple
-        "rgba(255, 159, 64, 1)",  # Orange
-    ]
-
-    if num_colors > len(color_palette):
-        for i in range(num_colors - len(color_palette)):
-            color_palette.append(random_color_generator())
-
-    colors = []
-    for i in range(num_colors):
-        # color=random_color_generator()
-        colors.append(color_palette[i % len(color_palette)])
-
-    return colors
-
-
-@login_required
-@permission_required("payroll.view_dashboard")
-def dashboard(request):
-    """
-    Dashboard render views
-    """
-    return render(request, "payroll/dashboard.html")
+def get_language_code(request):
+    scale_x_text = _("Name of Employees")
+    scale_y_text = _("Amount")
+    response = {"scale_x_text": scale_x_text, "scale_y_text": scale_y_text}
+    print(response)
+    return JsonResponse(response)
 
 
 @login_required
@@ -425,8 +390,12 @@ def contract_info_initial(request):
 
 
 @login_required
-@permission_required("payroll.add_contract")
+@permission_required("payroll.view_dashboard")
 def view_payroll_dashboard(request):
+    """
+    Dashboard rendering views
+    """
+
     paid = Payslip.objects.filter(status="paid")
     posted = Payslip.objects.filter(status="confirmed")
     review_ongoing = Payslip.objects.filter(status="review_ongoing")
@@ -440,7 +409,10 @@ def view_payroll_dashboard(request):
 
 @login_required
 def dashboard_employee_chart(request):
-    """payroll dashboard employee chart data"""
+    """
+    payroll dashboard employee chart data
+    """
+
     date = request.GET.get("period")
     year = date.split("-")[0]
     month = date.split("-")[1]
@@ -508,6 +480,10 @@ def dashboard_employee_chart(request):
 
 
 def payslip_details(request):
+    """
+    payroll dashboard payslip details data
+    """
+
     date = request.GET.get("period")
     year = date.split("-")[0]
     month = date.split("-")[1]
@@ -528,7 +504,10 @@ def payslip_details(request):
 
 @login_required
 def dashboard_department_chart(request):
-    """objective dashboard data"""
+    """
+    payroll dashboard department chart data
+    """
+
     date = request.GET.get("period")
     year = date.split("-")[0]
     month = date.split("-")[1]
@@ -589,6 +568,10 @@ def dashboard_department_chart(request):
 
 
 def contract_ending(request):
+    """
+    payroll dashboard contract ending details data
+    """
+
     date = request.GET.get("period")
     year = date.split("-")[0]
     month = date.split("-")[1]
@@ -609,12 +592,20 @@ def contract_ending(request):
     return JsonResponse(response)
 
 
-def payslip_export(request, date):
+def payslip_export(request):
+    """
+    payroll dashboard exporting to excell data
+
+    Args:
+    - request (HttpRequest): The HTTP request object.
+    - contract_id (int): The ID of the contract to view.
+
+    """
+
     start_date = request.GET.get("start_date")
     end_date = request.GET.get("end_date")
     employee = request.GET.get("employee")
-    year = date.split("-")[0]
-    month = date.split("-")[1]
+    status = request.GET.get("status")
     department = []
     total_amount = 0
 
@@ -633,6 +624,9 @@ def payslip_export(request, date):
 
     if employee:
         employee_payslip_list = employee_payslip_list.filter(employee_id=employee)
+
+    if status:
+        employee_payslip_list = employee_payslip_list.filter(status=status)
 
     for payslip in employee_payslip_list:
         table1_data.append(
@@ -688,9 +682,23 @@ def payslip_export(request, date):
     if not employee_payslip_list:
         table2_data.append({"Department": "None", "Amount": 0})
 
-    contract_end = Contract.objects.filter(
-        Q(contract_end_date__month=month) & Q(contract_end_date__year=year)
-    )
+    contract_end = Contract.objects.all()
+    if not start_date and not end_date:
+        contract_end = contract_end.filter(
+            Q(contract_end_date__month=datetime.now().month)
+            & Q(contract_end_date__year=datetime.now().year)
+        )
+    if end_date:
+        contract_end = contract_end.filter(contract_end_date__lte=end_date)
+
+    if start_date:
+        if not end_date:
+            contract_end = contract_end.filter(
+                Q(contract_end_date__gte=start_date)
+                & Q(contract_end_date__lte=datetime.now())
+            )
+        else:
+            contract_end = contract_end.filter(contract_end_date__gte=start_date)
 
     table3_data = {"contract_ending": []}
 
@@ -728,7 +736,9 @@ def payslip_export(request, date):
 
     df_table3 = df_table3.rename(
         columns={
-            "contract_ending": "Contract Ending",
+            "contract_ending": f"Contract Ending {start_date} to {end_date}"
+            if start_date and end_date
+            else f"Contract Ending",
         }
     )
 
@@ -793,7 +803,9 @@ def payslip_export(request, date):
         0,
         0,
         max_columns - 1,
-        f"Payroll details {start_date} / {end_date}",
+        f"Payroll details {start_date} to {end_date}"
+        if start_date and end_date
+        else f"Payroll details",
         heading_format,
     )
 
@@ -835,6 +847,8 @@ def payslip_export(request, date):
 
         header_width = max(len(value) + 2, len(df_table4[value].astype(str).max()) + 2)
         worksheet.set_column(f"{col_letter}:{col_letter}", header_width)
+
+    worksheet.set_row(len(df_table1) + len(df_table2) + 9, 30)
 
     writer.close()
 

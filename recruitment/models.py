@@ -43,7 +43,7 @@ def validate_pdf(value):
     """
     ext = os.path.splitext(value.name)[1]  # Get file extension
     if ext.lower() != ".pdf":
-        raise ValidationError("File must be a PDF.")
+        raise ValidationError(_("File must be a PDF."))
 
 
 def validate_image(value):
@@ -61,16 +61,21 @@ class Recruitment(models.Model):
     title = models.CharField(max_length=30, null=True, blank=True)
     description = models.TextField(null=True)
     is_event_based = models.BooleanField(
-        default=False, help_text="To start bulk recruitment form multiple job positions"
+        default=False,
+        help_text=_("To start bulk recruitment form multiple job positions"),
     )
     closed = models.BooleanField(
         default=False,
-        help_text="To close the recruitment, If closed then not visible on pipeline view.",
+        help_text=_(
+            "To close the recruitment, If closed then not visible on pipeline view."
+        ),
     )
     is_active = models.BooleanField(
         default=True,
-        help_text="To archive and un-archive a recruitment, if active is false then it \
-            will not appear on recruitment list view.",
+        help_text=_(
+            "To archive and un-archive a recruitment, if active is false then it \
+            will not appear on recruitment list view."
+        ),
     )
     open_positions = models.ManyToManyField(
         JobPosition, related_name="open_positions", blank=True
@@ -125,19 +130,21 @@ class Recruitment(models.Model):
 
     def clean(self):
         if self.title is None:
-            raise ValidationError({"title": "This field is required"})
-        if self.start_date is not None and self.start_date > self.end_date:
+            raise ValidationError({"title": _("This field is required")})
+        if self.end_date is not None and (
+            self.start_date is not None and self.start_date > self.end_date
+        ):
             raise ValidationError(
-                {"start_date": "Start date cannot be greater than end date."}
+                {"end_date": _("End date cannot be less than start date.")}
             )
         if not self.is_event_based and self.job_position_id is None:
-            raise ValidationError({"job_position_id": "This field is required"})
+            raise ValidationError({"job_position_id": _("This field is required")})
         return super().clean()
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)  # Save the Recruitment instance first
         if self.is_event_based and self.open_positions is None:
-            raise ValidationError({"open_positions": "This field is required"})
+            raise ValidationError({"open_positions": _("This field is required")})
 
 
 class Stage(models.Model):
@@ -260,9 +267,9 @@ class Candidate(models.Model):
         if not self.recruitment_id.is_event_based and self.job_position_id is None:
             self.job_position_id = self.recruitment_id.job_position_id
         if self.job_position_id not in self.recruitment_id.open_positions.all():
-            raise ValidationError({"job_position_id": "Choose valid choice"})
+            raise ValidationError({"job_position_id": _("Choose valid choice")})
         if self.recruitment_id.is_event_based and self.job_position_id is None:
-            raise ValidationError({"job_position_id": "This field is required."})
+            raise ValidationError({"job_position_id": _("This field is required.")})
         super().save(*args, **kwargs)
 
     class Meta:
@@ -303,32 +310,28 @@ class RecruitmentSurvey(models.Model):
     """
 
     question_types = [
-        ("checkbox", "Yes/No"),
-        ("options", "Choices"),
-        ("multiple", "Multiple Choice"),
-        ("text", "Text"),
-        ("number", "Number"),
-        ("percentage", "Percentage"),
-        ("date", "Date"),
-        ("textarea", "Textarea"),
-        ("file", "File Upload"),
-        ("rating", "Rating"),
+        ("checkbox", _("Yes/No")),
+        ("options", _("Choices")),
+        ("multiple", _("Multiple Choice")),
+        ("text", _("Text")),
+        ("number", _("Number")),
+        ("percentage", _("Percentage")),
+        ("date", _("Date")),
+        ("textarea", _("Textarea")),
+        ("file", _("File Upload")),
+        ("rating", _("Rating")),
     ]
     question = models.TextField(null=False)
-    recruitment_ids = models.ManyToManyField(Recruitment,verbose_name="Recruitment")
-    job_position_ids = models.ManyToManyField(
-        JobPosition,
-        verbose_name="Job Positions"
-    )
+    recruitment_ids = models.ManyToManyField(Recruitment, verbose_name="Recruitment")
+    job_position_ids = models.ManyToManyField(JobPosition, verbose_name="Job Positions")
     sequence = models.IntegerField(null=True, default=0)
     type = models.CharField(
         max_length=15,
         choices=question_types,
     )
     options = models.TextField(
-        null=True, default="", help_text="Separate choices by ', '"
+        null=True, default="", help_text=_("Separate choices by ',  '")
     )
-
 
     def __str__(self) -> str:
         return str(self.question)
@@ -356,7 +359,6 @@ class RecruitmentSurveyAnswer(models.Model):
     attachment = models.FileField(
         upload_to="recruitment_attachment", null=True, blank=True
     )
-
 
     @property
     def answer(self):

@@ -60,6 +60,8 @@ class CandidateTask(models.Model):
 
     Choice = (
         ("", ""),
+        ("todo", _("Todo")),
+        ("scheduled", _("Scheduled")),
         ("ongoing", _("Ongoing")),
         ("stuck", _("Stuck")),
         ("done", _("Done")),

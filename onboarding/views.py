@@ -14,6 +14,7 @@ import json
 import random
 import secrets
 from django.core.mail import send_mail
+from django.contrib.auth.models import User
 from django.utils.translation import gettext_lazy as _
 from django.shortcuts import render, redirect
 from django.contrib.auth import login
@@ -21,6 +22,7 @@ from django.http import HttpResponse, JsonResponse
 from django.contrib import messages
 from django.core.paginator import Paginator
 from django.views.decorators.http import require_http_methods
+from django.forms.utils import ErrorDict
 from notifications.signals import notify
 from horilla.decorators import login_required, hx_request_required
 from horilla.decorators import permission_required
@@ -441,7 +443,7 @@ def email_send(request):
     request (HttpRequest): The HTTP request object.
 
     Returns:
-    GET : return json response
+    GET : return json response8
     """
     if request.method != "POST":
         return JsonResponse("", safe=False)
@@ -453,7 +455,14 @@ def email_send(request):
         candidate = Candidate.objects.get(id=cand_id)
         if candidate.start_onboard is False:
             token = secrets.token_hex(15)
-            OnboardingPortal(candidate_id=candidate, token=token).save()
+            existing_portal = OnboardingPortal.objects.filter(candidate_id = candidate)
+            if existing_portal.exists():
+                new_portal =existing_portal.first()
+                new_portal.token = token
+                new_portal.used =  False
+                new_portal.save()
+            else:
+                OnboardingPortal(candidate_id=candidate, token=token).save()
             send_mail(
                 "Onboarding Portal",
                 f"{request.get_host()}/onboarding/user-creation/{token}",
@@ -530,14 +539,20 @@ def user_creation(request, token):
     GET : return user creation form template
     POST : return user_save function
     """
+    user = None if request.user.is_anonymous else request.user
+    if user is not None:
+        return redirect(employee_creation,token=token)
     try:
         onboarding_portal = OnboardingPortal.objects.get(token=token)
-        form = UserCreationForm()
-        if not onboarding_portal or onboarding_portal.used is True:
+        candidate = onboarding_portal.candidate_id
+        user = User.objects.filter(username=candidate.email).first()
+        
+        form = UserCreationForm(instance=user)
+        if not onboarding_portal or onboarding_portal.used is True and request.user.is_anonymous:
             return HttpResponse("Denied")
         try:
             if request.method == "POST":
-                form = UserCreationForm(request.POST)
+                form = UserCreationForm(request.POST, instance=user)
                 if form.is_valid():
                     return user_save(form, onboarding_portal, request, token)
         except Exception:
@@ -572,8 +587,7 @@ def user_save(form, onboarding_portal, request, token):
     onboarding_portal.used = True
     onboarding_portal.save()
     login(request, user)
-    onboarding_portal.count += 1
-    onboarding_portal.save()
+    onboarding_portal.count = 1
     messages.success(request, _("Account created successfully.."))
     return redirect("profile-view", token)
 
@@ -590,12 +604,17 @@ def profile_view(request, token):
     GET : return user profile template
     POST : update profile image of the user
     """
-    candidate = Candidate.objects.get(email=request.user)
+    onboarding_portal = OnboardingPortal.objects.filter(token=token).first()
+    if onboarding_portal is None:
+        return HttpResponse("Denied")
+    candidate = onboarding_portal.candidate_id
+    user = User.objects.get(username = candidate.email)
     if request.method == "POST":
         profile = request.FILES.get("profile")
         if profile is not None:
             candidate.profile = profile
             candidate.save()
+            onboarding_portal.count = 2
             messages.success(request, _("Profile picture updated successfully.."))
     return render(
         request,
@@ -620,44 +639,59 @@ def employee_creation(request, token):
     GET : return employee creation profile template.
     POST : return employee bank detail creation template.
     """
-    candidate = Candidate.objects.get(email=request.user)
-    onboarding_portal = OnboardingPortal.objects.get(token=token)
-    form = EmployeeCreationForm(
-        initial={
-            "employee_first_name": candidate.name,
-            "phone": candidate.mobile,
-            "address": candidate.address,
-            "dob": candidate.dob,
-        }
-    )
-    if not Employee.objects.filter(employee_user_id=request.user).exists():
-        if request.method == "POST":
-            form_data = EmployeeCreationForm(request.POST)
-            if form_data.is_valid():
-                employee_personal_info = form_data.save(commit=False)
-                employee_personal_info.employee_user_id = request.user
-                employee_personal_info.email = candidate.email
-                employee_personal_info.employee_profile = candidate.profile
-                employee_personal_info.save()
-                EmployeeWorkInformation(
-                    employee_id=employee_personal_info,
-                    date_joining=candidate.joining_date,
-                    job_position_id=candidate.recruitment_id.job_position_id,
-                ).save()
-                onboarding_portal.count += 1
-                onboarding_portal.save()
-                messages.success(
-                    request, _("Employee personal details created successfully..")
-                )
-                return redirect("employee-bank-details", token)
-        onboarding_portal.count += 1
-        onboarding_portal.save()
-        return render(
-            request,
-            "onboarding/employee-creation.html",
-            {"form": form, "employee": candidate.recruitment_id.company_id},
+    onboarding_portal = OnboardingPortal.objects.filter(token=token).first()
+    if onboarding_portal is None:
+        return HttpResponse("Denied.")
+    candidate = onboarding_portal.candidate_id
+    initial = {
+        "employee_first_name": candidate.name,
+        "phone": candidate.mobile,
+        "address": candidate.address,
+        "dob": candidate.dob,
+    }
+    user = User.objects.filter(username=candidate.email).first()
+    if Employee.objects.filter(employee_user_id=user).first() is not None:
+        initial = (
+            Employee.objects.filter(employee_user_id=user).first().__dict__
         )
-    return redirect("employee-bank-details", token)
+
+    form = EmployeeCreationForm(
+        initial,
+    )
+    form.errors.clear()
+    if request.method == "POST":
+        instance = Employee.objects.filter(employee_user_id=user).first()
+        form_data = EmployeeCreationForm(
+            request.POST,
+            instance=instance,
+        )
+        if form_data.is_valid():
+            employee_personal_info = form_data.save(commit=False)
+            employee_personal_info.employee_user_id = user
+            employee_personal_info.job_position_id = (
+                onboarding_portal.candidate_id.job_position_id
+            )
+            employee_personal_info.email = candidate.email
+            employee_personal_info.employee_profile = candidate.profile
+            employee_personal_info.save()
+            EmployeeWorkInformation.objects.get_or_create(
+                employee_id=employee_personal_info,
+                date_joining=candidate.joining_date,
+                job_position_id=onboarding_portal.candidate_id.job_position_id,
+            )
+            onboarding_portal.count = 3 
+            onboarding_portal.save()
+            messages.success(
+                request, _("Employee personal details created successfully..")
+            )
+            return redirect("employee-bank-details", token)
+    onboarding_portal.count += 1
+    onboarding_portal.save()
+    return render(
+        request,
+        "onboarding/employee-creation.html",
+        {"form": form, "employee": candidate.recruitment_id.company_id},
+    )
 
 
 def employee_bank_details(request, token):
@@ -673,22 +707,22 @@ def employee_bank_details(request, token):
     POST : return employee_bank_details_save function
     """
     onboarding_portal = OnboardingPortal.objects.get(token=token)
-    form = BankDetailsCreationForm()
-    employee_id = request.user.employee_get
-    if not EmployeeBankDetails.objects.filter(employee_id=employee_id).exists():
-        if request.method == "POST":
-            form = BankDetailsCreationForm(request.POST)
-            if form.is_valid():
-                return employee_bank_details_save(form, request, onboarding_portal)
-        return render(
-            request,
-            "onboarding/employee-bank-details.html",
-            {
-                "form": form,
-                "company": onboarding_portal.candidate_id.recruitment_id.company_id,
-            },
-        )
-    return redirect(welcome_aboard)
+    user = User.objects.filter(username=onboarding_portal.candidate_id.email).first()
+    employee = Employee.objects.filter(employee_user_id = user).first()
+    form = BankDetailsCreationForm(instance =EmployeeBankDetails.objects.filter(employee_id = employee).first())
+    if request.method == "POST":
+        form = BankDetailsCreationForm(request.POST, instance=EmployeeBankDetails.objects.filter(employee_id = employee).first())
+        if form.is_valid():
+            return employee_bank_details_save(form, request, onboarding_portal)
+        return redirect(welcome_aboard)
+    return render(
+        request,
+        "onboarding/employee-bank-details.html",
+        {
+            "form": form,
+            "company": onboarding_portal.candidate_id.recruitment_id.company_id,
+        },
+    )
 
 
 def employee_bank_details_save(form, request, onboarding_portal):
@@ -708,7 +742,7 @@ def employee_bank_details_save(form, request, onboarding_portal):
         employee_user_id=request.user
     )
     employee_bank_detail.save()
-    onboarding_portal.count += 1
+    onboarding_portal.count = 4
     onboarding_portal.save()
     messages.success(request, _("Employee bank details created successfully.."))
     return redirect(welcome_aboard)
@@ -882,9 +916,7 @@ def onboard_candidate_chart(_):
         blue = random.randint(0, 255)
         background_color.append(f"rgba({red}, {green}, {blue}, 0.2")
         border_color.append(f"rgb({red}, {green}, {blue})")
-        labels.append(
-            f"{recruitment.title} | {recruitment.start_date}"
-        )
+        labels.append(f"{recruitment.title} | {recruitment.start_date}")
         data.append(
             recruitment.candidate.filter(hired=True, start_onboard=True).count()
         )
@@ -905,7 +937,6 @@ def update_joining(request):
     """
     Ajax method to update joinng date
     """
-    print(request.POST)
     cand_id = request.POST["candId"]
     date = request.POST["date"]
     candidate_obj = Candidate.objects.get(id=cand_id)

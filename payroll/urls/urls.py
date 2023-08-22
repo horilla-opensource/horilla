@@ -9,7 +9,7 @@ from payroll.views import views
 urlpatterns = [
     path("", include("payroll.urls.component_urls")),
     path("", include("payroll.urls.tax_urls")),
-    path("dashboard", views.dashboard, name="dashboard"),
+    path("get-language-code/", views.get_language_code, name="get-language-code"),
     path("contract-create", views.contract_create, name="contract-create"),
     path(
         "update-contract/<int:contract_id>",
@@ -85,7 +85,7 @@ urlpatterns = [
         name="dashboard-contract-ending",
     ),
     path(
-        "dashboard-export/<str:date>",
+        "dashboard-export/",
         views.payslip_export,
         name="dashboard-export",
     ),

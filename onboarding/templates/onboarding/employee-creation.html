@@ -84,13 +84,16 @@
               <div class="col-sm-12 col-md-12 col-lg-12 ">
                 <div class="oh-input-group">
                   <label for="" class="oh-label">{% trans "Country" %}</label>
-                  <select name="country" id="id_country" data-selected="{{form.initial.country}}" class="oh-select oh-select-2">
+                  <input type="hidden" name="country" id="" value="{{request.user.employee_get.country}}">
+                  <select name="country" id="id_country" class="oh-select oh-select-2">
+                    <option value="{{request.user.employee_get.country}}" selected>{{form.initial.country}}</option>
                   </select>
                 </div>
               </div>
               <div class="col-sm-12 col-md-12 col-lg-12 ">
                 <div class="oh-input-group">
                   <label for="" class="oh-label">{% trans "State" %}</label>
+                  <input type="hidden" name="state" id="" value="{{request.user.employee_get.state}}">
                   <select name="state" id="id_state" data-selected="{{form.initial.country}}" class="oh-select oh-select-2">
                   </select>
                   {{form.state.errors}}

@@ -8,7 +8,7 @@ This page is used to write reusable methods.
 
 def is_stagemanager(request):
     """
-    This method is used to check stage manager, if the employee is also 
+    This method is used to check stage manager, if the employee is also
     recruitment manager it returns true
     """
     try:

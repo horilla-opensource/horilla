@@ -3,14 +3,18 @@ surveys.py
 
 This module is used to write views related to the survey features
 """
-import json
+import json, uuid
+import os
+from datetime import datetime
+from django.core import cache
+from django.core.files.storage import default_storage
 from django.core import serializers
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.http import HttpResponse
 from django.utils.translation import gettext_lazy as _
 from horilla.decorators import login_required, permission_required
-from recruitment.models import Recruitment
+from recruitment.models import Recruitment, validate_pdf
 from recruitment.forms import ApplicationForm, SurveyForm, QuestionForm
 from recruitment.models import (
     RecruitmentSurvey,
@@ -37,7 +41,7 @@ def candidate_survey(request):
     """
     Used to render survey form to the candidate
     """
-
+    MAX_FILE_SIZE = 5 * 1024 * 1024  # 5 MB in bytes
     candidate_json = request.session["candidate"]
     candidate_dict = json.loads(candidate_json)
     rec_id = candidate_dict[0]["fields"]["recruitment_id"]
@@ -55,11 +59,58 @@ def candidate_survey(request):
             email=candidate.email, recruitment_id=candidate.recruitment_id
         ).exists():
             candidate.save()
-            answer = RecruitmentSurveyAnswer()
-            answer.candidate_id = candidate
-            answer.answer_json = json.dumps(request.POST)
-            answer.save()
-            messages.success(request, "Your answers are submitted.")
+        else:
+            candidate = Candidate.objects.filter(
+                email=candidate.email, recruitment_id=candidate.recruitment_id
+            ).first()
+
+        answer = (
+            RecruitmentSurveyAnswer()
+            if candidate.recruitmentsurveyanswer_set.first() is None
+            else candidate.recruitmentsurveyanswer_set.first()
+        )
+        answer.candidate_id = candidate
+
+        # Process the POST data to properly handle multiple values
+        answer_data = {}
+        for key, value in request.POST.items():
+            if key.startswith("multiple_choices_"):
+                parts = key.split("_", 2)
+                question_text = parts[2]
+                selected_choices = request.POST.getlist(key)
+                answer_data[question_text] = selected_choices
+            elif key.startswith("date_"):
+                parts = key.split("_", 1)
+                question_text = parts[1]
+                selected_choices = request.POST.getlist(key)
+                if selected_choices and selected_choices[0] != '':
+                    formatted_dates = [
+                        datetime.strptime(date, "%Y-%m-%d").strftime("%d-%m-%Y")
+                        for date in selected_choices
+                    ]
+                    answer_data[question_text] = formatted_dates
+            else:
+                answer_data[key] = [value]
+        for key, value in request.FILES.items():
+            attachment = request.FILES[key]
+            if attachment.size > MAX_FILE_SIZE:
+                messages.error(
+                    request, "File size exceeds the limit. Maximum size is 5 MB"
+                )
+                return render(
+                    request,
+                    "survey/candidate-survey-form.html",
+                    {"form": form, "candidate": candidate},
+                )
+            attachment_path = f"recruitment_attachment/{attachment.name}"
+            with default_storage.open(attachment_path, "wb+") as destination:
+                for chunk in attachment.chunks():
+                    destination.write(chunk)
+            answer.attachment = attachment_path
+            answer_data[key] = [attachment_path]
+        answer.answer_json = json.dumps(answer_data)
+        answer.save()
+        messages.success(request, "Your answers are submitted.")
         return render(request, "candidate/success.html")
     return render(
         request,
@@ -173,8 +224,25 @@ def application_form(request):
                 candidate_obj.stage_id = stages.filter(stage_type="initial").first()
             else:
                 candidate_obj.stage_id = stages.order_by("sequence").first()
-            # candidate_obj.save()
             messages.success(request, _("Application saved."))
+
+            resume = request.FILES["resume"]
+            profile = request.FILES["profile"]
+
+            resume_path = f"recruitment/resume/{resume.name}"
+            profile_path = f"recruitment/profile/{profile.name}"
+
+            with default_storage.open(resume_path, "wb+") as destination:
+                for chunk in resume.chunks():
+                    destination.write(chunk)
+
+            with default_storage.open(profile_path, "wb+") as destination:
+                for chunk in profile.chunks():
+                    destination.write(chunk)
+
+            candidate_obj.resume = resume_path
+            candidate_obj.profile = profile_path
+
             request.session["candidate"] = serializers.serialize(
                 "json", [candidate_obj]
             )

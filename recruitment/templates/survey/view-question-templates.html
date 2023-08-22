@@ -64,7 +64,7 @@
 <section class="oh-wrapper oh-main__topbar" x-data="{searchShow: false}">
   <div class="oh-main__titlebar oh-main__titlebar--left">
     <h1 class="oh-main__titlebar-title fw-bold">
-      {% trans "Surevey Templates" %}
+      {% trans "Survey Templates" %}
     </h1>
     <a
       class="oh-main__titlebar-search-toggle"
@@ -91,7 +91,7 @@
         type="text"
         class="oh-input oh-input__icon"
         aria-label="Search Input"
-        placeholder="Search"
+        placeholder="{% trans 'Search' %}"
         hx-get="{% url 'rec-filter-survey' %}"
         hx-target="#view-container"
         name="question"

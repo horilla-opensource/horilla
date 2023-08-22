@@ -1,3 +1,6 @@
+"""
+URL configuration for asset-related views.
+"""
 from django.urls import path
 from django import views
 from . import views
@@ -6,7 +9,7 @@ from . import views
 urlpatterns = [
     path("asset-creation/<int:id>/", views.asset_creation, name="asset-creation"),
     path("asset-list/<int:id>", views.asset_list, name="asset-list"),
-    path("asset-update/<int:id>/", views.asset_update, name="asset-update"),
+    path("asset-update/<int:asset_id>/", views.asset_update, name="asset-update"),
     path("asset-delete/<int:id>/", views.asset_delete, name="asset-delete"),
     path(
         "asset-information/<int:id>/", views.asset_information, name="asset-information"

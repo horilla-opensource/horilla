@@ -1,3 +1,4 @@
+import random
 from employee.models import Employee
 from django.utils.translation import gettext as _
 
@@ -104,3 +105,36 @@ def sortby(request, queryset, key):
         orderingList.append(ordering)
 
     return queryset
+
+def random_color_generator():
+    r = random.randint(0, 255)
+    g = random.randint(0, 255)
+    b = random.randint(0, 255)
+    if r==g or g==b or b==r:
+        random_color_generator()
+    return f"rgba({r}, {g}, {b} , 0.7)"
+
+
+# color_palette=[]
+# Function to generate distinct colors for each object
+def generate_colors(num_colors):
+    # Define a color palette with distinct colors
+    color_palette = [
+        "rgba(255, 99, 132, 1)",   # Red
+        "rgba(54, 162, 235, 1)",   # Blue
+        "rgba(255, 206, 86, 1)",   # Yellow
+        "rgba(75, 192, 192, 1)",   # Green
+        "rgba(153, 102, 255, 1)",  # Purple
+        "rgba(255, 159, 64, 1)",   # Orange
+    ]
+    
+    if num_colors > len(color_palette):
+        for i in range(num_colors-len(color_palette)):
+            color_palette.append(random_color_generator())
+
+    colors = []
+    for i in range(num_colors):
+        # color=random_color_generator()
+        colors.append(color_palette[i % len(color_palette)])
+
+    return colors

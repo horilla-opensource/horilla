@@ -6,7 +6,7 @@ Each filter set class corresponds to a specific model and contains filter fields
 to customize the filtering behavior.
 
 """
-import django_filters
+import django_filters 
 from django import forms
 from horilla.filters import filter_by_name
 from attendance.filters import FilterSet
@@ -218,6 +218,8 @@ class PayslipFilter(FilterSet):
     )
     net_pay__lte = django_filters.NumberFilter(field_name="net_pay", lookup_expr="lte")
     net_pay__gte = django_filters.NumberFilter(field_name="net_pay", lookup_expr="gte")
+    
+    department = django_filters.CharFilter(field_name='employee_id__employee_work_info__department_id__department', lookup_expr='icontains')
 
     class Meta:
         """

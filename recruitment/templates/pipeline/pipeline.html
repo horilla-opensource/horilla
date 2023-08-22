@@ -152,7 +152,7 @@
                     <div class="oh-sticky-table__th oh-table-config__th">
                       <span> {% trans "Contact" %} </span>
                     </div>
-                    <div class="oh-sticky-table__th oh-table-config__th">Stage</div>
+                    <div class="oh-sticky-table__th oh-table-config__th">{% trans "Stage" %}</div>
                     <div class="oh-sticky-table__th oh-table-config__th" style="width: 200px;" ></div>
                   </div>
                 </div>
@@ -222,7 +222,7 @@
                         <button
                           type="button"
                           hx-get='{% url "send-mail" cand.id %}'
-                          title="Send Mail"
+                          title="{% trans "Send Mail" %}"
                           hx-target="#mail-content"
                           hx-swap="innerHTML"
                           class="oh-btn oh-btn--light"
@@ -235,7 +235,7 @@
                         <button
                           type="button"
                           hx-get='{% url "add-note" cand.id %}'
-                          title="Add note"
+                          title="{% trans "Add Note" %}"
                           hx-target="#remark-content"
                           hx-swap="innerHTML"
                           class="oh-btn oh-btn--light"
@@ -248,7 +248,7 @@
                         <button
                           type="button"
                           hx-get='{% url "view-note" cand.id %}'
-                          title="View Note"
+                          title="{% trans "View Note" %}"
                           hx-target="#activitySidebar"
                           hx-swap="innerHTML"
                           data-target="#activitySidebar"
@@ -263,7 +263,7 @@
                           class="oh-btn oh-btn--light"
                           href="/media/{{cand.resume}}"
                           target="_blank"
-                          title="Resume"
+                          title="{% trans "Resume" %}"
                           rel="noopener noreferrer"
                           style="flex: 1 0 auto; width:20px;height: 40.68px; padding: 0;"
                           ><ion-icon name="document-outline"></ion-icon

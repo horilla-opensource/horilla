@@ -1,307 +1,410 @@
-{% extends 'index.html' %}
-{% load i18n %}
-{% block content %}
-      <div class="oh-wrapper" id='section'>
-    <div class="oh-card mt-4 mb-5">
-      <div class="d-flex flex-row-reverse " >
-        <a href="{% url 'rec-candidate-update' candidate.id %}" class="">
-          <ion-icon name="pencil" ></ion-icon>
-        </a>
-      </div>
-      <div class="row">
-        <div class="col-12 col-sm-12 col-md-12 col-lg-4">
-          <div class="d-flex align-items-center">
-            <div class="oh-profile oh-profile--lg me-3">
-              <div class="oh-profile__avatar">
-                {% if candidate.profile %}
-                <img
+{% extends 'index.html' %} {% load i18n %} {% load yes_no %} {% block content %}
+<div class="oh-wrapper" id="section">
+  <div class="oh-card mt-4 mb-5">
+    <div class="d-flex flex-row-reverse">
+      <a href="{% url 'rec-candidate-update' candidate.id %}" class="">
+        <ion-icon name="pencil"></ion-icon>
+      </a>
+    </div>
+    <div class="row">
+      <div class="col-12 col-sm-12 col-md-12 col-lg-4">
+        <div class="d-flex align-items-center">
+          <div class="oh-profile oh-profile--lg me-3">
+            <div class="oh-profile__avatar">
+              {% if candidate.profile %}
+              <img
                 src="{{candidate.profile.url}}"
                 class="oh-profile-section__avatar preview"
                 alt="Username"
-                />
-                {% else %}
-                <img
+              />
+              {% else %}
+              <img
                 src="https://ui-avatars.com/api/?name={{candidate}}&background=random"
                 class="oh-profile-section__avatar preview"
                 alt="Username"
-                />
-                {% endif %}
-                
-              </div>
-              <span class="oh-profile__active-badge oh-profile__active-badge--secondary" title="Active"></span>
+              />
+              {% endif %}
             </div>
-            <div class="oh-profile__info-container">
-              <h1 class="oh-profile__info-name">{{candidate}}</h1>
-              <p class="oh-profile__info-designation">
-                {{candidate.job_position_id}}
-              </p>
-            </div>
+            <span
+              class="oh-profile__active-badge oh-profile__active-badge--secondary"
+              title="Active"
+            ></span>
+          </div>
+          <div class="oh-profile__info-container">
+            <h1 class="oh-profile__info-name">{{candidate}}</h1>
+            <p class="oh-profile__info-designation">
+              {{candidate.job_position_id}}
+            </p>
           </div>
         </div>
-        <div
-          class="col-12 col-sm-12 col-md-12 col-lg-8 d-flex align-items-center"
-        >
-          <ul class="oh-profile__info-list">
-            <li class="oh-profile__info-list-item">
-              <span class="oh-profile__info-label">
-                <ion-icon name="mail-outline"></ion-icon>
-                <span>{% trans "Email" %}:</span>
-              </span>
-              <span class="oh-profile__info-value"
-                >{{candidate.email}}</span
-              >
-            </li>
-            
-            <li class="oh-profile__info-list-item">
-              <span class="oh-profile__info-label">
-                <ion-icon name="call-outline"></ion-icon>
-                <span>{% trans "Phone" %}:</span>
-              </span>
-              <span class="oh-profile__info-value">{{candidate.mobile}}</span>
-            </li>
-          </ul>
-        </div>
       </div>
-      <div class="row">
-        <div class="col-sm-12 col-md-12 col lg-12">
-          <ul
-            class="oh-general__tabs oh-general__tabs--border  oh-general__tabs--profile oh-general__tabs--no-grow oh-profile-section__tab mt-5"
-          >
-            <li class="oh-general__tab">
-              <a
-                href="#"
-                class="oh-general__tab-link oh-general__tab-link--active"
-                data-action="general-tab"
-                data-target="#personal"
-                >{% trans "About" %}</a
-              >
-            </li>
-            <li class="oh-general__tab">
-              <a
-                href="#"
-                class="oh-general__tab-link"
-                data-action="general-tab"
-                data-target="#note"
-                >{% trans "Notes" %}</a
-              >
-            </li>
-            <li class="oh-general__tab">
-              <a
-                href="#"
-                class="oh-general__tab-link"
-                data-action="general-tab"
-                data-target="#resume"
-                >{% trans "Resume" %}</a
-              >
-            </li>
-            <li class="oh-general__tab">
-              <a
-                href="#"
-                class="oh-general__tab-link"
-                data-action="general-tab"
-                data-target="#survey"
-                >{% trans "Survey" %}</a
-              >
-            </li>
-            
-          </ul>
+      <div
+        class="col-12 col-sm-12 col-md-12 col-lg-8 d-flex align-items-center"
+      >
+        <ul class="oh-profile__info-list">
+          <li class="oh-profile__info-list-item">
+            <span class="oh-profile__info-label">
+              <ion-icon name="mail-outline"></ion-icon>
+              <span>{% trans "Email" %}:</span>
+            </span>
+            <span class="oh-profile__info-value">{{candidate.email}}</span>
+          </li>
 
-          <div
-            class="oh-general__tab-target oh-profile__info-tab mb-4 "
-            id="personal"
-          >
-            <div class="row">
-              <div class="col-sm-12 col-md-12 col-lg-4">
-                <div class="oh-card oh-card--margin">
-                  <div class="oh-card__header">
-                    <span
-                      class="oh-card__title oh-card__title--sm fw-bold me-2"
-                      >{% trans "Personal Information" %}</span
-                    >
-                  </div>
-                  <div class="oh-card__body mt-4">
-                    <ul class="oh-profile__card-info-list">
-                      <li class="oh-profile__card-info-item">
-                        <span class="oh-profile__info-label mb-1">
-                          <ion-icon name="calendar-outline"></ion-icon>
-                          <span>{% trans "Date of Birth" %}</span>
-                        </span>
-                        <span class="oh-profile__info-value"
-                          >{{candidate.dob}}</span
-                        >
-                      </li>
-                      <li class="oh-profile__card-info-item">
-                        <span class="oh-profile__info-label mb-1">
-                          <ion-icon
-                            name="transgender-outline"
-                          ></ion-icon>
-                          <span>{% trans "Gender" %}</span>
-                        </span>
-                        <span class="oh-profile__info-value"
-                          >{{candidate.gender|capfirst}}</span
-                        >
-                      </li>
-                      <li class="oh-profile__card-info-item">
-                        <span class="oh-profile__info-label mb-1">
-                          <ion-icon name="home-outline"></ion-icon>
-                          <span>{% trans "Address" %}</span>
-                        </span>
-                        <p class="oh-profile__info-value mb-0">
-                          {{candidate.address}}
-                        </p>
-                      </li>
-                      <li class="oh-profile__card-info-item">
-                        <span class="oh-profile__info-label mb-1">
-                          <ion-icon name="flag-outline"></ion-icon>
-                          <span>{% trans "Country" %}</span>
-                        </span>
-                        <span class="oh-profile__info-value">
-                          {{candidate.country}}
-                        </span>
-                      </li>
-                      <li class="oh-profile__card-info-item">
-                        <span class="oh-profile__info-label mb-1">
-                          <ion-icon name="compass-outline"></ion-icon>
-                          <span>{% trans "State" %}</span>
-                        </span>
-                        <span class="oh-profile__info-value">
-                          {{candidate.state}}
-                        </span>
-                      </li>
-                      <li class="oh-profile__card-info-item">
-                        <span class="oh-profile__info-label mb-1">
-                          <ion-icon name="brush-outline"></ion-icon>
-                          <span>{% trans "Portfolio" %}</span>
-                        </span>
-                        <span class="oh-profile__info-value">
-                          {{candidate.portfolio}}
-                        </span>
-                      </li>
-                    </ul>
-                  </div>
+          <li class="oh-profile__info-list-item">
+            <span class="oh-profile__info-label">
+              <ion-icon name="call-outline"></ion-icon>
+              <span>{% trans "Phone" %}:</span>
+            </span>
+            <span class="oh-profile__info-value">{{candidate.mobile}}</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-sm-12 col-md-12 col lg-12">
+        <ul
+          class="oh-general__tabs oh-general__tabs--border oh-general__tabs--profile oh-general__tabs--no-grow oh-profile-section__tab mt-5"
+        >
+          <li class="oh-general__tab">
+            <a
+              href="#"
+              class="oh-general__tab-link oh-general__tab-link--active"
+              data-action="general-tab"
+              data-target="#personal"
+              >{% trans "About" %}</a
+            >
+          </li>
+          <li class="oh-general__tab">
+            <a
+              href="#"
+              class="oh-general__tab-link"
+              data-action="general-tab"
+              data-target="#resume"
+              >{% trans "Resume" %}</a
+            >
+          </li>
+          <li class="oh-general__tab">
+            <a
+            href="#"
+            class="oh-general__tab-link"
+            data-action="general-tab"
+            data-target="#survey"
+            >{% trans "Survey" %}</a
+            >
+          </li>
+          <li class="oh-general__tab">
+            <a
+              href="#"
+              class="oh-general__tab-link"
+              data-action="general-tab"
+              data-target="#note"
+              >{% trans "Notes" %}</a
+            >
+          </li>
+          {% if candidate.hired %}
+          <li class="oh-general__tab">
+            <a
+            href="#"
+            class="oh-general__tab-link"
+            data-action="general-tab"
+            data-target="#onboarding"
+            >{% trans "Onboarding" %}</a
+            >
+          </li>
+          {% endif %}
+        </ul>
+
+        <div
+          class="oh-general__tab-target oh-profile__info-tab mb-4"
+          id="personal"
+        >
+          <div class="row">
+            <div class="col-sm-12 col-md-12 col-lg-4">
+              <div class="oh-card oh-card--margin">
+                <div class="oh-card__header">
+                  <span class="oh-card__title oh-card__title--sm fw-bold me-2"
+                    >{% trans "Personal Information" %}</span
+                  >
+                </div>
+                <div class="oh-card__body mt-4">
+                  <ul class="oh-profile__card-info-list">
+                    <li class="oh-profile__card-info-item">
+                      <span class="oh-profile__info-label mb-1">
+                        <ion-icon name="calendar-outline"></ion-icon>
+                        <span>{% trans "Date of Birth" %}</span>
+                      </span>
+                      <span class="oh-profile__info-value"
+                        >{{candidate.dob}}</span
+                      >
+                    </li>
+                    <li class="oh-profile__card-info-item">
+                      <span class="oh-profile__info-label mb-1">
+                        <ion-icon name="transgender-outline"></ion-icon>
+                        <span>{% trans "Gender" %}</span>
+                      </span>
+                      <span class="oh-profile__info-value"
+                        >{{candidate.gender|capfirst}}</span
+                      >
+                    </li>
+                    <li class="oh-profile__card-info-item">
+                      <span class="oh-profile__info-label mb-1">
+                        <ion-icon name="home-outline"></ion-icon>
+                        <span>{% trans "Address" %}</span>
+                      </span>
+                      <p class="oh-profile__info-value mb-0">
+                        {{candidate.address}}
+                      </p>
+                    </li>
+                    <li class="oh-profile__card-info-item">
+                      <span class="oh-profile__info-label mb-1">
+                        <ion-icon name="flag-outline"></ion-icon>
+                        <span>{% trans "Country" %}</span>
+                      </span>
+                      <span class="oh-profile__info-value">
+                        {{candidate.country}}
+                      </span>
+                    </li>
+                    <li class="oh-profile__card-info-item">
+                      <span class="oh-profile__info-label mb-1">
+                        <ion-icon name="compass-outline"></ion-icon>
+                        <span>{% trans "State" %}</span>
+                      </span>
+                      <span class="oh-profile__info-value">
+                        {{candidate.state}}
+                      </span>
+                    </li>
+                    <li class="oh-profile__card-info-item">
+                      <span class="oh-profile__info-label mb-1">
+                        <ion-icon name="brush-outline"></ion-icon>
+                        <span>{% trans "Portfolio" %}</span>
+                      </span>
+                      <span class="oh-profile__info-value">
+                        {{candidate.portfolio}}
+                      </span>
+                    </li>
+                  </ul>
                 </div>
               </div>
-              <div class="col-sm-12 col-md-12 col-lg-8">
-                <div class="oh-card oh-card--margin">
-                  <div class="oh-card__header">
-                    <span
-                      class="oh-card__title oh-card__title--sm fw-bold me-2"
-                      >{% trans "Recruitment Information" %}</span
-                    >
-                  </div>
-                  <div class="oh-card__body mt-4">
-                    <div class="row">
-                      <div class="col-12 col-sm-12 col-md-12 col-lg-6">
-                        <ul class="oh-profile__card-info-list">
-                          <li class="oh-profile__card-info-item">
-                            <span class="oh-profile__info-label mb-1">
-                              <ion-icon name="construct-outline"></ion-icon>
-                              <span>{% trans "Recruitment" %}</span>
-                            </span>
-                            <span class="oh-profile__info-value"
-                              >{{candidate.recruitment_id}}</span
-                            >
-                          </li>
-                          <li class="oh-profile__card-info-item">
-                            <span class="oh-profile__info-label mb-1">
-                              <ion-icon name="briefcase-outline"></ion-icon>
+            </div>
+            <div class="col-sm-12 col-md-12 col-lg-8">
+              <div class="oh-card oh-card--margin">
+                <div class="oh-card__header">
+                  <span class="oh-card__title oh-card__title--sm fw-bold me-2"
+                    >{% trans "Recruitment Information" %}</span
+                  >
+                </div>
+                <div class="oh-card__body mt-4">
+                  <div class="row">
+                    <div class="col-12 col-sm-12 col-md-12 col-lg-6">
+                      <ul class="oh-profile__card-info-list">
+                        <li class="oh-profile__card-info-item">
+                          <span class="oh-profile__info-label mb-1">
+                            <ion-icon name="construct-outline"></ion-icon>
+                            <span>{% trans "Recruitment" %}</span>
+                          </span>
+                          <span class="oh-profile__info-value"
+                            >{{candidate.recruitment_id}}</span
+                          >
+                        </li>
+                        <li class="oh-profile__card-info-item">
+                          <span class="oh-profile__info-label mb-1">
+                            <ion-icon name="briefcase-outline"></ion-icon>
 
-                              <span>{% trans "Department" %}</span>
-                            </span>
-                            <span class="oh-profile__info-value"
-                              >{{candidate.recruitment_id.job_position_id.department_id}}</span
-                            >
-                          </li>                      
+                            <span>{% trans "Department" %}</span>
+                          </span>
+                          <span class="oh-profile__info-value"
+                            >{{candidate.recruitment_id.job_position_id.department_id}}</span
+                          >
+                        </li>
+                      </ul>
+                    </div>
 
-                          
-                        </ul>
-                      </div>
-
-                      <div class="col-12 col-sm-12 col-md-12 col-lg-6">
-                        <ul class="oh-profile__card-info-list">
-                          <li class="oh-profile__card-info-item">
-                            <span class="oh-profile__info-label mb-1">
-                              <ion-icon name="file-tray-stacked-outline"></ion-icon>
-                              <span>{% trans "Current Stage" %}</span>
-                            </span>
-                            <span class="oh-profile__info-value"
-                              >{{candidate.stage_id}}</span
-                            >
-                          </li>
-                          <li class="oh-profile__card-info-item">
-                            <span class="oh-profile__info-label mb-1">
-                              <ion-icon name="briefcase-outline"></ion-icon>
-                              <span>{% trans "Job Position" %}</span>
-                            </span>
-                            <span class="oh-profile__info-value"
-                              >{{candidate.recruitment_id.job_position_id}}</span
-                            >
-                          </li>
-                          
-                          
-                        </ul>
-                      </div>
+                    <div class="col-12 col-sm-12 col-md-12 col-lg-6">
+                      <ul class="oh-profile__card-info-list">
+                        <li class="oh-profile__card-info-item">
+                          <span class="oh-profile__info-label mb-1">
+                            <ion-icon
+                              name="file-tray-stacked-outline"
+                            ></ion-icon>
+                            <span>{% trans "Current Stage" %}</span>
+                          </span>
+                          <span class="oh-profile__info-value"
+                            >{{candidate.stage_id}}</span
+                          >
+                        </li>
+                        <li class="oh-profile__card-info-item">
+                          <span class="oh-profile__info-label mb-1">
+                            <ion-icon name="briefcase-outline"></ion-icon>
+                            <span>{% trans "Job Position" %}</span>
+                          </span>
+                          <span class="oh-profile__info-value"
+                            >{{candidate.recruitment_id.job_position_id}}</span
+                          >
+                        </li>
+                      </ul>
                     </div>
                   </div>
                 </div>
-                
               </div>
             </div>
           </div>
+        </div>
 
-
-          <div
-          class="oh-general__tab-target oh-profile__info-tab  mb-4 d-none"
+        <div
+          class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
           id="note"
         >
           <!-- #2 -->
           <ol class="oh-activity-sidebar__qa-list" role="list">
             {% for note in candidate.stagenote_set.all %}
-          <li class="oh-activity-sidebar__qa-item">
-            <span class="oh-activity-sidebar__q"
-              >{{forloop.counter}}. {{note.title}}</span
-            >
-            <span 
-              >{{note.description}}</span
-            >
-            <span class="oh-activity-sidebar__a">
-                {% trans "by" %} <img src="https://ui-avatars.com/api/?name={{note.updated_by.employee_first_name}}+{{note.updated_by.employee_last_name}}&amp;background=random" style="width: 1.5em; border-radius: 100%;height:1000px ;" alt="User"> {{note.updated_by}} @{{note.stage_id}}
-            </span>
-          </li>
-          {% endfor %}
-        </ol>
+            <li class="oh-activity-sidebar__qa-item">
+              <span class="oh-activity-sidebar__q"
+                >{{forloop.counter}}. {{note.title}}</span
+              >
+              <span>{{note.description}}</span>
+              <span class="oh-activity-sidebar__a">
+                {% trans "by" %}
+                <img
+                  src="https://ui-avatars.com/api/?name={{note.updated_by.employee_first_name}}+{{note.updated_by.employee_last_name}}&amp;background=random"
+                  style="width: 1.5em; border-radius: 100%; height: 1000px"
+                  alt="User"
+                />
+                {{note.updated_by}} @{{note.stage_id}}
+              </span>
+            </li>
+            {% endfor %}
+          </ol>
         </div>
         <div
-          class="oh-general__tab-target oh-profile__info-tab  mb-4 d-none"
+          class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
           id="resume"
         >
-        {% if candidate.resume %}
-            <iframe id="iframe_pdf" src="/media/{{candidate.resume}}" style="width:100%; height:500px;" frameborder="0"></iframe>
-        {% else %}
-            <p>{% trans "This candidate does not have a resume on file." %}</p>
-        {% endif %}
+          {% if candidate.resume %}
+          <iframe
+            id="iframe_pdf"
+            src="/media/{{candidate.resume}}"
+            style="width: 100%; height: 500px"
+            frameborder="0"
+          ></iframe>
+          {% else %}
+          <p>{% trans "This candidate does not have a resume on file." %}</p>
+          {% endif %}
         </div>
         <div
-        class="oh-general__tab-target oh-profile__info-tab  mb-4 d-none"
-        id="survey"
-      >
-      <!-- #3 -->
-      {% for surveys in candidate.recruitmentsurveyanswer_set.all %}
-      {% for question,answer in surveys.answer.items %}
-      {% if question != "csrfmiddlewaretoken" %}
-      <div>
-        {{question}}---{{answer}}
-      </div>
-      {% endif %}
-      {% endfor %}
-      {% endfor %}
-      </div>
-
+          class="oh-general__tab-target oh-profile__info-tab mb-4"
+          id="survey"
+          >
+          <!-- #3 -->
+          {% for surveys in candidate.recruitmentsurveyanswer_set.all %}
+          <div class="oh-survey__table">
+            {% for question, answer_list in surveys.answer.items %} 
+            {% if question != "csrfmiddlewaretoken" %}
+                <div class="oh-survey__table-row">
+                  <div class="oh-survey__table-col">
+                    {% if question|slice:"0:11" == "percentage_" %}
+                      {{ question|slice:"11:" }} 
+                    {% elif question|slice:"0:7" == "rating_" %}
+                      {{ question|slice:"7:" }}
+                    {% elif question|slice:"0:5" == "file_" %}
+                      {{ question|slice:"5:" }}
+                    {% else %}
+                      {{ question }}
+                    {% endif %}
+                  </div>
+                  <div class="oh-survey__table-col">
+                    {% if answer_list|length > 1 %}
+                      {{ answer_list|join:", " }}
+                    {% else %} 
+                      {% if answer_list.0 == "on" or answer_list.0 == "off"%} 
+                        {{ answer_list.0|on_off }}
+                      {% elif question|slice:"0:11" == "percentage_" %}
+                        {{ answer_list.0 }}%
+                      {% elif question|slice:"0:5" == "file_" %}
+                        <a href="/media/{{ answer_list.0 }}" target="_blank">{{ answer_list.0 }}</a>
+                      {% elif question|slice:"0:7" == "rating_" %}
+                          <div class="oh-rate">
+                            <input type="radio" id="star5" name="answer{{q.id}}" value="5" disabled {% if answer_list.0 == '5' %} checked {% endif %} />
+                            <label for="star5" title="5 Stars">5 {% trans "Stars" %}</label>
+                            <input type="radio" id="star4" name="answer{{q.id}}" value="4" disabled  {% if answer_list.0 == '4' %} checked {% endif %} />
+                            <label for="star4" title="4 Stars">4 {% trans "Stars" %}</label>
+                            <input type="radio" id="star3" name="answer{{q.id}}" value="3" disabled  {% if answer_list.0 == '3' %} checked {% endif %} />
+                            <label for="star3" title="3 Stars">3 {% trans "Stars" %}</label>
+                            <input type="radio" id="star2" name="answer{{q.id}}" value="2" disabled  {% if answer_list.0 == '2' %} checked {% endif %}  />
+                            <label for="star2" title="2 Stars">2 {% trans "Stars" %}</label>
+                            <input type="radio" id="star1" name="answer{{q.id}}" value="1" disabled  {% if answer_list.0 == '1' %} checked {% endif %} />
+                            <label for="star1" title="1 Star">1 {% trans "Star" %}</label>
+                          </div>
+                      {% else %} 
+                        {{ answer_list.0 }} 
+                      {% endif %} 
+                    {% endif %}
+                  </div>
+                </div>
+            {% endif %}
+           {% endfor %}
+          </div>
+          {% endfor %}
+        </div>
+        <div
+          class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
+          id="onboarding"
+        >
+        <style>
+          .onboarding-task-status{
+            padding: 20px;
+            margin-top: 5px;
+            font-weight: 700;
+          }
+          .onboarding-task-status--ongoing{
+            border-left: solid 4px yellow;
+            background-color: rgba(255, 255, 0, 0.113);
+          }
+          .onboarding-task-status--stuck{
+            border-left: solid 4px rgb(255, 60, 0);
+            background-color: rgb(255, 60, 0,0.113);
+          }
+          .onboarding-task-status--todo, .onboarding-task-status--None{
+            border-left: solid 4px rgb(205, 205, 205);
+            background-color: rgba(205,205,205,0.113);
+          }
+          .onboarding-task-status--done{
+            border-left: solid 4px rgb(154, 205, 50);
+            background-color: rgba(154, 205, 50,0.113);
+          }
+          .onboarding-task-status--scheduled{
+            border-left: solid 4px rgb(0, 255, 255);
+            background-color: rgb(0, 255, 255,0.133);
+          }
+        </style>
+        {% for task in candidate.candidate_task.all %}
+        <div class="onboarding-task-status onboarding-task-status--{{task.status}}">
+          {{task.onboarding_task_id.task_title}} ---- {{task.status|capfirst}}<br>
+        </div>
+        {% endfor %}
         </div>
       </div>
     </div>
   </div>
-
-
-  
-  {% endblock content %}
+</div>
+<script>
+  $(document).ready(function () {
+    // Active tab script
+    function activeCandTab() {
+      var activeTab = localStorage.getItem("activeCandTab")
+      if(activeTab != null){
+        $(".oh-general__tab-link--active").removeClass("oh-general__tab-link--active");
+        $(`[data-target='${activeTab}']`).addClass("oh-general__tab-link--active");
+        $(".oh-general__tab-target").addClass("d-none");
+        $(activeTab).removeClass("d-none");
+      }
+    }
+    activeCandTab()
+    $("[data-action=general-tab]").click(function (e) { 
+      e.preventDefault();
+      console.log(this);
+      const targetId = $(this).attr('data-target');
+      localStorage.setItem("activeCandTab",targetId)
+    });
+  });
+</script>
+{% endblock content %}
