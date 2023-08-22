@@ -371,6 +371,10 @@
             border-left: solid 4px rgb(154, 205, 50);
             background-color: rgba(154, 205, 50,0.113);
           }
+          .onboarding-task-status--scheduled{
+            border-left: solid 4px rgb(0, 255, 255);
+            background-color: rgb(0, 255, 255,0.133);
+          }
         </style>
         {% for task in candidate.candidate_task.all %}
         <div class="onboarding-task-status onboarding-task-status--{{task.status}}">
@@ -382,4 +386,25 @@
     </div>
   </div>
 </div>
+<script>
+  $(document).ready(function () {
+    // Active tab script
+    function activeCandTab() {
+      var activeTab = localStorage.getItem("activeCandTab")
+      if(activeTab != null){
+        $(".oh-general__tab-link--active").removeClass("oh-general__tab-link--active");
+        $(`[data-target='${activeTab}']`).addClass("oh-general__tab-link--active");
+        $(".oh-general__tab-target").addClass("d-none");
+        $(activeTab).removeClass("d-none");
+      }
+    }
+    activeCandTab()
+    $("[data-action=general-tab]").click(function (e) { 
+      e.preventDefault();
+      console.log(this);
+      const targetId = $(this).attr('data-target');
+      localStorage.setItem("activeCandTab",targetId)
+    });
+  });
+</script>
 {% endblock content %}
