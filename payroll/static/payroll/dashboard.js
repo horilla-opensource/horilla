@@ -10,80 +10,87 @@ $(document).ready(function(){
     $("#monthYearField").val(formattedDate); 
     
     
-    function employee_chart(dataSet,labels){
-        $("#employee_canvas_body").html('<canvas id="employeeChart"></canvas>')
-        
-
-        const employeeChartData = {
-            labels: labels,
-            datasets: dataSet
-            
-        };
-
-        window["employeeChart"] = {};
+    function employee_chart(dataSet, labels) {
+        $("#employee_canvas_body").html('<canvas id="employeeChart"></canvas>');
+    
         const employeeChart = document.getElementById('employeeChart').getContext("2d");
         
-        // chart constructor
-        var employeePayrollChart = new Chart(employeeChart, {
-            type: "bar",
-            data: employeeChartData,
-            options:{
-                scales: {
-                    x: {
-                        stacked: true,
-                        title: {
-                        display: true,
-                        text: "Name of Employees",
-                        font: {
-                            weight: "bold", 
-                            size: 16,
-                          },
-                        },
-                    },
-                    y: {
-                        stacked: true,
-                        title: {
-                        display: true,
-                        text: "Amount",
-                        font: {
-                            weight: "bold", 
-                            size: 16,
-                          },
-                        
-                        },
-                    }
-                }
-            }
-        });
-
-        $("#employeeChart").on("click", function(event) {
-            var activeBars = employeePayrollChart.getElementsAtEventForMode(event, "index", { intersect: true }, true);
+        $.ajax({
+            url: '/payroll/get-language-code',
+            type: "GET",
+            success: (response) => {
+                const scaleXText = response.scale_x_text;
+                const scaleYText = response.scale_y_text;
     
-            if (activeBars.length > 0) {
-                var clickedBarIndex = activeBars[0].index;
-                var clickedLabel = employeeChartData.labels[clickedBarIndex];
-                
-                $.ajax({
-                    url: '/payroll/filter-payslip?search='+clickedLabel,
-                    type: "GET",
-                    dataType: "html",
-                    headers: {
-                        "X-Requested-With": "XMLHttpRequest",
-                    },
-                    success: (response) => {
-                        $("#back_button").removeClass("d-none")
-                        $("#dashboard").html(response)
-        
-        
-                    },
-                    error: (error) => {
-                        console.log('Error', error);
+                const employeeChartData = {
+                    labels: labels,
+                    datasets: dataSet
+                };
+    
+                window["employeeChart"] = {};
+    
+                // Chart constructor
+                var employeePayrollChart = new Chart(employeeChart, {
+                    type: "bar",
+                    data: employeeChartData,
+                    options: {
+                        scales: {
+                            x: {
+                                stacked: true,
+                                title: {
+                                    display: true,
+                                    text: scaleXText,
+                                    font: {
+                                        weight: "bold",
+                                        size: 16,
+                                    },
+                                },
+                            },
+                            y: {
+                                stacked: true,
+                                title: {
+                                    display: true,
+                                    text: scaleYText,
+                                    font: {
+                                        weight: "bold",
+                                        size: 16,
+                                    },
+                                },
+                            }
+                        }
                     }
                 });
+    
+                $("#employeeChart").on("click", function (event) {
+                    var activeBars = employeePayrollChart.getElementsAtEventForMode(event, "index", { intersect: true }, true);
+    
+                    if (activeBars.length > 0) {
+                        var clickedBarIndex = activeBars[0].index;
+                        var clickedLabel = employeeChartData.labels[clickedBarIndex];
+    
+                        $.ajax({
+                            url: '/payroll/filter-payslip?search=' + clickedLabel,
+                            type: "GET",
+                            dataType: "html",
+                            headers: {
+                                "X-Requested-With": "XMLHttpRequest",
+                            },
+                            success: (response) => {
+                                $("#back_button").removeClass("d-none")
+                                $("#dashboard").html(response)
+                            },
+                            error: (error) => {
+                                console.log('Error', error);
+                            }
+                        });
+                    }
+                });
+            },
+            error: (error) => {
+                console.log('Error', error);
             }
         });
-
-    }
+    }    
 
     var  employee_chart_view = (dataSet,labels) =>{
 

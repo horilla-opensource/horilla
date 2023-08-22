@@ -9,6 +9,7 @@ from payroll.views import views
 urlpatterns = [
     path("", include("payroll.urls.component_urls")),
     path("", include("payroll.urls.tax_urls")),
+    path("get-language-code/", views.get_language_code, name="get-language-code"),
     path("contract-create", views.contract_create, name="contract-create"),
     path(
         "update-contract/<int:contract_id>",

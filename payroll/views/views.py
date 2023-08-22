@@ -27,11 +27,20 @@ from payroll.methods.methods import paginator_qry
 # Create your views here.
 
 status_choices = {
-  "draft": "Draft",
-  "review_ongoing": "Review Ongoing",
-  "confirmed": "Confirmed",
-  "paid": "Paid",
-  }
+    "draft": "Draft",
+    "review_ongoing": "Review Ongoing",
+    "confirmed": "Confirmed",
+    "paid": "Paid",
+}
+
+
+def get_language_code(request):
+    scale_x_text = _("Name of Employees")
+    scale_y_text = _("Amount")
+    response = {"scale_x_text": scale_x_text, "scale_y_text": scale_y_text}
+    print(response)
+    return JsonResponse(response)
+
 
 @login_required
 @permission_required("payroll.add_contract")
@@ -133,8 +142,8 @@ def view_single_contract(request, contract_id):
         dashboard = request.GET.get("dashboard")
     contract = Contract.objects.get(id=contract_id)
     context = {
-            "contract": contract,
-            "dashboard":dashboard,
+        "contract": contract,
+        "dashboard": dashboard,
     }
     return render(request, "payroll/contract/contract_single_view.html", context)
 
@@ -379,27 +388,27 @@ def contract_info_initial(request):
     }
     return JsonResponse(response_data)
 
+
 @login_required
 @permission_required("payroll.view_dashboard")
 def view_payroll_dashboard(request):
     """
-        Dashboard rendering views
+    Dashboard rendering views
     """
 
-    paid = Payslip.objects.filter(status = "paid")
-    posted = Payslip.objects.filter(status = "confirmed")
-    review_ongoing = Payslip.objects.filter(status = "review_ongoing")
+    paid = Payslip.objects.filter(status="paid")
+    posted = Payslip.objects.filter(status="confirmed")
+    review_ongoing = Payslip.objects.filter(status="review_ongoing")
     context = {
-        "paid":paid,
-        "posted":posted,
-        "review_ongoing":review_ongoing,
+        "paid": paid,
+        "posted": posted,
+        "review_ongoing": review_ongoing,
     }
-    return render(request,"payroll/dashboard.html",context=context)
+    return render(request, "payroll/dashboard.html", context=context)
 
 
 @login_required
 def dashboard_employee_chart(request):
-
     """
     payroll dashboard employee chart data
     """
@@ -412,7 +421,7 @@ def dashboard_employee_chart(request):
     is_ajax = request.headers.get("X-Requested-With") == "XMLHttpRequest"
     if is_ajax and request.method == "GET":
         employee_list = Payslip.objects.filter(
-            Q(start_date__month = month) & Q(start_date__year = year)
+            Q(start_date__month=month) & Q(start_date__year=year)
         )
         labels = []
         for employee in employee_list:
@@ -435,34 +444,42 @@ def dashboard_employee_chart(request):
         total_pay_with_status = defaultdict(lambda: defaultdict(float))
 
         for label in employees:
-            payslips = employee_list.filter(employee_id = label)
+            payslips = employee_list.filter(employee_id=label)
             for payslip in payslips:
-                total_pay_with_status[payslip.status][label] += round(payslip.net_pay,2)
+                total_pay_with_status[payslip.status][label] += round(
+                    payslip.net_pay, 2
+                )
 
         for data in dataset:
-            dataset_label= data["label"]
-            data["data"] = [total_pay_with_status[dataset_label][label] for label in employees]
-
+            dataset_label = data["label"]
+            data["data"] = [
+                total_pay_with_status[dataset_label][label] for label in employees
+            ]
 
         employee_label = []
         for employee in employees:
-            employee_label.append(f"{employee.employee_first_name} {employee.employee_last_name}")
+            employee_label.append(
+                f"{employee.employee_first_name} {employee.employee_last_name}"
+            )
 
-        for value,choice in zip(dataset,Payslip.status_choices[1:]):
-            if value["label"]== choice[0]:
+        for value, choice in zip(dataset, Payslip.status_choices[1:]):
+            if value["label"] == choice[0]:
                 value["label"] = choice[1]
 
-        list_of_employees =list(Employee.objects.values_list("id","employee_first_name","employee_last_name"))
+        list_of_employees = list(
+            Employee.objects.values_list(
+                "id", "employee_first_name", "employee_last_name"
+            )
+        )
         response = {
-            "dataset":dataset,
-            "labels":employee_label,
-            'employees':list_of_employees
+            "dataset": dataset,
+            "labels": employee_label,
+            "employees": list_of_employees,
         }
         return JsonResponse(response)
-    
+
 
 def payslip_details(request):
-
     """
     payroll dashboard payslip details data
     """
@@ -472,22 +489,21 @@ def payslip_details(request):
     month = date.split("-")[1]
     employee_list = []
     employee_list = Payslip.objects.filter(
-        Q(start_date__month = month) & Q(start_date__year = year)
+        Q(start_date__month=month) & Q(start_date__year=year)
     )
     total_amount = 0
     for employee in employee_list:
-        total_amount+=employee.net_pay
+        total_amount += employee.net_pay
 
     response = {
-        "no_of_emp" : len(employee_list),
-        "total_amount":round(total_amount,2),
+        "no_of_emp": len(employee_list),
+        "total_amount": round(total_amount, 2),
     }
     return JsonResponse(response)
 
 
 @login_required
 def dashboard_department_chart(request):
-    
     """
     payroll dashboard department chart data
     """
@@ -495,44 +511,43 @@ def dashboard_department_chart(request):
     date = request.GET.get("period")
     year = date.split("-")[0]
     month = date.split("-")[1]
-    dataset=[
+    dataset = [
         {
             "label": "",
             "data": [],
-            "backgroundColor": [  '#8de5b3',  '#f0a8a6',  '#8ed1f7',  '#f8e08e',  '#c2c7cc'],
+            "backgroundColor": ["#8de5b3", "#f0a8a6", "#8ed1f7", "#f8e08e", "#c2c7cc"],
         }
     ]
-    department=[]
+    department = []
     department_total = []
 
     is_ajax = request.headers.get("X-Requested-With") == "XMLHttpRequest"
     if is_ajax and request.method == "GET":
         employee_list = Payslip.objects.filter(
-            Q(start_date__month = month) & Q(start_date__year = year)
+            Q(start_date__month=month) & Q(start_date__year=year)
         )
 
         for employee in employee_list:
-            department.append(employee.employee_id.employee_work_info.department_id.department)
+            department.append(
+                employee.employee_id.employee_work_info.department_id.department
+            )
 
         department = list(set(department))
         for depart in department:
-            department_total.append(
-                {
-                "department":depart,
-                "amount":0
-                }
-            )
-        
+            department_total.append({"department": depart, "amount": 0})
+
         for employee in employee_list:
-            employee_department = employee.employee_id.employee_work_info.department_id.department
-            
+            employee_department = (
+                employee.employee_id.employee_work_info.department_id.department
+            )
+
             for depart in department_total:
                 if depart["department"] == employee_department:
-                    depart["amount"] += round(employee.net_pay,2)
-        
+                    depart["amount"] += round(employee.net_pay, 2)
+
         colors = generate_colors(len(department))
 
-        dataset=[
+        dataset = [
             {
                 "label": "",
                 "data": [],
@@ -540,20 +555,19 @@ def dashboard_department_chart(request):
             }
         ]
 
-        for depart_total, depart in zip(department_total,department):
+        for depart_total, depart in zip(department_total, department):
             if depart == depart_total["department"]:
                 dataset[0]["data"].append(depart_total["amount"])
 
         response = {
-            "dataset":dataset,
-            "labels":department,
-            "department_total":department_total,
+            "dataset": dataset,
+            "labels": department,
+            "department_total": department_total,
         }
         return JsonResponse(response)
 
 
 def contract_ending(request):
-
     """
     payroll dashboard contract ending details data
     """
@@ -563,25 +577,22 @@ def contract_ending(request):
     month = date.split("-")[1]
     contract_end = []
     contract_end = Contract.objects.filter(
-        Q(contract_end_date__month = month) & Q(contract_end_date__year = year)
+        Q(contract_end_date__month=month) & Q(contract_end_date__year=year)
     )
 
     ending_contract = []
     for contract in contract_end:
-        ending_contract.append({
-            "contract_name":contract.contract_name,
-            "contract_id":contract.id
-            })
-    
+        ending_contract.append(
+            {"contract_name": contract.contract_name, "contract_id": contract.id}
+        )
 
     response = {
-        "contract_end" : ending_contract,
+        "contract_end": ending_contract,
     }
     return JsonResponse(response)
 
 
 def payslip_export(request):
-
     """
     payroll dashboard exporting to excell data
 
@@ -591,115 +602,105 @@ def payslip_export(request):
 
     """
 
-    start_date= request.GET.get("start_date")
-    end_date= request.GET.get("end_date")
-    employee= request.GET.get("employee")
-    status= request.GET.get("status")
-    department=[]
+    start_date = request.GET.get("start_date")
+    end_date = request.GET.get("end_date")
+    employee = request.GET.get("employee")
+    status = request.GET.get("status")
+    department = []
     total_amount = 0
-    
-    table1_data=[]
-    table2_data=[]
-    table3_data=[]
-    table4_data=[]
+
+    table1_data = []
+    table2_data = []
+    table3_data = []
+    table4_data = []
 
     employee_payslip_list = Payslip.objects.all()
 
     if start_date:
-        employee_payslip_list = employee_payslip_list.filter(start_date__gte = start_date)
+        employee_payslip_list = employee_payslip_list.filter(start_date__gte=start_date)
 
-    
     if end_date:
-        employee_payslip_list = employee_payslip_list.filter(end_date__lte = end_date)
-
+        employee_payslip_list = employee_payslip_list.filter(end_date__lte=end_date)
 
     if employee:
-        employee_payslip_list = employee_payslip_list.filter(employee_id = employee)
+        employee_payslip_list = employee_payslip_list.filter(employee_id=employee)
 
     if status:
-        employee_payslip_list = employee_payslip_list.filter(status = status)
-    
+        employee_payslip_list = employee_payslip_list.filter(status=status)
+
     for payslip in employee_payslip_list:
         table1_data.append(
             {
-                "employee":payslip.employee_id.employee_first_name +" "+ payslip.employee_id.employee_last_name,
-                "start_date":payslip.start_date.strftime("%d/%m/%Y"),
-                "end_date":payslip.end_date.strftime("%d/%m/%Y"),
-                "basic_pay":round(payslip.basic_pay,2),
-                "deduction":round(payslip.deduction,2),
-                "allowance":round(payslip.gross_pay - payslip.basic_pay,2),
-                "gross_pay":round(payslip.gross_pay,2),
-                "net_pay":round(payslip.net_pay,2),
-                "status":status_choices.get(payslip.status),
+                "employee": payslip.employee_id.employee_first_name
+                + " "
+                + payslip.employee_id.employee_last_name,
+                "start_date": payslip.start_date.strftime("%d/%m/%Y"),
+                "end_date": payslip.end_date.strftime("%d/%m/%Y"),
+                "basic_pay": round(payslip.basic_pay, 2),
+                "deduction": round(payslip.deduction, 2),
+                "allowance": round(payslip.gross_pay - payslip.basic_pay, 2),
+                "gross_pay": round(payslip.gross_pay, 2),
+                "net_pay": round(payslip.net_pay, 2),
+                "status": status_choices.get(payslip.status),
             },
-
         )
 
     if not employee_payslip_list:
         table1_data.append(
             {
-                "employee":"None",
-                "start_date":"None",
-                "end_date":"None",
-                "basic_pay":"None",
-                "deduction":"None",
-                "allowance":"None",
-                "gross_pay":"None",
-                "net_pay":"None",
-                "status":"None",
+                "employee": "None",
+                "start_date": "None",
+                "end_date": "None",
+                "basic_pay": "None",
+                "deduction": "None",
+                "allowance": "None",
+                "gross_pay": "None",
+                "net_pay": "None",
+                "status": "None",
             },
-
         )
 
     for employee in employee_payslip_list:
-            department.append(employee.employee_id.employee_work_info.department_id.department)
+        department.append(
+            employee.employee_id.employee_work_info.department_id.department
+        )
 
     department = list(set(department))
 
     for depart in department:
-        table2_data.append(
-            {
-            "Department":depart,
-            "Amount":0
-            }
-        )
+        table2_data.append({"Department": depart, "Amount": 0})
 
     for employee in employee_payslip_list:
-        employee_department = employee.employee_id.employee_work_info.department_id.department
-           
+        employee_department = (
+            employee.employee_id.employee_work_info.department_id.department
+        )
+
         for depart in table2_data:
             if depart["Department"] == employee_department:
-                depart["Amount"] += round(employee.net_pay,2)
+                depart["Amount"] += round(employee.net_pay, 2)
 
     if not employee_payslip_list:
-        table2_data.append(
-            {
-            "Department":"None",
-            "Amount":0
-            }
-        )
+        table2_data.append({"Department": "None", "Amount": 0})
 
     contract_end = Contract.objects.all()
     if not start_date and not end_date:
         contract_end = contract_end.filter(
-            Q(contract_end_date__month = datetime.now().month) & Q(contract_end_date__year = datetime.now().year)
+            Q(contract_end_date__month=datetime.now().month)
+            & Q(contract_end_date__year=datetime.now().year)
         )
     if end_date:
-        contract_end = contract_end.filter(contract_end_date__lte = end_date)
+        contract_end = contract_end.filter(contract_end_date__lte=end_date)
 
     if start_date:
         if not end_date:
             contract_end = contract_end.filter(
-            Q(contract_end_date__gte = start_date) & Q(contract_end_date__lte = datetime.now()) 
-        )
-        else:
-            contract_end = contract_end.filter(
-                contract_end_date__gte = start_date
+                Q(contract_end_date__gte=start_date)
+                & Q(contract_end_date__lte=datetime.now())
             )
+        else:
+            contract_end = contract_end.filter(contract_end_date__gte=start_date)
 
-    table3_data={
-        "contract_ending":[]
-    }
+    table3_data = {"contract_ending": []}
 
     for contract in contract_end:
         table3_data["contract_ending"].append(contract.contract_name)
@@ -707,99 +708,148 @@ def payslip_export(request):
     if not contract_end:
         table3_data["contract_ending"].append("None")
 
-
     for employee in employee_payslip_list:
-        total_amount+=round(employee.net_pay,2)
+        total_amount += round(employee.net_pay, 2)
 
     table4_data = {
-        "no_of_payslip_generated":len(employee_payslip_list),
-        "total_amount" : [total_amount],
+        "no_of_payslip_generated": len(employee_payslip_list),
+        "total_amount": [total_amount],
     }
-    
 
     df_table1 = pd.DataFrame(table1_data)
     df_table2 = pd.DataFrame(table2_data)
     df_table3 = pd.DataFrame(table3_data)
     df_table4 = pd.DataFrame(table4_data)
 
-    df_table1 = df_table1.rename(columns={
-        "employee":"Employee",
-        "start_date":"Start Date",
-        "end_date": "End Date",
-        "deduction":"Deduction",
-        "allowance":"Allowance",
-        "gross_pay":"Gross Pay",
-        "net_pay":"Net Pay",
-        "status":"Status",
-    })
+    df_table1 = df_table1.rename(
+        columns={
+            "employee": "Employee",
+            "start_date": "Start Date",
+            "end_date": "End Date",
+            "deduction": "Deduction",
+            "allowance": "Allowance",
+            "gross_pay": "Gross Pay",
+            "net_pay": "Net Pay",
+            "status": "Status",
+        }
+    )
 
-    df_table3 = df_table3.rename(columns={
-        "contract_ending":f'Contract Ending {start_date} to {end_date}' if start_date and end_date else f'Contract Ending',
-    })
+    df_table3 = df_table3.rename(
+        columns={
+            "contract_ending": f"Contract Ending {start_date} to {end_date}"
+            if start_date and end_date
+            else f"Contract Ending",
+        }
+    )
 
-    df_table4 = df_table4.rename(columns={
-        "no_of_payslip_generated":"Number of payslips generated",
-        "total_amount" : "Total Amount",
-    })
+    df_table4 = df_table4.rename(
+        columns={
+            "no_of_payslip_generated": "Number of payslips generated",
+            "total_amount": "Total Amount",
+        }
+    )
 
-    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-    response['Content-Disposition'] = 'attachment; filename=payslip.xlsx'
+    response = HttpResponse(
+        content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    )
+    response["Content-Disposition"] = "attachment; filename=payslip.xlsx"
 
-    writer = pd.ExcelWriter(response, engine='xlsxwriter')
-    df_table1.to_excel(writer, sheet_name='Payroll Dashboard details', index=False, startrow=3)
-    df_table2.to_excel(writer, sheet_name='Payroll Dashboard details', index=False, startrow=len(df_table1)+ 3 + 3)
-    df_table3.to_excel(writer, sheet_name='Payroll Dashboard details', index=False, startrow=len(df_table1)+ 3 + len(df_table2) + 6)
-    df_table4.to_excel(writer, sheet_name='Payroll Dashboard details', index=False, startrow=len(df_table1)+ 3 + len(df_table2) + len(df_table3) + 9)
+    writer = pd.ExcelWriter(response, engine="xlsxwriter")
+    df_table1.to_excel(
+        writer, sheet_name="Payroll Dashboard details", index=False, startrow=3
+    )
+    df_table2.to_excel(
+        writer,
+        sheet_name="Payroll Dashboard details",
+        index=False,
+        startrow=len(df_table1) + 3 + 3,
+    )
+    df_table3.to_excel(
+        writer,
+        sheet_name="Payroll Dashboard details",
+        index=False,
+        startrow=len(df_table1) + 3 + len(df_table2) + 6,
+    )
+    df_table4.to_excel(
+        writer,
+        sheet_name="Payroll Dashboard details",
+        index=False,
+        startrow=len(df_table1) + 3 + len(df_table2) + len(df_table3) + 9,
+    )
 
     workbook = writer.book
-    worksheet = writer.sheets['Payroll Dashboard details']
-    max_columns = max(len(df_table1.columns), len(df_table2.columns), len(df_table3.columns), len(df_table4.columns))
+    worksheet = writer.sheets["Payroll Dashboard details"]
+    max_columns = max(
+        len(df_table1.columns),
+        len(df_table2.columns),
+        len(df_table3.columns),
+        len(df_table4.columns),
+    )
 
-    heading_format = workbook.add_format({
-        'bold': True, 
-        'font_size': 14, 
-        'align': 'center', 
-        'valign': 'vcenter',
-        'bg_color' :'#B2ED67',
-        'font_size': 20,
-        })
+    heading_format = workbook.add_format(
+        {
+            "bold": True,
+            "font_size": 14,
+            "align": "center",
+            "valign": "vcenter",
+            "bg_color": "#B2ED67",
+            "font_size": 20,
+        }
+    )
 
     worksheet.set_row(0, 30)
-    worksheet.merge_range(0, 0, 0, max_columns - 1, f'Payroll details {start_date} to {end_date}' if start_date and end_date else f'Payroll details', heading_format)
+    worksheet.merge_range(
+        0,
+        0,
+        0,
+        max_columns - 1,
+        f"Payroll details {start_date} to {end_date}"
+        if start_date and end_date
+        else f"Payroll details",
+        heading_format,
+    )
 
-    header_format = workbook.add_format({'bg_color': '#B2ED67', 'bold': True,'text_wrap': True})
+    header_format = workbook.add_format(
+        {"bg_color": "#B2ED67", "bold": True, "text_wrap": True}
+    )
 
     for col_num, value in enumerate(df_table1.columns.values):
         worksheet.write(3, col_num, value, header_format)
-        col_letter = chr(65 + col_num)  
+        col_letter = chr(65 + col_num)
 
         header_width = max(len(value) + 2, len(df_table1[value].astype(str).max()) + 2)
-        worksheet.set_column(f'{col_letter}:{col_letter}', header_width)
+        worksheet.set_column(f"{col_letter}:{col_letter}", header_width)
 
     for col_num, value in enumerate(df_table2.columns.values):
         worksheet.write(len(df_table1) + 3 + 3, col_num, value, header_format)
-        col_letter = chr(65 + col_num)  
+        col_letter = chr(65 + col_num)
 
         header_width = max(len(value) + 2, len(df_table2[value].astype(str).max()) + 2)
-        worksheet.set_column(f'{col_letter}:{col_letter}', header_width)
+        worksheet.set_column(f"{col_letter}:{col_letter}", header_width)
 
     for col_num, value in enumerate(df_table3.columns.values):
-        worksheet.write(len(df_table1) + 3 + len(df_table2) + 6, col_num, value, header_format)
-        col_letter = chr(65 + col_num)  
+        worksheet.write(
+            len(df_table1) + 3 + len(df_table2) + 6, col_num, value, header_format
+        )
+        col_letter = chr(65 + col_num)
 
         header_width = max(len(value) + 2, len(df_table3[value].astype(str).max()) + 2)
-        worksheet.set_column(f'{col_letter}:{col_letter}', header_width)
+        worksheet.set_column(f"{col_letter}:{col_letter}", header_width)
 
     for col_num, value in enumerate(df_table4.columns.values):
-        worksheet.write(len(df_table1) + 3 + len(df_table2) + len(df_table3) + 9, col_num, value, header_format)
-        col_letter = chr(65 + col_num)  
+        worksheet.write(
+            len(df_table1) + 3 + len(df_table2) + len(df_table3) + 9,
+            col_num,
+            value,
+            header_format,
+        )
+        col_letter = chr(65 + col_num)
 
         header_width = max(len(value) + 2, len(df_table4[value].astype(str).max()) + 2)
-        worksheet.set_column(f'{col_letter}:{col_letter}', header_width)
+        worksheet.set_column(f"{col_letter}:{col_letter}", header_width)
 
     worksheet.set_row(len(df_table1) + len(df_table2) + 9, 30)
-    
-        
+
     writer.close()
 
     return response
