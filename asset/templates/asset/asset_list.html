@@ -52,7 +52,7 @@
             class="oh-btn oh-btn--light-bkg w-100" 
             data-toggle="oh-modal-toggle" 
             data-target="#AssetCategoryModal"
-            hx-get="{% url 'asset-update'  id=asset.id %}?asset_under=asset_filter&{{pg}}" 
+            hx-get="{% url 'asset-update'  asset_id=asset.id %}?asset_under=asset_filter&{{pg}}" 
             title="{% trans 'Update' %}"
             hx-target="#AssetModal" 
             id="oh-btn-asset-update-modal"> 
@@ -70,7 +70,7 @@
           class="oh-btn oh-btn--light-bkg w-100 " 
           data-toggle="oh-modal-toggle" 
           data-target="#AssetCategoryModal"
-          hx-get="{% url 'asset-update'  asset.id %}?{{pg}}" 
+          hx-get="{% url 'asset-update'  asset_id=asset.id %}?{{pg}}" 
           title="{% trans 'Update' %}" 
           hx-target="#AssetModal"
           id="oh-btn-asset-update-modal"> 

@@ -71,7 +71,7 @@ def asset_creation(request, id):
 @login_required
 @hx_request_required
 @permission_required("asset.delete_asset")
-def asset_update(request, id):
+def asset_update(request, asset_id):
     """
     Updates an asset with the given ID.
     If the request method is GET, it displays the form to update the asset. If the
@@ -86,6 +86,7 @@ def asset_update(request, id):
     - If the request method is POST and the form is valid, a redirect to the asset
       list view for the asset's category.
     """
+
     if request.method == "GET":
         # modal form get
         asset_under = request.GET.get("asset_under")
@@ -96,7 +97,7 @@ def asset_update(request, id):
     if not asset_under:
         # if asset there is no asset_under data that means the request is form the category list
         asset_under = "asset_category"
-    instance = Asset.objects.get(id=id)
+    instance = Asset.objects.get(id=asset_id)
     asset_form = AssetForm(instance=instance)
     previous_data = request.environ["QUERY_STRING"]
     context = {
