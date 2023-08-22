@@ -132,13 +132,13 @@ class Attendance(models.Model):
         EmployeeShiftDay, on_delete=models.DO_NOTHING, null=True
     )
     attendance_clock_in = models.TimeField(
-        null=True, verbose_name=_("Check-in"), help_text="First Check-in Time"
+        null=True, verbose_name=_("Check-in"), help_text=_("First Check-in Time")
     )
     attendance_clock_in_date = models.DateField(
         null=True, verbose_name=_("Check-in date")
     )
     attendance_clock_out = models.TimeField(
-        null=True, verbose_name=_("Check-out"), help_text="Last Check-out Time"
+        null=True, verbose_name=_("Check-out"), help_text=_("Last Check-out Time")
     )
     attendance_clock_out_date = models.DateField(
         null=True, verbose_name=_("Check-out date")
