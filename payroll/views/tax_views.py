@@ -10,6 +10,7 @@ django.shortcuts module.
 
 """
 import math
+from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from horilla.decorators import permission_required, login_required
@@ -54,7 +55,8 @@ def create_filing_status(request):
         filing_status_form = FilingStatusForm(request.POST)
         if filing_status_form.is_valid():
             filing_status_form.save()
-            return redirect("create-filing-status")
+            messages.success(request,"Filing status created successfully")
+            return HttpResponse("<script>window.location.reload()</script>")
     return render(
         request,
         "payroll/tax/filing_status_creation.html",
@@ -106,6 +108,7 @@ def filing_status_delete(request, filing_status_id):
         filing_status = FilingStatus.objects.get(id=filing_status_id)
         filing_status.delete()
         messages.info(request, "Filing status successfully deleted.")
+        return HttpResponse("<script>window.location.reload()</script>")
     except:
         messages.error(request, "This filing status assigned to employees")
 
@@ -193,6 +196,7 @@ def update_tax_bracket(request, tax_bracket_id):
                 messages.info(request, "The maximum income will be infinite")
                 tax_bracket_form.instance.max_income = math.inf
             tax_bracket_form.save()
+            return HttpResponse("<script>window.location.reload()</script>")
 
     context = {
         "form": tax_bracket_form,

@@ -84,10 +84,10 @@ def dashboard(request):
     total_hired_candidates = len(hired_candidates)
     conversion_ratio = 0
     acceptance_ratio = 0
-    if total_vacancy != 0:
+    if total_candidates != 0:
         acceptance_ratio = f"{((total_hired_candidates / total_candidates) * 100):.1f}"
 
-    if total_candidates != 0:
+    if total_vacancy != 0:
         conversion_ratio = f"{((total_hired_candidates / total_vacancy) * 100):.1f}"
     return render(
         request,

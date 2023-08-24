@@ -93,6 +93,7 @@
         $(document).ready(function () {
           $(".oh-accordion-meta__header").click(function () {
             var target = $(this).data("target");
+            $(this).toggleClass("oh-accordion-meta__header--show");
             $(target).toggleClass("d-none");
           });
         });

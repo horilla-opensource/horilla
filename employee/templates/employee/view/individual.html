@@ -1,4 +1,4 @@
-{% extends 'index.html' %}
+{% extends 'index.html' %}{% load static %}
 {% block content %}
 {% load i18n %}
       
@@ -8,7 +8,8 @@
     <div class="oh-card mt-4 mb-5">
       <div class="d-flex flex-row-reverse " >
         <a href="{% url 'employee-view-update' employee.id %}" class="">
-          <ion-icon name="pencil" ></ion-icon>
+          <img src="{% static 'images/ui/edit_btn.png' %}" style="width: 25px; height: auto;" title="{% trans 'Edit' %}">
+        </a>
         </a>
       </div>
       <div class="row">

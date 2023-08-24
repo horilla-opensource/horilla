@@ -1242,9 +1242,13 @@ def user_leave_view(request):
         page_number = request.GET.get("page")
         page_obj = paginator_qry(queryset, page_number)
         assigned_leave_filter = AssignedLeaveFilter()
+        if not queryset.exists():
+            template_name = "leave/user-leave-empty-view.html"
+        else:
+            template_name = "leave/user-leave-view.html"
         return render(
             request,
-            "leave/user-leave-view.html",
+            template_name,
             {
                 "user_leaves": page_obj,
                 "form": assigned_leave_filter.form,
