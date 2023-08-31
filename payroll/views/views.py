@@ -38,7 +38,6 @@ def get_language_code(request):
     scale_x_text = _("Name of Employees")
     scale_y_text = _("Amount")
     response = {"scale_x_text": scale_x_text, "scale_y_text": scale_y_text}
-    print(response)
     return JsonResponse(response)
 
 
@@ -853,3 +852,31 @@ def payslip_export(request):
     writer.close()
 
     return response
+
+
+@login_required
+@permission_required("payroll.delete_payslip")
+def payslip_bulk_delete(request):
+    """
+    This method is used to bulk delete for Payslip
+    """
+    ids = request.POST["ids"]
+    ids = json.loads(ids)
+    for id in ids:
+        payslip = Payslip.objects.get(id=id)
+        period = f"{payslip.start_date} to {payslip.end_date}"
+        try:
+            payslip.delete()
+            messages.success(
+                request,
+                _("{employee} {period} payslip deleted.").format(
+                    employee=payslip.employee_id, period=period
+                ),
+            )
+        except Exception as e:
+            messages.error(
+                request,
+                _("You cannot delete {payslip}").format(payslip=payslip),
+            )
+            messages.error(request, e)
+    return JsonResponse({"message": "Success"})

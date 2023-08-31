@@ -267,7 +267,7 @@ def delete_allowance(request, allowance_id):
     """
     try:
         payroll.models.models.Allowance.objects.get(id=allowance_id).delete()
-        messages.success(request, "Allowance deleted")
+        messages.success(request, "Allowance deleted successfully")
     except ObjectDoesNotExist(Exception):
         messages.error(request, "Allowance not found")
     except ValidationError as validation_error:
@@ -361,13 +361,14 @@ def update_deduction(request, deduction_id):
 
 @login_required
 @permission_required("payroll.delete_deduction")
-def delete_deduction(_request, deduction_id):
+def delete_deduction(request, deduction_id):
     """
     This method is used to delete the deduction instance
     Args:
         id : deduction instance id
     """
     payroll.models.models.Deduction.objects.get(id=deduction_id).delete()
+    messages.success(request, "Deduction deleted successfully")
     return redirect(view_deduction)
 
 

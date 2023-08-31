@@ -89,4 +89,9 @@ urlpatterns = [
         views.payslip_export,
         name="dashboard-export",
     ),
+    path(
+        "payslip-bulk-delete",
+        views.payslip_bulk_delete,
+        name="payslip-bulk-delete",
+    ),
 ]

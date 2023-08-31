@@ -65,13 +65,16 @@
                   >
                 </li>
                 <li class="oh-dropdown__item">
-                  <a
-                    onclick="event.stopPropagation()"
-                    hx-post="{% url 'filing-status-delete' filing_status_id=filing_status.id %}"
-                    hx-target="#FilingStatusList"
-                    class="oh-dropdown__link oh-dropdown__link--danger"
-                    >{% trans "Delete" %}</a
-                  >
+                  <form 
+                    action="{% url 'filing-status-delete' filing_status_id=filing_status.id %}"
+                    onsubmit="return confirm('{% trans "Are you sure to delete this status ?" %}')" 
+                    method="post"
+                    style="display: contents">
+                    {% csrf_token %}
+                    <button class="oh-dropdown__link oh-dropdown__link--danger">
+                      {% trans 'Delete' %}
+                    </button>
+                  </form>
                 </li>
               </ul>
             </div>

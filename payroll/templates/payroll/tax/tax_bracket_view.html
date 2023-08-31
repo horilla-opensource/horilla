@@ -42,20 +42,16 @@
       </div>
       <div class="oh-sticky-table__td">
         <div class="oh-btn-group">
-          <a
-            hx-post="{% url 'tax-bracket-delete' tax_bracket_id=tax_bracket.id%}"
-            data-toggle="oh-modal-toggle"
-            hx-target="#taxbracketList{{tax_bracket.filing_status_id.id}}"
-            class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
-            onclick="event.stopPropagation()"
-          >
-            <ion-icon
-              name="trash-outline"
-              role="img"
-              class="md hydrated"
-              aria-label="trash outline"
-            ></ion-icon>
-          </a>
+          <form 
+            action="{% url 'tax-bracket-delete' tax_bracket_id=tax_bracket.id%}"
+            onsubmit="return confirm('{% trans "Are you sure to delete this tax bracket ?" %}')" 
+            method="post"
+            style="display: contents">
+            {% csrf_token %}
+            <button class="oh-btn oh-btn--danger-outline  w-100" title="{% trans 'Delete' %}">
+              <ion-icon name="trash-outline" role="img" class="md hydrated" aria-label="trash outline"></ion-icon>
+            </button>
+          </form>
         </div>
       </div>
     </div>

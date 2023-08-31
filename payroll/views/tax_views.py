@@ -10,7 +10,7 @@ django.shortcuts module.
 
 """
 import math
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from horilla.decorators import permission_required, login_required
@@ -108,13 +108,10 @@ def filing_status_delete(request, filing_status_id):
         filing_status = FilingStatus.objects.get(id=filing_status_id)
         filing_status.delete()
         messages.info(request, "Filing status successfully deleted.")
-        return HttpResponse("<script>window.location.reload()</script>")
     except:
         messages.error(request, "This filing status assigned to employees")
 
-    status = FilingStatus.objects.all()
-    context = {"status": status}
-    return render(request, "payroll/tax/filing_status_list.html", context)
+    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 
 
 @login_required
@@ -206,7 +203,7 @@ def update_tax_bracket(request, tax_bracket_id):
 
 @login_required
 @permission_required("payroll.delete_taxbracket")
-def delete_tax_bracket(_request, tax_bracket_id):
+def delete_tax_bracket(request, tax_bracket_id):
     """
     Delete an existing tax bracket record.
 
@@ -217,9 +214,8 @@ def delete_tax_bracket(_request, tax_bracket_id):
     """
     tax_bracket = TaxBracket.objects.get(id=tax_bracket_id)
     tax_bracket.delete()
-    return redirect(
-        "tax-bracket-list", filing_status_id=tax_bracket.filing_status_id.id
-    )
+    messages.info(request, "Tax bracket successfully deleted.")
+    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 
 
 @login_required

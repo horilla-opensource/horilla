@@ -1,8 +1,23 @@
 {% load i18n %}
+{% load static i18n %}
 <div class="oh-sticky-table">
   <div class="oh-sticky-table__table oh-table--sortable">
     <div class="oh-sticky-table__thead">
       <div class="oh-sticky-table__tr">
+        <div class="oh-sticky-table__th" >
+          <div class="d-flex">
+            <div>
+              <input
+                type="checkbox"
+                class="all-payslip oh-input oh-input__checkbox mt-1 mr-2 "
+                id = "Allpayslip"
+              />
+            </div>
+            <div>
+              {% trans "Employee" %}
+            </div>
+          </div>
+        </div>
         <div class="oh-sticky-table__th">{% trans "Employee" %}</div>
         <div class="oh-sticky-table__th">{% trans "Period" %}</div>
         <div class="oh-sticky-table__th">{% trans "Status" %}</div>
@@ -16,6 +31,14 @@
     {% for payslip in payslips %}
     <div class="oh-sticky-table__tr" draggable="true">
       <div class="oh-sticky-table__td">
+        <div class="d-flex">
+          <div>
+            <input
+              type="checkbox"
+              id="{{payslip.id}}"
+              class="oh-input payslip-checkbox oh-input__checkbox mt-2 mr-2 all-payslip-row"
+            />
+          </div>
         <div class="oh-profile oh-profile--md">
           <div class="oh-profile__avatar mr-1">
             <img
@@ -26,6 +49,7 @@
           </div>
           <span class="oh-profile__name oh-text--dark">{{payslip.employee_id}}</span>
         </div>
+      </div>
         
       </div>
       <div class="oh-sticky-table__td">
@@ -103,5 +127,14 @@
   </nav>
 </div>
 
-
-
+<script src="{% static 'payroll/action.js' %}"></script>
+<script>
+  $("#Allpayslip").click(function (e) {
+    var is_checked = $(this).is(":checked");
+    if (is_checked) {
+      $(".all-payslip-row").prop("checked", true);
+    } else {
+      $(".all-payslip-row").prop("checked", false);
+    }
+  });
+</script>
