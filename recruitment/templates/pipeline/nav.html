@@ -77,52 +77,85 @@ x-data="{searchShow: false}"
 
 <div class="oh-main__titlebar oh-main__titlebar--right">
   
+  
   <div
     class="oh-input-group oh-input__search-group"
     :class="searchShow ? 'oh-input__search-group--show' : ''"
   >
-  <ion-icon
-  name="search-outline"
-  class="oh-input-group__icon oh-input-group__icon--left"
-></ion-icon>
-<input
-  type="search"
-  id = "pipelineSearch" 
-  placeholder="{% trans 'Search' %}" 
-  name='search'
-  class="oh-input oh-input__icon"
-  aria-label="Search Input"
-/>
-  </div>
-  <ul class="oh-view-types ml-2" style="margin-bottom: 0;">
-    <li class="oh-view-type candidate-view-type" data-view='list'>
-      <a href="{% url 'pipeline' %}"  hx-target='#section' class="oh-btn oh-btn--view "
-        ><ion-icon name="list-outline"></ion-icon
-      ></a>
-    </li>
-    <li class="oh-view-type candidate-view-type" data-view='card'>
-      <a href="{% url 'pipeline' %}?view=card" hx-target='#section' class="oh-btn oh-btn--view"
-        ><ion-icon name="grid-outline"></ion-icon
-      ></a>
-    </li>
-  </ul>
+	<ion-icon
+	name="search-outline"
+	class="oh-input-group__icon oh-input-group__icon--left"
+		></ion-icon>
+		<input
+		type="search"
+		id = "pipelineSearch" 
+		placeholder="{% trans 'Search' %}" 
+		name='search'
+		class="oh-input oh-input__icon"
+		aria-label="Search Input"
+		/>
+  	</div>
+	<ul class="oh-view-types ml-2" style="margin-bottom: 0;">
+		<li class="oh-view-type candidate-view-type" data-view='list'>
+		<a href="{% url 'pipeline' %}"  hx-target='#section' class="oh-btn oh-btn--view "
+			><ion-icon name="list-outline"></ion-icon
+		></a>
+		</li>
+		<li class="oh-view-type candidate-view-type" data-view='card'>
+		<a href="{% url 'pipeline' %}?view=card" hx-target='#section' class="oh-btn oh-btn--view"
+			><ion-icon name="grid-outline"></ion-icon
+		></a>
+		</li>
+	</ul>
 
-  <div class="oh-main__titlebar-button-container">
+    <div class="oh-main__titlebar-button-container">
 
-    {% if perms.recruitment.add_recruitment %}
-    {% include 'pipeline/form/recruitment_drop_down_form.html' %}
-    {% endif %}
-    
-    
-  </div>
+        <div class="oh-dropdown" x-data="{open: false}">
+          <button class="oh-btn ml-2" @click="open = !open">
+            <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}
+          </button>
+            <div class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4" x-show="open" @click.outside="open = false" style="display: none;" @click.>
+                
+                <div class="mb-3 mt-3">
+                    <label for="job_pos_id" class="oh-label">Job position</label>
+                    <select class="" name="job_pos_id" id="job_pos_id">
+                        <option value="">------------------</option>
+                        {% for job_position in job_positions %}
+                            <option value="{{job_position}}">{{job_position}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="oh-tabs__action-bar mt-2" id="filter_item" x-on:click="open = false" >
+                    <button class="oh-btn oh-btn--small oh-btn--secondary oh-tabs__action-new-table w-100" >
+                        <ion-icon class="me-1 md hydrated" name="add-outline" role="img"aria-label="add outline"></ion-icon>
+                        {% trans "Filter" %}
+                    </button>
+                </div>
+            </div>
+    </div>
+	<div class="oh-main__titlebar-button-container">
+
+		{% if perms.recruitment.add_recruitment %}
+		{% include 'pipeline/form/recruitment_drop_down_form.html' %}
+		{% endif %}
+		
+		
+	</div>
 </div>
 </section>
 <script>
-  $('#candidate-search').keyup(function (e) { 
-      $('.candidate-view-type').attr('hx-vals',`{"search":"${$(this).val()}"}`)
-    });
-    $('.candidate-view-type').click(function (e) { 
-      let view = $(this).attr('data-view');
-      $('#candidate-search').attr('hx-vals',`{"view":"${view}"}`);
-    });
+$(document).ready(function(){
+	{% include 'select2.js' %}
+	$('#candidate-search').keyup(function (e) { 
+		$('.candidate-view-type').attr('hx-vals',`{"search":"${$(this).val()}"}`)
+	  });
+	  $('.candidate-view-type').click(function (e) { 
+		let view = $(this).attr('data-view');
+		$('#candidate-search').attr('hx-vals',`{"view":"${view}"}`);
+	  });
+	  $("#job_pos_id").select2();
+	  $("#portal_stage").select2();
+})
+	
 </script>

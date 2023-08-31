@@ -61,4 +61,9 @@ def filtersubordinates(user):
     return employee_manages.exists()
 
 
+@register.filter(name='clean_field')
+def remove_id_suffix(value):
+    if value.endswith("_id"):
+        return value[:-3]
     
+    return value.replace('_', ' ')

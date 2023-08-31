@@ -9,6 +9,13 @@
   });
 </script>
 <style>
+  .select2-container{
+    width: 100% !important;
+}
+.select2-container .select2-selection {
+    padding: 10px !important;
+    height: 50px !important; /* Adjust the height value as needed */
+}
   .pipeline-header {
     padding: 0.3rem 0.75rem;
     border-bottom: 1px solid hsl(213deg, 22%, 84%);
@@ -29,7 +36,6 @@
 
 <div class="oh-wrapper">
   <div id="ohMessages"></div>
-
   {% include 'pipeline/nav.html' %}
 
   <div class="oh-tabs oh-wrapper">
@@ -128,7 +134,7 @@
             </div>
           </div>
           <div
-            class="oh-tabs__movable-body position-relative"
+            class="oh-tabs__movable-body position-relative pipeline_items"
             data-stage-toggle-id="{{stage.id}}"
           >
             <div
@@ -172,6 +178,7 @@
                     data-change-cand-id="{{cand.id}}"
                     data-sequence = "{{cand.sequence}}"
                     data-candidate="{{cand.name}}"
+                    data-job-position ="{{cand.job_position_id}}"
                   >
                     <a
                       class="oh-sticky-table__sd oh-table-config__td"

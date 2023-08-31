@@ -17,6 +17,7 @@ import json
 from django.http import JsonResponse, HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.core import serializers
+from base.models import JobPosition
 from django.contrib import messages
 from django.views.decorators.http import require_http_methods
 from django.core.mail import send_mail
@@ -207,6 +208,7 @@ def recruitment_pipeline(request):
     This method is used to filter out candidate through pipeline structure
     """
     view = request.GET.get("view")
+    job_position = JobPosition.objects.all()
     template = "pipeline/pipeline.html"
     if view == "card":
         template = "pipeline/pipeline_card.html"
@@ -306,6 +308,7 @@ def recruitment_pipeline(request):
             "recruitment_form": recruitment_form,
             "stage_form": stage_form,
             "candidate_form": candidate_form,
+            "job_positions" :job_position,
         },
     )
 

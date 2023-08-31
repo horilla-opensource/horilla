@@ -13,7 +13,6 @@ import attendance.views.requests
 from .views import views
 
 urlpatterns = [
-    path("get-language-code/", views.get_language_code, name="get-language-code"),
     path("attendance-create", views.attendance_create, name="attendance-create"),
     path("attendance-view", views.attendance_view, name="attendance-view"),
     path(

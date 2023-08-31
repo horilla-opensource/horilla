@@ -4,6 +4,7 @@ models.py
 This module is used to register models for onboarding app
 
 """
+from datetime import datetime
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from recruitment.models import Recruitment, Candidate
@@ -19,9 +20,17 @@ class OnboardingStage(models.Model):
     recruitment_id = models.ManyToManyField(Recruitment)
     employee_id = models.ManyToManyField(Employee)
     sequence = models.IntegerField(null=True)
+    is_final_stage = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.stage_title}"
+    
+    class Meta:
+        """
+        Meta class for additional options
+        """
+        ordering = ['sequence']
+
 
 
 class OnboardingTask(models.Model):
@@ -48,9 +57,23 @@ class CandidateStage(models.Model):
     onboarding_stage_id = models.ForeignKey(
         OnboardingStage, on_delete=models.CASCADE, related_name="candidate"
     )
+    onboarding_end_date = models.DateField(blank=True,null=True)
+    sequence = models.IntegerField(null=True,default=0)
+
 
     def __str__(self):
         return f"{self.candidate_id}  |  {self.onboarding_stage_id}"
+    
+    def save(self, *args, **kwargs):
+        if self.onboarding_stage_id.is_final_stage:
+            self.onboarding_end_date = datetime.today()
+        super(CandidateStage, self).save(*args, **kwargs)
+    
+    class Meta:
+        """
+        Meta class for additional options
+        """
+        ordering = ['sequence']
 
 
 class CandidateTask(models.Model):
@@ -58,7 +81,7 @@ class CandidateTask(models.Model):
     CandidateTask model
     """
 
-    Choice = (
+    choice = (
         ("", ""),
         ("todo", _("Todo")),
         ("scheduled", _("Scheduled")),
@@ -69,7 +92,7 @@ class CandidateTask(models.Model):
     candidate_id = models.ForeignKey(
         Candidate, on_delete=models.CASCADE, related_name="candidate_task"
     )
-    status = models.CharField(max_length=50, choices=Choice, blank=True, null=True)
+    status = models.CharField(max_length=50, choices=choice, blank=True, null=True)
     onboarding_task_id = models.ForeignKey(OnboardingTask, on_delete=models.CASCADE)
 
     def __str__(self):

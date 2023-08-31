@@ -20,6 +20,7 @@ class YourForm(forms.Form):
         # Custom validation logic goes here
         pass
 """
+import uuid
 from django import forms
 from django.forms import DateInput
 from django.contrib.auth.models import User
@@ -239,11 +240,21 @@ class OnboardingViewStageForm(ModelForm):
         """
 
         model = OnboardingStage
-        fields = ["stage_title", "employee_id"]
+        fields = ["stage_title", "employee_id","is_final_stage"]
         labels = {
             "stage_title": _("Stage Title"),
+            "is_final_stage":_("Is Final Stage")
         }
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        
+        # Loop through form fields and generate unique IDs for their attributes
+        for field_name, field in self.fields.items():
+            unique_id = str(uuid.uuid4())  # You can customize the unique ID format
+            
+            # Set the widget's attributes with the unique ID
+            field.widget.attrs.update({'id': unique_id})
 
 class EmployeeCreationForm(ModelForm):
     """

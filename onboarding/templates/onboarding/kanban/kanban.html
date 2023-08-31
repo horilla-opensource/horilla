@@ -1,0 +1,310 @@
+{% extends 'index.html' %}
+{% block content %}
+{% load static i18n %}
+
+<style>
+    .select2-container{
+        width: 100% !important;
+    }
+    .select2-container .select2-selection {
+        padding: 10px;
+        height: 50px !important; /* Adjust the height value as needed */
+    }
+</style>
+
+
+<div class="oh-wrapper">
+    <section class=" oh-main__topbar" x-data="{searchShow: false}">
+        <div class="oh-main__titlebar oh-main__titlebar--left">
+            <div class="oh-main__titlebar-title fw-bold mb-0 text-dark" style="cursor:pointer;">Onboarding</div>
+        </div>
+
+        <div class="oh-main__titlebar oh-main__titlebar--right">
+
+            <div class="oh-input-group oh-input__search-group"
+                :class="searchShow ? 'oh-input__search-group--show' : ''">
+                <ion-icon name="search-outline" class="oh-input-group__icon oh-input-group__icon--left md hydrated"
+                    role="img" aria-label="search outline"></ion-icon>
+                <input type="search" id="search" placeholder="Search" name="search"
+                    class="oh-input oh-input__icon" aria-label="Search Input">
+            </div>
+
+            <div class="oh-switch ms-3" style="width: 30px;">
+                <input type="checkbox" name="is_closed" data-widget="style-widget" class="style-widget oh-switch__checkbox" {% if request.GET.closed %} checked title="Ongoing Recruitments" {% else %}title="Closed Recruitments" {% endif %} id="is_closed" > 
+            </div>
+
+            <ul class="oh-view-types ml-2" style="margin-bottom: 0;">
+                <li class="oh-view-type candidate-view-type" data-view="list">
+                    <a href="{% url 'onboarding-view' %}" hx-target="#section" class="oh-btn oh-btn--view "><ion-icon
+                        name="list-outline" role="img" class="md hydrated" aria-label="list outline"></ion-icon></a>
+                </li>
+                <li class="oh-view-type candidate-view-type" data-view="card">
+                    <a href="{% url 'kanban-view' %}" hx-target="#section" class="oh-btn oh-btn--view"><ion-icon
+                            name="grid-outline" role="img" class="md hydrated" aria-label="grid outline"></ion-icon></a>
+                </li>
+            </ul>
+            <div class="oh-main__titlebar-button-container">
+
+                <div class="oh-dropdown" x-data="{open: false}">
+                  <button class="oh-btn ml-2" @click="open = !open">
+                    <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}
+                  </button>
+                    <div class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4" x-show="open" @click.outside="open = false" style="display: none;" @click.>
+                        
+                        <div class="mb-3 mt-3">
+                            <label for="job_position_id" class="oh-label">Job position</label>
+                            <select class="" name="job_position_id" id="job_position_id">
+                                <option value="">------------------</option>
+                                {% for job_position in job_positions %}
+                                    <option value="{{job_position}}">{{job_position}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-12 col-md-12 col-lg-6">
+                                <label class ="mb-2" for="join_date">Join Date</label>
+                                <input type="date" name="join_date" id="join_date" class="oh-input w-100">
+                            </div>
+                            <div class="col-sm-12 col-md-12 col-lg-6">
+                                <label class ="mb-2" for="portal_stage">Onboarding Portal Stage</label>
+                                <select class="" name="portal_stage" id="portal_stage">
+                                    <option value="">------------------</option>
+                                    <option value="0">0</option>
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                    <option value="4">4</option>                                
+                                </select>
+                            </div>
+                        </div>
+                        <div class="oh-accordion">
+                            <div class="oh-accordion-header">{% trans "Advanced" %}</div>
+                                <div class="oh-accordion-body">
+                                    <div class="row">
+                                        <div class="col-sm-12 col-md-12 col-lg-6">
+                                            <div class="oh-input-group">
+                                                <label class ="mb-2" for="join_date">Join Date From</label>
+                                            <input type="date" name="join_date" id="join_date_start" class="oh-input w-100">
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-12 col-md-12 col-lg-6">
+                                            <div class="oh-input-group">
+                                                <label class ="mb-2" for="join_date">Join Date To</label>
+                                                <input type="date" name="join_date" id="join_date_end" class="oh-input w-100">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        <div class="oh-tabs__action-bar mt-2" id="filter_item" x-on:click="open = false" >
+                            <button class="oh-btn oh-btn--small oh-btn--secondary oh-tabs__action-new-table w-100" >
+                                <ion-icon class="me-1 md hydrated" name="add-outline" role="img"aria-label="add outline"></ion-icon>
+                                {% trans "Filter" %}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <div class="oh-tabs">
+        <ul class="oh-tabs__tablist">
+            {% for rec in recruitments %}
+            <li class="oh-tabs__tab " data-target="#tab_{{rec.id}}" data-recruitment-id="{{rec.id}}">
+                {{rec.title}}
+                <button class="oh-btn oh-btn--sq-sm oh-btn--transparent oh-tabs__close-btn">
+                    <ion-icon name="close-outline"></ion-icon>
+                </button>
+            </li>
+            {% endfor %}
+            
+        </ul>
+        <div class="oh-tabs__contents">
+            {% for rec in recruitments %}
+            <div class="oh-tabs__content " id="tab_{{rec.id}}" data-recruitment-id="{{rec.id}}">
+                <div class="oh-kanban">
+                    {% for stage in rec.onboardingstage_set.all %}
+                    <div class="oh-kanban__section stage" id="b3a7bac2-2a16-40fe-9b7e-78a1101ee9d3" data-recruitment-id="{{rec.id}}" data-stage-id="{{stage.id}}" data-sequence="{{forloop.counter}}">
+                        <div class="oh-kanban__section-head oh-kanban__section-head--white">
+                            <div class="d-flex ">
+                                <span class="oh-kanban__section-title" data-type="label">{{stage.stage_title}}</span>
+                                <span class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round ms-2 mr-2 stage_count">{{stage.candidate.count}}</span>
+                            </div>
+                            <div class="oh-kanban__head-actions oh-kanban__dropdown">
+                                <button
+                                    class="oh-btn oh-btn--small oh-btn--transparent oh-kanban__btn oh-kanban__dropdown-toggle">
+                                    <ion-icon name="ellipsis-vertical-sharp" role="img" class="md hydrated"
+                                        aria-label="ellipsis vertical sharp"></ion-icon>
+                                </button>
+                                <div class="oh-dropdown oh-kanban__dropdown-menu d-none">
+                                    <div class="oh-dropdown__menu oh-dropdown__menu--right">
+                                        <ul class="oh-dropdown__items">
+                                            <li class="oh-dropdown__item">
+                                                <a data-toggle="oh-modal-toggle" 
+                                                data-target="#editModal3"
+                                                hx-get="{% url 'stage-update' stage.id rec.id %}"
+                                                hx-target="#updateStage">{% trans "Edit" %}</a>
+                                            </li>
+                                            <li class="oh-dropdown__item">
+                                                <a  href="{% url 'stage-delete' stage.id %}"
+                                                    onclick="return confirm('{% trans "Do you want to delete this stage?" %}')"
+                                                    class="oh-dropdown__link oh-dropdown__link--danger">Delete</a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <button
+                                    class="oh-btn oh-btn--small oh-btn--transparent p-0" 
+                                    data-toggle="oh-modal-toggle"
+                                    data-target="#taskModal"
+                                    hx-get="{% url 'task-creation' rec.id %}"
+                                    hx-target = "#taskModalBody"
+
+                                    title="Add task">
+                                    <ion-icon name="add-sharp" role="img" class="md hydrated"
+                                        aria-label="add sharp"></ion-icon>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="oh-kanban__section-body ui-sortable onboarding_items" data-stage-id="{{stage.id}}" data-recruitment-id="{{rec.id}}">
+                            {% for candidate in stage.candidate.all %}
+                            <div class="oh-kanban__card candidate" id="{{candidate.id}}"  data-candidate="{{candidate.candidate_id}}" data-candidate-id="{{candidate.candidate_id.id}}" data-recruitment-id="{{rec.id}}" data-candidate-now = "{{stage.id}}" data-job-position = "{{candidate.candidate_id.job_position_id}}" data-portal-count="{{candidate.candidate_id.onboarding_portal.count}}" data-join-date="{{candidate.candidate_id.joining_date}}" >
+                                <div class="oh-kanban__card-head">
+                                    <div class="oh-profile oh-profile--md">
+                                        <div class="oh-profile__avatar mr-1">
+                                        <img src="https://ui-avatars.com/api/?name={{candidate.candidate_id.name}}&amp;background=random" class="oh-profile__image" alt="Hella">
+                                        </div>
+                                        <span class="oh-profile__name oh-text--dark fw-bold" data-type="label">{{candidate.candidate_id.name}}</span>
+                                    </div>
+                                    <div class="oh-kanban__card-actions oh-kanban__dropdown">
+                                        <button class="oh-btn oh-btn--small oh-btn--transparent oh-kanban__btn oh-kanban__dropdown-toggle">
+                                            <ion-icon name="ellipsis-vertical-sharp" role="img" class="md hydrated" aria-label="ellipsis vertical sharp"></ion-icon>
+                                        </button>
+                                        <div class="oh-dropdown oh-kanban__dropdown-menu d-none">
+                                            <div class="oh-dropdown__menu oh-dropdown__menu--right">
+                                                <ul class="oh-dropdown__items">
+                                                    {% comment %} <li class="oh-dropdown__item">
+                                                        <a href="#" class="oh-dropdown__link oh-dropdown__link--danger oh-kanban__card-delete">Delete</a>
+                                                    </li> {% endcomment %}
+                                                    <li class="oh-dropdown__item">
+                                                        <a href="#" data-toggle="oh-modal-toggle" data-target="#sendMailModal" hx-get="{% url 'onboarding-send-mail' candidate.candidate_id.id %}" hx-target="#sendMailModalBody" class="oh-dropdown__link">Send Mail</a>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="oh-kanban__card-body">
+                                    {{candidate.candidate_id.job_position_id}} <br/>
+                                    <span class="oh-kanban__card-footer-text oh-text--light">{{candidate.candidate_id.email}}</span>
+                                
+                                    <button class="oh-kanban__card-body-collapse oh-kanban__card-collapse--down" aria-label="Toggle Options" title="Tasks"></button>
+                                    <div class="oh-kanban__card-content oh-kanban__card-content--hide">
+                                        {% for task in candidate.candidate_id.candidate_task.all %}
+                                        <label class="oh-label oh-label--sm d-block">{{task.onboarding_task_id.task_title}}</label>
+                                        <div id="task{{task.id}}">
+                                            {% include 'onboarding/candidate-task.html' %}
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            <div class="oh-kanban__card-footer">
+                                <span class="oh-kanban__card-footer-text oh-text--light">Candidate</span>
+                                </div>
+                            </div>
+                            {% endfor %}
+
+                        </div>
+                    </div>
+                    {% endfor %}
+
+                    <div class="oh-kanban__add-container">
+                        <button class="oh-btn oh-btn--x-small oh-kanban__add-section" onclick="event.stopPropagation()"  data-action="toggle"
+                            data-target="#addStageModal" hx-get="{% url 'stage-creation' rec.id %}" hx-target="#stageForm" data-toggle="oh-modal-toggle" data-class="d-none">
+                            <ion-icon class="me-1" name="add-outline"></ion-icon>
+                            Add Stage
+                        </button>                        
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+<div class="messages"></div>
+
+<div class="oh-modal" id="editModal3" role="dialog" aria-labelledby="editDialogModal" aria-hidden="true">
+    <div class="oh-modal__dialog oh-modal__dialog--timeoff">
+        <div class="oh-modal__dialog-header">
+            <span class="oh-modal__dialog-title" id="editDialogDialog">{% trans "Update Stage" %}</span>
+            <button class="oh-modal__close" aria-label="Close">
+                <ion-icon name="close-outline"></ion-icon>
+            </button>
+        </div>
+        <div id="updateStage">
+        </div>
+    </div>
+</div>
+
+<div class="oh-modal" id="addStageModal" role="dialog" aria-labelledby="addStageModal" aria-hidden="true">
+    <div class="oh-modal__dialog oh-modal__dialog--timeoff">
+        <div class="oh-modal__dialog-header">
+            <span class="oh-modal__dialog-title" id="editDialogDialog">Create Stage</span>
+            <button class="oh-modal__close" aria-label="Close">
+                <ion-icon name="close-outline" role="img" class="md hydrated" aria-label="close outline"></ion-icon>
+            </button>
+        </div>
+        <div id="stageForm" class="">
+            
+        </div>
+    </div>
+</div>
+
+<div class="oh-modal" id="taskModal" role="dialog" aria-labelledby="taskModal" aria-hidden="true">
+    <div class="oh-modal__dialog oh-modal__dialog--timeoff">
+        <div class="oh-modal__dialog-header">
+            <span class="oh-modal__dialog-title" id="editDialogDialog">Create Task</span>
+            <button class="oh-modal__close" aria-label="Close">
+                <ion-icon name="close-outline" role="img" class="md hydrated" aria-label="close outline"></ion-icon>
+            </button>
+        </div>
+        <div id="taskModalBody" class="">
+            
+        </div>
+    </div>
+</div>
+
+<div class="oh-modal" id="sendMailModal" role="dialog" aria-labelledby="" aria-hidden="true">
+    <div class="oh-modal__dialog oh-modal__dialog--timeoff">
+        <div class="oh-modal__dialog-header">
+            <span class="oh-modal__dialog-title" id="modalTask">Send Mail</span>
+            <button class="oh-modal__close" aria-label="Close">
+                <ion-icon name="close-outline" role="img" class="md hydrated" aria-label="close outline"></ion-icon>
+            </button>
+        </div>
+        <div id="sendMailModalBody" class="p-3 ">
+                        
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function() {
+        
+        $("#is_closed").on("change", function() {
+            if ($(this).is(":checked")) {
+                window.location.href = "{% url 'kanban-view' %}?closed={{status}}";
+            } else {
+                window.location.href = "{% url 'kanban-view' %}";
+            }
+        });
+    });
+</script>
+<script src="{% static '/kanban/script.js' %}"></script>
+<script src="{% static 'onboarding_view/search.js' %}"></script>
+<script src="{% static 'onboarding_view/activeTab.js' %}"></script>
+
+
+
+{% endblock content %}

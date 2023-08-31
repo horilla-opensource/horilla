@@ -125,10 +125,6 @@ def attendance_validate(attendance):
     at_work = strtime_seconds(attendance.attendance_worked_hour)
     return condition_for_at_work >= at_work
 
-def get_language_code(request):
-    language_code = request.LANGUAGE_CODE
-    return JsonResponse({"language_code": language_code})
-
 @login_required
 @manager_can_enter("attendance.add_attendance")
 def attendance_create(request):
@@ -780,6 +776,14 @@ def approve_bulk_overtime(request):
     """
     ids = request.POST["ids"]
     ids = json.loads(ids)
+    print('-----------------------------------------------------------------')
+    print('-----------------------------------------------------------------')
+    print('-----------------------------------------------------------------')
+    print('-----------------------------------------------------------------')
+    print(ids)
+    print('-----------------------------------------------------------------')
+    print('-----------------------------------------------------------------')
+    print('-----------------------------------------------------------------')
     for attendance_id in ids:
         attendance = Attendance.objects.get(id=attendance_id)
         attendance.attendance_overtime_approve = True

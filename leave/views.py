@@ -698,7 +698,7 @@ def leave_assign_delete(request, id):
     GET : return leave type assigned view template
     """
     AvailableLeave.objects.get(id=id).delete()
-    messages.error(request, _("Assigned leave is successfully deleted.."))
+    messages.success(request, _("Assigned leave is successfully deleted."))
     return redirect(leave_assign_view)
 
 

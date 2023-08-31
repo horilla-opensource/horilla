@@ -23,6 +23,11 @@
         {{form.employee_id}}
         {{form.employee_id.errors}}
     </div>
+    <div class="oh-modal__dialog-body pb-2" id="stageEmployee">
+        <label class="oh-label me-2">{% trans "Is Final Stage" %}</label>
+        {{form.is_final_stage}}
+        {{form.is_final_stage.errors}}
+    </div>
     <div class="oh-modal__dialog-footer">
         <button id="formStage" type="submit" class="oh-btn oh-btn--secondary w-100">
             {% trans "Create" %}

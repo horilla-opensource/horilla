@@ -978,7 +978,11 @@ def rotating_work_type_assign_bulk_archive(request):
             is_active=True, employee_id=rwork_type_assign.employee_id
         )
         flag = True
-        if len(employees_rwork_type_assign) < 1:
+        if is_active:
+            if len(employees_rwork_type_assign) < 1:
+                flag = False
+                rwork_type_assign.is_active = is_active
+        else:
             flag = False
             rwork_type_assign.is_active = is_active
         rwork_type_assign.save()
@@ -1488,7 +1492,11 @@ def rotating_shift_assign_bulk_archive(request):
             is_active=True, employee_id=rshift_assign.employee_id
         )
         flag = True
-        if len(employees_rshift_assign) < 1:
+        if is_active:
+            if len(employees_rshift_assign) < 1:
+                flag = False
+                rshift_assign.is_active = is_active
+        else:
             flag = False
             rshift_assign.is_active = is_active
         rshift_assign.save()
@@ -1782,6 +1790,7 @@ def work_type_request_bulk_cancel(request):
     """
     ids = request.POST["ids"]
     ids = json.loads(ids)
+    result = False
     for id in ids:
         work_type_request = WorkTypeRequest.objects.get(id=id)
         if (
@@ -1809,7 +1818,8 @@ def work_type_request_bulk_cancel(request):
                 redirect="/",
                 icon="close",
             )
-    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+            result = True
+    return JsonResponse({"result": result})
 
 
 @login_required
@@ -1855,6 +1865,7 @@ def work_type_request_bulk_approve(request):
     """
     ids = request.POST["ids"]
     ids = json.loads(ids)
+    result = False
     for id in ids:
         work_type_request = WorkTypeRequest.objects.get(id=id)
         if (
@@ -1884,7 +1895,8 @@ def work_type_request_bulk_approve(request):
                 redirect="/",
                 icon="checkmark",
             )
-    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+            result = True
+    return JsonResponse({"result": result})
 
 
 @login_required
@@ -1992,13 +2004,8 @@ def work_type_request_bulk_delete(request):
                     date=work_type_request.requested_date,
                 ),
             )
-    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
-
-
-@login_required
-def get_language_code(request):
-    language_code = request.LANGUAGE_CODE
-    return JsonResponse({"language_code": language_code})
+        result = True
+    return JsonResponse({"result": result})
 
 
 @login_required
@@ -2179,6 +2186,7 @@ def shift_request_bulk_cancel(request):
     """
     ids = request.POST["ids"]
     ids = json.loads(ids)
+    result = False
     for id in ids:
         shift_request = ShiftRequest.objects.get(id=id)
         if (
@@ -2206,7 +2214,8 @@ def shift_request_bulk_cancel(request):
                 redirect="/",
                 icon="close",
             )
-    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+            result = True
+    return JsonResponse({"result": result})
 
 
 @login_required
@@ -2257,7 +2266,7 @@ def shift_request_bulk_approve(request):
     """
     ids = request.POST["ids"]
     ids = json.loads(ids)
-
+    result = False
     for id in ids:
         shift_request = ShiftRequest.objects.get(id=id)
         if (
@@ -2275,7 +2284,7 @@ def shift_request_bulk_approve(request):
             employee_work_info.shift_id = shift_request.shift_id
             employee_work_info.save()
             shift_request.save()
-            messages.success(request, _("Shift has been approved."))
+            messages.success(request, _("Shifts have been approved."))
             notify.send(
                 request.user.employee_get,
                 recipient=shift_request.employee_id.employee_user_id,
@@ -2287,7 +2296,8 @@ def shift_request_bulk_approve(request):
                 redirect="/",
                 icon="checkmark",
             )
-    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+        result = True
+    return JsonResponse({"result": result})
 
 
 @login_required
@@ -2304,7 +2314,6 @@ def shift_request_delete(request, id):
         shift_request = ShiftRequest.objects.get(id=id)
         user = shift_request.employee_id.employee_user_id
         shift_request.delete()
-        messages.success(request, _("Shift request deleted."))
         notify.send(
             request.user.employee_get,
             recipient=user,
@@ -2335,7 +2344,7 @@ def shift_request_bulk_delete(request):
     """
     ids = request.POST["ids"]
     ids = json.loads(ids)
-
+    result = False
     for id in ids:
         try:
             shift_request = ShiftRequest.objects.get(id=id)
@@ -2364,8 +2373,8 @@ def shift_request_bulk_delete(request):
                     date=shift_request.requested_date,
                 ),
             )
-
-    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+        result = True
+    return JsonResponse({"result": result})
 
 
 @login_required

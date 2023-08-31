@@ -133,11 +133,7 @@ urlpatterns = [
     path('rotating-shift-assign-bulk-delete',views.rotating_shift_assign_bulk_delete,name='rotating-shift-assign-bulk-delete'),
     
     path('rotating-shift-assign-delete/<int:id>/',views.rotating_shift_assign_delete,name='rotating-shift-assign-delete'),
-    
-    path("shift-requests/get-language-code/", views.get_language_code, name="get-language-code"),
-    
-    path("work-type-requests/get-language-code/", views.get_language_code, name="get-language-code"),
-    
+        
     path('work-type-request',views.work_type_request,name='work-type-request'),
     
     path('work-type-requests/work-type-request-view',views.work_type_request_view,name='work-type-request-view'),

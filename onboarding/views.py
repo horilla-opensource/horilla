@@ -10,20 +10,19 @@ actions to handle the request, process data, and generate a response.
 This module is part of the recruitment project and is intended to
 provide the main entry points for interacting with the application's functionality.
 """
-import json
-import random
-import secrets
+import json, contextlib, random, secrets
 from django.core.mail import send_mail
 from django.contrib.auth.models import User
 from django.utils.translation import gettext_lazy as _
 from django.shortcuts import render, redirect
 from django.contrib.auth import login
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse, JsonResponse, HttpResponseRedirect
 from django.contrib import messages
 from django.core.paginator import Paginator
 from django.views.decorators.http import require_http_methods
-from django.forms.utils import ErrorDict
+from base.models import JobPosition
 from notifications.signals import notify
+from horilla import settings
 from horilla.decorators import login_required, hx_request_required
 from horilla.decorators import permission_required
 from recruitment.models import Candidate, Recruitment
@@ -181,7 +180,7 @@ def stage_delete(request, stage_id):
         messages.success(request, _("the stage deleted successfully..."))
     else:
         messages.error(request, _("There are candidates in this stage..."))
-    return redirect(onboarding_view)
+    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 
 
 @login_required
@@ -408,7 +407,22 @@ def candidates_view(request):
             "pd": previous_data,
         },
     )
-
+@login_required
+@permission_required(perm="recruitment.view_candidate")
+def hired_candidate_view(request):
+    previous_data = request.environ["QUERY_STRING"]
+    candidates = Candidate.objects.filter(hired = True)
+    if request.GET.get("is_active") is None:
+        candidates = candidates.filter(is_active=True)
+    candidates = CandidateFilter(request.GET, queryset=candidates).qs
+    return render(
+        request,
+        "candidate/candidate_card.html",
+        {
+            "data": paginator_qry(candidates, request.GET.get("page")),
+            "pd": previous_data,
+        },
+    )
 
 @login_required
 @permission_required("candidate.view_candidate")
@@ -443,7 +457,7 @@ def email_send(request):
     request (HttpRequest): The HTTP request object.
 
     Returns:
-    GET : return json response8
+    GET : return json response
     """
     if request.method != "POST":
         return JsonResponse("", safe=False)
@@ -488,6 +502,7 @@ def onboarding_view(request):
     GET : return onboarding view template
     """
     candidates = Candidate.objects.filter(hired=True, start_onboard=True)
+    job_positions = JobPosition.objects.all()
     for candidate in candidates:
         if not CandidateStage.objects.filter(candidate_id=candidate).exists():
             try:
@@ -513,9 +528,15 @@ def onboarding_view(request):
                     CandidateTask(
                         candidate_id=candidate, onboarding_task_id=task
                     ).save()
-    recruitments = Recruitment.objects.all()
+
+    recruitments = Recruitment.objects.filter(closed = False)
+    status = "closed"
+    if request.GET.get("closed") == "closed":
+        recruitments = Recruitment.objects.filter(closed = True)
+        status = ""
+
     onboarding_stages = OnboardingStage.objects.all()
-    choices = CandidateTask.Choice
+    choices = CandidateTask.choice
     return render(
         request,
         "onboarding/onboarding-view.html",
@@ -523,8 +544,64 @@ def onboarding_view(request):
             "recruitments": recruitments,
             "onboarding_stages": onboarding_stages,
             "choices": choices,
+            "job_positions":job_positions,
+            "status":status,       
         },
     )
+
+
+@login_required
+@all_manager_can_enter("onboarding.view_candidatestage")
+def kanban_view(request):
+    candidates = Candidate.objects.filter(hired=True, start_onboard=True)
+    job_positions = JobPosition.objects.all()
+    for candidate in candidates:
+        if not CandidateStage.objects.filter(candidate_id=candidate).exists():
+            try:
+                onboarding_stage = OnboardingStage.objects.filter(
+                    recruitment_id=candidate.recruitment_id
+                ).order_by("sequence")[0]
+                CandidateStage(
+                    candidate_id=candidate, onboarding_stage_id=onboarding_stage
+                ).save()
+            except Exception:
+                messages.error(
+                    request,
+                    _("%(recruitment)s has no stage..")
+                    % {"recruitment": candidate.recruitment_id},
+                )
+        if tasks := OnboardingTask.objects.filter(
+            recruitment_id=candidate.recruitment_id
+        ):
+            for task in tasks:
+                if not CandidateTask.objects.filter(
+                    candidate_id=candidate, onboarding_task_id=task
+                ).exists():
+                    CandidateTask(
+                        candidate_id=candidate, onboarding_task_id=task
+                    ).save()
+
+    recruitments = Recruitment.objects.filter(closed = False)
+    status = "closed"
+    if request.GET.get("closed") == "closed":
+        recruitments = Recruitment.objects.filter(closed = True)
+        status = ""
+    onboarding_stages = OnboardingStage.objects.all()
+    choices = CandidateTask.choice
+    stage_form = OnboardingViewStageForm()
+    return render(
+        request,
+        "onboarding/kanban/kanban.html",
+        {
+            "recruitments": recruitments,
+            "onboarding_stages": onboarding_stages,
+            "choices": choices,
+            "job_positions":job_positions,
+            "stage_form": stage_form,
+            "status":status,       
+            "choices":choices,
+        },
+    ) 
 
 
 def user_creation(request, token):
@@ -797,8 +874,7 @@ def candidate_task_update(request, obj_id):
         icon="people-circle",
         redirect="/onboarding/onboarding-view",
     )
-    messages.info(request, _("Candidate task updated successfully.."))
-    choices = CandidateTask.Choice
+    choices = CandidateTask.choice
     return render(
         request,
         "onboarding/candidate-task.html",
@@ -807,7 +883,6 @@ def candidate_task_update(request, obj_id):
 
 
 @login_required
-@hx_request_required
 @require_http_methods(["POST"])
 @stage_manager_can_enter("onboarding.change_candidatestage")
 def candidate_stage_update(request, candidate_id, recruitment_id):
@@ -830,33 +905,35 @@ def candidate_stage_update(request, candidate_id, recruitment_id):
     candidate_stage.onboarding_stage_id = stage
     candidate_stage.save()
     onboarding_stages = OnboardingStage.objects.all()
-    choices = CandidateTask.Choice
-    messages.info(request, _("Candidate stage updated successfully..."))
+    choices = CandidateTask.choice
     users = [
         employee.employee_user_id
         for employee in candidate_stage.onboarding_stage_id.employee_id.all()
     ]
-    notify.send(
-        request.user.employee_get,
-        recipient=users,
-        verb=f"The stage of {candidate_stage.candidate_id} \
-            was updated to {candidate_stage.onboarding_stage_id}.",
-        verb_ar=f"تم تحديث مرحلة المرشح {candidate_stage.candidate_id} إلى {candidate_stage.onboarding_stage_id}.",
-        verb_de=f"Die Phase des Kandidaten {candidate_stage.candidate_id} wurde auf {candidate_stage.onboarding_stage_id} aktualisiert.",
-        verb_es=f"La etapa del candidato {candidate_stage.candidate_id} se ha actualizado a {candidate_stage.onboarding_stage_id}.",
-        verb_fr=f"L'étape du candidat {candidate_stage.candidate_id} a été mise à jour à {candidate_stage.onboarding_stage_id}.",
-        icon="people-circle",
-        redirect="/onboarding/onboarding-view",
-    )
-    return render(
-        request,
-        "onboarding/onboarding-table.html",
-        {
-            "recruitment": recruitment,
-            "onboarding_stages": onboarding_stages,
-            "choices": choices,
-        },
-    )
+    if request.POST.get("is_ajax") is None:
+        notify.send(
+            request.user.employee_get,
+            recipient=users,
+            verb=f"The stage of {candidate_stage.candidate_id} \
+                was updated to {candidate_stage.onboarding_stage_id}.",
+            verb_ar=f"تم تحديث مرحلة المرشح {candidate_stage.candidate_id} إلى {candidate_stage.onboarding_stage_id}.",
+            verb_de=f"Die Phase des Kandidaten {candidate_stage.candidate_id} wurde auf {candidate_stage.onboarding_stage_id} aktualisiert.",
+            verb_es=f"La etapa del candidato {candidate_stage.candidate_id} se ha actualizado a {candidate_stage.onboarding_stage_id}.",
+            verb_fr=f"L'étape du candidat {candidate_stage.candidate_id} a été mise à jour à {candidate_stage.onboarding_stage_id}.",
+            icon="people-circle",
+            redirect="/onboarding/onboarding-view",
+        )
+        messages.success(request, _("Candidate stage updated successfully..."))
+        return render(
+            request,
+            "onboarding/onboarding-table.html",
+            {
+                "recruitment": recruitment,
+                "onboarding_stages": onboarding_stages,
+                "choices": choices,
+            },
+        )
+    return JsonResponse({"message":"Candidate onboarding stage updated","type":"success"})
 
 
 @login_required
@@ -916,7 +993,9 @@ def onboard_candidate_chart(_):
         blue = random.randint(0, 255)
         background_color.append(f"rgba({red}, {green}, {blue}, 0.2")
         border_color.append(f"rgb({red}, {green}, {blue})")
-        labels.append(f"{recruitment.title} | {recruitment.start_date}")
+        labels.append(
+            f"{recruitment.job_position_id.job_position} | {recruitment.start_date}"
+        )
         data.append(
             recruitment.candidate.filter(hired=True, start_onboard=True).count()
         )
@@ -943,3 +1022,118 @@ def update_joining(request):
     candidate_obj.joining_date = date
     candidate_obj.save()
     return JsonResponse({"message": "Success"})
+
+
+@login_required
+@permission_required("candidate.view_candidate")
+def view_dashboard(request):
+    recruitment = Recruitment.objects.all().values_list("title",flat=True)
+    candidates = Candidate.objects.all()
+    hired = candidates.filter(hired=True)
+    onboard_candidates = Candidate.objects.filter(start_onboard = True)
+    job_positions =onboard_candidates.values_list("job_position_id__job_position",flat=True)
+
+    context = {
+        "recruitment":list(recruitment),
+        "candidates":candidates,
+        "hired":hired,
+        "onboard_candidates" : onboard_candidates,
+        "job_positions" : list(set(job_positions)),
+    }
+    return render (request,"onboarding/dashboard.html",context=context)
+
+@login_required
+@permission_required("candidate.view_candidate")
+def dashboard_stage_chart(request):
+    recruitment = request.GET.get("recruitment")
+    labels = OnboardingStage.objects.filter(recruitment_id__title = recruitment).values_list("stage_title",flat=True)
+    labels = list(labels)
+    candidate_counts = []
+    border_color = []
+    background_color= []
+    for label in labels:
+        red = random.randint(0, 255)
+        green = random.randint(0, 255)
+        blue = random.randint(0, 255)
+        background_color.append(f"rgba({red}, {green}, {blue}, 0.3")
+        border_color.append(f"rgb({red}, {green}, {blue})")
+        count = CandidateStage.objects.filter(onboarding_stage_id__stage_title=label,onboarding_stage_id__recruitment_id__title = recruitment).count()
+        candidate_counts.append(count)
+
+    response = {
+        "labels" : labels,
+        "data" : candidate_counts,
+        "recruitment":recruitment,
+        "background_color":background_color,
+        "border_color":border_color,
+    }
+    return JsonResponse(response)
+
+
+
+@login_required
+@stage_manager_can_enter("recruitment.change_candidate")
+def candidate_sequence_update(request):
+    """
+    This method is used to update the sequence of candidate
+    """
+    sequence_data = json.loads(request.POST["sequenceData"])
+    updated = False
+    for cand_id, seq in sequence_data.items():
+        cand = CandidateStage.objects.get(id=cand_id)
+        if cand.sequence != seq:
+            cand.sequence = seq
+            cand.save()
+            updated = True
+    if updated:
+        return JsonResponse({"message": "Candidate sequence updated", "type": "info"})
+    return JsonResponse({"type": "fail"})
+
+
+    
+@login_required
+@stage_manager_can_enter("recruitment.change_stage")
+def stage_sequence_update(request):
+    """
+    This method is used to update the sequence of the stages
+    """
+    sequence_data = json.loads(request.POST["sequenceData"])
+    updated = False
+
+    for stage_id, seq in sequence_data.items():
+        stage = OnboardingStage.objects.get(id=stage_id)
+        if stage.sequence != seq:
+            stage.sequence = seq
+            stage.save()
+            updated = True
+            
+    if updated:
+        return JsonResponse({"type": "success", "message": "Stage sequence updated"})
+    return JsonResponse({"type": "fail"})
+
+
+@login_required
+@stage_manager_can_enter("recruitment.change_candidate")
+def onboarding_send_mail(request,candidate_id):
+    """
+    This method is used to send mail to the candidate from onboarding view
+    """
+    candidate = Candidate.objects.get(id=candidate_id)
+    candidate_mail = candidate.email
+    response = render(request,"onboarding/send-mail-form.html",{"candidate":candidate})
+    if request.method == "POST":
+        subject = request.POST['subject']
+        body = request.POST["body"]
+        with contextlib.suppress(Exception):
+            res = send_mail(
+                subject, body, settings.EMAIL_HOST_USER, [candidate_mail], fail_silently=False
+            )
+            if res == 1:
+                messages.success(request,"Mail sent successfully")
+            else:
+                messages.error(request,"Something went wrong")
+        return HttpResponse(
+            response.content.decode("utf-8") + "<script>location.reload();</script>"
+        )
+
+    return response

@@ -5,6 +5,18 @@
 {% load recruitmentfilters %}
 {% load onboardingfilters %}
 
+<style>
+    .select2-container{
+        width: 100% !important;
+    }
+    .select2-container .select2-selection {
+        padding: 10px;
+        height: 50px !important; /* Adjust the height value as needed */
+    }
+</style>
+<div class="oh-alert-container messages" >
+        
+</div>
 <section class="oh-wrapper oh-main__topbar" x-data="{searchShow: false}">
     <div class="oh-main__titlebar oh-main__titlebar--left">
         <h1 class="oh-main__titlebar-title fw-bold">{% trans "Onboarding" %}</h1>
@@ -14,13 +26,99 @@
         </a>
     </div>
     <div class="oh-main__titlebar oh-main__titlebar--right">
+        
         <div class="oh-input-group oh-input__search-group" :class="searchShow ? 'oh-input__search-group--show' : ''">
             <ion-icon name="search-outline" class="oh-input-group__icon oh-input-group__icon--left"></ion-icon>
-            <input type="text" id="search" class="oh-input oh-input__icon" aria-label="Search Input" placeholder="{% trans 'Search' %}" />
+            <input type="text" id="search" name='search' class="oh-input oh-input__icon" aria-label="Search Input" placeholder="{% trans 'Search' %}" />
+        </div>
+
+        {% comment %} <button class="oh-btn oh-btn--small oh-btn--secondary oh-tabs__action-new-table ms-4">
+            <a href="{% url 'onboarding-view' %}?closed={{status}}" class="text-light text-decoration-none" >
+                {% if status == "closed" %}
+                {% trans "Closed Recruitments" %}
+                {% else %}
+                {% trans "Ongoing Recruitments" %}
+                {% endif %}
+            </a>
+        </button> {% endcomment %}
+
+        <div class="oh-switch ms-3" style="width: 30px;">
+            <input type="checkbox" name="is_closed" data-widget="style-widget" class="style-widget oh-switch__checkbox" {% if request.GET.closed %} checked title="Ongoing Recruitments" {% else %}title="Closed Recruitments" {% endif %} id="is_closed" > 
+        </div>
+        <ul class="oh-view-types ml-2" style="margin-bottom: 0;">
+            <li class="oh-view-type candidate-view-type" data-view="list">
+                <a href="{% url 'onboarding-view' %}" hx-target="#section" class="oh-btn oh-btn--view "><ion-icon
+                        name="list-outline" role="img" class="md hydrated" aria-label="list outline"></ion-icon></a>
+            </li>
+            <li class="oh-view-type candidate-view-type" data-view="card">
+                <a href="{% url 'kanban-view' %}" hx-target="#section" class="oh-btn oh-btn--view"><ion-icon
+                        name="grid-outline" role="img" class="md hydrated" aria-label="grid outline"></ion-icon></a>
+            </li>
+        </ul>
+        <div class="oh-main__titlebar-button-container">
+
+            <div class="oh-dropdown" x-data="{open: false}">
+              <button class="oh-btn ml-2" @click="open = !open">
+                <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}
+              </button>
+                <div class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4" x-show="open" @click.outside="open = false" style="display: none;" @click.>
+                    
+                    <div class="mb-3 mt-3">
+                        <label for="job_position_id" class="oh-label">Job position</label>
+                        <select class="" name="job_position_id" id="job_position_id">
+                            <option value="">------------------</option>
+                            {% for job_position in job_positions %}
+                                <option value="{{job_position}}">{{job_position}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-12 col-md-12 col-lg-6">
+                            <label class ="mb-2" for="join_date">Join Date</label>
+                            <input type="date" name="join_date" id="join_date" class="oh-input w-100">
+                        </div>
+                        <div class="col-sm-12 col-md-12 col-lg-6">
+                            <label class ="mb-2" for="portal_stage">Onboarding Portal Stage</label>
+                            <select class="" name="portal_stage" id="portal_stage">
+                                <option value="">------------------</option>
+                                <option value="0">0</option>
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>                                
+                            </select>
+                        </div>
+                    </div>
+                    <div class="oh-accordion">
+                        <div class="oh-accordion-header">{% trans "Advanced" %}</div>
+                            <div class="oh-accordion-body">
+                                <div class="row">
+                                    <div class="col-sm-12 col-md-12 col-lg-6">
+                                        <div class="oh-input-group">
+                                            <label class ="mb-2" for="join_date">Join Date From</label>
+                                        <input type="date" name="join_date" id="join_date_start" class="oh-input w-100">
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-12 col-md-12 col-lg-6">
+                                        <div class="oh-input-group">
+                                            <label class ="mb-2" for="join_date">Join Date To</label>
+                                            <input type="date" name="join_date" id="join_date_end" class="oh-input w-100">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    <div class="oh-tabs__action-bar mt-2" id="filter_item" x-on:click="open = false" >
+                        <button class="oh-btn oh-btn--small oh-btn--secondary oh-tabs__action-new-table w-100" >
+                            <ion-icon class="me-1 md hydrated" name="add-outline" role="img"aria-label="add outline"></ion-icon>
+                            {% trans "Filter" %}
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </section>
-
 
 <div class="oh-wrapper">
     <div class="oh-tabs">
@@ -95,8 +193,6 @@
         </div>
         <div id="updateStage">
 
-
-
         </div>
 
 
@@ -133,6 +229,36 @@
 
     </div>
 </div>
+
+<div class="oh-modal" id="sendMailModal" role="dialog" aria-labelledby="" aria-hidden="true">
+    <div class="oh-modal__dialog oh-modal__dialog--timeoff">
+        <div class="oh-modal__dialog-header">
+            <span class="oh-modal__dialog-title" id="modalTask">Send Mail</span>
+            <button class="oh-modal__close" aria-label="Close">
+                <ion-icon name="close-outline" role="img" class="md hydrated" aria-label="close outline"></ion-icon>
+            </button>
+        </div>
+        <div id="sendMailModalBody" class="p-3 ">
+                        
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function() {
+        $("#search").on("htmx:afterRequest", function(event, xhr, data) {
+            
+            alertContainer.append(alertDiv);
+            $("#messages").html(alertContainer);
+        });
+        $("#is_closed").on("change", function() {
+            if ($(this).is(":checked")) {
+                window.location.href = "{% url 'onboarding-view' %}?closed={{status}}";
+            } else {
+                window.location.href = "{% url 'onboarding-view' %}";
+            }
+        });
+    });
+</script>
 <script src="{% static 'onboarding_view/activeTab.js' %}"></script>
 <script src="{% static 'onboarding_view/search.js' %}"></script>
 

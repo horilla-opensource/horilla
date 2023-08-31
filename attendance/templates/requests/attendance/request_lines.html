@@ -63,7 +63,7 @@
                   <div class="oh-sticky-table__td {% if 'attendance_day' in attendance.requested_fields or attendance.request_type == 'create_request' %} diff-cell{% endif %}" >
                     {{attendance.attendance_day|capfirst}}
                   </div>
-                  <div class="oh-sticky-table__td {% if 'atteendance_clock_in' in attendance.requested_fields or attendance.request_type == 'create_request' %} diff-cell{% endif %}" >
+                  <div class="oh-sticky-table__td {% if 'attendance_clock_in' in attendance.requested_fields or attendance.request_type == 'create_request' %} diff-cell{% endif %}" >
                     {{attendance.attendance_clock_in}}
                   </div>
                   <div class="oh-sticky-table__td {% if 'attendance_clock_in_date' in attendance.requested_fields or attendance.request_type == 'create_request' %} diff-cell{% endif %}" >

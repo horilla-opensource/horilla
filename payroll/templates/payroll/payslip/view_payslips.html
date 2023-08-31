@@ -114,7 +114,8 @@
       </div>
     </div>
     {% endif %}
-    {% if perms.payroll.add_payslip %}
+
+    {% comment %} {% if perms.payroll.add_payslip %}
     <div class="oh-main__titlebar-button-container">
       <div class="oh-btn-group ml-2">
         <div>
@@ -154,6 +155,70 @@
       </div>
     </div>
     {% endif %}
+    {% if perms.payroll.add_payslip %}
+    <div class="oh-main__titlebar-button-container">
+      <div class="oh-btn-group ml-2">
+        <div>
+          <a
+            class="oh-btn oh-btn--secondary oh-btn--shadow"
+            id="DeletePayslipBulk"
+          >
+          <ion-icon 
+            class="me-2 md hydrated" role="img"
+            aria-label="add outline" name="trash-outline"
+            ></ion-icon
+            >{% trans "Delete" %}</a>
+        </div>
+      </div>
+    </div>
+    {% endif %} {% endcomment %}
+
+    {% if perms.payroll.add_payslip %}
+    <div class="oh-btn-group ml-2">
+      <div class="oh-dropdown" x-data="{open: false}">
+        <button
+          class="oh-btn oh-btn--dropdown "
+          @click="open = !open"
+          @click.outside="open = false"
+        >
+          {% trans "Actions" %}
+        </button>
+        <div class="oh-dropdown__menu oh-dropdown__menu--right" x-show="open" style="display: none; cursor:pointer;">
+          <ul class="oh-dropdown__items">
+      
+            {% if perms.payroll.add_payslip %}
+            <li class="oh-dropdown__item">
+              <a
+                class="oh-dropdown__link"
+                data-toggle="oh-modal-toggle"
+                data-target="#individualPayslipModal"
+              >{% trans "Create" %}</a
+        >
+            </li>
+            {% endif %} 
+            {% if perms.payroll.add_payslip %}
+            <li class="oh-dropdown__item">
+              <a
+                class="oh-dropdown__link"
+                data-toggle="oh-modal-toggle"
+                data-target="#bulkPayslipModal"
+              >{% trans "Generate" %}</a>
+            </li>
+            {% endif %} 
+            {% if perms.payroll.add_payslip %}
+            <li class="oh-dropdown__item">
+                    <a
+                      class="oh-dropdown__link "
+                      id="DeletePayslipBulk"
+                    >{% trans "Delete" %}</a>
+            {% endif %}
+          </ul>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+
+
   </div>
 </section>
 <div id="payroll-payslip-container" class="oh-wrapper">
