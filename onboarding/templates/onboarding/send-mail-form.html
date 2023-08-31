@@ -1,0 +1,15 @@
+{% load i18n %}
+<div class="p-2 mb-3" style="background-color:#6089d54e;
+color:#6089d5fd;border-radius: 5px;">
+    Mail to {{candidate.email}}
+</div>
+<form hx-post="{% url 'onboarding-send-mail' candidate.id %}" hx-target="#sendMailModalBody" method="post">
+    {% csrf_token %}
+    <label for="subject" class="mb-1">Subject</label>
+<input type="text" class="oh-input w-100" id="subject{{candidate.id}}" name="subject">
+<label for="Body" class="mt-3 mb-1">Body</label>
+<textarea name="body" class="w-100 oh-input" id="Body{{candidate.id}}" cols="30" rows="2"></textarea>
+<button type="submit" class="oh-btn oh-btn--secondary w-100">
+    {% trans "Send" %}
+</button>
+</form>

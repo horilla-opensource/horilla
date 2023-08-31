@@ -1,0 +1,132 @@
+{% extends 'index.html' %} 
+{% block content %}
+{% load static i18n %}
+{% load i18n %}
+
+<!-- End of Navigation -->
+<main :class="sidebarOpen ? 'oh-main__sidebar-visible' : ''">
+    <div class="oh-wrapper">
+        <div class="d-none mt-5" id="back_button" style="width:10%">
+            <a href=""
+              class="oh-btn oh-btn--secondary oh-btn--shadow ms-3">
+              <ion-icon
+                class="me-2 md hydrated"
+                name="arrow-back-outline"
+                role="img"
+                aria-label="arrow-back-outline">
+                </ion-icon>
+              {% trans "Back" %}
+            </a>
+        </div>
+        <div class="oh-dashboard row" id="dashboard">
+            <div class="oh-dashboard__left col-12 col-sm-12 col-md-12 col-lg-12">
+                <div class="oh-dashboard__cards row">
+                    <div class="col-12 col-sm-12 col-md-6 col-lg-4 filter">
+                        <div class="oh-card-dashboard oh-card-dashboard oh-card-dashboard--success" >
+                            <a href={% url "pipeline" %} class="text-decoration-none recruitment">
+                                <div class="oh-card-dashboard__header">
+                                    <span class="oh-card-dashboard__title">{% trans "Recruitment" %}</span>
+                                </div>
+                                <div class="oh-card-dashboard__body">
+                                    <span class="oh-card-dashboard__count">{{recruitment|length}}</span>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-12 col-md-6 col-lg-4 filter">
+                        <div class="oh-card-dashboard oh-card-dashboard--warning"
+                            hx-get={% url "candidate-view-card" %}
+                            hx-target="#dashboard"
+                            id="candidate_view"
+                            >
+                            <div class="oh-card-dashboard__header">
+                                <span class="oh-card-dashboard__title">{% trans "Candidates" %}</span>
+                            </div>
+                            <div class="oh-card-dashboard__body">
+                                <span class="oh-card-dashboard__count">{{candidates|length}}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-12 col-md-6 col-lg-4 filter">
+                        <div class="oh-card-dashboard oh-card-dashboard--success"
+                            hx-get={% url "hired-candidates-view" %}
+                            hx-target="#dashboard"
+                            id="hired_candidate"
+                            >
+                            <div style="text-decoration: none;" class="oh-card-dashboard__header">
+                                <span class="oh-card-dashboard__title">{% trans "Hired" %}</span>
+                            </div>
+                            <div class="oh-card-dashboard__body">
+                                <a style="text-decoration: none;" class="oh-card-dashboard__counts">
+                                    <span class="oh-card-dashboard__count"> {{hired|length}} </span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-4">
+                    <div class="col-12 col-sm-12 col-md-12 col-lg-6 oh-card-dashboard--moveable">
+                        <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent">
+                            <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
+                                <span class="oh-card-dashboard__title" id="stage-chart-previous"><ion-icon name="caret-back-outline"></ion-icon></span>
+                                <span class="oh-card-dashboard__title">{% trans "Onboarding Stage Chart" %}</span>
+                                <span class="oh-card-dashboard__title float-end" id="stage-chart-next"><ion-icon name="caret-forward"></ion-icon></span>
+
+                            </div>
+                            <div class="oh-card-dashboard__body" id="onboarding_canvas_body" style="width: 90%; margin: auto;">
+                                <canvas id="onboardingChart"></canvas>
+                            </div>
+                        </div>
+                        
+                    </div>
+                    <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent" style="width:50%">
+                        <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
+                          <span class="oh-card-dashboard__title">{% trans "Candidates on Onboard" %}</span>
+                        </div>
+                        <div class="oh-card-dashboard__body">
+                          <ul class="oh-card-dashboard__user-list" style='white-space: nowrap; overflow-x: auto;'>
+                            {% for job in job_positions %}
+
+                            <li class="oh-card-dashboard__user-item row ms-2" style='width:40%; display: inline-block; float: none;'>
+                                <p class="oh-profile__name mt-1 fw-bold border-bottom w-75" > {{job|truncatechars:20}}</p>
+                                <div style="height:200px;overflow-y:auto;">
+                                {% for cand in onboard_candidates %}
+                                    {% if cand.job_position_id.job_position == job %}
+                                    <div class="oh-profile--md align-center d-flex mb-2">
+                                        <div class="oh-profile oh-profile__avatar me-2">
+                                            <img
+                                                src="https://ui-avatars.com/api/?name={{cand}}&background=random"
+                                                class="oh-profile__image"
+                                                alt="{{cand}}"
+                                            />
+                                        </div>
+                                        <span class="oh-profile__name oh-text--dark">{{cand}}</span>
+                                    </div>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                                </li>
+                            {% endfor %}
+                          </ul>
+                        </div>
+                      </div>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+</main>
+
+<script>
+    var recruitment = {{recruitment|safe}}
+    $("#candidate_view").on("click",function(){
+        $("#back_button").removeClass("d-none")
+    })
+    
+    $("#hired_candidate").on("click",function(){
+        $("#back_button").removeClass("d-none")
+    })
+</script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="{% static 'onboarding_view/dashboard.js' %}"></script>
+{% endblock content %}

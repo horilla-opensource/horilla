@@ -7,11 +7,13 @@ $(document).ready(function () {
         $(tabContent).attr('class', 'oh-tabs__content oh-tabs__content--active');
     }
     else {
-        $('[data-target="#tab_1"]').attr('class', 'oh-tabs__tab oh-tabs__tab--active');
-        $('#tab_1').attr('class', 'oh-tabs__content oh-tabs__content--active');
+        var targetId = $('.oh-tabs__tab[data-target]:first').attr("data-target")
+        $('.oh-tabs__tab[data-target]:first').attr('class', 'oh-tabs__tab oh-tabs__tab--active');
+        $(`${targetId}`).attr('class', 'oh-tabs__content oh-tabs__content--active');
     }
     $('.oh-tabs__tab').click(function (e) {
         var activeTab = $(this).attr('data-target');
         localStorage.setItem('activeTabOnboarding', activeTab)
     });
 });
+    

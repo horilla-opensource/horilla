@@ -1,20 +1,19 @@
 {% load onboardingfilters %} {% load i18n %}
+
+<style>
+    .oh-accordion-meta__body .oh-sticky-table--no-overflow {
+        height:300px;
+    }
+</style>
+
 {% for stage in recruitment.onboardingstage_set.all %}
-{% if messages %}
-    <div class="oh-alert-container">
-        {% for message in messages %}
-        <div class="oh-alert oh-alert--animated {{message.tags}}">
-              {{ message }}
-        </div> 
-        {% endfor %}
-    </div>
-    {% endif %}
-<div class="oh-accordion-meta">
+
+    
+<div class="oh-accordion-meta" >
     <div class="oh-accordion-meta__item">
         <div class="oh-accordion-meta__header oh-accordion-meta__header--show">
             <div class="d-flex">
-                <span
-                    class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round ms-2 mr-2">{{stage.candidate.count}}</span>
+                <span class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round ms-2 mr-2 stage_count">{{stage.candidate.count}}</span>
                 <span class="oh-accordion-meta__title">{{stage}}</span>
             </div>
 
@@ -48,7 +47,7 @@
             </div>
             {% endif %}
         </div>
-        <div class="oh-accordion-meta__body ">    
+        <div class="oh-accordion-meta__body onboarding_items">    
             <div class="oh-sticky-table oh-sticky-table--no-overflow mb-5">
                 <div class="oh-sticky-table__table">
                     <div class="oh-sticky-table__thead">
@@ -58,7 +57,9 @@
                             <div class="oh-sticky-table__th">{% trans "Job Position" %}</div>
                             <div class="oh-sticky-table__th">{% trans "Mobile" %}</div>
                             <div class="oh-sticky-table__th">{% trans "Joining Date" %}</div>
+                            <div class="oh-sticky-table__th">{% trans "Onboarding Portal Stage" %}</div>
                             <div class="oh-sticky-table__th">{% trans "Stage" %}</div>
+                            <div class="oh-sticky-table__th">{% trans "Actions" %}</div>
                             {% for task in recruitment.onboarding_task.all %}
                             <div class="oh-sticky-table__th" style="width: 250px;">
                                 <div class="d-flex align-items-center justify-content-between">
@@ -76,7 +77,8 @@
                                                     <a class="oh-dropdown__link" data-toggle="oh-modal-toggle"
                                                         data-target="#editModal4"
                                                         hx-get="{% url 'task-update' task.id recruitment.id %}"
-                                                        hx-target="#updateTask">{% trans "Edit" %}</a>
+                                                        hx-target="#updateTask">{% trans "Edit" %}
+                                                    </a>
                                                 </li>
                                                 {% endif %}
                                                 {% if request.user|stage_manages:stage or perms.onboarding.delete_onboardingtask %}
@@ -110,7 +112,13 @@
                         {% for candidate in stage.candidate.all %}
                         {% if candidate.candidate_id.recruitment_id == recruitment%}
                         <div class="oh-sticky-table__tr oh-multiple-table-sort__movable change-cand"
-                        data-candidate-id="{{candidate.candidate_id}}" data-drop="candidate" data-change-cand-id="{{candidate.candidate_id}}" data-candidate="{{candidate.candidate_id}}">
+                        data-candidate-id="{{candidate.candidate_id}}" data-drop="candidate" 
+                        data-change-cand-id="{{candidate.candidate_id}}" 
+                        data-candidate="{{candidate.candidate_id}}" 
+                        data-job-position = "{{candidate.candidate_id.job_position_id}}"
+                        data-join-date="{{candidate.candidate_id.joining_date}}"
+                        data-portal-count="{{candidate.candidate_id.onboarding_portal.count}}"
+                        >
                             <div class="oh-sticky-table__sd">
                                 <div class="oh-profile oh-profile--md">
                                     <div class="oh-profile__avatar mr-1">
@@ -126,15 +134,20 @@
                                 </div>
                             </div>
                             <div class="oh-sticky-table__td">{{candidate.candidate_id.email}}</div>
-                            <div class="oh-sticky-table__td">{{candidate.candidate_id.job_position_id}}</div>
+                            <div class="oh-sticky-table__td" >{{candidate.candidate_id.job_position_id}}</div>
                             <div class="oh-sticky-table__td">{{candidate.candidate_id.mobile}}</div>
-                            <div class="oh-sticky-table__td">{{candidate.candidate_id.joining_date}}</div>
+                            <div class="oh-sticky-table__td" >{{candidate.candidate_id.joining_date}}</div>
+                            <div class="oh-sticky-table__td">
+                            <div class="oh-checkpoint-badge oh-checkpoint-badge--secondary" >
+                                {{candidate.candidate_id.onboarding_portal.count}} / 4
+                            </div>
+                            </div>
                             <div class="oh-sticky-table__td">
                                 {% if request.user|stage_manages:stage or perms.onboarding.change_candidatestage %}
                                 <select id="" class="w-100" style="
-                                border: 1px solid hsl(213deg,22%,84%);
-                                padding: 0.3rem 0.8rem 0.3rem 0.3rem;
-                                border-radius: 0rem;" name="stage"
+                                    border: 1px solid hsl(213deg,22%,84%);
+                                    padding: 0.3rem 0.8rem 0.3rem 0.3rem;
+                                    border-radius: 0rem;" name="stage"
                                     hx-post="{% url 'candidate-stage-update' candidate.candidate_id.id recruitment.id %}"
                                     hx-trigger="change" hx-target="#onboardingTable{{recruitment.id}}">
                                     {% for stage in recruitment.onboardingstage_set.all %}
@@ -154,6 +167,22 @@
 
                                 {% endif %}
                             </div>
+                            <div class="oh-sticky-table__td">
+                                <div class="oh-kanban__card-actions oh-kanban__dropdown">
+                                    <button class="oh-btn oh-btn--small oh-btn--transparent oh-kanban__btn oh-kanban__dropdown-toggle">
+                                        <ion-icon name="ellipsis-vertical-sharp" role="img" class="md hydrated" aria-label="ellipsis vertical sharp"></ion-icon>
+                                    </button>
+                                    <div class="oh-dropdown oh-kanban__dropdown-menu d-none">
+                                        <div class="oh-dropdown__menu oh-dropdown__menu--right">
+                                            <ul class="oh-dropdown__items">
+                                                <li class="oh-dropdown__item">
+                                                    <a href="#" data-toggle="oh-modal-toggle" data-target="#sendMailModal" hx-get="{% url 'onboarding-send-mail' candidate.candidate_id.id %}" hx-target="#sendMailModalBody" class="oh-dropdown__link">Send Mail</a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                             {% for task in candidate.candidate_id.candidate_task.all %}
                             <div class="oh-sticky-table__td" id="task{{task.id}}">
                                 {% if request.user|task_manager:task or perms.onboarding.change_candidatetask %}
@@ -169,7 +198,7 @@
                             {% endfor %}
                         </div> 
                         {% endif %}
-                        {% endfor %}
+                        {% endfor %} 
                     </div>
                 </div>
             </div>
@@ -177,3 +206,18 @@
     </div>
 </div><br>
 {% endfor %}
+
+<script>
+    $(document).ready(function() {
+        
+
+        $("select[name='stage']").on("htmx:afterRequest", function(event, xhr, data) {
+            var alertContainer = $('<div class="oh-alert-container">');
+            var alertDiv = $('<div class="oh-alert oh-alert--animated oh-alert--info">').text("Candidate stage updated successfully..");
+            
+            alertContainer.append(alertDiv);
+            $(".messages").html(alertContainer);
+        });
+    });
+    </script>
+
