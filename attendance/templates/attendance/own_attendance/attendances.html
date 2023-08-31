@@ -15,7 +15,6 @@
           <div class="oh-sticky-table__th" hx-target='#attendance-container' hx-get="{% url 'own-attendance-filter' %}?{{pd}}&orderby=">{% trans "Min Hour" %}</div>
           <div class="oh-sticky-table__th" hx-target='#attendance-container' hx-get="{% url 'own-attendance-filter' %}?{{pd}}&orderby=at_work_second">{% trans "At Work" %}</div>
           <div class="oh-sticky-table__th" hx-target='#attendance-container' hx-get="{% url 'own-attendance-filter' %}?{{pd}}&orderby=overtime_second">{% trans "Overtime" %}</div>
-          <div class="oh-sticky-table__th"></div>
         </div>
       </div>
       <div class="oh-sticky-table__tbody">
@@ -66,11 +65,6 @@
           </div>
           <div class="oh-sticky-table__td">
               {{attendance.attendance_overtime}}
-          </div>
-          <div class="oh-sticky-table__td">
-            {% if attendance.attendance_validated == True %}
-            <a href="/attendance/revalidate-this-attendance/{{attendance.id}}/"class='oh-btn oh-btn--info'>{% trans "Revalidate" %}</a>
-            {% endif %}
           </div>
         </div>
         {% endfor %}

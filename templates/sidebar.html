@@ -84,6 +84,11 @@
             </a>
             <div class="oh-sidebar__submenu" id="onboardingNav" style="display: none;" x-show="isOpen" x-transition style="display: none;">
                <ul class="oh-sidebar__submenu-items">
+                  {% if perms.onboarding.view_dashboard  %}
+                  <li class="oh-sidebar__submenu-item">
+                     <a href="{%url 'view-onboarding-dashboard' %}" class="oh-sidebar__submenu-link">{% trans "Dashboard" %}</a>
+                  </li>
+                  {% endif %}
                   {% if request.user|is_taskmanager or perms.onboarding.view_candidatestage %}
                   <li class="oh-sidebar__submenu-item">
                      <a href="{% url 'onboarding-view' %}" class="oh-sidebar__submenu-link">{% trans "Onboarding View" %}</a>
@@ -185,11 +190,11 @@
                   {% if perms.attendance.view_attendance or request.user|is_reportingmanager %} 
                   <li class="oh-sidebar__submenu-item">
                      <a class="oh-sidebar__submenu-link" href="{% url 'attendance-view' %}">{% trans "Attendance" %}</a>
-                  </li>
+                  </li>{% endif %}
                   <li class="oh-sidebar__submenu-item">
                      <a class="oh-sidebar__submenu-link" href="{% url 'request-attendance-view' %}">{% trans "Attendance Requests" %}</a>
                   </li>
-                  {% endif %} {% if perms.attendance.view_attendanceovertime or request.user|is_reportingmanager %} 
+                  {% if perms.attendance.view_attendanceovertime or request.user|is_reportingmanager %} 
                   <li class="oh-sidebar__submenu-item">
                      <a class="oh-sidebar__submenu-link" href="{% url 'attendance-overtime-view' %}">{% trans "Hour Account" %}</a>
                   </li>
