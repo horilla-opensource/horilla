@@ -1,4 +1,5 @@
 {% load i18n %}
+{% load basefilters %}
 <style>
   .count-span{
     width: 100%;
@@ -30,6 +31,30 @@
           {% endfor %}
       </div>
       {% endif %}  
+      
+<!-- filter items showing here -->
+<div class="oh-filter-tag-container "  
+	style="position: fixed;top: 150px;z-index: 9999;">
+	{%for field,value in filter_dict.items %}
+		{%if value %}
+
+			<span class="oh-filter-tag filter-field" data-x-field="{{field}}" >{{field|clean_field}}<button class="oh-filter-tag__close">
+				<ion-icon name="close-outline" role="img" class="md hydrated" aria-label="close outline"></ion-icon></button>
+			</span>
+
+		{%endif%}
+	{% endfor %}
+</div>
+<script>
+var form_submit_id = '#filterButton'
+$(document).ready(function () {
+	$('.filter-field').on('click',function(){
+		const field_id = $(this).attr("data-x-field")
+		$('#id_'+field_id).val('')
+		$(form_submit_id).click()
+	})
+});
+</script>
         <div class="row">
             <div class="col-12 col-sm-12 col-md-12 col-lg-12">
                 <div class="oh-card p-4">
