@@ -37,6 +37,7 @@
                           hx-target="#companyUpdateForm"><ion-icon name="create-outline"></ion-icon></button>
                       <a class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100" id="delete-link"
                           href="{% url 'company-leave-delete' company_leave.id %}"
+                          onclick="return confirm('{% trans "Are you sure you want to delete ?" %}');" 
                           title="Delete"><ion-icon name="trash-outline"></ion-icon></a>
                   </div>
               </div>
