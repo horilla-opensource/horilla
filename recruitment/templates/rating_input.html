@@ -1,4 +1,4 @@
-<style>
+{% comment %} <style>
   .rating {
     display: inline-block;
     position: relative;
@@ -100,4 +100,19 @@
     <span class="icon">★</span>
     <span class="icon">★</span>
   </label>
+</div> {% endcomment %}
+
+{% load i18n %}
+
+<div class="oh-rate mb-5" style="padding-right: 82%;">
+  <input type="radio" id="star5" name="rating_{{q.id}}" value="5"  {% if answer_list.0 == '5' %} checked {% endif %} />
+  <label for="star5" title="5 Stars">5 {% trans "Stars" %}</label>
+  <input type="radio" id="star4" name="rating_{{q.id}}" value="4"   {% if answer_list.0 == '4' %} checked {% endif %} />
+  <label for="star4" title="4 Stars">4 {% trans "Stars" %}</label>
+  <input type="radio" id="star3" name="rating_{{q.id}}" value="3"   {% if answer_list.0 == '3' %} checked {% endif %} />
+  <label for="star3" title="3 Stars">3 {% trans "Stars" %}</label>
+  <input type="radio" id="star2" name="rating_{{q.id}}" value="2"   {% if answer_list.0 == '2' %} checked {% endif %}  />
+  <label for="star2" title="2 Stars">2 {% trans "Stars" %}</label>
+  <input type="radio" id="star1" name="rating_{{q.id}}" value="1"   {% if answer_list.0 == '1' %} checked {% endif %} />
+  <label for="star1" title="1 Star">1 {% trans "Star" %}</label>
 </div>
