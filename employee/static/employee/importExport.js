@@ -1,3 +1,10 @@
+var downloadMessages = {
+  ar: "هل ترغب في تنزيل القالب؟",
+  de: "Möchten Sie die Vorlage herunterladen?",
+  es: "¿Quieres descargar la plantilla?",
+  en: "Do you want to download the template?",
+  fr: "Voulez-vous télécharger le modèle ?",
+};
 
 function getCookie(name) {
   let cookieValue = null;
@@ -13,6 +20,17 @@ function getCookie(name) {
       }
   }
   return cookieValue;
+}
+
+function getCurrentLanguageCode(callback) {
+  $.ajax({
+    type: "GET",
+    url: "/employee/get-language-code/",
+    success: function (response) {
+      var languageCode = response.language_code;
+      callback(languageCode); // Pass the language code to the callback
+    },
+  });
 }
 
 
@@ -61,29 +79,44 @@ form.addEventListener("submit", function (event) {
 });
 
 $("#work-info-import").click(function (e) {
-  choice = originalConfirm("Do you want to download template?");
-  if (choice) {
-    $.ajax({
-      type: "GET",
-      url: "/employee/work-info-import",
-      dataType: "binary",
-      xhrFields: {
-        responseType: "blob",
-      },
-      success: function (response) {
-        const file = new Blob([response], {
-          type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+  e.preventDefault();
+  var languageCode = null;
+  getCurrentLanguageCode(function (code) {
+    languageCode = code;
+    var confirmMessage = downloadMessages[languageCode];
+    // Use SweetAlert for the confirmation dialog
+    Swal.fire({
+      text: confirmMessage,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#008000',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Confirm'
+    }).then(function(result) {
+      if (result.isConfirmed) {
+        $.ajax({
+          type: "GET",
+          url: "/employee/work-info-import",
+          dataType: "binary",
+          xhrFields: {
+            responseType: "blob",
+          },
+          success: function (response) {
+            const file = new Blob([response], {
+              type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            });
+            const url = URL.createObjectURL(file);
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = "work_info_template.xlsx";
+            document.body.appendChild(link);
+            link.click();
+          },
+          error: function (xhr, textStatus, errorThrown) {
+            console.error("Error downloading file:", errorThrown);
+          },
         });
-        const url = URL.createObjectURL(file);
-        const link = document.createElement("a");
-        link.href = url;
-        link.download = "work_info_template.xlsx";
-        document.body.appendChild(link);
-        link.click();
-      },
-      error: function (xhr, textStatus, errorThrown) {
-        console.error("Error downloading file:", errorThrown);
-      },
+      }
     });
-  }
+  });
 });
