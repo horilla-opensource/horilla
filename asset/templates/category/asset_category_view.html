@@ -51,11 +51,11 @@
                 </a>
                 <!-- import asset start  -->
                 <div class="oh-dropdown" x-data="{open: false}" @click.outside="open = false">
-                    <a href="{% url 'asset-excel' %}" onclick="return originalConfirm('Do you want to download excel file')">
+                    
                         <button class="oh-btn ml-2" @click="open = !open">
-                            <ion-icon name="arrow-down-outline" class="me-1"></ion-icon> {% trans "Import" %}
+                            <ion-icon name="arrow-down-outline" class="me-1"></ion-icon>
+                            <a href="#" id="asset-info-import" onclick="return confirm('{% trans "Do you want to download template ?" %}')"> {% trans "Import" %}</a>
                         </button>
-                    </a>
                     <div class="oh-dropdown__import oh-dropdown__import--right" x-show="open"  style="display: none;">
                         <div id="AssetImportResponse"></div>
                         <form action="{%url 'asset-import' %}" enctype="multipart/form-data" method="post">

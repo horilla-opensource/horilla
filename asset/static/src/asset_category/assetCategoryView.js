@@ -43,3 +43,58 @@ $(document).ready(function () {
         });
     
 });
+
+
+// function getCurrentLanguageCode(callback) {
+//     $.ajax({
+//       type: "GET",
+//       url: "/get-language-code",
+//       success: function (response) {
+//         var languageCode = response.language_code;
+//         callback(languageCode); // Pass the language code to the callback
+//       },
+//     });
+//   }
+
+
+
+
+$("#asset-info-import").click(function (e) {
+    e.preventDefault();
+    // getCurrentLanguageCode(function (code) {
+        // Use SweetAlert for the confirmation dialog
+        Swal.fire({
+            text: "Do you want to download template ?",
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#008000',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Confirm'
+        }).then(function(result) {
+        if (result.isConfirmed) {
+          $.ajax({
+            type: "GET",
+            url: "/asset/asset-excel",
+            dataType: "binary",
+            xhrFields: {
+              responseType: "blob",
+            },
+            success: function (response) {
+              const file = new Blob([response], {
+                type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+              });
+              const url = URL.createObjectURL(file);
+              const link = document.createElement("a");
+              link.href = url;
+              link.download = "my_excel_file.xlsx";
+              document.body.appendChild(link);
+              link.click();
+            },
+            error: function (xhr, textStatus, errorThrown) {
+              console.error("Error downloading file:", errorThrown);
+            },
+          });
+        }
+      });
+    // });
+  });
