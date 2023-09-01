@@ -69,7 +69,7 @@ $(document).ready(function(){
                         var clickedLabel = employeeChartData.labels[clickedBarIndex];
     
                         $.ajax({
-                            url: '/payroll/filter-payslip?search=' + clickedLabel,
+                            url: '/payroll/filter-payslip?dashboard=true&search=' + clickedLabel,
                             type: "GET",
                             dataType: "html",
                             headers: {
@@ -188,7 +188,7 @@ $(document).ready(function(){
                     var clickedLabel = departmentChartData.labels[clickedBarIndex];
                     
                     $.ajax({
-                        url: '/payroll/filter-payslip?department='+clickedLabel,
+                        url: '/payroll/filter-payslip?dashboard=true&department='+clickedLabel,
                         type: "GET",
                         dataType: "html",
                         headers: {

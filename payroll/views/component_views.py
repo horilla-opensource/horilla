@@ -567,12 +567,13 @@ def filter_payslip(request):
         )
     template = "payroll/payslip/list_payslips.html"
     payslips = paginator_qry(payslips, request.GET.get("page"))
+    data_dict = []
+    if not request.GET.get("dashboard"):
+        data_dict = parse_qs(query_string)
 
-    data_dict = parse_qs(query_string)
-
-    keys_to_remove = [key for key, value in data_dict.items() if value == ['unknown']]
-    for key in keys_to_remove:
-        data_dict.pop(key)
+        keys_to_remove = [key for key, value in data_dict.items() if value == ['unknown']]
+        for key in keys_to_remove:
+            data_dict.pop(key)
     return render(request, template, {"payslips": payslips, "pd": query_string,"filter_dict":data_dict,})
 
 
