@@ -64,6 +64,24 @@
             </div>
             <div class="oh-sticky-table__td">{{rshift.rotating_shift_id}}</div>
             <div class="oh-sticky-table__td">{{rshift.get_based_on_display }}</div>
+            <div class="oh-sticky-table__td">
+              {% if rshift.based_on == 'after' %}
+          Rotate after {{rshift.rotate_after_day}} days
+          {% elif rshift.based_on == "weekly" %}
+          {% elif rshift.based_on == "monthly" %}
+          {% if rshift.rotate_every == "1" %}
+          Rotate every {{rshift.rotate_every}}st day of month 
+          {% elif rshift.rotate_every == "2" %}
+          Rotate every {{rshift.rotate_every}}nd day of month 
+          {% elif rshift.rotate_every == "3" %}
+          Rotate every {{rshift.rotate_every}}rd day of month 
+          {% elif rshift.rotate_every == "last" %}
+          Rotate every last day of month 
+          {% else %}
+          Rotate every {{rshift.rotate_every}}th day of month 
+          {% endif %}
+          {% endif %}
+            </div>
             <div class="oh-sticky-table__td">{{rshift.start_date}}</div>
             <div class="oh-sticky-table__td">{{rshift.current_shift}}</div>
             <div class="oh-sticky-table__td">{{rshift.next_change_date}}</div>
