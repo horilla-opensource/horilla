@@ -751,11 +751,13 @@ def employee_creation(request, token):
             employee_personal_info.email = candidate.email
             employee_personal_info.employee_profile = candidate.profile
             employee_personal_info.save()
-            EmployeeWorkInformation.objects.get_or_create(
+            work_info = EmployeeWorkInformation.objects.get_or_create(
                 employee_id=employee_personal_info,
-                date_joining=candidate.joining_date,
-                job_position_id=onboarding_portal.candidate_id.job_position_id,
             )
+            job_position_id =onboarding_portal.candidate_id.job_position_id
+            work_info[0].job_position_id = job_position_id
+            work_info[0].date_joining = candidate.joining_date
+            work_info[0].save()
             onboarding_portal.count = 3 
             onboarding_portal.save()
             messages.success(
@@ -993,9 +995,7 @@ def onboard_candidate_chart(_):
         blue = random.randint(0, 255)
         background_color.append(f"rgba({red}, {green}, {blue}, 0.2")
         border_color.append(f"rgb({red}, {green}, {blue})")
-        labels.append(
-            f"{recruitment.job_position_id.job_position} | {recruitment.start_date}"
-        )
+        labels.append(recruitment.title)
         data.append(
             recruitment.candidate.filter(hired=True, start_onboard=True).count()
         )
