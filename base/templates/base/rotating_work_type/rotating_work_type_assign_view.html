@@ -64,7 +64,24 @@
           {{rwork_type.rotating_work_type_id}}
         </div>
         <div class="oh-sticky-table__td">{{rwork_type.get_based_on_display}}</div>
-        <div class="oh-sticky-table__td">{{rwork_type.start_date}}</div>
+        <div class="oh-sticky-table__td">
+          {% if rwork_type.based_on == 'after' %}
+          Rotate after {{rwork_type.rotate_after_day}} days
+          {% elif rwork_type.based_on == "weekly" %}
+          {% elif rwork_type.based_on == "monthly" %}
+          {% if rwork_type.rotate_every == "1" %}
+          Rotate every {{rwork_type.rotate_every}}st day of month 
+          {% elif rwork_type.rotate_every == "2" %}
+          Rotate every {{rwork_type.rotate_every}}nd day of month 
+          {% elif rwork_type.rotate_every == "3" %}
+          Rotate every {{rwork_type.rotate_every}}rd day of month 
+          {% elif rwork_type.rotate_every == "last" %}
+          Rotate every last day of month 
+          {% else %}
+          Rotate every {{rwork_type.rotate_every}}th day of month 
+          {% endif %}
+          {% endif %}
+        </div>
         <div class="oh-sticky-table__td">{{rwork_type.start_date}}</div>
         <div class="oh-sticky-table__td">{{rwork_type.current_work_type}}</div>
         <div class="oh-sticky-table__td">{{rwork_type.next_change_date}}</div>
