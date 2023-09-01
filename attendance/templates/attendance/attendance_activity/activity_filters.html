@@ -126,7 +126,7 @@
         </div>
         <div class="col-sm-12 col-md-12 col-lg-6">
           <div class="oh-input-group">
-              <select class="oh-select mt-1 " id="field" name="field" class="select2-selection select2-selection--single" id="gp">
+              <select class="oh-select mt-1 " id="id_field" name="field" class="select2-selection select2-selection--single" id="gp">
               {% for field in gp_fields %}
                   <option value="{{ field.0 }}">{% trans field.1 %}</option>
               {% endfor %}
@@ -138,7 +138,7 @@
   </div>
 </div>
 <div class="oh-dropdown__filter-footer">
-  <button class="oh-btn oh-btn--secondary oh-btn--small w-100" id="filterSubmit">{% trans "Filter" %}</button>
+  <button class="oh-btn oh-btn--secondary oh-btn--small w-100 filterButton" id="filterSubmit">{% trans "Filter" %}</button>
 </div>
 
 </form>

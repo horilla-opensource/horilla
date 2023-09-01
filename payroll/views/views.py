@@ -4,6 +4,7 @@ views.py
 This module is used to define the method for the path in the urls
 """
 from collections import defaultdict
+from urllib.parse import parse_qs
 import pandas as pd
 import json
 from datetime import datetime, timedelta
@@ -165,7 +166,12 @@ def contract_filter(request):
     template = "payroll/contract/contract_list.html"
     contracts = contracts_filter.qs
     contracts = paginator_qry(contracts, request.GET.get("page"))
-    return render(request, template, {"contracts": contracts, "pd": query_string})
+    data_dict = parse_qs(query_string)
+
+    keys_to_remove = [key for key, value in data_dict.items() if value == ['unknown']]
+    for key in keys_to_remove:
+        data_dict.pop(key)
+    return render(request, template, {"contracts": contracts, "pd": query_string,"filter_dict":data_dict,})
 
 
 @login_required

@@ -6,6 +6,7 @@ This module is used to write methods to the component_urls patterns respectively
 import json
 import operator
 from datetime import datetime
+from urllib.parse import parse_qs
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
@@ -237,7 +238,12 @@ def filter_allowance(request):
     allowances = AllowanceFilter(request.GET).qs
     template = "payroll/allowance/list_allowance.html"
     allowances = paginator_qry(allowances, request.GET.get("page"))
-    return render(request, template, {"allowances": allowances, "pd": query_string})
+    data_dict = parse_qs(query_string)
+
+    keys_to_remove = [key for key, value in data_dict.items() if value == ['unknown']]
+    for key in keys_to_remove:
+        data_dict.pop(key)
+    return render(request, template, {"allowances": allowances, "pd": query_string,"filter_dict":data_dict,})
 
 
 @login_required
@@ -339,7 +345,13 @@ def filter_deduction(request):
     deductions = DeductionFilter(request.GET).qs
     template = "payroll/deduction/list_deduction.html"
     deductions = paginator_qry(deductions, request.GET.get("page"))
-    return render(request, template, {"deductions": deductions, "pd": query_string})
+
+    data_dict = parse_qs(query_string)
+
+    keys_to_remove = [key for key, value in data_dict.items() if value == ['unknown']]
+    for key in keys_to_remove:
+        data_dict.pop(key)
+    return render(request, template, {"deductions": deductions, "pd": query_string,"filter_dict":data_dict,})
 
 
 @login_required
@@ -555,7 +567,13 @@ def filter_payslip(request):
         )
     template = "payroll/payslip/list_payslips.html"
     payslips = paginator_qry(payslips, request.GET.get("page"))
-    return render(request, template, {"payslips": payslips, "pd": query_string})
+
+    data_dict = parse_qs(query_string)
+
+    keys_to_remove = [key for key, value in data_dict.items() if value == ['unknown']]
+    for key in keys_to_remove:
+        data_dict.pop(key)
+    return render(request, template, {"payslips": payslips, "pd": query_string,"filter_dict":data_dict,})
 
 
 @login_required

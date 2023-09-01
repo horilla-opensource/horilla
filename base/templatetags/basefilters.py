@@ -41,7 +41,8 @@ def update_request(user,request):
 
 @register.filter(name='is_reportingmanager')
 def is_reportingmanager(user):
-    """
+    """{% load basefilters %}
+
     This method will return true if the user employee profile is reporting manager to any employee
     """
     employee = Employee.objects.filter(employee_user_id=user).first()
@@ -61,9 +62,10 @@ def filtersubordinates(user):
     return employee_manages.exists()
 
 
-@register.filter(name='clean_field')
-def remove_id_suffix(value):
-    if value.endswith("_id"):
-        return value[:-3]
-    
-    return value.replace('_', ' ')
+@register.filter(name='filter_field')
+def filter_field(value):  
+    if value.endswith("_id"):    
+        value = value[:-3]    
+    splitted = value.split("__")
+
+    return splitted[-1].replace('_', ' ').capitalize()

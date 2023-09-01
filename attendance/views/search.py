@@ -3,6 +3,7 @@ search.py
 
 This is moduel is used to register end point related to the search filter functionalities
 """
+from urllib.parse import parse_qs
 from django.shortcuts import render
 from base.methods import filtersubordinates, sortby
 from horilla.decorators import (
@@ -66,6 +67,11 @@ def attendance_search(request):
     attendances = sortby(request, attendances, "sortby")
     validate_attendances = sortby(request, validate_attendances, "sortby")
     ot_attendances = sortby(request, ot_attendances, "sortby")
+    data_dict = parse_qs(previous_data)
+
+    keys_to_remove = [key for key, value in data_dict.items() if value == ['unknown']]
+    for key in keys_to_remove:
+        data_dict.pop(key)
 
     return render(
         request,
@@ -80,6 +86,7 @@ def attendance_search(request):
             ),
             "pd": previous_data,
             "field": field,
+            "filter_dict":data_dict,
         },
     )
 
@@ -104,6 +111,11 @@ def attendance_overtime_search(request):
     accounts = filtersubordinates(
         request, accounts, "attendance.view_attendanceovertime"
     )
+    data_dict = parse_qs(previous_data)
+
+    keys_to_remove = [key for key, value in data_dict.items() if value == ['unknown']]
+    for key in keys_to_remove:
+        data_dict.pop(key)
     return render(
         request,
         template,
@@ -112,6 +124,7 @@ def attendance_overtime_search(request):
             "form": form,
             "pd": previous_data,
             "field": field,
+            "filter_dict":data_dict,
         },
     )
 
@@ -137,6 +150,11 @@ def attendance_activity_search(request):
     )
 
     attendance_activities = sortby(request, attendance_activities, "orderby")
+    data_dict = parse_qs(previous_data)
+
+    keys_to_remove = [key for key, value in data_dict.items() if value == ['unknown']]
+    for key in keys_to_remove:
+        data_dict.pop(key)
     return render(
         request,
         template,
@@ -144,6 +162,7 @@ def attendance_activity_search(request):
             "data": paginator_qry(attendance_activities, request.GET.get("page")),
             "pd": previous_data,
             "field": field,
+            "filter_dict":data_dict,
         },
     )
 
@@ -170,6 +189,11 @@ def late_come_early_out_search(request):
         request, reports, "attendance.view_attendancelatecomeearlyout"
     )
     reports = sortby(request, reports, "sortby")
+    data_dict = parse_qs(previous_data)
+
+    keys_to_remove = [key for key, value in data_dict.items() if value == ['unknown']]
+    for key in keys_to_remove:
+        data_dict.pop(key)
 
     return render(
         request,
@@ -178,6 +202,7 @@ def late_come_early_out_search(request):
             "data": paginator_qry(reports, request.GET.get("page")),
             "pd": previous_data,
             "field": field,
+            "filter_dict":data_dict,
         },
     )
 
@@ -190,10 +215,16 @@ def filter_own_attendance(request):
     """
     attendances = Attendance.objects.filter(employee_id=request.user.employee_get)
     attendances = AttendanceFilters(request.GET, queryset=attendances).qs
+    previous_data = request.environ["QUERY_STRING"]
+    data_dict = parse_qs(previous_data)
+
+    keys_to_remove = [key for key, value in data_dict.items() if value == ['unknown']]
+    for key in keys_to_remove:
+        data_dict.pop(key)
     return render(
         request,
         "attendance/own_attendance/attendances.html",
-        {"attendances": paginator_qry(attendances, request.GET.get("page"))},
+        {"attendances": paginator_qry(attendances, request.GET.get("page")),"filter_dict":data_dict,},
     )
 
 
@@ -239,8 +270,15 @@ def search_attendance_requests(request):
         employee_id__employee_user_id=request.user
     )
     attendances = AttendanceFilters(request.GET,attendances).qs
+    previous_data = request.environ["QUERY_STRING"]
+    data_dict = parse_qs(previous_data)
+
+    keys_to_remove = [key for key, value in data_dict.items() if value == ['unknown']]
+    for key in keys_to_remove:
+        data_dict.pop(key)
+
     return render(
         request,
         "requests/attendance/request_lines.html",
-        {"requests": paginator_qry(requests,request.GET.get("rpage")), "attendances": paginator_qry(attendances,request.GET.get("page")),"pd":request.environ["QUERY_STRING"]},
+        {"requests": paginator_qry(requests,request.GET.get("rpage")), "attendances": paginator_qry(attendances,request.GET.get("page")),"pd":previous_data,"filter_dict":data_dict,},
     )
