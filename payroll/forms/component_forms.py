@@ -174,7 +174,7 @@ class GeneratePayslipForm(forms.Form):
         end_date = cleaned_data.get("end_date")
 
         today = datetime.date.today()
-        if end_date <= start_date:
+        if end_date < start_date:
             raise forms.ValidationError(
                 {
                     "end_date": "The end date must be greater than or equal to the start date."
