@@ -1,4 +1,5 @@
 {% load i18n %}
+{% get_current_language as LANGUAGE_CODE %}
 {% if messages %}
     <div class="oh-alert-container">
         {% for message in messages %}
@@ -18,7 +19,17 @@
                 {% if notification.unread %}
                 <span style="width: 10px;height: 10px;border-radius: 100%; background-color: hsl(8deg,77%,56%);display: inline-block;right: 5px;"></span>
                 {% endif %}
-                {% trans notification.verb %}
+                {% if LANGUAGE_CODE == 'ar' %}
+                    <p class="oh-navbar__notification-text" :class="markRead ? '' : 'oh-navbar__notification-text--unread' ">{{ notification.data.verb_ar }}</p>
+                {% elif LANGUAGE_CODE == 'de' %}
+                    <p class="oh-navbar__notification-text" :class="markRead ? '' : 'oh-navbar__notification-text--unread' ">{{ notification.data.verb_de }}</p>
+                {% elif LANGUAGE_CODE == 'fr' %}
+                    <p class="oh-navbar__notification-text" :class="markRead ? '' : 'oh-navbar__notification-text--unread' ">{{ notification.data.verb_fr }}</p>
+                {% elif LANGUAGE_CODE == 'es' %}
+                    <p class="oh-navbar__notification-text" :class="markRead ? '' : 'oh-navbar__notification-text--unread' ">{{ notification.data.verb_es }}</p>
+                {% else %}
+                    <p class="oh-navbar__notification-text" :class="markRead ? '' : 'oh-navbar__notification-text--unread' ">{{ notification.verb }}</p>
+                {% endif %}
             </span>
         <ion-icon name="close-outline" hx-target="#allNotificationBody" hx-post="{% url 'delete-notifications' notification.id %}" role="img" aria-label="close outline"></ion-icon>
     </div>

@@ -1,6 +1,17 @@
+import json
 import datetime
-from django.http import HttpResponse
+from urllib.parse import parse_qs
+from django.http import HttpResponse, JsonResponse
+from django.db.utils import IntegrityError
+from django.db.models import Q
+from django.forms import modelformset_factory
+from django.contrib import messages
+from django.core.paginator import Paginator
+from django.utils.translation import gettext_lazy as _
 from django.shortcuts import get_object_or_404, render, redirect
+from horilla.decorators import manager_can_enter
+from horilla.decorators import login_required, hx_request_required
+from pms.filters import ObjectiveFilter, FeedbackFilter
 from pms.models import (
     EmployeeKeyResult,
     EmployeeObjective,
@@ -14,13 +25,9 @@ from pms.models import (
     KeyresultFeedback,
 )
 from base.models import Department, JobPosition
+from base.methods import get_key_instances
 from employee.models import Employee, EmployeeWorkInformation
-from horilla.decorators import manager_can_enter
-from django.http import JsonResponse
-import json
 from itertools import tee
-from django.core.paginator import Paginator
-from pms.filters import ObjectiveFilter, FeedbackFilter
 from .forms import (
     QuestionForm,
     ObjectiveForm,
@@ -30,15 +37,7 @@ from .forms import (
     PeriodForm,
     QuestionTemplateForm,
 )
-from django.forms import modelformset_factory
-from django.contrib import messages
-from horilla.decorators import login_required, hx_request_required
-from django.urls import reverse
-from django.db.utils import IntegrityError
-from django.db.models import Q
-from django.utils.translation import gettext_lazy as _
 from notifications.signals import notify
-from urllib.parse import parse_qs
 
 
 @login_required
@@ -194,7 +193,7 @@ def objective_delete(request, id):
     return redirect(objective_list_view)
 
 
-def objecitve_filter_pagination(request, objective_own, objective_all):
+def objective_filter_pagination(request, objective_own, objective_all):
     """
     This view takes two arguments, all_objective,own_objecitve and returns some objects.
     Args:
@@ -205,7 +204,7 @@ def objecitve_filter_pagination(request, objective_own, objective_all):
     """
     previous_data = request.environ["QUERY_STRING"]
     initial_data = {"archive": False}  # set initial value of archive filter to False
-    if request.GET.get("status") !="Closed":
+    if request.GET.get("status") != "Closed":
         objective_own = objective_own.exclude(status="Closed")
         objective_all = objective_all.exclude(status="Closed")
     objective_filter_own = ObjectiveFilter(
@@ -221,8 +220,7 @@ def objecitve_filter_pagination(request, objective_own, objective_all):
     objectives_all = objective_paginator_all.get_page(page_number)
     now = datetime.datetime.now()
     data_dict = parse_qs(previous_data)
-
-    # Print the dictionary
+    get_key_instances(EmployeeObjective, data_dict)
     context = {
         "superuser": "true",
         "own_objectives": objectives_own,
@@ -256,7 +254,7 @@ def objective_list_view(request):
         )
         objective_own = objective_own.distinct()
         objective_all = EmployeeObjective.objects.all().exclude(status="Closed")
-        context = objecitve_filter_pagination(request, objective_own, objective_all)
+        context = objective_filter_pagination(request, objective_own, objective_all)
 
     elif is_manager:
         # if user is a manager
@@ -275,7 +273,7 @@ def objective_list_view(request):
             status="Closed"
         )
         objective_all = objective_all.distinct()
-        context = objecitve_filter_pagination(request, objective_own, objective_all)
+        context = objective_filter_pagination(request, objective_own, objective_all)
     else:
         # for normal user
         objective_own = EmployeeObjective.objects.filter(employee_id=employee).exclude(
@@ -285,7 +283,7 @@ def objective_list_view(request):
         )
         objective_own = objective_own.distinct()
         objective_all = EmployeeObjective.objects.none()
-        context = objecitve_filter_pagination(request, objective_own, objective_all)
+        context = objective_filter_pagination(request, objective_own, objective_all)
     return render(request, "okr/objective_list_view.html", context)
 
 
@@ -315,7 +313,7 @@ def objective_list_search(request):
         objective_all = EmployeeObjective.objects.filter(
             employee_id__employee_first_name__icontains=objective_owner
         )
-        context = objecitve_filter_pagination(request, objective_own, objective_all)
+        context = objective_filter_pagination(request, objective_own, objective_all)
 
     elif is_manager:
         # if user is a manager
@@ -326,7 +324,7 @@ def objective_list_search(request):
         objective_all = EmployeeObjective.objects.filter(
             employee_id__in=employees_ids
         ).filter(employee_id__employee_first_name__icontains=objective_owner)
-        context = objecitve_filter_pagination(request, objective_own, objective_all)
+        context = objective_filter_pagination(request, objective_own, objective_all)
 
     else:
         # for normal user
@@ -334,7 +332,7 @@ def objective_list_search(request):
             employee_id__employee_first_name__icontains=objective_owner
         )
         objective_all = EmployeeObjective.objects.none()
-        context = objecitve_filter_pagination(request, objective_own, objective_all)
+        context = objective_filter_pagination(request, objective_own, objective_all)
 
     return render(request, "okr/objective_list.html", context)
 
@@ -912,7 +910,7 @@ def filter_pagination_feedback(
     feedbacks_all = feedback_paginator_all.get_page(page_number)
     now = datetime.datetime.now()
     data_dict = parse_qs(previous_data)
-
+    get_key_instances(Feedback, data_dict)
     context = {
         "superuser": "true",
         "self_feedback": feedbacks_own,

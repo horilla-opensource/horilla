@@ -2,23 +2,25 @@
       
 <!-- filter items showing here -->
 <div class="oh-filter-tag-container "  
-	style="position: fixed;top: 150px;z-index: 9999;">
-	{%for field,value in filter_dict.items %}
-		{%if value %}
-
-			<span class="oh-filter-tag filter-field" data-x-field="{{field}}" >{{field|filter_field}}<button class="oh-filter-tag__close">
-				<ion-icon name="close-outline" role="img" class="md hydrated" aria-label="close outline"></ion-icon></button>
-			</span>
-
-		{%endif%}
-	{% endfor %}
+      style="position: fixed;top: 150;z-index: 9999;">
+    {%for field,values in filter_dict.items %}
+      {%if values %}
+        <span class="oh-filter-tag filter-field" data-x-field="{{field}}" >
+          {{field|filter_field}} : {% for value in values%} {{ value|capfirst  }}{% endfor %}
+          <button class="oh-filter-tag__close"> 
+            <ion-icon name="close-outline" role="img" class="md hydrated" aria-label="close outline"> </ion-icon>
+          </button>
+        </span>
+      {%endif%}
+    {% endfor %}
 </div>
 <script>
     var form_submit_id = '.filterButton'
     $(document).ready(function () {
         $('.filter-field').on('click',function(){
             const field_id = $(this).attr("data-x-field")
-            $('#id_'+field_id).val('')
+            // Update all elements with the same ID to have null values
+            $('[id="id_' + field_id + '"]').val('');
             $(form_submit_id).click()
         })
     });

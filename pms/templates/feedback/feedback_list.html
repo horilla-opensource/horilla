@@ -1,4 +1,5 @@
 {% load i18n %}
+{% load basefilters %}
 {% if messages %}
     <ul class="messages">
         {% for message in messages %}
@@ -15,18 +16,20 @@
 {% endif %}
 
  <!-- filter items showing here -->
- <div class="oh-filter-tag-container "  
+  <div class="oh-filter-tag-container "  
       style="position: fixed;top: 150;z-index: 9999;">
-  {%for field,value in filter_dict.items %}
-    {%if value %}
-      <span class="oh-filter-tag filter-field" data-x-field="{{field}}" >{{field}}<button class="oh-filter-tag__close">
-        <ion-icon name="close-outline" role="img" class="md hydrated" aria-label="close outline"></ion-icon></button>
-      </span>
-  
-    {%endif%}
-  {% endfor %}
-</div>
- <script>
+    {%for field,values in filter_dict.items %}
+      {%if values %}
+        <span class="oh-filter-tag filter-field" data-x-field="{{field}}" >
+          {{field|filter_field}} : {% for value in values%} {{ value|capfirst  }}{% endfor %}
+          <button class="oh-filter-tag__close"> 
+            <ion-icon name="close-outline" role="img" class="md hydrated" aria-label="close outline"> </ion-icon>
+          </button>
+        </span>
+      {%endif%}
+    {% endfor %}
+  </div>
+  <script>
    var form_submit_id = 'feedback-filter-form-submit'
    $(document).ready(function () {
      $('.filter-field').on('click',function(){
@@ -35,7 +38,7 @@
        $('#'+form_submit_id).click()
      })
    });
- </script>
+  </script>
 <div class="oh-tabs__contents">
   <div class="oh-tabs__content oh-tabs__content" id="tab_1">
     <!-- Sticky Table for self feedback -->
