@@ -226,7 +226,7 @@
 </div>
 <script>
   $(document).ready(function () {
-    $("form").submit(function (e) {
+    $("form").not('.filter-form').submit(function (e) {
       e.preventDefault()
       
       var form = $(this); // Get the form element

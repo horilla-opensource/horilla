@@ -12,7 +12,9 @@ from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from horilla.decorators import login_required, permission_required
+from base.methods import get_key_instances
 import payroll.models.models
+from payroll.models.models import Allowance, Deduction, Payslip
 from payroll.methods.payslip_calc import (
     calculate_allowance,
     calculate_gross_pay,
@@ -72,7 +74,9 @@ def payroll_calculation(employee, start_date, end_date):
     basic_pay = updated_basic_pay_data["compensation_amount"]
     basic_pay_deductions = updated_basic_pay_data["deductions"]
 
-    loss_of_pay_amount = float(loss_of_pay) if not contract.deduct_leave_from_basic_pay else 0
+    loss_of_pay_amount = (
+        float(loss_of_pay) if not contract.deduct_leave_from_basic_pay else 0
+    )
 
     basic_pay = basic_pay - loss_of_pay_amount
 
@@ -239,11 +243,19 @@ def filter_allowance(request):
     template = "payroll/allowance/list_allowance.html"
     allowances = paginator_qry(allowances, request.GET.get("page"))
     data_dict = parse_qs(query_string)
-
-    keys_to_remove = [key for key, value in data_dict.items() if value == ['unknown']]
+    get_key_instances(Allowance, data_dict)
+    keys_to_remove = [key for key, value in data_dict.items() if value == ["unknown"]]
     for key in keys_to_remove:
         data_dict.pop(key)
-    return render(request, template, {"allowances": allowances, "pd": query_string,"filter_dict":data_dict,})
+    return render(
+        request,
+        template,
+        {
+            "allowances": allowances,
+            "pd": query_string,
+            "filter_dict": data_dict,
+        },
+    )
 
 
 @login_required
@@ -347,11 +359,19 @@ def filter_deduction(request):
     deductions = paginator_qry(deductions, request.GET.get("page"))
 
     data_dict = parse_qs(query_string)
-
-    keys_to_remove = [key for key, value in data_dict.items() if value == ['unknown']]
+    get_key_instances(Deduction, data_dict)
+    keys_to_remove = [key for key, value in data_dict.items() if value == ["unknown"]]
     for key in keys_to_remove:
         data_dict.pop(key)
-    return render(request, template, {"deductions": deductions, "pd": query_string,"filter_dict":data_dict,})
+    return render(
+        request,
+        template,
+        {
+            "deductions": deductions,
+            "pd": query_string,
+            "filter_dict": data_dict,
+        },
+    )
 
 
 @login_required
@@ -476,7 +496,6 @@ def validate_start_date(request):
     """
     This method to validate the contract start date and the pay period start date
     """
-    print("hitting.....")
     start_date = request.GET.get("start_date")
     end_date = request.GET.get("end_date")
     employee_id = request.GET.getlist("employee_id")
@@ -499,8 +518,7 @@ def validate_start_date(request):
                 or equal to the start date.</li></ul>"
         response["message"] = error_message
         response["valid"] = False
-    print(end_datetime)
-    print(datetime.today())
+
     if end_datetime > datetime.today().date():
         error_message = (
             '<ul class="errorlist"><li>The end date cannot be in the future.</li></ul>'
@@ -570,11 +588,20 @@ def filter_payslip(request):
     data_dict = []
     if not request.GET.get("dashboard"):
         data_dict = parse_qs(query_string)
-
-        keys_to_remove = [key for key, value in data_dict.items() if value == ['unknown']]
+        keys_to_remove = [
+            key for key, value in data_dict.items() if value == ["unknown"]
+        ]
         for key in keys_to_remove:
             data_dict.pop(key)
-    return render(request, template, {"payslips": payslips, "pd": query_string,"filter_dict":data_dict,})
+    return render(
+        request,
+        template,
+        {
+            "payslips": payslips,
+            "pd": query_string,
+            "filter_dict": data_dict,
+        },
+    )
 
 
 @login_required
