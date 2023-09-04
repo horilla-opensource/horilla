@@ -1029,7 +1029,7 @@ def update_joining(request):
 def view_dashboard(request):
     recruitment = Recruitment.objects.all().values_list("title",flat=True)
     candidates = Candidate.objects.all()
-    hired = candidates.filter(hired=True)
+    hired = candidates.filter(start_onboard=True)
     onboard_candidates = Candidate.objects.filter(start_onboard = True)
     job_positions =onboard_candidates.values_list("job_position_id__job_position",flat=True)
 

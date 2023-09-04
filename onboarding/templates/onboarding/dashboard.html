@@ -23,9 +23,9 @@
                 <div class="oh-dashboard__cards row">
                     <div class="col-12 col-sm-12 col-md-6 col-lg-4 filter">
                         <div class="oh-card-dashboard oh-card-dashboard oh-card-dashboard--success" >
-                            <a href={% url "pipeline" %} class="text-decoration-none recruitment">
+                            <a href={% url "onboarding-view" %} class="text-decoration-none recruitment">
                                 <div class="oh-card-dashboard__header">
-                                    <span class="oh-card-dashboard__title">{% trans "Recruitment" %}</span>
+                                    <span class="oh-card-dashboard__title">{% trans "Onboarding" %}</span>
                                 </div>
                                 <div class="oh-card-dashboard__body">
                                     <span class="oh-card-dashboard__count">{{recruitment|length}}</span>
@@ -40,7 +40,7 @@
                             id="candidate_view"
                             >
                             <div class="oh-card-dashboard__header">
-                                <span class="oh-card-dashboard__title">{% trans "Candidates" %}</span>
+                                <span class="oh-card-dashboard__title">{% trans "Total Candidates" %}</span>
                             </div>
                             <div class="oh-card-dashboard__body">
                                 <span class="oh-card-dashboard__count">{{candidates|length}}</span>
@@ -49,12 +49,12 @@
                     </div>
                     <div class="col-12 col-sm-12 col-md-6 col-lg-4 filter">
                         <div class="oh-card-dashboard oh-card-dashboard--success"
-                            hx-get={% url "hired-candidates-view" %}
+                            hx-get={% url "search-candidate" %}?dashboard=true&start_onboard=true
                             hx-target="#dashboard"
                             id="hired_candidate"
                             >
                             <div style="text-decoration: none;" class="oh-card-dashboard__header">
-                                <span class="oh-card-dashboard__title">{% trans "Hired" %}</span>
+                                <span class="oh-card-dashboard__title">{% trans "Candidates Start Onboarding" %}</span>
                             </div>
                             <div class="oh-card-dashboard__body">
                                 <a style="text-decoration: none;" class="oh-card-dashboard__counts">
