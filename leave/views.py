@@ -1,4 +1,5 @@
 import contextlib
+from urllib.parse import parse_qs
 from django.shortcuts import render, redirect
 from horilla.decorators import login_required, hx_request_required
 from .forms import *
@@ -22,7 +23,7 @@ from django.core.paginator import Paginator
 from django.db.models.functions import TruncYear
 from horilla.decorators import permission_required
 from horilla.decorators import manager_can_enter
-from base.methods import filtersubordinates, choosesubordinates
+from base.methods import filtersubordinates, choosesubordinates, get_key_instances
 from django.utils.translation import gettext_lazy as _
 from notifications.signals import notify
 
@@ -101,10 +102,12 @@ def leave_type_filter(request):
     leave_type_filter = LeaveTypeFilter(request.GET, queryset).qs
     page_obj = paginator_qry(leave_type_filter, page_number)
     previous_data = request.environ["QUERY_STRING"]
+    data_dict = parse_qs(previous_data)
+    get_key_instances(LeaveType, data_dict)
     return render(
         request,
         "leave/leave_type/leave_types.html",
-        {"leave_types": page_obj, "pd": previous_data},
+        {"leave_types": page_obj, "pd": previous_data, "filter_dict": data_dict},
     )
 
 
@@ -275,10 +278,12 @@ def leave_request_filter(request):
     leave_request_filter = LeaveRequestFilter(request.GET, queryset).qs
     page_number = request.GET.get("page")
     page_obj = paginator_qry(leave_request_filter, page_number)
+    data_dict = parse_qs(previous_data)
+    get_key_instances(LeaveRequest, data_dict)
     return render(
         request,
         "leave/leave_request/leave-requests.html",
-        {"leave_requests": page_obj, "pd": previous_data},
+        {"leave_requests": page_obj, "pd": previous_data, "filter_dict": data_dict},
     )
 
 
@@ -571,10 +576,12 @@ def leave_assign_filter(request):
     previous_data = request.environ["QUERY_STRING"]
     page_number = request.GET.get("page")
     page_obj = paginator_qry(assigned_leave_filter, page_number)
+    data_dict = parse_qs(previous_data)
+    get_key_instances(AvailableLeave, data_dict)
     return render(
         request,
         "leave/leave_assign/assigned-leave.html",
-        {"available_leaves": page_obj, "pd": previous_data},
+        {"available_leaves": page_obj, "pd": previous_data, "filter_dict": data_dict},
     )
 
 
@@ -772,10 +779,12 @@ def holiday_filter(request):
     holiday_filter = HolidayFilter(request.GET, queryset).qs
     page_number = request.GET.get("page")
     page_obj = paginator_qry(holiday_filter, page_number)
+    data_dict = parse_qs(previous_data)
+    get_key_instances(Holiday, data_dict)
     return render(
         request,
         "leave/holiday/holiday.html",
-        {"holidays": page_obj, "pd": previous_data},
+        {"holidays": page_obj, "pd": previous_data, "filter_dict": data_dict},
     )
 
 
@@ -907,6 +916,9 @@ def company_leave_filter(request):
     page_number = request.GET.get("page")
     company_leave_filter = CompanyLeaveFilter(request.GET, queryset).qs
     page_obj = paginator_qry(company_leave_filter, page_number)
+    data_dict = parse_qs(previous_data)
+    get_key_instances(CompanyLeave, data_dict)
+
     return render(
         request,
         "leave/company_leave/company-leave.html",
@@ -915,6 +927,7 @@ def company_leave_filter(request):
             "weeks": WEEKS,
             "week_days": WEEK_DAYS,
             "pd": previous_data,
+            "filter_dict": data_dict,
         },
     )
 
@@ -1278,11 +1291,13 @@ def user_leave_filter(request):
         previous_data = request.environ["QUERY_STRING"]
         page_number = request.GET.get("page")
         assigned_leave_filter = AssignedLeaveFilter(request.GET, queryset).qs
+        data_dict = parse_qs(previous_data)
+        get_key_instances(AvailableLeave, data_dict)
         page_obj = paginator_qry(assigned_leave_filter, page_number)
         return render(
             request,
             "leave/user_leave/user-leave.html",
-            {"user_leaves": page_obj, "pd": previous_data},
+            {"user_leaves": page_obj, "pd": previous_data, "filter_dict": data_dict},
         )
     except Exception as e:
         messages.error(request, _("User is not an employee.."))
@@ -1340,10 +1355,12 @@ def user_request_filter(request):
         page_number = request.GET.get("page")
         user_request_filter = UserLeaveRequestFilter(request.GET, queryset).qs
         page_obj = paginator_qry(user_request_filter, page_number)
+        data_dict = parse_qs(previous_data)
+        get_key_instances(LeaveRequest, data_dict)
         return render(
             request,
             "leave/user-requests.html",
-            {"leave_requests": page_obj, "pd": previous_data},
+            {"leave_requests": page_obj, "pd": previous_data, "filter_dict": data_dict},
         )
     except Exception as e:
         messages.error(request, _("User is not an employee.."))
