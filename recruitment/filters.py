@@ -65,12 +65,12 @@ class CandidateFilter(FilterSet):
         widget=forms.DateInput(attrs={"type": "date"}),
     )
     scheduled_from = django_filters.DateFilter(
-        field_name="schedule_date",
+        field_name="joining_date",
         lookup_expr="gte",
         widget=forms.DateInput(attrs={"type": "date"}),
     )
     scheduled_till = django_filters.DateFilter(
-        field_name="schedule_date",
+        field_name="joining_date",
         lookup_expr="lte",
         widget=forms.DateInput(attrs={"type": "date"}),
     )
