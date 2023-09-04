@@ -925,7 +925,6 @@ def candidate_stage_update(request, candidate_id, recruitment_id):
             icon="people-circle",
             redirect="/onboarding/onboarding-view",
         )
-        messages.success(request, _("Candidate stage updated successfully..."))
         return render(
             request,
             "onboarding/onboarding-table.html",
