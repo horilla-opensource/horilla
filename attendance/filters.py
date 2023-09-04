@@ -4,9 +4,9 @@ filters.py
 This page is used to register filter for attendance models
 
 """
+import django_filters
 from django.forms import DateTimeInput
 from django import forms
-import django_filters
 from horilla.filters import filter_by_name
 from attendance.models import (
     Attendance,
@@ -141,6 +141,9 @@ class AttendanceOverTimeFilter(FilterSet):
 
 
 class LateComeEarlyOutFilter(FilterSet):
+    """
+    LateComeEarlyOutFilter class
+    """
     search = django_filters.CharFilter(method=filter_by_name)
     attendance_date__gte = django_filters.DateFilter(
         field_name="attendance_id__attendance_date",
@@ -187,19 +190,21 @@ class LateComeEarlyOutFilter(FilterSet):
         widget=forms.DateInput(attrs={"type": "date"}),
     )
     overtime_second__lte = DurationInSecondsFilter(
-        field_name="overtime_second", lookup_expr="lte"
+        field_name="attendance_id__overtime_second", lookup_expr="lte"
     )
     overtime_second__gte = DurationInSecondsFilter(
-        field_name="overtime_second", lookup_expr="gte"
+        field_name="attendance_id__overtime_second", lookup_expr="gte"
     )
     at_work_second__lte = DurationInSecondsFilter(
-        field_name="at_work_second", lookup_expr="lte"
+        field_name="attendance_id__at_work_second", lookup_expr="lte"
     )
     at_work_second__gte = DurationInSecondsFilter(
-        field_name="at_work_second", lookup_expr="gte"
+        field_name="attendance_id__at_work_second", lookup_expr="gte"
     )
 
     class Meta:
+        """
+        Meta class for additional options"""
         model = AttendanceLateComeEarlyOut
         fields = [
             "employee_id",
