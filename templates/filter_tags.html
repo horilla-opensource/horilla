@@ -22,6 +22,7 @@
             // Update all elements with the same ID to have null values
             {% comment %} $('[id="id_' + field_id + '"]').val(''); {% endcomment %}
             $(`[name=${field_id}]`).val('');
+            console.log( $(`[name=${field_id}]`))
             $(form_submit_id).click()
         })
     });

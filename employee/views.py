@@ -16,6 +16,7 @@ import json
 import calendar
 from datetime import datetime, timedelta, date
 from collections import defaultdict
+from urllib.parse import parse_qs
 import pandas as pd
 from django.db.models import F
 from django.conf import settings
@@ -42,7 +43,12 @@ from base.models import (
     EmployeeType,
     Company,
 )
-from base.methods import filtersubordinates, filtersubordinatesemployeemodel, sortby
+from base.methods import (
+    filtersubordinates,
+    filtersubordinatesemployeemodel,
+    get_key_instances,
+    sortby,
+)
 from employee.filters import EmployeeFilter
 from employee.forms import (
     EmployeeForm,
@@ -59,6 +65,7 @@ from employee.models import Employee, EmployeeWorkInformation, EmployeeBankDetai
 def get_language_code(request):
     language_code = request.LANGUAGE_CODE
     return JsonResponse({"language_code": language_code})
+
 
 @login_required
 def employee_profile(request):
@@ -545,6 +552,8 @@ def employee_filter_view(request):
     page_number = request.GET.get("page")
     template = "employee_personal_info/employee_card.html"
     view = request.GET.get("view")
+    data_dict = parse_qs(previous_data)
+    get_key_instances(Employee, data_dict)
     if view == "list":
         template = "employee_personal_info/employee_list.html"
     return render(
@@ -554,6 +563,7 @@ def employee_filter_view(request):
             "data": paginator_qry(filter_obj.qs, page_number),
             "f": filter_obj,
             "pd": previous_data,
+            "filter_dict": data_dict,
         },
     )
 

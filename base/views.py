@@ -3,6 +3,7 @@ views.py
 
 This module is used to map url pattens with django views or methods
 """
+from urllib.parse import parse_qs
 import uuid
 import json
 from django.shortcuts import render, redirect
@@ -65,7 +66,12 @@ from base.filters import (
     RotatingShiftAssignFilters,
     RotatingWorkTypeAssignFilter,
 )
-from base.methods import choosesubordinates, filtersubordinates, sortby
+from base.methods import (
+    choosesubordinates,
+    filtersubordinates,
+    get_key_instances,
+    sortby,
+)
 
 
 def custom404(request, exception):
@@ -883,6 +889,8 @@ def rotating_work_type_assign_view(request):
         request, rwork_type_assign, "base.view_rotatingworktypeassign"
     )
     rwork_type_assign = sortby(request, rwork_type_assign, "orderby")
+    data_dict = parse_qs(previous_data)
+    get_key_instances(RotatingWorkTypeAssign, data_dict)
     return render(
         request,
         "base/rotating_work_type/rotating_work_type_assign_view.html",
@@ -891,6 +899,7 @@ def rotating_work_type_assign_view(request):
                 rwork_type_assign, request.GET.get("page")
             ),
             "pd": previous_data,
+            "filter_dict": data_dict,
         },
     )
 
@@ -1394,12 +1403,15 @@ def rotating_shift_assign_view(request):
         request, rshift_assign, "base.view_rotatingshiftassign"
     )
     rshift_assign = sortby(request, rshift_assign, "orderby")
+    data_dict = parse_qs(previous_data)
+    get_key_instances(RotatingShiftAssign, data_dict)
     return render(
         request,
         "base/rotating_shift/rotating_shift_assign_view.html",
         {
             "rshift_assign": paginator_qry(rshift_assign, request.GET.get("page")),
             "pd": previous_data,
+            "filter_dict": data_dict,
         },
     )
 
@@ -1676,12 +1688,15 @@ def work_type_request_search(request):
             employee_id=employee
         )
     work_typ_requests = sortby(request, work_typ_requests, "orderby")
+    data_dict = parse_qs(previous_data)
+    get_key_instances(WorkTypeRequest, data_dict)
     return render(
         request,
         "work_type_request/htmx/requests.html",
         {
             "data": paginator_qry(work_typ_requests, request.GET.get("page")),
             "pd": previous_data,
+            "filter_dict": data_dict,
         },
     )
 
@@ -2095,12 +2110,15 @@ def shift_request_search(request):
             employee_id=employee
         )
     shift_requests = sortby(request, shift_requests, "orderby")
+    data_dict = parse_qs(previous_data)
+    get_key_instances(ShiftRequest, data_dict)
     return render(
         request,
         "shift_request/htmx/requests.html",
         {
             "data": paginator_qry(shift_requests, request.GET.get("page")),
             "pd": previous_data,
+            "filter_dict": data_dict,
         },
     )
 

@@ -250,8 +250,14 @@ def get_key_instances(model, data_dict):
             nested_instance = get_nested_instances(model, field_names, field_values)
             if nested_instance is not None:
                 data_dict[key] = nested_instance
+                
     if 'csrfmiddlewaretoken' in data_dict:
         del data_dict['csrfmiddlewaretoken']
+        
+    keys_to_remove = [key for key, value in data_dict.items() if value == ['unknown']]
+    for key in keys_to_remove:
+        del data_dict[key]
+        
     return data_dict
 
 
