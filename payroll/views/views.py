@@ -14,7 +14,7 @@ from django.http import HttpResponse, JsonResponse, HttpResponseRedirect
 from django.contrib import messages
 from django.db.models import Q
 from horilla.decorators import login_required, permission_required
-from base.methods import generate_colors
+from base.methods import generate_colors, get_key_instances
 from employee.models import Employee, EmployeeWorkInformation
 from payroll.models.models import Payslip, WorkRecord
 from payroll.models.models import Contract
@@ -167,11 +167,19 @@ def contract_filter(request):
     contracts = contracts_filter.qs
     contracts = paginator_qry(contracts, request.GET.get("page"))
     data_dict = parse_qs(query_string)
-
-    keys_to_remove = [key for key, value in data_dict.items() if value == ['unknown']]
+    get_key_instances(Contract, data_dict)
+    keys_to_remove = [key for key, value in data_dict.items() if value == ["unknown"]]
     for key in keys_to_remove:
         data_dict.pop(key)
-    return render(request, template, {"contracts": contracts, "pd": query_string,"filter_dict":data_dict,})
+    return render(
+        request,
+        template,
+        {
+            "contracts": contracts,
+            "pd": query_string,
+            "filter_dict": data_dict,
+        },
+    )
 
 
 @login_required
