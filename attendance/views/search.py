@@ -5,7 +5,7 @@ This is moduel is used to register end point related to the search filter functi
 """
 from urllib.parse import parse_qs
 from django.shortcuts import render
-from base.methods import filtersubordinates, sortby
+from base.methods import filtersubordinates, sortby, get_key_instances
 from horilla.decorators import (
     hx_request_required,
     login_required,
@@ -19,7 +19,13 @@ from attendance.filters import (
 )
 from attendance.forms import AttendanceOverTimeForm
 from attendance.filters import AttendanceOverTimeFilter
-from attendance.models import Attendance, AttendanceValidationCondition
+from attendance.models import (
+    Attendance,
+    AttendanceValidationCondition,
+    AttendanceOverTime,
+    AttendanceActivity,
+    AttendanceLateComeEarlyOut,
+)
 from attendance.views.views import paginator_qry, strtime_seconds
 
 
@@ -68,8 +74,8 @@ def attendance_search(request):
     validate_attendances = sortby(request, validate_attendances, "sortby")
     ot_attendances = sortby(request, ot_attendances, "sortby")
     data_dict = parse_qs(previous_data)
-
-    keys_to_remove = [key for key, value in data_dict.items() if value == ['unknown']]
+    get_key_instances(Attendance, data_dict)
+    keys_to_remove = [key for key, value in data_dict.items() if value == ["unknown"]]
     for key in keys_to_remove:
         data_dict.pop(key)
 
@@ -86,7 +92,7 @@ def attendance_search(request):
             ),
             "pd": previous_data,
             "field": field,
-            "filter_dict":data_dict,
+            "filter_dict": data_dict,
         },
     )
 
@@ -112,8 +118,8 @@ def attendance_overtime_search(request):
         request, accounts, "attendance.view_attendanceovertime"
     )
     data_dict = parse_qs(previous_data)
-
-    keys_to_remove = [key for key, value in data_dict.items() if value == ['unknown']]
+    get_key_instances(AttendanceOverTime, data_dict)
+    keys_to_remove = [key for key, value in data_dict.items() if value == ["unknown"]]
     for key in keys_to_remove:
         data_dict.pop(key)
     return render(
@@ -124,7 +130,7 @@ def attendance_overtime_search(request):
             "form": form,
             "pd": previous_data,
             "field": field,
-            "filter_dict":data_dict,
+            "filter_dict": data_dict,
         },
     )
 
@@ -151,8 +157,8 @@ def attendance_activity_search(request):
 
     attendance_activities = sortby(request, attendance_activities, "orderby")
     data_dict = parse_qs(previous_data)
-
-    keys_to_remove = [key for key, value in data_dict.items() if value == ['unknown']]
+    get_key_instances(AttendanceActivity, data_dict)
+    keys_to_remove = [key for key, value in data_dict.items() if value == ["unknown"]]
     for key in keys_to_remove:
         data_dict.pop(key)
     return render(
@@ -162,7 +168,7 @@ def attendance_activity_search(request):
             "data": paginator_qry(attendance_activities, request.GET.get("page")),
             "pd": previous_data,
             "field": field,
-            "filter_dict":data_dict,
+            "filter_dict": data_dict,
         },
     )
 
@@ -190,8 +196,8 @@ def late_come_early_out_search(request):
     )
     reports = sortby(request, reports, "sortby")
     data_dict = parse_qs(previous_data)
-
-    keys_to_remove = [key for key, value in data_dict.items() if value == ['unknown']]
+    get_key_instances(AttendanceLateComeEarlyOut, data_dict)
+    keys_to_remove = [key for key, value in data_dict.items() if value == ["unknown"]]
     for key in keys_to_remove:
         data_dict.pop(key)
 
@@ -202,7 +208,7 @@ def late_come_early_out_search(request):
             "data": paginator_qry(reports, request.GET.get("page")),
             "pd": previous_data,
             "field": field,
-            "filter_dict":data_dict,
+            "filter_dict": data_dict,
         },
     )
 
@@ -218,13 +224,16 @@ def filter_own_attendance(request):
     previous_data = request.environ["QUERY_STRING"]
     data_dict = parse_qs(previous_data)
 
-    keys_to_remove = [key for key, value in data_dict.items() if value == ['unknown']]
+    keys_to_remove = [key for key, value in data_dict.items() if value == ["unknown"]]
     for key in keys_to_remove:
         data_dict.pop(key)
     return render(
         request,
         "attendance/own_attendance/attendances.html",
-        {"attendances": paginator_qry(attendances, request.GET.get("page")),"filter_dict":data_dict,},
+        {
+            "attendances": paginator_qry(attendances, request.GET.get("page")),
+            "filter_dict": data_dict,
+        },
     )
 
 
@@ -260,7 +269,7 @@ def search_attendance_requests(request):
         employee_id__employee_user_id=request.user,
         is_validate_request=True,
     )
-    requests = AttendanceFilters(request.GET,requests).qs
+    requests = AttendanceFilters(request.GET, requests).qs
     attendances = filtersubordinates(
         request=request,
         perm="attendance.view_attendance",
@@ -269,16 +278,22 @@ def search_attendance_requests(request):
     attendances = attendances | Attendance.objects.filter(
         employee_id__employee_user_id=request.user
     )
-    attendances = AttendanceFilters(request.GET,attendances).qs
+    attendances = AttendanceFilters(request.GET, attendances).qs
     previous_data = request.environ["QUERY_STRING"]
     data_dict = parse_qs(previous_data)
+    get_key_instances(Attendance, data_dict)
 
-    keys_to_remove = [key for key, value in data_dict.items() if value == ['unknown']]
+    keys_to_remove = [key for key, value in data_dict.items() if value == ["unknown"]]
     for key in keys_to_remove:
         data_dict.pop(key)
 
     return render(
         request,
         "requests/attendance/request_lines.html",
-        {"requests": paginator_qry(requests,request.GET.get("rpage")), "attendances": paginator_qry(attendances,request.GET.get("page")),"pd":previous_data,"filter_dict":data_dict,},
+        {
+            "requests": paginator_qry(requests, request.GET.get("rpage")),
+            "attendances": paginator_qry(attendances, request.GET.get("page")),
+            "pd": previous_data,
+            "filter_dict": data_dict,
+        },
     )
