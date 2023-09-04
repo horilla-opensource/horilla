@@ -20,7 +20,8 @@
         $('.filter-field').on('click',function(){
             const field_id = $(this).attr("data-x-field")
             // Update all elements with the same ID to have null values
-            $('[id="id_' + field_id + '"]').val('');
+            {% comment %} $('[id="id_' + field_id + '"]').val(''); {% endcomment %}
+            $(`[name=${field_id}]`).val('');
             $(form_submit_id).click()
         })
     });

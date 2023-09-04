@@ -3,7 +3,7 @@
 {% load i18n %}
 {% load mathfilters %}
 {% load widget_tweaks %}
-
+{% comment %} {% include 'filter_tags.html' %} {% endcomment %}
 <main :class="sidebarOpen ? 'oh-main__sidebar-visible' : ''">
     <section class="oh-wrapper oh-main__topbar" x-data="{searchShow: false}">
         <div class="oh-main__titlebar oh-main__titlebar--left">
@@ -135,7 +135,7 @@
                                 </div>
                             </div>
                             <div class="oh-dropdown__filter-footer">
-                                <button class="oh-btn oh-btn--secondary oh-btn--small w-100">{% trans "Filter" %}</button>
+                                <button class="oh-btn oh-btn--secondary oh-btn--small w-100 filterButton">{% trans "Filter" %}</button>
                             </div>
                         </form>
                     </div>

@@ -2,12 +2,14 @@
 asset.py
 
 This module is used to """
+from urllib.parse import parse_qs
 import pandas as pd
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib import messages
 from django.core.paginator import Paginator
 from django.utils.translation import gettext_lazy as _
+from base.methods import get_key_instances
 from notifications.signals import notify
 from horilla.decorators import login_required, hx_request_required
 from horilla.decorators import permission_required
@@ -239,13 +241,16 @@ def asset_list(request, id):
     paginator = Paginator(asset_list, 20)
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
-
+    data_dict = parse_qs(previous_data)
+    get_key_instances(Asset, data_dict)
     context = {
         "assets": page_obj,
         "pg": previous_data,
         "asset_category_id": id,
         "asset_under": asset_under,
         "asset_count": len(assets_in_category) or None,
+        "asset_count": len(assets_in_category) or None,
+        "filter_dict": data_dict,
     }
     return render(request, "asset/asset_list.html", context)
 
@@ -348,7 +353,8 @@ def filter_pagination_asset_category(request):
     asset_category_paginator = Paginator(asset_category_filtered.qs, 20)
     page_number = request.GET.get("page")
     asset_categorys = asset_category_paginator.get_page(page_number)
-
+    data_dict = parse_qs(previous_data)
+    get_key_instances(AssetCategory, data_dict)
     asset_creation_form = AssetForm()
     asset_category_form = AssetCategoryForm()
     asset_filter_form = AssetFilter()
@@ -360,6 +366,7 @@ def filter_pagination_asset_category(request):
         "asset_category_filter_form": asset_category_filtered.form,
         "asset_filter_form": asset_filter_form.form,
         "pg": previous_data,
+        "filter_dict": data_dict,
     }
 
 
@@ -377,6 +384,9 @@ def asset_category_view(request):
         None
     """
     context = filter_pagination_asset_category(request)
+    print(
+        "---------------------------------------------asset_category_view---------------------------------------------------------"
+    )
     return render(request, "category/asset_category_view.html", context)
 
 
@@ -401,6 +411,10 @@ def asset_category_view_search_filter(request):
         # searching asset will redirect to asset list and pass the query
         return redirect(f"/asset/asset-list/0?asset_list=asset&query={query}")
     context = filter_pagination_asset_category(request)
+    print(
+        "-------------------------------------------------asset_category_view_search_filter-----------------------------------------------------------------"
+    )
+    print(context)
     return render(request, "category/asset_category.html", context)
 
 
@@ -636,7 +650,10 @@ def filter_pagination_asset_request_allocation(request):
     assets = asset_paginator.get_page(page_number)
     asset_requests = asset_request_paginator.get_page(page_number)
     asset_allocations = asset_allocation_paginator.get_page(page_number)
-
+    data_dict = parse_qs(previous_data)
+    get_key_instances(AssetRequest, data_dict)
+    get_key_instances(AssetAssignment, data_dict)
+    get_key_instances(Asset, data_dict)
     return {
         "assets": assets,
         "asset_requests": asset_requests,
@@ -645,6 +662,7 @@ def filter_pagination_asset_request_allocation(request):
         "asset_request_filter_form": asset_request_filtered.form,
         "asset_allocation_filter_form": asset_allocation_filtered.form,
         "pg": previous_data,
+        "filter_dict":data_dict,
     }
 
 
