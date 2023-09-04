@@ -66,16 +66,20 @@ def get_diff_dict(first_dict, other_dict, model=None):
             value = first_dict[key]
             other_value = other_dict[key]
             if isinstance(field, models.DateField):
-                if value is not None:
+                if value is not None and value != "None":
                     value = datetime.strptime(value, "%Y-%m-%d").strftime("%d %b %Y")
-                if other_value is not None:
+                if other_value is not None and other_value != "None":
                     other_value = datetime.strptime(other_value, "%Y-%m-%d").strftime(
                         "%d %b %Y"
                     )
             elif isinstance(field, models.TimeField):
-                if value is not None:
+                if value is not None and value != 'None':
+                    if len(value.split(":")) == 2:
+                        value = value + ":00"
                     value = datetime.strptime(value, "%H:%M:%S").strftime("%I:%M %p")
-                if other_value is not None:
+                if other_value is not None and value != 'None':
+                    if len(other_value.split(":")) == 2:
+                        other_value = other_value + ":00"
                     other_value = datetime.strptime(other_value, "%H:%M:%S").strftime(
                         "%I:%M %p"
                     )
