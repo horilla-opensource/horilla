@@ -117,6 +117,8 @@ class AttendanceUpdateForm(ModelForm):
             "approved_overtime_second",
             "request_type",
             "requested_data",
+            "is_validate_request",
+            "is_validate_request_approved",
         ]
         model = Attendance
         widgets = {
@@ -198,6 +200,8 @@ class AttendanceForm(ModelForm):
             "approved_overtime_second",
             "request_type",
             "requested_data",
+            "is_validate_request",
+            "is_validate_request_approved",
         )
         widgets = {
             "attendance_clock_in": DateTimeInput(attrs={"type": "time"}),
