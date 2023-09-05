@@ -4,6 +4,7 @@ Asset Management Forms
 This module contains Django ModelForms for handling various aspects of asset management,
 including asset creation, allocation, return, category assignment, and batch handling.
 """
+from datetime import date
 import uuid
 from django import forms
 from django.forms import ModelForm
@@ -264,7 +265,7 @@ class AssetReturnForm(ModelForm):
                     "rows": 3,
                     "cols": 40,
                     "placeholder": _(
-                        "ohn returns the laptop. However, it has suffered minor damage."
+                        "on returns the laptop. However, it has suffered minor damage."
                     ),
                 }
             ),
@@ -272,6 +273,13 @@ class AssetReturnForm(ModelForm):
                 attrs={"class": "oh-select oh-select-2", "required": "true"},
             ),
         }
+    def clean_return_date(self):
+        return_date = self.cleaned_data.get("return_date")
+
+        if return_date and return_date > date.today():
+            raise forms.ValidationError(_("Return date cannot be in the future."))
+
+        return return_date
 
 
 class AssetBatchForm(ModelForm):

@@ -565,13 +565,35 @@ def asset_allocate_return(request, id):
     - message of the return
     """
 
-    context = {"asset_return_form": AssetReturnForm(), "asset_id": id}
+    asset_return_form = AssetReturnForm()
     if request.method == "POST":
-        asset = Asset.objects.filter(id=id).first()
-        asset_return_status = request.POST.get("return_status")
-        asset_return_date = request.POST.get("return_date")
-        asset_return_condition = request.POST.get("return_condition")
-        if asset_return_status == "Healthy":
+        asset_return_form = AssetReturnForm(request.POST)
+
+        if asset_return_form.is_valid():
+            asset = Asset.objects.filter(id=id).first()
+            asset_return_status = request.POST.get("return_status")
+            asset_return_date = request.POST.get("return_date")
+            asset_return_condition = request.POST.get("return_condition")
+            context = {"asset_return_form":asset_return_form,"asset_id":id}
+            response = render(
+                request, "asset/asset_return_form.html", context
+            )
+            if asset_return_status == "Healthy":
+                asset_allocation = AssetAssignment.objects.filter(
+                    asset_id=id, return_status__isnull=True
+                ).first()
+                asset_allocation.return_date = asset_return_date
+                asset_allocation.return_status = asset_return_status
+                asset_allocation.return_condition = asset_return_condition
+                asset_allocation.save()
+                asset.asset_status = "Available"
+                asset.save()
+                messages.info(request, _("Asset Return Successful !."))
+                return HttpResponse(
+                response.content.decode("utf-8") + "<script>location.reload();</script>"
+                )
+            asset.asset_status = "Not-Available"
+            asset.save()
             asset_allocation = AssetAssignment.objects.filter(
                 asset_id=id, return_status__isnull=True
             ).first()
@@ -579,22 +601,12 @@ def asset_allocate_return(request, id):
             asset_allocation.return_status = asset_return_status
             asset_allocation.return_condition = asset_return_condition
             asset_allocation.save()
-            asset.asset_status = "Available"
-            asset.save()
-            messages.info(request, _("Asset Return Successful !."))
-            return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
-        asset.asset_status = "Not-Available"
-        asset.save()
-        asset_allocation = AssetAssignment.objects.filter(
-            asset_id=id, return_status__isnull=True
-        ).first()
-        asset_allocation.return_date = asset_return_date
-        asset_allocation.return_status = asset_return_status
-        asset_allocation.return_condition = asset_return_condition
-        asset_allocation.save()
-        messages.info(request, _("Asset Return Successful!."))
-        return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
-    return render(request, "asset/asset_return_form.html", context)
+            messages.info(request, _("Asset Return Successful!."))
+            return HttpResponse(
+                response.content.decode("utf-8") + "<script>location.reload();</script>"
+            )
+    context = {"asset_return_form":asset_return_form,"asset_id":id}
+    return render(request, "asset/asset_return_form.html",context )
 
 
 def filter_pagination_asset_request_allocation(request):
