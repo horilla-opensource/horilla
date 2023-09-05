@@ -50,7 +50,7 @@
                 <div class="oh-sticky-table__td">{{leave_request.requested_days}}</div>
                 <div class="oh-sticky-table__td">{{leave_request.get_status_display}}</div>
                 <div class="oh-sticky-table__td">
-                    <div class="oh-btn-group">
+                    <div class="oh-btn-group" onclick="event.stopPropagation()">
                         {% if leave_request.status != 'approved' %}
                         <a type="submit" href="{% url 'request-approve' leave_request.id %}" title="{% trans 'Approve' %}"
                             class="oh-btn oh-btn--success w-100">
@@ -59,7 +59,7 @@
                         {% else %}
                         <a type="submit" href="{% url 'request-approve' leave_request.id %}" title="{% trans 'Approve' %}"
                             class="oh-btn oh-btn--success oh-btn--disabled
-                            w-100" onclick="event.preventDefault()">
+                            w-100">
                             <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
                         </a>
                         {% endif %}
@@ -72,7 +72,7 @@
                         {% else %}
                         <a type="submit" href="{% url 'request-cancel' leave_request.id %}" title="{% trans 'Cancel' %}"
                             class="oh-btn oh-btn--danger oh-btn--disabled
-                            w-100"  onclick="event.preventDefault()">
+                            w-100" >
                             <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
 
                         </a>

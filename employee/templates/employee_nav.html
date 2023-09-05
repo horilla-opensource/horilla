@@ -104,8 +104,9 @@
       <li class="oh-view-type employee-view-type" data-view="list">
         <a
           id='list'
-          hx-get="/employee/employee-view-list"
-          hx-target="#view-container"
+          {% comment %} href = "{% url 'employee-view-list' %}" {% endcomment %}
+          hx-get="{% url 'employee-filter-view' %}?view=list" 
+          hx-target="#view-container" 
           class="oh-btn oh-btn--view"
           ><ion-icon name="list-outline"></ion-icon
         ></a>
@@ -113,9 +114,10 @@
       <li class="oh-view-type employee-view-type" data-view="card">
         <a
           id='card'
-          hx-get="/employee/employee-view-card"
-          hx-target="#view-container"
-          class="oh-btn oh-btn--view"
+          {% comment %} href = "{% url 'employee-view-card' %}" {% endcomment %}
+          hx-get="{% url 'employee-filter-view' %}?view=card"
+          hx-target="#view-container"  
+          class="oh-btn oh-btn--view" 
           ><ion-icon name="grid-outline"></ion-icon
         ></a>
       </li>

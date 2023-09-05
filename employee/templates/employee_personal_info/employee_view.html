@@ -5,7 +5,11 @@
 {% include 'employee_nav.html' %}
 <div class="oh-wrapper">
   <div id="view-container">
-    {% include 'employee_personal_info/employee_card.html' %}
+    {% if view_type == 'list' %}
+      {% include 'employee_personal_info/employee_list.html' %}
+    {% else %}
+      {% include 'employee_personal_info/employee_card.html' %}
+    {% endif %}
   </div>
 </div>
 </div>

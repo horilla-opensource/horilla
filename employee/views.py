@@ -194,6 +194,7 @@ def employee_view(request):
     """
     This method is used to render template for view all employee
     """
+    view_type = (request.GET.get('view'))
     previous_data = request.environ["QUERY_STRING"]
     employees = Employee.objects.filter(is_active=True)
     page_number = request.GET.get("page")
@@ -208,6 +209,7 @@ def employee_view(request):
             "data": paginator_qry(employees, page_number),
             "pd": previous_data,
             "f": filter_obj,
+            'view_type':view_type,
         },
     )
 
