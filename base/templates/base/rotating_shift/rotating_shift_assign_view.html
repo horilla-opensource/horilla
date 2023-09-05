@@ -69,6 +69,7 @@
               {% if rshift.based_on == 'after' %}
           Rotate after {{rshift.rotate_after_day}} days
           {% elif rshift.based_on == "weekly" %}
+          Weekly every {{rshift.rotate_every_weekend}}
           {% elif rshift.based_on == "monthly" %}
           {% if rshift.rotate_every == "1" %}
           Rotate every {{rshift.rotate_every}}st day of month 
