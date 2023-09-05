@@ -27,10 +27,12 @@
       const field_id = $(this).attr("data-x-field");
       // Update all elements with the same ID to have null values
       $(`.oh-main__topbar:first [name=${field_id}]`).val("");
-      const elementId = $(`.oh-main__topbar:first [name=${field_id}]`).attr("id");
-      alert(elementId)
-      console.log(elementId)
-      const spanElement = $(`.oh-main__topbar:first #select2-id_${field_id}-container, .oh-main__topbar:first #select2-${elementId}-container`);
+      const elementId = $(
+        `.oh-main__topbar:first [name=${field_id}]:last`
+      ).attr("id");
+      const spanElement = $(
+        `.oh-dropdown__filter-body:first #select2-id_${field_id}-container, #select2-${elementId}-container`
+      );
       if (spanElement.length) {
         spanElement.attr("title", "---------");
         spanElement.text("---------");
