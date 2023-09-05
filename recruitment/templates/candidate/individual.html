@@ -322,16 +322,16 @@
                         <a href="/media/{{ answer_list.0 }}" target="_blank">{{ answer_list.0 }}</a>
                       {% elif question|slice:"0:7" == "rating_" %}
                           <div class="oh-rate">
-                            <input type="radio" id="star5" name="answer{{q.id}}" value="5" disabled {% if answer_list.0 == '5' %} checked {% endif %} />
-                            <label for="star5" title="5 Stars">5 {% trans "Stars" %}</label>
-                            <input type="radio" id="star4" name="answer{{q.id}}" value="4" disabled  {% if answer_list.0 == '4' %} checked {% endif %} />
-                            <label for="star4" title="4 Stars">4 {% trans "Stars" %}</label>
-                            <input type="radio" id="star3" name="answer{{q.id}}" value="3" disabled  {% if answer_list.0 == '3' %} checked {% endif %} />
-                            <label for="star3" title="3 Stars">3 {% trans "Stars" %}</label>
-                            <input type="radio" id="star2" name="answer{{q.id}}" value="2" disabled  {% if answer_list.0 == '2' %} checked {% endif %}  />
-                            <label for="star2" title="2 Stars">2 {% trans "Stars" %}</label>
-                            <input type="radio" id="star1" name="answer{{q.id}}" value="1" disabled  {% if answer_list.0 == '1' %} checked {% endif %} />
-                            <label for="star1" title="1 Star">1 {% trans "Star" %}</label>
+                            <input type="radio" id="star5{{question.id}}" value="5" disabled {% if answer_list.0 == '5' %} checked {% endif %} />
+                            <label for="star5{{question.id}}" title="5 Stars">5 {% trans "Stars" %}</label>
+                            <input type="radio" id="star4{{question.id}}" value="4" disabled  {% if answer_list.0 == '4' %} checked {% endif %} />
+                            <label for="star4{{question.id}}" title="4 Stars">4 {% trans "Stars" %}</label>
+                            <input type="radio" id="star3{{question.id}}" value="3" disabled  {% if answer_list.0 == '3' %} checked {% endif %} />
+                            <label for="star3{{question.id}}" title="3 Stars">3 {% trans "Stars" %}</label>
+                            <input type="radio" id="star2{{question.id}}" value="2" disabled  {% if answer_list.0 == '2' %} checked {% endif %}  />
+                            <label for="star2{{question.id}}" title="2 Stars">2 {% trans "Stars" %}</label>
+                            <input type="radio" id="star1{{question.id}}" value="1" disabled  {% if answer_list.0 == '1' %} checked {% endif %} />
+                            <label for="star1{{question.id}}" title="1 Star">1 {% trans "Star" %}</label>
                           </div>
                       {% else %} 
                         {{ answer_list.0 }} 
