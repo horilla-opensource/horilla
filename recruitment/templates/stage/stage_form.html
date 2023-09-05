@@ -13,10 +13,13 @@
             {{form.recruitment_id}}
             {{form.recruitment_id.errors}}
         </div>
-        <div class="col-12 col-sm-12 col-md-12 col-lg-6">
+        <div class="col-12 col-sm-12 col-md-12 col-lg-6" id='stage_manager'>
             <label class="oh-label" for="">{% trans "Stage Managers" %}</label>
             {{form.stage_managers}}
             {{form.stage_managers.errors}}
+            <ul id="error-list" class="errorlist" style="display: none">
+                <li>This field is requied</li>
+            </ul>
         </div>
         <div class="col-12 col-sm-12 col-md-12 col-lg-6">
             <label class="oh-label" for="">{% trans "Stage Type" %}</label>
@@ -36,9 +39,16 @@
     <button
     type="submit"
     class="oh-btn oh-btn--secondary  pl-5 pr-5"
+    onclick="validateForm(event)"
     >
     {% trans "Add" %}
   </button>
 </div>
 </form>
+
+<script>
+    $(document).ready(function () {
+        $("#stageFormCreate [name=stage_managers]").removeAttr("required");
+    });
+</script>
 

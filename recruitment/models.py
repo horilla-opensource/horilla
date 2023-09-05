@@ -164,7 +164,7 @@ class Stage(models.Model):
         related_name="stage_set",
         verbose_name="Recruitment",
     )
-    stage_managers = models.ManyToManyField(Employee, blank=True)
+    stage_managers = models.ManyToManyField(Employee)
     stage = models.CharField(max_length=50)
     stage_type = models.CharField(
         max_length=20, choices=stage_types, default="interview"
