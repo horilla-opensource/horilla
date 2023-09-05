@@ -39,7 +39,7 @@
           <div class="oh-accordion-meta__actions" id="assetActions">
             <div class="oh-dropdown" x-data="{open: false}" >
               <button class="oh-btn oh-stop-prop oh-accordion-meta__btn" @click="open = !open"
-                @click.outside="open = false">
+                @click.outside="open = false" onclick="event.stopPropagation()">
                 {% trans "Actions" %}
                 <ion-icon class="ms-2 oh-accordion-meta__btn-icon" name="caret-down-outline"></ion-icon>
               </button>
