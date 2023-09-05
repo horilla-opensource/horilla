@@ -210,6 +210,11 @@ class AssetAllocationForm(ModelForm):
     A Django ModelForm for creating and updating AssetAssignment instances.
     """
 
+    def __init__(self, *args, **kwargs):
+        super(AssetAllocationForm, self).__init__(*args, **kwargs)
+        self.fields['asset_id'].queryset = Asset.objects.filter(asset_status="Available")
+
+
     class Meta:
         """
         Specifies the model and fields to be used for the AssetAllocationForm.
