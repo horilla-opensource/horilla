@@ -1,0 +1,54 @@
+{% load i18n %}
+<style>
+    .row-status--orange {
+      border-left: 4px solid orange;
+      border-radius: 5px;
+    }
+    .row-status--gray {
+      border-left: 4px solid gray;
+      border-radius: 5px;
+    }
+    .row-status--yellow {
+      border-left: 4px solid yellowgreen;
+      border-radius: 5px;
+    }
+  </style>
+
+  <div class="oh-sticky-table mt-4">
+    <div class="oh-sticky-table__table oh-table--sortable">
+        <div class="oh-sticky-table__thead">
+            <div class="oh-sticky-table__tr">
+                <div class="oh-sticky-table__th">{% trans "Leave Type" %}</div>
+                <div class="oh-sticky-table__th">{% trans "Start Date" %}</div>
+                <div class="oh-sticky-table__th">{% trans "End Date" %}</div>
+                <div class="oh-sticky-table__th">{% trans "Requested days" %}</div>
+                <div class="oh-sticky-table__th">{% trans "Status" %}</div>
+            </div>
+        </div>
+        <div class="oh-sticky-table__tbody">
+            {% for leave_request in employee.leaverequest_set.all %}
+            <div class="oh-sticky-table__tr" draggable="true">
+                <div class="oh-sticky-table__sd {% if leave_request.status == "requested" %}row-status--orange {% elif leave_request.status == "cancelled" %} row-status--gray {% elif leave_request.status == "approved" %} row-status--yellow{% endif %}" data-toggle="oh-modal-toggle" data-target="#tableTimeOff"
+                  hx-get="{% url 'user-request-one' leave_request.id %}" hx-target="#userRequestView">
+                    <div class="oh-profile oh-profile--md">
+                        <div class="oh-profile__avatar mr-1">
+                            {% if leave_request.leave_type_id.icon %}
+                            <img src="{{leave_request.leave_type_id.icon.url}}" class="oh-profile__image"
+                                alt="Leave Type Icon" />
+                            {% else%}
+                            <img src="https://ui-avatars.com/api/?name={{leave_request.leave_type_id}}&background=random"
+                                class="oh-profile__image" alt="Leave type icon" />
+                            {% endif %}
+                        </div>
+                        <span class="oh-profile__name oh-text--dark">{{leave_request.leave_type_id}}</span>
+                    </div>
+                </div>
+                <div class="oh-sticky-table__td">{{leave_request.start_date}}</div>
+                <div class="oh-sticky-table__td">{{leave_request.end_date}}</div>
+                <div class="oh-sticky-table__td">{{leave_request.requested_days}}</div>
+                <div class="oh-sticky-table__td">{{leave_request.get_status_display}}</div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
