@@ -2331,6 +2331,7 @@ def shift_request_delete(request, id):
     try:
         shift_request = ShiftRequest.objects.get(id=id)
         user = shift_request.employee_id.employee_user_id
+        messages.success(request,"Shift request deleted")
         shift_request.delete()
         notify.send(
             request.user.employee_get,
