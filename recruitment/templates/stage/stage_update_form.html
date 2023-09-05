@@ -8,9 +8,9 @@
     {% endfor %}
 </div>
 {% endif %}
-<form method="post" class='oh-general__tab-target oh-profile-section' hx-post="{% url 'rec-stage-update' form.instance.id %}">
+<form method="post" class='oh-general__tab-target oh-profile-section' hx-post="{% url 'rec-stage-update' form.instance.id %}" hx-target='#stageUpdate'>
     {% csrf_token %}
-    <div>
+    <div id='stageFormCreate' >
         {% csrf_token %}
         <div class="row" id='stageFormUpdate'>
             <div class="col-12 col-sm-12 col-md-12 col-lg-6">
@@ -27,6 +27,9 @@
                 <label class="oh-label" for="">{% trans "Stage Managers" %}</label>
                 {{form.stage_managers}}
                 {{form.stage_managers.errors}}
+                <ul id="error-list" class="errorlist" style="display: none">
+                    <li>This field is requied</li>
+                </ul>
             </div>
             <div class="col-12 col-sm-12 col-md-12 col-lg-6">
                 <label class="oh-label" for="">{% trans "Stage Type" %}</label>
@@ -45,5 +48,9 @@
     
     <input type="submit" value="Submit" class='mt-4 oh-btn oh-btn--secondary'>
 </form>
-
+<script>
+    $(document).ready(function () {
+        $("#stageFormCreate [name=stage_managers]").removeAttr("required");
+    });
+</script>
 
