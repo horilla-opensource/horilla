@@ -1,29 +1,41 @@
 {% load basefilters %}
-      
+
 <!-- filter items showing here -->
-<div class="oh-filter-tag-container "  
-      style="position: fixed;top: 150;z-index: 9999;">
-    {%for field,values in filter_dict.items %}
-      {%if values %}
-        <span class="oh-filter-tag filter-field" data-x-field="{{field}}" >
-          {{field|filter_field}} : {% for value in values%} {{ value|capfirst  }}{% endfor %}
-          <button class="oh-filter-tag__close"> 
-            <ion-icon name="close-outline" role="img" class="md hydrated" aria-label="close outline"> </ion-icon>
-          </button>
-        </span>
-      {%endif%}
-    {% endfor %}
+<div
+  class="oh-filter-tag-container"
+  style="position: fixed; top: 150; z-index: 9999"
+>
+  {%for field,values in filter_dict.items %} {%if values %}
+  <span class="oh-filter-tag filter-field" data-x-field="{{field}}">
+    {{field|filter_field}} : {% for value in values%} {{ value|capfirst }}{% endfor %}
+    <button class="oh-filter-tag__close">
+      <ion-icon
+        name="close-outline"
+        role="img"
+        class="md hydrated"
+        aria-label="close outline"
+      >
+      </ion-icon>
+    </button>
+  </span>
+  {%endif%} {% endfor %}
 </div>
 <script>
-    var form_submit_id = '.filterButton'
-    $(document).ready(function () {
-        $('.filter-field').on('click',function(){
-            const field_id = $(this).attr("data-x-field")
-            // Update all elements with the same ID to have null values
-            {% comment %} $('[id="id_' + field_id + '"]').val(''); {% endcomment %}
-            $(`[name=${field_id}]`).val('');
-            console.log( $(`[name=${field_id}]`))
-            $(form_submit_id).click()
-        })
+  var form_submit_id = ".filterButton";
+  $(document).ready(function () {
+    $(".filter-field").on("click", function () {
+      const field_id = $(this).attr("data-x-field");
+      // Update all elements with the same ID to have null values
+      $(`.oh-main__topbar:first [name=${field_id}]`).val("");
+      const elementId = $(`.oh-main__topbar:first [name=${field_id}]`).attr("id");
+      alert(elementId)
+      console.log(elementId)
+      const spanElement = $(`.oh-main__topbar:first #select2-id_${field_id}-container, .oh-main__topbar:first #select2-${elementId}-container`);
+      if (spanElement.length) {
+        spanElement.attr("title", "---------");
+        spanElement.text("---------");
+      }
+      $(form_submit_id).click();
     });
+  });
 </script>

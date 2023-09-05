@@ -31,14 +31,7 @@ def recruitment_search(request):
     recruitment_obj = sortby(request, filter_obj.qs, "orderby")
     data_dict = parse_qs(previous_data)
     get_key_instances(Recruitment, data_dict)
-    if request.GET.get("is_active"):
-        if data_dict["is_active"] == ["unknown"]:
-            data_dict.pop("is_active")
-    
-    
-    
 
-    
     return render(
         request,
         "recruitment/recruitment_component.html",
@@ -88,9 +81,6 @@ def candidate_search(request):
     if not request.GET.get("dashboard"):
         data_dict = parse_qs(previous_data)
         get_key_instances(Candidate, data_dict)
-        keys_to_remove = [key for key, value in data_dict.items() if value == ["unknown"]]
-        for key in keys_to_remove:
-            data_dict.pop(key)
 
     template = "candidate/candidate_card.html"
     if request.GET.get("view") == "list":
