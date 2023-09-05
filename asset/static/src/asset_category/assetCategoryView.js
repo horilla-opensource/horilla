@@ -1,4 +1,5 @@
 $(document).ready(function () {
+  $("#import-dropdown").hide();
     // asset category accordion
     $('.oh-accordion-meta__header--custom').on("click", function () {
         $(this).toggleClass('oh-accordion-meta__header--show');
@@ -41,28 +42,18 @@ $(document).ready(function () {
             $("select[name='type']").hide();
             }
         });
+        $("#import-button").on("click",function(){
+          $("#import-dropdown").show();
+        })
+        $(".close-import").on("click" , function(){
+          $("#import-dropdown").hide();
+        })
     
 });
 
 
-// function getCurrentLanguageCode(callback) {
-//     $.ajax({
-//       type: "GET",
-//       url: "/get-language-code",
-//       success: function (response) {
-//         var languageCode = response.language_code;
-//         callback(languageCode); // Pass the language code to the callback
-//       },
-//     });
-//   }
-
-
-
-
 $("#asset-info-import").click(function (e) {
     e.preventDefault();
-    // getCurrentLanguageCode(function (code) {
-        // Use SweetAlert for the confirmation dialog
         Swal.fire({
             text: "Do you want to download template ?",
             icon: 'question',
@@ -96,5 +87,4 @@ $("#asset-info-import").click(function (e) {
           });
         }
       });
-    // });
   });

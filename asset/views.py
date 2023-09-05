@@ -267,15 +267,14 @@ def asset_category_creation(request):
         A rendered HTML template displaying the AssetCategory creation form.
     """
     asset_category_form = AssetCategoryForm()
-    context = {"asset_category_form": asset_category_form}
 
     if request.method == "POST":
         asset_category_form = AssetCategoryForm(request.POST)
         if asset_category_form.is_valid():
             asset_category_form.save()
             messages.success(request, _("Asset category created successfully"))
-        else:
-            context["asset_category_form"] = asset_category_form
+    context = {"asset_category_form": asset_category_form}
+
     return render(request, "category/asset_category_creation.html", context)
 
 
@@ -384,9 +383,6 @@ def asset_category_view(request):
         None
     """
     context = filter_pagination_asset_category(request)
-    print(
-        "---------------------------------------------asset_category_view---------------------------------------------------------"
-    )
     return render(request, "category/asset_category_view.html", context)
 
 
@@ -411,10 +407,6 @@ def asset_category_view_search_filter(request):
         # searching asset will redirect to asset list and pass the query
         return redirect(f"/asset/asset-list/0?asset_list=asset&query={query}")
     context = filter_pagination_asset_category(request)
-    print(
-        "-------------------------------------------------asset_category_view_search_filter-----------------------------------------------------------------"
-    )
-    print(context)
     return render(request, "category/asset_category.html", context)
 
 

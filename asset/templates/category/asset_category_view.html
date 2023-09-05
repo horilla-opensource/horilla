@@ -50,13 +50,16 @@
                     <button class="oh-btn ml-2"> <ion-icon name="list-outline" class="me-1"></ion-icon>{% trans "Batch No" %}</button>
                 </a>
                 <!-- import asset start  -->
-                <div class="oh-dropdown" x-data="{open: false}" @click.outside="open = false">
+                <div class="oh-dropdown" >
                     
-                        <button class="oh-btn ml-2" @click="open = !open">
+                        <button class="oh-btn ml-2" id="import-button">
                             <ion-icon name="arrow-down-outline" class="me-1"></ion-icon>
                             <a href="#" id="asset-info-import" onclick="return confirm('{% trans "Do you want to download template ?" %}')"> {% trans "Import" %}</a>
                         </button>
-                    <div class="oh-dropdown__import oh-dropdown__import--right" x-show="open"  style="display: none;">
+                    <div class="oh-dropdown__import oh-dropdown__import--right " id ="import-dropdown" >
+                        <button class="oh-modal__close close-import"  aria-label="Close">
+                            <ion-icon name="close-outline"></ion-icon>
+                          </button>
                         <div id="AssetImportResponse"></div>
                         <form action="{%url 'asset-import' %}" enctype="multipart/form-data" method="post">
                             {% csrf_token %}
