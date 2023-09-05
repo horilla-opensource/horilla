@@ -1,118 +1,15 @@
-{% comment %} <style>
-  .rating {
-    display: inline-block;
-    position: relative;
-    height: 50px;
-    line-height: 50px;
-    font-size: 50px;
-  }
-
-  .rating label {
-    position: absolute;
-    top: 0;
-    left: 0;
-    height: 100%;
-    cursor: pointer;
-  }
-
-  .rating label:last-child {
-    position: static;
-  }
-
-  .rating label:nth-child(1) {
-    z-index: 5;
-  }
-
-  .rating label:nth-child(2) {
-    z-index: 4;
-  }
-
-  .rating label:nth-child(3) {
-    z-index: 3;
-  }
-
-  .rating label:nth-child(4) {
-    z-index: 2;
-  }
-
-  .rating label:nth-child(5) {
-    z-index: 1;
-  }
-
-  .rating label input {
-    position: absolute;
-    top: 0;
-    left: 0;
-    opacity: 0;
-  }
-  .icon{
-    left: 12px !important;
-    position: relative !important;
-  }
-
-  .rating label .icon {
-    float: left;
-    color: transparent;
-  }
-
-  .rating label:last-child .icon {
-    color: #000;
-  }
-
-  .rating:not(:hover) label input:checked ~ .icon,
-  .rating:hover label:hover input ~ .icon {
-    color: #09f;
-  }
-
-  .rating label input:focus:not(:checked) ~ .icon:last-child {
-    color: #000;
-    text-shadow: 0 0 5px #09f;
-  }
-</style>
-<div class="rating">
-  <label>
-    <input type="radio" name="rating_{{question.question}}" value="1" />
-    <span class="icon">★</span>
-  </label>
-  <label>
-    <input type="radio" name="rating_{{question.question}}" value="2" />
-    <span class="icon">★</span>
-    <span class="icon">★</span>
-  </label>
-  <label>
-    <input type="radio" name="rating_{{question.question}}" value="3" />
-    <span class="icon">★</span>
-    <span class="icon">★</span>
-    <span class="icon">★</span>
-  </label>
-  <label>
-    <input type="radio" name="rating_{{question.question}}" value="4" />
-    <span class="icon">★</span>
-    <span class="icon">★</span>
-    <span class="icon">★</span>
-    <span class="icon">★</span>
-  </label>
-  <label>
-    <input type="radio" name="rating_{{question.question}}" value="5" />
-    <span class="icon">★</span>
-    <span class="icon">★</span>
-    <span class="icon">★</span>
-    <span class="icon">★</span>
-    <span class="icon">★</span>
-  </label>
-</div> {% endcomment %}
 
 {% load i18n %}
 
 <div class="oh-rate mb-5" style="padding-right: 82%;">
-  <input type="radio" id="star5" name="rating_{{q.id}}" value="5"  {% if answer_list.0 == '5' %} checked {% endif %} />
-  <label for="star5" title="5 Stars">5 {% trans "Stars" %}</label>
-  <input type="radio" id="star4" name="rating_{{q.id}}" value="4"   {% if answer_list.0 == '4' %} checked {% endif %} />
-  <label for="star4" title="4 Stars">4 {% trans "Stars" %}</label>
-  <input type="radio" id="star3" name="rating_{{q.id}}" value="3"   {% if answer_list.0 == '3' %} checked {% endif %} />
-  <label for="star3" title="3 Stars">3 {% trans "Stars" %}</label>
-  <input type="radio" id="star2" name="rating_{{q.id}}" value="2"   {% if answer_list.0 == '2' %} checked {% endif %}  />
-  <label for="star2" title="2 Stars">2 {% trans "Stars" %}</label>
-  <input type="radio" id="star1" name="rating_{{q.id}}" value="1"   {% if answer_list.0 == '1' %} checked {% endif %} />
-  <label for="star1" title="1 Star">1 {% trans "Star" %}</label>
+  <input type="radio" id="star5{{question.id}}" name="rating_{{question.question}}" value="5"  {% if answer_list.0 == '5' %} checked {% endif %} />
+  <label for="star5{{question.id}}" title="5 Stars">5 {% trans "Stars" %}</label>
+  <input type="radio" id="star4{{question.id}}" name="rating_{{question.question}}" value="4"   {% if answer_list.0 == '4' %} checked {% endif %} />
+  <label for="star4{{question.id}}" title="4 Stars">4 {% trans "Stars" %}</label>
+  <input type="radio" id="star3{{question.id}}" name="rating_{{question.question}}" value="3"   {% if answer_list.0 == '3' %} checked {% endif %} />
+  <label for="star3{{question.id}}" title="3 Stars">3 {% trans "Stars" %}</label>
+  <input type="radio" id="star2{{question.id}}" name="rating_{{question.question}}" value="2"   {% if answer_list.0 == '2' %} checked {% endif %}  />
+  <label for="star2{{question.id}}" title="2 Stars">2 {% trans "Stars" %}</label>
+  <input type="radio" id="star1{{question.id}}" name="rating_{{question.question}}" value="1"   {% if answer_list.0 == '1' %} checked {% endif %} />
+  <label for="star1{{question.id}}" title="1 Star">1 {% trans "Star" %}</label>
 </div>
