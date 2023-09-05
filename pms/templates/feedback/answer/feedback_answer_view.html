@@ -16,15 +16,15 @@
         {% if answer.question_id.question_type == '2' %}  <!--question type =  Rating-->
         <div class="d-block mb-0">
           <div class="oh-rate">
-            <input type="radio" id="star5" name="answer{{q.id}}" value="5" disabled {% if answer.answer.answer == '5' %} checked {% endif %} />
+            <input type="radio" id="star5" value="5" disabled {% if answer.answer.answer == '5' %} checked {% endif %} />
             <label for="star5" title="5 Stars">5 {% trans "Stars" %}</label>
-            <input type="radio" id="star4" name="answer{{q.id}}" value="4" disabled  {% if answer.answer.answer == '4' %} checked {% endif %} />
+            <input type="radio" id="star4" value="4" disabled  {% if answer.answer.answer == '4' %} checked {% endif %} />
             <label for="star4" title="4 Stars">4 {% trans "Stars" %}</label>
-            <input type="radio" id="star3" name="answer{{q.id}}" value="3" disabled  {% if answer.answer.answer == '3' %} checked {% endif %} />
+            <input type="radio" id="star3" value="3" disabled  {% if answer.answer.answer == '3' %} checked {% endif %} />
             <label for="star3" title="3 Stars">3 {% trans "Stars" %}</label>
-            <input type="radio" id="star2" name="answer{{q.id}}" value="2" disabled  {% if answer.answer.answer == '2' %} checked {% endif %}  />
+            <input type="radio" id="star2" value="2" disabled  {% if answer.answer.answer == '2' %} checked {% endif %}  />
             <label for="star2" title="2 Stars">2 {% trans "Stars" %}</label>
-            <input type="radio" id="star1" name="answer{{q.id}}" value="1" disabled  {% if answer.answer.answer == '1' %} checked {% endif %} />
+            <input type="radio" id="star1" value="1" disabled  {% if answer.answer.answer == '1' %} checked {% endif %} />
             <label for="star1" title="1 Star">1 {% trans "Star" %}</label>
           </div>
         </div>
@@ -44,7 +44,7 @@
             <ul class="oh-questions mt-2">
               <li class="oh-questions__answer">
                 <div class="oh-radio">
-                  <input type="radio" class="oh-radio  " id="answer1" name="answer{{q.id}}" value="{{option.option_a}}"
+                  <input type="radio" class="oh-radio" id="answer1" name="answer{{q.id}}" value="{{option.option_a}}"
                     checked />
                   <span class="oh-radio__checkmark"></span>
                   <label class="oh-label" for="answer1"> {{answer.answer.answer}}</label>
