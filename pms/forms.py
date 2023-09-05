@@ -368,12 +368,15 @@ class FeedbackForm(forms.ModelForm):
                 attrs={
                     "class": " oh-select--employee-change",
                     "style": "width:100%; display:none;",
+                    "required": "false",
                 },
             ),
             "manager_id": forms.Select(
                 attrs={
                     "class": "oh-select oh-select-2 ",
                     "style": "width:100%; display:none;",
+                    "required": "false",
+
                 },
             ),
             "colleague_id": forms.SelectMultiple(
@@ -394,6 +397,8 @@ class FeedbackForm(forms.ModelForm):
                 attrs={
                     "class": "oh-select oh-select--lg oh-select-no-search",
                     "style": "width:100%; display:none;",
+                    "required": "false",
+
                 }
             ),
         }

@@ -79,3 +79,32 @@ $(document).ready(function () {
   }
 
 });
+
+
+function validateFeedBack(event) {
+  var button = $(event.srcElement)
+  var employeElement = $("#id_employee_id")
+  var managerElement =  $("#id_manager_id")
+  var questionTemplateElement =  $("#id_question_template_id")
+  console.log(employeElement.val());
+  if (employeElement.val()=='') {
+    $(employeElement).siblings(".errorlist").first().show();
+  }
+  else{
+    $(employeElement).siblings(".errorlist").first().hide();
+  }
+
+  if (managerElement.val()=='') {
+    $(managerElement).siblings(".errorlist").first().show();
+  }
+  else{
+    $(managerElement).siblings(".errorlist").first().hide();
+  }
+
+  if (questionTemplateElement.val()=='') {
+    $(questionTemplateElement).siblings(".errorlist").first().show();
+  }
+  else{
+    $(questionTemplateElement).siblings(".errorlist").first().hide();
+  }
+}

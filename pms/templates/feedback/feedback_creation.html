@@ -25,7 +25,7 @@
 <!-- Feedback form'-->
 <main class="oh-onboarding">
     <div class="oh-onboarding-card">
-        <form action="{%url 'feedback-creation' %}" method="post">
+        <form action="{%url 'feedback-creation' %}" id="feedbackCreationForm" method="post">
             {% csrf_token %}
             <div class="oh-onboarding-card__address-group">
                 <h2 class="oh-onboarding-card__section-title">{% trans "Feedback" %}</h2>
@@ -41,6 +41,9 @@
                                 <label class="oh-input__label" for="endDate">{% trans "Employee" %}</label>
                                 {{feedback_form.employee_id }}
                                 {{feedback_form.employee_id.errors }}
+                                <ul id="error-list" class="errorlist" style="display: none">
+                                    <li>{% trans "This field is required" %}.</li>
+                                </ul>
                             </div>
                         </div>
                     </div>
@@ -50,6 +53,9 @@
                                 <label class="oh-input__label" for="endDate">{% trans "Manager" %}</label>
                                 {{feedback_form.manager_id}}
                                 {{feedback_form.manager_id.errros}}
+                                <ul id="error-list" class="errorlist" style="display: none">
+                                    <li>{% trans "This field is required" %}.</li>
+                                </ul>
                             </div>
                         </div>
                     </div>
@@ -110,6 +116,9 @@
                             <label class="oh-input__label" for="startDate">{% trans "Question Template" %}</label>
                             {{feedback_form.question_template_id}}
                             {{feedback_form.question_template_id.errors}}
+                            <ul id="error-list" class="errorlist" style="display: none">
+                                <li>{% trans "This field is required" %}.</li>
+                            </ul>
                         </div>
                     </div>
                     <div class="col-12 col-sm-12 col-md-6 col-lg-6">
@@ -124,7 +133,7 @@
                 </div>
             </div>
             </section>
-            <button type="submit" class=" w-100 oh-btn oh-btn--secondary oh-btn--shadow mt-4 mb-4">
+            <button type="submit" onclick="validateFeedBack(event)" class=" w-100 oh-btn oh-btn--secondary oh-btn--shadow mt-4 mb-4">
                 {% trans "Save" %}
             </button>
         </form>
