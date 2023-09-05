@@ -1,5 +1,5 @@
 {% load basefilters %}
-{% load i18n %}
+{% load i18n %}{% load static %}
 {% if messages %}
 <div class="oh-wrapper">
   {% for message in messages %}
@@ -20,7 +20,8 @@
         <div class="oh-sticky-table__th"  >
           <div class="d-flex">
             <div class="">
-              <input type="checkbox" class="oh-input oh-input__checkbox mt-1 mr-2 all-candidate" />
+              <input type="checkbox" class="all-candidate oh-input oh-input__checkbox mt-1 mr-2" 
+              id = "Allcandidate"/>
             </div>
             <div hx-target='#section' hx-get="{% url 'search-candidate' %}?{{pd}}&orderby=name&view=list">
               {% trans "Candidates" %}
@@ -95,7 +96,7 @@
             {% endif %}
             {% endif %}
             {% if perms.recruitment.delete_candidate %}
-            <form action="{% url 'rec-candidate-delete' cand.id  %}" method='post'
+            <form action="{% url 'rec-candidate-delete' cand.id  %}" onsubmit="return confirm('{% trans "Do you want to delete this candidate" %}')" method='post'
               onsubmit="Are you sure want to delete this candidate?">
               {% csrf_token %}
               <button type='submit' class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
@@ -154,3 +155,15 @@
     </ul>
   </nav>
 </div>
+
+<script src="{% static '/candidate/bulk.js' %}"></script>
+<script>
+  $("#Allcandidate").click(function (e) {
+    var is_checked = $(this).is(":checked");
+    if (is_checked) {
+      $(".all-candidate-row").prop("checked", true);
+    } else {
+      $(".all-candidate-row").prop("checked", false);
+    }
+  });
+</script>

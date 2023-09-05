@@ -183,14 +183,14 @@ def candidate_bulk_delete(request):
         try:
             candidate_obj.delete()
             messages.success(
-                request, _("%(candidate_obj)s deleted.") % {"candidate": candidate_obj}
+                request, _("%(candidate)s deleted.") % {"candidate": candidate_obj}
             )
         except Exception as error:
+            messages.error(request, error)
             messages.error(
                 request,
-                _("You cannot delete %(candidate_obj)s") % {"candidate": candidate_obj},
+                _("You cannot delete %(candidate)s") % {"candidate": candidate_obj},
             )
-            messages.error(request, error)
     return JsonResponse({"message": "Success"})
 
 
