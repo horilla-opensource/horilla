@@ -453,7 +453,7 @@ def asset_request_approve(request, id):
 
     asset_request = AssetRequest.objects.filter(id=id).first()
     asset_category = asset_request.asset_category_id
-    assets = asset_category.asset_set.all()
+    assets = asset_category.asset_set.filter(asset_status="Available")
     form = AssetAllocationForm()
     form.fields["asset_id"].queryset = assets
     context = {"asset_allocation_form": form, "id": id}
