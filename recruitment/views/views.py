@@ -718,6 +718,7 @@ def candidate_view(request):
     """
     This method render all candidate to the template
     """
+    view_type = request.GET.get('view')
     previous_data = request.environ["QUERY_STRING"]
     candidates = Candidate.objects.filter(is_active=True)
     filter_obj = CandidateFilter(queryset=candidates)
@@ -728,6 +729,7 @@ def candidate_view(request):
             "data": paginator_qry(filter_obj.qs, request.GET.get("page")),
             "pd": previous_data,
             "f": filter_obj,
+            'view_type':view_type,
         },
     )
 

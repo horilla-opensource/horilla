@@ -143,18 +143,12 @@ x-data="{searchShow: false}"
   $('#candidate-search').keyup(function (e) { 
       $('.candidate-view-type').attr('hx-vals',`{"search":"${$(this).val()}"}`)
     });
-    $('.candidate-view-type').click(function (e) { 
-      let view = $(this).attr('data-view');
-      $('#candidate-search').attr('hx-vals',`{"view":"${view}"}`);
-      $('#filterButton').attr('data-view',view);
-    });
   
     function candidateFilter(element) {
       var search = $('#candidate-search').val();
       const form = document.querySelector('#filterForm');
       const formData = new FormData(form);
       const queryString = new URLSearchParams(formData).toString();
-      console.log(queryString);
       const searchParams = new URLSearchParams(queryString);
       const queryObject = Object.fromEntries(searchParams.entries());
       view = $(element).attr('data-view');
@@ -164,6 +158,24 @@ x-data="{searchShow: false}"
       $('#list').attr('hx-vals', stringQueyObject);
       $('#card').attr('hx-vals', stringQueyObject);
     }
+  $(document).ready(function () {
+    $(".candidate-view-type").click(function (e) {  
+      let view = $(this).attr("data-view");          
+      var currentURL = window.location.href;     
+      if (view != undefined){        
+        if (/\?view=[^&]+/.test(currentURL)) {          
+          newURL = currentURL.replace(/\?view=[^&]+/, "?view="+view);      
+        }        
+        else {          
+          var separator = currentURL.includes('?') ? '&' : '?';  
+          newURL = currentURL + separator + "view="+view;        
+        }       
+        history.pushState({}, "", newURL);       
+        $('#candidate-search').attr('hx-vals',`{"view":"${view}"}`);
+        $('#filterButton').attr('data-view',view); 
+      }    
+    });
+  });
 </script>
 
 

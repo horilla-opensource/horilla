@@ -14,7 +14,11 @@
 <div class="oh-wrapper">
   {% include 'candidate/candidate_nav.html' %}
   <div id="section" hx-target="#section" hx-swap="innerHTML">
-    {% include 'candidate/candidate_card.html' %}
+    {% if view_type == 'list' %}
+      {% include 'candidate/candidate_list.html' %}
+    {% else %}
+      {% include 'candidate/candidate_card.html' %}
+    {% endif %}
   </div>
   </div>
 
