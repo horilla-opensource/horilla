@@ -77,7 +77,7 @@
             {% elif request.user.employee_get == work_type_request.employee_id and not perms.base.change_worktyperequest %}
             <button class='oh-btn oh-btn--info w-100' disabled>{% trans "Approve" %}</button></td>
             {% else %}
-            <a href="/work-type-request-approve/{{work_type_request.id}}/" class='oh-btn oh-btn--info'>{% trans "Approve" %}</a></td>
+            <a href="/work-type-request-approve/{{work_type_request.id}}/" onclick="return confirm('{% trans "Do you want to approve this request?" %}')" class='oh-btn oh-btn--info'>{% trans "Approve" %}</a></td>
             
             {% endif %}
             {% endif %}

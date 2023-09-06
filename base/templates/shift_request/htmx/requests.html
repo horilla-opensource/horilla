@@ -77,7 +77,7 @@
                 {% elif request.user.employee_get == shift_request.employee_id and not perms.base.change_shiftrequest %}
                   <button class='oh-btn oh-btn--info w-100' disabled>{% trans "Approve" %}</button></td>
                 {% else %}
-                  <a href="/shift-request-approve/{{shift_request.id}}/" class='oh-btn oh-btn--info'>{% trans "Approve" %}</a></td>
+                  <a href="/shift-request-approve/{{shift_request.id}}/" onclick="return confirm('{% trans "Do you want to approve this request?" %}')" class='oh-btn oh-btn--info'>{% trans "Approve" %}</a></td>
                 {% endif %}
               {% endif %}
             {% elif shift_request.approved == True %}
