@@ -37,6 +37,7 @@ x-data="{searchShow: false}"
       hx-trigger="keyup changed delay:.2s"
       hx-target="#section"
       class="oh-input oh-input__icon"
+      hx-vals = '{"view":"{{request.GET.view}}"}'
       aria-label="Search Input"
     />
   </div>
@@ -44,7 +45,7 @@ x-data="{searchShow: false}"
     <li class="oh-view-type candidate-view-type" data-view='list'>
       <a
         id = 'list' 
-        hx-get="{% url 'candidate-view-list' %}"  
+        hx-get="{% url 'search-candidate' %}?view=list"  
         hx-target='#section' 
         class="oh-btn oh-btn--view "
         ><ion-icon name="list-outline"></ion-icon
@@ -53,7 +54,7 @@ x-data="{searchShow: false}"
     <li class="oh-view-type candidate-view-type" data-view='card'>
       <a 
         id="card"
-        hx-get="{% url 'candidate-view-card' %}" 
+        hx-get="{% url 'search-candidate' %}?view=card" 
         hx-target='#section' 
         class="oh-btn oh-btn--view"
         ><ion-icon name="grid-outline"></ion-icon
@@ -140,9 +141,7 @@ x-data="{searchShow: false}"
 </section>
 <script>
   
-  $('#candidate-search').keyup(function (e) { 
-      $('.candidate-view-type').attr('hx-vals',`{"search":"${$(this).val()}"}`)
-    });
+
   
     function candidateFilter(element) {
       var search = $('#candidate-search').val();
@@ -155,12 +154,15 @@ x-data="{searchShow: false}"
       queryObject['search'] = search
       queryObject['view'] = view
       stringQueyObject = JSON.stringify(queryObject)
-      $('#list').attr('hx-vals', stringQueyObject);
-      $('#card').attr('hx-vals', stringQueyObject);
+      // $('#list').attr('hx-vals', stringQueyObject);
+      // $('#card').attr('hx-vals', stringQueyObject);
     }
   $(document).ready(function () {
+    $('#candidate-search').keyup(function (e) { 
+      $('.candidate-view-type').attr('hx-vals',`{"search":"${$(this).val()}"}`)
+    });
     $(".candidate-view-type").click(function (e) {  
-      let view = $(this).attr("data-view");          
+      let view = $(this).attr("data-view");  
       var currentURL = window.location.href;     
       if (view != undefined){        
         if (/\?view=[^&]+/.test(currentURL)) {          
@@ -171,12 +173,12 @@ x-data="{searchShow: false}"
           newURL = currentURL + separator + "view="+view;        
         }       
         history.pushState({}, "", newURL);       
-        $('#candidate-search').attr('hx-vals',`{"view":"${view}"}`);
-        $('#filterButton').attr('data-view',view); 
+        // $('#candidate-search').attr('hx-vals',`{"view":"${view}"}`);     
+        // $('#filterForm').attr("hx-vals", `{"view":"${view}"}`);
+        
       }    
     });
   });
 </script>
-
 
 <script src="{% static '/candidate/bulk.js' %}"></script>

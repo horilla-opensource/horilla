@@ -116,6 +116,9 @@ def candidate_filter_view(request):
     """
     This method is used for filter,pagination and search candidate.
     """
+    templete = "candidate/candidate_card.html"
+    if request.GET.get('view') == 'list':
+        templete= "candidate/candidate_list.html"
     previous_data = request.environ["QUERY_STRING"]
     filter_obj = CandidateFilter(
         request.GET, queryset=Candidate.objects.filter(is_active=True)
@@ -125,7 +128,7 @@ def candidate_filter_view(request):
     page_obj = paginator.get_page(page_number)
     return render(
         request,
-        "candidate/candidate_card.html",
+        templete,
         {"data": page_obj, "pd": previous_data},
     )
 
