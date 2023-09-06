@@ -273,6 +273,7 @@ def asset_category_creation(request):
         if asset_category_form.is_valid():
             asset_category_form.save()
             messages.success(request, _("Asset category created successfully"))
+            return HttpResponse("<script>location.reload();</script>")
     context = {"asset_category_form": asset_category_form}
 
     return render(request, "category/asset_category_creation.html", context)
