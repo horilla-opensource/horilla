@@ -11,13 +11,13 @@
           </a>
       </div>
       <div class="oh-main__titlebar oh-main__titlebar--right">
-          {% comment %} <div class="oh-input-group oh-input__search-group"
+          <div class="oh-input-group oh-input__search-group"
               :class="searchShow ? 'oh-input__search-group--show' : ''">
               <ion-icon name="search-outline" class="oh-input-group__icon oh-input-group__icon--left"></ion-icon>
               <input name="search"  type="text" class="oh-input oh-input__icon" aria-label="Search Input" placeholder="{% trans 'Search' %}"
-                      hx-get="{% url 'asset-batch-number-search' %}" hx-target="#AssetBatchList" hx-trigger='keyup delay:500ms'
+                      hx-get="{% url 'filing-status-search' %}" hx-target="#FilingStatusList" hx-trigger='keyup delay:500ms'
               />
-          </div> {% endcomment %}
+          </div>
           <div class="oh-main__titlebar-button-container">
               <div class="oh-btn-group ml-2">
                   <div>

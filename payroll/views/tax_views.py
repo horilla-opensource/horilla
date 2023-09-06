@@ -115,6 +115,19 @@ def filing_status_delete(request, filing_status_id):
 
 
 @login_required
+@permission_required("payroll.view_filingstatus")
+def filing_status_search(request):
+    search = request.GET.get("search")
+    status = FilingStatus.objects.filter(filing_status__icontains = search)
+    previous_data = request.environ["QUERY_STRING"]
+    context = {
+        "status" :status,
+        "pd":previous_data,
+    }
+    return render(request, "payroll/tax/filing_status_list.html", context)
+
+
+@login_required
 @permission_required("payroll.view_taxbracket")
 def tax_bracket_list(request, filing_status_id):
     """

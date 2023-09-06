@@ -25,6 +25,11 @@ urlpatterns = [
         name="filing-status-delete",
     ),
     path(
+        "filing-status-search/",
+        tax_views.filing_status_search,
+        name="filing-status-search",
+    ),
+    path(
         "tax-bracket-list/<int:filing_status_id>",
         tax_views.tax_bracket_list,
         name="tax-bracket-list",

@@ -10,7 +10,7 @@ import django_filters
 from django import forms
 from horilla.filters import filter_by_name
 from attendance.filters import FilterSet
-from payroll.models.models import Allowance, Contract, Deduction
+from payroll.models.models import Allowance, Contract, Deduction ,FilingStatus
 from payroll.models.models import Payslip
 
 
@@ -121,7 +121,7 @@ class AllowanceFilter(FilterSet):
                 specific_employees__employee_last_name__icontains=last_name
             )
         queryset = queryset | og_queryset.filter(title__icontains=value)
-        return queryset
+        return queryset.distinct()
 
 
 class DeductionFilter(FilterSet):
@@ -169,7 +169,7 @@ class DeductionFilter(FilterSet):
                 specific_employees__employee_last_name__icontains=last_name
             )
         queryset = queryset | og_queryset.filter(title__icontains=value)
-        return queryset
+        return queryset.distinct()
 
 
 class PayslipFilter(FilterSet):
