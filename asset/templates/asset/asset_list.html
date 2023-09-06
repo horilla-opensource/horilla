@@ -58,13 +58,13 @@
             id="oh-btn-asset-update-modal"> 
             <ion-icon name="create-outline" role="img" class="md hydrated" aria-label="create outline"></ion-icon>
           </a>
-          <a href="{% url 'asset-delete' asset.id %}?asset_list=asset_filter&{{pg}}"
-          hx-target="#assetCategoryList"
-          onclick="return confirm('{% trans "Do you want to delete this asset?" %}')"
-          class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
-          title="{% trans 'Remove' %}">
-          <ion-icon name="trash-outline" role="img" class="md hydrated" aria-label="trash outline"></ion-icon>
-           </a>       
+          <form action="{% url 'asset-delete' asset.id %}?asset_list=asset_filter&{{pg}}" 
+            onsubmit="return confirm('{% trans "Do you want to delete this asset?" %}')" 
+            method="post" style="display: contents"> {% csrf_token %} 
+            <button class="oh-btn oh-btn--danger-outline  w-100" title="{% trans 'Delete' %}"> 
+              <ion-icon name="trash-outline" role="img" class="md hydrated" aria-label="trash outline"></ion-icon>
+            </button>
+          </form>
           {% else %}
           <a 
           class="oh-btn oh-btn--light-bkg w-100 " 
@@ -76,14 +76,13 @@
           id="oh-btn-asset-update-modal"> 
           <ion-icon name="create-outline" role="img" class="md hydrated" aria-label="create outline"></ion-icon>
         </a>
-        <a  href="{% url 'asset-delete' id=asset.id %}?{{pg}}"
-            hx-target="#assetList{{asset.asset_category_id.id}}"
-            onclick="return confirm('{% trans "Do you want to delete this asset?" %}')"
-            class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100 asset-delete"
-            title="{% trans 'Remove' %}"
-            data-category-id="{{asset.asset_category_id.id}}">
-        <ion-icon name="trash-outline" role="img" class="md hydrated" aria-label="trash outline"></ion-icon>
-        </a>
+        <form action="{% url 'asset-delete' id=asset.id %}?{{pg}}" 
+            onsubmit="return confirm('{% trans "Do you want to delete this asset?" %}')" 
+            method="post" style="display: contents"> {% csrf_token %} 
+            <button class="oh-btn oh-btn--danger-outline  w-100" title="{% trans 'Delete' %}"> 
+              <ion-icon name="trash-outline" role="img" class="md hydrated" aria-label="trash outline"></ion-icon>
+            </button>
+        </form>
           {% endif %}
         </div>
       </div>
