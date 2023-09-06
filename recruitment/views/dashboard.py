@@ -61,7 +61,6 @@ def dashboard(request):
     job_data = list(zip(all_job, initial, test, interview, hired))
 
     recruitment_obj = Recruitment.objects.filter(closed=False)
-    # print(recruitment_obj)
 
     recruitment_manager_mapping = {}
 

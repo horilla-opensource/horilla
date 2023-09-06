@@ -22,5 +22,39 @@
   </div>
   </div>
 
+<script>
+  $(document).ready(function () {
+    $("#candidate-search").keyup(function (e) { 
+      $("#filterSearch").val($(this).val());
+    });
+    $(".filterButton").click(function (e) { 
+      const formData = $("#filterForm").serializeArray();
+      const jsonObject = {};
+      
+      $.each(formData, function() {
+          jsonObject[this.name] = this.value;
+      });
+      var hxVals = JSON.stringify(jsonObject)
+      $(".candidate-view-type").attr("hx-vals", hxVals);
+      const { search, ...newObj } = jsonObject;
+      $("#candidate-search").attr("hx-vals", JSON.stringify(newObj));
+    });
+
+    $("#candidate-search").focusout(function (e) { 
+      const formData = $("#filterForm").serializeArray();
+      const jsonObject = {};
+      
+      $.each(formData, function() {
+          jsonObject[this.name] = this.value;
+      });
+      var hxVals = JSON.stringify(jsonObject)
+      $(".candidate-view-type").attr("hx-vals", hxVals);
+      
+    });
+    
+  });
+
+</script>
+
 
 {% endblock %}

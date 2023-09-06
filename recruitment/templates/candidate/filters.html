@@ -1,5 +1,6 @@
 {% load i18n %}
 <form hx-get='{% url "search-candidate" %}' id="filterForm" hx-target='#section'>
+    <input type="hidden" name="search" id="filterSearch">
     <div class="oh-dropdown__filter-body">
       <div class="oh-accordion">
       <div class="oh-accordion-header">{% trans "Candidates" %}</div>
