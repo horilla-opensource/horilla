@@ -257,7 +257,7 @@ def get_key_instances(model, data_dict):
     keys_to_remove = [
         key
         for key, value in data_dict.items()
-        if value in ["unknown"] or key in ["sortby", "orderby","view"]
+        if value == ["unknown"] or key in ["sortby", "orderby","view"]
     ]
     for key in keys_to_remove:
         del data_dict[key]
