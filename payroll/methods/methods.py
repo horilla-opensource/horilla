@@ -10,7 +10,7 @@ from django.core.paginator import Paginator
 from dateutil.relativedelta import relativedelta
 from leave.models import Holiday, CompanyLeave
 from attendance.models import Attendance
-from payroll.models.models import Contract
+from payroll.models.models import Contract, Payslip
 
 
 def get_holiday_dates():
@@ -571,3 +571,27 @@ def paginator_qry(qryset, page_number):
     paginator = Paginator(qryset, 50)
     qryset = paginator.get_page(page_number)
     return qryset
+
+
+def save_payslip(**kwargs):
+    """
+    This method is used to save the generated payslip
+    """
+    filtered_instance = Payslip.objects.filter(
+        employee_id=kwargs["employee"],
+        start_date=kwargs["start_date"],
+        end_date=kwargs["end_date"],
+    ).first()
+    instance = filtered_instance if filtered_instance is not None else Payslip()
+    instance.employee_id = kwargs["employee"]
+    instance.start_date = kwargs["start_date"]
+    instance.end_date = kwargs["end_date"]
+    instance.status = kwargs["status"]
+    instance.basic_pay = kwargs["basic_pay"]
+    instance.contract_wage = kwargs["contract_wage"]
+    instance.gross_pay = kwargs["gross_pay"]
+    instance.deduction = kwargs["deduction"]
+    instance.net_pay = kwargs["net_pay"]
+    instance.pay_head_data = kwargs["pay_data"]
+    instance.save()
+    return instance

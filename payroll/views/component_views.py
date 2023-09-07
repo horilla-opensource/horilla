@@ -31,7 +31,11 @@ from payroll.methods.payslip_calc import (
     calculate_net_pay_deduction,
 )
 from payroll.methods.tax_calc import calculate_taxable_amount
-from payroll.methods.methods import compute_salary_on_period, paginator_qry
+from payroll.methods.methods import (
+    compute_salary_on_period,
+    paginator_qry,
+    save_payslip,
+)
 from payroll.methods.deductions import update_compensation_deduction
 
 operator_mapping = {
@@ -220,6 +224,23 @@ def view_allowance(request):
 
 @login_required
 @permission_required("payroll.view_allowance")
+def view_allowance_view(request):
+    """
+    This method is used to switch view for allowance
+    """
+    list_view = "payroll/allowance/list_allowance.html"
+    card_view = "payroll/allowance/card_allowance.html"
+    template = card_view
+    if request.GET.get('view') == "list":
+        template = list_view
+    allowances = payroll.models.models.Allowance.objects.all()
+    allowance_filter = AllowanceFilter(request.GET)
+    allowances = paginator_qry(allowances, request.GET.get("page"))
+    return render(request, template, {"allowances": allowances, "f": allowance_filter},)
+
+
+@login_required
+@permission_required("payroll.view_allowance")
 def view_single_allowance(request, allowance_id):
     """
     This method is used render template to view the selected allowance instances
@@ -240,7 +261,12 @@ def filter_allowance(request):
     """
     query_string = request.environ["QUERY_STRING"]
     allowances = AllowanceFilter(request.GET).qs
-    template = "payroll/allowance/list_allowance.html"
+    list_view = "payroll/allowance/list_allowance.html"
+    card_view = "payroll/allowance/card_allowance.html"
+    template = card_view
+    if request.GET.get('view') == "list":
+        template = list_view
+    print()
     allowances = paginator_qry(allowances, request.GET.get("page"))
     data_dict = parse_qs(query_string)
     get_key_instances(Allowance, data_dict)
@@ -334,6 +360,22 @@ def view_deduction(request):
 
 @login_required
 @permission_required("payroll.view_allowance")
+def view_deduction_view(request):
+    """
+    This method is used to switch view for allowance
+    """
+    list_view = "payroll/deduction/list_deduction.html"
+    card_view = "payroll/deduction/card_deduction.html"
+    template = card_view
+    if request.GET.get('view') == "list":
+        template = list_view
+    deductions = payroll.models.models.Deduction.objects.all()
+    deductions_filter = DeductionFilter(request.GET)
+    deductions = paginator_qry(deductions, request.GET.get("page"))
+    return render(request, template, {"deductions": deductions, "f": deductions_filter})
+
+@login_required
+@permission_required("payroll.view_allowance")
 def view_single_deduction(request, deduction_id):
     """
     This method is used render template to view all the deduction instances
@@ -355,7 +397,11 @@ def filter_deduction(request):
     """
     query_string = request.environ["QUERY_STRING"]
     deductions = DeductionFilter(request.GET).qs
-    template = "payroll/deduction/list_deduction.html"
+    list_view = "payroll/deduction/list_deduction.html"
+    card_view = "payroll/deduction/card_deduction.html"
+    template = card_view
+    if request.GET.get('view') == "list":
+        template = list_view
     deductions = paginator_qry(deductions, request.GET.get("page"))
 
     data_dict = parse_qs(query_string)
@@ -482,6 +528,19 @@ def create_payslip(request):
                     start_date = contract.contract_start_date
                 payslip_data = payroll_calculation(employee, start_date, end_date)
                 payslip_data["payslip"] = payslip
+                data = {}
+                data["employee"] = employee
+                data["start_date"] = payslip_data["start_date"]
+                data["end_date"] = payslip_data["end_date"]
+                data["status"] = "draft"
+                data["contract_wage"] = payslip_data["contract_wage"]
+                data["basic_pay"] = payslip_data["basic_pay"]
+                data["gross_pay"] = payslip_data["gross_pay"]
+                data["deduction"] = payslip_data["total_deductions"]
+                data["net_pay"] = payslip_data["net_pay"]
+                data["pay_data"] = json.loads(payslip_data["json_data"])
+                save_payslip(**data)
+                messages.success(request, "Payslip Saved")
                 return render(
                     request,
                     "payroll/payslip/individual_payslip.html",

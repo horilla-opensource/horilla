@@ -16,11 +16,11 @@ from django.db.models import Q
 from horilla.decorators import login_required, permission_required
 from base.methods import generate_colors, get_key_instances
 from employee.models import Employee, EmployeeWorkInformation
-from payroll.models.models import Payslip, WorkRecord
-from payroll.models.models import Contract
+from payroll.models.models import Payslip, WorkRecord, Contract
 from payroll.forms.forms import ContractForm, WorkRecordForm
 from payroll.models.tax_models import PayrollSettings
 from payroll.forms.component_forms import PayrollSettingsForm
+from payroll.methods.methods import save_payslip
 from django.utils.translation import gettext_lazy as _
 from payroll.filters import ContractFilter
 from payroll.methods.methods import paginator_qry
@@ -269,35 +269,20 @@ def update_payslip_status(request):
     """
     This method is used to update the payslip confirmation status
     """
+    data = {}
     pay_data = json.loads(request.GET["data"])
     emp_id = pay_data["employee"]
-    employee = Employee.objects.get(id=emp_id)
-    start_date = pay_data["start_date"]
-    end_date = pay_data["end_date"]
-    status = pay_data["status"]
-    contract_wage = pay_data["contract_wage"]
-    basic_pay = pay_data["basic_pay"]
-    gross_pay = pay_data["gross_pay"]
-    deduction = pay_data["total_deductions"]
-    net_pay = pay_data["net_pay"]
-
-    filtered_instance = Payslip.objects.filter(
-        employee_id=employee,
-        start_date=start_date,
-        end_date=end_date,
-    ).first()
-    instance = filtered_instance if filtered_instance is not None else Payslip()
-    instance.employee_id = employee
-    instance.start_date = start_date
-    instance.end_date = end_date
-    instance.status = status
-    instance.basic_pay = basic_pay
-    instance.contract_wage = contract_wage
-    instance.gross_pay = gross_pay
-    instance.deduction = deduction
-    instance.net_pay = net_pay
-    instance.pay_head_data = pay_data
-    instance.save()
+    data["employee"] = Employee.objects.get(id=emp_id)
+    data["start_date"] = pay_data["start_date"]
+    data["end_date"] = pay_data["end_date"]
+    data["status"] = pay_data["status"]
+    data["contract_wage"] = pay_data["contract_wage"]
+    data["basic_pay"] = pay_data["basic_pay"]
+    data["gross_pay"] = pay_data["gross_pay"]
+    data["deduction"] = pay_data["total_deductions"]
+    data["net_pay"] = pay_data["net_pay"]
+    data["pay_data"] = pay_data
+    save_payslip(**data)
     return JsonResponse({"message": "success"})
 
 
@@ -341,7 +326,7 @@ def bulk_update_payslip_status(request):
 
 
 @login_required
-# @permission_required("payroll.view_payslip")
+@permission_required("payroll.view_payslip")
 def view_created_payslip(request, payslip_id):
     """
     This method is used to view the saved payslips
@@ -440,7 +425,11 @@ def dashboard_employee_chart(request):
         for employee in employee_list:
             labels.append(employee.employee_id)
 
-        colors = generate_colors(len(Payslip.status_choices))
+        colors = [
+        "rgba(245, 60, 60, 1)",  # Red
+        "rgba(245, 245, 60, 1)",  # yellow
+        "rgba(60, 245, 60, 1)",  # green
+        ]
 
         for choice, color in zip(Payslip.status_choices[1:], colors):
             dataset.append(
