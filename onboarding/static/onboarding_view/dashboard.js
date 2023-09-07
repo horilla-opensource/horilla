@@ -78,6 +78,9 @@ $(document).ready(function(){
         if (index < Object.keys(recruitment).length-1){
             index += 1
         }
+        else{
+            index = 0
+        }
         stage_chart_view(recruitment[index])
 
     })
@@ -85,6 +88,9 @@ $(document).ready(function(){
         if (index > 0){
 
             index -= 1
+        }
+        else{
+            index=Object.keys(recruitment).length-1
         }
         stage_chart_view(recruitment[index])
 
