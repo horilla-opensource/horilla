@@ -165,6 +165,9 @@
     </ul>
   </nav>
 </div>
+<div id="ohMessages">
+
+</div>
 <script>
   $(document).ready(function () {
     $(".joining-date").change(function (e) {
@@ -179,9 +182,13 @@
           candId: candId,
           date: value,
         },
-        dataType: "dataType",
         success: function (response) {
           console.log(response);
+          $("#ohMessages").append(`
+            <div class="oh-alert-container">
+                  <div class="oh-alert oh-alert--animated oh-alert--${response.type}">
+                    ${response.message}
+            </div>`);
         },
       });
     });

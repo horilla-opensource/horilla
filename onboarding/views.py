@@ -1020,7 +1020,7 @@ def update_joining(request):
     candidate_obj = Candidate.objects.get(id=cand_id)
     candidate_obj.joining_date = date
     candidate_obj.save()
-    return JsonResponse({"message": "Success"})
+    return JsonResponse({"type":"success","message":f"{candidate_obj.name}'s Date of joining updated sussefully"})
 
 
 @login_required
