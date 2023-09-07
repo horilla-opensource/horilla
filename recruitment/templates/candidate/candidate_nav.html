@@ -173,8 +173,8 @@ x-data="{searchShow: false}"
           newURL = currentURL + separator + "view="+view;        
         }       
         history.pushState({}, "", newURL);       
-        // $('#candidate-search').attr('hx-vals',`{"view":"${view}"}`);     
-        // $('#filterForm').attr("hx-vals", `{"view":"${view}"}`);
+        $('#candidate-search').attr('hx-vals',`{"view":"${view}"}`);     
+        $('#filterForm').attr("hx-vals", `{"view":"${view}"}`);
         
       }    
     });
