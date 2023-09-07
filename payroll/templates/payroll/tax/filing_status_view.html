@@ -44,5 +44,14 @@
 <div class="oh-modal" id="TaxBracketModal" role="dialog" aria-labelledby="TaxBracketModal" aria-hidden="true">
     <div class="oh-modal__dialog" style="max-width: 550px" id="TaxBracketFormTarget"></div>
 </div>
+<script>
+    $(document).ready(function () {
+      $(".oh-accordion-meta__header").click(function () {
+        var target = $(this).data("target");
+        $(this).toggleClass("oh-accordion-meta__header--show");
+        $(target).toggleClass("d-none");
+      });
+    });
+</script>
 {% endblock content %}
 

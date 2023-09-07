@@ -28,6 +28,7 @@
               class="oh-btn oh-stop-prop oh-accordion-meta__btn"
               @click="open = !open"
               @click.outside="open = false"
+              onclick=event.stopPropagation()
             >
               {% trans "Actions" %}
               <ion-icon
@@ -92,15 +93,6 @@
         ></div>
       </div>
       {% endfor %}
-      <script>
-        $(document).ready(function () {
-          $(".oh-accordion-meta__header").click(function () {
-            var target = $(this).data("target");
-            $(this).toggleClass("oh-accordion-meta__header--show");
-            $(target).toggleClass("d-none");
-          });
-        });
-      </script>
     </div>
   </div>
 </div>
