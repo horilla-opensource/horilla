@@ -33,18 +33,4 @@ $(document).ready(function () {
       stageBadge.html(count-1)
     }
     });
-
-    badges = $('.oh-badge[data-rec-stage-badge]')
-    $.each(badges, function (indexInArray, valueOfElement) { 
-       stageBadgeId = $(valueOfElement).attr('data-rec-stage-badge');
-       stageBadges = $(`[data-rec-stage-badge="${stageBadgeId}"]`)
-       count = 0
-       $.each(stageBadges, function (indexInArray, valueOfElement) { 
-         count = parseInt($(valueOfElement).html()) + count
-       });
-       $(`#recruitmentCandidateCount${stageBadgeId}`).html(count)
-    });
-
-
-
   });

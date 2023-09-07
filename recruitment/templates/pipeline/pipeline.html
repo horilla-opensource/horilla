@@ -65,8 +65,9 @@
             <div class="pipeline-toggle w-75" data-stage-id="{{stage.id}}">
               <div class="oh-tabs__input-badge-container">
                 <span
-                  class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round ms-2 mr-2"
+                  class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round ms-2 mr-2 stage_count"
                   data-rec-stage-badge="{{rec.id}}"
+                  title="{{stage.candidate_set.all|length}} candidates"
                   id="stageCount{{stage.id}}"
                   >{{stage.candidate_set.all|length}}</span
                 >
@@ -134,7 +135,7 @@
             </div>
           </div>
           <div
-            class="oh-tabs__movable-body position-relative pipeline_items"
+            class="oh-tabs__movable-body position-relative pipeline_items recruitment_items"
             data-stage-toggle-id="{{stage.id}}"
           >
             <div
@@ -172,7 +173,7 @@
                   {% for cand in stage.candidate_set.all%} {% if cand.is_active %}
 
                   <div
-                    class="oh-sticky-table__tr oh-table-config__tr candidate ui-droppable ui-sortable-handle cand change-cand"
+                    class="oh-sticky-table__tr oh-table-config__tr candidate ui-droppable ui-sortable-handle cand change-cand "
                     data-candidate-id="{{cand.id}}"
                     data-drop="candidate"
                     data-change-cand-id="{{cand.id}}"
