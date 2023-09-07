@@ -76,7 +76,10 @@ def dashboard(request):
 
     total_vacancy = 0
     for openings in recruitment_obj:
-        total_vacancy += openings.vacancy
+        if openings.vacancy == None:
+            pass
+        else:
+            total_vacancy += openings.vacancy
 
     hired_candidates = candidates.filter(hired=True)
     total_candidates = len(candidates)
@@ -209,7 +212,8 @@ def dashboard_vacancy(request):
         vacancies_for_department = recruitment_obj.filter(
             job_position_id__department_id=dep
         )
-        vacancies = [int(rec.vacancy) for rec in vacancies_for_department]
+
+        vacancies = [int(rec.vacancy) if rec.vacancy is not None else 0 for rec in vacancies_for_department]
 
         data_set[0]["data"].append([sum(vacancies)])
 
