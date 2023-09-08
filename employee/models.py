@@ -83,6 +83,7 @@ class Employee(models.Model):
     is_active = models.BooleanField(default=True)
     additional_info = models.JSONField(null=True, blank=True)
     objects = models.Manager()
+
     def __str__(self) -> str:
         last_name = (
             self.employee_last_name if self.employee_last_name is not None else ""
@@ -217,6 +218,7 @@ class EmployeeWorkInformation(models.Model):
     history = HistoricalRecords(
         related_name="employee_work_info_history",
     )
+    objects = models.Manager()
 
     def __str__(self) -> str:
         return f"{self.employee_id} - {self.job_position_id}"
@@ -251,6 +253,7 @@ class EmployeeBankDetails(models.Model):
         max_length=50, null=True, blank=True, verbose_name="Bank Code #2"
     )
     additional_info = models.JSONField(null=True, blank=True)
+    objects = models.Manager()
 
     def __str__(self) -> str:
         return f"{self.employee_id}-{self.bank_name}"
