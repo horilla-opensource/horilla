@@ -43,6 +43,7 @@
         aria-label="Search Input"
         id="filter-deduction"
         name="search"
+        hx-vals = '{"view":"{{request.GET.view}}"}'
         placeholder="{% trans 'Search' %}"
         hx-get="{% url 'filter-deduction' %}"
         hx-trigger="keyup changed delay:500ms, search"
@@ -53,10 +54,10 @@
     <div class="oh-main__titlebar-button-container">
       <ul class="oh-view-types ml-2" style="margin-bottom: 0;">
         <li class="oh-view-type deduction-view-type" data-view="list">
-        <a hx-get="{% url 'deduction-view-type' %}?view=list" hx-target="#payroll-deduction-container" class="oh-btn oh-btn--view "><ion-icon name="list-outline" role="img" class="md hydrated" aria-label="list outline"></ion-icon></a>
+        <a hx-get="{% url 'filter-deduction' %}?view=list" hx-target="#payroll-deduction-container" class="oh-btn oh-btn--view "><ion-icon name="list-outline" role="img" class="md hydrated" aria-label="list outline"></ion-icon></a>
         </li>
         <li class="oh-view-type deduction-view-type" data-view="card">
-        <a hx-get="{% url 'deduction-view-type' %}?view=card" hx-target="#payroll-deduction-container" class="oh-btn oh-btn--view"><ion-icon name="grid-outline" role="img" class="md hydrated" aria-label="grid outline"></ion-icon></a>
+        <a hx-get="{% url 'filter-deduction' %}?view=card" hx-target="#payroll-deduction-container" class="oh-btn oh-btn--view"><ion-icon name="grid-outline" role="img" class="md hydrated" aria-label="grid outline"></ion-icon></a>
         </li>
       </ul>
       <div class="oh-dropdown" x-data="{open: false}">
@@ -94,8 +95,11 @@
   </div>
 </section>
 <div id="payroll-deduction-container" class="oh-wrapper">
-  {% comment %} {% include 'payroll/deduction/list_deduction.html' %} {% endcomment %}
+  {% if request.GET.view == "list" %}
+  {% include 'payroll/deduction/list_deduction.html' %}
+  {% else %}
   {% include 'payroll/deduction/card_deduction.html' %}
+  {% endif %}
 </div>
 <div class="oh-modal" id="DeductionModal" role="dialog" aria-labelledby="DeductionModal" aria-hidden="true">
   <div class="oh-modal__dialog" style="max-width: 600px" id="OneDeductionTarget"></div>
@@ -107,6 +111,50 @@
       var view = $(this).attr("data-view")
       $("#filter-deduction").attr("hx-vals", `{"view":"${view}"}`);
       $("#filterView").val(view);
+      var currentURL = window.location.href;     
+      if (/\?view=[^&]+/.test(currentURL)) {          
+        newURL = currentURL.replace(/\?view=[^&]+/, "?view="+view);      
+      }        
+      else {          
+        var separator = currentURL.includes('?') ? '&' : '?';  
+        newURL = currentURL + separator + "view="+view;        
+      }       
+      history.pushState({}, "", newURL);
+    });
+    $("#filter-deduction").focusout(function (e) {
+      $("#filterSearch").val($(this).val());
+      const formData = $("#filterForm").serializeArray();
+      const jsonObject = {};
+      
+      $.each(formData, function() {
+          jsonObject[this.name] = this.value;
+      });
+      delete jsonObject.view
+      var hxVals = JSON.stringify(jsonObject)
+      $(".deduction-view-type a").attr("hx-vals", hxVals);      
+    });
+
+    $("#filter-deduction").keyup(function (e) { 
+      const formData = $("#filterForm").serializeArray();
+      const jsonObject = {};
+      
+      $.each(formData, function() {
+          jsonObject[this.name] = this.value;
+      });
+      delete jsonObject.search
+      var hxVals = JSON.stringify(jsonObject)
+      $(this).attr("hx-vals", hxVals);   
+    });
+    $("#filterSubmit").click(function (e) { 
+      const formData = $("#filterForm").serializeArray();
+      const jsonObject = {};
+      
+      $.each(formData, function() {
+          jsonObject[this.name] = this.value;
+      });
+      delete jsonObject.view
+      var hxVals = JSON.stringify(jsonObject)
+      $(".deduction-view-type").attr("hx-vals", hxVals);   
     });
   });
 </script>
