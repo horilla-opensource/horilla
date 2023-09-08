@@ -9,7 +9,6 @@ from payroll.views import component_views
 urlpatterns = [
     path("create-allowance", component_views.create_allowance, name="create-allowance"),
     path("view-allowance", component_views.view_allowance, name="view-allowance"),
-    path("view-allowance-type", component_views.view_allowance_view, name="allowance-view-type"),
     path(
         "single-allowance-view/<int:allowance_id>",
         component_views.view_single_allowance,
@@ -28,7 +27,6 @@ urlpatterns = [
     ),
     path("create-deduction", component_views.create_deduction, name="create-deduction"),
     path("view-deduction", component_views.view_deduction, name="view-deduction"),
-    path("view-deduction-type", component_views.view_deduction_view, name="deduction-view-type"),
     path(
         "single-deduction-view/<int:deduction_id>",
         component_views.view_single_deduction,

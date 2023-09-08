@@ -44,6 +44,7 @@
         name="search"
         placeholder="{% trans 'Search' %}"
         hx-get="{% url 'filter-allowance' %}"
+        hx-vals = '{"view":"{{request.GET.view}}"}'
         hx-trigger="keyup changed delay:500ms, search"
         hx-target="#payroll-allowance-container"
         hx-swap="innerHTML"
@@ -66,10 +67,10 @@
     <div class="oh-main__titlebar-button-container">
       <ul class="oh-view-types ml-2" style="margin-bottom: 0;">
         <li class="oh-view-type allowance-view-type" data-view="list">
-        <a hx-get="{% url 'allowance-view-type' %}?view=list" hx-target="#payroll-allowance-container" class="oh-btn oh-btn--view "><ion-icon name="list-outline" role="img" class="md hydrated" aria-label="list outline"></ion-icon></a>
+        <a hx-get="{% url 'filter-allowance' %}?view=list" hx-target="#payroll-allowance-container" class="oh-btn oh-btn--view "><ion-icon name="list-outline" role="img" class="md hydrated" aria-label="list outline"></ion-icon></a>
         </li>
         <li class="oh-view-type allowance-view-type" data-view="card">
-        <a hx-get="{% url 'allowance-view-type' %}?view=card" hx-target="#payroll-allowance-container" class="oh-btn oh-btn--view"><ion-icon name="grid-outline" role="img" class="md hydrated" aria-label="grid outline"></ion-icon></a>
+        <a hx-get="{% url 'filter-allowance' %}?view=card" hx-target="#payroll-allowance-container" class="oh-btn oh-btn--view"><ion-icon name="grid-outline" role="img" class="md hydrated" aria-label="grid outline"></ion-icon></a>
         </li>
       </ul>
       <div class="oh-btn-group ml-2">
@@ -96,8 +97,11 @@
   </div>
 </section>
 <div id="payroll-allowance-container" class="oh-wrapper">
+  {% if request.GET.view == 'list' %}
+  {% include 'payroll/allowance/list_allowance.html' %}
+  {% else %}
   {% include 'payroll/allowance/card_allowance.html' %}
-  {% comment %} {% include 'payroll/allowance/list_allowance.html' %} {% endcomment %}
+  {% endif %}
 </div>
 <div class="oh-modal" id="AllowanceModal" role="dialog" aria-labelledby="AllowanceModal" aria-hidden="true">
   <div class="oh-modal__dialog" style="max-width: 550px" id="OneAllowanceTarget"></div>
@@ -134,6 +138,50 @@
       var view = $(this).attr("data-view")
       $("#filter-allowance").attr("hx-vals", `{"view":"${view}"}`);
       $("#filterView").val(view);
+      var currentURL = window.location.href;     
+      if (/\?view=[^&]+/.test(currentURL)) {          
+        newURL = currentURL.replace(/\?view=[^&]+/, "?view="+view);      
+      }        
+      else {          
+        var separator = currentURL.includes('?') ? '&' : '?';  
+        newURL = currentURL + separator + "view="+view;        
+      }       
+      history.pushState({}, "", newURL);
+    });
+    $("#filter-allowance").focusout(function (e) {
+      $("#filterSearch").val($(this).val());
+      const formData = $("#filterForm").serializeArray();
+      const jsonObject = {};
+      
+      $.each(formData, function() {
+          jsonObject[this.name] = this.value;
+      });
+      delete jsonObject.view
+      var hxVals = JSON.stringify(jsonObject)
+      $(".allowance-view-type a").attr("hx-vals", hxVals);      
+    });
+
+    $("#filter-allowance").keyup(function (e) { 
+      const formData = $("#filterForm").serializeArray();
+      const jsonObject = {};
+      
+      $.each(formData, function() {
+          jsonObject[this.name] = this.value;
+      });
+      delete jsonObject.search
+      var hxVals = JSON.stringify(jsonObject)
+      $(this).attr("hx-vals", hxVals);   
+    });
+    $("#filterSubmit").click(function (e) { 
+      const formData = $("#filterForm").serializeArray();
+      const jsonObject = {};
+      
+      $.each(formData, function() {
+          jsonObject[this.name] = this.value;
+      });
+      delete jsonObject.view
+      var hxVals = JSON.stringify(jsonObject)
+      $(".allowance-view-type").attr("hx-vals", hxVals);   
     });
   });
 </script>

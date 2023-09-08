@@ -222,21 +222,6 @@ def view_allowance(request):
     )
 
 
-@login_required
-@permission_required("payroll.view_allowance")
-def view_allowance_view(request):
-    """
-    This method is used to switch view for allowance
-    """
-    list_view = "payroll/allowance/list_allowance.html"
-    card_view = "payroll/allowance/card_allowance.html"
-    template = card_view
-    if request.GET.get('view') == "list":
-        template = list_view
-    allowances = payroll.models.models.Allowance.objects.all()
-    allowance_filter = AllowanceFilter(request.GET)
-    allowances = paginator_qry(allowances, request.GET.get("page"))
-    return render(request, template, {"allowances": allowances, "f": allowance_filter},)
 
 
 @login_required
@@ -259,6 +244,7 @@ def filter_allowance(request):
     """
     Filter and retrieve a list of allowances based on the provided query parameters.
     """
+    print(request.GET)
     query_string = request.environ["QUERY_STRING"]
     allowances = AllowanceFilter(request.GET).qs
     list_view = "payroll/allowance/list_allowance.html"
@@ -357,22 +343,6 @@ def view_deduction(request):
         {"deductions": deductions, "f": deduction_filter},
     )
 
-
-@login_required
-@permission_required("payroll.view_allowance")
-def view_deduction_view(request):
-    """
-    This method is used to switch view for allowance
-    """
-    list_view = "payroll/deduction/list_deduction.html"
-    card_view = "payroll/deduction/card_deduction.html"
-    template = card_view
-    if request.GET.get('view') == "list":
-        template = list_view
-    deductions = payroll.models.models.Deduction.objects.all()
-    deductions_filter = DeductionFilter(request.GET)
-    deductions = paginator_qry(deductions, request.GET.get("page"))
-    return render(request, template, {"deductions": deductions, "f": deductions_filter})
 
 @login_required
 @permission_required("payroll.view_allowance")
