@@ -148,9 +148,11 @@
             </a>
             <div class="oh-sidebar__submenu" id="payRollNav" x-show="isOpen" x-transition style="display: none;">
                <ul class="oh-sidebar__submenu-items">
+               {% if perms.payroll.view_payroll  %} 
                   <li class="oh-sidebar__submenu-item">
                      <a href="{%url 'view-payroll-dashboard' %}" class="oh-sidebar__submenu-link">{% trans "Dashboard" %}</a>
                   </li>
+               {% endif %}
                {% if perms.payroll.view_allowance  %} 
                   <li class="oh-sidebar__submenu-item">
                      <a href="{%url 'view-contract' %}" class="oh-sidebar__submenu-link">{% trans "Contract" %}</a>
