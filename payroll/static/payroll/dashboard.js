@@ -408,7 +408,7 @@ $(document).ready(function(){
     $("#department_total").on("click",".department",function(){
         department = $(this).children(".department_item").text()
         $.ajax({
-            url: '/payroll/filter-payslip?department='+department,
+            url: '/payroll/filter-payslip?dashboard=true&department='+department,
             type: "GET",
             dataType: "html",
             headers: {

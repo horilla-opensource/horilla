@@ -397,10 +397,12 @@ def view_payroll_dashboard(request):
     paid = Payslip.objects.filter(status="paid")
     posted = Payslip.objects.filter(status="confirmed")
     review_ongoing = Payslip.objects.filter(status="review_ongoing")
+    draft = Payslip.objects.filter(status="draft")
     context = {
         "paid": paid,
         "posted": posted,
         "review_ongoing": review_ongoing,
+        "draft": draft,
     }
     return render(request, "payroll/dashboard.html", context=context)
 
@@ -426,12 +428,13 @@ def dashboard_employee_chart(request):
             labels.append(employee.employee_id)
 
         colors = [
-        "rgba(245, 60, 60, 1)",  # Red
-        "rgba(245, 245, 60, 1)",  # yellow
-        "rgba(60, 245, 60, 1)",  # green
+        "rgba(255, 99, 132, 1)",  # Red
+        "rgba(255, 206, 86, 1)",  # Yellow
+        "rgba(54, 162, 235, 1)",  # Blue
+        "rgba(75, 242, 182, 1)",  #green
         ]
 
-        for choice, color in zip(Payslip.status_choices[1:], colors):
+        for choice, color in zip(Payslip.status_choices, colors):
             dataset.append(
                 {
                     "label": choice[0],
@@ -464,7 +467,7 @@ def dashboard_employee_chart(request):
                 f"{employee.employee_first_name} {employee.employee_last_name}"
             )
 
-        for value, choice in zip(dataset, Payslip.status_choices[1:]):
+        for value, choice in zip(dataset, Payslip.status_choices):
             if value["label"] == choice[0]:
                 value["label"] = choice[1]
 
