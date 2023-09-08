@@ -1,7 +1,28 @@
+"""
+admin.py
+
+This page is used to register base models with admins site.
+"""
 from django.contrib import admin
 from simple_history.admin import SimpleHistoryAdmin
 
-from base.models import Company, Department, JobPosition, JobRole, EmployeeShiftSchedule, EmployeeShift, EmployeeShiftDay, EmployeeType, WorkType, RotatingWorkType,RotatingWorkTypeAssign ,RotatingShift,RotatingShiftAssign, ShiftRequest,WorkTypeRequest
+from base.models import (
+    Company,
+    Department,
+    JobPosition,
+    JobRole,
+    EmployeeShiftSchedule,
+    EmployeeShift,
+    EmployeeShiftDay,
+    EmployeeType,
+    WorkType,
+    RotatingWorkType,
+    RotatingWorkTypeAssign,
+    RotatingShift,
+    RotatingShiftAssign,
+    ShiftRequest,
+    WorkTypeRequest,
+)
 
 # Register your models here.
 

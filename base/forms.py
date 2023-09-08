@@ -1180,11 +1180,7 @@ class ChangePasswordForm(forms.Form):
         confirm_password = cleaned_data.get("confirm_password")
         if new_password and confirm_password and new_password != confirm_password:
             raise ValidationError(
-                {
-                    "new_password": _(
-                        "New password and confirm password do not match"
-                    )
-                }
+                {"new_password": _("New password and confirm password do not match")}
             )
 
         return cleaned_data

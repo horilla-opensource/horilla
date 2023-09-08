@@ -1948,7 +1948,6 @@ def work_type_request_update(request, id):
 
 
 @login_required
-@permission_required("base.delete_worktyperequest")
 @require_http_methods(["POST"])
 def work_type_request_delete(request, id):
     """
@@ -2319,7 +2318,6 @@ def shift_request_bulk_approve(request):
 
 
 @login_required
-@permission_required("delete_shiftrequest")
 @require_http_methods(["POST"])
 def shift_request_delete(request, id):
     """
