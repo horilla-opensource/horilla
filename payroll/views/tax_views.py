@@ -10,10 +10,12 @@ django.shortcuts module.
 
 """
 import math
+from urllib.parse import parse_qs
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from horilla.decorators import permission_required, login_required
+from base.methods import get_key_instances
 from payroll.models.tax_models import (
     TaxBracket,
 )
@@ -120,9 +122,12 @@ def filing_status_search(request):
     search = request.GET.get("search")
     status = FilingStatus.objects.filter(filing_status__icontains = search)
     previous_data = request.environ["QUERY_STRING"]
+    data_dict = parse_qs(previous_data)
+    get_key_instances(FilingStatus, data_dict)
     context = {
         "status" :status,
         "pd":previous_data,
+        "filter_dict": data_dict,
     }
     return render(request, "payroll/tax/filing_status_list.html", context)
 
