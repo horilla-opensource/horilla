@@ -6,7 +6,8 @@
   hx-swap="innerHTML"
   hx-target="#payroll-deduction-container"
 >
-<input type="hidden" name="view" id="#filterView">
+<input type="hidden" name="view" id="filterView" value="{{request.GET.view}}">
+<input type="hidden" name="search" id="filterSearch">
   <div class="oh-dropdown__filter-body">
     <div class="oh-accordion">
       <div class="oh-accordion-header">{% trans "Deduction" %}</div>
