@@ -22,7 +22,7 @@
         <div class="oh-dashboard row" id="dashboard">
             <div class="oh-dashboard__left col-12 col-sm-12 col-md-12 col-lg-12">
                 <div class="oh-dashboard__cards row">
-                    <div class="col-12 col-sm-12 col-md-6 col-lg-4 filter">
+                    <div class="col-12 col-sm-12 col-md-6 col-lg-3 filter">
                         <div class="oh-card-dashboard oh-card-dashboard oh-card-dashboard--success" 
                             hx-get="{% url 'filter-payslip' %}?dashboard=true&status=paid"
                             hx-target="#dashboard">
@@ -34,8 +34,8 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-12 col-sm-12 col-md-6 col-lg-4 filter">
-                        <div class="oh-card-dashboard oh-card-dashboard--warning"
+                    <div class="col-12 col-sm-12 col-md-6 col-lg-3 filter">
+                        <div class="oh-card-dashboard oh-card-dashboard--neutral"
                             hx-get="{% url 'filter-payslip' %}?dashboard=true&status=confirmed"
                             hx-target="#dashboard"
                         >
@@ -47,8 +47,8 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-12 col-sm-12 col-md-6 col-lg-4 filter">
-                        <div class="oh-card-dashboard oh-card-dashboard--danger"
+                    <div class="col-12 col-sm-12 col-md-6 col-lg-3 filter">
+                        <div class="oh-card-dashboard oh-card-dashboard--warning"
                             hx-get="{% url 'filter-payslip' %}?dashboard=true&status=review_ongoing"
                             hx-target="#dashboard"
                         >
@@ -58,6 +58,21 @@
                             <div class="oh-card-dashboard__body">
                                 <a style="text-decoration: none;" class="oh-card-dashboard__counts">
                                     <span class="oh-card-dashboard__count"> {{review_ongoing|length}} </span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-12 col-md-6 col-lg-3 filter">
+                        <div class="oh-card-dashboard oh-card-dashboard--danger"
+                            hx-get="{% url 'filter-payslip' %}?dashboard=true&status=draft"
+                            hx-target="#dashboard"
+                        >
+                            <div style="text-decoration: none;" class="oh-card-dashboard__header">
+                                <span class="oh-card-dashboard__title">{% trans "Draft" %}</span>
+                            </div>
+                            <div class="oh-card-dashboard__body">
+                                <a style="text-decoration: none;" class="oh-card-dashboard__counts">
+                                    <span class="oh-card-dashboard__count"> {{draft|length}} </span>
                                 </a>
                             </div>
                         </div>
