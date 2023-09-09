@@ -244,7 +244,6 @@ def filter_allowance(request):
     """
     Filter and retrieve a list of allowances based on the provided query parameters.
     """
-    print(request.GET)
     query_string = request.environ["QUERY_STRING"]
     allowances = AllowanceFilter(request.GET).qs
     list_view = "payroll/allowance/list_allowance.html"
@@ -252,7 +251,6 @@ def filter_allowance(request):
     template = card_view
     if request.GET.get('view') == "list":
         template = list_view
-    print()
     allowances = paginator_qry(allowances, request.GET.get("page"))
     data_dict = parse_qs(query_string)
     get_key_instances(Allowance, data_dict)
