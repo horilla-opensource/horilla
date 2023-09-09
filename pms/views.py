@@ -1,6 +1,7 @@
 import json
 import datetime
 from urllib.parse import parse_qs
+from itertools import tee
 from django.http import HttpResponse, JsonResponse
 from django.db.utils import IntegrityError
 from django.db.models import Q
@@ -11,6 +12,10 @@ from django.utils.translation import gettext_lazy as _
 from django.shortcuts import get_object_or_404, render, redirect
 from horilla.decorators import manager_can_enter
 from horilla.decorators import login_required, hx_request_required
+from notifications.signals import notify
+from base.methods import get_key_instances
+from base.models import Department, JobPosition
+from employee.models import Employee, EmployeeWorkInformation
 from pms.filters import ObjectiveFilter, FeedbackFilter
 from pms.models import (
     EmployeeKeyResult,
@@ -22,12 +27,8 @@ from pms.models import (
     Answer,
     Period,
     QuestionOptions,
-    KeyresultFeedback,
+    KeyResultFeedback,
 )
-from base.models import Department, JobPosition
-from base.methods import get_key_instances
-from employee.models import Employee, EmployeeWorkInformation
-from itertools import tee
 from .forms import (
     QuestionForm,
     ObjectiveForm,
@@ -37,7 +38,6 @@ from .forms import (
     PeriodForm,
     QuestionTemplateForm,
 )
-from notifications.signals import notify
 
 
 @login_required
@@ -133,15 +133,15 @@ def objective_creation(request):
 @login_required
 @hx_request_required
 @manager_can_enter(perm="pms.change_employeeobjective")
-def objective_update(request, id):
+def objective_update(request, obj_id):
     """
     This view takes one arguments, id , and returns a HttpResponse object.,using htmx
     Args:
-        id (int): Primarykey of EmployeeObjective.
+        id (int): Primary key of EmployeeObjective.
     Returns:
         A HttpResponse object with the content Form errors.
     """
-    instance = EmployeeObjective.objects.get(id=id)
+    instance = EmployeeObjective.objects.get(id=obj_id)
     objective_form = ObjectiveForm(instance=instance)
     context = {"objective_form": objective_form}
     if request.method == "POST":
@@ -176,7 +176,7 @@ def objective_update(request, id):
 
 @login_required
 @manager_can_enter(perm="pms.delete_employeeobjective")
-def objective_delete(request, id):
+def objective_delete(request, obj_id):
     """
     This view takes one arguments, id and returns redirecting to a view.
     Args:
@@ -184,7 +184,7 @@ def objective_delete(request, id):
     Returns:
         Redirect to Objective_list_view".
     """
-    objective = EmployeeObjective.objects.get(id=id)
+    objective = EmployeeObjective.objects.get(id=obj_id)
     objective.delete()
     messages.success(
         request,
@@ -436,14 +436,14 @@ def objective_detailed_view_activity(request, id):
     """
     This view is used to show objective activity template ,using htmx
     Args:
-        id (int): Primarykey of EmployeeObjective.
+        id (int): Primary key of EmployeeObjective.
     Returns:
         it will return history,comment object to objective_detailed_view_activity.
     """
 
     history = objective_history(id)
-    objecitve = EmployeeObjective.objects.get(id=id)
-    comments = Comment.objects.filter(employee_objective_id=objecitve)
+    objective = EmployeeObjective.objects.get(id=id)
+    comments = Comment.objects.filter(employee_objective_id=objective)
     context = {
         "historys": history,
         "comments": comments,
@@ -457,16 +457,16 @@ def objective_detailed_view_comment(request, id):
     """
     This view is used to create comment object for objective activity, using htmx
     Args:
-        id (int): Primarykey of EmployeeObjective.
+        id (int): Primary key of EmployeeObjective.
     Returns:
         it will redirect to objective_detailed_view_activity.
     """
     comment_form = ObjectiveCommentForm(request.POST)
     if comment_form.is_valid():
-        objecitve = EmployeeObjective.objects.get(id=id)
+        objective = EmployeeObjective.objects.get(id=id)
         form = comment_form.save(commit=False)
         form.employee_id = request.user.employee_get
-        form.employee_objective_id = objecitve
+        form.employee_objective_id = objective
         form.save()
 
         return redirect(objective_detailed_view_activity, id)
@@ -557,11 +557,11 @@ def objective_archive(request, id):
             redirect to objective_list_view
     """
     objective = EmployeeObjective.objects.get(id=id)
-    if objective.archive == True:
+    if objective.archive:
         objective.archive = False
         objective.save()
         messages.info(request, _("Objective un-archived successfully!."))
-    elif objective.archive == False:
+    elif not objective.archive:
         objective.archive = True
         objective.save()
         messages.info(request, _("Objective archived successfully!."))
@@ -1143,7 +1143,7 @@ def feedback_answer_post(request, id):
         for key_result in feedback.employee_key_results_id.all():
             if request.POST.get(f"key_result{key_result.id}"):
                 answer = request.POST.get(f"key_result{key_result.id}")
-                KeyresultFeedback.objects.get_or_create(
+                KeyResultFeedback.objects.get_or_create(
                     answer={"answer": answer},
                     key_result_id=key_result,
                     feedback_id=feedback,
@@ -1171,7 +1171,7 @@ def feedback_answer_view(request, id):
     employee = Employee.objects.filter(employee_user_id=user).first()
     feedback = Feedback.objects.get(id=id)
     answers = Answer.objects.filter(feedback_id=feedback, employee_id=employee)
-    key_result_feedback = KeyresultFeedback.objects.filter(
+    key_result_feedback = KeyResultFeedback.objects.filter(
         feedback_id=feedback, employee_id=employee
     )
 
@@ -1256,11 +1256,11 @@ def feedback_archive(request, id):
     """
 
     feedback = Feedback.objects.get(id=id)
-    if feedback.archive == True:
+    if feedback.archive:
         feedback.archive = False
         feedback.save()
         messages.info(request, _("Feedback un-archived successfully!."))
-    elif feedback.archive == False:
+    elif not feedback.archive:
         feedback.archive = True
         feedback.save()
         messages.info(request, _("Feedback archived successfully!."))
@@ -1498,7 +1498,7 @@ def question_template_view(request):
 
 @login_required
 @manager_can_enter(perm="pms.view_questiontemplate")
-def question_template_detailed_view(request, id):
+def question_template_detailed_view(request, template_id):
     """
     This view is used to  view question template object.
     Args:
@@ -1508,7 +1508,7 @@ def question_template_detailed_view(request, id):
         it will redirect to  question_template_detailed_view.
     """
 
-    question_template = QuestionTemplate.objects.get(id=id)
+    question_template = QuestionTemplate.objects.get(id=template_id)
     questions = question_template.question.all()
     question_types = ["text", "ratings", "boolean", "multi-choices", "likert"]
     options = QuestionOptions.objects.filter(question_id__in=questions)
@@ -1532,7 +1532,7 @@ def question_template_detailed_view(request, id):
 
 @login_required
 @manager_can_enter(perm="pms.change_questiontemplate")
-def question_template_update(request, id):
+def question_template_update(request, template_id):
     """
     This view is used to  update  question template object.
     Args:
@@ -1541,7 +1541,7 @@ def question_template_update(request, id):
         it will redirect to  question_template_view.
 
     """
-    question_template = QuestionTemplate.objects.filter(id=id).first()
+    question_template = QuestionTemplate.objects.filter(id=template_id).first()
     question_update_form = QuestionTemplateForm(instance=question_template)
     context = {"question_update_form": question_update_form}
     if request.method == "POST":
@@ -1558,7 +1558,7 @@ def question_template_update(request, id):
 
 @login_required
 @manager_can_enter(perm="pms.delete_questiontemplate")
-def question_template_delete(request, id):
+def question_template_delete(request, template_id):
     """
     This view is used to  delete  question template object.
     Args:
@@ -1567,7 +1567,7 @@ def question_template_delete(request, id):
         it will redirect to  question_template_view.
     """
 
-    question_template = QuestionTemplate.objects.get(id=id)
+    question_template = QuestionTemplate.objects.get(id=template_id)
     if Feedback.objects.filter(question_template_id=question_template):
         messages.info(request, _("This template is using in a feedback"))
         return redirect(question_template_view)
@@ -1618,7 +1618,7 @@ def period_create(request):
 
 @login_required
 @manager_can_enter(perm="pms.change_period")
-def period_update(request, id):
+def period_update(request, period_id):
     """
     This view is used to update period objects.
     Args:
@@ -1627,7 +1627,7 @@ def period_update(request, id):
         it will redirect to period_view.
     """
 
-    period = Period.objects.filter(id=id).first()
+    period = Period.objects.filter(id=period_id).first()
     form = PeriodForm(instance=period)
     context = {"form": form}
     if request.method == "POST":
@@ -1646,7 +1646,7 @@ def period_update(request, id):
 
 @login_required
 @manager_can_enter(perm="pms.delete_period")
-def period_delete(request, id):
+def period_delete(request, period_id):
     """
     This view is used to delete period objects.
     Args:
@@ -1655,7 +1655,7 @@ def period_delete(request, id):
         it will redirect to period_view.
     """
 
-    obj_period = Period.objects.get(id=id)
+    obj_period = Period.objects.get(id=period_id)
     obj_period.delete()
     messages.info(request, _("Period deleted successfully."))
     return redirect(period_view)

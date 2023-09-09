@@ -12,7 +12,7 @@
 </div>
 {% endif %}
 <span class="oh-modal__dialog-title" id="addEmployeeModalLabel">{% trans "Update Period" %}</span>
-<form hx-post="{% url 'period-update' id=form.instance.id %}" hx-target="#periodModalTarget"> 
+<form hx-post="{% url 'period-update' period_id=form.instance.id %}" hx-target="#periodModalTarget"> 
     {% csrf_token %}
   <section>
     <div id="periodContainer">

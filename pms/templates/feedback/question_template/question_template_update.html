@@ -1,5 +1,5 @@
 {% load i18n %}
-<form method="post" action="{% url 'question-template-update' id=question_update_form.instance.id %}">
+<form method="post" action="{% url 'question-template-update' template_id=question_update_form.instance.id %}">
   {% csrf_token %}
   <div class="oh-modal__dialog-body m-2">
     <div class="oh-input__group">

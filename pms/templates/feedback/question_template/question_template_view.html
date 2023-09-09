@@ -56,7 +56,7 @@
           {% for question_template in question_templates %}
           <div class="oh-sticky-table__tr" draggable="true">
             <a style="color: inherit;text-decoration: none;"
-              href="{% url 'question-template-detailed-view' id=question_template.id %}" class="oh-sticky-table__sd">
+              href="{% url 'question-template-detailed-view' template_id=question_template.id %}" class="oh-sticky-table__sd">
               <div class="oh-profile oh-profile--md">
                 <div class="oh-profile__avatar mr-1">
                   <img src="https://ui-avatars.com/api/?name={{question_template.question_template}}&background=random"
@@ -66,14 +66,14 @@
               </div>
             </a>
             <a style="color: inherit;text-decoration: none;"
-              href="{% url 'question-template-detailed-view' id=question_template.id %}"
+              href="{% url 'question-template-detailed-view' template_id=question_template.id %}"
               class="oh-sticky-table__td">{{question_template.question.count}}</a>
             <div class="oh-sticky-table__td">
               <div class="oh-btn-group ">
                 <a class="oh-btn oh-btn--light-bkg w-100 " data-toggle="oh-modal-toggle" data-target="#questionTemplateUpdateModal"
-                  hx-get="{% url 'question-template-update'  id=question_template.id %}" title="{% trans 'Update' %}" hx-target="#questionTemplateUpdateModalTarget" > <ion-icon
+                  hx-get="{% url 'question-template-update'  template_id=question_template.id %}" title="{% trans 'Update' %}" hx-target="#questionTemplateUpdateModalTarget" > <ion-icon
                   name="create-outline" role="img" class="md hydrated" aria-label="create outline"></ion-icon></a>
-                <a class="oh-btn oh-btn--danger-outline  w-100" onclick="return confirm('{% trans "Do you want to delete this question template?" %}')" href="{% url 'question-template-delete' id=question_template.id %}">
+                <a class="oh-btn oh-btn--danger-outline  w-100" onclick="return confirm('{% trans "Do you want to delete this question template?" %}')" href="{% url 'question-template-delete' template_id=question_template.id %}">
                   <ion-icon name="trash-outline" role="img" class="md hydrated" aria-label="trash outline"></ion-icon>
                 </a>
               </div>

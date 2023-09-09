@@ -107,7 +107,7 @@
                 </form>
                 {% endif %} {% if perms.pms.delete_employeeobjective %}
                 <form
-                  action="{% url 'objective-delete' id=own_objective.id %}"
+                  action="{% url 'objective-delete' obj_id=own_objective.id %}"
                   onsubmit="return confirm('{% trans "Do you want Delete this OKR ?" %}')"
                   method="post"
                   style="display: contents"
@@ -303,7 +303,7 @@
                 </form>
                 {% endif %} {% if perms.pms.delete_employeeobjective %}
                 <form
-                  action="{% url 'objective-delete' id=all_objective.id %}"
+                  action="{% url 'objective-delete' obj_id=all_objective.id %}"
                   onsubmit="return confirm('{% trans "Do you want delete this OKR ?" %}')"
                   method="post"
                   style="display: contents"

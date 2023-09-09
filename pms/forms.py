@@ -4,10 +4,9 @@ forms.py
 This module is used to register the forms for pms models
 """
 import uuid
+from django import forms
 from django.core.exceptions import ValidationError
-from django import forms
 from django.utils.translation import gettext_lazy as _
-from django import forms
 from employee.models import Department, JobPosition
 from pms.models import (
     Question,
@@ -23,6 +22,9 @@ from pms.models import (
 
 
 def validate_date(start_date, end_date):
+    """
+    Validates that the start date is before or equal to the end date.
+    """
     if start_date and end_date and start_date > end_date:
         raise forms.ValidationError("The start date must be before the end date.")
 
@@ -102,11 +104,18 @@ class ObjectiveForm(forms.ModelForm):
     )
 
     class Meta:
+        """
+        A nested class that specifies the model,fields and style of fields for the form.
+        """
+
         model = EmployeeObjective
         exclude = ["status"]
         widgets = {
             "objective": forms.TextInput(
-                attrs={"class": "oh-input oh-input--block", "placeholder": _("Objective")}
+                attrs={
+                    "class": "oh-input oh-input--block",
+                    "placeholder": _("Objective"),
+                }
             ),
             "objective_description": forms.Textarea(
                 attrs={
@@ -215,6 +224,10 @@ class KeyResultForm(forms.ModelForm):
     )
 
     class Meta:
+        """
+        A nested class that specifies the model,fields and exclude fields for the form.
+        """
+
         model = EmployeeKeyResult
         fields = "__all__"
         exclude = [
@@ -287,6 +300,9 @@ class KeyResultForm(forms.ModelForm):
         self.fields["employee_id"].widget.attrs.update({"id": str(uuid.uuid4())})
 
     def clean_value(self, value_type):
+        """
+        Validate the 'current_value' and 'target_value' field of model EmployeeKeyResult.
+        """
         value = self.cleaned_data.get(value_type)
         other_value = self.cleaned_data.get(
             "current_value" if value_type == "target_value" else "target_value"
@@ -348,8 +364,11 @@ class FeedbackForm(forms.ModelForm):
         required=False,
     )
 
-    # employee_key_results_id = forms.ModelChoiceField(queryset=EmployeeKeyResult.objects.filter(id=-8451257845215),widget=forms.SelectMultiple(attrs={"class":"oh-select oh-select-2 w-100 oh-select-2--large","multiple":"multiple"}),required=False)
     class Meta:
+        """
+        A nested class that specifies the model,fields and exclude fields for the form.
+        """
+
         model = Feedback
         fields = "__all__"
         exclude = ["status", "archive"]
@@ -376,7 +395,6 @@ class FeedbackForm(forms.ModelForm):
                     "class": "oh-select oh-select-2 ",
                     "style": "width:100%; display:none;",
                     "required": "false",
-
                 },
             ),
             "colleague_id": forms.SelectMultiple(
@@ -398,7 +416,6 @@ class FeedbackForm(forms.ModelForm):
                     "class": "oh-select oh-select--lg oh-select-no-search",
                     "style": "width:100%; display:none;",
                     "required": "false",
-
                 }
             ),
         }
@@ -466,6 +483,10 @@ class QuestionTemplateForm(forms.ModelForm):
     )
 
     class Meta:
+        """
+        A nested class that specifies the model and fields for the form.
+        """
+
         model = QuestionTemplate
         fields = "__all__"
 
@@ -517,8 +538,11 @@ class QuestionForm(forms.ModelForm):
     )
 
     class Meta:
-        model = Question
+        """
+        A nested class that specifies the model,exclude fields and style of fields for the form.
+        """
 
+        model = Question
         exclude = ["question_option_id", "template_id"]
         widgets = {
             "question_type": forms.Select(
@@ -559,6 +583,10 @@ class ObjectiveCommentForm(forms.ModelForm):
     """
 
     class Meta:
+        """
+        A nested class that specifies the model,exclude fields and style of fields for the form.
+        """
+
         model = Comment
         exclude = ["employee_id", "employee_objective_id"]
         widgets = {
@@ -578,6 +606,10 @@ class PeriodForm(forms.ModelForm):
     """
 
     class Meta:
+        """
+        A nested class that specifies the model,fields and style of fields for the form.
+        """
+
         model = Period
         fields = "__all__"
         widgets = {
@@ -593,12 +625,11 @@ class PeriodForm(forms.ModelForm):
         }
 
     def __init__(self, *args, **kwargs):
+        """
+        django forms not showing value inside the date, time html element.
+        so here overriding default forms instance method to set initial value
+        """
         if instance := kwargs.get("instance"):
-            """
-            django forms not showing value inside the date, time html element.
-            so here overriding default forms instance method to set initial value
-            """
-
             kwargs["initial"] = set_date_field_initial(instance)
         super(PeriodForm, self).__init__(*args, **kwargs)
 
