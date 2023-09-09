@@ -326,21 +326,25 @@ def bulk_update_payslip_status(request):
 
 
 @login_required
-@permission_required("payroll.view_payslip")
+# @permission_required("payroll.view_payslip")
 def view_created_payslip(request, payslip_id):
     """
     This method is used to view the saved payslips
     """
-    payslip = Payslip.objects.get(id=payslip_id)
-    # the data must be dictionary in the payslip model for the json field
-    data = payslip.pay_head_data
-    data["employee"] = payslip.employee_id
-    data["payslip"] = payslip
-    data["json_data"] = data.copy()
-    data["json_data"]["employee"] = payslip.employee_id.id
-    data["json_data"]["payslip"] = payslip.id
-
-    return render(request, "payroll/payslip/individual_payslip.html", data)
+    payslip = Payslip.objects.filter(id=payslip_id).first()
+    if payslip is not None and (
+        request.user.has_perm("payroll.view_payslip")
+        or payslip.employee_id.employee_user_id == request.user
+    ):
+        # the data must be dictionary in the payslip model for the json field
+        data = payslip.pay_head_data
+        data["employee"] = payslip.employee_id
+        data["payslip"] = payslip
+        data["json_data"] = data.copy()
+        data["json_data"]["employee"] = payslip.employee_id.id
+        data["json_data"]["payslip"] = payslip.id
+        return render(request, "payroll/payslip/individual_payslip.html", data)
+    return render(request, "404.html")
 
 
 @login_required
@@ -428,10 +432,10 @@ def dashboard_employee_chart(request):
             labels.append(employee.employee_id)
 
         colors = [
-        "rgba(255, 99, 132, 1)",  # Red
-        "rgba(255, 206, 86, 1)",  # Yellow
-        "rgba(54, 162, 235, 1)",  # Blue
-        "rgba(75, 242, 182, 1)",  #green
+            "rgba(255, 99, 132, 1)",  # Red
+            "rgba(255, 206, 86, 1)",  # Yellow
+            "rgba(54, 162, 235, 1)",  # Blue
+            "rgba(75, 242, 182, 1)",  # green
         ]
 
         for choice, color in zip(Payslip.status_choices, colors):
