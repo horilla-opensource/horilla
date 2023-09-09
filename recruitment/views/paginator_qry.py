@@ -1,3 +1,9 @@
+"""
+paginator_qry.py
+
+This module is used to pagination
+"""
+
 from django.core.paginator import Paginator
 
 

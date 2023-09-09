@@ -31,10 +31,9 @@ def validate_mobile(value):
                 "Invalid input: Plus symbol (+) should only appear at the beginning \
                     or no other characters allowed."
             )
-        else:
-            raise forms.ValidationError(
-                "Invalid input: Only digits and spaces are allowed."
-            )
+        raise forms.ValidationError(
+            "Invalid input: Only digits and spaces are allowed."
+        )
 
 
 def validate_pdf(value):
@@ -132,7 +131,7 @@ class Recruitment(models.Model):
         if self.title is None:
             raise ValidationError({"title": _("This field is required")})
         if self.end_date is not None and (
-            self.start_date is not None and self.start_date > self.end_date
+                self.start_date is not None and self.start_date > self.end_date
         ):
             raise ValidationError(
                 {"end_date": _("End date cannot be less than start date.")}
@@ -332,6 +331,7 @@ class RecruitmentSurvey(models.Model):
     options = models.TextField(
         null=True, default="", help_text=_("Separate choices by ',  '")
     )
+    objects = models.Manager()
 
     def __str__(self) -> str:
         return str(self.question)

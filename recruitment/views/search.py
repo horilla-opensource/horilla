@@ -1,5 +1,5 @@
 """
-search.py 
+search.py
 
 This module is used to register search/filter views methods
 """
@@ -118,7 +118,7 @@ def candidate_filter_view(request):
     """
     templete = "candidate/candidate_card.html"
     if request.GET.get('view') == 'list':
-        templete= "candidate/candidate_list.html"
+        templete = "candidate/candidate_list.html"
     previous_data = request.environ["QUERY_STRING"]
     filter_obj = CandidateFilter(
         request.GET, queryset=Candidate.objects.filter(is_active=True)
@@ -134,7 +134,7 @@ def candidate_filter_view(request):
 
 
 @login_required
-@permission_required("recruitment.view_recruitmentsurvey")
+@permission_required(perm="recruitment.view_recruitmentsurvey")
 def filter_survey(request):
     """
     This method is used to filter/search the recruitment surveys

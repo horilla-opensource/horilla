@@ -3,7 +3,7 @@ forms.py
 
 This module contains the form classes used in the application.
 
-Each form represents a specific functionality or data input in the 
+Each form represents a specific functionality or data input in the
 application. They are responsible for validating
 and processing user input data.
 
@@ -47,8 +47,8 @@ class ModelForm(forms.ModelForm):
         for field_name, field in self.fields.items():
             widget = field.widget
             if isinstance(
-                widget,
-                (forms.NumberInput, forms.EmailInput, forms.TextInput, forms.FileInput),
+                    widget,
+                    (forms.NumberInput, forms.EmailInput, forms.TextInput, forms.FileInput),
             ):
                 label = _(field.label)
                 field.widget.attrs.update(
@@ -80,11 +80,11 @@ class ModelForm(forms.ModelForm):
                     }
                 )
             elif isinstance(
-                widget,
-                (
-                    forms.CheckboxInput,
-                    forms.CheckboxSelectMultiple,
-                ),
+                    widget,
+                    (
+                        forms.CheckboxInput,
+                        forms.CheckboxSelectMultiple,
+                    ),
             ):
                 field.widget.attrs.update({"class": "oh-switch__checkbox "})
 
@@ -113,11 +113,11 @@ class RegistrationForm(forms.ModelForm):
                     }
                 )
             elif isinstance(
-                widget,
-                (
-                    forms.CheckboxInput,
-                    forms.CheckboxSelectMultiple,
-                ),
+                    widget,
+                    (
+                        forms.CheckboxInput,
+                        forms.CheckboxSelectMultiple,
+                    ),
             ):
                 field.widget.attrs.update({"class": "oh-switch__checkbox "})
 
@@ -132,14 +132,14 @@ class DropDownForm(forms.ModelForm):
         for field_name, field in self.fields.items():
             widget = field.widget
             if isinstance(
-                widget,
-                (
-                    forms.NumberInput,
-                    forms.EmailInput,
-                    forms.TextInput,
-                    forms.FileInput,
-                    forms.URLInput,
-                ),
+                    widget,
+                    (
+                        forms.NumberInput,
+                        forms.EmailInput,
+                        forms.TextInput,
+                        forms.FileInput,
+                        forms.URLInput,
+                    ),
             ):
                 if field.label is not None:
                     label = _(field.label)
@@ -168,11 +168,11 @@ class DropDownForm(forms.ModelForm):
                         }
                     )
             elif isinstance(
-                widget,
-                (
-                    forms.CheckboxInput,
-                    forms.CheckboxSelectMultiple,
-                ),
+                    widget,
+                    (
+                        forms.CheckboxInput,
+                        forms.CheckboxSelectMultiple,
+                    ),
             ):
                 field.widget.attrs.update({"class": "oh-switch__checkbox "})
 
@@ -289,15 +289,15 @@ class CandidateCreationForm(ModelForm):
         if self.instance.name is not None:
             self.errors.pop("job_position_id", None)
             if (
-                self.instance.job_position_id is None
-                or self.data["job_position_id"] == ""
+                    self.instance.job_position_id is None
+                    or self.data["job_position_id"] == ""
             ):
                 raise forms.ValidationError(
                     {"job_position_id": "This field is required"}
                 )
             if (
-                self.instance.job_position_id
-                not in self.instance.recruitment_id.open_positions.all()
+                    self.instance.job_position_id
+                    not in self.instance.recruitment_id.open_positions.all()
             ):
                 raise forms.ValidationError({"job_position_id": "Choose valid choice"})
         return super().clean()

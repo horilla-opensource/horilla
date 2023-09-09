@@ -28,7 +28,7 @@ class FilterSet(django_filters.FilterSet):
         for _, filter_widget in self.filters.items():
             widget = filter_widget.field.widget
             if isinstance(
-                widget, (forms.NumberInput, forms.EmailInput, forms.TextInput)
+                    widget, (forms.NumberInput, forms.EmailInput, forms.TextInput)
             ):
                 widget.attrs.update({"class": "oh-input w-100"})
             elif isinstance(widget, (forms.Select,)):
@@ -38,7 +38,7 @@ class FilterSet(django_filters.FilterSet):
             elif isinstance(widget, (forms.Textarea)):
                 widget.attrs.update({"class": "oh-input w-100"})
             elif isinstance(
-                widget, (forms.CheckboxInput, forms.CheckboxSelectMultiple)
+                    widget, (forms.CheckboxInput, forms.CheckboxSelectMultiple)
             ):
                 widget.attrs.update({"class": "oh-switch__checkbox"})
             elif isinstance(widget, (forms.ModelChoiceField)):

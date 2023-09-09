@@ -3,10 +3,8 @@ surveys.py
 
 This module is used to write views related to the survey features
 """
-import json, uuid
-import os
+import json
 from datetime import datetime
-from django.core import cache
 from django.core.files.storage import default_storage
 from django.core import serializers
 from django.shortcuts import render, redirect
@@ -14,7 +12,7 @@ from django.contrib import messages
 from django.http import HttpResponse
 from django.utils.translation import gettext_lazy as _
 from horilla.decorators import login_required, permission_required
-from recruitment.models import Recruitment, validate_pdf
+from recruitment.models import Recruitment
 from recruitment.forms import ApplicationForm, SurveyForm, QuestionForm
 from recruitment.models import (
     RecruitmentSurvey,
@@ -56,7 +54,7 @@ def candidate_survey(request):
     form = SurveyForm(recruitment=recruitment).form
     if request.method == "POST":
         if not Candidate.objects.filter(
-            email=candidate.email, recruitment_id=candidate.recruitment_id
+                email=candidate.email, recruitment_id=candidate.recruitment_id
         ).exists():
             candidate.save()
         else:
@@ -120,7 +118,7 @@ def candidate_survey(request):
 
 
 @login_required
-@permission_required("recruitment.view_recruitmentsurvey")
+@permission_required(perm="recruitment.view_recruitmentsurvey")
 def view_question_template(request):
     """
     This method is used to view the question template
@@ -138,7 +136,7 @@ def view_question_template(request):
 
 
 @login_required
-@permission_required("recruitment.change_recruitmentsurvey")
+@permission_required(perm="recruitment.change_recruitmentsurvey")
 def update_question_template(request, survey_id):
     """
     This view method is used to update question template
@@ -169,7 +167,7 @@ def update_question_template(request, survey_id):
 
 
 @login_required
-@permission_required("recruitment.add_recruitmentsurvey")
+@permission_required(perm="recruitment.add_recruitmentsurvey")
 def create_question_template(request):
     """
     This view method is used to create question template
@@ -193,7 +191,7 @@ def create_question_template(request):
 
 
 @login_required
-@permission_required("recriutment.delete_recruitmentsurvey")
+@permission_required(perm="recriutment.delete_recruitmentsurvey")
 def delete_survey_question(request, survey_id):
     """
     This method is used to delete the survey instance

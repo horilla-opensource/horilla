@@ -190,7 +190,8 @@ def recruitment_update(request, rec_id):
                             einer der Manager ausgewählt",
                     verb_es=f"{recruitment_obj} ha sido actualizado/a. Has sido elegido\
                             a como uno de los gerentes",
-                    verb_fr=f"{recruitment_obj} a été mis(e) à jour. Vous êtes choisi(e) comme l'un des responsables",
+                    verb_fr=f"{recruitment_obj} a été mis(e) à jour. Vous êtes choisi(e) comme\
+                            l'un des responsables",
                     icon="people-circle",
                     redirect="/recruitment/pipeline",
                 )
@@ -218,7 +219,7 @@ def recruitment_pipeline(request):
     recruitment_obj = Recruitment.objects.filter(is_active=True, closed=False)
     if request.method == "POST":
         if request.POST.get(
-            "recruitment_managers"
+                "recruitment_managers"
         ) is not None and request.user.has_perm("add_recruitment"):
             recruitment_form = RecruitmentDropDownForm(request.POST)
             if recruitment_form.is_valid():
@@ -238,8 +239,10 @@ def recruitment_pipeline(request):
                         verb_ar=f"تم اختيارك كمدير توظيف للتوظيف {recruitment_obj}",
                         verb_de=f"Sie wurden als Personalvermittler für die Rekrutierung\
                                 {recruitment_obj} ausgewählt",
-                        verb_es=f"Has sido elegido/a como gerente de contratación para la contratación {recruitment_obj}",
-                        verb_fr=f"Vous êtes choisi(e) comme responsable du recrutement pour le recrutement {recruitment_obj}",
+                        verb_es=f"Has sido elegido/a como gerente de contratación para\
+                                la contratación {recruitment_obj}",
+                        verb_fr=f"Vous êtes choisi(e) comme responsable du recrutement pour\
+                                le recrutement {recruitment_obj}",
                         icon="people-circle",
                         redirect="/recruitment/pipeline",
                     )
@@ -247,7 +250,7 @@ def recruitment_pipeline(request):
                 return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
         elif request.FILES.get("resume") is not None:
             if request.user.has_perm("add_candidate") or is_stagemanager(
-                request,
+                    request,
             ):
                 candidate_form = CandidateDropDownForm(request.POST, request.FILES)
                 if candidate_form.is_valid():
@@ -263,7 +266,8 @@ def recruitment_pipeline(request):
                             recipient=users,
                             verb=f"New candidate arrived on stage {candidate_obj.stage_id.stage}",
                             verb_ar=f"وصل مرشح جديد إلى المرحلة {candidate_obj.stage_id.stage}",
-                            verb_de=f"Neuer Kandidat ist auf der Stufe {candidate_obj.stage_id.stage} angekommen",
+                            verb_de=f"Neuer Kandidat ist auf der Stufe\
+                                    {candidate_obj.stage_id.stage} angekommen",
                             verb_es=f"Nuevo candidato llegó a la etapa {candidate_obj.stage_id.stage}",
                             verb_fr=f"Nouveau candidat arrivé à l'étape {candidate_obj.stage_id.stage}",
                             icon="person-add",
@@ -276,7 +280,7 @@ def recruitment_pipeline(request):
             stage_form = StageDropDownForm(request.POST)
             if stage_form.is_valid():
                 if recruitment_manages(
-                    request, stage_form.instance.recruitment_id
+                        request, stage_form.instance.recruitment_id
                 ) or request.user.has_perm("recruitment.add_stage"):
                     stage_obj = stage_form.save()
                     stage_form = StageDropDownForm()
@@ -289,11 +293,16 @@ def recruitment_pipeline(request):
                         notify.send(
                             request.user.employee_get,
                             recipient=users,
-                            verb=f"You are chosen as a stage manager on the stage {stage_obj.stage} in recruitment {stage_obj.recruitment_id}",
-                            verb_ar=f"لقد تم اختيارك كمدير مرحلة في المرحلة {stage_obj.stage} في التوظيف {stage_obj.recruitment_id}",
-                            verb_de=f"Sie wurden als Bühnenmanager für die Stufe {stage_obj.stage} in der Rekrutierung {stage_obj.recruitment_id} ausgewählt",
-                            verb_es=f"Has sido elegido/a como gerente de etapa en la etapa {stage_obj.stage} en la contratación {stage_obj.recruitment_id}",
-                            verb_fr=f"Vous avez été choisi(e) comme responsable de l'étape {stage_obj.stage} dans le recrutement {stage_obj.recruitment_id}",
+                            verb=f"You are chosen as a stage manager on the stage\
+                                      {stage_obj.stage} in recruitment {stage_obj.recruitment_id}",
+                            verb_ar=f"لقد تم اختيارك كمدير مرحلة في المرحلة \
+                                    {stage_obj.stage} في التوظيف {stage_obj.recruitment_id}",
+                            verb_de=f"Sie wurden als Bühnenmanager für die Stufe{stage_obj.stage}\
+                                  in der Rekrutierung {stage_obj.recruitment_id} ausgewählt",
+                            verb_es=f"Has sido elegido/a como gerente de etapa en la etapa\
+                                      {stage_obj.stage} en la contratación {stage_obj.recruitment_id}",
+                            verb_fr=f"Vous avez été choisi(e) comme responsable de l'étape\
+                                      {stage_obj.stage} dans le recrutement {stage_obj.recruitment_id}",
                             icon="people-circle",
                             redirect="/recruitment/pipeline",
                         )
@@ -356,10 +365,10 @@ def stage_update_pipeline(request, stage_id):
                             ، تم اختيارك كأحد المديرين",
                     verb_de=f"Die Stufe {stage_obj.stage} in der Rekrutierung {stage_obj.recruitment_id}\
                             wurde aktualisiert. Sie wurden als einer der Manager ausgewählt",
-                    verb_es=f"Se ha actualizado la etapa {stage_obj.stage} en la contratación {stage_obj.recruitment_id}.\
-                            Has sido elegido/a como uno de los gerentes",
-                    verb_fr=f"L'étape {stage_obj.stage} dans le recrutement {stage_obj.recruitment_id} a été mise à jour.\
-                            Vous avez été choisi(e) comme l'un des responsables",
+                    verb_es=f"Se ha actualizado la etapa {stage_obj.stage} en la contratación\
+                          {stage_obj.recruitment_id}.Has sido elegido/a como uno de los gerentes",
+                    verb_fr=f"L'étape {stage_obj.stage} dans le recrutement {stage_obj.recruitment_id}\
+                          a été mise à jour.Vous avez été choisi(e) comme l'un des responsables",
                     icon="people-circle",
                     redirect="/recruitment/pipeline",
                 )
@@ -392,7 +401,8 @@ def recruitment_update_pipeline(request, rec_id):
                     recipient=users,
                     verb=f"{recruitment_obj} is updated, You are chosen as one of the managers",
                     verb_ar=f"تم تحديث {recruitment_obj}، تم اختيارك كأحد المديرين",
-                    verb_de=f"{recruitment_obj} wurde aktualisiert. Sie wurden als einer der Manager ausgewählt",
+                    verb_de=f"{recruitment_obj} wurde aktualisiert.\
+                          Sie wurden als einer der Manager ausgewählt",
                     verb_es=f"{recruitment_obj} ha sido actualizado/a. Has sido elegido\
                             a como uno de los gerentes",
                     verb_fr=f"{recruitment_obj} a été mis(e) à jour. Vous avez été\
@@ -439,9 +449,9 @@ def candidate_stage_update(request, cand_id):
         .exists()
     )
     if (
-        stage_manager_on_this_recruitment
-        or request.user.is_superuser
-        or is_recruitmentmanager(rec_id=stage_obj.recruitment_id.id)[0]
+            stage_manager_on_this_recruitment
+            or request.user.is_superuser
+            or is_recruitmentmanager(rec_id=stage_obj.recruitment_id.id)[0]
     ):
         candidate_obj.stage_id = stage_obj
         candidate_obj.schedule_date = None
@@ -589,11 +599,16 @@ def stage(request):
                 notify.send(
                     request.user.employee_get,
                     recipient=users,
-                    verb=f"Stage {stage_obj} is updated on recruitment {stage_obj.recruitment_id}, You are chosen as one of the managers",
-                    verb_ar=f"تم تحديث المرحلة {stage_obj} في التوظيف {stage_obj.recruitment_id}، تم اختيارك كأحد المديرين",
-                    verb_de=f"Stufe {stage_obj} wurde in der Rekrutierung {stage_obj.recruitment_id} aktualisiert. Sie wurden als einer der Manager ausgewählt",
-                    verb_es=f"La etapa {stage_obj} ha sido actualizada en la contratación {stage_obj.recruitment_id}. Has sido elegido/a como uno de los gerentes",
-                    verb_fr=f"L'étape {stage_obj} a été mise à jour dans le recrutement {stage_obj.recruitment_id}. Vous avez été choisi(e) comme l'un des responsables",
+                    verb=f"Stage {stage_obj} is updated on recruitment {stage_obj.recruitment_id},\
+                          You are chosen as one of the managers",
+                    verb_ar=f"تم تحديث المرحلة {stage_obj} في التوظيف\
+                          {stage_obj.recruitment_id}، تم اختيارك كأحد المديرين",
+                    verb_de=f"Stufe {stage_obj} wurde in der Rekrutierung {stage_obj.recruitment_id}\
+                          aktualisiert. Sie wurden als einer der Manager ausgewählt",
+                    verb_es=f"La etapa {stage_obj} ha sido actualizada en la contratación\
+                          {stage_obj.recruitment_id}. Has sido elegido/a como uno de los gerentes",
+                    verb_fr=f"L'étape {stage_obj} a été mise à jour dans le recrutement\
+                          {stage_obj.recruitment_id}. Vous avez été choisi(e) comme l'un des responsables",
                     icon="people-circle",
                     redirect="/recruitment/pipeline",
                 )
@@ -809,8 +824,8 @@ def candidate_update(request, cand_id):
                 ).first()
             if candidate_obj.stage_id is not None:
                 if (
-                    candidate_obj.stage_id.recruitment_id
-                    != candidate_obj.recruitment_id
+                        candidate_obj.stage_id.recruitment_id
+                        != candidate_obj.recruitment_id
                 ):
                     candidate_obj.stage_id = (
                         candidate_obj.recruitment_id.stage_set.filter(
@@ -888,7 +903,7 @@ def send_acknowledgement(request):
 
 
 @login_required
-@manager_can_enter("recruitment.change_candidate")
+@manager_can_enter(perm="recruitment.change_candidate")
 def candidate_sequence_update(request):
     """
     This method is used to update the sequence of candidate
@@ -903,7 +918,7 @@ def candidate_sequence_update(request):
 
 
 @login_required
-@recruitment_manager_can_enter("recruitment.change_stage")
+@recruitment_manager_can_enter(perm="recruitment.change_stage")
 def stage_sequence_update(request):
     """
     This method is used to update the sequence of the stages

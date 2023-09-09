@@ -9,12 +9,11 @@ from django.core import serializers
 from django.http import JsonResponse
 from django.utils.translation import gettext_lazy as _
 from django.shortcuts import render
-from base.models import Department
 from horilla.decorators import login_required
 from recruitment.decorators import manager_can_enter
 from recruitment.models import Candidate, Recruitment, Stage
 from base.models import Department, JobPosition
-from employee.models import Employee, EmployeeWorkInformation
+from employee.models import EmployeeWorkInformation
 
 
 @login_required
@@ -24,7 +23,6 @@ def dashboard(request):
     This method is used to render dashboard for recruitment module
     """
     candidates = Candidate.objects.all()
-    onboard_candidates = Candidate.objects.filter(start_onboard=True)
 
     jobs = JobPosition.objects.all()
     all_job = []
@@ -41,8 +39,8 @@ def dashboard(request):
 
     test = []
     for job in jobs:
-        te = Candidate.objects.filter(job_position_id=job, stage_id__stage_type="test")
-        test.append(te.count())
+        tes = Candidate.objects.filter(job_position_id=job, stage_id__stage_type="test")
+        test.append(tes.count())
 
     interview = []
     for job in jobs:
@@ -100,7 +98,6 @@ def dashboard(request):
             "conversion_ratio": conversion_ratio,
             "onboard_candidates": hired_candidates.filter(start_onboard=True),
             "job_data": job_data,
-            "onboard_candidates": onboard_candidates,
             "total_vacancy": total_vacancy,
             "recruitment_manager_mapping": recruitment_manager_mapping,
             "acceptance_ratio": acceptance_ratio,
@@ -134,8 +131,8 @@ def dashboard_pipeline(_):
         data_set.append(
             {
                 "label": rec.title
-                if rec.title is not None
-                else f"""{rec.job_position_id}
+                         if rec.title is not None
+                         else f"""{rec.job_position_id}
                  {rec.start_date}""",
                 "data": data,
             }
@@ -195,7 +192,7 @@ def dashboard_hiring(request):
 
 @login_required
 @manager_can_enter(perm="recruitment.view_recruitment")
-def dashboard_vacancy(request):
+def dashboard_vacancy(_request):
     """
     This method is used to generate a recruitment vacancy chart for the dashboard
     """
@@ -213,7 +210,9 @@ def dashboard_vacancy(request):
             job_position_id__department_id=dep
         )
 
-        vacancies = [int(rec.vacancy) if rec.vacancy is not None else 0 for rec in vacancies_for_department]
+        vacancies = [
+            int(rec.vacancy) if rec.vacancy is not None else 0 for rec in vacancies_for_department
+            ]
 
         data_set[0]["data"].append([sum(vacancies)])
 
