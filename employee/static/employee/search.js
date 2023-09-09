@@ -21,6 +21,24 @@ $(document).ready(function () {
     }    
   });
 
+
+  // Active tab script
+  function activeProfileTab() {
+    var activeTab = localStorage.getItem("activeProfileTab")
+    if(activeTab != null){
+      $(".oh-general__tab-link--active").removeClass("oh-general__tab-link--active");
+      $(`[data-target='${activeTab}']`).addClass("oh-general__tab-link--active");
+      $(".oh-general__tab-target").addClass("d-none");
+      $(activeTab).removeClass("d-none");
+    }
+  }
+  activeProfileTab()
+  $("[data-action=general-tab]").on("click",function (e) { 
+    e.preventDefault();
+    const targetId = $(this).attr('data-target');
+    localStorage.setItem("activeProfileTab",targetId)
+  });
+
 });
 
 function employeeFilter(element) {
