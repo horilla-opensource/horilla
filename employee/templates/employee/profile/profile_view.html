@@ -1,5 +1,6 @@
 {% extends 'index.html' %}
 {% load i18n %}
+{% load static %}
 {% block content %}
 <div class="oh-wrapper">
     <div class="oh-card mt-4 mb-5">
@@ -96,6 +97,15 @@
                 data-action="general-tab"
                 data-target="#leave"
                 >{% trans "Leave" %}</a
+              >
+            </li>
+            <li class="oh-general__tab">
+              <a
+                href="#"
+                class="oh-general__tab-link"
+                data-action="general-tab"
+                data-target="#payroll"
+                >{% trans "Payroll" %}</a
               >
             </li>
             <li class="oh-general__tab">
@@ -487,6 +497,12 @@
           {% include 'leave-tab.html' %}
         </div>
         <div
+        class="oh-general__tab-target oh-profile__info-tab  mb-4 d-none"
+        id="payroll"
+      >
+      {% include 'payroll-tab.html' %}
+      </div>
+        <div
           class="oh-general__tab-target oh-profile__info-tab  mb-4 d-none"
           id="team"
         >
@@ -504,5 +520,6 @@
       </div>
     </div>
   </div>
+  <script src="{% static 'employee/search.js' %}"></script>
 
   {% endblock content %}
