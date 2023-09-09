@@ -1,13 +1,13 @@
 """
 Module: admin.py
-Description: This module is responsible for registering models 
+Description: This module is responsible for registering models
             to be managed through the Django admin interface.
 Models Registered:
 - Asset: Represents a physical asset with relevant details.
 - AssetCategory: Categorizes assets for better organization.
 - AssetRequest: Manages requests for acquiring assets.
 - AssetAssignment: Tracks the assets assigned to employees.
-- AssetLot: Represents a collection of assets under a lot number. 
+- AssetLot: Represents a collection of assets under a lot number.
 """
 
 from django.contrib import admin

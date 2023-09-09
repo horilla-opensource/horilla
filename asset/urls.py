@@ -8,11 +8,11 @@ from . import views
 
 urlpatterns = [
     path("asset-creation/<int:id>/", views.asset_creation, name="asset-creation"),
-    path("asset-list/<int:id>", views.asset_list, name="asset-list"),
+    path("asset-list/<int:cat_id>", views.asset_list, name="asset-list"),
     path("asset-update/<int:asset_id>/", views.asset_update, name="asset-update"),
-    path("asset-delete/<int:id>/", views.asset_delete, name="asset-delete"),
+    path("asset-delete/<int:asset_id>/", views.asset_delete, name="asset-delete"),
     path(
-        "asset-information/<int:id>/", views.asset_information, name="asset-information"
+        "asset-information/<int:asset_id>/", views.asset_information, name="asset-information"
     ),
     path("asset-category-view", views.asset_category_view, name="asset-category-view"),
     path(
@@ -26,7 +26,7 @@ urlpatterns = [
         name="asset-category-creation",
     ),
     path(
-        "asset-category-update/<int:id>",
+        "asset-category-update/<int:cat_id>",
         views.asset_category_update,
         name="asset-category-update",
     ),
@@ -56,7 +56,7 @@ urlpatterns = [
         name="asset-request-approve",
     ),
     path(
-        "asset-request-reject/<int:id>/",
+        "asset-request-reject/<int:req_id>/",
         views.asset_request_reject,
         name="asset-request-reject",
     ),
@@ -66,7 +66,7 @@ urlpatterns = [
         name="asset-allocate-creation",
     ),
     path(
-        "asset-allocate-return/<int:id>/",
+        "asset-allocate-return/<int:asset_id>/",
         views.asset_allocate_return,
         name="asset-allocate-return",
     ),
@@ -85,12 +85,12 @@ urlpatterns = [
         name="asset-batch-number-search",
     ),
     path(
-        "asset-batch-update/<int:id>",
+        "asset-batch-update/<int:batch_id>",
         views.asset_batch_update,
         name="asset-batch-update",
     ),
     path(
-        "asset-batch-number-delete/<int:id>",
+        "asset-batch-number-delete/<int:batch_id>",
         views.asset_batch_number_delete,
         name="asset-batch-number-delete",
     ),

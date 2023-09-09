@@ -95,13 +95,13 @@ class AssetForm(ModelForm):
         instance = self.instance
         if instance.pk:
             if asset_in_use := instance.assetassignment_set.filter(
-                return_status__isnull=True
+                    return_status__isnull=True
             ):
                 raise ValidationError('Asset in use you can"t change the status')
             if (
-                Asset.objects.filter(asset_tracking_id=self.data["asset_tracking_id"])
-                .exclude(id=instance.pk)
-                .exists()
+                    Asset.objects.filter(asset_tracking_id=self.data["asset_tracking_id"])
+                    .exclude(id=instance.pk)
+                    .exists()
             ):
                 raise ValidationError(
                     {"asset_tracking_id": "Already asset with this tracking id exists."}
@@ -313,7 +313,8 @@ class AssetBatchForm(ModelForm):
                 attrs={
                     "type": "text",
                     "placeholder": _(
-                        "A batch of 50 laptops, consisting of Lenovo ThinkPad T480s and Dell XPS 13."
+                        "A batch of 50 laptops, consisting of Lenovo ThinkPad T480s\
+                              and Dell XPS 13."
                     ),
                     "class": "oh-input oh-input--textarea oh-input--block",
                     "rows": 3,

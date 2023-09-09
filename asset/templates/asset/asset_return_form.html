@@ -1,6 +1,6 @@
 {% load i18n %}
 <div class="oh-modal__dialog-title">{% trans "Asset Return Form" %}</div>
-<form hx-post="{%url 'asset-allocate-return' id=asset_id %}" hx-target="#asset-request-allocation-modal-target" method="post">
+<form hx-post="{%url 'asset-allocate-return' asset_id=asset_id %}" hx-target="#asset-request-allocation-modal-target" method="post">
   {% csrf_token %}
   <div class="m-3">
     <div class="oh-input__group ">

@@ -10,6 +10,17 @@ from .models import Asset, AssetAssignment, AssetCategory, AssetRequest
 
 
 class CustomFilterSet(FilterSet):
+    """
+    Custom FilterSet class that applies specific CSS classes to filter
+    widgets.
+
+    The class applies CSS classes to different types of filter widgets,
+    such as NumberInput, EmailInput, TextInput, Select, Textarea,
+    CheckboxInput, CheckboxSelectMultiple, and ModelChoiceField. The
+    CSS classes are applied to enhance the styling and behavior of the
+    filter widgets.
+    """
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -17,7 +28,7 @@ class CustomFilterSet(FilterSet):
             filter_widget = self.filters[field_name]
             widget = filter_widget.field.widget
             if isinstance(
-                widget, (forms.NumberInput, forms.EmailInput, forms.TextInput)
+                    widget, (forms.NumberInput, forms.EmailInput, forms.TextInput)
             ):
                 filter_widget.field.widget.attrs.update({"class": "oh-input w-100"})
             elif isinstance(widget, (forms.Select,)):
@@ -29,11 +40,11 @@ class CustomFilterSet(FilterSet):
             elif isinstance(widget, (forms.Textarea)):
                 filter_widget.field.widget.attrs.update({"class": "oh-input w-100"})
             elif isinstance(
-                widget,
-                (
-                    forms.CheckboxInput,
-                    forms.CheckboxSelectMultiple,
-                ),
+                    widget,
+                    (
+                        forms.CheckboxInput,
+                        forms.CheckboxSelectMultiple,
+                    ),
             ):
                 filter_widget.field.widget.attrs.update(
                     {"class": "oh-switch__checkbox"}
@@ -182,7 +193,7 @@ class AssetCategoryFilter(CustomFilterSet):
 
         Attributes:
             model (class): The model class AssetCategory to be filtered.
-            fields (str): A special value "__all__" to include all fields 
+            fields (str): A special value "__all__" to include all fields
                           of the model in the filter.
         """
 

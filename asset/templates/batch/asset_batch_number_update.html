@@ -24,7 +24,7 @@
     <ion-icon name="close-outline"></ion-icon>
     </button>
 </div>
-<form hx-post="{%url 'asset-batch-update' id=asset_batch_update_form.instance.id %}" hx-target="#AssetFormTarget">
+<form hx-post="{%url 'asset-batch-update' batch_id=asset_batch_update_form.instance.id %}" hx-target="#AssetFormTarget">
     {% csrf_token %}
     <div class="oh-modal__dialog-body">
         <div class="oh-input__group ">

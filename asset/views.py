@@ -118,31 +118,31 @@ def asset_update(request, asset_id):
 
 @login_required
 @hx_request_required
-def asset_information(request, id):
+def asset_information(request, asset_id):
     """
     Display information about a specific Asset object.
     Args:
         request: the HTTP request object
-        id (int): the ID of the Asset object to retrieve
+        asset_id (int): the ID of the Asset object to retrieve
     Returns:
         A rendered HTML template displaying the information about the requested Asset object.
     """
 
-    asset = Asset.objects.get(id=id)
+    asset = Asset.objects.get(id=asset_id)
     context = {"asset": asset}
     return render(request, "asset/asset_information.html", context)
 
 
 @login_required
-@permission_required("asset.delete_asset")
-def asset_delete(request, id):
+@permission_required(perm="asset.delete_asset")
+def asset_delete(request, asset_id):
     """Delete the asset with the given id.
     If the asset is currently in use, display an info message and
     redirect to the asset list.
     Otherwise, delete the asset and display a success message.
     Args:
         request: HttpRequest object representing the current request.
-        id: int representing the id of the asset to be deleted.
+        asset_id: int representing the id of the asset to be deleted.
     Returns:
         If the asset is currently in use or the asset list filter is
         applied, render the asset list template
@@ -151,7 +151,7 @@ def asset_delete(request, id):
         category of the deleted asset.
     """
 
-    asset = Asset.objects.get(id=id)
+    asset = Asset.objects.get(id=asset_id)
     status = asset.asset_status
     asset_list_filter = request.GET.get("asset_list")
     asset_allocation = AssetAssignment.objects.filter(asset_id=asset).first()
@@ -203,14 +203,14 @@ def asset_delete(request, id):
 
 @login_required
 @hx_request_required
-def asset_list(request, id):
+def asset_list(request, cat_id):
     """
     View function is used as asset list inside a category and also in
     filterd asset list
     Args:
         request (HttpRequest): A Django HttpRequest object that contains
         information about the  current request.
-        id (int): An integer representing the id of the asset category
+        cat_id (int): An integer representing the id of the asset category
         to list assets for.
     Returns:
         A rendered HTML template that displays a paginated list of assets in the given
@@ -231,7 +231,7 @@ def asset_list(request, id):
     else:
         # if the data is not present means that it is for asset category list
         asset_under = "asset_category"
-        asset_category = AssetCategory.objects.get(id=id)
+        asset_category = AssetCategory.objects.get(id=cat_id)
         assets_in_category = Asset.objects.filter(asset_category_id=asset_category)
 
     previous_data = request.environ["QUERY_STRING"]
@@ -246,9 +246,8 @@ def asset_list(request, id):
     context = {
         "assets": page_obj,
         "pg": previous_data,
-        "asset_category_id": id,
+        "asset_category_id": cat_id,
         "asset_under": asset_under,
-        "asset_count": len(assets_in_category) or None,
         "asset_count": len(assets_in_category) or None,
         "filter_dict": data_dict,
     }
@@ -257,7 +256,7 @@ def asset_list(request, id):
 
 @login_required
 @hx_request_required
-@permission_required("asset.add_assetcategory")
+@permission_required(perm="asset.add_assetcategory")
 def asset_category_creation(request):
     """
     Allow a user to create a new AssetCategory object using a form.
@@ -281,8 +280,8 @@ def asset_category_creation(request):
 
 @login_required
 @hx_request_required
-@permission_required("asset.change_assetcategory")
-def asset_category_update(request, id):
+@permission_required(perm="asset.change_assetcategory")
+def asset_category_update(request, asset_id):
     """
     This view is used to update an existing asset category.
     Args:
@@ -293,7 +292,7 @@ def asset_category_update(request, id):
     """
 
     previous_data = request.environ["QUERY_STRING"]
-    asset_category = AssetCategory.objects.get(id=id)
+    asset_category = AssetCategory.objects.get(id=asset_id)
     asset_category_form = AssetCategoryForm(instance=asset_category)
     context = {"asset_category_update_form": asset_category_form, "pg": previous_data}
     if request.method == "POST":
@@ -307,8 +306,8 @@ def asset_category_update(request, id):
     return render(request, "category/asset_category_update.html", context)
 
 
-@permission_required("asset.delete_assetcategory")
-def asset_category_delete(request, id):
+@permission_required(perm="asset.delete_assetcategory")
+def asset_category_delete(request, cat_id):
     """
     Deletes an asset category and redirects to the asset category view.
     Args:
@@ -319,7 +318,7 @@ def asset_category_delete(request, id):
     Raises:
         None.
     """
-    asset_category = AssetCategory.objects.get(id=id)
+    asset_category = AssetCategory.objects.get(id=cat_id)
     asset_status = Asset.objects.filter(asset_category_id=asset_category).filter(
         asset_status="In use"
     )
@@ -338,6 +337,9 @@ def asset_category_delete(request, id):
 
 
 def filter_pagination_asset_category(request):
+    """
+    This view is used for pagination
+    """
     search = request.GET.get("search")
     if search is None:
         search = ""
@@ -371,7 +373,7 @@ def filter_pagination_asset_category(request):
 
 
 @login_required
-@permission_required("asset.view_assetcategory")
+@permission_required(perm="asset.view_assetcategory")
 def asset_category_view(request):
     """
     View function for rendering a paginated list of asset categories.
@@ -388,7 +390,7 @@ def asset_category_view(request):
 
 
 @login_required
-@permission_required("asset.view_assetcategory")
+@permission_required(perm="asset.view_assetcategory")
 def asset_category_view_search_filter(request):
     """
     View function for rendering a paginated list of asset categories with search and filter options.
@@ -439,25 +441,25 @@ def asset_request_creation(request):
 
 
 @login_required
-@permission_required("asset.add_asset")
-def asset_request_approve(request, id):
+@permission_required(perm="asset.add_asset")
+def asset_request_approve(request, req_id):
     """
     Approves an asset request with the given ID and updates the corresponding asset record
     to mark it as allocated.
     Args:
         request: The HTTP request object.
-        id (int): The ID of the asset request to be approved.
+        req_id (int): The ID of the asset request to be approved.
     Returns:
         A redirect response to the asset request allocation view, or an error message if the
         request with the given ID cannot be found or its asset has already been allocated.
     """
 
-    asset_request = AssetRequest.objects.filter(id=id).first()
+    asset_request = AssetRequest.objects.filter(id=req_id).first()
     asset_category = asset_request.asset_category_id
     assets = asset_category.asset_set.filter(asset_status="Available")
     form = AssetAllocationForm()
     form.fields["asset_id"].queryset = assets
-    context = {"asset_allocation_form": form, "id": id}
+    context = {"asset_allocation_form": form, "id": req_id}
     if request.method == "POST":
         post_data = request.POST.dict()
         # Add additional fields to the dictionary
@@ -487,7 +489,7 @@ def asset_request_approve(request, id):
             response = render(
                 request,
                 "request_allocation/asset_approve.html",
-                {"asset_allocation_form": form, "id": id},
+                {"asset_allocation_form": form, "id": req_id},
             )
             return HttpResponse(
                 response.content.decode("utf-8") + "<script>location.reload();</script>"
@@ -498,13 +500,13 @@ def asset_request_approve(request, id):
 
 
 @login_required
-@permission_required("asset.add_asset")
-def asset_request_reject(request, id):
+@permission_required(perm="asset.add_asset")
+def asset_request_reject(request, req_id):
     """
     View function to reject an asset request.
     Parameters:
     request (HttpRequest): the request object sent by the client
-    id (int): the id of the AssetRequest object to reject
+    req_id (int): the id of the AssetRequest object to reject
 
     Returns:
     HttpResponse: a redirect to the asset request list view with a success m
@@ -512,7 +514,7 @@ def asset_request_reject(request, id):
         asset request detail view with an error message if the asset request is not
         found or already rejected
     """
-    asset_request = AssetRequest.objects.get(id=id)
+    asset_request = AssetRequest.objects.get(id=req_id)
     asset_request.asset_request_status = "Rejected"
     asset_request.save()
     messages.info(request, _("Asset request rejected"))
@@ -531,7 +533,7 @@ def asset_request_reject(request, id):
 
 
 @login_required
-@permission_required("asset.add_asset")
+@permission_required(perm="asset.add_asset")
 def asset_allocate_creation(request):
     """
     View function to create asset allocation.
@@ -557,11 +559,11 @@ def asset_allocate_creation(request):
 
 
 @login_required
-def asset_allocate_return(request, id):
+def asset_allocate_return(request, asset_id):
     """
     View function to return asset.
     Args:
-    - id: integer value representing the ID of the asset
+    - asset_id: integer value representing the ID of the asset
     Returns:
     - message of the return
     """
@@ -571,17 +573,17 @@ def asset_allocate_return(request, id):
         asset_return_form = AssetReturnForm(request.POST)
 
         if asset_return_form.is_valid():
-            asset = Asset.objects.filter(id=id).first()
+            asset = Asset.objects.filter(id=asset_id).first()
             asset_return_status = request.POST.get("return_status")
             asset_return_date = request.POST.get("return_date")
             asset_return_condition = request.POST.get("return_condition")
-            context = {"asset_return_form":asset_return_form,"asset_id":id}
+            context = {"asset_return_form":asset_return_form,"asset_id":asset_id}
             response = render(
                 request, "asset/asset_return_form.html", context
             )
             if asset_return_status == "Healthy":
                 asset_allocation = AssetAssignment.objects.filter(
-                    asset_id=id, return_status__isnull=True
+                    asset_id=asset_id, return_status__isnull=True
                 ).first()
                 asset_allocation.return_date = asset_return_date
                 asset_allocation.return_status = asset_return_status
@@ -596,7 +598,7 @@ def asset_allocate_return(request, id):
             asset.asset_status = "Not-Available"
             asset.save()
             asset_allocation = AssetAssignment.objects.filter(
-                asset_id=id, return_status__isnull=True
+                asset_id=asset_id, return_status__isnull=True
             ).first()
             asset_allocation.return_date = asset_return_date
             asset_allocation.return_status = asset_return_status
@@ -606,7 +608,7 @@ def asset_allocate_return(request, id):
             return HttpResponse(
                 response.content.decode("utf-8") + "<script>location.reload();</script>"
             )
-    context = {"asset_return_form":asset_return_form,"asset_id":id}
+    context = {"asset_return_form":asset_return_form,"asset_id":asset_id}
     return render(request, "asset/asset_return_form.html",context )
 
 
@@ -703,12 +705,11 @@ def asset_request_alloaction_view_search_filter(request):
 def convert_nan(val):
     if pd.isna(val):
         return None
-    else:
-        return val
+    return val
 
 
 @login_required
-@permission_required("asset.add_asset")
+@permission_required(perm="asset.add_asset")
 def asset_import(request):
     """asset import view"""
 
@@ -718,13 +719,13 @@ def asset_import(request):
 
             if file is not None:
                 try:
-                    df = pd.read_excel(file)
-                except KeyError as e:
-                    messages.error(request, f"{e}")
+                    dataframe = pd.read_excel(file)
+                except KeyError as exception:
+                    messages.error(request, f"{exception}")
                     return redirect(asset_category_view)
 
                 # Create Asset objects from the DataFrame and save them to the database
-                for index, row in df.iterrows():
+                for index, row in dataframe.iterrows():
                     asset_name = convert_nan(row["Asset name"])
                     asset_description = convert_nan(row["Description"])
                     asset_tracking_id = convert_nan(row["Tracking id"])
@@ -755,13 +756,13 @@ def asset_import(request):
                 return redirect(asset_category_view)
             messages.error(request, _("File Error"))
             return redirect(asset_category_view)
-    except Exception as e:
-        messages.error(request, f"{e}")
+    except Exception as exception:
+        messages.error(request, f"{exception}")
         return redirect(asset_category_view)
 
 
 @login_required
-def asset_excel(request):
+def asset_excel(_request):
     """asset excel download view"""
 
     try:
@@ -776,18 +777,18 @@ def asset_excel(request):
             "lot number",
         ]
         # Create a pandas DataFrame with columns but no data
-        df = pd.DataFrame(columns=columns)
+        dataframe = pd.DataFrame(columns=columns)
         # Write the DataFrame to an Excel file
         response = HttpResponse(content_type="application/ms-excel")
         response["Content-Disposition"] = 'attachment; filename="my_excel_file.xlsx"'
-        df.to_excel(response, index=False)
+        dataframe.to_excel(response, index=False)
         return response
-    except Exception as e:
-        return HttpResponse(e)
+    except Exception as exception:
+        return HttpResponse(exception)
 
 
 @login_required
-@permission_required("asset.add_asset")
+@permission_required(perm="asset.add_asset")
 def asset_export_excel(request):
     """asset export view"""
 
@@ -834,11 +835,11 @@ def asset_export_excel(request):
         data[key] = data[key] + [None] * (len(queryset) - len(data[key]))
 
     # Convert the data dictionary to a Pandas DataFrame
-    df = pd.DataFrame(data)
+    dataframe = pd.DataFrame(data)
 
     # Convert any date fields to the desired format
     # Rename the columns as needed
-    df = df.rename(
+    dataframe = dataframe.rename(
         columns={
             "asset_name": "Asset name",
             "asset_description": "Description",
@@ -854,7 +855,7 @@ def asset_export_excel(request):
     # Write the DataFrame to an Excel file
     response = HttpResponse(content_type="application/vnd.ms-excel")
     response["Content-Disposition"] = 'attachment; filename="assets.xlsx"'
-    df.to_excel(response, index=False)
+    dataframe.to_excel(response, index=False)
     return response
 
 
@@ -876,16 +877,15 @@ def asset_batch_number_creation(request):
             return HttpResponse(
                 response.content.decode("utf-8") + "<script>location.reload();</script>"
             )
-        else:
-            context = {
-                "asset_batch_form": asset_batch_form,
-            }
+        context = {
+            "asset_batch_form": asset_batch_form,
+        }
         return render(request, "batch/asset_batch_number_creation.html", context)
     return render(request, "batch/asset_batch_number_creation.html", context)
 
 
 @login_required
-@permission_required("asset.add_assetlot")
+@permission_required(perm="asset.add_assetlot")
 def asset_batch_view(request):
     """
     View function to display details of all batch numbers.
@@ -910,17 +910,17 @@ def asset_batch_view(request):
 
 
 @login_required
-@permission_required("asset.change_assetlot")
-def asset_batch_update(request, id):
+@permission_required(perm="asset.change_assetlot")
+def asset_batch_update(request, batch_id):
     """
     View function to return asset.
     Args:
-    - id: integer value representing the ID of the asset
+    - batch_id: integer value representing the ID of the asset
     Returns:
     - message of the return
     """
-    asset_batch_number = AssetLot.objects.get(id=id)
-    asset_batch = AssetLot.objects.get(id=id)
+    asset_batch_number = AssetLot.objects.get(id=batch_id)
+    asset_batch = AssetLot.objects.get(id=batch_id)
     asset_batch_form = AssetBatchForm(instance=asset_batch)
     context = {
         "asset_batch_update_form": asset_batch_form,
@@ -947,16 +947,16 @@ def asset_batch_update(request, id):
 
 
 @login_required
-@permission_required("asset.delete_assetlot")
-def asset_batch_number_delete(request, id):
+@permission_required(perm="asset.delete_assetlot")
+def asset_batch_number_delete(request, batch_id):
     """
     View function to return asset.
     Args:
-    - id: integer value representing the ID of the asset
+    - batch_id: integer value representing the ID of the asset
     Returns:
     - message of the return
     """
-    asset_batch_number = AssetLot.objects.get(id=id)
+    asset_batch_number = AssetLot.objects.get(id=batch_id)
     assigned_batch_number = Asset.objects.filter(asset_lot_number_id=asset_batch_number)
     if assigned_batch_number:
         messages.error(request, _("Batch number in-use"))
@@ -968,7 +968,7 @@ def asset_batch_number_delete(request, id):
 
 @login_required
 @hx_request_required
-@permission_required("asset.delete_assetlot")
+@permission_required(perm="asset.delete_assetlot")
 def asset_batch_number_search(request):
     """
     View function to return search  data of asset batch number.
@@ -1018,7 +1018,7 @@ def asset_count_update(request):
 
 
 @login_required
-@permission_required("asset.delete_assetcategory")
+@permission_required(perm="asset.delete_assetcategory")
 def delete_asset_category(request, cat_id):
     """
     This method is used to delete asset category

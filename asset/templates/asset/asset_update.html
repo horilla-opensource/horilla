@@ -38,7 +38,7 @@
   id="asset_update_close_btn_asset_list" 
   data-dismiss="oh-modal"
   aria-label="Close" 
-  hx-get="{%url 'asset-list' id=0 %}?asset_list=asset_filter&{{pg}}"
+  hx-get="{%url 'asset-list' cat_id=0 %}?asset_list=asset_filter&{{pg}}"
   hx-target="#assetCategoryList">
     <ion-icon name="close-outline"></ion-icon>
   </button>
@@ -50,7 +50,7 @@
     id="asset_update_close_btn_category"
     data-dismiss="oh-modal" 
     aria-label="Close"
-    hx-get="{%url 'asset-list' id=asset_form.instance.asset_category_id.id %}?{{pg}}"
+    hx-get="{%url 'asset-list' cat_id=asset_form.instance.asset_category_id.id %}?{{pg}}"
     hx-target="#assetList{{asset_form.instance.asset_category_id.id}}">
     <ion-icon name="close-outline"></ion-icon>
   </button>
