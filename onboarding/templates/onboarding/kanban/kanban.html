@@ -16,7 +16,7 @@
 <div class="oh-wrapper">
     <section class=" oh-main__topbar" x-data="{searchShow: false}">
         <div class="oh-main__titlebar oh-main__titlebar--left">
-            <div class="oh-main__titlebar-title fw-bold mb-0 text-dark" style="cursor:pointer;">Onboarding</div>
+            <div class="oh-main__titlebar-title fw-bold mb-0 text-dark" style="cursor:pointer;">{% trans "Onboarding" %}</div>
         </div>
 
         <div class="oh-main__titlebar oh-main__titlebar--right">
@@ -30,7 +30,7 @@
             </div>
 
             <div class="oh-switch ms-3" style="width: 30px;">
-                <input type="checkbox" name="is_closed" data-widget="style-widget" class="style-widget oh-switch__checkbox" {% if request.GET.closed %} checked title="Ongoing Recruitments" {% else %}title="Closed Recruitments" {% endif %} id="is_closed" > 
+                <input type="checkbox" name="is_closed" data-widget="style-widget" class="style-widget oh-switch__checkbox" {% if request.GET.closed %} checked title="{% trans 'Ongoing Recruitments' %}" {% else %}title="{% trans 'Closed Recruitments' %}" {% endif %} id="is_closed" > 
             </div>
 
             <ul class="oh-view-types ml-2" style="margin-bottom: 0;">
@@ -52,7 +52,7 @@
                     <div class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4" x-show="open" @click.outside="open = false" style="display: none;" @click.>
                         
                         <div class="mb-3 mt-3">
-                            <label for="job_position_id" class="oh-label">Job position</label>
+                            <label for="job_position_id" class="oh-label">{% trans "Job position" %}</label>
                             <select class="" name="job_position_id" id="job_position_id">
                                 <option value="">------------------</option>
                                 {% for job_position in job_positions %}
@@ -62,11 +62,11 @@
                         </div>
                         <div class="row">
                             <div class="col-sm-12 col-md-12 col-lg-6">
-                                <label class ="mb-2" for="join_date">Join Date</label>
+                                <label class ="mb-2" for="join_date">{% trans "Join Date" %}</label>
                                 <input type="date" name="join_date" id="join_date" class="oh-input w-100">
                             </div>
                             <div class="col-sm-12 col-md-12 col-lg-6">
-                                <label class ="mb-2" for="portal_stage">Onboarding Portal Stage</label>
+                                <label class ="mb-2" for="portal_stage">{% trans "Onboarding Portal Stage" %}</label>
                                 <select class="" name="portal_stage" id="portal_stage">
                                     <option value="">------------------</option>
                                     <option value="0">0</option>
@@ -83,13 +83,13 @@
                                     <div class="row">
                                         <div class="col-sm-12 col-md-12 col-lg-6">
                                             <div class="oh-input-group">
-                                                <label class ="mb-2" for="join_date">Join Date From</label>
+                                                <label class ="mb-2" for="join_date">{% trans "Join Date From" %}</label>
                                             <input type="date" name="join_date" id="join_date_start" class="oh-input w-100">
                                             </div>
                                         </div>
                                         <div class="col-sm-12 col-md-12 col-lg-6">
                                             <div class="oh-input-group">
-                                                <label class ="mb-2" for="join_date">Join Date To</label>
+                                                <label class ="mb-2" for="join_date">{% trans "Join Date To" %}</label>
                                                 <input type="date" name="join_date" id="join_date_end" class="oh-input w-100">
                                             </div>
                                         </div>
@@ -150,7 +150,7 @@
                                             <li class="oh-dropdown__item">
                                                 <a  href="{% url 'stage-delete' stage.id %}"
                                                     onclick="return confirm('{% trans "Do you want to delete this stage?" %}')"
-                                                    class="oh-dropdown__link oh-dropdown__link--danger">Delete</a>
+                                                    class="oh-dropdown__link oh-dropdown__link--danger">{% trans "Delete" %}</a>
                                             </li>
                                         </ul>
                                     </div>
@@ -162,7 +162,7 @@
                                     hx-get="{% url 'task-creation' rec.id %}"
                                     hx-target = "#taskModalBody"
 
-                                    title="Add task">
+                                    title="{% trans 'Add task' %}">
                                     <ion-icon name="add-sharp" role="img" class="md hydrated"
                                         aria-label="add sharp"></ion-icon>
                                 </button>
@@ -189,7 +189,7 @@
                                                         <a href="#" class="oh-dropdown__link oh-dropdown__link--danger oh-kanban__card-delete">Delete</a>
                                                     </li> {% endcomment %}
                                                     <li class="oh-dropdown__item">
-                                                        <a href="#" data-toggle="oh-modal-toggle" data-target="#sendMailModal" hx-get="{% url 'onboarding-send-mail' candidate.candidate_id.id %}" hx-target="#sendMailModalBody" class="oh-dropdown__link">Send Mail</a>
+                                                        <a href="#" data-toggle="oh-modal-toggle" data-target="#sendMailModal" hx-get="{% url 'onboarding-send-mail' candidate.candidate_id.id %}" hx-target="#sendMailModalBody" class="oh-dropdown__link">{% trans "Send Mail" %}</a>
                                                     </li>
                                                 </ul>
                                             </div>
@@ -200,7 +200,7 @@
                                     {{candidate.candidate_id.job_position_id}} <br/>
                                     <span class="oh-kanban__card-footer-text oh-text--light">{{candidate.candidate_id.email}}</span>
                                 
-                                    <button class="oh-kanban__card-body-collapse oh-kanban__card-collapse--down" aria-label="Toggle Options" title="Tasks"></button>
+                                    <button class="oh-kanban__card-body-collapse oh-kanban__card-collapse--down" aria-label="Toggle Options" title="{% trans 'Tasks' %}"></button>
                                     <div class="oh-kanban__card-content oh-kanban__card-content--hide">
                                         {% for task in candidate.candidate_id.candidate_task.all %}
                                         <label class="oh-label oh-label--sm d-block">{{task.onboarding_task_id.task_title}}</label>
@@ -211,7 +211,7 @@
                                     </div>
                                 </div>
                             <div class="oh-kanban__card-footer">
-                                <span class="oh-kanban__card-footer-text oh-text--light">Candidate</span>
+                                <span class="oh-kanban__card-footer-text oh-text--light">{% trans "Candidate" %}</span>
                                 </div>
                             </div>
                             {% endfor %}
@@ -224,7 +224,7 @@
                         <button class="oh-btn oh-btn--x-small oh-kanban__add-section" onclick="event.stopPropagation()"  data-action="toggle"
                             data-target="#addStageModal" hx-get="{% url 'stage-creation' rec.id %}" hx-target="#stageForm" data-toggle="oh-modal-toggle" data-class="d-none">
                             <ion-icon class="me-1" name="add-outline"></ion-icon>
-                            Add Stage
+                            {% trans "Add Stage" %}
                         </button>                        
                     </div>
                 </div>
@@ -251,7 +251,7 @@
 <div class="oh-modal" id="addStageModal" role="dialog" aria-labelledby="addStageModal" aria-hidden="true">
     <div class="oh-modal__dialog oh-modal__dialog--timeoff">
         <div class="oh-modal__dialog-header">
-            <span class="oh-modal__dialog-title" id="editDialogDialog">Create Stage</span>
+            <span class="oh-modal__dialog-title" id="editDialogDialog">{% trans "Create Stage" %}</span>
             <button class="oh-modal__close" aria-label="Close">
                 <ion-icon name="close-outline" role="img" class="md hydrated" aria-label="close outline"></ion-icon>
             </button>
@@ -265,7 +265,7 @@
 <div class="oh-modal" id="taskModal" role="dialog" aria-labelledby="taskModal" aria-hidden="true">
     <div class="oh-modal__dialog oh-modal__dialog--timeoff">
         <div class="oh-modal__dialog-header">
-            <span class="oh-modal__dialog-title" id="editDialogDialog">Create Task</span>
+            <span class="oh-modal__dialog-title" id="editDialogDialog">{% trans "Create Task" %}</span>
             <button class="oh-modal__close" aria-label="Close">
                 <ion-icon name="close-outline" role="img" class="md hydrated" aria-label="close outline"></ion-icon>
             </button>
@@ -279,7 +279,7 @@
 <div class="oh-modal" id="sendMailModal" role="dialog" aria-labelledby="" aria-hidden="true">
     <div class="oh-modal__dialog oh-modal__dialog--timeoff">
         <div class="oh-modal__dialog-header">
-            <span class="oh-modal__dialog-title" id="modalTask">Send Mail</span>
+            <span class="oh-modal__dialog-title" id="modalTask">{% trans "Send Mail" %}</span>
             <button class="oh-modal__close" aria-label="Close">
                 <ion-icon name="close-outline" role="img" class="md hydrated" aria-label="close outline"></ion-icon>
             </button>

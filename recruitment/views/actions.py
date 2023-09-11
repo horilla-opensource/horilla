@@ -203,8 +203,8 @@ def candidate_archive(request, cand_id):
     candidate_obj = Candidate.objects.get(id=cand_id)
     candidate_obj.is_active = not candidate_obj.is_active
     candidate_obj.save()
-    message = "archived" if not candidate_obj.is_active else "un-archived"
-    messages.success(request, f"Candidate is {message}")
+    message = _("archived") if not candidate_obj.is_active else _("un-archived")
+    messages.success(request, _("Candidate is %(message)s") % {"message": message})
     return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 
 
@@ -218,15 +218,20 @@ def candidate_bulk_archive(request):
     ids = request.POST["ids"]
     ids = json.loads(ids)
     is_active = True
-    message = "un-archived"
+    message = _("un-archived")
     if request.GET.get("is_active") == "False":
         is_active = False
-        message = "archived"
+        message = _("archived")
     for cand_id in ids:
         candidate_obj = Candidate.objects.get(id=cand_id)
         candidate_obj.is_active = is_active
         candidate_obj.save()
-        messages.success(request, f"{candidate_obj} is {message}")
+        messages.success(
+            request,
+            _("{candidate} is {message}").format(
+                candidate=candidate_obj, message=message
+            ),
+        )
     return JsonResponse({"message": "Success"})
 
 

@@ -11,6 +11,7 @@ from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.contrib import messages
+from django.utils.translation import gettext_lazy as _
 from horilla.decorators import login_required, permission_required
 from base.methods import get_key_instances
 import payroll.models.models
@@ -201,7 +202,7 @@ def create_allowance(request):
         if form.is_valid():
             form.save()
             form = forms.AllowanceForm()
-            messages.success(request, "Allowance created.")
+            messages.success(request, _("Allowance created."))
             return redirect(view_allowance)
     return render(request, "payroll/common/form.html", {"form": form})
 
@@ -282,7 +283,7 @@ def update_allowance(request, allowance_id):
         form = forms.AllowanceForm(request.POST, instance=instance)
         if form.is_valid():
             form.save()
-            messages.success(request, "Allowance updated.")
+            messages.success(request, _("Allowance updated."))
             return redirect(view_allowance)
     return render(request, "payroll/common/form.html", {"form": form})
 
@@ -295,16 +296,16 @@ def delete_allowance(request, allowance_id):
     """
     try:
         payroll.models.models.Allowance.objects.get(id=allowance_id).delete()
-        messages.success(request, "Allowance deleted successfully")
+        messages.success(request, _("Allowance deleted successfully"))
     except ObjectDoesNotExist(Exception):
-        messages.error(request, "Allowance not found")
+        messages.error(request, _("Allowance not found"))
     except ValidationError as validation_error:
         messages.error(
-            request, "Validation error occurred while deleting the allowance"
+            request, _("Validation error occurred while deleting the allowance")
         )
         messages.error(request, str(validation_error))
     except Exception as exception:
-        messages.error(request, "An error occurred while deleting the allowance")
+        messages.error(request, _("An error occurred while deleting the allowance"))
         messages.error(request, str(exception))
     return redirect(view_allowance)
 
@@ -320,7 +321,7 @@ def create_deduction(request):
         form = forms.DeductionForm(request.POST)
         if form.is_valid():
             form.save()
-            messages.success(request, "Deduction created.")
+            messages.success(request, _("Deduction created."))
             return redirect(view_deduction)
     return render(request, "payroll/common/form.html", {"form": form})
 
@@ -400,7 +401,7 @@ def update_deduction(request, deduction_id):
         form = forms.DeductionForm(request.POST, instance=instance)
         if form.is_valid():
             form.save()
-            messages.success(request, "Deduction updated.")
+            messages.success(request, _("Deduction updated."))
             return redirect(view_deduction)
     return render(request, "payroll/common/form.html", {"form": form})
 
@@ -414,7 +415,7 @@ def delete_deduction(request, deduction_id):
         id : deduction instance id
     """
     payroll.models.models.Deduction.objects.get(id=deduction_id).delete()
-    messages.success(request, "Deduction deleted successfully")
+    messages.success(request, _("Deduction deleted successfully"))
     return redirect(view_deduction)
 
 
@@ -508,7 +509,7 @@ def create_payslip(request):
                 data["net_pay"] = payslip_data["net_pay"]
                 data["pay_data"] = json.loads(payslip_data["json_data"])
                 save_payslip(**data)
-                messages.success(request, "Payslip Saved")
+                messages.success(request, _("Payslip Saved"))
                 return render(
                     request,
                     "payroll/payslip/individual_payslip.html",

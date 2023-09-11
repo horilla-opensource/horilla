@@ -14,6 +14,7 @@ from urllib.parse import parse_qs
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.contrib import messages
+from django.utils.translation import gettext_lazy as _
 from horilla.decorators import permission_required, login_required
 from base.methods import get_key_instances
 from payroll.models.tax_models import (
@@ -57,7 +58,7 @@ def create_filing_status(request):
         filing_status_form = FilingStatusForm(request.POST)
         if filing_status_form.is_valid():
             filing_status_form.save()
-            messages.success(request,"Filing status created successfully")
+            messages.success(request, _("Filing status created successfully"))
             return HttpResponse("<script>window.location.reload()</script>")
     return render(
         request,
@@ -109,9 +110,9 @@ def filing_status_delete(request, filing_status_id):
     try:
         filing_status = FilingStatus.objects.get(id=filing_status_id)
         filing_status.delete()
-        messages.info(request, "Filing status successfully deleted.")
+        messages.info(request, _("Filing status successfully deleted."))
     except:
-        messages.error(request, "This filing status assigned to employees")
+        messages.error(request, _("This filing status assigned to employees"))
 
     return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 
@@ -179,7 +180,7 @@ def create_tax_bracket(request, filing_status_id):
         if tax_bracket_form.is_valid():
             max_income = tax_bracket_form.cleaned_data.get("max_income")
             if not max_income:
-                messages.info(request, "The maximum income will be infinite")
+                messages.info(request, _("The maximum income will be infinite"))
                 tax_bracket_form.instance.max_income = math.inf
             tax_bracket_form.save()
             return redirect(create_tax_bracket, filing_status_id=filing_status_id)
@@ -208,7 +209,7 @@ def update_tax_bracket(request, tax_bracket_id):
         if tax_bracket_form.is_valid():
             max_income = tax_bracket_form.cleaned_data.get("max_income")
             if not max_income:
-                messages.info(request, "The maximum income will be infinite")
+                messages.info(request, _("The maximum income will be infinite"))
                 tax_bracket_form.instance.max_income = math.inf
             tax_bracket_form.save()
             return HttpResponse("<script>window.location.reload()</script>")
@@ -232,7 +233,7 @@ def delete_tax_bracket(request, tax_bracket_id):
     """
     tax_bracket = TaxBracket.objects.get(id=tax_bracket_id)
     tax_bracket.delete()
-    messages.info(request, "Tax bracket successfully deleted.")
+    messages.info(request, _("Tax bracket successfully deleted."))
     return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 
 

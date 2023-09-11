@@ -17,7 +17,11 @@
                 <div class="oh-sticky-table__sd">{{holiday.name}}</div>
                 <div class="oh-sticky-table__td">{{holiday.start_date}}</div>
                 <div class="oh-sticky-table__td">{{holiday.end_date}}</div>
-                <div class="oh-sticky-table__td">{{holiday.recurring}}</div>
+                <div class="oh-sticky-table__td">{% if holiday.recurring %}
+                    {% trans "Yes" %}
+                        {% else %}
+                            {% trans "No" %}
+                        {% endif %}</div>
                 <div class="oh-sticky-table__td">
                     <div class="oh-btn-group">
                         <button class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Edit' %}" data-toggle="oh-modal-toggle"

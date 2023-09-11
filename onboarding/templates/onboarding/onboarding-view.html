@@ -43,7 +43,7 @@
         </button> {% endcomment %}
 
         <div class="oh-switch ms-3" style="width: 30px;">
-            <input type="checkbox" name="is_closed" data-widget="style-widget" class="style-widget oh-switch__checkbox" {% if request.GET.closed %} checked title="Ongoing Recruitments" {% else %}title="Closed Recruitments" {% endif %} id="is_closed" > 
+            <input type="checkbox" name="is_closed" data-widget="style-widget" class="style-widget oh-switch__checkbox" {% if request.GET.closed %} checked title="{% trans 'Ongoing Recruitments' %}" {% else %} title="{% trans 'Closed Recruitments' %}" {% endif %} id="is_closed" > 
         </div>
         <ul class="oh-view-types ml-2" style="margin-bottom: 0;">
             <li class="oh-view-type candidate-view-type" data-view="list">
@@ -64,7 +64,7 @@
                 <div class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4" x-show="open" @click.outside="open = false" style="display: none;" @click.>
                     
                     <div class="mb-3 mt-3">
-                        <label for="job_position_id" class="oh-label">Job position</label>
+                        <label for="job_position_id" class="oh-label">{% trans "Job position" %}</label>
                         <select class="" name="job_position_id" id="job_position_id">
                             <option value="">------------------</option>
                             {% for job_position in job_positions %}
@@ -74,11 +74,11 @@
                     </div>
                     <div class="row">
                         <div class="col-sm-12 col-md-12 col-lg-6">
-                            <label class ="mb-2" for="join_date">Join Date</label>
+                            <label class ="mb-2" for="join_date">{% trans "Join Date" %}</label>
                             <input type="date" name="join_date" id="join_date" class="oh-input w-100">
                         </div>
                         <div class="col-sm-12 col-md-12 col-lg-6">
-                            <label class ="mb-2" for="portal_stage">Onboarding Portal Stage</label>
+                            <label class ="mb-2" for="portal_stage">{% trans "Portal Stage" %}</label>
                             <select class="" name="portal_stage" id="portal_stage">
                                 <option value="">------------------</option>
                                 <option value="0">0</option>
@@ -95,13 +95,13 @@
                                 <div class="row">
                                     <div class="col-sm-12 col-md-12 col-lg-6">
                                         <div class="oh-input-group">
-                                            <label class ="mb-2" for="join_date">Join Date From</label>
+                                            <label class ="mb-2" for="join_date">{% trans "Join Date From" %}</label>
                                         <input type="date" name="join_date" id="join_date_start" class="oh-input w-100">
                                         </div>
                                     </div>
                                     <div class="col-sm-12 col-md-12 col-lg-6">
                                         <div class="oh-input-group">
-                                            <label class ="mb-2" for="join_date">Join Date To</label>
+                                            <label class ="mb-2" for="join_date">{% trans "Join Date To" %}</label>
                                             <input type="date" name="join_date" id="join_date_end" class="oh-input w-100">
                                         </div>
                                     </div>

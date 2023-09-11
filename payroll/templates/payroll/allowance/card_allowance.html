@@ -32,14 +32,14 @@
                 <li class="oh-dropdown__item">
                 <a onclick="event.stopPropagation();"
                    href="{% url 'update-allowance' allowance.id %}"
-                >Edit</a>
+                >{% trans "Edit" %}</a>
                 </li>
                 <li class="oh-dropdown__item">
                 <a class="text-danger"
                    href="{% url 'delete-allowance' allowance.id %}"
                    onclick = "event.preventDefault();event.stopPropagation(); confirm(`{% trans 'Do you want to delete this Allowance?' %}`)"
       
-                >Delete</a
+                >{% trans "Delete" %}</a
                 >
                 </li>
             </ul>

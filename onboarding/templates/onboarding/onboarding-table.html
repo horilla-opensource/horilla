@@ -176,7 +176,7 @@
                                         <div class="oh-dropdown__menu oh-dropdown__menu--right">
                                             <ul class="oh-dropdown__items">
                                                 <li class="oh-dropdown__item">
-                                                    <a href="#" data-toggle="oh-modal-toggle" data-target="#sendMailModal" hx-get="{% url 'onboarding-send-mail' candidate.candidate_id.id %}" hx-target="#sendMailModalBody" class="oh-dropdown__link">Send Mail</a>
+                                                    <a href="#" data-toggle="oh-modal-toggle" data-target="#sendMailModal" hx-get="{% url 'onboarding-send-mail' candidate.candidate_id.id %}" hx-target="#sendMailModalBody" class="oh-dropdown__link">{% trans "Send Mail" %}</a>
                                                 </li>
                                             </ul>
                                         </div>

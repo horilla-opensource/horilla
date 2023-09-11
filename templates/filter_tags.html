@@ -1,3 +1,4 @@
+{% load i18n %}
 {% load basefilters %}
 
 <!-- filter items showing here -->
@@ -6,8 +7,9 @@
   style="position: fixed; top: 150; z-index: 9999"
 >
   {%for field,values in filter_dict.items %} {%if values %}
+  {% with translation_field=field|filter_field %}
   <span class="oh-filter-tag filter-field" data-x-field="{{field}}">
-    {{field|filter_field}} : {% for value in values%} {{ value|capfirst }}{% endfor %}
+    {% trans translation_field  %} : {% for value in values%} {{ value|capfirst }}{% endfor %}
     <button class="oh-filter-tag__close">
       <ion-icon
         name="close-outline"
@@ -18,6 +20,7 @@
       </ion-icon>
     </button>
   </span>
+  {% endwith %}
   {%endif%} {% endfor %}
 </div>
 <script>

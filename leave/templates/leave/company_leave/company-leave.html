@@ -33,13 +33,13 @@
 
               <div class="oh-sticky-table__td">
                   <div class="oh-btn-group">
-                      <button class="oh-btn oh-btn--light-bkg w-100" title="Edit" data-toggle="oh-modal-toggle"
+                      <button class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Edit' %}" data-toggle="oh-modal-toggle"
                           data-target="#editModal2" hx-get="{% url 'company-leave-update' company_leave.id %}"
                           hx-target="#companyUpdateForm"><ion-icon name="create-outline"></ion-icon></button>
                       <a class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100" id="delete-link"
                           href="{% url 'company-leave-delete' company_leave.id %}"
                           onclick="return confirm('{% trans "Are you sure you want to delete ?" %}');" 
-                          title="Delete"><ion-icon name="trash-outline"></ion-icon></a>
+                          title="{% trans 'Delete' %}"><ion-icon name="trash-outline"></ion-icon></a>
                   </div>
               </div>
           </div>

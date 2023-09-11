@@ -102,7 +102,7 @@
                               </a>
                             </span>
                             {% endfor %}
-                            <span class="count-span">{{rec.recruitment_managers.all|length}} Managers</span>
+                            <span class="count-span">{{rec.recruitment_managers.all|length}} {% trans "Managers" %}</span>
                             
                           </div>
                           <div class="oh-sticky-table__td">
@@ -125,7 +125,7 @@
                               </a> {% endcomment %}
                             </span>
                             {% endfor %}
-                            <span class="count-span">{{rec.open_positions.all|length}} Jobs</span>
+                            <span class="count-span">{{rec.open_positions.all|length}} {% trans "Jobs" %}</span>
 
                           </div>
                           <div class="oh-sticky-table__td">

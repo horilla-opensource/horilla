@@ -117,7 +117,7 @@ x-data="{searchShow: false}"
             <div class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4" x-show="open" @click.outside="open = false" style="display: none;" @click.>
                 
                 <div class="mb-3 mt-3">
-                    <label for="job_pos_id" class="oh-label">Job position</label>
+                    <label for="job_pos_id" class="oh-label">{% trans "Job position" %}</label>
                     <select class="" name="job_pos_id" id="job_pos_id">
                         <option value="">------------------</option>
                         {% for job_position in job_positions %}

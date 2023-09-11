@@ -407,11 +407,13 @@ def candidates_view(request):
             "pd": previous_data,
         },
     )
+
+
 @login_required
 @permission_required(perm="recruitment.view_candidate")
 def hired_candidate_view(request):
     previous_data = request.environ["QUERY_STRING"]
-    candidates = Candidate.objects.filter(hired = True)
+    candidates = Candidate.objects.filter(hired=True)
     if request.GET.get("is_active") is None:
         candidates = candidates.filter(is_active=True)
     candidates = CandidateFilter(request.GET, queryset=candidates).qs
@@ -423,6 +425,7 @@ def hired_candidate_view(request):
             "pd": previous_data,
         },
     )
+
 
 @login_required
 @permission_required("candidate.view_candidate")
@@ -469,11 +472,11 @@ def email_send(request):
         candidate = Candidate.objects.get(id=cand_id)
         if candidate.start_onboard is False:
             token = secrets.token_hex(15)
-            existing_portal = OnboardingPortal.objects.filter(candidate_id = candidate)
+            existing_portal = OnboardingPortal.objects.filter(candidate_id=candidate)
             if existing_portal.exists():
-                new_portal =existing_portal.first()
+                new_portal = existing_portal.first()
                 new_portal.token = token
-                new_portal.used =  False
+                new_portal.used = False
                 new_portal.save()
             else:
                 OnboardingPortal(candidate_id=candidate, token=token).save()
@@ -529,10 +532,10 @@ def onboarding_view(request):
                         candidate_id=candidate, onboarding_task_id=task
                     ).save()
 
-    recruitments = Recruitment.objects.filter(closed = False)
+    recruitments = Recruitment.objects.filter(closed=False)
     status = "closed"
     if request.GET.get("closed") == "closed":
-        recruitments = Recruitment.objects.filter(closed = True)
+        recruitments = Recruitment.objects.filter(closed=True)
         status = ""
 
     onboarding_stages = OnboardingStage.objects.all()
@@ -544,8 +547,8 @@ def onboarding_view(request):
             "recruitments": recruitments,
             "onboarding_stages": onboarding_stages,
             "choices": choices,
-            "job_positions":job_positions,
-            "status":status,       
+            "job_positions": job_positions,
+            "status": status,
         },
     )
 
@@ -581,10 +584,10 @@ def kanban_view(request):
                         candidate_id=candidate, onboarding_task_id=task
                     ).save()
 
-    recruitments = Recruitment.objects.filter(closed = False)
+    recruitments = Recruitment.objects.filter(closed=False)
     status = "closed"
     if request.GET.get("closed") == "closed":
-        recruitments = Recruitment.objects.filter(closed = True)
+        recruitments = Recruitment.objects.filter(closed=True)
         status = ""
     onboarding_stages = OnboardingStage.objects.all()
     choices = CandidateTask.choice
@@ -596,12 +599,12 @@ def kanban_view(request):
             "recruitments": recruitments,
             "onboarding_stages": onboarding_stages,
             "choices": choices,
-            "job_positions":job_positions,
+            "job_positions": job_positions,
             "stage_form": stage_form,
-            "status":status,       
-            "choices":choices,
+            "status": status,
+            "choices": choices,
         },
-    ) 
+    )
 
 
 def user_creation(request, token):
@@ -618,14 +621,18 @@ def user_creation(request, token):
     """
     user = None if request.user.is_anonymous else request.user
     if user is not None:
-        return redirect(employee_creation,token=token)
+        return redirect(employee_creation, token=token)
     try:
         onboarding_portal = OnboardingPortal.objects.get(token=token)
         candidate = onboarding_portal.candidate_id
         user = User.objects.filter(username=candidate.email).first()
-        
+
         form = UserCreationForm(instance=user)
-        if not onboarding_portal or onboarding_portal.used is True and request.user.is_anonymous:
+        if (
+            not onboarding_portal
+            or onboarding_portal.used is True
+            and request.user.is_anonymous
+        ):
             return HttpResponse("Denied")
         try:
             if request.method == "POST":
@@ -685,7 +692,7 @@ def profile_view(request, token):
     if onboarding_portal is None:
         return HttpResponse("Denied")
     candidate = onboarding_portal.candidate_id
-    user = User.objects.get(username = candidate.email)
+    user = User.objects.get(username=candidate.email)
     if request.method == "POST":
         profile = request.FILES.get("profile")
         if profile is not None:
@@ -728,9 +735,7 @@ def employee_creation(request, token):
     }
     user = User.objects.filter(username=candidate.email).first()
     if Employee.objects.filter(employee_user_id=user).first() is not None:
-        initial = (
-            Employee.objects.filter(employee_user_id=user).first().__dict__
-        )
+        initial = Employee.objects.filter(employee_user_id=user).first().__dict__
 
     form = EmployeeCreationForm(
         initial,
@@ -754,11 +759,11 @@ def employee_creation(request, token):
             work_info = EmployeeWorkInformation.objects.get_or_create(
                 employee_id=employee_personal_info,
             )
-            job_position_id =onboarding_portal.candidate_id.job_position_id
+            job_position_id = onboarding_portal.candidate_id.job_position_id
             work_info[0].job_position_id = job_position_id
             work_info[0].date_joining = candidate.joining_date
             work_info[0].save()
-            onboarding_portal.count = 3 
+            onboarding_portal.count = 3
             onboarding_portal.save()
             messages.success(
                 request, _("Employee personal details created successfully..")
@@ -787,10 +792,15 @@ def employee_bank_details(request, token):
     """
     onboarding_portal = OnboardingPortal.objects.get(token=token)
     user = User.objects.filter(username=onboarding_portal.candidate_id.email).first()
-    employee = Employee.objects.filter(employee_user_id = user).first()
-    form = BankDetailsCreationForm(instance =EmployeeBankDetails.objects.filter(employee_id = employee).first())
+    employee = Employee.objects.filter(employee_user_id=user).first()
+    form = BankDetailsCreationForm(
+        instance=EmployeeBankDetails.objects.filter(employee_id=employee).first()
+    )
     if request.method == "POST":
-        form = BankDetailsCreationForm(request.POST, instance=EmployeeBankDetails.objects.filter(employee_id = employee).first())
+        form = BankDetailsCreationForm(
+            request.POST,
+            instance=EmployeeBankDetails.objects.filter(employee_id=employee).first(),
+        )
         if form.is_valid():
             return employee_bank_details_save(form, request, onboarding_portal)
         return redirect(welcome_aboard)
@@ -934,7 +944,9 @@ def candidate_stage_update(request, candidate_id, recruitment_id):
                 "choices": choices,
             },
         )
-    return JsonResponse({"message":"Candidate onboarding stage updated","type":"success"})
+    return JsonResponse(
+        {"message": "Candidate onboarding stage updated", "type": "success"}
+    )
 
 
 @login_required
@@ -1020,54 +1032,66 @@ def update_joining(request):
     candidate_obj = Candidate.objects.get(id=cand_id)
     candidate_obj.joining_date = date
     candidate_obj.save()
-    return JsonResponse({"type":"success","message":f"{candidate_obj.name}'s Date of joining updated sussefully"})
+    return JsonResponse(
+        {
+            "type": "success",
+            "message": f"{candidate_obj.name}'s Date of joining updated sussefully",
+        }
+    )
 
 
 @login_required
 @permission_required("candidate.view_candidate")
 def view_dashboard(request):
-    recruitment = Recruitment.objects.all().values_list("title",flat=True)
+    recruitment = Recruitment.objects.all().values_list("title", flat=True)
     candidates = Candidate.objects.all()
     hired = candidates.filter(start_onboard=True)
-    onboard_candidates = Candidate.objects.filter(start_onboard = True)
-    job_positions =onboard_candidates.values_list("job_position_id__job_position",flat=True)
+    onboard_candidates = Candidate.objects.filter(start_onboard=True)
+    job_positions = onboard_candidates.values_list(
+        "job_position_id__job_position", flat=True
+    )
 
     context = {
-        "recruitment":list(recruitment),
-        "candidates":candidates,
-        "hired":hired,
-        "onboard_candidates" : onboard_candidates,
-        "job_positions" : list(set(job_positions)),
+        "recruitment": list(recruitment),
+        "candidates": candidates,
+        "hired": hired,
+        "onboard_candidates": onboard_candidates,
+        "job_positions": list(set(job_positions)),
     }
-    return render (request,"onboarding/dashboard.html",context=context)
+    return render(request, "onboarding/dashboard.html", context=context)
+
 
 @login_required
 @permission_required("candidate.view_candidate")
 def dashboard_stage_chart(request):
     recruitment = request.GET.get("recruitment")
-    labels = OnboardingStage.objects.filter(recruitment_id__title = recruitment).values_list("stage_title",flat=True)
+    labels = OnboardingStage.objects.filter(
+        recruitment_id__title=recruitment
+    ).values_list("stage_title", flat=True)
     labels = list(labels)
     candidate_counts = []
     border_color = []
-    background_color= []
+    background_color = []
     for label in labels:
         red = random.randint(0, 255)
         green = random.randint(0, 255)
         blue = random.randint(0, 255)
         background_color.append(f"rgba({red}, {green}, {blue}, 0.3")
         border_color.append(f"rgb({red}, {green}, {blue})")
-        count = CandidateStage.objects.filter(onboarding_stage_id__stage_title=label,onboarding_stage_id__recruitment_id__title = recruitment).count()
+        count = CandidateStage.objects.filter(
+            onboarding_stage_id__stage_title=label,
+            onboarding_stage_id__recruitment_id__title=recruitment,
+        ).count()
         candidate_counts.append(count)
 
     response = {
-        "labels" : labels,
-        "data" : candidate_counts,
-        "recruitment":recruitment,
-        "background_color":background_color,
-        "border_color":border_color,
+        "labels": labels,
+        "data": candidate_counts,
+        "recruitment": recruitment,
+        "background_color": background_color,
+        "border_color": border_color,
     }
     return JsonResponse(response)
-
 
 
 @login_required
@@ -1089,7 +1113,6 @@ def candidate_sequence_update(request):
     return JsonResponse({"type": "fail"})
 
 
-    
 @login_required
 @stage_manager_can_enter("recruitment.change_stage")
 def stage_sequence_update(request):
@@ -1105,7 +1128,7 @@ def stage_sequence_update(request):
             stage.sequence = seq
             stage.save()
             updated = True
-            
+
     if updated:
         return JsonResponse({"type": "success", "message": "Stage sequence updated"})
     return JsonResponse({"type": "fail"})
@@ -1113,24 +1136,30 @@ def stage_sequence_update(request):
 
 @login_required
 @stage_manager_can_enter("recruitment.change_candidate")
-def onboarding_send_mail(request,candidate_id):
+def onboarding_send_mail(request, candidate_id):
     """
     This method is used to send mail to the candidate from onboarding view
     """
     candidate = Candidate.objects.get(id=candidate_id)
     candidate_mail = candidate.email
-    response = render(request,"onboarding/send-mail-form.html",{"candidate":candidate})
+    response = render(
+        request, "onboarding/send-mail-form.html", {"candidate": candidate}
+    )
     if request.method == "POST":
-        subject = request.POST['subject']
+        subject = request.POST["subject"]
         body = request.POST["body"]
         with contextlib.suppress(Exception):
             res = send_mail(
-                subject, body, settings.EMAIL_HOST_USER, [candidate_mail], fail_silently=False
+                subject,
+                body,
+                settings.EMAIL_HOST_USER,
+                [candidate_mail],
+                fail_silently=False,
             )
             if res == 1:
-                messages.success(request,"Mail sent successfully")
+                messages.success(request, _("Mail sent successfully"))
             else:
-                messages.error(request,"Something went wrong")
+                messages.error(request, _("Something went wrong"))
         return HttpResponse(
             response.content.decode("utf-8") + "<script>location.reload();</script>"
         )

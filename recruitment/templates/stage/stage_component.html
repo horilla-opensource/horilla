@@ -80,11 +80,11 @@
                                       </button>
                                     </span>
                                     {% endfor %}
-                                    <span class="count-span">{{stage.stage_managers.all|length}} Managers</span>
+                                    <span class="count-span">{{stage.stage_managers.all|length}} {% trans "Managers" %}</span>
 
                                   </div>
                                   <div class="oh-sticky-table__td">
-                                    {{stage.stage_type}}
+                                    {{stage.get_stage_type_display}}
                                   </div>
                                   <div class="oh-sticky-table__td">
                                     {{stage.recruitment_id}}

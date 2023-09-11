@@ -54,7 +54,7 @@ def candidate_survey(request):
     form = SurveyForm(recruitment=recruitment).form
     if request.method == "POST":
         if not Candidate.objects.filter(
-                email=candidate.email, recruitment_id=candidate.recruitment_id
+            email=candidate.email, recruitment_id=candidate.recruitment_id
         ).exists():
             candidate.save()
         else:
@@ -81,7 +81,7 @@ def candidate_survey(request):
                 parts = key.split("_", 1)
                 question_text = parts[1]
                 selected_choices = request.POST.getlist(key)
-                if selected_choices and selected_choices[0] != '':
+                if selected_choices and selected_choices[0] != "":
                     formatted_dates = [
                         datetime.strptime(date, "%Y-%m-%d").strftime("%d-%m-%Y")
                         for date in selected_choices
@@ -93,7 +93,7 @@ def candidate_survey(request):
             attachment = request.FILES[key]
             if attachment.size > MAX_FILE_SIZE:
                 messages.error(
-                    request, "File size exceeds the limit. Maximum size is 5 MB"
+                    request, _("File size exceeds the limit. Maximum size is 5 MB")
                 )
                 return render(
                     request,
@@ -108,7 +108,7 @@ def candidate_survey(request):
             answer_data[key] = [attachment_path]
         answer.answer_json = json.dumps(answer_data)
         answer.save()
-        messages.success(request, "Your answers are submitted.")
+        messages.success(request, _("Your answers are submitted."))
         return render(request, "candidate/success.html")
     return render(
         request,
@@ -156,7 +156,7 @@ def update_question_template(request, survey_id):
             instance.save()
             instance.recruitment_ids.set(form.recruitment)
             instance.job_position_ids.set(form.job_positions)
-            messages.success(request, "New survey question updated.")
+            messages.success(request, _("New survey question updated."))
             return HttpResponse(
                 render(
                     request, "survey/template-update-form.html", {"form": form}
@@ -180,7 +180,7 @@ def create_question_template(request):
             instance.save()
             instance.recruitment_ids.set(form.recruitment)
             instance.job_position_ids.set(form.job_positions)
-            messages.success(request, "New survey question created.")
+            messages.success(request, _("New survey question created."))
             return HttpResponse(
                 render(
                     request, "survey/template-form.html", {"form": form}
@@ -197,7 +197,7 @@ def delete_survey_question(request, survey_id):
     This method is used to delete the survey instance
     """
     RecruitmentSurvey.objects.get(id=survey_id).delete()
-    messages.success(request, "Question was deleted successfully")
+    messages.success(request, _("Question was deleted successfully"))
     return redirect(view_question_template)
 
 

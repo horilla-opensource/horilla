@@ -1,3 +1,38 @@
+var downloadMessages = {
+  ar: "هل ترغب في تنزيل القالب؟",
+  de: "Möchten Sie die Vorlage herunterladen?",
+  es: "¿Quieres descargar la plantilla?",
+  en: "Do you want to download the template?",
+  fr: "Voulez-vous télécharger le modèle ?",
+};
+
+function getCookie(name) {
+  let cookieValue = null;
+  if (document.cookie && document.cookie !== '') {
+      const cookies = document.cookie.split(';');
+      for (let i = 0; i < cookies.length; i++) {
+          const cookie = cookies[i].trim();
+          // Does this cookie string begin with the name we want?
+          if (cookie.substring(0, name.length + 1) === (name + '=')) {
+              cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+              break;
+          }
+      }
+  }
+  return cookieValue;
+}
+
+function getCurrentLanguageCode(callback) {
+  $.ajax({
+    type: "GET",
+    url: "/employee/get-language-code/",
+    success: function (response) {
+      var languageCode = response.language_code;
+      callback(languageCode); // Pass the language code to the callback
+    },
+  });
+}
+
 $(document).ready(function () {
   $("#import-dropdown").hide();
     // asset category accordion
@@ -53,9 +88,14 @@ $(document).ready(function () {
 
 
 $("#asset-info-import").click(function (e) {
-    e.preventDefault();
-        Swal.fire({
-            text: "Do you want to download template ?",
+  e.preventDefault();
+  var languageCode = null;
+  getCurrentLanguageCode(function (code) {
+    languageCode = code;
+    var confirmMessage = downloadMessages[languageCode];
+    // Use SweetAlert for the confirmation dialog
+    Swal.fire({
+            text: confirmMessage,
             icon: 'question',
             showCancelButton: true,
             confirmButtonColor: '#008000',
@@ -87,4 +127,5 @@ $("#asset-info-import").click(function (e) {
           });
         }
       });
+    });
   });
