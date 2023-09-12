@@ -317,7 +317,7 @@ def group_assign_view(request):
     if request.GET.get("search") is not None:
         search = request.GET.get("search")
     groups = Group.objects.filter(name__icontains=search)
-    previous_data = request.environ["QUERY_STRING"]
+    previous_data = request.GET.urlencode()
     return render(
         request,
         "base/auth/group_assign_view.html",
@@ -881,7 +881,7 @@ def rotating_work_type_assign_view(request):
     This method renders template to view rotating work type objects
     """
 
-    previous_data = request.environ["QUERY_STRING"]
+    previous_data = request.GET.urlencode()
     rwork_type_assign = RotatingWorkTypeAssignFilter(request.GET).qs
     if request.GET.get("is_active") is None:
         rwork_type_assign = rwork_type_assign.filter(is_active=True)
@@ -1395,7 +1395,7 @@ def rotating_shift_assign_view(request):
     """
     This method renders all instance of rotating shift assign to a template
     """
-    previous_data = request.environ["QUERY_STRING"]
+    previous_data = request.GET.urlencode()
     rshift_assign = RotatingShiftAssignFilters(request.GET).qs
     if request.GET.get("is_active") is None:
         rshift_assign = rshift_assign.filter(is_active=True)
@@ -1613,7 +1613,7 @@ def employee_permission_search(request, codename=None, uid=None):
     employees = Employee.objects.filter(
         employee_first_name__icontains=search
     ) | Employee.objects.filter(employee_last_name__icontains=search)
-    previous_data = request.environ["QUERY_STRING"]
+    previous_data = request.GET.urlencode()
     return render(
         request,
         "base/auth/permission_view.html",
@@ -1680,7 +1680,7 @@ def work_type_request_search(request):
     This method is used to search work type request.
     """
     employee = Employee.objects.filter(employee_user_id=request.user).first()
-    previous_data = request.environ["QUERY_STRING"]
+    previous_data = request.GET.urlencode()
     f = WorkTypeRequestFilter(request.GET)
     work_typ_requests = filtersubordinates(request, f.qs, "base.add_worktyperequest")
     if set(WorkTypeRequest.objects.filter(employee_id=employee)).issubset(set(f.qs)):
@@ -2101,7 +2101,7 @@ def shift_request_search(request):
     This method is used search shift request by employee and also used to filter shift request.
     """
     employee = Employee.objects.filter(employee_user_id=request.user).first()
-    previous_data = request.environ["QUERY_STRING"]
+    previous_data = request.GET.urlencode()
     f = ShiftRequestFilter(request.GET)
     shift_requests = filtersubordinates(request, f.qs, "base.add_shiftrequest")
     if set(ShiftRequest.objects.filter(employee_id=employee)).issubset(set(f.qs)):

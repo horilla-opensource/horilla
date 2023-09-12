@@ -202,7 +202,7 @@ def objective_filter_pagination(request, objective_own, objective_all):
     Returns:
         All the filtered and paginated object will return.
     """
-    previous_data = request.environ["QUERY_STRING"]
+    previous_data = request.GET.urlencode()
     initial_data = {"archive": False}  # set initial value of archive filter to False
     if request.GET.get("status") != "Closed":
         objective_own = objective_own.exclude(status="Closed")
@@ -888,7 +888,7 @@ def filter_pagination_feedback(
         it will return the filtered and searched object.
 
     """
-    previous_data = request.environ["QUERY_STRING"]
+    previous_data = request.GET.urlencode()
     initial_data = {"archive": False}  # set initial value of archive filter to False
     feedback_filter_own = FeedbackFilter(
         request.GET or initial_data, queryset=self_feedback

@@ -163,7 +163,7 @@ def attendance_view(request):
     """
     This method is used to view attendances.
     """
-    previous_data = request.environ["QUERY_STRING"]
+    previous_data = request.GET.urlencode()
     form = AttendanceForm()
     condition = AttendanceValidationCondition.objects.first()
     minot = strtime_seconds("00:30")
@@ -370,7 +370,7 @@ def attendance_overtime_view(request):
     """
     This method is used to view attendance account or overtime account.
     """
-    previous_data = request.environ["QUERY_STRING"]
+    previous_data = request.GET.urlencode()
     accounts = AttendanceOverTime.objects.all()
     accounts = filtersubordinates(
         request, accounts, "attendance.view_attendanceovertime"
@@ -447,7 +447,7 @@ def attendance_activity_view(request):
     This method will render a template to view all attendance activities
     """
     attendance_activities = AttendanceActivity.objects.all()
-    previous_data = request.environ["QUERY_STRING"]
+    previous_data = request.GET.urlencode()
     filter_obj = AttendanceActivityFilter()
     return render(
         request,

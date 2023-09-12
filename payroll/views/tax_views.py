@@ -122,7 +122,7 @@ def filing_status_delete(request, filing_status_id):
 def filing_status_search(request):
     search = request.GET.get("search")
     status = FilingStatus.objects.filter(filing_status__icontains = search)
-    previous_data = request.environ["QUERY_STRING"]
+    previous_data = request.GET.urlencode()
     data_dict = parse_qs(previous_data)
     get_key_instances(FilingStatus, data_dict)
     context = {

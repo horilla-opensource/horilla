@@ -27,7 +27,7 @@ def recruitment_search(request):
     This method is used to search recruitment
     """
     filter_obj = RecruitmentFilter(request.GET)
-    previous_data = request.environ["QUERY_STRING"]
+    previous_data = request.GET.urlencode()
     recruitment_obj = sortby(request, filter_obj.qs, "orderby")
     data_dict = parse_qs(previous_data)
     get_key_instances(Recruitment, data_dict)
@@ -50,7 +50,7 @@ def stage_search(request):
     This method is used to search stage
     """
     stages = StageFilter(request.GET).qs
-    previous_data = request.environ["QUERY_STRING"]
+    previous_data = request.GET.urlencode()
     stages = sortby(request, stages, "orderby")
     data_dict = parse_qs(previous_data)
     get_key_instances(Stage, data_dict)
@@ -71,7 +71,7 @@ def candidate_search(request):
     """
     This method is used to search candidate model and return matching objects
     """
-    previous_data = request.environ["QUERY_STRING"]
+    previous_data = request.GET.urlencode()
     search = request.GET.get("search")
     if search is None:
         search = ""
@@ -119,7 +119,7 @@ def candidate_filter_view(request):
     templete = "candidate/candidate_card.html"
     if request.GET.get('view') == 'list':
         templete = "candidate/candidate_list.html"
-    previous_data = request.environ["QUERY_STRING"]
+    previous_data = request.GET.urlencode()
     filter_obj = CandidateFilter(
         request.GET, queryset=Candidate.objects.filter(is_active=True)
     )
@@ -139,7 +139,7 @@ def filter_survey(request):
     """
     This method is used to filter/search the recruitment surveys
     """
-    previous_data = request.environ["QUERY_STRING"]
+    previous_data = request.GET.urlencode()
     filter_obj = SurveyFilter(request.GET)
     questions = filter_obj.qs
     data_dict = parse_qs(previous_data)

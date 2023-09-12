@@ -734,7 +734,7 @@ def candidate_view(request):
     This method render all candidate to the template
     """
     view_type = request.GET.get('view')
-    previous_data = request.environ["QUERY_STRING"]
+    previous_data = request.GET.urlencode()
     candidates = Candidate.objects.filter(is_active=True)
     filter_obj = CandidateFilter(queryset=candidates)
     return render(
@@ -755,7 +755,7 @@ def candidate_view_list(request):
     """
     This method renders all candidate on candidate_list.html template
     """
-    previous_data = request.environ["QUERY_STRING"]
+    previous_data = request.GET.urlencode()
     candidates = Candidate.objects.all()
     if request.GET.get("is_active") is None:
         candidates = candidates.filter(is_active=True)
@@ -776,7 +776,7 @@ def candidate_view_card(request):
     """
     This method renders all candidate on candidate_card.html template
     """
-    previous_data = request.environ["QUERY_STRING"]
+    previous_data = request.GET.urlencode()
     candidates = Candidate.objects.all()
     if request.GET.get("is_active") is None:
         candidates = candidates.filter(is_active=True)

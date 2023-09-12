@@ -245,7 +245,7 @@ def filter_allowance(request):
     """
     Filter and retrieve a list of allowances based on the provided query parameters.
     """
-    query_string = request.environ["QUERY_STRING"]
+    query_string = request.GET.urlencode()
     allowances = AllowanceFilter(request.GET).qs
     list_view = "payroll/allowance/list_allowance.html"
     card_view = "payroll/allowance/card_allowance.html"
@@ -364,7 +364,7 @@ def filter_deduction(request):
     """
     This method is used search the deduction
     """
-    query_string = request.environ["QUERY_STRING"]
+    query_string = request.GET.urlencode()
     deductions = DeductionFilter(request.GET).qs
     list_view = "payroll/deduction/list_deduction.html"
     card_view = "payroll/deduction/card_deduction.html"
@@ -604,7 +604,7 @@ def filter_payslip(request):
     """
     Filter and retrieve a list of payslips based on the provided query parameters.
     """
-    query_string = request.environ["QUERY_STRING"]
+    query_string = request.GET.urlencode()
     if request.user.has_perm("payroll.view_payslip"):
         payslips = PayslipFilter(request.GET).qs
     else:

@@ -161,7 +161,7 @@ def contract_filter(request):
         Renders the contract list template with the filtered contracts.
 
     """
-    query_string = request.environ["QUERY_STRING"]
+    query_string = request.GET.urlencode()
     contracts_filter = ContractFilter(request.GET)
     template = "payroll/contract/contract_list.html"
     contracts = contracts_filter.qs

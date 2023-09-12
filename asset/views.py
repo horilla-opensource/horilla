@@ -101,7 +101,7 @@ def asset_update(request, asset_id):
         asset_under = "asset_category"
     instance = Asset.objects.get(id=asset_id)
     asset_form = AssetForm(instance=instance)
-    previous_data = request.environ["QUERY_STRING"]
+    previous_data = request.GET.urlencode()
     context = {
         "asset_form": asset_form,
         "asset_under": asset_under,
@@ -159,7 +159,7 @@ def asset_delete(request, asset_id):
         # if the asset deleted is from the filterd list of asset
         asset_under = "asset_filter"
         assets = Asset.objects.all()
-        previous_data = request.environ["QUERY_STRING"]
+        previous_data = request.GET.urlencode()
         asset_filtered = AssetFilter(request.GET, queryset=assets)
         asset_list = asset_filtered.qs
         paginator = Paginator(asset_list, 20)
@@ -234,7 +234,7 @@ def asset_list(request, cat_id):
         asset_category = AssetCategory.objects.get(id=cat_id)
         assets_in_category = Asset.objects.filter(asset_category_id=asset_category)
 
-    previous_data = request.environ["QUERY_STRING"]
+    previous_data = request.GET.urlencode()
     asset_filtered = AssetFilter(request.GET, queryset=assets_in_category)
     asset_list = asset_filtered.qs
     # Change 20 to the desired number of items per page
@@ -291,7 +291,7 @@ def asset_category_update(request, asset_id):
         Rendered HTML template.
     """
 
-    previous_data = request.environ["QUERY_STRING"]
+    previous_data = request.GET.urlencode()
     asset_category = AssetCategory.objects.get(id=asset_id)
     asset_category_form = AssetCategoryForm(instance=asset_category)
     context = {"asset_category_update_form": asset_category_form, "pg": previous_data}
@@ -344,7 +344,7 @@ def filter_pagination_asset_category(request):
     if search is None:
         search = ""
 
-    previous_data = request.environ["QUERY_STRING"]
+    previous_data = request.GET.urlencode()
     asset_category_queryset = AssetCategory.objects.all().filter(
         asset_category_name__icontains=search
     )
@@ -642,7 +642,7 @@ def filter_pagination_asset_request_allocation(request):
             requested_employee_id__employee_first_name__icontains=asset_request_alloaction_search
         )
 
-    previous_data = request.environ["QUERY_STRING"]
+    previous_data = request.GET.urlencode()
     assets_filtered = CustomAssetFilter(request.GET, queryset=assets)
     asset_request_filtered = AssetRequestFilter(
         request.GET, queryset=asset_requests_queryset
@@ -895,7 +895,7 @@ def asset_batch_view(request):
     """
 
     asset_batchs = AssetLot.objects.all()
-    previous_data = request.environ["QUERY_STRING"]
+    previous_data = request.GET.urlencode()
     asset_batch_numbers_search_paginator = Paginator(asset_batchs, 20)
     page_number = request.GET.get("page")
     asset_batch_numbers = asset_batch_numbers_search_paginator.get_page(page_number)
@@ -986,7 +986,7 @@ def asset_batch_number_search(request):
     asset_batchs = AssetLot.objects.all().filter(
         lot_number__icontains=asset_batch_number_search
     )
-    previous_data = request.environ["QUERY_STRING"]
+    previous_data = request.GET.urlencode()
     asset_batch_numbers_search_paginator = Paginator(asset_batchs, 20)
     page_number = request.GET.get("page")
     asset_batch_numbers = asset_batch_numbers_search_paginator.get_page(page_number)

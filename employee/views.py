@@ -195,7 +195,7 @@ def employee_view(request):
     This method is used to render template for view all employee
     """
     view_type = request.GET.get("view")
-    previous_data = request.environ["QUERY_STRING"]
+    previous_data = request.GET.urlencode()
     employees = Employee.objects.filter(is_active=True)
     page_number = request.GET.get("page")
     filter_obj = EmployeeFilter(queryset=employees)
@@ -546,7 +546,7 @@ def employee_filter_view(request):
     """
     This method is used to filter employee.
     """
-    previous_data = request.environ["QUERY_STRING"]
+    previous_data = request.GET.urlencode()
     employees = filtersubordinatesemployeemodel(
         request, Employee.objects.all(), "employee.view_employee"
     )
@@ -577,7 +577,7 @@ def employee_card(request):
     """
     This method renders card template to view all employees.
     """
-    previous_data = request.environ["QUERY_STRING"]
+    previous_data = request.GET.urlencode()
     search = request.GET.get("search")
     if isinstance(search, type(None)):
         search = ""
@@ -616,7 +616,7 @@ def employee_list(request):
     """
     This method renders template to view all employees
     """
-    previous_data = request.environ["QUERY_STRING"]
+    previous_data = request.GET.urlencode()
     search = request.GET.get("search")
     if isinstance(search, type(None)):
         search = ""
@@ -778,7 +778,7 @@ def employee_search(request):
     """
     search = request.GET["search"]
     view = request.GET["view"]
-    previous_data = request.environ["QUERY_STRING"]
+    previous_data = request.GET.urlencode()
     employees = EmployeeFilter(request.GET).qs
     if search == "":
         employees = employees.filter(is_active=True)

@@ -261,7 +261,7 @@ def remove_stage_manager(request, mid, sid):
     stage_obj.stage_managers.remove(manager)
     messages.success(request, _("Stage manager removed successfully."))
     stages = Stage.objects.all()
-    previous_data = request.environ["QUERY_STRING"]
+    previous_data = request.GET.urlencode()
     return render(
         request,
         "stage/stage_component.html",
@@ -299,7 +299,7 @@ def remove_recruitment_manager(request, mid, rid):
         redirect="",
     )
     recruitment_queryset = Recruitment.objects.all()
-    previous_data = request.environ["QUERY_STRING"]
+    previous_data = request.GET.urlencode()
     return render(
         request,
         "recruitment/recruitment_component.html",

@@ -35,7 +35,7 @@ def attendance_search(request):
     """
     This method is used to search attendance by employee
     """
-    previous_data = request.environ["QUERY_STRING"]
+    previous_data = request.GET.urlencode()
     field = request.GET.get("field")
     minot = strtime_seconds("00:30")
     condition = AttendanceValidationCondition.objects.first()
@@ -104,7 +104,7 @@ def attendance_overtime_search(request):
     This method is used to search attendance overtime account by employee.
     """
     field = request.GET.get("field")
-    previous_data = request.environ["QUERY_STRING"]
+    previous_data = request.GET.urlencode()
 
     accounts = AttendanceOverTimeFilter(request.GET).qs
     form = AttendanceOverTimeForm()
@@ -141,7 +141,7 @@ def attendance_activity_search(request):
     """
     This method is used to search attendance activity
     """
-    previous_data = request.environ["QUERY_STRING"]
+    previous_data = request.GET.urlencode()
     field = request.GET.get("field")
     attendance_activities = AttendanceActivityFilter(
         request.GET,
@@ -181,7 +181,7 @@ def late_come_early_out_search(request):
     Also include filter and pagination.
     """
     field = request.GET.get("field")
-    previous_data = request.environ["QUERY_STRING"]
+    previous_data = request.GET.urlencode()
 
     reports = LateComeEarlyOutFilter(
         request.GET,
@@ -221,7 +221,7 @@ def filter_own_attendance(request):
     """
     attendances = Attendance.objects.filter(employee_id=request.user.employee_get)
     attendances = AttendanceFilters(request.GET, queryset=attendances).qs
-    previous_data = request.environ["QUERY_STRING"]
+    previous_data = request.GET.urlencode()
     data_dict = parse_qs(previous_data)
 
     keys_to_remove = [key for key, value in data_dict.items() if value == ["unknown"]]
@@ -243,7 +243,7 @@ def own_attendance_sort(request):
     This method is used to sort out attendances
     """
     attendances = Attendance.objects.filter(employee_id=request.user.employee_get)
-    previous_data = request.environ["QUERY_STRING"]
+    previous_data = request.GET.urlencode()
     attendances = sortby(request, attendances, "orderby")
     return render(
         request,
@@ -279,7 +279,7 @@ def search_attendance_requests(request):
         employee_id__employee_user_id=request.user
     )
     attendances = AttendanceFilters(request.GET, attendances).qs
-    previous_data = request.environ["QUERY_STRING"]
+    previous_data = request.GET.urlencode()
     data_dict = parse_qs(previous_data)
     get_key_instances(Attendance, data_dict)
 

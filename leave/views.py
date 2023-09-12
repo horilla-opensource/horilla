@@ -75,7 +75,7 @@ def leave_type_view(request):
     queryset = LeaveType.objects.all()
     page_number = request.GET.get("page")
     page_obj = paginator_qry(queryset, page_number)
-    previous_data = request.environ["QUERY_STRING"]
+    previous_data = request.GET.urlencode()
     leave_type_filter = LeaveTypeFilter()
     return render(
         request,
@@ -101,7 +101,7 @@ def leave_type_filter(request):
     page_number = request.GET.get("page")
     leave_type_filter = LeaveTypeFilter(request.GET, queryset).qs
     page_obj = paginator_qry(leave_type_filter, page_number)
-    previous_data = request.environ["QUERY_STRING"]
+    previous_data = request.GET.urlencode()
     data_dict = parse_qs(previous_data)
     get_key_instances(LeaveType, data_dict)
     return render(
@@ -244,7 +244,7 @@ def leave_request_view(request):
     requests = queryset.filter(status="requested").count()
     approved_requests = queryset.filter(status="approved").count()
     rejected_requests = queryset.filter(status="cancelled").count()
-    previous_data = request.environ["QUERY_STRING"]
+    previous_data = request.GET.urlencode()
     return render(
         request,
         "leave/request-view.html",
@@ -272,7 +272,7 @@ def leave_request_filter(request):
     Returns:
     GET : return leave request view template
     """
-    previous_data = request.environ["QUERY_STRING"]
+    previous_data = request.GET.urlencode()
     queryset = LeaveRequest.objects.all()
     queryset = filtersubordinates(request, queryset, "leave.view_leaverequest")
     leave_request_filter = LeaveRequestFilter(request.GET, queryset).qs
@@ -542,7 +542,7 @@ def leave_assign_view(request):
     """
     queryset = AvailableLeave.objects.all()
     queryset = filtersubordinates(request, queryset, "leave.view_availableleave")
-    previous_data = request.environ["QUERY_STRING"]
+    previous_data = request.GET.urlencode()
     page_number = request.GET.get("page")
     page_obj = paginator_qry(queryset, page_number)
     assigned_leave_filter = AssignedLeaveFilter()
@@ -573,7 +573,7 @@ def leave_assign_filter(request):
     queryset = AvailableLeave.objects.all()
     queryset = filtersubordinates(request, queryset, "leave.view_availableleave")
     assigned_leave_filter = AssignedLeaveFilter(request.GET, queryset).qs
-    previous_data = request.environ["QUERY_STRING"]
+    previous_data = request.GET.urlencode()
     page_number = request.GET.get("page")
     page_obj = paginator_qry(assigned_leave_filter, page_number)
     data_dict = parse_qs(previous_data)
@@ -750,7 +750,7 @@ def holiday_view(request):
     GET : return holiday view  template
     """
     queryset = Holiday.objects.all()
-    previous_data = request.environ["QUERY_STRING"]
+    previous_data = request.GET.urlencode()
     page_number = request.GET.get("page")
     page_obj = paginator_qry(queryset, page_number)
     holiday_filter = HolidayFilter()
@@ -775,7 +775,7 @@ def holiday_filter(request):
     GET : return holiday view template
     """
     queryset = Holiday.objects.all()
-    previous_data = request.environ["QUERY_STRING"]
+    previous_data = request.GET.urlencode()
     holiday_filter = HolidayFilter(request.GET, queryset).qs
     page_number = request.GET.get("page")
     page_obj = paginator_qry(holiday_filter, page_number)
@@ -881,7 +881,7 @@ def company_leave_view(request):
     GET : return company leave view template
     """
     queryset = CompanyLeave.objects.all()
-    previous_data = request.environ["QUERY_STRING"]
+    previous_data = request.GET.urlencode()
     page_number = request.GET.get("page")
     page_obj = paginator_qry(queryset, page_number)
     company_leave_filter = CompanyLeaveFilter()
@@ -912,7 +912,7 @@ def company_leave_filter(request):
     GET : return company leave view template
     """
     queryset = CompanyLeave.objects.all()
-    previous_data = request.environ["QUERY_STRING"]
+    previous_data = request.GET.urlencode()
     page_number = request.GET.get("page")
     company_leave_filter = CompanyLeaveFilter(request.GET, queryset).qs
     page_obj = paginator_qry(company_leave_filter, page_number)
@@ -1251,7 +1251,7 @@ def user_leave_view(request):
     try:
         employee = request.user.employee_get
         queryset = employee.available_leave.all()
-        previous_data = request.environ["QUERY_STRING"]
+        previous_data = request.GET.urlencode()
         page_number = request.GET.get("page")
         page_obj = paginator_qry(queryset, page_number)
         assigned_leave_filter = AssignedLeaveFilter()
@@ -1288,7 +1288,7 @@ def user_leave_filter(request):
     try:
         employee = request.user.employee_get
         queryset = employee.available_leave.all()
-        previous_data = request.environ["QUERY_STRING"]
+        previous_data = request.GET.urlencode()
         page_number = request.GET.get("page")
         assigned_leave_filter = AssignedLeaveFilter(request.GET, queryset).qs
         data_dict = parse_qs(previous_data)
@@ -1318,7 +1318,7 @@ def user_request_view(request):
     try:
         user = request.user.employee_get
         queryset = user.leaverequest_set.all()
-        previous_data = request.environ["QUERY_STRING"]
+        previous_data = request.GET.urlencode()
         page_number = request.GET.get("page")
         page_obj = paginator_qry(queryset, page_number)
         user_request_filter = UserLeaveRequestFilter()
@@ -1351,7 +1351,7 @@ def user_request_filter(request):
     try:
         user = request.user.employee_get
         queryset = user.leaverequest_set.all()
-        previous_data = request.environ["QUERY_STRING"]
+        previous_data = request.GET.urlencode()
         page_number = request.GET.get("page")
         user_request_filter = UserLeaveRequestFilter(request.GET, queryset).qs
         page_obj = paginator_qry(user_request_filter, page_number)

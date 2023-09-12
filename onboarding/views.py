@@ -395,7 +395,7 @@ def candidates_view(request):
     """
     queryset = Candidate.objects.filter(hired=True, start_onboard=False)
     candidate_filter_obj = CandidateFilter()
-    previous_data = request.environ["QUERY_STRING"]
+    previous_data = request.GET.urlencode()
     page_number = request.GET.get("page")
     page_obj = paginator_qry(queryset, page_number)
     return render(
@@ -412,7 +412,7 @@ def candidates_view(request):
 @login_required
 @permission_required(perm="recruitment.view_candidate")
 def hired_candidate_view(request):
-    previous_data = request.environ["QUERY_STRING"]
+    previous_data = request.GET.urlencode()
     candidates = Candidate.objects.filter(hired=True)
     if request.GET.get("is_active") is None:
         candidates = candidates.filter(is_active=True)
@@ -441,7 +441,7 @@ def candidate_filter(request):
     """
     queryset = Candidate.objects.filter(hired=True, start_onboard=False)
     candidate_filter_obj = CandidateFilter(request.GET, queryset).qs
-    previous_data = request.environ["QUERY_STRING"]
+    previous_data = request.GET.urlencode()
     page_number = request.GET.get("page")
     page_obj = paginator_qry(candidate_filter_obj, page_number)
     return render(
@@ -945,7 +945,7 @@ def candidate_stage_update(request, candidate_id, recruitment_id):
             },
         )
     return JsonResponse(
-        {"message": "Candidate onboarding stage updated", "type": "success"}
+        {"message": _("Candidate onboarding stage updated"), "type": "success"}
     )
 
 
