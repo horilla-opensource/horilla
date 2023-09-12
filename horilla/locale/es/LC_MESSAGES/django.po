@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-09-11 12:51+0530\n"
+"POT-Creation-Date: 2023-09-11 16:33+0530\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -36,24 +36,16 @@ msgstr ""
 "Solicitud de una computadora portátil para fines de desarrollo de software."
 
 #: .\asset\forms.py:273
-#, fuzzy
-#| msgid "ohn returns the laptop. However, it has suffered minor damage."
 msgid "on returns the laptop. However, it has suffered minor damage."
 msgstr ""
-"Ohn trae de vuelta la computadora portátil. Sin embargo, ha sufrido daños "
+"On trae de vuelta la computadora portátil. Sin embargo, ha sufrido daños "
 "menores."
 
 #: .\asset\forms.py:285
-#, fuzzy
-#| msgid "The start date cannot be in the future."
 msgid "Return date cannot be in the future."
-msgstr "La fecha de inicio no puede ser en el futuro."
+msgstr "La fecha de devolución no puede ser en el futuro."
 
 #: .\asset\forms.py:316
-#, fuzzy
-#| msgid ""
-#| "A batch of 50 laptops, consisting of Lenovo ThinkPad T480s and Dell XPS "
-#| "13."
 msgid ""
 "A batch of 50 laptops, consisting of Lenovo ThinkPad "
 "T480s                              and Dell XPS 13."
@@ -73,10 +65,8 @@ msgid "Not-Available"
 msgstr "No Disponible"
 
 #: .\asset\models.py:76
-#, fuzzy
-#| msgid "User with email-id already exists.."
 msgid "An asset with this tracking ID already exists."
-msgstr "El usuario con ID de correo electrónico ya existe.."
+msgstr "Ya existe un activo con este ID de seguimiento."
 
 #: .\asset\models.py:89
 msgid "Minor damage"
@@ -989,10 +979,8 @@ msgid "Asset Category"
 msgstr "Categoría de Activo"
 
 #: .\asset\templates\category\asset_category_view.html:69
-#, fuzzy
-#| msgid "Do you want to delete this employee?"
 msgid "Do you want to download template ?"
-msgstr "¿Quieres eliminar a esta empleada?"
+msgstr "¿Quieres descargar plantilla ?"
 
 #: .\asset\templates\category\asset_category_view.html:69
 #: .\employee\templates\employee_nav.html:162
@@ -1467,8 +1455,6 @@ msgid "Maximum Allowed Overtime Per Day"
 msgstr "Máximo de horas extra permitidas por día"
 
 #: .\attendance\forms.py:491 .\base\translator.py:99
-#, fuzzy
-#| msgid "Request Description"
 msgid "Request description"
 msgstr "solicitud descripción "
 
@@ -1502,10 +1488,8 @@ msgid "Update Request"
 msgstr "Actualización Solicitud"
 
 #: .\attendance\models.py:106
-#, fuzzy
-#| msgid "Update Request"
 msgid "Re-validate Request"
-msgstr "Actualización Solicitud"
+msgstr "Revalidar Solicitud"
 
 #: .\attendance\models.py:117
 #: .\attendance\templates\attendance\attendance\attendance_filters.html:19
@@ -1582,10 +1566,8 @@ msgid "Check-in"
 msgstr "Registrarse"
 
 #: .\attendance\models.py:135
-#, fuzzy
-#| msgid "Check-in date"
 msgid "First Check-in Time"
-msgstr "Registrarse Fecha"
+msgstr "Primera hora de check-in"
 
 #: .\attendance\models.py:138
 msgid "Check-in date"
@@ -1596,10 +1578,8 @@ msgid "Check-out"
 msgstr "Registrafuera"
 
 #: .\attendance\models.py:141
-#, fuzzy
-#| msgid "Check-out date"
 msgid "Last Check-out Time"
-msgstr "Registrafuera Fecha"
+msgstr "Última Hora de Salida"
 
 #: .\attendance\models.py:144
 msgid "Check-out date"
@@ -1618,22 +1598,16 @@ msgid "Overtime approved"
 msgstr "Horas extras aprobadas"
 
 #: .\attendance\models.py:169 .\base\translator.py:100
-#, fuzzy
-#| msgid "Attendance validated."
 msgid "Attendance validated"
 msgstr "Asistencia validada."
 
 #: .\attendance\models.py:176 .\base\translator.py:101
-#, fuzzy
-#| msgid "Update Request"
 msgid "Is validate request"
-msgstr "Actualización Solicitud"
+msgstr "Es validar solicitud"
 
 #: .\attendance\models.py:179 .\base\translator.py:102
-#, fuzzy
-#| msgid "Your asset request approved!."
 msgid "Is validate request approved"
-msgstr "¡Su solicitud de activos fue aprobada!"
+msgstr "Es validar solicitud"
 
 #: .\attendance\models.py:435
 #: .\attendance\templates\attendance\late_come_early_out\report_list.html:37
@@ -2321,10 +2295,8 @@ msgid "Current Value"
 msgstr "Actual Valor "
 
 #: .\attendance\templates\requests\attendance\individual_view.html:18
-#, fuzzy
-#| msgid "Requested Date"
 msgid "Requested Value"
-msgstr "Solicitada Fecha"
+msgstr "Solicitada Valor"
 
 #: .\attendance\templates\requests\attendance\individual_view.html:41
 #: .\base\templates\shift_request\htmx\requests.html:94
@@ -2345,10 +2317,8 @@ msgid "Update Attendances Request"
 msgstr "Solicitud de actualización de asistencias"
 
 #: .\attendance\templates\requests\attendance\nav.html:46
-#, fuzzy
-#| msgid "Update Attendances Request"
 msgid "New Attendances Request"
-msgstr "Solicitud de actualización de asistencias"
+msgstr "Solicitud de Nuevas asistencias"
 
 #: .\attendance\templates\requests\attendance\nav.html:69
 #: .\attendance\templates\requests\attendance\nav.html:92
@@ -2360,14 +2330,10 @@ msgid "All Attendances"
 msgstr "Todas las Asistencias"
 
 #: .\attendance\templates\requests\attendance\nav.html:169
-#, fuzzy
-#| msgid "New Requests"
 msgid "New Request"
 msgstr "Nuevas Solicitudes"
 
 #: .\attendance\templates\requests\attendance\request_lines.html:113
-#, fuzzy
-#| msgid "Do you want to cancel this request?"
 msgid "Are you sure want to cancel the request?"
 msgstr "¿Quiere cancelar esta solicitud?"
 
@@ -2378,16 +2344,12 @@ msgid "Request"
 msgstr "Solicitudar"
 
 #: .\attendance\templates\requests\attendance\request_lines.html:244
-#, fuzzy
-#| msgid "Shift Request"
 msgid "Edit Request"
-msgstr "Solicitud de turno"
+msgstr "Editar solicitud"
 
 #: .\attendance\templates\requests\attendance\view-requests.html:25
-#, fuzzy
-#| msgid "Requested days"
 msgid "Requested Attendances"
-msgstr "Días solicitados"
+msgstr "Asistencias solicitadas"
 
 #: .\attendance\views\clock_in_out.py:184 .\templates\index.html:128
 msgid "Check-Out"
@@ -2730,18 +2692,14 @@ msgstr "Contraseña antigua"
 #: .\base\templates\base\auth\password_change_form.html:32
 #: .\base\templates\base\auth\password_change_form.html:53
 #: .\base\templates\base\auth\password_change_form.html:74
-#, fuzzy
-#| msgid "New Password"
 msgid "Show Password"
-msgstr "Nueva contraseña"
+msgstr "Mostrar contraseña"
 
 #: .\base\templates\base\auth\password_change_form.html:37
 #: .\base\templates\base\auth\password_change_form.html:58
 #: .\base\templates\base\auth\password_change_form.html:79
-#, fuzzy
-#| msgid "Old Password"
 msgid "Hide Password"
-msgstr "Contraseña antigua"
+msgstr "esconder Contraseña"
 
 #: .\base\templates\base\auth\password_change_form.html:46
 #: .\templates\reset_password.html:35
@@ -3251,10 +3209,8 @@ msgstr "Cancelado"
 
 #: .\base\templates\shift_request\htmx\requests.html:79
 #: .\base\templates\work_type_request\htmx\requests.html:80
-#, fuzzy
-#| msgid "Do you want to cancel this request?"
 msgid "Do you want to approve this request?"
-msgstr "¿Quiere cancelar esta solicitud?"
+msgstr "¿Quieres aprobar esta solicitud?"
 
 #: .\base\templates\shift_request\htmx\requests.html:94
 #: .\base\templates\work_type_request\htmx\requests.html:96
@@ -3737,76 +3693,56 @@ msgid "Rotate every"
 msgstr "Rotar cada"
 
 #: .\base\translator.py:104
-#, fuzzy
-#| msgid "Employee Type"
 msgid "Employment Type"
-msgstr "Empleado de Tipo"
+msgstr "Tipo de empleo"
 
 #: .\base\translator.py:105 .\leave\models.py:25
-#, fuzzy
-#| msgid "January"
 msgid "Jan"
-msgstr "Enero"
+msgstr "Ene"
 
 #: .\base\translator.py:106 .\leave\models.py:26
 msgid "Feb"
-msgstr ""
+msgstr "Feb"
 
 #: .\base\translator.py:107 .\leave\models.py:27
-#, fuzzy
-#| msgid "March"
 msgid "Mar"
-msgstr "Marzo"
+msgstr "Mar"
 
 #: .\base\translator.py:108 .\leave\models.py:28
-#, fuzzy
-#| msgid "April"
 msgid "Apr"
-msgstr "Abril"
+msgstr "Abr"
 
 #: .\base\translator.py:110 .\leave\models.py:30
-#, fuzzy
-#| msgid "June"
 msgid "Jun"
-msgstr "Junio"
+msgstr "jun"
 
 #: .\base\translator.py:111 .\leave\models.py:31
-#, fuzzy
-#| msgid "July"
 msgid "Jul"
-msgstr "Julio"
+msgstr "Jul"
 
 #: .\base\translator.py:112 .\leave\models.py:32
-#, fuzzy
-#| msgid "August"
 msgid "Aug"
-msgstr "Agosto"
+msgstr "Ago"
 
 #: .\base\translator.py:113 .\leave\models.py:33
 msgid "Sep"
-msgstr ""
+msgstr "Sep"
 
 #: .\base\translator.py:114 .\leave\models.py:34
-#, fuzzy
-#| msgid "October"
 msgid "Oct"
-msgstr "Octubre"
+msgstr "Oct"
 
 #: .\base\translator.py:115 .\leave\models.py:35
-#, fuzzy
-#| msgid "No"
 msgid "Nov"
-msgstr "No"
+msgstr "Nov"
 
 #: .\base\translator.py:116 .\leave\models.py:36
-#, fuzzy
-#| msgid "Due"
 msgid "Dec"
-msgstr "Debido"
+msgstr "Dec"
 
 #: .\base\translator.py:117
 msgid "Additional info"
-msgstr ""
+msgstr "información adicional"
 
 #: .\base\views.py:119
 msgid "Invalid username or password."
@@ -4154,10 +4090,8 @@ msgid "Shift has been approved."
 msgstr "El turno ha sido aprobado."
 
 #: .\base\views.py:2304
-#, fuzzy
-#| msgid "Shift has been approved."
 msgid "Shifts have been approved."
-msgstr "El turno ha sido aprobado."
+msgstr "Se han aprobado turnos."
 
 #: .\base\views.py:2348
 msgid "You cannot delete this shift request."
@@ -4649,14 +4583,10 @@ msgid "Requested days"
 msgstr "Días solicitados"
 
 #: .\employee\templates\payroll-tab.html:29
-#, fuzzy
-#| msgid "Employee"
 msgid "employee"
 msgstr "Empleado"
 
 #: .\employee\templates\payroll-tab.html:30
-#, fuzzy
-#| msgid "Period"
 msgid "period"
 msgstr "Período"
 
@@ -5036,14 +4966,12 @@ msgstr "Actualizar Festivos"
 
 #: .\leave\templates\leave\company_leave\company-leave.html:23
 msgid "All"
-msgstr ""
+msgstr "Toda"
 
 #: .\leave\templates\leave\company_leave\company-leave.html:41
 #: .\leave\templates\leave\holiday\holiday.html:31
 #: .\leave\templates\leave\leave_assign\assigned-leave.html:41
 #: .\leave\templates\leave\leave_request\leave-requests.html:89
-#, fuzzy
-#| msgid "Are you sure you want to delete?"
 msgid "Are you sure you want to delete ?"
 msgstr "¿Estás segura de que quieres eliminar?"
 
@@ -5360,14 +5288,13 @@ msgid "Leave Request"
 msgstr "Dejar petición"
 
 #: .\leave\templates\leave\user-leave-empty-view.html:13
-#, fuzzy
-#| msgid "New leave type is assigned to you"
 msgid "Leave types not assigned to you"
-msgstr "Se le ha asignado un nuevo dejar tipo"
+msgstr "Tipos de dejar no asignados a usted"
 
 #: .\leave\templates\leave\user-leave-empty-view.html:14
 msgid "Please contact your administrators for assistance"
 msgstr ""
+"Por favor, póngase en contacto con sus administradores para obtener ayuda."
 
 #: .\leave\templates\leave\user-leave-view.html:7
 msgid "My Leave"
@@ -5443,8 +5370,6 @@ msgid "Available leaves updated successfully..."
 msgstr "Disponibles dejar actualizadas con éxito..."
 
 #: .\leave\views.py:708
-#, fuzzy
-#| msgid "Assigned leave is successfully deleted.."
 msgid "Assigned leave is successfully deleted."
 msgstr "Dejar asignada eliminó con éxito."
 
@@ -5524,7 +5449,7 @@ msgstr "Etapa Título"
 #: .\onboarding\templates\onboarding\stage-form.html:27
 #: .\onboarding\templates\onboarding\stage-update.html:27
 msgid "Is Final Stage"
-msgstr ""
+msgstr "es la etapa final"
 
 #: .\onboarding\forms.py:273
 #: .\onboarding\templates\onboarding\employee-creation.html:146
@@ -5538,7 +5463,7 @@ msgstr "Emergencia Contacto Número"
 
 #: .\onboarding\models.py:86
 msgid "Todo"
-msgstr ""
+msgstr "hacer"
 
 #: .\onboarding\models.py:87
 msgid "Scheduled"
@@ -5648,28 +5573,20 @@ msgid "Onboarding"
 msgstr "Onboarding"
 
 #: .\onboarding\templates\onboarding\dashboard.html:43
-#, fuzzy
-#| msgid "Candidates"
 msgid "Total Candidates"
-msgstr "Candidatos"
+msgstr "Total de candidatas"
 
 #: .\onboarding\templates\onboarding\dashboard.html:57
-#, fuzzy
-#| msgid "Candidate Started Onboarding"
 msgid "Candidates Start Onboarding"
 msgstr "Candidato comenzó a bordo"
 
 #: .\onboarding\templates\onboarding\dashboard.html:72
-#, fuzzy
-#| msgid "Onboarding View"
 msgid "Onboarding Stage Chart"
-msgstr "Onboarding Vista "
+msgstr "Gráfico de etapas de incorporación "
 
 #: .\onboarding\templates\onboarding\dashboard.html:84
-#, fuzzy
-#| msgid "Candidate Started Onboarding"
 msgid "Candidates on Onboard"
-msgstr "Candidato comenzó a bordo"
+msgstr "Candidatas a bordo"
 
 #: .\onboarding\templates\onboarding\employee-bank-details.html:49
 #: .\onboarding\templates\onboarding\employee-creation.html:35
@@ -5720,58 +5637,42 @@ msgstr "Próximo Paso"
 
 #: .\onboarding\templates\onboarding\kanban\kanban.html:33
 #: .\onboarding\templates\onboarding\onboarding-view.html:47
-#, fuzzy
-#| msgid "Open Recruitment"
 msgid "Ongoing Recruitments"
-msgstr "Abierto Reclutamiento "
+msgstr "Reclutamientos en curso"
 
 #: .\onboarding\templates\onboarding\kanban\kanban.html:33
 #: .\onboarding\templates\onboarding\onboarding-view.html:47
-#, fuzzy
-#| msgid "View Recruitments"
 msgid "Closed Recruitments"
-msgstr "Ver Reclutamientos"
+msgstr "Reclutamientos Cerrados"
 
 #: .\onboarding\templates\onboarding\kanban\kanban.html:65
 #: .\onboarding\templates\onboarding\onboarding-view.html:78
-#, fuzzy
-#| msgid "Joining Date"
 msgid "Join Date"
-msgstr "Dia de ingreso"
+msgstr "Dia de unirse"
 
 #: .\onboarding\templates\onboarding\kanban\kanban.html:69
 #: .\onboarding\templates\onboarding\onboarding-table.html:60
-#, fuzzy
-#| msgid "Onboarding View"
 msgid "Onboarding Portal Stage"
-msgstr "Onboarding Vista "
+msgstr "Etapa del portal de incorporación"
 
 #: .\onboarding\templates\onboarding\kanban\kanban.html:86
 #: .\onboarding\templates\onboarding\onboarding-view.html:99
-#, fuzzy
-#| msgid "End Date From"
 msgid "Join Date From"
-msgstr "Fecha de finalización desde"
+msgstr "Fecha de unirse desde"
 
 #: .\onboarding\templates\onboarding\kanban\kanban.html:92
 #: .\onboarding\templates\onboarding\onboarding-view.html:105
-#, fuzzy
-#| msgid "Joining Date"
 msgid "Join Date To"
-msgstr "Dia de ingreso"
+msgstr "Únase al día para"
 
 #: .\onboarding\templates\onboarding\kanban\kanban.html:152
 #: .\onboarding\templates\onboarding\onboarding-table.html:40
-#, fuzzy
-#| msgid "Do you want to delete this asset?"
 msgid "Do you want to delete this stage?"
-msgstr "¿Quieres eliminar este activo?"
+msgstr "¿Quieres eliminar esta etapa?"
 
 #: .\onboarding\templates\onboarding\kanban\kanban.html:165
-#, fuzzy
-#| msgid "Add Stage"
 msgid "Add task"
-msgstr "Agregar etapa"
+msgstr "Agregar tarea"
 
 #: .\onboarding\templates\onboarding\kanban\kanban.html:193
 #: .\onboarding\templates\onboarding\kanban\kanban.html:283
@@ -5785,10 +5686,8 @@ msgid "Send Mail"
 msgstr "Enviar Correo"
 
 #: .\onboarding\templates\onboarding\kanban\kanban.html:204
-#, fuzzy
-#| msgid "Task"
 msgid "Tasks"
-msgstr "Tarea"
+msgstr "Tareas"
 
 #: .\onboarding\templates\onboarding\kanban\kanban.html:228
 #: .\recruitment\templates\pipeline\form\stage_drop_down_form.html:40
@@ -5833,10 +5732,8 @@ msgid "Task"
 msgstr "Tarea"
 
 #: .\onboarding\templates\onboarding\onboarding-view.html:82
-#, fuzzy
-#| msgid "Onboarding View"
 msgid "Portal Stage"
-msgstr "Onboarding Vista "
+msgstr "Etapa del portal"
 
 #: .\onboarding\templates\onboarding\onboarding-view.html:222
 msgid "Update Task"
@@ -5848,10 +5745,8 @@ msgid "Candidate Name"
 msgstr "Candidato Nombre"
 
 #: .\onboarding\templates\onboarding\send-mail-form.html:13
-#, fuzzy
-#| msgid "Send Mail"
 msgid "Send"
-msgstr "Enviar Correo"
+msgstr "Enviar"
 
 #: .\onboarding\templates\onboarding\stage-form.html:22
 #: .\onboarding\templates\onboarding\stage-update.html:22
@@ -5955,11 +5850,13 @@ msgstr "Datos personales del empleado creados con éxito.."
 msgid "Employee bank details created successfully.."
 msgstr "Datos bancarios del empleado creados con éxito.."
 
+#: .\onboarding\views.py:948
+msgid "Candidate onboarding stage updated"
+msgstr "Étape d'intégration des candidats mise à jour"
+
 #: .\onboarding\views.py:1160
-#, fuzzy
-#| msgid "Email send successfully"
 msgid "Mail sent successfully"
-msgstr "Correo electrónico enviado con éxito"
+msgstr "Correo enviado con éxito"
 
 #: .\onboarding\views.py:1162 .\payroll\views\views.py:362
 msgid "Something went wrong"
@@ -6664,7 +6561,7 @@ msgstr "Contribución del empleador"
 
 #: .\payroll\templates\payroll\dashboard.html:84
 msgid "Select Month and Year:"
-msgstr ""
+msgstr "Seleccione Mes y Año:"
 
 #: .\payroll\templates\payroll\dashboard.html:104
 #: .\payroll\templates\payroll\payslip\filter_payslips.html:44
@@ -6673,36 +6570,28 @@ msgid "Start Date From"
 msgstr "Fecha inicio desde"
 
 #: .\payroll\templates\payroll\dashboard.html:155
-#, fuzzy
-#| msgid "Employee Type"
 msgid "Employee Payslips"
-msgstr "Empleado de Tipo"
+msgstr "Empleado de hoja de paga"
 
 #: .\payroll\templates\payroll\dashboard.html:166
 msgid "Total Payslips Genarated :"
-msgstr ""
+msgstr "Total de hoja de paga Generadas:"
 
 #: .\payroll\templates\payroll\dashboard.html:167
-#, fuzzy
-#| msgid "Amount"
 msgid "Total Amount :"
-msgstr "Cantidad"
+msgstr "cantidad total"
 
 #: .\payroll\templates\payroll\dashboard.html:168
-#, fuzzy
-#| msgid "Department on Contract"
 msgid "Department Total Amount"
-msgstr "Departamento in Contratos"
+msgstr "Departamento Monto Total"
 
 #: .\payroll\templates\payroll\dashboard.html:176
-#, fuzzy
-#| msgid "Contract end date"
 msgid "Contracts ending this month"
-msgstr "fecha de finalización del contrato"
+msgstr "Contratos que finalizan este mes"
 
 #: .\payroll\templates\payroll\dashboard.html:177
 msgid "Number of contracts expiring this month :"
-msgstr ""
+msgstr "Número de contratos que vencen este mes:"
 
 #: .\payroll\templates\payroll\dashboard.html:187
 #: .\templates\dashboard.html:134
@@ -6710,8 +6599,6 @@ msgid "Department Chart"
 msgstr "gráfico de departamento"
 
 #: .\payroll\templates\payroll\deduction\card_deduction.html:40
-#, fuzzy
-#| msgid "Do you want to delete this Deduction?"
 msgid "Do you want to delete this deduction?"
 msgstr "¿Quieres eliminar esta Deducción?"
 
@@ -6844,19 +6731,19 @@ msgstr "Ganancias brutas - Deducciones totales"
 
 #: .\payroll\templates\payroll\payslip\individual_payslip.html:225
 msgid "Type A"
-msgstr ""
+msgstr "Type A"
 
 #: .\payroll\templates\payroll\payslip\individual_payslip.html:227
 msgid "Type B"
-msgstr ""
+msgstr "Type B"
 
 #: .\payroll\templates\payroll\payslip\individual_payslip.html:232
 msgid "Option #1"
-msgstr ""
+msgstr "Opción #1"
 
 #: .\payroll\templates\payroll\payslip\individual_payslip.html:233
 msgid "Option #2"
-msgstr ""
+msgstr "Opción #2"
 
 #: .\payroll\templates\payroll\payslip\list_payslips.html:22
 #: .\pms\templates\feedback\feedback_creation.html:87
@@ -6883,10 +6770,8 @@ msgid "Generate"
 msgstr "Genera"
 
 #: .\payroll\templates\payroll\tax\filing_status_list.html:72
-#, fuzzy
-#| msgid "Are you sure to delete this recruitment?"
 msgid "Are you sure to delete this status ?"
-msgstr "¿Estás segura de eliminar este reclutamiento"
+msgstr "¿Estás segura de eliminar este estado?"
 
 #: .\payroll\templates\payroll\tax\tax_bracket_creation.html:4
 #: .\payroll\templates\payroll\tax\tax_bracket_edit.html:4
@@ -6894,10 +6779,8 @@ msgid "Tax Bracket"
 msgstr "Tramo de impuestos"
 
 #: .\payroll\templates\payroll\tax\tax_bracket_view.html:47
-#, fuzzy
-#| msgid "Are you sure to delete this recruitment?"
-msgid "Are you sure to delete this tax bracket ?"
-msgstr "¿Estás segura de eliminar este reclutamiento"
+msgid "Are you sure to delete this Tax bracket ?"
+msgstr "¿Estás segura de eliminar este grupo de impuestos?"
 
 #: .\payroll\templates\payroll\work_record\work_record_create.html:9
 msgid "save"
@@ -6917,83 +6800,64 @@ msgstr "Registros de trabajo"
 
 #: .\payroll\templates\payroll\work_record\work_record_employees_view.html:59
 msgid "A"
-msgstr ""
+msgstr "A"
 
 #: .\payroll\templates\payroll\work_record\work_record_employees_view.html:61
 msgid "P"
-msgstr ""
+msgstr "P"
 
 #: .\payroll\templates\payroll\work_record\work_record_view.html:10
 msgid "record_type_name"
 msgstr "nombre del tipo de registro"
 
 #: .\payroll\views\component_views.py:205
-#, fuzzy
-#| msgid "Allowance view"
 msgid "Allowance created."
-msgstr "Vista de asignación"
+msgstr "creada de beneficios"
 
 #: .\payroll\views\component_views.py:286
-#, fuzzy
-#| msgid "Attendance Updated."
 msgid "Allowance updated."
-msgstr "Asistencia actualizada."
+msgstr "beneficios actualizada."
 
 #: .\payroll\views\component_views.py:299
-#, fuzzy
-#| msgid "Asset deleted successfully"
 msgid "Allowance deleted successfully"
-msgstr "Activo eliminado con éxito"
+msgstr "beneficios eliminado con éxito"
 
 #: .\payroll\views\component_views.py:301
-#, fuzzy
-#| msgid "Allowance"
 msgid "Allowance not found"
-msgstr "beneficios"
+msgstr "beneficios no encontrada"
 
 #: .\payroll\views\component_views.py:304
 msgid "Validation error occurred while deleting the allowance"
-msgstr ""
+msgstr "Se produjo un error de validación al eliminar la beneficios."
 
 #: .\payroll\views\component_views.py:308
 msgid "An error occurred while deleting the allowance"
-msgstr ""
+msgstr "Se produjo un error al eliminar la beneficios."
 
 #: .\payroll\views\component_views.py:324
-#, fuzzy
-#| msgid "Deduction view"
 msgid "Deduction created."
-msgstr "Vista de deducción"
+msgstr "Deducción creada."
 
 #: .\payroll\views\component_views.py:404
-#, fuzzy
-#| msgid "Department updated."
 msgid "Deduction updated."
-msgstr "Departamento actualizado."
+msgstr "Deducción actualizada."
 
 #: .\payroll\views\component_views.py:418
-#, fuzzy
-#| msgid "Question deleted successfully!"
 msgid "Deduction deleted successfully"
-msgstr "¡Pregunta eliminada con éxito!"
+msgstr "Deducción eliminada con éxito"
 
 #: .\payroll\views\component_views.py:512
-#, fuzzy
-#| msgid "Payslip deleted"
 msgid "Payslip Saved"
-msgstr "Boleta de pago eliminada"
+msgstr "Nómina guardada"
 
 #: .\payroll\views\tax_views.py:61
-#, fuzzy
-#| msgid "Asset created successfully"
 msgid "Filing status created successfully"
-msgstr "Activo creado con éxito"
+msgstr "Estado de archivo creado con éxito"
 
 #: .\payroll\views\tax_views.py:113
-#, fuzzy
-#| msgid "Filing status deleted."
 msgid "Filing status successfully deleted."
-msgstr "Estado de declaración de impuestos eliminado."
+msgstr ""
+"El estado civil para efectos de la declaración se eliminó exitosamente."
 
 #: .\payroll\views\tax_views.py:115
 msgid "This filing status assigned to employees"
@@ -7004,16 +6868,12 @@ msgid "The maximum income will be infinite"
 msgstr "El ingreso máximo será infinito"
 
 #: .\payroll\views\tax_views.py:236
-#, fuzzy
-#| msgid "Tax bracket deleted."
 msgid "Tax bracket successfully deleted."
-msgstr "Rango de impuestos eliminada."
+msgstr "Categoría impositiva eliminada exitosamente."
 
 #: .\payroll\views\views.py:39
-#, fuzzy
-#| msgid "New Employee"
 msgid "Name of Employees"
-msgstr "Nuevo Empleado"
+msgstr "Nombre de las empleadas"
 
 #: .\payroll\views\views.py:56
 msgid "Contract Created"
@@ -7036,16 +6896,14 @@ msgid "Payslip deleted"
 msgstr "Boleta de pago eliminada"
 
 #: .\payroll\views\views.py:882
-#, fuzzy, python-brace-format
-#| msgid "{employee} assign deleted."
+#, python-brace-format
 msgid "{employee} {period} payslip deleted."
-msgstr "{employee} asignación eliminada."
+msgstr "{employee} {period} Nómina eliminada."
 
 #: .\payroll\views\views.py:889
-#, fuzzy, python-brace-format
-#| msgid "You cannot delete {rshift_assign}"
+#, python-brace-format
 msgid "You cannot delete {payslip}"
-msgstr "No puedes eliminar {rshift_assign}"
+msgstr "No puedes eliminar {payslip}"
 
 #: .\pms\forms.py:49
 msgid "Individual"
@@ -7453,10 +7311,8 @@ msgid "Total Question"
 msgstr "Total Pregunta"
 
 #: .\pms\templates\feedback\question_template\question_template_view.html:76
-#, fuzzy
-#| msgid "Do you want to delete the question?"
 msgid "Do you want to delete this question template?"
-msgstr "¿Quieres eliminar la pregunta?"
+msgstr "¿Quieres eliminar la pregunta plantilla?"
 
 #: .\pms\templates\okr\key_result\key_result_creation.html:83
 #: .\pms\templates\okr\key_result\key_result_creation_htmx.html:62
@@ -7576,10 +7432,8 @@ msgid "Update Period"
 msgstr "Actualización Período"
 
 #: .\pms\templates\period\period_view.html:66
-#, fuzzy
-#| msgid "Do you want to delete this Deduction?"
 msgid "Do you want to delete this period ?"
-msgstr "¿Quieres eliminar esta Deducción?"
+msgstr "¿Quieres eliminar este período?"
 
 #: .\pms\views.py:78
 msgid "Objective created"
@@ -7775,34 +7629,35 @@ msgid "Job Positions"
 msgstr "Puestos de trabajo"
 
 #: .\recruitment\forms.py:492
-#, fuzzy
-#| msgid "Sequence updated."
 msgid "Sequence"
-msgstr "Secuencia actualizada."
+msgstr "Secuencia."
 
 #: .\recruitment\models.py:45
 msgid "File must be a PDF."
-msgstr ""
+msgstr "El archivo debe ser un PDF."
 
 #: .\recruitment\models.py:64
 msgid "To start bulk recruitment form multiple job positions"
 msgstr ""
+"Para iniciar el reclutamiento masivo desde múltiples puestos de trabajo"
 
 #: .\recruitment\models.py:69
 msgid "To close the recruitment, If closed then not visible on pipeline view."
 msgstr ""
+"Para cerrar el reclutamiento, si está cerrado, no será visible en la vista "
+"del tubería."
 
 #: .\recruitment\models.py:75
 msgid ""
 "To archive and un-archive a recruitment, if active is false then "
 "it             will not appear on recruitment list view."
 msgstr ""
+"Para archivar y desarchivar un reclutamiento, si activo es falso, no "
+"aparecerá en la vista de lista de reclutamiento."
 
 #: .\recruitment\models.py:137
-#, fuzzy
-#| msgid "End date should not be less than start date."
 msgid "End date cannot be less than start date."
-msgstr "La fecha de finalización no debe ser inferior a la fecha de inicio.."
+msgstr "La fecha de finalización no puede ser inferior a la fecha de inicio."
 
 #: .\recruitment\models.py:155
 #: .\recruitment\templates\dashboard\dashboard.html:206
@@ -7830,45 +7685,35 @@ msgstr "Otro"
 
 #: .\recruitment\models.py:269
 msgid "Choose valid choice"
-msgstr ""
+msgstr "Elija una opción válida"
 
 #: .\recruitment\models.py:271
-#, fuzzy
-#| msgid "This field is required"
 msgid "This field is required."
 msgstr "Este campo es obligatorio"
 
 #: .\recruitment\models.py:312
 msgid "Yes/No"
-msgstr ""
+msgstr "sí/no"
 
 #: .\recruitment\models.py:313
-#, fuzzy
-#| msgid "If choice"
 msgid "Choices"
-msgstr "Si la elección"
+msgstr "elección"
 
 #: .\recruitment\models.py:314
-#, fuzzy
-#| msgid "Multi-choices"
 msgid "Multiple Choice"
-msgstr "Múlti-opciones "
+msgstr "Múltiple-elección "
 
 #: .\recruitment\models.py:319
-#, fuzzy
-#| msgid "Text"
 msgid "Textarea"
-msgstr "Texto"
+msgstr "área de texto"
 
 #: .\recruitment\models.py:320
-#, fuzzy
-#| msgid "Upload"
 msgid "File Upload"
-msgstr "Subir"
+msgstr "Subir archivo"
 
 #: .\recruitment\models.py:332
 msgid "Separate choices by ',  '"
-msgstr ""
+msgstr "Separe las opciones por ',  '"
 
 #: .\recruitment\templates\candidate\application_form.html:90
 msgid "Please select profile image"
@@ -7883,10 +7728,8 @@ msgid "Choose Open Position"
 msgstr "Elegir posición abierta"
 
 #: .\recruitment\templates\candidate\application_form.html:131
-#, fuzzy
-#| msgid "Choose Open Position"
 msgid "Choose Job Position"
-msgstr "Elegir posición abierta"
+msgstr "Elija el puesto de trabajo"
 
 #: .\recruitment\templates\candidate\application_form.html:177
 #: .\recruitment\templates\candidate\individual.html:178
@@ -7934,8 +7777,6 @@ msgid "Do you want to un-archive this candidate"
 msgstr "¿Quiere desarchivar a este candidato"
 
 #: .\recruitment\templates\candidate\candidate_list.html:101
-#, fuzzy
-#| msgid "Do you want to delete this candidate?"
 msgid "Do you want to delete this candidate"
 msgstr "¿Quieres eliminar a esta candidata"
 
@@ -7992,7 +7833,7 @@ msgstr "programado hasta"
 #: .\recruitment\templates\candidate\individual.html:91
 #: .\recruitment\templates\survey\candidate-survey-form.html:17
 msgid "Survey"
-msgstr ""
+msgstr "Encuesta"
 
 #: .\recruitment\templates\candidate\individual.html:100
 #: .\recruitment\templates\pipeline\pipeline_components\candidate_remark_view.html:22
@@ -8020,68 +7861,48 @@ msgstr "Esta candidata no tiene un currículum en el archivo."
 
 #: .\recruitment\templates\dashboard\dashboard.html:12
 #: .\recruitment\views\dashboard.py:203
-#, fuzzy
-#| msgid "Open"
 msgid "Openings"
-msgstr "Abierto"
+msgstr "Aperturas"
 
 #: .\recruitment\templates\dashboard\dashboard.html:29
-#, fuzzy
-#| msgid "Total Days"
 msgid "Total Applicants"
-msgstr "Días totales"
+msgstr "Total de solicitantes"
 
 #: .\recruitment\templates\dashboard\dashboard.html:77
-#, fuzzy
-#| msgid "Condition Based"
 msgid "Conversion Rate"
-msgstr "Basado en condiciones"
+msgstr "Tasa de conversión"
 
 #: .\recruitment\templates\dashboard\dashboard.html:93
 msgid "Offer Acceptance Rate (OAR)"
-msgstr ""
+msgstr "Tasa de aceptación de oferta (OAR)"
 
 #: .\recruitment\templates\dashboard\dashboard.html:113
-#, fuzzy
-#| msgid "Open Job Positions"
 msgid "Open Positions By Department"
-msgstr "Puestos de trabajo abiertos"
+msgstr "Puestos abiertos por departamento"
 
 #: .\recruitment\templates\dashboard\dashboard.html:123
-#, fuzzy
-#| msgid "Candidate Started Onboarding"
 msgid "Candidate on Onboard"
-msgstr "Candidato comenzó a bordo"
+msgstr "Candidata a bordo"
 
 #: .\recruitment\templates\dashboard\dashboard.html:124
-#, fuzzy
-#| msgid "View"
 msgid "View all"
-msgstr "Vista"
+msgstr "vista toda"
 
 #: .\recruitment\templates\dashboard\dashboard.html:162
-#, fuzzy
-#| msgid "Candidate Name"
 msgid "Candidates Per Stage"
-msgstr "Candidato Nombre"
+msgstr "Candidatas por etapa"
 
 #: .\recruitment\templates\dashboard\dashboard.html:179
-#, fuzzy
-#| msgid "Joining From"
 msgid "Joinings Per Month"
-msgstr "Unirse Desde"
+msgstr "Unirse por mes"
 
 #: .\recruitment\templates\dashboard\dashboard.html:199
-#, fuzzy
-#| msgid "Recruitment Pipeline"
 msgid "Current Hiring Pipeline"
-msgstr "Reclutamiento Tubería"
+msgstr "Contratación actual Tubería"
 
 #: .\recruitment\templates\dashboard\dashboard.html:233
-#, fuzzy
-#| msgid "Recruitment Managers"
 msgid "Ongoing Recruitments & Hiring Managers"
-msgstr "Gerentes de reclutamiento"
+msgstr "Reclutamientos en curso y Gerentes de contratación"
 
 #: .\recruitment\templates\pipeline\footer_components.html:27
 #: .\recruitment\templates\pipeline\pipeline.html:246
@@ -8213,10 +8034,8 @@ msgid "Open Jobs"
 msgstr "Trabajos abiertos"
 
 #: .\recruitment\templates\recruitment\recruitment_component.html:129
-#, fuzzy
-#| msgid "Open Jobs"
 msgid "Jobs"
-msgstr "Trabajos abiertos"
+msgstr "abiertos"
 
 #: .\recruitment\templates\recruitment\recruitment_component.html:143
 msgid "Open"
@@ -8235,23 +8054,17 @@ msgid "View Stages"
 msgstr "Vista Etapas"
 
 #: .\recruitment\templates\survey\filter.html:5
-#, fuzzy
-#| msgid "Filter"
 msgid "Survey Filter"
-msgstr "Filtrar"
+msgstr "Filtro de encuesta"
 
 #: .\recruitment\templates\survey\view-question-templates.html:27
 #: .\recruitment\templates\survey\view-question-templates.html:51
-#, fuzzy
-#| msgid "Create Leave Type"
 msgid "Create Survey Template"
-msgstr "Crear Dejar Tipo"
+msgstr "Crear plantilla de encuesta"
 
 #: .\recruitment\templates\survey\view-question-templates.html:67
-#, fuzzy
-#| msgid "Question Template"
 msgid "Survey Templates"
-msgstr "Plantilla de pregunta"
+msgstr "Plantillas de encuestas"
 
 #: .\recruitment\views\actions.py:50
 msgid "Recruitment deleted successfully."
@@ -8294,28 +8107,24 @@ msgid "You cannot delete this candidate"
 msgstr "No puede eliminar este candidato"
 
 #: .\recruitment\views\actions.py:186
-#, fuzzy, python-format
-#| msgid "%(candidate_obj)s deleted."
+#, python-format
 msgid "%(candidate)s deleted."
-msgstr "%(candidate_obj)s eliminada"
+msgstr "%(candidate)s eliminada"
 
 #: .\recruitment\views\actions.py:192
-#, fuzzy, python-format
-#| msgid "You cannot delete %(candidate_obj)s"
+#, python-format
 msgid "You cannot delete %(candidate)s"
-msgstr "No puedes eliminar %(candidate_obj)s"
+msgstr "No puedes eliminar %(candidate)s"
 
 #: .\recruitment\views\actions.py:207
-#, fuzzy, python-format
-#| msgid "Candidate Name"
+#, python-format
 msgid "Candidate is %(message)s"
-msgstr "Candidato Nombre"
+msgstr "La candidata es %(message)s"
 
 #: .\recruitment\views\actions.py:231
-#, fuzzy, python-brace-format
-#| msgid "Candidate Name"
+#, python-brace-format
 msgid "{candidate} is {message}"
-msgstr "Candidato Nombre"
+msgstr "{candidate} es {message}"
 
 #: .\recruitment\views\actions.py:262
 msgid "Stage manager removed successfully."
@@ -8328,33 +8137,25 @@ msgstr "Gerente de reclutamiento eliminado con éxito."
 #: .\recruitment\views\dashboard.py:184
 #, python-format
 msgid "Employees joined in %(year)s"
-msgstr ""
+msgstr "Los empleados se Unirse en %(year)s"
 
 #: .\recruitment\views\surveys.py:96
 msgid "File size exceeds the limit. Maximum size is 5 MB"
-msgstr ""
+msgstr "El tamaño del archivo excede el límite. El tamaño máximo es 5 MB"
 
 #: .\recruitment\views\surveys.py:111
-#, fuzzy
-#| msgid "Your asset request rejected!."
 msgid "Your answers are submitted."
-msgstr "¡Su solicitud de activos fue rechazada!"
+msgstr "Sus respuestas son enviadas."
 
 #: .\recruitment\views\surveys.py:159
-#, fuzzy
-#| msgid "Sequence updated."
 msgid "New survey question updated."
-msgstr "Secuencia actualizada."
+msgstr "Nueva pregunta de la encuesta actualizada."
 
 #: .\recruitment\views\surveys.py:183
-#, fuzzy
-#| msgid "Asset request created!"
 msgid "New survey question created."
-msgstr "¡Solicitud de activo creada!"
+msgstr "Nueva pregunta de encuesta creada."
 
 #: .\recruitment\views\surveys.py:200
-#, fuzzy
-#| msgid "Question deleted successfully!"
 msgid "Question was deleted successfully"
 msgstr "¡Pregunta eliminada con éxito!"
 
@@ -8585,7 +8386,7 @@ msgstr "Asignación de grupo de usuarios"
 
 #: .\templates\settings.html:82
 msgid "Currency"
-msgstr ""
+msgstr "Moneda"
 
 #: .\templates\sidebar.html:18
 msgid "My Company"
@@ -8602,10 +8403,8 @@ msgid "Recruitment Pipeline"
 msgstr "Reclutamiento Tubería"
 
 #: .\templates\sidebar.html:59
-#, fuzzy
-#| msgid "Recruitment"
 msgid "Recruitment Survey"
-msgstr "Reclutamiento"
+msgstr "Encuesta de reclutamiento"
 
 #: .\templates\sidebar.html:72
 msgid "Stages"
@@ -8671,10 +8470,6 @@ msgstr "Activos Vista"
 msgid "Request and Allocation"
 msgstr "Solicitud y Asignación"
 
-#, fuzzy
-#~| msgid "Requested Shift"
-#~ msgid "Regular Shift"
-#~ msgstr "Turno Solicitado"
 
 #~ msgid "None"
 #~ msgstr "Ninguno"

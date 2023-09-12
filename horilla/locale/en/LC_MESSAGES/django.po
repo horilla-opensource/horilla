@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-09-11 12:51+0530\n"
+"POT-Creation-Date: 2023-09-11 16:33+0530\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -5837,6 +5837,10 @@ msgstr ""
 msgid "Employee bank details created successfully.."
 msgstr ""
 
+#: .\onboarding\views.py:948
+msgid "Candidate onboarding stage updated"
+msgstr ""
+
 #: .\onboarding\views.py:1160
 msgid "Mail sent successfully"
 msgstr ""
@@ -6731,7 +6735,7 @@ msgid "Tax Bracket"
 msgstr ""
 
 #: .\payroll\templates\payroll\tax\tax_bracket_view.html:47
-msgid "Are you sure to delete this tax bracket ?"
+msgid "Are you sure to delete this Tax bracket ?"
 msgstr ""
 
 #: .\payroll\templates\payroll\work_record\work_record_create.html:9

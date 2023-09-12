@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-09-11 12:51+0530\n"
+"POT-Creation-Date: 2023-09-11 15:04+0530\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2341,10 +2341,8 @@ msgid "Request"
 msgstr "مطلب "
 
 #: .\attendance\templates\requests\attendance\request_lines.html:244
-#, fuzzy
-#| msgid "Shift Request"
 msgid "Edit Request"
-msgstr "طلب التحول"
+msgstr "تعديل الطلب"
 
 #: .\attendance\templates\requests\attendance\view-requests.html:25
 msgid "Requested Attendances"
@@ -2691,18 +2689,14 @@ msgstr "كلمة المرور القديمة"
 #: .\base\templates\base\auth\password_change_form.html:32
 #: .\base\templates\base\auth\password_change_form.html:53
 #: .\base\templates\base\auth\password_change_form.html:74
-#, fuzzy
-#| msgid "New Password"
 msgid "Show Password"
-msgstr "كلمة المرور الجديدة"
+msgstr "إظهار كلمة المرور"
 
 #: .\base\templates\base\auth\password_change_form.html:37
 #: .\base\templates\base\auth\password_change_form.html:58
 #: .\base\templates\base\auth\password_change_form.html:79
-#, fuzzy
-#| msgid "Old Password"
 msgid "Hide Password"
-msgstr "كلمة المرور القديمة"
+msgstr "إخفاء كلمة المرور"
 
 #: .\base\templates\base\auth\password_change_form.html:46
 #: .\templates\reset_password.html:35
@@ -5633,24 +5627,18 @@ msgstr "الخطوة التالية"
 
 #: .\onboarding\templates\onboarding\kanban\kanban.html:33
 #: .\onboarding\templates\onboarding\onboarding-view.html:47
-#, fuzzy
-#| msgid "Open Recruitment"
 msgid "Ongoing Recruitments"
-msgstr "فتح باب التعيين"
+msgstr "التوظيف مستمر"
 
 #: .\onboarding\templates\onboarding\kanban\kanban.html:33
 #: .\onboarding\templates\onboarding\onboarding-view.html:47
-#, fuzzy
-#| msgid "View Recruitments"
 msgid "Closed Recruitments"
-msgstr "منظر التوظيف"
+msgstr "التوظيف المغلق"
 
 #: .\onboarding\templates\onboarding\kanban\kanban.html:65
 #: .\onboarding\templates\onboarding\onboarding-view.html:78
-#, fuzzy
-#| msgid "Joining Date"
 msgid "Join Date"
-msgstr "تاريخ الانضمام"
+msgstr "تاريخ الإنضمام"
 
 #: .\onboarding\templates\onboarding\kanban\kanban.html:69
 #: .\onboarding\templates\onboarding\onboarding-table.html:60
@@ -5659,17 +5647,13 @@ msgstr "مرحلة الدخول إلى البوابة"
 
 #: .\onboarding\templates\onboarding\kanban\kanban.html:86
 #: .\onboarding\templates\onboarding\onboarding-view.html:99
-#, fuzzy
-#| msgid "End Date From"
 msgid "Join Date From"
-msgstr "تاريخ انتهاء الصلاحية من"
+msgstr "تاريخ الإنضمام من"
 
 #: .\onboarding\templates\onboarding\kanban\kanban.html:92
 #: .\onboarding\templates\onboarding\onboarding-view.html:105
-#, fuzzy
-#| msgid "Joining Date"
 msgid "Join Date To"
-msgstr "تاريخ الانضمام"
+msgstr "تاريخ الإنضمام إلى"
 
 #: .\onboarding\templates\onboarding\kanban\kanban.html:152
 #: .\onboarding\templates\onboarding\onboarding-table.html:40
@@ -5677,10 +5661,8 @@ msgid "Do you want to delete this stage?"
 msgstr "هل تريد حذف هذه المرحلة؟"
 
 #: .\onboarding\templates\onboarding\kanban\kanban.html:165
-#, fuzzy
-#| msgid "Add Stage"
 msgid "Add task"
-msgstr "أضف المرحلة"
+msgstr "إضافة مهمة"
 
 #: .\onboarding\templates\onboarding\kanban\kanban.html:193
 #: .\onboarding\templates\onboarding\kanban\kanban.html:283
@@ -5694,10 +5676,8 @@ msgid "Send Mail"
 msgstr "ارسل بريد"
 
 #: .\onboarding\templates\onboarding\kanban\kanban.html:204
-#, fuzzy
-#| msgid "Task"
 msgid "Tasks"
-msgstr "مهمة"
+msgstr "المهام"
 
 #: .\onboarding\templates\onboarding\kanban\kanban.html:228
 #: .\recruitment\templates\pipeline\form\stage_drop_down_form.html:40
@@ -5742,10 +5722,8 @@ msgid "Task"
 msgstr "مهمة"
 
 #: .\onboarding\templates\onboarding\onboarding-view.html:82
-#, fuzzy
-#| msgid "Onboarding Portal Stage"
 msgid "Portal Stage"
-msgstr "مرحلة الدخول إلى البوابة"
+msgstr "مرحلة البوابة"
 
 #: .\onboarding\templates\onboarding\onboarding-view.html:222
 msgid "Update Task"
@@ -5862,9 +5840,11 @@ msgstr "تم إنشاء التفاصيل الشخصية للموظف بنجاح 
 msgid "Employee bank details created successfully.."
 msgstr "تم إنشاء تفاصيل بنك الموظف بنجاح .."
 
+#: .\onboarding\views.py:948
+msgid "Candidate onboarding stage updated"
+msgstr "تم تحديث مرحلة تأهيل المرشح"
+
 #: .\onboarding\views.py:1160
-#, fuzzy
-#| msgid "Email send successfully"
 msgid "Mail sent successfully"
 msgstr "أرسل البريد الإلكتروني بنجاح"
 
@@ -6773,7 +6753,7 @@ msgid "Tax Bracket"
 msgstr "شريحة ضريبية"
 
 #: .\payroll\templates\payroll\tax\tax_bracket_view.html:47
-msgid "Are you sure to delete this tax bracket ?"
+msgid "Are you sure to delete this Tax bracket ?"
 msgstr "هل أنت متأكد من حذف هذه الشريحة الضريبية؟"
 
 #: .\payroll\templates\payroll\work_record\work_record_create.html:9
@@ -6805,72 +6785,52 @@ msgid "record_type_name"
 msgstr "اسم نوع_لسجل"
 
 #: .\payroll\views\component_views.py:205
-#, fuzzy
-#| msgid "Allowance view"
 msgid "Allowance created."
-msgstr "عرض البدلات"
+msgstr "تم إنشاء مخصص الرواتب."
 
 #: .\payroll\views\component_views.py:286
-#, fuzzy
-#| msgid "Attendance Updated."
 msgid "Allowance updated."
-msgstr "تم تحديث الحضور."
+msgstr "تم تحديث بدل الرواتب."
 
 #: .\payroll\views\component_views.py:299
-#, fuzzy
-#| msgid "Asset deleted successfully"
 msgid "Allowance deleted successfully"
-msgstr "تم حذف الأصل بنجاح"
+msgstr "تم حذف مخصص الرواتب بنجاح"
 
 #: .\payroll\views\component_views.py:301
-#, fuzzy
-#| msgid "Allowance"
 msgid "Allowance not found"
-msgstr "البدلات"
+msgstr "لم يتم العثور على بدل الرواتب"
 
 #: .\payroll\views\component_views.py:304
 msgid "Validation error occurred while deleting the allowance"
-msgstr ""
+msgstr "حدث خطأ في التحقق أثناء حذف علاوة الراتب"
 
 #: .\payroll\views\component_views.py:308
 msgid "An error occurred while deleting the allowance"
-msgstr ""
+msgstr "حدث خطأ أثناء حذف بدل الراتب"
 
 #: .\payroll\views\component_views.py:324
-#, fuzzy
-#| msgid "Deduction view"
 msgid "Deduction created."
-msgstr "انظر خصم الراتب"
+msgstr "تم إنشاء خصم الراتب."
 
 #: .\payroll\views\component_views.py:404
-#, fuzzy
-#| msgid "Department updated."
 msgid "Deduction updated."
-msgstr "الإدارات المحدثة"
+msgstr "تم تحديث خصم الراتب."
 
 #: .\payroll\views\component_views.py:418
-#, fuzzy
-#| msgid "Question deleted successfully!"
 msgid "Deduction deleted successfully"
-msgstr "تم حذف السؤال بنجاح!"
+msgstr "تم حذف خصم الراتب بنجاح"
 
 #: .\payroll\views\component_views.py:512
-#, fuzzy
-#| msgid "Payslip deleted"
 msgid "Payslip Saved"
-msgstr "تمت إزالة قسيمة الراتب"
+msgstr "تم حفظ قسيمة الدفع"
 
 #: .\payroll\views\tax_views.py:61
-#, fuzzy
-#| msgid "Asset created successfully"
 msgid "Filing status created successfully"
-msgstr "تم إنشاء الأصل بنجاح"
+msgstr "تم إنشاء حالة الملف بنجاح"
 
 #: .\payroll\views\tax_views.py:113
-#, fuzzy
-#| msgid "Filing status deleted."
 msgid "Filing status successfully deleted."
-msgstr "تم حذف حالة الإيداع الضريبي."
+msgstr "تم حذف حالة الملف بنجاح."
 
 #: .\payroll\views\tax_views.py:115
 msgid "This filing status assigned to employees"
@@ -6881,10 +6841,8 @@ msgid "The maximum income will be infinite"
 msgstr "الحد الأقصى للدخل سيكون بلا حدود"
 
 #: .\payroll\views\tax_views.py:236
-#, fuzzy
-#| msgid "Tax bracket deleted."
 msgid "Tax bracket successfully deleted."
-msgstr "تم حذف شريحة الضرائب."
+msgstr "تم حذف شريحة الضريبة بنجاح."
 
 #: .\payroll\views\views.py:39
 msgid "Name of Employees"

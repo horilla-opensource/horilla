@@ -44,7 +44,7 @@
         <div class="oh-btn-group">
           <form 
             action="{% url 'tax-bracket-delete' tax_bracket_id=tax_bracket.id%}"
-            onsubmit="return confirm('{% trans "Are you sure to delete this tax bracket ?" %}')" 
+            onsubmit="return confirm('{% trans "Are you sure to delete this Tax bracket ?" %}')" 
             method="post"
             style="display: contents">
             {% csrf_token %}
