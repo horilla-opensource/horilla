@@ -144,6 +144,7 @@ class LateComeEarlyOutFilter(FilterSet):
     """
     LateComeEarlyOutFilter class
     """
+
     search = django_filters.CharFilter(method=filter_by_name)
     attendance_date__gte = django_filters.DateFilter(
         field_name="attendance_id__attendance_date",
@@ -205,6 +206,7 @@ class LateComeEarlyOutFilter(FilterSet):
     class Meta:
         """
         Meta class for additional options"""
+
         model = AttendanceLateComeEarlyOut
         fields = [
             "employee_id",
@@ -255,12 +257,12 @@ class AttendanceActivityFilter(FilterSet):
         lookup_expr="lte",
         widget=forms.DateInput(attrs={"type": "date"}),
     )
-    in_form = django_filters.DateFilter(
+    in_from = django_filters.DateFilter(
         field_name="clock_in",
         lookup_expr="gte",
         widget=forms.DateInput(attrs={"type": "time"}),
     )
-    out_form = django_filters.DateFilter(
+    out_from = django_filters.DateFilter(
         field_name="clock_out",
         lookup_expr="gte",
         widget=forms.DateInput(attrs={"type": "time"}),
@@ -292,9 +294,9 @@ class AttendanceActivityFilter(FilterSet):
             "attendance_date",
             "attendance_date_from",
             "attendance_date_till",
-            "in_form",
+            "in_from",
             "in_till",
-            "out_form",
+            "out_from",
             "shift_day",
             "out_till",
             "clock_in_date",
