@@ -9,7 +9,7 @@
   {%for field,values in filter_dict.items %} {%if values %}
   {% with translation_field=field|filter_field %}
   <span class="oh-filter-tag filter-field" data-x-field="{{field}}">
-    {% trans translation_field  %} : {% for value in values%} {{ value|capfirst }}{% endfor %}
+    {% trans translation_field  %} : {% for value in values%} {% with trans_value=value|capfirst  %}  {% trans trans_value %} {% endwith %} {% endfor %}
     <button class="oh-filter-tag__close">
       <ion-icon
         name="close-outline"

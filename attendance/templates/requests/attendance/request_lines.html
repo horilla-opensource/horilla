@@ -97,7 +97,7 @@
                       hx-get = "{% url 'validate-attendance-request' attendance.id %}"
                         hx-target="#validateAttendanceRequestModalBody"
                         class="oh-btn oh-btn--light-bkg w-100"
-                        title="View and Edit"
+                        title="{% trans 'View and Edit' %}"
                         
                         ><ion-icon
                         name="eye-outline"
@@ -109,7 +109,7 @@
                       <a
                         type="submit"
                         class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
-                        title="Re-validate Request"
+                        title="{% trans 'Re-validate Request' %}"
                         onclick="return confirm('{% trans "Are you sure want to cancel the request?" %}')"
                         href="{% url 'cancel-validate-attendance-request' attendance.id %}"
                       >

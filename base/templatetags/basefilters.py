@@ -65,7 +65,9 @@ def filtersubordinates(user):
 @register.filter(name='filter_field')
 def filter_field(value):  
     if value.endswith("_id"):    
-        value = value[:-3]    
+        value = value[:-3] 
+    if value.endswith("_ids"):
+        value = value[:-4]   
     splitted = value.split("__")
 
     return splitted[-1].replace('_', ' ').capitalize()

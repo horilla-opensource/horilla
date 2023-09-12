@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-09-11 16:33+0530\n"
+"POT-Creation-Date: 2023-09-12 11:51+0530\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1022,7 +1022,7 @@ msgstr "Achated Date"
 #: .\attendance\templates\attendance\attendance\attendance_nav.html:73
 #: .\attendance\templates\attendance\attendance_account\attendance_account_filter.html:126
 #: .\attendance\templates\attendance\attendance_account\nav.html:73
-#: .\attendance\templates\attendance\attendance_activity\activity_filters.html:142
+#: .\attendance\templates\attendance\attendance_activity\activity_filters.html:153
 #: .\attendance\templates\attendance\attendance_activity\nav.html:46
 #: .\attendance\templates\attendance\late_come_early_out\late_come_early_out_filters.html:165
 #: .\attendance\templates\attendance\late_come_early_out\nav.html:47
@@ -1349,7 +1349,7 @@ msgstr "Mois"
 #: .\attendance\templates\attendance\attendance_account\attendance_account_filter.html:11
 #: .\attendance\templates\attendance\attendance_account\group_by.html:9
 #: .\attendance\templates\attendance\attendance_account\overtime_list.html:8
-#: .\attendance\templates\attendance\attendance_activity\activity_filters.html:11
+#: .\attendance\templates\attendance\attendance_activity\activity_filters.html:15
 #: .\attendance\templates\attendance\attendance_activity\activity_list.html:8
 #: .\attendance\templates\attendance\attendance_activity\group_by.html:8
 #: .\attendance\templates\attendance\late_come_early_out\group_by.html:8
@@ -1489,6 +1489,7 @@ msgid "Update Request"
 msgstr "Demande de mise à jour"
 
 #: .\attendance\models.py:106
+#: .\attendance\templates\requests\attendance\request_lines.html:112
 msgid "Re-validate Request"
 msgstr "Demande de revalidation"
 
@@ -1501,7 +1502,7 @@ msgstr "Demande de revalidation"
 #: .\attendance\templates\attendance\attendance\tab_content.html:177
 #: .\attendance\templates\attendance\attendance\tab_content.html:335
 #: .\attendance\templates\attendance\attendance_account\attendance_account_filter.html:19
-#: .\attendance\templates\attendance\attendance_activity\activity_filters.html:19
+#: .\attendance\templates\attendance\attendance_activity\activity_filters.html:23
 #: .\attendance\templates\attendance\late_come_early_out\late_come_early_out_filters.html:19
 #: .\attendance\templates\attendance\own_attendance\attendances.html:14
 #: .\attendance\templates\requests\attendance\filter.html:19
@@ -1533,7 +1534,7 @@ msgstr "Quarts Info"
 #: .\attendance\templates\attendance\attendance\tab_content.html:178
 #: .\attendance\templates\attendance\attendance\tab_content.html:336
 #: .\attendance\templates\attendance\attendance_account\attendance_account_filter.html:39
-#: .\attendance\templates\attendance\attendance_activity\activity_filters.html:39
+#: .\attendance\templates\attendance\attendance_activity\activity_filters.html:41
 #: .\attendance\templates\attendance\late_come_early_out\late_come_early_out_filters.html:39
 #: .\attendance\templates\attendance\own_attendance\attendances.html:15
 #: .\attendance\templates\requests\attendance\filter.html:39
@@ -1627,7 +1628,7 @@ msgstr "Vous ne pouvez pas ajouter plus de conditions."
 
 #: .\attendance\templates\attendance\attendance\attendance_filters.html:6
 #: .\attendance\templates\attendance\attendance_account\attendance_account_filter.html:6
-#: .\attendance\templates\attendance\attendance_activity\activity_filters.html:6
+#: .\attendance\templates\attendance\attendance_activity\activity_filters.html:10
 #: .\attendance\templates\attendance\late_come_early_out\late_come_early_out_filters.html:6
 #: .\attendance\templates\requests\attendance\filter.html:6
 #: .\base\templates\base\rotating_shift\filters.html:44
@@ -1642,7 +1643,7 @@ msgstr "Travail Info"
 
 #: .\attendance\templates\attendance\attendance\attendance_filters.html:15
 #: .\attendance\templates\attendance\attendance_account\attendance_account_filter.html:15
-#: .\attendance\templates\attendance\attendance_activity\activity_filters.html:15
+#: .\attendance\templates\attendance\attendance_activity\activity_filters.html:19
 #: .\attendance\templates\attendance\late_come_early_out\late_come_early_out_filters.html:15
 #: .\attendance\templates\requests\attendance\filter.html:15
 #: .\base\models.py:86 .\base\templates\base\department\department.html:9
@@ -1670,7 +1671,7 @@ msgstr "Département"
 
 #: .\attendance\templates\attendance\attendance\attendance_filters.html:23
 #: .\attendance\templates\attendance\attendance_account\attendance_account_filter.html:23
-#: .\attendance\templates\attendance\attendance_activity\activity_filters.html:23
+#: .\attendance\templates\attendance\attendance_activity\activity_filters.html:27
 #: .\attendance\templates\attendance\late_come_early_out\late_come_early_out_filters.html:23
 #: .\attendance\templates\requests\attendance\filter.html:23
 #: .\base\templates\base\rotating_shift\filters.html:63
@@ -1689,7 +1690,7 @@ msgstr "Rapports Responsable"
 
 #: .\attendance\templates\attendance\attendance\attendance_filters.html:31
 #: .\attendance\templates\attendance\attendance_account\attendance_account_filter.html:31
-#: .\attendance\templates\attendance\attendance_activity\activity_filters.html:31
+#: .\attendance\templates\attendance\attendance_activity\activity_filters.html:33
 #: .\attendance\templates\attendance\late_come_early_out\late_come_early_out_filters.html:31
 #: .\attendance\templates\requests\attendance\filter.html:31
 #: .\base\templates\base\company\company.html:9
@@ -1716,7 +1717,7 @@ msgstr "Entreprise"
 
 #: .\attendance\templates\attendance\attendance\attendance_filters.html:35
 #: .\attendance\templates\attendance\attendance_account\attendance_account_filter.html:35
-#: .\attendance\templates\attendance\attendance_activity\activity_filters.html:35
+#: .\attendance\templates\attendance\attendance_activity\activity_filters.html:37
 #: .\attendance\templates\attendance\late_come_early_out\late_come_early_out_filters.html:35
 #: .\attendance\templates\requests\attendance\filter.html:35
 #: .\base\models.py:98 .\base\templates\base\job_position\job_position.html:9
@@ -1759,7 +1760,7 @@ msgstr "Poste"
 
 #: .\attendance\templates\attendance\attendance\attendance_filters.html:43
 #: .\attendance\templates\attendance\attendance_account\attendance_account_filter.html:43
-#: .\attendance\templates\attendance\attendance_activity\activity_filters.html:43
+#: .\attendance\templates\attendance\attendance_activity\activity_filters.html:45
 #: .\attendance\templates\attendance\late_come_early_out\late_come_early_out_filters.html:43
 #: .\attendance\templates\requests\attendance\filter.html:43
 #: .\employee\templates\employee\profile\profile_view.html:315
@@ -1777,7 +1778,7 @@ msgid "Attendance"
 msgstr "Fréquentation"
 
 #: .\attendance\templates\attendance\attendance\attendance_filters.html:58
-#: .\attendance\templates\attendance\attendance_activity\activity_filters.html:58
+#: .\attendance\templates\attendance\attendance_activity\activity_filters.html:60
 #: .\attendance\templates\attendance\late_come_early_out\group_by.html:10
 #: .\attendance\templates\attendance\late_come_early_out\late_come_early_out_filters.html:62
 #: .\attendance\templates\attendance\late_come_early_out\report_list.html:9
@@ -1834,7 +1835,7 @@ msgstr "Aufiltemps Approuvé?"
 
 #: .\attendance\templates\attendance\attendance\attendance_filters.html:88
 #: .\attendance\templates\attendance\attendance_account\attendance_account_filter.html:77
-#: .\attendance\templates\attendance\attendance_activity\activity_filters.html:81
+#: .\attendance\templates\attendance\attendance_activity\activity_filters.html:82
 #: .\attendance\templates\attendance\late_come_early_out\late_come_early_out_filters.html:92
 #: .\attendance\templates\attendance\own_attendance\filters.html:55
 #: .\attendance\templates\requests\attendance\filter.html:88
@@ -1853,7 +1854,7 @@ msgid "Advanced"
 msgstr "Avancé"
 
 #: .\attendance\templates\attendance\attendance\attendance_filters.html:93
-#: .\attendance\templates\attendance\attendance_activity\activity_filters.html:86
+#: .\attendance\templates\attendance\attendance_activity\activity_filters.html:87
 #: .\attendance\templates\attendance\late_come_early_out\late_come_early_out_filters.html:97
 #: .\attendance\templates\attendance\own_attendance\filters.html:60
 #: .\attendance\templates\requests\attendance\filter.html:93
@@ -1861,7 +1862,7 @@ msgid "Attendance From"
 msgstr "Fréquentation Depuis"
 
 #: .\attendance\templates\attendance\attendance\attendance_filters.html:97
-#: .\attendance\templates\attendance\attendance_activity\activity_filters.html:90
+#: .\attendance\templates\attendance\attendance_activity\activity_filters.html:91
 #: .\attendance\templates\attendance\late_come_early_out\late_come_early_out_filters.html:101
 #: .\attendance\templates\attendance\own_attendance\filters.html:64
 #: .\attendance\templates\requests\attendance\filter.html:97
@@ -1869,7 +1870,7 @@ msgid "In From"
 msgstr "Dans De Depuis"
 
 #: .\attendance\templates\attendance\attendance\attendance_filters.html:101
-#: .\attendance\templates\attendance\attendance_activity\activity_filters.html:94
+#: .\attendance\templates\attendance\attendance_activity\activity_filters.html:95
 #: .\attendance\templates\attendance\late_come_early_out\late_come_early_out_filters.html:105
 #: .\attendance\templates\attendance\own_attendance\filters.html:68
 #: .\attendance\templates\requests\attendance\filter.html:101
@@ -1884,7 +1885,7 @@ msgid "At Work Greater or Equal"
 msgstr "Au Travail Supérieur ou Égal"
 
 #: .\attendance\templates\attendance\attendance\attendance_filters.html:109
-#: .\attendance\templates\attendance\attendance_activity\activity_filters.html:98
+#: .\attendance\templates\attendance\attendance_activity\activity_filters.html:99
 #: .\attendance\templates\attendance\late_come_early_out\late_come_early_out_filters.html:113
 #: .\attendance\templates\attendance\own_attendance\filters.html:76
 #: .\attendance\templates\requests\attendance\filter.html:109
@@ -1892,7 +1893,7 @@ msgid "OT Greater or Equal"
 msgstr "Aufiltemps Supérieur ou Égal"
 
 #: .\attendance\templates\attendance\attendance\attendance_filters.html:115
-#: .\attendance\templates\attendance\attendance_activity\activity_filters.html:104
+#: .\attendance\templates\attendance\attendance_activity\activity_filters.html:105
 #: .\attendance\templates\attendance\late_come_early_out\late_come_early_out_filters.html:119
 #: .\attendance\templates\attendance\own_attendance\filters.html:82
 #: .\attendance\templates\requests\attendance\filter.html:115
@@ -1900,7 +1901,7 @@ msgid "Attendance Till"
 msgstr "Présence Jusqu'à"
 
 #: .\attendance\templates\attendance\attendance\attendance_filters.html:119
-#: .\attendance\templates\attendance\attendance_activity\activity_filters.html:108
+#: .\attendance\templates\attendance\attendance_activity\activity_filters.html:109
 #: .\attendance\templates\attendance\late_come_early_out\late_come_early_out_filters.html:123
 #: .\attendance\templates\attendance\own_attendance\filters.html:86
 #: .\attendance\templates\requests\attendance\filter.html:119
@@ -1908,7 +1909,7 @@ msgid "In Till"
 msgstr "Dans Jusqu'à"
 
 #: .\attendance\templates\attendance\attendance\attendance_filters.html:123
-#: .\attendance\templates\attendance\attendance_activity\activity_filters.html:112
+#: .\attendance\templates\attendance\attendance_activity\activity_filters.html:113
 #: .\attendance\templates\attendance\late_come_early_out\late_come_early_out_filters.html:127
 #: .\attendance\templates\attendance\own_attendance\filters.html:90
 #: .\attendance\templates\requests\attendance\filter.html:123
@@ -1931,14 +1932,14 @@ msgstr "Au fil du temps inférieur ou égal"
 
 #: .\attendance\templates\attendance\attendance\attendance_filters.html:139
 #: .\attendance\templates\attendance\attendance_account\attendance_account_filter.html:104
-#: .\attendance\templates\attendance\attendance_activity\activity_filters.html:120
+#: .\attendance\templates\attendance\attendance_activity\activity_filters.html:121
 #: .\attendance\templates\attendance\late_come_early_out\late_come_early_out_filters.html:143
 msgid "Group By"
 msgstr "Groupe Par"
 
 #: .\attendance\templates\attendance\attendance\attendance_filters.html:144
 #: .\attendance\templates\attendance\attendance_account\attendance_account_filter.html:109
-#: .\attendance\templates\attendance\attendance_activity\activity_filters.html:125
+#: .\attendance\templates\attendance\attendance_activity\activity_filters.html:126
 #: .\attendance\templates\attendance\late_come_early_out\late_come_early_out_filters.html:148
 #: .\attendance\templates\requests\attendance\individual_view.html:16
 msgid "Field"
@@ -2022,7 +2023,7 @@ msgstr "Horloge Dans"
 #: .\attendance\templates\attendance\attendance\tab_content.html:25
 #: .\attendance\templates\attendance\attendance\tab_content.html:174
 #: .\attendance\templates\attendance\attendance\tab_content.html:332
-#: .\attendance\templates\attendance\attendance_activity\activity_filters.html:68
+#: .\attendance\templates\attendance\attendance_activity\activity_filters.html:70
 #: .\attendance\templates\attendance\attendance_activity\activity_list.html:10
 #: .\attendance\templates\attendance\attendance_activity\group_by.html:10
 #: .\attendance\templates\attendance\late_come_early_out\group_by.html:12
@@ -2054,7 +2055,7 @@ msgstr "Horloge Dehors"
 #: .\attendance\templates\attendance\attendance\tab_content.html:27
 #: .\attendance\templates\attendance\attendance\tab_content.html:176
 #: .\attendance\templates\attendance\attendance\tab_content.html:334
-#: .\attendance\templates\attendance\attendance_activity\activity_filters.html:62
+#: .\attendance\templates\attendance\attendance_activity\activity_filters.html:64
 #: .\attendance\templates\attendance\attendance_activity\activity_list.html:13
 #: .\attendance\templates\attendance\attendance_activity\group_by.html:13
 #: .\attendance\templates\attendance\late_come_early_out\group_by.html:14
@@ -2194,13 +2195,13 @@ msgstr "Mis à jour Compte"
 msgid "Add OT"
 msgstr "Ajouter Au fildutemps"
 
-#: .\attendance\templates\attendance\attendance_activity\activity_filters.html:53
+#: .\attendance\templates\attendance\attendance_activity\activity_filters.html:55
 #: .\attendance\templates\attendance\attendance_activity\nav.html:6
 #: .\templates\sidebar.html:207
 msgid "Attendance Activity"
 msgstr "Activité de Fréquentation"
 
-#: .\attendance\templates\attendance\attendance_activity\activity_filters.html:72
+#: .\attendance\templates\attendance\attendance_activity\activity_filters.html:74
 msgid "Shift Day"
 msgstr "Quarts Jour"
 
@@ -2333,6 +2334,12 @@ msgstr "Toutes les présences"
 #: .\attendance\templates\requests\attendance\nav.html:169
 msgid "New Request"
 msgstr "Nouvelle requête"
+
+#: .\attendance\templates\requests\attendance\request_lines.html:100
+#, fuzzy
+#| msgid "View candidates"
+msgid "View and Edit"
+msgstr "Voir Candidats"
 
 #: .\attendance\templates\requests\attendance\request_lines.html:113
 msgid "Are you sure want to cancel the request?"
@@ -3041,6 +3048,7 @@ msgstr "Voulez-vous archiver cette affectation d'équipe tournante ?"
 
 #: .\base\templates\base\rotating_shift\rotating_shift_assign_view.html:109
 #: .\base\templates\base\rotating_work_type\rotating_work_type_assign_view.html:109
+#: .\base\translator.py:184
 msgid "False"
 msgstr "False"
 
@@ -3749,6 +3757,380 @@ msgstr "Déc"
 #: .\base\translator.py:117
 msgid "Additional info"
 msgstr "information additionnelle"
+
+#: .\base\translator.py:118
+#, fuzzy
+#| msgid "Scheduled Date"
+msgid "Schedule date"
+msgstr "Date Prévue"
+
+#: .\base\translator.py:119
+#, fuzzy
+#| msgid "Is Active"
+msgid "Is active"
+msgstr "C'est actif"
+
+#: .\base\translator.py:120
+#, fuzzy
+#| msgid "End Date"
+msgid "End date"
+msgstr "Date de fin"
+
+#: .\base\translator.py:121
+#, fuzzy
+#| msgid "Recruitment Managers"
+msgid "Recruitment managers"
+msgstr "Responsables du recrutement"
+
+#: .\base\translator.py:122
+#, fuzzy
+#| msgid "Stage Managers"
+msgid "Stage managers"
+msgstr "Étape Gestionnaires"
+
+#: .\base\translator.py:123
+#, fuzzy
+#| msgid "Stage Type"
+msgid "Stage type"
+msgstr "Type d'Étape"
+
+#: .\base\translator.py:124
+#, fuzzy
+#| msgid "Scheduled From"
+msgid "Scheduled from"
+msgstr "Programmé à partir de"
+
+#: .\base\translator.py:125
+#, fuzzy
+#| msgid "Scheduled Till"
+msgid "Scheduled till"
+msgstr "Prévue à partir de"
+
+#: .\base\translator.py:126
+#, fuzzy
+#| msgid "Start Date From"
+msgid "Start from"
+msgstr "Date de début du"
+
+#: .\base\translator.py:127
+#, fuzzy
+#| msgid "End Date Till"
+msgid "End till"
+msgstr "Date de fin jusqu'au"
+
+#: .\base\translator.py:128
+#, fuzzy
+#| msgid "Employee First Name"
+msgid "Employee first name"
+msgstr "Employé Prénom"
+
+#: .\base\translator.py:129
+#, fuzzy
+#| msgid "Employee Last Name"
+msgid "Employee last name"
+msgstr "Employé Famille Nom"
+
+#: .\base\translator.py:130
+#, fuzzy
+#| msgid "Reporting Manager"
+msgid "Reporting manager"
+msgstr "Rapports Responsable"
+
+#: .\base\translator.py:131
+#, fuzzy
+#| msgid "Requested Date"
+msgid "Requested date"
+msgstr "Demandée Date"
+
+#: .\base\translator.py:132
+#, fuzzy
+#| msgid "Previous Shift"
+msgid "Previous shift"
+msgstr "Précédent Quart"
+
+#: .\base\translator.py:133
+msgid "Gte"
+msgstr ""
+
+#: .\base\translator.py:134
+msgid "Lte"
+msgstr ""
+
+#: .\base\translator.py:135
+#, fuzzy
+#| msgid "Previous Work Type"
+msgid "Previous work type"
+msgstr "Précédent Travail Type"
+
+#: .\base\translator.py:136
+#, fuzzy
+#| msgid "Current Shift"
+msgid "Current shift"
+msgstr "Décalage actuel travail en équi"
+
+#: .\base\translator.py:137
+msgid "Rotating shift"
+msgstr "Décalage rotatif"
+
+#: .\base\translator.py:138
+#, fuzzy
+#| msgid "No change detected."
+msgid "Next change date"
+msgstr "Aucun changement détecté."
+
+#: .\base\translator.py:139
+#, fuzzy
+#| msgid "Next Shift"
+msgid "Next shift"
+msgstr "suivante travail par roulement"
+
+#: .\base\translator.py:140
+#, fuzzy
+#| msgid "Current Work Type"
+msgid "Current work type"
+msgstr "Type de travail actuel"
+
+#: .\base\translator.py:141
+#, fuzzy
+#| msgid "Next Work Type"
+msgid "Next work type"
+msgstr "Type de travail suivant"
+
+#: .\base\translator.py:142
+#, fuzzy
+#| msgid "Start Date From"
+msgid "Start date from"
+msgstr "Date de début du"
+
+#: .\base\translator.py:143
+#, fuzzy
+#| msgid "Start Date Till"
+msgid "Start date till"
+msgstr "Date de début jusqu'au"
+
+#: .\base\translator.py:144
+#, fuzzy
+#| msgid "End Date From"
+msgid "End date from"
+msgstr "Date de fin de"
+
+#: .\base\translator.py:145
+#, fuzzy
+#| msgid "End Date Till"
+msgid "End date till"
+msgstr "Date de fin jusqu'au"
+
+#: .\base\translator.py:146
+#, fuzzy
+#| msgid "Work Location"
+msgid "Location"
+msgstr "Travail Lieu"
+
+#: .\base\translator.py:147
+#, fuzzy
+#| msgid "Attendance Break Point"
+msgid "Attendance clock in"
+msgstr "Point d'arrêt de Fréquentation"
+
+#: .\base\translator.py:148
+#, fuzzy
+#| msgid "Attendance Break Point"
+msgid "Attendance clock out"
+msgstr "Point d'arrêt de Fréquentation"
+
+#: .\base\translator.py:149
+#, fuzzy
+#| msgid "Overtime approved"
+msgid "Attendance overtime approve"
+msgstr "Heures supplémentaires approuvées"
+
+#: .\base\translator.py:150
+#, fuzzy
+#| msgid "Hour Account"
+msgid "Hour account"
+msgstr "Hour Compte"
+
+#: .\base\translator.py:151
+#, fuzzy
+#| msgid "Check-out date"
+msgid "Clock out date"
+msgstr "Vérifier-Dehors Date"
+
+#: .\base\translator.py:152
+#, fuzzy
+#| msgid "Check-in date"
+msgid "Clock in date"
+msgstr "Vérifier-Dans Date"
+
+#: .\base\translator.py:153
+#, fuzzy
+#| msgid "Shift Day"
+msgid "Shift day"
+msgstr "Quarts Jour"
+
+#: .\base\translator.py:154
+#, fuzzy
+#| msgid "Attendance date"
+msgid "Attendance date from"
+msgstr "Fréquentation Date"
+
+#: .\base\translator.py:155
+#, fuzzy
+#| msgid "from"
+msgid "In from"
+msgstr "de"
+
+#: .\base\translator.py:156 .\base\translator.py:158
+#, fuzzy
+#| msgid "Out From"
+msgid "Out from"
+msgstr "En Dehors de Depuis"
+
+#: .\base\translator.py:157
+#, fuzzy
+#| msgid "Attendance date"
+msgid "Attendance date till"
+msgstr "Fréquentation Date"
+
+#: .\base\translator.py:159
+#, fuzzy
+#| msgid "Out Till"
+msgid "Out till"
+msgstr "Bout Jusqu'au"
+
+#: .\base\translator.py:160
+msgid "In till"
+msgstr ""
+
+#: .\base\translator.py:161
+#, fuzzy
+#| msgid "Leave types"
+msgid "Leave type"
+msgstr "Congé de types"
+
+#: .\base\translator.py:162
+#, fuzzy
+#| msgid "From Date"
+msgid "From date"
+msgstr "Partir de Date"
+
+#: .\base\translator.py:163
+#, fuzzy
+#| msgid "End Date"
+msgid "To date"
+msgstr "Date de fin"
+
+#: .\base\translator.py:164
+#, fuzzy
+#| msgid "Assigned Date"
+msgid "Assigned date"
+msgstr "Attribué Date"
+
+#: .\base\translator.py:165
+#, fuzzy
+#| msgid "Based On week"
+msgid "Based on week"
+msgstr "Basé Sur Semaine"
+
+#: .\base\translator.py:166
+#, fuzzy
+#| msgid "Based On Weekday"
+msgid "Based on week day"
+msgstr "Basé Sur Semainejour"
+
+#: .\base\translator.py:167
+msgid "Emp obj"
+msgstr ""
+
+#: .\base\translator.py:168
+msgid "Updated at"
+msgstr "Mis à jour à"
+
+#: .\base\translator.py:169
+#, fuzzy
+#| msgid "Created Date"
+msgid "Created at"
+msgstr "Date de création"
+
+#: .\base\translator.py:170
+#, fuzzy
+#| msgid "Created Date"
+msgid "Created at date range"
+msgstr "Date de création"
+
+#: .\base\translator.py:171
+#, fuzzy
+#| msgid "Review Cycle"
+msgid "Review cycle"
+msgstr "Révision Cycle"
+
+#: .\base\translator.py:172
+#, fuzzy
+#| msgid "Assets"
+msgid "Asset list"
+msgstr "Actifs"
+
+#: .\base\translator.py:173
+msgid "Query"
+msgstr ""
+
+#: .\base\translator.py:174
+#, fuzzy
+#| msgid "Asset Category Update"
+msgid "Asset category name"
+msgstr "Actifs Catégorie  Mise à jour"
+
+#: .\base\translator.py:175
+#, fuzzy
+#| msgid "Asset Category Creation"
+msgid "Asset category description"
+msgstr "Actifs Création Catégorie"
+
+#: .\base\translator.py:176
+#, fuzzy
+#| msgid "Asset Name"
+msgid "Asset name"
+msgstr "Actif Nom"
+
+#: .\base\translator.py:177
+#, fuzzy
+#| msgid "Asset Creation"
+msgid "Asset tracking"
+msgstr "Actif Création"
+
+#: .\base\translator.py:178
+#, fuzzy
+#| msgid "Asset Update"
+msgid "Asset purchase date"
+msgstr "Actifs Mise à jour"
+
+#: .\base\translator.py:179
+#, fuzzy
+#| msgid "Purchase Cost"
+msgid "Asset purchase cost"
+msgstr "Achat Coût"
+
+#: .\base\translator.py:180
+#, fuzzy
+#| msgid "Asset Lot Number"
+msgid "Asset lot number"
+msgstr "Numéro  Lot  l'actif"
+
+#: .\base\translator.py:181
+#, fuzzy
+#| msgid "Asset Category"
+msgid "Asset category"
+msgstr "Actifs Catégorie"
+
+#: .\base\translator.py:182
+#, fuzzy
+#| msgid "Asset Update"
+msgid "Asset status"
+msgstr "Actifs Mise à jour"
+
+#: .\base\translator.py:183
+msgid "True"
+msgstr ""
 
 #: .\base\views.py:119
 msgid "Invalid username or password."
@@ -6832,11 +7214,14 @@ msgstr "indemnités pas trouvé"
 
 #: .\payroll\views\component_views.py:304
 msgid "Validation error occurred while deleting the allowance"
-msgstr "Une erreur de validation s'est produite lors de la suppression de l'indemnité de paie"
+msgstr ""
+"Une erreur de validation s'est produite lors de la suppression de "
+"l'indemnité de paie"
 
 #: .\payroll\views\component_views.py:308
 msgid "An error occurred while deleting the allowance"
-msgstr "Une erreur s'est produite lors de la suppression de l'indemnité de paie"
+msgstr ""
+"Une erreur s'est produite lors de la suppression de l'indemnité de paie"
 
 #: .\payroll\views\component_views.py:324
 msgid "Deduction created."
@@ -8122,6 +8507,7 @@ msgid "You cannot delete %(candidate)s"
 msgstr "Vous ne pouvez pas supprimer %(candidate)s"
 
 #: .\recruitment\views\actions.py:207
+#, python-format
 msgid "Candidate is %(message)s"
 msgstr "Le candidat est %(message)s"
 
@@ -8504,12 +8890,6 @@ msgstr "Demande et Allocation"
 #~ msgid "Every"
 #~ msgstr "Chaque"
 
-#~ msgid "Rotating shift"
-#~ msgstr "Décalage rotatif"
-
-#~ msgid "No change detected."
-#~ msgstr "Aucun changement détecté."
-
 #~ msgid "Min Income"
 #~ msgstr "Min. Revenu"
 
@@ -8542,9 +8922,6 @@ msgstr "Demande et Allocation"
 
 #~ msgid "You Don't Have Permission"
 #~ msgstr "Vous n'avez pas la permission"
-
-#~ msgid "Asset Lot Number"
-#~ msgstr "Numéro  Lot  l'actif"
 
 #~ msgid "User Name"
 #~ msgstr "Nom d'utilisateur"
@@ -8581,9 +8958,6 @@ msgstr "Demande et Allocation"
 
 #~ msgid "History"
 #~ msgstr "Histoire"
-
-#~ msgid "Updated at"
-#~ msgstr "Mis à jour à"
 
 #~ msgid "Changed by"
 #~ msgstr "Changé Par"
