@@ -185,7 +185,7 @@ def clock_in(request):
             )
         )
     return HttpResponse(
-        "You Don't have work information filled or your employee detail neither entered "
+        _("You Don't have work information filled or your employee detail neither entered ")
     )
 
 

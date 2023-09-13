@@ -18,6 +18,16 @@
 </style>
 
 {% include 'requests/attendance/nav.html' %}
+<div class="d-flex flex-row-reverse mb-1">
+  <span class="me-5" >
+    <span class="oh-dot oh-dot--small" style="background-color:rgba(128, 128, 128, 0.482)"></span>
+    {% trans "Not-Validated" %}
+  </span>
+  <span class="me-3">
+    <span class="oh-dot oh-dot--small" style="background-color:yellowgreen"></span>
+    {% trans "Validated" %}
+  </span>
+</div>
 <div class="oh-wrapper ">
   <div class="oh-tabs">
     <ul class="oh-tabs__tablist">

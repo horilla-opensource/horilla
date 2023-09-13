@@ -12,7 +12,7 @@
             <div class="oh-sticky-table__th" >
               <div class="d-flex">
                 <div class="">
-                  <input type="checkbox"  class="oh-input oh-input__checkbox mt-1 mr-2 all-attendances" />
+                  <input type="checkbox" title='{% trans "Select All" %}' class="oh-input oh-input__checkbox mt-1 mr-2 all-attendances" />
                 </div>
                 <div hx-get="{% url 'attendance-search' %}?{{pd}}&sortby=employee_id__employee_first_name" hx-target="#tab_contents">
                   {% trans "Employee" %}
@@ -161,7 +161,7 @@
             <div class="oh-sticky-table__th"  >
               <div class="d-flex">
                 <div class="">
-                  <input type="checkbox"  class="oh-input oh-input__checkbox mt-1 mr-2 validate" />
+                  <input type="checkbox" title='{% trans "Select All" %}' class="oh-input oh-input__checkbox mt-1 mr-2 validate" />
                 </div>
                 <div hx-get="{% url 'attendance-search' %}?{{pd}}&sortby=employee_id__employee_first_name" hx-target="#tab_contents">
                   {% trans "Employee" %}
@@ -319,7 +319,7 @@
               <div class="oh-sticky-table__th" >
                 <div class="d-flex">
                   <div class="">
-                    <input type="checkbox"  class="oh-input oh-input__checkbox mt-1 mr-2 ot-attendances" />
+                    <input type="checkbox" title='{% trans "Select All" %}' class="oh-input oh-input__checkbox mt-1 mr-2 ot-attendances" />
                   </div>
                   <div hx-get="{% url 'attendance-search' %}?{{pd}}&sortby=employee_id__employee_first_name" hx-target="#tab_contents">
                     {% trans "Employee" %}
