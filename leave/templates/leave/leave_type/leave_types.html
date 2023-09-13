@@ -19,7 +19,7 @@
         <div class="oh-kanban-card__dots">
           <div class="oh-dropdown" x-data="{show: false}">
             <button class="oh-btn oh-btn--transparent text-muted p-3" @click="show = !show">
-              <ion-icon name="ellipsis-vertical-sharp"></ion-icon>
+              <span title='{% trans "Actions" %}'> <ion-icon name="ellipsis-vertical-sharp"></ion-icon></span>
             </button>
             <div class="oh-dropdown__menu oh-dropdown__menu--dark-border oh-dropdown__menu--right" x-show="show" style="display: none;"
               @click.outside="show = false">
