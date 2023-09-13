@@ -1,5 +1,6 @@
 {% extends 'index.html' %}
 {% block content %}
+{% load i18n %}
 <style>
   .hired-cand{
     border-left: solid 4px yellowgreen !important;
@@ -13,6 +14,17 @@
 </style>
 <div class="oh-wrapper">
   {% include 'candidate/candidate_nav.html' %}
+  <div class="d-flex flex-row-reverse">
+    <span class="m-3" >
+      <span class="oh-dot oh-dot--small me-1" style="background-color:rgba(128, 128, 128, 0.482)"></span>
+      {% trans "Not-Hired" %}
+    </span>
+    <span class="m-3">
+      <span class="oh-dot oh-dot--small me-1" style="background-color:yellowgreen"></span>
+      {% trans "Hired" %}
+    </span>
+  </div>
+  
   <div id="section" hx-target="#section" hx-swap="innerHTML">
     {% if view_type == 'list' %}
       {% include 'candidate/candidate_list.html' %}

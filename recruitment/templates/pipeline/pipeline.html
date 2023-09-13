@@ -92,6 +92,7 @@
                   class="oh-btn oh-stop-prop oh-btn--transparent oh-accordion-meta__btn"
                   @click="open = !open"
                   @click.outside="open = false"
+                  title="{% trans "Actions" %}"
                 >
                   <ion-icon name="ellipsis-vertical"></ion-icon>
                 </button>
@@ -186,7 +187,7 @@
                       style="text-decoration: none;width: 400px !important;"
                       href="{% url 'candidate-view-individual' cand.id %}"
                     >
-                      <ion-icon name="move"></ion-icon>
+                      <span title={% trans "Move" %}><ion-icon name="move"></ion-icon></span>
                       <div class="oh-profile oh-profile--md">
                         <div class="oh-profile__avatar mr-1">
                           <img

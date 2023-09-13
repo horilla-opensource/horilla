@@ -67,7 +67,7 @@
 
         <div class="oh-kanban__head-actions oh-kanban__dropdown" >          
           <div class="oh-kanban__head-actions oh-kanban__dropdown">
-            <button class="oh-btn oh-btn--small oh-btn--transparent oh-kanban__btn oh-kanban__dropdown-toggle">
+            <button class="oh-btn oh-btn--small oh-btn--transparent oh-kanban__btn oh-kanban__dropdown-toggle" title = {% trans "Actions" %}>
               <ion-icon name="ellipsis-vertical-sharp" role="img" class="md hydrated" aria-label="ellipsis vertical sharp"></ion-icon>
             </button>
             <div class="oh-dropdown oh-kanban__dropdown-menu d-none">
@@ -91,7 +91,7 @@
             </div>
             {% if perms.recruitment.add_candidate or request.user|is_stagemanager %}
             <div class="oh-dropdown" x-data="{open: false}">
-              <a class="" @click="open = !open">
+              <a class="" @click="open = !open" title="Add Candidates">
                 <ion-icon name="add-sharp" role="img" class="md hydrated mt-1" aria-label="add sharp"></ion-icon>
               </a>
               <div
@@ -187,6 +187,7 @@
             <div class="oh-kanban__card-actions oh-kanban__dropdown">
               <button
                 class="oh-btn oh-btn--small oh-btn--transparent oh-kanban__btn oh-kanban__dropdown-toggle"
+                title={% trans "Actions" %}
               >
                 <ion-icon
                   name="ellipsis-vertical-sharp"

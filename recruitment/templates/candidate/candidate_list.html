@@ -20,7 +20,7 @@
         <div class="oh-sticky-table__th"  >
           <div class="d-flex">
             <div class="">
-              <input type="checkbox" class="all-candidate oh-input oh-input__checkbox mt-1 mr-2" 
+              <input type="checkbox" class="all-candidate oh-input oh-input__checkbox mt-1 mr-2" title="Select All" 
               id = "Allcandidate"/>
             </div>
             <div hx-target='#section' hx-get="{% url 'search-candidate' %}?{{pd}}&orderby=name&view=list">
@@ -88,10 +88,10 @@
             </form>
             {% else %}
             
-            <form action="{% url 'rec-candidate-archive' cand.id  %}" onsubmit="return confirm('{% trans "Do you want to un-archive this candidate" %}')" method='post'>
+            <form action="{% url 'rec-candidate-archive' cand.id  %}"  title="Un Archive" onsubmit="return confirm('{% trans "Do you want to un-archive this candidate" %}')" method='post'>
               {% csrf_token %}
               <button type='submit' class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
-                ><ion-icon name="archive" title="Un Archive"></ion-icon></button>
+                ><ion-icon name="archive"></ion-icon></button>
             </form>
             {% endif %}
             {% endif %}
