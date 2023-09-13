@@ -66,7 +66,6 @@ class DeductionForm(forms.ModelForm):
     style = forms.CharField(required=False)
     verbose_name = _("Deduction")
 
-
     class Meta:
         """
         Meta class for additional options
@@ -164,6 +163,7 @@ class GeneratePayslipForm(forms.Form):
             contract_set__isnull=False, contract_set__contract_status="active"
         ),
         widget=forms.SelectMultiple,
+        label="Employee",
     )
     start_date = forms.DateField(widget=forms.DateInput(attrs={"type": "date"}))
     end_date = forms.DateField(widget=forms.DateInput(attrs={"type": "date"}))
