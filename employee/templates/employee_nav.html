@@ -108,6 +108,7 @@
           hx-get="{% url 'employee-filter-view' %}?view=list" 
           hx-target="#view-container" 
           class="oh-btn oh-btn--view"
+          title='{% trans "List" %}'
           ><ion-icon name="list-outline"></ion-icon
         ></a>
       </li>
@@ -118,6 +119,7 @@
           hx-get="{% url 'employee-filter-view' %}?view=card"
           hx-target="#view-container"  
           class="oh-btn oh-btn--view" 
+          title='{% trans "Card" %}'
           ><ion-icon name="grid-outline"></ion-icon
         ></a>
       </li>

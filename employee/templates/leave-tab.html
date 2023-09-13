@@ -14,7 +14,22 @@
     }
   </style>
 
-  <div class="oh-sticky-table mt-4">
+  <div class="d-flex flex-row-reverse">
+    <span class="m-3">
+      <span class="oh-dot oh-dot--small me-1" style="background-color:gray"></span>
+      {% trans "Cancelled" %}
+    </span>
+    <span class="m-3">
+      <span class="oh-dot oh-dot--small me-1" style="background-color:orange"></span>
+      {% trans "Requested" %}
+    </span>
+    <span class="m-3" >
+      <span class="oh-dot oh-dot--small me-1" style="background-color:yellowgreen"></span>
+      {% trans "Approved" %}
+    </span>
+  </div>
+
+  <div class="oh-sticky-table">
     <div class="oh-sticky-table__table oh-table--sortable">
         <div class="oh-sticky-table__thead">
             <div class="oh-sticky-table__tr">

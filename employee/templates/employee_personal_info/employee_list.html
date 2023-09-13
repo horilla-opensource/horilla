@@ -21,6 +21,7 @@
                     <input
                       type="checkbox"
                       class="oh-input oh-input__checkbox mt-1 mr-2 all-employee"
+                      title='{% trans "Select All" %}'
                     />
                   </div>
                   <div  hx-target="#view-container" hx-get="{% url 'employee-view-list' %}?{{pd}}&orderby=employee_first_name">
