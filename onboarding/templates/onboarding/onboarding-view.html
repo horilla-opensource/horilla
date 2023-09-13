@@ -46,11 +46,11 @@
             <input type="checkbox" name="is_closed" data-widget="style-widget" class="style-widget oh-switch__checkbox" {% if request.GET.closed %} checked title="{% trans 'Ongoing Recruitments' %}" {% else %} title="{% trans 'Closed Recruitments' %}" {% endif %} id="is_closed" > 
         </div>
         <ul class="oh-view-types ml-2" style="margin-bottom: 0;">
-            <li class="oh-view-type candidate-view-type" data-view="list">
+            <li class="oh-view-type candidate-view-type" data-view="list" title="{% trans "List" %}">
                 <a href="{% url 'onboarding-view' %}" hx-target="#section" class="oh-btn oh-btn--view "><ion-icon
                         name="list-outline" role="img" class="md hydrated" aria-label="list outline"></ion-icon></a>
             </li>
-            <li class="oh-view-type candidate-view-type" data-view="card">
+            <li class="oh-view-type candidate-view-type" data-view="card" title="{% trans "Card" %}">
                 <a href="{% url 'kanban-view' %}" hx-target="#section" class="oh-btn oh-btn--view"><ion-icon
                         name="grid-outline" role="img" class="md hydrated" aria-label="grid outline"></ion-icon></a>
             </li>
@@ -168,7 +168,7 @@
     <div class="oh-modal__dialog oh-modal__dialog--timeoff">
         <div class="oh-modal__dialog-header">
             <span class="oh-modal__dialog-title" id="editDialogDialog">{% trans "Create Stage" %}</span>
-            <button class="oh-modal__close" aria-label="Close">
+            <button class="oh-modal__close" aria-label="Close" title="{% trans "Close" %}">
                 <ion-icon name="close-outline"></ion-icon>
             </button>
         </div>
@@ -187,7 +187,7 @@
     <div class="oh-modal__dialog oh-modal__dialog--timeoff">
         <div class="oh-modal__dialog-header">
             <span class="oh-modal__dialog-title" id="editDialogDialog">{% trans "Update Stage" %}</span>
-            <button class="oh-modal__close" aria-label="Close">
+            <button class="oh-modal__close" aria-label="Close" title="{% trans "Close" %}">
                 <ion-icon name="close-outline"></ion-icon>
             </button>
         </div>
@@ -204,7 +204,7 @@
     <div class="oh-modal__dialog oh-modal__dialog--timeoff">
         <div class="oh-modal__dialog-header">
             <span class="oh-modal__dialog-title" id="editDialogDialog">{% trans "Create Task" %}</span>
-            <button class="oh-modal__close" aria-label="Close">
+            <button class="oh-modal__close" aria-label="Close" title="{% trans "Close" %}">
                 <ion-icon name="close-outline"></ion-icon>
             </button>
         </div>
@@ -219,7 +219,7 @@
     <div class="oh-modal__dialog oh-modal__dialog--timeoff">
         <div class="oh-modal__dialog-header">
             <span class="oh-modal__dialog-title" id="editDialogDialog">{% trans "Update Task" %}</span>
-            <button class="oh-modal__close" aria-label="Close">
+            <button class="oh-modal__close" aria-label="Close" title="{% trans "Close" %}">
                 <ion-icon name="close-outline"></ion-icon>
             </button>
         </div>
@@ -234,7 +234,7 @@
     <div class="oh-modal__dialog oh-modal__dialog--timeoff">
         <div class="oh-modal__dialog-header">
             <span class="oh-modal__dialog-title" id="modalTask">Send Mail</span>
-            <button class="oh-modal__close" aria-label="Close">
+            <button class="oh-modal__close" aria-label="Close" title="{% trans "Close" %}">
                 <ion-icon name="close-outline" role="img" class="md hydrated" aria-label="close outline"></ion-icon>
             </button>
         </div>

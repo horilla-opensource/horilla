@@ -21,7 +21,8 @@
             <div class="oh-accordion-meta__actions" onclick="event.stopPropagation()">
                 <div class="oh-dropdown" x-data="{open: false}">
                     <button class="oh-btn oh-stop-prop oh-accordion-meta__btn" @click="open = !open"
-                        @click.outside="open = false">
+                        @click.outside="open = false"
+                        title="{% trans "Action" %}">
                         {% trans "Actions" %}
                         <ion-icon class="ms-2 oh-accordion-meta__btn-icon" name="caret-down-outline"></ion-icon>
                     </button>
@@ -57,7 +58,7 @@
                             <div class="oh-sticky-table__th">{% trans "Job Position" %}</div>
                             <div class="oh-sticky-table__th">{% trans "Mobile" %}</div>
                             <div class="oh-sticky-table__th">{% trans "Joining Date" %}</div>
-                            <div class="oh-sticky-table__th">{% trans "Onboarding Portal Stage" %}</div>
+                            <div class="oh-sticky-table__th">{% trans "Portal Status" %}</div>
                             <div class="oh-sticky-table__th">{% trans "Stage" %}</div>
                             <div class="oh-sticky-table__th">{% trans "Actions" %}</div>
                             {% for task in recruitment.onboarding_task.all %}
@@ -67,7 +68,8 @@
                                     {% if request.user|stage_manages:stage or perms.onboarding.change_onboardingtask or perms.onboarding.delete_onboardingtask %}
                                     <div class="oh-dropdown" x-data="{open: false}">
                                         <button class="oh-btn oh-stop-prop oh-btn--transparent oh-accordion-meta__btn"
-                                            @click="open = !open" @click.outside="open = false">
+                                            @click="open = !open" @click.outside="open = false"
+                                            title="{% trans "Actions" %}">
                                             <ion-icon name="ellipsis-vertical"></ion-icon>
                                         </button>
                                         <div class="oh-dropdown__menu oh-dropdown__menu--right" x-show="open">
@@ -169,7 +171,7 @@
                             </div>
                             <div class="oh-sticky-table__td">
                                 <div class="oh-kanban__card-actions oh-kanban__dropdown">
-                                    <button class="oh-btn oh-btn--small oh-btn--transparent oh-kanban__btn oh-kanban__dropdown-toggle">
+                                    <button class="oh-btn oh-btn--small oh-btn--transparent oh-kanban__btn oh-kanban__dropdown-toggle" title="{% trans "Actions" %}">
                                         <ion-icon name="ellipsis-vertical-sharp" role="img" class="md hydrated" aria-label="ellipsis vertical sharp"></ion-icon>
                                     </button>
                                     <div class="oh-dropdown oh-kanban__dropdown-menu d-none">
