@@ -11,6 +11,22 @@
 </div>
 {% endif %}
 {% include 'filter_tags.html' %}
+
+<div class="d-flex flex-row-reverse">
+    <span class="m-3">
+      <span class="oh-dot oh-dot--small me-1" style="background-color:gray"></span>
+      {% trans "Cancelled" %}
+    </span>
+    <span class="m-3">
+      <span class="oh-dot oh-dot--small me-1" style="background-color:orange"></span>
+      {% trans "Requested" %}
+    </span>
+    <span class="m-3" >
+      <span class="oh-dot oh-dot--small me-1" style="background-color:yellowgreen"></span>
+      {% trans "Approved" %}
+    </span>
+</div>
+
 <div class="oh-sticky-table">
     <div class="oh-sticky-table__table oh-table--sortable">
         <div class="oh-sticky-table__thead">
@@ -26,7 +42,7 @@
         <div class="oh-sticky-table__tbody">
             {% for leave_request in leave_requests %}
             <div class="oh-sticky-table__tr" draggable="true">
-                <div class="oh-sticky-table__sd" data-toggle="oh-modal-toggle" data-target="#tableTimeOff"
+                <div class="oh-sticky-table__sd {% if leave_request.status == "requested" %}row-status--orange {% elif leave_request.status == "cancelled" %} row-status--gray {% elif leave_request.status == "approved" %} row-status--yellow{% endif %}" data-toggle="oh-modal-toggle" data-target="#tableTimeOff"
                 hx-get="{% url 'user-request-one' leave_request.id %}" hx-target="#userRequestView">
                     <div class="oh-profile oh-profile--md">
                         <div class="oh-profile__avatar mr-1">
