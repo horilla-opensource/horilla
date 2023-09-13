@@ -1,28 +1,31 @@
 {% load i18n %}
 
 <style>
-    .row-status--orange {
-      border-left: 4px solid orange;
-      border-radius: 5px;
-    }
-    .row-status--gray {
-      border-left: 4px solid gray;
-      border-radius: 5px;
-    }
-    .row-status--yellow {
-      border-left: 4px solid yellowgreen;
-      border-radius: 5px;
-    }
-    .row-status--blue {
-        border-left: 4px solid rgb(103, 171, 238);
-        border-radius: 5px;
-      }
     a:hover {
         text-decoration: none;
     }
-  </style>
+</style>
 
-  <div class="oh-sticky-table mt-4">
+<div class="d-flex flex-row-reverse">
+  <span class="m-3">
+    <span class="oh-dot oh-dot--small me-1" style="background-color:gray"></span>
+    {% trans "Draft" %}
+  </span>
+  <span class="m-3">
+    <span class="oh-dot oh-dot--small me-1" style="background-color:orange"></span>
+    {% trans "Review Ongoing" %}
+  </span>
+  <span class="m-3">
+    <span class="oh-dot oh-dot--small me-1" style="background-color:rgb(103, 171, 238)"></span>
+    {% trans "Confirmed" %}
+  </span>
+  <span class="m-3" >
+    <span class="oh-dot oh-dot--small me-1" style="background-color:yellowgreen"></span>
+    {% trans "Paid" %}
+  </span>
+</div>
+
+  <div class="oh-sticky-table">
     <div class="oh-sticky-table__table oh-table--sortable">
         <div class="oh-sticky-table__thead">
             <div class="oh-sticky-table__tr">
