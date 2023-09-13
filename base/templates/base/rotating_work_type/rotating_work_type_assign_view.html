@@ -12,6 +12,7 @@
               <input
                 type="checkbox"
                 class="oh-input oh-input__checkbox mt-1 mr-2 all-rwork-type"
+                title='{% trans "Select All" %}'
               />
             </div>
             <div hx-target="#view-container" hx-get="{% url 'rotating-work-type-assign-view' %}?{{pd}}&orderby=employee_id__employee_first_name">
@@ -98,6 +99,7 @@
               data-toggle="oh-modal-toggle"
               type="button"
               class="oh-btn oh-btn--light-bkg w-50"
+              title="{% trans 'Update' %}"
             >
               <ion-icon name="create-outline"></ion-icon
             ></a>
@@ -105,15 +107,15 @@
             {% if perms.base.change_rotatingworktypeassign or request.user|is_reportingmanager  %}
             {% if rwork_type.is_active %}
             <form onsubmit="return confirm('{% trans "Do you Want to archive this rotating work type assign?" %}')" action="{% url 'rotating-work-type-assign-archive' rwork_type.id %}" >
-              <button class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100">
+              <button class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100" title="{% trans 'Archive' %}">
                 <input type="hidden" name="is_active" value="{% trans 'False' %}" id="">
-                <ion-icon name="archive" title="{% trans 'Archive' %}"></ion-icon>
+                <ion-icon name="archive"></ion-icon>
               </button>
             </form>
             {% else %}
             <form onsubmit="return confirm('{% trans "Do you Want to un-archive this rotating work type assign?" %}')" action="{% url 'rotating-work-type-assign-archive' rwork_type.id %}">
-              <button class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100">
-                <ion-icon name="archive" title="{% trans 'Un-Archive' %}"></ion-icon>
+              <button class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100" title="{% trans 'Un-Archive' %}">
+                <ion-icon name="archive"></ion-icon>
               </button>
             </form>
             {% endif %}

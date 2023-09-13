@@ -14,6 +14,7 @@
                   <input
                     type="checkbox"
                     class="oh-input oh-input__checkbox mt-1 mr-2 all-rshift"
+                    title='{% trans "Select All" %}'
                   />
                 </div>
                 <div  hx-target="#view-container" hx-get="{% url 'rotating-shift-assign-view' %}?{{pd}}&orderby=employee_id__employee_first_name">
@@ -99,6 +100,7 @@
                   data-toggle="oh-modal-toggle"
                   type="button"
                   class="oh-btn oh-btn--light-bkg w-50"
+                  title="{% trans 'Update' %}"
                 >
                   <ion-icon name="create-outline"></ion-icon
                 ></a>
@@ -107,14 +109,14 @@
                 {% if rshift.is_active %}
                 <form onsubmit="return confirm('{% trans "Do you Want to archive this rotating shift assign?" %}')" action="{% url 'rotating-shift-assign-archive' rshift.id %}?is_active=False" >
                   <input type="hidden" name="is_active" value="{% trans 'False' %}" id="">
-                  <button class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100">
-                    <ion-icon name="archive" title="{% trans 'Archive' %}"></ion-icon>
+                  <button class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100" title="{% trans 'Archive' %}">
+                    <ion-icon name="archive"></ion-icon>
                   </button>
                 </form>
                 {% else %}
                 <form onsubmit="return confirm('{% trans "Do you Want to un-archive this rotating shift assign?" %}')" action="{% url 'rotating-shift-assign-archive' rshift.id %}" >
-                  <button class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100">
-                    <ion-icon name="archive" title="{% trans 'Un-Archive' %}"></ion-icon>
+                  <button class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100" title="{% trans 'Un-Archive' %}">
+                    <ion-icon name="archive"></ion-icon>
                   </button>
                 </form>
                 {% endif %}

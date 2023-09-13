@@ -13,6 +13,7 @@
                 <input
                   type="checkbox"
                   class="oh-input oh-input__checkbox mt-1 mr-2 all-shift-requests"
+                  title='{% trans "Select All" %}'
                 />
               </div>
               <div  hx-target="#view-container" hx-get="{% url 'shift-request-search' %}?{{pd}}&orderby=employee_id__employee_first_name" hx-target="#view-container">
