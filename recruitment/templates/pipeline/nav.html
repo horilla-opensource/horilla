@@ -87,7 +87,7 @@ x-data="{searchShow: false}"
 	class="oh-input-group__icon oh-input-group__icon--left"
 		></ion-icon>
 		<input
-		type="search"
+		type="text"
 		id = "pipelineSearch" 
 		placeholder="{% trans 'Search' %}" 
 		name='search'
@@ -144,6 +144,7 @@ x-data="{searchShow: false}"
 	</div>
 </div>
 </section>
+<div class="oh-wrapper oh-filter-tag-container filter-value"></div>
 <script>
 $(document).ready(function(){
 	{% include 'select2.js' %}

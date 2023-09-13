@@ -25,7 +25,7 @@
                 :class="searchShow ? 'oh-input__search-group--show' : ''">
                 <ion-icon name="search-outline" class="oh-input-group__icon oh-input-group__icon--left md hydrated"
                     role="img" aria-label="search outline"></ion-icon>
-                <input type="search" id="search" placeholder="Search" name="search"
+                <input type="text" id="search" placeholder="{% trans 'Search' %}" name="search"
                     class="oh-input oh-input__icon" aria-label="Search Input">
             </div>
 
@@ -34,11 +34,11 @@
             </div>
 
             <ul class="oh-view-types ml-2" style="margin-bottom: 0;">
-                <li class="oh-view-type candidate-view-type" data-view="list">
+                <li class="oh-view-type candidate-view-type" data-view="list" title="{% trans "List" %}">
                     <a href="{% url 'onboarding-view' %}" hx-target="#section" class="oh-btn oh-btn--view "><ion-icon
                         name="list-outline" role="img" class="md hydrated" aria-label="list outline"></ion-icon></a>
                 </li>
-                <li class="oh-view-type candidate-view-type" data-view="card">
+                <li class="oh-view-type candidate-view-type" data-view="card" title="{% trans "Card" %}">
                     <a href="{% url 'kanban-view' %}" hx-target="#section" class="oh-btn oh-btn--view"><ion-icon
                             name="grid-outline" role="img" class="md hydrated" aria-label="grid outline"></ion-icon></a>
                 </li>
@@ -114,7 +114,7 @@
             {% for rec in recruitments %}
             <li class="oh-tabs__tab " data-target="#tab_{{rec.id}}" data-recruitment-id="{{rec.id}}">
                 {{rec.title}}
-                <button class="oh-btn oh-btn--sq-sm oh-btn--transparent oh-tabs__close-btn">
+                <button class="oh-btn oh-btn--sq-sm oh-btn--transparent oh-tabs__close-btn" title="{% trans "Close" %}">
                     <ion-icon name="close-outline"></ion-icon>
                 </button>
             </li>
@@ -134,7 +134,7 @@
                             </div>
                             <div class="oh-kanban__head-actions oh-kanban__dropdown">
                                 <button
-                                    class="oh-btn oh-btn--small oh-btn--transparent oh-kanban__btn oh-kanban__dropdown-toggle">
+                                    class="oh-btn oh-btn--small oh-btn--transparent oh-kanban__btn oh-kanban__dropdown-toggle" title="{% trans "Actions" %}">
                                     <ion-icon name="ellipsis-vertical-sharp" role="img" class="md hydrated"
                                         aria-label="ellipsis vertical sharp"></ion-icon>
                                 </button>
@@ -179,7 +179,7 @@
                                         <span class="oh-profile__name oh-text--dark fw-bold" data-type="label">{{candidate.candidate_id.name}}</span>
                                     </div>
                                     <div class="oh-kanban__card-actions oh-kanban__dropdown">
-                                        <button class="oh-btn oh-btn--small oh-btn--transparent oh-kanban__btn oh-kanban__dropdown-toggle">
+                                        <button class="oh-btn oh-btn--small oh-btn--transparent oh-kanban__btn oh-kanban__dropdown-toggle" title="{% trans "Actions" %}">
                                             <ion-icon name="ellipsis-vertical-sharp" role="img" class="md hydrated" aria-label="ellipsis vertical sharp"></ion-icon>
                                         </button>
                                         <div class="oh-dropdown oh-kanban__dropdown-menu d-none">
@@ -239,7 +239,7 @@
     <div class="oh-modal__dialog oh-modal__dialog--timeoff">
         <div class="oh-modal__dialog-header">
             <span class="oh-modal__dialog-title" id="editDialogDialog">{% trans "Update Stage" %}</span>
-            <button class="oh-modal__close" aria-label="Close">
+            <button class="oh-modal__close" aria-label="Close" title="{% trans "Close" %}">
                 <ion-icon name="close-outline"></ion-icon>
             </button>
         </div>
@@ -252,7 +252,7 @@
     <div class="oh-modal__dialog oh-modal__dialog--timeoff">
         <div class="oh-modal__dialog-header">
             <span class="oh-modal__dialog-title" id="editDialogDialog">{% trans "Create Stage" %}</span>
-            <button class="oh-modal__close" aria-label="Close">
+            <button class="oh-modal__close" aria-label="Close" title="{% trans "Close" %}">
                 <ion-icon name="close-outline" role="img" class="md hydrated" aria-label="close outline"></ion-icon>
             </button>
         </div>
@@ -266,7 +266,7 @@
     <div class="oh-modal__dialog oh-modal__dialog--timeoff">
         <div class="oh-modal__dialog-header">
             <span class="oh-modal__dialog-title" id="editDialogDialog">{% trans "Create Task" %}</span>
-            <button class="oh-modal__close" aria-label="Close">
+            <button class="oh-modal__close" aria-label="Close" title="{% trans "Close" %}">
                 <ion-icon name="close-outline" role="img" class="md hydrated" aria-label="close outline"></ion-icon>
             </button>
         </div>
@@ -280,7 +280,7 @@
     <div class="oh-modal__dialog oh-modal__dialog--timeoff">
         <div class="oh-modal__dialog-header">
             <span class="oh-modal__dialog-title" id="modalTask">{% trans "Send Mail" %}</span>
-            <button class="oh-modal__close" aria-label="Close">
+            <button class="oh-modal__close" aria-label="Close" title="{% trans "Close" %}">
                 <ion-icon name="close-outline" role="img" class="md hydrated" aria-label="close outline"></ion-icon>
             </button>
         </div>
