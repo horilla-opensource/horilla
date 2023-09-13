@@ -54,10 +54,10 @@
     <div class="oh-main__titlebar-button-container">
       <ul class="oh-view-types ml-2" style="margin-bottom: 0;">
         <li class="oh-view-type deduction-view-type" data-view="list">
-        <a hx-get="{% url 'filter-deduction' %}?view=list" hx-target="#payroll-deduction-container" class="oh-btn oh-btn--view "><ion-icon name="list-outline" role="img" class="md hydrated" aria-label="list outline"></ion-icon></a>
+        <a hx-get="{% url 'filter-deduction' %}?view=list" hx-target="#payroll-deduction-container" class="oh-btn oh-btn--view" title='{% trans "List" %}'><ion-icon name="list-outline" role="img" class="md hydrated" aria-label="list outline"></ion-icon></a>
         </li>
         <li class="oh-view-type deduction-view-type" data-view="card">
-        <a hx-get="{% url 'filter-deduction' %}?view=card" hx-target="#payroll-deduction-container" class="oh-btn oh-btn--view"><ion-icon name="grid-outline" role="img" class="md hydrated" aria-label="grid outline"></ion-icon></a>
+        <a hx-get="{% url 'filter-deduction' %}?view=card" hx-target="#payroll-deduction-container" class="oh-btn oh-btn--view" title='{% trans "Card" %}'><ion-icon name="grid-outline" role="img" class="md hydrated" aria-label="grid outline"></ion-icon></a>
         </li>
       </ul>
       <div class="oh-dropdown" x-data="{open: false}">

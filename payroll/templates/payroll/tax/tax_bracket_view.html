@@ -30,6 +30,7 @@
             hx-get="{% url 'tax-bracket-update' tax_bracket_id=tax_bracket.id %}"
             onclick="event.stopPropagation(); document.querySelector('#TaxBracketModal').classList.add('oh-modal--show')"
             hx-target="#TaxBracketFormTarget"
+            title="{% trans 'Update' %}"
           >
             <ion-icon
               name="create-outline"

@@ -6,19 +6,13 @@
       <div class="oh-sticky-table__tr">
         <div class="oh-sticky-table__th">
           <div class="d-flex">
-            <div class="">
-              <input
-                type="checkbox"
-                class="oh-input oh-input__checkbox mt-1 mr-2 all-candidate"
-              />
-            </div>
             <div
               hx-target="#section"
               hx-get="{% url 'search-candidate' %}?{{pd}}&orderby=name&view=list"
             >
               {% trans "Allowance" %}
             </div>
-          </div>
+          </div>  
         </div>
         <div class="oh-sticky-table__th">{% trans "Specific Employees" %}</div>
         <div class="oh-sticky-table__th">{% trans "Excluded Employees" %}</div>
@@ -74,6 +68,7 @@
               onclick="event.stopPropagation();"
               class="oh-btn oh-btn--light-bkg w-100"
               href="{% url 'update-allowance' allowance.id %}"
+              title='{% trans "Update" %}'
             >
               <ion-icon
                 name="create-outline"
@@ -87,7 +82,7 @@
               class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
               href="{% url 'delete-allowance' allowance.id %}"
               onclick = "event.preventDefault();event.stopPropagation(); confirm(`{% trans 'Do you want to delete this Allowance?' %}`)"
-
+              title='{% trans "Delete" %}'  
             >
               <ion-icon
                 name="trash-outline"

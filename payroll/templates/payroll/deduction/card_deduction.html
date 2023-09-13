@@ -13,13 +13,14 @@
         </div>
         </div>
         <div class="oh-kanban-card__details">
-        <span class=deduction"oh-kanban-card__title">{{deduction}}</span>
+        <span class="oh-kanban-card__title">{{deduction}}</span>
         </div>
         <div class="oh-kanban-card__dots">
         <div class="oh-dropdown" x-data="{show: false}" onclick="event.stopPropagation()">
             <button
             class="oh-btn oh-btn--transparent text-muted p-3"
             @click="show = !show"
+            title='{% trans "Actions" %}'
             >
             <ion-icon name="ellipsis-vertical-sharp"></ion-icon>
             </button>
