@@ -20,8 +20,8 @@
         <td>
           <div class="oh-btn-group">
             <a class="oh-btn oh-btn--light-bkg w-100 " data-toggle="oh-modal-toggle" data-target="#AssetBatchModal"
-              hx-put="{% url 'asset-batch-update' batch_id=batch_number.id %}" hx-target="#AssetFormTarget">
-              <ion-icon name="create-outline" role="img" class="md hydrated" aria-label="create outline" title="{% trans 'Update' %}">
+              hx-put="{% url 'asset-batch-update' batch_id=batch_number.id %}" hx-target="#AssetFormTarget" title="{% trans 'Update' %}">
+              <ion-icon name="create-outline" role="img" class="md hydrated" aria-label="create outline">
               </ion-icon>
             </a>
             <form 

@@ -154,7 +154,7 @@
                 <li class="oh-tabs__tab " data-target="#tab_1">
                     {% trans "Asset Request" %}
                     <a href="#" class="link-danger oh-btn oh-btn--secondary-outline" role="" data-toggle="oh-modal-toggle"
-                        data-target="#asset-request-allocation-modal" hx-get="{%url 'asset-request-creation'%}" hx-target="#asset-request-allocation-modal-target">
+                        data-target="#asset-request-allocation-modal" hx-get="{%url 'asset-request-creation'%}" hx-target="#asset-request-allocation-modal-target" title='{% trans "Create" %}'>
                         <ion-icon name="add-outline" role="img" class="md hydrated" aria-label="add outline"></ion-icon>
                     </a>
                 </li>
@@ -162,7 +162,7 @@
                 <li class="oh-tabs__tab" data-target="#tab_2">
                     {% trans "Asset Allocation" %}
                     <a href="#" class="oh-btn oh-btn--secondary-outline" role="button" data-toggle="oh-modal-toggle"
-                        data-target="#asset-request-allocation-modal" hx-get="{%url 'asset-allocate-creation' %}" hx-target="#asset-request-allocation-modal-target">
+                        data-target="#asset-request-allocation-modal" hx-get="{%url 'asset-allocate-creation' %}" hx-target="#asset-request-allocation-modal-target" title='{% trans "Create" %}'>
                         <ion-icon name="add-outline" role="img" class="md hydrated" aria-label="add outline"></ion-icon>
                     </a>
                 </li>

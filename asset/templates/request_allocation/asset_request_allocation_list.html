@@ -30,7 +30,7 @@
             <div class="oh-sticky-table__td">
               <span class="oh-dot oh-dot--small  me-1 oh-dot--color oh-dot--warning"></span>
               <span class="link-warning">
-              In use
+              {% trans "In use" %}
               </span>
           </div>
             <div class="oh-sticky-table__td">
@@ -343,35 +343,35 @@
 
                     <div class="oh-timeoff-modal__stats-container">
                       <div class="oh-timeoff-modal__stat">
-                        <span class="oh-timeoff-modal__stat-title">Returned Status </span>
+                        <span class="oh-timeoff-modal__stat-title">{% trans "Returned Status" %} </span>
                         <span class="oh-timeoff-modal__stat-count">{{asset_allocation.return_status}}</span>
                       </div>
                       <div class="oh-timeoff-modal__stat">
-                        <span class="oh-timeoff-modal__stat-title">Allocated User</span>
+                        <span class="oh-timeoff-modal__stat-title">{% trans "Allocated User" %}</span>
                         <span class="oh-timeoff-modal__stat-count">{{asset_allocation.assigned_by_employee_id}}</span>
                       </div>
                     </div>
 
                     <div class="oh-timeoff-modal__stats-container mt-3">
                       <div class="oh-timeoff-modal__stat">
-                        <span class="oh-timeoff-modal__stat-title">Allocated Date </span>
+                        <span class="oh-timeoff-modal__stat-title">{% trans "Allocated Date" %} </span>
                         <span class="oh-timeoff-modal__stat-count">{{asset_allocation.assigned_date}}</span>
                       </div>
                       <div class="oh-timeoff-modal__stat">
-                        <span class="oh-timeoff-modal__stat-title">Returned Date </span>
+                        <span class="oh-timeoff-modal__stat-title">{% trans "Returned Date" %} </span>
                         <span class="oh-timeoff-modal__stat-count">{{asset_allocation.return_date}}</span>
                       </div> 
                     </div>
                     <div class="oh-timeoff-modal__stats-container mt-3">
                       <div class="oh-timeoff-modal__stat w-100">
-                        <span class="oh-timeoff-modal__stat-title">Asset</span>
+                        <span class="oh-timeoff-modal__stat-title">{% trans "Asset" %}</span>
                         <span class="oh-timeoff-modal__stat-count">{{asset_allocation.asset_id}}</span>
                       </div> 
                     </div>
 
                     <div class="oh-timeoff-modal__stats mt-3 w-100">
                       <div class="oh-timeoff-modal__stat">
-                        <span class="oh-timeoff-modal__stat-title">Return Description</span>
+                        <span class="oh-timeoff-modal__stat-title">{% trans "Return Description" %}</span>
                         <div class="oh-timeoff-modal__stat-description ">
                           {{asset_allocation.return_condition}}
                         </div>
