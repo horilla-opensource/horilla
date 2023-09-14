@@ -26,6 +26,7 @@ from horilla.decorators import manager_can_enter
 from base.methods import filtersubordinates, choosesubordinates, get_key_instances
 from django.utils.translation import gettext_lazy as _
 from notifications.signals import notify
+from django.db.models import ProtectedError
 
 
 @login_required
@@ -151,8 +152,13 @@ def leave_type_delete(request, id):
     Returns:
     GET : return leave type view template
     """
-    LeaveType.objects.get(id=id).delete()
-    messages.error(request, _("Leave type deleted successfully.."))
+    try:
+        LeaveType.objects.get(id=id).delete()
+        messages.error(request, _("Leave type deleted successfully.."))
+    except LeaveType.DoesNotExist:
+        messages.error(request, _("Leave type not found."))
+    except ProtectedError:
+        messages.error(request, _("Related entries exists"))
     return redirect(leave_type_view)
 
 
@@ -347,8 +353,13 @@ def leave_request_delete(request, id):
     Returns:
     GET : return leave request view template
     """
-    LeaveRequest.objects.get(id=id).delete()
-    messages.success(request, _("Leave request deleted successfully.."))
+    try:
+        LeaveRequest.objects.get(id=id).delete()
+        messages.success(request, _("Leave request deleted successfully.."))
+    except LeaveRequest.DoesNotExist:
+        messages.error(request, _("Leave request not found."))
+    except ProtectedError:
+        messages.error(request, _("Related entries exists"))
     return redirect(leave_request_view)
 
 
@@ -704,8 +715,13 @@ def leave_assign_delete(request, id):
     Returns:
     GET : return leave type assigned view template
     """
-    AvailableLeave.objects.get(id=id).delete()
-    messages.success(request, _("Assigned leave is successfully deleted."))
+    try:
+        AvailableLeave.objects.get(id=id).delete()
+        messages.success(request, _("Assigned leave is successfully deleted."))
+    except AvailableLeave.DoesNotExist:
+        messages.error(request, _("Assigned leave not found."))
+    except ProtectedError:
+        messages.error(request, _("Related entries exists"))
     return redirect(leave_assign_view)
 
 
@@ -833,8 +849,13 @@ def holiday_delete(request, id):
     Returns:
     GET : return holiday view template
     """
-    Holiday.objects.get(id=id).delete()
-    messages.success(request, _("Holiday deleted successfully.."))
+    try:
+        Holiday.objects.get(id=id).delete()
+        messages.success(request, _("Holiday deleted successfully.."))
+    except Holiday.DoesNotExist:
+        messages.error(request, _("Holiday not found."))
+    except ProtectedError:
+        messages.error(request, _("Related entries exists"))
     return redirect(holiday_view)
 
 
@@ -981,8 +1002,13 @@ def company_leave_delete(request, id):
     GET : return company leave creation form template
     POST : return company leave view template
     """
-    CompanyLeave.objects.get(id=id).delete()
-    messages.success(request, _("Company leave deleted successfully.."))
+    try:
+        CompanyLeave.objects.get(id=id).delete()
+        messages.success(request, _("Company leave deleted successfully.."))
+    except CompanyLeave.DoesNotExist:
+        messages.error(request, _("Company leave not found."))
+    except ProtectedError:
+        messages.error(request, _("Related entries exists"))
     return redirect(company_leave_view)
 
 
@@ -1226,15 +1252,16 @@ def user_request_delete(request, id):
     Returns:
     GET : return user leave request view template
     """
-    leave_request = LeaveRequest.objects.get(id=id)
     try:
+        leave_request = LeaveRequest.objects.get(id=id)
         if request.user.employee_get == leave_request.employee_id:
             LeaveRequest.objects.get(id=id).delete()
             messages.success(request, _("Leave request deleted successfully.."))
-            return redirect(user_request_view)
-    except Exception as e:
+    except LeaveRequest.DoesNotExist:
         messages.error(request, _("User has no leave request.."))
-        return redirect("/")
+    except ProtectedError:
+        messages.error(request, _("Related entries exists"))
+    return redirect(user_request_view)
 
 
 @login_required
@@ -1470,3 +1497,22 @@ def overall_leave(request):
         )
         data.append(count)
     return JsonResponse({"labels": labels, "data": data})
+
+
+def dashboard(request):
+    today = date.today()
+    requested=LeaveRequest.objects.filter(status="requested")
+    approved=LeaveRequest.objects.filter(status="approved")
+    cancelled=LeaveRequest.objects.filter(status="cancelled")
+    holidays = Holiday.objects.filter(start_date__gte = today)
+    next_holiday = holidays.earliest('start_date')
+    leave_today=LeaveRequest.objects.filter(~Q(status="cancelled"),start_date__lte=today,end_date__gte=today)
+
+    context = {
+        "requested":requested,
+        "approved":approved,
+        "cancelled":cancelled,
+        "next_holiday":next_holiday,
+        "leave_today_employees":leave_today,
+    }
+    return render(request,"leave/dashboard.html",context)
