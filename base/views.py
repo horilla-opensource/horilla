@@ -6,6 +6,7 @@ This module is used to map url pattens with django views or methods
 from urllib.parse import parse_qs
 import uuid
 import json
+from django.db.models import ProtectedError
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.views.decorators.http import require_http_methods
@@ -404,10 +405,12 @@ def user_group_delete(request, id):
     try:
         user_group = Group.objects.get(id=id).delete()
         messages.success(request, _("User group deleted."))
-    except Exception as e:
-        messages.error(request, e)
+    except Group.DoesNotExist:
+        messages.error(request, _("User group not found."))
+    except ProtectedError:
         messages.error(request, _("You cannot delete this user group."))
     return redirect("/settings/user-group-create")
+
 
 
 @login_required
@@ -466,11 +469,13 @@ def company_delete(request, id):
         id : company instance id
 
     """
+
     try:
         company = Company.objects.get(id=id).delete()
         messages.success(request, _("Company deleted."))
-    except Exception as e:
-        messages.error(request, e)
+    except Company.DoesNotExist:
+        messages.error(request, _("Company not found."))
+    except ProtectedError:
         messages.error(request, _("This company already in use"))
     return redirect(company_create)
 
@@ -530,13 +535,14 @@ def department_delete(request, id):
     args:
         id : department instance id
     """
+
     try:
         departments = Department.objects.get(id=id).delete()
         messages.success(request, _("Department deleted."))
-    except Exception as e:
-        messages.error(request, e)
+    except Department.DoesNotExist:
+        messages.error(request, _("Department not found."))
+    except ProtectedError:
         messages.error(request, _("Department already in use."))
-
     return redirect("/settings/department-creation")
 
 
@@ -595,11 +601,13 @@ def job_position_delete(request, id):
     args:
         id : job position id
     """
+
     try:
         job_position = JobPosition.objects.get(id=id).delete()
         messages.success(request, _("Job Position Deleted."))
-    except Exception as e:
-        messages.error(request, e)
+    except JobPosition.DoesNotExist:
+        messages.error(request, _("JobPosition not found."))
+    except ProtectedError:
         messages.error(request, _("This job position already in use."))
     return redirect("/settings/job-position-creation")
 
@@ -661,8 +669,9 @@ def job_role_delete(request, id):
     try:
         job_role = JobRole.objects.get(id=id).delete()
         messages.success(request, _("Job Role Deleted."))
-    except Exception as e:
-        messages.error(request, e)
+    except JobRole.DoesNotExist:
+        messages.error(request, _("Job role not found."))
+    except ProtectedError:
         messages.error(request, _("This job role already in use."))
     return redirect("/settings/job-role-create")
 
@@ -728,8 +737,9 @@ def work_type_delete(request, id):
     try:
         work_type = WorkType.objects.get(id=id).delete()
         messages.success(request, _("Work type deleted."))
-    except Exception as e:
-        messages.error(request, e)
+    except WorkType.DoesNotExist:
+        messages.error(request, _("Work type not found."))
+    except ProtectedError:
         messages.error(request, _("This work type already in use."))
     return redirect("/settings/work-type-create")
 
@@ -795,8 +805,9 @@ def rotating_work_type_delete(request, id):
     try:
         rotating_work_type = RotatingWorkType.objects.get(id=id).delete()
         messages.success(request, _("Rotating work type deleted."))
-    except Exception as e:
-        messages.error(request, e)
+    except RotatingWorkType.DoesNotExist:
+        messages.error(request, _("Rotating work type not found."))
+    except ProtectedError:
         messages.error(request, _("This rotating work type already in use."))
     return redirect("/settings/rotating-work-type-create")
 
@@ -1021,21 +1032,22 @@ def rotating_work_type_assign_bulk_delete(request):
     ids = request.POST["ids"]
     ids = json.loads(ids)
     for id in ids:
-        rwork_type_assign = RotatingWorkTypeAssign.objects.get(id=id)
         try:
+            rwork_type_assign = RotatingWorkTypeAssign.objects.get(id=id)
             rwork_type_assign.delete()
             messages.success(
                 request,
                 _("{employee} deleted.").format(employee=rwork_type_assign.employee_id),
             )
-        except Exception as e:
+        except RotatingWorkTypeAssign.DoesNotExist:
+            messages.error(request, _("{rwork_type_assign} not found."))
+        except ProtectedError:
             messages.error(
                 request,
                 _("You cannot delete {rwork_type_assign}").format(
                     rwork_type_assign=rwork_type_assign
                 ),
             )
-            messages.error(request, e)
     return JsonResponse({"message": "Success"})
 
 
@@ -1051,9 +1063,11 @@ def rotating_work_type_assign_delete(request, id):
             id=id
         ).delete()
         messages.success(request, _("Rotating work type assign deleted."))
-    except Exception as e:
-        messages.error(request, e)
+    except RotatingWorkTypeAssign.DoesNotExist:
+        messages.error(request, _("Rotating work type assign not found."))
+    except ProtectedError:
         messages.error(request, _("You cannot delete this rotating work type."))
+
     return redirect("/employee/rotating-work-type-assign")
 
 
@@ -1117,9 +1131,11 @@ def employee_type_delete(request, id):
     try:
         employee_type = EmployeeType.objects.get(id=id).delete()
         messages.success(request, _("Employee type deleted."))
-    except Exception as e:
-        messages.error(request, e)
+    except EmployeeType.DoesNotExist:
+        messages.error(request, _("Employee type not found."))
+    except ProtectedError:
         messages.error(request, _("This Employee type already in use."))
+        
     return redirect("/settings/employee-type-create")
 
 
@@ -1175,14 +1191,15 @@ def employee_shift_delete(request, id):
     args:
         id : employee shift instance id
     """
+
     try:
         employee_shift = EmployeeShift.objects.get(id=id).delete()
         messages.success(request, _("Employee shift deleted."))
-    except Exception as e:
-        messages.error(request, e)
+    except EmployeeShift.DoesNotExist:
+        messages.error(request, _("This shift not found."))
+    except ProtectedError:
         messages.error(request, _("This shift already in use."))
     return redirect("/settings/employee-shift-create")
-
 
 @login_required
 @permission_required("base.add_employeeshiftschedule")
@@ -1239,8 +1256,9 @@ def employee_shift_schedule_delete(request, id):
     try:
         employee_shift_schedule = EmployeeShiftSchedule.objects.get(id=id).delete()
         messages.success(request, _("Shift schedule deleted."))
-    except Exception as e:
-        messages.error(request, e)
+    except EmployeeShiftSchedule.DoesNotExist:
+        messages.error(request, _("Shift schedule not found."))
+    except ProtectedError:
         messages.error(request, _("You cannot delete this schedule"))
     return redirect("/settings/employee-shift-schedule-create")
 
@@ -1309,8 +1327,9 @@ def rotating_shift_delete(request, id):
     try:
         rotating_shift = RotatingShift.objects.get(id=id).delete()
         messages.success(request, _("Rotating shift deleted."))
-    except Exception as e:
-        messages.error(request, e)
+    except RotatingShift.DoesNotExist:
+        messages.error(request, _("Rotating shift not found."))
+    except ProtectedError:
         messages.error(request, _("You cannot delete this rotating shift"))
     return redirect(rotating_shift_create)
 
@@ -1538,8 +1557,8 @@ def rotating_shift_assign_bulk_delete(request):
     ids = request.POST["ids"]
     ids = json.loads(ids)
     for id in ids:
-        rshift_assign = RotatingShiftAssign.objects.get(id=id)
         try:
+            rshift_assign = RotatingShiftAssign.objects.get(id=id)
             rshift_assign.delete()
             messages.success(
                 request,
@@ -1547,14 +1566,15 @@ def rotating_shift_assign_bulk_delete(request):
                     employee=rshift_assign.employee_id
                 ),
             )
-        except Exception as e:
+        except RotatingShiftAssign.DoesNotExist:
+            messages.error(request, _("{rshift_assign} not found."))
+        except ProtectedError:
             messages.error(
                 request,
                 _("You cannot delete {rshift_assign}").format(
                     rshift_assign=rshift_assign
                 ),
             )
-            messages.error(request, e)
     return JsonResponse({"message": "Success"})
 
 
@@ -1570,8 +1590,9 @@ def rotating_shift_assign_delete(request, id):
     try:
         rotating_shift_assign_obj = RotatingShiftAssign.objects.get(id=id).delete()
         messages.success(request, _("Rotating shift assign deleted."))
-    except Exception as e:
-        messages.error(request, e)
+    except RotatingShiftAssign.DoesNotExist:
+        messages.error(request, _("Rotating shift assign not found."))
+    except ProtectedError:
         messages.error(request, _("You cannot delete this rotating shift assign."))
     return redirect("/employee/rotating-shift-assign")
 
@@ -1972,8 +1993,9 @@ def work_type_request_delete(request, id):
             redirect="/",
             icon="trash",
         )
-    except Exception as e:
-        messages.error(request, e)
+    except WorkTypeRequest.DoesNotExist:
+        messages.error(request, _("Work type request not found."))
+    except ProtectedError:
         messages.error(request, _("You cannot delete this work type request."))
     return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 
@@ -2007,8 +2029,9 @@ def work_type_request_bulk_delete(request):
                 redirect="/",
                 icon="trash",
             )
-        except Exception as e:
-            messages.error(request, e)
+        except WorkTypeRequest.DoesNotExist:
+            messages.error(request, _("Work type request not found."))
+        except ProtectedError:
             messages.error(
                 request,
                 _(
@@ -2343,8 +2366,9 @@ def shift_request_delete(request, id):
             icon="trash",
         )
 
-    except Exception as e:
-        messages.error(request, e)
+    except ShiftRequest.DoesNotExist:
+        messages.error(request, _("Shift request not found."))
+    except ProtectedError:
         messages.error(request, _("You cannot delete this shift request."))
     return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 
@@ -2379,8 +2403,9 @@ def shift_request_bulk_delete(request):
                 redirect="/",
                 icon="trash",
             )
-        except Exception as error:
-            messages.error(request, error)
+        except ShiftRequest.DoesNotExist:
+            messages.error(request, _("Shift request not found."))
+        except ProtectedError:
             messages.error(
                 request,
                 _(
