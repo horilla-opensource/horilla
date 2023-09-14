@@ -10,6 +10,7 @@ actions to handle the request, process data, and generate a response.
 This module is part of the recruitment project and is intended to
 provide the main entry points for interacting with the application's functionality.
 """
+from urllib.parse import parse_qs
 import json, contextlib, random, secrets
 from django.core.mail import send_mail
 from django.contrib.auth.models import User
@@ -25,6 +26,7 @@ from notifications.signals import notify
 from horilla import settings
 from horilla.decorators import login_required, hx_request_required
 from horilla.decorators import permission_required
+from base.methods import get_key_instances
 from recruitment.models import Candidate, Recruitment
 from recruitment.filters import CandidateFilter
 from employee.models import Employee, EmployeeWorkInformation, EmployeeBankDetails
@@ -443,11 +445,13 @@ def candidate_filter(request):
     candidate_filter_obj = CandidateFilter(request.GET, queryset).qs
     previous_data = request.GET.urlencode()
     page_number = request.GET.get("page")
+    data_dict = parse_qs(previous_data)
+    get_key_instances(Candidate, data_dict)
     page_obj = paginator_qry(candidate_filter_obj, page_number)
     return render(
         request,
         "onboarding/candidates.html",
-        {"candidates": page_obj, "pd": previous_data},
+        {"candidates": page_obj, "pd": previous_data, "filter_dict": data_dict},
     )
 
 
