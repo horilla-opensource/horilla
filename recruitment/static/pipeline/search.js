@@ -1,10 +1,21 @@
-function closeTag(event) {
-  console.log(event.target);
-  $(".oh-filter-tag.filter-field").remove();
-  $("#pipelineSearch").val("");
-  $("#pipelineSearch").trigger("keyup");
-  $("#job_pos_id").val("");
-  $("#select2-job_pos_id-container").text("------------------");
+function closeTag(element) {
+  var filterTagClass = $(element).attr("class");
+  classArray = filterTagClass.split(" ");
+  lastClass = classArray[classArray.length - 1];
+  if (lastClass === "pipelineSearch") {
+    $("#" + lastClass).val("");
+    $("#" + lastClass).trigger("keyup");
+  }
+  var button = document.querySelector(
+    ".oh-tabs__action-bar#filter_item button"
+  );
+  if (lastClass === "job_pos_id") {
+    $("#" + lastClass).val("");
+    $("#select2-" + lastClass + "-container").text("------------------");
+    if (button) {
+      button.click();
+    }
+  }
 }
 
 $(document).ready(function () {
@@ -23,10 +34,10 @@ $(document).ready(function () {
       badge = $(`#stageCount${stageId}`).html(count);
       $(`#stageCount${stageId}`).attr("title", `${count} candidates`);
     });
-    $(".oh-filter-tag.filter-field").remove();
+    $(".oh-filter-tag.filter-field.pipelineSearch").remove();
     if (search != "") {
       $(".oh-filter-tag-container.filter-value").append(
-        '<span class="oh-filter-tag filter-field" onclick="closeTag(event)">Search : ' +
+        '<span class="oh-filter-tag filter-field pipelineSearch" onclick="closeTag(this)">Search : ' +
           search +
           '<button class="oh-filter-tag__close" id="close"><ion-icon name="close-outline" role="img" class="md hydrated" aria-label="close outline"></ion-icon></button></span>'
       );
@@ -42,7 +53,6 @@ $(document).ready(function () {
 
     $.each(nos, function (index, value1) {
       var value2 = count[index];
-      console.log(value2);
       $(value2).text(value1);
       $(value2).attr("title", `${value1} candidates`);
     });
@@ -50,7 +60,7 @@ $(document).ready(function () {
 
   function job_Position() {
     let search = $("#job_pos_id").val().toLowerCase();
-    $(".oh-filter-tag.filter-field").remove();
+    $(".oh-filter-tag.filter-field.job_pos_id").remove();
     if (search != "") {
       job = $("[data-job-position]:visible");
       job.each(function () {
@@ -62,7 +72,7 @@ $(document).ready(function () {
         }
       });
       $(".oh-filter-tag-container.filter-value").append(
-        '<span class="oh-filter-tag filter-field" onclick="closeTag(event)">Job position : ' +
+        '<span class="oh-filter-tag filter-field job_pos_id" onclick="closeTag(this)">Job position : ' +
           search +
           '<button class="oh-filter-tag__close" id="close"><ion-icon name="close-outline" role="img" class="md hydrated" aria-label="close outline"></ion-icon></button></span>'
       );
