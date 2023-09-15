@@ -18,7 +18,7 @@ from datetime import datetime, timedelta, date
 from collections import defaultdict
 from urllib.parse import parse_qs
 import pandas as pd
-from django.db.models import F
+from django.db.models import F, ProtectedError
 from django.conf import settings
 from django.contrib import messages
 from django.core.paginator import Paginator
@@ -690,14 +690,15 @@ def employee_delete(request, obj_id):
         id  : employee id
     """
 
-    view = request.POST.get("view")
-    employee = Employee.objects.get(id=obj_id)
-    user = employee.employee_user_id
     try:
+        view = request.POST.get("view")
+        employee = Employee.objects.get(id=obj_id)
+        user = employee.employee_user_id
         user.delete()
         messages.success(request, _("Employee deleted"))
-    except Exception as error:
-        messages.error(request, error)
+    except Employee.DoesNotExist:
+        messages.error(request, _("Employee not found."))
+    except ProtectedError:
         messages.error(request, _("You cannot delete this user/employee"))
     return HttpResponseRedirect(request.META.get("HTTP_REFERER", f"/view={view}"))
 
@@ -711,15 +712,16 @@ def employee_bulk_delete(request):
     ids = request.POST["ids"]
     ids = json.loads(ids)
     for employee_id in ids:
-        employee = Employee.objects.get(id=employee_id)
-        user = employee.employee_user_id
         try:
+            employee = Employee.objects.get(id=employee_id)
+            user = employee.employee_user_id
             user.delete()
             messages.success(
                 request, _("%(employee)s deleted.") % {"employee": employee}
             )
-        except Exception as error:
-            messages.error(request, error)
+        except Employee.DoesNotExist:
+            messages.error(request, _("Employee not found."))
+        except ProtectedError:
             messages.error(
                 request, _("You cannot delete %(employee)s.") % {"employee": employee}
             )
@@ -928,13 +930,21 @@ def employee_bank_details_view_update(request, obj_id):
 @login_required
 @permission_required("employee.delete_employeeworkinformation")
 @require_http_methods(["POST", "DELETE"])
-def employee_work_information_delete(_, obj_id):
+def employee_work_information_delete(request, obj_id):
     """
     This method is used to delete employee work information
     args:
         obj_id : employee work information id
     """
-    EmployeeWorkInformation.objects.get(id=obj_id).delete()
+    try:
+        employee_work = EmployeeWorkInformation.objects.get(id=obj_id)
+        employee_work.delete()
+        messages.success(request, _("Employee work information deleted"))
+    except EmployeeWorkInformation.DoesNotExist:
+        messages.error(request, _("Employee work information not found."))
+    except ProtectedError:
+        messages.error(request, _("You cannot delete this Employee work information"))
+    
     return redirect("/employee/employee-work-information-view")
 
 
