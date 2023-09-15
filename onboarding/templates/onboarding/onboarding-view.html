@@ -128,7 +128,7 @@
             <li class="oh-tabs__tab" data-target="#tab_{{recruitment.id}}">
                 {{recruitment}}
                 <span
-                    class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round ms-2 mr-2">{{recruitment.onboardingstage_set.all|length}}</span>
+                    class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round ms-2 mr-2" title="{{recruitment.onboardingstage_set.all|length}} {% trans 'Stage' %}" style="padding-right: 0;">{{recruitment.onboardingstage_set.all|length}}</span>
             </li>
             {% endif %}
             {% endfor %}

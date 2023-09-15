@@ -40,6 +40,11 @@ urlpatterns = [
         views.candidate_stage_update,
         name="candidate-stage-update",
     ),
+    path(
+        "stage-name-update/<int:stage_id>/",
+        views.stage_name_update,
+        name="stage-name-update",
+    ),
     path("user-creation/<str:token>", views.user_creation, name="user-creation"),
     path("profile-view/<str:token>", views.profile_view, name="profile-view"),
     path(

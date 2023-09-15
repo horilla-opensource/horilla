@@ -26,6 +26,7 @@ $(document).ready(function () {
     $.each(nos, function (index, value1) {
       var value2 = count[index];
       $(value2).text(value1);
+      $(value2).attr("title", `${value1} candidates`);
     });
   }
 
