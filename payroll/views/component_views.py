@@ -621,6 +621,10 @@ def filter_payslip(request):
         ]
         for key in keys_to_remove:
             data_dict.pop(key)
+    if 'status' in data_dict:
+        status_list = data_dict['status']
+        if len(status_list) > 1:
+            data_dict['status'] = [status_list[-1]]
     return render(
         request,
         template,

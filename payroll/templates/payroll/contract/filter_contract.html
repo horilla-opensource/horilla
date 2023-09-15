@@ -66,6 +66,18 @@
 <script>
   $("#filterForm").submit(function (e) {
     var formData = $(this).serialize();
-    $('#field').attr('hx-vals',`{'data':${formData}}` );
+    count = 0;
+    formData.split("&").forEach(function (field) {
+      parts = field.split("=");
+      value = parts[1];
+      if (value != "") {
+        count++;
+      }
+    });
+    $("#filterCount").empty();
+    if (count > 0) {
+      $("#filterCount").text("(" + count + ")");
+    }
+    $("#field").attr("hx-vals", `{'data':${formData}}`);
   });
 </script>

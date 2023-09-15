@@ -1,19 +1,19 @@
 {% load i18n %}
 {% include 'filter_tags.html' %}
 <div class="d-flex flex-row-reverse">
-  <span class="m-3">
+  <span class="m-3" hx-get="{% url 'contract-filter' %}?{{pd}}&contract_status=terminated" hx-target="#payroll-contract-container" style="cursor: pointer">
     <span class="oh-dot oh-dot--small me-1" style="background-color:black"></span>
     {% trans "Terminated" %}
   </span>
-  <span class="m-3">
+  <span class="m-3"hx-get="{% url 'contract-filter' %}?{{pd}}&contract_status=expired" hx-target="#payroll-contract-container" style="cursor: pointer">
     <span class="oh-dot oh-dot--small me-1" style="background-color:red"></span>
     {% trans "Expired" %}
   </span>
-  <span class="m-3">
+  <span class="m-3"hx-get="{% url 'contract-filter' %}?{{pd}}&contract_status=draft" hx-target="#payroll-contract-container" style="cursor: pointer">
     <span class="oh-dot oh-dot--small me-1" style="background-color:rgba(128, 128, 128, 0.482)"></span>
     {% trans "Draft" %}
   </span>
-  <span class="m-3" >
+  <span class="m-3"hx-get="{% url 'contract-filter' %}?{{pd}}&contract_status=active" hx-target="#payroll-contract-container" style="cursor: pointer">
     <span class="oh-dot oh-dot--small me-1" style="background-color:yellowgreen"></span>
     {% trans "Active" %}
   </span>

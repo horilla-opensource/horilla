@@ -171,6 +171,10 @@ def contract_filter(request):
     keys_to_remove = [key for key, value in data_dict.items() if value == ["unknown"]]
     for key in keys_to_remove:
         data_dict.pop(key)
+    if 'contract_status' in data_dict:
+        status_list = data_dict['contract_status']
+        if len(status_list) > 1:
+            data_dict['contract_status'] = [status_list[-1]]
     return render(
         request,
         template,

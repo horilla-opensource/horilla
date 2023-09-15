@@ -2,19 +2,19 @@
 {% load static i18n %}
 {% include 'filter_tags.html' %}
 <div class="d-flex flex-row-reverse">
-  <span class="m-3">
+  <span class="m-3 draft" hx-get="{% url "filter-payslip" %}?{{pd}}&status=draft" hx-target="#payroll-payslip-container" style="cursor: pointer">
     <span class="oh-dot oh-dot--small me-1" style="background-color:gray"></span>
     {% trans "Draft" %}
   </span>
-  <span class="m-3">
+  <span class="m-3 review_ongoing" hx-get="{% url "filter-payslip" %}?{{pd}}&status=review_ongoing" hx-target="#payroll-payslip-container" style="cursor: pointer">
     <span class="oh-dot oh-dot--small me-1" style="background-color:orange"></span>
     {% trans "Review Ongoing" %}
   </span>
-  <span class="m-3">
+  <span class="m-3 confirmed" hx-get="{% url "filter-payslip" %}?{{pd}}&status=confirmed" hx-target="#payroll-payslip-container" style="cursor: pointer">
     <span class="oh-dot oh-dot--small me-1" style="background-color:rgb(103, 171, 238)"></span>
     {% trans "Confirmed" %}
   </span>
-  <span class="m-3" >
+  <span class="m-3 paid" hx-get="{% url "filter-payslip" %}?{{pd}}&status=paid" hx-target="#payroll-payslip-container" style="cursor: pointer">
     <span class="oh-dot oh-dot--small me-1" style="background-color:yellowgreen"></span>
     {% trans "Paid" %}
   </span>
