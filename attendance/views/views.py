@@ -54,6 +54,7 @@ from attendance.filters import (
     LateComeEarlyOutReGroup,
     AttendanceActivityReGroup,
 )
+from django.db.models import ProtectedError
 
 
 # Create your views here.
@@ -247,29 +248,31 @@ def attendance_delete(request, obj_id):
     args:
         obj_id : attendance id
     """
-    attendance = Attendance.objects.get(id=obj_id)
-    month = attendance.attendance_date
-    month = month.strftime("%B").lower()
-    overtime = attendance.employee_id.employee_overtime.filter(month=month).last()
-    if overtime is not None:
-        if attendance.attendance_overtime_approve:
-            # Subtract overtime of this attendance
-            total_overtime = strtime_seconds(overtime.overtime)
-            attendance_overtime_seconds = strtime_seconds(
-                attendance.attendance_overtime
-            )
-            if total_overtime > attendance_overtime_seconds:
-                total_overtime = total_overtime - attendance_overtime_seconds
-            else:
-                total_overtime = attendance_overtime_seconds - total_overtime
-            overtime.overtime = format_time(total_overtime)
-            overtime.save()
-        try:
-            attendance.delete()
-            messages.success(request, _("Attendance deleted."))
-        except Exception as error:
-            messages.error(request, error)
-            messages.error(request, _("You cannot delete this attendance"))
+    try:
+        attendance = Attendance.objects.get(id=obj_id)
+        month = attendance.attendance_date
+        month = month.strftime("%B").lower()
+        overtime = attendance.employee_id.employee_overtime.filter(month=month).last()
+        if overtime is not None:
+            if attendance.attendance_overtime_approve:
+                # Subtract overtime of this attendance
+                total_overtime = strtime_seconds(overtime.overtime)
+                attendance_overtime_seconds = strtime_seconds(
+                    attendance.attendance_overtime
+                )
+                if total_overtime > attendance_overtime_seconds:
+                    total_overtime = total_overtime - attendance_overtime_seconds
+                else:
+                    total_overtime = attendance_overtime_seconds - total_overtime
+                overtime.overtime = format_time(total_overtime)
+                overtime.save()
+            try:
+                attendance.delete()
+                messages.success(request, _("Attendance deleted."))
+            except ProtectedError:
+                messages.error(request, _("You cannot delete this attendance"))
+    except Attendance.DoesNotExist:
+        messages.error(request, _("Attendance Does not exists.."))
     return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 
 
@@ -304,7 +307,8 @@ def attendance_bulk_delete(request):
                 try:
                     attendance.delete()
                     messages.success(request, _("Attendance Deleted"))
-                except:
+                
+                except ProtectedError:
                     messages.error(
                         request,
                         _(
@@ -312,8 +316,8 @@ def attendance_bulk_delete(request):
                             % {"attendance": attendance}
                         ),
                     )
-        except:
-            pass
+        except Attendance.DoesNotExist:
+                    messages.error(request, _("Attendance not found."))
 
     return JsonResponse({"message": "Success"})
 
@@ -434,8 +438,9 @@ def attendance_overtime_delete(request, obj_id):
     try:
         AttendanceOverTime.objects.get(id=obj_id).delete()
         messages.success(request, _("OT account deleted."))
-    except Exception as e:
-        messages.error(request, e)
+    except AttendanceOverTime.DoesNotExist:
+            messages.error(request, _("OT account Doesnot exists.."))
+    except ProtectedError:
         messages.error(request, _("You cannot delete this attendance OT"))
     return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 
@@ -473,8 +478,9 @@ def attendance_activity_delete(request, obj_id):
     try:
         AttendanceActivity.objects.get(id=obj_id).delete()
         messages.success(request, _("Attendance activity deleted"))
-    except Exception as e:
-        messages.error(request, e)
+    except AttendanceActivity.DoesNotExist:
+            messages.error(request, _("Attendance activity Doesnot exists.."))
+    except ProtectedError:
         messages.error(request, _("You cannot delete this activity"))
     return redirect("/attendance/attendance-activity-view")
 
@@ -585,8 +591,9 @@ def late_come_early_out_delete(request, obj_id):
     try:
         AttendanceLateComeEarlyOut.objects.get(id=obj_id).delete()
         messages.success(request, _("Late-in early-out deleted"))
-    except Exception as e:
-        messages.error(request, e)
+    except AttendanceLateComeEarlyOut.DoesNotExist:
+            messages.error(request, _("Late-in early-out Doesnot exists.."))
+    except ProtectedError:
         messages.error(request, _("You cannot delete this Late-in early-out"))
 
     return redirect("/attendance/late-come-early-out-view")
@@ -645,8 +652,9 @@ def validation_condition_delete(request, obj_id):
     try:
         AttendanceValidationCondition.objects.get(id=obj_id).delete()
         messages.success(request, _("validation condition deleted."))
-    except Exception as e:
-        messages.error(request, e)
+    except AttendanceValidationCondition.DoesNotExist:
+            messages.error(request, _("validation condition Doesnot exists.."))
+    except ProtectedError:
         messages.error(request, _("You cannot delete this validation condition."))
     return redirect("/attendance/validation-condition-view")
 
