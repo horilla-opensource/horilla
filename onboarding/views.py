@@ -30,6 +30,7 @@ from base.methods import get_key_instances
 from recruitment.models import Candidate, Recruitment
 from recruitment.filters import CandidateFilter
 from employee.models import Employee, EmployeeWorkInformation, EmployeeBankDetails
+from django.db.models import ProtectedError
 from onboarding.forms import (
     OnboardingCandidateForm,
     UserCreationForm,
@@ -176,11 +177,13 @@ def stage_delete(request, stage_id):
     Returns:
     GET : return onboarding view
     """
-    onboarding_stage = OnboardingStage.objects.get(id=stage_id)
-    if not onboarding_stage.candidate.exists():
-        onboarding_stage.delete()
-        messages.success(request, _("the stage deleted successfully..."))
-    else:
+    try:
+        OnboardingStage.objects.get(id=stage_id).delete()
+        messages.success(request, _("The stage deleted successfully..."))
+            
+    except OnboardingStage.DoesNotExist:
+        messages.error(request, _("Stage not found."))
+    except ProtectedError:
         messages.error(request, _("There are candidates in this stage..."))
     return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 
@@ -300,9 +303,13 @@ def task_delete(request, task_id):
     Returns:
     GET : return onboarding view
     """
-    onboarding_task = OnboardingTask.objects.get(id=task_id)
-    onboarding_task.delete()
-    messages.success(request, _("The task deleted successfully..."))
+    try:
+        OnboardingTask.objects.get(id=task_id).delete()
+        messages.success(request, _("The task deleted successfully..."))
+    except OnboardingTask.DoesNotExist:
+        messages.error(request, _("Task not found."))
+    except ProtectedError:
+        messages.error(request, _("Related entries exists"))
     return redirect(onboarding_view)
 
 
@@ -369,8 +376,13 @@ def candidate_delete(request, obj_id):
     Returns:
     GET : return candidate view
     """
-    Candidate.objects.get(id=obj_id).delete()
-    messages.success(request, _("Candidate deleted successfully.."))
+    try:
+        Candidate.objects.get(id=obj_id).delete()
+        messages.success(request, _("Candidate deleted successfully.."))
+    except Candidate.DoesNotExist:
+        messages.error(request, _("Candidate not found."))
+    except ProtectedError:
+        messages.error(request, _("Related entries exists"))
     return redirect(candidates_view)
 
 
@@ -471,7 +483,9 @@ def email_send(request):
     candidates = request.POST.get("candidates")
     json_mylist = json.loads(candidates)
     if len(json_mylist) <= 0:
-        return JsonResponse({"message": _("No candidate choosed"), "tags": "danger"})
+        return JsonResponse(
+            {"message": _("No candidate has chosen."), "tags": "danger"}
+        )
     for cand_id in json_mylist:
         candidate = Candidate.objects.get(id=cand_id)
         if candidate.start_onboard is False:
@@ -1039,7 +1053,9 @@ def update_joining(request):
     return JsonResponse(
         {
             "type": "success",
-            "message": f"{candidate_obj.name}'s Date of joining updated sussefully",
+            "message": _("{candidate}'s Date of joining updated sussefully").format(
+                candidate=candidate_obj.name
+            ),
         }
     )
 
@@ -1113,7 +1129,9 @@ def candidate_sequence_update(request):
             cand.save()
             updated = True
     if updated:
-        return JsonResponse({"message": "Candidate sequence updated", "type": "info"})
+        return JsonResponse(
+            {"message": _("Candidate sequence updated"), "type": "info"}
+        )
     return JsonResponse({"type": "fail"})
 
 
@@ -1134,8 +1152,24 @@ def stage_sequence_update(request):
             updated = True
 
     if updated:
-        return JsonResponse({"type": "success", "message": "Stage sequence updated"})
+        return JsonResponse({"type": "success", "message": _("Stage sequence updated")})
     return JsonResponse({"type": "fail"})
+
+
+@login_required
+@require_http_methods(["POST"])
+@hx_request_required
+def stage_name_update(request, stage_id):
+    """
+    This method is used to update the name of recruitment stage
+    """
+    stage_obj = OnboardingStage.objects.get(id=stage_id)
+    stage_obj.stage_title = request.POST["stage"]
+    stage_obj.save()
+    message = _("The stage title has been updated successfully")
+    return HttpResponse(
+        f'<div class="oh-alert-container"><div class="oh-alert oh-alert--animated oh-alert--success">{message}</div></div>'
+    )
 
 
 @login_required

@@ -108,15 +108,16 @@
 
         </div>
     </section>
-
+    <div id = "stage-messages"></div>
     <div class="oh-tabs">
         <ul class="oh-tabs__tablist">
             {% for rec in recruitments %}
             <li class="oh-tabs__tab " data-target="#tab_{{rec.id}}" data-recruitment-id="{{rec.id}}">
                 {{rec.title}}
-                <button class="oh-btn oh-btn--sq-sm oh-btn--transparent oh-tabs__close-btn" title="{% trans "Close" %}">
-                    <ion-icon name="close-outline"></ion-icon>
-                </button>
+                <span
+                    class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round ms-2 mr-2" title="{{rec.onboardingstage_set.all|length}} {% trans 'Stage' %}">
+                    {{rec.onboardingstage_set.all|length}}
+                </span>
             </li>
             {% endfor %}
             
@@ -129,8 +130,18 @@
                     <div class="oh-kanban__section stage" id="b3a7bac2-2a16-40fe-9b7e-78a1101ee9d3" data-recruitment-id="{{rec.id}}" data-stage-id="{{stage.id}}" data-sequence="{{forloop.counter}}">
                         <div class="oh-kanban__section-head oh-kanban__section-head--white">
                             <div class="d-flex ">
-                                <span class="oh-kanban__section-title" data-type="label">{{stage.stage_title}}</span>
-                                <span class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round ms-2 mr-2 stage_count">{{stage.candidate.count}}</span>
+                                <span class="oh-kanban__section-title" data-type="label">
+                                    <input
+                                    class="oh-tabs__movable-title oh-table__editable-input"
+                                    value="{{stage}}"
+                                    hx-post="{% url 'stage-name-update' stage.id %}"
+                                    name='stage'
+                                    hx-target="#stage-messages"
+                                    style="width: 160px;"
+                                    readonly=""
+                                  />  
+                                </span>
+                                <span class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round ms-2 mr-2 stage_count" title="{{stage.candidate.count}} {% trans 'Candidate' %}">{{stage.candidate.count}}</span>
                             </div>
                             <div class="oh-kanban__head-actions oh-kanban__dropdown">
                                 <button
