@@ -17,6 +17,7 @@ from base.methods import get_key_instances
 from base.models import Department, JobPosition
 from employee.models import Employee, EmployeeWorkInformation
 from pms.filters import ObjectiveFilter, FeedbackFilter
+from django.db.models import ProtectedError
 from pms.models import (
     EmployeeKeyResult,
     EmployeeObjective,
@@ -184,12 +185,17 @@ def objective_delete(request, obj_id):
     Returns:
         Redirect to Objective_list_view".
     """
-    objective = EmployeeObjective.objects.get(id=obj_id)
-    objective.delete()
-    messages.success(
-        request,
-        _("Objective %(objective)s deleted") % {"objective": objective.objective},
-    )
+    try:
+        objective = EmployeeObjective.objects.get(id=obj_id)
+        objective.delete()
+        messages.success(
+            request,
+            _("Objective %(objective)s deleted") % {"objective": objective.objective},
+        )
+    except EmployeeObjective.DoesNotExist:
+        messages.error(request, _("Objective not found."))
+    except ProtectedError:
+        messages.error(request, _("Related entries exists"))
     return redirect(objective_list_view)
 
 
@@ -1197,25 +1203,30 @@ def feedback_delete(request, id):
     Returns:
         it will redirect to  feedback_list_view.
     """
-
-    feedback = Feedback.objects.filter(id=id).first()
-    answered = Answer.objects.filter(feedback_id=feedback).first()
-    if feedback.status == "Closed" or feedback.status == "Not Started" and not answered:
-        feedback.delete()
-        messages.success(
-            request,
-            _("Feedback %(review_cycle)s deleted successfully!")
-            % {"review_cycle": feedback.review_cycle},
-        )
-        return redirect(feedback_list_view)
-    else:
-        messages.warning(
-            request,
-            _("Feedback %(review_cycle)s is ongoing you  you can archive it!")
-            % {"review_cycle": feedback.review_cycle},
-        )
-        return redirect(feedback_detailed_view, feedback.id)
-
+    try:
+        feedback = Feedback.objects.filter(id=id).first()
+        answered = Answer.objects.filter(feedback_id=feedback).first()
+        if feedback.status == "Closed" or feedback.status == "Not Started" and not answered:
+            feedback.delete()
+            messages.success(
+                request,
+                _("Feedback %(review_cycle)s deleted successfully!")
+                % {"review_cycle": feedback.review_cycle},
+            )
+            
+        else:
+            messages.warning(
+                request,
+                _("Feedback %(review_cycle)s is ongoing you  you can archive it!")
+                % {"review_cycle": feedback.review_cycle},
+            )
+            return redirect(feedback_detailed_view, feedback.id)
+        
+    except Feedback.DoesNotExist:
+        messages.error(request, _("Feedback not found."))
+    except ProtectedError:
+        messages.error(request, _("Related entries exists"))
+    return redirect(feedback_list_view)
 
 @login_required
 @hx_request_required
@@ -1450,8 +1461,12 @@ def question_delete(request, id):
         messages.error(
             request, _("Failed to delete question: Question template is in use.")
         )
-        return redirect(question_template_detailed_view, temp_id)
-
+        
+    except Question.DoesNotExist:
+        messages.error(request, _("Question not found."))
+    except ProtectedError:
+        messages.error(request, _("Related entries exists"))
+    return redirect(question_template_detailed_view, temp_id)
 
 @login_required
 @manager_can_enter(perm="pms.add_questiontemplate")
@@ -1566,13 +1581,17 @@ def question_template_delete(request, template_id):
     Returns:
         it will redirect to  question_template_view.
     """
-
-    question_template = QuestionTemplate.objects.get(id=template_id)
-    if Feedback.objects.filter(question_template_id=question_template):
-        messages.info(request, _("This template is using in a feedback"))
-        return redirect(question_template_view)
-    question_template.delete()
-    messages.success(request, _("The question template is deleted successfully !."))
+    try:
+        question_template = QuestionTemplate.objects.get(id=template_id)
+        if Feedback.objects.filter(question_template_id=question_template):
+            messages.info(request, _("This template is using in a feedback"))
+            return redirect(question_template_view)
+        question_template.delete()
+        messages.success(request, _("The question template is deleted successfully !."))        
+    except QuestionTemplate.DoesNotExist:
+        messages.error(request, _("question template not found."))
+    except ProtectedError:
+        messages.error(request, _("Related entries exists"))
     return redirect(question_template_view)
 
 
@@ -1654,10 +1673,14 @@ def period_delete(request, period_id):
     Returns:
         it will redirect to period_view.
     """
-
-    obj_period = Period.objects.get(id=period_id)
-    obj_period.delete()
-    messages.info(request, _("Period deleted successfully."))
+    try:
+        obj_period = Period.objects.get(id=period_id)
+        obj_period.delete()
+        messages.info(request, _("Period deleted successfully."))       
+    except Period.DoesNotExist:
+        messages.error(request, _("Period not found."))
+    except ProtectedError:
+        messages.error(request, _("Related entries exists"))
     return redirect(period_view)
 
 

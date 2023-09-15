@@ -166,17 +166,17 @@
       <ul class="oh-tabs__tablist">
         <li class="oh-tabs__tab oh-tabs__tab" data-target="#tab_1">
           {% trans "Self Feedback" %}
-          <span class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round ms-2 mr-2" id="" data-category-id="1">{{self_feedback|length}}</span>
+          <span class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round ms-2 mr-2" id="" data-category-id="1" title="{{self_feedback|length}} feedback">{{self_feedback|length}}</span>
         </li>
         <li class="oh-tabs__tab" data-target="#tab_2">
           {% trans "Requested Feedback" %}
-          <span class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round ms-2 mr-2" id="" data-category-id="1">{{requested_feedback|length}}</span>
+          <span class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round ms-2 mr-2" id="" data-category-id="1" title="{{requested_feedback|length}} feedback">{{requested_feedback|length}}</span>
         </li>
         <!-- normal user can't view all objective  -->
         {% if perms.pms.view_feedback or request.user|filtersubordinates %}
         <li class="oh-tabs__tab" data-target="#tab_3">
           {% trans "All Feedback" %}
-          <span class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round ms-2 mr-2" id="" data-category-id="1">{{all_feedbacks|length}}</span>
+          <span class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round ms-2 mr-2" id="" data-category-id="1" title="{{all_feedbacks|length}} feedback">{{all_feedbacks|length}}</span>
         </li>
         {% endif %}
 
