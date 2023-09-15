@@ -13,15 +13,15 @@
 {% include 'filter_tags.html' %}
 
 <div class="d-flex flex-row-reverse">
-    <span class="m-3">
+    <span class="m-3" style="cursor:pointer;" hx-get="{% url 'user-request-filter' %}?status=cancelled" hx-target="#userRequest">
       <span class="oh-dot oh-dot--small me-1" style="background-color:gray"></span>
       {% trans "Cancelled" %}
     </span>
-    <span class="m-3">
-      <span class="oh-dot oh-dot--small me-1" style="background-color:orange"></span>
+    <span class="m-3" style="cursor:pointer;" hx-get="{% url 'user-request-filter' %}?status=requested" hx-target="#userRequest">
+      <span class="oh-dot oh-dot--small me-1" style="background-color:orange;"></span>
       {% trans "Requested" %}
     </span>
-    <span class="m-3" >
+    <span class="m-3" style="cursor:pointer;" hx-get="{% url 'user-request-filter' %}?status=approved" hx-target="#userRequest">
       <span class="oh-dot oh-dot--small me-1" style="background-color:yellowgreen"></span>
       {% trans "Approved" %}
     </span>
