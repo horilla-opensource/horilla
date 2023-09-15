@@ -4,6 +4,7 @@ asset.py
 This module is used to """
 from urllib.parse import parse_qs
 import pandas as pd
+from django.db.models import ProtectedError
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib import messages
@@ -31,6 +32,13 @@ from asset.filters import (
     AssetFilter,
 )
 
+def asset_del(request, asset):
+    try:
+        asset.delete()
+        messages.success(request, _("Asset deleted successfully"))
+    except ProtectedError:
+        messages.error(request, _("You cannot delete this asset."))
+    return
 
 @login_required
 @hx_request_required
@@ -150,8 +158,11 @@ def asset_delete(request, asset_id):
         Otherwise, redirect to the asset list view for the asset
         category of the deleted asset.
     """
-
-    asset = Asset.objects.get(id=asset_id)
+    try:
+        asset = Asset.objects.get(id=asset_id)
+    except Asset.DoesNotExist:
+        messages.error(request, _("Asset not found"))
+        return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
     status = asset.asset_status
     asset_list_filter = request.GET.get("asset_list")
     asset_allocation = AssetAssignment.objects.filter(asset_id=asset).first()
@@ -179,9 +190,9 @@ def asset_delete(request, asset_id):
             # if this asset is used in any allocation
             messages.error(request, _("Asset is used in allocation!."))
             return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+        
+        asset_del(request, asset)
 
-        asset.delete()
-        messages.success(request, _("Asset deleted successfully"))
         return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 
     else:
@@ -195,10 +206,10 @@ def asset_delete(request, asset_id):
             # if this asset is used in any allocation
             messages.error(request, _("Asset is used in allocation!."))
             return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+        
+        asset_del(request, asset)
 
-        asset.delete()
-        messages.success(request, _("Asset deleted successfully"))
-    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+        return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 
 
 @login_required
@@ -318,7 +329,11 @@ def asset_category_delete(request, cat_id):
     Raises:
         None.
     """
-    asset_category = AssetCategory.objects.get(id=cat_id)
+    try:
+        asset_category = AssetCategory.objects.get(id=cat_id)
+    except AssetCategory.DoesNotExist:
+        messages.error(request, _("Asset not found"))
+        return redirect(asset_category_view_search_filter)
     asset_status = Asset.objects.filter(asset_category_id=asset_category).filter(
         asset_status="In use"
     )
@@ -330,9 +345,11 @@ def asset_category_delete(request, cat_id):
             % {"asset_category": asset_category},
         )
         return redirect(asset_category_view_search_filter)
-
-    asset_category.delete()
-    messages.success(request, _("Asset Category Deleted"))
+    try:
+        asset_category.delete()
+        messages.success(request, _("Asset Category Deleted"))
+    except ProtectedError:
+        messages.error(request, _("You cannot delete this asset category."))
     return redirect(asset_category_view_search_filter)
 
 
@@ -956,13 +973,20 @@ def asset_batch_number_delete(request, batch_id):
     Returns:
     - message of the return
     """
-    asset_batch_number = AssetLot.objects.get(id=batch_id)
+    try:
+        asset_batch_number = AssetLot.objects.get(id=batch_id)
+    except AssetLot.DoesNotExist:
+        messages.error(request, _("Batch number not found"))
+        return redirect(asset_batch_view)
     assigned_batch_number = Asset.objects.filter(asset_lot_number_id=asset_batch_number)
     if assigned_batch_number:
         messages.error(request, _("Batch number in-use"))
         return redirect(asset_batch_view)
-    asset_batch_number.delete()
-    messages.success(request, _("Batch number deleted"))
+    try:
+        asset_batch_number.delete()
+        messages.success(request, _("Batch number deleted"))
+    except ProtectedError:
+        messages.error(request, _("You cannot delete this Batch number."))
     return redirect(asset_batch_view)
 
 
