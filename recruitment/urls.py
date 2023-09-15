@@ -61,9 +61,9 @@ urlpatterns = [
         name="stage-update-pipeline",
     ),
     path(
-        "stage-name-update/<int:stage_id>/",
-        views.stage_name_update,
-        name="stage-name-update",
+        "stage-title-update/<int:stage_id>/",
+        views.stage_title_update,
+        name="stage-title-update",
     ),
     path(
         "stage-delete/<int:stage_id>/",

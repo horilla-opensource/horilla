@@ -670,14 +670,17 @@ def stage_update(request, stage_id):
 @login_required
 @require_http_methods(["POST"])
 @hx_request_required
-def stage_name_update(request, stage_id):
+def stage_title_update(request, stage_id):
     """
     This method is used to update the name of recruitment stage
     """
     stage_obj = Stage.objects.get(id=stage_id)
     stage_obj.stage = request.POST["stage"]
     stage_obj.save()
-    return HttpResponse({"message": "success"})
+    message = _("The stage title has been updated successfully")
+    return HttpResponse(
+        f'<div class="oh-alert-container"><div class="oh-alert oh-alert--animated oh-alert--success">{message}</div></div>'
+    )
 
 
 @login_required
