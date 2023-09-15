@@ -67,18 +67,19 @@
                 <span
                   class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round ms-2 mr-2 stage_count"
                   data-rec-stage-badge="{{rec.id}}"
-                  title="{{stage.candidate_set.all|length}} candidates"
+                  title="{{stage.candidate_set.all|length}} {% trans 'candidates' %}"
                   id="stageCount{{stage.id}}"
                   >{{stage.candidate_set.all|length}}</span
                 >
                 <input
                   class="oh-tabs__movable-title oh-table__editable-input"
                   value="{{stage}}"
-                  {% if perms.recruitment.change_stage or request.user|stage_manages:rec %}
-                  hx-post="{% url 'stage-name-update' stage.id %}"
-                  name="stage"
+                  {% if perms.recruitment.change_stage or request.user|recruitment_manages:rec %}
+                  hx-post="{% url 'stage-title-update' stage.id %}"
+                  name='stage'
                   {% endif %}
-                  hx-swap="none"
+                  hx-target = "#ohMessages"
+                  style="width: 160px;"
                   readonly=""
                 />
               </div>

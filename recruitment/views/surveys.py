@@ -7,6 +7,7 @@ import json
 from datetime import datetime
 from django.core.files.storage import default_storage
 from django.core import serializers
+from django.db.models import ProtectedError
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.http import HttpResponse
@@ -196,8 +197,13 @@ def delete_survey_question(request, survey_id):
     """
     This method is used to delete the survey instance
     """
-    RecruitmentSurvey.objects.get(id=survey_id).delete()
-    messages.success(request, _("Question was deleted successfully"))
+    try:
+        RecruitmentSurvey.objects.get(id=survey_id).delete()
+        messages.success(request, _("Question was deleted successfully"))
+    except RecruitmentSurvey.DoesNotExist:
+        messages.error(request, _("Question not found."))
+    except ProtectedError:
+        messages.error(request, _("You cannot delete this question"))    
     return redirect(view_question_template)
 
 

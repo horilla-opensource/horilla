@@ -20,6 +20,8 @@ $(document).ready(function () {
         var stageId = $(this).attr('data-stage-id');
         var stageBadge = $(`#stageCount${stageId}`)
         stageBadge.html(count)
+        stageBadge.attr("title", `${count} candidates`);
+
       }
     });
   
@@ -30,7 +32,9 @@ $(document).ready(function () {
       let count = $(this).children().filter('.change-cand').length;
       var stageId = $(this).attr('data-stage-id');
       var stageBadge = $(`#stageCount${stageId}`)
+      count_element()
       stageBadge.html(count-1)
+      stageBadge.attr("title", `${count-1} candidates`);
     }
     });
   });

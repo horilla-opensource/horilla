@@ -29,9 +29,7 @@
     {% endfor %}
 </div>
 {% endif %}
-<div id="ohMessages">
-  
-</div>
+<div id="update-message"></div>
 {% for rec in recruitment %}
 {% if request.user|stage_manages:rec or perms.recruitment.view_stage %}
 <div class="oh-tabs__content " id="tab_rec_{{rec.id}}">
@@ -49,16 +47,16 @@
     >
       <div class="oh-kanban__section-head stage" style="cursor: pointer;" data-recruitment-id='{{rec.id}}'>
         <div class="d-flex">
-          <span class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round ms-2 mr-2" data-rec-stage-badge="{{rec.id}}" id="stageCount{{stage.id}}">{{stage.candidate_set.all|length}}</span>
+          <span class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round ms-2 mr-2" data-rec-stage-badge="{{rec.id}}" id="stageCount{{stage.id}}" title="{{stage.candidate_set.all|length}} {% trans 'candidates' %}">{{stage.candidate_set.all|length}}</span>
           <span class="oh-kanban__section-title" data-type="label"
           ><input
           class="oh-tabs__movable-title oh-table__editable-input"
           value="{{stage}}"
           {% if perms.recruitment.change_stage or request.user|recruitment_manages:rec %}
-          hx-post="{% url 'stage-name-update' stage.id %}"
+          hx-post="{% url 'stage-title-update' stage.id %}"
           name='stage'
           {% endif %}
-          hx-swap='none'
+          hx-target = "#update-message"
           style="width: 160px;"
           readonly=""
         />

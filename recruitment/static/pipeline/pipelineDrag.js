@@ -14,6 +14,22 @@ function getCookie(name) {
   return cookieValue;
 }
 
+function count_element() {
+  let stage = $(".recruitment_items");
+  let count = $(".stage_count");
+  let nos = [];
+  for (i = 0; i < stage.length; i++) {
+    nos.push($(stage[i]).find("[data-candidate]:visible").length);
+  }
+
+  $.each(nos, function (index, value1) {
+    var value2 = count[index];
+    $(value2).text(value1);
+    $(value2).attr("title", `${value1} candidates`);
+  });
+}
+
+
 var candidateId = null;
 
 $(".candidate").mousedown(function () {
@@ -29,7 +45,6 @@ var elements = [];
 function stageSequenceGet(stage) {
   var sequence = {};
   var stageId = stage.attr("id");
-  console.log(stageId);
   var stageContainers = stage.parent().parent().find("[data-container]");
   let totalStages = stageContainers.length;
   $.each(stageContainers, function (index, element) {
@@ -43,12 +58,10 @@ function stageSequenceGet(stage) {
       sequence: JSON.stringify(sequence),
     },
     success: function (response) {
-      console.log(response);
+      count_element();
     },
   });
 
-  console.log("---------");
-  console.log(sequence);
 }
 $(".stage").mousedown(function () {
   window["stageSequence"] = $(this).attr("data-stage-sequence");
@@ -148,13 +161,13 @@ $("[data-container='candidate']").on("DOMNodeInserted", function (e) {
       success: function (response) {
         var candidateId = $(this).attr("data-candidate-id");
         setInterval(countSequence(candidate), 500);
-
-        //  console.log(response);
         $("#ohMessages").append(`
             <div class="oh-alert-container">
                   <div class="oh-alert oh-alert--animated oh-alert--${response.type}">
                     ${response.message}
             </div>`);
+            
+
       },
     });
   }
@@ -172,7 +185,6 @@ $(".schedule").change(function (e) {
       date: date,
     },
     success: function (response) {
-      // console.log(response);
     },
   });
 });

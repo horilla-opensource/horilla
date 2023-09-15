@@ -7,6 +7,7 @@ This module is used to register methods to delete/archive/un-archive instances
 
 import json
 from django.contrib import messages
+from django.db.models import ProtectedError
 from django.contrib.auth.models import Permission
 from django.http import HttpResponseRedirect, JsonResponse
 from django.utils.translation import gettext_lazy as _
@@ -28,7 +29,11 @@ def recruitment_delete(request, rec_id):
     Args:
         id : recruitment_id
     """
-    recruitment_obj = Recruitment.objects.get(id=rec_id)
+    try:
+        recruitment_obj = Recruitment.objects.get(id=rec_id)
+    except Recruitment.DoesNotExist:
+        messages.error(request, _("Recruitment not found."))
+        return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
     recruitment_mangers = recruitment_obj.recruitment_managers.all()
     all_stage_permissions = Permission.objects.filter(
         content_type__app_label="recruitment", content_type__model="stage"
@@ -48,8 +53,7 @@ def recruitment_delete(request, rec_id):
     try:
         recruitment_obj.delete()
         messages.success(request, _("Recruitment deleted successfully."))
-    except Exception as error:
-        messages.error(request, error)
+    except ProtectedError:
         messages.error(request, _("You cannot delete this recruitment"))
     recruitment_obj = Recruitment.objects.all()
     return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
@@ -66,12 +70,13 @@ def recruitment_delete_pipeline(request, rec_id):
     Returns:
         HttpResponseRedirect: Used to refresh the page
     """
-    recruitment_obj = Recruitment.objects.get(id=rec_id)
     try:
+        recruitment_obj = Recruitment.objects.get(id=rec_id)
         recruitment_obj.delete()
         messages.success(request, _("Recruitment deleted."))
-    except Exception as error:
-        messages.error(request, error)
+    except Recruitment.DoesNotExist:
+        messages.error(request, _("Recruitment not found."))
+    except ProtectedError:
         messages.error(request, _("Recruitment already in use."))
     return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 
@@ -82,13 +87,14 @@ def note_delete(request, note_id):
     """
     This method is used to delete the stage note
     """
-    note = StageNote.objects.get(id=note_id)
-    candidate_obj = note.candidate_id
     try:
+        note = StageNote.objects.get(id=note_id)
+        candidate_obj = note.candidate_id
         note.delete()
         messages.success(request, _("Note deleted"))
-    except Exception as error:
-        messages.error(request, error)
+    except StageNote.DoesNotExist:
+        messages.error(request, _("Note not found."))
+    except ProtectedError:
         messages.error(request, _("You cannot delete this note."))
     return render(
         request, "pipeline/pipeline_components/view_note.html", {"cand": candidate_obj}
@@ -104,13 +110,14 @@ def candidate_remark_delete(request, note_id):
     Args:
         id : stage note instance id
     """
-    stage_note = StageNote.objects.get(id=note_id)
-    candidate_obj = stage_note.candidate_note_id.candidate_id
     try:
+        stage_note = StageNote.objects.get(id=note_id)
+        candidate_obj = stage_note.candidate_note_id.candidate_id
         stage_note.delete()
         messages.success(request, _("Note deleted"))
-    except Exception as error:
-        messages.error(request, error)
+    except StageNote.DoesNotExist:
+        messages.error(request, _("Note not found."))
+    except ProtectedError:
         messages.error(request, _("You cannot delete this note."))
     return render(
         request,
@@ -128,7 +135,12 @@ def stage_delete(request, stage_id):
     Args:
         id : stage_id
     """
-    stage_obj = Stage.objects.get(id=stage_id)
+    try:
+        stage_obj = Stage.objects.get(id=stage_id)
+    except Stage.DoesNotExist:
+        messages.error(request, _("Stage not found."))
+        return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+
     stage_managers = stage_obj.stage_managers.all()
     for manager in stage_managers:
         all_this_manger = manager.stage_set.all()
@@ -145,8 +157,7 @@ def stage_delete(request, stage_id):
     try:
         stage_obj.delete()
         messages.success(request, _("Stage deleted successfully."))
-    except Exception as error:
-        messages.error(request, error)
+    except ProtectedError:
         messages.error(request, _("You cannot delete this stage"))
     return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 
@@ -163,8 +174,9 @@ def candidate_delete(request, cand_id):
     try:
         Candidate.objects.get(id=cand_id).delete()
         messages.success(request, _("Candidate deleted successfully."))
-    except Exception as error:
-        messages.error(request, error)
+    except Candidate.DoesNotExist:
+        messages.error(request, _("Candidate not found."))
+    except ProtectedError:
         messages.error(request, _("You cannot delete this candidate"))
     return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 
@@ -179,14 +191,15 @@ def candidate_bulk_delete(request):
     ids = request.POST["ids"]
     ids = json.loads(ids)
     for cand_id in ids:
-        candidate_obj = Candidate.objects.get(id=cand_id)
         try:
+            candidate_obj = Candidate.objects.get(id=cand_id)
             candidate_obj.delete()
             messages.success(
                 request, _("%(candidate)s deleted.") % {"candidate": candidate_obj}
             )
-        except Exception as error:
-            messages.error(request, error)
+        except Candidate.DoesNotExist:
+            messages.error(request, _("Candidate not found."))
+        except ProtectedError:
             messages.error(
                 request,
                 _("You cannot delete %(candidate)s") % {"candidate": candidate_obj},
