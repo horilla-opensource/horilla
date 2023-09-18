@@ -1,6 +1,6 @@
 {% load static %}
 {% load i18n %}
-<form hx-get='{% url "attendance-ot-search" %}' hx-swap='innerHTML' hx-target='#ot-table' >
+<form hx-get='{% url "attendance-ot-search" %}' hx-swap='innerHTML' hx-target='#ot-table' id="filterForm">
   <div class="oh-dropdown__filter-body">
     <div class="oh-accordion">
     <div class="oh-accordion-header">{% trans "Work Info" %}</div>
@@ -126,4 +126,5 @@
   <button class="oh-btn oh-btn--secondary oh-btn--small w-100 filterButton">{% trans "Filter" %}</button>
 </div>
 </form>
+<script src="{% static '/base/filter.js' %}"></script>
 

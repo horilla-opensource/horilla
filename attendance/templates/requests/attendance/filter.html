@@ -142,8 +142,20 @@
 </form>
 
 <script>
-  $('#filterForm').submit(function (e) { 
-    // var formData = $(this).serialize();
-    // $('#field').attr('hx-vals',`{'data':${formData}}` ); 
+  $("#requestFilter").submit(function (e) {
+    var formData = $(this).serialize();
+    count = 0;
+    formData.split("&").forEach(function (field) {
+      parts = field.split("=");
+      value = parts[1];
+      if (value && value!== "unknown") {
+        count++;
+      }
+      $("#filterCount").empty();
+      if (count > 0) {
+        $("#filterCount").text("(" + count + ")");
+      }
+    });
+    // $('#field').attr('hx-vals',`{'data':${formData}}` );
   });
 </script>

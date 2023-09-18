@@ -19,11 +19,11 @@
 
 {% include 'requests/attendance/nav.html' %}
 <div class="d-flex flex-row-reverse mb-1">
-  <span class="me-5" >
+  <span class="me-5" hx-get='{% url "search-attendance-requests" %}?attendance_validated=false' hx-target="#view-container" style="cursor: pointer">
     <span class="oh-dot oh-dot--small" style="background-color:rgba(128, 128, 128, 0.482)"></span>
     {% trans "Not-Validated" %}
   </span>
-  <span class="me-3">
+  <span class="me-3" hx-get='{% url "search-attendance-requests" %}?attendance_validated=true' hx-target="#view-container" style="cursor: pointer">
     <span class="oh-dot oh-dot--small" style="background-color:yellowgreen"></span>
     {% trans "Validated" %}
   </span>

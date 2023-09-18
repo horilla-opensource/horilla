@@ -1,7 +1,7 @@
-{% load i18n %}
+{% load i18n %}{% load static %}
 <div class="oh-dropdown" x-data="{open: false}">
   <button class="oh-btn" @click="open = !open">
-    <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}
+    <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}<div id="filterCount"></div>
   </button>
   <div
     class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4"
@@ -141,3 +141,4 @@
     </form>
   </div>
 </div>
+<script src="{% static '/base/filter.js' %}"></script>
