@@ -1384,6 +1384,10 @@ def user_request_filter(request):
         page_obj = paginator_qry(user_request_filter, page_number)
         data_dict = parse_qs(previous_data)
         get_key_instances(LeaveRequest, data_dict)
+        if 'status' in data_dict:
+            status_list = data_dict['status']
+            if len(status_list) > 1:
+                data_dict['status'] = [status_list[-1]]
         return render(
             request,
             "leave/user-requests.html",

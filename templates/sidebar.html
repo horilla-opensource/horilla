@@ -224,6 +224,15 @@
             </a>
             <div class="oh-sidebar__submenu" id="leaveNav" x-show="isOpen" x-transition style="display: none;">
                <ul class="oh-sidebar__submenu-items">
+                  {% comment %} {% if perms.leave.view_leaverequest %}
+                  <li class="oh-sidebar__submenu-item">
+                     <a href="{% url 'leave-dashboard' %}" class="oh-sidebar__submenu-link">{% trans "Dashboard" %}</a>
+                  </li>
+                  {% else %}
+                  <li class="oh-sidebar__submenu-item">
+                     <a href="{% url 'leave-employee-dashboard' %}" class="oh-sidebar__submenu-link">{% trans "Dashboard" %}</a>
+                  </li>
+                  {% endif %} {% endcomment %}
                   <li class="oh-sidebar__submenu-item">
                      <a href="{% url 'user-leave' %}" class="oh-sidebar__submenu-link">{% trans "My Leaves" %}</a>
                   </li>
