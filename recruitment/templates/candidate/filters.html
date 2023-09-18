@@ -1,4 +1,4 @@
-{% load i18n %}
+{% load i18n %}{% load static %}
 <form hx-get='{% url "search-candidate" %}' id="filterForm" hx-target='#section'>
     <input type="hidden" name="search" id="filterSearch">
     <div class="oh-dropdown__filter-body">
@@ -145,5 +145,7 @@
     <button class="oh-btn oh-btn--secondary oh-btn--small w-100 filterButton" id="" data-view="card" onclick='candidateFilter(this)'>{% trans "Filter" %}</button>
   </div>
   </form>
+<script src="{% static '/base/filter.js' %}"></script>
+
   
   

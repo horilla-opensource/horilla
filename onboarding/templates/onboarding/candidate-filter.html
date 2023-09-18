@@ -1,5 +1,5 @@
-{% load i18n %}
-<form hx-get="{% url 'candidate-filter' %}" hx-target="#candidates">
+{% load i18n %}{% load static %}
+<form hx-get="{% url 'candidate-filter' %}" hx-target="#candidates" id="filterForm">
   <div
     class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4"
     x-show="open"
@@ -49,3 +49,4 @@
     </div>
   </div>
 </form>
+<script src="{% static '/base/filter.js' %}"></script>

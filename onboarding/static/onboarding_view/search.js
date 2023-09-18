@@ -1,3 +1,4 @@
+var filterCount = 0;
 function closeTag(element) {
   var filterTagClass = $(element).attr("class");
   $(element).remove();
@@ -59,6 +60,7 @@ $(document).ready(function () {
   function job_Position() {
     let search = $("#job_position_id").val().toLowerCase();
     if (search != "") {
+      filterCount++;
       job = $("[data-job-position]:visible");
       job.each(function () {
         var candidate = $(this).attr("data-job-position");
@@ -81,6 +83,7 @@ $(document).ready(function () {
   function join_date() {
     let date = $("#join_date").val();
     if (date != "") {
+      filterCount++;
       var dateObject = new Date(date);
 
       var monthNames = [
@@ -127,6 +130,7 @@ $(document).ready(function () {
     let search = $("#portal_stage").val();
 
     if (search != "") {
+      filterCount++;
       let portal_items = $("[data-portal-count]:visible");
       portal_items.each(function () {
         var candidate = $(this).attr("data-portal-count");
@@ -150,6 +154,7 @@ $(document).ready(function () {
     let end_date = $("#join_date_end").val();
 
     if (start_date || end_date) {
+      filterCount++;
       let visibleDates = $("[data-join-date]:visible");
 
       visibleDates.each(function () {
@@ -200,6 +205,7 @@ $(document).ready(function () {
   }
 
   $("#filter_item").on("click", function () {
+    filterCount = 0;
     var candidate = $("[data-job-position]");
     candidate.each(function () {
       $(this).show();
@@ -211,6 +217,10 @@ $(document).ready(function () {
     join_date();
     portal();
     join_date_range();
+    $("#filterCount").empty();
+    if (filterCount > 0) {
+      $("#filterCount").text("(" + filterCount + ")");
+    }
   });
 
   $(".oh-tabs__tab").on("click", function () {

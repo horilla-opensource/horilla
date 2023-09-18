@@ -1,5 +1,5 @@
-{% load i18n %}
-<form hx-get='{% url "recruitment-search" %}' hx-target='#recruitment-container'>
+{% load i18n %}{% load static %}
+<form hx-get='{% url "recruitment-search" %}' hx-target='#recruitment-container' id="filterForm">
   <div class="oh-dropdown__filter-body">
     <div class="oh-accordion">
     <div class="oh-accordion-header">{% trans "Recruitment" %}</div>
@@ -62,4 +62,5 @@
   <button class="oh-btn oh-btn--secondary oh-btn--small w-100 filterButton" id="">{% trans "Filter" %}</button>
 </div>
 </form>
+<script src="{% static '/base/filter.js' %}"></script>
 

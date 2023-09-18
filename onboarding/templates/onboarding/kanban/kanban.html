@@ -47,7 +47,7 @@
 
                 <div class="oh-dropdown" x-data="{open: false}">
                   <button class="oh-btn ml-2" @click="open = !open">
-                    <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}
+                    <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}<div id="filterCount"></div>
                   </button>
                     <div class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4" x-show="open" @click.outside="open = false" style="display: none;" @click.>
                         
@@ -109,6 +109,7 @@
         </div>
     </section>
     <div id = "stage-messages"></div>
+    <div class="oh-wrapper oh-filter-tag-container filter-value" style="margin-left:-3px"></div>
     <div class="oh-tabs">
         <ul class="oh-tabs__tablist">
             {% for rec in recruitments %}

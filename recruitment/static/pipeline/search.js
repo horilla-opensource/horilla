@@ -60,6 +60,9 @@ $(document).ready(function () {
 
   function job_Position() {
     let search = $("#job_pos_id").val().toLowerCase();
+    if (search != "") {
+      $("#filterCount").text("(1)");
+    }
     $(".oh-filter-tag.filter-field.job_pos_id").remove();
     if (search != "") {
       job = $("[data-job-position]:visible");
@@ -80,6 +83,7 @@ $(document).ready(function () {
   }
 
   $("#filter_item").on("click", function () {
+    $("#filterCount").empty();
     var candidate = $("[data-job-position]");
     candidate.each(function () {
       $(this).show();
