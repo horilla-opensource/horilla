@@ -150,7 +150,7 @@
                 <!--  asset filter  -->
                 <div class="oh-dropdown" x-data="{open: false}">
                     <button class="oh-btn ml-2" @click="open = !open">
-                        <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}
+                        <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}<div id="filterCount"></div>
                     </button>
                     <div class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4" x-show="open"
                         @click.outside="open = false" style="display: none;">
@@ -158,7 +158,7 @@
                                 <div class="oh-accordion">
                                     <div class="oh-accordion-header">{% trans "Asset Category" %}</div>
                                     <div class="oh-accordion-body">
-                                        <form hx-get="{%url 'asset-category-view-search-filter' %}" hx-target="#assetCategoryList" hx-swap="innerHTML">
+                                        <form hx-get="{%url 'asset-category-view-search-filter' %}" hx-target="#assetCategoryList" hx-swap="innerHTML" id="filterForm">
                                         <div class="row">
                                             <div class="col-sm-12 col-md-12 col-lg-12">
                                                 <div class="oh-input-group">
@@ -182,7 +182,7 @@
                                 <div class="oh-accordion">
                                     <div class="oh-accordion-header">{% trans "Asset" %}</div>
                                     <div class="oh-accordion-body">
-                                        <form hx-get="{%url 'asset-list' cat_id=0 %}?asset_list='asset'" name="asset_list" hx-target="#assetCategoryList" hx-swap="innerHTML">
+                                        <form hx-get="{%url 'asset-list' cat_id=0 %}?asset_list='asset'" name="asset_list" hx-target="#assetCategoryList" hx-swap="innerHTML" id="filterForm2">
                                         <div class="row">
                                             <div class="col-sm-12 col-md-12 col-lg-6">
                                                 <div class="oh-input-group">
@@ -279,5 +279,6 @@
 </div>
 
 
+<script src="{% static '/base/filter.js' %}"></script>
 <script src="{% static 'src/asset_category/assetCategoryView.js' %}"></script>
 {% endblock %}

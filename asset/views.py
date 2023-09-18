@@ -217,7 +217,7 @@ def asset_delete(request, asset_id):
 def asset_list(request, cat_id):
     """
     View function is used as asset list inside a category and also in
-    filterd asset list
+    filter asset list
     Args:
         request (HttpRequest): A Django HttpRequest object that contains
         information about the  current request.
