@@ -14,54 +14,6 @@
 </div>
 {% endif %}
 
-<div class="oh-wrapper">
-    <div class="oh-dashboard row">
-        <div class="oh-dashboard__left col-12 col-sm-12 col-md-12">
-            <div class="oh-dashboard__cards row">
-                <div class="col-12 col-sm-12 col-md-6 col-lg-4">
-                    <div class="oh-card-dashboard oh-card-dashboard oh-card-dashboard--success">
-                        <div class="oh-card-dashboard__header">
-                            <span class="oh-card-dashboard__title">{% trans "New Requests" %}</span>
-                        </div>
-                        <div class="oh-card-dashboard__body">
-                            <div class="oh-card-dashboard__counts">
-                                <span class="oh-card-dashboard__count">{{requests}}</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-12 col-sm-12 col-md-6 col-lg-4">
-                    <div class="oh-card-dashboard oh-card-dashboard--neutral">
-                        <div class="oh-card-dashboard__header">
-                            <span class="oh-card-dashboard__title">{% trans "Approved Requests" %}</span>
-                        </div>
-                        <div class="oh-card-dashboard__body">
-                            <div class="oh-card-dashboard__counts">
-                                <span class="oh-card-dashboard__count">{{approved_requests}}</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-12 col-sm-12 col-md-6 col-lg-4">
-                    <div class="oh-card-dashboard oh-card-dashboard--danger">
-                        <div class="oh-card-dashboard__header">
-                            <span class="oh-card-dashboard__title">{% trans "Rejected Requests" %}</span>
-                        </div>
-                        <div class="oh-card-dashboard__body">
-                            <div class="oh-card-dashboard__counts">
-                                <span class="oh-card-dashboard__count">{{rejected_requests}}</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-
-        </div>
-
-    </div>
-</div>
-
 <section class="oh-wrapper oh-main__topbar" x-data="{searchShow: false}">
     <div class="oh-main__titlebar oh-main__titlebar--left">
         <h1 class="oh-main__titlebar-title fw-bold">{% trans "Leave Requests" %}</h1>
@@ -79,15 +31,15 @@
         <div class="oh-main__titlebar-button-container">
             <div class="oh-dropdown" x-data="{open: false}">
                 <button class="oh-btn ml-2" @click="open = !open">
-                    <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}
+                    <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}<div id="filterCount"></div>
                 </button>
-                <form method="post" hx-get="{% url 'request-filter' %}" hx-target="#leaveRequest">
+                <form method="post" hx-get="{% url 'request-filter' %}" hx-target="#leaveRequest" id="filterForm">
                     {% csrf_token %}
                     <div class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4" x-show="open"
                         style="display: none;" @click.outside="open = false">
                         <div class="oh-dropdown__filter-body">
                             <div class="oh-accordion">
-                                <div class="oh-accordion-header">{% trans "Leave Request" %}</div>
+                                <div class="oh-accordion-header" onclick="event.stopImmediatePropagation();$(this).parent().toggleClass('oh-accordion--show');">{% trans "Leave Request" %}</div>
                                 <div class="oh-accordion-body">
                                     <div class="row">
                                         <div class="col-sm-12 col-md-12 col-lg-12">
@@ -96,21 +48,6 @@
                                                 {{form.leave_type_id}}
                                             </div>
                                         </div>
-
-                                        <div class="col-sm-12 col-md-12 col-lg-6">
-                                            <div class="oh-input-group">
-                                                <label class="oh-label">{% trans "From Date" %}</label>
-                                                {{form.from_date}}
-                                            </div>
-                                        </div>
-
-                                        <div class="col-sm-12 col-md-12 col-lg-6">
-                                            <div class="oh-input-group">
-                                                <label class="oh-label">{% trans "To Date" %}</label>
-                                                {{form.to_date}}
-                                            </div>
-                                        </div>
-
                                         <div class="col-sm-12 col-md-12 col-lg-6">
                                             <div class="oh-input-group">
                                                 <label class="oh-label">{% trans "Start Date" %}</label>
@@ -133,7 +70,26 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="oh-accordion" >
+                                <div class="oh-accordion-header" onclick="event.stopImmediatePropagation();$(this).parent().toggleClass('oh-accordion--show');">{% trans "Advanced" %}</div>
+                                <div class="oh-accordion-body">
+                                    <div class="row">
+                                        <div class="col-sm-12 col-md-12 col-lg-6">
+                                            <div class="oh-input-group">
+                                                <label class="oh-label">{% trans "From Date" %}</label>
+                                                {{form.from_date}}
+                                            </div>
+                                        </div>
 
+                                        <div class="col-sm-12 col-md-12 col-lg-6">
+                                            <div class="oh-input-group">
+                                                <label class="oh-label">{% trans "To Date" %}</label>
+                                                {{form.to_date}}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
 
                         </div>
                         <div class="oh-dropdown__filter-footer">
@@ -248,5 +204,22 @@
             window.location.href = link.attr('href'); // execute the href if confirmed
         }
     });
+
+    $("#filterForm").submit(function (e) {
+        var formData = $(this).serialize();
+        count = 0;
+        formData.split("&").forEach(function (field) {
+            parts = field.split("=");
+            value = parts[1];
+            if (value !='' && parts[0] !== "csrfmiddlewaretoken") {
+                count++;
+            }
+        });
+        $("#filterCount").empty();
+        if (count > 0) {
+            $("#filterCount").text("(" + count + ")");
+        }
+      });
+    
 </script>
 {% endblock %}

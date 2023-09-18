@@ -19,9 +19,9 @@
         <div class="oh-main__titlebar-button-container">
             <div class="oh-dropdown" x-data="{open: false}">
                 <button class="oh-btn ml-2" @click="open = !open">
-                    <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}
+                    <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}<div id='filterCount'></div>
                 </button>
-                <form hx-get="{% url 'user-leave-filter' %}" hx-target="#userLeaves">
+                <form hx-get="{% url 'user-leave-filter' %}" hx-target="#userLeaves" id="filterForm">
                     <div class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4" x-show="open" style="display: none;"
                         @click.outside="open = false">
                         <div class="oh-dropdown__filter-body">
@@ -92,7 +92,10 @@
         $('#startDate #id_start_date_breakdown').select2();
         $('#endDate #id_end_date_breakdown').select2();
     });
+
 </script>
+
+<script src="{% static '/base/filter.js' %}"></script>
 
 
 {% endblock %}
