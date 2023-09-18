@@ -1,4 +1,5 @@
 {% load i18n %}
+{% load static %}
 <form
   hx-get='{% url "rotating-shift-assign-view" %}'
   id="filterForm"
@@ -100,3 +101,5 @@
     </button>
   </div>
 </form>
+
+<script src="{% static '/base/filter.js' %}"></script>

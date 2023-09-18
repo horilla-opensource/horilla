@@ -87,7 +87,7 @@ x-data="{searchShow: false}"
     {% endif %}
     <div class="oh-dropdown" x-data="{open: false}">
       <button class="oh-btn ml-2" @click="open = !open">
-        <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}
+        <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}<div id="filterCount"></div>
       </button>
       <div
         class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4"
@@ -95,7 +95,7 @@ x-data="{searchShow: false}"
         @click.outside="open = false"
         style="display: none;"
       >
-        <form hx-get="{% url 'shift-request-search' %}" hx-target='#view-container'>
+        <form hx-get="{% url 'shift-request-search' %}" hx-target='#view-container' id="filterForm">
 
           <div class="oh-dropdown__filter-body">
             <div class="oh-accordion">
@@ -267,3 +267,4 @@ x-data="{searchShow: false}"
   </div>
 </div>
 
+<script src="{% static '/base/filter.js' %}"></script>
