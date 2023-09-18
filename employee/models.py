@@ -29,6 +29,8 @@ def reporting_manager_validator(value):
     return value
 
 
+
+
 class Employee(models.Model):
     """
     Employee model
@@ -83,6 +85,15 @@ class Employee(models.Model):
     is_active = models.BooleanField(default=True)
     additional_info = models.JSONField(null=True, blank=True)
     objects = models.Manager()
+
+    def get_image(self):
+        """
+        This method is used to return the profile image path of the employee
+        """
+        url = False
+        if self.employee_profile:
+            url = self.employee_profile.url
+        return url
 
     def __str__(self) -> str:
         last_name = (
