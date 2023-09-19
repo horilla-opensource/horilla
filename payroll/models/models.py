@@ -120,7 +120,7 @@ class Contract(models.Model):
     contract_name = models.CharField(max_length=250, help_text=_("Contract Title"))
     employee_id = models.ForeignKey(
         Employee,
-        on_delete=models.CASCADE,
+        on_delete=models.PROTECT,
         related_name="contract_set",
         verbose_name=_("Employee"),
     )
@@ -135,42 +135,42 @@ class Contract(models.Model):
     deduct_leave_from_basic_pay = models.BooleanField(default=True)
     department = models.ForeignKey(
         Department,
-        on_delete=models.DO_NOTHING,
+        on_delete=models.PROTECT,
         null=True,
         blank=True,
         related_name="contracts",
     )
     job_position = models.ForeignKey(
         JobPosition,
-        on_delete=models.DO_NOTHING,
+        on_delete=models.PROTECT,
         null=True,
         blank=True,
         related_name="contracts",
     )
     job_role = models.ForeignKey(
         JobRole,
-        on_delete=models.DO_NOTHING,
+        on_delete=models.PROTECT,
         null=True,
         blank=True,
         related_name="contracts",
     )
     shift = models.ForeignKey(
         EmployeeShift,
-        on_delete=models.DO_NOTHING,
+        on_delete=models.PROTECT,
         null=True,
         blank=True,
         related_name="contracts",
     )
     work_type = models.ForeignKey(
         WorkType,
-        on_delete=models.DO_NOTHING,
+        on_delete=models.PROTECT,
         null=True,
         blank=True,
         related_name="contracts",
     )
     filing_status = models.ForeignKey(
         FilingStatus,
-        on_delete=models.DO_NOTHING,
+        on_delete=models.PROTECT,
         related_name="contracts",
         null=True,
         blank=True,
@@ -302,7 +302,7 @@ class WorkRecord(models.Model):
     record_name = models.CharField(max_length=250, null=True, blank=True)
     work_record_type = models.CharField(max_length=5, null=True, choices=choices)
     employee_id = models.ForeignKey(
-        Employee, on_delete=models.CASCADE, verbose_name=_("Employee")
+        Employee, on_delete=models.PROTECT, verbose_name=_("Employee")
     )
     date = models.DateField(null=True, blank=True)
     at_work = models.CharField(
@@ -692,7 +692,7 @@ class Allowance(models.Model):
     # If based on shift
     shift_id = models.ForeignKey(
         EmployeeShift,
-        on_delete=models.DO_NOTHING,
+        on_delete=models.PROTECT,
         null=True,
         blank=True,
         verbose_name=_("Shift"),
@@ -716,7 +716,7 @@ class Allowance(models.Model):
     )
     work_type_id = models.ForeignKey(
         WorkType,
-        on_delete=models.DO_NOTHING,
+        on_delete=models.PROTECT,
         null=True,
         blank=True,
         verbose_name=_("Work Type"),
@@ -1123,7 +1123,7 @@ class Payslip(models.Model):
     ]
     reference = models.CharField(max_length=255, unique=False)
     employee_id = models.ForeignKey(
-        Employee, on_delete=models.CASCADE, verbose_name=_("Employee")
+        Employee, on_delete=models.PROTECT, verbose_name=_("Employee")
     )
     start_date = models.DateField()
     end_date = models.DateField()

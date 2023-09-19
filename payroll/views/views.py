@@ -12,7 +12,7 @@ from django.utils import timezone
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, JsonResponse, HttpResponseRedirect
 from django.contrib import messages
-from django.db.models import Q
+from django.db.models import Q, ProtectedError
 from horilla.decorators import login_required, permission_required
 from base.methods import generate_colors, get_key_instances
 from employee.models import Employee, EmployeeWorkInformation
@@ -103,8 +103,13 @@ def contract_delete(request, contract_id):
         Redirects to the contract view after successfully deleting the contract.
 
     """
-    Contract.objects.get(id=contract_id).delete()
-    messages.success(request, _("Contract deleted"))
+    try:
+        Contract.objects.get(id=contract_id).delete()
+        messages.success(request, _("Contract deleted"))
+    except Contract.DoesNotExist:
+        messages.error(request, _("Contract not found."))
+    except ProtectedError:
+        messages.error(request, _("You cannot delete this contract."))
     return redirect(contract_view)
 
 
@@ -362,7 +367,9 @@ def delete_payslip(request, payslip_id):
     try:
         Payslip.objects.get(id=payslip_id).delete()
         messages.success(request, _("Payslip deleted"))
-    except:
+    except Payslip.DoesNotExist:
+        messages.error(request, _("Payslip not found."))
+    except ProtectedError:
         messages.error(request, _("Something went wrong"))
     return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 
@@ -887,10 +894,11 @@ def payslip_bulk_delete(request):
                     employee=payslip.employee_id, period=period
                 ),
             )
-        except Exception as e:
+        except Payslip.DoesNotExist:
+            messages.error(request, _("Payslip not found."))
+        except ProtectedError:
             messages.error(
                 request,
                 _("You cannot delete {payslip}").format(payslip=payslip),
             )
-            messages.error(request, e)
     return JsonResponse({"message": "Success"})
