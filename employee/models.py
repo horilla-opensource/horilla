@@ -8,6 +8,7 @@ from datetime import date
 from django.db import models
 from django.contrib.auth.models import User, Permission
 from django.utils.translation import gettext_lazy as trans
+from django.utils.translation import gettext as _
 from simple_history.models import HistoricalRecords
 from base.models import (
     Company,
@@ -53,12 +54,14 @@ class Employee(models.Model):
         blank=True,
         null=True,
         related_name="employee_get",
+        verbose_name=_("User")
     )
     employee_first_name = models.CharField(
         max_length=200,
         null=False,
+        verbose_name=_("First Name")
     )
-    employee_last_name = models.CharField(max_length=200, null=True, blank=True)
+    employee_last_name = models.CharField(max_length=200, null=True, blank=True, verbose_name=_("Last Name"))
     employee_profile = models.ImageField(
         upload_to="employee/profile", null=True, blank=True
     )
@@ -167,37 +170,38 @@ class EmployeeWorkInformation(models.Model):
         blank=True,
         null=True,
         related_name="employee_work_info",
+        verbose_name=_("Employee")
     )
     job_position_id = models.ForeignKey(
-        JobPosition, on_delete=models.DO_NOTHING, null=True, verbose_name="Job Position"
+        JobPosition, on_delete=models.PROTECT, null=True, verbose_name=_("Job Position")
     )
     department_id = models.ForeignKey(
         Department,
-        on_delete=models.DO_NOTHING,
+        on_delete=models.PROTECT,
         null=True,
         blank=True,
-        verbose_name="Department",
+        verbose_name=_("Department"),
     )
     work_type_id = models.ForeignKey(
         WorkType,
-        on_delete=models.DO_NOTHING,
+        on_delete=models.PROTECT,
         null=True,
         blank=True,
-        verbose_name="Work Type",
+        verbose_name=_("Work Type"),
     )
     employee_type_id = models.ForeignKey(
         EmployeeType,
-        on_delete=models.CASCADE,
+        on_delete=models.PROTECT,
         null=True,
         blank=True,
-        verbose_name="Employee Type",
+        verbose_name=_("Employee Type"),
     )
     job_role_id = models.ForeignKey(
         JobRole,
-        on_delete=models.DO_NOTHING,
+        on_delete=models.PROTECT,
         null=True,
         blank=True,
-        verbose_name="Job Role",
+        verbose_name=_("Job Role"),
     )
     reporting_manager_id = models.ForeignKey(
         Employee,
@@ -205,10 +209,10 @@ class EmployeeWorkInformation(models.Model):
         blank=True,
         null=True,
         related_name="reporting_manager",
-        verbose_name="Reporting Manager",
+        verbose_name=_("Reporting Manager"),
     )
     company_id = models.ForeignKey(
-        Company, on_delete=models.CASCADE, blank=True, null=True, verbose_name="Company"
+        Company, on_delete=models.PROTECT, blank=True, null=True, verbose_name=_("Company")
     )
     location = models.CharField(max_length=50, blank=True)
     email = models.EmailField(max_length=254, blank=True, null=True)
@@ -218,7 +222,7 @@ class EmployeeWorkInformation(models.Model):
         on_delete=models.DO_NOTHING,
         null=True,
         blank=True,
-        verbose_name="Shift",
+        verbose_name=_("Shift"),
     )
     date_joining = models.DateField(null=True, blank=True)
     contract_end_date = models.DateField(blank=True, null=True)
@@ -249,6 +253,7 @@ class EmployeeBankDetails(models.Model):
         on_delete=models.CASCADE,
         null=True,
         related_name="employee_bank_details",
+        verbose_name=_("Employee")
     )
     bank_name = models.CharField(max_length=50)
     account_number = models.CharField(

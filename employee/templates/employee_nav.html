@@ -1,5 +1,33 @@
 {% load static %}
 {% load i18n %}
+
+<style>
+  #progress {
+    width: 300px;
+    height: 30px;
+    border: 1px solid #ccc;
+    background-color: #f0f0f0;
+    margin-bottom: 10px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .progress-bar {
+    height: 100%;
+    background-color: #4caf50;
+    position: absolute;
+    top: 0;
+    left: 0;
+    transition: width 0.2s ease-in-out;
+  }
+
+  #progress-text {
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+  }
+</style>
+
 <div
   class="oh-modal"
   id="workInfoImport"
@@ -29,7 +57,18 @@
           id="workInfoImportForm"
           enctype="multipart/form-data"
         >
-          <div class="modal-body">
+
+        
+        <div id="loading" style="display: none;">
+          <div id="progress">
+            <div class="progress-bar" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+          </div>
+          <p id="progress-text">{% trans "Uploading..." %}</p>
+        </div>
+
+        <div id="error-container" style='color:red;'></div>
+
+        <div class="modal-body">
 
             {% csrf_token %}
             {% comment %} {% endcomment %}
@@ -39,14 +78,14 @@
                   <span class="oh-dropdown__import-form-title">{% trans "Upload a File" %}</span>
                   <span class="oh-dropdown__import-form-text">{% trans "Drag and drop files here" %}</span>
               </label>
-              <input type="file" name="file" id="workInfoImportFile" /> 
+              <input type="file" name="file" id="workInfoImportFile" />
           </div>
           </div>
           <div class="modal-footer d-flex flex-row-reverse">
             <input
               type="submit"
               class="oh-btn oh-btn--secondary"
-              value="Upload"
+              value='{% trans "Upload" %}'
             />
           </div>
         </form>
@@ -128,7 +167,7 @@
     <div class="oh-main__titlebar-button-container">
       <div class="oh-dropdown" x-data="{open: false}">
         <button class="oh-btn ml-2" @click="open = !open">
-          <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}
+          <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}<div id="filterCount"></div>
         </button>
         <div
           class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4"
