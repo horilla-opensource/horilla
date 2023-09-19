@@ -24,6 +24,7 @@ from django.contrib import messages
 from django.core.paginator import Paginator
 from django.shortcuts import render, redirect
 from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext as __
 from django.contrib.auth.models import User
 from django.views.decorators.http import require_http_methods
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
@@ -698,8 +699,14 @@ def employee_delete(request, obj_id):
         messages.success(request, _("Employee deleted"))
     except Employee.DoesNotExist:
         messages.error(request, _("Employee not found."))
-    except ProtectedError:
-        messages.error(request, _("You cannot delete this user/employee"))
+    except ProtectedError as e:
+        model_verbose_names_set = set()
+        for obj in e.protected_objects:
+            model_verbose_names_set.add(__(obj._meta.verbose_name.capitalize()))    
+        model_names_str = ", ".join(model_verbose_names_set)
+        messages.error(
+            request, _("This employee already related in {}.".format(model_names_str))
+        )
     return HttpResponseRedirect(request.META.get("HTTP_REFERER", f"/view={view}"))
 
 

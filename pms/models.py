@@ -37,7 +37,7 @@ class EmployeeObjective(models.Model):
     created_at = models.DateField(auto_now_add=True)
     employee_id = models.ForeignKey(
         Employee,
-        on_delete=models.DO_NOTHING,
+        on_delete=models.PROTECT,
         related_name="employee_objective",
         null=True,
         blank=True,
@@ -185,7 +185,7 @@ class QuestionOptions(models.Model):
 
     question_id = models.ForeignKey(
         Question,
-        on_delete=models.CASCADE,
+        on_delete=models.PROTECT,
         related_name="question_options",
         null=True,
         blank=True,
@@ -271,7 +271,7 @@ class Answer(models.Model):
         blank=True,
     )
     feedback_id = models.ForeignKey(
-        Feedback, on_delete=models.CASCADE, related_name="feedback_answer"
+        Feedback, on_delete=models.PROTECT, related_name="feedback_answer"
     )
     objects = models.Manager()
 
@@ -282,7 +282,7 @@ class Answer(models.Model):
 class KeyResultFeedback(models.Model):
     feedback_id = models.ForeignKey(
         Feedback,
-        on_delete=models.CASCADE,
+        on_delete=models.PROTECT,
         related_name="feedback_key_result",
         null=True,
         blank=True,

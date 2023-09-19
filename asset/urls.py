@@ -51,7 +51,7 @@ urlpatterns = [
         name="asset-request-allocation-view-search-filter",
     ),
     path(
-        "asset-request-approve/<int:id>/",
+        "asset-request-approve/<int:req_id>/",
         views.asset_request_approve,
         name="asset-request-approve",
     ),

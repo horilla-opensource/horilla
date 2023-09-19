@@ -470,7 +470,6 @@ def asset_request_approve(request, req_id):
         A redirect response to the asset request allocation view, or an error message if the
         request with the given ID cannot be found or its asset has already been allocated.
     """
-
     asset_request = AssetRequest.objects.filter(id=req_id).first()
     asset_category = asset_request.asset_category_id
     assets = asset_category.asset_set.filter(asset_status="Available")
@@ -1049,7 +1048,7 @@ def delete_asset_category(request, cat_id):
     """
     try:
         AssetCategory.objects.get(id=cat_id).delete()
-        messages.success(request, "Asset category deleted.")
+        messages.success(request, _("Asset category deleted."))
     except:
-        messages.error(request, "Something went wrong!")
+        messages.error(request, _("Assets are located within this category."))
     return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))

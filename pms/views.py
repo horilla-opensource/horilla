@@ -187,15 +187,19 @@ def objective_delete(request, obj_id):
     """
     try:
         objective = EmployeeObjective.objects.get(id=obj_id)
-        objective.delete()
-        messages.success(
-            request,
-            _("Objective %(objective)s deleted") % {"objective": objective.objective},
-        )
+        if objective.status == 'Not Started' or objective.status == 'Closed' :
+            objective.delete()
+            messages.success(
+                request,
+                _("Objective %(objective)s deleted") % {"objective": objective.objective},
+            )
+        else:
+            messages.warning(
+                request,
+                _("You can't delete objective %(objective)s with status %(status)s") % {"objective": objective.objective, "status": objective.status},
+            )
     except EmployeeObjective.DoesNotExist:
         messages.error(request, _("Objective not found."))
-    except ProtectedError:
-        messages.error(request, _("Related entries exists"))
     return redirect(objective_list_view)
 
 

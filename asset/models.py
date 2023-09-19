@@ -51,12 +51,12 @@ class Asset(models.Model):
     asset_tracking_id = models.CharField(max_length=30, null=False, unique=True)
     asset_purchase_date = models.DateField()
     asset_purchase_cost = models.DecimalField(max_digits=10, decimal_places=2)
-    asset_category_id = models.ForeignKey(AssetCategory, on_delete=models.CASCADE)
+    asset_category_id = models.ForeignKey(AssetCategory, on_delete=models.PROTECT)
     asset_status = models.CharField(
         choices=ASSET_STATUS, default="Available", max_length=40
     )
     asset_lot_number_id = models.ForeignKey(
-        AssetLot, on_delete=models.CASCADE, null=True, blank=True
+        AssetLot, on_delete=models.PROTECT, null=True, blank=True
     )
     objects = models.Manager()
 
@@ -91,14 +91,14 @@ class AssetAssignment(models.Model):
         ("Healthy", _("Healthy")),
     ]
     asset_id = models.ForeignKey(
-        Asset, on_delete=models.CASCADE,
+        Asset, on_delete=models.PROTECT,
     )
     assigned_to_employee_id = models.ForeignKey(
-        Employee, on_delete=models.CASCADE, related_name="allocated_employeee"
+        Employee, on_delete=models.PROTECT, related_name="allocated_employeee"
     )
     assigned_date = models.DateField(auto_now_add=True)
     assigned_by_employee_id = models.ForeignKey(
-        Employee, on_delete=models.CASCADE, related_name="assigned_by"
+        Employee, on_delete=models.PROTECT, related_name="assigned_by"
     )
     return_date = models.DateField(null=True, blank=True)
     return_condition = models.TextField(null=True, blank=True)
@@ -120,12 +120,12 @@ class AssetRequest(models.Model):
     ]
     requested_employee_id = models.ForeignKey(
         Employee,
-        on_delete=models.CASCADE,
+        on_delete=models.PROTECT,
         related_name="requested_employee",
         null=False,
         blank=False,
     )
-    asset_category_id = models.ForeignKey(AssetCategory, on_delete=models.CASCADE)
+    asset_category_id = models.ForeignKey(AssetCategory, on_delete=models.PROTECT)
     asset_request_date = models.DateField(auto_now_add=True)
     description = models.TextField(null=True, blank=True)
     asset_request_status = models.CharField(

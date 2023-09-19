@@ -52,10 +52,10 @@ class CandidateStage(models.Model):
     """
 
     candidate_id = models.OneToOneField(
-        Candidate, on_delete=models.CASCADE, related_name="onboarding_stage"
+        Candidate, on_delete=models.PROTECT, related_name="onboarding_stage"
     )
     onboarding_stage_id = models.ForeignKey(
-        OnboardingStage, on_delete=models.CASCADE, related_name="candidate"
+        OnboardingStage, on_delete=models.PROTECT, related_name="candidate"
     )
     onboarding_end_date = models.DateField(blank=True,null=True)
     sequence = models.IntegerField(null=True,default=0)
@@ -90,10 +90,10 @@ class CandidateTask(models.Model):
         ("done", _("Done")),
     )
     candidate_id = models.ForeignKey(
-        Candidate, on_delete=models.CASCADE, related_name="candidate_task"
+        Candidate, on_delete=models.PROTECT, related_name="candidate_task"
     )
     status = models.CharField(max_length=50, choices=choice, blank=True, null=True)
-    onboarding_task_id = models.ForeignKey(OnboardingTask, on_delete=models.CASCADE)
+    onboarding_task_id = models.ForeignKey(OnboardingTask, on_delete=models.PROTECT)
 
     def __str__(self):
         return f"{self.candidate_id} | {self.onboarding_task_id} | {self.status}"
@@ -112,7 +112,7 @@ class OnboardingPortal(models.Model):
     """
 
     candidate_id = models.OneToOneField(
-        Candidate, on_delete=models.CASCADE, related_name="onboarding_portal"
+        Candidate, on_delete=models.PROTECT, related_name="onboarding_portal"
     )
     token = models.CharField(max_length=200)
     used = models.BooleanField(default=False)

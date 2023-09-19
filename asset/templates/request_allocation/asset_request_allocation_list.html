@@ -141,7 +141,7 @@
            <div class="oh-sticky-table__td">
             <div class="oh-btn-group"  >
               <a class="oh-btn oh-btn--success" role="button" data-toggle="oh-modal-toggle"
-              data-target="#asset-request-allocation-modal" hx-get="{%url 'asset-request-approve' id=asset_request.id %}" hx-target="#asset-request-allocation-modal-target" >
+              data-target="#asset-request-allocation-modal" hx-get="{%url 'asset-request-approve' req_id=asset_request.id %}" hx-target="#asset-request-allocation-modal-target" >
               <ion-icon name="checkmark-outline"></ion-icon>
               {% trans "Approve" %}
             </a>
@@ -205,7 +205,7 @@
                 {% if perms.asset.add_assetassignment %} 
                   {% if asset_request.asset_request_status == 'Requested' %}
                       <a class="oh-btn oh-btn--success " role="button" data-toggle="oh-modal-toggle"
-                        data-target="#asset-request-allocation-modal" hx-get="{%url 'asset-request-approve' id=asset_request.id %}" hx-target="#asset-request-allocation-modal-target"  title="{% trans 'Approve' %}">
+                        data-target="#asset-request-allocation-modal" hx-get="{%url 'asset-request-approve' req_id=asset_request.id %}" hx-target="#asset-request-allocation-modal-target"  title="{% trans 'Approve' %}">
                         <ion-icon name="checkmark-outline"></ion-icon>
                       </a>
                       <form action="{% url 'asset-request-reject' req_id=asset_request.id %}" method="post" class="">
