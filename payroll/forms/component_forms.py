@@ -7,8 +7,12 @@ import datetime
 from django import forms
 from django.utils.translation import gettext_lazy as _
 from django.template.loader import render_to_string
+from horilla_widgets.forms import HorillaForm
+from horilla_widgets.widgets.horilla_multi_select_field import HorillaMultiSelectField
+from horilla_widgets.widgets.select_widgets import HorillaMultiSelectWidget
 from base.forms import ModelForm
 from employee.models import Employee
+from employee.filters import EmployeeFilter
 from payroll.models import tax_models as models
 from payroll.widgets import component_widgets as widget
 from payroll.models.models import Contract
@@ -153,16 +157,21 @@ class PayslipForm(ModelForm):
         }
 
 
-class GeneratePayslipForm(forms.Form):
+class GeneratePayslipForm(HorillaForm):
     """
     Form for Payslip
     """
 
-    employee_id = forms.ModelMultipleChoiceField(
+    employee_id = HorillaMultiSelectField(
         queryset=Employee.objects.filter(
             contract_set__isnull=False, contract_set__contract_status="active"
         ),
-        widget=forms.SelectMultiple,
+        widget=HorillaMultiSelectWidget(
+            filter_route_name="employee-widget-filter",
+            filter_class=EmployeeFilter,
+            filter_instance_contex_name="f",
+            filter_template_path="employee_filters.html",
+        ),
         label="Employee",
     )
     start_date = forms.DateField(widget=forms.DateInput(attrs={"type": "date"}))
