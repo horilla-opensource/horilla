@@ -14,6 +14,7 @@ from urllib.parse import parse_qs
 import json, contextlib, random, secrets
 from django.core.mail import send_mail
 from django.contrib.auth.models import User
+from django.utils.translation import gettext as __
 from django.utils.translation import gettext_lazy as _
 from django.shortcuts import render, redirect
 from django.contrib.auth import login
@@ -180,7 +181,7 @@ def stage_delete(request, stage_id):
     try:
         OnboardingStage.objects.get(id=stage_id).delete()
         messages.success(request, _("The stage deleted successfully..."))
-            
+
     except OnboardingStage.DoesNotExist:
         messages.error(request, _("Stage not found."))
     except ProtectedError:
@@ -309,7 +310,12 @@ def task_delete(request, task_id):
     except OnboardingTask.DoesNotExist:
         messages.error(request, _("Task not found."))
     except ProtectedError:
-        messages.error(request, _("Related entries exists"))
+        messages.error(
+            request,
+            _(
+                "You cannot delete this task because some candidates are associated with it."
+            ),
+        )
     return redirect(onboarding_view)
 
 
@@ -381,8 +387,19 @@ def candidate_delete(request, obj_id):
         messages.success(request, _("Candidate deleted successfully.."))
     except Candidate.DoesNotExist:
         messages.error(request, _("Candidate not found."))
-    except ProtectedError:
-        messages.error(request, _("Related entries exists"))
+    except ProtectedError as e:
+        models_verbose_name_sets = set()
+        for obj in e.protected_objects:
+            models_verbose_name_sets.add(__(obj._meta.verbose_name))
+        models_verbose_name_str = (", ").join(models_verbose_name_sets)
+        messages.error(
+            request,
+            _(
+                "You cannot delete this candidate. The candidate is included in the {}".format(
+                    models_verbose_name_str
+                )
+            ),
+        )
     return redirect(candidates_view)
 
 

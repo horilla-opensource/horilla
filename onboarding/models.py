@@ -73,6 +73,7 @@ class CandidateStage(models.Model):
         """
         Meta class for additional options
         """
+        verbose_name = _("Candidate Onboarding stage")
         ordering = ['sequence']
 
 
@@ -102,7 +103,7 @@ class CandidateTask(models.Model):
         """
         Meta class to add some additional options
         """
-
+        verbose_name = _("Candidate onboarding task")
         unique_together = ("candidate_id", "onboarding_task_id")
 
 
