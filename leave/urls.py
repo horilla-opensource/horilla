@@ -71,4 +71,14 @@ urlpatterns = [
     path("user-request-one/<int:id>", views.user_request_one, name="user-request-one"),
     path("employee-leave", views.employee_leave, name="employee-leave"),
     path("overall-leave", views.overall_leave, name="overall-leave"),
+
+    path("leave-dashboard", views.dashboard, name="leave-dashboard"),
+    path("leave-employee-dashboard", views.employee_dashboard, name="leave-employee-dashboard"),
+    path("available-leaves", views.available_leave_chart, name="available-leaves"),
+    path("dashboard-leave-requests", views.dashboard_leave_request, name="dashboard-leave-requests"),
+    path("employee-leave-chart", views.employee_leave_chart, name="employee-leave-chart"),
+    path("department-leave-chart", views.department_leave_chart, name="department-leave-chart"),
+    path("leave-type-chart", views.leave_type_chart, name="leave-type-chart"),
+    path("leave-over-period", views.leave_over_period, name="leave-over-period"),
+
 ]

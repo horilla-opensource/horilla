@@ -21,9 +21,10 @@
                 <div class="oh-sticky-table__th">{% trans "End Date" %}</div>
                 <div class="oh-sticky-table__th">{% trans "Requested Days" %}</div>
                 <div class="oh-sticky-table__th">{% trans "Status" %}</div>
-                <div class="oh-sticky-table__th">{% trans "Options" %}</div>
-                <div class="oh-sticky-table__th">{% trans "Actions" %}</div>
-
+                {% if  not dashboard %}
+                    <div class="oh-sticky-table__th">{% trans "Options" %}</div>
+                    <div class="oh-sticky-table__th">{% trans "Actions" %}</div>
+                {% endif %}
             </div>
         </div>
         <div class="oh-sticky-table__tbody">
@@ -49,6 +50,7 @@
                 <div class="oh-sticky-table__td">{{leave_request.end_date}}</div>
                 <div class="oh-sticky-table__td">{{leave_request.requested_days}}</div>
                 <div class="oh-sticky-table__td">{{leave_request.get_status_display}}</div>
+                {% if  not dashboard %}
                 <div class="oh-sticky-table__td">
                     <div class="oh-btn-group" onclick="event.stopPropagation()">
                         {% if leave_request.status != 'approved' %}
@@ -91,6 +93,7 @@
 
                     </div>
                 </div>
+                {% endif %}
             </div>
             {% endfor %}
 
@@ -98,7 +101,7 @@
     </div>
 </div>
 <!-- End of Sticky Table -->
-
+{% if  not dashboard %}
 <div class="oh-pagination">
     <span class="oh-pagination__page">
         {% trans "Page" %} {{ leave_requests.number }} {% trans "of" %} {{ leave_requests.paginator.num_pages }}.
@@ -138,3 +141,4 @@
         </ul>
     </nav>
 </div>
+{% endif %}

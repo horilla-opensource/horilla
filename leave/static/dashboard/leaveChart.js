@@ -1,48 +1,5 @@
 $(document).ready(function () {
-  //Todays leave count department wise chart
-  var myChart1 = document.getElementById("leaveEmployee");
-  var overAllLeave = new Chart(myChart1, {
-    type: 'doughnut',
-    data: {
-      labels: [],
-      datasets: [{
-        label: 'Leave count',
-        data: [],
-        backgroundColor: null,
-      }]
-    },
-  });
-
-  $.ajax({
-    type: "GET",
-    url: "/leave/overall-leave",
-    dataType: "json",
-    success: function (response) {
-      overAllLeave.data.labels = response.labels;
-      overAllLeave.data.datasets[0].data = response.data;
-      overAllLeave.data.datasets[0].backgroundColor = null;
-      overAllLeave.update();
-
-    }
-  });
-
-  $('#overAllLeaveSelect').change(function () {
-    var selected = $(this).val()
-    var myChart1 = document.getElementById("overAllLeave");
-    $.ajax({
-      type: "GET",
-      url: `/leave/overall-leave?selected=${selected}`,
-      dataType: "json",
-      success: function (response) {
-        overAllLeave.data.labels = response.labels;
-        overAllLeave.data.datasets[0].data = response.data;
-        overAllLeave.data.datasets[0].backgroundColor = null;
-        overAllLeave.update();
-      }
-    });
-
-  });
-
+	
   //Today leave employees chart
   $.ajax({
     type: "GET",

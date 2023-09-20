@@ -5,10 +5,10 @@
             <div class="oh-profile__avatar mr-1">
                 {% if leave_request.employee_id.employee_profile %}
                 <img src="{{leave_request.employee_id.employee_profile.url}}" class="oh-profile__image"
-                    alt="Mary Magdalene" />
+                    alt="" />
                 {% else %}
                 <img src="https://ui-avatars.com/api/?name={{leave_request.employee_id}}&background=random"
-                    class="oh-profile__image" alt="Mary Magdalene" />
+                    class="oh-profile__image" alt="" />
                 {% endif %}
             </div>
         </div>

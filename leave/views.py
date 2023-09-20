@@ -1,3 +1,4 @@
+from collections import defaultdict
 import contextlib
 from urllib.parse import parse_qs
 from django.shortcuts import render, redirect
@@ -284,8 +285,10 @@ def leave_request_filter(request):
     leave_request_filter = LeaveRequestFilter(request.GET, queryset).qs
     page_number = request.GET.get("page")
     page_obj = paginator_qry(leave_request_filter, page_number)
-    data_dict = parse_qs(previous_data)
-    get_key_instances(LeaveRequest, data_dict)
+    data_dict = []
+    if not request.GET.get("dashboard"):
+        data_dict = parse_qs(previous_data)
+        get_key_instances(LeaveRequest, data_dict)
     return render(
         request,
         "leave/leave_request/leave-requests.html",
@@ -1503,20 +1506,249 @@ def overall_leave(request):
     return JsonResponse({"labels": labels, "data": data})
 
 
+@login_required
+@permission_required("leave_deleteleaverequest")
 def dashboard(request):
     today = date.today()
-    requested=LeaveRequest.objects.filter(status="requested")
-    approved=LeaveRequest.objects.filter(status="approved")
-    cancelled=LeaveRequest.objects.filter(status="cancelled")
-    holidays = Holiday.objects.filter(start_date__gte = today)
-    next_holiday = holidays.earliest('start_date')
-    leave_today=LeaveRequest.objects.filter(~Q(status="cancelled"),start_date__lte=today,end_date__gte=today)
+    leave_requests = LeaveRequest.objects.filter(start_date__month = today.month)
+    requested=leave_requests.filter(status="requested")
+    approved=leave_requests.filter(status="approved")
+    cancelled=leave_requests.filter(status="cancelled")
+    holidays = Holiday.objects.filter(start_date__gte = today,start_date__month=today.month).order_by('start_date')
+    next_holiday, holidays = (holidays[0], holidays[1:]) if holidays else (None, [])
+
+    leave_today=LeaveRequest.objects.filter(status="approved",start_date__lte=today,end_date__gte=today)
 
     context = {
+        "leave_requests":leave_requests,
         "requested":requested,
         "approved":approved,
         "cancelled":cancelled,
         "next_holiday":next_holiday,
+        "holidays":holidays,
         "leave_today_employees":leave_today,
+        "dashboard":"dashboard",
     }
     return render(request,"leave/dashboard.html",context)
+
+
+@login_required
+def employee_dashboard(request):
+    today = date.today()
+    user=Employee.objects.get(employee_user_id = request.user)
+    leave_requests = LeaveRequest.objects.filter(employee_id=user,start_date__month=today.month,start_date__year=today.year)
+    requested=leave_requests.filter(status="requested")
+    approved=leave_requests.filter(status="approved")
+    cancelled=leave_requests.filter(status="cancelled")
+        
+    holidays = Holiday.objects.filter(start_date__gte = today,start_date__month=today.month).order_by('start_date')
+    next_holiday, holidays = (holidays[0], holidays[1:]) if holidays else (None, [])
+
+    context = {
+        "leave_requests":leave_requests,
+        "requested":requested,
+        "approved":approved,
+        "cancelled":cancelled,
+        "next_holiday":next_holiday,
+        "holidays":holidays,
+        "dashboard":"dashboard",
+    }
+    return render(request,"leave/employee-dashboard.html",context)
+
+@login_required
+def dashboard_leave_request(request):
+    user=Employee.objects.get(employee_user_id = request.user)
+    day = request.GET.get("date")
+    if day:
+        day=datetime.strptime(day, "%Y-%m")
+        leave_requests = LeaveRequest.objects.filter(employee_id=user,start_date__month=day.month,start_date__year=day.year)
+    else:
+        leave_requests=[]
+    context = {
+        "leave_requests":leave_requests,
+        "dashboard":"dashboard"
+    }
+    return render(request,"leave/leave_request/leave-requests.html",context)
+
+
+@login_required
+def available_leave_chart(request):
+    user=Employee.objects.get(employee_user_id = request.user)
+    available_leaves=AvailableLeave.objects.filter(employee_id=user)
+    leave_count=[]
+    for leave in available_leaves:
+        leave_count.append(leave.available_days+leave.carryforward_days)
+
+    
+    labels= [available.leave_type_id.name for available in available_leaves]
+    dataset=[
+        {
+        "label":_("Total leaves available"),
+        "data":leave_count,
+    },
+    ]
+    response={
+        "labels":labels,
+        "dataset":dataset,
+    }
+    return JsonResponse(response)
+
+@login_required
+def employee_leave_chart(request):
+    leave_requests=LeaveRequest.objects.all()
+    leave_types = LeaveType.objects.all()
+    day = date.today()
+    if request.GET.get("date"):
+        day= request.GET.get("date")
+        day=datetime.strptime(day, "%Y-%m")
+
+    
+    labels=[]
+    dataset=[]
+    for employee in leave_requests.filter(start_date__month=day.month,start_date__year=day.year):
+        labels.append(employee.employee_id)
+
+    for leave_type in leave_types:
+        dataset.append(
+            {
+                "label":leave_type.name,
+                "data":[],
+            }
+        )
+    
+    labels = list(set(labels))
+    total_leave_with_type = defaultdict(lambda: defaultdict(float))
+
+    for label in labels:
+        leaves = leave_requests.filter(employee_id=label,start_date__month=day.month,start_date__year=day.year)
+        for leave in leaves:
+            total_leave_with_type[leave.leave_type_id.name][label] += round(
+                leave.requested_days, 2
+            )
+
+    for data in dataset:
+        dataset_label = data["label"]
+        data["data"] = [
+            total_leave_with_type[dataset_label][label] for label in labels
+        ]
+    
+    employee_label = []
+    for employee in list(set(labels)):
+        employee_label.append(
+            f"{employee.employee_first_name} {employee.employee_last_name}"
+        )
+    
+    response={
+        "labels":employee_label,
+        "dataset":dataset,
+    }
+    return JsonResponse(response)
+
+
+
+@login_required
+def department_leave_chart(request):
+    today=date.today()
+
+    departments=Department.objects.all()
+    department_counts = {dep.department: 0 for dep in departments}
+    leave_request=LeaveRequest.objects.filter(status="approved")
+    leave_dates = []
+
+    for leave in leave_request:
+        for leave_date in  leave.requested_dates():
+            leave_dates.append(leave_date.strftime('%Y-%m-%d'))
+        
+        if str(today) in leave_dates:
+
+            for dep in departments:
+                if dep ==leave.employee_id.employee_work_info.department_id:
+                    department_counts[dep.department] += 1
+
+    labels= [department.department for department in departments]
+    dataset=[
+        {
+        "label":_(""),
+        "data":list(department_counts.values()),
+    },
+    ]
+    response={
+        "labels":labels,
+        "dataset":dataset,
+    }
+    return JsonResponse(response)
+
+
+@login_required
+def leave_type_chart(request):
+    today=date.today()
+    leave_types=LeaveType.objects.all()
+    leave_type_count = {types.name: 0 for types in leave_types}
+    leave_request=LeaveRequest.objects.filter(status="approved")
+    company_leave_dates = company_leave_dates_list(CompanyLeave.objects.all(),datetime.today().replace(day=1))
+    holidays=holiday_dates_list(Holiday.objects.all())
+    for leave in leave_request:
+        leave_dates = []
+        
+        for leave_date in  leave.requested_dates():
+            leave_dates.append(leave_date)
+                    
+        filtered_dates = [date for date in leave_dates if date.month == today.month and date.year == today.year]
+        leave_type_dates = []
+        for filtered in filtered_dates:
+            if filtered not in company_leave_dates and filtered not in holidays:
+                leave_type_dates.append(filtered)
+        for lev in leave_types:
+                if lev ==leave.leave_type_id:
+                    leave_type_count[lev.name] += len(leave_type_dates)
+        
+    labels= [leave_type.name for leave_type in leave_types]
+    dataset=[
+        {
+        "label":_(""),
+        "data":list(leave_type_count.values()),
+    },
+    ]
+    response={
+        "labels":labels,
+        "dataset":dataset,
+    }
+    return JsonResponse(response)
+
+
+@login_required
+def leave_over_period(request):
+    today = date.today()
+    start_of_week = today - timedelta(days=today.weekday())
+    week_dates = [start_of_week + timedelta(days=i) for i in range(6)]
+
+    leave_in_week = []
+
+    
+    leave_request=LeaveRequest.objects.filter(status="approved")
+    leave_dates = []
+    for leave in leave_request:
+        for leave_date in  leave.requested_dates():
+            leave_dates.append(leave_date)
+
+    filtered_dates = [day for day in leave_dates if day.month == today.month and day.year == today.year]
+    for week_date in week_dates:
+        days=[]
+        for filtered_date in filtered_dates:
+            if filtered_date == week_date:
+                days.append(filtered_date)
+        leave_in_week.append(len(days))
+
+
+    dataset = {
+            "label":_("Leave Trends"),
+            "data":leave_in_week,
+        },
+    
+    labels = [week_date.strftime("%d-%m-%Y") for week_date in week_dates]
+
+    response={
+        "labels":labels,
+        "dataset":dataset,
+    }
+    return JsonResponse(response)

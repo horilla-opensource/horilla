@@ -1,224 +1,197 @@
 {% extends 'index.html' %}
+{% load static %}
+{% load i18n %}
 {% block content %}
+
 <div class="oh-wrapper">
-    <div class="oh-dashboard row">
+    <div class="d-none mt-5" id="back_button" style="width:10%">
+        <a href=""
+          class="oh-btn oh-btn--secondary oh-btn--shadow ms-3"
+        >
+          <ion-icon
+            class="me-2 md hydrated"
+            name="arrow-back-outline"
+            role="img"
+            aria-label="arrow-back-outline"
+          ></ion-icon
+          >{% trans "Back" %}</a
+        >
+    </div>
+    <div class="oh-dashboard row" id="dashboard">
         <div class="oh-dashboard__left col-12 col-sm-12 col-md-12 col-lg-9">
             <div class="oh-dashboard__cards row">
                 <div class="col-12 col-sm-12 col-md-6 col-lg-4">
-                    <div class="oh-card-dashboard oh-card-dashboard oh-card-dashboard--success">
+                    <div class="oh-card-dashboard oh-card-dashboard oh-card-dashboard--neutral filter" hx-get="{% url "request-filter" %}?status=requested&dashboard=true" hx-target="#dashboard" >
                         <div class="oh-card-dashboard__header">
                             <span class="oh-card-dashboard__title">New Requests</span>
                         </div>
                         <div class="oh-card-dashboard__body">
                             <div class="oh-card-dashboard__counts">
-                                {% if requests > 0 %}
-                                <span class="oh-card-dashboard__sign"><ion-icon
-                                        name="caret-up-outline"></ion-icon></span>
-                                {% endif %}
-                                <span class="oh-card-dashboard__count">{{requests}}</span>
+                                <span class="oh-card-dashboard__count">{{requested|length}}</span>
                             </div>
-                            {% if requests > 0 %}
-                            <span class="oh-badge oh-card-dashboard__badge">{{request_perc}}%</span>
-                            {% endif %}
                         </div>
                     </div>
                 </div>
                 <div class="col-12 col-sm-12 col-md-6 col-lg-4">
-                    <div class="oh-card-dashboard oh-card-dashboard--neutral">
+                    <div class="oh-card-dashboard oh-card-dashboard--success filter" hx-get="{% url "request-filter" %}?status=approved&dashboard=true" hx-target="#dashboard">
                         <div class="oh-card-dashboard__header">
                             <span class="oh-card-dashboard__title">Approved Requests</span>
                         </div>
                         <div class="oh-card-dashboard__body">
                             <div class="oh-card-dashboard__counts">
-                                <span class="oh-card-dashboard__count">{{approved_requests}}</span>
+                                <span class="oh-card-dashboard__count">{{approved|length}}</span>
                             </div>
-                            <span class="oh-badge oh-card-dashboard__badge">0.00%</span>
                         </div>
                     </div>
                 </div>
                 <div class="col-12 col-sm-12 col-md-6 col-lg-4">
-                    <div class="oh-card-dashboard oh-card-dashboard--danger">
+                    <div class="oh-card-dashboard oh-card-dashboard--danger filter" hx-get="{% url "request-filter" %}?status=cancelled&dashboard=true" hx-target="#dashboard">
                         <div class="oh-card-dashboard__header">
                             <span class="oh-card-dashboard__title">Rejected Requests</span>
                         </div>
                         <div class="oh-card-dashboard__body">
                             <div class="oh-card-dashboard__counts">
-                                <span class="oh-card-dashboard__sign"><ion-icon
-                                        name="caret-down-outline"></ion-icon></span>
-                                <span class="oh-card-dashboard__count">{{rejected_requests}}</span>
+                                <span class="oh-card-dashboard__count">{{cancelled|length}}</span>
                             </div>
-                            <span class="oh-badge oh-card-dashboard__badge">3.00%</span>
                         </div>
                     </div>
                 </div>
             </div>
 
             <div class="oh-dashboard__movable-cards row mt-4">
-                <div class="col-12 col-sm-12 col-md-12 col-lg-6 oh-card-dashboard--moveable">
+                <div class="col-12 col-sm-12 col-md-12 col-lg-8 mt-2">
                     <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent">
                         <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
-                            <span class="oh-card-dashboard__title">Todays Leave</span>
+                            <span class="oh-card-dashboard__title" id="employee-previous" title="{% trans "Previous" %}"><ion-icon name="caret-back-outline"></ion-icon></span>
+                            <span class="oh-card-dashboard__title">Employee Leaves</span>
+                            <span class="oh-card-dashboard__title float-end" id="employee-next" title="{% trans "next" %}"><ion-icon name="caret-forward"></ion-icon></span>
                         </div>
+                        <input type="month" class="mb-2 float-end " name="" id="dash_month" />
                         <div class="oh-card-dashboard__body">
-                            <canvas id="myChart1"></canvas>
+                            <canvas id="employeeLeave"></canvas>
                         </div>
                     </div>
-                </div>
+                </div> 
+                <div class="col-12 col-sm-12 col-md-12 col-lg-4 mt-2" style = "height:400px">
+                    <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent">
 
-                <div class="col-12 col-sm-12 col-md-12 col-lg-6 oh-card-dashboard--moveable">
-                    <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent">
                         <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
-                            <span class="oh-card-dashboard__title">Overall Conversions</span>
+                            <span class="oh-card-dashboard__title">On Leave</span>
                         </div>
+                        {% if leave_today_employees %}
                         <div class="oh-card-dashboard__body">
-                            <canvas id="myChart2"></canvas>
+                            <ul class="oh-card-dashboard__user-list" style="height: 380px;overflow-y:auto">
+                                {% for leave_today_employee in leave_today_employees %}
+                                    <li class="oh-card-dashboard__user-item" data-toggle="oh-modal-toggle" data-target="#tableTimeOff"
+                                    hx-get="{% url 'one-request-view' leave_today_employee.id %}" hx-target="#requestView">
+                                        <div class="oh-profile oh-profile--md">
+                                            <div class="oh-profile__avatar mr-1">
+                                                <img src="https://ui-avatars.com/api/?name={{leave_today_employee.employee_id}}&background=random"
+                                                    class="oh-profile__image" alt="" />
+                                            </div>
+                                            <span class="oh-profile__name oh-text--dark">{{leave_today_employee.employee_id}}</span>
+                                        </div>
+                                    </li>
+                                {% endfor %}
+                            </ul>
                         </div>
+                        {% else %}
+                        {% include "leave/today-leave-empty.html" %}
+                        {% endif %}
                     </div>
                 </div>
+                
             </div>
         </div> 
         <div class="oh-dashboard__right  col-12 col-sm-12 col-md-12 col-lg-3">
             <div class="oh-dashboard__events">
-                <div class="oh-dashbaord__events-reel">
-                    <div class="oh-dashboard__event oh-dashboard__event--purple">
-                        <div class="oh-dasboard__event-photo">
-                            <img src="/static/images/upload/userphoto.png" class="oh-dashboard__event-userphoto" />
-                        </div>
-                        <div class="oh-dasboard__event-details">
-                            <span class="oh-dashboard__event-title">Birthday</span>
-                            <span class="oh-dashboard__event-main">Katie Melua</span>
-                            <span class="oh-dashboard__event-date">29/03/2023</span>
-                        </div>
-                    </div>
-
-                    <div class="oh-dashboard__event oh-dashboard__event--crimson">
-                        <div class="oh-dasboard__event-photo">
-                            <img src="/static/images/upload/userphoto.png" class="oh-dashboard__event-userphoto" />
-                        </div>
-
-                        <div class="oh-dasboard__event-details">
-                            <span class="oh-dashboard__event-title">Birthday</span>
-                            <span class="oh-dashboard__event-main">Katie Melua</span>
-                            <span class="oh-dashboard__event-date">29/03/2023</span>
-                        </div>
-                    </div>
 
                     <div class="oh-dashboard__event oh-dashboard__event--purple">
-                        <div class="oh-dasboard__event-photo">
-                            <img src="/static/images/upload/userphoto.png" class="oh-dashboard__event-userphoto" />
+                        <div class="oh-dasboard__event-photo" style="background-color:white">
+                            <img src="/static/images/ui/sunbed.png" class="oh-dashboard__event-userphoto" />
                         </div>
                         <div class="oh-dasboard__event-details">
-                            <span class="oh-dashboard__event-title">Birthday</span>
-                            <span class="oh-dashboard__event-main">Katie Melua</span>
-                            <span class="oh-dashboard__event-date">29/03/2023</span>
+                            <span class="oh-dashboard__event-title">Next Holiday</span>
+                            <span class="oh-dashboard__event-main">{{next_holiday.name}}</span>
+                            <span class="oh-dashboard__event-date">{{next_holiday.start_date}}</span>
                         </div>
                     </div>
-                </div>
-                <ul class="oh-dashboard__events-nav">
-                    <li class="oh-dashboard__events-nav-item oh-dashboard__events-nav-item--active" data-target="0">
-                    </li>
-                    <li class="oh-dashboard__events-nav-item" data-target="1"></li>
-                    <li class="oh-dashboard__events-nav-item" data-target="2"></li>
-                </ul>
             </div>
 
-            <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent mt-3">
+            <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent mt-3 mb-3" style="height:520px;overflow-y:auto">
                 <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
-                    <span class="oh-card-dashboard__title">On Leave</span>
+                    <span class="oh-card-dashboard__title">Up coming holidays</span>
                 </div>
                 <div class="oh-card-dashboard__body">
                     <ul class="oh-card-dashboard__user-list">
-                        <li class="oh-card-dashboard__user-item">
-                            <div class="oh-profile oh-profile--md">
-                                <div class="oh-profile__avatar mr-1">
-                                    <img src="https://ui-avatars.com/api/?name=Amy+Winehouse&background=random"
-                                        class="oh-profile__image" alt="Amy Winehouse" />
+                        
+                        {% for holiday in holidays %}
+                            <li class="oh-card-dashboard__user-item oh-dashboard__event">
+                                <div class="">
+                                <span class="oh-profile__name oh-text--white">{{holiday.name}}</span> <br/>
+                                <span class="oh-dashboard__event-date oh-text--white">{{holiday.start_date}}</span>
                                 </div>
-                                <span class="oh-profile__name oh-text--dark">Amy Winehouse</span>
-                            </div>
-                        </li>
-                        <li class="oh-card-dashboard__user-item">
-                            <div class="oh-profile oh-profile--md">
-                                <div class="oh-profile__avatar mr-1">
-                                    <img src="https://ui-avatars.com/api/?name=Natalia+Lafourcade&background=random"
-                                        class="oh-profile__image" alt="Natalia Lafourcade" />
-                                </div>
-                                <span class="oh-profile__name oh-text--dark">Natalia Lafourcade</span>
-                            </div>
-                        </li>
-                        <li class="oh-card-dashboard__user-item">
-                            <div class="oh-profile oh-profile--md">
-                                <div class="oh-profile__avatar mr-1">
-                                    <img src="https://ui-avatars.com/api/?name=Googoosh&background=random"
-                                        class="oh-profile__image" alt="Googoosh" />
-                                </div>
-                                <span class="oh-profile__name oh-text--dark">Googoosh</span>
-                            </div>
-                        </li>
-                        <li class="oh-card-dashboard__user-item">
-                            <div class="oh-profile oh-profile--md">
-                                <div class="oh-profile__avatar mr-1">
-                                    <img src="https://ui-avatars.com/api/?name=Che+Noir&background=random"
-                                        class="oh-profile__image" alt="Che Noir" />
-                                </div>
-                                <span class="oh-profile__name oh-text--dark">Che Noir</span>
-                            </div>
-                        </li>
-                        <li class="oh-card-dashboard__user-item">
-                            <div class="oh-profile oh-profile--md">
-                                <div class="oh-profile__avatar mr-1">
-                                    <img src="https://ui-avatars.com/api/?name=Kacey+Musgraves&background=random"
-                                        class="oh-profile__image" alt="Kacey Musgraves" />
-                                </div>
-                                <span class="oh-profile__name oh-text--dark">Kacey Musgraves</span>
-                            </div>
-                        </li>
-                        <li class="oh-card-dashboard__user-item">
-                            <div class="oh-profile oh-profile--md">
-                                <div class="oh-profile__avatar mr-1">
-                                    <img src="https://ui-avatars.com/api/?name=Billie+Holiday&background=random"
-                                        class="oh-profile__image" alt="Billie Holiday" />
-                                </div>
-                                <span class="oh-profile__name oh-text--dark">Billie Holiday</span>
-                            </div>
-                        </li>
-                        <li class="oh-card-dashboard__user-item">
-                            <div class="oh-profile oh-profile--md">
-                                <div class="oh-profile__avatar mr-1">
-                                    <img src="https://ui-avatars.com/api/?name=Nina+Simone&background=random"
-                                        class="oh-profile__image" alt="Nina Simone" />
-                                </div>
-                                <span class="oh-profile__name oh-text--dark">Nina Simone</span>
-                            </div>
-                        </li>
-                        <li class="oh-card-dashboard__user-item">
-                            <div class="oh-profile oh-profile--md">
-                                <div class="oh-profile__avatar mr-1">
-                                    <img src="https://ui-avatars.com/api/?name=Carolina+Polachek&background=random"
-                                        class="oh-profile__image" alt="Caroline Polachek" />
-                                </div>
-                                <span class="oh-profile__name oh-text--dark">Carloine Polachek</span>
-                            </div>
-                        </li>
-                        <li class="oh-card-dashboard__user-item">
-                            <div class="oh-profile oh-profile--md">
-                                <div class="oh-profile__avatar mr-1">
-                                    <img src="https://ui-avatars.com/api/?name=Beth+Gibbons&background=random"
-                                        class="oh-profile__image" alt="Beth Gibbons" />
-                                </div>
-                                <span class="oh-profile__name oh-text--dark">Beth Gibbons</span>
-                            </div>
-                        </li>
+                            </li>
+                        {% endfor %}
                     </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-sm-12 col-md-12 col-lg-3 mt-3">
+            <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent">
+                <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
+                    <span class="oh-card-dashboard__title">Department Leaves</span>
+                </div>
+                <div class="oh-card-dashboard__body">
+                    {% if leave_today_employees %}
+                        <canvas id="departmentLeave"></canvas>
+                    {% else %}
+                        {% include "leave/today-leave-empty.html" %}
+                    {% endif %}
+                </div>
+            </div>
+        </div> 
+        <div class="col-12 col-sm-12 col-md-12 col-lg-3 mt-3">
+            <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent">
+                <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
+                    <span class="oh-card-dashboard__title">Leave Type</span>
+                </div>
+                <div class="oh-card-dashboard__body">
+                    <canvas id="leaveType"></canvas>
+                </div>
+            </div>
+        </div> 
+        <div class="col-12 col-sm-12 col-md-12 col-lg-6 mt-3">
+            <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent">
+                <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
+                    <span class="oh-card-dashboard__title">Leave trend this week</span>
+                </div>
+                <div class="oh-card-dashboard__body">
+                    <canvas id="leavePeriod"></canvas>
                 </div>
             </div>
         </div>
     </div>
 </div>
+<div class="oh-modal" id="tableTimeOff" role="dialog" aria-labelledby="tableTimeOffModal" aria-hidden="true">
+    <div class="oh-modal__dialog oh-modal__dialog--timeoff oh-timeoff-modal">
+        <div class="oh-modal__dialog-header">
 
+            <button class="oh-modal__close" aria-label="Close">
+                <ion-icon name="close-outline"></ion-icon>
+            </button>
+        </div>
+
+        <div id="requestView">
+
+        </div>
+        
+    </div>
+</div>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="{% static "dashboard/dashboard.js" %}"></script>
 
-<script>
+{% comment %} <script>
     $(document).ready(function () {
 
         var myChart1 = document.getElementById("myChart1");
@@ -247,5 +220,5 @@
 
 
     })
-</script>
+</script> {% endcomment %}
 {% endblock %}

@@ -1,0 +1,113 @@
+{% extends 'index.html' %}
+{% load static %}
+{% block content %}
+<div class="oh-wrapper">
+    <div class="oh-dashboard row">
+        <div class="oh-dashboard__left col-12 col-sm-12 col-md-12 col-lg-9">
+            <div class="oh-dashboard__cards row">
+                <div class="col-12 col-sm-12 col-md-6 col-lg-4">
+                    <div class="oh-card-dashboard oh-card-dashboard oh-card-dashboard--neutral">
+                        <div class="oh-card-dashboard__header">
+                            <span class="oh-card-dashboard__title">New Requests</span>
+                        </div>
+                        <div class="oh-card-dashboard__body">
+                            <div class="oh-card-dashboard__counts">
+                                
+                                <span class="oh-card-dashboard__count">{{requested|length}}</span>
+                            </div>
+                            
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-sm-12 col-md-6 col-lg-4">
+                    <div class="oh-card-dashboard oh-card-dashboard--success">
+                        <div class="oh-card-dashboard__header">
+                            <span class="oh-card-dashboard__title">Approved Requests</span>
+                        </div>
+                        <div class="oh-card-dashboard__body">
+                            <div class="oh-card-dashboard__counts">
+                                <span class="oh-card-dashboard__count">{{approved|length}}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-sm-12 col-md-6 col-lg-4">
+                    <div class="oh-card-dashboard oh-card-dashboard--danger">
+                        <div class="oh-card-dashboard__header">
+                            <span class="oh-card-dashboard__title">Rejected Requests</span>
+                        </div>
+                        <div class="oh-card-dashboard__body">
+                            <div class="oh-card-dashboard__counts">
+                               <span class="oh-card-dashboard__count">{{cancelled|length}}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="oh-dashboard__movable-cards row mt-4">
+    
+                <div class="col-12 col-sm-12 col-md-12 col-lg-4 mt-2">
+                    <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent">
+                        <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
+                            <span class="oh-card-dashboard__title" >Overall Conversions</span>
+                        </div>
+                        <div class="oh-card-dashboard__body">
+                            <canvas id="availableLeave" ></canvas>
+                        </div>
+                    </div>
+                </div> 
+                <div class="col-12 col-sm-12 col-md-12 col-lg-8">
+                    <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent">
+                        <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
+                            <span class="oh-card-dashboard__title">Total Leave Requests</span>
+                            <input type="month" hx-trigger="change delay:100ms" class="float-end month" hx-get="{% url 'dashboard-leave-requests' %}" hx-target="#leaveRequest">
+                        </div>
+                        <div class="oh-card-dashboard__body" id="leaveRequest" style="height:35vh;overflow-y:auto">
+                            {% include 'leave/leave_request/leave-requests.html' %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div> 
+
+        
+
+        <div class="oh-dashboard__right  col-12 col-sm-12 col-md-12 col-lg-3">
+            <div class="oh-dashboard__events">
+
+                <div class="oh-dashboard__event oh-dashboard__event--purple">
+                    <div class="oh-dasboard__event-photo" style="background-color:white">
+                        <img src="/static/images/ui/sunbed.png" class="oh-dashboard__event-userphoto" />
+                    </div>
+                    <div class="oh-dasboard__event-details">
+                        <span class="oh-dashboard__event-title">Next Holiday</span>
+                        <span class="oh-dashboard__event-main">{{next_holiday.name}}</span>
+                        <span class="oh-dashboard__event-date">{{next_holiday.start_date}}</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent mt-3">
+                <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
+                    <span class="oh-card-dashboard__title">Up coming holidays</span>
+                </div>
+                <div class="oh-card-dashboard__body">
+                    <ul class="oh-card-dashboard__user-list">
+                        {% for holiday in holidays %}
+                            <li class="oh-card-dashboard__user-item oh-dashboard__event">
+                                <div class="">
+                                <span class="oh-profile__name oh-text--white">{{holiday.name}}</span> <br/>
+                                <span class="oh-dashboard__event-date oh-text--white">{{holiday.start_date}}</span>
+                                </div>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script src="{% static "dashboard/dashboard.js" %}"></script>
+{% endblock %}
