@@ -176,7 +176,13 @@
           style="display: none;"
 
         >
+        <form hx-get='{% url "employee-filter-view" %}' id="filterForm" hx-target='#view-container'>
           {% include 'employee_filters.html' %}
+        <div class="oh-dropdown__filter-footer">
+          <button class="oh-btn oh-btn--secondary oh-btn--small w-100 filterButton" id='#employeeFilter' onclick="employeeFilter(this)">{% trans "Filter" %}</button>
+        </div>
+        </form>
+          
         </div>
       </div>
       <div class="oh-btn-group ml-2">
