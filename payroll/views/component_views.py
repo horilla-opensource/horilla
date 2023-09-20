@@ -223,8 +223,6 @@ def view_allowance(request):
     )
 
 
-
-
 @login_required
 @permission_required("payroll.view_allowance")
 def view_single_allowance(request, allowance_id):
@@ -250,7 +248,7 @@ def filter_allowance(request):
     list_view = "payroll/allowance/list_allowance.html"
     card_view = "payroll/allowance/card_allowance.html"
     template = card_view
-    if request.GET.get('view') == "list":
+    if request.GET.get("view") == "list":
         template = list_view
     allowances = paginator_qry(allowances, request.GET.get("page"))
     data_dict = parse_qs(query_string)
@@ -369,7 +367,7 @@ def filter_deduction(request):
     list_view = "payroll/deduction/list_deduction.html"
     card_view = "payroll/deduction/card_deduction.html"
     template = card_view
-    if request.GET.get('view') == "list":
+    if request.GET.get("view") == "list":
         template = list_view
     deductions = paginator_qry(deductions, request.GET.get("page"))
 
@@ -428,7 +426,7 @@ def generate_payslip(request):
     Requires the user to be logged in and have the 'payroll.add_payslip' permission.
 
     """
-    payslip_data = []
+    payslips = []
     json_data = []
     form = forms.GeneratePayslipForm()
     if request.method == "POST":
@@ -444,14 +442,28 @@ def generate_payslip(request):
                 if start_date < contract.contract_start_date:
                     start_date = contract.contract_start_date
                 payslip = payroll_calculation(employee, start_date, end_date)
-                payslip_data.append(payslip)
+                payslips.append(payslip)
                 json_data.append(payslip["json_data"])
 
+                payslip["payslip"] = payslip
+                data = {}
+                data["employee"] = employee
+                data["start_date"] = payslip["start_date"]
+                data["end_date"] = payslip["end_date"]
+                data["status"] = "draft"
+                data["contract_wage"] = payslip["contract_wage"]
+                data["basic_pay"] = payslip["basic_pay"]
+                data["gross_pay"] = payslip["gross_pay"]
+                data["deduction"] = payslip["total_deductions"]
+                data["net_pay"] = payslip["net_pay"]
+                data["pay_data"] = json.loads(payslip["json_data"])
+                save_payslip(**data)
+            messages.success(request, f"{employees.count()} payslip saved as draft")
             return render(
                 request,
                 "payroll/payslip/generate_payslip_list.html",
                 {
-                    "payslip_data": payslip_data,
+                    "payslip_data": payslips,
                     "json_data": json_data,
                     "start_date": start_date,
                     "end_date": end_date,
@@ -501,14 +513,19 @@ def create_payslip(request):
                 data["employee"] = employee
                 data["start_date"] = payslip_data["start_date"]
                 data["end_date"] = payslip_data["end_date"]
-                data["status"] = "draft"
+                data["status"] = (
+                    "draft"
+                    if request.GET.get("status") is None
+                    else request.GET["status"]
+                )
                 data["contract_wage"] = payslip_data["contract_wage"]
                 data["basic_pay"] = payslip_data["basic_pay"]
                 data["gross_pay"] = payslip_data["gross_pay"]
                 data["deduction"] = payslip_data["total_deductions"]
                 data["net_pay"] = payslip_data["net_pay"]
                 data["pay_data"] = json.loads(payslip_data["json_data"])
-                save_payslip(**data)
+                payslip_data["instance"] = save_payslip(**data)
+                form = forms.PayslipForm()
                 messages.success(request, _("Payslip Saved"))
                 return render(
                     request,
@@ -621,10 +638,10 @@ def filter_payslip(request):
         ]
         for key in keys_to_remove:
             data_dict.pop(key)
-    if 'status' in data_dict:
-        status_list = data_dict['status']
+    if "status" in data_dict:
+        status_list = data_dict["status"]
         if len(status_list) > 1:
-            data_dict['status'] = [status_list[-1]]
+            data_dict["status"] = [status_list[-1]]
     return render(
         request,
         template,
