@@ -11,8 +11,9 @@ from django.db.models import ProtectedError
 from django.contrib.auth.models import Permission
 from django.http import HttpResponseRedirect, JsonResponse
 from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext as __
 from django.views.decorators.http import require_http_methods
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from employee.models import Employee
 from horilla.decorators import login_required, permission_required
 from notifications.signals import notify
@@ -53,8 +54,19 @@ def recruitment_delete(request, rec_id):
     try:
         recruitment_obj.delete()
         messages.success(request, _("Recruitment deleted successfully."))
-    except ProtectedError:
-        messages.error(request, _("You cannot delete this recruitment"))
+    except ProtectedError as e:
+        model_verbose_name_sets = set()
+        for obj in e.protected_objects:
+            model_verbose_name_sets.add(__(obj._meta.verbose_name.capitalize()))
+        model_verbose_name_str = (",").join(model_verbose_name_sets)
+        messages.error(
+            request,
+            _(
+                "You cannot delete this recruitment as it is using in {}".format(
+                    model_verbose_name_str
+                )
+            ),
+        )
     recruitment_obj = Recruitment.objects.all()
     return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 
@@ -76,8 +88,15 @@ def recruitment_delete_pipeline(request, rec_id):
         messages.success(request, _("Recruitment deleted."))
     except Recruitment.DoesNotExist:
         messages.error(request, _("Recruitment not found."))
-    except ProtectedError:
-        messages.error(request, _("Recruitment already in use."))
+    except ProtectedError as e:
+        models_verbose_name_sets = set()
+        for obj in e.protected_objects:
+            models_verbose_name_sets.add(__(obj._meta.verbose_name.capitalize()))
+        models_verbose_name_str = (",").join(models_verbose_name_sets)
+        messages.error(
+            request,
+            _("Recruitment already in use for {}.".format(models_verbose_name_str)),
+        )
     return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 
 
@@ -89,41 +108,15 @@ def note_delete(request, note_id):
     """
     try:
         note = StageNote.objects.get(id=note_id)
-        candidate_obj = note.candidate_id
+        cand_id = note.candidate_id.id
         note.delete()
         messages.success(request, _("Note deleted"))
     except StageNote.DoesNotExist:
         messages.error(request, _("Note not found."))
     except ProtectedError:
         messages.error(request, _("You cannot delete this note."))
-    return render(
-        request, "pipeline/pipeline_components/view_note.html", {"cand": candidate_obj}
-    )
 
-
-@login_required
-@require_http_methods(["DELETE"])
-@permission_required(perm="recruitment.delete_stagenote")
-def candidate_remark_delete(request, note_id):
-    """
-    This method is used to delete the candidate stage note
-    Args:
-        id : stage note instance id
-    """
-    try:
-        stage_note = StageNote.objects.get(id=note_id)
-        candidate_obj = stage_note.candidate_note_id.candidate_id
-        stage_note.delete()
-        messages.success(request, _("Note deleted"))
-    except StageNote.DoesNotExist:
-        messages.error(request, _("Note not found."))
-    except ProtectedError:
-        messages.error(request, _("You cannot delete this note."))
-    return render(
-        request,
-        "pipeline/pipeline_components/candidate_remark_view.html",
-        {"cand": candidate_obj},
-    )
+    return redirect("view-note", cand_id=cand_id)
 
 
 @login_required
@@ -157,8 +150,19 @@ def stage_delete(request, stage_id):
     try:
         stage_obj.delete()
         messages.success(request, _("Stage deleted successfully."))
-    except ProtectedError:
-        messages.error(request, _("You cannot delete this stage"))
+    except ProtectedError as e:
+        models_verbose_name_sets = set()
+        for obj in e.protected_objects:
+            models_verbose_name_sets.add(__(obj._meta.verbose_name.capitalize()))
+        models_verbose_name_str = (",").join(models_verbose_name_sets)
+        messages.error(
+            request,
+            _(
+                "You cannot delete this stage while it's in use for {}".format(
+                    models_verbose_name_str
+                )
+            ),
+        )
     return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 
 
@@ -176,8 +180,19 @@ def candidate_delete(request, cand_id):
         messages.success(request, _("Candidate deleted successfully."))
     except Candidate.DoesNotExist:
         messages.error(request, _("Candidate not found."))
-    except ProtectedError:
-        messages.error(request, _("You cannot delete this candidate"))
+    except ProtectedError as e:
+        models_verbose_name_set = set()
+        for obj in e.protected_objects:
+            models_verbose_name_set.add(__(obj._meta.verbose_name.capitalize()))
+        models_verbose_name_str = (",").join(models_verbose_name_set)
+        messages.error(
+            request,
+            _(
+                "You cannot delete this candidate because the candidate is in {}.".format(
+                    models_verbose_name_str
+                )
+            ),
+        )
     return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 
 

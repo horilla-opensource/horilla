@@ -219,7 +219,7 @@ def recruitment_pipeline(request):
     recruitment_obj = Recruitment.objects.filter(is_active=True, closed=False)
     if request.method == "POST":
         if request.POST.get(
-                "recruitment_managers"
+            "recruitment_managers"
         ) is not None and request.user.has_perm("add_recruitment"):
             recruitment_form = RecruitmentDropDownForm(request.POST)
             if recruitment_form.is_valid():
@@ -250,7 +250,7 @@ def recruitment_pipeline(request):
                 return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
         elif request.FILES.get("resume") is not None:
             if request.user.has_perm("add_candidate") or is_stagemanager(
-                    request,
+                request,
             ):
                 candidate_form = CandidateDropDownForm(request.POST, request.FILES)
                 if candidate_form.is_valid():
@@ -280,7 +280,7 @@ def recruitment_pipeline(request):
             stage_form = StageDropDownForm(request.POST)
             if stage_form.is_valid():
                 if recruitment_manages(
-                        request, stage_form.instance.recruitment_id
+                    request, stage_form.instance.recruitment_id
                 ) or request.user.has_perm("recruitment.add_stage"):
                     stage_obj = stage_form.save()
                     stage_form = StageDropDownForm()
@@ -317,7 +317,7 @@ def recruitment_pipeline(request):
             "recruitment_form": recruitment_form,
             "stage_form": stage_form,
             "candidate_form": candidate_form,
-            "job_positions" :job_position,
+            "job_positions": job_position,
         },
     )
 
@@ -449,9 +449,9 @@ def candidate_stage_update(request, cand_id):
         .exists()
     )
     if (
-            stage_manager_on_this_recruitment
-            or request.user.is_superuser
-            or is_recruitmentmanager(rec_id=stage_obj.recruitment_id.id)[0]
+        stage_manager_on_this_recruitment
+        or request.user.is_superuser
+        or is_recruitmentmanager(rec_id=stage_obj.recruitment_id.id)[0]
     ):
         candidate_obj.stage_id = stage_obj
         candidate_obj.schedule_date = None
@@ -479,6 +479,24 @@ def candidate_stage_update(request, cand_id):
         )
     return JsonResponse(
         {"type": "danger", "message": _("Something went wrong, Try agian.")}
+    )
+
+
+@login_required
+@hx_request_required
+@manager_can_enter(perm="recruitment.view_stagenote")
+def view_note(request, cand_id):
+    """
+    This method renders a template components to view candidate remark or note
+    Args:
+        id : candidate instance id
+    """
+    candidate_obj = Candidate.objects.get(id=cand_id)
+    notes = candidate_obj.stagenote_set.all().order_by("-id")
+    return render(
+        request,
+        "pipeline/pipeline_components/view_note.html",
+        {"cand": candidate_obj, "notes": notes},
     )
 
 
@@ -517,16 +535,32 @@ def add_note(request, cand_id=None):
 
 @login_required
 @hx_request_required
-@manager_can_enter(perm="recruitment.view_stagenote")
-def view_note(request, cand_id):
+@manager_can_enter(perm="recruitment.add_stagenote")
+def create_note(request, cand_id=None):
     """
-    This method renders a template components to view candidate remark or note
-    Args:
-        id : candidate instance id
+    This method renders template component to add candidate remark
     """
-    candidate_obj = Candidate.objects.get(id=cand_id)
+    form = StageNoteForm(initial={"candidate_id": cand_id})
+    if request.method == "POST":
+        form = StageNoteForm(
+            request.POST,
+        )
+        if form.is_valid():
+            candidate = form.cleaned_data.get("candidate_id")
+            cand_id = candidate.id
+            note = form.save(commit=False)
+            note.stage_id = note.candidate_id.stage_id
+            note.updated_by = request.user.employee_get
+            note.save()
+            messages.success(request, _("Note added successfully.."))
+            return redirect("view-note", cand_id=cand_id)
+
     return render(
-        request, "pipeline/pipeline_components/view_note.html", {"cand": candidate_obj}
+        request,
+        "pipeline/pipeline_components/create_note.html",
+        {
+            "note_form": form,
+        },
     )
 
 
@@ -545,12 +579,9 @@ def note_update(request, note_id):
         if form.is_valid():
             form.save()
             messages.success(request, _("Note updated successfully..."))
-            response = render(
-                request, "pipeline/pipeline_components/update_note.html", {"form": form}
-            )
-            return HttpResponse(
-                response.content.decode("utf-8") + "<script>location.reload();</script>"
-            )
+            cand_id = note.candidate_id.id
+            return redirect("view-note", cand_id=cand_id)
+
     return render(
         request, "pipeline/pipeline_components/update_note.html", {"form": form}
     )
@@ -736,7 +767,7 @@ def candidate_view(request):
     """
     This method render all candidate to the template
     """
-    view_type = request.GET.get('view')
+    view_type = request.GET.get("view")
     previous_data = request.GET.urlencode()
     candidates = Candidate.objects.filter(is_active=True)
     filter_obj = CandidateFilter(queryset=candidates)
@@ -747,7 +778,7 @@ def candidate_view(request):
             "data": paginator_qry(filter_obj.qs, request.GET.get("page")),
             "pd": previous_data,
             "f": filter_obj,
-            'view_type':view_type,
+            "view_type": view_type,
         },
     )
 
@@ -827,8 +858,8 @@ def candidate_update(request, cand_id):
                 ).first()
             if candidate_obj.stage_id is not None:
                 if (
-                        candidate_obj.stage_id.recruitment_id
-                        != candidate_obj.recruitment_id
+                    candidate_obj.stage_id.recruitment_id
+                    != candidate_obj.recruitment_id
                 ):
                     candidate_obj.stage_id = (
                         candidate_obj.recruitment_id.stage_set.filter(

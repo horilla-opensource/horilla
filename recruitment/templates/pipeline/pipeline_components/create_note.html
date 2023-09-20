@@ -1,0 +1,13 @@
+{% load i18n %}
+<form
+  class="oh-general__tab-target oh-profile-section"
+  hx-post="{% url 'create-note-post' %}"
+  hx-target="#activitySidebar"
+>
+  {{note_form.as_p}}
+  <div class="d-flex flex-row-reverse">
+    <button class="oh-btn oh-btn--secondary pr-4 pl-4" onclick="$(this).parents().find('.oh-modal--show').removeClass('oh-modal--show')">
+      {% trans "Add" %}
+    </button>
+  </div>
+</form>

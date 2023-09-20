@@ -81,7 +81,7 @@ class Recruitment(models.Model):
     )
     job_position_id = models.ForeignKey(
         JobPosition,
-        on_delete=models.CASCADE,
+        on_delete=models.PROTECT,
         null=True,
         blank=True,
         db_constraint=False,
@@ -92,7 +92,7 @@ class Recruitment(models.Model):
     recruitment_managers = models.ManyToManyField(Employee)
     company_id = models.ForeignKey(
         Company,
-        on_delete=models.DO_NOTHING,
+        on_delete=models.PROTECT,
         null=True,
         blank=True,
         verbose_name="Company",
@@ -131,7 +131,7 @@ class Recruitment(models.Model):
         if self.title is None:
             raise ValidationError({"title": _("This field is required")})
         if self.end_date is not None and (
-                self.start_date is not None and self.start_date > self.end_date
+            self.start_date is not None and self.start_date > self.end_date
         ):
             raise ValidationError(
                 {"end_date": _("End date cannot be less than start date.")}
@@ -179,7 +179,6 @@ class Stage(models.Model):
         """
         Meta class to add the additional info
         """
-
         permissions = (("archive_Stage", "Archive Stage"),)
         unique_together = ["recruitment_id", "stage"]
         ordering = ["sequence"]
@@ -199,17 +198,17 @@ class Candidate(models.Model):
     portfolio = models.URLField(max_length=200, blank=True)
     recruitment_id = models.ForeignKey(
         Recruitment,
-        on_delete=models.CASCADE,
+        on_delete=models.PROTECT,
         blank=True,
         null=True,
         related_name="candidate",
         verbose_name="Recruitment",
     )
     job_position_id = models.ForeignKey(
-        JobPosition, on_delete=models.CASCADE, null=True, blank=True
+        JobPosition, on_delete=models.PROTECT, null=True, blank=True
     )
     stage_id = models.ForeignKey(
-        Stage, on_delete=models.CASCADE, null=True, verbose_name="Stage"
+        Stage, on_delete=models.PROTECT, null=True, verbose_name="Stage"
     )
     schedule_date = models.DateTimeField(blank=True, null=True)
     email = models.EmailField(
@@ -350,10 +349,10 @@ class RecruitmentSurveyAnswer(models.Model):
 
     candidate_id = models.ForeignKey(Candidate, on_delete=models.CASCADE)
     recruitment_id = models.ForeignKey(
-        Recruitment, on_delete=models.CASCADE, verbose_name="Recruitment", null=True
+        Recruitment, on_delete=models.PROTECT, verbose_name="Recruitment", null=True
     )
     job_position_id = models.ForeignKey(
-        JobPosition, on_delete=models.CASCADE, verbose_name="Job position", null=True
+        JobPosition, on_delete=models.PROTECT, verbose_name="Job position", null=True
     )
     answer_json = models.JSONField()
     attachment = models.FileField(

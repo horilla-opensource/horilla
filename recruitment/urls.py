@@ -92,19 +92,16 @@ urlpatterns = [
         name="candidate-stage-update",
     ),
     path("view-note/<int:cand_id>/", views.view_note, name="view-note"),
+    path("add-note/<int:cand_id>/", views.add_note, name="add-note"),
+    path("add-note", views.add_note, name="add-note-post"),
+    path("create-note/<int:cand_id>/", views.create_note, name="create-note"),
+    path("create-note", views.create_note, name="create-note-post"),
     path("note-update/<int:note_id>/", views.note_update, name="note-update"),
     path(
         "note-delete/<int:note_id>/",
         recruitment.views.actions.note_delete,
         name="note-delete",
     ),
-    path(
-        "stage-note-delete/<int:note_id>/",
-        recruitment.views.actions.candidate_remark_delete,
-        name="stage-note-delete",
-    ),
-    path("add-note/<int:cand_id>/", views.add_note, name="add-note"),
-    path("add-note", views.add_note, name="add-note-post"),
     path("send-mail/<int:cand_id>/", views.form_send_mail, name="send-mail"),
     path("candidate-view", views.candidate_view, name="candidate-view"),
     path(
