@@ -96,7 +96,13 @@
                             </ul>
                         </div>
                         {% else %}
-                        {% include "leave/today-leave-empty.html" %}
+                        <div style="height: 380px; display:flex;align-items: center;justify-content: center;" class="">
+                            <div style="" class="">
+                              <img style="    display: block;width: 70px;margin: 10px auto ;" src="{% static 'images/ui/leave_types.png' %}" class="" alt=""/>
+                              <h3 style="font-size:16px" class="oh-404__subtitle">{% trans "Today, all employees are present." %}</h3>
+                              {% comment %} <p class="oh-404__subtitle">{% trans "Please contact your administrators for assistance" %}</p> {% endcomment %}
+                            </div>
+                          </div>
                         {% endif %}
                     </div>
                 </div>
@@ -106,7 +112,7 @@
         <div class="oh-dashboard__right  col-12 col-sm-12 col-md-12 col-lg-3">
             <div class="oh-dashboard__events">
 
-                    <div class="oh-dashboard__event oh-dashboard__event--purple">
+                    <div class="oh-dashboard__event oh-dashboard__event--purple mb-2">
                         <div class="oh-dasboard__event-photo" style="background-color:white">
                             <img src="/static/images/ui/sunbed.png" class="oh-dashboard__event-userphoto" />
                         </div>
@@ -118,13 +124,13 @@
                     </div>
             </div>
 
-            <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent mt-3 mb-3" style="height:520px;overflow-y:auto">
+            <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent mt-5 mb-3" style="height:480px;overflow-y:auto">
                 <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
                     <span class="oh-card-dashboard__title">Up coming holidays</span>
                 </div>
                 <div class="oh-card-dashboard__body">
                     <ul class="oh-card-dashboard__user-list">
-                        
+                        {% if holidays %}
                         {% for holiday in holidays %}
                             <li class="oh-card-dashboard__user-item oh-dashboard__event">
                                 <div class="">
@@ -133,6 +139,15 @@
                                 </div>
                             </li>
                         {% endfor %}
+                        {% else %}
+                        <div style="height: 350px; display:flex;align-items: center;justify-content: center;" class="">
+                            <div style="" class="">
+                              <img style="    display: block;width: 70px;margin: 10px auto ;" src="{% static 'images/ui/leave_types.png' %}" class="" alt=""/>
+                              <h3 style="font-size:16px" class="oh-404__subtitle">{% trans "No more holidays scheduled for this month." %}</h3>
+                              {% comment %} <p class="oh-404__subtitle">{% trans "Please contact your administrators for assistance" %}</p> {% endcomment %}
+                            </div>
+                          </div>
+                        {% endif %}
                     </ul>
                 </div>
             </div>
@@ -146,7 +161,13 @@
                     {% if leave_today_employees %}
                         <canvas id="departmentLeave"></canvas>
                     {% else %}
-                        {% include "leave/today-leave-empty.html" %}
+                    <div style="height: 310px; display:flex;align-items: center;justify-content: center;" class="">
+                        <div style="" class="">
+                          <img style="    display: block;width: 70px;margin: 10px auto ;" src="{% static 'images/ui/leave_types.png' %}" class="" alt=""/>
+                          <h3 style="font-size:16px" class="oh-404__subtitle">{% trans "Today, all employees are present." %}</h3>
+                          {% comment %} <p class="oh-404__subtitle">{% trans "Please contact your administrators for assistance" %}</p> {% endcomment %}
+                        </div>
+                      </div>
                     {% endif %}
                 </div>
             </div>

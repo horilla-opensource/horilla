@@ -176,14 +176,14 @@
             {% endif %}
             </div>
             {% if request.user|any_permission:'base' or perms.attendance.add_attendancevalidationcondition %}
-            <div class="oh-navbar__action-icons">
+            <div class="oh-navbar__action-icons" title="Settings">
               <a href="/settings/department-creation" class="oh-navbar__action-icons-link">
                 <ion-icon name="settings-outline"  class="oh-navbar__icon"></ion-icon>
               </a>
             </div>
             {% endif %}
             {% include 'notification/notification.html' %}
-            <div class="oh-dropdown" x-data="{open: false}" @click="open = !open">
+            <div class="oh-dropdown" x-data="{open: false}" @click="open = !open" title="Languages">
               <div class="oh-navbar__action-icons">
                   <a href="#" class="oh-navbar__action-icons-link">
                       <ion-icon name="globe-outline" class="oh-navbar__icon"></ion-icon>

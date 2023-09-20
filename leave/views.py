@@ -1514,8 +1514,10 @@ def dashboard(request):
     requested=leave_requests.filter(status="requested")
     approved=leave_requests.filter(status="approved")
     cancelled=leave_requests.filter(status="cancelled")
-    holidays = Holiday.objects.filter(start_date__gte = today,start_date__month=today.month).order_by('start_date')
-    next_holiday, holidays = (holidays[0], holidays[1:]) if holidays else (None, [])
+    holidays = Holiday.objects.filter(start_date__gte = today)
+    next_holiday = holidays[0]
+    holidays = holidays.filter(start_date__gte = today,start_date__month=today.month).order_by('start_date')[1:]
+
 
     leave_today=LeaveRequest.objects.filter(status="approved",start_date__lte=today,end_date__gte=today)
 
