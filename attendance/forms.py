@@ -119,6 +119,7 @@ class AttendanceUpdateForm(ModelForm):
             "requested_data",
             "is_validate_request",
             "is_validate_request_approved",
+            "attendance_overtime_approve"
         ]
         model = Attendance
         widgets = {

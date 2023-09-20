@@ -74,7 +74,7 @@ class AttendanceActivity(models.Model):
 
     employee_id = models.ForeignKey(
         Employee,
-        on_delete=models.CASCADE,
+        on_delete=models.PROTECT,
         related_name="employee_attendance_activities",
         verbose_name=_("Employee"),
     )
@@ -108,7 +108,7 @@ class Attendance(models.Model):
 
     employee_id = models.ForeignKey(
         Employee,
-        on_delete=models.CASCADE,
+        on_delete=models.PROTECT,
         null=True,
         related_name="employee_attendances",
         verbose_name=_("Employee"),
@@ -372,7 +372,7 @@ class AttendanceOverTime(models.Model):
 
     employee_id = models.ForeignKey(
         Employee,
-        on_delete=models.CASCADE,
+        on_delete=models.PROTECT,
         related_name="employee_overtime",
         verbose_name=_("Employee"),
     )
@@ -437,7 +437,7 @@ class AttendanceLateComeEarlyOut(models.Model):
     ]
 
     attendance_id = models.ForeignKey(
-        Attendance, on_delete=models.CASCADE, related_name="late_come_early_out"
+        Attendance, on_delete=models.PROTECT, related_name="late_come_early_out"
     )
     employee_id = models.ForeignKey(
         Employee,

@@ -92,10 +92,10 @@
             <div class="oh-sticky-table__td">
                 <div class="oh-btn-group">
                 {% if perms.attendance.change_attendance or request.user|is_reportingmanager %}
-                <a hx-get="{% url 'attendance-update' attendance.id %}" hx-target='#updateAttendanceModalBody' hx-swap='innerHTML' data-toggle='oh-modal-toggle' data-target='#updateAttendanceModal'  class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Edit' %}"><ion-icon name="create-outline"></ion-icon></a>
+                <a hx-get="{% url 'attendance-update' attendance.id %}" hx-target='#updateAttendanceModalBody' hx-swap='innerHTML' data-toggle='oh-modal-toggle' data-target='#updateAttendanceModal'  class="oh-btn oh-btn--light-bkg w-50" title="{% trans 'Edit' %}"><ion-icon name="create-outline"></ion-icon></a>
                 {% endif %}
                 {% if perms.attendance.delete_attendance %}
-                <form action="{% url 'attendance-delete' attendance.id  %}" onsubmit="return confirm('{% trans "Are you sure want to delete this attendance?" %}')" hx-target="#tab_contents" method='post'>
+                <form action="{% url 'attendance-delete' attendance.id  %}" onsubmit="return confirm('{% trans "Are you sure want to delete this attendance?" %}')" hx-target="#tab_contents" method='post' class='w-50'>
                   {% csrf_token %}
                   <button type='submit' class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100" title="{% trans 'Remove' %}"><ion-icon name="trash-outline"></ion-icon></button>
                 </form>
@@ -243,10 +243,10 @@
             <div class="oh-sticky-table__td">
               <div class="oh-btn-group">
                 {% if perms.attendance.change_attendance or request.user|is_reportingmanager %}
-                <a hx-get="{% url 'attendance-update' attendance.id %}" hx-target='#updateAttendanceModalBody' hx-swap='innerHTML' data-toggle='oh-modal-toggle' data-target='#updateAttendanceModal'  class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Edit' %}"><ion-icon name="create-outline"></ion-icon></a>
+                <a hx-get="{% url 'attendance-update' attendance.id %}" hx-target='#updateAttendanceModalBody' hx-swap='innerHTML' data-toggle='oh-modal-toggle' data-target='#updateAttendanceModal'  class="oh-btn oh-btn--light-bkg w-50" title="{% trans 'Edit' %}"><ion-icon name="create-outline"></ion-icon></a>
                 {% endif %}
                 {% if perms.attendance.delete_attendance %}
-                <form action="{% url 'attendance-delete' attendance.id  %}" onsubmit="return confirm('{% trans "Are you sure want to delete this attendance?" %}')" hx-target="#tab_contents" method='post'>
+                <form action="{% url 'attendance-delete' attendance.id  %}" onsubmit="return confirm('{% trans "Are you sure want to delete this attendance?" %}')" hx-target="#tab_contents" method='post' class='w-50'>
                   {% csrf_token %}
                   <button type='submit' class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100" title="{% trans 'Remove' %}"><ion-icon name="trash-outline"></ion-icon></button>
                 </form>
@@ -404,10 +404,10 @@
             <div class="oh-sticky-table__td">
               <div class="oh-btn-group">
                 {% if perms.attendance.change_attendance or request.user|is_reportingmanager %}
-                <a hx-get="{% url 'attendance-update' attendance.id %}" hx-target='#updateAttendanceModalBody' hx-swap='innerHTML' data-toggle='oh-modal-toggle' data-target='#updateAttendanceModal'  class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Edit' %}"><ion-icon name="create-outline"></ion-icon></a>
+                <a hx-get="{% url 'attendance-update' attendance.id %}" hx-target='#updateAttendanceModalBody' hx-swap='innerHTML' data-toggle='oh-modal-toggle' data-target='#updateAttendanceModal'  class="oh-btn oh-btn--light-bkg w-50" title="{% trans 'Edit' %}"><ion-icon name="create-outline"></ion-icon></a>
                 {% endif %}
                 {% if perms.attendance.delete_attendance %}
-                <form action="{% url 'attendance-delete' attendance.id  %}" onsubmit="return confirm('{% trans "Are you sure want to delete this attendance?" %}')" hx-target="#tab_contents" method='post'>
+                <form action="{% url 'attendance-delete' attendance.id  %}" onsubmit="return confirm('{% trans "Are you sure want to delete this attendance?" %}')" hx-target="#tab_contents" method='post' class='w-50'>
                   {% csrf_token %}
                   <button type='submit' class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100" title="{% trans 'Remove' %}"><ion-icon name="trash-outline"></ion-icon></button>
                 </form>

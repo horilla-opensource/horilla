@@ -17,6 +17,7 @@ import json
 from datetime import datetime
 from django.shortcuts import render, redirect
 from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext as __
 from django.contrib import messages
 from django.core.paginator import Paginator
 from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
@@ -269,8 +270,14 @@ def attendance_delete(request, obj_id):
             try:
                 attendance.delete()
                 messages.success(request, _("Attendance deleted."))
-            except ProtectedError:
-                messages.error(request, _("You cannot delete this attendance"))
+            except ProtectedError as e:
+                model_verbose_names_set = set()
+                for obj in e.protected_objects:
+                    model_verbose_names_set.add(__(obj._meta.verbose_name.capitalize()))
+                model_names_str = ", ".join(model_verbose_names_set)
+                messages.error(
+                request, _("An attendance entry for {} already exists.".format(model_names_str))
+                )
     except Attendance.DoesNotExist:
         messages.error(request, _("Attendance Does not exists.."))
     return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
@@ -308,13 +315,13 @@ def attendance_bulk_delete(request):
                     attendance.delete()
                     messages.success(request, _("Attendance Deleted"))
                 
-                except ProtectedError:
+                except ProtectedError as e:
+                    model_verbose_names_set = set()
+                    for obj in e.protected_objects:
+                        model_verbose_names_set.add(__(obj._meta.verbose_name.capitalize()))
+                    model_names_str = ", ".join(model_verbose_names_set)
                     messages.error(
-                        request,
-                        _(
-                            "You cannot delete this %(attendance)s"
-                            % {"attendance": attendance}
-                        ),
+                    request, _("An attendance entry for {} already exists.".format(model_names_str))
                     )
         except Attendance.DoesNotExist:
                     messages.error(request, _("Attendance not found."))

@@ -113,10 +113,10 @@
                   <a hx-get="{% url 'attendance-update' attendance.id %}" hx-target='#updateAttendanceModalBody' hx-swap='innerHTML' data-toggle='oh-modal-toggle' data-target='#updateAttendanceModal'  class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Edit' %}"><ion-icon name="create-outline"></ion-icon></a>
                   {% endif %}
                   {% if perms.attendance.delete_attendance %}
-                  <form hx-post="{% url 'attendance-delete' attendance.id  %}?{{pd}}&opage={{overtime_attendances.number}}&vpage={{validate_attendances.number}}&page={{attendances.number}}" hx-confirm="Are you sure want to delete this attendance?" hx-target="#tab_contents" method='post'>
-                    {% csrf_token %}
-                    <button type='submit' class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100" title="{% trans 'Remove' %}"><ion-icon name="trash-outline"></ion-icon></button>
-                  </form>
+                  {% comment %} <form hx-post="{% url 'attendance-delete' attendance.id  %}?{{pd}}&opage={{overtime_attendances.number}}&vpage={{validate_attendances.number}}&page={{attendances.number}}" hx-confirm="Are you sure want to delete this attendance?" hx-target="#tab_contents" method='post'>
+                    {% csrf_token %} {% endcomment %}
+                    <button data-id={{attendance.id}} class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100 deletebutton" title="{% trans 'Remove' %}"><ion-icon name="trash-outline"></ion-icon></button>
+                  {% comment %} </form> {% endcomment %}
                   {% endif %}
                 </div>
           </div>
@@ -276,10 +276,10 @@
                 <a hx-get="{% url 'attendance-update' attendance.id %}" hx-target='#updateAttendanceModalBody' hx-swap='innerHTML' data-toggle='oh-modal-toggle' data-target='#updateAttendanceModal'  class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Edit' %}"><ion-icon name="create-outline"></ion-icon></a>
                 {% endif %}
                 {% if perms.attendance.delete_attendance %}
-                <form hx-post="{% url 'attendance-delete' attendance.id  %}?{{pd}}&opage={{overtime_attendances.number}}&vpage={{validate_attendances.number}}&page={{attendances.number}}" hx-confirm="Are you sure want to delete this attendance?" hx-target="#tab_contents" method='post'>
-                  {% csrf_token %}
-                  <button type='submit' class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100" title="{% trans 'Remove' %}"><ion-icon name="trash-outline"></ion-icon></button>
-                </form>
+                {% comment %} <form hx-post="{% url 'attendance-delete' attendance.id  %}?{{pd}}&opage={{overtime_attendances.number}}&vpage={{validate_attendances.number}}&page={{attendances.number}}" hx-confirm="Are you sure want to delete this attendance?" hx-target="#tab_contents" method='post'>
+                  {% csrf_token %} {% endcomment %}
+                  <button data-id={{attendance.id}} class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100 deletebutton" title="{% trans 'Remove' %}"><ion-icon name="trash-outline"></ion-icon></button>
+                {% comment %} </form> {% endcomment %}
                 {% endif %}
         </div>
       </div>
@@ -439,10 +439,10 @@
                 <a hx-get="{% url 'attendance-update' attendance.id %}" hx-target='#updateAttendanceModalBody' hx-swap='innerHTML' data-toggle='oh-modal-toggle' data-target='#updateAttendanceModal'  class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Edit' %}"><ion-icon name="create-outline"></ion-icon></a>
                 {% endif %}
                 {% if perms.attendance.delete_attendance %}
-                <form hx-post="{% url 'attendance-delete' attendance.id  %}?{{pd}}&opage={{overtime_attendances.number}}&vpage={{validate_attendances.number}}&page={{attendances.number}}" hx-confirm="Are you sure want to delete this attendance?" hx-target="#tab_contents" method='post'>
-                  {% csrf_token %}
-                  <button type='submit' class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100" title="{% trans 'Remove' %}"><ion-icon name="trash-outline"></ion-icon></button>
-                </form>
+                {% comment %} <form hx-post="{% url 'attendance-delete' attendance.id  %}?{{pd}}&opage={{overtime_attendances.number}}&vpage={{validate_attendances.number}}&page={{attendances.number}}" hx-confirm="Are you sure want to delete this attendance?" hx-target="#tab_contents" method='post'>
+                  {% csrf_token %} {% endcomment %}
+                  <button data-id={{attendance.id}} class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100 deletebutton" title="{% trans 'Remove' %}"><ion-icon name="trash-outline"></ion-icon></button>
+                {% comment %} </form> {% endcomment %}
             {% endif %}
           </div>
         </div>
@@ -540,6 +540,28 @@ aria-hidden="true"
     }
   });
   $(document).ready(function () {
+
+    $('.deletebutton').click(function(){
+      var id = $(this).attr('data-id');
+      var url = `/attendance/attendance-delete/${id}/`;
+  
+      // Create a form element
+      var form = $('<form></form>');
+      form.attr('method', 'POST');
+      form.attr('action', url);
+  
+      // Create a hidden input field for the CSRF token
+      var csrf_token = $('input[name="csrfmiddlewaretoken"]').val();
+      var csrf_input = $('<input type="hidden" name="csrfmiddlewaretoken">');
+      csrf_input.val(csrf_token);
+      form.append(csrf_input);
+
+      // Append the form to the body and submit it
+      $(document.body).append(form);
+      form.submit();
+    });
+
+
     var activeTab = localStorage.getItem('activeTabAttendance')
       if (activeTab != null) {
         var tab  = $(`[data-target="${activeTab}"]`)  
