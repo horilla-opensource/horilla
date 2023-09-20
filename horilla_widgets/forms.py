@@ -3,13 +3,13 @@ forms.py
 
 Horilla forms
 """
-from typing import Any
+from typing import Any, Dict
 from django import forms
 from horilla_widgets.widgets.horilla_multi_select_field import HorillaMultiSelectField
 
 
 class HorillaForm(forms.Form):
-    def clean(self) -> dict[str, Any]:
+    def clean(self) -> Dict[str, Any]:
         for field_name, field_instance in self.fields.items():
             if isinstance(field_instance, HorillaMultiSelectField):
                 self.errors.pop(field_name, None)
@@ -25,7 +25,7 @@ class HorillaForm(forms.Form):
 
 
 class HorillaModelForm(forms.ModelForm):
-    def clean(self) -> dict[str, Any]:
+    def clean(self) -> Dict[str, Any]:
         for field_name, field_instance in self.fields.items():
             if isinstance(field_instance, HorillaMultiSelectField):
                 self.errors.pop(field_name, None)
