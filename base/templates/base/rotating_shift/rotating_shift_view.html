@@ -30,6 +30,7 @@
               action="{% url 'rotating-shift-delete' rshift.id %}"
               onsubmit="return confirm('{% trans "Are you sure you want to delete this rotating shift?" %}');"
               method="post"
+              class="w-50"
             >
               {% csrf_token %}
               <button

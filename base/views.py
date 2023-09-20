@@ -75,7 +75,7 @@ from base.methods import (
 )
 
 
-def custom404(request, exception):
+def custom404(request):
     """
     Custom 404 method
     """
@@ -90,21 +90,21 @@ def is_reportingmanger(request, instance):
     """
     manager = request.user.employee_get
     try:
-        employee_workinfo_manager = (
+        employee_work_info_manager = (
             instance.employee_id.employee_work_info.reporting_manager_id
         )
     except Exception:
         return HttpResponse("This Employee Dont Have any work information")
-    return manager == employee_workinfo_manager
+    return manager == employee_work_info_manager
 
 
-def paginator_qry(qryset, page_number):
+def paginator_qry(queryset, page_number):
     """
     Common paginator method
     """
-    paginator = Paginator(qryset, 50)
-    qryset = paginator.get_page(page_number)
-    return qryset
+    paginator = Paginator(queryset, 50)
+    queryset = paginator.get_page(page_number)
+    return queryset
 
 
 def login_user(request):
@@ -412,7 +412,6 @@ def user_group_delete(request, id):
     return redirect("/settings/user-group-create")
 
 
-
 @login_required
 @permission_required("base.add_company")
 def company_create(request):
@@ -475,8 +474,15 @@ def company_delete(request, id):
         messages.success(request, _("Company deleted."))
     except Company.DoesNotExist:
         messages.error(request, _("Company not found."))
-    except ProtectedError:
-        messages.error(request, _("This company already in use"))
+    except ProtectedError as e:
+        model_verbose_names_set = set()
+        for obj in e.protected_objects:
+            model_verbose_names_set.add(_(obj._meta.verbose_name.capitalize()))
+
+        model_names_str = ", ".join(model_verbose_names_set)
+        messages.error(
+            request, _("This company is already in use for {}.".format(model_names_str))
+        )
     return redirect(company_create)
 
 
@@ -541,8 +547,16 @@ def department_delete(request, id):
         messages.success(request, _("Department deleted."))
     except Department.DoesNotExist:
         messages.error(request, _("Department not found."))
-    except ProtectedError:
-        messages.error(request, _("Department already in use."))
+    except ProtectedError as e:
+        model_verbose_names_set = set()
+        for obj in e.protected_objects:
+            model_verbose_names_set.add(_(obj._meta.verbose_name.capitalize()))
+
+        model_names_str = ", ".join(model_verbose_names_set)
+        messages.error(
+            request,
+            _("This department is already in use for {}.".format(model_names_str)),
+        )
     return redirect("/settings/department-creation")
 
 
@@ -607,8 +621,16 @@ def job_position_delete(request, id):
         messages.success(request, _("Job Position Deleted."))
     except JobPosition.DoesNotExist:
         messages.error(request, _("JobPosition not found."))
-    except ProtectedError:
-        messages.error(request, _("This job position already in use."))
+    except ProtectedError as e:
+        model_verbose_names_set = set()
+        for obj in e.protected_objects:
+            model_verbose_names_set.add(_(obj._meta.verbose_name.capitalize()))
+        model_names_str = ", ".join(model_verbose_names_set)
+
+        messages.error(
+            request,
+            _("This job position is already in use for {}.".format(model_names_str)),
+        )
     return redirect("/settings/job-position-creation")
 
 
@@ -671,8 +693,17 @@ def job_role_delete(request, id):
         messages.success(request, _("Job Role Deleted."))
     except JobRole.DoesNotExist:
         messages.error(request, _("Job role not found."))
-    except ProtectedError:
-        messages.error(request, _("This job role already in use."))
+    except ProtectedError as e:
+        model_verbose_names_set = set()
+        for obj in e.protected_objects:
+            model_verbose_names_set.add(_(obj._meta.verbose_name.capitalize()))
+
+        model_names_str = ", ".join(model_verbose_names_set)
+
+        messages.error(
+            request,
+            _("This job role is already in use for {}.".format(model_names_str)),
+        )
     return redirect("/settings/job-role-create")
 
 
@@ -739,8 +770,17 @@ def work_type_delete(request, id):
         messages.success(request, _("Work type deleted."))
     except WorkType.DoesNotExist:
         messages.error(request, _("Work type not found."))
-    except ProtectedError:
-        messages.error(request, _("This work type already in use."))
+    except ProtectedError as e:
+        model_verbose_names_set = set()
+        for obj in e.protected_objects:
+            model_verbose_names_set.add(_(obj._meta.verbose_name.capitalize()))
+
+        model_names_str = ", ".join(model_verbose_names_set)
+
+        messages.error(
+            request,
+            _("This work type is already in use for {}.".format(model_names_str)),
+        )
     return redirect("/settings/work-type-create")
 
 
@@ -807,8 +847,21 @@ def rotating_work_type_delete(request, id):
         messages.success(request, _("Rotating work type deleted."))
     except RotatingWorkType.DoesNotExist:
         messages.error(request, _("Rotating work type not found."))
-    except ProtectedError:
-        messages.error(request, _("This rotating work type already in use."))
+    except ProtectedError as e:
+        model_verbose_names_set = set()
+        for obj in e.protected_objects:
+            model_verbose_names_set.add(_(obj._meta.verbose_name.capitalize()))
+
+        model_names_str = ", ".join(model_verbose_names_set)
+
+        messages.error(
+            request,
+            _(
+                "This rotating work type is already in use for {}.".format(
+                    model_names_str
+                )
+            ),
+        )
     return redirect("/settings/rotating-work-type-create")
 
 
@@ -1133,9 +1186,18 @@ def employee_type_delete(request, id):
         messages.success(request, _("Employee type deleted."))
     except EmployeeType.DoesNotExist:
         messages.error(request, _("Employee type not found."))
-    except ProtectedError:
-        messages.error(request, _("This Employee type already in use."))
-        
+    except ProtectedError as e:
+        model_verbose_names_set = set()
+        for obj in e.protected_objects:
+            model_verbose_names_set.add(_(obj._meta.verbose_name.capitalize()))
+
+        model_names_str = ", ".join(model_verbose_names_set)
+
+        messages.error(
+            request,
+            _("This employee type is already in use for {}.".format(model_names_str)),
+        )
+
     return redirect("/settings/employee-type-create")
 
 
@@ -1197,9 +1259,17 @@ def employee_shift_delete(request, id):
         messages.success(request, _("Employee shift deleted."))
     except EmployeeShift.DoesNotExist:
         messages.error(request, _("This shift not found."))
-    except ProtectedError:
-        messages.error(request, _("This shift already in use."))
+    except ProtectedError as e:
+        model_verbose_names_set = set()
+        for obj in e.protected_objects:
+            model_verbose_names_set.add(_(obj._meta.verbose_name.capitalize()))
+
+        model_names_str = ", ".join(model_verbose_names_set)
+        messages.error(
+            request, _("This shift is already in use for {}.".format(model_names_str))
+        )
     return redirect("/settings/employee-shift-create")
+
 
 @login_required
 @permission_required("base.add_employeeshiftschedule")
@@ -1329,8 +1399,16 @@ def rotating_shift_delete(request, id):
         messages.success(request, _("Rotating shift deleted."))
     except RotatingShift.DoesNotExist:
         messages.error(request, _("Rotating shift not found."))
-    except ProtectedError:
-        messages.error(request, _("You cannot delete this rotating shift"))
+    except ProtectedError as e:
+        model_verbose_names_set = set()
+        for obj in e.protected_objects:
+            model_verbose_names_set.add(_(obj._meta.verbose_name.capitalize()))
+
+        model_names_str = ", ".join(model_verbose_names_set)
+        messages.error(
+            request,
+            _("This rotating shift is already in use for {}.".format(model_names_str)),
+        )
     return redirect(rotating_shift_create)
 
 
@@ -1756,7 +1834,8 @@ def work_type_request(request):
                     recipient=(
                         instance.employee_id.employee_work_info.reporting_manager_id.employee_user_id
                     ),
-                    verb=f"You have new work type request to validate for {instance.employee_id}",
+                    verb=f"You have new work type request to \
+                            validate for {instance.employee_id}",
                     verb_ar=f"لديك طلب نوع وظيفة جديد للتحقق من \
                             {instance.employee_id}",
                     verb_de=f"Sie haben eine neue Arbeitstypanfrage zur \
@@ -2072,11 +2151,15 @@ def shift_request(request):
                     recipient=(
                         instance.employee_id.employee_work_info.reporting_manager_id.employee_user_id
                     ),
-                    verb=f"You have new shift request to approve for {instance.employee_id}",
+                    verb=f"You have new shift request to approve \
+                        for {instance.employee_id}",
                     verb_ar=f"لديك طلب وردية جديد للموافقة عليه لـ {instance.employee_id}",
-                    verb_de=f"Sie müssen eine neue Schichtanfrage für {instance.employee_id} genehmigen",
-                    verb_es=f"Tiene una nueva solicitud de turno para aprobar para {instance.employee_id}",
-                    verb_fr=f"Vous avez une nouvelle demande de quart de travail à approuver pour {instance.employee_id}",
+                    verb_de=f"Sie müssen eine neue Schichtanfrage \
+                        für {instance.employee_id} genehmigen",
+                    verb_es=f"Tiene una nueva solicitud de turno para \
+                        aprobar para {instance.employee_id}",
+                    verb_fr=f"Vous avez une nouvelle demande de quart de\
+                        travail à approuver pour {instance.employee_id}",
                     icon="information",
                     redirect="/shift-requests/shift-request-view",
                 )

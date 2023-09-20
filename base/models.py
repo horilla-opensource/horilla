@@ -80,7 +80,7 @@ class JobPosition(models.Model):
     job_position = models.CharField(max_length=50, blank=False, null=False, unique=True)
     department_id = models.ForeignKey(
         Department,
-        on_delete=models.CASCADE,
+        on_delete=models.PROTECT,
         blank=True,
         related_name="job_position",
         verbose_name=_("Department"),
@@ -95,7 +95,7 @@ class JobRole(models.Model):
     """JobRole model"""
 
     job_position_id = models.ForeignKey(
-        JobPosition, on_delete=models.CASCADE, verbose_name=_("Job Position")
+        JobPosition, on_delete=models.PROTECT, verbose_name=_("Job Position")
     )
     job_role = models.CharField(max_length=50, blank=False, null=True)
     objects = models.Manager()
@@ -131,13 +131,13 @@ class RotatingWorkType(models.Model):
     name = models.CharField(max_length=50)
     work_type1 = models.ForeignKey(
         WorkType,
-        on_delete=models.CASCADE,
+        on_delete=models.PROTECT,
         related_name="work_type1",
         verbose_name=_("Work Type 1"),
     )
     work_type2 = models.ForeignKey(
         WorkType,
-        on_delete=models.CASCADE,
+        on_delete=models.PROTECT,
         related_name="work_type2",
         verbose_name=_("Work Type 2"),
     )
@@ -181,12 +181,12 @@ class RotatingWorkTypeAssign(models.Model):
 
     employee_id = models.ForeignKey(
         "employee.Employee",
-        on_delete=models.CASCADE,
+        on_delete=models.PROTECT,
         null=True,
         verbose_name=_("Employee"),
     )
     rotating_work_type_id = models.ForeignKey(
-        RotatingWorkType, on_delete=models.CASCADE, verbose_name=_("Rotating work type")
+        RotatingWorkType, on_delete=models.PROTECT, verbose_name=_("Rotating work type")
     )
     next_change_date = models.DateField(null=True)
     start_date = models.DateField(default=django.utils.timezone.now)
@@ -203,11 +203,11 @@ class RotatingWorkTypeAssign(models.Model):
     current_work_type = models.ForeignKey(
         WorkType,
         null=True,
-        on_delete=models.DO_NOTHING,
+        on_delete=models.PROTECT,
         related_name="current_work_type",
     )
     next_work_type = models.ForeignKey(
-        WorkType, null=True, on_delete=models.DO_NOTHING, related_name="next_work_type"
+        WorkType, null=True, on_delete=models.PROTECT, related_name="next_work_type"
     )
     is_active = models.BooleanField(default=True)
     objects = models.Manager()
@@ -254,7 +254,6 @@ class EmployeeShiftDay(models.Model):
     def __str__(self) -> str:
         return str(_(self.day))
 
-from django.utils.translation import gettext_lazy as _
 class EmployeeShift(models.Model):
     """
     EmployeeShift model
@@ -288,10 +287,10 @@ class EmployeeShiftSchedule(models.Model):
     """
 
     day = models.ForeignKey(
-        EmployeeShiftDay, on_delete=models.CASCADE, related_name="day_schedule"
+        EmployeeShiftDay, on_delete=models.PROTECT, related_name="day_schedule"
     )
     shift_id = models.ForeignKey(
-        EmployeeShift, on_delete=models.CASCADE, verbose_name=_("Shift")
+        EmployeeShift, on_delete=models.PROTECT, verbose_name=_("Shift")
     )
     minimum_working_hour = models.CharField(
         default="08:15", max_length=5, validators=[validate_time_format]
@@ -329,13 +328,13 @@ class RotatingShift(models.Model):
     shift1 = models.ForeignKey(
         EmployeeShift,
         related_name="shift1",
-        on_delete=models.CASCADE,
+        on_delete=models.PROTECT,
         verbose_name=_("Shift 1"),
     )
     shift2 = models.ForeignKey(
         EmployeeShift,
         related_name="shift2",
-        on_delete=models.CASCADE,
+        on_delete=models.PROTECT,
         verbose_name=_("Shift 2"),
     )
     objects = models.Manager()
@@ -354,10 +353,10 @@ class RotatingShiftAssign(models.Model):
     """
 
     employee_id = models.ForeignKey(
-        "employee.Employee", on_delete=models.CASCADE, verbose_name=_("Employee")
+        "employee.Employee", on_delete=models.PROTECT, verbose_name=_("Employee")
     )
     rotating_shift_id = models.ForeignKey(
-        RotatingShift, on_delete=models.CASCADE, verbose_name=_("Rotating Shift")
+        RotatingShift, on_delete=models.PROTECT, verbose_name=_("Rotating Shift")
     )
     next_change_date = models.DateField(null=True)
     start_date = models.DateField(
@@ -375,12 +374,12 @@ class RotatingShiftAssign(models.Model):
     )
     current_shift = models.ForeignKey(
         EmployeeShift,
-        on_delete=models.DO_NOTHING,
+        on_delete=models.PROTECT,
         null=True,
         related_name="current_shift",
     )
     next_shift = models.ForeignKey(
-        EmployeeShift, on_delete=models.DO_NOTHING, null=True, related_name="next_shift"
+        EmployeeShift, on_delete=models.PROTECT, null=True, related_name="next_shift"
     )
     is_active = models.BooleanField(default=True)
     objects = models.Manager()
@@ -411,7 +410,7 @@ class WorkTypeRequest(models.Model):
 
     employee_id = models.ForeignKey(
         "employee.Employee",
-        on_delete=models.CASCADE,
+        on_delete=models.PROTECT,
         null=True,
         related_name="work_type_request",
         verbose_name=_("Employee"),
@@ -422,13 +421,13 @@ class WorkTypeRequest(models.Model):
     )
     work_type_id = models.ForeignKey(
         WorkType,
-        on_delete=models.CASCADE,
+        on_delete=models.PROTECT,
         related_name="requested_work_type",
         verbose_name=_("Work Type"),
     )
     previous_work_type_id = models.ForeignKey(
         WorkType,
-        on_delete=models.DO_NOTHING,
+        on_delete=models.PROTECT,
         null=True,
         blank=True,
         related_name="previous_work_type",
@@ -470,7 +469,7 @@ class ShiftRequest(models.Model):
 
     employee_id = models.ForeignKey(
         "employee.Employee",
-        on_delete=models.CASCADE,
+        on_delete=models.PROTECT,
         null=True,
         related_name="shift_request",
         verbose_name=_("Employee"),
@@ -481,13 +480,13 @@ class ShiftRequest(models.Model):
     )
     shift_id = models.ForeignKey(
         EmployeeShift,
-        on_delete=models.CASCADE,
+        on_delete=models.PROTECT,
         related_name="requested_shift",
         verbose_name=_("Shift"),
     )
     previous_shift_id = models.ForeignKey(
         EmployeeShift,
-        on_delete=models.DO_NOTHING,
+        on_delete=models.PROTECT,
         null=True,
         blank=True,
         related_name="previous_shift",

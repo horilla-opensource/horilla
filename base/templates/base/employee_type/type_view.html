@@ -20,7 +20,7 @@
                 <a href="{% url 'employee-type-update' type.id %}" type="button"  class="oh-btn oh-btn--light-bkg w-50"> <ion-icon name="create-outline"></ion-icon></a>
                 {% endif %}
                 {% if perms.base.delete_employeetype %}
-                <form action="{% url 'employee-type-delete' type.id %}" onsubmit="return confirm('{% trans "Are you sure you want to delete this employee type?" %}');" method='post'>
+                <form action="{% url 'employee-type-delete' type.id %}" class="w-50" onsubmit="return confirm('{% trans "Are you sure you want to delete this employee type?" %}');" method='post'>
                   {% csrf_token %} 
                   <button type='submit' class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100" title="{% trans 'Remove' %}"><ion-icon name="trash-outline"></ion-icon></button>
                 </form>
