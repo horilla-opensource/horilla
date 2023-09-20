@@ -83,8 +83,12 @@ urlpatterns = [
     path("employee-view-card", views.employee_card, name="employee-view-card"),
     path("employee-view-list", views.employee_list, name="employee-view-list"),
     path("search-employee", views.employee_search, name="search-employee"),
-    path("employee-update/<int:obj_id>/", views.employee_update, name="employee-update"),
-    path("employee-delete/<int:obj_id>/", views.employee_delete, name="employee-delete"),
+    path(
+        "employee-update/<int:obj_id>/", views.employee_update, name="employee-update"
+    ),
+    path(
+        "employee-delete/<int:obj_id>/", views.employee_delete, name="employee-delete"
+    ),
     path(
         "employee-bulk-delete", views.employee_bulk_delete, name="employee-bulk-delete"
     ),
@@ -93,7 +97,11 @@ urlpatterns = [
         views.employee_bulk_archive,
         name="employee-bulk-archive",
     ),
-    path("employee-archive/<int:obj_id>/", views.employee_archive, name="employee-archive"),
+    path(
+        "employee-archive/<int:obj_id>/",
+        views.employee_archive,
+        name="employee-archive",
+    ),
     path(
         "employee-user-group-assign-delete/<int:obj_id>/",
         views.employee_user_group_assign_delete,
@@ -146,4 +154,5 @@ urlpatterns = [
         views.dashboard_employee_tiles,
         name="dashboard-employee-count",
     ),
+    path("employee-widget-filter", views.widget_filter, name="employee-widget-filter"),
 ]

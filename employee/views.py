@@ -702,7 +702,7 @@ def employee_delete(request, obj_id):
     except ProtectedError as e:
         model_verbose_names_set = set()
         for obj in e.protected_objects:
-            model_verbose_names_set.add(__(obj._meta.verbose_name.capitalize()))    
+            model_verbose_names_set.add(__(obj._meta.verbose_name.capitalize()))
         model_names_str = ", ".join(model_verbose_names_set)
         messages.error(
             request, _("This employee already related in {}.".format(model_names_str))
@@ -951,7 +951,7 @@ def employee_work_information_delete(request, obj_id):
         messages.error(request, _("Employee work information not found."))
     except ProtectedError:
         messages.error(request, _("You cannot delete this Employee work information"))
-    
+
     return redirect("/employee/employee-work-information-view")
 
 
@@ -1510,3 +1510,12 @@ def dashboard_employee_tiles(_):
     except Exception:
         data["newbies_week_percentage"] = 0
     return JsonResponse(data)
+
+
+@login_required
+def widget_filter(request):
+    """
+    This method is used to return all the ids of the employees
+    """
+    ids = EmployeeFilter(request.GET).qs.values_list("id", flat=True)
+    return JsonResponse({"ids": list(ids)})
