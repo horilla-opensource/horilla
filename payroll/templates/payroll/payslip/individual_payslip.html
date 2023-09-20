@@ -1,27 +1,31 @@
 {% extends 'index.html' %} {% block content %} {% load i18n %}
 <div class="oh-payslip">
   {% if perms.payroll.change_payslip %}
-    <div class="oh-payslip__header">
-      <div class="oh-payslip__header-left">
-        <div class="oh-payslip__title oh-payslip__title--h2">
-          <select name="status" class="oh-select" id="id_status">
-            {% if payslip.status %}
-            <option value="{{payslip.status}}" selected>{{payslip.get_status_display}}</option>
-            {% else %}
-            <option value="draft" selected>{% trans "Draft" %}</option>
-            {% endif %}
-            <option value="review_ongoing">{% trans "Review Ongoing" %}</option>
-            <option value="confirmed">{% trans "Confirmed" %}</option>
-            <option value="paid">{% trans "paid" %}</option>
-          </select>
-        </div>
+  <div class="oh-payslip__header">
+    <div class="oh-payslip__header-left">
+      <div class="oh-payslip__title oh-payslip__title--h2">
+        <select name="status" class="oh-select" id="id_status">
+          {% if instance %}
+          <option value="{{instance.status}}" selected>
+            {{instance.get_status_display }}
+          </option>
+          {% else %}
+          <option value="draft" selected>{% trans "Draft" %}</option>
+          {% endif %}
+          <option value="review_ongoing">{% trans "Review Ongoing" %}</option>
+          <option value="confirmed">{% trans "Confirmed" %}</option>
+          <option value="paid">{% trans "paid" %}</option>
+        </select>
       </div>
     </div>
+  </div>
   {% endif %}
   <div class="oh-payslip__header">
     <div class="oh-payslip__header-left">
-      <h1 class="oh-payslip__title oh-payslip__title--h1">{% trans "Payslip" %}</h1>
-      <h2 class="oh-payslip__title oh-payslip__title--h2">{{range}} </h2>
+      <h1 class="oh-payslip__title oh-payslip__title--h1">
+        {% trans "Payslip" %}
+      </h1>
+      <h2 class="oh-payslip__title oh-payslip__title--h2">{{range}}</h2>
     </div>
     <div class="oh-payslip__header-left">
       <img
@@ -34,20 +38,28 @@
     <!-- Payslip Summary -->
     <div class="oh-payslip__summary">
       <div class="oh-payslip__user-detail">
-        <h3 class="oh-payslip__employee-title">{% trans "Employee Details" %}</h3>
+        <h3 class="oh-payslip__employee-title">
+          {% trans "Employee Details" %}
+        </h3>
         <ul class="oh-payslip__employee-details">
           <li class="oh-payslip__employee-detail">
-            <span class="oh-payslip__employee-detail-title">{% trans "Employee ID" %}</span>
+            <span class="oh-payslip__employee-detail-title"
+              >{% trans "Employee ID" %}</span
+            >
             <span class="oh-payslip__employee-detail-value"
               >{{employee.badge_id}}</span
             >
           </li>
           <li class="oh-payslip__employee-detail">
-            <span class="oh-payslip__employee-detail-title">{% trans "Employee Name" %}</span>
+            <span class="oh-payslip__employee-detail-title"
+              >{% trans "Employee Name" %}</span
+            >
             <span class="oh-payslip__employee-detail-value">{{employee}}</span>
           </li>
           <li class="oh-payslip__employee-detail">
-            <span class="oh-payslip__employee-detail-title">{% trans "Department" %}</span>
+            <span class="oh-payslip__employee-detail-title"
+              >{% trans "Department" %}</span
+            >
             <span class="oh-payslip__employee-detail-value"
               >{{employee.employee_work_info.department_id.department}}</span
             >
@@ -64,7 +76,9 @@
       </div>
 
       <div class="oh-payslip__netpay">
-        <span class="oh-payslip__netpay-title">{% trans "Employee Net Pay" %}</span>
+        <span class="oh-payslip__netpay-title"
+          >{% trans "Employee Net Pay" %}</span
+        >
         <span class="oh-payslip__netpay-amount"
           >{{currency}}{{net_pay|floatformat:2}}</span
         >
@@ -83,7 +97,12 @@
         </thead>
         <tbody class="oh-payslip__table-tbody">
           <tr class="oh-payslip__table-tr">
-            <td class="oh-payslip__table-td" title="Some deductions will update basic pay before payslip calculation starts, eg: LOP is Deduducted from basic pay if 'Deduct leave from basic pay' field is enabled on the contract, and also with the update compensation deduction through">Basic Pay</td>
+            <td
+              class="oh-payslip__table-td"
+              title="Some deductions will update basic pay before payslip calculation starts, eg: LOP is Deduducted from basic pay if 'Deduct leave from basic pay' field is enabled on the contract, and also with the update compensation deduction through"
+            >
+              Basic Pay
+            </td>
             <td class="oh-payslip__table-td" colspan="2">
               {{currency}}{{basic_pay|floatformat:2}}
             </td>
@@ -99,7 +118,12 @@
         </tbody>
         <tfoot class="oh-payslip__table-tfoot">
           <tr class="oh-payslip__table-tr">
-            <th class="oh-payslip__table-tf" title="Some Deduction will update the total gross pay using the deductions that are enabled update compensation">{% trans "Total Gross Pay" %}</th>
+            <th
+              class="oh-payslip__table-tf"
+              title="Some Deduction will update the total gross pay using the deductions that are enabled update compensation"
+            >
+              {% trans "Total Gross Pay" %}
+            </th>
             <th class="oh-payslip__table-tf">
               {{currency}}{{gross_pay|floatformat:2}}
             </th>
@@ -165,8 +189,7 @@
               {{currency}}{{deduction.amount|floatformat:2}}
             </td>
           </tr>
-          {% endfor %} 
-          {% for deduction in net_deductions %}
+          {% endfor %} {% for deduction in net_deductions %}
           <tr class="oh-payslip__table-tr">
             <td class="oh-payslip__table-td">{{deduction.title}}</td>
             <td class="oh-payslip__table-td">
@@ -177,7 +200,12 @@
         </tbody>
         <tfoot class="oh-payslip__table-tfoot">
           <tr class="oh-payslip__table-tr">
-            <th class="oh-payslip__table-tf" title="Some deductions are not calculated to total deductions because they are deduducted before the calculation starts they deducted from basic pay, gross pay and some deduct after calculating the net pay">Total Deductions</th>
+            <th
+              class="oh-payslip__table-tf"
+              title="Some deductions are not calculated to total deductions because they are deduducted before the calculation starts they deducted from basic pay, gross pay and some deduct after calculating the net pay"
+            >
+              Total Deductions
+            </th>
             <th class="oh-payslip__table-tf">
               {{currency}}{{total_deductions|floatformat:2}}
             </th>
@@ -190,7 +218,9 @@
     <!-- Payslip Payable -->
     <div class="oh-payslip__net-payable">
       <div class="oh-payslip__net-payable-left">
-        <h2 class="oh-payslip__net-payable-title">{% trans "Total Net Payable" %}</h2>
+        <h2 class="oh-payslip__net-payable-title">
+          {% trans "Total Net Payable" %}
+        </h2>
         <p class="oh-payslip__net-payable-subtext">
           {% trans "Gross Earnings - Total Deductions" %}
         </p>
@@ -240,24 +270,35 @@
 </form> -->
   </div>
 </div>
+<div id="messageContainer"></div>
 <script>
-  $("#id_status").change(function (e) { 
-    e.preventDefault();
+  $("#id_status").change(function (e) {
+    var endDate = "{{instance.end_date|date:'Y-m-d'}}"
+    var startDate = "{{instance.start_date|date:'Y-m-d'}}"
     var status = $(this).val();
-    pay_data = {{ json_data|safe }}
-    var True = true
-    var False = false
-    pay_data["status"] = status
-    json_pay_data = JSON.stringify(pay_data)
-    
-    
+    // var currentUrl = window.location.href;
+    // var params = new URLSearchParams(window.location.search);
+    // params.set('status', status);
+    // params.set('start_date', startDate);
+    // params.set('end_date', endDate);
+    // var newUrl = currentUrl.split('?')[0] + '?' + params.toString();
+    // window.history.pushState(null, '', newUrl);
+
+
+    e.preventDefault();
     $.ajax({
       type: "get",
-      url: "{% url 'payslip-status-update' %}",
-      data: {"data":json_pay_data},
-      dataType: "dataType",
+      url: "{% url 'payslip-status-update' instance.id %}",
+      data: {"status":status},
       success: function (response) {
-        
+        console.log(response)
+        $("#messageContainer").html($($(`
+        <div class="oh-alert-container">
+          <div class="oh-alert oh-alert--animated  oh-alert--${response.type}">
+            ${response.message}
+          </div>
+        </div>`)
+        ))
       }
     });
   });

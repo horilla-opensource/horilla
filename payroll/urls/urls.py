@@ -37,7 +37,7 @@ urlpatterns = [
     ),
     path("settings", views.settings, name="payroll-settings"),
     path(
-        "payslip-status-update",
+        "payslip-status-update/<int:payslip_id>/",
         views.update_payslip_status,
         name="payslip-status-update",
     ),

@@ -176,10 +176,10 @@ def contract_filter(request):
     keys_to_remove = [key for key, value in data_dict.items() if value == ["unknown"]]
     for key in keys_to_remove:
         data_dict.pop(key)
-    if 'contract_status' in data_dict:
-        status_list = data_dict['contract_status']
+    if "contract_status" in data_dict:
+        status_list = data_dict["contract_status"]
         if len(status_list) > 1:
-            data_dict['contract_status'] = [status_list[-1]]
+            data_dict["contract_status"] = [status_list[-1]]
     return render(
         request,
         template,
@@ -274,25 +274,18 @@ def settings(request):
 
 @login_required
 @permission_required("payroll.change_payslip")
-def update_payslip_status(request):
+def update_payslip_status(request, payslip_id):
     """
     This method is used to update the payslip confirmation status
     """
-    data = {}
-    pay_data = json.loads(request.GET["data"])
-    emp_id = pay_data["employee"]
-    data["employee"] = Employee.objects.get(id=emp_id)
-    data["start_date"] = pay_data["start_date"]
-    data["end_date"] = pay_data["end_date"]
-    data["status"] = pay_data["status"]
-    data["contract_wage"] = pay_data["contract_wage"]
-    data["basic_pay"] = pay_data["basic_pay"]
-    data["gross_pay"] = pay_data["gross_pay"]
-    data["deduction"] = pay_data["total_deductions"]
-    data["net_pay"] = pay_data["net_pay"]
-    data["pay_data"] = pay_data
-    save_payslip(**data)
-    return JsonResponse({"message": "success"})
+    message = {"type": "success", "message": "Payslip status updated."}
+    try:
+        payslip = Payslip.objects.get(id=payslip_id)
+        payslip.status = request.GET["status"]
+        payslip.save()
+    except Payslip.DoesNotExist:
+        message = {"type": "error", "message": "Payslip not found."}
+    return JsonResponse(message)
 
 
 @login_required
@@ -352,6 +345,7 @@ def view_created_payslip(request, payslip_id):
         data["json_data"] = data.copy()
         data["json_data"]["employee"] = payslip.employee_id.id
         data["json_data"]["payslip"] = payslip.id
+        data["instance"] = payslip
         return render(request, "payroll/payslip/individual_payslip.html", data)
     return render(request, "404.html")
 
