@@ -1,0 +1,146 @@
+<section
+  class="oh-main__topbar p-3 mb-1 m-0"
+  style="padding-left: 0 !important; padding-right: 0 !important"
+  x-data="{searchShow: false}"
+  id="widgetFilterFormContainer{{self.attrs.id}}"
+>
+  <div class="oh-main__titlebar oh-main__titlebar--left">
+    <div class="mb-2 mt-2">
+      <h1 class="oh-main__titlebar-title fw-bold">{{field.label}}</h1>
+    </div>
+  </div>
+  <div class="oh-main__titlebar oh-main__titlebar--right">
+    <div
+      class="oh-input-group oh-input__search-group"
+      :class="searchShow ? 'oh-input__search-group--show' : ''"
+    >
+      <input
+        type="text"
+        class="oh-input oh-input__icon"
+        name="search"
+        aria-label="Search Input"
+        placeholder="Search"
+      />
+    </div>
+    <div class="oh-main__titlebar-button-container">
+      <div class="oh-dropdown" x-data="{open: false}">
+        <button class="oh-btn ml-2" @click="open = !open">
+          <ion-icon
+            name="filter"
+            class="mr-1 md hydrated"
+            role="img"
+            aria-label="filter"
+          ></ion-icon
+          >Filter
+          <div id="filterCount"></div>
+        </button>
+        <div
+          class="oh-dropdown__menu oh-dropdown__menu--left oh-dropdown__filter p-4"
+          x-show="open"
+          @click.outside="open = false"
+        >
+          {% include filter_template_path %}
+          <div class="oh-dropdown__filter-footer">
+            <button
+              type="submit"
+              class="oh-btn oh-btn--secondary oh-btn--small w-100"
+              data-action="{% url filter_route_name %}"
+              id="widgetFilterButton{{self.attrs.id}}"
+            >
+              Filter
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<script>
+  $(document).ready(function () {
+    function transformJson(inputJson) {
+      // Clone the input JSON to avoid modifying the original object
+      const modifiedJson = JSON.parse(JSON.stringify(inputJson));
+
+      // Iterate through each object in the JSON array
+      modifiedJson.forEach((obj) => {
+        // Remove "_id" when it appears at the end of a name
+
+        // If there are "__" in the name, keep only the word after the last "__" and capitalize it
+        obj.name = obj.name.replace(/_id$/, "");
+        obj.name.replace("_", " ");
+        if (obj.name.includes("__")) {
+          const parts = obj.name.split("__");
+          obj.name = parts[parts.length - 1];
+        }
+        obj.name = obj.name.charAt(0).toUpperCase() + obj.name.slice(1);
+        obj.name = obj.name.replace(/_/g, " ");
+      });
+
+      return modifiedJson;
+    }
+
+    $("#widgetFilterButton{{self.attrs.id}}").click(function (e) {
+      e.preventDefault();
+      const formFields = $("#widgetFilterFormContainer{{self.attrs.id}}").find(
+        "[name]"
+      );
+      var formData = [];
+      formFields.each(function () {
+        const name = $(this).attr("name");
+        const value = $(this).val();
+        formData.push({ name, value });
+      });
+      var filterUrl = $(this).attr("data-action");
+      $.ajax({
+        type: "get",
+        url: filterUrl,
+        data: formData,
+        success: function (response) {
+          let ids = response.ids;
+          $("#chooseTableHeaderParent .oh-sticky-table__tbody").hide();
+          $.each(ids, function (indexInArray, valueOfElement) {
+            $(
+              `#chooseTableHeaderParent .oh-sticky-table__tbody[data-instance-id=${valueOfElement}]`
+            ).show();
+          });
+          $(".visible-count").html(
+            $(".oh-sticky-table__tr--custom:visible .oh-sticky-table__sd")
+              .length
+          );
+          var labeledTags = transformJson(formData);
+          var tagContainer = $("#filterTagContainer{{self.attrs.id}}");
+          tagContainer.html("");
+          $.each(labeledTags, function (indexInArray, valueOfElement) {
+            if (valueOfElement.value.length != 0) {
+              tagContainer.append(
+                $(`
+                <span class="oh-filter-tag" id="tag-{{self.attrs.id}}"
+                  >${valueOfElement.name}<button class="oh-filter-tag__close" onclick="closeFilterTag(event, ${formData[indexInArray].name}, '#tag-{{self.attrs.id}}')">
+                    <ion-icon name="close-outline"></ion-icon></button
+                  >
+                </span>`)
+              );
+            }
+          });
+        },
+      });
+    });
+    $("#widgetFilterFormContainer{{self.attrs.id}} [name=search]").keyup(
+      function (e) {
+        $("#widgetFilterButton{{self.attrs.id}}").click();
+      }
+    );
+  });
+  function closeFilterTag(e, fieldName, targetTag) {
+    e.preventDefault();
+    $(fieldName).val("");
+    if ($(fieldName).is("select")) {
+      $(fieldName)
+        .next()
+        .find(`#select2-${$(fieldName).attr("id")}-container`)
+        .html("---------");
+    }
+    $("#widgetFilterButton{{self.attrs.id}}").click();
+    $(targetTag).remove();
+  }
+</script>

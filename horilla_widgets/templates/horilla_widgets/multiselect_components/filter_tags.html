@@ -1,0 +1,35 @@
+<style>
+  .oh-checkpoint-badge--success {
+    color: yellowgreen;
+  }
+  .oh-checkpoint-badge {
+    cursor: pointer;
+  }
+  .m-zero {
+    margin: 0 !important;
+  }
+</style>
+<div class="oh-filter-tag-container mb-2 p-0" id="filterTagContainer{{self.attrs.id}}">
+
+</div>
+<div class="ration-container mb-2 d-flex justify-content-between">
+  <div>
+    <div
+      class="oh-checkpoint-badge oh-checkpoint-badge--secondary"
+      data-toggle="oh-modal-toggle"
+      data-target="#viewSelectedModal"
+    >
+      Selected <span class="selected-count">0</span>/<span class="total-count">{{queryset|length}}</span>
+    </div>
+    <div class="oh-checkpoint-badge oh-checkpoint-badge--secondary" id="selectAllUsers">
+      Select All <span class="total-count visible-count">{{queryset|length}}</span> user
+    </div>
+    <div class="oh-checkpoint-badge" id="unselectAllUsers">
+      Unselect All
+    </div>
+  </div>
+
+  <div class="oh-checkpoint-badge oh-checkpoint-badge--success m-zero" id="selectAllInstances">
+    Select All {{queryset|length}} Item
+  </div>
+</div>

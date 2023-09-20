@@ -1,0 +1,60 @@
+<section
+  class="oh-main__topbar p-3 mb-1 m-0"
+  style="padding-left: 0 !important; padding-right: 0 !important"
+  x-data="{searchShow: false}"
+>
+  <div
+    class="oh-input-group w-100 oh-input__search-group"
+    :class="searchShow ? 'oh-input__search-group--show' : ''"
+  >
+    <input
+      type="text"
+      class="oh-input oh-input__icon w-100"
+      aria-label="Search Input"
+      placeholder="Search"
+    />
+  </div>
+</section>
+
+<div class="ration-container mb-2 d-flex justify-content-between">
+  <div>
+    <div
+      class="oh-checkpoint-badge oh-checkpoint-badge--secondary"
+    >
+      Selected <span class="selected-count">0</span>/<span class="total-count">138</span>
+    </div>
+    <div class="oh-checkpoint-badge oh-checkpoint-badge--secondary" id="selectSelected">
+      Select All
+    </div>
+    <div class="oh-checkpoint-badge" id="unselectSelected">Unselect All</div>
+  </div>
+
+  <!-- <div class="oh-checkpoint-badge oh-checkpoint-badge--success m-zero">
+          Add Selected
+        </div> -->
+</div>
+
+<script>
+  $(document).ready(function () {
+    function updateSelectedCount(){
+        let selectedCount = $(".tag-badge").not(".tag-badge--outline").length
+        $(".selected-count").html(selectedCount);
+    }
+    $(".tag-badge").click(function (e) {
+      e.preventDefault();
+      $(this).toggleClass("tag-badge--outline");
+      updateSelectedCount()
+    });
+    $("#selectSelected").click(function (e) { 
+        e.preventDefault();
+        $(".tag-badge").removeClass("tag-badge--outline");
+        updateSelectedCount()
+    });
+
+    $("#unselectSelected").click(function (e) { 
+        e.preventDefault();
+        $(".tag-badge").addClass("tag-badge--outline");
+        updateSelectedCount()
+    });
+  });
+</script>

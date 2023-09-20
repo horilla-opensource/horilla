@@ -1,0 +1,205 @@
+<div class="oh-sticky-table" style="height: 50vh">
+  <div
+    class="oh-sticky-table__table oh-table--sortable"
+    id="chooseTableHeaderParent"
+  >
+    <div class="oh-sticky-table__thead" id="chooseTableHeader">
+      <div class="oh-sticky-table__tr">
+        <div class="oh-sticky-table__th oh-sticky-table__th--custom">
+          <div class="d-flex">
+            <div class="">
+              <input
+                type="checkbox"
+                title="Select all users"
+                class="oh-input oh-input__checkbox mt-1 mr-2"
+                id="choose-all-user"
+              />
+            </div>
+            Employee
+          </div>
+        </div>
+      </div>
+    </div>
+    {% for instance in queryset %}
+    <div class="oh-sticky-table__tbody" data-instance-id="{{instance.id}}">
+      <div
+        class="oh-sticky-table__tr oh-sticky-table__tr--custom"
+        data-instance-id="{{instance.id}}"
+        data-label="{{instance}}"
+        data-avatar="{% if instance.get_image %}{{instance.get_image}}{% else %}https://ui-avatars.com/api/?name={{instance}}&background=random{% endif %}"
+        draggable="true"
+      >
+        <div
+          class="oh-sticky-table__sd"
+          id="selectRow{{self.attrs.id}}{{instance.id}}"
+        >
+          <div class="d-flex">
+            <div class="">
+              <input
+                type="checkbox"
+                value="{{instance.id}}"
+                class="oh-input oh-input__checkbox mt-2 mr-2 all-choose-user-row"
+              />
+            </div>
+            <div class="oh-profile oh-profile--md">
+              <div class="oh-profile__avatar mr-1">
+                <img
+                  src="{% if instance.get_image %}{{instance.get_image}}{% else %}https://ui-avatars.com/api/?name={{instance}}&background=random{% endif %}"
+                  class="oh-profile__image"
+                />
+              </div>
+              <span class="oh-profile__name oh-text--dark">{{instance}}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+<script>
+  let selectedIds = [];
+  $(document).ready(function () {
+    $("#{{self.attrs.id}}").select2({
+      multiple: true,
+    });
+    $("#{{self.attrs.id}}")
+      .next()
+      .find(".select2-container")
+      .css("width", "100%");
+
+    $("#chooseTableHeader")
+      .not("[type=checkbox]")
+      .click(function (e) {
+        e.preventDefault();
+        if ($(this).find("[type=checkbox]:first").is(":checked")) {
+          $(this).find("[type=checkbox]:first").prop("checked", false);
+        } else {
+          $(this).find("[type=checkbox]:first").prop("checked", true);
+        }
+        $("#choose-all-user").change();
+      });
+    $("#selectAllUsers").click(function (e) {
+      e.preventDefault();
+      $("#choose-all-user").prop("checked", true);
+      $("#choose-all-user").change();
+    });
+    $("#unselectAllUsers").click(function (e) {
+      e.preventDefault();
+      $("#choose-all-user").prop("checked", false);
+      $("#choose-all-user").change();
+    });
+    $("#choose-all-user").change(function (e) {
+      e.preventDefault();
+      if ($(this).is(":checked")) {
+        $(".all-choose-user-row:visible").prop("checked", true);
+        $(".oh-sticky-table__tr--custom:visible .oh-sticky-table__sd").addClass(
+          "oh-sticky-table__tr--selected"
+        );
+      } else {
+        $(".all-choose-user-row:visible").prop("checked", false);
+        $(
+          ".oh-sticky-table__tr--custom:visible .oh-sticky-table__sd"
+        ).removeClass("oh-sticky-table__tr--selected");
+      }
+    });
+    $(".oh-sticky-table__tr--custom").click(function (e) {
+      var checkbox = $(this).find("[type=checkbox]");
+
+      // Toggle the checkbox's checked state
+      checkbox.prop("checked", function (i, checked) {
+        if (!checked) {
+          console.log($(this));
+          $(this)
+            .parent()
+            .parent()
+            .parent()
+            .addClass("oh-sticky-table__tr--selected");
+        } else {
+          $(this)
+            .parent()
+            .parent()
+            .parent()
+            .removeClass("oh-sticky-table__tr--selected");
+        }
+        return !checked;
+      });
+    });
+    $("#filterChoose").click(function (e) {
+      e.preventDefault();
+      var selectedRows = $("#filterChoose div").find(
+        ".oh-sticky-table__tr--selected"
+      );
+      var ids = [];
+      var instanceData = [];
+      $.each(selectedRows, function (indexInArray, valueOfElement) {
+        var id = $(valueOfElement).parent().attr("data-instance-id");
+        var label = $(valueOfElement).parent().attr("data-label");
+        ids.push(id);
+        instanceData.push({ id: id, label: label });
+      });
+      var selectedCount = selectedRows.length;
+      $(".selected-count").html(selectedCount);
+      console.log(ids);
+      console.log(instanceData);
+
+      $("#{{self.attrs.id}}").val(ids);
+      $("#{{self.attrs.id}}").change();
+      $("#avatarsContainer").html("");
+      $.each(instanceData, function (indexInArray, valueOfElement) {
+        var imgUrl = $(
+          `.oh-sticky-table__tr.oh-sticky-table__tr--custom[data-instance-id=${valueOfElement.id}]`
+        ).attr("data-avatar");
+        $("#avatarsContainer").append(
+          $(
+            `<a href="#" class="avatars__item" title="${valueOfElement.label}"><img class="avatar" src="${imgUrl}" alt=""></a>`
+          )
+        );
+      });
+    });
+    $("#selectAllInstances").click(function (e) {
+      e.preventDefault();
+      $("#choose-all-user").prop("checked", true);
+      $(".all-choose-user-row").prop("checked", true);
+      $(".oh-sticky-table__tr--custom .oh-sticky-table__sd").addClass(
+        "oh-sticky-table__tr--selected"
+      );
+      $("#choose-all-user").change();
+    });
+    $("#{{ self.attrs.id }}").change(function (e) {
+      e.preventDefault();
+
+      // Get all selected options
+      $("#avatarsContainer").html("");
+      $(".oh-sticky-table__tr--selected")
+        .find("[type=checkbox]")
+        .prop("checked", false);
+      $(".oh-sticky-table__tr--selected").removeClass(
+        "oh-sticky-table__tr--selected"
+      );
+      var selectedOptions = $(this).find(`:selected`);
+      $(".selected-count").html(selectedOptions.length);
+
+      // Loop through the selected options
+      selectedOptions.each(function (indexInArray, valueOfElement) {
+        // Get the HTML content of each selected option
+        var optionHtml = $(this).html();
+        // Append the selected option's HTML to the avatarsContainer
+        var imgUrl = $(
+          `.oh-sticky-table__tr.oh-sticky-table__tr--custom[data-instance-id=${$(
+            valueOfElement
+          ).val()}]`
+        ).attr("data-avatar");
+        $("#avatarsContainer").append(
+          $(
+            `<a href="#" class="avatars__item" title="${optionHtml}"><img class="avatar" src="${imgUrl}" alt=""></a>`
+          )
+        );
+        var optValue = $(valueOfElement).val();
+        var rowId = "#selectRow{{self.attrs.id}}" + optValue;
+        $(rowId).addClass("oh-sticky-table__tr--selected");
+        $(rowId).find("[type=checkbox]").prop("checked", true);
+      });
+    });
+  });
+</script>
