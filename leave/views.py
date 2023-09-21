@@ -1510,19 +1510,19 @@ def overall_leave(request):
 @permission_required("leave_deleteleaverequest")
 def dashboard(request):
     today = date.today()
-    leave_requests = LeaveRequest.objects.filter(start_date__month = today.month)
+    leave_requests = LeaveRequest.objects.all()
     requested=leave_requests.filter(status="requested")
     approved=leave_requests.filter(status="approved")
     cancelled=leave_requests.filter(status="cancelled")
     holidays = Holiday.objects.filter(start_date__gte = today)
-    next_holiday = holidays[0]
+    next_holiday = holidays[0] if holidays else None
     holidays = holidays.filter(start_date__gte = today,start_date__month=today.month).order_by('start_date')[1:]
 
 
     leave_today=LeaveRequest.objects.filter(status="approved",start_date__lte=today,end_date__gte=today)
 
     context = {
-        "leave_requests":leave_requests,
+        "leave_requests":leave_requests.filter(start_date__month = today.month),
         "requested":requested,
         "approved":approved,
         "cancelled":cancelled,

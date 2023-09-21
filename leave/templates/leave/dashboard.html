@@ -98,9 +98,8 @@
                         {% else %}
                         <div style="height: 380px; display:flex;align-items: center;justify-content: center;" class="">
                             <div style="" class="">
-                              <img style="    display: block;width: 70px;margin: 10px auto ;" src="{% static 'images/ui/leave_types.png' %}" class="" alt=""/>
+                              <img style="    display: block;width: 70px;margin: 10px auto ;" src="{% static 'images/ui/attendance.png' %}" class="" alt=""/>
                               <h3 style="font-size:16px" class="oh-404__subtitle">{% trans "Today, all employees are present." %}</h3>
-                              {% comment %} <p class="oh-404__subtitle">{% trans "Please contact your administrators for assistance" %}</p> {% endcomment %}
                             </div>
                           </div>
                         {% endif %}
@@ -131,22 +130,21 @@
                 <div class="oh-card-dashboard__body">
                     <ul class="oh-card-dashboard__user-list">
                         {% if holidays %}
-                        {% for holiday in holidays %}
-                            <li class="oh-card-dashboard__user-item oh-dashboard__event">
-                                <div class="">
-                                <span class="oh-profile__name oh-text--white">{{holiday.name}}</span> <br/>
-                                <span class="oh-dashboard__event-date oh-text--white">{{holiday.start_date}}</span>
-                                </div>
-                            </li>
-                        {% endfor %}
+                            {% for holiday in holidays %}
+                                <li class="oh-card-dashboard__user-item oh-dashboard__event">
+                                    <div class="">
+                                    <span class="oh-profile__name oh-text--white">{{holiday.name}}</span> <br/>
+                                    <span class="oh-dashboard__event-date oh-text--white">{{holiday.start_date}}</span>
+                                    </div>
+                                </li>
+                            {% endfor %}
                         {% else %}
-                        <div style="height: 350px; display:flex;align-items: center;justify-content: center;" class="">
-                            <div style="" class="">
-                              <img style="    display: block;width: 70px;margin: 10px auto ;" src="{% static 'images/ui/leave_types.png' %}" class="" alt=""/>
-                              <h3 style="font-size:16px" class="oh-404__subtitle">{% trans "No more holidays scheduled for this month." %}</h3>
-                              {% comment %} <p class="oh-404__subtitle">{% trans "Please contact your administrators for assistance" %}</p> {% endcomment %}
+                            <div style="height: 350px; display:flex;align-items: center;justify-content: center;" class="">
+                                <div style="" class="">
+                                <img style="    display: block;width: 70px;margin: 10px auto ;" src="{% static 'images/ui/leave_types.png' %}" class="" alt=""/>
+                                <h3 style="font-size:16px" class="oh-404__subtitle">{% trans "No more holidays scheduled for this month." %}</h3>
+                                </div>
                             </div>
-                          </div>
                         {% endif %}
                     </ul>
                 </div>
@@ -161,13 +159,12 @@
                     {% if leave_today_employees %}
                         <canvas id="departmentLeave"></canvas>
                     {% else %}
-                    <div style="height: 310px; display:flex;align-items: center;justify-content: center;" class="">
-                        <div style="" class="">
-                          <img style="    display: block;width: 70px;margin: 10px auto ;" src="{% static 'images/ui/leave_types.png' %}" class="" alt=""/>
-                          <h3 style="font-size:16px" class="oh-404__subtitle">{% trans "Today, all employees are present." %}</h3>
-                          {% comment %} <p class="oh-404__subtitle">{% trans "Please contact your administrators for assistance" %}</p> {% endcomment %}
+                        <div style="height: 310px; display:flex;align-items: center;justify-content: center;" class="">
+                            <div style="" class="">
+                            <img style="    display: block;width: 70px;margin: 10px auto ;" src="{% static 'images/ui/attendance.png' %}" class="" alt=""/>
+                            <h3 style="font-size:16px" class="oh-404__subtitle">{% trans "Today, all employees are present." %}</h3>
+                            </div>
                         </div>
-                      </div>
                     {% endif %}
                 </div>
             </div>
@@ -178,7 +175,16 @@
                     <span class="oh-card-dashboard__title">Leave Type</span>
                 </div>
                 <div class="oh-card-dashboard__body">
-                    <canvas id="leaveType"></canvas>
+                    {% if leave_requests %}
+                        <canvas id="leaveType"></canvas>
+                    {% else %}
+                        <div style="height: 310px; display:flex;align-items: center;justify-content: center;" class="">
+                            <div style="" class="">
+                            <img style="    display: block;width: 70px;margin: 10px auto ;" src="{% static 'images/ui/leave_types.png' %}" class="" alt=""/>
+                            <h3 style="font-size:16px" class="oh-404__subtitle">{% trans "No leave requests for any leave type this month." %}</h3>
+                            </div>
+                        </div>
+                    {% endif %}
                 </div>
             </div>
         </div> 
