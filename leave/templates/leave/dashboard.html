@@ -2,6 +2,9 @@
 {% load static %}
 {% load i18n %}
 {% block content %}
+{% load tz %}
+
+{% now "Y-m-d" as current_date %}
 
 <div class="oh-wrapper">
     <div class="d-none mt-5" id="back_button" style="width:10%">
@@ -23,7 +26,7 @@
                 <div class="col-12 col-sm-12 col-md-6 col-lg-4">
                     <div class="oh-card-dashboard oh-card-dashboard oh-card-dashboard--neutral filter" hx-get="{% url "request-filter" %}?status=requested&dashboard=true" hx-target="#dashboard" >
                         <div class="oh-card-dashboard__header">
-                            <span class="oh-card-dashboard__title">New Requests</span>
+                            <span class="oh-card-dashboard__title">{% trans "New Requests" %}</span>
                         </div>
                         <div class="oh-card-dashboard__body">
                             <div class="oh-card-dashboard__counts">
@@ -35,7 +38,7 @@
                 <div class="col-12 col-sm-12 col-md-6 col-lg-4">
                     <div class="oh-card-dashboard oh-card-dashboard--success filter" hx-get="{% url "request-filter" %}?status=approved&dashboard=true" hx-target="#dashboard">
                         <div class="oh-card-dashboard__header">
-                            <span class="oh-card-dashboard__title">Approved Requests</span>
+                            <span class="oh-card-dashboard__title">{% trans "Approved Requests" %}</span>
                         </div>
                         <div class="oh-card-dashboard__body">
                             <div class="oh-card-dashboard__counts">
@@ -47,7 +50,7 @@
                 <div class="col-12 col-sm-12 col-md-6 col-lg-4">
                     <div class="oh-card-dashboard oh-card-dashboard--danger filter" hx-get="{% url "request-filter" %}?status=cancelled&dashboard=true" hx-target="#dashboard">
                         <div class="oh-card-dashboard__header">
-                            <span class="oh-card-dashboard__title">Rejected Requests</span>
+                            <span class="oh-card-dashboard__title">{% trans "Rejected Requests" %}</span>
                         </div>
                         <div class="oh-card-dashboard__body">
                             <div class="oh-card-dashboard__counts">
@@ -63,7 +66,7 @@
                     <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent">
                         <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
                             <span class="oh-card-dashboard__title" id="employee-previous" title="{% trans "Previous" %}"><ion-icon name="caret-back-outline"></ion-icon></span>
-                            <span class="oh-card-dashboard__title">Employee Leaves</span>
+                            <span class="oh-card-dashboard__title">{% trans "Employee Leaves" %}</span>
                             <span class="oh-card-dashboard__title float-end" id="employee-next" title="{% trans "next" %}"><ion-icon name="caret-forward"></ion-icon></span>
                         </div>
                         <input type="month" class="mb-2 float-end " name="" id="dash_month" />
@@ -95,13 +98,21 @@
                                 {% endfor %}
                             </ul>
                         </div>
-                        {% else %}
+                        {% elif current_date == next_holiday.start_date|date:"Y-m-d" %}
                         <div style="height: 380px; display:flex;align-items: center;justify-content: center;" class="">
                             <div style="" class="">
-                              <img style="    display: block;width: 70px;margin: 10px auto ;" src="{% static 'images/ui/attendance.png' %}" class="" alt=""/>
-                              <h3 style="font-size:16px" class="oh-404__subtitle">{% trans "Today, all employees are present." %}</h3>
+                              <img style="    display: block;width: 70px;margin: 20px auto ;" src="{% static 'images/ui/sunbed outline.png' %}" class="" alt=""/>
+                              <h3 style="font-size:16px" class="oh-404__subtitle">{% trans "Today is a holiday." %}</h3>
                             </div>
-                          </div>
+                        </div>
+
+                        {% else %}                    
+                        <div style="height: 380px; display:flex;align-items: center;justify-content: center;" class="">
+                            <div style="" class="">
+                              <img style="display: block;width: 70px;margin: 10px auto ;" src="{% static 'images/ui/attendance.png' %}" class="" alt=""/>
+                              <h3 style="font-size:16px" class="oh-404__subtitle">{% trans "No leave requests for today." %}</h3>
+                            </div>
+                        </div>
                         {% endif %}
                     </div>
                 </div>
@@ -110,22 +121,21 @@
         </div> 
         <div class="oh-dashboard__right  col-12 col-sm-12 col-md-12 col-lg-3">
             <div class="oh-dashboard__events">
-
-                    <div class="oh-dashboard__event oh-dashboard__event--purple mb-2">
-                        <div class="oh-dasboard__event-photo" style="background-color:white">
-                            <img src="/static/images/ui/sunbed.png" class="oh-dashboard__event-userphoto" />
-                        </div>
-                        <div class="oh-dasboard__event-details">
-                            <span class="oh-dashboard__event-title">Next Holiday</span>
-                            <span class="oh-dashboard__event-main">{{next_holiday.name}}</span>
-                            <span class="oh-dashboard__event-date">{{next_holiday.start_date}}</span>
-                        </div>
+                <div class="oh-dashboard__event oh-dashboard__event--purple mb-2">
+                    <div class="oh-dasboard__event-photo" style="background-color:white">
+                        <img src="/static/images/ui/sunbed.png" class="oh-dashboard__event-userphoto" />
                     </div>
+                    <div class="oh-dasboard__event-details">
+                        <span class="oh-dashboard__event-title">{% trans "Next Holiday" %}</span>
+                        <span class="oh-dashboard__event-main">{{next_holiday.name}}</span>
+                        <span class="oh-dashboard__event-date">{{next_holiday.start_date}}</span>
+                    </div>
+                </div>
             </div>
 
             <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent mt-5 mb-3" style="height:480px;overflow-y:auto">
                 <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
-                    <span class="oh-card-dashboard__title">Up coming holidays</span>
+                    <span class="oh-card-dashboard__title">{% trans "Up coming holidays" %}</span>
                 </div>
                 <div class="oh-card-dashboard__body">
                     <ul class="oh-card-dashboard__user-list">
@@ -153,16 +163,23 @@
         <div class="col-12 col-sm-12 col-md-12 col-lg-3 mt-3">
             <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent">
                 <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
-                    <span class="oh-card-dashboard__title">Department Leaves</span>
+                    <span class="oh-card-dashboard__title">{% trans "Department Leaves" %}</span>
                 </div>
                 <div class="oh-card-dashboard__body">
                     {% if leave_today_employees %}
                         <canvas id="departmentLeave"></canvas>
+                    {% elif current_date == next_holiday.start_date|date:"Y-m-d" %}
+                    <div style="height: 380px; display:flex;align-items: center;justify-content: center;" class="">
+                        <div style="" class="">
+                            <img style="    display: block;width: 70px;margin: 20px auto ;" src="{% static 'images/ui/sunbed outline.png' %}" class="" alt=""/>
+                            <h3 style="font-size:16px" class="oh-404__subtitle">{% trans "Today is a holiday." %}</h3>
+                        </div>
+                    </div>
                     {% else %}
                         <div style="height: 310px; display:flex;align-items: center;justify-content: center;" class="">
                             <div style="" class="">
                             <img style="    display: block;width: 70px;margin: 10px auto ;" src="{% static 'images/ui/attendance.png' %}" class="" alt=""/>
-                            <h3 style="font-size:16px" class="oh-404__subtitle">{% trans "Today, all employees are present." %}</h3>
+                            <h3 style="font-size:16px" class="oh-404__subtitle">{% trans "No leave requests for today." %}</h3>
                             </div>
                         </div>
                     {% endif %}
@@ -172,7 +189,7 @@
         <div class="col-12 col-sm-12 col-md-12 col-lg-3 mt-3">
             <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent">
                 <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
-                    <span class="oh-card-dashboard__title">Leave Type</span>
+                    <span class="oh-card-dashboard__title">{% trans "Leave Type" %}</span>
                 </div>
                 <div class="oh-card-dashboard__body">
                     {% if leave_requests %}
@@ -191,7 +208,7 @@
         <div class="col-12 col-sm-12 col-md-12 col-lg-6 mt-3">
             <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent">
                 <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
-                    <span class="oh-card-dashboard__title">Leave trend this week</span>
+                    <span class="oh-card-dashboard__title">{% trans "Leave trend this week" %}</span>
                 </div>
                 <div class="oh-card-dashboard__body">
                     <canvas id="leavePeriod"></canvas>

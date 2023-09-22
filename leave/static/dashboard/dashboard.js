@@ -20,6 +20,18 @@ $(document).ready(function(){
 	year = today.getFullYear()
 	$(".month").val(`${year}-${month}`)
 	$("#dash_month").val(`${year}-${month}`)
+
+	function isPieChartEmpty(chartData) {
+		if (!chartData || !chartData.dataset || chartData.dataset.length === 0) {
+			return true;
+		}
+		for (var i = 0; i < chartData.dataset[0].data.length; i++) {
+			if (chartData.dataset[0].data[i] != 0) {
+				return false;
+			}
+		}	
+		return true;
+	  }
   
  	//Employee wise chart for available leaves
 	function available_leave_chart (dataSet){
@@ -119,7 +131,7 @@ $(document).ready(function(){
 					//   stacked: true,
 						title: {
 							display: true,
-							text: "Number of leaves",
+							text: "Number of days",
 							font: {
 								weight: "bold", 
 								size: 16,
@@ -162,8 +174,17 @@ $(document).ready(function(){
 		url: "/leave/available-leaves",
 		dataType: "json",
 		success: function (response) {
-		available_leave_chart(response)
-
+			if (isPieChartEmpty(response)){
+				$("#availableLeaveContainer").html(
+					`<div style="height: 310px; display:flex;align-items: center;justify-content: center;" class="">
+					<div style="" class="">
+					<h3 style="font-size:16px" class="oh-404__subtitle">${response.message}</h3>
+					</div>
+				</div>`
+				)
+			}else{
+				available_leave_chart(response)
+			}
 		},
 		error: (error) => {
 			console.log('Error', error);

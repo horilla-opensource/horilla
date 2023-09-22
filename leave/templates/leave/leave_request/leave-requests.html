@@ -11,6 +11,22 @@
 </div>
 {% endif %}
 {% include 'filter_tags.html' %}
+{% if not dashboard %}
+<div class="d-flex flex-row-reverse">
+    <span class="m-3 review_ongoing" hx-get="{% url "request-filter" %}?{{pd}}&status=cancelled" hx-target="#leaveRequest" style="cursor: pointer">
+      <span class="oh-dot oh-dot--small me-1" style="background-color:red"></span>
+      {% trans "Cancelled" %}
+    </span>
+    <span class="m-3 confirmed" hx-get="{% url "request-filter" %}?{{pd}}&status=requested" hx-target="#leaveRequest" style="cursor: pointer">
+      <span class="oh-dot oh-dot--small me-1" style="background-color:rgb(103, 171, 238)"></span>
+      {% trans "Requested" %}
+    </span>
+    <span class="m-3 paid" hx-get="{% url "request-filter" %}?{{pd}}&status=approved" hx-target="#leaveRequest" style="cursor: pointer">
+      <span class="oh-dot oh-dot--small me-1" style="background-color:yellowgreen"></span>
+      {% trans "Approved" %}
+    </span>
+  </div>
+{% endif %}
 <div class="oh-sticky-table">
     <div class="oh-sticky-table__table ">
         <div class="oh-sticky-table__thead">
@@ -31,15 +47,15 @@
             {% for leave_request in leave_requests %}
             <div class="oh-sticky-table__tr" draggable="true" data-toggle="oh-modal-toggle" data-target="#tableTimeOff"
             hx-get="{% url 'one-request-view' leave_request.id %}" hx-target="#requestView">
-                <div class="oh-sticky-table__sd" >
+                <div class="oh-sticky-table__sd {% if leave_request.status == "requested" %} row-status--blue {% elif leave_request.status == "approved" %} row-status--yellow {% elif leave_request.status == "cancelled" %} row-status--red{% endif %}" >
                     <div class="oh-profile oh-profile--md">
                         <div class="oh-profile__avatar mr-1">
                             {% if leave_request.employee_id.employee_profile %}
                             <img src="{{leave_request.employee_id.employee_profile.url}}" class="oh-profile__image"
-                                alt="{{leave_request.employee_id}}" />
+                                alt="" />
                             {% else %}
                             <img src="https://ui-avatars.com/api/?name={{leave_request.employee_id}}&background=random"
-                                class="oh-profile__image" alt="{{leave_request.employee_id}}" />
+                                class="oh-profile__image" alt="" />
                             {% endif %}
                         </div>
                         <span class="oh-profile__name oh-text--dark">{{leave_request.employee_id}}</span>
