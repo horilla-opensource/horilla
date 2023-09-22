@@ -26,7 +26,7 @@
         <label for="job-position" class="oh-label">{% trans "Stage Manager" %}</label>
         {{stage_form.stage_managers|generate_id:"stage"}}
         <ul id="error-list" class="errorlist" style="display: none">
-          <li>This field is requied</li>
+          <li>This field is requied.</li>
         </ul>
       </div>
       <input type="hidden" name="recruitment_id" value="{{rec.id}}" />
@@ -45,10 +45,10 @@
 
 <script>
   function validateForm(event) {
-    var stage_manager = document.getElementById("stage_manager");
-    var errorList = $(event.srcElement).parent().find("#error-list")
-
-    if (!stage_manager.value) {
+    var stage_manager = $("#stage_manager");
+    var errorList = stage_manager.find("#error-list")
+    var select = stage_manager.children("select")
+    if (select.val().length==0) {
       errorList.show(); // Show error message
     } else {
       errorList.hide();// Hide error message
