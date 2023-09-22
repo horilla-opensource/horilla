@@ -4,7 +4,15 @@
     $(".pipeline-toggle").click(function (e) {
       e.preventDefault();
       toggle = $(this).attr("data-stage-id");
-      $(`[data-stage-toggle-id=${toggle}]`).toggleClass("d-none");
+      if ($(`[data-stage-toggle-id=${toggle}]`).hasClass("d-none")) {
+        $(`[data-stage-toggle-id=${toggle}]`).removeClass("d-none");
+      } 
+      else {
+        setTimeout(function() {
+          $(`[data-stage-toggle-id=${toggle}]`).addClass("d-none");
+        }, 100);
+      }
+
     });
   });
 </script>
