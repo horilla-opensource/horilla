@@ -2,14 +2,26 @@ $(document).ready(function(){
 
     var myDate = new Date();
     var year = myDate.getFullYear();
-    var month = ('0' + (myDate.getMonth())).slice(-2); // Month is zero-indexed, so add 1 and pad with leading zero if needed
+    var month = ('0' + (myDate.getMonth())).slice(-2);
     var formattedDate = year + '-' + month;
     var start_index=0;
     var per_page=10 
 
     $("#monthYearField").val(formattedDate); 
-    
-    
+
+    function isBarChartEmpty(chartData) {
+        if (!chartData) {
+            return true;
+        }
+        for (let i = 0; i < chartData.length; i++) {
+            const hasNonZeroValues = chartData[i].data.some(value => value !== 0);
+            if (hasNonZeroValues) {
+                return false;  // Return false if any non-zero value is found
+            }
+        }
+        return true;  // Return true if all values are zero	
+    }
+	    
     function employee_chart(dataSet, labels) {
         $("#employee_canvas_body").html('<canvas id="employeeChart"></canvas>');
     
@@ -69,7 +81,7 @@ $(document).ready(function(){
                         var clickedLabel = employeeChartData.labels[clickedBarIndex];
     
                         $.ajax({
-                            url: '/payroll/filter-payslip?dashboard=true&search=' + clickedLabel,
+                            url: '/payroll/filter-payslip?dashboard=true&start_date='+$("#monthYearField").val()+'-01&search=' + clickedLabel,
                             type: "GET",
                             dataType: "html",
                             headers: {
@@ -126,8 +138,18 @@ $(document).ready(function(){
                     item["data"]=item.data.slice(start_index,start_index+per_page,)
                 });
                 var values = Object.values(labels).slice(start_index, start_index + per_page);
-
-                employee_chart(dataSet,values)
+                if(isBarChartEmpty(dataSet)){
+                    $("#employee_canvas_body").html(
+                        `<div style="height: 310px; display:flex;align-items: center;justify-content: center;" class="">
+                        <div style="" class="">
+                        <img style="display: block;width: 70px;margin: 10px auto ;" src="/static/images/ui/no-money.png" class="" alt=""/>
+                        <h3 style="font-size:16px" class="oh-404__subtitle">${response.message}</h3>
+                        </div>
+                    </div>`
+                    )
+                }else{
+                    employee_chart(dataSet,values)
+                }
             },
             error: (error) => {
                 console.log('Error', error);
@@ -188,7 +210,7 @@ $(document).ready(function(){
                     var clickedLabel = departmentChartData.labels[clickedBarIndex];
                     
                     $.ajax({
-                        url: '/payroll/filter-payslip?dashboard=true&department='+clickedLabel,
+                        url: '/payroll/filter-payslip?dashboard=true&start_date='+$("#monthYearField").val()+'-01&department='+clickedLabel,
                         type: "GET",
                         dataType: "html",
                         headers: {
@@ -222,16 +244,38 @@ $(document).ready(function(){
                 dataSet = response.dataset;
                 labels = response.labels;
                 department_total = response.department_total
+                if (department_total.length!=0){
+                    $("#department_total").html("")
+                    $.each(department_total, function (key, value) {
+                        $("#department_total").append(
+                            `<li class='m-3 department' style = 'cursor: pointer;''><span class='department_item'>${value["department"]}</span>: <span> ${value["amount"]}</span></li>`
+                            )
+                        })
 
-                $("#department_total").html("")
-                $.each(department_total, function (key, value) {
-                    $("#department_total").append(
-                        "<li class='m-3 department'><span class='department_item'>"+value["department"]+"</span>: <span>"+value["amount"]+"</span></li>"
-                        )
-                    })
 
+                }else {
+                    $("#department_total").html(
+                        `<div style="display:flex;align-items: center;justify-content: center; padding-top:50px" class="">
+                        <div style="" class="">
+                        <img style="display: block;width: 70px;margin: 10px auto ;" src="/static/images/ui/money.png" class="" alt=""/>
+                        <h3 style="font-size:16px" class="oh-404__subtitle">${response.message}</h3>
+                        </div>
+                    </div>`
+                    )
+                }
 
-                department_chart(dataSet,labels)
+                if (isBarChartEmpty(dataSet)){
+                    $("#department_canvas_body").html(
+                        `<div style="height: 310px; display:flex;align-items: center;justify-content: center;" class="">
+                        <div style="" class="">
+                        <img style="display: block;width: 70px;margin: 10px auto ;" src="/static/images/ui/no-money.png" class="" alt=""/>
+                        <h3 style="font-size:16px" class="oh-404__subtitle">${response.message}</h3>
+                        </div>
+                    </div>`
+                    )
+                }else{
+                    department_chart(dataSet,labels)
+                }
             },
             error: (error) => {
                 console.log('Error', error);
@@ -253,17 +297,26 @@ $(document).ready(function(){
             },
             success: (response) => {
                 var contract_end = response.contract_end
-                
-
-                $("#contract_ending").html("")
-                $.each(contract_end, function (key,value) {
-                    id=value.contract_id
-                    elem = `<li class='m-3 contract_id' data-id=${id}> ${value.contract_name} </li>`
-                    
-                    $("#contract_ending").append(elem)
-                    })
-                $(".contract-number").html(Object.keys(contract_end).length)
-
+                if (contract_end.length!=0){
+                    $("#contract_ending").html("")
+                    $.each(contract_end, function (key,value) {
+                        id=value.contract_id
+                        elem = `<li class='m-3 contract_id' style = "cursor: pointer;" data-id=${id}> ${value.contract_name} </li>`
+                        
+                        $("#contract_ending").append(elem)
+                        })
+                    $(".contract-number").html(Object.keys(contract_end).length)
+                }
+                else {
+                    $("#contract_ending").html(
+                        `<div style="display:flex;align-items: center;justify-content: center; padding-top:50px" class="">
+                        <div style="" class="">
+                        <img style="display: block;width: 70px;margin: 10px auto ;" src="/static/images/ui/contract.png" class="" alt=""/>
+                        <h3 style="font-size:16px" class="oh-404__subtitle">${response.message}</h3>
+                        </div>
+                    </div>`
+                    )
+                }
             },
             error: (error) => {
                 console.log('Error', error);
@@ -408,7 +461,7 @@ $(document).ready(function(){
     $("#department_total").on("click",".department",function(){
         department = $(this).children(".department_item").text()
         $.ajax({
-            url: '/payroll/filter-payslip?dashboard=true&department='+department,
+            url: '/payroll/filter-payslip?dashboard=true&start_date='+$("#monthYearField").val()+'-01&department='+department,
             type: "GET",
             dataType: "html",
             headers: {
@@ -426,8 +479,4 @@ $(document).ready(function(){
         });
     })
     
-
-
-    
-
 })

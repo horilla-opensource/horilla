@@ -489,6 +489,7 @@ def dashboard_employee_chart(request):
             "dataset": dataset,
             "labels": employee_label,
             "employees": list_of_employees,
+            "message":_("No payslips generated for this month.")
         }
         return JsonResponse(response)
 
@@ -577,6 +578,7 @@ def dashboard_department_chart(request):
             "dataset": dataset,
             "labels": department,
             "department_total": department_total,
+            "message":"No payslips generated for this month."
         }
         return JsonResponse(response)
 
@@ -602,6 +604,7 @@ def contract_ending(request):
 
     response = {
         "contract_end": ending_contract,
+        "message":"No contracts ending this month"
     }
     return JsonResponse(response)
 

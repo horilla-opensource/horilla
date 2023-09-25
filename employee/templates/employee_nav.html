@@ -146,7 +146,7 @@
           {% comment %} href = "{% url 'employee-view-list' %}" {% endcomment %}
           hx-get="{% url 'employee-filter-view' %}?view=list" 
           hx-target="#view-container" 
-          class="oh-btn oh-btn--view"
+          class="oh-btn oh-btn--view {% if request.GET.view != 'card' %} oh-btn--view-active {% endif %}"
           title='{% trans "List" %}'
           ><ion-icon name="list-outline"></ion-icon
         ></a>
@@ -157,7 +157,7 @@
           {% comment %} href = "{% url 'employee-view-card' %}" {% endcomment %}
           hx-get="{% url 'employee-filter-view' %}?view=card"
           hx-target="#view-container"  
-          class="oh-btn oh-btn--view" 
+          class="oh-btn oh-btn--view {% if request.GET.view == 'card' %} oh-btn--view-active {% endif %}" 
           title='{% trans "Card" %}'
           ><ion-icon name="grid-outline"></ion-icon
         ></a>

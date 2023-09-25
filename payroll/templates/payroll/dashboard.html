@@ -80,9 +80,9 @@
                 </div>
 
                 <div class="oh-btn-group ms-2 mt-3 justify-content-between">
-                    <div>
-                        <label for="monthYearField" class="text-danger fw-bold">{% trans "Select Month and Year:" %}</label>
-                        <input class="oh-select p-3 m-1" type="month" id="monthYearField" name="monthYearField"> 
+                    <div style = "cursor: pointer;">
+                        <label for="monthYearField" class="text-danger fw-bold" style = "cursor: pointer;">{% trans "Select Month and Year:" %}</label>
+                        <input class="oh-select p-3 m-1" type="month" id="monthYearField" name="monthYearField" style = "cursor: pointer;"> 
                     </div>
                     
                     <div class="oh-main__titlebar-button-container">
@@ -106,7 +106,7 @@
                               </div>
                             </div>
                             <div class="col-sm-12 col-md-12 col-lg-6">
-                              <div class="oh-input-group">
+                              <div class="oh-input-group" >
                                 <label class="oh-label">{% trans "End Date" %}</label>
                                 <input class="mb-3 oh-select p-3" type="date" name="end_date" id="end_date">
                               </div>
@@ -150,10 +150,10 @@
                 <div class="oh-dashboard__movable-cards row mt-4">
                     <div class="col-12 col-sm-12 col-md-12 col-lg-6 oh-card-dashboard--moveable mb-4">
                         <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent">
-                            <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
-                                <span class="oh-card-dashboard__title" id="employee-previous"><ion-icon name="caret-back-outline"></ion-icon></span>
+                            <div class="oh-card-dashboard__header oh-card-dashboard__header--divider" style = "cursor: default;">
+                                <span class="oh-card-dashboard__title" id="employee-previous" style = "cursor: pointer;"><ion-icon name="caret-back-outline"></ion-icon></span>
                                 <span class="oh-card-dashboard__title">{% trans "Employee Payslips" %}</span>
-                                <span class="oh-card-dashboard__title float-end" id="payroll-employee-next"><ion-icon name="caret-forward"></ion-icon></span>
+                                <span class="oh-card-dashboard__title float-end" id="payroll-employee-next" style = "cursor: pointer;"><ion-icon name="caret-forward"></ion-icon></span>
 
                             </div>
                             <div class="oh-card-dashboard__body" id="employee_canvas_body">
@@ -161,8 +161,8 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-12 col-sm-12 col-md-12 col-lg-6 oh-card-dashboard--moveable">
-                        <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent">
+                    <div class="col-12 col-sm-12 col-md-12 col-lg-6 oh-card-dashboard--moveable" >
+                        <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent" style = "cursor: default;">
                             <h6 class="ms-4 m-2 fw-bold">{% trans "Total Payslips Genarated :" %}  <b><span class="payslip-number"></span></b></h6>
                             <h6 class="ms-4 m-2 fw-bold">{% trans "Total Amount :" %} <b>{{currency}} <span class="payslip-amount"></span></b></h6>
                             <h5 class="ms-4 m-2 fw-bold" style="color:#9C4000">{% trans "Department Total Amount" %}</h5>
@@ -172,7 +172,7 @@
                     </div>
                     
                     <div class="col-12 col-sm-12 col-md-12 col-lg-6 oh-card-dashboard--moveable">
-                        <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent">
+                        <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent" style = "cursor: default;">
                             <h4 class="ms-4 m-2 fw-bold text-danger">{% trans "Contracts ending this month" %}  <b><span class=""></span></b></h4>
                             <h6 class="ms-4 fw-bold" >{% trans "Number of contracts expiring this month :" %} <b class="contract-number"></b></h6>
                             <hr class="line">
@@ -186,7 +186,7 @@
                             <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
                                 <span class="oh-card-dashboard__title">{% trans "Department Chart" %}</span>
                             </div>
-                            <div class="oh-card-dashboard__body" id="department_canvas_body" style="width: 50%; margin: 0 auto;">
+                            <div class="oh-card-dashboard__body" id="department_canvas_body" style="width: 50%; margin: 0 auto;" >
                                 <canvas id="departmentChart"></canvas>
                             </div>
                         </div>

@@ -8,6 +8,9 @@
   .oh-card-dashboard--moveable {
     padding: 0 10px 20px 10px;
   }
+  .oh-card-dashboard {
+    cursor: default;
+  }
 </style>
 <main>
   <div class="oh-wrapper">
@@ -73,7 +76,7 @@
                 </select>
               </div>
               <div class="oh-card-dashboard__body">
-                <canvas id="overAllLeave"></canvas>
+                <canvas id="overAllLeave" style = "cursor: pointer;"></canvas>
               </div>
             </div>
           </div>
@@ -85,7 +88,7 @@
                 <span class="oh-card-dashboard__title">{% trans "Hired Candidates" %}</span>
               </div>
               <div class="oh-card-dashboard__body">
-                <canvas id="hiredCandidate"></canvas>
+                <canvas id="hiredCandidate" style = "cursor: pointer;"></canvas>
               </div>
             </div>
           </div>
@@ -95,7 +98,7 @@
                 <span class="oh-card-dashboard__title">{% trans "Candidate Started Onboarding" %}</span>
               </div>
               <div class="oh-card-dashboard__body">
-                <canvas id="onboardCandidate"></canvas>
+                <canvas id="onboardCandidate" style = "cursor: pointer;"></canvas>
               </div>
             </div>
           </div>
@@ -108,7 +111,7 @@
                 <span class="oh-card-dashboard__title">{% trans "Daily Attendance Analytic" %}</span>
               </div>
               <div class="oh-card-dashboard__body">
-                <canvas id="dailyAnalytic"></canvas>
+                <canvas id="dailyAnalytic" style = "cursor: pointer;"></canvas>
               </div>
             </div>
           </div>
@@ -121,7 +124,7 @@
                 <span class="oh-card-dashboard__title">{% trans "Employees Chart" %}</span>
               </div>
               <div class="oh-card-dashboard__body">
-                <canvas id="totalEmployees"></canvas>
+                <canvas id="totalEmployees" style = "cursor: pointer;"></canvas>
               </div>
             </div>
           </div>
@@ -134,7 +137,7 @@
                 <span class="oh-card-dashboard__title">{% trans "Department Chart" %}</span>
               </div>
               <div class="oh-card-dashboard__body">
-                <canvas id="departmentChart"></canvas>
+                <canvas id="departmentChart" style = "cursor: pointer;"></canvas>
               </div>
             </div>
           </div>
@@ -146,7 +149,7 @@
                 <span class="oh-card-dashboard__title">{% trans "Gender Chart" %}</span>
               </div>
               <div class="oh-card-dashboard__body">
-                <canvas id="genderChart"></canvas>
+                <canvas id="genderChart" style = "cursor: pointer;"></canvas>
               </div>
             </div>
           </div>
@@ -158,7 +161,7 @@
                 <span class="oh-card-dashboard__title">{% trans "Recruitment Analytic" %}</span>
               </div>
               <div class="oh-card-dashboard__body">
-                <canvas id="recruitmentChart1"></canvas>
+                <canvas id="recruitmentChart1" style = "cursor: pointer;"></canvas>
               </div>
             </div>
           </div>
@@ -171,7 +174,7 @@
                 <span class="oh-card-dashboard__title">{% trans "Objective status" %}</span>
               </div>
               <div class="oh-card-dashboard__body">
-                <canvas id="objectiveChart"></canvas>
+                <canvas id="objectiveChart" style = "cursor: pointer;"></canvas>
               </div>
             </div>
             {% endif %}
@@ -183,7 +186,7 @@
                 <span class="oh-card-dashboard__title">{% trans "Key result status" %}</span>
               </div>
               <div class="oh-card-dashboard__body">
-                <canvas id="keyResultChart"></canvas>
+                <canvas id="keyResultChart" style = "cursor: pointer;"></canvas>
               </div>
             </div>
           </div>
@@ -193,11 +196,11 @@
             <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent">
               <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
                 <span class="oh-card-dashboard__title">{% trans "Feedback Status" %}</span>
-                <span class="oh-card-dashboard__title float-end" id="feedback-status-chart"><ion-icon
+                <span class="oh-card-dashboard__title float-end" id="feedback-status-chart" style = "cursor: pointer;"><ion-icon
                     name="caret-forward"></ion-icon></span>
               </div>
               <div class="oh-card-dashboard__body">
-                <canvas id="feedbackChart"></canvas>
+                <canvas id="feedbackChart" style = "cursor: pointer;"></canvas>
               </div>
             </div>
           </div>
@@ -218,7 +221,7 @@
           </ul>
         </div>
 
-        <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent mt-3">
+        <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent">
           <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
             <span class="oh-card-dashboard__title">{% trans "On Leave" %}</span>
           </div>

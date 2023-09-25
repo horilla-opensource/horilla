@@ -6,6 +6,9 @@
   class="oh-filter-tag-container"
   style="position: fixed; top: 150; z-index: 9999"
 >
+  {% if filter_dict %}
+    <span class="oh-filter-tag">{% trans "Applied Filters :" %}</span>
+  {% endif %}
   {%for field,values in filter_dict.items %} {%if values %}
   {% with translation_field=field|filter_field %}
   <span class="oh-filter-tag filter-field" data-x-field="{{field}}">

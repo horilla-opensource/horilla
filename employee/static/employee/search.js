@@ -18,6 +18,8 @@ $(document).ready(function () {
       history.pushState({}, "", newURL);      
       $("#employee-search").attr("hx-vals", `{"view":"${view}"}`);      
       $('#filterForm').attr("hx-vals", `{"view":"${view}"}`);   
+      $(".oh-btn--view-active").removeClass("oh-btn--view-active")
+      $(this).children("a").addClass("oh-btn--view-active")
     }    
   });
 
