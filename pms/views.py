@@ -215,8 +215,8 @@ def objective_filter_pagination(request, objective_own, objective_all):
     previous_data = request.GET.urlencode()
     initial_data = {"archive": False}  # set initial value of archive filter to False
     if request.GET.get("status") != "Closed":
-        objective_own = objective_own.exclude(status="Closed")
-        objective_all = objective_all.exclude(status="Closed")
+        objective_own = objective_own
+        objective_all = objective_all
     objective_filter_own = ObjectiveFilter(
         request.GET or initial_data, queryset=objective_own
     )
@@ -257,40 +257,29 @@ def objective_list_view(request):
     )
 
     if request.user.has_perm("pms.view_employeeobjective"):
-        objective_own = EmployeeObjective.objects.filter(employee_id=employee).exclude(
-            status="Closed"
-        ) | EmployeeObjective.objects.filter(emp_obj_id__employee_id=employee).exclude(
-            status="Closed"
-        )
+        objective_own = EmployeeObjective.objects.filter(employee_id=employee
+    ) | EmployeeObjective.objects.filter(emp_obj_id__employee_id=employee)
         objective_own = objective_own.distinct()
-        objective_all = EmployeeObjective.objects.all().exclude(status="Closed")
+        objective_all = EmployeeObjective.objects.all()
         context = objective_filter_pagination(request, objective_own, objective_all)
 
     elif is_manager:
         # if user is a manager
         employees_ids = [employee.id for employee in is_manager]
-        objective_own = EmployeeObjective.objects.filter(employee_id=employee).exclude(
-            status="Closed"
-        ) | EmployeeObjective.objects.filter(emp_obj_id__employee_id=employee).exclude(
-            status="Closed"
-        )
+        objective_own = EmployeeObjective.objects.filter(employee_id=employee
+        ) | EmployeeObjective.objects.filter(emp_obj_id__employee_id=employee)
         objective_own = objective_own.distinct()
         objective_all = EmployeeObjective.objects.filter(
             employee_id__in=employees_ids
-        ).exclude(status="Closed") | EmployeeObjective.objects.filter(
+        )| EmployeeObjective.objects.filter(
             emp_obj_id__employee_id__in=employees_ids
-        ).exclude(
-            status="Closed"
         )
         objective_all = objective_all.distinct()
         context = objective_filter_pagination(request, objective_own, objective_all)
     else:
         # for normal user
-        objective_own = EmployeeObjective.objects.filter(employee_id=employee).exclude(
-            status="Closed"
-        ) | EmployeeObjective.objects.filter(emp_obj_id__employee_id=employee).exclude(
-            status="Closed"
-        )
+        objective_own = EmployeeObjective.objects.filter(employee_id=employee
+            ) | EmployeeObjective.objects.filter(emp_obj_id__employee_id=employee)
         objective_own = objective_own.distinct()
         objective_all = EmployeeObjective.objects.none()
         context = objective_filter_pagination(request, objective_own, objective_all)
@@ -1004,13 +993,12 @@ def feedback_list_view(request):
     ).values_list("id", flat=True)
     feedback_own = (
         Feedback.objects.filter(employee_id=employee)
-        .exclude(status="Closed")
         .filter(archive=False)
     )
     feedback_requested = Feedback.objects.filter(pk__in=feedback_requested_ids).filter(
         archive=False
     )
-    feedback_all = Feedback.objects.all().exclude(status="Closed").filter(archive=False)
+    feedback_all = Feedback.objects.all().filter(archive=False)
     employees = Employee.objects.filter(
         employee_work_info__reporting_manager_id=employee
     )  # checking the user is reporting manager or not
@@ -1723,7 +1711,7 @@ def dashboard_view(request):
         count_key_result = EmployeeKeyResult.objects.all().count()
         count_feedback = Feedback.objects.all().count()
         okr_at_risk = EmployeeObjective.objects.filter(status="At Risk")
-    if is_manager:
+    elif is_manager:
         employees_ids = [employee.id for employee in is_manager]
         count_objective = EmployeeObjective.objects.filter(
             employee_id__in=employees_ids
@@ -1822,3 +1810,24 @@ def filtersubordinates(request, queryset, perm=None):
     else:
         queryset = queryset.filter(employee_id=user.employee_get)
         return queryset
+
+
+@login_required
+def create_period(request):
+    """
+    This is an ajax method to return json response to create stage related 
+    to the project in the task-all form fields
+    """
+    
+    if request.method == 'GET':
+        form = PeriodForm()
+    if request.method == 'POST':
+        form = PeriodForm(request.POST)
+        if form.is_valid():
+            instance = form.save()
+            return JsonResponse({"id": instance.id, "name": instance.period_name, "start_date": instance.start_date, "end_date": instance.end_date})
+        errors = form.errors.as_json()
+        print('-------------------------------------')
+        print(errors)
+        return JsonResponse({"errors": errors})
+    return render(request,"okr/create_period.html",context={"form": form})

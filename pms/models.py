@@ -1,4 +1,5 @@
 from django.db import models
+from django.forms import ValidationError
 from django.utils.translation import gettext_lazy as _
 
 # importing simple history
@@ -13,8 +14,8 @@ class Period(models.Model):
     """this is a period model used for creating period"""
 
     period_name = models.CharField(max_length=150, unique=True)
-    start_date = models.DateField(null=True, blank=True)
-    end_date = models.DateField(null=True, blank=True)
+    start_date = models.DateField()
+    end_date = models.DateField()
     objects = models.Manager()
 
     def __str__(self):

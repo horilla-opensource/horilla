@@ -144,6 +144,12 @@ class ObjectiveForm(forms.ModelForm):
             "employee", None
         )  # access the logged-in user's information
         super(ObjectiveForm, self).__init__(*args, **kwargs)
+
+        self.fields["period"].choices = list(self.fields["period"].choices)
+        self.fields["period"].choices.append(
+                ("create_new_period", "Create new period")
+            )
+        
         if employee and Employee.objects.filter(
             employee_work_info__reporting_manager_id=employee
         ):
@@ -433,6 +439,12 @@ class FeedbackForm(forms.ModelForm):
         if instance:
             kwargs["initial"] = set_date_field_initial(instance)
         super().__init__(*args, **kwargs)
+
+        self.fields["period"].choices = list(self.fields["period"].choices)
+        self.fields["period"].choices.append(
+                ("create_new_period", "Create new period")
+            )
+        
         if instance:
             self.fields["employee_id"].widget.attrs.update(
                 {"class": "oh-select oh-select-2"}

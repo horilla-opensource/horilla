@@ -1,0 +1,121 @@
+{% load i18n %}
+{% if form.errors %}
+<!-- form non field errors  -->
+<div class="oh-wrapper">
+    <div class="oh-alert-container">
+        {% for error in form.non_field_errors %}
+        <div class="oh-alert oh-alert--animated oh-alert--danger">
+            {{ error }}
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+<span class="oh-modal__dialog-title" id="addEmployeeModalLabel">{% trans "Create Period" %}</span>
+<form onsubmit="event.preventDefault()" hx-target="#periodModalTarget" id="periodForm">
+  {% csrf_token %}
+<section>
+  <div id="periodContainer">
+    <div class="my-3" id="keyResultCard">
+      <div class="">
+
+        <div class="oh-input__group">
+          <label class="oh-input__label mt-0" for="keyTitle">{% trans "Title" %}</label>
+          {{ form.period_name }}
+          {{ form.period_name.errors }}
+  
+        </div>
+        <div class="row">
+          <div class="col-12 col-sm-12 col-md-6 col-lg-6">
+            <div class="oh-input__group">
+              <label class="oh-input__label" for="keyType">{% trans "Start Date" %}</label>
+              {{form.start_date}}
+
+              <div id="error-container"></div>
+
+
+            </div>
+          </div>
+          <div class="col-12 col-sm-12 col-md-6 col-lg-6">
+            <div class="oh-input__group">
+              <label class="oh-input__label" for="keyType">{% trans "End Date" %}</label>
+              {{form.end_date}}
+                    
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="oh-modal__dialog-footer">
+      <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow ">
+        {% trans "Save" %} 
+      </button>
+    </div>
+  </section>
+</form>
+<script>
+    $(document).ready(function (e) {
+    function getCookie(name) {
+      let cookieValue = null;
+      if (document.cookie && document.cookie !== "") {
+        const cookies = document.cookie.split(";");
+        for (let i = 0; i < cookies.length; i++) {
+          const cookie = cookies[i].trim();
+          if (cookie.substring(0, name.length + 1) === name + "=") {
+            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+            break;
+          }
+        }
+      }
+      return cookieValue;
+    }
+    $("#periodForm").submit(function(e){
+
+      e.preventDefault();
+      var formData = $(this).serialize();
+
+      formData["csrfmiddlewaretoken"] = getCookie("csrftoken");
+      $.ajax({
+        type:"post",
+        url:"create-period",
+        data:formData,
+        beforeSend: function () {
+          $(".errorlist").remove();
+        },
+        success:function(data){
+          
+          if (data.errors){
+            var errorDataJson = JSON.parse(data.errors)
+            key = Object.keys(errorDataJson)[0]
+
+            if (key == 'period_name'){
+              var nameerror = errorDataJson["period_name"]
+              var errorMessage = nameerror[0].message;
+            }
+            else{
+              var dateerror = errorDataJson["__all__"]
+              var errorMessage = dateerror[0].message;
+            }
+
+            $('#error-container').html('<div class="error text-danger">' + errorMessage + '</div>');
+
+          }
+          else{
+          var newOption = $("<option></option>")
+          .val(data.id)
+          .text(data.name);
+          $("#id_period option[value='create_new_period']").before(newOption);
+            $("#id_period").val(data.id).trigger("change");
+          // Close the second modal and reset the form
+          $('#PeriodModal').removeClass('oh-modal--show');
+          
+          console.log('ghjjj')
+          document.periodForm.reset();
+        }
+        },
+      });
+    });
+
+});
+</script>

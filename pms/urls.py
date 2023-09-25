@@ -162,4 +162,9 @@ urlpatterns = [
         views.dashboard_feedback_status,
         name="dashboard-feedback-status",
     ),
+    path(
+        "create-period",
+        views.create_period,
+        name="create-period",
+    ),
 ]

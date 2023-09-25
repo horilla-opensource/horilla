@@ -1,7 +1,9 @@
 
 
 const objectiveChart = document.getElementById('objectiveChart');
-
+console.log('--------------------------------');
+console.log(objectiveChart);
+console.log('--------------------------------');
 // data dictionary 
 var objectiveStatusData = {
     labels: [],
@@ -13,11 +15,14 @@ var objectiveStatusData = {
     }]
 };
 
+
 // chart constructor
-var objectiveStatusChart = new Chart(objectiveChart, {
-    type: "doughnut",
-    data: objectiveStatusData,
-});
+if (objectiveChart != null) {
+    var objectiveStatusChart = new Chart(objectiveChart, {
+        type: "doughnut",
+        data: objectiveStatusData,
+    });
+}
 
 function objectiveStatusDataUpdate(data){
     objectiveStatusData.labels = data.objective_label
@@ -75,10 +80,12 @@ var keyResultStatusData = {
 };
 
 // chart constructor
-var keyResultStatusChart = new Chart(keyResultStatusChartCtx, {
-    type: "pie",
-    data: keyResultStatusData,
-});
+if (keyResultStatusChartCtx != null) {
+    var keyResultStatusChart = new Chart(keyResultStatusChartCtx, {
+        type: "pie",
+        data: keyResultStatusData,
+    });
+}
 
 function keyResultStatusDataUpdate(data){
     keyResultStatusData.labels = data.key_result_label
@@ -128,7 +135,7 @@ const feedbackStatusChartCtx = document.getElementById('feedbackChart');
 var feedbackStatusData = {
     labels: [],
     datasets: [{
-        label: '',
+        label: 'Feedback',
         data: [],
         backgroundColor: [  '#8de5b3',  '#f0a8a6',  '#8ed1f7',  '#f8e08e',  '#c2c7cc'],
         hoverOffset: 3
@@ -136,11 +143,13 @@ var feedbackStatusData = {
 };
 
 // chart constructor
-var feedbackStatusChart = new Chart(feedbackStatusChartCtx, {
-    type: "line",
-    data: feedbackStatusData,
-});
-
+if (feedbackStatusChartCtx != null) {
+    var feedbackStatusChart = new Chart(feedbackStatusChartCtx, {
+        type: "line",
+        data: feedbackStatusData,
+    });
+}
+    
 function feedbackStatusDataUpdate(data){
     feedbackStatusData.labels = data.feedback_label
     feedbackStatusData.datasets[0].data = data.feedback_value
