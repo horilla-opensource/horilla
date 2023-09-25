@@ -2,6 +2,7 @@ import calendar
 from datetime import datetime, timedelta
 from django.db import models
 from django.utils import timezone
+from django.core.exceptions import ValidationError
 from dateutil.relativedelta import relativedelta
 from django.utils.translation import gettext_lazy as _
 from employee.models import Employee
@@ -143,6 +144,9 @@ class LeaveType(models.Model):
     require_approval = models.CharField(
         max_length=30, choices=CHOICES, null=True, blank=True
     )
+    require_attachment = models.CharField(
+        max_length=30, choices=CHOICES, null=True, blank=True, verbose_name=_("Require Attachment")
+    )
     exclude_company_leave = models.CharField(max_length=30, choices=CHOICES)
     exclude_holiday = models.CharField(max_length=30, choices=CHOICES)
     objects = models.Manager()
@@ -179,13 +183,13 @@ class CompanyLeave(models.Model):
 class AvailableLeave(models.Model):
     leave_type_id = models.ForeignKey(
         LeaveType,
-        on_delete=models.CASCADE,
+        on_delete=models.PROTECT,
         related_name="employee_available_leave",
         blank=True,
         null=True,
     )
     employee_id = models.ForeignKey(
-        Employee, on_delete=models.DO_NOTHING, related_name="available_leave"
+        Employee, on_delete=models.CASCADE, related_name="available_leave"
     )
     available_days = models.FloatField(default=0)
     carryforward_days = models.FloatField(default=0)
@@ -310,7 +314,7 @@ class AvailableLeave(models.Model):
 
 
 class LeaveRequest(models.Model):
-    leave_type_id = models.ForeignKey(LeaveType, on_delete=models.CASCADE)
+    leave_type_id = models.ForeignKey(LeaveType, on_delete=models.PROTECT)
     employee_id = models.ForeignKey(Employee, on_delete=models.CASCADE)
     start_date = models.DateField(null=False)
     start_date_breakdown = models.CharField(
@@ -338,6 +342,7 @@ class LeaveRequest(models.Model):
     approved_carryforward_days = models.FloatField(default=0)
     created_at = models.DateTimeField(auto_now="True")
     objects = models.Manager()
+    
 
     def __str__(self):
         return f"{self.employee_id} | {self.leave_type_id} | {self.status}"

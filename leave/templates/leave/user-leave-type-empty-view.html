@@ -1,0 +1,57 @@
+{% extends 'index.html' %}
+{% block content %}
+{% load static %}
+{% load i18n %}
+
+{% if messages %}
+<div class="oh-wrapper">
+  {% for message in messages %}
+  <div class="oh-alert-container">
+    <div class="oh-alert oh-alert--animated {{ message.tags }}">
+      {{ message }}
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+
+<section class="oh-wrapper oh-main__topbar" x-data="{searchShow: false}">
+  <div class="oh-main__titlebar oh-main__titlebar--left">
+    <h1 class="oh-main__titlebar-title fw-bold mb-0">{% trans "Leave Types" %}</h1>
+    <a class="oh-main__titlebar-search-toggle" role="button" aria-label="Toggle Search"
+      @click="searchShow = !searchShow">
+      <ion-icon name="search-outline" class="oh-main__titlebar-serach-icon"></ion-icon>
+    </a>
+  </div>
+  <div class="oh-main__titlebar oh-main__titlebar--right">
+    <div class="oh-main__titlebar-button-container">
+      <div class="oh-btn-group ml-2">
+        <form action="{% url 'type-creation' %}">
+          <button class="oh-btn oh-btn--secondary oh-btn--shadow">
+            <ion-icon name="add-outline" class="me-1"></ion-icon>
+            {% trans "Create" %}
+          </button>
+        </form>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<div
+class="oh-wrapper-main"
+>
+  <main :class="sidebarOpen ? 'oh-main__sidebar-visible' : ''">
+    
+    <div class="oh-wrapper">
+      <div class="oh-404">
+          <img style="    width: 150px;height: 150px;" src="{% static 'images/ui/leave_types.png' %}" class="oh-404__image mb-4" alt="Page not found. 404."/>
+          <h3 class="oh-404__subtitle">{% trans "No leave types have been created yet." %}</h3>
+          <p class="oh-404__subtitle">{% trans "Please contact your administrators for assistance." %}</p>
+      </div>
+    </div>
+  </main>
+</div>
+</div>
+
+{% endblock content %}

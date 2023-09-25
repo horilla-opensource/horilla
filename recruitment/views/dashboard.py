@@ -16,6 +16,18 @@ from base.models import Department, JobPosition
 from employee.models import EmployeeWorkInformation
 
 
+def stage_type_candidate_count(rec, stage_type):
+    """
+    This method is used find the count of candidate in recruitment
+    """
+    candidates_count = 0
+    for stage_obj in rec.stage_set.filter(stage_type=stage_type):
+        candidates_count = candidates_count + len(
+            stage_obj.candidate_set.filter(is_active=True)
+        )
+    return candidates_count
+
+
 @login_required
 @manager_can_enter(perm="recruitment.view_recruitment")
 def dashboard(request):
@@ -23,6 +35,21 @@ def dashboard(request):
     This method is used to render dashboard for recruitment module
     """
     candidates = Candidate.objects.all()
+    stage_chart_count = 0
+    vacancy_chart = Recruitment.objects.filter(closed=False, is_event_based=False)
+    if vacancy_chart.exists():
+        dep_vacancy = 1
+    else:
+        dep_vacancy = 0
+    employee_info = EmployeeWorkInformation.objects.all()
+    joining_list = []
+    for rec in employee_info:
+        if rec.date_joining != None :
+            joining_list.append('OK')
+    if joining_list != []:
+        joining = 1
+    else:
+        joining = 0
 
     jobs = JobPosition.objects.all()
     all_job = []
@@ -59,6 +86,16 @@ def dashboard(request):
     job_data = list(zip(all_job, initial, test, interview, hired))
 
     recruitment_obj = Recruitment.objects.filter(closed=False)
+
+    for rec in recruitment_obj:
+        data = [stage_type_candidate_count(rec, type[0]) for type in Stage.stage_types]
+        for i in data:
+            i += stage_chart_count
+        if i > 1:
+            stage_chart_count = 1
+
+    onboarding_count = Candidate.objects.filter(start_onboard = True)
+    onboarding_count = onboarding_count.count()
 
     recruitment_manager_mapping = {}
 
@@ -101,20 +138,13 @@ def dashboard(request):
             "total_vacancy": total_vacancy,
             "recruitment_manager_mapping": recruitment_manager_mapping,
             "acceptance_ratio": acceptance_ratio,
+            'joining' : joining,
+            "dep_vacancy" : dep_vacancy,
+            "stage_chart_count" : stage_chart_count,
+            "onboarding_count" : onboarding_count,
         },
     )
 
-
-def stage_type_candidate_count(rec, stage_type):
-    """
-    This method is used find the count of candidate in recruitment
-    """
-    candidates_count = 0
-    for stage_obj in rec.stage_set.filter(stage_type=stage_type):
-        candidates_count = candidates_count + len(
-            stage_obj.candidate_set.filter(is_active=True)
-        )
-    return candidates_count
 
 
 @login_required

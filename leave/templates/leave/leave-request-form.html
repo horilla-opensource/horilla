@@ -13,7 +13,7 @@
 {% endif %}
 
 <form  hx-post="{% url 'request-creation' %}"  hx-encoding="multipart/form-data">
-    <div class="oh-modal__dialog-body pb-2" id="leaveType">
+      <div class="oh-modal__dialog-body pb-2" id="leaveType">
         <label class="oh-label d-block ">{% trans "Leave types" %}</label>
         {{form.leave_type_id}}
         {{form.leave_type_id.errors}}

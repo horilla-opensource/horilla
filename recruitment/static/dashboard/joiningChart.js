@@ -5,15 +5,19 @@ $(document).ready(function () {
         datasets: dataSet,
       };
       // Create chart using the Chart.js library
-      $("#hiringChart").html("<canvas id='hiring'></canvas>")
+      // $("#hiringChart").html("<canvas id='hiring'></canvas>")
       window['myChart1'] = {}
-      const ctx = document.getElementById("hiring").getContext("2d");
-      myChart1 = new Chart(ctx, {
-        type: 'bar',
-        data: data,
-        options: {
-        },
-      });
+      var ctx = document.getElementById("hiringChart");
+      
+      if (ctx != null) {
+        ctx = ctx.getContext("2d")
+        myChart1 = new Chart(ctx, {
+          type: 'bar',
+          data: data,
+          options: {
+          },
+        });
+      }
     }
     
     function joining(){
@@ -34,6 +38,7 @@ $(document).ready(function () {
     }
 
     $("#year").on("change", function (e) { 
+      myChart1.destroy();
       joining()
     });
 
@@ -51,4 +56,6 @@ $(document).ready(function () {
     });
       
   });
+
+
   

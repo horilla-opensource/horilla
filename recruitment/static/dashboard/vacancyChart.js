@@ -16,7 +16,6 @@ $(document).ready(function(){
         url: "/recruitment/dashboard-vacancy",
         type: "GET",
         success: function(response){
-            console.log(response)
             dataSet = response.dataSet;
             labels = response.labels;
             vacancyChart(dataSet, labels);

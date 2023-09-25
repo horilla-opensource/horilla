@@ -94,6 +94,9 @@ class LeaveTypeForm(ConditionForm):
     require_approval = forms.CharField(
         label="Require Approval", widget=forms.RadioSelect(choices=CHOICES)
     )
+    require_attachment = forms.CharField(
+        label="Require Attachment", widget=forms.RadioSelect(choices=CHOICES)
+    )
     exclude_company_leave = forms.CharField(
         label="Exclude Company Leave", widget=forms.RadioSelect(choices=CHOICES)
     )
@@ -126,6 +129,9 @@ class LeaveTypeForm(ConditionForm):
 class UpdateLeaveTypeForm(ConditionForm):
     require_approval = forms.CharField(
         label="Require Approval", widget=forms.RadioSelect(choices=CHOICES)
+    )
+    require_attachment = forms.CharField(
+        label="Require Attachment", widget=forms.RadioSelect(choices=CHOICES)
     )
     exclude_company_leave = forms.CharField(
         label="Exclude Company Leave", widget=forms.RadioSelect(choices=CHOICES)
@@ -179,9 +185,15 @@ class LeaveRequestCreationForm(ModelForm):
         leave_type_id = cleaned_data.get("leave_type_id")
         start_date_breakdown = cleaned_data.get("start_date_breakdown")
         end_date_breakdown = cleaned_data.get("end_date_breakdown")
+        attachment = cleaned_data.get("attachment")
         overlapping_requests = LeaveRequest.objects.filter(
             employee_id=employee_id, start_date__lte=end_date, end_date__gte=start_date
         )
+        if leave_type_id.require_attachment == "yes":
+            if attachment is None:
+                raise forms.ValidationError(
+                    _("An attachment is required for this leave request")
+                )
         if not start_date <= end_date:
             raise forms.ValidationError(
                 _("End date should not be less than start date.")

@@ -148,11 +148,18 @@
                             {{form.carryforward_expire_period.errors}}
                         </div>
                     </div>
-                    <div class="col-sm-12 col-md-12">
+                    <div class="col-sm-12 col-md-12 col-lg-6">
                         <div class="oh-input-group">
                             <label for="" class="oh-label">{% trans "Require Approval" %}</label>
                             {{form.require_approval}}
                             {{form.require_approval.errors}}
+                        </div>
+                    </div>
+                    <div class="col-sm-12 col-md-12 col-lg-6">
+                        <div class="oh-input-group">
+                            <label for="" class="oh-label">{% trans "Require Attachment" %}</label>
+                            {{form.require_attachment}}
+                            {{form.require_attachment.errors}}
                         </div>
                     </div>
                     <div class="col-sm-12 col-md-12 col-lg-6">

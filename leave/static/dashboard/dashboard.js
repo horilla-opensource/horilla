@@ -21,17 +21,18 @@ $(document).ready(function(){
 	$(".month").val(`${year}-${month}`)
 	$("#dash_month").val(`${year}-${month}`)
 
-	function isPieChartEmpty(chartData) {
-		if (!chartData || !chartData.dataset || chartData.dataset.length === 0) {
-			return true;
-		}
-		for (var i = 0; i < chartData.dataset[0].data.length; i++) {
-			if (chartData.dataset[0].data[i] != 0) {
-				return false;
-			}
-		}	
-		return true;
-	  }
+	  function isBarChartEmpty(chartData) {
+        if (!chartData) {
+            return true;
+        }
+        for (let i = 0; i < chartData.length; i++) {
+            const hasNonZeroValues = chartData[i].data.some(value => value !== 0);
+            if (hasNonZeroValues) {
+                return false;  // Return false if any non-zero value is found
+            }
+        }
+        return true;  // Return true if all values are zero	
+    }
   
  	//Employee wise chart for available leaves
 	function available_leave_chart (dataSet){
@@ -160,7 +161,25 @@ $(document).ready(function(){
 				"labels":values,
 				"dataset":dataSet,
 			}
-			employee_leave_chart(dataset)
+			const dataObjects = [
+				{ label: 'Draft', data: [0, 0, 0], backgroundColor: 'rgba(255, 99, 132, 1)' },
+				{ label: 'Review Ongoing', data: [0, 0, 0], backgroundColor: 'rgba(255, 206, 86, 1)' },
+				{ label: 'Confirmed', data: [0, 0, 0], backgroundColor: 'rgba(54, 162, 235, 1)' },
+				{ label: 'Paid', data: [0, 0, 0], backgroundColor: 'rgba(75, 242, 182, 1)' }
+			  ];
+			  
+			if (isBarChartEmpty(dataSet)){
+				$("#employee_leave_canvas").html(
+					`<div style="height: 310px; display:flex;align-items: center;justify-content: center;" class="">
+					<div style="" class="">
+					<img style="    display: block;width: 70px;margin: 20px auto ;" src="/static/images/ui/attendance.png" class="" alt=""/>
+					<h3 style="font-size:16px" class="oh-404__subtitle">${response.message}</h3>
+					</div>
+				</div>`
+				)
+			}else{
+				employee_leave_chart(dataset)
+			}
 			start_index+=per_page
 
 		},
@@ -174,10 +193,11 @@ $(document).ready(function(){
 		url: "/leave/available-leaves",
 		dataType: "json",
 		success: function (response) {
-			if (isPieChartEmpty(response)){
+			if (isBarChartEmpty(response)){
 				$("#availableLeaveContainer").html(
 					`<div style="height: 310px; display:flex;align-items: center;justify-content: center;" class="">
 					<div style="" class="">
+					<img style="    display: block;width: 70px;margin: 20px auto ;" src="/static/images/ui/sunbed outline.png" class="" alt=""/>
 					<h3 style="font-size:16px" class="oh-404__subtitle">${response.message}</h3>
 					</div>
 				</div>`
@@ -190,7 +210,6 @@ $(document).ready(function(){
 			console.log('Error', error);
 		}
 	});
-
 	$.ajax({
 		type: "GET",
 		url: "/leave/department-leave-chart",
@@ -245,7 +264,19 @@ $(document).ready(function(){
 				"date":month,
 			},
 			success: function (response) {
+			if (isBarChartEmpty(response.dataset)){
+				$("#employee_leave_canvas").html(
+					`<div style="height: 310px; display:flex;align-items: center;justify-content: center;" class="">
+					<div style="" class="">
+					<img style="    display: block;width: 70px;margin: 20px auto ;" src="/static/images/ui/attendance.png" class="" alt=""/>
+					<h3 style="font-size:16px" class="oh-404__subtitle">${response.message}</h3>
+					</div>
+				</div>`
+				)
+			}else{
+				$("#employee_leave_canvas").html('<canvas id="employeeLeave" class="pointer"></canvas>')
 				employee_leave_chart(response)
+			}
 
 			},
 			error: (error) => {

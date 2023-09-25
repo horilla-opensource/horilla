@@ -41,13 +41,13 @@ x-data="{searchShow: false}"
       aria-label="Search Input"
     />
   </div>
-  <ul class="oh-view-types ml-2" style="margin-bottom: 0;">
-    <li class="oh-view-type candidate-view-type" data-view='list'>
+  <ul class="oh-view-types ml-2" style="margin-bottom: 0;" id="view-type">
+    <li class="oh-view-type candidate-view-type " data-view='list' >
       <a
         id = 'list' 
         hx-get="{% url 'search-candidate' %}?view=list"  
         hx-target='#section' 
-        class="oh-btn oh-btn--view "
+        class="oh-btn oh-btn--view {% if request.GET.view != 'list' %} oh-btn--view-active {% endif %}"
         ><ion-icon name="list-outline"></ion-icon
       ></a>
     </li>
@@ -56,7 +56,7 @@ x-data="{searchShow: false}"
         id="card"
         hx-get="{% url 'search-candidate' %}?view=card" 
         hx-target='#section' 
-        class="oh-btn oh-btn--view"
+        class="oh-btn oh-btn--view {% if request.GET.view == 'list' %} oh-btn--view-active {% endif %}"
         ><ion-icon name="grid-outline"></ion-icon
       ></a>
     </li>
@@ -140,8 +140,7 @@ x-data="{searchShow: false}"
 </div>
 </section>
 <script>
-  
-
+  $(document).ready(function () {
   
     function candidateFilter(element) {
       var search = $('#candidate-search').val();
@@ -157,11 +156,11 @@ x-data="{searchShow: false}"
       // $('#list').attr('hx-vals', stringQueyObject);
       // $('#card').attr('hx-vals', stringQueyObject);
     }
-  $(document).ready(function () {
+
     $('#candidate-search').keyup(function (e) { 
       $('.candidate-view-type').attr('hx-vals',`{"search":"${$(this).val()}"}`)
     });
-    $(".candidate-view-type").click(function (e) {  
+    $(".candidate-view-type").on("click",function (e) {  
       let view = $(this).attr("data-view");  
       var currentURL = window.location.href;     
       if (view != undefined){        
@@ -175,7 +174,8 @@ x-data="{searchShow: false}"
         history.pushState({}, "", newURL);       
         $('#candidate-search').attr('hx-vals',`{"view":"${view}"}`);     
         $('#filterForm').attr("hx-vals", `{"view":"${view}"}`);
-        
+        $(".oh-btn--view-active").removeClass("oh-btn--view-active")
+        $(this).children("a").addClass("oh-btn--view-active")
       }    
     });
   });
