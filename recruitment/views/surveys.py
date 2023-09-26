@@ -126,9 +126,13 @@ def view_question_template(request):
     """
     questions = RecruitmentSurvey.objects.all()
     filter_obj = SurveyFilter()
+    if questions.exists():
+        template = "survey/view-question-templates.html"
+    else:
+        template = "survey/survey-empty-view.html"
     return render(
         request,
-        "survey/view-question-templates.html",
+        template,
         {
             "questions": paginator_qry(questions, request.GET.get("page")),
             "f": filter_obj,

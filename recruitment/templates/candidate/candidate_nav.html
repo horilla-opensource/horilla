@@ -47,7 +47,8 @@ x-data="{searchShow: false}"
         id = 'list' 
         hx-get="{% url 'search-candidate' %}?view=list"  
         hx-target='#section' 
-        class="oh-btn oh-btn--view {% if request.GET.view != 'list' %} oh-btn--view-active {% endif %}"
+        class="oh-btn oh-btn--view {% if request.GET.view == 'list' %} oh-btn--view-active {% endif %}"
+        title = {% trans "List" %}
         ><ion-icon name="list-outline"></ion-icon
       ></a>
     </li>
@@ -56,7 +57,8 @@ x-data="{searchShow: false}"
         id="card"
         hx-get="{% url 'search-candidate' %}?view=card" 
         hx-target='#section' 
-        class="oh-btn oh-btn--view {% if request.GET.view == 'list' %} oh-btn--view-active {% endif %}"
+        class="oh-btn oh-btn--view {% if request.GET.view != 'list' %} oh-btn--view-active {% endif %}"
+        title = {% trans "Card" %}
         ><ion-icon name="grid-outline"></ion-icon
       ></a>
     </li>
@@ -131,7 +133,7 @@ x-data="{searchShow: false}"
         <a href="{% url 'candidate-create' %}"
         class='oh-btn oh-btn--secondary'
         >
-        {% trans "Create" %}
+        <ion-icon name="add-sharp" class="mr-1"></ion-icon>{% trans "Create" %}
       </a>
       {% endif %}
       </div>

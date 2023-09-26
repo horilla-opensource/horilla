@@ -210,7 +210,11 @@ def recruitment_pipeline(request):
     """
     view = request.GET.get("view")
     job_position = JobPosition.objects.all()
-    template = "pipeline/pipeline.html"
+    rec = Recruitment.objects.all()
+    if rec.exists():
+        template = "pipeline/pipeline.html"
+    else:
+        template = "pipeline/pipeline_empty.html"
     if view == "card":
         template = "pipeline/pipeline_card.html"
     recruitment_form = RecruitmentDropDownForm()
@@ -771,9 +775,13 @@ def candidate_view(request):
     previous_data = request.GET.urlencode()
     candidates = Candidate.objects.filter(is_active=True)
     filter_obj = CandidateFilter(queryset=candidates)
+    if candidates.exists():
+        template = "candidate/candidate_view.html"
+    else:
+        template = "candidate/candidate_empty.html"
     return render(
         request,
-        "candidate/candidate_view.html",
+        template,
         {
             "data": paginator_qry(filter_obj.qs, request.GET.get("page")),
             "pd": previous_data,

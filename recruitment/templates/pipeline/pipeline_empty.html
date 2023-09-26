@@ -1,0 +1,65 @@
+{% extends 'index.html' %}
+{% load static %}
+{% block content %}
+{% load i18n %}
+<section
+class="oh-wrapper oh-main__topbar"
+x-data="{searchShow: false}"
+>
+<div class="oh-main__titlebar oh-main__titlebar--left">
+  <div class="oh-main__titlebar-title fw-bold mb-0 text-dark"  style="cursor:pointer;">{% trans "Recruitments" %}</div>
+</div>
+
+<div class="oh-main__titlebar oh-main__titlebar--right">
+
+    <div class="oh-main__titlebar-button-container">
+
+        <div class="oh-dropdown" x-data="{open: false}">
+
+            <div class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4" x-show="open" @click.outside="open = false" style="display: none;" @click.>
+                
+                <div class="mb-3 mt-3">
+                    <label for="job_pos_id" class="oh-label">{% trans "Job position" %}</label>
+                    <select class="" name="job_pos_id" id="job_pos_id">
+                        <option value="">------------------</option>
+                        {% for job_position in job_positions %}
+                            <option value="{{job_position}}">{{job_position}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="oh-tabs__action-bar mt-2" id="filter_item" x-on:click="open = false" >
+                    <button class="oh-btn oh-btn--small oh-btn--secondary oh-tabs__action-new-table w-100" >
+                        <ion-icon class="me-1 md hydrated" name="add-outline" role="img"aria-label="add outline"></ion-icon>
+                        {% trans "Filter" %}
+                    </button>
+                </div>
+            </div>
+    </div>
+	<div class="oh-main__titlebar-button-container">
+
+		{% if perms.recruitment.add_recruitment %}
+		{% include 'pipeline/form/recruitment_drop_down_form.html' %}
+		{% endif %}
+		
+		
+	</div>
+</div>
+</section>
+
+<div
+class="oh-wrapper-main"
+>
+  <main :class="sidebarOpen ? 'oh-main__sidebar-visible' : ''">
+    
+    <div class="oh-wrapper">
+      <div class="oh-404">
+          <img style="    width: 190px;height: 190px;" src="{% static 'images/ui/recruitment.png' %}" class="oh-404__image mb-4" alt="Page not found. 404."/>
+          <h5 class="oh-404__subtitle">{% trans "At present, there is no ongoing recruitment." %}</h5>
+      </div>
+    </div>
+  </main>
+</div>
+</div>
+
+{% endblock content %}

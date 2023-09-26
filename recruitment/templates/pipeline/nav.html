@@ -98,12 +98,12 @@ x-data="{searchShow: false}"
 	<ul class="oh-view-types ml-2" style="margin-bottom: 0;">
 		<li class="oh-view-type candidate-view-type" data-view='list'>
 		<a href="{% url 'pipeline' %}"  hx-target='#section' class="oh-btn oh-btn--view {% if request.GET.view != 'card' %} oh-btn--view-active {% endif %}"
-			><ion-icon name="list-outline"></ion-icon
+			title={% trans 'List' %}><ion-icon name="list-outline"></ion-icon
 		></a>
 		</li>
 		<li class="oh-view-type candidate-view-type" data-view='card'>
 		<a href="{% url 'pipeline' %}?view=card" hx-target='#section' class="oh-btn oh-btn--view {% if request.GET.view == 'card' %} oh-btn--view-active {% endif %}"
-			><ion-icon name="grid-outline"></ion-icon
+    title={% trans 'Card' %}><ion-icon name="grid-outline"></ion-icon
 		></a>
 		</li>
 	</ul>

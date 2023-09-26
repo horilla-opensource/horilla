@@ -1,0 +1,55 @@
+{% extends 'index.html' %}
+{% block content %}
+{% load i18n %}
+{% load static %}
+
+<section
+class="oh-wrapper oh-main__topbar"
+x-data="{searchShow: false}"
+>
+<div class="oh-main__titlebar oh-main__titlebar--left">
+  <div hx-get="{% url 'candidate-view-card' %}" class="oh-main__titlebar-title fw-bold mb-0 text-dark" hx-target="#section" style="cursor:pointer;">{% trans "Candidates" %}</div>
+  <a
+    class="oh-main__titlebar-search-toggle "
+    role="button"
+    aria-label="Toggle Search"
+    @click="searchShow = !searchShow"
+  >
+    <ion-icon
+      name="search-outline"
+      class="oh-main__titlebar-serach-icon"
+    ></ion-icon>
+  </a>
+</div>
+
+<div class="oh-main__titlebar oh-main__titlebar--right">
+    
+    <div class="oh-btn-group ml-2">
+      <div class="oh-dropdown" >
+        {% if perms.recruitment.add_candidate %}
+        <a href="{% url 'candidate-create' %}"
+        class='oh-btn oh-btn--secondary'
+        >
+        <ion-icon name="add-sharp" class="mr-1"></ion-icon>{% trans "Create" %}
+      </a>
+      {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+  <main :class="sidebarOpen ? 'oh-main__sidebar-visible' : ''">
+    
+    <div class="oh-wrapper">
+      <div class="oh-404">
+          <img style="    width: 150px;height: 150px;" src="{% static 'images/ui/candidate.png' %}" class="oh-404__image mb-4" alt="Page not found. 404."/>
+          <h5 class="oh-404__subtitle">{% trans "There are currently no candidates to consider." %}</h5>
+      </div>
+    </div>
+  </main>
+</div>
+</div>
+
+
+</section>
+{% endblock content %}

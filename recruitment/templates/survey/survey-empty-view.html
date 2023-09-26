@@ -1,0 +1,111 @@
+{% extends 'index.html' %}
+{% load static %}
+{% block content %}
+
+{% load i18n %} {% load basefilters %}
+<style>
+  .oh-modal_close--custom {
+    border: none;
+    background: none;
+    font-size: 1.5rem;
+    opacity: 0.7;
+    position: absolute;
+    top: 25px;
+    right: 15px;
+  }
+</style>
+
+<div
+  class="oh-modal"
+  id="addSurvey"
+  role="dialog"
+  aria-labelledby="addSurvey"
+  aria-hidden="true"
+>
+  <div class="oh-modal__dialog">
+    <div class="oh-modal__dialog-header">
+      <h2 class="oh-modal__dialog-title" id="addEmployeeModalLabel">
+        {% trans "Create Survey Template" %}
+      </h2>
+      <button class="oh-modal__close" aria-label="Close">
+        <ion-icon name="close-outline"></ion-icon>
+      </button>
+    </div>
+    <div
+      class="oh-modal__dialog-body"
+      id="addSurveyModalBody"
+    ></div>
+  </div>
+</div>
+
+
+<div
+  class="oh-modal"
+  id="updateSurvey"
+  role="dialog"
+  aria-labelledby="updateSurvey"
+  aria-hidden="true"
+>
+  <div class="oh-modal__dialog">
+    <div class="oh-modal__dialog-header">
+      <h2 class="oh-modal__dialog-title" id="addEmployeeModalLabel">
+        {% trans "Create Survey Template" %}
+      </h2>
+      <button class="oh-modal__close" aria-label="Close">
+        <ion-icon name="close-outline"></ion-icon>
+      </button>
+    </div>
+    <div
+      class="oh-modal__dialog-body"
+      id="updateSurveyModalBody"
+    ></div>
+  </div>
+</div>
+
+<section class="oh-wrapper oh-main__topbar" x-data="{searchShow: false}">
+  <div class="oh-main__titlebar oh-main__titlebar--left">
+    <h1 class="oh-main__titlebar-title fw-bold">
+      {% trans "Survey Templates" %}
+    </h1>
+    <a
+      class="oh-main__titlebar-search-toggle"
+      role="button"
+      aria-label="Toggle Search"
+      @click="searchShow = !searchShow"
+    >
+      <ion-icon
+        name="search-outline"
+        class="oh-main__titlebar-serach-icon"
+      ></ion-icon>
+    </a>
+  </div>
+  <div class="oh-main__titlebar oh-main__titlebar--right">
+
+    <button
+      class="oh-btn oh-btn--secondary ml-2"
+      data-toggle="oh-modal-toggle"
+      data-target="#addSurvey"
+      hx-get="{% url 'recruitment-survey-question-template-create' %}"
+      hx-target="#addSurveyModalBody"
+    >
+      <ion-icon name="add-sharp" class="mr-1"></ion-icon>{% trans "Add" %}
+    </button>
+  </div>
+</section>
+
+<div
+class="oh-wrapper-main"
+>
+  <main :class="sidebarOpen ? 'oh-main__sidebar-visible' : ''">
+    
+    <div class="oh-wrapper">
+      <div class="oh-404">
+          <img style="width: 150px;height: 150px;" src="{% static 'images/ui/editor.png' %}" class="oh-404__image mb-4" alt="Page not found. 404."/>
+          <h5 class="oh-404__subtitle">{% trans "No survey templates have been established yet." %}</h5>
+      </div>
+    </div>
+  </main>
+</div>
+</div>
+
+{% endblock content %}
