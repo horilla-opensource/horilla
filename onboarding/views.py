@@ -1127,6 +1127,7 @@ def dashboard_stage_chart(request):
         "recruitment": recruitment,
         "background_color": background_color,
         "border_color": border_color,
+        "message":_("No candidates started onboarding....")
     }
     return JsonResponse(response)
 

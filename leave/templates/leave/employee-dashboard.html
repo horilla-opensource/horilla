@@ -2,6 +2,17 @@
 {% load static %}
 {% block content %}
 {% load i18n %}
+<style>
+    .oh-card-dashboard {
+        cursor : default !important;
+    }
+    .pointer {
+        cursor : pointer !important;
+    }
+    .dash-card {
+        padding-bottom:30px;
+    }
+</style>
 <div class="oh-wrapper">
     <div class="d-none mt-5" id="back_button" style="width:10%">
         <a href=""
@@ -20,7 +31,7 @@
         <div class="oh-dashboard__left col-12 col-sm-12 col-md-12 col-lg-9">
             <div class="oh-dashboard__cards row">
                 <div class="col-12 col-sm-12 col-md-6 col-lg-4">
-                    <div class="oh-card-dashboard oh-card-dashboard oh-card-dashboard--neutral filter" hx-get="{% url "request-filter" %}?status=requested&dashboard=true&employee_id={{request.user.employee_get.employee_first_name}}" hx-target="#dashboard" >
+                    <div class="oh-card-dashboard oh-card-dashboard oh-card-dashboard--neutral filter pointer dash-card" hx-get="{% url "request-filter" %}?status=requested&dashboard=true&employee_id={{request.user.employee_get.employee_first_name}}" hx-target="#dashboard" >
                         <div class="oh-card-dashboard__header">
                             <span class="oh-card-dashboard__title">{% trans "New Requests" %}</span>
                         </div>
@@ -34,7 +45,7 @@
                     </div>
                 </div>
                 <div class="col-12 col-sm-12 col-md-6 col-lg-4">
-                    <div class="oh-card-dashboard oh-card-dashboard--success filter" hx-get="{% url "request-filter" %}?status=approved&dashboard=true&employee_id={{request.user.employee_get.employee_first_name}}" hx-target="#dashboard">
+                    <div class="oh-card-dashboard oh-card-dashboard--success filter pointer dash-card" hx-get="{% url "request-filter" %}?status=approved&dashboard=true&employee_id={{request.user.employee_get.employee_first_name}}" hx-target="#dashboard">
                         <div class="oh-card-dashboard__header">
                             <span class="oh-card-dashboard__title">{% trans "Approved Requests" %}</span>
                         </div>
@@ -46,7 +57,7 @@
                     </div>
                 </div>
                 <div class="col-12 col-sm-12 col-md-6 col-lg-4">
-                    <div class="oh-card-dashboard oh-card-dashboard--danger filter" hx-get="{% url "request-filter" %}?status=cancelled&dashboard=true&employee_id={{request.user.employee_get.employee_first_name}}" hx-target="#dashboard">
+                    <div class="oh-card-dashboard oh-card-dashboard--danger filter pointer dash-card" hx-get="{% url "request-filter" %}?status=cancelled&dashboard=true&employee_id={{request.user.employee_get.employee_first_name}}" hx-target="#dashboard">
                         <div class="oh-card-dashboard__header">
                             <span class="oh-card-dashboard__title">{% trans "Rejected Requests" %}</span>
                         </div>
@@ -88,15 +99,31 @@
 
         <div class="oh-dashboard__right  col-12 col-sm-12 col-md-12 col-lg-3">
             <div class="oh-dashboard__events">
-
-                <div class="oh-dashboard__event oh-dashboard__event--purple">
-                    <div class="oh-dasboard__event-photo" style="background-color:white">
-                        <img src="/static/images/ui/sunbed.png" class="oh-dashboard__event-userphoto" />
+                <div class="w-100">
+                    {% if perms.leave.view_leaverequest %}
+                    <div class="w-100 mb-1" id="back_button">
+                        <a href="{% url 'leave-dashboard' %}"
+                        class="oh-btn oh-btn--secondary oh-btn--shadow"
+                        >{% trans "View Admin Dashboard" %}
+                        <ion-icon
+                            class="me-2 md hydrated"
+                            name="arrow-forward-outline"
+                            role="img"
+                            aria-label="arrow-back-outline"
+                        ></ion-icon
+                        ></a
+                        >
                     </div>
-                    <div class="oh-dasboard__event-details">
-                        <span class="oh-dashboard__event-title">{% trans "Next Holiday" %}</span>
-                        <span class="oh-dashboard__event-main">{{next_holiday.name}}</span>
-                        <span class="oh-dashboard__event-date">{{next_holiday.start_date}}</span>
+                    {% endif %}
+                    <div class="oh-dashboard__event oh-dashboard__event--purple mb-2"  style="padding-bottom:1rem">
+                        <div class="oh-dasboard__event-photo" style="background-color:white">
+                            <img src="/static/images/ui/sunbed.png" class="oh-dashboard__event-userphoto" />
+                        </div>
+                        <div class="oh-dasboard__event-details">
+                            <span class="oh-dashboard__event-title">{% trans "Next Holiday" %}</span>
+                            <span class="oh-dashboard__event-main">{{next_holiday.name}}</span>
+                            <span class="oh-dashboard__event-date">{{next_holiday.start_date}}</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -107,14 +134,24 @@
                 </div>
                 <div class="oh-card-dashboard__body">
                     <ul class="oh-card-dashboard__user-list">
-                        {% for holiday in holidays %}
-                            <li class="oh-card-dashboard__user-item oh-dashboard__event">
-                                <div class="">
-                                <span class="oh-profile__name oh-text--white">{{holiday.name}}</span> <br/>
-                                <span class="oh-dashboard__event-date oh-text--white">{{holiday.start_date}}</span>
+                        {% if holidays %}
+                            {% for holiday in holidays %}
+                                <li class="oh-card-dashboard__user-item oh-dashboard__event">
+                                    <div class="">
+                                    <span class="oh-profile__name oh-text--white">{{holiday.name}}</span> <br/>
+                                    <span class="oh-dashboard__event-date oh-text--white">{{holiday.start_date}}</span>
+                                    </div>
+                                </li>
+                            {% endfor %}
+
+                        {% else %}
+                            <div style="height: 350px; display:flex;align-items: center;justify-content: center;" class="">
+                                <div style="" class="">
+                                <img style="display: block;width: 70px;margin: 10px auto ;" src="{% static 'images/ui/leave_types.png' %}" class="" alt=""/>
+                                <h3 style="font-size:16px" class="oh-404__subtitle">{% trans "No more holidays scheduled for this month." %}</h3>
                                 </div>
-                            </li>
-                        {% endfor %}
+                            </div>
+                        {% endif %}
                     </ul>
                 </div>
             </div>

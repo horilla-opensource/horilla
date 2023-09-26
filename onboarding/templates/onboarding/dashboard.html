@@ -85,28 +85,37 @@
                         </div>
                         <div class="oh-card-dashboard__body">
                           <ul class="oh-card-dashboard__user-list" style='white-space: nowrap; overflow-x: auto;'>
+                            {% if onboard_candidates and job_positions  %}
                             {% for job in job_positions %}
 
                             <li class="oh-card-dashboard__user-item row ms-2" style='width:40%; display: inline-block; float: none;'>
                                 <p class="oh-profile__name mt-1 fw-bold border-bottom w-75" > {{job|truncatechars:20}}</p>
                                 <div style="height:200px;overflow-y:auto;">
-                                {% for cand in onboard_candidates %}
-                                    {% if cand.job_position_id.job_position == job %}
-                                    <div class="oh-profile--md align-center d-flex mb-2">
-                                        <div class="oh-profile oh-profile__avatar me-2">
-                                            <img
-                                                src="https://ui-avatars.com/api/?name={{cand}}&background=random"
-                                                class="oh-profile__image"
-                                                alt="{{cand}}"
-                                            />
-                                        </div>
-                                        <span class="oh-profile__name oh-text--dark">{{cand}}</span>
-                                    </div>
+                                    {% for cand in onboard_candidates %}
+                                        {% if cand.job_position_id.job_position == job %}
+                                            <div class="oh-profile--md align-center d-flex mb-2">
+                                                <div class="oh-profile oh-profile__avatar me-2">
+                                                    <img
+                                                        src="https://ui-avatars.com/api/?name={{cand}}&background=random"
+                                                        class="oh-profile__image"
+                                                        alt="{{cand}}"
+                                                    />
+                                                </div>
+                                                <span class="oh-profile__name oh-text--dark">{{cand}}</span>
+                                            </div>
                                         {% endif %}
                                     {% endfor %}
                                 </div>
                                 </li>
                             {% endfor %}
+                            {% else %}
+                            <div style="height: 200px; display:flex;align-items: center;justify-content: center;" class="">
+                              <div style="" class="">
+                                  <img style="display: block;width: 80px;margin: 20px auto ;" src="{% static 'images/ui/no_vacancy.png' %}" class=""/>
+                                  <h3 style="font-size:16px" class="oh-404__subtitle">{% trans "No candidates started onboarding...." %}</h3>
+                              </div>
+                            </div>
+                            {% endif %}
                           </ul>
                         </div>
                       </div>

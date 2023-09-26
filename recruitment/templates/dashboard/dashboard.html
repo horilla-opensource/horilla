@@ -122,7 +122,7 @@
                 {% else %}
                   <div style="height: 200px; display:flex;align-items: center;justify-content: center;" class="">
                     <div style="" class="">
-                        <img style="display: block;width: 80px;margin: 20px auto ;" src="{% static 'images/ui/no_vacnacy.png' %}" class=""/>
+                        <img style="display: block;width: 88px;margin: 20px auto ;" src="{% static 'images/ui/no_vacancy.png' %}" class=""/>
                         <h3 style="font-size:16px" class="oh-404__subtitle">{% trans "No department-specific vacancies currently." %}</h3>
                     </div>
                   </div>
@@ -157,7 +157,12 @@
                   {% endfor %}
                 </ul>
               {% else %}
-                <h6 style="font-size:18px; text-align:center;" class="oh-404__subtitle p-5" >{% trans "No candidates started onboarding." %}</h6>
+                <div style="height: 180px; display:flex;align-items: center;justify-content: center;" class="">
+                  <div style="" class="">
+                      <img style="display: block;width: 100px;margin: 20px auto ;" src="{% static 'images/ui/no_candidate.png' %}" class=""/>
+                      <h3 style="font-size:16px" class="oh-404__subtitle">{% trans "No candidates started onboarding." %}</h3>
+                  </div>
+                </div>
               {% endif %}
               
             </div>

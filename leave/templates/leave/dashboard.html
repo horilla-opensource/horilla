@@ -12,6 +12,9 @@
     .pointer {
         cursor : pointer;
     }
+    .dash-card {
+        padding-bottom:30px;
+    }
 </style>
 <div class="oh-wrapper">
     <div class="d-none mt-5" id="back_button" style="width:10%">
@@ -31,7 +34,7 @@
         <div class="oh-dashboard__left col-12 col-sm-12 col-md-12 col-lg-9">
             <div class="oh-dashboard__cards row">
                 <div class="col-12 col-sm-12 col-md-6 col-lg-4">
-                    <div class="oh-card-dashboard oh-card-dashboard oh-card-dashboard--neutral filter pointer" hx-get="{% url "request-filter" %}?status=requested&dashboard=true" hx-target="#dashboard" >
+                    <div class="oh-card-dashboard oh-card-dashboard oh-card-dashboard--neutral filter pointer dash-card" hx-get="{% url "request-filter" %}?status=requested&dashboard=true" hx-target="#dashboard" >
                         <div class="oh-card-dashboard__header">
                             <span class="oh-card-dashboard__title">{% trans "New Requests" %}</span>
                         </div>
@@ -43,7 +46,7 @@
                     </div>
                 </div>
                 <div class="col-12 col-sm-12 col-md-6 col-lg-4">
-                    <div class="oh-card-dashboard oh-card-dashboard--success filter pointer" hx-get="{% url "request-filter" %}?status=approved&dashboard=true" hx-target="#dashboard">
+                    <div class="oh-card-dashboard oh-card-dashboard--success filter pointer dash-card" hx-get="{% url "request-filter" %}?status=approved&dashboard=true" hx-target="#dashboard">
                         <div class="oh-card-dashboard__header">
                             <span class="oh-card-dashboard__title">{% trans "Approved Requests" %}</span>
                         </div>
@@ -55,7 +58,7 @@
                     </div>
                 </div>
                 <div class="col-12 col-sm-12 col-md-6 col-lg-4">
-                    <div class="oh-card-dashboard oh-card-dashboard--danger filter pointer" hx-get="{% url "request-filter" %}?status=cancelled&dashboard=true" hx-target="#dashboard">
+                    <div class="oh-card-dashboard oh-card-dashboard--danger filter pointer dash-card" hx-get="{% url "request-filter" %}?status=cancelled&dashboard=true" hx-target="#dashboard">
                         <div class="oh-card-dashboard__header">
                             <span class="oh-card-dashboard__title">{% trans "Rejected Requests" %}</span>
                         </div>
@@ -128,8 +131,22 @@
         </div> 
         <div class="oh-dashboard__right  col-12 col-sm-12 col-md-12 col-lg-3">
             <div class="oh-dashboard__events">
+                <div class="w-100">
+                    <div class="w-100 mb-1" id="back_button">
+                        <a href="{% url 'leave-employee-dashboard' %}"
+                        class="oh-btn oh-btn--secondary oh-btn--shadow"
+                        >{% trans "View Personal Dashboard" %}
+                        <ion-icon
+                            class="me-2 md hydrated"
+                            name="arrow-forward-outline"
+                            role="img"
+                            aria-label="arrow-back-outline"
+                        ></ion-icon
+                        ></a
+                        >
+                    </div>
 
-                    <div class="oh-dashboard__event oh-dashboard__event--purple mb-2">
+                    <div class="oh-dashboard__event oh-dashboard__event--purple mb-2" style="padding-bottom:1rem">
                         <div class="oh-dasboard__event-photo" style="background-color:white">
                             <img src="/static/images/ui/sunbed.png" class="oh-dashboard__event-userphoto" />
                         </div>
@@ -138,9 +155,10 @@
                             <span class="oh-dashboard__event-main">{{next_holiday.name}}</span>
                             <span class="oh-dashboard__event-date">{{next_holiday.start_date}}</span>
                         </div>                
+                    </div>
                 </div>
             </div>
-            <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent mt-5 mb-3" style="height:480px;overflow-y:auto">
+            <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent mt-3 mb-3" style="height:480px;overflow-y:auto">
                 <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
                     <span class="oh-card-dashboard__title">{% trans "Up coming holidays" %}</span>
                 </div>
@@ -242,34 +260,4 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="{% static "dashboard/dashboard.js" %}"></script>
 
-{% comment %} <script>
-    $(document).ready(function () {
-
-        var myChart1 = document.getElementById("myChart1");
-        $.ajax({
-            type: "GET",
-            url: "{% url 'todays-leave' %}",
-            dataType: "json",
-            success: function (response) {
-                console.log(response.background_color)
-                const data = {
-                    labels: response.labels,
-                    datasets: [{
-                        label: 'Leave count',
-                        data: response.data,
-                        backgroundColor: response.background_color,
-
-                    }]
-                };
-
-                var rankData = new Chart(myChart1, {
-                    type: 'pie',
-                    data: data,
-                });
-            }
-        });
-
-
-    })
-</script> {% endcomment %}
 {% endblock %}
