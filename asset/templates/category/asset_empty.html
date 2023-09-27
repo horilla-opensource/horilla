@@ -1,0 +1,127 @@
+{% extends 'index.html' %}
+{% block content %}
+{% load static i18n %}
+{% load i18n %}
+{% load widget_tweaks %}
+{% load assets_custom_filter %}
+
+
+<style>
+    .button-link {
+        display: inline-block;
+        padding: 12px 15px;
+        background-color: #F0EFEF; /* Change this to your desired button color */
+        color: #312D2D; /* Text color for the button */
+        text-align: center;
+        text-decoration: none;
+        cursor: pointer;
+    }
+</style>
+
+<!-- start of messages -->
+{% if messages %}
+<div class="oh-wrapper">
+    {% for message in messages %}
+    <div class="oh-alert-container">
+        <div class="oh-alert oh-alert--animated oh-alert--warning">
+            {{ message }}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+<!-- end of messages -->
+
+<main :class="sidebarOpen ? 'oh-main__sidebar-visible' : ''">
+    <section class="oh-wrapper oh-main__topbar" x-data="{searchShow: false}">
+        <div class="oh-main__titlebar oh-main__titlebar--left">
+            <h1 class="oh-main__titlebar-title fw-bold">{% trans "Asset Category" %}</h1>
+        </div>
+        <div class="oh-main__titlebar oh-main__titlebar--right">
+
+            <div class="oh-main__titlebar-button-container">
+                <a href="{% url 'asset-batch-view'%}">
+                    <button class="oh-btn ml-2"> <ion-icon name="list-outline" class="me-1"></ion-icon>{% trans "Batch No" %}</button>
+                </a>
+                <!-- import asset start  -->
+                <div class="oh-dropdown" >
+                    
+                        <button class="ml-2" id="import-button" style='border:none'>
+                            <a href="#" id="asset-info-import" class="button-link" onclick="return confirm('{% trans "Do you want to download template ?" %}')"><ion-icon name="arrow-down-outline" class="me-1"></ion-icon> {% trans "Import" %}</a>
+                        </button>
+                    <div class="oh-dropdown__import oh-dropdown__import--right " style="display: none;" id ="import-dropdown" >
+                        <button class="oh-modal__close close-import"  aria-label="Close">
+                            <ion-icon name="close-outline"></ion-icon>
+                          </button>
+                        <div id="AssetImportResponse"></div>
+                        <form action="{%url 'asset-import' %}" enctype="multipart/form-data" method="post">
+                            {% csrf_token %}
+                            <div class="oh-dropdown__import-form">
+                                <label class="oh-dropdown__import-label" for="uploadFile">
+                                    <ion-icon name="cloud-upload" class="oh-dropdown__import-form-icon"></ion-icon>
+                                    <span class="oh-dropdown__import-form-title">{% trans "Upload a File" %}</span>
+                                    <span class="oh-dropdown__import-form-text">{% trans "Drag and drop files here" %}</span>
+                                </label>
+                                <input type="file" name="asset_import" id="" />
+                            </div>
+                            <button type="submit"
+                                class="oh-btn oh-btn--small oh-btn--secondary w-100 mt-3">{% trans "Upload" %}</button>
+                        </form>
+                    </div>
+                </div>
+                <!-- import asset end  -->
+                <div class="oh-btn-group ml-2">
+                    <div>
+                        <a  href="#" class="oh-btn oh-btn--secondary oh-btn--shadow" 
+                            data-toggle="oh-modal-toggle"
+                            data-target="#AssetCategoryModal" 
+                            hx-get="{%url 'asset-category-creation' %}"
+                            hx-target="#AssetModal"> 
+                            <ion-icon class="me-2" name="add-outline"></ion-icon>
+                            {% trans "Create" %}
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+<div class="oh-modal" id="AssetCategoryModal" role="dialog" aria-labelledby="AssetCategoryModal" aria-hidden="true">
+    <div class="oh-modal__dialog" id="AssetModal">
+           
+    </div>
+</div>
+
+<div class="oh-modal" id="assetInfoModal" role="dialog" aria-labelledby="assetModalLabel" aria-hidden="true">
+    <div class="oh-modal__dialog">
+        <div class="oh-modal__dialog-header">
+            <span class="oh-modal__dialog-title" id="assetModalLabel">{{asset.asset_name}}</span>
+            <button class="oh-modal__close" aria-label="Close" >
+                <ion-icon name="close-outline"></ion-icon>
+            </button>
+        </div>
+        <div class="oh-modal__dialog-body">
+            <section id="assetInfomation">
+            </section>
+        </div>
+    </div>
+</div>
+
+<div
+class="oh-wrapper-main"
+>
+  <main :class="sidebarOpen ? 'oh-main__sidebar-visible' : ''">
+    
+    <div class="oh-wrapper">
+      <div class="oh-404">
+          <img style="    width: 190px;height: 190px;" src="{% static 'images/ui/asset.png' %}" class="oh-404__image mb-4" alt="Page not found. 404."/>
+          <h5 class="oh-404__subtitle">{% trans "There is no Asset category and no Assets has been created." %}</h5>
+      </div>
+    </div>
+  </main>
+</div>
+</div>
+
+<script src="{% static 'src/asset_category/assetCategoryView.js' %}"></script>
+{% endblock %}

@@ -162,6 +162,11 @@ class GeneratePayslipForm(HorillaForm):
     Form for Payslip
     """
 
+    group_name = forms.CharField(
+        label="Batch name",
+        required=False,
+        # help_text="Enter +-something if you want to generate payslips by batches",
+    )
     employee_id = HorillaMultiSelectField(
         queryset=Employee.objects.filter(
             contract_set__isnull=False, contract_set__contract_status="active"
@@ -207,6 +212,7 @@ class GeneratePayslipForm(HorillaForm):
             {"class": "oh-select oh-select-2", "id": uuid.uuid4()}
         )
         self.fields["start_date"].widget.attrs.update({"class": "oh-input w-100"})
+        self.fields["group_name"].widget.attrs.update({"class": "oh-input w-100"})
         self.fields["end_date"].widget.attrs.update({"class": "oh-input w-100"})
 
     class Meta:

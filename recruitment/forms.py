@@ -500,7 +500,7 @@ class QuestionForm(ModelForm):
         """
         context = {"form": self}
         table_html = render_to_string(
-            "survey/question-template-organized-form.html", context
+            "survey/question_template_organized_form.html", context
         )
         return table_html
 

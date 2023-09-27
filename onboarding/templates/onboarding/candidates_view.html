@@ -1,0 +1,163 @@
+{% extends 'index.html' %} {% load i18n %} {% load static %} {% block content %} {% if messages %}
+<div class="oh-wrapper">
+  {% for message in messages %}
+  <div class="oh-alert-container">
+    <div class="oh-alert oh-alert--animated {{message.tags}}">
+      {{ message }}
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+
+<div class="oh-wrapper">
+  <div class="oh-alert-container" id="message"></div>
+</div>
+
+<section class="oh-wrapper oh-main__topbar" x-data="{searchShow: false}">
+  <div class="oh-main__titlebar oh-main__titlebar--left">
+    <h1 class="oh-main__titlebar-title fw-bold mb-0">
+      {% trans "Hired Candidates" %}
+    </h1>
+    <a
+      class="oh-main__titlebar-search-toggle"
+      role="button"
+      aria-label="Toggle Search"
+      @click="searchShow = !searchShow"
+    >
+      <ion-icon
+        name="search-outline"
+        class="oh-main__titlebar-serach-icon"
+      ></ion-icon>
+    </a>
+  </div>
+  <div class="oh-main__titlebar oh-main__titlebar--right">
+    {% if candidates %}
+    <div
+      class="oh-input-group oh-input__search-group"
+      :class="searchShow ? 'oh-input__search-group--show' : ''"
+    >
+      <ion-icon
+        name="search-outline"
+        class="oh-input-group__icon oh-input-group__icon--left"
+      ></ion-icon>
+      <input
+        type="text"
+        class="oh-input oh-input__icon"
+        aria-label="Search Input"
+        placeholder="{% trans 'Search' %}"
+        name="name"
+        hx-get="{% url 'candidate-filter' %}"
+        hx-trigger="keyup"
+        hx-target="#candidates"
+      />
+    </div>
+    <div class="oh-main__titlebar-button-container">
+      <div class="oh-dropdown" x-data="{open: false}">
+        <button class="oh-btn ml-2" @click="open = !open">
+          <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}<div id="filterCount"></div>
+        </button>
+        {% include 'onboarding/candidate_filter.html' %}
+      </div>
+
+      <div class="oh-btn-group ml-2">
+        <button
+          class="oh-btn oh-btn--primary oh-btn--shadow"
+          id="trigger-onboarding"
+        >
+          {% trans "Trigger Onboarding" %}
+        </button>
+        <input
+          type="hidden"
+          name="csrfmiddlewaretoken"
+          value="{{ csrf_token }}"
+        />
+      </div>
+      {% endif %}
+      <div class="oh-btn-group ml-2">
+        <a
+          href="{% url 'candidate-create' %}?onboarding=True"
+          class="oh-btn oh-btn--secondary oh-btn--shadow"
+          method="get"
+        >
+          <ion-icon name="add-outline" class="me-1"></ion-icon>
+          {% trans "Create" %}
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="oh-wrapper" id="candidates">
+  {% if candidates %}
+  {% include 'onboarding/candidates.html' %}
+  {% else %}
+      <div style="height: 70vh; display:flex;align-items: center;justify-content: center;" class="">
+          <div style="" class="">
+              <img style="width: 190px;height: 190px; margin:0 auto;" src="{% static 'images/ui/candidate.png' %}" class="oh-404__image d-block mb-4" alt="Page not found. 404."/>
+              <h5 class="oh-404__subtitle">{% trans "At present, There are no Candidates onboarding." %}</h5>
+          </div>
+      </div>
+  {% endif %}
+</div>
+
+<script>
+  $("#trigger-onboarding").on("click", function () {
+    var array = [];
+    $(".checkboxAll:checked").each(function () {
+      array.push($(this).attr("id"));
+      $("#message").empty();
+      $("#message").append(`
+            <div class="oh-alert oh-alert--animated oh-alert--success">
+                Processing
+            </div>`);
+    });
+
+    $.ajax({
+      type: "post",
+      url: "{% url 'email-send' %}",
+      data: {
+        candidates: JSON.stringify(array),
+        csrfmiddlewaretoken: $("input[name=csrfmiddlewaretoken]").val(),
+      },
+      dataType: "json",
+      success: function (response) {
+        $("#message").empty();
+        $("#message").append(`
+                <div class="oh-alert oh-alert--animated oh-alert--${response.tags}">
+                    ${response.message}
+                </div>`);
+        if (response.tags == "success") {
+          setTimeout(function () {
+            // Code to be executed after the delay
+            location.reload();
+          }, 2000);
+        }
+      },
+    });
+  });
+
+  $("#selectAll").on("click", function () {
+    if (this.checked) {
+      $(".checkboxAll").each(function () {
+        $(".checkboxAll").prop("checked", true);
+      });
+    } else {
+      $(".checkboxAll").each(function () {
+        $(".checkboxAll").prop("checked", false);
+      });
+    }
+  });
+
+  $("#delete-link").on("click", function (event) {
+    event.preventDefault(); // prevent the default behavior of the link
+
+    const link = $(this);
+    const confirmation = confirm("{% trans 'Are you sure you want to delete?' %}");
+
+    if (confirmation) {
+      window.location.href = link.attr("href"); // execute the href if confirmed
+    }
+  });
+</script>
+{% endblock content %}

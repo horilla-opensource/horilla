@@ -1,0 +1,25 @@
+{% extends 'index.html' %}{% block content %}
+{% load static %}
+{% load i18n %}
+<section class="oh-wrapper oh-main__topbar " x-data="{searchShow: false}">
+  <div class="oh-main__titlebar oh-main__titlebar--left">
+    <h1 class="oh-main__titlebar-title fw-bold">{% trans "My Attendances" %}</h1>
+  </div>
+</section>
+
+<div
+class="oh-wrapper-main"
+>
+  <main :class="sidebarOpen ? 'oh-main__sidebar-visible' : ''">
+    
+    <div class="oh-wrapper">
+      <div class="oh-404">
+          <img style="    width: 190px;height:  200px;" src="{% static 'images/ui/present.png' %}" class="oh-404__image mb-4" alt="Page not found. 404."/>
+          <h5 class="oh-404__subtitle">{% trans "There are no attendance records to display." %}</h5>
+      </div>
+    </div>
+  </main>
+</div>
+</div>
+
+{% endblock %}

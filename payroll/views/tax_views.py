@@ -39,8 +39,12 @@ def filing_status_view(request):
 
     """
     status = FilingStatus.objects.all()
+    if status.exists():
+        template = "payroll/tax/filing_status_view.html"
+    else:
+        template = "payroll/tax/filing_status_empty.html"
     context = {"status": status}
-    return render(request, "payroll/tax/filing_status_view.html", context)
+    return render(request, template , context)
 
 
 @login_required

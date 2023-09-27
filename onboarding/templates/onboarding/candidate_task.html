@@ -1,0 +1,28 @@
+<select name="task"  class="w-100" data-task-id="{{task.id}}" style="
+border: 1px solid hsl(213deg,22%,84%);
+padding: 0.3rem 0.8rem 0.3rem 0.3rem;
+border-radius: 0rem;" hx-post="{% url 'candidate-task-update' task.id  %}"
+    hx-trigger="change" hx-target="#task{{task.id}}">
+    {% for choice in choices %}
+    {% if choice.0 == task.status %}
+    <option value="{{choice.0}}" selected>{{choice.1}}</option>
+    {% else %}
+    <option value="{{choice.0}}">{{choice.1}}</option>
+    {% endif %}
+    {% endfor %}
+</select>
+
+
+
+
+<script>
+$(document).ready(function() {
+    $("select[name='task']").on("htmx:afterRequest", function(event, xhr, data) {
+        var alertContainer = $('<div class="oh-alert-container">');
+        var alertDiv = $('<div class="oh-alert oh-alert--animated oh-alert--info">').text("Candidate task updated successfully..");
+        
+        alertContainer.append(alertDiv);
+        $(".messages").html(alertContainer);
+    });
+});
+</script>

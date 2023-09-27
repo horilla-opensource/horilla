@@ -1,0 +1,53 @@
+{% load i18n %}
+<div class="oh-modal__dialog-body oh-timeoff-modal__body  pb-2">
+    <div class="oh-timeoff-modal__profile-content">
+        <div class="oh-profile">
+            <div class="oh-profile__avatar mr-1">
+                {% if leave_request.leave_type_id.icon %}
+                <img src="{{leave_request.leave_type_id.icon.url}}" class="oh-profile__image"
+                    alt="{{leave_request.leave_type_id}}" />
+                {% else %}
+                <img src="https://ui-avatars.com/api/?name={{leave_request.employee_id}}&background=random"
+                    class="oh-profile__image" alt="Mary Magdalene" />
+                {% endif %}
+            </div>
+        </div>
+        <div class="oh-timeoff-modal__profile-info">
+            <span class="oh-timeoff-modal__user fw-bold">{{leave_request.leave_type_id}}</span>
+        </div>
+    </div>
+
+    <div class="oh-timeoff-modal__stats-container">
+        <div class="oh-timeoff-modal__stat">
+            <span class="oh-timeoff-modal__stat-title">{% trans "Start Date" %}</span>
+            <span class="oh-timeoff-modal__stat-count">{{leave_request.start_date}}</span>
+        </div>
+        <div class="oh-timeoff-modal__stat">
+            <span class="oh-timeoff-modal__stat-title">{% trans "End Date" %}</span>
+            <span class="oh-timeoff-modal__stat-count">{{leave_request.end_date}}</span>
+        </div>
+    </div>
+
+    <div class="oh-timeoff-modal__stats-container mt-3">
+        <div class="oh-timeoff-modal__stat">
+            <span class="oh-timeoff-modal__stat-title">{% trans "Days" %}</span>
+            <span class="oh-timeoff-modal__stat-count">{{leave_request.requested_days}}</span>
+        </div>
+       
+    </div>
+
+    <div class="oh-timeoff-modal__stats w-100 mt-3">
+        <div class="oh-timeoff-modal__stat">
+            <span class="oh-timeoff-modal__stat-title">{% trans "Description" %}</span>
+            <div class="oh-timeoff-modal__stat-description">{{leave_request.description}}</div>
+        </div>
+    </div>
+    {% if leave_request.attachment %}
+    <a href="{{leave_request.attachment.url}}" target="_blank" class="oh-timeoff-modal__download-link">
+        <ion-icon class="me-1" name="download-outline"></ion-icon>
+        <span class="oh-timeoff-modal__download-link-text"></span>
+        {% trans "View attachment" %}
+    </a>
+    {% endif %}
+ 
+</div>

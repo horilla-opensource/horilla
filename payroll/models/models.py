@@ -1121,6 +1121,7 @@ class Payslip(models.Model):
         ("confirmed", _("Confirmed")),
         ("paid", _("Paid")),
     ]
+    group_name = models.CharField(max_length=50,null=True,blank=True)
     reference = models.CharField(max_length=255, unique=False)
     employee_id = models.ForeignKey(
         Employee, on_delete=models.PROTECT, verbose_name=_("Employee")

@@ -584,6 +584,7 @@ def save_payslip(**kwargs):
     ).first()
     instance = filtered_instance if filtered_instance is not None else Payslip()
     instance.employee_id = kwargs["employee"]
+    instance.group_name = kwargs.get("group_name")
     instance.start_date = kwargs["start_date"]
     instance.end_date = kwargs["end_date"]
     instance.status = kwargs["status"]

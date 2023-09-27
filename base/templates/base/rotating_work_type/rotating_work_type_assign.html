@@ -3,7 +3,11 @@
 
 <div class="oh-wrapper">
   <div id="view-container">
+  {% if rwork_type_assign %}
     {% include 'base/rotating_work_type/rotating_work_type_assign_view.html' %}
+  {% else %}
+    {% include "base/rotating_work_type/rotating_work_type_assign_empty.html" %}
+  {% endif %}
   </div>
 </div>
 <div

@@ -1,0 +1,22 @@
+{% extends 'candidate/application_form_component.html' %}
+{% block content %}
+{% load i18n %}
+{% if messages %}
+    <div class="oh-alert-container">
+        {% for message in messages %}
+        <div class="oh-alert oh-alert--animated {{message.tags}}">
+              {{ message }}
+        </div> 
+        {% endfor %}
+    </div>
+{% endif %}
+<div class="oh-wrapper p-5">
+    <form action="" method="post" enctype="multipart/form-data" class="p-5">
+        {% csrf_token %}
+        <h1 class="oh-main__titlebar-title fw-bold">
+            {{candidate.name}}'s {% trans "Survey" %} 
+          </h1>
+        {{form}}
+    </form>
+</div>
+{% endblock content %}

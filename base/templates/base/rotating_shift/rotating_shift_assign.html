@@ -50,7 +50,11 @@
 </div>
 <div class="oh-inner-sidebar-content">
   <div id="view-container">
+  {% if rshift_assign %}
     {% include 'base/rotating_shift/rotating_shift_assign_view.html' %}
+  {% else %}
+    {% include 'base/rotating_shift/rotating_shift_assign_empty.html' %}
+  {% endif %}
   </div>
 </div>
 

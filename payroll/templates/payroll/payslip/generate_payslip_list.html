@@ -3,7 +3,7 @@
 <section class="oh-wrapper oh-main__topbar" x-data="{searchShow: false}">
   <div class="oh-main__titlebar oh-main__titlebar--left">
     <h1 class="oh-main__titlebar-title fw-bold">
-      {% trans "Payroll" %} - {{ start_date }} to {{ end_date }}
+      {% trans "Payslips" %} - {{ start_date }} to {{ end_date }}
     </h1>
     <a
       class="oh-main__titlebar-search-toggle"
@@ -31,6 +31,11 @@
   </div>
 </section>
 <div class="oh-wrapper">
+  <div
+  class="oh-tabs__content oh-tabs__content--active"
+  style="padding-top: 30px"
+  id="allPaySlips"
+>
   <div class="oh-sticky-table">
     <div class="oh-sticky-table__table oh-table--sortable">
       <div class="oh-sticky-table__thead">
@@ -40,7 +45,7 @@
               <div class="">
                 <input
                   type="checkbox"
-                  class="oh-input oh-input__checkbox mt-1 mr-2 all-candidate"
+                  class="oh-input oh-input__checkbox mt-1 mr-2 all-slips"
                 />
               </div>
               <div
@@ -51,6 +56,8 @@
               </div>
             </div>
           </div>
+          <div class="oh-sticky-table__th">{% trans "Status" %}</div>
+          <div class="oh-sticky-table__th">{% trans "Batch" %}</div>
           <div class="oh-sticky-table__th">{% trans "Gross Pay" %}</div>
           <div class="oh-sticky-table__th">{% trans "Deductions" %}</div>
           <div class="oh-sticky-table__th">{% trans "Net Pay" %}</div>
@@ -58,38 +65,51 @@
         </div>
       </div>
       <div class="oh-sticky-table__tbody ui-sortable">
-        {% for data in payslip_data %}
+        {% for payslip in instances %}
         <div class="oh-sticky-table__tr ui-sortable-handle">
-          <div class="oh-sticky-table__sd">
-            <div class="oh-profile oh-profile--md">
-              <div class="oh-profile__avatar mr-1">
-                {% if data.employee.employee_profile %}
-                <img
-                  src="/media/{{payslip.employee_id.employee_profile}}"
-                  class="oh-profile__image"
-                  alt="Username"
+          <div class="oh-sticky-table__sd {% if payslip.status == "review_ongoing" %}row-status--orange {% elif payslip.status == "confirmed" %} row-status--blue {% elif payslip.status == "paid" %} row-status--yellow {% elif payslip.status == "draft" %} row-status--gray{% endif %}">
+            <div class="d-flex">
+
+              <div class="">
+                <input
+                type="checkbox"
+                value="{{payslip.id}}"
+                class="oh-input oh-input__checkbox mt-2 mr-2 payslip-row"
                 />
-                {% else %}
-                <img
-                  src="https://ui-avatars.com/api/?name={{data.employee.employee_first_name}}+{{data.employee.employee_last_name}}&background=random"
-                  class="oh-profile__image"
-                  alt="Username"
-                />
-                {% endif %}
               </div>
-              <span class="oh-profile__name oh-text--dark"
-                >{{data.employee}}</span
-              >
+              <div class="oh-profile oh-profile--md">
+                <div class="oh-profile__avatar mr-1">
+                  <img
+                  src="https://ui-avatars.com/api/?name={{payslip.employee_id}}&background=random"
+                  class="oh-profile__image"
+                  alt="Username"
+                  />
+                </div>
+                <span class="oh-profile__name oh-text--dark"
+                >{{payslip.employee_id}}
+                </span
+                >
+              </div>
             </div>
           </div>
           <div class="oh-sticky-table__td">
-            {{currency}} {{data.gross_pay|floatformat:2}}
+            <select name="pay_status" data-instance-id="{{payslip.id}}">
+              {% for opt in payslip.status_choices %}
+              <option value="{{opt.0}}"{% if opt.0 == payslip.status %}selected{% endif %}>{{opt.1}}</option>
+              {% endfor %}
+            </select>
           </div>
           <div class="oh-sticky-table__td">
-            {{currency}} {{data.total_deductions|floatformat:2}}
+            {{payslip.group_name}}
+          </div>          
+          <div class="oh-sticky-table__td">
+            {{currency}} {{payslip.gross_pay|floatformat:2}}
           </div>
           <div class="oh-sticky-table__td">
-            {{currency}} {{data.net_pay|floatformat:2}}
+            {{currency}} {{payslip.deduction|floatformat:2}}
+          </div>
+          <div class="oh-sticky-table__td">
+            {{currency}} {{payslip.net_pay|floatformat:2}}
           </div>
           <div class="oh-sticky-table__td">
             <div class="oh-btn-group" >
@@ -132,20 +152,116 @@
       </div>
     </div>
   </div>
+  </div>
+</div>
+<div id="messageContainer">
 </div>
 <script>
+  $(".all-slips").change(function (e) { 
+    e.preventDefault();
+    $(".payslip-row").prop("checked",false)
+    if ($(this).is(":checked")) {
+      $(".payslip-row").prop("checked",true)
+    }
+  });
+  function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== "") {
+      const cookies = document.cookie.split(";");
+      for (let i = 0; i < cookies.length; i++) {
+        const cookie = cookies[i].trim();
+        // Does this cookie string begin with the name we want?
+        if (cookie.substring(0, name.length + 1) === name + "=") {
+          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+          break;
+        }
+      }
+    }
+    return cookieValue;
+  }
   var allEmployeePayData = {{json_data|safe}}
   $("#id_status").change(function (e) {
     e.preventDefault();
-    var status = $(this).val();
+    var status = $(this).val()
+    var ids =[]
+    $.each($(".payslip-row:checked"), function (indexInArray, valueOfElement) { 
+      ids.push($(valueOfElement).val())
+    });
+    var color = "gray"
+    if (status == "review_ongoing") {
+      color = "orange"
+    }else if (status == "confirmed") {
+      color = "blue"
+    }else if(status == "paid"){
+      color = "yellow"
+    }
     $.ajax({
-      type: "get",
-      url: "{% url 'bulk-payslip-status-update' %}",
-      data: {"json_data":JSON.stringify(allEmployeePayData),"status":status},
-      dataType: "dataType",
+      type: "post",
+      url: '{% url "payslip-status-update-no-id" %}',
+      data: {
+        csrfmiddlewaretoken: getCookie("csrftoken"),
+        ids:JSON.stringify(ids),
+        status:status,
+      },
       success: function (response) {
+        $(".payslip-row:checked").parent().parent().parent().attr("class",`oh-sticky-table__sd row-status--${color}`)
+        $(".payslip-row:checked").parent().parent().parent().parent().find("[name=pay_status]").val(status)
+        $("#messageContainer").html($($(`
+            <div class="oh-alert-container">
+              <div class="oh-alert oh-alert--animated  oh-alert--${response.type}">
+                ${response.message}
+              </div>
+            </div>`)
+            ))
+      },error:()=>{
+        $("#messageContainer").html($($(`
+        <div class="oh-alert-container">
+          <div class="oh-alert oh-alert--animated  oh-alert--danger">
+            Status not updated.
+          </div>
+        </div>`)
+        ))
       }
     });
+
+  });
+  $("[name=pay_status]").change(function (e) {
+    let $element = $(this)
+    var instanceId = $element.attr("data-instance-id");
+        var status = $element.val()
+        $.ajax({
+          type: "get",
+          url: `/payroll/payslip-status-update/${instanceId}/`,
+          data: {"status":status},
+          success: function (response) {
+            console.log($element);
+            var color = "gray"
+            if (status == "review_ongoing") {
+              color = "orange"
+            }else if (status == "confirmed") {
+              color = "blue"
+            }else if(status == "paid"){
+              color = "yellow"
+            }
+            $element.parent().parent().find(".oh-sticky-table__sd").attr("class",`oh-sticky-table__sd row-status--${color}`)
+            $("#messageContainer").html($($(`
+            <div class="oh-alert-container">
+              <div class="oh-alert oh-alert--animated  oh-alert--${response.type}">
+                ${response.message}
+              </div>
+            </div>`)
+            ))
+          },
+          error:()=>{
+            $("#messageContainer").html($($(`
+            <div class="oh-alert-container">
+              <div class="oh-alert oh-alert--animated  oh-alert--danger">
+                Status not updated.
+              </div>
+            </div>`)
+            ))
+          }
+        })
   });
 </script>
 {% endblock content %}

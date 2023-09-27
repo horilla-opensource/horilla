@@ -1,0 +1,119 @@
+{% load i18n %}
+{% if messages %}
+<div class="oh-wrapper">
+    {% for message in messages %}
+    <div class="oh-alert-container">
+        <div class="oh-alert oh-alert--animated {{ message.tags }}">
+        {{ message }}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+{% include 'filter_tags.html' %}
+
+<div class="d-flex flex-row-reverse">
+    <span class="m-3" style="cursor:pointer;" hx-get="{% url 'user-request-filter' %}?{{pd}}&status=cancelled" hx-target="#userRequest">
+      <span class="oh-dot oh-dot--small me-1" style="background-color:gray"></span>
+      {% trans "Cancelled" %}
+    </span>
+    <span class="m-3" style="cursor:pointer;" hx-get="{% url 'user-request-filter' %}?{{pd}}&status=requested" hx-target="#userRequest">
+      <span class="oh-dot oh-dot--small me-1" style="background-color:orange;"></span>
+      {% trans "Requested" %}
+    </span>
+    <span class="m-3" style="cursor:pointer;" hx-get="{% url 'user-request-filter' %}?{{pd}}&status=approved" hx-target="#userRequest">
+      <span class="oh-dot oh-dot--small me-1" style="background-color:yellowgreen"></span>
+      {% trans "Approved" %}
+    </span>
+</div>
+
+<div class="oh-sticky-table">
+    <div class="oh-sticky-table__table oh-table--sortable">
+        <div class="oh-sticky-table__thead">
+            <div class="oh-sticky-table__tr">
+                <div class="oh-sticky-table__th">{% trans "Leave Type" %}</div>
+                <div class="oh-sticky-table__th">{% trans "Start Date" %}</div>
+                <div class="oh-sticky-table__th">{% trans "End Date" %}</div>
+                <div class="oh-sticky-table__th">{% trans "Requested days" %}</div>
+                <div class="oh-sticky-table__th">{% trans "Status" %}</div>
+                <div class="oh-sticky-table__th">{% trans "Actions" %}</div>
+            </div>
+        </div>
+        <div class="oh-sticky-table__tbody">
+            {% for leave_request in leave_requests %}
+            <div class="oh-sticky-table__tr" draggable="true">
+                <div class="oh-sticky-table__sd {% if leave_request.status == "requested" %}row-status--orange {% elif leave_request.status == "cancelled" %} row-status--gray {% elif leave_request.status == "approved" %} row-status--yellow{% endif %}" data-toggle="oh-modal-toggle" data-target="#tableTimeOff"
+                hx-get="{% url 'user-request-one' leave_request.id %}" hx-target="#userRequestView">
+                    <div class="oh-profile oh-profile--md">
+                        <div class="oh-profile__avatar mr-1">
+                            {% if leave_request.leave_type_id.icon %}
+                            <img src="{{leave_request.leave_type_id.icon.url}}" class="oh-profile__image"
+                                alt="Leave Type Icon" />
+                            {% else%}
+                            <img src="https://ui-avatars.com/api/?name={{leave_request.leave_type_id}}&background=random"
+                                class="oh-profile__image" alt="Leave type icon" />
+                            {% endif %}
+                        </div>
+                        <span class="oh-profile__name oh-text--dark">{{leave_request.leave_type_id}}</span>
+                    </div>
+                </div>
+                <div class="oh-sticky-table__td">{{leave_request.start_date}}</div>
+                <div class="oh-sticky-table__td">{{leave_request.end_date}}</div>
+                <div class="oh-sticky-table__td">{{leave_request.requested_days}}</div>
+                <div class="oh-sticky-table__td">{{leave_request.get_status_display}}</div>
+                {% if leave_request.status == 'requested'%}
+                <div class="oh-sticky-table__td">
+                    <div class="oh-btn-group">
+                        <button class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Edit' %}" data-toggle="oh-modal-toggle"
+                            data-target="#editModal" hx-get="{% url 'user-request-update' leave_request.id %}"
+                            hx-target="#updateForm"><ion-icon name="create-outline"></ion-icon></button>
+                        <a class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100" title="{% trans 'Delete' %}" id="delete-link"
+                            href="{% url 'user-request-delete' leave_request.id %}"><ion-icon name="trash-outline"></ion-icon></a>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<div class="oh-pagination">
+    <span class="oh-pagination__page">
+        {% trans "Page" %} {{ leave_requests.number }} {% trans "of" %} {{ leave_requests.paginator.num_pages }}.
+    </span>
+    <nav class="oh-pagination__nav">
+        <div class="oh-pagination__input-container me-3">
+            <span class="oh-pagination__label me-1">{% trans "Page" %}</span>
+            <input type="number" name="page" class="oh-pagination__input" value="{{leave_requests.number}}"
+                hx-get="{% url 'user-request-filter' %}?{{pd}}" hx-target="#userRequest" min="1" />
+            <span class="oh-pagination__label">{% trans "of" %} {{leave_requests.paginator.num_pages}}</span>
+        </div>
+        <ul class="oh-pagination__items">
+            {% if leave_requests.has_previous %}
+            <li class="oh-pagination__item oh-pagination__item--wide">
+                <a hx-target='#userRequest' hx-get="{% url 'user-request-filter' %}?{{pd}}&page=1"
+                    class="oh-pagination__link">{% trans "First" %}</a>
+            </li>
+            <li class="oh-pagination__item oh-pagination__item--wide">
+                <a hx-target='#userRequest'
+                    hx-get="{% url 'user-request-filter' %}?{{pd}}&page={{ leave_requests.previous_page_number }}"
+                    class="oh-pagination__link">{% trans "Previous" %}</a>
+            </li>
+            {% endif %}
+            {% if leave_requests.has_next %}
+            <li class="oh-pagination__item oh-pagination__item--wide">
+                <a hx-target='#userRequest'
+                    hx-get="{% url 'user-request-filter' %}?{{pd}}&page={{ leave_requests.next_page_number }}"
+                    class="oh-pagination__link">{% trans "Next" %}</a>
+            </li>
+            <li class="oh-pagination__item oh-pagination__item--wide">
+                <a hx-target='#userRequest'
+                    hx-get="{% url 'user-request-filter' %}?{{pd}}&page={{ leave_requests.paginator.num_pages }}"
+                    class="oh-pagination__link">{% trans "Last" %}</a>
+            </li>
+            {% endif %}
+  
+        </ul>
+    </nav>
+  </div>

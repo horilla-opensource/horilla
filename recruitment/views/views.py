@@ -144,10 +144,15 @@ def recruitment_view(request):
     if not request.GET:
         request.GET.copy().update({"is_active": "on"})
     form = RecruitmentCreationForm()
-    filter_obj = RecruitmentFilter(request.GET, queryset=Recruitment.objects.all())
+    queryset=Recruitment.objects.all()
+    if queryset.exists():
+        template = "recruitment/recruitment_view.html"
+    else:
+        template = "recruitment/recruitment_empty.html"
+    filter_obj = RecruitmentFilter(request.GET, queryset)
     return render(
         request,
-        "recruitment/recruitment_view.html",
+        template,
         {
             "data": paginator_qry(filter_obj.qs, request.GET.get("page")),
             "f": filter_obj,
@@ -664,9 +669,13 @@ def stage_view(request):
     stages = Stage.objects.filter()
     filter_obj = StageFilter()
     form = StageCreationForm()
+    if stages.exists():
+        template = "stage/stage_view.html"
+    else:
+        template = "stage/stage_empty.html"
     return render(
         request,
-        "stage/stage_view.html",
+        template,
         {
             "data": paginator_qry(stages, request.GET.get("page")),
             "form": form,

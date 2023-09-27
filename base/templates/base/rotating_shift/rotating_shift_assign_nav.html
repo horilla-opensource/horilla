@@ -1,9 +1,10 @@
-{% load basefilters %}
-{% load i18n %}
+{% load basefilters %} {% load i18n %}
 
 <section class="oh-wrapper oh-main__topbar" x-data="{searchShow: false}">
   <div class="oh-main__titlebar oh-main__titlebar--left">
-    <h1 class="oh-main__titlebar-title fw-bold">{% trans "Rotating Shift Assign" %}</h1>
+    <h1 class="oh-main__titlebar-title fw-bold">
+      {% trans "Rotating Shift Assign" %}
+    </h1>
     <a
       class="oh-main__titlebar-search-toggle"
       role="button"
@@ -17,97 +18,105 @@
     </a>
   </div>
   <div class="oh-main__titlebar oh-main__titlebar--right">
-    <div
-      class="oh-input-group oh-input__search-group"
-      :class="searchShow ? 'oh-input__search-group--show' : ''"
-    >
-      <ion-icon
-        name="search-outline"
-        class="oh-input-group__icon oh-input-group__icon--left"
-      ></ion-icon>
-      <input
-        type="text"
-        hx-get="{% url 'rotating-shift-assign-view' %}"
-        hx-target="#view-container"
-        hx-trigger="keyup changed delay:.2s"
-
-        name="search"
-        class="oh-input oh-input__icon"
-        aria-label="Search Input"
-        placeholder="{% trans 'Search' %}"
-      />
-    </div>
+    {% if rshift_assign %}
+      <div
+        class="oh-input-group oh-input__search-group"
+        :class="searchShow ? 'oh-input__search-group--show' : ''"
+      >
+        <ion-icon
+          name="search-outline"
+          class="oh-input-group__icon oh-input-group__icon--left"
+        ></ion-icon>
+        <input
+          type="text"
+          hx-get="{% url 'rotating-shift-assign-view' %}"
+          hx-target="#view-container"
+          hx-trigger="keyup changed delay:.2s"
+          name="search"
+          class="oh-input oh-input__icon"
+          aria-label="Search Input"
+          placeholder="{% trans 'Search' %}"
+        />
+      </div>
+    {% endif %}
     <div class="oh-main__titlebar-button-container">
-      <div class="oh-dropdown" x-data="{open: false}">
-        <button class="oh-btn ml-2" @click="open = !open">
-          <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}<div id="filterCount"></div>
-        </button>
-        <div
-          class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4"
-          x-show="open"
-          @click.outside="open = false"
-          style="display: none;"
-
-        >
-          {% include 'base/rotating_shift/filters.html' %}
+      {% if rshift_assign %}
+        <div class="oh-dropdown" x-data="{open: false}">
+          <button class="oh-btn ml-2" @click="open = !open">
+            <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}
+            <div id="filterCount"></div>
+          </button>
+          <div
+            class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4"
+            x-show="open"
+            @click.outside="open = false"
+            style="display: none"
+          >
+            {% include 'base/rotating_shift/filters.html' %}
+          </div>
         </div>
-      </div>
-      <div class="oh-dropdown" x-data="{open: false}">
-        <button
-          class="oh-btn oh-btn--dropdown oh-btn  ml-2"
-          @click="open = !open"
-          @click.outside="open = false"
-        >
-          {% trans "Actions" %}
-        </button>
-        <div class="oh-dropdown__menu oh-dropdown__menu--right" x-show="open" style="display: none;">
-          <ul class="oh-dropdown__items">
-            
-            {% if perms.base.change_rotatingshiftassign or request.user|is_reportingmanager %}
-            <li class="oh-dropdown__item">
-              <a href="#" 
-              class="oh-dropdown__link " 
-              id="archiveRotatingShiftAssign"
-                >{% trans "Archive" %}</a
-              >
-            </li>
-            {% endif %} 
-            {% if perms.base.change_rotatingshiftassign or request.user|is_reportingmanager %}
-            <li class="oh-dropdown__item">
-              <a href="#" 
-              class="oh-dropdown__link " 
-              id="unArchiveRotatingShiftAssign"
-                >{% trans "Un-Archive" %}</a
-              >
-            </li>
-            {% endif %} 
-            {% if perms.base.delete_rotatingshiftassign %}
-            <li class="oh-dropdown__item">
-              <a
-                href="#"
-                class="oh-dropdown__link oh-dropdown__link--danger"
-                id="deleteRotatingShiftAssign"
-                >{% trans "Delete" %}</a
-              >
-            </li>
-            {% endif %}
-          </ul>
-        </div>
-      </div>
-      {% if perms.base.add_rotatingshiftassign or request.user|is_reportingmanager %}
-      <div class="oh-btn-group ml-2">
         <div class="oh-dropdown" x-data="{open: false}">
           <button
-            class="oh-btn oh-btn--secondary oh-btn--shadow"
-            hx-get="{% url 'rotating-shift-assign-add' %}"
-            hx-target="#rotatingShiftAssignModalBody"
-            data-toggle="oh-modal-toggle"
-            data-target="#rotating-shift-modal"
-            >
-            {% trans "Assign" %}
+            class="oh-btn oh-btn--dropdown oh-btn ml-2"
+            @click="open = !open"
+            @click.outside="open = false"
+          >
+            {% trans "Actions" %}
           </button>
+          <div
+            class="oh-dropdown__menu oh-dropdown__menu--right"
+            x-show="open"
+            style="display: none"
+          >
+            <ul class="oh-dropdown__items">
+              {% if perms.base.change_rotatingshiftassign or request.user|is_reportingmanager %}
+                <li class="oh-dropdown__item">
+                  <a
+                    href="#"
+                    class="oh-dropdown__link"
+                    id="archiveRotatingShiftAssign"
+                    >{% trans "Archive" %}</a
+                  >
+                </li>
+              {% endif %} 
+              {% if perms.base.change_rotatingshiftassign or request.user|is_reportingmanager %}
+                <li class="oh-dropdown__item">
+                  <a
+                    href="#"
+                    class="oh-dropdown__link"
+                    id="unArchiveRotatingShiftAssign"
+                    >{% trans "Un-Archive" %}</a
+                  >
+                </li>
+              {% endif %} 
+              {% if perms.base.delete_rotatingshiftassign %}
+                <li class="oh-dropdown__item">
+                  <a
+                    href="#"
+                    class="oh-dropdown__link oh-dropdown__link--danger"
+                    id="deleteRotatingShiftAssign"
+                    >{% trans "Delete" %}</a
+                  >
+                </li>
+              {% endif %}
+            </ul>
+          </div>
         </div>
-      </div>
+      {% endif %}
+      {% if perms.base.add_rotatingshiftassign or request.user|is_reportingmanager %}
+        <div class="oh-btn-group ml-2">
+          <div class="oh-dropdown" x-data="{open: false}">
+            <button
+              class="oh-btn oh-btn--secondary oh-btn--shadow"
+              hx-get="{% url 'rotating-shift-assign-add' %}"
+              hx-target="#rotatingShiftAssignModalBody"
+              data-toggle="oh-modal-toggle"
+              data-target="#rotating-shift-modal"
+            >
+              {% trans "Assign" %}
+            </button>
+          </div>
+        </div>
       {% endif %}
     </div>
   </div>

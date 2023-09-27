@@ -186,10 +186,15 @@ def attendance_view(request):
     ot_attendances = filtersubordinates(
         request, ot_attendances, "attendance.view_attendance"
     )
+    check_attendance = Attendance.objects.all()
+    if check_attendance.exists():
+        template = "attendance/attendance/attendance_view.html"
+    else:
+        template = "attendance/attendance/attendance_empty.html"
 
     return render(
         request,
-        "attendance/attendance/attendance_view.html",
+        template,
         {
             "form": form,
             "validate_attendances": paginator_qry(
@@ -342,9 +347,13 @@ def view_my_attendance(request):
     employee = user.employee_get
     employee_attendances = employee.employee_attendances.all()
     filter = AttendanceFilters()
+    if employee_attendances.exists():
+        template = "attendance/own_attendance/view_own_attendances.html"
+    else:
+        template = "attendance/own_attendance/own_empty.html"
     return render(
         request,
-        "attendance/own_attendance/view_own_attendances.html",
+        template,
         {
             "attendances": paginator_qry(employee_attendances, request.GET.get("page")),
             "f": filter,
@@ -383,6 +392,10 @@ def attendance_overtime_view(request):
     """
     previous_data = request.GET.urlencode()
     accounts = AttendanceOverTime.objects.all()
+    if accounts.exists():
+        template = "attendance/attendance_account/attendance_overtime_view.html"
+    else:
+        template = "attendance/attendance_account/overtime_empty.html"
     accounts = filtersubordinates(
         request, accounts, "attendance.view_attendanceovertime"
     )
@@ -391,7 +404,7 @@ def attendance_overtime_view(request):
     filter_obj = AttendanceOverTimeFilter()
     return render(
         request,
-        "attendance/attendance_account/attendance_overtime_view.html",
+        template,
         {
             "accounts": paginator_qry(accounts, request.GET.get("page")),
             "form": form,
@@ -461,9 +474,13 @@ def attendance_activity_view(request):
     attendance_activities = AttendanceActivity.objects.all()
     previous_data = request.GET.urlencode()
     filter_obj = AttendanceActivityFilter()
+    if attendance_activities.exists():
+        template = "attendance/attendance_activity/attendance_activity_view.html"
+    else:
+        template = "attendance/attendance_activity/activity_empty.html"
     return render(
         request,
-        "attendance/attendance_activity/attendance_activity_view.html",
+        template,
         {
             "data": paginator_qry(attendance_activities, request.GET.get("page")),
             "pd": previous_data,
@@ -571,13 +588,17 @@ def late_come_early_out_view(request):
     This method render template to view all late come early out entries
     """
     reports = AttendanceLateComeEarlyOut.objects.all()
+    if reports.exists():
+        template = "attendance/late_come_early_out/reports.html"
+    else:
+        template = "attendance/late_come_early_out/reports_empty.html"
     reports = filtersubordinates(
         request, reports, "attendance.view_attendancelatecomeearlyout"
     )
     filter_obj = LateComeEarlyOutFilter()
     return render(
         request,
-        "attendance/late_come_early_out/reports.html",
+        template,
         {
             "data": paginator_qry(reports, request.GET.get("page")),
             "f": filter_obj,

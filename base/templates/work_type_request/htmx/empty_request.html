@@ -1,0 +1,17 @@
+{% load static %}{% load i18n %}
+<div class="oh-wrapper-main">
+  <main :class="sidebarOpen ? 'oh-main__sidebar-visible' : ''">
+    <div class="oh-wrapper">
+      <div class="oh-404">
+        <img
+          style="width: 150px; height: 150px"
+          src="{% static 'images/ui/no_request.png' %}"
+          class="oh-404__image mb-4"
+        />
+        <h3 class="oh-404__subtitle">
+          {% trans "No work type requests have been created yet." %}
+        </h3>
+      </div>
+    </div>
+  </main>
+</div>

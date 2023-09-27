@@ -121,11 +121,15 @@ def contract_view(request):
     """
 
     contracts = Contract.objects.all()
+    if contracts.exists():
+        template = "payroll/contract/contract_view.html"
+    else:
+        template = "payroll/contract/contract_empty.html"
     contracts = paginator_qry(contracts, request.GET.get("page"))
     filter_form = ContractFilter(request.GET)
     context = {"contracts": contracts, "f": filter_form}
 
-    return render(request, "payroll/contract/contract_view.html", context)
+    return render(request, template, context)
 
 
 @login_required
@@ -274,11 +278,19 @@ def settings(request):
 
 @login_required
 @permission_required("payroll.change_payslip")
-def update_payslip_status(request, payslip_id):
+def update_payslip_status(request, payslip_id=None):
     """
     This method is used to update the payslip confirmation status
     """
     message = {"type": "success", "message": "Payslip status updated."}
+    if request.method == "POST":
+        ids_json = request.POST['ids']
+        ids = json.loads(ids_json)
+        status = request.POST["status"]
+        slips = Payslip.objects.filter(id__in=ids)
+        slips.update(status=status)
+        message = {"type": "success", "message": f"{slips.count()} Payslips status updated."}
+        return JsonResponse(message)
     try:
         payslip = Payslip.objects.get(id=payslip_id)
         payslip.status = request.GET["status"]
@@ -324,7 +336,7 @@ def bulk_update_payslip_status(request):
         instance.pay_head_data = data
         instance.save()
 
-    return JsonResponse({"message": "success"})
+    return JsonResponse({"type":"success","message": "Payslips status updated"})
 
 
 @login_required
@@ -578,7 +590,7 @@ def dashboard_department_chart(request):
             "dataset": dataset,
             "labels": department,
             "department_total": department_total,
-            "message":"No payslips generated for this month."
+            "message":_("No payslips generated for this month.")
         }
         return JsonResponse(response)
 
@@ -604,7 +616,7 @@ def contract_ending(request):
 
     response = {
         "contract_end": ending_contract,
-        "message":"No contracts ending this month"
+        "message":_("No contracts ending this month")
     }
     return JsonResponse(response)
 
@@ -881,9 +893,9 @@ def payslip_bulk_delete(request):
     ids = request.POST["ids"]
     ids = json.loads(ids)
     for id in ids:
-        payslip = Payslip.objects.get(id=id)
-        period = f"{payslip.start_date} to {payslip.end_date}"
         try:
+            payslip = Payslip.objects.get(id=id)
+            period = f"{payslip.start_date} to {payslip.end_date}"
             payslip.delete()
             messages.success(
                 request,
@@ -899,3 +911,15 @@ def payslip_bulk_delete(request):
                 _("You cannot delete {payslip}").format(payslip=payslip),
             )
     return JsonResponse({"message": "Success"})
+
+
+@login_required
+@permission_required("payroll.change_payslip")
+def slip_group_name_update(request):
+    """
+    This method is used to update the group of the payslip
+    """
+    new_name = request.POST["newName"]
+    group_name = request.POST["previousName"]
+    Payslip.objects.filter(group_name=group_name).update(group_name=new_name)
+    return JsonResponse({"type":"success","message":"Batch name updated.","new_name":new_name})

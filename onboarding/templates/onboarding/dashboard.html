@@ -84,8 +84,8 @@
                           <span class="oh-card-dashboard__title">{% trans "Candidates on Onboard" %}</span>
                         </div>
                         <div class="oh-card-dashboard__body">
-                          <ul class="oh-card-dashboard__user-list" style='white-space: nowrap; overflow-x: auto;'>
                             {% if onboard_candidates and job_positions  %}
+                          <ul class="oh-card-dashboard__user-list" style='white-space: nowrap; overflow-x: auto;'>
                             {% for job in job_positions %}
 
                             <li class="oh-card-dashboard__user-item row ms-2" style='width:40%; display: inline-block; float: none;'>
@@ -108,15 +108,16 @@
                                 </div>
                                 </li>
                             {% endfor %}
+                        </ul>
+
                             {% else %}
-                            <div style="height: 200px; display:flex;align-items: center;justify-content: center;" class="">
-                              <div style="" class="">
+                            <div style="display:flex;align-items: center;justify-content: center;" class="">
+                              <div style="" class="p-5">
                                   <img style="display: block;width: 80px;margin: 20px auto ;" src="{% static 'images/ui/no_vacancy.png' %}" class=""/>
-                                  <h3 style="font-size:16px" class="oh-404__subtitle">{% trans "No candidates started onboarding...." %}</h3>
+                                  <h3 style="font-size:16px" class="oh-404__subtitle">{% trans "No candidates started onboarding." %}</h3>
                               </div>
                             </div>
-                            {% endif %}
-                          </ul>
+                        {% endif %}
                         </div>
                       </div>
                 </div>

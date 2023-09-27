@@ -1,0 +1,128 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Employee Onboarding - Horilla Dashboard</title>
+    <link rel="stylesheet" href="{% static 'build/css/style.min.css' %}" />
+</head>
+
+<body>
+    {% if messages %}
+    <div class="oh-wrapper">
+        {% for message in messages %}
+        <div class="oh-alert-container">
+            <div class="oh-alert oh-alert--animated {{message.tags}}">
+                {{ message }}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+
+    <div id="main">
+        <main class="oh-onboarding">
+            <div class="oh-onboarding-card">
+                <div class="oh-onboarding-card__header">
+                    <span class="oh-onboarding-card__company-name">{{company}}</span>
+                    <ul class="oh-onboarding-card__steps">
+                        <li class="oh-onboarding-card__step ">
+                            <div class="oh-onboarding-card__count">1</div>
+                            <span class="oh-onboarding-card__text">Login</span>
+                        </li>
+                        <li class="oh-onboarding-card__step oh-onboarding-card__step--active">
+                            <div class="oh-onboarding-card__count">2</div>
+                            <span class="oh-onboarding-card__text">Profile Setup</span>
+                        </li>
+                        <li class="oh-onboarding-card__step">
+                            <div class="oh-onboarding-card__count">3</div>
+                            <span class="oh-onboarding-card__text">Personal Details</span>
+                        </li>
+                        <li class="oh-onboarding-card__step">
+                            <div class="oh-onboarding-card__count">4</div>
+                            <span class="oh-onboarding-card__text">Bank Details</span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="oh-onboarding-card__container">
+
+                    <form>
+                        <div class="oh-input-group w-100 d-flex justify-content-center">
+                            <div class="oh-profile-section__edit-photo me-4 mb-3" data-toggle="oh-modal-toggle"
+                                data-target="#uploadPhotoModal">
+                                {% if candidate.profile %}
+                                <img src="{{candidate.profile.url}}" class="oh-profile-section__avatar" alt="{{candidate.name}}"/>
+                                {% else %}
+                                <img src="https://ui-avatars.com/api/?name={{candidate}}&background=random" class="oh-profile-section__avatar" alt="{{candidate.name}}"/>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <h2 class="oh-onboarding-card__greeting text-center">Welcome Aboard</h2>
+                        <h3 class="oh-onboarding-card__title oh-onboarding-card__title--h1 text-center">
+                            {{candidate.name}}</h2>
+                            <span class="oh-onboarding-card__subtitle mb-3 text-center">({{candidate.email}})</span>
+
+                            <a href="{% url 'employee-creation' token %}"
+                                class="oh-btn oh-onboarding-card__button mt-4 oh-btn--secondary oh-btn--shadow w-100 mb-4"
+                                role="button">
+                                Next Step
+                                <ion-icon class="ms-2" name="arrow-forward-outline"></ion-icon>
+                            </a>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Upload Photo Modal -->
+            <div class="oh-modal" id="uploadPhotoModal" role="dialog" aria-labelledby="uploadPhotoModal"
+                aria-hidden="true">
+                <div class="oh-modal__dialog">
+                    <div class="oh-modal__dialog-header">
+                        <span class="oh-modal__dialog-title" id="uploadPhotoModalLabel">Upload Photo</span>
+                        <button class="oh-modal__close" aria-label="Close">
+                            <ion-icon name="close-outline"></ion-icon>
+                        </button>
+                    </div>
+                    <form action="" method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="oh-modal__dialog-body">
+                            <div class="oh-profile-section__image-container">
+                                <div class="oh-profile-section__modal-avatar">
+                                    {% if candidate.profile %}
+                                    <img src="{{candidate.profile.url}}"
+                                        class="oh-profile-section__modal-image oh-upload-photo" alt="User Photo" />
+                                    {% else %}
+                                    <img src="https://ui-avatars.com/api/?name={{candidate}}&background=random"
+                                        class="oh-profile-section__modal-image oh-upload-photo" alt="User Photo" />
+                                    {% endif %}
+                                </div>
+                                <input type="file"
+                                    class="oh-input oh-input--file oh-input--file-sm mt-4 oh-upload-input"
+                                    data-target=".oh-upload-photo" name="profile" />
+
+
+                                <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow">
+                                    Update Image
+                                </button>
+
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+
+
+    <script src="{% static 'build/js/web.frontend.min.js' %}"></script>
+    <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+    <script></script>
+</body>
+
+</html>

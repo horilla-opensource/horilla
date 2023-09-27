@@ -81,7 +81,7 @@ $(document).ready(function () {
 					$("#onboarding_canvas_body").html(
 						`<div style="height: 310px; display:flex;align-items: center;justify-content: center;" class="">
                         <div style="" class="">
-                        <img style="display: block;width: 70px;margin: 10px auto ;" src="/static/images/ui/no_candidate.png" class="" alt=""/>
+                        <img style="display: block;width: 90px;margin: 10px auto ;" src="/static/images/ui/no_candidate.png" alt=""/>
                         <h3 style="font-size:16px" class="oh-404__subtitle">${response.message}</h3>
                         </div>
                     </div>`

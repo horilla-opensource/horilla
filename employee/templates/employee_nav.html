@@ -118,73 +118,79 @@
   </div>
 
   <div class="oh-main__titlebar oh-main__titlebar--right">
-    <div
-      class="oh-input-group oh-input__search-group"
-      :class="searchShow ? 'oh-input__search-group--show' : ''"
-      >
-      <ion-icon
-        name="search-outline"
-        class="oh-input-group__icon oh-input-group__icon--left"
-      ></ion-icon>
-      <input
-        type="text"
-        hx-get="{% url 'search-employee' %}"
-        placeholder="{% trans 'Search' %}"
-        name="search"
-        hx-vals='{"view":"card"}'
-        id="employee-search"
-        hx-trigger="keyup changed delay:.2s"
-        hx-target="#view-container"
-        class="oh-input oh-input__icon"
-        aria-label="Search Input"
-      />
-    </div>
-    <ul class="oh-view-types ml-2" style="margin-bottom: 0">
-      <li class="oh-view-type employee-view-type" data-view="list">
-        <a
-          id='list'
-          {% comment %} href = "{% url 'employee-view-list' %}" {% endcomment %}
-          hx-get="{% url 'employee-filter-view' %}?view=list" 
-          hx-target="#view-container" 
-          class="oh-btn oh-btn--view {% if request.GET.view != 'card' %} oh-btn--view-active {% endif %}"
-          title='{% trans "List" %}'
-          ><ion-icon name="list-outline"></ion-icon
-        ></a>
-      </li>
-      <li class="oh-view-type employee-view-type" data-view="card">
-        <a
-          id='card'
-          {% comment %} href = "{% url 'employee-view-card' %}" {% endcomment %}
-          hx-get="{% url 'employee-filter-view' %}?view=card"
-          hx-target="#view-container"  
-          class="oh-btn oh-btn--view {% if request.GET.view == 'card' %} oh-btn--view-active {% endif %}" 
-          title='{% trans "Card" %}'
-          ><ion-icon name="grid-outline"></ion-icon
-        ></a>
-      </li>
-    </ul>
+    {% if data %}
+      <div
+        class="oh-input-group oh-input__search-group"
+        :class="searchShow ? 'oh-input__search-group--show' : ''"
+        >
+        <ion-icon
+          name="search-outline"
+          class="oh-input-group__icon oh-input-group__icon--left"
+        ></ion-icon>
+        <input
+          type="text"
+          hx-get="{% url 'search-employee' %}"
+          placeholder="{% trans 'Search' %}"
+          name="search"
+          hx-vals='{"view":"card"}'
+          id="employee-search"
+          hx-trigger="keyup changed delay:.2s"
+          hx-target="#view-container"
+          class="oh-input oh-input__icon"
+          aria-label="Search Input"
+        />
+      </div>
+    {% endif %}
+    {% if data %}
+      <ul class="oh-view-types ml-2" style="margin-bottom: 0">
+        <li class="oh-view-type employee-view-type" data-view="list">
+          <a
+            id='list'
+            {% comment %} href = "{% url 'employee-view-list' %}" {% endcomment %}
+            hx-get="{% url 'employee-filter-view' %}?view=list" 
+            hx-target="#view-container" 
+            class="oh-btn oh-btn--view {% if request.GET.view == 'card' %} oh-btn--view-active {% endif %}"
+            title='{% trans "List" %}'
+            ><ion-icon name="list-outline"></ion-icon
+          ></a>
+        </li>
+        <li class="oh-view-type employee-view-type" data-view="card">
+          <a
+            id='card'
+            {% comment %} href = "{% url 'employee-view-card' %}" {% endcomment %}
+            hx-get="{% url 'employee-filter-view' %}?view=card"
+            hx-target="#view-container"  
+            class="oh-btn oh-btn--view {% if request.GET.view != 'card' %} oh-btn--view-active {% endif %}" 
+            title='{% trans "Card" %}'
+            ><ion-icon name="grid-outline"></ion-icon
+          ></a>
+        </li>
+      </ul>
+    {% endif %}
 
     <div class="oh-main__titlebar-button-container">
-      <div class="oh-dropdown" x-data="{open: false}">
-        <button class="oh-btn ml-2" @click="open = !open">
-          <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}<div id="filterCount"></div>
-        </button>
-        <div
-          class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4"
-          x-show="open"
-          @click.outside="open = false"
-          style="display: none;"
+      {% if data %}
+        <div class="oh-dropdown" x-data="{open: false}">
+          <button class="oh-btn ml-2" @click="open = !open">
+            <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}<div id="filterCount"></div>
+          </button>
+          <div
+            class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4"
+            x-show="open"
+            @click.outside="open = false"
+            style="display: none;"
 
-        >
-        <form hx-get='{% url "employee-filter-view" %}' id="filterForm" hx-target='#view-container'>
-          {% include 'employee_filters.html' %}
-        <div class="oh-dropdown__filter-footer">
-          <button class="oh-btn oh-btn--secondary oh-btn--small w-100 filterButton" id='#employeeFilter' onclick="employeeFilter(this)">{% trans "Filter" %}</button>
+          >
+          <form hx-get='{% url "employee-filter-view" %}' id="filterForm" hx-target='#view-container'>
+            {% include 'employee_filters.html' %}
+          <div class="oh-dropdown__filter-footer">
+            <button class="oh-btn oh-btn--secondary oh-btn--small w-100 filterButton" id='#employeeFilter' onclick="employeeFilter(this)">{% trans "Filter" %}</button>
+          </div>
+          </form>
+
+          </div>
         </div>
-        </form>
-          
-        </div>
-      </div>
+      {% endif %}
       <div class="oh-btn-group ml-2">
         <div class="oh-dropdown" x-data="{open: false}">
           <button
@@ -206,37 +212,39 @@
                   >{% trans "Import" %}</a
                 >
               </li>
-              <li class="oh-dropdown__item">
-                <a
-                  href="{% url 'work-info-export' %}"
-                  hx-target="#section"
-                  class="oh-dropdown__link"
-                  >{% trans "Export" %}</a
-                >
-              </li>
-              {% if perms.delete_employee %}
-              <li class="oh-dropdown__item">
-                <a href="#" class="oh-dropdown__link " id="archiveEmployees" 
-                  >{% trans "Archive" %}</a
-                >
-              </li>
-              {% endif %} 
-              {% if perms.delete_employee %}
-              <li class="oh-dropdown__item">
-                <a href="#" class="oh-dropdown__link "  id="unArchiveEmployees" 
-                  >{% trans "Un-Archive" %}</a
-                >
-              </li>
-              {% endif %} 
-              {% if perms.delete_employee %}
-              <li class="oh-dropdown__item">
-                <a
-                  href="#"
-                  class="oh-dropdown__link oh-dropdown__link--danger"
-                  id="deleteEmployees"
-                  >{% trans "Delete" %}</a
-                >
-              </li>
+              {% if data %}
+                <li class="oh-dropdown__item">
+                  <a
+                    href="{% url 'work-info-export' %}"
+                    hx-target="#section"
+                    class="oh-dropdown__link"
+                    >{% trans "Export" %}</a
+                  >
+                </li>
+                {% if perms.delete_employee %}
+                <li class="oh-dropdown__item">
+                  <a href="#" class="oh-dropdown__link " id="archiveEmployees" 
+                    >{% trans "Archive" %}</a
+                  >
+                </li>
+                {% endif %} 
+                {% if perms.delete_employee %}
+                <li class="oh-dropdown__item">
+                  <a href="#" class="oh-dropdown__link "  id="unArchiveEmployees" 
+                    >{% trans "Un-Archive" %}</a
+                  >
+                </li>
+                {% endif %} 
+                {% if perms.delete_employee %}
+                <li class="oh-dropdown__item">
+                  <a
+                    href="#"
+                    class="oh-dropdown__link oh-dropdown__link--danger"
+                    id="deleteEmployees"
+                    >{% trans "Delete" %}</a
+                  >
+                </li>
+                {% endif %}
               {% endif %}
             </ul>
           </div>

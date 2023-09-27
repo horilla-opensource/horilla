@@ -1,0 +1,93 @@
+{% load i18n %}
+<div class="oh-modal__dialog-body oh-timeoff-modal__body  pb-2">
+    <div class="oh-timeoff-modal__profile-content">
+        <div class="oh-profile">
+            <div class="oh-profile__avatar mr-1">
+                {% if leave_request.employee_id.employee_profile %}
+                <img src="{{leave_request.employee_id.employee_profile.url}}" class="oh-profile__image"
+                    alt="" />
+                {% else %}
+                <img src="https://ui-avatars.com/api/?name={{leave_request.employee_id}}&background=random"
+                    class="oh-profile__image" alt="" />
+                {% endif %}
+            </div>
+        </div>
+        <div class="oh-timeoff-modal__profile-info">
+            <span class="oh-timeoff-modal__user fw-bold">{{leave_request.employee_id}}</span>
+            <span class="oh-timeoff-modal__position">{{leave_request.employee_id.recruitment_id.job_position_id}}</span>
+        </div>
+    </div>
+
+    <div class="oh-timeoff-modal__stats-container">
+        <div class="oh-timeoff-modal__stat">
+            <span class="oh-timeoff-modal__stat-title">{% trans "Start Date" %}</span>
+            <span class="oh-timeoff-modal__stat-count">{{leave_request.start_date}}</span>
+        </div>
+        <div class="oh-timeoff-modal__stat">
+            <span class="oh-timeoff-modal__stat-title">{% trans "End Date" %}</span>
+            <span class="oh-timeoff-modal__stat-count">{{leave_request.end_date}}</span>
+        </div>
+    </div>
+
+    <div class="oh-timeoff-modal__stats-container mt-3">
+        <div class="oh-timeoff-modal__stat">
+            <span class="oh-timeoff-modal__stat-title">{% trans "Days" %}</span>
+            <span class="oh-timeoff-modal__stat-count">{{leave_request.requested_days}}</span>
+        </div>
+        <div class="oh-timeoff-modal__stat">
+            <span class="oh-timeoff-modal__stat-title">{% trans "Leave Type" %}</span>
+            <span class="oh-timeoff-modal__stat-count">{{leave_request.leave_type_id}}</span>
+        </div>
+    </div>
+    <div class="oh-timeoff-modal__stats-container mt-3">
+        <div class="oh-timeoff-modal__stat">
+            <span class="oh-timeoff-modal__stat-title">{% trans "Created Date" %}</span>
+            <span class="oh-timeoff-modal__stat-count">{{leave_request.requested_date}}</span>
+        </div>
+        <div class="oh-timeoff-modal__stat">
+            <span class="oh-timeoff-modal__stat-title">{% trans "Created By" %}</span>
+            <span class="oh-timeoff-modal__stat-count">{{leave_request.created_by}}</span>
+        </div>
+    </div>
+
+    <div class="oh-timeoff-modal__stats w-100 mt-3">
+        <div class="oh-timeoff-modal__stat">
+            <span class="oh-timeoff-modal__stat-title">{% trans "Description" %}</span>
+            <div class="oh-timeoff-modal__stat-description">{{leave_request.description}}</div>
+        </div>
+    </div>
+    {% if leave_request.attachment %}
+    <a href="{{leave_request.attachment.url}}" target="_blank" class="oh-timeoff-modal__download-link">
+        <ion-icon class="me-1" name="download-outline"></ion-icon>
+        <span class="oh-timeoff-modal__download-link-text"></span>
+        {% trans "View attachment" %}
+    </a>
+    {% endif %}
+</div>
+
+<div class="oh-modal__dialog-footer oh-timeoff-modal__footer">
+    {% if leave_request.status != 'approved'%}
+    <a href="{% url 'request-approve' leave_request.id %}" class="oh-btn oh-btn--success">
+        <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
+        {% trans "Approve" %}
+    </a>
+    {% else %}
+    <a href="{% url 'request-approve' leave_request.id %}" class="oh-btn oh-btn--success oh-btn--disabled"
+        onclick="event.preventDefault()">
+        <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
+        {% trans "Approve" %}
+    </a>
+    {% endif %}
+    {% if leave_request.status != 'cancelled' %}
+    <a href="{% url 'request-cancel' leave_request.id %}" class="oh-btn oh-btn--danger">
+        <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
+        {% trans "Cancel" %}
+    </a>
+    {% else %}
+    <a href="{% url 'request-cancel' leave_request.id %}" class="oh-btn oh-btn--danger oh-btn--disabled
+    " onclick="event.preventDefault()">
+        <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
+        {% trans "Cancel" %}
+    </a>
+    {% endif %}
+</div>

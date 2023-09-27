@@ -127,9 +127,9 @@ def view_question_template(request):
     questions = RecruitmentSurvey.objects.all()
     filter_obj = SurveyFilter()
     if questions.exists():
-        template = "survey/view-question-templates.html"
+        template = "survey/view_question_templates.html"
     else:
-        template = "survey/survey-empty-view.html"
+        template = "survey/survey_empty_view.html"
     return render(
         request,
         template,
@@ -188,11 +188,11 @@ def create_question_template(request):
             messages.success(request, _("New survey question created."))
             return HttpResponse(
                 render(
-                    request, "survey/template-form.html", {"form": form}
+                    request, "survey/template_form.html", {"form": form}
                 ).content.decode("utf-8")
                 + "<script>location.reload();</script>"
             )
-    return render(request, "survey/template-form.html", {"form": form})
+    return render(request, "survey/template_form.html", {"form": form})
 
 
 @login_required

@@ -1,20 +1,15 @@
-{% extends "index.html" %}
-{% block content %}
-
-
-{% include 'employee_nav.html' %}
+{% extends "index.html" %} {% block content %} {% include 'employee_nav.html' %}
 <div class="oh-wrapper">
   <div id="view-container">
-    {% if view_type == 'list' %}
-      {% include 'employee_personal_info/employee_list.html' %}
-    {% else %}
-      {% include 'employee_personal_info/employee_card.html' %}
+    {% if data %}  
+      {% if view_type == 'list' %} 
+        {% include 'employee_personal_info/employee_list.html' %} 
+      {% else %} 
+        {% include 'employee_personal_info/employee_card.html' %} 
+      {% endif %}
+    {% else %} 
+      {% include "employee_personal_info/employee_empty_view.html" %} 
     {% endif %}
   </div>
 </div>
-</div>
-</div>
-
-
-
 {% endblock %}

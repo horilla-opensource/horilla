@@ -74,8 +74,10 @@ def employee_profile(request):
     This method is used to view own profile of employee.
     """
     user = request.user
+    employee = request.user.employee_get
+    user_leaves = employee.available_leave.all()
     employee = Employee.objects.filter(employee_user_id=user).first()
-    return render(request, "employee/profile/profile_view.html", {"employee": employee})
+    return render(request, "employee/profile/profile_view.html", {"employee": employee,"user_leaves":user_leaves})
 
 
 @login_required
@@ -123,11 +125,12 @@ def employee_view_individual(request, obj_id):
     This method is used to view profile of an employee.
     """
     employee = Employee.objects.get(id=obj_id)
+    employee_leaves = employee.available_leave.all()
     user = Employee.objects.filter(employee_user_id=request.user).first()
     if user.reporting_manager.filter(
         employee_id=employee
     ).exists() or request.user.has_perm("employee.change_employee"):
-        return render(request, "employee/view/individual.html", {"employee": employee})
+        return render(request, "employee/view/individual.html", {"employee": employee,"employee_leaves":employee_leaves})
     return HttpResponseRedirect(
         request.META.get("HTTP_REFERER", "/employee/employee-view")
     )

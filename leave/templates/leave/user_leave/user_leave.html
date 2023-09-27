@@ -1,0 +1,70 @@
+{% load i18n %}
+{% include 'filter_tags.html' %}
+<div class="oh-layout--grid-3">
+    {% for user_leave in user_leaves %}
+    <div class="oh-kanban-card" data-toggle="oh-modal-toggle" data-target="#editDialog"
+        hx-get="{% url 'user-request' user_leave.leave_type_id.id %}" hx-target="#requestForm">
+        <div class="oh-kanban-card__avatar">
+            <div class="oh-kanban-card__profile-container">
+                {% if user_leave.leave_type_id.icon %}
+                <img src="{{user_leave.leave_type_id.icon.url }}" class="oh-kanban-card__profile-image"
+                    alt="Leave Icon" />
+                {% else %}
+                <img src="https://ui-avatars.com/api/?name={{user_leave.leave_type_id}}&background=random"
+                    class="oh-kanban-card__profile-image" alt="Leave Icon" />
+                {% endif %}
+            </div>
+        </div>
+        <div class="oh-kanban-card__details">
+            <span class="oh-kanban-card__title">{{user_leave.leave_type_id}}</span>
+            <span class="oh-kanban-card__subtitle">{% trans "Available Leave Days" %} : {{user_leave.available_days}}</span><br>
+            <span class="oh-kanban-card__subtitle">{% trans "Carryforward Leave Days" %} :
+                {{user_leave.carryforward_days}}</span><br>
+            <span class="oh-kanban-card__subtitle">{% trans "Total Leave Days" %} : {{user_leave.total_leave_days}}</span>
+        </div>
+
+
+    </div>
+    {% endfor %}
+
+</div>
+
+<div class="oh-pagination">
+    <span class="oh-pagination__page">
+        {% trans "Page" %} {{ user_leaves.number }} {% trans "of" %} {{ user_leaves.paginator.num_pages }}.
+    </span>
+    <nav class="oh-pagination__nav">
+        <div class="oh-pagination__input-container me-3">
+            <span class="oh-pagination__label me-1">{% trans "Page" %}</span>
+            <input type="number" name="page" class="oh-pagination__input" value="{{user_leaves.number}}"
+                hx-get="{% url 'user-leave-filter' %}?{{pd}}" hx-target="#userLeaves" min="1" />
+            <span class="oh-pagination__label">{% trans "of" %} {{user_leaves.paginator.num_pages}}</span>
+        </div>
+        <ul class="oh-pagination__items">
+            {% if user_leaves.has_previous %}
+            <li class="oh-pagination__item oh-pagination__item--wide">
+                <a hx-target='#userLeaves' hx-get="{% url 'user-leave-filter' %}?{{pd}}&page=1"
+                    class="oh-pagination__link">{% trans "First" %}</a>
+            </li>
+            <li class="oh-pagination__item oh-pagination__item--wide">
+                <a hx-target='#userLeaves'
+                    hx-get="{% url 'user-leave-filter' %}?{{pd}}&page={{ user_leaves.previous_page_number }}"
+                    class="oh-pagination__link">{% trans "Previous" %}</a>
+            </li>
+            {% endif %}
+            {% if user_leaves.has_next %}
+            <li class="oh-pagination__item oh-pagination__item--wide">
+                <a hx-target='#userLeaves'
+                    hx-get="{% url 'user-leave-filter' %}?{{pd}}&page={{ user_leaves.next_page_number }}"
+                    class="oh-pagination__link">{% trans "Next" %}</a>
+            </li>
+            <li class="oh-pagination__item oh-pagination__item--wide">
+                <a hx-target='#userLeaves'
+                    hx-get="{% url 'user-leave-filter' %}?{{pd}}&page={{ user_leaves.paginator.num_pages }}"
+                    class="oh-pagination__link">{% trans "Last" %}</a>
+            </li>
+            {% endif %}
+  
+        </ul>
+    </nav>
+  </div>

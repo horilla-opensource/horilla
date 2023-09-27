@@ -10,11 +10,16 @@ urlpatterns = [
     path("type-delete/<int:id>", views.leave_type_delete, name="type-delete"),
     path("type-filter", views.leave_type_filter, name="type-filter"),
     path("request-creation", views.leave_request_creation, name="request-creation"),
+    path("leave-request-creation/<int:type_id>/<int:emp_id>", views.leave_request_creation, name="leave-request-creation"),
     path("request-view", views.leave_request_view, name="request-view"),
     path(
         "request-approve/<int:id>", views.leave_request_approve, name="request-approve"
     ),
+    path(
+        "request-approve/<int:id>/<int:emp_id>", views.leave_request_approve, name="request-approve"
+    ),
     path("request-cancel/<int:id>", views.leave_request_cancel, name="request-cancel"),
+    path("request-cancel/<int:id>/<int:emp_id>", views.leave_request_cancel, name="request-cancel"),
     path("request-update/<int:id>", views.leave_request_update, name="request-update"),
     path("request-delete/<int:id>", views.leave_request_delete, name="request-delete"),
     path("user-request/<int:id>", views.user_leave_request, name="user-request"),

@@ -116,7 +116,7 @@
             <li class="oh-tabs__tab " data-target="#tab_{{rec.id}}" data-recruitment-id="{{rec.id}}">
                 {{rec.title}}
                 <span
-                    class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round ms-2 mr-2" title="{{rec.onboardingstage_set.all|length}} {% trans 'Stage' %}">
+                    class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round ms-2 mr-2" title="{{rec.onboardingstage_set.all|length}} {% trans 'Stage' %}" onclick="event.stopPropagation()">
                     {{rec.onboardingstage_set.all|length}}
                 </span>
             </li>
@@ -217,7 +217,7 @@
                                         {% for task in candidate.candidate_id.candidate_task.all %}
                                         <label class="oh-label oh-label--sm d-block">{{task.onboarding_task_id.task_title}}</label>
                                         <div id="task{{task.id}}">
-                                            {% include 'onboarding/candidate-task.html' %}
+                                            {% include 'onboarding/candidate_task.html' %}
                                         </div>
                                         {% endfor %}
                                     </div>

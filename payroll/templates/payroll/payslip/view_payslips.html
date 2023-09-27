@@ -11,24 +11,26 @@
     <div class="oh-modal__dialog-header">
       <h1 class="oh-modal__dialog-title" id="addEmployeeModalLabel">
         {% trans "Create Payslip" %}
-        <div class="oh-payslip__header mt-3 mb-0">
-        </div>
+        <div class="oh-payslip__header mt-3 mb-0"></div>
       </h1>
       <button class="oh-modal__close" aria-label="Close">
         <ion-icon name="close-outline"></ion-icon>
       </button>
     </div>
     <div class="oh-modal__dialog-body" id="individualPayslipModal">
-        <form action="{% url 'create-payslip' %}" class="" method="post">
-          {% csrf_token %} {{individual_form}}
-          <div class="oh-modal__dialog-footer mt-4">
-            <input type="submit" value="Create Payslip" class="oh-btn oh-btn--secondary oh-btn--shadow">
+      <form action="{% url 'create-payslip' %}" class="" method="post">
+        {% csrf_token %} {{individual_form}}
+        <div class="oh-modal__dialog-footer mt-4">
+          <input
+            type="submit"
+            value="Create Payslip"
+            class="oh-btn oh-btn--secondary oh-btn--shadow"
+          />
         </div>
-        </form>
+      </form>
     </div>
   </div>
 </div>
-
 
 <div
   class="oh-modal"
@@ -41,20 +43,23 @@
     <div class="oh-modal__dialog-header">
       <h1 class="oh-modal__dialog-title" id="addEmployeeModalLabel">
         {% trans "Bulk Payslip" %}
-        <div class="oh-payslip__header mt-3 mb-0">
-        </div>
+        <div class="oh-payslip__header mt-3 mb-0"></div>
       </h1>
       <button class="oh-modal__close" aria-label="Close">
         <ion-icon name="close-outline"></ion-icon>
       </button>
     </div>
     <div class="oh-modal__dialog-body" id="bulkPayslipModal">
-        <form action="{% url 'generate-payslip' %}" class="" method="post">
-          {% csrf_token %} {{bulk_form}}
-          <div class="oh-modal__dialog-footer mt-4">
-            <input type="submit" value="Generate Payslips" class="oh-btn oh-btn--secondary oh-btn--shadow">
+      <form action="{% url 'generate-payslip' %}" class="" method="post">
+        {% csrf_token %} {{bulk_form}}
+        <div class="oh-modal__dialog-footer mt-4">
+          <input
+            type="submit"
+            value="Generate Payslips"
+            class="oh-btn oh-btn--secondary oh-btn--shadow"
+          />
         </div>
-        </form>
+      </form>
     </div>
   </div>
 </div>
@@ -92,17 +97,25 @@
         id="filter-allowance"
         name="search"
         placeholder="{% trans 'Search' %}"
-        hx-get="{% url 'filter-payslip' %}"
+        hx-get="{% url 'filter-payslip' %}?group_by={{request.GET.group_by}}"
         hx-trigger="keyup changed delay:500ms, search"
         hx-target="#payroll-payslip-container"
         hx-swap="innerHTML"
       />
     </div>
-    {% endif %}
-    {% if perms.payroll.view_payslip %}
+    {% endif %} {% if perms.payroll.view_payslip %}
+    <ul class="oh-view-types ml-2" style="margin-bottom: 0;">
+      <li class="oh-view-type allowance-view-type" data-view="list">
+      <a href="{% url "view-payslip" %}" class="oh-btn oh-btn--view" title="List"><ion-icon name="list-outline" role="img" class="md hydrated" aria-label="list outline"></ion-icon></a>
+      </li>
+      <li class="oh-view-type allowance-view-type" data-view="card">
+      <a href="{% url "view-payslip" %}?group_by=group_name" class="oh-btn oh-btn--view" title="Group by group slips"><ion-icon name="library-outline" role="img" class="md hydrated" aria-label="grid outline"></ion-icon></a>
+      </li>
+    </ul>
     <div class="oh-dropdown" x-data="{open: false}">
       <button class="oh-btn ml-2" @click="open = !open">
-        <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}<div id="filterCount"></div>
+        <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}
+        <div id="filterCount"></div>
       </button>
       <div
         class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4"
@@ -113,19 +126,21 @@
         {% include 'payroll/payslip/filter_payslips.html' %}
       </div>
     </div>
-    {% endif %}
-    
-    {% if perms.payroll.add_payslip %}
+    {% endif %} {% if perms.payroll.add_payslip %}
     <div class="oh-btn-group ml-2">
       <div class="oh-dropdown" x-data="{open: false}">
         <button
-          class="oh-btn oh-btn--dropdown "
+          class="oh-btn oh-btn--dropdown"
           @click="open = !open"
           @click.outside="open = false"
         >
           {% trans "Actions" %}
         </button>
-        <div class="oh-dropdown__menu oh-dropdown__menu--right" x-show="open" style="display: none; cursor:pointer;">
+        <div
+          class="oh-dropdown__menu oh-dropdown__menu--right"
+          x-show="open"
+          style="display: none; cursor: pointer"
+        >
           <ul class="oh-dropdown__items">
             {% if perms.payroll.add_payslip %}
             <li class="oh-dropdown__item">
@@ -133,22 +148,41 @@
                 class="oh-dropdown__link"
                 data-toggle="oh-modal-toggle"
                 data-target="#bulkPayslipModal"
-              >{% trans "Generate" %}</a>
+                >{% trans "Generate" %}</a
+              >
             </li>
             {% endif %} 
+            {% if perms.payroll.change_payslip %}
+            <li class="oh-dropdown__item" 
+            onclick="event.stopPropagation()" 
+            >
+              <a
+                class="oh-dropdown__link"
+                >{% trans "Bulk Status Update" %}</a
+              >
+              <select name="update_selected" class="oh-select">
+                <option value="">------</option>
+                <option value="draft">Draft</option>
+                <option value="review_ongoing">Review Ongoing</option>
+                <option value="confirmed">Confirmed</option>
+                <option value="paid">Paid</option>
+              </select>
+            </li>
+            {% endif %}
             {% if perms.payroll.add_payslip %}
             <li class="oh-dropdown__item">
-                    <a
-                      class="oh-dropdown__link oh-dropdown__link--danger"
-                      id="DeletePayslipBulk"
-                    >{% trans "Delete" %}</a>
-            {% endif %}
+              <a
+                class="oh-dropdown__link oh-dropdown__link--danger"
+                id="DeletePayslipBulk"
+                >{% trans "Delete" %}</a
+              >
+              {% endif %}
+            </li>
           </ul>
         </div>
       </div>
     </div>
-    {% endif %}
-    {% if perms.payroll.add_payslip %}
+    {% endif %} {% if perms.payroll.add_payslip %}
     <div class="oh-btn-group ml-2">
       <div>
         <a
@@ -167,38 +201,149 @@
       </div>
     </div>
     {% endif %}
-
-
   </div>
 </section>
-<div id="payroll-payslip-container" class="oh-wrapper">
-  {% include 'payroll/payslip/list_payslips.html' %}
 </div>
-<script>
-  $(document).ready(function () {
-    $("form").not('.filter-form').submit(function (e) {
-      e.preventDefault()
-      
-      var form = $(this); // Get the form element
-      var formData = form.serialize(); // Serialize the form data as a URL-encoded string
+<div class="oh-tabs oh-wrapper">
+  <div class="oh-tabs__contents">
+    <div
+      class="oh-tabs__content oh-tabs__content--active"
+      style="padding-top: 10px"
+      id="allPaySlips"
+    >
+      <div id="payroll-payslip-container">
+        {% if request.GET.group_by %}
+        {% include 'payroll/payslip/group_payslips.html' %}
+        {% else %}
+        {% include 'payroll/payslip/list_payslips.html' %}
+        {% endif %}
+      </div>
+    </div>
+    <div id="messageContainer"></div>
 
-      $(".errorlist").remove()
-      $.ajax({
-        type: "get",
-        url: "{% url 'validate-start-date' %}",
-        data: formData,
-        success: function (response) {
-          form.prepend(response.message);
-          if (response.valid) {
-            form[0].submit();
-          }
-
-
-
-
+    <script>
+      function updateBulkStatus(element) {
+        var status = element.val()
+        var ids =[]
+        var containerId = element.attr("data-accordion-id")
+        var notCheckedIds = $("[data-checked=false]").map(function() {
+            return $(this).val();
+        }).get();
+        if (containerId == undefined) {
+          var allSelectedElements = $(".all-payslip-row").filter(":checked")
+          $.each(allSelectedElements, function (indexInArray, valueOfElement) { 
+            ids.push($(valueOfElement).val())
+          });
+        }else{
+          var containerCheckBoxes = $(`[id="${containerId}"]:first .all-payslip-row`).filter(":checked")
+          $.each(containerCheckBoxes, function (indexInArray, valueOfElement) { 
+            ids.push($(valueOfElement).val())
+          });
         }
+        var color = "gray"
+        if (status == "review_ongoing") {
+          color = "orange"
+        }else if (status == "confirmed") {
+          color = "blue"
+        }else if(status == "paid"){
+          color = "yellow"
+        }
+        ids = [...new Set(ids)]
+        ids = ids.filter(item => !notCheckedIds.includes(item));
+        $.ajax({
+          type: "post",
+          url: '{% url "payslip-status-update-no-id" %}',
+          data: {
+            csrfmiddlewaretoken: getCookie("csrftoken"),
+            ids:JSON.stringify(ids),
+            status:status,
+          },
+          success: function (response) {
+            if (containerId == undefined) {  
+              allSelectedElements.parent().parent().parent().attr("class",`oh-sticky-table__sd row-status--${color}`)
+              allSelectedElements.parent().parent().parent().parent().find("[name=pay_status]").val(status)
+            }else{
+              containerCheckBoxes.parent().parent().parent().attr("class",`oh-sticky-table__sd row-status--${color}`)
+              containerCheckBoxes.parent().parent().parent().parent().find("[name=pay_status]").val(status)
+            }
+            $("#messageContainer").html($($(`
+                <div class="oh-alert-container">
+                  <div class="oh-alert oh-alert--animated  oh-alert--${response.type}">
+                    ${response.message}
+                  </div>
+                </div>`)
+                ))
+          },error:()=>{
+            $("#messageContainer").html($($(`
+            <div class="oh-alert-container">
+              <div class="oh-alert oh-alert--animated  oh-alert--danger">
+                Status not updated.
+              </div>
+            </div>`)
+            ))
+          }
+        });
+      }
+      $(document).ready(function () {
+        $("form")
+          .not(".filter-form")
+          .submit(function (e) {
+            e.preventDefault();
+
+            var form = $(this); // Get the form element
+            var formData = form.serialize(); // Serialize the form data as a URL-encoded string
+
+            $(".errorlist").remove();
+            $.ajax({
+              type: "get",
+              url: "{% url 'validate-start-date' %}",
+              data: formData,
+              success: function (response) {
+                form.prepend(response.message);
+                if (response.valid) {
+                  form[0].submit();
+                }
+              },
+            });
+          });
       });
-    });
-  });
-</script>
+      function updatePayStatus($element){
+        var instanceId = $element.attr("data-instance-id");
+        var status = $element.val()
+        $.ajax({
+          type: "get",
+          url: `/payroll/payslip-status-update/${instanceId}/`,
+          data: {"status":status},
+          success: function (response) {
+            var color = "gray"
+            if (status == "review_ongoing") {
+              color = "orange"
+            }else if (status == "confirmed") {
+              color = "blue"
+            }else if(status == "paid"){
+              color = "yellow"
+            }
+            $element.parent().parent().find(".oh-sticky-table__sd").attr("class",`oh-sticky-table__sd row-status--${color}`)
+            $("#messageContainer").html($($(`
+            <div class="oh-alert-container">
+              <div class="oh-alert oh-alert--animated  oh-alert--${response.type}">
+                ${response.message}
+              </div>
+            </div>`)
+            ))
+          },
+          error:()=>{
+            $("#messageContainer").html($($(`
+            <div class="oh-alert-container">
+              <div class="oh-alert oh-alert--animated  oh-alert--danger">
+                Status not updated.
+              </div>
+            </div>`)
+            ))
+          }
+        });
+      }
+    </script>
+  </div>
+</div>
 {% endblock content %}

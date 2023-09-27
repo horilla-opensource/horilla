@@ -1,0 +1,156 @@
+{% extends 'index.html' %} {% block content %}{% load static %}
+
+{% load i18n %} {% load basefilters %}
+<style>
+  .oh-modal_close--custom {
+    border: none;
+    background: none;
+    font-size: 1.5rem;
+    opacity: 0.7;
+    position: absolute;
+    top: 25px;
+    right: 15px;
+  }
+</style>
+<div
+  class="oh-modal"
+  id="updateAttendanceRequest"
+  role="dialog"
+  aria-labelledby="updateAttendanceRequest"
+  aria-hidden="true"
+>
+  <div class="oh-modal__dialog">
+    <div class="oh-modal__dialog-header">
+      <h2 class="oh-modal__dialog-title" id="addEmployeeModalLabel">
+        {% trans "Update Attendances Request" %}
+      </h2>
+      <button class="oh-modal__close" aria-label="Close">
+        <ion-icon name="close-outline"></ion-icon>
+      </button>
+    </div>
+    <div
+      class="oh-modal__dialog-body"
+      id="updateAttendanceRequestModalBody"
+    ></div>
+  </div>
+</div>
+
+<div
+  class="oh-modal"
+  id="newAttendanceRequest"
+  role="dialog"
+  aria-labelledby="newAttendanceRequest"
+  aria-hidden="true"
+>
+  <div class="oh-modal__dialog">
+    <div class="oh-modal__dialog-header">
+      <h2 class="oh-modal__dialog-title" id="addEmployeeModalLabel">
+        {% trans "New Attendances Request" %}
+      </h2>
+      <button class="oh-modal__close" aria-label="Close">
+        <ion-icon name="close-outline"></ion-icon>
+      </button>
+    </div>
+    <div
+      class="oh-modal__dialog-body"
+      id="newAttendanceRequestModalBody"
+    ></div>
+  </div>
+</div>
+
+<div
+  class="oh-modal"
+  id="validateAttendanceRequest"
+  role="dialog"
+  aria-labelledby="validateAttendanceRequest"
+  aria-hidden="true"
+>
+  <div class="oh-modal__dialog">
+    <div class="oh-modal__dialog-header">
+      <h2 class="oh-modal__dialog-title" id="addEmployeeModalLabel">
+        {% trans "Validate Attendances Request" %}
+      </h2>
+      <button class="oh-modal__close" aria-label="Close">
+        <ion-icon name="close-outline"></ion-icon>
+      </button>
+    </div>
+    <div
+      class="oh-modal__dialog-body"
+      id="validateAttendanceRequestModalBody"
+    ></div>
+  </div>
+</div>
+
+<div
+  class="oh-modal"
+  id="editValidateAttendanceRequest"
+  role="dialog"
+  aria-labelledby="editValidateAttendanceRequest"
+  aria-hidden="true"
+>
+  <div class="oh-modal__dialog">
+    <div class="oh-modal__dialog-header">
+      <h2 class="oh-modal__dialog-title" id="addEmployeeModalLabel">
+        {% trans "Validate Attendances Request" %}
+      </h2>
+      <button
+        class="oh-modal_close--custom"
+        onclick="event.stopPropagation(); var modalElement = this.closest('.oh-modal'); modalElement.classList.toggle('oh-modal--show');"
+      >
+        <ion-icon name="close-outline"></ion-icon>
+      </button>
+    </div>
+    <div
+      class="oh-modal__dialog-body"
+      id="editValidateAttendanceRequestModalBody"
+    ></div>
+  </div>
+</div>
+
+<section class="oh-wrapper oh-main__topbar" x-data="{searchShow: false}">
+  <div class="oh-main__titlebar oh-main__titlebar--left">
+    <h1 class="oh-main__titlebar-title fw-bold">
+      {% trans "All Attendances" %}
+    </h1>
+    <a
+      class="oh-main__titlebar-search-toggle"
+      role="button"
+      aria-label="Toggle Search"
+      @click="searchShow = !searchShow"
+    >
+      <ion-icon
+        name="search-outline"
+        class="oh-main__titlebar-serach-icon"
+      ></ion-icon>
+    </a>
+  </div>
+  <div class="oh-main__titlebar oh-main__titlebar--right">
+    <button
+      class="oh-btn oh-btn--secondary ml-2"
+      data-toggle="oh-modal-toggle"
+      data-target="#newAttendanceRequest"
+      hx-get="{% url 'request-new-attendance' %}"
+      hx-target="#newAttendanceRequestModalBody"
+    >
+      <ion-icon name="add-sharp" class="mr-1"></ion-icon>{% trans "New Request" %}
+    </button>
+  </div>
+</section>
+
+
+<div
+class="oh-wrapper-main"
+>
+  <main :class="sidebarOpen ? 'oh-main__sidebar-visible' : ''">
+    
+    <div class="oh-wrapper">
+      <div class="oh-404">
+          <img style="    width: 190px;height:  200px;" src="{% static 'images/ui/present.png' %}" class="oh-404__image mb-4" alt="Page not found. 404."/>
+          <h5 class="oh-404__subtitle">{% trans "There are no attendance records to display." %}</h5>
+      </div>
+    </div>
+  </main>
+</div>
+</div>
+
+{% endblock content %}

@@ -1,0 +1,119 @@
+{% load i18n %}
+<style>
+  .oh-kanban-card__title {
+    width: 280px;
+  }
+</style>
+{% include 'filter_tags.html' %}
+<div class="oh-layout--grid-3">
+  {% for question in questions %}
+  <div class="oh-kanban-card">
+    <div class="oh-kanban-card__details">
+      <span class="oh-kanban-card__title">{{question}}</span>
+      <span class="oh-kanban-card__subtitle">
+        {% for rec in question.recruitment_ids.all %} {{rec}},&nbsp; {% endfor %}
+      </span>
+    </div>
+    <div class="oh-kanban-card__dots">
+      <div class="oh-dropdown" x-data="{show: false}">
+        <button
+          class="oh-btn oh-btn--transparent text-muted p-3"
+          @click="show = !show"
+          title={% trans "Actions" %}
+        >
+          <ion-icon name="ellipsis-vertical-sharp"></ion-icon>
+        </button>
+        <div
+          class="oh-dropdown__menu oh-dropdown__menu--dark-border oh-dropdown__menu--right"
+          x-show="show"
+          @click.outside="show = false"
+        >
+          <ul class="oh-dropdown__items">
+            <li class="oh-dropdown__item">
+              <a
+                hx-get="{% url 'recruitment-survey-question-template-edit' question.id %}"
+                data-toggle="oh-modal-toggle"
+                data-target="#updateSurvey"
+                hx-target="#updateSurveyModalBody"
+                class="oh-dropdown__link"
+                >{% trans "Edit" %}</a
+              >
+            </li>
+            <li class="oh-dropdown__item">
+              <a
+                href="{% url 'recruitment-survey-question-template-delete' question.id %}"
+                onclick="return confirm('Are you sure want to delete?')"
+                class="text-danger"
+                >{% trans "Delete" %}</a
+              >
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {% endfor %}
+</div>
+<div class="oh-pagination">
+  <span class="oh-pagination__page">
+    {% trans "Page" %} {{ questions.number }} {% trans "of" %} 
+    {{ questions.paginator.num_pages }}.
+  </span>
+  <nav class="oh-pagination__nav">
+    <div class="oh-pagination__input-container me-3">
+      <span class="oh-pagination__label me-1">{% trans "Page" %}</span>
+
+      <input
+        type="number"
+        name="page"
+        class="oh-pagination__input"
+        value="{{questions.number}}"
+        hx-get="{% url 'rec-filter-survey' %}?{{pd}}"
+        hx-target="#view-container"
+        min="1"
+      />
+      <span class="oh-pagination__label"
+        >{% trans "of" %} {{questions.paginator.num_pages}}</span
+      >
+    </div>
+
+    <ul class="oh-pagination__items">
+      {% if questions.has_previous %}
+      <li class="oh-pagination__item oh-pagination__item--wide">
+        <a
+          hx-target="#view-container"
+          hx-get="{% url 'rec-filter-survey' %}?{{pd}}&page=1"
+          class="oh-pagination__link"
+          >{% trans "First" %}</a
+        >
+      </li>
+      <li class="oh-pagination__item oh-pagination__item--wide">
+        <a
+          hx-target="#view-container"
+          hx-get="{% url 'rec-filter-survey' %}?{{pd}}&page={{ questions.previous_page_number }}"
+          class="oh-pagination__link"
+          >{% trans "Previous" %}</a
+        >
+      </li>
+      {% endif %} {% if questions.has_next %}
+      <li class="oh-pagination__item oh-pagination__item--wide">
+        <a
+          hx-target="#view-container"
+          hx-get="{% url 'rec-filter-survey' %}?{{pd}}&page={{ questions.next_page_number }}"
+          class="oh-pagination__link"
+          >{% trans "Next" %}</a
+        >
+      </li>
+      <li class="oh-pagination__item oh-pagination__item--wide">
+        <a
+          hx-target="#view-container"
+          hx-get="{% url 'rec-filter-survey' %}?{{pd}}&page={{ questions.paginator.num_pages }}"
+          class="oh-pagination__link"
+          >{% trans "Last" %}</a
+        >
+      </li>
+      {% endif %}
+    </ul>
+  </nav>
+</div>

@@ -4,7 +4,11 @@
 
 {% include 'work_type_request/work_type_request_nav.html' %}
 <div id="view-container" class="oh-wrapper">
+  {% if data %}
     {% include 'work_type_request/htmx/requests.html' %}
+  {% else %}
+    {% include 'work_type_request/htmx/empty_request.html' %}
+  {% endif %}
 </div>
 
 

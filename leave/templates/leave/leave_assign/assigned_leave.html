@@ -1,0 +1,92 @@
+{% load i18n %}
+<!-- Sticky Table -->
+{% include 'filter_tags.html' %}
+<div class="oh-sticky-table">
+    <div class="oh-sticky-table__table oh-table--sortable">
+        <div class="oh-sticky-table__thead">
+            <div class="oh-sticky-table__tr">
+                <div class="oh-sticky-table__th">{% trans "Employee" %}</div>
+                <div class="oh-sticky-table__th">{% trans "Leave Type" %}</div>
+                <div class="oh-sticky-table__th">{% trans "Available Days" %}</div>
+                <div class="oh-sticky-table__th">{% trans "Carryforward Days" %}</div>
+                <div class="oh-sticky-table__th">{% trans "Total Leave Days" %}</div>
+                <div class="oh-sticky-table__th">{% trans "Assigned Date" %}</div>
+                <div class="oh-sticky-table__th">{% trans "Actions" %}</div>
+
+
+            </div>
+        </div>
+        <div class="oh-sticky-table__tbody">
+            {% for available_leave in available_leaves %}
+            <div class="oh-sticky-table__tr" draggable="true">
+                <div class="oh-sticky-table__sd">
+                    <div class="oh-profile oh-profile--md">
+                        <div class="oh-profile__avatar mr-1">
+                            <img src="https://ui-avatars.com/api/?name={{available_leave.employee_id}}&background=random"
+                                class="oh-profile__image" alt="Mary Magdalene" />
+                        </div>
+                        <span class="oh-profile__name oh-text--dark">{{available_leave.employee_id}}</span>
+                    </div>
+                </div>
+                <div class="oh-sticky-table__td">{{available_leave.leave_type_id}}</div>
+                <div class="oh-sticky-table__td">{{available_leave.available_days}}</div>
+                <div class="oh-sticky-table__td">{{available_leave.carryforward_days}}</div>
+                <div class="oh-sticky-table__td">{{available_leave.total_leave_days}}</div>
+                <div class="oh-sticky-table__td">{{available_leave.assigned_date}}</div>
+                <div class="oh-sticky-table__td">
+                    <div class="oh-btn-group">
+                        <button class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Edit' %}" data-toggle="oh-modal-toggle"
+                            data-target="#editModal1" hx-get="{% url 'available-leave-update' available_leave.id %}"
+                            hx-target="#leaveForm"><ion-icon name="create-outline"></ion-icon></button>
+                        <a class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100" onclick="return confirm('{% trans "Are you sure you want to delete ?" %}');" id="delete-link"
+                            href="{% url 'assign-delete' available_leave.id %}" title="{% trans 'Delete' %}"><ion-icon
+                                name="trash-outline"></ion-icon></a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+
+        </div>
+    </div>
+</div>
+<!-- End of Sticky Table -->
+
+<div class="oh-pagination">
+    <span class="oh-pagination__page">
+        {% trans "Page" %} {{ available_leaves.number }} {% trans "of" %} {{ available_leaves.paginator.num_pages }}.
+    </span>
+    <nav class="oh-pagination__nav">
+        <div class="oh-pagination__input-container me-3">
+            <span class="oh-pagination__label me-1">{% trans "Page" %}</span>
+            <input type="number" name="page" class="oh-pagination__input" value="{{available_leaves.number}}"
+                hx-get="{% url 'assign-filter' %}?{{pd}}" hx-target="#assignedLeaves" min="1" />
+            <span class="oh-pagination__label">{% trans "of" %} {{available_leaves.paginator.num_pages}}</span>
+        </div>
+        <ul class="oh-pagination__items">
+            {% if available_leaves.has_previous %}
+            <li class="oh-pagination__item oh-pagination__item--wide">
+                <a hx-target='#assignedLeaves' hx-get="{% url 'assign-filter' %}?{{pd}}&page=1"
+                    class="oh-pagination__link">{% trans "First" %}</a>
+            </li>
+            <li class="oh-pagination__item oh-pagination__item--wide">
+                <a hx-target='#assignedLeaves'
+                    hx-get="{% url 'assign-filter' %}?{{pd}}&page={{ available_leaves.previous_page_number }}"
+                    class="oh-pagination__link">{% trans "Previous" %}</a>
+            </li>
+            {% endif %}
+            {% if available_leaves.has_next %}
+            <li class="oh-pagination__item oh-pagination__item--wide">
+                <a hx-target='#assignedLeaves'
+                    hx-get="{% url 'assign-filter' %}?{{pd}}&page={{ available_leaves.next_page_number }}"
+                    class="oh-pagination__link">{% trans "Next" %}</a>
+            </li>
+            <li class="oh-pagination__item oh-pagination__item--wide">
+                <a hx-target='#assignedLeaves'
+                    hx-get="{% url 'assign-filter' %}?{{pd}}&page={{ available_leaves.paginator.num_pages }}"
+                    class="oh-pagination__link">{% trans "Last" %}</a>
+            </li>
+            {% endif %}
+
+        </ul>
+    </nav>
+</div>

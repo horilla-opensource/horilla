@@ -432,9 +432,11 @@ def generate_payslip(request):
     if request.method == "POST":
         form = forms.GeneratePayslipForm(request.POST)
         if form.is_valid():
+            instances = []
             employees = form.cleaned_data["employee_id"]
             start_date = form.cleaned_data["start_date"]
             end_date = form.cleaned_data["end_date"]
+            group_name = form.cleaned_data["group_name"]
             for employee in employees:
                 contract = payroll.models.models.Contract.objects.filter(
                     employee_id=employee, contract_status="active"
@@ -448,6 +450,7 @@ def generate_payslip(request):
                 payslip["payslip"] = payslip
                 data = {}
                 data["employee"] = employee
+                data["group_name"] = group_name
                 data["start_date"] = payslip["start_date"]
                 data["end_date"] = payslip["end_date"]
                 data["status"] = "draft"
@@ -457,18 +460,10 @@ def generate_payslip(request):
                 data["deduction"] = payslip["total_deductions"]
                 data["net_pay"] = payslip["net_pay"]
                 data["pay_data"] = json.loads(payslip["json_data"])
-                save_payslip(**data)
+                instance = save_payslip(**data)
+                instances.append(instance)
             messages.success(request, f"{employees.count()} payslip saved as draft")
-            return render(
-                request,
-                "payroll/payslip/generate_payslip_list.html",
-                {
-                    "payslip_data": payslips,
-                    "json_data": json_data,
-                    "start_date": start_date,
-                    "end_date": end_date,
-                },
-            )
+            return redirect(f"/payroll/view-payslip?group_by=group_name&active_group={group_name}")
 
     return render(request, "payroll/common/form.html", {"form": form})
 
@@ -602,8 +597,10 @@ def view_payslip(request):
     filter_form = PayslipFilter(request.GET)
     individual_form = forms.PayslipForm()
     bulk_form = forms.GeneratePayslipForm()
+    field = request.GET.get("group_by")
+    if field in Payslip.__dict__.keys():
+        payslips = payslips.filter(group_name__isnull=False).order_by(field)
     payslips = paginator_qry(payslips, request.GET.get("page"))
-
     return render(
         request,
         "payroll/payslip/view_payslips.html",
@@ -629,6 +626,10 @@ def filter_payslip(request):
             employee_id__employee_user_id=request.user
         )
     template = "payroll/payslip/list_payslips.html"
+    field = request.GET.get("group_by")
+    if field in Payslip.__dict__.keys():
+        template = "payroll/payslip/group_payslips.html"
+        payslips = payslips.filter(group_name__isnull=False).order_by("-" + field)
     payslips = paginator_qry(payslips, request.GET.get("page"))
     data_dict = []
     if not request.GET.get("dashboard"):
@@ -642,6 +643,7 @@ def filter_payslip(request):
         status_list = data_dict["status"]
         if len(status_list) > 1:
             data_dict["status"] = [status_list[-1]]
+
     return render(
         request,
         template,

@@ -42,6 +42,11 @@ urlpatterns = [
         name="payslip-status-update",
     ),
     path(
+        "payslip-status-update",
+        views.update_payslip_status,
+        name="payslip-status-update-no-id",
+    ),
+    path(
         "bulk-payslip-status-update",
         views.bulk_update_payslip_status,
         name="bulk-payslip-status-update",
@@ -93,5 +98,10 @@ urlpatterns = [
         "payslip-bulk-delete",
         views.payslip_bulk_delete,
         name="payslip-bulk-delete",
+    ),
+    path(
+        "update-batch-group-name",
+        views.slip_group_name_update,
+        name="update-batch-group-name",
     ),
 ]

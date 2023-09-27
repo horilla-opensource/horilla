@@ -283,7 +283,11 @@ def objective_list_view(request):
         objective_own = objective_own.distinct()
         objective_all = EmployeeObjective.objects.none()
         context = objective_filter_pagination(request, objective_own, objective_all)
-    return render(request, "okr/objective_list_view.html", context)
+    if objective_all.exists() or objective_own.exists():
+        template = "okr/objective_list_view.html"
+    else:
+        template = "okr/objective_empty.html"
+    return render(request, template, context)
 
 
 @login_required
@@ -1018,8 +1022,11 @@ def feedback_list_view(request):
         context = filter_pagination_feedback(
             request, feedback_own, feedback_requested, feedback_all
         )
-
-    return render(request, "feedback/feedback_list_view.html", context)
+    if feedback_own.exists() or feedback_requested.exists() or feedback_all.exists():
+        template = "feedback/feedback_list_view.html"
+    else:
+        template = "feedback/feedback_empty.html"
+    return render(request, template, context)
 
 
 @login_required
@@ -1498,8 +1505,12 @@ def question_template_view(request):
     """
     question_templates = QuestionTemplate.objects.all()
     context = {"form": QuestionTemplateForm, "question_templates": question_templates}
+    if question_templates.exists():
+        template = "feedback/question_template/question_template_view.html"
+    else:
+        template = "feedback/question_template/question_template_empty.html"
     return render(
-        request, "feedback/question_template/question_template_view.html", context
+        request, template, context
     )
 
 
@@ -1600,7 +1611,11 @@ def period_view(request):
     context = {
         "periods": periods,
     }
-    return render(request, "period/period_view.html", context)
+    if periods.exists():
+        template = "period/period_view.html"
+    else:
+        template = "period/period_empty.html"
+    return render(request, template, context)
 
 
 @login_required

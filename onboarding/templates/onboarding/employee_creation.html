@@ -1,0 +1,193 @@
+{% load static %} {% load i18n %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Employee Onboarding - Horilla Dashboard</title>
+  <link rel="stylesheet" href="{% static 'build/css/style.min.css' %}" />
+</head>
+
+<body>
+  {% if form.errors %}
+  <!-- form errors  -->
+  <div class="oh-wrapper">
+    <div class="oh-alert-container">
+
+      {% for error in form.non_field_errors %}
+      <div class="oh-alert oh-alert--animated oh-alert--danger">
+        {{ error }}
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+  <div id="main">
+    <main class="oh-onboarding">
+      <div class="oh-onboarding-card">
+        <div class="oh-onboarding-card__header">
+          <span class="oh-onboarding-card__company-name">{{employee}}</span>
+          <ul class="oh-onboarding-card__steps">
+            <li class="oh-onboarding-card__step">
+              <div class="oh-onboarding-card__count">1</div>
+              <span class="oh-onboarding-card__text">{% trans "Login" %}</span>
+            </li>
+            <li class="oh-onboarding-card__step">
+              <div class="oh-onboarding-card__count">2</div>
+              <span class="oh-onboarding-card__text">{% trans "Profile Setup" %}</span>
+            </li>
+            <li class="oh-onboarding-card__step oh-onboarding-card__step--active">
+              <div class="oh-onboarding-card__count">3</div>
+              <span class="oh-onboarding-card__text">{% trans "Personal Details" %}</span>
+            </li>
+            <li class="oh-onboarding-card__step">
+              <div class="oh-onboarding-card__count">4</div>
+              <span class="oh-onboarding-card__text">{% trans "Bank Details" %}</span>
+            </li>
+          </ul>
+        </div>
+        <form method="post">
+          {% csrf_token %}
+          <div class="oh-onboarding-card__address-group">
+            <h2 class="oh-onboarding-card__section-title">{% trans "Personal Details" %}</h2>
+            <div class="row">
+              <div class="col-sm-12 col-md-12 col-lg-6">
+                <div class="oh-input-group">
+                  <label for="" class="oh-label">{% trans "First Name" %}</label>
+                  {{form.employee_first_name}}
+                  {{form.employee_first_name.errors}}
+                </div>
+              </div>
+              <div class="col-sm-12 col-md-12 col-lg-6">
+                <div class="oh-input-group">
+                  <label for="" class="oh-label">{% trans "Last Name" %}</label>
+                  {{form.employee_last_name}}
+                  {{form.employee_last_name.errors}}
+                </div>
+              </div>
+              <div class="col-sm-12 col-md-12 col-lg-12">
+                <div class="oh-input-group">
+                  <label for="" class="oh-label">{% trans "Phone" %}</label>
+                  {{form.phone}}
+                  {{form.phone.errors}}
+                </div>
+              </div>
+              <div class="col-sm-12 col-md-12 col-lg-12">
+                <div class="oh-input-group">
+                  <label for="" class="oh-label">{% trans "Address" %}</label>
+                  {{form.address}}
+                  {{form.address.errors}}
+                </div>
+              </div>
+              <div class="col-sm-12 col-md-12 col-lg-12 ">
+                <div class="oh-input-group">
+                  <label for="" class="oh-label">{% trans "Country" %}</label>
+                  <input type="hidden" name="country" id="" value="{{request.user.employee_get.country}}">
+                  <select name="country" id="id_country" class="oh-select oh-select-2">
+                    <option value="{{request.user.employee_get.country}}" selected>{{form.initial.country}}</option>
+                  </select>
+                </div>
+              </div>
+              <div class="col-sm-12 col-md-12 col-lg-12 ">
+                <div class="oh-input-group">
+                  <label for="" class="oh-label">{% trans "State" %}</label>
+                  <input type="hidden" name="state" id="" value="{{request.user.employee_get.state}}">
+                  <select name="state" id="id_state" data-selected="{{form.initial.country}}" class="oh-select oh-select-2">
+                  </select>
+                  {{form.state.errors}}
+                </div>
+              </div>
+              <div class="col-sm-12 col-md-12 col-lg-12">
+                <div class="oh-input-group">
+                  <label for="" class="oh-label">{% trans "Zip" %}</label>
+                  {{form.zip}}
+                  {{form.zip.errors}}
+                </div>
+              </div>
+              <div class="col-sm-12 col-md-12 col-lg-12">
+                <div class="oh-input-group">
+                  <label for="" class="oh-label">{% trans "DOB" %}</label>
+                  {{form.dob}}
+                  {{form.dob.errors}}
+                </div>
+              </div>
+              <div class="col-sm-12 col-md-12 col-lg-12">
+                <div class="oh-input-group">
+                  <label for="" class="oh-label">{% trans "Gender" %}</label>
+                  {{form.gender}}
+                  {{form.gender.errors}}
+                </div>
+              </div>
+              <div class="col-sm-12 col-md-12 col-lg-12">
+                <div class="oh-input-group">
+                  <label for="" class="oh-label">{% trans "Qualification" %}</label>
+                  {{form.qualification}}
+                  {{form.qualification.errors}}
+                </div>
+              </div>
+              <div class="col-sm-12 col-md-12 col-lg-12">
+                <div class="oh-input-group">
+                  <label for="" class="oh-label">{% trans "Experience" %}</label>
+                  {{form.experience}}
+                  {{form.experience.errors}}
+                </div>
+              </div>
+              <div class="col-sm-12 col-md-12 col-lg-12">
+                <div class="oh-input-group">
+                  <label for="" class="oh-label">{% trans "Marital status" %}</label>
+                  {{form.marital_status}}
+                  {{form.marital_status.errors}}
+                </div>
+              </div>
+              <div class="col-sm-12 col-md-12 col-lg-12">
+                <div class="oh-input-group">
+                  <label for="" class="oh-label">{% trans "Childrens" %}</label>
+                  {{form.children}}
+                  {{form.children.errors}}
+                </div>
+              </div>
+              <div class="col-sm-12 col-md-12 col-lg-12">
+                <div class="oh-input-group">
+                  <label for="" class="oh-label">{% trans "Emergency Contact Number" %}</label>
+                  {{form.emergency_contact}}
+                  {{form.emergency_contact.errors}}
+                </div>
+              </div>
+              <div class="col-sm-12 col-md-12 col-lg-12">
+                <div class="oh-input-group">
+                  <label for="" class="oh-label">{% trans "Emergency Contact Name" %}</label>
+                  {{form.emergency_contact_name}}
+                  {{form.emergency_contact_name.errors}}
+                </div>
+              </div>
+              <div class="col-sm-12 col-md-12 col-lg-12">
+                <div class="oh-input-group">
+                  <label for="" class="oh-label">{% trans "Emergency Contact Relation" %}</label>
+                  {{form.emergency_contact_relation}}
+                  {{form.emergency_contact_relation.errors}}
+                </div>
+              </div>
+            </div>
+          </div>
+          <button href="#" class="oh-btn oh-onboarding-card__button mt-4 oh-btn--secondary oh-btn--shadow w-100 mb-4"
+            role="button">
+            {% trans "Next Step" %}
+            <ion-icon class="ms-2" name="arrow-forward-outline"></ion-icon>
+          </button>
+
+        </form>
+
+      </div>
+    </main>
+  </div>
+  <script src="{% static 'build/js/web.frontend.min.js' %}"></script>
+  <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+  <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+  <script>
+    {% include 'onboarding/static/country.js' %}
+  </script>
+
+</body>
+</html>

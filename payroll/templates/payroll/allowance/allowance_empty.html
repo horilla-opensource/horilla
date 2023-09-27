@@ -1,0 +1,76 @@
+{% extends 'index.html' %} {% block content %} {% load i18n %} {% load static %}
+
+<section class="oh-wrapper oh-main__topbar" x-data="{searchShow: false}">
+  <div class="oh-main__titlebar oh-main__titlebar--left">
+    <h1 class="oh-main__titlebar-title fw-bold">{% trans "Allowances" %}</h1>
+  </div>
+  <div class="oh-main__titlebar oh-main__titlebar--right">
+
+    <div class="oh-main__titlebar-button-container">
+
+      <div class="oh-btn-group ml-2">
+        <div>
+          <a
+            class="oh-btn oh-btn--secondary oh-btn--shadow"
+            data-target="#allowanceModal"
+            href="{% url 'create-allowance' %}"
+          >
+            <ion-icon
+              class="me-2 md hydrated"
+              name="add-outline"
+              role="img"
+              aria-label="add outline"
+            ></ion-icon
+            >{% trans "Create" %}</a
+          >
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="oh-modal" id="AllowanceModal" role="dialog" aria-labelledby="AllowanceModal" aria-hidden="true">
+  <div class="oh-modal__dialog" style="max-width: 550px" id="OneAllowanceTarget"></div>
+</div>
+
+
+<div
+  class="oh-modal"
+  id="allowanceModal"
+  role="dialog"
+  aria-labelledby="allowanceModal"
+  aria-hidden="true"
+>
+  <div class="oh-modal__dialog">
+    <div class="oh-modal__dialog-header">
+      <h2 class="oh-modal__dialog-title" id="addEmployeeModalLabel">
+        {% trans "Add Allowance" %}
+      </h2>
+      <button
+        class="oh-modal__close"
+        aria-label="Close"
+        
+      >
+        <ion-icon name="close-outline"></ion-icon>
+      </button>
+    </div>
+    <div class="oh-modal__dialog-body" id="allowanceModalBody"></div>
+  </div>
+</div>
+
+<div
+class="oh-wrapper-main"
+>
+  <main :class="sidebarOpen ? 'oh-main__sidebar-visible' : ''">
+    
+    <div class="oh-wrapper">
+      <div class="oh-404">
+          <img style="    width: 190px;height: 190px;" src="{% static 'images/ui/allowance.png' %}" class="oh-404__image mb-4" alt="Page not found. 404."/>
+          <h5 class="oh-404__subtitle">{% trans "No allowance has been allocated." %}</h5>
+      </div>
+    </div>
+  </main>
+</div>
+</div>
+
+{% endblock content %}

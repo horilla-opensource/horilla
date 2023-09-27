@@ -59,10 +59,14 @@ def request_attendance_view(request):
         employee_id__employee_user_id=request.user
     )
     filter_obj = AttendanceFilters()
-
+    check_attendance = Attendance.objects.all()
+    if check_attendance.exists():
+        template = "requests/attendance/view-requests.html"
+    else:
+        template = "requests/attendance/requests_empty.html"
     return render(
         request,
-        "requests/attendance/view-requests.html",
+        template,
         {
             "requests": paginator_qry(requests, None),
             "attendances": paginator_qry(attendances, None),

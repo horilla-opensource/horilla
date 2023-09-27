@@ -402,8 +402,13 @@ def asset_category_view(request):
     Raises:
         None
     """
+    queryset = AssetCategory.objects.all()
+    if queryset.exists():
+        template = "category/asset_category_view.html"
+    else:
+        template = "category/asset_empty.html"
     context = filter_pagination_asset_category(request)
-    return render(request, "category/asset_category_view.html", context)
+    return render(request, template, context)
 
 
 @login_required
@@ -916,13 +921,16 @@ def asset_batch_view(request):
     page_number = request.GET.get("page")
     asset_batch_numbers = asset_batch_numbers_search_paginator.get_page(page_number)
     asset_batch_form = AssetBatchForm()
-
+    if asset_batchs.exists():
+        template = "batch/asset_batch_number_view.html"
+    else:
+        template = "batch/asset_batch_empty.html"
     context = {
         "batch_numbers": asset_batch_numbers,
         "asset_batch_form": asset_batch_form,
         "pg": previous_data,
     }
-    return render(request, "batch/asset_batch_number_view.html", context)
+    return render(request, template, context)
 
 
 @login_required

@@ -1,0 +1,52 @@
+{% load i18n %}{% load static %}
+<form hx-get="{% url 'candidate-filter' %}" hx-target="#candidates" id="filterForm">
+  <div
+    class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4"
+    x-show="open"
+    style="display: none"
+    @click.outside="open = false"
+  >
+    <div class="oh-dropdown__filter-body">
+      <div class="oh-accordion">
+        <div class="oh-accordion-header">{% trans "Candidate Filter" %}</div>
+        <div class="oh-accordion-body">
+          <div class="row">
+            <div class="col-sm-12 col-md-12 col-lg-6">
+              <div class="oh-input-group">
+                <label class="oh-label">{% trans "Recruitment" %}</label>
+                {{form.recruitment_id}}
+              </div>
+            </div>
+            <div class="col-sm-12 col-md-12 col-lg-6">
+              <div class="oh-input-group">
+                <label class="oh-label">{% trans "Job Position" %}</label>
+                {{form.job_position_id}}
+              </div>
+            </div>
+            <div class="col-sm-12 col-md-12 col-lg-6">
+              <div class="oh-input-group">
+                <label class="oh-label">{% trans "Joining From" %}</label>
+                {{form.scheduled_from}}
+              </div>
+            </div>
+            <div class="col-sm-12 col-md-12 col-lg-6">
+              <div class="oh-input-group">
+                <label class="oh-label">{% trans "Joining Till" %}l</label>
+                {{form.scheduled_till}}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="oh-dropdown__filter-footer">
+      <button
+        class="oh-btn oh-btn--secondary oh-btn--small w-100 filterButton"
+        type="submit"
+      >
+        {% trans "Filter" %}
+      </button>
+    </div>
+  </div>
+</form>
+<script src="{% static '/base/filter.js' %}"></script>

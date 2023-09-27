@@ -5,7 +5,11 @@
 {% load attendancefilters %}
 {% include 'shift_request/shift_request_nav.html' %}
 <div id="view-container" class="oh-wrapper">
-  {% include 'shift_request/htmx/requests.html' %}
+  {% if data %}
+    {% include 'shift_request/htmx/requests.html' %}
+  {% else %}
+    {% include 'shift_request/htmx/empty_request.html' %}
+  {% endif %}
 </div>
 
 

@@ -75,7 +75,7 @@ def stage_creation(request, obj_id):
         form = OnboardingViewStageForm(request.POST)
         if form.is_valid():
             return stage_save(form, recruitment, request, obj_id)
-    return render(request, "onboarding/stage-form.html", {"form": form, "id": obj_id})
+    return render(request, "onboarding/stage_form.html", {"form": form, "id": obj_id})
 
 
 def stage_save(form, recruitment, request, rec_id):
@@ -107,7 +107,7 @@ def stage_save(form, recruitment, request, rec_id):
         redirect="/onboarding/onboarding-view",
     )
     response = render(
-        request, "onboarding/stage-form.html", {"form": form, "id": rec_id}
+        request, "onboarding/stage_form.html", {"form": form, "id": rec_id}
     )
     return HttpResponse(
         response.content.decode("utf-8") + "<script>location.reload();</script>"
@@ -151,7 +151,7 @@ def stage_update(request, stage_id, recruitment_id):
             )
             response = render(
                 request,
-                "onboarding/stage-update.html",
+                "onboarding/stage_update.html",
                 {"form": form, "stage_id": stage_id, "recruitment_id": recruitment_id},
             )
             return HttpResponse(
@@ -159,7 +159,7 @@ def stage_update(request, stage_id, recruitment_id):
             )
     return render(
         request,
-        "onboarding/stage-update.html",
+        "onboarding/stage_update.html",
         {"form": form, "stage_id": stage_id, "recruitment_id": recruitment_id},
     )
 
@@ -231,12 +231,12 @@ def task_creation(request, obj_id):
                 redirect="/onboarding/onboarding-view",
             )
             response = render(
-                request, "onboarding/task-form.html", {"form": form, "id": obj_id}
+                request, "onboarding/task_form.html", {"form": form, "id": obj_id}
             )
             return HttpResponse(
                 response.content.decode("utf-8") + "<script>location.reload();</script>"
             )
-    return render(request, "onboarding/task-form.html", {"form": form, "id": obj_id})
+    return render(request, "onboarding/task_form.html", {"form": form, "id": obj_id})
 
 
 @login_required
@@ -275,7 +275,7 @@ def task_update(request, task_id, recruitment_id):
             )
             response = render(
                 request,
-                "onboarding/task-update.html",
+                "onboarding/task_update.html",
                 {"form": form, "task_id": task_id, "recruitment_id": recruitment_id},
             )
             return HttpResponse(
@@ -284,7 +284,7 @@ def task_update(request, task_id, recruitment_id):
     form = OnboardingViewTaskForm(instance=onboarding_task)
     return render(
         request,
-        "onboarding/task-update.html",
+        "onboarding/task_update.html",
         {"form": form, "task_id": task_id, "recruitment_id": recruitment_id},
     )
 
@@ -341,7 +341,7 @@ def candidate_creation(request):
             candidate.save()
             messages.success(request, _("New candidate created successfully.."))
             return redirect(candidates_view)
-    return render(request, "onboarding/candidate-creation.html", {"form": form})
+    return render(request, "onboarding/candidate_creation.html", {"form": form})
 
 
 @login_required
@@ -366,7 +366,7 @@ def candidate_update(request, obj_id):
             form.save()
             messages.info(request, _("Candidate detail is updated successfully.."))
             return redirect(candidates_view)
-    return render(request, "onboarding/candidate-update.html", {"form": form})
+    return render(request, "onboarding/candidate_update.html", {"form": form})
 
 
 @login_required
@@ -431,7 +431,7 @@ def candidates_view(request):
     page_obj = paginator_qry(queryset, page_number)
     return render(
         request,
-        "onboarding/candidates-view.html",
+        "onboarding/candidates_view.html",
         {
             "candidates": page_obj,
             "form": candidate_filter_obj.form,
@@ -577,7 +577,7 @@ def onboarding_view(request):
     choices = CandidateTask.choice
     return render(
         request,
-        "onboarding/onboarding-view.html",
+        "onboarding/onboarding_view.html",
         {
             "recruitments": recruitments,
             "onboarding_stages": onboarding_stages,
@@ -678,7 +678,7 @@ def user_creation(request, token):
             messages.error(request, _("User with email-id already exists.."))
         return render(
             request,
-            "onboarding/user-creation.html",
+            "onboarding/user_creation.html",
             {
                 "form": form,
                 "company": onboarding_portal.candidate_id.recruitment_id.company_id,
@@ -737,7 +737,7 @@ def profile_view(request, token):
             messages.success(request, _("Profile picture updated successfully.."))
     return render(
         request,
-        "onboarding/profile-view.html",
+        "onboarding/profile_view.html",
         {
             "candidate": candidate,
             "token": token,
@@ -808,7 +808,7 @@ def employee_creation(request, token):
     onboarding_portal.save()
     return render(
         request,
-        "onboarding/employee-creation.html",
+        "onboarding/employee_creation.html",
         {"form": form, "employee": candidate.recruitment_id.company_id},
     )
 
@@ -841,7 +841,7 @@ def employee_bank_details(request, token):
         return redirect(welcome_aboard)
     return render(
         request,
-        "onboarding/employee-bank-details.html",
+        "onboarding/employee_bank_details.html",
         {
             "form": form,
             "company": onboarding_portal.candidate_id.recruitment_id.company_id,
@@ -883,7 +883,7 @@ def welcome_aboard(request):
     Returns:
     GET : return welcome onboard view
     """
-    return render(request, "onboarding/welcome-aboard.html")
+    return render(request, "onboarding/welcome_aboard.html")
 
 
 @login_required
@@ -924,7 +924,7 @@ def candidate_task_update(request, obj_id):
     choices = CandidateTask.choice
     return render(
         request,
-        "onboarding/candidate-task.html",
+        "onboarding/candidate_task.html",
         {"choices": choices, "task": candidate_task},
     )
 
@@ -972,7 +972,7 @@ def candidate_stage_update(request, candidate_id, recruitment_id):
         )
         return render(
             request,
-            "onboarding/onboarding-table.html",
+            "onboarding/onboarding_table.html",
             {
                 "recruitment": recruitment,
                 "onboarding_stages": onboarding_stages,
@@ -1127,7 +1127,7 @@ def dashboard_stage_chart(request):
         "recruitment": recruitment,
         "background_color": background_color,
         "border_color": border_color,
-        "message":_("No candidates started onboarding....")
+        "message": _("No candidates started onboarding...."),
     }
     return JsonResponse(response)
 
@@ -1199,7 +1199,7 @@ def onboarding_send_mail(request, candidate_id):
     candidate = Candidate.objects.get(id=candidate_id)
     candidate_mail = candidate.email
     response = render(
-        request, "onboarding/send-mail-form.html", {"candidate": candidate}
+        request, "onboarding/send_mail_form.html", {"candidate": candidate}
     )
     if request.method == "POST":
         subject = request.POST["subject"]

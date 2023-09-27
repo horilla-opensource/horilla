@@ -51,7 +51,7 @@ def leave_type_creation(request):
             form.save()
             messages.success(request, _("New leave type Created.."))
             return redirect(leave_type_view)
-    return render(request, "leave/leave-type-creation.html", {"form": form})
+    return render(request, "leave/leave_type_creation.html", {"form": form})
 
 
 def paginator_qry(qryset, page_number):
@@ -81,9 +81,9 @@ def leave_type_view(request):
     previous_data = request.GET.urlencode()
     leave_type_filter = LeaveTypeFilter()
     if not queryset.exists():
-        template_name = "leave/user-leave-type-empty-view.html"
+        template_name = "leave/user_leave_type_empty_view.html"
     else:
-        template_name = "leave/leave-type-view.html"
+        template_name = "leave/leave_type_view.html"
     return render(
         request,
         template_name,
@@ -142,7 +142,7 @@ def leave_type_update(request, id):
             form_data.save()
             messages.info(request, _("Leave type is updated successfully.."))
             return redirect(leave_type_view)
-    return render(request, "leave/leave-type-update.html", {"form": form})
+    return render(request, "leave/leave_type_update.html", {"form": form})
 
 
 @login_required
@@ -182,7 +182,7 @@ def leave_type_delete(request, id):
 @login_required
 @hx_request_required
 @manager_can_enter("leave.add_leaverequest")
-def leave_request_creation(request):
+def leave_request_creation(request, type_id=None, emp_id=None):
     """
     function used to create leave request.
 
@@ -194,6 +194,12 @@ def leave_request_creation(request):
     POST : return leave request view
     """
     form = LeaveRequestCreationForm()
+    if type_id and emp_id:
+        initial_data = {
+            "leave_type_id": type_id,
+            "employee_id": emp_id,
+        }
+        form = LeaveRequestCreationForm(initial=initial_data)
     form = choosesubordinates(request, form, "leave.add_leaverequest")
     if request.method == "POST":
         form = LeaveRequestCreationForm(request.POST, request.FILES)
@@ -240,11 +246,11 @@ def leave_request_creation(request):
                     icon="people-circle",
                     redirect="/leave/request-view",
                 )
-            response = render(request, "leave/leave-request-form.html", {"form": form})
+            response = render(request, "leave/leave_request_form.html", {"form": form})
             return HttpResponse(
                 response.content.decode("utf-8") + "<script>location.reload();</script>"
             )
-    return render(request, "leave/leave-request-form.html", {"form": form})
+    return render(request, "leave/leave_request_form.html", {"form": form})
 
 
 @login_required
@@ -270,7 +276,7 @@ def leave_request_view(request):
     previous_data = request.GET.urlencode()
     return render(
         request,
-        "leave/request-view.html",
+        "leave/request_view.html",
         {
             "leave_requests": page_obj,
             "pd": previous_data,
@@ -311,7 +317,7 @@ def leave_request_filter(request):
             data_dict["status"] = [status_list[-1]]
     return render(
         request,
-        "leave/leave_request/leave-requests.html",
+        "leave/leave_request/leave_requests.html",
         {
             "leave_requests": page_obj,
             "pd": previous_data,
@@ -360,12 +366,12 @@ def leave_request_update(request, id):
                     redirect="/leave/request-view",
                 )
             response = render(
-                request, "leave/request-update-form.html", {"form": form, "id": id}
+                request, "leave/request_update_form.html", {"form": form, "id": id}
             )
             return HttpResponse(
                 response.content.decode("utf-8") + "<script>location.reload();</script>"
             )
-    return render(request, "leave/request-update-form.html", {"form": form, "id": id})
+    return render(request, "leave/request_update_form.html", {"form": form, "id": id})
 
 
 @login_required
@@ -393,16 +399,19 @@ def leave_request_delete(request, id):
 
 @login_required
 @manager_can_enter("leave.update_leaverequest")
-def leave_request_approve(request, id):
+def leave_request_approve(request, id, emp_id=None):
     """
     function used to approve a leave request.
 
     Parameters:
     request (HttpRequest): The HTTP request object.
     id : leave request id
+    emp_id : employee id if the approval operation comes from "/employee/employee-view/{employee_id}/" template.
+
 
     Returns:
-    GET : return leave request view template
+    GET : If `emp_id` is provided, it returns to the "/employee/employee-view/{employee_id}/" template after approval.
+          Otherwise, it returns to the default leave request view template.
     """
     leave_request = LeaveRequest.objects.get(id=id)
     employee_id = leave_request.employee_id
@@ -447,21 +456,26 @@ def leave_request_approve(request, id):
             request,
             f"{employee_id} dont have enough leave days to approve the request..",
         )
+    if emp_id is not None:
+        employee_id = emp_id
+        return redirect(f"/employee/employee-view/{employee_id}/")
     return redirect(leave_request_view)
 
 
 @login_required
 @manager_can_enter("leave.update_leaverequest")
-def leave_request_cancel(request, id):
+def leave_request_cancel(request, id, emp_id=None):
     """
     function used to cancel leave request.
 
     Parameters:
     request (HttpRequest): The HTTP request object.
     id : leave request id
+    emp_id : employee id if the cancel operation comes from "/employee/employee-view/{employee_id}/" template.
 
     Returns:
-    GET : return leave request view template
+    GET : If `emp_id` is provided, it returns to the "/employee/employee-view/{employee_id}/" template after cancel.
+          Otherwise, it returns to the default leave request view template.
 
     """
     leave_request = LeaveRequest.objects.get(id=id)
@@ -490,6 +504,9 @@ def leave_request_cancel(request, id):
             icon="people-circle",
             redirect="/leave/user-request-view",
         )
+    if emp_id is not None:
+        employee_id = emp_id
+        return redirect(f"/employee/employee-view/{employee_id}/")
     return redirect(leave_request_view)
 
 
@@ -507,7 +524,7 @@ def one_request_view(request, id):
     """
     leave_request = LeaveRequest.objects.get(id=id)
     return render(
-        request, "leave/one-request-view.html", {"leave_request": leave_request}
+        request, "leave/one_request_view.html", {"leave_request": leave_request}
     )
 
 
@@ -559,12 +576,12 @@ def leave_assign_one(request, id):
                     request, _("leave type is already assigned to the employee..")
                 )
         response = render(
-            request, "leave/leave-assign-one-form.html", {"form": form, "id": id}
+            request, "leave/leave_assign_one_form.html", {"form": form, "id": id}
         )
         return HttpResponse(
             response.content.decode("utf-8") + "<script>location.reload();</script>"
         )
-    return render(request, "leave/leave-assign-one-form.html", {"form": form, "id": id})
+    return render(request, "leave/leave_assign_one_form.html", {"form": form, "id": id})
 
 
 @login_required
@@ -587,7 +604,7 @@ def leave_assign_view(request):
     assigned_leave_filter = AssignedLeaveFilter()
     return render(
         request,
-        "leave/assign-view.html",
+        "leave/assign_view.html",
         {
             "available_leaves": page_obj,
             "form": assigned_leave_filter.form,
@@ -619,7 +636,7 @@ def leave_assign_filter(request):
     get_key_instances(AvailableLeave, data_dict)
     return render(
         request,
-        "leave/leave_assign/assigned-leave.html",
+        "leave/leave_assign/assigned_leave.html",
         {"available_leaves": page_obj, "pd": previous_data, "filter_dict": data_dict},
     )
 
@@ -679,12 +696,12 @@ def leave_assign(request):
                                 _("Leave type is already assigned to the employee.."),
                             )
         response = render(
-            request, "leave/leave-assign-form.html", {"form": form, "id": id}
+            request, "leave/leave_assign_form.html", {"form": form, "id": id}
         )
         return HttpResponse(
             response.content.decode("utf-8") + "<script>location. reload();</script>"
         )
-    return render(request, "leave/leave-assign-form.html", {"form": form})
+    return render(request, "leave/leave_assign_form.html", {"form": form})
 
 
 @login_required
@@ -722,12 +739,12 @@ def available_leave_update(request, id):
                     redirect="/leave/user-leave",
                 )
         response = render(
-            request, "leave/available-update-form.html", {"form": form, "id": id}
+            request, "leave/available_update_form.html", {"form": form, "id": id}
         )
         return HttpResponse(
             response.content.decode("utf-8") + "<script>location. reload();</script>"
         )
-    return render(request, "leave/available-update-form.html", {"form": form, "id": id})
+    return render(request, "leave/available_update_form.html", {"form": form, "id": id})
 
 
 @login_required
@@ -773,12 +790,12 @@ def holiday_creation(request):
         if form.is_valid():
             form.save()
             messages.success(request, _("New holiday created successfully.."))
-            response = render(request, "leave/holiday-form.html", {"form": form})
+            response = render(request, "leave/holiday_form.html", {"form": form})
             return HttpResponse(
                 response.content.decode("utf-8")
                 + "<script>location. reload();</script>"
             )
-    return render(request, "leave/holiday-form.html", {"form": form})
+    return render(request, "leave/holiday_form.html", {"form": form})
 
 
 @login_required
@@ -800,7 +817,7 @@ def holiday_view(request):
     holiday_filter = HolidayFilter()
     return render(
         request,
-        "leave/holiday-view.html",
+        "leave/holiday_view.html",
         {"holidays": page_obj, "form": holiday_filter.form, "pd": previous_data},
     )
 
@@ -855,13 +872,13 @@ def holiday_update(request, id):
             form.save()
             messages.info(request, _("Holiday updated successfully.."))
             response = render(
-                request, "leave/holiday-update-form.html", {"form": form, "id": id}
+                request, "leave/holiday_update_form.html", {"form": form, "id": id}
             )
             return HttpResponse(
                 response.content.decode("utf-8")
                 + "<script>location. reload();</script>"
             )
-    return render(request, "leave/holiday-update-form.html", {"form": form, "id": id})
+    return render(request, "leave/holiday_update_form.html", {"form": form, "id": id})
 
 
 @login_required
@@ -908,13 +925,13 @@ def company_leave_creation(request):
             form.save()
             messages.success(request, _("New company leave created successfully.."))
             response = render(
-                request, "leave/company-leave-creation-form.html", {"form": form}
+                request, "leave/company_leave_creation_form.html", {"form": form}
             )
             return HttpResponse(
                 response.content.decode("utf-8")
                 + "<script>location. reload();</script>"
             )
-    return render(request, "leave/company-leave-creation-form.html", {"form": form})
+    return render(request, "leave/company_leave_creation_form.html", {"form": form})
 
 
 @login_required
@@ -936,7 +953,7 @@ def company_leave_view(request):
     company_leave_filter = CompanyLeaveFilter()
     return render(
         request,
-        "leave/company-leave-view.html",
+        "leave/company_leave_view.html",
         {
             "company_leaves": page_obj,
             "weeks": WEEKS,
@@ -970,7 +987,7 @@ def company_leave_filter(request):
 
     return render(
         request,
-        "leave/company_leave/company-leave.html",
+        "leave/company_leave/company_leave.html",
         {
             "company_leaves": page_obj,
             "weeks": WEEKS,
@@ -1005,7 +1022,7 @@ def company_leave_update(request, id):
             messages.info(request, _("Company leave updated successfully.."))
             response = render(
                 request,
-                "leave/company-leave-update-form.html",
+                "leave/company_leave_update_form.html",
                 {"form": form, "id": id},
             )
             return HttpResponse(
@@ -1013,7 +1030,7 @@ def company_leave_update(request, id):
                 + "<script>location. reload();</script>"
             )
     return render(
-        request, "leave/company-leave-update-form.html", {"form": form, "id": id}
+        request, "leave/company_leave_update_form.html", {"form": form, "id": id}
     )
 
 
@@ -1165,7 +1182,7 @@ def user_leave_request(request, id):
                         redirect="/leave/user-request-view",
                     )
                 response = render(
-                    request, "leave/user-request-form.html", {"form": form, "id": id}
+                    request, "leave/user_request_form.html", {"form": form, "id": id}
                 )
                 return HttpResponse(
                     response.content.decode("utf-8")
@@ -1177,7 +1194,7 @@ def user_leave_request(request, id):
             )
     return render(
         request,
-        "leave/user-request-form.html",
+        "leave/user_request_form.html",
         {"form": form, "id": id, "leave_type": leave_type},
     )
 
@@ -1259,7 +1276,7 @@ def user_request_update(request, id):
                         )
                         response = render(
                             request,
-                            "leave/user-request-update.html",
+                            "leave/user_request_update.html",
                             {"form": form, "id": id},
                         )
                         return HttpResponse(
@@ -1272,7 +1289,7 @@ def user_request_update(request, id):
                             _("You dont have enough leave days to make the request.."),
                         )
             return render(
-                request, "leave/user-request-update.html", {"form": form, "id": id}
+                request, "leave/user_request_update.html", {"form": form, "id": id}
             )
     except Exception as e:
         messages.error(request, _("User has no leave request.."))
@@ -1321,9 +1338,9 @@ def user_leave_view(request):
         page_obj = paginator_qry(queryset, page_number)
         assigned_leave_filter = AssignedLeaveFilter()
         if not queryset.exists():
-            template_name = "leave/user-leave-empty-view.html"
+            template_name = "leave/user_leave_empty_view.html"
         else:
-            template_name = "leave/user-leave-view.html"
+            template_name = "leave/user_leave_view.html"
         return render(
             request,
             template_name,
@@ -1361,7 +1378,7 @@ def user_leave_filter(request):
         page_obj = paginator_qry(assigned_leave_filter, page_number)
         return render(
             request,
-            "leave/user_leave/user-leave.html",
+            "leave/user_leave/user_leave.html",
             {"user_leaves": page_obj, "pd": previous_data, "filter_dict": data_dict},
         )
     except Exception as e:
@@ -1389,7 +1406,7 @@ def user_request_view(request):
         user_request_filter = UserLeaveRequestFilter()
         return render(
             request,
-            "leave/user-request-view.html",
+            "leave/user_request_view.html",
             {
                 "leave_requests": page_obj,
                 "form": user_request_filter.form,
@@ -1428,7 +1445,7 @@ def user_request_filter(request):
                 data_dict["status"] = [status_list[-1]]
         return render(
             request,
-            "leave/user-requests.html",
+            "leave/user_requests.html",
             {"leave_requests": page_obj, "pd": previous_data, "filter_dict": data_dict},
         )
     except Exception as e:
@@ -1452,7 +1469,7 @@ def user_request_one(request, id):
     try:
         if request.user.employee_get == leave_request.employee_id:
             return render(
-                request, "leave/user-request-one.html", {"leave_request": leave_request}
+                request, "leave/user_request_one.html", {"leave_request": leave_request}
             )
     except Exception as e:
         messages.error(request, _("User has no leave request.."))
@@ -1602,7 +1619,7 @@ def employee_dashboard(request):
         "holidays": holidays,
         "dashboard": "dashboard",
     }
-    return render(request, "leave/employee-dashboard.html", context)
+    return render(request, "leave/employee_dashboard.html", context)
 
 
 @login_required
@@ -1617,7 +1634,7 @@ def dashboard_leave_request(request):
     else:
         leave_requests = []
     context = {"leave_requests": leave_requests, "dashboard": "dashboard"}
-    return render(request, "leave/leave_request/leave-requests.html", context)
+    return render(request, "leave/leave_request/leave_requests.html", context)
 
 
 @login_required
@@ -1692,7 +1709,7 @@ def employee_leave_chart(request):
     response = {
         "labels": employee_label,
         "dataset": dataset,
-        "message" : _("No leave request this month")
+        "message": _("No leave request this month"),
     }
     return JsonResponse(response)
 
