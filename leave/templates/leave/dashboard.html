@@ -34,7 +34,7 @@
         <div class="oh-dashboard__left col-12 col-sm-12 col-md-12 col-lg-9">
             <div class="oh-dashboard__cards row">
                 <div class="col-12 col-sm-12 col-md-6 col-lg-4">
-                    <div class="oh-card-dashboard oh-card-dashboard oh-card-dashboard--neutral filter pointer dash-card" hx-get="{% url "request-filter" %}?status=requested&dashboard=true" hx-target="#dashboard" >
+                    <div class="oh-card-dashboard oh-card-dashboard oh-card-dashboard--neutral filter pointer dash-card" hx-get="{% url "request-filter" %}?status=requested&dashboard=card" hx-target="#dashboard" >
                         <div class="oh-card-dashboard__header">
                             <span class="oh-card-dashboard__title">{% trans "New Requests" %}</span>
                         </div>
@@ -46,7 +46,7 @@
                     </div>
                 </div>
                 <div class="col-12 col-sm-12 col-md-6 col-lg-4">
-                    <div class="oh-card-dashboard oh-card-dashboard--success filter pointer dash-card" hx-get="{% url "request-filter" %}?status=approved&dashboard=true" hx-target="#dashboard">
+                    <div class="oh-card-dashboard oh-card-dashboard--success filter pointer dash-card" hx-get="{% url "request-filter" %}?status=approved&dashboard=card" hx-target="#dashboard">
                         <div class="oh-card-dashboard__header">
                             <span class="oh-card-dashboard__title">{% trans "Approved Requests" %}</span>
                         </div>
@@ -58,7 +58,7 @@
                     </div>
                 </div>
                 <div class="col-12 col-sm-12 col-md-6 col-lg-4">
-                    <div class="oh-card-dashboard oh-card-dashboard--danger filter pointer dash-card" hx-get="{% url "request-filter" %}?status=cancelled&dashboard=true" hx-target="#dashboard">
+                    <div class="oh-card-dashboard oh-card-dashboard--danger filter pointer dash-card" hx-get="{% url "request-filter" %}?status=cancelled&dashboard=card" hx-target="#dashboard">
                         <div class="oh-card-dashboard__header">
                             <span class="oh-card-dashboard__title">{% trans "Rejected Requests" %}</span>
                         </div>

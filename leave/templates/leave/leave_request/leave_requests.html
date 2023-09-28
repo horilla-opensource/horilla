@@ -12,7 +12,7 @@
 </div>
 {% endif %}
 {% include 'filter_tags.html' %}
-{% if not dashboard %}
+{% if not request.GET.dashboard %}
 <div class="d-flex flex-row-reverse">
     <span class="m-3 review_ongoing" hx-get="{% url "request-filter" %}?{{pd}}&status=cancelled" hx-target="#leaveRequest" style="cursor: pointer">
       <span class="oh-dot oh-dot--small me-1" style="background-color:red"></span>
@@ -118,7 +118,7 @@
             </div>
         </div>
     </div>
-    {% elif dashboard %}
+    {% elif dashboard and request.GET.dashboard != 'card' %}
     <div style="height: 310px; display:flex;align-items: center;justify-content: center;" class="">
         <div style="" class="">
         <img style="    display: block;width: 70px;margin: 10px auto ;" src="{% static 'images/ui/attendance.png' %}" class="" alt=""/>
