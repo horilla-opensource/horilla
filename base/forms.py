@@ -4,6 +4,7 @@ forms.py
 This module is used to register forms for base module
 """
 import calendar
+import os
 from typing import Any, Dict
 import uuid
 import datetime
@@ -292,6 +293,26 @@ class CompanyForm(ModelForm):
 
         model = Company
         fields = "__all__"
+
+
+    def validate_image(self,file):
+        max_size = 5 * 1024 * 1024
+
+        if file.size > max_size:
+            raise ValidationError("File size should be less than 5MB.")
+
+        # Check file extension
+        valid_extensions = ['.jpg', '.jpeg', '.png', '.webp', '.svg']
+        ext = os.path.splitext(file.name)[1].lower()
+        if ext not in valid_extensions:
+            raise ValidationError("Unsupported file extension.")
+        
+    
+    def clean_icon(self):
+        icon = self.cleaned_data.get('icon')
+        if icon:
+            self.validate_image(icon)
+        return icon
 
 
 class DepartmentForm(ModelForm):
