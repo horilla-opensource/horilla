@@ -98,7 +98,7 @@ def candidate_survey(request):
                 )
                 return render(
                     request,
-                    "survey/candidate-survey-form.html",
+                    "survey/candidate_survey_form.html",
                     {"form": form, "candidate": candidate},
                 )
             attachment_path = f"recruitment_attachment/{attachment.name}"
@@ -113,7 +113,7 @@ def candidate_survey(request):
         return render(request, "candidate/success.html")
     return render(
         request,
-        "survey/candidate-survey-form.html",
+        "survey/candidate_survey_form.html",
         {"form": form, "candidate": candidate},
     )
 
