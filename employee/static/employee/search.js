@@ -56,4 +56,25 @@ function employeeFilter(element) {
   $('#card').attr('hx-vals', stringQueyObject);
 }
 
+// Profile picture enlarging
 
+function enlargeImage(image) {
+  console.log(image)
+  var enlargeImageContainer = document.getElementById('enlargeImageContainer');
+  enlargeImageContainer.innerHTML = ''; 
+
+  var enlargedImage = document.createElement('img');
+  enlargedImage.src = image.src;
+  enlargeImageContainer.appendChild(enlargedImage);
+
+  setTimeout(function() {
+    enlargeImageContainer.style.display = 'block';
+  }, 250);
+}
+
+function hideEnlargeImage() {
+  var enlargeImageContainer = document.getElementById('enlargeImageContainer');
+  enlargeImageContainer.innerHTML = '';
+  enlargeImageContainer.style.display = 'none';
+
+}

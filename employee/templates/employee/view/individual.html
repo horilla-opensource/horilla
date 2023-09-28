@@ -2,6 +2,26 @@
 {% load static %} 
 {% comment %} {% include 'employee_nav.html' %} {% endcomment %}
 
+<style>
+  .enlarge-image-container {
+    display: none;
+    position: fixed;
+    top: 40%;
+    left: 40%;
+    transform: translate(-50%, -50%);
+    width: 30%;
+    height: 50%;
+    z-index: 9999;
+  }
+  .enlarge-image-container img{
+    max-width: 100%;
+    height: auto;
+    border-radius: 5%;
+  }
+</style>
+
+<div id="enlargeImageContainer" class="enlarge-image-container"></div>
+
 <div class="oh-wrapper" id="view-container">
   <div class="oh-card mt-4 mb-5">
     <div class="d-flex flex-row-reverse">
@@ -23,6 +43,8 @@
                 src="/media/{{employee.employee_profile}}"
                 class="oh-profile__image"
                 alt="Username"
+                onmouseover="enlargeImage(this)"
+                onmouseout="hideEnlargeImage()"
               />
               {% else %}
               <img

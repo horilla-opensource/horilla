@@ -1,4 +1,25 @@
 {% extends 'index.html' %} {% load i18n %} {% load yes_no %} {% block content %}
+
+<style>
+  .enlarge-image-container {
+    display: none;
+    position: fixed;
+    top: 40%;
+    left: 40%;
+    transform: translate(-50%, -50%);
+    width: 30%;
+    height: 50%;
+    z-index: 9999;
+  }
+  .enlarge-image-container img{
+    max-width: 100%;
+    height: auto;
+    border-radius: 5%;
+  }
+</style>
+
+<div id="enlargeImageContainer" class="enlarge-image-container"></div>
+
 <div class="oh-wrapper" id="section">
   <div class="oh-card mt-4 mb-5">
     <div class="d-flex flex-row-reverse">
@@ -15,6 +36,9 @@
                 src="{{candidate.profile.url}}"
                 class="oh-profile-section__avatar preview"
                 alt="Username"
+                style="border-radius:10%"
+                onmouseover="enlargeImage(this)"
+                onmouseout="hideEnlargeImage()"
               />
               {% else %}
               <img
@@ -405,5 +429,28 @@
       localStorage.setItem("activeCandTab",targetId)
     });
   });
+
+// Profile picture enlarging
+
+  function enlargeImage(image) {
+    var enlargeImageContainer = document.getElementById('enlargeImageContainer');
+    enlargeImageContainer.innerHTML = ''; 
+  
+    var enlargedImage = document.createElement('img');
+    enlargedImage.src = image.src;
+    enlargeImageContainer.appendChild(enlargedImage);
+  
+    setTimeout(function() {
+      enlargeImageContainer.style.display = 'block';
+    }, 250);
+  }
+  
+  function hideEnlargeImage() {
+    var enlargeImageContainer = document.getElementById('enlargeImageContainer');
+    enlargeImageContainer.innerHTML = ''; // Clear the content
+    enlargeImageContainer.style.display = 'none';
+  
+  }
+
 </script>
 {% endblock content %}

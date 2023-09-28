@@ -1,4 +1,25 @@
 {% extends 'index.html' %} {% load i18n %} {% load static %} {% block content %}
+
+<style>
+  .enlarge-image-container {
+    display: none;
+    position: fixed;
+    top: 40%;
+    left: 40%;
+    transform: translate(-50%, -50%);
+    width: 30%;
+    height: 50%;
+    z-index: 9999;
+  }
+  .enlarge-image-container img{
+    max-width: 100%;
+    height: auto;
+    border-radius: 5%;
+  }
+</style>
+
+<div id="enlargeImageContainer" class="enlarge-image-container"></div>
+
 <div class="oh-wrapper">
   <div class="oh-card mt-4 mb-5">
     <div class="d-flex flex-row-reverse">
@@ -20,11 +41,15 @@
                 src="/media/{{employee.employee_profile}}"
                 class="oh-profile-section__avatar"
                 alt="Username"
+                style="border-radius:10%"
+                onmouseover="enlargeImage(this)"
+                onmouseout="hideEnlargeImage()"
               />
               {% else %}
               <img
                 src="https://ui-avatars.com/api/?name={{employee.employee_first_name}}+{{employee.employee_last_name}}&background=random"
                 class="oh-profile-section__avatar"
+                style="border-radius:10%"
                 alt="Username"
               />
               {% endif %}
