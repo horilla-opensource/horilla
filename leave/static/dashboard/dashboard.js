@@ -187,7 +187,7 @@ $(document).ready(function () {
 
 			if (isChartEmpty(dataSet)) {
 				$("#employee_leave_canvas").html(
-					`<div style="height: 310px; display:flex;align-items: center;justify-content: center;" class="">
+					`<div style="height: 380px; display:flex;align-items: center;justify-content: center;" class="">
 					<div style="" class="">
 					<img style="    display: block;width: 70px;margin: 20px auto ;" src="/static/images/ui/attendance.png" class="" alt=""/>
 					<h3 style="font-size:16px" class="oh-404__subtitle">${response.message}</h3>

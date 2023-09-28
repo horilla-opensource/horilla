@@ -1563,9 +1563,9 @@ def overall_leave(request):
 def dashboard(request):
     today = date.today()
     leave_requests = LeaveRequest.objects.filter(start_date__month=today.month)
-    requested = leave_requests.filter(status="requested")
-    approved = leave_requests.filter(status="approved")
-    cancelled = leave_requests.filter(status="cancelled")
+    requested = LeaveRequest.objects.filter(status="requested")
+    approved = LeaveRequest.objects.filter(status="approved")
+    cancelled = LeaveRequest.objects.filter(status="cancelled")
     holidays = Holiday.objects.filter(start_date__gte=today)
     next_holiday = (
         holidays.order_by("start_date").first() if holidays.exists() else None
