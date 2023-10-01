@@ -292,7 +292,7 @@ def asset_category_creation(request):
 @login_required
 @hx_request_required
 @permission_required(perm="asset.change_assetcategory")
-def asset_category_update(request, asset_id):
+def asset_category_update(request, cat_id):
     """
     This view is used to update an existing asset category.
     Args:
@@ -303,7 +303,7 @@ def asset_category_update(request, asset_id):
     """
 
     previous_data = request.GET.urlencode()
-    asset_category = AssetCategory.objects.get(id=asset_id)
+    asset_category = AssetCategory.objects.get(id=cat_id)
     asset_category_form = AssetCategoryForm(instance=asset_category)
     context = {"asset_category_update_form": asset_category_form, "pg": previous_data}
     if request.method == "POST":
