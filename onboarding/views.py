@@ -654,9 +654,6 @@ def user_creation(request, token):
     GET : return user creation form template
     POST : return user_save function
     """
-    user = None if request.user.is_anonymous else request.user
-    if user is not None:
-        return redirect(employee_creation, token=token)
     try:
         onboarding_portal = OnboardingPortal.objects.get(token=token)
         candidate = onboarding_portal.candidate_id
