@@ -2,6 +2,9 @@
 {% load basefilters %}
 {% load recruitmentfilters %}
 {% load i18n %}
+{% load tz %}
+
+{% now "Y-m-d" as current_date %}
 <div id="mainNav"></div>
 <!-- End of Navigation -->
 <style>
@@ -20,44 +23,50 @@
         <div class="oh-dashboard__cards row">
           <div class="col-12 col-sm-12 col-md-6 col-lg-4">
             <div class="oh-card-dashboard oh-card-dashboard--success">
-              <div class="oh-card-dashboard__header">
-                <span class="oh-card-dashboard__title">{% trans "New Joining Today" %}</span>
-              </div>
-              <div class="oh-card-dashboard__body">
-                <div class="oh-card-dashboard__counts">
-                  <span class="oh-card-dashboard__sign"><ion-icon name="caret-up-outline"></ion-icon></span>
-                  <span class="oh-card-dashboard__count" id="newbieToday"></span>
+              <a href="{% url 'candidate-view' %}?joining_date={{current_date}}" style="text-decoration:none">
+                <div class="oh-card-dashboard__header">
+                  <span class="oh-card-dashboard__title">{% trans "New Joining Today" %}</span>
                 </div>
-                <span class="oh-badge oh-card-dashboard__badge" id="newbieTodayPerc">0%</span>
-              </div>
+                <div class="oh-card-dashboard__body">
+                  <div class="oh-card-dashboard__counts">
+                    <span class="oh-card-dashboard__sign"><ion-icon name="caret-up-outline"></ion-icon></span>
+                    <span class="oh-card-dashboard__count" id="newbieToday"></span>
+                  </div>
+                  <span class="oh-badge oh-card-dashboard__badge" id="newbieTodayPerc">0%</span>
+                </div>
+              </a>
             </div>
           </div>
           <div class="col-12 col-sm-12 col-md-6 col-lg-4">
             <div class="oh-card-dashboard oh-card-dashboard oh-card-dashboard--warning">
-              <div class="oh-card-dashboard__header">
-                <span class="oh-card-dashboard__title">{% trans "New Joining This Week" %}</span>
-              </div>
-              <div class="oh-card-dashboard__body">
-                <div class="oh-card-dashboard__counts">
-                  <span class="oh-card-dashboard__sign"><ion-icon name="caret-up-outline"></ion-icon></span>
-                  <span class="oh-card-dashboard__count" id="newbie">12</span>
+              <a href="{% url 'candidate-view' %}?scheduled_from={{first_day_of_week}}&scheduled_till={{last_day_of_week}}" style="text-decoration:none">
+                <div class="oh-card-dashboard__header">
+                  <span class="oh-card-dashboard__title">{% trans "New Joining This Week" %}</span>
                 </div>
-                <span class="oh-badge oh-card-dashboard__badge" id="newbiePerc">0%</span>
-              </div>
+                <div class="oh-card-dashboard__body">
+                  <div class="oh-card-dashboard__counts">
+                    <span class="oh-card-dashboard__sign"><ion-icon name="caret-up-outline"></ion-icon></span>
+                    <span class="oh-card-dashboard__count" id="newbie">12</span>
+                  </div>
+                  <span class="oh-badge oh-card-dashboard__badge" id="newbiePerc">0%</span>
+                </div>
+              </a>
             </div>
           </div>
           <div class="col-12 col-sm-12 col-md-6 col-lg-4">
-            <div class="oh-card-dashboard oh-card-dashboard--neutral">
-              <div class="oh-card-dashboard__header">
-                <span class="oh-card-dashboard__title">{% trans "Total Strength" %}</span>
-              </div>
-              <div class="oh-card-dashboard__body">
-                <div class="oh-card-dashboard__counts">
-                  <span class="oh-card-dashboard__count" id="totalEmployeesCount">100%</span>
+            <a href="{% url 'employee-view' %}" style="text-decoration:none">
+              <div class="oh-card-dashboard oh-card-dashboard--neutral">
+                <div class="oh-card-dashboard__header">
+                  <span class="oh-card-dashboard__title">{% trans "Total Strength" %}</span>
                 </div>
-                <span class="oh-badge oh-card-dashboard__badge" id="totalEmployeesCountPerc">100%</span>
+                <div class="oh-card-dashboard__body">
+                  <div class="oh-card-dashboard__counts">
+                    <span class="oh-card-dashboard__count" id="totalEmployeesCount">100%</span>
+                  </div>
+                  <span class="oh-badge oh-card-dashboard__badge" id="totalEmployeesCountPerc">100%</span>
+                </div>
               </div>
-            </div>
+            </a>
           </div>
         </div>
         {% endif %}

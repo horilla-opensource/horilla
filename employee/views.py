@@ -59,6 +59,7 @@ from employee.forms import (
     EmployeeBankDetailsUpdateForm,
 )
 from employee.models import Employee, EmployeeWorkInformation, EmployeeBankDetails
+from recruitment.models import Candidate
 
 
 # Create your views here.
@@ -1480,8 +1481,8 @@ def dashboard_employee_tiles(_):
     # active employees count
     data["total_employees"] = Employee.objects.filter(is_active=True).count()
     # filtering newbies
-    data["newbies_today"] = EmployeeWorkInformation.objects.filter(
-        date_joining__range=[date.today(), date.today() + timedelta(days=1)]
+    data["newbies_today"] = Candidate.objects.filter(
+        joining_date__range=[date.today(), date.today() + timedelta(days=1)]
     ).count()
     try:
         data[
@@ -1496,8 +1497,8 @@ def dashboard_employee_tiles(_):
         data["newbies_today_percentage"] = 0
     # filtering newbies on this week
 
-    data["newbies_week"] = EmployeeWorkInformation.objects.filter(
-        date_joining__range=[date.today() - timedelta(days=7), date.today()]
+    data["newbies_week"] = Candidate.objects.filter(
+        joining_date__range=[date.today() - timedelta(days=date.today().weekday()), date.today() + timedelta(days=6-date.today().weekday())]
     ).count()
     try:
         data[

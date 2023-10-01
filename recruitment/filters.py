@@ -104,6 +104,7 @@ class CandidateFilter(FilterSet):
             "recruitment_id__recruitment_managers",
             "stage_id__stage_managers",
             "stage_id__stage_type",
+            "joining_date",
         ]
 
     def __init__(self, *args, **kwargs):
