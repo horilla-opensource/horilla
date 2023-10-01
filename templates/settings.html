@@ -2,6 +2,22 @@
 {% block content %}
 {% load static %}
 {% load i18n %}
+<style>
+  .settings-label{
+    font-weight:bold;
+    font-size:15px;
+  }
+  .perm-count {
+    width: 100%;
+    display: flex;
+    padding: 0.5rem 0rem;
+    font-style: italic;
+    color: hsl(0deg,0%,37%);
+    width: 100%;
+    
+  }
+</style>
+
 <section class="oh-wrapper oh-main__topbar">
   <div
     class="oh-main__titlebar oh-main__titlebar--left oh-d-flex-column--resp oh-mb-3--small"
@@ -22,7 +38,7 @@
         >
           <ion-icon class="me-2" name="menu-outline"></ion-icon>{% trans "All Settings" %}
         </button>
-        <div class="oh-inner-sidebar oh-resp-hidden--lg" id="mobileMenu">
+        <div class="oh-inner-sidebar oh-resp-hidden--lg" style="font-weight:bold;" id="mobileMenu">
           <ul class="oh-inner-sidebar__items">
             <li class="oh-inner-sidebar__item">
               <a
@@ -61,8 +77,12 @@
             <li class="oh-inner-sidebar__item">
               <a id="rotatingShift" href="{% url 'rotating-shift-create' %}" class="oh-inner-sidebar__link oh-dropdown__link">{% trans "Rotating Shift" %}</a>
             </li>
-            <li class="oh-inner-sidebar__item">
+            {% comment %} <li class="oh-inner-sidebar__item">
               <a id="condition" href="{% url 'validation-condition-create' %}" class="oh-inner-sidebar__link oh-dropdown__link"
+                >{% trans "Attendance Break Point" %}</a>
+            </li> {% endcomment %}
+            <li class="oh-inner-sidebar__item">
+              <a id="condition" href="{% url 'attendance-settings' %}" class="oh-inner-sidebar__link oh-dropdown__link"
                 >{% trans "Attendance Break Point" %}</a>
             </li>
             <li class="oh-inner-sidebar__item">
@@ -79,7 +99,7 @@
               <a id="company" href="{% url 'company-create' %}" class="oh-inner-sidebar__link oh-dropdown__link">{% trans "Company" %}</a>
             </li>
             <li class="oh-inner-sidebar__item">
-              <a id="currency" href="/payroll/settings" class="oh-inner-sidebar__link oh-dropdown__link">{% trans "Currency" %}</a>
+              <a id="currency" href="{% url 'currency-settings' %}" class="oh-inner-sidebar__link oh-dropdown__link">{% trans "Currency" %}</a>
             </li>
           </ul>
         </div>
@@ -97,7 +117,8 @@
       var activeTab = localStorage.getItem('activeTabSettings')
       if (activeTab != null) {
         var tab  = $(`[id="${activeTab}"]`)  
-        $(tab).attr('class', 'oh-inner-sidebar__link oh-dropdown__link oh-inner-sidebar__link--active');   
+        $(tab).attr('class', 'oh-inner-sidebar__link oh-dropdown__link oh-inner-sidebar__link--active');
+        $(tab).attr('style', 'border:1px solid #FF820D ; border-radius:10px; ');
       }
       else{
         $('[id="department"]').attr('class', 'oh-inner-sidebar__link oh-dropdown__link oh-inner-sidebar__link--active');   
