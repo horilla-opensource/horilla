@@ -13,7 +13,7 @@
                       </div>
                       <div class="oh-sticky-table__tbody">
                         {% for employee in employees %}
-                        <div class="oh-sticky-table__tr oh-permission-table__tr oh-permission-table--collapsed" data-label="Permissions" data-count="{{employee.employee_user_id.user_permissions.all|length}}">
+                        <div class="oh-sticky-table__tr oh-permission-table__tr oh-permission-table--collapsed">
                           <div class="oh-sticky-table__sd oh-permission-table--toggle">
                             <div class="d-flex align-items-center">
                               <button class="oh-permission-table__collapse me-2">
@@ -24,13 +24,18 @@
                             </div>
                           </div>
                           <div class="oh-sticky-table__td">
+                            
+                            
+                            <span class="perm-count">{{employee.employee_user_id.get_user_permissions|length}} {% trans "Permissions" %}</span>
                             {% for permission in employee.employee_user_id.get_user_permissions %}                            
-                              <span class="oh-permission-panel oh-collapse-panel" data-label="Permissions" data-count="{{employee.employee_user_id.get_user_permissions|length}}">
+                              <span class="oh-permission-panel oh-collapse-panel" 
+                              data-label="Permissions" 
+                              data-count="{{employee.employee_user_id.get_user_permissions|length}}">
                               {{permission}}
                               {% if perms.change_permissions %}
                               <form hx-post="{% url 'remove-permission' permission employee.employee_user_id.id %}?page={{pd}}" hx-target='#view-container'>
                                 {% csrf_token %}
-                                <button type='submit' class="oh-permission-panel__remove">
+                                <button type='submit' class="oh-permission-panel__remove" title="{% trans 'Remove' %}">
                                   <ion-icon name="close-outline"></ion-icon>
                                 </button>
                                 </form>

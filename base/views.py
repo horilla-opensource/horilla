@@ -3,6 +3,7 @@ views.py
 
 This module is used to map url pattens with django views or methods
 """
+from datetime import date, timedelta, datetime
 from urllib.parse import parse_qs
 import uuid
 import json
@@ -16,6 +17,8 @@ from django.utils.translation import gettext as _
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import Group, User, Permission
+from attendance.forms import AttendanceValidationConditionForm
+from attendance.models import AttendanceValidationCondition
 from notifications.signals import notify
 from horilla.decorators import permission_required, login_required, manager_can_enter
 from horilla.settings import EMAIL_HOST_USER
@@ -73,6 +76,8 @@ from base.methods import (
     get_key_instances,
     sortby,
 )
+from payroll.forms.component_forms import PayrollSettingsForm
+from payroll.models.tax_models import PayrollSettings
 
 
 def custom404(request):
@@ -254,7 +259,17 @@ def home(request):
             shift_day.day = day[0]
             shift_day.save()
 
-    return render(request, "index.html")
+    today = datetime.today()
+    today_weekday = today.weekday()
+    first_day_of_week= today - timedelta(days=today_weekday)
+    last_day_of_week = first_day_of_week + timedelta(days=6)
+
+    context = {
+        "first_day_of_week":first_day_of_week.strftime("%Y-%m-%d"),
+        "last_day_of_week":last_day_of_week.strftime("%Y-%m-%d"),
+    }
+
+    return render(request, "index.html",context)
 
 
 @login_required
@@ -2577,4 +2592,60 @@ def all_notifications(request):
         request,
         "notification/all_notifications.html",
         {"notifications": request.user.notifications.all()},
+    )
+
+
+@login_required
+@permission_required("payroll.view_settings")
+def settings(request):
+    """
+    This method is used to render settings template
+    """
+    instance = PayrollSettings.objects.first()
+    form = PayrollSettingsForm(instance=instance)
+    if request.method == "POST":
+        form = PayrollSettingsForm(request.POST, instance=instance)
+        if form.is_valid():
+            form.save()
+            messages.success(request, _("Payroll settings updated."))
+    return render(request, "payroll/settings/payroll_settings.html", {"form": form})
+
+
+@login_required
+@permission_required("attendance.add_attendancevalidationcondition")
+def validation_condition_create(request):
+    """
+    This method render a form to create attendance validation conditions,
+    and create if the form is valid.
+    """
+    form = AttendanceValidationConditionForm()
+    condition = AttendanceValidationCondition.objects.first()
+    if request.method == "POST":
+        form = AttendanceValidationConditionForm(request.POST)
+        if form.is_valid():
+            form.save()
+    return render(
+        request,
+        "attendance/break_point/condition.html",
+        {"form": form, "condition": condition},
+    )
+
+@login_required
+@permission_required("attendance.change_attendancevalidationcondition")
+def validation_condition_update(request, obj_id):
+    """
+    This method is used to update validation condition
+    Args:
+        obj_id : validation condition instance id
+    """
+    condition = AttendanceValidationCondition.objects.get(id=obj_id)
+    form = AttendanceValidationConditionForm(instance=condition)
+    if request.method == "POST":
+        form = AttendanceValidationConditionForm(request.POST, instance=condition)
+        if form.is_valid():
+            form.save()
+    return render(
+        request,
+        "attendance/break_point/condition.html",
+        {"form": form, "condition": condition},
     )

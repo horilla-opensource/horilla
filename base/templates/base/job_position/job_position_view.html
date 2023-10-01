@@ -58,7 +58,7 @@
                       <div class="d-flex">
                         {% if perms.base.change_jobposition %}
                         <div class="m-2">
-                          <a href="{% url 'job-position-update' job.id %}">
+                          <a href="{% url 'job-position-update' job.id %}" title="{% trans 'Edit' %}">
                             <ion-icon name="pencil"></ion-icon>
                           </a>
                         </div>
@@ -80,6 +80,7 @@
                                 cursor: pointer;
                                 outline: none;
                               "
+                              title="{% trans 'Remove' %}"
                             >
                               <ion-icon
                                 name="close"

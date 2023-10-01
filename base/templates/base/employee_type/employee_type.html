@@ -9,6 +9,9 @@
             <h2 class="oh-inner-sidebar-content__title">{% trans "Employee Type" %}</h2>
         </div>
         <div class="oh-inner-sidebar-content__body">
+            <label class='settings-label mb-1' for="">
+                {% trans "Employee Type" %}
+            </label>
             <div class="oh-input-group">
                 {{form.employee_type.errors}}
                 {{form.employee_type}}

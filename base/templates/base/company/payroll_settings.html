@@ -2,7 +2,7 @@
 
 <form action="{% url 'payroll-settings' %}" class='settings-label mb-1' method="post">
   {% csrf_token %}
-  <div class="oh-inner-sidebar-content__header mt-4">
+  <div class="oh-inner-sidebar-content__header mt-3">
     <h2 class="oh-inner-sidebar-content__title">{% trans "Currency" %}</h2>
   </div>
    {{form}}

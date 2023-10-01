@@ -15,7 +15,7 @@
 
           <div class="oh-btn-group">
             {% if perms.base.change_worktype %}
-            <a href="{% url 'work-type-update' type.id %}" type="button" class="oh-btn oh-btn--light-bkg w-50">
+            <a href="{% url 'work-type-update' type.id %}" type="button" class="oh-btn oh-btn--light-bkg w-50" title="{% trans 'Edit' %}">
               <ion-icon name="create-outline"></ion-icon></a>
             {% endif %}
             {% if perms.base.delete_worktype %}

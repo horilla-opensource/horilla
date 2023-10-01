@@ -253,6 +253,8 @@ def get_key_instances(model, data_dict):
 
     if "csrfmiddlewaretoken" in data_dict:
         del data_dict["csrfmiddlewaretoken"]
+    if "vpage" in data_dict:
+        del data_dict["vpage"]
 
     keys_to_remove = [
         key

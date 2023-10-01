@@ -348,4 +348,19 @@ urlpatterns = [
         views.delete_notification,
         name="delete-notifications",
     ),
+
+    path("settings/currency", views.settings, name="currency-settings"),
+
+    path(
+        "settings/attendance-settings",
+        views.validation_condition_create,
+        name="attendance-settings",
+    ),
+
+    path(
+        "settings/attendance-settings-update/<int:obj_id>/",
+        views.validation_condition_update,
+        name="attendance-settings-update",
+    ),
+
 ]

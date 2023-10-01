@@ -1,0 +1,32 @@
+{% load i18n %}
+<div class="oh-sticky-table">
+    <div class="oh-sticky-table__table oh-table--sortable">
+      <div class="oh-sticky-table__thead">
+        <div class="oh-sticky-table__tr">
+          <div class="oh-sticky-table__th">{% trans "Auto Validate Till" %}</div>
+          <div class="oh-sticky-table__th">{% trans "Min Hour To Approve OT" %}</div>
+          <div class="oh-sticky-table__th">{% trans "OT Cut-Off/Day" %}</div>
+          <div class="oh-sticky-table__th"></div>
+        </div>
+      </div>
+      <div class="oh-sticky-table__tbody">
+          {% if condition != None %}
+        <div class="oh-sticky-table__tr" draggable="true">
+        
+            <div class="oh-sticky-table__td">
+                {{condition.validation_at_work}}
+            </div>
+            <div class="oh-sticky-table__td">
+                {{condition.minimum_overtime_to_approve}}
+            </div>
+            <div class="oh-sticky-table__td">
+                {{condition.overtime_cutoff}}
+            </div>
+            <div class="oh-sticky-table__td">
+                <a href="{% url 'attendance-settings-update' condition.id %}" type="button" class="oh-btn oh-btn--info"> {% trans "Edit" %}</a>
+            </div>
+        </div>        
+        {% endif %}
+      </div>
+    </div>
+  </div>

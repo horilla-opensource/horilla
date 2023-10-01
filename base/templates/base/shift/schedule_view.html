@@ -57,6 +57,7 @@
                           <a
                             href="{% url 'employee-shift-schedule-update' schedule.id %}"
                             class="oh-user-panel__remove"
+                            title="{% trans 'Edit' %}"
                           >
                             <ion-icon name="pencil-outline"></ion-icon>
                           </a>
@@ -80,6 +81,7 @@
                                 cursor: pointer;
                                 outline: none;
                               "
+                              title="{% trans 'Remove' %}"
                             >
                               <ion-icon
                                 name="close"
