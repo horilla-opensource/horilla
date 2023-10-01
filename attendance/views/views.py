@@ -168,8 +168,8 @@ def attendance_view(request):
     previous_data = request.GET.urlencode()
     form = AttendanceForm()
     condition = AttendanceValidationCondition.objects.first()
-    minot = strtime_seconds("00:30")
-    if condition is not None:
+    minot = strtime_seconds("00:00")
+    if condition is not None and condition.minimum_overtime_to_approve is not None:
         minot = strtime_seconds(condition.minimum_overtime_to_approve)
     validate_attendances = Attendance.objects.filter(attendance_validated=False)
     attendances = Attendance.objects.filter(attendance_validated=True)

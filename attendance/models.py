@@ -233,13 +233,13 @@ class Attendance(models.Model):
         prev_attendance_approved = False
 
         condition = AttendanceValidationCondition.objects.first()
-        if condition is not None:
+        if condition is not None and condition.overtime_cutoff is not None:
             overtime_cutoff = condition.overtime_cutoff
             cutoff_seconds = strtime_seconds(overtime_cutoff)
             overtime = self.overtime_second
             if overtime > cutoff_seconds:
                 self.overtime_second = cutoff_seconds
-                self_overtime = format_time(cutoff_seconds)
+                self.attendance_overtime = format_time(cutoff_seconds)
 
         if self.pk is not None:
             # Get the previous values of the boolean field
@@ -466,13 +466,13 @@ class AttendanceValidationCondition(models.Model):
     """
 
     validation_at_work = models.CharField(
-        default="09:00", max_length=10, validators=[validate_time_format]
+        max_length=10, validators=[validate_time_format]
     )
     minimum_overtime_to_approve = models.CharField(
-        default="00:30", null=True, max_length=10, validators=[validate_time_format]
+        blank=True,null=True, max_length=10, validators=[validate_time_format]
     )
     overtime_cutoff = models.CharField(
-        default="02:00", null=True, max_length=10, validators=[validate_time_format]
+        blank=True,null=True, max_length=10, validators=[validate_time_format]
     )
 
     def clean(self):

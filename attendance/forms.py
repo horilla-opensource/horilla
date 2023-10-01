@@ -203,6 +203,7 @@ class AttendanceForm(ModelForm):
             "requested_data",
             "is_validate_request",
             "is_validate_request_approved",
+            "attendance_overtime",
         )
         widgets = {
             "attendance_clock_in": DateTimeInput(attrs={"type": "time"}),
@@ -265,16 +266,8 @@ class AttendanceForm(ModelForm):
 
     def clean(self) -> Dict[str, Any]:
         super().clean()
-        overtime = strtime_seconds(self.cleaned_data["attendance_overtime"])
         minimum_hour = strtime_seconds(self.cleaned_data["minimum_hour"])
         at_work = strtime_seconds(self.cleaned_data["attendance_worked_hour"])
-        if overtime > 0 and (at_work - minimum_hour) != overtime:
-            raise ValidationError(
-                {
-                    "attendance_overtime": "OT will calculate automatically, So set it to 00:00 or \
-                        manually add the OT"
-                }
-            )
         return
 
     def clean_employee_id(self):
@@ -388,7 +381,7 @@ class AttendanceLateComeEarlyOutForm(ModelForm):
         fields = "__all__"
 
 
-class AttendanceValidationConditionForm(ModelForm):
+class AttendanceValidationConditionForm(forms.ModelForm):
     """
     Model form for AttendanceValidationCondition
     """
@@ -402,6 +395,11 @@ class AttendanceValidationConditionForm(ModelForm):
         validation_at_work = forms.DurationField()
         approve_overtime_after = forms.DurationField()
         overtime_cutoff = forms.DurationField()
+        widgets = {
+            "validation_at_work": forms.TextInput(attrs={"class": "oh-input w-100","placeholder": "09:00"}),
+            "minimum_overtime_to_approve": forms.TextInput(attrs={"class": "oh-input w-100","placeholder": "00:30"}),
+            "overtime_cutoff": forms.TextInput(attrs={"class": "oh-input w-100","placeholder": "02:00"}),
+        }
 
         labels = {
             "validation_at_work": _(
