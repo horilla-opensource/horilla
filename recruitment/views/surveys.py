@@ -164,11 +164,11 @@ def update_question_template(request, survey_id):
             messages.success(request, _("New survey question updated."))
             return HttpResponse(
                 render(
-                    request, "survey/template-update-form.html", {"form": form}
+                    request, "survey/template_update_form.html", {"form": form}
                 ).content.decode("utf-8")
                 + "<script>location.reload();</script>"
             )
-    return render(request, "survey/template-update-form.html", {"form": form})
+    return render(request, "survey/template_update_form.html", {"form": form})
 
 
 @login_required
