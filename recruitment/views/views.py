@@ -783,7 +783,7 @@ def candidate_view(request):
     view_type = request.GET.get("view")
     previous_data = request.GET.urlencode()
     candidates = Candidate.objects.filter(is_active=True)
-    filter_obj = CandidateFilter(queryset=candidates)
+    filter_obj = CandidateFilter(request.GET,queryset=candidates)
     if candidates.exists():
         template = "candidate/candidate_view.html"
     else:

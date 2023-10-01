@@ -1,53 +1,52 @@
 {% extends 'index.html' %} {% block content %} {% load mathfilters %} 
 {% load static %} {% load i18n %}
-<style>
-  .not_click {
-    cursor: default !important;
-  }
-</style>
 <div class="oh-wrapper">
   <div class="oh-dashboard row">
     <div class="oh-dashboard__left col-12 col-sm-12 col-md-12 col-lg-12">
-
       <div class="oh-dashboard__cards row">
         <div class="col-12 col-sm-12 col-md-6 col-lg-4">
-          <div class="oh-card-dashboard oh-card-dashboard--warning not_click">
-            <div class="oh-card-dashboard__header">
-              <span class="oh-card-dashboard__title">{% trans "Openings" %}</span>
-            </div>
-            <div class="oh-card-dashboard__body">
-              <div class="oh-card-dashboard__counts">
-                <span class="oh-card-dashboard__sign"
-                  ><ion-icon name="people"></ion-icon></span>
-                <span class="oh-card-dashboard__count"
-                  >{{total_vacancy}}</span
-                >
+          <a href="/recruitment/recruitment-view" class="text-decoration-none">
+            <div class="oh-card-dashboard oh-card-dashboard--warning not_click">
+              <div class="oh-card-dashboard__header">
+                <span class="oh-card-dashboard__title">{% trans "Openings" %}</span>
               </div>
-              <span class="oh-badge oh-card-dashboard__badge">100%</span>
+              <div class="oh-card-dashboard__body">
+                <div class="oh-card-dashboard__counts">
+                  <span class="oh-card-dashboard__sign"
+                    ><ion-icon name="people"></ion-icon></span>
+                  <span class="oh-card-dashboard__count"
+                    >{{total_vacancy}}</span
+                  >
+                </div>
+                <span class="oh-badge oh-card-dashboard__badge">100%</span>
+              </div>
             </div>
-          </div>
+          </a>
         </div>
         <div class="col-12 col-sm-12 col-md-6 col-lg-4  ">
-          <div class="oh-card-dashboard oh-card-dashboard--danger not_click">
-            <div class="oh-card-dashboard__header">
-              <span class="oh-card-dashboard__title">{% trans "Total Applicants" %}</span>
-            </div>
-            <div class="oh-card-dashboard__body">
-              <div class="oh-card-dashboard__counts">
-                <span class="oh-card-dashboard__sign"
-                  ><ion-icon name="accessibility"></ion-icon
-                ></span>
-                <span class="oh-card-dashboard__count"
-                  >{{total_candidates}}</span
-                >
+          <a href="/recruitment/candidate-view" class="text-decoration-none">
+            <div class="oh-card-dashboard oh-card-dashboard--danger">
+              <div class="oh-card-dashboard__header">
+                <span class="oh-card-dashboard__title">{% trans "Total Applicants" %}</span>
               </div>
-              <span class="oh-badge oh-card-dashboard__badge">100%</span>
+              <div class="oh-card-dashboard__body">
+                <div class="oh-card-dashboard__counts">
+                  <span class="oh-card-dashboard__sign"
+                    ><ion-icon name="accessibility"></ion-icon
+                  ></span>
+                  <span class="oh-card-dashboard__count"
+                    >{{total_candidates}}</span
+                  >
+                </div>
+                <span class="oh-badge oh-card-dashboard__badge">100%</span>
+              </div>
             </div>
-          </div>
+          </a>
         </div>
         <div class="col-12 col-sm-12 col-md-6 col-lg-4  ">
+        <a href="/recruitment/candidate-view?hired=true" class="text-decoration-none">
           <div
-            class="oh-card-dashboard oh-card-dashboard oh-card-dashboard--success not_click"
+            class="oh-card-dashboard oh-card-dashboard oh-card-dashboard--success filter"
           >
             <div class="oh-card-dashboard__header">
               <span class="oh-card-dashboard__title">{% trans "Hired Candidates" %}</span>
@@ -66,8 +65,9 @@
               >
             </div>
           </div>
+         </a> 
         </div>
-        
+
       </div>
 
 
@@ -75,7 +75,7 @@
         <div class="d-grid w-75" style='height:0%;'>
 
           <div class="col-12 col-sm-12 col-md-6 col-lg-12 mt-4">
-            <div class="oh-card-dashboard oh-card-dashboard--neutral not_click">
+            <div class="oh-card-dashboard oh-card-dashboard--neutral" style="cursor:default;">
               <div class="oh-card-dashboard__header">
                 <span class="oh-card-dashboard__title">{% trans "Conversion Rate" %}</span>
               </div>
@@ -91,7 +91,7 @@
           </div>
 
           <div class="col-12 col-sm-12 col-md-6 col-lg-12 mt-4">
-            <div class="oh-card-dashboard oh-card-dashboard--success not_click">
+            <div class="oh-card-dashboard oh-card-dashboard--success" style="cursor:default;">
               <div class="oh-card-dashboard__header">
                 <span class="oh-card-dashboard__title">{% trans "Offer Acceptance Rate (OAR)" %}</span>
               </div>

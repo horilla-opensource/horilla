@@ -14,12 +14,13 @@
 </style>
 <div class="oh-wrapper">
   {% include 'candidate/candidate_nav.html' %}
+  
   <div class="d-flex flex-row-reverse">
-    <span class="m-3" >
+    <span class="m-3" hx-get="{% url "search-candidate" %}?{{pd}}&hired=false" hx-target="#section" style="cursor: pointer">
       <span class="oh-dot oh-dot--small me-1" style="background-color:rgba(128, 128, 128, 0.482)"></span>
       {% trans "Not-Hired" %}
     </span>
-    <span class="m-3">
+    <span class="m-3" hx-get="{% url "search-candidate" %}?{{pd}}&hired=true" hx-target="#section" style="cursor: pointer">
       <span class="oh-dot oh-dot--small me-1" style="background-color:yellowgreen"></span>
       {% trans "Hired" %}
     </span>
