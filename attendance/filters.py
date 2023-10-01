@@ -98,7 +98,20 @@ class AttendanceOverTimeFilter(FilterSet):
     Args:
         FilterSet (class): custom filter set class to apply styling
     """
-
+    MONTH_CHOICES = [
+    ('January', 'January'),
+    ('February', 'February'),
+    ('March', 'March'),
+    ('April', 'April'),
+    ('May', 'May'),
+    ('June', 'June'),
+    ('July', 'July'),
+    ('August', 'August'),
+    ('September', 'September'),
+    ('October', 'October'),
+    ('November', 'November'),
+    ('December', 'December'),
+    ]
     search = django_filters.CharFilter(method=filter_by_name)
 
     hour_account__gte = DurationInSecondsFilter(
@@ -113,7 +126,7 @@ class AttendanceOverTimeFilter(FilterSet):
     overtime__lte = DurationInSecondsFilter(
         field_name="overtime_second", lookup_expr="lte"
     )
-    month = django_filters.CharFilter(field_name="month", lookup_expr="icontains")
+    month = django_filters.ChoiceFilter(choices=MONTH_CHOICES,lookup_expr="icontains")
 
     class Meta:
         """
