@@ -209,7 +209,7 @@ $(document).ready(function () {
 		url: "/leave/available-leaves",
 		dataType: "json",
 		success: function (response) {
-			if (isChartEmpty(response)) {
+			if (isChartEmpty(response.dataset)) {
 				$("#availableLeaveContainer").html(
 					`<div style="height: 310px; display:flex;align-items: center;justify-content: center;" class="">
 					<div style="" class="">
@@ -264,7 +264,7 @@ $(document).ready(function () {
 
 	$(".month").on("change", function () {
 		month = $(this).val();
-		$(this).attr("hx-vals", `{"date":"${month}"}`);
+		$(this).attr("hx-vals", `{"date":"${month}","dashboard":"true"}`);
 	});
 	$("#dash_month").on("change", function () {
 		let month = $(this).val();
