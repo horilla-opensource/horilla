@@ -26,7 +26,7 @@
         <div class="oh-input-group oh-input__search-group" :class="searchShow ? 'oh-input__search-group--show' : ''">
             <ion-icon name="search-outline" class="oh-input-group__icon oh-input-group__icon--left"></ion-icon>
             <input type="text" class="oh-input oh-input__icon" aria-label="Search Input" placeholder="{% trans 'Search' %}"
-                name="name" hx-get="{% url 'company-leave-filter' %}" hx-trigger="keyup" hx-target="#companyLeave" />
+                name="name" id="search" />
         </div>
         <div class="oh-main__titlebar-button-container">
             <div class="oh-dropdown" x-data="{open: false}">
@@ -95,11 +95,10 @@
 </div>
 
 
-<!-- Holiday creation -->
 <div class="oh-modal" id="editModal1" role="dialog" aria-labelledby="editDialogModal" aria-hidden="true">
     <div class="oh-modal__dialog oh-modal__dialog--timeoff">
         <div class="oh-modal__dialog-header">
-            <span class="oh-modal__dialog-title" id="editDialogDialog">{% trans "Create Holiday" %}</span>
+            <span class="oh-modal__dialog-title" id="editDialogDialog">{% trans "Create Company Leaves" %}</span>
             <button class="oh-modal__close" aria-label="Close">
                 <ion-icon name="close-outline"></ion-icon>
             </button>
@@ -112,11 +111,10 @@
     </div>
 </div>
 
-<!-- Update Holiday -->
 <div class="oh-modal" id="editModal2" role="dialog" aria-labelledby="editDialogModal" aria-hidden="true">
     <div class="oh-modal__dialog oh-modal__dialog--timeoff">
         <div class="oh-modal__dialog-header">
-            <span class="oh-modal__dialog-title" id="editDialogDialog">{% trans "Update Holiday" %}</span>
+            <span class="oh-modal__dialog-title" id="editDialogDialog">{% trans "Update Company Leaves" %}</span>
             <button class="oh-modal__close" aria-label="Close">
                 <ion-icon name="close-outline"></ion-icon>
             </button>
@@ -159,7 +157,33 @@
           window.location.href = link.attr('href'); // execute the href if confirmed
         }
       });
-
+      
+      $(document).ready(function(){
+        $("#search").on("keyup", function() {
+            var value = $(this).val().toLowerCase();
+            $(".week_days").filter(function() {
+              $(this).parent(".company_leave").toggle($(this).text().toLowerCase().indexOf(value) > -1)
+            });
+            if (value == ""){
+                $(".oh-filter-tag-container").html("")
+            }
+            else {
+            $(".oh-filter-tag-container").html(`<span class="oh-filter-tag">{% trans "Applied Filters :" %}</span>
+            <span class="oh-filter-tag filter-field" data-x-field="{{field}}">
+                ${value}
+                <button class="oh-filter-tag__close" onclick="$('.filterButton').click();$('#search').val('');">
+                  <ion-icon
+                    name="close-outline"
+                    role="img"
+                    class="md hydrated"
+                    aria-label="close outline"
+                  >
+                  </ion-icon>
+                </button></span>`
+            )  
+            }          
+        });     
+      })
 </script>
 
 <script src="{% static '/base/filter.js' %}"></script>

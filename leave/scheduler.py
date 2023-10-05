@@ -1,3 +1,4 @@
+import datetime as dt
 from apscheduler.schedulers.background import BackgroundScheduler
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
@@ -37,20 +38,21 @@ def leave_reset():
 
 def recurring_holiday():
     from leave.models import Holiday
-
     recurring_holidays = Holiday.objects.filter(recurring=True)
     # Looping through all recurring holiday
     for recurring_holiday in recurring_holidays:
         start_date = recurring_holiday.start_date
         end_date = recurring_holiday.end_date
+        new_start_date = dt.date(start_date.year + 1, start_date.month, start_date.day)
+        new_end_date = dt.date(end_date.year + 1, end_date.month, end_date.day)
         # Checking that end date is not none
         if end_date is None:
             # checking if that start date is day before today
             if start_date == (today - timedelta(days=1)).date():
-                recurring_holiday.start_date = start_date + timedelta(days=365)
+                recurring_holiday.start_date = new_start_date
         elif end_date == (today - timedelta(days=1)).date():
-            recurring_holiday.start_date = start_date + timedelta(days=365)
-            recurring_holiday.end_date = end_date + timedelta(days=365)
+            recurring_holiday.start_date = new_start_date
+            recurring_holiday.end_date = new_end_date
         recurring_holiday.save()
 
 

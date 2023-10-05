@@ -11,7 +11,7 @@
       </div>
       <div class="oh-sticky-table__tbody">
           {% for company_leave in company_leaves %}
-          <div class="oh-sticky-table__tr">
+          <div class="oh-sticky-table__tr company_leave">
               <div class="oh-sticky-table__sd">
                   {% if company_leave.based_on_week != None %}
                   {% for week in weeks %}
@@ -23,7 +23,7 @@
                   {% trans "All" %}
                   {% endif %}
               </div>
-              <div class="oh-sticky-table__sd">
+              <div class="oh-sticky-table__sd week_days">
                   {% for week_day in week_days %}
                   {% if week_day.0 == company_leave.based_on_week_day %}
                   {{week_day.1}}

@@ -1561,6 +1561,15 @@ def overall_leave(request):
 @login_required
 @permission_required("leave_deleteleaverequest")
 def dashboard(request):
+    """
+    function used to view Admin dashboard in the leave module.
+
+    Parameters:
+    request (HttpRequest): The HTTP request object.
+
+    Returns:
+    GET : return Admin dasboard template.
+    """
     today = date.today()
     leave_requests = LeaveRequest.objects.filter(start_date__month=today.month)
     requested = LeaveRequest.objects.filter(status="requested")
@@ -1571,7 +1580,7 @@ def dashboard(request):
         holidays.order_by("start_date").first() if holidays.exists() else None
     )
     holidays = holidays.filter(
-        start_date__gte=today, start_date__month=today.month
+        start_date__gte=today, start_date__month=today.month, start_date__year=today.year
     ).order_by("start_date")[1:]
 
     leave_today = LeaveRequest.objects.filter(
@@ -1593,6 +1602,15 @@ def dashboard(request):
 
 @login_required
 def employee_dashboard(request):
+    """
+    function used to view Employee dashboard in the leave module.
+
+    Parameters:
+    request (HttpRequest): The HTTP request object.
+
+    Returns:
+    GET : return Employee dasboard template.
+    """
     today = date.today()
     user = Employee.objects.get(employee_user_id=request.user)
     leave_requests = LeaveRequest.objects.filter(employee_id=user)
@@ -1605,7 +1623,7 @@ def employee_dashboard(request):
         holidays.order_by("start_date").first() if holidays.exists() else None
     )
     holidays = holidays.filter(
-        start_date__gte=today, start_date__month=today.month
+        start_date__gte=today, start_date__month=today.month, start_date__year=today.year
     ).order_by("start_date")[1:]
 
     context = {
@@ -1624,6 +1642,15 @@ def employee_dashboard(request):
 
 @login_required
 def dashboard_leave_request(request):
+    """
+    function used to view leave request table.
+
+    Parameters:
+    request (HttpRequest): The HTTP request object.
+
+    Returns:
+    GET : return leave requests table.
+    """
     user = Employee.objects.get(employee_user_id=request.user)
     day = request.GET.get("date")
     if day:
@@ -1639,6 +1666,15 @@ def dashboard_leave_request(request):
 
 @login_required
 def available_leave_chart(request):
+    """
+    function used to generate available leave chart in employee dashboard.
+
+    Parameters:
+    request (HttpRequest): The HTTP request object.
+
+    Returns:
+    GET : return Json response of labels, dataset, message.
+    """
     user = Employee.objects.get(employee_user_id=request.user)
     available_leaves = AvailableLeave.objects.filter(employee_id=user)
     leave_count = []
@@ -1662,6 +1698,15 @@ def available_leave_chart(request):
 
 @login_required
 def employee_leave_chart(request):
+    """
+    function used to generate employee leave chart in Admin dashboard.
+
+    Parameters:
+    request (HttpRequest): The HTTP request object.
+
+    Returns:
+    GET : return Json response of labels, dataset, message.
+    """
     leave_requests = LeaveRequest.objects.filter(status="approved")
     leave_types = LeaveType.objects.all()
     day = date.today()
@@ -1716,6 +1761,15 @@ def employee_leave_chart(request):
 
 @login_required
 def department_leave_chart(request):
+    """
+    function used to generate department leave chart in Admin dashboard.
+
+    Parameters:
+    request (HttpRequest): The HTTP request object.
+
+    Returns:
+    GET : return Json response of labels, dataset.
+    """
     today = date.today()
 
     departments = Department.objects.all()
@@ -1748,6 +1802,15 @@ def department_leave_chart(request):
 
 @login_required
 def leave_type_chart(request):
+    """
+    function used to generate leave type chart in Admin dashboard.
+
+    Parameters:
+    request (HttpRequest): The HTTP request object.
+
+    Returns:
+    GET : return Json response of labels, dataset.
+    """
     leave_types = LeaveType.objects.all()
     leave_type_count = {types.name: 0 for types in leave_types}
     leave_request = LeaveRequest.objects.filter(status="approved")
@@ -1771,6 +1834,15 @@ def leave_type_chart(request):
 
 @login_required
 def leave_over_period(request):
+    """
+    function used to generate leave over a week chart in Admin dashboard.
+
+    Parameters:
+    request (HttpRequest): The HTTP request object.
+
+    Returns:
+    GET : return Json response of labels, dataset.
+    """
     today = date.today()
     start_of_week = today - timedelta(days=today.weekday())
     week_dates = [start_of_week + timedelta(days=i) for i in range(6)]
