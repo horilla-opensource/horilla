@@ -166,11 +166,11 @@
             {% if request.user.employee_get %}
               {% if request.user|is_clocked_in  %}
               <button class="oh-btn oh-btn--warning-outline mr-2" hx-get="{% url 'clock-out' %}"  hx-target='#attendance-activity-container' hx-swap='innerHTML'><ion-icon class="oh-navbar__clock-icon mr-2 text-warning" name="exit-outline"></ion-icon>
-                <span class="hr-check-in-out-text">{% trans "Check-Out" %}</span>                
+                <span class="hr-Check-In-out-text">{% trans "Check-Out" %}</span>                
               </button>
               {% else %}
               <button class="oh-btn oh-btn--success-outline mr-2" hx-get="{% url 'clock-in' %}"  hx-target='#attendance-activity-container' hx-swap='innerHTML'><ion-icon class="oh-navbar__clock-icon mr-2 text-success" name="enter-outline"></ion-icon>
-                <span class="hr-check-in-out-text">{% trans "Check-In" %}</span>                
+                <span class="hr-Check-In-out-text">{% trans "Check-In" %}</span>                
               </button>
             {% endif %}
             {% endif %}
