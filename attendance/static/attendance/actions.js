@@ -1,4 +1,11 @@
 $(document).ready(function () {
+  var downloadMessages = {
+    ar: "هل ترغب في تنزيل القالب؟",
+    de: "Möchten Sie die Vorlage herunterladen?",
+    es: "¿Quieres descargar la plantilla?",
+    en: "Do you want to download the template?",
+    fr: "Voulez-vous télécharger le modèle ?",
+  };
   var validateMessages = {
     ar: "هل ترغب حقًا في التحقق من كل الحضور المحدد؟",
     de: "Möchten Sie wirklich alle ausgewählten Anwesenheiten überprüfen?",
@@ -93,6 +100,96 @@ $(document).ready(function () {
     }
     return cookieValue;
   }
+
+  $("#attendance-info-import").click(function (e) {
+    e.preventDefault();
+    var languageCode = null;
+    getCurrentLanguageCode(function (code) {
+      languageCode = code;
+      var confirmMessage = downloadMessages[languageCode];
+      Swal.fire({
+        text: confirmMessage,
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonColor: "#008000",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Confirm",
+      }).then(function (result) {
+        if (result.isConfirmed) {
+          $.ajax({
+            type: "GET",
+            url: "attendance-excel",
+            dataType: "binary",
+            xhrFields: {
+              responseType: "blob",
+            },
+            success: function (response) {
+              const file = new Blob([response], {
+                type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+              });
+              const url = URL.createObjectURL(file);
+              const link = document.createElement("a");
+              link.href = url;
+              link.download = "attendance_excel.xlsx";
+              document.body.appendChild(link);
+              link.click();
+            },
+            error: function (xhr, textStatus, errorThrown) {
+              console.error("Error downloading file:", errorThrown);
+            },
+          });
+        }
+      });
+    });
+  });
+
+  $("#attendanceImportForm").submit(function (e) {
+    e.preventDefault();
+
+    // Create a FormData object to send the file
+    $("#uploadContainer").css("display", "none");
+    $("#uploading").css("display", "block");
+    var formData = new FormData(this);
+
+    fetch("/attendance/attendance-info-import", {
+      method: "POST",
+      dataType: "binary",
+      body: formData,
+      processData: false,
+      contentType: false,
+      headers: {
+        // Include the CSRF token in the headers
+        "X-CSRFToken": "{{ csrf_token }}",
+      },
+      xhrFields: {
+        responseType: "blob",
+      },
+    })
+      .then((response) => {
+        if (response.ok) {
+          return response.blob(); // Use response.blob() to get the binary data
+        } else {
+          // Handle errors, e.g., show an error message
+        }
+      })
+      .then((blob) => {
+        if (blob) {
+          // Create a Blob from the binary data
+          const file = new Blob([blob], {
+            type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+          });
+          const url = URL.createObjectURL(file);
+          const link = document.createElement("a");
+          link.href = url;
+          link.download = "ImportError.xlsx";
+          document.body.appendChild(link);
+          link.click();
+          window.location.href = "/attendance/attendance-view";
+        }
+      })
+      .catch((error) => {
+      });
+  });
 
   $("#validateAttendances").click(function (e) {
     e.preventDefault();

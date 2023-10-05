@@ -86,6 +86,7 @@ class AttendanceActivity(models.Model):
     clock_in = models.TimeField()
     clock_out = models.TimeField(null=True)
     clock_out_date = models.DateField(null=True)
+    objects = models.Manager()
 
     class Meta:
         """
@@ -171,7 +172,6 @@ class Attendance(models.Model):
     at_work_second = models.IntegerField(null=True, blank=True)
     overtime_second = models.IntegerField(null=True, blank=True)
     approved_overtime_second = models.IntegerField(default=0)
-    objects = models.Manager()
     is_validate_request = models.BooleanField(
         default=False, verbose_name=_("Is validate request")
     )
@@ -183,6 +183,7 @@ class Attendance(models.Model):
         max_length=18, null=True, choices=status, default="update_request"
     )
     requested_data = models.JSONField(null=True, editable=False)
+    objects = models.Manager()
 
     class Meta:
         """
@@ -395,6 +396,7 @@ class AttendanceOverTime(models.Model):
         default=0,
         null=True,
     )
+    objects = models.Manager()
 
     class Meta:
         """
@@ -447,6 +449,7 @@ class AttendanceLateComeEarlyOut(models.Model):
         verbose_name=_("Employee"),
     )
     type = models.CharField(max_length=20, choices=choices)
+    objects = models.Manager()
 
     class Meta:
         """
@@ -474,6 +477,7 @@ class AttendanceValidationCondition(models.Model):
     overtime_cutoff = models.CharField(
         blank=True,null=True, max_length=10, validators=[validate_time_format]
     )
+    objects = models.Manager()
 
     def clean(self):
         """

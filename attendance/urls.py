@@ -14,6 +14,8 @@ from .views import views
 
 urlpatterns = [
     path("attendance-create", views.attendance_create, name="attendance-create"),
+    path("attendance-excel", views.attendance_excel, name="attendance-excel"),
+    path("attendance-info-import", views.attendance_import, name="attendance-info-import"),
     path("attendance-view", views.attendance_view, name="attendance-view"),
     path(
         "attendance-search",

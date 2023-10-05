@@ -12,16 +12,20 @@ provide the main entry points for interacting with the application's functionali
 """
 
 
-import contextlib
 import json
+import contextlib
 from datetime import datetime
+import pandas as pd
 from django.shortcuts import render, redirect
 from django.utils.translation import gettext_lazy as _
 from django.utils.translation import gettext as __
 from django.contrib import messages
 from django.core.paginator import Paginator
+from django.db.models import ProtectedError
 from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from django.views.decorators.http import require_http_methods
+from base.models import EmployeeShift, WorkType
+from employee.models import Employee
 from horilla.decorators import (
     permission_required,
     login_required,
@@ -55,7 +59,6 @@ from attendance.filters import (
     LateComeEarlyOutReGroup,
     AttendanceActivityReGroup,
 )
-from django.db.models import ProtectedError
 
 
 # Create your views here.
@@ -127,6 +130,7 @@ def attendance_validate(attendance):
     at_work = strtime_seconds(attendance.attendance_worked_hour)
     return condition_for_at_work >= at_work
 
+
 @login_required
 @manager_can_enter("attendance.add_attendance")
 def attendance_create(request):
@@ -157,6 +161,66 @@ def paginator_qry(qryset, page_number):
     paginator = Paginator(qryset, 50)
     qryset = paginator.get_page(page_number)
     return qryset
+
+
+def attendance_excel(_request):
+    """
+    Generate an empty Excel template for attendance data with predefined columns.
+
+    Returns:
+        HttpResponse: An HTTP response containing an empty Excel template with predefined columns.
+    """
+    try:
+        columns = [
+            "Badge ID",
+            "Shift",
+            "Work type",
+            "Attendance date",
+            "Check-in date",
+            "Check-in",
+            "Check-out date",
+            "Check-out",
+            "Worked hour",
+            "Minimum hour",
+        ]
+        data_frame = pd.DataFrame(columns=columns)
+        response = HttpResponse(content_type="application/ms-excel")
+        response["Content-Disposition"] = 'attachment; filename="my_excel_file.xlsx"'
+        data_frame.to_excel(response, index=False)
+        return response
+    except Exception as exception:
+        return HttpResponse(exception)
+
+
+def attendance_import(request):
+    """
+    Save the import of attendance data from an uploaded Excel file, validate the data,
+    and return an Excel file with error details if validation fails for anyone 
+    of the attendance data.
+
+    Parameters:
+        request (HttpRequest): The HTTP request object containing the uploaded Excel file.
+
+    Returns:
+        HttpResponse or redirect: An HTTP response with an Excel file containing error details
+        if validation fails, or a redirect to the attendance view if successful.
+    """
+    if request.method == "POST":
+        file = request.FILES["attendance_import"]
+        data_frame = pd.read_excel(file)
+        attendance_dicts = data_frame.to_dict("records")
+        attendance_import = process_attendance_data(attendance_dicts)
+
+        if attendance_import:
+            error_data = handle_attendance_errors(attendance_import)
+            data_frame = pd.DataFrame(error_data, columns=error_data.keys())
+            response = HttpResponse(content_type="application/ms-excel")
+            response["Content-Disposition"] = 'attachment; filename="ImportError.xlsx"'
+            data_frame.to_excel(response, index=False)
+            return response
+
+        return redirect(attendance_view)
+    return redirect(attendance_view)
 
 
 @login_required
@@ -281,7 +345,12 @@ def attendance_delete(request, obj_id):
                     model_verbose_names_set.add(__(obj._meta.verbose_name.capitalize()))
                 model_names_str = ", ".join(model_verbose_names_set)
                 messages.error(
-                request, _("An attendance entry for {} already exists.".format(model_names_str))
+                    request,
+                    _(
+                        "An attendance entry for {} already exists.".format(
+                            model_names_str
+                        )
+                    ),
                 )
     except Attendance.DoesNotExist:
         messages.error(request, _("Attendance Does not exists.."))
@@ -319,17 +388,24 @@ def attendance_bulk_delete(request):
                 try:
                     attendance.delete()
                     messages.success(request, _("Attendance Deleted"))
-                
+
                 except ProtectedError as e:
                     model_verbose_names_set = set()
                     for obj in e.protected_objects:
-                        model_verbose_names_set.add(__(obj._meta.verbose_name.capitalize()))
+                        model_verbose_names_set.add(
+                            __(obj._meta.verbose_name.capitalize())
+                        )
                     model_names_str = ", ".join(model_verbose_names_set)
                     messages.error(
-                    request, _("An attendance entry for {} already exists.".format(model_names_str))
+                        request,
+                        _(
+                            "An attendance entry for {} already exists.".format(
+                                model_names_str
+                            )
+                        ),
                     )
         except Attendance.DoesNotExist:
-                    messages.error(request, _("Attendance not found."))
+            messages.error(request, _("Attendance not found."))
 
     return JsonResponse({"message": "Success"})
 
@@ -459,7 +535,7 @@ def attendance_overtime_delete(request, obj_id):
         AttendanceOverTime.objects.get(id=obj_id).delete()
         messages.success(request, _("OT account deleted."))
     except AttendanceOverTime.DoesNotExist:
-            messages.error(request, _("OT account Doesnot exists.."))
+        messages.error(request, _("OT account Does not exists.."))
     except ProtectedError:
         messages.error(request, _("You cannot delete this attendance OT"))
     return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
@@ -503,7 +579,7 @@ def attendance_activity_delete(request, obj_id):
         AttendanceActivity.objects.get(id=obj_id).delete()
         messages.success(request, _("Attendance activity deleted"))
     except AttendanceActivity.DoesNotExist:
-            messages.error(request, _("Attendance activity Doesnot exists.."))
+        messages.error(request, _("Attendance activity Does not exists.."))
     except ProtectedError:
         messages.error(request, _("You cannot delete this activity"))
     return redirect("/attendance/attendance-activity-view")
@@ -620,7 +696,7 @@ def late_come_early_out_delete(request, obj_id):
         AttendanceLateComeEarlyOut.objects.get(id=obj_id).delete()
         messages.success(request, _("Late-in early-out deleted"))
     except AttendanceLateComeEarlyOut.DoesNotExist:
-            messages.error(request, _("Late-in early-out Doesnot exists.."))
+        messages.error(request, _("Late-in early-out Does not exists.."))
     except ProtectedError:
         messages.error(request, _("You cannot delete this Late-in early-out"))
 
@@ -681,7 +757,7 @@ def validation_condition_delete(request, obj_id):
         AttendanceValidationCondition.objects.get(id=obj_id).delete()
         messages.success(request, _("validation condition deleted."))
     except AttendanceValidationCondition.DoesNotExist:
-            messages.error(request, _("validation condition Doesnot exists.."))
+        messages.error(request, _("validation condition Does not exists.."))
     except ProtectedError:
         messages.error(request, _("You cannot delete this validation condition."))
     return redirect("/attendance/validation-condition-view")
@@ -830,3 +906,219 @@ def approve_bulk_overtime(request):
         )
 
     return JsonResponse({"message": "Success"})
+
+
+def process_attendance_data(attendance_dicts):
+    """
+    Process a list of attendance data dictionaries and save valid records to the database,
+    while collecting error details for invalid records.
+
+    Parameters:
+        attendance_dicts (list of dict): A list of dictionaries containing attendance data.
+
+    Returns:
+        list: A list of dictionaries representing errors encountered during processing.
+    """
+    error_list = []
+    for attendance_data in attendance_dicts:
+        save = True
+        try:
+            today = datetime.today().date()
+            badge_id = attendance_data["Badge ID"]
+            shift_id = attendance_data["Shift"]
+            work_type_id = attendance_data["Work type"]
+            employee = Employee.objects.filter(badge_id=badge_id).first()
+            shift = EmployeeShift.objects.filter(employee_shift=shift_id).first()
+            work_type = WorkType.objects.filter(work_type=work_type_id).first()
+            attendance_date = None
+            check_in_date = None
+            check_out_date = None
+
+            try:
+                attendance_date = pd.to_datetime(
+                    attendance_data["Attendance date"]
+                ).date()
+                existing_attendance = Attendance.objects.filter(
+                    employee_id__badge_id=badge_id,
+                    attendance_date=attendance_data["Attendance date"],
+                ).first()
+                if existing_attendance:
+                    attendance_data[
+                        "Error6"
+                    ] = "Attendance for this date already exists"
+                    save = False
+            except Exception as exception:
+                attendance_data[
+                    "Error14"
+                ] = "The date format for attendance date is not valid"
+                save = False
+
+            try:
+                check_in_date = pd.to_datetime(attendance_data["Check-in date"]).date()
+            except Exception as exception:
+                attendance_data[
+                    "Error15"
+                ] = "The date format for Check-in date is not valid"
+                save = False
+
+            try:
+                check_out_date = pd.to_datetime(
+                    attendance_data["Check-out date"]
+                ).date()
+            except Exception as exception:
+                attendance_data[
+                    "Error16"
+                ] = "The date format for Check-out date is not valid"
+                save = False
+
+            try:
+                check_in = pd.to_datetime(
+                    attendance_data["Check-in"], format="%H:%M:%S"
+                ).time()
+            except Exception as exception:
+                attendance_data["Error10"] = f"{exception} of check-in time"
+                save = False
+
+            try:
+                check_out = pd.to_datetime(
+                    attendance_data["Check-out"], format="%H:%M:%S"
+                ).time()
+            except Exception as exception:
+                attendance_data["Error11"] = f"{exception} of check-out time"
+                save = False
+
+            try:
+                worked_hour = pd.to_datetime(
+                    attendance_data["Worked hour"], format="%H:%M:%S"
+                ).time()
+            except Exception as exception:
+                attendance_data["Error12"] = f"{exception} of worked hours"
+                save = False
+
+            try:
+                minimum_hour = pd.to_datetime(
+                    attendance_data["Minimum hour"], format="%H:%M:%S"
+                ).time()
+            except Exception as exception:
+                attendance_data["Error13"] = f"{exception} of minimum hours"
+                save = False
+
+            if employee is None:
+                attendance_data["Error1"] = f"Invalid Badge ID given {badge_id}"
+                save = False
+
+            if shift is None:
+                attendance_data["Error2"] = f"Invalid shift '{shift_id}'"
+                save = False
+
+            if work_type is None:
+                attendance_data["Error3"] = f"Invalid work type '{work_type_id}'"
+                save = False
+
+            if check_in_date is not None and attendance_date is not None:
+                if check_in_date < attendance_date:
+                    attendance_data[
+                        "Error4"
+                    ] = "Attendance check-in date cannot be smaller than attendance date"
+                    save = False
+
+            if check_in_date is not None and check_out_date is not None:
+                if check_out_date < check_in_date:
+                    attendance_data[
+                        "Error5"
+                    ] = "Attendance check-out date never smaller than attendance check-in date"
+                    save = False
+
+            if attendance_date is not None:
+                if attendance_date >= today:
+                    attendance_data["Error7"] = "Attendance date in future"
+                    save = False
+
+            if check_in_date is not None:
+                if check_in_date >= today:
+                    attendance_data["Error8"] = "Attendance check in date in future"
+                    save = False
+
+            if check_out_date is not None:
+                if check_out_date >= today:
+                    attendance_data["Error9"] = "Attendance check out date in future"
+                    save = False
+
+            if save:
+                attendance = Attendance(
+                    employee_id=employee,
+                    shift_id=shift,
+                    work_type_id=work_type,
+                    attendance_date=attendance_date,
+                    attendance_clock_in_date=check_in_date,
+                    attendance_clock_in=str(check_in).strip(),
+                    attendance_clock_out_date=check_out_date,
+                    attendance_clock_out=str(check_out).strip(),
+                    attendance_worked_hour=str(worked_hour).strip(),
+                    minimum_hour=str(minimum_hour).strip(),
+                )
+                attendance.save()
+            else:
+                error_list.append(attendance_data)
+
+        except Exception as exception:
+            attendance_data["Error17"] = f"{str(exception)}"
+            error_list.append(attendance_data)
+
+    return error_list
+
+
+def handle_attendance_errors(error_list):
+    """
+    Reorganize a list of error dictionaries into a structured error data dictionary
+    and remove keys with all None values.
+
+    Parameters:
+        error_list (list of dict): A list of dictionaries containing error details.
+
+    Returns:
+        dict: A structured dictionary where keys represent error types and values are lists
+              of error details for each type.
+    """
+    keys_to_remove = []
+    error_data = {
+        "Badge ID": [],
+        "Shift": [],
+        "Work type": [],
+        "Attendance date": [],
+        "Check-in date": [],
+        "Check-in": [],
+        "Check-out date": [],
+        "Check-out": [],
+        "Worked hour": [],
+        "Minimum hour": [],
+        "Error1": [],
+        "Error2": [],
+        "Error3": [],
+        "Error4": [],
+        "Error5": [],
+        "Error6": [],
+        "Error7": [],
+        "Error8": [],
+        "Error9": [],
+        "Error10": [],
+        "Error11": [],
+        "Error12": [],
+        "Error13": [],
+        "Error14": [],
+        "Error15": [],
+        "Error16": [],
+        "Error17": [],
+    }
+    for item in error_list:
+        for key in error_data.keys():
+            if key in item:
+                error_data[key].append(item[key])
+            else:
+                error_data[key].append(None)
+    for key, value in error_data.items():
+        if all(v is None for v in value):
+            keys_to_remove.append(key)
+    for key in keys_to_remove:
+        del error_data[key]
+    return error_data
