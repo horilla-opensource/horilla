@@ -18,11 +18,11 @@
     {% csrf_token %}
     <div class="row" id="recruitmentUpdateContainer">
       <div class="col-12 col-sm-12 col-md-12 col-lg-12">
-        <label class="oh-label" for="">{% trans "Title" %}</label>
+        <label class="oh-label" for="">{% trans "Title" %} *</label>
         {{form.title}} {{form.title.errors}}
       </div>
       <div class="col-12 col-sm-12 col-md-12 col-lg-12">
-        <label class="oh-label" for="">{% trans "Description" %}</label>
+        <label class="oh-label" for="">{% trans "Description" %} *</label>
         {{form.description}} {{form.description.errors}}
       </div>
       <div class="col-12 col-sm-12 col-md-12 col-lg-4">
@@ -48,11 +48,11 @@
         {{form.job_position_id}} {{form.job_position_id.errors}}
       </div>
       <div class="col-12 col-sm-12 col-md-12 col-lg-6" id="openPositionUpdateContainer">
-        <label class="oh-label" for="">{% trans "Job Position" %}</label>
+        <label class="oh-label" for="">{% trans "Job Position" %} *</label>
         {{form.open_positions}} {{form.open_positions.errors}}
       </div>
       <div class="col-12 col-sm-12 col-md-12 col-lg-6">
-        <label class="oh-label" for="">{% trans "Managers" %}</label>
+        <label class="oh-label" for="">{% trans "Managers" %} *</label>
         {{form.recruitment_managers}} {{form.recruitment_managers.errors}}
       </div>
       <div class="col-12 col-sm-12 col-md-12 col-lg-6">

@@ -1,0 +1,70 @@
+{% load i18n %} {% load yes_no %}
+<div class="oh-modal__dialog-header">
+
+        <span class="oh-timeoff-modal__stat-title">{% trans "Question" %}</span>
+        <span class="oh-timeoff-modal__stat-count">{{question|capfirst}}</span>
+        {% if question.options %}
+            <span class="oh-timeoff-modal__stat-title mt-3">{% trans "Options" %}</span>
+            <span class="oh-timeoff-modal__stat-count">{{question.options}}</span>
+        {% endif %}
+
+    <div class="oh-timeoff-modal__stats-container mt-3 mb-3">
+        <div class="oh-timeoff-modal__stat">
+            <span class="oh-timeoff-modal__stat-title">{% trans "Question Type" %}</span>
+            <span class="oh-timeoff-modal__stat-count">{{question.type|capfirst}}</span>
+        </div>
+        <div class="oh-timeoff-modal__stat" style="margin-left: 20px;">
+            <span class="oh-timeoff-modal__stat-title">{% trans "Sequence" %}</span>
+            {% if  question.sequence %}
+                <span class="oh-timeoff-modal__stat-count">{{question.sequence}}</span>
+            {% else %}
+                <span class="oh-timeoff-modal__stat-count">-</span>
+            {% endif %}
+        </div>
+    </div>
+    <div class="oh-timeoff-modal__stats-container mt-3 mb-3">
+        <div class="oh-timeoff-modal__stat">
+            <span class="oh-timeoff-modal__stat-title">{% trans "Recruitment" %}</span>
+            {% if  question.recruitment_ids.all %}
+                <span class="oh-timeoff-modal__stat-count">{% for rec in question.recruitment_ids.all %} {{rec}},&nbsp; {% endfor %}</span>
+            {% else %}
+                <span class="oh-timeoff-modal__stat-count">-</span>
+            {% endif %}
+        </div>
+        <div class="oh-timeoff-modal__stat" style="margin-left: 20px;">
+            <span class="oh-timeoff-modal__stat-title">{% trans "Job Position" %}</span>
+            {% if  question.job_position_ids.all %}
+                <span class="oh-timeoff-modal__stat-count">{% for job in question.job_position_ids.all %} {{job}},&nbsp; {% endfor %}</span>
+            {% else %}
+                <span class="oh-timeoff-modal__stat-count">-</span>
+            {% endif %}
+        </div>
+    </div>
+    <div class="oh-modal__button-container text-center">
+       <div class="oh-btn-group">
+         <a 
+                class="oh-btn oh-btn--info"
+                hx-get="{% url 'recruitment-survey-question-template-edit' question.id %}"
+                data-toggle="oh-modal-toggle"
+                data-target="#updateSurvey"
+                hx-target="#updateSurveyModalBody"
+                style="width: 50%;"
+                >
+                <ion-icon name="create-outline" role="img" 
+                class="md hydrated" aria-label="create outline">
+                </ion-icon>{% trans "Edit" %}
+          </a>
+          <a 
+                href="{% url 'recruitment-survey-question-template-delete' question.id %}"
+                onclick="return confirm('{% trans "Are you sure want to delete?" %}')"
+                class="oh-btn oh-btn--danger"style="width: 50%;">
+            <ion-icon
+            name="trash-outline"
+            role="img"
+            class="md hydrated"
+            aria-label="create outline"
+            ></ion-icon>{% trans "Delete" %}
+           </a>
+        </div>
+    </div>
+</div>

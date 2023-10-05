@@ -32,7 +32,7 @@
 
 <div class="oh-layout--grid-3">
   {% for cand in data %}
-  <div  class="oh-kanban-card candidate {% if cand.hired %}hired-cand{% endif %}" style="color: inherit;text-decoration: none;">
+  <div  class="oh-kanban-card candidate {% if cand.canceled == True %} row-status--red {% elif cand.hired == True %} row-status--yellow {% endif %}" style="color: inherit;text-decoration: none;">
     <a href="{% url 'candidate-view-individual' cand.id %}" style="color: inherit;text-decoration: none; display: flex;">
     <div class="oh-kanban-card__avatar">
       {% if cand.profile == None %}

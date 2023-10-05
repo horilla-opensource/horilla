@@ -4,17 +4,17 @@
     {% csrf_token %}
     <div class="row" id='stageFormCreate'>
         <div class="col-12 col-sm-12 col-md-12 col-lg-6">
-            <label class="oh-label" for="">{% trans "Stage" %}</label>
+            <label class="oh-label" for="">{% trans "Stage" %} *</label>
             {{form.stage}}
             {{form.stage.errors}}
         </div>
         <div class="col-12 col-sm-12 col-md-12 col-lg-6">
-            <label class="oh-label" for="">{% trans "Recruitment" %}</label>
+            <label class="oh-label" for="">{% trans "Recruitment" %} *</label>
             {{form.recruitment_id}}
             {{form.recruitment_id.errors}}
         </div>
         <div class="col-12 col-sm-12 col-md-12 col-lg-6" id='stage_manager'>
-            <label class="oh-label" for="">{% trans "Stage Managers" %}</label>
+            <label class="oh-label" for="">{% trans "Stage Managers" %} *</label>
             {{form.stage_managers}}
             {{form.stage_managers.errors}}
             <ul id="error-list" class="errorlist" style="display: none">
@@ -22,7 +22,7 @@
             </ul>
         </div>
         <div class="col-12 col-sm-12 col-md-12 col-lg-6">
-            <label class="oh-label" for="">{% trans "Stage Type" %}</label>
+            <label class="oh-label" for="">{% trans "Stage Type" %} *</label>
             {{form.stage_type}}
             {{form.stage_type.errors}}
         </div>

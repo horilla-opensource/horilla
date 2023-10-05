@@ -146,7 +146,7 @@ def filter_survey(request):
     get_key_instances(RecruitmentSurvey, data_dict)
     return render(
         request,
-        "survey/survey-card.html",
+        "survey/survey_card.html",
         {
             "questions": paginator_qry(questions, request.GET.get("page")),
             "pd": previous_data,

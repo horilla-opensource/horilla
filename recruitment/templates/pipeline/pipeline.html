@@ -40,6 +40,10 @@
   .pipeline-toggle {
     cursor: move;
   }
+  .ui-sortable-placeholder {
+    min-height: 50px !important
+  }
+
 </style>
 
 <div class="oh-wrapper">
@@ -75,9 +79,9 @@
                 <span
                   class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round ms-2 mr-2 stage_count"
                   data-rec-stage-badge="{{rec.id}}"
-                  title="{{stage.candidate_set.all|length}} {% trans 'candidates' %}"
+                  title="{{stage.active_candidates.all|length}} {% trans 'candidates' %}"
                   id="stageCount{{stage.id}}"
-                  >{{stage.candidate_set.all|length}}</span
+                  >{{stage.active_candidates.all|length}}</span
                 >
                 <input
                   class="oh-tabs__movable-title oh-table__editable-input"
@@ -161,7 +165,7 @@
                     </div>
 
                     <div class="oh-sticky-table__th oh-table-config__th">
-                      <span> {% trans "Email" %} </span>
+                      <span> {% trans "Email" %}</span>
                     </div>
                     <div class="oh-sticky-table__th oh-table-config__th">
                       <span> {% trans "Job Position" %} </span>
@@ -176,11 +180,12 @@
                 <div
                   class="oh-sticky-table__tbody oh-table--inter-sortable ui-sortable candidate-container"
                   data-container="candidate"
+                  data-container-list = "candidate"
                   data-stage-id="{{stage.id}}"
                   data-recruitment-id="{{rec.id}}"
                   id="candidateContainer{{stage.id}}"
                 >
-                  {% for cand in stage.candidate_set.all%} {% if cand.is_active %}
+                  {% for cand in stage.active_candidates.all%} {% if cand.is_active %}
 
                   <div
                     class="oh-sticky-table__tr oh-table-config__tr candidate ui-droppable ui-sortable-handle cand change-cand "

@@ -179,9 +179,20 @@ class Stage(models.Model):
         """
         Meta class to add the additional info
         """
+
         permissions = (("archive_Stage", "Archive Stage"),)
         unique_together = ["recruitment_id", "stage"]
         ordering = ["sequence"]
+
+    def active_candidates(self):
+        """
+        This method is used to get all the active candidate like related objects
+        """
+        return {
+            "all": Candidate.objects.filter(
+                stage_id=self, canceled=False, is_active=True
+            )
+        }
 
 
 class Candidate(models.Model):
@@ -330,6 +341,7 @@ class RecruitmentSurvey(models.Model):
     options = models.TextField(
         null=True, default="", help_text=_("Separate choices by ',  '")
     )
+    is_mandatory = models.BooleanField(default=False)
     objects = models.Manager()
 
     def __str__(self) -> str:

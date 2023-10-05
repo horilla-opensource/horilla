@@ -2,14 +2,19 @@
 {% load i18n %}
 
 <div class="oh-rate mb-5" style="padding-right: 82%;">
-  <input type="radio" id="star5{{question.id}}" name="rating_{{question.question}}" value="5"  {% if answer_list.0 == '5' %} checked {% endif %} />
+  <input type="radio" id="star5{{question.id}}" name="rating_{{question.question}}"
+  {% if question.is_mandatory %}required{% endif %} value="5"  {% if answer_list.0 == '5' %} checked {% endif %} />
   <label for="star5{{question.id}}" title="5 Stars">5 {% trans "Stars" %}</label>
-  <input type="radio" id="star4{{question.id}}" name="rating_{{question.question}}" value="4"   {% if answer_list.0 == '4' %} checked {% endif %} />
+  <input type="radio" id="star4{{question.id}}" name="rating_{{question.question}}"
+  {% if question.is_mandatory %}required{% endif %} value="4"   {% if answer_list.0 == '4' %} checked {% endif %} />
   <label for="star4{{question.id}}" title="4 Stars">4 {% trans "Stars" %}</label>
-  <input type="radio" id="star3{{question.id}}" name="rating_{{question.question}}" value="3"   {% if answer_list.0 == '3' %} checked {% endif %} />
+  <input type="radio" id="star3{{question.id}}" name="rating_{{question.question}}"
+  {% if question.is_mandatory %}required{% endif %} value="3"   {% if answer_list.0 == '3' %} checked {% endif %} />
   <label for="star3{{question.id}}" title="3 Stars">3 {% trans "Stars" %}</label>
-  <input type="radio" id="star2{{question.id}}" name="rating_{{question.question}}" value="2"   {% if answer_list.0 == '2' %} checked {% endif %}  />
+  <input type="radio" id="star2{{question.id}}" name="rating_{{question.question}}"
+  {% if question.is_mandatory %}required{% endif %} value="2"   {% if answer_list.0 == '2' %} checked {% endif %}  />
   <label for="star2{{question.id}}" title="2 Stars">2 {% trans "Stars" %}</label>
-  <input type="radio" id="star1{{question.id}}" name="rating_{{question.question}}" value="1"   {% if answer_list.0 == '1' %} checked {% endif %} />
+  <input type="radio" id="star1{{question.id}}" name="rating_{{question.question}}"
+  {% if question.is_mandatory %}required{% endif %} value="1"   {% if answer_list.0 == '1' %} checked {% endif %} />
   <label for="star1{{question.id}}" title="1 Star">1 {% trans "Star" %}</label>
 </div>

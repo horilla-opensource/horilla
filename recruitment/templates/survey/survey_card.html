@@ -7,8 +7,12 @@
 {% include 'filter_tags.html' %}
 <div class="oh-layout--grid-3">
   {% for question in questions %}
-  <div class="oh-kanban-card">
-    <div class="oh-kanban-card__details">
+  <div class="oh-kanban-card" data-toggle="oh-modal-toggle"
+      data-target="#detailSurvey"
+      hx-get="{% url 'single-survey-view' question.id %}"
+      hx-target="#detailSurveyModalBody">
+
+      <div class="oh-kanban-card__details">
       <span class="oh-kanban-card__title">{{question}}</span>
       <span class="oh-kanban-card__subtitle">
         {% for rec in question.recruitment_ids.all %} {{rec}},&nbsp; {% endfor %}
@@ -20,6 +24,7 @@
           class="oh-btn oh-btn--transparent text-muted p-3"
           @click="show = !show"
           title={% trans "Actions" %}
+          onclick="event.stopPropagation()"
         >
           <ion-icon name="ellipsis-vertical-sharp"></ion-icon>
         </button>
@@ -42,7 +47,7 @@
             <li class="oh-dropdown__item">
               <a
                 href="{% url 'recruitment-survey-question-template-delete' question.id %}"
-                onclick="return confirm('Are you sure want to delete?')"
+                onclick="event.preventDefault();event.stopPropagation(); confirm('{% trans "Are you sure want to delete?" %}')"
                 class="text-danger"
                 >{% trans "Delete" %}</a
               >
@@ -54,6 +59,30 @@
   </div>
 
   {% endfor %}
+</div>
+
+<div
+  class="oh-modal"
+  id="detailSurvey"
+  role="dialog"
+  aria-labelledby="detailSurvey"
+  aria-hidden="true"
+  style="z-index:10 !important;"
+>
+  <div class="oh-modal__dialog">
+    <div class="oh-modal__dialog-header">
+      <h2 class="oh-modal__dialog-title" id="addEmployeeModalLabel">
+        {% trans "Details" %}
+      </h2>
+      <button class="oh-modal__close" aria-label="Close">
+        <ion-icon name="close-outline"></ion-icon>
+      </button>
+    </div>
+    <div
+      class="oh-modal__dialog-body"
+      id="detailSurveyModalBody"
+    ></div>
+  </div>
 </div>
 <div class="oh-pagination">
   <span class="oh-pagination__page">

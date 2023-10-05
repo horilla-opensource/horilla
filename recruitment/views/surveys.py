@@ -62,7 +62,6 @@ def candidate_survey(request):
             candidate = Candidate.objects.filter(
                 email=candidate.email, recruitment_id=candidate.recruitment_id
             ).first()
-
         answer = (
             RecruitmentSurveyAnswer()
             if candidate.recruitmentsurveyanswer_set.first() is None
@@ -263,3 +262,13 @@ def application_form(request):
         "candidate/application_form.html",
         {"form": form, "recruitment": recruitment},
     )
+
+
+@login_required
+@permission_required(perm="recruitment.change_recruitmentsurvey")
+def single_survey(request, survey_id):
+    """
+    This view method is used to single view of question template
+    """
+    question = RecruitmentSurvey.objects.get(id=survey_id)
+    return render(request, "survey/view_single_template.html", {'question' : question})

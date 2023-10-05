@@ -492,6 +492,7 @@ class QuestionForm(ModelForm):
             "sequence":_("Sequence"),
             "type":_("Type"),
             "options":_("Options"),
+            "is_mandatory":_("Is Mandatory"),
         }
 
     def as_p(self, *args, **kwargs):
@@ -543,4 +544,4 @@ class SurveyForm(forms.Form):
         self.form = form
         return
         # for question in questions:
-        #     self
+        # self

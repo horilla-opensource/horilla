@@ -444,7 +444,7 @@ def candidate_stage_update(request, cand_id):
     stage_obj = Stage.objects.get(id=stage_id)
     previous_stage = history_queryset.stage_id
     if previous_stage == stage_obj:
-        return JsonResponse({"type": "info", "message": _("Sequence updated.")})
+        return JsonResponse({"type": "noChange", "message": _("No change detected.")})
     # Here set the last updated schedule date on this stage if schedule exists in history
     history_queryset = candidate_obj.candidate_history.filter(stage_id=stage_obj)
     schedule_date = None

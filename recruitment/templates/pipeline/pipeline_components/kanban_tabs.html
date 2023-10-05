@@ -27,7 +27,7 @@
       <div class="oh-kanban__section-head stage" style="cursor: pointer;" data-recruitment-id='{{rec.id}}'>
         <div class="d-flex">
 
-          <span class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round ms-2 mr-2">{{stage.candidate_set.all|length}}</span>
+          <span class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round ms-2 mr-2">{{stage.active_candidates.all|length}}</span>
           <span class="oh-kanban__section-title" data-type="label"
           >{{stage}}</span>
         </div>
@@ -81,7 +81,7 @@
 
       <div class="oh-kanban__section-body ui-sortable" data-stage-id='{{stage.id}}' data-recruitment-id="{{rec.id}}">
         
-        {% for cand in stage.candidate_set.all %}
+        {% for cand in stage.active_candidates.all %}
         <div
           class="oh-kanban__card candidate"
           data-candidate-id="{{cand.id}}"

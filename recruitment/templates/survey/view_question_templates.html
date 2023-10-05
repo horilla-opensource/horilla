@@ -48,10 +48,10 @@
   <div class="oh-modal__dialog">
     <div class="oh-modal__dialog-header">
       <h2 class="oh-modal__dialog-title" id="addEmployeeModalLabel">
-        {% trans "Create Survey Template" %}
+        {% trans "Update Survey Template" %}
       </h2>
-      <button class="oh-modal__close" aria-label="Close">
-        <ion-icon name="close-outline"></ion-icon>
+      <button type="button" class="oh-modal_close--custom" onclick="$('#updateSurvey').removeClass('oh-modal--show');">
+        <ion-icon name="close-outline" role="img" aria-label="close outline"></ion-icon>
       </button>
     </div>
     <div

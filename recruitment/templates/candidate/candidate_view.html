@@ -1,21 +1,15 @@
 {% extends 'index.html' %}
 {% block content %}
 {% load i18n %}
-<style>
-  .hired-cand{
-    border-left: solid 4px yellowgreen !important;
-    border-radius: 4px 0 0 4px;
-  }
-  .candidate{
-    border-left: solid 4px rgba(128, 128, 128, 0.482);
-    border-radius: 4px 0 0 4px;
 
-  }
-</style>
 <div class="oh-wrapper">
   {% include 'candidate/candidate_nav.html' %}
   
   <div class="d-flex flex-row-reverse">
+    <span class="m-3" hx-get="{% url "search-candidate" %}?{{pd}}&canceled=true" hx-target="#section" style="cursor: pointer">
+      <span class="oh-dot oh-dot--small me-1" style="background-color:red"></span>
+      {% trans "Canceled" %}
+    </span>
     <span class="m-3" hx-get="{% url "search-candidate" %}?{{pd}}&hired=false" hx-target="#section" style="cursor: pointer">
       <span class="oh-dot oh-dot--small me-1" style="background-color:rgba(128, 128, 128, 0.482)"></span>
       {% trans "Not-Hired" %}

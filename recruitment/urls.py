@@ -227,4 +227,9 @@ urlpatterns = [
         recruitment.views.search.filter_survey,
         name="rec-filter-survey",
     ),
+    path(
+        "single-survey-view/<int:survey_id>/",
+        recruitment.views.surveys.single_survey,
+        name="single-survey-view",
+    ),
 ]

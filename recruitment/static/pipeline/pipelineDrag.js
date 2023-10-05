@@ -29,7 +29,6 @@ function count_element() {
   });
 }
 
-
 var candidateId = null;
 
 $(".candidate").mousedown(function () {
@@ -61,7 +60,6 @@ function stageSequenceGet(stage) {
       count_element();
     },
   });
-
 }
 $(".stage").mousedown(function () {
   window["stageSequence"] = $(this).attr("data-stage-sequence");
@@ -118,8 +116,7 @@ $(".stage").mouseup(function () {
   window["stages"] = [];
 });
 
-function countSequence(element) {
-  // let childs = element.parent().find(".change-cand")
+function countSequence(letmessage=true) {
   let childs = $(".change-cand");
   let data = {};
   $.each(childs, function (index, elem) {
@@ -133,44 +130,107 @@ function countSequence(element) {
       csrfmiddlewaretoken: getCookie("csrftoken"),
       sequenceData: JSON.stringify(data),
     },
-    dataType: "dataType",
     success: function (response) {
+      if (response.type != "noChange" && letmessage) {
+
+      $("#ohMessages").append(`
+        <div class="oh-alert-container">
+              <div class="oh-alert oh-alert--animated oh-alert--${response.type}">
+                ${response.message}
+        </div>`);
+    }},
+    error: (response) => {
       $("#ohMessages").append(`
             <div class="oh-alert-container">
-                  <div class="oh-alert oh-alert--animated oh-alert--${response.type}">
-                    ${response.message}
+                  <div class="oh-alert oh-alert--animated oh-alert--danger">
+                    Something went wrong
             </div>`);
     },
   });
 }
 
-$("[data-container='candidate']").on("DOMNodeInserted", function (e) {
+$('[data-container-list = "candidate"]').on("DOMNodeInserted", function (e) {
   var candidate = $(e.target);
-  setInterval(countSequence(candidate), 500);
-  // countSequence(candidate)
-  var stageId = $(this).attr("data-stage-id");
-  candidateId = $(candidate).attr("data-candidate-id");
-  if (candidateId != null) {
-    $.ajax({
-      type: "post",
-      url: `/recruitment/candidate-stage-update/${candidateId}/`,
-      data: {
-        csrfmiddlewaretoken: getCookie("csrftoken"),
-        stageId: stageId,
-      },
-      success: function (response) {
-        var candidateId = $(this).attr("data-candidate-id");
-        setInterval(countSequence(candidate), 500);
-        $("#ohMessages").append(`
-            <div class="oh-alert-container">
-                  <div class="oh-alert oh-alert--animated oh-alert--${response.type}">
-                    ${response.message}
-            </div>`);
-            
+  if (e.target.nodeType === Node.ELEMENT_NODE) {
+    const insertedElement = $(e.target);
 
-      },
-    });
+    // Check if the inserted element has the class you want to remove
+    if (!insertedElement.hasClass("ui-sortable-placeholder")) {
+      
+      // countSequence(candidate)
+      var stageId = $(this).attr("data-stage-id");
+      candidateId = $(candidate).attr("data-candidate-id");
+      if (candidateId != null) {
+        $.ajax({
+          type: "post",
+          url: `/recruitment/candidate-stage-update/${candidateId}/`,
+          data: {
+            csrfmiddlewaretoken: getCookie("csrftoken"),
+            stageId: stageId,
+          },
+          success: function (response) {
+              candidate.find("select").val(stageId)
+              if (response.type != "noChange") {
+                countSequence(false)
+                setTimeout(() => {
+                  $("#ohMessages").append(`
+                    <div class="oh-alert-container">
+                    <div class="oh-alert oh-alert--animated oh-alert--${response.type}">
+                    ${response.message}
+                    </div>
+                    </div>`);
+                }, 1000);
+              }
+          },
+        });
+      }else{
+        countSequence()
+      }
+    }
   }
+  
+});
+
+$(`.change-cand`).not('[data-container-list = "candidate"]').mouseup(function (e) {
+  e.preventDefault()
+  setTimeout(() => {
+    var stageId = $(this).parent().attr("data-stage-id");
+    var candidate = $(e.target).parents(".change-cand").last();
+    var candidateId = candidate.attr("data-candidate-id");
+    if (candidateId != null) {
+      $.ajax({
+        type: "post",
+        url: `/recruitment/candidate-stage-update/${candidateId}/`,
+        data: {
+          csrfmiddlewaretoken: getCookie("csrftoken"),
+          stageId: stageId,
+        },
+        success: function (response) {
+          var selectElement = $("#stageChange" + candidateId);
+          selectElement.val(stageId);
+          var duration = 0;
+          if (response.type != "noChange") {
+              $("#ohMessages").append(`
+              <div class="oh-alert-container">
+              <div class="oh-alert oh-alert--animated oh-alert--${response.type}">
+              ${response.message}
+              </div>
+              </div>`);
+              duration = 1500;
+          }
+          countSequence(false);
+        },
+        error: (response) => {
+          $("#ohMessages").append(`
+            <div class="oh-alert-container">
+              <div class="oh-alert oh-alert--animated oh-alert--danger">
+                Something went wrong.
+              </div>
+            </div>`);
+        },
+      });
+    }
+  }, 200);
 });
 
 $(".schedule").change(function (e) {
@@ -184,7 +244,6 @@ $(".schedule").change(function (e) {
       candidateId: candidateId,
       date: date,
     },
-    success: function (response) {
-    },
+    success: function (response) {},
   });
 });

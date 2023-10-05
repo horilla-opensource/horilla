@@ -15,15 +15,15 @@
     <form action="" class="stage-drop-form" method="post">
       {% csrf_token %}
       <div class="oh-input-group">
-        <label for="desc" class="oh-label">{% trans "Stage" %}</label>
+        <label for="desc" class="oh-label">{% trans "Stage" %} *</label>
         {{stage_form.stage}}
       </div>
       <div class="oh-input-group">
-        <label for="job-position" class="oh-label">{% trans "Stage Type" %}</label>
+        <label for="job-position" class="oh-label">{% trans "Stage Type" %} *</label>
         {{stage_form.stage_type|generate_id:"stage"}}
       </div>
       <div class="oh-input-group" id='stage_manager'>
-        <label for="job-position" class="oh-label">{% trans "Stage Manager" %}</label>
+        <label for="job-position" class="oh-label">{% trans "Stage Manager" %} *</label>
         {{stage_form.stage_managers|generate_id:"stage"}}
         <ul id="error-list" class="errorlist" style="display: none">
           <li>This field is requied.</li>

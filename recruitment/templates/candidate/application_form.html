@@ -1,10 +1,10 @@
-{% extends 'candidate/application_form_component.html' %}
-{% block content %}
-{% load static %} {% load i18n %}
-    {{form.load}}
-    <div id="main">
-      <main class="oh-onboarding">
-        <div class="oh-onboarding-card oh-onboarding-card--top-bar">
+{% extends 'candidate/application_form_component.html' %} {% block content %} 
+{% load static %} {% load i18n %} {{form.load}}
+<div id="main">
+  <div class="oh-wrapper mt-5">
+    <div class="row">
+      <div class="col-12 col-md-6 col-lg-6">
+        <div class="oh-onboarding-card oh-onboarding-card--top-bar w-100">
           <div
             class="oh-onboarding-card__container oh-onboarding-card__container--wide"
           >
@@ -33,7 +33,12 @@
                         id="uploadPhotoModalLabel"
                         >Upload Photo</span
                       >
-                      <button type="button" onclick="event.stopPropagation()" class="oh-modal__close" aria-label="Close">
+                      <button
+                        type="button"
+                        onclick="event.stopPropagation()"
+                        class="oh-modal__close"
+                        aria-label="Close"
+                      >
                         <ion-icon name="close-outline"></ion-icon>
                       </button>
                     </div>
@@ -67,7 +72,6 @@
                             ></ion-icon
                             >Delete image
                           </button>
-                          
                         </div>
                       </div>
                     </div>
@@ -92,7 +96,7 @@
                 <div class="col-sm-12 col-md-12 col-lg-12">
                   <div class="oh-input-group">
                     <label class="oh-label" for="name"
-                      >{% trans "Name" %}</label
+                      >* {% trans "Name" %}</label
                     >
                     <input
                       type="text"
@@ -110,46 +114,54 @@
                 <div class="col-sm-12 col-md-6 col-lg-6">
                   <div class="oh-input-group">
                     <label class="oh-label" for="recuitment"
-                    >{% trans "Open Recruitment" %}
-                  </label>
-                    {{form.recruitment_id}}
-                    {{form.recruitment_id.errors}}
+                      >* {% trans "Open Recruitment" %}
+                    </label>
+                    {{form.recruitment_id}} {{form.recruitment_id.errors}}
                   </div>
                 </div>
                 <div class="col-sm-12 col-md-6 col-lg-6">
                   <div class="oh-input-group">
                     <label class="oh-label" for="recuitment"
-                    >{% trans "Choose Open Position" %}
-                  </label>
-                  {{form.job_position_id}} {{form.job_position_id.errors}}
+                      >* {% trans "Choose Open Position" %}
+                    </label>
+                    {{form.job_position_id}} {{form.job_position_id.errors}}
                   </div>
                 </div>
                 {% else %}
-                <input type="text" name="recruitment_id" hidden value="{{recruitment.id}}">
+                <input
+                  type="text"
+                  name="recruitment_id"
+                  hidden
+                  value="{{recruitment.id}}"
+                />
                 <div class="oh-input-group">
                   <label class="oh-label" for="recuitment"
-                  >{% trans "Choose Job Position" %}
-                </label>
-                
-                <select name="job_position_id" class="oh-select oh-select2 w-100" style="height: 50px;">
-                  {% for job in recruitment.open_positions.all %}
-                  <option value="{{job.id}}">{{job.job_position}}</option>
-                  {% endfor %}
-                </select>
+                    >{% trans "Choose Job Position" %}
+                  </label>
+
+                  <select
+                    name="job_position_id"
+                    class="oh-select oh-select2 w-100"
+                    style="height: 50px"
+                  >
+                    {% for job in recruitment.open_positions.all %}
+                    <option value="{{job.id}}">{{job.job_position}}</option>
+                    {% endfor %}
+                  </select>
                 </div>
                 {% endif %}
 
                 <div class="col-sm-12 col-md-6 col-lg-6">
                   <div class="oh-input-group">
                     <label class="oh-label" for="email"
-                      >{% trans "Email" %}</label
+                      >* {% trans "Email" %}</label
                     >
                     <input
                       type="email"
                       id="email"
                       name="email"
                       class="oh-input w-100"
-                      requied
+                      required
                       placeholder="e.g. janedoe@example.com"
                     />
                   </div>
@@ -159,7 +171,7 @@
                 <div class="col-sm-12 col-md-6 col-lg-6">
                   <div class="oh-input-group">
                     <label class="oh-label" for="phone"
-                      >{% trans "Phone" %}</label
+                      >* {% trans "Phone" %}</label
                     >
                     <input
                       type="text"
@@ -182,15 +194,15 @@
                       name="portfolio"
                       class="oh-input w-100"
                       placeholder="e.g. https://www.linktoportfolio.com/"
-                      />
-                      {{form.portfolio.errors}}
+                    />
+                    {{form.portfolio.errors}}
                   </div>
                 </div>
 
                 <div class="col-sm-12 col-md-12 col-lg-6">
                   <div class="oh-input-group">
                     <label class="oh-label" for="resume"
-                      >{% trans "Resume" %}</label
+                      >* {% trans "Resume" %}</label
                     >
                     <input
                       type="file"
@@ -205,7 +217,7 @@
                 <div class="col-sm-12 col-md-6 col-lg-6">
                   <div class="oh-input-group">
                     <label class="oh-label" for="gender"
-                      >{% trans "Gender" %}</label
+                      >* {% trans "Gender" %}</label
                     >
                     {{form.gender}} {{form.gender.errros}}
                   </div>
@@ -213,11 +225,12 @@
                 <div class="col-sm-12 col-md-6 col-lg-12">
                   <div class="oh-input-group">
                     <label class="oh-label" for="address"
-                      >{% trans "Address" %}</label
+                      >* {% trans "Address" %}</label
                     >
                     <textarea
                       id="address"
                       name="address"
+                      required
                       class="oh-input oh-input--textarea w-100"
                     ></textarea>
                     {{form.address.errors}}
@@ -227,11 +240,12 @@
                 <div class="col-sm-12 col-md-6 col-lg-6">
                   <div class="oh-input-group">
                     <label class="oh-label" for="id_country"
-                      >{% trans "Country" %}</label
+                      >* {% trans "Country" %}</label
                     >
                     <select
                       name="country"
                       id="id_country"
+                      required
                       class="oh-select oh-select-2"
                     ></select>
                     {{form.country.errors}}
@@ -241,10 +255,11 @@
                 <div class="col-sm-12 col-md-6 col-lg-6">
                   <div class="oh-input-group">
                     <label class="oh-label" for="id_state"
-                      >{% trans "State" %}</label
+                      >* {% trans "State" %}</label
                     >
                     <select
                       name="state"
+                      required
                       id="id_state"
                       class="oh-select oh-select-2"
                     ></select>
@@ -255,11 +270,12 @@
                 <div class="col-sm-12 col-md-6 col-lg-6">
                   <div class="oh-input-group">
                     <label class="oh-label" for="city"
-                      >{% trans "City" %}</label
+                      >* {% trans "City" %}</label
                     >
                     <input
                       type="text"
                       id="city"
+                      required
                       name="city"
                       class="oh-input w-100"
                       placeholder="e.g. Kerala"
@@ -271,11 +287,12 @@
                 <div class="col-sm-12 col-md-6 col-lg-6">
                   <div class="oh-input-group">
                     <label class="oh-label" for="zip"
-                      >{% trans "Zip Code" %}</label
+                      >* {% trans "Zip Code" %}</label
                     >
                     <input
                       type="text"
                       id="zip"
+                      required
                       name="zip"
                       class="oh-input w-100"
                       placeholder="e.g. 611 293"
@@ -283,8 +300,6 @@
                     {{form.zip.errors}}
                   </div>
                 </div>
-
-                
 
                 <div class="col-sm-12 col-md-12 col-lg-12">
                   <button
@@ -306,33 +321,45 @@
             </form>
           </div>
         </div>
-        
-        <div class="oh-onboarding-preview oh-onboarding-card--top-bar" >
+      </div>
+      <div class="col-12 col-md-6 col-lg-6">
+        <div class="oh-onboarding-preview oh-onboarding-card--top-bar w-100">
           {{recruitment.description|safe}}
-          <div class="oh-onboarding-preview__content" id="recruitmentInfoBody" style="border-bottom: solid rgba(128, 128, 128, 0.281) 1px;">
-          </div>
+          <div
+            class="oh-onboarding-preview__content"
+            id="recruitmentInfoBody"
+            style="border-bottom: solid rgba(128, 128, 128, 0.281) 1px"
+          ></div>
         </div>
-      </main>
+      </div>
     </div>
-    <script>
-      {% include 'country.js' %}
-      {% include 'select2.js' %}
-      var description = `{{form.instance.recruitment_id.description|safe}}`
-      var formattedDescription = description.replace(/\n/g, "<br>");
-      $("#recruitmentInfoBody").html(formattedDescription);
+  </div>
+  <main class="oh-onboarding"></main>
+</div>
+<script>
+  {% include 'country.js' %}
+  {% include 'select2.js' %}
+  var description = `{{form.instance.recruitment_id.description|safe}}`
+  var formattedDescription = description.replace(/\n/g, "<br>");
+  $("#recruitmentInfoBody").html(formattedDescription);
 
-    </script>
-    <script>
-      function validateForm(event) {
-        var fileInput = document.getElementById("photo");
-        var errorList = document.getElementById("error-list");
-
-        if (!fileInput.value) {
-          errorList.style.display = "block"; // Show error message
-        } else {
-          errorList.style.display = "none"; // Hide error message
-        }
+  $('form label').each(function() {
+    var text = $(this).text();
+    if (text.startsWith('*')) {
+        $(this).html('<strong>' + text + '</strong>');
       }
-    </script>
-    
+  });
+  function validateForm(event) {
+    var fileInput = document.getElementById("photo");
+    var errorList = document.getElementById("error-list");
+
+    if (!fileInput.value) {
+      errorList.scrollIntoView({ behavior: "smooth", block: "center" });
+      errorList.style.display = "block"; // Show error message
+    } else {
+      errorList.style.display = "none"; // Hide error message
+    }
+  }
+</script>
+
 {% endblock content %}

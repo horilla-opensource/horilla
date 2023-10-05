@@ -1,11 +1,48 @@
 
 $(document).ready(function () {
-    $('.stage-change').on('change', function() {
+    $('.stage-change').on('change', function(e) {
+    e.preventDefault()
+
       // Your code here
       var candidateId = $(this).attr('data-candidate-id');
+      var stageId = $(this).val();
       const elementToMove = $(`[data-change-cand-id=${candidateId}]`)
-      const stageContainerId = $(this).val();
-      $(`#candidateContainer${stageContainerId}`).append(elementToMove);     
+      $(`#candidateContainer${stageId}`).append(elementToMove);  
+      setTimeout(() => {
+        $.ajax({
+          type: "post",
+          url: `/recruitment/candidate-stage-update/${candidateId}/`,
+          data: {
+            csrfmiddlewaretoken: getCookie("csrftoken"),
+            stageId: stageId,
+          },
+          success: function (response) {
+            var selectElement = $("#stageChange" + candidateId);
+            selectElement.val(stageId);
+            var duration = 0;
+            if (response.type != "noChange") {
+              $("#ohMessages").append(`
+              <div class="oh-alert-container">
+              <div class="oh-alert oh-alert--animated oh-alert--${response.type}">
+              ${response.message}
+              </div>
+              </div>`);
+              duration = 1500;
+            }else{
+              countSequence(false);
+            }
+          },
+          error: (response) => {
+            $("#ohMessages").append(`
+              <div class="oh-alert-container">
+                <div class="oh-alert oh-alert--animated oh-alert--danger">
+                  Something went wrong.
+                </div>
+              </div>`);
+          },
+        });
+      }, 100);
+
     
     });
   
