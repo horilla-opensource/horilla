@@ -5,7 +5,7 @@ Payroll related module to write custom calculation methods
 """
 import calendar
 from datetime import timedelta, datetime, date
-from django.db.models import F
+from django.db.models import F, Q
 from django.core.paginator import Paginator
 from dateutil.relativedelta import relativedelta
 from leave.models import Holiday, CompanyLeave
@@ -13,22 +13,25 @@ from attendance.models import Attendance
 from payroll.models.models import Contract, Payslip
 
 
-def get_holiday_dates():
+def get_holiday_dates(range_start:date, range_end:date)->list:
     """
     :return: this functions returns a list of all holiday dates.
     """
-    holiday_dates = []
-    holidays = Holiday.objects.all()
+    pay_range_dates = get_date_range(start_date=range_start, end_date=range_end)
+    query = Q()
+    for check_date in pay_range_dates:
+        query |= Q(start_date__lte=check_date, end_date__gte=check_date)
+    holidays = Holiday.objects.filter(query)
+    holiday_dates = set([])
     for holiday in holidays:
-        holiday_start_date = holiday.start_date
-        holiday_end_date = holiday.end_date
-        if holiday_end_date is None:
-            holiday_end_date = holiday_start_date
-        holiday_days = holiday_end_date - holiday_start_date
-        for i in range(holiday_days.days + 1):
-            holiday_date = holiday_start_date + timedelta(i)
-            holiday_dates.append(holiday_date)
-    return holiday_dates
+        holiday_dates = holiday_dates | (
+            set(
+                get_date_range(
+                    start_date=holiday.start_date, end_date=holiday.end_date
+                )
+            )
+        )
+    return list(set(holiday_dates))
 
 
 def get_company_leave_dates(year):
@@ -95,7 +98,6 @@ def get_date_range(start_date, end_date):
     for i in range(delta.days + 1):
         current_date = start_date + timedelta(days=i)
         date_list.append(current_date)
-
     return date_list
 
 
@@ -105,8 +107,8 @@ def get_total_days(start_date, end_date):
 
     Args:
         start_date (date): The start date of the period.
-        end_date (date): The end date of the period.
 
+        end_date (date): The end date of the period.
     Returns:
         int: The total number of days in the period, including the end date.
 
@@ -130,7 +132,7 @@ def get_working_days(start_date, end_date):
         end_date (_type_): the end date till the date needed
     """
 
-    holiday_dates = get_holiday_dates()
+    holiday_dates = get_holiday_dates(start_date, end_date)
 
     # appending company/holiday leaves
     # Note: Duplicate entry may exist
@@ -255,7 +257,7 @@ def get_attendance(employee, start_date, end_date):
     conflict_dates = conflict_dates + [
         date
         for date in present_on
-        if date in get_holiday_dates()
+        if date in get_holiday_dates(start_date, end_date)
         or date
         in list(
             set(
@@ -398,7 +400,7 @@ def get_daily_salary(wage, wage_date) -> dict:
     end_date = date(wage_date.year, wage_date.month, last_day)
     start_date = date(wage_date.year, wage_date.month, 1)
     working_days = get_working_days(start_date, end_date)["total_working_days"]
-    day_wage = wage / working_days
+    day_wage = wage / working_days  # if working_days != 0 else 0
 
     return {
         "day_wage": day_wage,
@@ -452,7 +454,8 @@ def months_between_range(wage, start_date, end_date):
             # month period
             "working_days_on_period": total_working_days_on_period,
             "working_days_on_month": working_days_on_month,
-            "per_day_amount": wage / working_days_on_month,
+            "per_day_amount": wage
+            / working_days_on_month,  # if working_days_on_month != 0 else 0,
         }
 
         months_data.append(month_info)
