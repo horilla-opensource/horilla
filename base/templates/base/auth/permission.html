@@ -1,51 +1,62 @@
-{% extends 'settings.html' %}
-{% load i18n %}
-{% block settings %}
-
+{% extends 'settings.html' %} {% load i18n %} {% block settings %}
 
 <div class="oh-inner-sidebar-content">
-    <form action="" method="post" class='settings-label mb-1'>
-        {% csrf_token %}
-        <div class="oh-inner-sidebar-content__header">
-            <h2 class="oh-inner-sidebar-content__title">{% trans "Permissions" %}</h2>
-        </div>
-        <div class="oh-inner-sidebar-content__body">
-            <div class="oh-input-group">
-                {% csrf_token %}
-                {{form}}
-            </div>
-            
-        </div>
-        <button type='submit' class="oh-btn oh-btn--secondary mt-2 mr-0 oh-btn--w-100-resp">
-            {% trans "Save Changes" %}
-        </button>
-        <div class="oh-inner-sidebar-content__footer">
-        </div>
-        </div>
-        </form>
-        <div class="oh-table-controls">
-            <div
-              class="oh-input-group"
-            >
-              <ion-icon
-                name="search-outline"
-                class="oh-input-group__icon oh-input-group__icon--left"
-              ></ion-icon>
-              <input
-                hx-get="{% url 'permission-search' %}"
-                hx-target='#view-container'
-                hx-trigger = "keyup changed delay:.2s"
-                name="search"
-                type="text"
-                class="oh-input oh-input__icon oh-input--medium"
-                aria-label="Search Input"
-                placeholder="{% trans 'Search' %}"
-              />
-            </div>
-        </div>
-    <div id="view-container">
-        {% include 'base/auth/permission_view.html' %}
+  <form action="" method="post" class="settings-label mb-1">
+    {% csrf_token %}
+    <div class="oh-inner-sidebar-content__header">
+      <h2 class="oh-inner-sidebar-content__title">{% trans "Permissions" %}</h2>
     </div>
+    <div class="oh-inner-sidebar-content__body">
+      <div class="oh-input-group">
+        {% csrf_token %}
+        <div>
+          <label for="id_employee">Employee</label>
+          {{form.employee}}
+        </div>
+        <label for="id_permission" onclick="event.stopImmediatePropagation()"
+          >Permissions</label
+        >
+        {{form.permission}}
+      </div>
+    </div>
+    <script>
+      $(document).ready(function () {
+        $("input").click(function (e) { 
+          alert()
+          e.preventDefault();
+          setTimeout(() => {
+            $(this).focus();
+          }, 1000);
+        });
+      });
+    </script>
+    <button
+      type="submit"
+      class="oh-btn oh-btn--secondary mt-2 mr-0 oh-btn--w-100-resp"
+    >
+      {% trans "Save Changes" %}
+    </button>
+    <div class="oh-inner-sidebar-content__footer"></div>
+  </form>
+  <div class="oh-table-controls">
+    <div class="oh-input-group">
+      <ion-icon
+        name="search-outline"
+        class="oh-input-group__icon oh-input-group__icon--left"
+      ></ion-icon>
+      <input
+        hx-get="{% url 'permission-search' %}"
+        hx-target="#view-container"
+        hx-trigger="keyup changed delay:.2s"
+        name="search"
+        type="text"
+        class="oh-input oh-input__icon oh-input--medium"
+        aria-label="Search Input"
+        placeholder="{% trans 'Search' %}"
+      />
+    </div>
+  </div>
+  <div id="view-container">{% include 'base/auth/permission_view.html' %}</div>
 </div>
 
 {% endblock settings %}
