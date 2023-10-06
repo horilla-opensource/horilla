@@ -114,20 +114,18 @@
 </div>
 <script>
   $(document).ready(function () {
-      var activeTab = localStorage.getItem('activeTabSettings')
-      if (activeTab != null) {
-        var tab  = $(`[id="${activeTab}"]`)  
-        $(tab).attr('class', 'oh-inner-sidebar__link oh-dropdown__link oh-inner-sidebar__link--active');
-        $(tab).attr('style', 'border:1px solid #FF820D ; border-radius:10px; ');
-      }
-      else{
-        $('[id="department"]').attr('class', 'oh-inner-sidebar__link oh-dropdown__link oh-inner-sidebar__link--active');   
-      }
-      $('.oh-inner-sidebar__link').click(function (e) { 
-        var activeTab = $(this).attr('id');
-        localStorage.setItem('activeTabSettings',activeTab)
-      });
-    });
-    
+    var path = location.pathname
+    var menu = $(`a[href="${path}"].oh-inner-sidebar__link.oh-dropdown__link`)
+    if (menu.length == 0) {
+      var path = localStorage.getItem("lastActiveTab")
+      menu = $(`a[href="${path}"].oh-inner-sidebar__link.oh-dropdown__link`)
+    }
+    menu.addClass("oh-inner-sidebar__link--active");
+    menu.attr('style', 'border:1px solid #FF820D ; border-radius:2px;');
+    menu[0].scrollIntoView({ behavior: "smooth", block: "center" })
+    if (menu.length != undefined) {
+      localStorage.setItem("lastActiveTab",path)
+    }
+  })
 </script>
 {% endblock content %}
