@@ -1,0 +1,48 @@
+{% load i18n %}
+    <!-- Sticky Table  for own objective-->
+    <div class="oh-sticky-table">
+      <div class="oh-sticky-table__table ">
+        <div class="oh-sticky-table__thead">
+          <div class="oh-sticky-table__tr">
+            <div class="oh-sticky-table__th">{% trans "Asset" %}</div>
+            <div class="oh-sticky-table__th">{% trans "Status" %}</div>
+            <div class="oh-sticky-table__th">{% trans "Assigned Date" %}</div>
+            <div class="oh-sticky-table__th"></div>
+          </div>
+        </div>
+        <div class="oh-sticky-table__tbody">
+          <div id="assetRequestAllocationTarget"></div>
+          {% for asset in assets %}
+          {% if asset.asset_id.asset_status == "In use" %}
+          <!-- asset request looping -->
+            <div class="oh-sticky-table__tr">
+                <div class="oh-sticky-table__sd">
+                <div class="oh-profile oh-profile--md">
+                    <div class="oh-profile__avatar mr-1">
+                    <img src="https://ui-avatars.com/api/?name={{asset.asset_id.asset_name}}&background=random" class="oh-profile__image"
+                        alt="" />
+                    </div>
+                    <span class="oh-profile__name oh-text--dark">{{asset.asset_id.asset_name}}
+                    </span>
+                </div>
+                </div>
+                <div class="oh-sticky-table__td">
+                <span class="oh-dot oh-dot--small  me-1 oh-dot--color oh-dot--warning"></span>
+                <span class="link-warning">
+                {{asset.asset_id.asset_status}}
+                </span>
+                </div>
+                <div class="oh-sticky-table__td">
+                <span class="oh-dot oh-dot--small  me-1 oh-dot--color oh-dot--success"></span>
+                <span class="link-success">
+                {{asset.assigned_date}}
+                </span>
+                </div>
+            </div>
+          {% endif %}
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+    <!-- End of Sticky Table -->
+

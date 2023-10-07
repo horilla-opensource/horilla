@@ -28,6 +28,7 @@ from django.utils.translation import gettext as __
 from django.contrib.auth.models import User
 from django.views.decorators.http import require_http_methods
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+from asset.models import AssetAssignment
 from notifications.signals import notify
 from horilla.decorators import (
     permission_required,
@@ -59,6 +60,7 @@ from employee.forms import (
     EmployeeBankDetailsUpdateForm,
 )
 from employee.models import Employee, EmployeeWorkInformation, EmployeeBankDetails
+from pms.models import Feedback
 from recruitment.models import Candidate
 
 
@@ -78,7 +80,10 @@ def employee_profile(request):
     employee = request.user.employee_get
     user_leaves = employee.available_leave.all()
     employee = Employee.objects.filter(employee_user_id=user).first()
-    return render(request, "employee/profile/profile_view.html", {"employee": employee,"user_leaves":user_leaves})
+    assets = AssetAssignment.objects.filter(assigned_to_employee_id=employee)
+    feedback_own = Feedback.objects.filter(employee_id=employee,archive=False)
+    today=datetime.today()
+    return render(request, "employee/profile/profile_view.html", {"employee": employee,"user_leaves":user_leaves,"assets":assets,"self_feedback":feedback_own,"current_date":today,})
 
 
 @login_required
@@ -127,11 +132,14 @@ def employee_view_individual(request, obj_id):
     """
     employee = Employee.objects.get(id=obj_id)
     employee_leaves = employee.available_leave.all()
+    feedback_own = Feedback.objects.filter(employee_id=employee,archive=False)
+    today = datetime.today()
+    assets = AssetAssignment.objects.filter(assigned_to_employee_id=employee)
     user = Employee.objects.filter(employee_user_id=request.user).first()
     if user.reporting_manager.filter(
         employee_id=employee
     ).exists() or request.user.has_perm("employee.change_employee"):
-        return render(request, "employee/view/individual.html", {"employee": employee,"employee_leaves":employee_leaves})
+        return render(request, "employee/view/individual.html", {"employee": employee,"employee_leaves":employee_leaves,"assets":assets,"self_feedback":feedback_own,"current_date":today,})
     return HttpResponseRedirect(
         request.META.get("HTTP_REFERER", "/employee/employee-view")
     )

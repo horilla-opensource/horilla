@@ -1,0 +1,47 @@
+{% load i18n %}
+<div class="oh-sticky-table">
+    <div class="oh-sticky-table__table ">
+      <div class="oh-sticky-table__thead">
+        <div class="oh-sticky-table__tr">
+          <div class="oh-sticky-table__th">{% trans "Employee" %}</div>
+          <div class="oh-sticky-table__th">{% trans "Title" %}</div>
+          <div class="oh-sticky-table__th">{% trans "Status" %}</div>
+          <div class="oh-sticky-table__th">{% trans "Due In" %}</div>
+          <div class="oh-sticky-table__th"></div>
+        </div>
+      </div>
+      <div class="oh-sticky-table__tbody">
+        {% for feedback in self_feedback %}
+        <div class="oh-sticky-table__tr">
+          <a href="{% url 'feedback-detailed-view' id=feedback.id %}" style="color: inherit;text-decoration: none;" class="oh-sticky-table__sd">
+            <div class="oh-profile oh-profile--md">
+              <div class="oh-profile__avatar mr-1">
+                <img src="https://ui-avatars.com/api/?name={{feedback.employee_id}}&background=random" class="oh-profile__image"
+                  alt="{{feedback.employee_id}}" />
+              </div>
+              <span class="oh-profile__name oh-text--dark">{{feedback.employee_id}}</span>
+            </div>
+          </a>
+          <a href="{% url 'feedback-detailed-view' id=feedback.id %}" style="color: inherit;text-decoration: none;"class="oh-sticky-table__td">{{feedback.review_cycle | title}}</a>
+          <a href="{% url 'feedback-detailed-view' id=feedback.id %}" style="color: inherit;text-decoration: none;"class="oh-sticky-table__td">
+            <span class="oh-dot oh-dot--small  me-1 oh-dot--color{{ feedback.status }}"></span>
+            <span>{% trans feedback.status %}</span> 
+          </a>
+          <a href="{% url 'feedback-detailed-view' id=feedback.id %}" style="color: inherit;text-decoration: none;" class="oh-sticky-table__td">{{ current_date|timesince:feedback.end_date }}</a>
+          <div class="oh-sticky-table__td">
+            <div class="oh-btn-group">
+                {% if request.user.employee_get.id == feedback.manager_id.id or request.user.employee_get.id == feedback.employee_id.id or request.user.employee_get in feedback.colleague_id.all or request.user.employee_get in feedback.subordinate_id.all %}
+                  <a class="oh-btn w-100" href="{% url 'feedback-answer-get' id=feedback.id %}" title="{% trans 'Answer' %}">
+                      <ion-icon name="create-outline"></ion-icon>
+                  </a>
+              {% endif %}
+              
+                <a class="oh-btn w-100"  href="{% url 'feedback-answer-view' id=feedback.id %}" title="{% trans 'Answer view' %}"><ion-icon name="eye"></ion-icon></ion-icon></a>
+                
+            </div>
+          </div>
+        </div>
+        {% endfor%}
+      </div>
+    </div>
+  </div>
