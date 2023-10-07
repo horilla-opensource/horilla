@@ -252,7 +252,7 @@ class EmployeeShiftDay(models.Model):
     objects = models.Manager()
 
     def __str__(self) -> str:
-        return str(_(self.day))
+        return str(_(self.day).capitalize())
 
 class EmployeeShift(models.Model):
     """
