@@ -2619,11 +2619,12 @@ def validation_condition_create(request):
     and create if the form is valid.
     """
     form = AttendanceValidationConditionForm()
-    condition = AttendanceValidationCondition.objects.first()
     if request.method == "POST":
         form = AttendanceValidationConditionForm(request.POST)
         if form.is_valid():
             form.save()
+            messages.success(request, _("Attendance Break-point settings created."))
+    condition = AttendanceValidationCondition.objects.first()
     return render(
         request,
         "attendance/break_point/condition.html",
@@ -2644,6 +2645,7 @@ def validation_condition_update(request, obj_id):
         form = AttendanceValidationConditionForm(request.POST, instance=condition)
         if form.is_valid():
             form.save()
+            messages.success(request, _("Attendance Break-point settings updated."))
     return render(
         request,
         "attendance/break_point/condition.html",
