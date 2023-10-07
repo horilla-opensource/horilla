@@ -97,10 +97,16 @@ urlpatterns = [
     path("create-note/<int:cand_id>/", views.create_note, name="create-note"),
     path("create-note", views.create_note, name="create-note-post"),
     path("note-update/<int:note_id>/", views.note_update, name="note-update"),
+    path("note-update-individual/<int:note_id>/", views.note_update_individual, name="note-update-individual"),
     path(
         "note-delete/<int:note_id>/",
         recruitment.views.actions.note_delete,
         name="note-delete",
+    ),
+    path(
+        "note-delete-individual/<int:note_id>/",
+        recruitment.views.actions.note_delete_individual,
+        name="note-delete-individual",
     ),
     path("send-mail/<int:cand_id>/", views.form_send_mail, name="send-mail"),
     path("candidate-view", views.candidate_view, name="candidate-view"),

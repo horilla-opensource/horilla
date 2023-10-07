@@ -595,6 +595,35 @@ def note_update(request, note_id):
         request, "pipeline/pipeline_components/update_note.html", {"form": form}
     )
 
+@login_required
+@permission_required(perm="recruitment.change_stagenote")
+def note_update_individual(request, note_id):
+    """
+    This method is used to update the stage not
+    Args:
+        id : stage note instance id
+    """
+    note = StageNote.objects.get(id=note_id)
+    form = StageNoteForm(instance=note)
+    if request.POST:
+        form = StageNoteForm(request.POST, instance=note)
+        if form.is_valid():
+            form.save()
+            messages.success(request, _("Note updated successfully..."))
+            response = render(
+                request, "pipeline/pipeline_components/update_note_individual.html", {"form": form}
+            )
+            return HttpResponse(
+                response.content.decode("utf-8") + "<script>location.reload();</script>"
+            )
+    return render(
+        request,
+        "pipeline/pipeline_components/update_note_individual.html",
+        {
+            "form": form,
+        },
+    )
+
 
 @login_required
 @permission_required(perm="recruitment.change_candidate")
