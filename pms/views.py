@@ -513,10 +513,23 @@ def objective_detailed_view_key_result_status(request, obj_id, kr_id):
 
     status = request.POST.get("key_result_status")
     employee_key_result = EmployeeKeyResult.objects.get(id=kr_id)
-    employee_key_result.status = status
+
+    current_value = employee_key_result.current_value
+    target_value = employee_key_result.target_value
+
+    if current_value >= target_value:
+        employee_key_result.status = 'Closed'
+    else:
+        employee_key_result.status = status
     employee_key_result.save()
     messages.info(request, _("Status has been updated"))
-    return redirect(objective_detailed_view_activity, id=obj_id)
+    # return redirect(objective_detailed_view_activity, id=obj_id)
+    response = (
+                redirect(objective_detailed_view_activity, id=obj_id)
+            )
+    return HttpResponse(
+        response.content.decode("utf-8") + "<script>location.reload();</script>"
+    )
 
 
 @login_required
@@ -534,7 +547,7 @@ def objective_detailed_view_current_value(request, kr_id):
         employee_key_result = EmployeeKeyResult.objects.get(id=kr_id)
         target_value = employee_key_result.target_value
         objective_id = employee_key_result.employee_objective_id.id
-        if int(current_value) <= target_value:
+        if int(current_value) < target_value:
             employee_key_result.current_value = current_value
             employee_key_result.save()
             messages.info(
@@ -543,6 +556,24 @@ def objective_detailed_view_current_value(request, kr_id):
                 % {"employee_key_result": employee_key_result},
             )
             return redirect(objective_detailed_view_activity, objective_id)
+
+        elif int(current_value) == target_value:
+            employee_key_result.current_value = current_value
+            employee_key_result.status = 'Closed'
+            employee_key_result.save()
+            messages.info(
+                request,
+                _("Current value of %(employee_key_result)s updated")
+                % {"employee_key_result": employee_key_result},
+            )
+            # return redirect(objective_detailed_view_activity, objective_id)
+            response = (
+                redirect(objective_detailed_view_activity, objective_id)
+            )
+            return HttpResponse(
+                response.content.decode("utf-8") + "<script>location.reload();</script>"
+            )
+        
         elif int(current_value) > target_value:
             messages.warning(request, _("Current value is greater than target value"))
             return redirect(objective_detailed_view_activity, objective_id)
@@ -1006,7 +1037,7 @@ def feedback_list_view(request):
     employees = Employee.objects.filter(
         employee_work_info__reporting_manager_id=employee
     )  # checking the user is reporting manager or not
-
+    feedback_available = Feedback.objects.all()
     if request.user.has_perm("pms.view_feedback"):
         context = filter_pagination_feedback(
             request, feedback_own, feedback_requested, feedback_all
@@ -1022,7 +1053,7 @@ def feedback_list_view(request):
         context = filter_pagination_feedback(
             request, feedback_own, feedback_requested, feedback_all
         )
-    if feedback_own.exists() or feedback_requested.exists() or feedback_all.exists():
+    if feedback_available.exists():
         template = "feedback/feedback_list_view.html"
     else:
         template = "feedback/feedback_empty.html"
