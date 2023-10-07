@@ -143,6 +143,11 @@ $(document).ready(function () {
     });
   });
 
+  $("#select-all-fields").change(function () {
+    const isChecked = $(this).prop("checked");
+    $('[name="selected_fields"]').prop("checked", isChecked);
+  });
+
   $("#attendanceImportForm").submit(function (e) {
     e.preventDefault();
 
@@ -187,8 +192,7 @@ $(document).ready(function () {
           window.location.href = "/attendance/attendance-view";
         }
       })
-      .catch((error) => {
-      });
+      .catch((error) => {});
   });
 
   $("#validateAttendances").click(function (e) {

@@ -119,7 +119,7 @@ class AttendanceUpdateForm(ModelForm):
             "requested_data",
             "is_validate_request",
             "is_validate_request_approved",
-            "attendance_overtime_approve"
+            "attendance_overtime_approve",
         ]
         model = Attendance
         widgets = {
@@ -242,7 +242,6 @@ class AttendanceForm(ModelForm):
         self.fields["employee_id"].widget.attrs.update({"id": str(uuid.uuid4())})
         self.fields["shift_id"].widget.attrs.update({"id": str(uuid.uuid4())})
         self.fields["work_type_id"].widget.attrs.update({"id": str(uuid.uuid4())})
-
 
     def save(self, commit=True):
         instance = super().save(commit=False)
@@ -396,9 +395,15 @@ class AttendanceValidationConditionForm(forms.ModelForm):
         approve_overtime_after = forms.DurationField()
         overtime_cutoff = forms.DurationField()
         widgets = {
-            "validation_at_work": forms.TextInput(attrs={"class": "oh-input w-100","placeholder": "09:00"}),
-            "minimum_overtime_to_approve": forms.TextInput(attrs={"class": "oh-input w-100","placeholder": "00:30"}),
-            "overtime_cutoff": forms.TextInput(attrs={"class": "oh-input w-100","placeholder": "02:00"}),
+            "validation_at_work": forms.TextInput(
+                attrs={"class": "oh-input w-100", "placeholder": "09:00"}
+            ),
+            "minimum_overtime_to_approve": forms.TextInput(
+                attrs={"class": "oh-input w-100", "placeholder": "00:30"}
+            ),
+            "overtime_cutoff": forms.TextInput(
+                attrs={"class": "oh-input w-100", "placeholder": "02:00"}
+            ),
         }
 
         labels = {
@@ -547,3 +552,42 @@ class NewRequestForm(AttendanceRequestForm):
         new_instance.request_type = "create_request"
         self.new_instance = new_instance
         return
+
+excluded_fields = [
+    "id",
+    "requested_data",
+    "at_work_second",
+    "overtime_second",
+    "approved_overtime_second",
+    "is_validate_request",
+    "is_validate_request_approved",
+    "request_description",
+    "request_type",
+    "objects",
+]
+
+
+class AttendanceExportForm(forms.Form):
+    model_fields = Attendance._meta.get_fields()
+    field_choices = [
+        (field.name, field.verbose_name)
+        for field in model_fields
+        if hasattr(field, "verbose_name") and field.name not in excluded_fields
+    ]
+
+    selected_fields = forms.MultipleChoiceField(
+        choices=field_choices,
+        widget=forms.CheckboxSelectMultiple,
+        initial=[
+            "employee_id",
+            "shift_id",
+            "work_type_id",
+            "attendance_date",
+            "attendance_clock_in",
+            "attendance_clock_in_date",
+            "attendance_clock_out",
+            "attendance_clock_out_date",
+            "attendance_worked_hour",
+            "attendance_validated",
+        ],
+    )

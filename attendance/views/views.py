@@ -15,6 +15,7 @@ provide the main entry points for interacting with the application's functionali
 import json
 import contextlib
 from datetime import datetime
+from datetime import date
 import pandas as pd
 from django.shortcuts import render, redirect
 from django.utils.translation import gettext_lazy as _
@@ -45,6 +46,7 @@ from attendance.forms import (
     AttendanceOverTimeForm,
     AttendanceValidationConditionForm,
     AttendanceUpdateForm,
+    AttendanceExportForm,
 )
 from attendance.models import (
     Attendance,
@@ -195,7 +197,7 @@ def attendance_excel(_request):
 def attendance_import(request):
     """
     Save the import of attendance data from an uploaded Excel file, validate the data,
-    and return an Excel file with error details if validation fails for anyone 
+    and return an Excel file with error details if validation fails for anyone
     of the attendance data.
 
     Parameters:
@@ -223,6 +225,39 @@ def attendance_import(request):
     return redirect(attendance_view)
 
 
+def attendance_export(request):
+    """
+    Export attendance data to an Excel file.
+
+    This view function takes a GET request and exports attendance data into an Excel file.
+    The exported Excel file will include the selected fields from the Attendance model,
+    and the data will be ordered by attendance date.
+    """
+    today_date = date.today().strftime("%Y-%m-%d")
+    file_name = f"Attendance_{today_date}.xlsx"
+    attendances = AttendanceFilters(request.GET).qs.order_by("attendance_date")
+    selected_fields = request.GET.getlist("selected_fields")
+    model_fields = Attendance._meta.get_fields()
+    attendance_data = {}
+    for field in model_fields:
+        field_name = field.name
+        if field_name in selected_fields:
+            attendance_data[field.verbose_name] = []
+            for attendance in attendances:
+                value = getattr(attendance, field_name)
+                if value is True:
+                    value = "Yes"
+                elif value is False:
+                    value = "No"
+                attendance_data[field.verbose_name].append(value)
+
+    data_frame = pd.DataFrame(data=attendance_data)
+    response = HttpResponse(content_type="application/ms-excel")
+    response["Content-Disposition"] = f'attachment; filename="{file_name}"'
+    data_frame.to_excel(response, index=False)
+    return response
+
+
 @login_required
 @manager_can_enter("attendance.view_attendance")
 def attendance_view(request):
@@ -231,6 +266,7 @@ def attendance_view(request):
     """
     previous_data = request.GET.urlencode()
     form = AttendanceForm()
+    export_form = AttendanceExportForm()
     condition = AttendanceValidationCondition.objects.first()
     minot = strtime_seconds("00:00")
     if condition is not None and condition.minimum_overtime_to_approve is not None:
@@ -261,6 +297,7 @@ def attendance_view(request):
         template,
         {
             "form": form,
+            "export_form": export_form,
             "validate_attendances": paginator_qry(
                 validate_attendances, request.GET.get("vpage")
             ),
@@ -269,6 +306,7 @@ def attendance_view(request):
                 ot_attendances, request.GET.get("opage")
             ),
             "f": filter_obj,
+            "export": AttendanceFilters(queryset=Attendance.objects.all()),
             "pd": previous_data,
             "gp_fields": AttendanceReGroup.fields,
         },

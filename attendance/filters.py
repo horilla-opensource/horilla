@@ -4,10 +4,12 @@ filters.py
 This page is used to register filter for attendance models
 
 """
+import uuid
 import django_filters
 from django.forms import DateTimeInput
 from django import forms
 from horilla.filters import filter_by_name
+from employee.models import Employee
 from attendance.models import (
     Attendance,
     AttendanceOverTime,
@@ -78,7 +80,7 @@ class DurationInSecondsFilter(django_filters.CharFilter):
 
         Args:
             qs (self): FilterSet instance
-            value (str): duration formated string
+            value (str): duration formatted string
 
         Returns:
             qs: queryset object
@@ -98,19 +100,20 @@ class AttendanceOverTimeFilter(FilterSet):
     Args:
         FilterSet (class): custom filter set class to apply styling
     """
+
     MONTH_CHOICES = [
-    ('January', 'January'),
-    ('February', 'February'),
-    ('March', 'March'),
-    ('April', 'April'),
-    ('May', 'May'),
-    ('June', 'June'),
-    ('July', 'July'),
-    ('August', 'August'),
-    ('September', 'September'),
-    ('October', 'October'),
-    ('November', 'November'),
-    ('December', 'December'),
+        ("January", "January"),
+        ("February", "February"),
+        ("March", "March"),
+        ("April", "April"),
+        ("May", "May"),
+        ("June", "June"),
+        ("July", "July"),
+        ("August", "August"),
+        ("September", "September"),
+        ("October", "October"),
+        ("November", "November"),
+        ("December", "December"),
     ]
     search = django_filters.CharFilter(method=filter_by_name)
 
@@ -126,7 +129,7 @@ class AttendanceOverTimeFilter(FilterSet):
     overtime__lte = DurationInSecondsFilter(
         field_name="overtime_second", lookup_expr="lte"
     )
-    month = django_filters.ChoiceFilter(choices=MONTH_CHOICES,lookup_expr="icontains")
+    month = django_filters.ChoiceFilter(choices=MONTH_CHOICES, lookup_expr="icontains")
 
     class Meta:
         """
@@ -335,6 +338,11 @@ class AttendanceFilters(FilterSet):
 
     search = django_filters.CharFilter(method=filter_by_name)
 
+    employee_id = django_filters.ModelMultipleChoiceFilter(
+        queryset=Employee.objects.all(),  
+        widget=forms.SelectMultiple(),
+    )
+
     attendance_date__gte = django_filters.DateFilter(
         field_name="attendance_date",
         lookup_expr="gte",
@@ -430,6 +438,8 @@ class AttendanceFilters(FilterSet):
 
     def __init__(self, data=None, queryset=None, *, request=None, prefix=None):
         super().__init__(data=data, queryset=queryset, request=request, prefix=prefix)
+        for field in self.form.fields.keys():
+            self.form.fields[field].widget.attrs["id"] = f"{uuid.uuid4()}"
 
 
 class LateComeEarlyOutReGroup:

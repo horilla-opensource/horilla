@@ -297,3 +297,13 @@ def search_attendance_requests(request):
             "filter_dict": data_dict,
         },
     )
+
+from django.http import JsonResponse
+
+@login_required
+def widget_filter(request):
+    """
+    This method is used to return all the ids of the employees
+    """
+    ids = AttendanceFilters(request.GET).qs.values_list("id", flat=True)
+    return JsonResponse({"ids": list(ids)})

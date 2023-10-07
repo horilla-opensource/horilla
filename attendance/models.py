@@ -130,7 +130,10 @@ class Attendance(models.Model):
         verbose_name=_("Attendance date"),
     )
     attendance_day = models.ForeignKey(
-        EmployeeShiftDay, on_delete=models.DO_NOTHING, null=True
+        EmployeeShiftDay,
+        on_delete=models.DO_NOTHING,
+        null=True,
+        verbose_name=_("Attendance day"),
     )
     attendance_clock_in = models.TimeField(
         null=True, verbose_name=_("Check-in"), help_text=_("First Check-in Time")
@@ -149,7 +152,7 @@ class Attendance(models.Model):
         default="00:00",
         max_length=10,
         validators=[validate_time_format],
-        verbose_name=_("At work"),
+        verbose_name=_("Worked Hours"),
     )
     minimum_hour = models.CharField(
         max_length=10,
@@ -472,10 +475,10 @@ class AttendanceValidationCondition(models.Model):
         max_length=10, validators=[validate_time_format]
     )
     minimum_overtime_to_approve = models.CharField(
-        blank=True,null=True, max_length=10, validators=[validate_time_format]
+        blank=True, null=True, max_length=10, validators=[validate_time_format]
     )
     overtime_cutoff = models.CharField(
-        blank=True,null=True, max_length=10, validators=[validate_time_format]
+        blank=True, null=True, max_length=10, validators=[validate_time_format]
     )
     objects = models.Manager()
 

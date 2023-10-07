@@ -200,17 +200,20 @@ def get_key_instances(model, data_dict):
 
     for field_name in present_foreign_key_field_names:
         try:
-            # Get the integer value from data_dict for the field
-            field_value = int(data_dict[field_name][0])
+            # Get the list of integer values from data_dict for the field
+            field_values = [int(value) for value in data_dict[field_name]]
 
             # Get the related model of the ForeignKey field
             related_model = model._meta.get_field(field_name).remote_field.model
 
-            # Get the instance of the related model using the field value
-            related_instance = related_model.objects.get(id=field_value)
+            # Get the instances of the related model using the field values
+            related_instances = related_model.objects.filter(id__in=field_values)
 
-            # Update data_dict with the string representation of the instance
-            data_dict[field_name] = [str(related_instance)]
+            # Create a list of string representations of the instances
+            related_strings = [str(instance) for instance in related_instances]
+
+            # Update data_dict with the list of string representations
+            data_dict[field_name] = related_strings
         except (ObjectDoesNotExist, ValueError):
             pass
 
