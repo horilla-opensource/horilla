@@ -33,6 +33,10 @@
                   <label class="oh-label">{% trans "Validated?" %}</label>
                   {{f.form.attendance_validated}}
                 </div>
+                <div class="oh-input-group">
+                  <label class="oh-label">{% trans "Requested?" %}</label>
+                  {{f.form.is_validate_request}}
+                </div>
               </div>
               <div class="col-sm-12 col-md-12 col-lg-6">
                 <div class="oh-input-group">
@@ -46,6 +50,10 @@
                 <div class="oh-input-group">
                   <label class="oh-label">{% trans "OT Approved?" %}</label>
                   {{f.form.attendance_overtime_approve}}
+                </div>
+                <div class="oh-input-group">
+                  <label class="oh-label">{% trans "Approved Request" %}</label>
+                  {{f.form.is_validate_request_approved}}
                 </div>
               </div>
             </div>

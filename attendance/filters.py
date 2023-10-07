@@ -339,7 +339,7 @@ class AttendanceFilters(FilterSet):
     search = django_filters.CharFilter(method=filter_by_name)
 
     employee_id = django_filters.ModelMultipleChoiceFilter(
-        queryset=Employee.objects.all(),  
+        queryset=Employee.objects.all(),
         widget=forms.SelectMultiple(),
     )
 
@@ -425,6 +425,8 @@ class AttendanceFilters(FilterSet):
             "late_come_early_out__type",
             "attendance_overtime_approve",
             "attendance_validated",
+            "is_validate_request",
+            "is_validate_request_approved",
             "at_work_second__lte",
             "at_work_second__gte",
             "overtime_second__lte",

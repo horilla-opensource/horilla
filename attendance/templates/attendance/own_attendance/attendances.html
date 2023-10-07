@@ -1,119 +1,277 @@
-{% load i18n %}
-{% include 'filter_tags.html' %}
+{% load i18n %} {% include 'filter_tags.html' %}
+<style>
+  .row-status--orange {
+    border-left: 4px solid orange;
+    border-radius: 5px;
+  }
+  .row-status--red {
+    border-left: 4px solid rgb(243, 44, 44);
+    border-radius: 5px;
+  }
+  .row-status--green {
+    border-left: 4px solid rgb(2, 190, 2);
+    border-radius: 5px;
+  }
+  .row-status--blue {
+    border-left: 4px solid rgb(16, 56, 235);
+    border-radius: 5px;
+  }
+</style>
+<div class="d-flex flex-row-reverse">
+  <span
+    class="m-3"
+    style="cursor: pointer"
+    hx-get='{% url "filter-own-attendance" %}?is_validate_request_approved=true'
+    hx-swap="innerHTML"
+    hx-target="#attendance-container"
+  >
+    <span
+      class="oh-dot oh-dot--small me-1"
+      style="background-color: blue"
+    ></span>
+    {% trans "Approved request" %}
+  </span>
+  <span
+    class="m-3"
+    style="cursor: pointer"
+    hx-get='{% url "filter-own-attendance" %}?is_validate_request=true'
+    hx-swap="innerHTML"
+    hx-target="#attendance-container"
+  >
+    <span
+      class="oh-dot oh-dot--small me-1"
+      style="background-color: orange"
+    ></span>
+    {% trans "Requested" %}
+  </span>
+  <span
+    class="m-3"
+    style="cursor: pointer"
+    hx-get='{% url "filter-own-attendance" %}?attendance_validated=false'
+    hx-swap="innerHTML"
+    hx-target="#attendance-container"
+  >
+    <span
+      class="oh-dot oh-dot--small me-1"
+      style="background-color: red"
+    ></span>
+    {% trans "Not validated" %}
+  </span>
+  <span
+    class="m-3"
+    style="cursor: pointer"
+    hx-get='{% url "filter-own-attendance" %}?attendance_validated=true'
+    hx-swap="innerHTML"
+    hx-target="#attendance-container"
+  >
+    <span
+      class="oh-dot oh-dot--small me-1"
+      style="background-color: green"
+    ></span>
+    {% trans "Validated" %}
+  </span>
+</div>
 <div class="oh-sticky-table">
-    <div class="oh-sticky-table__table oh-table--sortable">
-      <div class="oh-sticky-table__thead">
-        <div class="oh-sticky-table__tr">
-          <div class="oh-sticky-table__th" hx-target='#attendance-container' hx-get="{% url 'own-attendance-filter' %}?{{pd}}&orderby=employee_id__employee_first_name">{% trans "Employee" %}</div>
-          <div class="oh-sticky-table__th" hx-target='#attendance-container' hx-get="{% url 'own-attendance-filter' %}?{{pd}}&orderby=attendance_date">{% trans "Date" %}</div>
-          <div class="oh-sticky-table__th" hx-target='#attendance-container' hx-get="{% url 'own-attendance-filter' %}?{{pd}}&orderby=">{% trans "Day" %}</div>
-          <div class="oh-sticky-table__th" hx-target='#attendance-container' hx-get="{% url 'own-attendance-filter' %}?{{pd}}&orderby=">{% trans "Check-In" %}</div>
-          <div class="oh-sticky-table__th" hx-target='#attendance-container' hx-get="{% url 'own-attendance-filter' %}?{{pd}}&orderby=attendance_clock_in_date">{% trans "In Date" %}</div>
-          <div class="oh-sticky-table__th" hx-target='#attendance-container' hx-get="{% url 'own-attendance-filter' %}?{{pd}}&orderby=">{% trans "Check-Out" %}</div>
-          <div class="oh-sticky-table__th" hx-target='#attendance-container' hx-get="{% url 'own-attendance-filter' %}?{{pd}}&orderby=attendance_clock_out_date">{% trans "Out Date" %}</div>
-          <div class="oh-sticky-table__th" hx-target='#attendance-container' hx-get="{% url 'own-attendance-filter' %}?{{pd}}&orderby=">{% trans "Shift" %}</div>
-          <div class="oh-sticky-table__th" hx-target='#attendance-container' hx-get="{% url 'own-attendance-filter' %}?{{pd}}&orderby=">{% trans "Work Type" %}</div>
-          <div class="oh-sticky-table__th" hx-target='#attendance-container' hx-get="{% url 'own-attendance-filter' %}?{{pd}}&orderby=">{% trans "Min Hour" %}</div>
-          <div class="oh-sticky-table__th" hx-target='#attendance-container' hx-get="{% url 'own-attendance-filter' %}?{{pd}}&orderby=at_work_second">{% trans "At Work" %}</div>
-          <div class="oh-sticky-table__th" hx-target='#attendance-container' hx-get="{% url 'own-attendance-filter' %}?{{pd}}&orderby=overtime_second">{% trans "Overtime" %}</div>
+  <div class="oh-sticky-table__table oh-table--sortable">
+    <div class="oh-sticky-table__thead">
+      <div class="oh-sticky-table__tr">
+        <div
+          class="oh-sticky-table__th"
+          hx-target="#attendance-container"
+          hx-get="{% url 'own-attendance-filter' %}?{{pd}}&orderby=employee_id__employee_first_name"
+        >
+          {% trans "Employee" %}
         </div>
-      </div>
-      <div class="oh-sticky-table__tbody">
-        {% for attendance in attendances %}
-        <div class="oh-sticky-table__tr" data-toggle="oh-modal-toggle"
-        data-target="#addAttendance" draggable="false">
-          <div class="oh-sticky-table__sd">
-            <div class="oh-profile oh-profile--md">
-              <div class="oh-profile__avatar mr-1">
-                <img
-                  src="https://ui-avatars.com/api/?name={{attendance.employee_id.employee_first_name}}+{{attendance.employee_id.employee_last_name}}&background=random"
-                  class="oh-profile__image"
-                  alt="Mary Magdalene"
-                />
-              </div>
-              <span class="oh-profile__name oh-text--dark"
-                >{{attendance.employee_id}}</span
-              >
-            </div>
-          </div>
-          <div class="oh-sticky-table__td">
-            {{attendance.attendance_date}}
-          </div>
-          <div class="oh-sticky-table__td">
-            {{attendance.attendance_day|capfirst}}
-          </div>
-          <div class="oh-sticky-table__td">
-            {{attendance.attendance_clock_in}}
-          </div>
-          <div class="oh-sticky-table__td">
-            {{attendance.attendance_clock_in_date}}
-          </div>
-          <div class="oh-sticky-table__td">
-            {{attendance.attendance_clock_out}}
-          </div>
-          <div class="oh-sticky-table__td">
-            {{attendance.attendance_clock_out_date}}
-          </div>
-          <div class="oh-sticky-table__td">{{attendance.shift_id}}</div>
-          <div class="oh-sticky-table__td">
-            {{attendance.work_type_id}}
-          </div>
-          <div class="oh-sticky-table__td">
-            {{attendance.minimum_hour}}
-          </div>
-          <div class="oh-sticky-table__td">
-              {{attendance.attendance_worked_hour}}
-          </div>
-          <div class="oh-sticky-table__td">
-              {{attendance.attendance_overtime}}
-          </div>
+        <div
+          class="oh-sticky-table__th"
+          hx-target="#attendance-container"
+          hx-get="{% url 'own-attendance-filter' %}?{{pd}}&orderby=attendance_date"
+        >
+          {% trans "Date" %}
         </div>
-        {% endfor %}
-        
+        <div
+          class="oh-sticky-table__th"
+          hx-target="#attendance-container"
+          hx-get="{% url 'own-attendance-filter' %}?{{pd}}&orderby="
+        >
+          {% trans "Day" %}
+        </div>
+        <div
+          class="oh-sticky-table__th"
+          hx-target="#attendance-container"
+          hx-get="{% url 'own-attendance-filter' %}?{{pd}}&orderby="
+        >
+          {% trans "Check-In" %}
+        </div>
+        <div
+          class="oh-sticky-table__th"
+          hx-target="#attendance-container"
+          hx-get="{% url 'own-attendance-filter' %}?{{pd}}&orderby=attendance_clock_in_date"
+        >
+          {% trans "In Date" %}
+        </div>
+        <div
+          class="oh-sticky-table__th"
+          hx-target="#attendance-container"
+          hx-get="{% url 'own-attendance-filter' %}?{{pd}}&orderby="
+        >
+          {% trans "Check-Out" %}
+        </div>
+        <div
+          class="oh-sticky-table__th"
+          hx-target="#attendance-container"
+          hx-get="{% url 'own-attendance-filter' %}?{{pd}}&orderby=attendance_clock_out_date"
+        >
+          {% trans "Out Date" %}
+        </div>
+        <div
+          class="oh-sticky-table__th"
+          hx-target="#attendance-container"
+          hx-get="{% url 'own-attendance-filter' %}?{{pd}}&orderby="
+        >
+          {% trans "Shift" %}
+        </div>
+        <div
+          class="oh-sticky-table__th"
+          hx-target="#attendance-container"
+          hx-get="{% url 'own-attendance-filter' %}?{{pd}}&orderby="
+        >
+          {% trans "Work Type" %}
+        </div>
+        <div
+          class="oh-sticky-table__th"
+          hx-target="#attendance-container"
+          hx-get="{% url 'own-attendance-filter' %}?{{pd}}&orderby="
+        >
+          {% trans "Min Hour" %}
+        </div>
+        <div
+          class="oh-sticky-table__th"
+          hx-target="#attendance-container"
+          hx-get="{% url 'own-attendance-filter' %}?{{pd}}&orderby=at_work_second"
+        >
+          {% trans "At Work" %}
+        </div>
+        <div
+          class="oh-sticky-table__th"
+          hx-target="#attendance-container"
+          hx-get="{% url 'own-attendance-filter' %}?{{pd}}&orderby=overtime_second"
+        >
+          {% trans "Overtime" %}
+        </div>
       </div>
     </div>
+    <div class="oh-sticky-table__tbody">
+      {% for attendance in attendances %}
+      <div
+        class="oh-sticky-table__tr"
+        data-toggle="oh-modal-toggle"
+        data-target="#addAttendance"
+        draggable="false"
+      >
+        <div
+          class="oh-sticky-table__sd{% if attendance.is_validate_request_approved %} row-status--blue {% elif attendance.attendance_validated %} row-status--green {% elif attendance.is_validate_request %} row-status--orange {% else %} row-status--red{% endif %}"
+        >
+          <div class="oh-profile oh-profile--md">
+            <div class="oh-profile__avatar mr-1">
+              <img
+                src="https://ui-avatars.com/api/?name={{attendance.employee_id.employee_first_name}}+{{attendance.employee_id.employee_last_name}}&background=random"
+                class="oh-profile__image"
+                alt="Mary Magdalene"
+              />
+            </div>
+            <span class="oh-profile__name oh-text--dark"
+              >{{attendance.employee_id}}</span
+            >
+          </div>
+        </div>
+        <div class="oh-sticky-table__td">{{attendance.attendance_date}}</div>
+        <div class="oh-sticky-table__td">
+          {{attendance.attendance_day|capfirst}}
+        </div>
+        <div class="oh-sticky-table__td">
+          {{attendance.attendance_clock_in}}
+        </div>
+        <div class="oh-sticky-table__td">
+          {{attendance.attendance_clock_in_date}}
+        </div>
+        <div class="oh-sticky-table__td">
+          {{attendance.attendance_clock_out}}
+        </div>
+        <div class="oh-sticky-table__td">
+          {{attendance.attendance_clock_out_date}}
+        </div>
+        <div class="oh-sticky-table__td">{{attendance.shift_id}}</div>
+        <div class="oh-sticky-table__td">{{attendance.work_type_id}}</div>
+        <div class="oh-sticky-table__td">{{attendance.minimum_hour}}</div>
+        <div class="oh-sticky-table__td">
+          {{attendance.attendance_worked_hour}}
+        </div>
+        <div class="oh-sticky-table__td">
+          {{attendance.attendance_overtime}}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
 </div>
 
-
-
-  <div class="oh-pagination">
-    <span
-      class="oh-pagination__page"
+<div class="oh-pagination">
+  <span class="oh-pagination__page">
+    {% trans "Page" %} {{ attendances.number }} {% trans "of" %} {{ attendances.paginator.num_pages }}.
+  </span>
+  <nav class="oh-pagination__nav">
+    <div class="oh-pagination__input-container me-3">
+      <span class="oh-pagination__label me-1">{% trans "Page" %}</span>
+      <input
+        type="number"
+        name="page"
+        class="oh-pagination__input"
+        value="{{attendances.number}}"
+        hx-get="{% url 'own-attendance-filter' %}?{{pd}}"
+        hx-target="#attendance-container"
+        min="1"
+      />
+      <span class="oh-pagination__label"
+        >{% trans "of" %} {{attendances.paginator.num_pages}}</span
       >
-      {% trans "Page" %} {{ attendances.number }} {% trans "of" %} {{ attendances.paginator.num_pages }}.
-      </span
-    >
-    <nav class="oh-pagination__nav">
-      <div class="oh-pagination__input-container me-3">
-        <span class="oh-pagination__label me-1">{% trans "Page" %}</span>
-        <input
-          type="number"
-          name="page"
-          class="oh-pagination__input"
-          value="{{attendances.number}}"
-          hx-get="{% url 'own-attendance-filter' %}?{{pd}}"
+    </div>
+    <ul class="oh-pagination__items">
+      {% if attendances.has_previous %}
+      <li class="oh-pagination__item oh-pagination__item--wide">
+        <a
           hx-target="#attendance-container"
-          min="1"
-        />
-        <span class="oh-pagination__label">{% trans "of" %} {{attendances.paginator.num_pages}}</span>
-      </div>
-      <ul class="oh-pagination__items">
-        {% if attendances.has_previous %}
-        <li class="oh-pagination__item oh-pagination__item--wide">
-          <a hx-target='#attendance-container' hx-get="{% url 'own-attendance-filter' %}?{{pd}}&page=1" class="oh-pagination__link">{% trans "First" %}</a>
-        </li>
-        <li class="oh-pagination__item oh-pagination__item--wide">
-          <a hx-target='#attendance-container' hx-get="{% url 'own-attendance-filter' %}?{{pd}}&page={{ attendances.previous_page_number }}" class="oh-pagination__link">{% trans "Previous" %}</a>
-        </li>
-        {% endif %}
-        {% if attendances.has_next %}
-        <li class="oh-pagination__item oh-pagination__item--wide">
-          <a hx-target='#attendance-container' hx-get="{% url 'own-attendance-filter' %}?{{pd}}&page={{ attendances.next_page_number }}" class="oh-pagination__link">{% trans "Next" %}</a>
-        </li>
-        <li class="oh-pagination__item oh-pagination__item--wide">
-          <a hx-target='#attendance-container' hx-get="{% url 'own-attendance-filter' %}?{{pd}}&page={{ attendances.paginator.num_pages }}" class="oh-pagination__link">{% trans "Last" %}</a>
-        </li>
-        {% endif %}
-      </ul>
-    </nav>
-  </div>
+          hx-get="{% url 'own-attendance-filter' %}?{{pd}}&page=1"
+          class="oh-pagination__link"
+          >{% trans "First" %}</a
+        >
+      </li>
+      <li class="oh-pagination__item oh-pagination__item--wide">
+        <a
+          hx-target="#attendance-container"
+          hx-get="{% url 'own-attendance-filter' %}?{{pd}}&page={{ attendances.previous_page_number }}"
+          class="oh-pagination__link"
+          >{% trans "Previous" %}</a
+        >
+      </li>
+      {% endif %} {% if attendances.has_next %}
+      <li class="oh-pagination__item oh-pagination__item--wide">
+        <a
+          hx-target="#attendance-container"
+          hx-get="{% url 'own-attendance-filter' %}?{{pd}}&page={{ attendances.next_page_number }}"
+          class="oh-pagination__link"
+          >{% trans "Next" %}</a
+        >
+      </li>
+      <li class="oh-pagination__item oh-pagination__item--wide">
+        <a
+          hx-target="#attendance-container"
+          hx-get="{% url 'own-attendance-filter' %}?{{pd}}&page={{ attendances.paginator.num_pages }}"
+          class="oh-pagination__link"
+          >{% trans "Last" %}</a
+        >
+      </li>
+      {% endif %}
+    </ul>
+  </nav>
+</div>
