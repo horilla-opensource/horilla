@@ -14,7 +14,7 @@ provide the main entry points for interacting with the application's functionali
 
 import json
 import contextlib
-from datetime import datetime
+from datetime import datetime, timedelta
 from datetime import date
 import pandas as pd
 from django.shortcuts import render, redirect
@@ -33,6 +33,7 @@ from horilla.decorators import (
     hx_request_required,
     manager_can_enter,
 )
+from base.models import EmployeeShiftSchedule
 from base.methods import filtersubordinates, choosesubordinates
 from notifications.signals import notify
 from attendance.filters import (
@@ -944,3 +945,43 @@ def approve_bulk_overtime(request):
         )
 
     return JsonResponse({"message": "Success"})
+
+
+def form_shift_dynamic_data(request):
+    """
+    This method is used to update the shift details to the form
+    """
+    shift_id = request.POST["shift_id"]
+    attendance_date_str = request.POST.get("attendance_date")
+    today = datetime.now()
+    attendance_date = date(day=today.day, month=today.month, year=today.year)
+    if attendance_date_str is not None and attendance_date_str != "":
+        attendance_date = datetime.strptime(attendance_date_str, "%Y-%m-%d").date()
+    day = attendance_date.strftime("%A").lower()
+    schedule_today = EmployeeShiftSchedule.objects.filter(
+        shift_id__id=shift_id, day__day=day
+    ).first()
+    shift_start_time = ""
+    shift_end_time = ""
+    minimum_hour = "00:00"
+    attendance_clock_out_date = attendance_date
+    if schedule_today is not None:
+        shift_start_time = schedule_today.start_time
+        shift_end_time = schedule_today.end_time
+        minimum_hour = schedule_today.minimum_working_hour
+        if shift_end_time < shift_start_time:
+            attendance_clock_out_date = attendance_date + timedelta(days=1)
+    worked_hour = minimum_hour
+    if attendance_date == date(day=today.day, month=today.month, year=today.year):
+        shift_end_time = datetime.now().strftime("%H:%M")
+        worked_hour = "00:00"
+    return JsonResponse(
+        {
+            "shift_start_time": shift_start_time,
+            "shift_end_time": shift_end_time,
+            "checkin_date": attendance_date.strftime("%Y-%m-%d"),
+            "minimum_hour": minimum_hour,
+            "worked_hour": worked_hour,
+            "checkout_date": attendance_clock_out_date.strftime("%Y-%m-%d"),
+        }
+    )

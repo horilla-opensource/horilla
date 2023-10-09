@@ -15,8 +15,12 @@ from .views import views
 urlpatterns = [
     path("attendance-create", views.attendance_create, name="attendance-create"),
     path("attendance-excel", views.attendance_excel, name="attendance-excel"),
-    path("attendance-info-import", views.attendance_import, name="attendance-info-import"),
-    path("attendance-info-export", views.attendance_export, name="attendance-info-export"),
+    path(
+        "attendance-info-import", views.attendance_import, name="attendance-info-import"
+    ),
+    path(
+        "attendance-info-export", views.attendance_export, name="attendance-info-export"
+    ),
     path("attendance-view", views.attendance_view, name="attendance-view"),
     path(
         "attendance-search",
@@ -197,5 +201,14 @@ urlpatterns = [
         attendance.views.requests.request_new,
         name="request-new-attendance",
     ),
-    path("employee-widget-filter",attendance.views.search.widget_filter,name="attendance-widget-filter")
+    path(
+        "employee-widget-filter",
+        attendance.views.search.widget_filter,
+        name="attendance-widget-filter",
+    ),
+    path(
+        "update-shift-details",
+        views.form_shift_dynamic_data,
+        name="update-shift-details",
+    ),
 ]
