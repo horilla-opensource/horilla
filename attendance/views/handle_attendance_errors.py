@@ -1,3 +1,6 @@
+"""Module for handling attendance error data."""
+
+
 def handle_attendance_errors(error_list):
     """
     Reorganize a list of error dictionaries into a structured error data dictionary
@@ -41,14 +44,17 @@ def handle_attendance_errors(error_list):
         "Error17": [],
     }
     for item in error_list:
-        for key in error_data.keys():
+        for key, value in error_data.items():
             if key in item:
-                error_data[key].append(item[key])
+                value.append(item[key])
             else:
-                error_data[key].append(None)
-    for key, value in error_data.items():
-        if all(v is None for v in value):
-            keys_to_remove.append(key)
+                value.append(None)
+
+    keys_to_remove = [
+        key for key, value in error_data.items() if all(v is None for v in value)
+    ]
+
     for key in keys_to_remove:
         del error_data[key]
+
     return error_data

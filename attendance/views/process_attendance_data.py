@@ -1,12 +1,14 @@
+"""
+process_attendance_data.py
+
+This module contains a function for processing attendance data 
+from Excel files and saving it to a database.
+"""
+from datetime import datetime
+import pandas as pd
+from employee.models import Employee
 from attendance.models import Attendance
 from base.models import EmployeeShift, WorkType
-from employee.models import Employee
-
-
-import pandas as pd
-
-
-from datetime import datetime
 
 
 def process_attendance_data(attendance_dicts):

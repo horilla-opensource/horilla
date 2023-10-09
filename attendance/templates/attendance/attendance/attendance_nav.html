@@ -1,23 +1,23 @@
-{% load static %} {% load i18n %} {% load basefilters %} {% if perms.attendance.add_attendance or request.user|is_reportingmanager %}
+{% load static %} {% load i18n %} {% load basefilters %} 
+{% if perms.attendance.add_attendance or request.user|is_reportingmanager %}
 <style>
   .loader-container {
     position: relative;
     width: 120px;
     height: 120px;
     margin-left: 199px;
-
   }
-  
+
   .loader {
     border: 10px solid #f3f3f3;
     border-radius: 50%;
-    border-top: 10px solid #A4A3A3;  
+    border-top: 10px solid #a4a3a3;
     width: 100%;
     height: 100%;
     -webkit-animation: spin 2s linear infinite; /* Safari */
     animation: spin 2s linear infinite;
   }
-  
+
   .loader-text {
     position: absolute;
     top: 52%;
@@ -27,18 +27,26 @@
     font-weight: bold;
     color: #000;
   }
-  
+
   /* Safari */
   @-webkit-keyframes spin {
-    0% { -webkit-transform: rotate(0deg); }
-    100% { -webkit-transform: rotate(360deg); }
+    0% {
+      -webkit-transform: rotate(0deg);
+    }
+    100% {
+      -webkit-transform: rotate(360deg);
+    }
   }
-  
+
   @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
   }
-  </style>
+</style>
 <div
   class="oh-modal"
   id="addAttendance"
@@ -84,27 +92,31 @@
           id="attendanceImportForm"
         >
           {% csrf_token %}
-            <div class = "oh-modal__dialog-body mr-5" id="uploading" style="display:none">
-              <div class="loader-container">
-                <div class="loader"></div>
-                <div class="loader-text">{% trans "Uploading..." %}</div>
-              </div>
+          <div
+            class="oh-modal__dialog-body mr-5"
+            id="uploading"
+            style="display: none"
+          >
+            <div class="loader-container">
+              <div class="loader"></div>
+              <div class="loader-text">{% trans "Uploading..." %}</div>
             </div>
-            <div id="uploadContainer">
-              <label class="oh-dropdown__import-label" for="uploadFile">
-                <ion-icon
-                  name="cloud-upload"
-                  class="oh-dropdown__import-form-icon"
-                ></ion-icon>
-                <span class="oh-dropdown__import-form-title"
-                  >{% trans "Upload a File" %}</span
-                >
-                <span class="oh-dropdown__import-form-text"
-                  >{% trans "Drag and drop files here" %}</span
-                >
-              </label>
-              <input type="file" name="attendance_import" id="" required/>
-            </div>
+          </div>
+          <div id="uploadContainer">
+            <label class="oh-dropdown__import-label" for="uploadFile">
+              <ion-icon
+                name="cloud-upload"
+                class="oh-dropdown__import-form-icon"
+              ></ion-icon>
+              <span class="oh-dropdown__import-form-title"
+                >{% trans "Upload a File" %}</span
+              >
+              <span class="oh-dropdown__import-form-text"
+                >{% trans "Drag and drop files here" %}</span
+              >
+            </label>
+            <input type="file" name="attendance_import" id="" required />
+          </div>
           <button
             type="submit"
             class="oh-btn oh-btn--small oh-btn--secondary w-100 mt-3"
@@ -134,15 +146,19 @@
       <div
         class="oh-modal__dialog-body p-0 pt-2"
         id="attendanceExportModalBody"
+      >
+        <form
+          action="{%url 'attendance-info-export' %}"
+          method="get"
+          onsubmit="event.stopPropagation();$(this).parents().find('.oh-modal--show').last().toggleClass('oh-modal--show');"
+          id="attendanceExportForm"
         >
-        <form action="{%url 'attendance-info-export' %}"
-        method="get"
-        onsubmit="event.stopPropagation();$(this).parents().find('.oh-modal--show').last().toggleClass('oh-modal--show');"
-        id="attendanceExportForm">
-        {% csrf_token %}
-          {% include 'attendance/attendance/export_filter.html' %}
+          {% csrf_token %} {% include 'attendance/attendance/export_filter.html'
+          %}
           <div class="oh-dropdown__filter-footer">
-            <button class="oh-btn oh-btn--secondary oh-btn--small w-100 ">{% trans "Export" %}</button>
+            <button class="oh-btn oh-btn--secondary oh-btn--small w-100">
+              {% trans "Export" %}
+            </button>
           </div>
         </form>
       </div>
@@ -222,61 +238,64 @@
         >
           <ul class="oh-dropdown__items">
             {% if perms.attendance.change_attendance or request.user|is_reportingmanager %}
-            <li class="oh-dropdown__item">
-              <a
-                href="#"
-                class="oh-dropdown__link"
-                id="attendance-info-import"
-                data-toggle="oh-modal-toggle"
-                data-target="#attendanceImport"
-                >{% trans "Import" %}</a
-              >
-            </li>
-            <li class="oh-dropdown__item">
-              <a
-                href="#"
-                class="oh-dropdown__link"
-                id="attendance-info-export"
-                data-toggle="oh-modal-toggle"
-                data-target="#attendanceExport"
-                >{% trans "Export" %}</a
-              >
-            </li>
-            {% endif %} {% if perms.attendance.change_attendance or request.user|is_reportingmanager %}
-            <li class="oh-dropdown__item">
-              <a href="#" id="validateAttendances" class="oh-dropdown__link"
-                >{% trans "Validate" %}</a
-              >
-            </li>
-            {% endif %} {% if perms.attendance.change_attendance or request.user|is_reportingmanager %}
-            <li class="oh-dropdown__item">
-              <a href="#" id="approveOt" class="oh-dropdown__link"
-                >{% trans "Approve OT" %}</a
-              >
-            </li>
-            {% endif %} {% if perms.attendance.delete_attendance %}
-            <li class="oh-dropdown__item">
-              <a
-                href="#"
-                id="bulkDelete"
-                class="oh-dropdown__link oh-dropdown__link--danger"
-                >{% trans "Delete" %}</a
-              >
-            </li>
+              <li class="oh-dropdown__item">
+                <a
+                  href="#"
+                  class="oh-dropdown__link"
+                  id="attendance-info-import"
+                  data-toggle="oh-modal-toggle"
+                  data-target="#attendanceImport"
+                  >{% trans "Import" %}</a
+                >
+              </li>
+              <li class="oh-dropdown__item">
+                <a
+                  href="#"
+                  class="oh-dropdown__link"
+                  id="attendance-info-export"
+                  data-toggle="oh-modal-toggle"
+                  data-target="#attendanceExport"
+                  >{% trans "Export" %}</a
+                >
+              </li>
+            {% endif %} 
+            {% if perms.attendance.change_attendance or request.user|is_reportingmanager %}
+              <li class="oh-dropdown__item">
+                <a href="#" id="validateAttendances" class="oh-dropdown__link"
+                  >{% trans "Validate" %}</a
+                >
+              </li>
+            {% endif %} 
+            {% if perms.attendance.change_attendance or request.user|is_reportingmanager %}
+              <li class="oh-dropdown__item">
+                <a href="#" id="approveOt" class="oh-dropdown__link"
+                  >{% trans "Approve OT" %}</a
+                >
+              </li>
+            {% endif %} 
+            {% if perms.attendance.delete_attendance %}
+              <li class="oh-dropdown__item">
+                <a
+                  href="#"
+                  id="bulkDelete"
+                  class="oh-dropdown__link oh-dropdown__link--danger"
+                  >{% trans "Delete" %}</a
+                >
+              </li>
             {% endif %}
           </ul>
         </div>
       </div>
       {% if perms.attendance.add_attendance or request.user|is_reportingmanager%}
-      <button
-        class="oh-btn oh-btn--secondary ml-2"
-        data-toggle="oh-modal-toggle"
-        data-target="#addAttendance"
-        hx-get="{% url 'attendance-create' %}"
-        hx-target="#addAttendanceModalBody"
-      >
-        <ion-icon name="add-sharp" class="mr-1"></ion-icon>{% trans "Create" %}
-      </button>
+        <button
+          class="oh-btn oh-btn--secondary ml-2"
+          data-toggle="oh-modal-toggle"
+          data-target="#addAttendance"
+          hx-get="{% url 'attendance-create' %}"
+          hx-target="#addAttendanceModalBody"
+        >
+          <ion-icon name="add-sharp" class="mr-1"></ion-icon>{% trans "Create" %}
+        </button>
       {% endif %}
     </div>
   </div>

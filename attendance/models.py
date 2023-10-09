@@ -237,6 +237,10 @@ class Attendance(models.Model):
         prev_attendance_approved = False
 
         condition = AttendanceValidationCondition.objects.first()
+        if self.is_validate_request:
+            self.is_validate_request_approved = False
+            self.attendance_validated = False
+
         if condition is not None and condition.overtime_cutoff is not None:
             overtime_cutoff = condition.overtime_cutoff
             cutoff_seconds = strtime_seconds(overtime_cutoff)
