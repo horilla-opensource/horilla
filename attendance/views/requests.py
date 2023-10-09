@@ -7,7 +7,7 @@ import json
 import copy
 from django.shortcuts import render, redirect
 from django.contrib import messages
-from django.http import HttpResponse
+from django.http import HttpResponse,HttpResponseRedirect
 from notifications.signals import notify
 from horilla.decorators import login_required, manager_can_enter
 from base.methods import filtersubordinates, is_reportingmanager, choosesubordinates
@@ -126,6 +126,7 @@ def attendance_request_changes(request, attendance_id):
     form = AttendanceRequestForm(instance=attendance)
     if request.method == "POST":
         form = AttendanceRequestForm(request.POST, instance=copy.copy(attendance))
+        print('first ..................')
         if form.is_valid():
             # commit already set to False
             # so the changes not affected to the db
@@ -139,6 +140,11 @@ def attendance_request_changes(request, attendance_id):
                 attendance.is_validate_request = True
                 attendance.save()
             else:
+                print("----------------------")
+                print(attendance.request_type)
+                print("----------------------")
+                instance.is_validate_request_approved = False
+                instance.is_validate_request = True
                 instance.save()
 
             messages.success(request, "Attendance update request created.")
@@ -148,6 +154,7 @@ def attendance_request_changes(request, attendance_id):
                 ).content.decode("utf-8")
                 + "<script>location.reload();</script>"
             )
+        print(form.errors)
     return render(request, "requests/attendance/form.html", {"form": form})
 
 
@@ -214,7 +221,7 @@ def approve_validate_attendance_request(request, attendance_id):
         redirect="/attendance/request-attendance-view",
         icon="checkmark-circle-outline",
     )
-    return redirect(request_attendance_view)
+    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 
 
 @login_required
@@ -251,7 +258,7 @@ def cancel_attendance_request(request, attendance_id):
             redirect="/attendance/request-attendance-view",
             icon="close-circle-outline",
         )
-    return redirect(request_attendance_view)
+    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 
 
 @login_required
