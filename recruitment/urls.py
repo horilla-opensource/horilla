@@ -97,7 +97,11 @@ urlpatterns = [
     path("create-note/<int:cand_id>/", views.create_note, name="create-note"),
     path("create-note", views.create_note, name="create-note-post"),
     path("note-update/<int:note_id>/", views.note_update, name="note-update"),
-    path("note-update-individual/<int:note_id>/", views.note_update_individual, name="note-update-individual"),
+    path(
+        "note-update-individual/<int:note_id>/",
+        views.note_update_individual,
+        name="note-update-individual",
+    ),
     path(
         "note-delete/<int:note_id>/",
         recruitment.views.actions.note_delete,
@@ -131,6 +135,11 @@ urlpatterns = [
         "candidate-update/<int:cand_id>/",
         views.candidate_update,
         name="rec-candidate-update",
+    ),
+    path(
+        "delete-profile-image/<int:obj_id>/",
+        views.delete_profile_image,
+        name="delete-profile-image",
     ),
     path(
         "candidate-delete/<int:cand_id>/",

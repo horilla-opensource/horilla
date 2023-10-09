@@ -11,9 +11,10 @@ This module is part of the recruitment project and is intended to
 provide the main entry points for interacting with the application's functionality.
 """
 
-
-import contextlib
+import os
 import json
+import contextlib
+from django.conf import settings
 from django.http import JsonResponse, HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.core import serializers
@@ -144,7 +145,7 @@ def recruitment_view(request):
     if not request.GET:
         request.GET.copy().update({"is_active": "on"})
     form = RecruitmentCreationForm()
-    queryset=Recruitment.objects.all()
+    queryset = Recruitment.objects.all()
     if queryset.exists():
         template = "recruitment/recruitment_view.html"
     else:
@@ -595,6 +596,7 @@ def note_update(request, note_id):
         request, "pipeline/pipeline_components/update_note.html", {"form": form}
     )
 
+
 @login_required
 @permission_required(perm="recruitment.change_stagenote")
 def note_update_individual(request, note_id):
@@ -611,7 +613,9 @@ def note_update_individual(request, note_id):
             form.save()
             messages.success(request, _("Note updated successfully..."))
             response = render(
-                request, "pipeline/pipeline_components/update_note_individual.html", {"form": form}
+                request,
+                "pipeline/pipeline_components/update_note_individual.html",
+                {"form": form},
             )
             return HttpResponse(
                 response.content.decode("utf-8") + "<script>location.reload();</script>"
@@ -813,7 +817,7 @@ def candidate_view(request):
     previous_data = request.GET.urlencode()
     candidates = Candidate.objects.filter(is_active=True)
     candidate_all = Candidate.objects.all()
-    filter_obj = CandidateFilter(request.GET,queryset=candidates)
+    filter_obj = CandidateFilter(request.GET, queryset=candidates)
     if candidate_all.exists():
         template = "candidate/candidate_view.html"
     else:
@@ -920,6 +924,25 @@ def candidate_update(request, cand_id):
             messages.success(request, _("Candidate Updated Successfully."))
             return redirect(path)
     return render(request, "candidate/candidate_create_form.html", {"form": form})
+
+
+@login_required
+@manager_can_enter(perm="recruitment.change_candidate")
+def delete_profile_image(request, obj_id):
+    candidate_obj = Candidate.objects.get(id=obj_id)
+    try:
+        if candidate_obj.profile:
+            file_path = candidate_obj.profile.path
+            absolute_path = os.path.join(settings.MEDIA_ROOT, file_path)
+            os.remove(absolute_path)
+            candidate_obj.profile = None
+            candidate_obj.save()
+            messages.success(request, _("Profile image removed."))
+    except Exception as e:
+        pass
+    return redirect('rec-candidate-update', cand_id=obj_id)
+
+
 
 
 @login_required
