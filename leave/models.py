@@ -314,8 +314,8 @@ class AvailableLeave(models.Model):
 
 
 class LeaveRequest(models.Model):
-    leave_type_id = models.ForeignKey(LeaveType, on_delete=models.PROTECT)
-    employee_id = models.ForeignKey(Employee, on_delete=models.CASCADE)
+    leave_type_id = models.ForeignKey(LeaveType, on_delete=models.PROTECT,verbose_name="Leave type")
+    employee_id = models.ForeignKey(Employee, on_delete=models.CASCADE,verbose_name="Employee")
     start_date = models.DateField(null=False)
     start_date_breakdown = models.CharField(
         max_length=30, choices=BREAKDOWN, default="full_day"
