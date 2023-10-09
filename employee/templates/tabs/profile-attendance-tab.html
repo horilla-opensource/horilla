@@ -1,0 +1,75 @@
+{% load i18n %}
+
+<div class="oh-sticky-table">
+    <div class="oh-sticky-table__table oh-table--sortable">
+      <div class="oh-sticky-table__thead">
+        <div class="oh-sticky-table__tr">
+          <div class="oh-sticky-table__th" >{% trans "Employee" %}</div>
+          <div class="oh-sticky-table__th" >{% trans "Date" %}</div>
+          <div class="oh-sticky-table__th" >{% trans "Day" %}</div>
+          <div class="oh-sticky-table__th" >{% trans "Check-In" %}</div>
+          <div class="oh-sticky-table__th" >{% trans "In Date" %}</div>
+          <div class="oh-sticky-table__th" >{% trans "Check-Out" %}</div>
+          <div class="oh-sticky-table__th" >{% trans "Out Date" %}</div>
+          <div class="oh-sticky-table__th" >{% trans "Shift" %}</div>
+          <div class="oh-sticky-table__th" >{% trans "Work Type" %}</div>
+          <div class="oh-sticky-table__th" >{% trans "Min Hour" %}</div>
+          <div class="oh-sticky-table__th" >{% trans "At Work" %}</div>
+          <div class="oh-sticky-table__th" >{% trans "Overtime" %}</div>
+        </div>
+      </div>
+      <div class="oh-sticky-table__tbody">
+        {% for attendance in attendances %}
+        <div class="oh-sticky-table__tr" data-toggle="oh-modal-toggle"
+        data-target="#addAttendance" draggable="false">
+          <div class="oh-sticky-table__sd">
+            <div class="oh-profile oh-profile--md">
+              <div class="oh-profile__avatar mr-1">
+                <img
+                  src="https://ui-avatars.com/api/?name={{attendance.employee_id.employee_first_name}}+{{attendance.employee_id.employee_last_name}}&background=random"
+                  class="oh-profile__image"
+                  alt="Mary Magdalene"
+                />
+              </div>
+              <span class="oh-profile__name oh-text--dark"
+                >{{attendance.employee_id}}</span
+              >
+            </div>
+          </div>
+          <div class="oh-sticky-table__td">
+            {{attendance.attendance_date}}
+          </div>
+          <div class="oh-sticky-table__td">
+            {{attendance.attendance_day|capfirst}}
+          </div>
+          <div class="oh-sticky-table__td">
+            {{attendance.attendance_clock_in}}
+          </div>
+          <div class="oh-sticky-table__td">
+            {{attendance.attendance_clock_in_date}}
+          </div>
+          <div class="oh-sticky-table__td">
+            {{attendance.attendance_clock_out}}
+          </div>
+          <div class="oh-sticky-table__td">
+            {{attendance.attendance_clock_out_date}}
+          </div>
+          <div class="oh-sticky-table__td">{{attendance.shift_id}}</div>
+          <div class="oh-sticky-table__td">
+            {{attendance.work_type_id}}
+          </div>
+          <div class="oh-sticky-table__td">
+            {{attendance.minimum_hour}}
+          </div>
+          <div class="oh-sticky-table__td">
+              {{attendance.attendance_worked_hour}}
+          </div>
+          <div class="oh-sticky-table__td">
+              {{attendance.attendance_overtime}}
+          </div>
+        </div>
+        {% endfor %}
+        
+      </div>
+    </div>
+</div>

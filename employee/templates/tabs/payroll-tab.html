@@ -1,0 +1,79 @@
+{% load i18n %}
+
+<style>
+    a:hover {
+        text-decoration: none;
+    }
+</style>
+
+<div class="d-flex flex-row-reverse">
+  <span class="m-3">
+    <span class="oh-dot oh-dot--small me-1" style="background-color:gray"></span>
+    {% trans "Draft" %}
+  </span>
+  <span class="m-3">
+    <span class="oh-dot oh-dot--small me-1" style="background-color:orange"></span>
+    {% trans "Review Ongoing" %}
+  </span>
+  <span class="m-3">
+    <span class="oh-dot oh-dot--small me-1" style="background-color:rgb(103, 171, 238)"></span>
+    {% trans "Confirmed" %}
+  </span>
+  <span class="m-3" >
+    <span class="oh-dot oh-dot--small me-1" style="background-color:yellowgreen"></span>
+    {% trans "Paid" %}
+  </span>
+</div>
+
+  <div class="oh-sticky-table">
+    <div class="oh-sticky-table__table oh-table--sortable">
+        <div class="oh-sticky-table__thead">
+            <div class="oh-sticky-table__tr">
+                <div class="oh-sticky-table__th">{% trans "Employee" %}</div>
+                <div class="oh-sticky-table__th">{% trans "Period" %}</div>
+                <div class="oh-sticky-table__th">{% trans "Status" %}</div>
+                <div class="oh-sticky-table__th">{% trans "Gross Pay" %}</div>
+                <div class="oh-sticky-table__th">{% trans "Deduction" %}</div>
+                <div class="oh-sticky-table__th">{% trans "Net Pay" %}</div>
+            </div>
+        </div>
+        <div class="oh-sticky-table__tbody">
+            {% for payslip in employee.payslip_set.all %}
+            
+            <a href="{% url 'view-created-payslip' payslip.id %}" class="oh-sticky-table__tr" >
+                <div class="oh-sticky-table__sd {% if payslip.status == "review_ongoing" %}row-status--orange {% elif payslip.status == "confirmed" %} row-status--blue {% elif payslip.status == "paid" %} row-status--yellow {% elif payslip.status == "draft" %} row-status--gray{% endif %}">
+                  <div class="d-flex">
+                  <div class="oh-profile oh-profile--md">
+                    <div class="oh-profile__avatar mr-1">
+                      <img
+                        src="https://ui-avatars.com/api/?name={{payslip.employee_id.employee_first_name}}+{{payslip.employee_id.employee_last_name}}&background=random"
+                        class="oh-profile__image"
+                        alt=""
+                      />
+                    </div>
+                    <span class="oh-profile__name oh-text--dark">{{payslip.employee_id}}</span>
+                  </div>
+                
+                </div>
+                  
+                </div>
+                <div class="oh-sticky-table__td">
+                  {{payslip.start_date}} - {{payslip.end_date}}
+                </div>
+                <div class="oh-sticky-table__td">
+                  {{payslip.get_status_display}}
+                </div>
+                <div class="oh-sticky-table__td">
+                  {{currency}} {{payslip.gross_pay|floatformat:2}}
+                </div>
+                <div class="oh-sticky-table__td">
+                  {{currency}} {{payslip.deduction|floatformat:2}}
+                </div>
+                <div class="oh-sticky-table__td">
+                  {{currency}} {{payslip.net_pay|floatformat:2}}
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+</div>

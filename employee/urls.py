@@ -155,4 +155,10 @@ urlpatterns = [
         name="dashboard-employee-count",
     ),
     path("employee-widget-filter", views.widget_filter, name="employee-widget-filter"),
+    path("asset-tab/<int:emp_id>", views.asset_tab, name="asset-tab"),
+    path("profile-asset-tab/<int:emp_id>", views.profile_asset_tab, name="profile-asset-tab"),
+    path("profile-attendance-tab", views.profile_attendance_tab, name="profile-attendance-tab"),
+    path("asset-request-tab/<int:emp_id>", views.asset_request_tab, name="asset-request-tab"),
+    path("performance-tab/<int:emp_id>", views.performance_tab, name="performance-tab"),
+    path("attendance-tab/<int:emp_id>", views.attendance_tab, name="attendance-tab"),
 ]

@@ -18,6 +18,23 @@
     height: auto;
     border-radius: 5%;
   }
+  .oh-sticky-table{
+    max-height:65vh;
+  }
+  .oh-sticky-table__sd{
+    z-index: 11 !important;
+  
+  }
+  .oh-sticky-table__right{
+    position: sticky;
+    right: 0;
+    background-color: #fff;
+    ;
+  }
+  .oh-sticky-table__top{
+    z-index: 12 !important;
+    top: 0;
+  }
 </style>
 
 <div id="enlargeImageContainer" class="enlarge-image-container"></div>
@@ -138,7 +155,7 @@
               >{% trans "Payroll" %}</a
             >
           </li>
-          <li class="oh-general__tab">
+          {% comment %} <li class="oh-general__tab">
             <a
               href="#"
               class="oh-general__tab-link"
@@ -155,23 +172,41 @@
               data-target="#timesheet"
               >{% trans "Timesheet" %}</a
             >
-          </li>
+          </li> {% endcomment %}
           <li class="oh-general__tab">
             <a
-              href="#"
-              class="oh-general__tab-link"
+              hx-get={% url 'asset-tab' employee.id %}
+              hx-target="#asset_target"
               data-action="general-tab"
-              data-target="#asset"
+              data-target="#asset_target"
+              id="asset"
+              class="oh-general__tab-link pointer"
+              role="button"
               >{% trans "Assets" %}</a
             >
           </li>
           <li class="oh-general__tab">
             <a
-              href="#"
-              class="oh-general__tab-link"
+              hx-get={% url 'performance-tab' employee.id %}
+              hx-target="#performance_target"
               data-action="general-tab"
-              data-target="#performance"
+              data-target="#performance_target"
+              id="asset"
+              class="oh-general__tab-link"
+              role="button"
               >{% trans "Performance" %}</a
+            >
+          </li>
+          <li class="oh-general__tab">
+            <a
+              hx-get="{% url 'attendance-tab' employee.id %}"
+              hx-target="#attendance_target"
+              data-action="general-tab"
+              data-target="#attendance_target"
+              id="asset"
+              class="oh-general__tab-link"
+              role="button"
+              >{% trans "Attendance" %}</a
             >
           </li>
         </ul>
@@ -180,7 +215,7 @@
           class="oh-general__tab-target oh-profile__info-tab mb-4"
           id="personal"
         >
-          {% include 'personal-tab.html' %}
+          {% include 'tabs/personal-tab.html' %}
         </div>
 
         
@@ -188,7 +223,7 @@
           class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
           id="payroll"
         >
-          {% include "payroll-tab.html" %}
+          {% include "tabs/payroll-tab.html" %}
         </div>
         <div
           class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
@@ -207,19 +242,22 @@
           class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
           id="leave"
         >
-          {% include "leave-tab.html" %}
+          {% include "tabs/leave-tab.html" %}
         </div>
         <div
           class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
-          id="asset"
+          id="performance_target"
         >
-          {% include "asset-tab.html" %}
         </div>
         <div
           class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
-          id="performance"
+          id="asset_target"
         >
-          {% include "performance-tab.html" %}
+        </div>
+        <div
+          class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
+          id="attendance_target"
+        >
         </div>
       </div>
     </div>

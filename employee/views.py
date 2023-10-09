@@ -28,7 +28,8 @@ from django.utils.translation import gettext as __
 from django.contrib.auth.models import User
 from django.views.decorators.http import require_http_methods
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
-from asset.models import AssetAssignment
+from asset.models import AssetAssignment, AssetRequest
+from attendance.models import Attendance, AttendanceOverTime
 from notifications.signals import notify
 from horilla.decorators import (
     permission_required,
@@ -132,17 +133,92 @@ def employee_view_individual(request, obj_id):
     """
     employee = Employee.objects.get(id=obj_id)
     employee_leaves = employee.available_leave.all()
-    feedback_own = Feedback.objects.filter(employee_id=employee,archive=False)
-    today = datetime.today()
-    assets = AssetAssignment.objects.filter(assigned_to_employee_id=employee)
     user = Employee.objects.filter(employee_user_id=request.user).first()
     if user.reporting_manager.filter(
         employee_id=employee
     ).exists() or request.user.has_perm("employee.change_employee"):
-        return render(request, "employee/view/individual.html", {"employee": employee,"employee_leaves":employee_leaves,"assets":assets,"self_feedback":feedback_own,"current_date":today,})
+        return render(request, "employee/view/individual.html", {"employee": employee,"employee_leaves":employee_leaves,})
     return HttpResponseRedirect(
         request.META.get("HTTP_REFERER", "/employee/employee-view")
     )
+
+@login_required
+@manager_can_enter("employee.view_employee")
+def asset_tab(request, emp_id):
+    assets_requests = AssetRequest.objects.filter(requested_employee_id=emp_id,asset_request_status="Requested")
+    assets = AssetAssignment.objects.filter(assigned_to_employee_id=emp_id)
+    context={
+        "assets":assets,
+        "requests":assets_requests,
+        "employee":emp_id,
+    }
+    return render(request,"tabs/asset-tab.html",context=context)
+
+@login_required
+@manager_can_enter("employee.view_employee")
+def profile_asset_tab(request, emp_id):
+    assets = AssetAssignment.objects.filter(assigned_to_employee_id=emp_id)
+    context={
+        "assets":assets,
+    }
+    return render(request,"tabs/profile-asset-tab.html",context=context)
+
+@login_required
+@manager_can_enter("employee.view_employee")
+def asset_request_tab(request, emp_id):
+    assets_requests = AssetRequest.objects.filter(requested_employee_id=emp_id)
+    context={
+        "asset_requests":assets_requests,
+    }
+    return render(request,"tabs/asset-request-tab.html",context=context)
+
+@login_required
+@manager_can_enter("employee.view_employee")
+def performance_tab(request, emp_id):
+    feedback_own = Feedback.objects.filter(employee_id=emp_id,archive=False)
+    today = datetime.today()
+    context={
+        "self_feedback":feedback_own,
+        "current_date":today,
+    }
+    return render(request,"tabs/performance-tab.html",context=context)
+
+@login_required
+@manager_can_enter("employee.view_employee")
+def profile_attendance_tab(request):
+    user = request.user
+    employee = user.employee_get
+    employee_attendances = employee.employee_attendances.all()
+    context={
+        "attendances":employee_attendances,
+    }
+    return render(request,"tabs/profile-attendance-tab.html",context)
+
+@login_required
+@manager_can_enter("employee.view_employee")
+def profile_attendance_tab(request):
+    user = request.user
+    employee = user.employee_get
+    employee_attendances = employee.employee_attendances.all()
+    context={
+        "attendances":employee_attendances,
+    }
+    return render(request,"tabs/profile-attendance-tab.html",context)
+
+@login_required
+@manager_can_enter("employee.view_employee")
+def attendance_tab(request, emp_id):
+    
+    requests = Attendance.objects.filter(
+        is_validate_request=True,employee_id=emp_id,
+    )
+    accounts = AttendanceOverTime.objects.filter(employee_id=emp_id)
+
+    context={
+        "requests":requests,
+        "accounts":accounts,
+    }
+    return render(request,"tabs/attendance-tab.html",context=context)
 
 
 @login_required

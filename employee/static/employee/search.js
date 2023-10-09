@@ -32,6 +32,7 @@ $(document).ready(function () {
       $(`[data-target='${activeTab}']`).addClass("oh-general__tab-link--active");
       $(".oh-general__tab-target").addClass("d-none");
       $(activeTab).removeClass("d-none");
+        $((`[data-target="${activeTab}"]`))[0].click();
     }
   }
   activeProfileTab()
@@ -59,7 +60,6 @@ function employeeFilter(element) {
 // Profile picture enlarging
 
 function enlargeImage(image) {
-  console.log(image)
   var enlargeImageContainer = document.getElementById('enlargeImageContainer');
   enlargeImageContainer.innerHTML = ''; 
 
