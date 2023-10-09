@@ -240,7 +240,8 @@ class AttendanceForm(ModelForm):
         kwargs["initial"] = initial
         super().__init__(*args, **kwargs)
         self.fields["employee_id"].widget.attrs.update({"id": str(uuid.uuid4())})
-        self.fields["shift_id"].widget.attrs.update({"id": str(uuid.uuid4())})
+        self.fields["shift_id"].widget.attrs.update({"id": str(uuid.uuid4()),"onchange": "shiftChange($(this))",}
+        )
         self.fields["work_type_id"].widget.attrs.update({"id": str(uuid.uuid4())})
 
     def save(self, commit=True):
@@ -552,6 +553,7 @@ class NewRequestForm(AttendanceRequestForm):
         new_instance.request_type = "create_request"
         self.new_instance = new_instance
         return
+
 
 excluded_fields = [
     "id",

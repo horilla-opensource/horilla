@@ -114,6 +114,11 @@ class Attendance(models.Model):
         related_name="employee_attendances",
         verbose_name=_("Employee"),
     )
+    attendance_date = models.DateField(
+        null=False,
+        validators=[attendance_date_validate],
+        verbose_name=_("Attendance date"),
+    )
     shift_id = models.ForeignKey(
         EmployeeShift, on_delete=models.DO_NOTHING, null=True, verbose_name=_("Shift")
     )
@@ -123,11 +128,6 @@ class Attendance(models.Model):
         blank=True,
         on_delete=models.DO_NOTHING,
         verbose_name=_("Work Type"),
-    )
-    attendance_date = models.DateField(
-        null=False,
-        validators=[attendance_date_validate],
-        verbose_name=_("Attendance date"),
     )
     attendance_day = models.ForeignKey(
         EmployeeShiftDay,
