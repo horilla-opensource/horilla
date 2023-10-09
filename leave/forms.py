@@ -4,6 +4,7 @@ from django.forms import ModelForm
 from django.forms.widgets import TextInput
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
+from django.template.loader import render_to_string
 from employee.models import Employee
 from .models import LeaveType, LeaveRequest, AvailableLeave, Holiday, CompanyLeave
 from .methods import (
@@ -252,6 +253,14 @@ class LeaveRequestCreationForm(ModelForm):
 
         return cleaned_data
 
+    def as_p(self, *args, **kwargs):
+        """
+        Render the form fields as HTML table rows with Bootstrap styling.
+        """
+        context = {"form": self}
+        table_html = render_to_string("attendance_form.html", context)
+        return table_html
+
     class Meta:
         model = LeaveRequest
         fields = [
@@ -334,6 +343,14 @@ class LeaveRequestUpdationForm(ModelForm):
             raise forms.ValidationError(_("Employee doesn't have enough leave days.."))
 
         return cleaned_data
+
+    def as_p(self, *args, **kwargs):
+        """
+        Render the form fields as HTML table rows with Bootstrap styling.
+        """
+        context = {"form": self}
+        table_html = render_to_string("attendance_form.html", context)
+        return table_html
 
     class Meta:
         model = LeaveRequest

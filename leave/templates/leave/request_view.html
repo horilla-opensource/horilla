@@ -129,34 +129,47 @@
 </div>
 
 <!-- Create request -->
-<div class="oh-modal" id="editModal1" role="dialog" aria-labelledby="editDialogModal" aria-hidden="true">
-    <div class="oh-modal__dialog oh-modal__dialog--timeoff">
-        <div class="oh-modal__dialog-header">
-            <span class="oh-modal__dialog-title" id="editDialogDialog">{% trans "Create Request" %}</span>
-            <button class="oh-modal__close" aria-label="Close">
-                <ion-icon name="close-outline"></ion-icon>
-            </button>
 
-        </div>
-        <div id="requestForm">
-
-        </div>
+<div
+  class="oh-modal"
+  id="editModal1"
+  role="dialog"
+  aria-labelledby="editModal1"
+  aria-hidden="true"
+>
+  <div class="oh-modal__dialog">
+    <div class="oh-modal__dialog-header">
+      <h2 class="oh-modal__dialog-title" id="editModal1ModalLabel">
+        {% trans "Leave Request Create" %}
+      </h2>
+      <button class="oh-modal__close" aria-label="Close">
+        <ion-icon name="close-outline"></ion-icon>
+      </button>
     </div>
+    <div class="oh-modal__dialog-body" id="requestForm"></div>
+  </div>
 </div>
 
-<!-- update request -->
-<div class="oh-modal" id="editModal2" role="dialog" aria-labelledby="editDialogModal" aria-hidden="true">
-    <div class="oh-modal__dialog oh-modal__dialog--timeoff">
-        <div class="oh-modal__dialog-header">
-            <span class="oh-modal__dialog-title" id="editDialogDialog">{% trans "Update Request" %}</span>
-            <button class="oh-modal__close" aria-label="Close">
-                <ion-icon name="close-outline"></ion-icon>
-            </button>
-        </div>
-        <div id="updateForm">
 
-        </div>
+<!-- update request -->
+<div
+  class="oh-modal"
+  id="editModal2"
+  role="dialog"
+  aria-labelledby="editModal2"
+  aria-hidden="true"
+>
+  <div class="oh-modal__dialog">
+    <div class="oh-modal__dialog-header">
+      <h2 class="oh-modal__dialog-title" id="editModal2ModalLabel">
+        {% trans "Leave Request Create" %}
+      </h2>
+      <button class="oh-modal__close" aria-label="Close">
+        <ion-icon name="close-outline"></ion-icon>
+      </button>
     </div>
+    <div class="oh-modal__dialog-body" id="updateForm"></div>
+  </div>
 </div>
 
 
