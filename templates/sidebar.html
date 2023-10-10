@@ -11,15 +11,18 @@
  </script>
  <div class="oh-sidebar" style='position: -webkit-sticky;
    position: sticky;top : 0;'>
-   <div class="oh-sidebar__company">
-      <span class="mr-2"> {% if request.user.employee_get.employee_work_info.company_id.icon == None %} <img src="https://ui-avatars.com/api/?name=C&background=random" style="width: 40px; border-radius: 5px;" /> {% else %} <img src="/media/{{request.user.employee_get.employee_work_info.company_id.icon}}" style="width: 40px; border-radius: 5px;" /> {% endif %} </span>
+   <div class="oh-sidebar__company" style="padding: 14px;">
+      <span class="mr-3"> 
+         {% if request.user.employee_get.employee_work_info.company_id.icon == None %} 
+         <img src="https://ui-avatars.com/api/?name=C&background=random" style="width: 34px; border-radius: 3px;" /> 
+         {% else %} 
+         <img src="/media/{{request.user.employee_get.employee_work_info.company_id.icon}}" style="width: 34px; border-radius: 3px;" /> 
+         {% endif %} 
+      </span>
       <div class="oh-sidebar__company-details">
-         <span class="oh-sidebar__company-title">{{request.user.employee_get.employee_work_info.company_id}}.</span>
-         <a href="#" class="oh-sidebar__company-link">{% trans "My Company" %}</a>
+         <span class="oh-sidebar__company-title" style="font-size: 13px;">{{request.user.employee_get.employee_work_info.company_id}}.</span>
+         <a href="#" class="oh-sidebar__company-link" style="font-size: 10px;">{% trans "My Company" %}</a>
       </div>
-      {% comment %} <button class="oh-btn oh-btn--transparent oh-btn--sq-sm">
-      <img src="{% static 'images/ui/dots-v.svg' %}" />
-      </button> {% endcomment %}
    </div>
    <div class="oh-sidebar__menu">
       <ul class="oh-sidebar__menu-items">
@@ -30,9 +33,6 @@
                </div>
                <span >{% trans "Dashboard" %}</span>
             </a>
-            {% comment %} <div class="oh-sidebar__submenu" id="dashboardNav" style="display: none;">
-               <ul class="oh-sidebar__submenu-items"></ul>
-            </div> {% endcomment %}
          </li>
          {% if request.user|is_stagemanager or 'recruitment' in perms %}
          <li class="oh-sidebar__menu-item" x-data="{ isOpen: getOpenState('recNav') }">
