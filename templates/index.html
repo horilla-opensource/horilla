@@ -87,10 +87,130 @@
     form label{
       font-weight: 700;
     }
-  </style>
+    .oh-modal .oh-modal__dialog-title{
+      font-weight: 600;
+      color: #4f4a4a;
+    }
+      
+  .flexbox {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-wrap: wrap;
+    flex-wrap: wrap;
+  }
 
+  .flexbox > div {
+    width: 300px;
+    height: 300px;
+    -webkit-box-flex: 0;
+    -ms-flex: 0 0 25%;
+    flex: 0 0 25%;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    margin: 0;
+    position: relative;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    overflow: hidden;
+  }
+  .triple-spinner {
+    display: block;
+    position: relative;
+    width: 125px;
+    height: 125px;
+    border-radius: 50%;
+    border: 4px solid transparent;
+    border-top: 4px solid #FF5722;
+    -webkit-animation: spin 2s linear infinite;
+    animation: spin 2s linear infinite;
+  }
+  
+  .triple-spinner::before,
+  .triple-spinner::after {
+    content: "";
+    position: absolute;
+    border-radius: 50%;
+    border: 4px solid transparent;
+  }
+  .triple-spinner::before {
+    top: 5px;
+    left: 5px;
+    right: 5px;
+    bottom: 5px;
+    border-top-color: #FF9800;
+    -webkit-animation: spin 3s linear infinite;
+    animation: spin 3.5s linear infinite;
+  }
+  .triple-spinner::after {
+    top: 15px;
+    left: 15px;
+    right: 15px;
+    bottom: 15px;
+    border-top-color: #FFC107;
+    -webkit-animation: spin 1.5s linear infinite;
+    animation: spin 1.75s linear infinite;
+  }
+
+  -webkit-@keyframes spin {
+  -webkit-from {
+    -webkit-transform: rotate(0deg);
+    -ms-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  -webkit-to {
+    -webkit-transform: rotate(360deg);
+    -ms-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+}
+
+@-webkit-keyframes spin {
+  from {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  to {
+    -webkit-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes spin {
+  from {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  to {
+    -webkit-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+}
+
+  
+
+  </style>
+<script>
+
+</script>
 </head>
 
+{% comment %} <div class="flexbox"> {% endcomment %}
+
+
+  <!-- TRIPLE SPINNER -->
+  {% comment %} <div>
+    <div class="triple-spinner"></div>
+  </div> {% endcomment %}
+{% comment %} </div> {% endcomment %}
 <body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
     {% if messages %}
     <div class="oh-alert-container">
@@ -204,7 +324,7 @@
                                   top: 3.3px;
                                   color: green;
                                   font-size: 1.2em;
-                              }"></ion-icon>
+                              "></ion-icon>
                                   {% endif %}
                               </a>
                               <form id="language-form-{{ language.0 }}" action="{% url 'set_language' %}" method="post" style="display: none;">
@@ -248,9 +368,12 @@
       <!-- End of Navigation -->
 
       <div id='main-section' >
-      {% block content %}
-      {% include 'dashboard.html' %}
-      {% endblock content %}
+        <div id="tripple-loader-contaner" class="d-flex justify-content-center align-items-center  tripple-loader-contaner--visible" style="height:90vh;"><div class="triple-spinner"></div></div>
+        <div id="main-section-data" style="display: none;">
+          {% block content %}
+          {% include 'dashboard.html' %}
+          {% endblock content %}
+        </div>
       </div>
     </div>
 
@@ -269,6 +392,7 @@
   </script>
   <!-- this is the master js  -->
   <script src="{% static '/index/index.js' %}"></script>
+  <script src="{% static '/index/saveFilters.js' %}"></script>
   <script src="{% static 'build/js/htmxSelect2.js' %}" ></script>
   <script src="{% static 'build/js/summernote-lite.min.js' %}" ></script>
   <script src="{% static 'attendance/actions.js' %}"></script>
