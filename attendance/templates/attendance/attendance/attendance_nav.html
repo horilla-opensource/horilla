@@ -153,8 +153,7 @@
           onsubmit="event.stopPropagation();$(this).parents().find('.oh-modal--show').last().toggleClass('oh-modal--show');"
           id="attendanceExportForm"
         >
-          {% csrf_token %} {% include 'attendance/attendance/export_filter.html'
-          %}
+          {% csrf_token %} {% include 'attendance/attendance/export_filter.html'%}
           <div class="oh-dropdown__filter-footer">
             <button class="oh-btn oh-btn--secondary oh-btn--small w-100">
               {% trans "Export" %}
