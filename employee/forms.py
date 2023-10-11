@@ -294,3 +294,71 @@ class EmployeeBankDetailsUpdateForm(ModelForm):
             visible.field.widget.attrs["class"] = "oh-input w-100"
         for field in self.fields:
             self.fields[field].widget.attrs["placeholder"] = self.fields[field].label
+
+
+excel_columns = [
+    ("badge_id", trans("Badge ID")),
+    ("employee_first_name", trans("First Name")),
+    ("employee_last_name", trans("Last Name")),
+    ("email", trans("Email")),
+    ("phone", trans("Phone")),
+    ("experience", trans("Experience")),
+    ("gender", trans("Gender")),
+    ("dob", trans("Date of Birth")),
+    ("country", trans("Country")),
+    ("state", trans("State")),
+    ("city", trans("City")),
+    ("address", trans("Address")),
+    ("zip", trans("Zip Code")),
+    ("marital_status", trans("Marital Status")),
+    ("children", trans("Children")),
+    ("is_active", trans("Is active")),
+    ("emergency_contact", trans("Emergency Contact")),
+    ("emergency_contact_name", trans("Emergency Contact Name")),
+    ("emergency_contact_relation", trans("Emergency Contact Relation")),
+    ("employee_work_info__email", trans("Work Email")),
+    ("employee_work_info__mobile", trans("Work Phone")),
+    ("employee_work_info__department_id", trans("Department")),
+    ("employee_work_info__job_position_id", trans("Job Position")),
+    ("employee_work_info__job_role_id", trans("Job Role")),
+    ("employee_work_info__shift_id", trans("Shift")),
+    ("employee_work_info__work_type_id", trans("Work Type")),
+    ("employee_work_info__reporting_manager_id", trans("Reporting Manager")),
+    ("employee_work_info__employee_type_id", trans("Employee Type")),
+    ("employee_work_info__location", trans("Work Location")),
+    ("employee_work_info__date_joining", trans("Date Joining")),
+    ("employee_work_info__company_id", trans("Company")),
+    ("employee_bank_details__bank_name", trans("Bank Name")),
+    ("employee_bank_details__branch", trans("Branch")),
+    ("employee_bank_details__account_number", trans("Account Number")),
+    ("employee_bank_details__any_other_code1", trans("Bank Code #1")),
+    ("employee_bank_details__any_other_code2", trans("Bank Code #2")),
+    ("employee_bank_details__country", trans("Country")),
+    ("employee_bank_details__state", trans("State")),
+    ("employee_bank_details__city", trans("City")),
+]
+
+
+class EmployeeExportExcelForm(forms.Form):
+    selected_fields = forms.MultipleChoiceField(
+        choices=excel_columns,
+        widget=forms.CheckboxSelectMultiple,
+        initial=[
+            "badge_id",
+            "employee_first_name",
+            "employee_last_name",
+            "email",
+            "phone",
+            "gender",
+            "employee_work_info__department_id",
+            "employee_work_info__job_position_id",
+            "employee_work_info__job_role_id",
+            "employee_work_info__shift_id",
+            "employee_work_info__work_type_id",
+            "employee_work_info__reporting_manager_id",
+            "employee_work_info__employee_type_id",
+            "employee_work_info__company_id",
+            "",
+            "",
+        ],
+    )

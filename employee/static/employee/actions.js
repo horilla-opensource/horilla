@@ -224,3 +224,8 @@ $("#deleteEmployees").click(function (e) {
     }
   });
 });
+
+$("#select-all-fields").change(function () {
+  const isChecked = $(this).prop("checked");
+  $('[name="selected_fields"]').prop("checked", isChecked);
+});

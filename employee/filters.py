@@ -4,6 +4,7 @@ filters.py
 This page is used to register filter for employee models
 
 """
+import uuid
 import django_filters
 from django.contrib.auth.models import Permission, Group
 from horilla.filters import FilterSet
@@ -77,3 +78,5 @@ class EmployeeFilter(FilterSet):
     def __init__(self, data=None, queryset=None, *, request=None, prefix=None):
         super().__init__(data=data, queryset=queryset, request=request, prefix=prefix)
         self.form.initial["is_active"] = True
+        for field in self.form.fields.keys():
+            self.form.fields[field].widget.attrs["id"] = f"{uuid.uuid4()}"

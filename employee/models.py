@@ -30,8 +30,6 @@ def reporting_manager_validator(value):
     return value
 
 
-
-
 class Employee(models.Model):
     """
     Employee model
@@ -170,7 +168,7 @@ class EmployeeWorkInformation(models.Model):
         blank=True,
         null=True,
         related_name="employee_work_info",
-        verbose_name=_("Employee")
+        verbose_name=_("Employee"),
     )
     job_position_id = models.ForeignKey(
         JobPosition, on_delete=models.PROTECT, null=True, verbose_name=_("Job Position")
@@ -212,7 +210,11 @@ class EmployeeWorkInformation(models.Model):
         verbose_name=_("Reporting Manager"),
     )
     company_id = models.ForeignKey(
-        Company, on_delete=models.PROTECT, blank=True, null=True, verbose_name=_("Company")
+        Company,
+        on_delete=models.PROTECT,
+        blank=True,
+        null=True,
+        verbose_name=_("Company"),
     )
     location = models.CharField(max_length=50, blank=True)
     email = models.EmailField(max_length=254, blank=True, null=True)
@@ -253,7 +255,7 @@ class EmployeeBankDetails(models.Model):
         on_delete=models.CASCADE,
         null=True,
         related_name="employee_bank_details",
-        verbose_name=_("Employee")
+        verbose_name=_("Employee"),
     )
     bank_name = models.CharField(max_length=50)
     account_number = models.CharField(
