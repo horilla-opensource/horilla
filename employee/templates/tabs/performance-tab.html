@@ -1,4 +1,5 @@
 {% load i18n %}
+{% if self_feedback %}
 <div class="oh-sticky-table mt-4">
     <div class="oh-sticky-table__table ">
       <div class="oh-sticky-table__thead">
@@ -45,3 +46,8 @@
       </div>
     </div>
   </div>
+  {% else %}
+  <div class="d-flex justify-content-center align-items-center" style="height:40vh">
+    <h5 class="oh-404__subtitle">{% trans "No feedbacks have been created." %}</h5>
+  </div>
+  {% endif %}

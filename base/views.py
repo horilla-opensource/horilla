@@ -1136,7 +1136,7 @@ def rotating_work_type_assign_delete(request, id):
     except ProtectedError:
         messages.error(request, _("You cannot delete this rotating work type."))
 
-    return redirect("/employee/rotating-work-type-assign")
+    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 
 
 @login_required
@@ -1687,7 +1687,7 @@ def rotating_shift_assign_delete(request, id):
         messages.error(request, _("Rotating shift assign not found."))
     except ProtectedError:
         messages.error(request, _("You cannot delete this rotating shift assign."))
-    return redirect("/employee/rotating-shift-assign")
+    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 
 
 @login_required

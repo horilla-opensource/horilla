@@ -1,5 +1,5 @@
 {% load i18n %}
-
+{% if attendances %}
 <div class="oh-sticky-table">
     <div class="oh-sticky-table__table oh-table--sortable">
       <div class="oh-sticky-table__thead">
@@ -73,3 +73,8 @@
       </div>
     </div>
 </div>
+{% else %}
+<div class="d-flex justify-content-center align-items-center" style="height:40vh">
+  <h5 class="oh-404__subtitle">{% trans "No attendance requests have been generated." %}</h5>
+</div>
+{% endif %}

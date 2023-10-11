@@ -19,6 +19,18 @@
   .oh-sticky-table{
     max-height:50vh;
   }
+	.oh-modal_close--custom {
+	  border: none;
+	  background: none;
+	  font-size: 1.5rem;
+	  opacity: 0.7;
+	  position: absolute;
+	  top: 25px;
+	  right: 15px;
+	}
+  .oh-tabs__tablist .oh-tabs__tab--active:nth-last-child(2) {
+      border-right: 1px solid hsl(213deg,22%,84%);
+  }
 </style>
 
 <div id="enlargeImageContainer" class="enlarge-image-container"></div>
@@ -125,6 +137,29 @@
           </li>
           <li class="oh-general__tab">
             <a
+              hx-get="{% url 'shift-tab' employee.id %}?profile=true"
+              hx-target="#shift_target"
+              data-action="general-tab"
+              data-target="#shift_target"
+              class="oh-general__tab-link pointer"
+              role="button"
+              >{% trans "Work type & Shift" %}</a
+            >
+          </li>
+          <li class="oh-general__tab">
+            <a
+              hx-get={% url 'profile-attendance-tab' %}
+              hx-target="#attendance_target"
+              data-action="general-tab"
+              data-target="#attendance_target"
+              id="asset"
+              class="oh-general__tab-link"
+              role="button"
+              >{% trans "Attendance" %}</a
+            >
+          </li>
+          <li class="oh-general__tab">
+            <a
               href="#"
               class="oh-general__tab-link"
               data-action="general-tab"
@@ -183,18 +218,6 @@
               >{% trans "Performance" %}</a
             >
           </li>
-          <li class="oh-general__tab">
-            <a
-              hx-get={% url 'profile-attendance-tab' %}
-              hx-target="#attendance_target"
-              data-action="general-tab"
-              data-target="#attendance_target"
-              id="asset"
-              class="oh-general__tab-link"
-              role="button"
-              >{% trans "Attendance" %}</a
-            >
-          </li>
         </ul>
 
         <div
@@ -242,6 +265,11 @@
         <div
           class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
           id="attendance_target"
+        >
+        </div>
+        <div
+          class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
+          id="shift_target"
         >
         </div>
       </div>

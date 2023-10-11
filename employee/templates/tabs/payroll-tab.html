@@ -5,7 +5,7 @@
         text-decoration: none;
     }
 </style>
-
+{% if employee.payslip_set.all %}
 <div class="d-flex flex-row-reverse">
   <span class="m-3">
     <span class="oh-dot oh-dot--small me-1" style="background-color:gray"></span>
@@ -77,3 +77,8 @@
         </div>
     </div>
 </div>
+{% else %}
+<div class="d-flex justify-content-center align-items-center" style="height:40vh">
+  <h5 class="oh-404__subtitle">{% trans "No Payslips have been generated." %}</h5>
+</div>
+{% endif %}

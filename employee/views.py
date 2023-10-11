@@ -41,10 +41,14 @@ from base.models import (
     Department,
     JobPosition,
     JobRole,
+    RotatingShiftAssign,
+    RotatingWorkTypeAssign,
+    ShiftRequest,
     WorkType,
     EmployeeShift,
     EmployeeType,
     Company,
+    WorkTypeRequest,
 )
 from base.methods import (
     filtersubordinates,
@@ -54,11 +58,13 @@ from base.methods import (
 )
 from employee.filters import EmployeeFilter
 from employee.forms import (
+    EmployeeExportExcelForm,
     EmployeeForm,
     EmployeeBankDetailsForm,
     EmployeeWorkInformationForm,
     EmployeeWorkInformationUpdateForm,
     EmployeeBankDetailsUpdateForm,
+    excel_columns,
 )
 from employee.models import Employee, EmployeeWorkInformation, EmployeeBankDetails
 from pms.models import Feedback
@@ -143,7 +149,6 @@ def employee_view_individual(request, obj_id):
     )
 
 @login_required
-@manager_can_enter("employee.view_employee")
 def asset_tab(request, emp_id):
     assets_requests = AssetRequest.objects.filter(requested_employee_id=emp_id,asset_request_status="Requested")
     assets = AssetAssignment.objects.filter(assigned_to_employee_id=emp_id)
@@ -155,7 +160,6 @@ def asset_tab(request, emp_id):
     return render(request,"tabs/asset-tab.html",context=context)
 
 @login_required
-@manager_can_enter("employee.view_employee")
 def profile_asset_tab(request, emp_id):
     assets = AssetAssignment.objects.filter(assigned_to_employee_id=emp_id)
     context={
@@ -164,7 +168,6 @@ def profile_asset_tab(request, emp_id):
     return render(request,"tabs/profile-asset-tab.html",context=context)
 
 @login_required
-@manager_can_enter("employee.view_employee")
 def asset_request_tab(request, emp_id):
     assets_requests = AssetRequest.objects.filter(requested_employee_id=emp_id)
     context={
@@ -173,7 +176,6 @@ def asset_request_tab(request, emp_id):
     return render(request,"tabs/asset-request-tab.html",context=context)
 
 @login_required
-@manager_can_enter("employee.view_employee")
 def performance_tab(request, emp_id):
     feedback_own = Feedback.objects.filter(employee_id=emp_id,archive=False)
     today = datetime.today()
@@ -184,7 +186,6 @@ def performance_tab(request, emp_id):
     return render(request,"tabs/performance-tab.html",context=context)
 
 @login_required
-@manager_can_enter("employee.view_employee")
 def profile_attendance_tab(request):
     user = request.user
     employee = user.employee_get
@@ -195,7 +196,6 @@ def profile_attendance_tab(request):
     return render(request,"tabs/profile-attendance-tab.html",context)
 
 @login_required
-@manager_can_enter("employee.view_employee")
 def profile_attendance_tab(request):
     user = request.user
     employee = user.employee_get
@@ -220,6 +220,22 @@ def attendance_tab(request, emp_id):
     }
     return render(request,"tabs/attendance-tab.html",context=context)
 
+@login_required
+def shift_tab(request, emp_id):
+    
+    
+    work_type_requests = WorkTypeRequest.objects.filter(employee_id=emp_id)
+    rshift_assign = RotatingShiftAssign.objects.filter(is_active=True,employee_id=emp_id)
+    rwork_type_assign = RotatingWorkTypeAssign.objects.filter(is_active=True,employee_id=emp_id)
+    shift_requests = ShiftRequest.objects.filter(employee_id=emp_id)
+
+    context={
+        "work_data":work_type_requests,
+        "rshift_assign":rshift_assign,
+        "rwork_type_assign":rwork_type_assign,
+        "shift_data":shift_requests,
+    }
+    return render(request,"tabs/shift-tab.html",context=context)
 
 @login_required
 @require_http_methods(["POST"])
@@ -276,7 +292,6 @@ def paginator_qry(qryset, page_number):
     qryset = paginator.get_page(page_number)
     return qryset
 
-
 @login_required
 @manager_can_enter("employee.view_employee")
 def employee_view(request):
@@ -288,6 +303,7 @@ def employee_view(request):
     employees = Employee.objects.filter(is_active=True)
     page_number = request.GET.get("page")
     filter_obj = EmployeeFilter(queryset=employees)
+    export_form = EmployeeExportExcelForm()
     employees = filtersubordinatesemployeemodel(
         request, filter_obj.qs, "employee.view_employee"
     )
@@ -298,10 +314,11 @@ def employee_view(request):
             "data": paginator_qry(employees, page_number),
             "pd": previous_data,
             "f": filter_obj,
+            "export_filter": EmployeeFilter(queryset=employees),
+            "export_form": export_form,
             "view_type": view_type,
         },
     )
-
 
 @login_required
 @permission_required("employee.add_employee")
@@ -1310,93 +1327,41 @@ def work_info_import(request):
         return HttpResponse("Imported successfully")
     return response
 
-
-def work_info_export(_):
+def work_info_export(request):
     """
     This method is used to export employee data to xlsx
     """
-    # Add the fields from the related Employee,JobPosition,Department,WorkType,JobRole model
-    field_names = [
-        "employee_id__badge_id",
-        "employee_id__employee_first_name",
-        "employee_id__employee_last_name",
-        "employee_id__phone",
-        "employee_id__email",
-        "employee_id__gender",
-        "department_id__department",
-        "job_position_id__job_position",
-        "job_role_id__job_role",
-        "work_type_id__work_type",
-        "shift_id__employee_shift",
-        "employee_type_id__employee_type",
-        "reporting_manager_id__employee_first_name",
-        "company_id__company",
-        "location",
-        "date_joining",
-        "contract_end_date",
-        "basic_salary",
-        "salary_hour",
-    ]
+    employees_data = {}
+    selected_columns = []
+    employees = EmployeeFilter(request.GET).qs
+    selected_fields = request.GET.getlist("selected_fields")
+    for field in excel_columns:
+        value = field[0]
+        key = field[1]
+        if value in selected_fields:
+            selected_columns.append((value, key))
+    for column_value, column_name in selected_columns:
+        nested_attributes = column_value.split("__")
+        employees_data[column_name] = []
+        for employee in employees:
+            value = employee
+            for attr in nested_attributes:
+                value = getattr(value, attr, None)
+                if value is None:
+                    break
+            data = str(value) if value is not None else ""
+            if data == "True":
+                data = _("Yes")
+            elif data == "False":
+                data = _("No")
+            employees_data[column_name].append(data)
 
-    # Get the list of field names from EmployeeWorkInformation model
-    field_names += [
-        f.name for f in EmployeeWorkInformation._meta.get_fields() if not f.auto_created
-    ]
-
-    fields_to_remove = [
-        "badge_id",
-        "employee_id",
-        "job_position_id",
-        "department_id",
-        "work_type_id",
-        "job_role_id",
-        "reporting_manager_id",
-        "company_id",
-        "shift_id",
-        "employee_type_id",
-        "additional_info",
-    ]
-    field_names = [
-        field_name for field_name in field_names if field_name not in fields_to_remove
-    ]
-
-    # Get the existing employee data with related Employee objects
-    employee_data = EmployeeWorkInformation.objects.values_list(*field_names)
-
-    data_frame = pd.DataFrame(employee_data, columns=field_names)
-
-    # Rename the columns for clarity
-    data_frame = data_frame.rename(
-        columns={
-            "employee_id__badge_id": "badge_id",
-            "employee_id__employee_first_name": "first_name",
-            "employee_id__employee_last_name": "last_name",
-            "employee_id__phone": "phone",
-            "employee_id__email": "email",
-            "employee_id__gender": "gender",
-            "department_id__department": "department",
-            "job_position_id__job_position": "job_position",
-            "job_role_id__job_role": "job_role",
-            "work_type_id__work_type": "work_type",
-            "shift_id__employee_shift": "shift",
-            "employee_type_id__employee_type": "employee_type",
-            "reporting_manager_id__employee_first_name": "reporting_manager",
-            "company_id__company": "company",
-            "location": "location",
-            "date_joining": "date_joining",
-            "contract_end_date": "contract_end_date",
-            "basic_salary": "basic_salary",
-            "salary_hour": "salary_hour",
-        }
-    )
-
-    # Export the DataFrame to an Excel file
+    data_frame = pd.DataFrame(data=employees_data)
     response = HttpResponse(content_type="application/ms-excel")
     response["Content-Disposition"] = 'attachment; filename="employee_export.xlsx"'
     data_frame.to_excel(response, index=False)
 
     return response
-
 
 def birthday():
     """

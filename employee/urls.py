@@ -161,4 +161,5 @@ urlpatterns = [
     path("asset-request-tab/<int:emp_id>", views.asset_request_tab, name="asset-request-tab"),
     path("performance-tab/<int:emp_id>", views.performance_tab, name="performance-tab"),
     path("attendance-tab/<int:emp_id>", views.attendance_tab, name="attendance-tab"),
+    path("shift-tab/<int:emp_id>", views.shift_tab, name="shift-tab"),
 ]

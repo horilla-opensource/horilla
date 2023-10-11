@@ -32,7 +32,9 @@ $(document).ready(function () {
       $(`[data-target='${activeTab}']`).addClass("oh-general__tab-link--active");
       $(".oh-general__tab-target").addClass("d-none");
       $(activeTab).removeClass("d-none");
-        $((`[data-target="${activeTab}"]`))[0].click();
+      if($(`[data-target="${activeTab}"]`).length>0){
+        $(`[data-target="${activeTab}"]`)[0].click();
+      }
     }
   }
   activeProfileTab()

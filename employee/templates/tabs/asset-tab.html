@@ -9,6 +9,7 @@
       </button>
       {% endif %}
     </div>
+    {% if assets %}
     <div class="oh-sticky-table">
       <div class="oh-sticky-table__table ">
         <div class="oh-sticky-table__thead">
@@ -51,5 +52,10 @@
         </div>
       </div>
     </div>
+    {% else %}
+    <div class="d-flex justify-content-center align-items-center" style="height:40vh">
+      <h5 class="oh-404__subtitle">{% trans "No assets have been allocated." %}</h5>
+    </div>
+    {% endif %}
     <!-- End of Sticky Table -->
 
