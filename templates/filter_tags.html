@@ -1,49 +1,56 @@
-{% load i18n %}
-{% load basefilters %}
+{% load i18n %} {% load basefilters %}
 
 <!-- filter items showing here -->
-<div
-  class="oh-filter-tag-container"
-  style="position: fixed; top: 150px; z-index: 9999"
->
-  {% if filter_dict %}
-    <span class="oh-filter-tag">{% trans "Applied Filters :" %}</span>
-  {% endif %}
-  {%for field,values in filter_dict.items %} {%if values %}
-  {% with translation_field=field|filter_field %}
-  <span class="oh-filter-tag filter-field" data-x-field="{{field}}">
-    {% trans translation_field  %} : {% for value in values%} {% with trans_value=value|capfirst  %}  {% trans trans_value %} {% endwith %} {% endfor %}
-    <button class="oh-filter-tag__close">
-      <ion-icon
-        name="close-outline"
-        role="img"
-        class="md hydrated"
-        aria-label="close outline"
-      >
-      </ion-icon>
-    </button>
-  </span>
-  {% endwith %}
-  {%endif%} {% endfor %}
+<div style="display: none;">
+{{filter_dict}}
 </div>
 <script>
   var form_submit_id = ".filterButton";
-  $(document).ready(function () {
-    $(".filter-field").on("click", function () {
-      const field_id = $(this).attr("data-x-field");
-      // Update all elements with the same ID to have null values
-      $(`.oh-main__topbar:first [name=${field_id}]`).val("");
-      const elementId = $(
-        `.oh-main__topbar:first [name=${field_id}]:last`
-      ).attr("id");
+  function clearFilterFromTag(element) {
+    const field_id = element.attr("data-x-field");
+    $(`[name=${field_id}]`).val("")
+    $(`[name=${field_id}]`).change()
+    console.log($(`.oh-main__topbar:first [name=${field_id}]`));
+    // Update all elements with the same ID to have null values
+    const elementId = $(`[name=${field_id}]:last`).attr(
+      "id"
+      );
       const spanElement = $(
         `.oh-dropdown__filter-body:first #select2-id_${field_id}-container, #select2-${elementId}-container`
-      );
-      if (spanElement.length) {
-        spanElement.attr("title", "---------");
-        spanElement.text("---------");
-      }
+        );
+        if (spanElement.length) {
+          spanElement.attr("title", "---------");
+          spanElement.text("---------");
+        }
       $(form_submit_id).click();
-    });
+      console.log($(element));
+  }
+  $(document).ready(function () {
+    var nav = $("#filterTagContainerSectionNav");
+    tags = $(`
+    {% if filter_dict %}
+    <span class="oh-titlebar__tag oh-titlebar__tag--custom"
+      >{% trans "Filters :" %}</span
+    >
+    {% endif %} 
+    {%for field,values in filter_dict.items %} {% if values %} 
+    {% with translation_field=field|filter_field %}
+    <span class="oh-titlebar__tag filter-field" >
+      {% trans translation_field %} : {% for value in values%} 
+      {% with trans_value=value|capfirst %} {% trans trans_value %} {% endwith %} {% endfor %}
+      <button class="oh-titlebar__tag-close" onclick="clearFilterFromTag($(this))" data-x-field="{{field}}">
+        <ion-icon
+          name="close-outline"
+          role="img"
+          class="md hydrated"
+          aria-label="close outline"
+        >
+        </ion-icon>
+      </button>
+    </span>
+    {% endwith %} {% endif %} {% endfor %}`);
+
+    nav.html(tags);
+    $("oh-tabs__tab oh-tabs__tab--active:first").click();
   });
 </script>
