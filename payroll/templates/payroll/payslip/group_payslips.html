@@ -33,11 +33,11 @@
               {{payslip.list|length}}
               </span>
           </div>
-          <span>
-            <input type="text" class="oh-tabs__movable-title oh-table__editable-input oh-table__editable-input--batch" value="{{payslip.grouper}}" name="" id="{{payslip.grouper}}Grouper" data-previous-name="{{payslip.grouper}}">
+          <span onclick="event.stopPropagation()">
+            <input type="text" class="oh-tabs__movable-title  oh-table__editable-input--batch" value="{{payslip.grouper}}" name="" id="{{payslip.grouper}}Grouper" data-previous-name="{{payslip.grouper}}">
           </span>
         </span>
-        <div class="oh-accordion-meta__actions">
+        <div class="oh-accordion-meta__actions" onclick="event.stopPropagation()">
           <select name="update_selected" onclick="event.stopPropagation()" class="oh-select" data-accordion-id="{{payslip.grouper}}Container">
             <option value="">------</option>
             <option value="draft">Draft</option>

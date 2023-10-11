@@ -7,6 +7,7 @@
   hx-swap="innerHTML"
   hx-target="#payroll-payslip-container"
 >
+  <input type="hidden" name="group_by" value="{{request.GET.group_by}}" data-exclude-saved-filter="true">
   <div class="oh-dropdown__filter-body">
     <div class="oh-accordion">
       <div class="oh-accordion-header">{% trans "Payslip" %}</div>
