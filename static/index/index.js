@@ -76,3 +76,9 @@ window.confirm = function(message) {
     })
   });
 };
+var nav = $("section.oh-wrapper.oh-main__topbar");
+nav.after($(
+  `
+  <div id="filterTagContainerSectionNav" class="oh-titlebar-container__filters mb-2 mt-0 oh-wrapper"></div>
+  `
+))
