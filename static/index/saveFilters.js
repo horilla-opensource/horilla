@@ -7,27 +7,27 @@ if (savedFilters != null) {
       if (filterDetails.filterData.hasOwnProperty(fieldName)) {
         var value = filterDetails.filterData[fieldName];
         // Set the value of the corresponding form field
-        filterForm.find('[name="' + fieldName + '"]').val(value);
-        filterForm
-          .find('[name="' + fieldName + '"]')
-          .first()
-          .change();
+        let field = filterForm.find('[name="' + fieldName + '"]');
+        if (field.attr("data-exclude-saved-filter")!="true") {
+          field.val(value);
+          field.first().change();
+        }
       }
     }
     setTimeout(() => {
-    filterForm.find(".filterButton").click();
-    setTimeout(() => {
+      filterForm.find(".filterButton").click();
+      setTimeout(() => {
         $("#main-section-data:first").show();
         $("#tripple-loader-contaner:first").remove();
-    }, 350);
-    },250 );
-  }else{
+      }, 350);
+    }, 250);
+  } else {
     $("#main-section-data:first").show();
     $("#tripple-loader-contaner:first").remove();
   }
-}else{
-    $("#main-section-data:first").show();
-    $("#tripple-loader-contaner:first").remove();
+} else {
+  $("#main-section-data:first").show();
+  $("#tripple-loader-contaner:first").remove();
 }
 $(document).ready(function () {
   $(".filterButton").click(function (e) {
