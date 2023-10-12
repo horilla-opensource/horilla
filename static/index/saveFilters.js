@@ -8,7 +8,7 @@ if (savedFilters != null) {
         var value = filterDetails.filterData[fieldName];
         // Set the value of the corresponding form field
         let field = filterForm.find('[name="' + fieldName + '"]');
-        if (field.attr("data-exclude-saved-filter")!="true") {
+        if (field.attr("data-exclude-saved-filter")!="true" && field.val() == "") {
           field.val(value);
           field.first().change();
         }
@@ -22,6 +22,7 @@ if (savedFilters != null) {
       }, 350);
     }, 250);
   } else {
+    var savedFilters = localStorage.removeItem("savedFilters");
     $("#main-section-data:first").show();
     $("#tripple-loader-contaner:first").remove();
   }
