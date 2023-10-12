@@ -26,8 +26,9 @@ def update_compensation_deduction(
     deductions = []
     temp = compensation_amount
     for deduction in deduction_heads:
-        compensation_amount = compensation_amount - float(deduction.amount)
-        deductions.append({"title": deduction.title, "amount": deduction.amount})
+        amount = deduction.amount if deduction.amount else 0
+        compensation_amount = compensation_amount - float(amount)
+        deductions.append({"title": deduction.title, "amount": amount})
 
     difference_amount = temp - compensation_amount
     return {

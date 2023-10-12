@@ -13,6 +13,14 @@
       <div class="oh-accordion-header">{% trans "Payslip" %}</div>
       <div class="oh-accordion-body">
         <div class="row">
+          <div class="col-sm-12">
+            <div class="oh-input-group">
+              <label class="oh-label">{% trans "Employee" %}</label>
+              {{ f.form.employee_id }}
+            </div>
+          </div>
+        </div>
+        <div class="row">
           <div class="col-sm-6">
             <div class="oh-input-group">
               <label class="oh-label">{% trans "Start Date" %}</label>
@@ -27,10 +35,16 @@
           </div>
         </div>
         <div class="row">
-          <div class="col-sm-12">
+          <div class="col-sm-6">
             <div class="oh-input-group">
               <label class="oh-label">{% trans "Status" %}</label>
               {{ f.form.status }}
+            </div>
+          </div>
+          <div class="col-sm-6">
+            <div class="oh-input-group">
+              <label class="oh-label">{% trans "Batch" %}</label>
+              {{ f.form.group_name }}
             </div>
           </div>
         </div>

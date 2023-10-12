@@ -6,11 +6,13 @@ Each filter set class corresponds to a specific model and contains filter fields
 to customize the filtering behavior.
 
 """
-import django_filters 
+import uuid
+import django_filters
 from django import forms
+from employee.models import Employee
 from horilla.filters import filter_by_name
 from attendance.filters import FilterSet
-from payroll.models.models import Allowance, Contract, Deduction ,FilingStatus
+from payroll.models.models import Allowance, Contract, Deduction, FilingStatus
 from payroll.models.models import Payslip
 
 
@@ -178,6 +180,10 @@ class PayslipFilter(FilterSet):
     """
 
     search = django_filters.CharFilter(method=filter_by_name)
+    employee_id = django_filters.ModelMultipleChoiceFilter(
+        queryset=Employee.objects.all(),
+        widget=forms.SelectMultiple(),
+    )
     start_date = django_filters.DateFilter(
         widget=forms.DateInput(attrs={"type": "date"}),
     )
@@ -218,8 +224,11 @@ class PayslipFilter(FilterSet):
     )
     net_pay__lte = django_filters.NumberFilter(field_name="net_pay", lookup_expr="lte")
     net_pay__gte = django_filters.NumberFilter(field_name="net_pay", lookup_expr="gte")
-    
-    department = django_filters.CharFilter(field_name='employee_id__employee_work_info__department_id__department', lookup_expr='icontains')
+
+    department = django_filters.CharFilter(
+        field_name="employee_id__employee_work_info__department_id__department",
+        lookup_expr="icontains",
+    )
 
     class Meta:
         """
@@ -231,6 +240,7 @@ class PayslipFilter(FilterSet):
             "employee_id",
             "start_date",
             "end_date",
+            "group_name",
             "status",
             "gross_pay__lte",
             "gross_pay__gte",
@@ -239,3 +249,8 @@ class PayslipFilter(FilterSet):
             "net_pay__lte",
             "net_pay__gte",
         ]
+
+    def __init__(self, data=None, queryset=None, *, request=None, prefix=None):
+        super().__init__(data=data, queryset=queryset, request=request, prefix=prefix)
+        for field in self.form.fields.keys():
+            self.form.fields[field].widget.attrs["id"] = f"{uuid.uuid4()}"

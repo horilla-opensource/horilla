@@ -110,7 +110,7 @@ def contract_delete(request, contract_id):
         messages.error(request, _("Contract not found."))
     except ProtectedError:
         messages.error(request, _("You cannot delete this contract."))
-    return redirect(contract_view)
+    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 
 
 @login_required
@@ -284,12 +284,15 @@ def update_payslip_status(request, payslip_id=None):
     """
     message = {"type": "success", "message": "Payslip status updated."}
     if request.method == "POST":
-        ids_json = request.POST['ids']
+        ids_json = request.POST["ids"]
         ids = json.loads(ids_json)
         status = request.POST["status"]
         slips = Payslip.objects.filter(id__in=ids)
         slips.update(status=status)
-        message = {"type": "success", "message": f"{slips.count()} Payslips status updated."}
+        message = {
+            "type": "success",
+            "message": f"{slips.count()} Payslips status updated.",
+        }
         return JsonResponse(message)
     try:
         payslip = Payslip.objects.get(id=payslip_id)
@@ -336,7 +339,7 @@ def bulk_update_payslip_status(request):
         instance.pay_head_data = data
         instance.save()
 
-    return JsonResponse({"type":"success","message": "Payslips status updated"})
+    return JsonResponse({"type": "success", "message": "Payslips status updated"})
 
 
 @login_required
@@ -501,7 +504,7 @@ def dashboard_employee_chart(request):
             "dataset": dataset,
             "labels": employee_label,
             "employees": list_of_employees,
-            "message":_("No payslips generated for this month.")
+            "message": _("No payslips generated for this month."),
         }
         return JsonResponse(response)
 
@@ -590,7 +593,7 @@ def dashboard_department_chart(request):
             "dataset": dataset,
             "labels": department,
             "department_total": department_total,
-            "message":_("No payslips generated for this month.")
+            "message": _("No payslips generated for this month."),
         }
         return JsonResponse(response)
 
@@ -616,7 +619,7 @@ def contract_ending(request):
 
     response = {
         "contract_end": ending_contract,
-        "message":_("No contracts ending this month")
+        "message": _("No contracts ending this month"),
     }
     return JsonResponse(response)
 
@@ -922,4 +925,6 @@ def slip_group_name_update(request):
     new_name = request.POST["newName"]
     group_name = request.POST["previousName"]
     Payslip.objects.filter(group_name=group_name).update(group_name=new_name)
-    return JsonResponse({"type":"success","message":"Batch name updated.","new_name":new_name})
+    return JsonResponse(
+        {"type": "success", "message": "Batch name updated.", "new_name": new_name}
+    )

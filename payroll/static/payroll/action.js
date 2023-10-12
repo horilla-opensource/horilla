@@ -44,20 +44,25 @@ $(".all-payslip").change(function (e) {
   var is_checked = $(this).is(":checked");
   if (is_checked) {
     $(".all-payslip-row").prop("checked", true);
-    $(".all-payslip-row").attr("data-checked",true);
+    $(".all-payslip-row").attr("data-checked", true);
   } else {
     $(".all-payslip-row").prop("checked", false);
-    $(".all-payslip-row").attr("data-checked",false);
+    $(".all-payslip-row").attr("data-checked", false);
   }
 });
 
-$(".all-payslip-row").change(function (e) { 
+$(".all-payslip-row").change(function (e) {
   e.preventDefault();
   if ($(this).is(":checked")) {
-    $(this).attr("data-checked",true);
-  }else{
-    $(this).attr("data-checked",false);
+    $(this).attr("data-checked", true);
+  } else {
+    $(this).attr("data-checked", false);
   }
+});
+
+$("#select-all-fields").change(function () {
+  const isChecked = $(this).prop("checked");
+  $('[name="selected_fields"]').prop("checked", isChecked);
 });
 
 $("#DeletePayslipBulk").click(function (e) {
@@ -73,7 +78,7 @@ $("#DeletePayslipBulk").click(function (e) {
     checkedRows.each(function () {
       ids.push($(this).val());
     });
-    alert()
+    alert();
     if (checkedRows.length === 0) {
       Swal.fire({
         text: textMessage,

@@ -238,3 +238,42 @@ class PayrollSettingsForm(ModelForm):
 
         model = models.PayrollSettings
         fields = "__all__"
+
+
+excel_columns = [
+    ("employee_id", _("Employee")),
+    ("group_name", _("Batch")),
+    ("start_date", _("Start Date")),
+    ("end_date", _("End Date")),
+    ("contract_wage", _("Contract Wage")),
+    ("basic_pay", _("Basic Pay")),
+    ("gross_pay", _("Gross Pay")),
+    ("deduction", _("Deduction")),
+    ("net_pay", _("Net Pay")),
+    ("status", _("Status")),
+    ("employee_id__employee_bank_details__bank_name", _("Bank Name")),
+    ("employee_id__employee_bank_details__branch", _("Branch")),
+    ("employee_id__employee_bank_details__account_number", _("Account Number")),
+    ("employee_id__employee_bank_details__any_other_code1", _("Bank Code #1")),
+    ("employee_id__employee_bank_details__any_other_code2", _("Bank Code #2")),
+    ("employee_id__employee_bank_details__country", _("Country")),
+    ("employee_id__employee_bank_details__state", _("State")),
+    ("employee_id__employee_bank_details__city", _("City")),
+]
+
+
+class PayslipExportColumnForm(forms.Form):
+    selected_fields = forms.MultipleChoiceField(
+        choices=excel_columns,
+        widget=forms.CheckboxSelectMultiple,
+        initial=[
+            "employee_id",
+            "group_name",
+            "start_date",
+            "end_date",
+            "basic_pay",
+            "gross_pay",
+            "net_pay",
+            "status",
+        ],
+    )

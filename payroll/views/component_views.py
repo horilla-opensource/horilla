@@ -8,10 +8,11 @@ import operator
 from datetime import datetime
 from urllib.parse import parse_qs
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
-from django.http import JsonResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.utils.translation import gettext_lazy as _
+import pandas as pd
 from horilla.decorators import login_required, permission_required
 from base.methods import get_key_instances
 import payroll.models.models
@@ -463,7 +464,9 @@ def generate_payslip(request):
                 instance = save_payslip(**data)
                 instances.append(instance)
             messages.success(request, f"{employees.count()} payslip saved as draft")
-            return redirect(f"/payroll/view-payslip?group_by=group_name&active_group={group_name}")
+            return redirect(
+                f"/payroll/view-payslip?group_by=group_name&active_group={group_name}"
+            )
 
     return render(request, "payroll/common/form.html", {"form": form})
 
@@ -536,35 +539,43 @@ def validate_start_date(request):
     """
     This method to validate the contract start date and the pay period start date
     """
+    end_datetime = None
+    start_datetime = None
     start_date = request.GET.get("start_date")
     end_date = request.GET.get("end_date")
     employee_id = request.GET.getlist("employee_id")
-    start_datetime = datetime.strptime(start_date, "%Y-%m-%d").date()
-    end_datetime = datetime.strptime(end_date, "%Y-%m-%d").date()
-
+    if start_date:
+        start_datetime = datetime.strptime(start_date, "%Y-%m-%d").date()
+    if end_date:
+        end_datetime = datetime.strptime(end_date, "%Y-%m-%d").date()
     error_message = ""
     response = {"valid": True, "message": error_message}
     for emp_id in employee_id:
         contract = payroll.models.models.Contract.objects.filter(
             employee_id__id=emp_id, contract_status="active"
         ).first()
-        if start_datetime < contract.contract_start_date:
+
+        if start_datetime is not None and start_datetime < contract.contract_start_date:
             error_message = f"<ul class='errorlist'><li>The {contract.employee_id}'s \
                 contract start date is smaller than pay period start date</li></ul>"
             response["message"] = error_message
             response["valid"] = False
-    if start_datetime > end_datetime:
+
+    if (
+        start_datetime is not None
+        and end_datetime is not None
+        and start_datetime > end_datetime
+    ):
         error_message = "<ul class='errorlist'><li>The end date must be greater than \
                 or equal to the start date.</li></ul>"
         response["message"] = error_message
         response["valid"] = False
 
-    if end_datetime > datetime.today().date():
-        error_message = (
-            '<ul class="errorlist"><li>The end date cannot be in the future.</li></ul>'
-        )
-        response["message"] = error_message
-        response["valid"] = False
+    if end_datetime is not None:
+        if end_datetime > datetime.today().date():
+            error_message = '<ul class="errorlist"><li>The end date cannot be in the future.</li></ul>'
+            response["message"] = error_message
+            response["valid"] = False
     return JsonResponse(response)
 
 
@@ -594,6 +605,7 @@ def view_payslip(request):
         payslips = payroll.models.models.Payslip.objects.filter(
             employee_id__employee_user_id=request.user
         )
+    export_column = forms.PayslipExportColumnForm()
     filter_form = PayslipFilter(request.GET)
     individual_form = forms.PayslipForm()
     bulk_form = forms.GeneratePayslipForm()
@@ -607,6 +619,8 @@ def view_payslip(request):
         {
             "payslips": payslips,
             "f": filter_form,
+            "export_column": export_column,
+            "export_filter": PayslipFilter(request.GET),
             "individual_form": individual_form,
             "bulk_form": bulk_form,
         },
@@ -634,11 +648,7 @@ def filter_payslip(request):
     data_dict = []
     if not request.GET.get("dashboard"):
         data_dict = parse_qs(query_string)
-        keys_to_remove = [
-            key for key, value in data_dict.items() if value == ["unknown"]
-        ]
-        for key in keys_to_remove:
-            data_dict.pop(key)
+        get_key_instances(Payslip, data_dict)
     if "status" in data_dict:
         status_list = data_dict["status"]
         if len(status_list) > 1:
@@ -653,6 +663,56 @@ def filter_payslip(request):
             "filter_dict": data_dict,
         },
     )
+
+
+def payslip_export(request):
+    """
+    This view exports payslip data based on selected fields and filters,
+    and generates an Excel file for download.
+    """
+    choices_mapping = {
+        "draft": _("Draft"),
+        "review_ongoing": _("Review Ongoing"),
+        "confirmed": _("Confirmed"),
+        "paid": _("Paid"),
+    }
+    selected_columns = []
+    payslips_data = {}
+    payslips = PayslipFilter(request.GET).qs
+    selected_fields = request.GET.getlist("selected_fields")
+
+    for field in forms.excel_columns:
+        value = field[0]
+        key = field[1]
+        if value in selected_fields:
+            selected_columns.append((value, key))
+
+    for column_value, column_name in selected_columns:
+        nested_attributes = column_value.split("__")
+        payslips_data[column_name] = []
+        for payslip in payslips:
+            value = payslip
+            for attr in nested_attributes:
+                value = getattr(value, attr, None)
+                if value is None:
+                    break
+            data = str(value) if value is not None else ""
+            if column_name == "Status":
+                data = choices_mapping.get(value, "")
+            else:
+                data = str(value) if value is not None else ""
+            payslips_data[column_name].append(data)
+
+    data_frame = pd.DataFrame(data=payslips_data)
+    styled_data_frame = data_frame.style.applymap(
+        lambda x: "text-align: center", subset=pd.IndexSlice[:, :]
+    )
+    response = HttpResponse(content_type="application/ms-excel")
+    response["Content-Disposition"] = 'attachment; filename="payslip_export.xlsx'
+
+    styled_data_frame.to_excel(response, index=False, engine="openpyxl")
+
+    return response
 
 
 @login_required

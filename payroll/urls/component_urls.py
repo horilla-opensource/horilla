@@ -47,6 +47,7 @@ urlpatterns = [
     path("generate-payslip", component_views.generate_payslip, name="generate-payslip"),
     path('validate-start-date', component_views.validate_start_date, name='validate-start-date'),
     path("filter-payslip", component_views.filter_payslip, name="filter-payslip"),
+    path("payslip-info-export", component_views.payslip_export, name="payslip-info-export"),
     path(
         "view-individual-payslip/<int:employee_id>/<str:start_date>/<str:end_date>/",
         component_views.view_individual_payslip,
