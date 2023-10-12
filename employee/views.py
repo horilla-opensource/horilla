@@ -246,6 +246,7 @@ def shift_tab(request, emp_id):
         "rshift_assign":rshift_assign,
         "rwork_type_assign":rwork_type_assign,
         "shift_data":shift_requests,
+        "employee":emp_id,
     }
     return render(request,"tabs/shift-tab.html",context=context)
 

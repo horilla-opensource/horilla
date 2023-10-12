@@ -10,24 +10,40 @@
 					<img src="{% static 'images/ui/work-from-home (1).png' %}" alt="" style="width: 25px; height: 25px; margin-right:3px">
 					{% trans "Work type request" %}
 				</div>
+				<button class="oh-btn oh-btn--secondary-outline oh-stop-prop oh-accordion-meta__btn p-2" title="Add" hx-get="{% url 'work-type-request' %}?emp_id={{employee}}" hx-target="#formBody" data-target='#workTypeRequestModal' data-toggle='oh-modal-toggle'>
+					<ion-icon class="md hydrated" name="add-outline" role="img" aria-label="add outline"></ion-icon>
+				</button>
 			</li>
 			<li class="oh-tabs__tab" data-target="#shift_tab_3">
 				<div>
 					<img src="{% static 'images/ui/work-from-home.png' %}" alt="" style="width: 25px; height: 25px; margin-right:3px">
 					{% trans "Rotating work type" %}
 				</div>
+				{% if not request.GET.profile %}
+				<button class="oh-btn oh-btn--secondary-outline oh-stop-prop oh-accordion-meta__btn p-2" title="Add" hx-get="{% url 'rotating-work-type-assign-add' %}?emp_id={{employee}}" hx-target="#rotatingWorkTypeAssignModalBody" data-target='#rotating-work-type-modal' data-toggle='oh-modal-toggle'>
+					<ion-icon class="md hydrated" name="add-outline" role="img" aria-label="add outline"></ion-icon>
+				</button>
+				{% endif%}
 			</li>
 			<li class="oh-tabs__tab" data-target="#shift_tab_4">
 				<div>
 					<img src="{% static 'images/ui/time-management.png' %}" alt="" style="width: 25px; height: 25px; margin-right:3px">
 					{% trans "Shift request" %}
 				</div>
+				<button class="oh-btn oh-btn--secondary-outline oh-stop-prop oh-accordion-meta__btn p-2" title="Add" hx-get="{% url 'shift-request' %}?emp_id={{employee}}" hx-target="#shiftRequestFormBody" data-target='#shiftRequestModal' data-toggle='oh-modal-toggle' >
+					<ion-icon class="md hydrated" name="add-outline" role="img" aria-label="add outline"></ion-icon>
+				  </button>
 			</li>
 			<li class="oh-tabs__tab" data-target="#shift_tab_2">
 				<div>
 					<img src="{% static 'images/ui/shift.png' %}" alt="" style="width: 25px; height: 25px; margin-right:3px">
 					{% trans "Rotating Shift" %}
 				</div>
+				{% if not request.GET.profile %}
+				<button class="oh-btn oh-btn--secondary-outline oh-stop-prop oh-accordion-meta__btn p-2" title="Add" hx-get="{% url 'rotating-shift-assign-add' %}?emp_id={{employee}}" hx-target="#rotatingShiftAssignModalBody" data-target='#rotating-shift-modal' data-toggle='oh-modal-toggle'>
+					<ion-icon class="md hydrated" name="add-outline" role="img" aria-label="add outline"></ion-icon>
+				  </button>
+				  {% endif %}
 			</li>
 		</ul>
 		<div class="oh-tabs__contents" id="view-container">
@@ -210,9 +226,9 @@
 							  {% if perms.base.change_rotatingshiftassign  or request.user|is_reportingmanager %}
 							  <a
 								hx-get="{% url 'rotating-shift-assign-update' rshift.id %}"
-								hx-target="#workTypeRequestUpdateModalBody"
+								hx-target="#rotatingShiftAssignUpdateModalBody"
 								hx-swap="innerHTML"
-								data-target="#workTypeRequestUpdateModal"
+								data-target="#rotating-shift-update-modal"
 								data-toggle="oh-modal-toggle"
 								type="button"
 								class="oh-btn oh-btn--light-bkg w-50"
@@ -334,8 +350,8 @@
 							  {% if perms.base.change_rotatingworktypeassign or request.user|is_reportingmanager  %}
 							  <a
 								hx-get="{% url 'rotating-work-type-assign-update' rwork_type.id %}"
-								hx-target="#workTypeRequestUpdateModalBody"
-								data-target="#workTypeRequestUpdateModal"
+								hx-target="#rotatingWorkTypeAssignModalBody"
+								data-target="#rotating-work-type-modal"
 								data-toggle="oh-modal-toggle"
 								type="button"
 								class="oh-btn oh-btn--light-bkg w-50"
@@ -421,7 +437,7 @@
 						  <div class="oh-sticky-table__td">
 							<div class="oh-btn-group">
 							{% if shift_request.approved == False and not shift_request.canceled   %}
-							<a hx-get="{% url 'shift-request-update' shift_request.id %}" hx-target='#workTypeRequestUpdateModalBody' data-toggle="oh-modal-toggle" data-target='#workTypeRequestUpdateModal' class="oh-btn oh-btn--light-bkg w-50" title="{% trans 'Edit' %}"><ion-icon name="create-outline"></ion-icon></a>
+							<a hx-get="{% url 'shift-request-update' shift_request.id %}" hx-target='#shiftRequestModalUpdateBody' data-toggle="oh-modal-toggle" data-target='#shiftRequestModalUpdate' class="oh-btn oh-btn--light-bkg w-50" title="{% trans 'Edit' %}"><ion-icon name="create-outline"></ion-icon></a>
 							{% endif %}
 							{% if shift_request.approved == False %}
 							<form action="{% url 'shift-request-delete' shift_request.id  %}" onsubmit="return confirm('{% trans "Are you sure you want to delete this shift request?" %}');" method='post'>
@@ -486,9 +502,9 @@
 >
   <div class="oh-modal__dialog">
     <div class="oh-modal__dialog-header">
-      <h2 class="oh-modal__dialog-title" id="addEmployeeModalLabel">
-        {% trans "Validate Attendances Request" %}
-      </h2>
+      <h5 class="oh-modal__dialog-title" id="workTypeRequestUpdateModalLabel"
+        >{% trans "Work type Request" %}</span
+      >
       <button
         class="oh-modal_close--custom"
         onclick="event.stopPropagation(); var modalElement = this.closest('.oh-modal'); modalElement.classList.toggle('oh-modal--show');"
@@ -496,21 +512,208 @@
         <ion-icon name="close-outline"></ion-icon>
       </button>
     </div>
+    
+    <div class="oh-modal__dialog-body" id='workTypeRequestUpdateModalBody'>
+
+    </div>
+   </div>
+  </div>
+</div>
+
+<div
+  class="oh-modal"
+  id="rotating-work-type-modal"
+  role="dialog"
+  aria-labelledby="rotating-work-type-modal"
+  aria-hidden="true"
+>
+  <div class="oh-modal__dialog">
+    <div class="oh-modal__dialog-header">
+      <h2 class="oh-modal__dialog-title" id="rotatingWorkTypeAssignModalLabel">
+        {% trans "Rotating Work Type Update" %}
+      </h2>
+      <button class="oh-modal__close" aria-label="Close">
+        <ion-icon name="close-outline"></ion-icon>
+      </button>
+    </div>
     <div
       class="oh-modal__dialog-body"
-      id="workTypeRequestUpdateModalBody"
+      id="rotatingWorkTypeAssignModalBody"
     ></div>
   </div>
 </div>
 
 <div
-	class="oh-modal__dialog-body"
-	id="shiftRequestModalUpdateBody"
-></div>
+  class="oh-modal"
+  id="shiftRequestModalUpdate"
+  role="dialog"
+  aria-labelledby="shiftRequestModalUpdate"
+  aria-hidden="true"
+>
+  <div class="oh-modal__dialog">
+    <div class="oh-modal__dialog-header">
+      <h5 class="oh-modal__dialog-title" id="shiftRequestModalUpdateLabel"
+        >{% trans "Update Shift Request" %}</span
+      >
+      <button class="oh-modal__close" aria-label="Close">
+        <ion-icon name="close-outline"></ion-icon>
+      </button>
+    </div>
+    
+    <div class="oh-modal__dialog-body" id='shiftRequestModalUpdateBody'>
+    </div>
+  </div>
+</div>
+  
 <div
-	class="oh-modal__dialog-body"
-	id="rotatingWorkTypeAssignUpdateModalLabel"
-></div>
+  class="oh-modal"
+  id="rotating-shift-update-modal"
+  role="dialog"
+  aria-labelledby="rotating-shift-update-modal"
+  aria-hidden="true"
+>
+  <div class="oh-modal__dialog">
+    <div class="oh-modal__dialog-header">
+      <h2 class="oh-modal__dialog-title" id="">
+        {% trans "Rotating Shift Assign Update" %}
+      </h2>
+      <button
+        class="oh-modal__close"
+        aria-label="Close"
+      >
+        <ion-icon name="close-outline"></ion-icon>
+      </button>
+    </div>
+
+    <div class="oh-modal__dialog-body" id="rotatingShiftAssignUpdateModalBody">
+    </div>
+  </div>
+</div>
+
+
+<div
+  class="oh-modal"
+  id="workTypeRequestModal"
+  role="dialog"
+  aria-labelledby="workTypeRequestModal"
+  aria-hidden="true"
+>
+  <div class="oh-modal__dialog">
+    <div class="oh-modal__dialog-header">
+      <h5 class="oh-modal__dialog-title" id="workTypeRequestModalLabel"
+        >{% trans "Work Type Request" %}</span
+      >
+      <button class="oh-modal__close" aria-label="Close" >
+        <ion-icon name="close-outline"></ion-icon>
+      </button>
+    </div>
+    
+    <form action="{% url 'shift-request' %}" method='post'>
+    <div class="oh-modal__dialog-body" id='workTypeRequestModalBody'>
+        <div id="formBody">
+          {% include 'work_type_request/request_form.html' %}
+        </div>
+        <div class="d-flex flex-row-reverse w-100 align-items-right mt-4">
+          <button
+          type="submit"
+          class="oh-btn oh-btn--secondary  pl-5 pr-5"
+          hx-post="{% url 'work-type-request' %}"
+          hx-target="#formBody"
+          >
+          {% trans "Add" %}
+        </button>
+      </div>
+    </form>
+    </div>
+  </div>
+</div>
+
+
+<div
+  class="oh-modal"
+  id="shiftRequestModal"
+  role="dialog"
+  aria-labelledby="shiftRequestModal"
+  aria-hidden="true"
+>
+  <div class="oh-modal__dialog">
+    <div class="oh-modal__dialog-header">
+      <h5 class="oh-modal__dialog-title" id="shiftRequestModalLabel"
+        >{% trans "Shift Request" %}</span
+      >
+      <button class="oh-modal__close" aria-label="Close" >
+        <ion-icon name="close-outline" ></ion-icon>
+      </button>
+    </div>
+    
+    <form action="{% url 'shift-request' %}" method='post'>
+    <div class="oh-modal__dialog-body" id='shiftRequestModal'>
+        <div id="shiftRequestFormBody">
+          
+        </div>
+        <div class="d-flex flex-row-reverse w-100 align-items-right mt-4">
+          <button
+          type="submit"
+          class="oh-btn oh-btn--secondary  pl-5 pr-5"
+          hx-post="{% url 'shift-request' %}"
+          hx-target="#shiftRequestFormBody"
+          >
+          {% trans "Add" %}
+        </button>
+      </div>
+    </form>
+    </div>
+  </div>
+</div>
+
+<div
+  class="oh-modal"
+  id="rotating-shift-modal"
+  role="dialog"
+  aria-labelledby="rotating-shift-modal"
+  aria-hidden="true"
+>
+  <div class="oh-modal__dialog">
+    <div class="oh-modal__dialog-header">
+      <h2 class="oh-modal__dialog-title" id="rotatingShiftAssignModalLabel">
+        {% trans "Rotating Shift Assign" %}
+      </h2>
+      <button class="oh-modal__close" aria-label="Close">
+        <ion-icon name="close-outline"></ion-icon>
+      </button>
+    </div>
+    <div class="oh-modal__dialog-body" id="rotatingShiftAssignModalBody">
+      
+    </div>
+  </div>
+</div>
+
+
+<div
+  class="oh-modal"
+  id="rotating-work-type-update-modal"
+  role="dialog"
+  aria-labelledby="rotating-work-type-update-modal"
+  aria-hidden="true"
+>
+  <div class="oh-modal__dialog">
+    <div class="oh-modal__dialog-header">
+      <h2
+        class="oh-modal__dialog-title"
+        id=""
+      >
+        {% trans "Rotating Work Type Assign Update" %}
+      </h2>
+      <button class="oh-modal__close" aria-label="Close">
+        <ion-icon name="close-outline"></ion-icon>
+      </button>
+    </div>
+    <div
+      class="oh-modal__dialog-body"
+      id="rotatingWorkTypeAssignUpdateModalLabel"
+    ></div>
+  </div>
+</div>
 
 <script>
     $(document).ready(function () {

@@ -914,6 +914,9 @@ def rotating_work_type_assign_add(request):
     This method is used to assign rotating work type
     """
     form = RotatingWorkTypeAssignForm()
+    if request.GET.get("emp_id"):
+        employee = request.GET.get("emp_id")
+        form = RotatingWorkTypeAssignForm(initial = {"employee_id":employee})
     form = choosesubordinates(request, form, "base.add_rotatingworktypeassign")
     if request.method == "POST":
         form = RotatingWorkTypeAssignForm(request.POST)
@@ -1462,6 +1465,9 @@ def rotating_shift_assign_add(request):
     This method is used to add rotating shift assign
     """
     form = RotatingShiftAssignForm()
+    if request.GET.get("emp_id"):
+        employee = request.GET.get("emp_id")
+        form = RotatingShiftAssignForm(initial = {"employee_id":employee})
     form = choosesubordinates(request, form, "base.add_rotatingshiftassign")
     if request.method == "POST":
         form = RotatingShiftAssignForm(request.POST)
@@ -1822,6 +1828,9 @@ def work_type_request(request):
     """
     form = WorkTypeRequestForm()
     "canceled"
+    if request.GET.get("emp_id"):
+        employee = request.GET.get("emp_id")
+        form = WorkTypeRequestForm(initial = {"employee_id":employee})
     form = choosesubordinates(
         request,
         form,
@@ -2145,6 +2154,9 @@ def shift_request(request):
     This method is used to create shift request
     """
     form = ShiftRequestForm()
+    if request.GET.get("emp_id"):
+        employee = request.GET.get("emp_id")
+        form = ShiftRequestForm(initial = {"employee_id":employee})
     form = choosesubordinates(
         request,
         form,
