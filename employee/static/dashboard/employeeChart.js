@@ -28,6 +28,21 @@ $(document).ready(function () {
       data: data,
       options: {},
     });
+    $("#genderChart").on("click", function (event) {
+      var activeBars = genderChart.getElementsAtEventForMode(
+        event,
+        "index",
+        { intersect: true },
+        true
+      );
+
+      if (activeBars.length > 0) {
+        var clickedBarIndex = activeBars[0].index;
+        var clickedLabel = data.labels[clickedBarIndex];
+        localStorage.removeItem("savedFilters")
+        window.location.href =  "/employee/employee-view?gender="+clickedLabel.toLowerCase()
+      }
+    });
   }
 
   function departmentChart(dataSet, labels) {
@@ -42,6 +57,21 @@ $(document).ready(function () {
       type: "doughnut",
       data: data,
       options: {},
+    });
+    $("#departmentChart").on("click", function (event) {
+      var activeBars = departmentChart.getElementsAtEventForMode(
+        event,
+        "index",
+        { intersect: true },
+        true
+      );
+
+      if (activeBars.length > 0) {
+        var clickedBarIndex = activeBars[0].index;
+        var clickedLabel = data.labels[clickedBarIndex];
+        localStorage.removeItem("savedFilters")
+        window.location.href =  "/employee/employee-view?department="+clickedLabel
+      }
     });
   }
 

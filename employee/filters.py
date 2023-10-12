@@ -23,6 +23,8 @@ class EmployeeFilter(FilterSet):
     employee_first_name = django_filters.CharFilter(lookup_expr="icontains")
     employee_last_name = django_filters.CharFilter(lookup_expr="icontains")
     country = django_filters.CharFilter(lookup_expr="icontains")
+    department = django_filters.CharFilter(field_name="employee_work_info__department_id__department",lookup_expr="icontains")
+    # gender = django_filters.ChoiceFilter(field_name="gender",lookup_expr="iexact")
 
     user_permissions = django_filters.ModelMultipleChoiceFilter(
         queryset=Permission.objects.all(),
@@ -47,6 +49,7 @@ class EmployeeFilter(FilterSet):
             "is_active",
             "employee_work_info__job_position_id",
             "employee_work_info__department_id",
+            "department",
             "employee_work_info__work_type_id",
             "employee_work_info__employee_type_id",
             "employee_work_info__job_role_id",
