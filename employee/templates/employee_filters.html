@@ -2,6 +2,7 @@
 {% load static %}
 <input type="hidden" value="{{request.GET.department}}" name="department">
 <input type="hidden" name="gender" class="oh-input w-100" value="{{request.GET.gender}}" id="">
+<input type="hidden" name="is_active" class="oh-input w-100" value="{{request.GET.is_active}}" id="">
   <div class="oh-dropdown__filter-body">
     <div class="oh-accordion">
     <div class="oh-accordion-header">{% trans "Employee" %}</div>

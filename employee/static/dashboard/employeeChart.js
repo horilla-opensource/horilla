@@ -7,10 +7,24 @@ $(document).ready(function () {
     // Create chart using the Chart.js library
     window["myChart"] = {};
     const ctx = document.getElementById("totalEmployees").getContext("2d");
-    myChart = new Chart(ctx, {
+    employeeChart = new Chart(ctx, {
       type: "doughnut",
       data: data,
       options: {},
+    });
+    $("#totalEmployees").on("click", function (event) {
+      var activeBars = employeeChart.getElementsAtEventForMode(
+        event,
+        "index",
+        { intersect: true },
+        true
+      );
+      if (activeBars.length > 0) {
+        var clickedBarIndex = activeBars[0].index;
+        var clickedLabel = data.labels[clickedBarIndex];
+        localStorage.removeItem("savedFilters")
+        window.location.href =  "/employee/employee-view?is_active="+clickedLabel.toLowerCase()
+      }
     });
   }
 
