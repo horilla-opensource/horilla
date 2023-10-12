@@ -229,6 +229,8 @@ class PayslipFilter(FilterSet):
         field_name="employee_id__employee_work_info__department_id__department",
         lookup_expr="icontains",
     )
+    month = django_filters.CharFilter(field_name="start_date",lookup_expr="month")
+    year = django_filters.CharFilter(field_name="start_date",lookup_expr="year")
 
     class Meta:
         """

@@ -606,13 +606,17 @@ def view_payslip(request):
             employee_id__employee_user_id=request.user
         )
     export_column = forms.PayslipExportColumnForm()
-    filter_form = PayslipFilter(request.GET)
+    filter_form = PayslipFilter(request.GET,payslips)
+    payslips = filter_form.qs
     individual_form = forms.PayslipForm()
     bulk_form = forms.GeneratePayslipForm()
     field = request.GET.get("group_by")
     if field in Payslip.__dict__.keys():
         payslips = payslips.filter(group_name__isnull=False).order_by(field)
     payslips = paginator_qry(payslips, request.GET.get("page"))
+    previous_data = request.GET.urlencode()
+    data_dict = parse_qs(previous_data)
+    get_key_instances(Payslip, data_dict)
     return render(
         request,
         "payroll/payslip/view_payslips.html",
@@ -623,6 +627,8 @@ def view_payslip(request):
             "export_filter": PayslipFilter(request.GET),
             "individual_form": individual_form,
             "bulk_form": bulk_form,
+            "filter_dict": data_dict,
+
         },
     )
 
