@@ -126,15 +126,17 @@
         <ul
           class="oh-general__tabs oh-general__tabs--border oh-general__tabs--profile oh-general__tabs--no-grow oh-profile-section__tab mt-5"
         >
-          <li class="oh-general__tab">
-            <a
-              href="#"
-              class="oh-general__tab-link oh-general__tab-link--active"
-              data-action="general-tab"
-              data-target="#personal"
-              >{% trans "About" %}</a
-            >
-          </li>
+        <li class="oh-general__tab">
+          <a
+            hx-get={% url 'contract-tab' employee.id %}
+            hx-target="#personal_target"
+            class="oh-general__tab-link oh-general__tab-link--active"
+            data-action="general-tab"
+            role="button"
+            data-target="#personal_target"
+            >{% trans "About" %}</a
+          >
+        </li>
           <li class="oh-general__tab">
             <a
               hx-get="{% url 'shift-tab' employee.id %}?profile=true"
@@ -222,9 +224,9 @@
 
         <div
           class="oh-general__tab-target oh-profile__info-tab mb-4"
-          id="personal"
+          id="personal_target"
         >
-        {% include 'tabs/personal-tab.html' %}
+        
         </div>
 
         <div

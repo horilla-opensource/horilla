@@ -1,24 +1,37 @@
 {% load i18n %}
+{% load static %}
 {% load basefilters %}
 {% load attendancefilters %}
 <div class="oh-wrapper mt-4">
 	<div class="oh-tabs">
 		<ul class="oh-tabs__tablist">
-			<li class="oh-tabs__tab oh-tabs__tab--active" data-target="#tab_1">
-				{% trans "Work type request" %}
+			<li class="oh-tabs__tab oh-tabs__tab--active" data-target="#shift_tab_1">
+				<div>
+					<img src="{% static 'images/ui/work-from-home (1).png' %}" alt="" style="width: 25px; height: 25px; margin-right:3px">
+					{% trans "Work type request" %}
+				</div>
 			</li>
-			<li class="oh-tabs__tab" data-target="#tab_3">
-				{% trans "Rotating Work type" %}
+			<li class="oh-tabs__tab" data-target="#shift_tab_3">
+				<div>
+					<img src="{% static 'images/ui/work-from-home.png' %}" alt="" style="width: 25px; height: 25px; margin-right:3px">
+					{% trans "Rotating work type" %}
+				</div>
 			</li>
-			<li class="oh-tabs__tab oh-tabs__tab" data-target="#tab_4">
-				{% trans "Shift request" %}
+			<li class="oh-tabs__tab" data-target="#shift_tab_4">
+				<div>
+					<img src="{% static 'images/ui/time-management.png' %}" alt="" style="width: 25px; height: 25px; margin-right:3px">
+					{% trans "Shift request" %}
+				</div>
 			</li>
-			<li class="oh-tabs__tab" data-target="#tab_2">
-				{% trans "Rotating Shift" %}
+			<li class="oh-tabs__tab" data-target="#shift_tab_2">
+				<div>
+					<img src="{% static 'images/ui/shift.png' %}" alt="" style="width: 25px; height: 25px; margin-right:3px">
+					{% trans "Rotating Shift" %}
+				</div>
 			</li>
 		</ul>
 		<div class="oh-tabs__contents" id="view-container">
-			<div class="oh-tabs__content oh-tabs__content--active" id="tab_1">
+			<div class="oh-tabs__content oh-tabs__content--active" id="shift_tab_1">
 				<!-- Sticky Table -->
 				{% if work_data %}
 				<div class="oh-sticky-table">
@@ -116,7 +129,7 @@
 				</div>
 				{% endif %}
 			</div>
-			<div class="oh-tabs__content" id="tab_2">
+			<div class="oh-tabs__content" id="shift_tab_2">
 				{% if rshift_assign %}
 				<div class="oh-sticky-table">
 					<div class="oh-sticky-table__table oh-table--sortable">
@@ -238,7 +251,7 @@
 				</div>
 				{% endif %}
 			</div>
-			<div class="oh-tabs__content" id="tab_3">
+			<div class="oh-tabs__content" id="shift_tab_3">
 				{% if rwork_type_assign %}
 				<div class="oh-sticky-table">
 					<div class="oh-sticky-table__table oh-table--sortable">
@@ -362,7 +375,7 @@
 				{% endif %}
 			</div>
 			</div>
-			<div class="oh-tabs__content" id="tab_4">
+			<div class="oh-tabs__content" id="shift_tab_4">
 				{% if shift_data %}
 				<div class="oh-sticky-table">
 					<div class="oh-sticky-table__table oh-table--sortable">
@@ -498,7 +511,6 @@
 	class="oh-modal__dialog-body"
 	id="rotatingWorkTypeAssignUpdateModalLabel"
 ></div>
-
 
 <script>
     $(document).ready(function () {

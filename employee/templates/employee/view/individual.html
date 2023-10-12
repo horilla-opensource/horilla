@@ -142,10 +142,12 @@
         >
           <li class="oh-general__tab">
             <a
-              href="#"
+              hx-get={% url 'contract-tab' employee.id %}
+              hx-target="#personal_target"
               class="oh-general__tab-link oh-general__tab-link--active"
               data-action="general-tab"
-              data-target="#personal"
+              role="button"
+              data-target="#personal_target"
               >{% trans "About" %}</a
             >
           </li>
@@ -233,9 +235,9 @@
 
         <div
           class="oh-general__tab-target oh-profile__info-tab mb-4"
-          id="personal"
+          id="personal_target"
         >
-          {% include 'tabs/personal-tab.html' %}
+          
         </div>
 
         

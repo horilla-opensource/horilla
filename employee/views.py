@@ -67,6 +67,7 @@ from employee.forms import (
     excel_columns,
 )
 from employee.models import Employee, EmployeeWorkInformation, EmployeeBankDetails
+from payroll.models.models import Contract
 from pms.models import Feedback
 from recruitment.models import Candidate
 
@@ -148,6 +149,25 @@ def employee_view_individual(request, obj_id):
         request.META.get("HTTP_REFERER", "/employee/employee-view")
     )
 
+
+@login_required
+@manager_can_enter("employee.view_employee")
+def contract_tab(request, obj_id):
+    """
+    This method is used to view profile of an employee.
+    """
+    employee = Employee.objects.get(id=obj_id)
+    employee_leaves = employee.available_leave.all()
+    user = Employee.objects.filter(employee_user_id=request.user).first()
+    contracts = Contract.objects.filter(employee_id=obj_id)
+    if user.reporting_manager.filter(
+        employee_id=employee
+    ).exists() or request.user.has_perm("employee.change_employee"):
+        return render(request, "tabs/personal-tab.html", {"employee": employee,"employee_leaves":employee_leaves,"contracts":contracts,})
+    return HttpResponseRedirect(
+        request.META.get("HTTP_REFERER", "/employee/employee-view")
+    )
+
 @login_required
 def asset_tab(request, emp_id):
     assets_requests = AssetRequest.objects.filter(requested_employee_id=emp_id,asset_request_status="Requested")
@@ -196,27 +216,19 @@ def profile_attendance_tab(request):
     return render(request,"tabs/profile-attendance-tab.html",context)
 
 @login_required
-def profile_attendance_tab(request):
-    user = request.user
-    employee = user.employee_get
-    employee_attendances = employee.employee_attendances.all()
-    context={
-        "attendances":employee_attendances,
-    }
-    return render(request,"tabs/profile-attendance-tab.html",context)
-
-@login_required
 @manager_can_enter("employee.view_employee")
 def attendance_tab(request, emp_id):
     
     requests = Attendance.objects.filter(
         is_validate_request=True,employee_id=emp_id,
     )
+    validate_attendances = Attendance.objects.filter(attendance_validated=False,employee_id=emp_id)
     accounts = AttendanceOverTime.objects.filter(employee_id=emp_id)
 
     context={
         "requests":requests,
         "accounts":accounts,
+        "validate_attendances":validate_attendances,
     }
     return render(request,"tabs/attendance-tab.html",context=context)
 
@@ -300,13 +312,14 @@ def employee_view(request):
     """
     view_type = request.GET.get("view")
     previous_data = request.GET.urlencode()
-    employees = Employee.objects.filter(is_active=True)
     page_number = request.GET.get("page")
-    filter_obj = EmployeeFilter(queryset=employees)
+    filter_obj = EmployeeFilter(request.GET,queryset=Employee.objects.filter(is_active=True))
     export_form = EmployeeExportExcelForm()
     employees = filtersubordinatesemployeemodel(
         request, filter_obj.qs, "employee.view_employee"
     )
+    data_dict = parse_qs(previous_data)
+    get_key_instances(Employee, data_dict)
     return render(
         request,
         "employee_personal_info/employee_view.html",
@@ -317,6 +330,8 @@ def employee_view(request):
             "export_filter": EmployeeFilter(queryset=employees),
             "export_form": export_form,
             "view_type": view_type,
+            "filter_dict": data_dict,
+
         },
     )
 
@@ -1507,9 +1522,8 @@ def dashboard_employee_department(_):
     labels = []
     count = []
     departments = Department.objects.all()
-    for i in departments:
-        labels.append(i.department)
     for dept in departments:
+        labels.append(dept.department)
         count.append(
             len(
                 Employee.objects.filter(
