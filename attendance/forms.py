@@ -119,7 +119,7 @@ class AttendanceUpdateForm(ModelForm):
             "requested_data",
             "is_validate_request",
             "is_validate_request_approved",
-            "attendance_overtime_approve",
+            "attendance_overtime",
         ]
         model = Attendance
         widgets = {
@@ -134,6 +134,8 @@ class AttendanceUpdateForm(ModelForm):
         if instance := kwargs.get("instance"):
             # django forms not showing value inside the date, time html element.
             # so here overriding default forms instance method to set initial value
+            condition = AttendanceValidationCondition.objects.first()
+            condition = strtime_seconds(condition.minimum_overtime_to_approve)
             initial = {
                 "attendance_date": instance.attendance_date.strftime("%Y-%m-%d"),
                 "attendance_clock_in": instance.attendance_clock_in.strftime("%H:%M"),
@@ -151,6 +153,11 @@ class AttendanceUpdateForm(ModelForm):
             kwargs["initial"] = initial
         super().__init__(*args, **kwargs)
 
+        self.fields['attendance_overtime_approve'].label = _("Approve overtime?")
+        self.fields['attendance_validated'].label = _("Validate Attendance?")
+        if strtime_seconds(instance.attendance_overtime) < condition or not instance.attendance_validated:
+            del self.fields['attendance_overtime_approve']
+
     def as_p(self, *args, **kwargs):
         """
         Render the form fields as HTML table rows with Bootstrap styling.
@@ -158,20 +165,6 @@ class AttendanceUpdateForm(ModelForm):
         context = {"form": self}
         table_html = render_to_string("attendance_form.html", context)
         return table_html
-
-    def clean(self) -> Dict[str, Any]:
-        super().clean()
-        overtime = strtime_seconds(self.cleaned_data["attendance_overtime"])
-        minimum_hour = strtime_seconds(self.cleaned_data["minimum_hour"])
-        at_work = strtime_seconds(self.cleaned_data["attendance_worked_hour"])
-        if overtime > 0 and (at_work - minimum_hour) != overtime:
-            raise ValidationError(
-                {
-                    "attendance_overtime": "OT will calculate automatically, So set it to 00:00 or \
-                        manually add the OT"
-                }
-            )
-        return
 
 
 class AttendanceForm(ModelForm):

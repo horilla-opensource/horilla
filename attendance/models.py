@@ -135,17 +135,17 @@ class Attendance(models.Model):
         null=True,
         verbose_name=_("Attendance day"),
     )
-    attendance_clock_in = models.TimeField(
-        null=True, verbose_name=_("Check-in"), help_text=_("First Check-in Time")
-    )
     attendance_clock_in_date = models.DateField(
         null=True, verbose_name=_("Check-in date")
     )
-    attendance_clock_out = models.TimeField(
-        null=True, verbose_name=_("Check-out"), help_text=_("Last Check-out Time")
+    attendance_clock_in = models.TimeField(
+        null=True, verbose_name=_("Check-in"), help_text=_("First Check-in Time")
     )
     attendance_clock_out_date = models.DateField(
         null=True, verbose_name=_("Check-out date")
+    )
+    attendance_clock_out = models.TimeField(
+        null=True, verbose_name=_("Check-out"), help_text=_("Last Check-out Time")
     )
     attendance_worked_hour = models.CharField(
         null=True,

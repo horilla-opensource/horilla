@@ -301,10 +301,8 @@
 
   <script>
     $(document).ready(function () {
-        console.log('------------');
         const activeTab = localStorage.getItem('attendanceRequestActiveTab')
         if (activeTab!=null) {
-            console.log(activeTab);
             $(".oh-tabs__content--active").toggleClass('oh-tabs__content--active');
             $(".oh-tabs__tab--active").toggleClass('oh-tabs__tab--active');
             $(`[data-target="${activeTab}"]`).toggleClass("oh-tabs__tab--active");

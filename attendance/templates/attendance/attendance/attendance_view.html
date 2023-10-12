@@ -29,8 +29,6 @@
     var shiftId =selectElement.val()
     let parentForm = selectElement.parents().closest("form")
     var attendanceDate = parentForm.find("[name=attendance_date]").first().val()
-    console.log(attendanceDate);
-    console.log(shiftId);
     $.ajax({
       type: "post",
       url: "{% url 'update-shift-details' %}",

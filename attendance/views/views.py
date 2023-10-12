@@ -275,7 +275,6 @@ def attendance_view(request):
     validate_attendances = Attendance.objects.filter(attendance_validated=False)
     attendances = Attendance.objects.filter(attendance_validated=True)
     ot_attendances = Attendance.objects.filter(
-        attendance_overtime_approve=False,
         overtime_second__gte=minot,
         attendance_validated=True,
     )

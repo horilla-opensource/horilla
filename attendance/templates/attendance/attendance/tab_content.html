@@ -2,6 +2,12 @@
 {% load attendancefilters %}
 {% load basefilters %}
 {% include 'filter_tags.html' %}
+<style>
+  .disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+</style>
 
 <div class="oh-tabs__content" id="tab_2">
     <!-- Sticky Table -->
@@ -397,9 +403,15 @@
                 {{attendance.attendance_overtime}}
               </div>
             <div class="oh-sticky-table__td">
-                <a href="{% url 'approve-overtime' attendance.id %}" class="oh-btn oh-btn--info">
+              {% if attendance.attendance_overtime_approve %}
+                <a href="#" class="oh-btn oh-btn--info disabled">
                     {% trans "Approve" %}
                 </a>
+                {% else %}
+                <a href="{% url 'approve-overtime' attendance.id %}" class="oh-btn oh-btn--info">
+                  {% trans "Approve" %}
+              </a>
+              {% endif %}
             </div>
             <div class="oh-sticky-table__td">
               <div class="oh-btn-group">
