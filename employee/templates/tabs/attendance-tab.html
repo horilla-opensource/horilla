@@ -1,17 +1,42 @@
 {% load i18n %}
+{% load static %}
 {% load basefilters %}
 {% load attendancefilters %}
 <div class="oh-wrapper mt-4">
     <div class="oh-tabs">
 		<ul class="oh-tabs__tablist">
 			<li class="oh-tabs__tab oh-tabs__tab--active" data-target="#attendance_tab_1">
-			{% trans "Requested Attendances" %}
+				<div>
+					<img
+						src="{% static 'images/ui/attendance-request.png' %}"
+						alt=""
+						style="width: 25px; height: 25px; margin-right: 3px"
+					/>
+					{% trans "Requested Attendances" %}
+				</div>
+			
 			</li>
 			<li class="oh-tabs__tab" data-target="#attendance_tab_3">
-				{% trans "Validate Attendance" %}
+				<div>
+					<img
+						src="{% static 'images/ui/attendance-check.png' %}"
+						alt=""
+						style="width: 25px; height: 25px; margin-right: 3px"
+					/>
+					{% trans "Validate Attendance" %}
+				</div>
+				
 				</li>
 			<li class="oh-tabs__tab" data-target="#attendance_tab_2">
-			{% trans "Hour Account" %}
+				<div>
+					<img
+						src="{% static 'images/ui/hour-glass.png' %}"
+						alt=""
+						style="width: 25px; height: 25px; margin-right: 3px"
+					/>
+					{% trans "Hour Account" %}
+				</div>
+			
 			</li>
 		</ul> 
 		<div class="oh-tabs__contents" id="view-container">

@@ -1,61 +1,69 @@
 {% load i18n %}
-    <!-- Sticky Table  for own objective-->
+<!-- Sticky Table  for own objective-->
 
-    <div class="p-3 d-flex justify-content-end">
-      {% if requests %}
-      <button href="#" class="oh-btn oh-btn--secondary" 
-        hx-get="{% url 'asset-request-tab' employee %}" hx-target="#asset_target">
-        {% trans "View requests to Approve" %}
-      </button>
-      {% endif %}
-    </div>
-    {% if assets %}
-    <div class="oh-sticky-table">
-      <div class="oh-sticky-table__table ">
-        <div class="oh-sticky-table__thead">
-          <div class="oh-sticky-table__tr">
-            <div class="oh-sticky-table__th">{% trans "Asset" %}</div>
-            <div class="oh-sticky-table__th">{% trans "Status" %}</div>
-            <div class="oh-sticky-table__th">{% trans "Assigned Date" %}</div>
-          </div>
-        </div>
-        <div class="oh-sticky-table__tbody">
-          {% for asset in assets %}
-          {% if asset.asset_id.asset_status == "In use" %}
-          <!-- asset request looping -->
-            <div class="oh-sticky-table__tr">
-                <div class="oh-sticky-table__sd">
-                <div class="oh-profile oh-profile--md">
-                    <div class="oh-profile__avatar mr-1">
-                    <img src="https://ui-avatars.com/api/?name={{asset.asset_id.asset_name}}&background=random" class="oh-profile__image"
-                        alt="" />
-                    </div>
-                    <span class="oh-profile__name oh-text--dark">{{asset.asset_id.asset_name}}
-                    </span>
-                </div>
-                </div>
-                <div class="oh-sticky-table__td">
-                <span class="oh-dot oh-dot--small  me-1 oh-dot--color oh-dot--warning"></span>
-                <span class="link-warning">
-                {{asset.asset_id.asset_status}}
-                </span>
-                </div>
-                <div class="oh-sticky-table__td">
-                <span class="oh-dot oh-dot--small  me-1 oh-dot--color oh-dot--success"></span>
-                <span class="link-success">
-                {{asset.assigned_date}}
-                </span>
-                </div>
-            </div>
-          {% endif %}
-          {% endfor %}
-        </div>
-      </div>
-    </div>
-    {% else %}
-    <div class="d-flex justify-content-center align-items-center" style="height:40vh">
-      <h5 class="oh-404__subtitle">{% trans "No assets have been allocated." %}</h5>
-    </div>
-    {% endif %}
-    <!-- End of Sticky Table -->
-
+<div class="p-3 d-flex justify-content-end">
+	{% if requests %}
+	<button
+		href="#"
+		class="oh-btn oh-btn--secondary"
+		hx-get="{% url 'asset-request-tab' employee %}"
+		hx-target="#asset_target"
+	>
+		{% trans "View requests to Approve" %}
+	</button>
+	{% endif %}
+</div>
+{% if assets %}
+<div class="oh-sticky-table">
+	<div class="oh-sticky-table__table">
+		<div class="oh-sticky-table__thead">
+			<div class="oh-sticky-table__tr">
+				<div class="oh-sticky-table__th">{% trans "Asset" %}</div>
+				<div class="oh-sticky-table__th">{% trans "Status" %}</div>
+				<div class="oh-sticky-table__th">{% trans "Assigned Date" %}</div>
+			</div>
+		</div>
+		<div class="oh-sticky-table__tbody">
+			{% for asset in assets %} {% if asset.asset_id.asset_status == "In use" %}
+			<!-- asset request looping -->
+			<div class="oh-sticky-table__tr">
+				<div class="oh-sticky-table__sd">
+					<div class="oh-profile oh-profile--md">
+						<div class="oh-profile__avatar mr-1">
+							<img
+								src="https://ui-avatars.com/api/?name={{asset.asset_id.asset_name}}&background=random"
+								class="oh-profile__image"
+								alt=""
+							/>
+						</div>
+						<span class="oh-profile__name oh-text--dark"
+							>{{asset.asset_id.asset_name}}
+						</span>
+					</div>
+				</div>
+				<div class="oh-sticky-table__td">
+					<span
+						class="oh-dot oh-dot--small me-1 oh-dot--color oh-dot--warning"
+					></span>
+					<span class="link-warning"> {{asset.asset_id.asset_status}} </span>
+				</div>
+				<div class="oh-sticky-table__td">
+					<span
+						class="oh-dot oh-dot--small me-1 oh-dot--color oh-dot--success"
+					></span>
+					<span class="link-success"> {{asset.assigned_date}} </span>
+				</div>
+			</div>
+			{% endif %} {% endfor %}
+		</div>
+	</div>
+</div>
+{% else %}
+<div
+	class="d-flex justify-content-center align-items-center"
+	style="height: 40vh"
+>
+	<h5 class="oh-404__subtitle">{% trans "No assets have been allocated." %}</h5>
+</div>
+{% endif %}
+<!-- End of Sticky Table -->
