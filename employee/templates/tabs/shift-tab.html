@@ -27,7 +27,7 @@
 			</li>
 			<li class="oh-tabs__tab" data-target="#shift_tab_4">
 				<div>
-					<img src="{% static 'images/ui/time-management.png' %}" alt="" style="width: 25px; height: 25px; margin-right:3px">
+					<img src="{% static 'images/ui/time-management.png' %}" alt="" style="width: 25px; height: 25px; margin-right:3px;opacity:0.5">
 					{% trans "Shift request" %}
 				</div>
 				<button class="oh-btn oh-btn--secondary-outline oh-stop-prop oh-accordion-meta__btn p-2" title="Add" hx-get="{% url 'shift-request' %}?emp_id={{employee}}" hx-target="#shiftRequestFormBody" data-target='#shiftRequestModal' data-toggle='oh-modal-toggle' >
