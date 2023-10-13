@@ -3,7 +3,7 @@ from base import views
 
 urlpatterns = [
     path("", views.home, name="home-page"),
-    path("login", views.login_user, name="login"),
+    path("login/", views.login_user, name="login"),
     path("forgot-password", views.forgot_password, name="forgot-password"),
     path("reset-password/<uuid>/", views.reset_password, name="reset-password"),
     path("change-password", views.change_password, name="change-password"),

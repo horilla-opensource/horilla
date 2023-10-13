@@ -18,6 +18,7 @@
 {% include 'filter_tags.html' %}
 <div class="oh-tabs__contents">
   <div class="oh-tabs__content oh-tabs__content" id="tab_1">
+    {% if self_feedback.object_list %}
     <!-- Sticky Table for self feedback -->
     <div class="oh-sticky-table">
       <div class="oh-sticky-table__table ">
@@ -122,12 +123,19 @@
       </nav>
     </div>
     <!-- end of pagination -->
+
+    {% else %}
+    <div class="d-flex justify-content-center align-items-center" style="height:60vh">
+        <h5 class="oh-404__subtitle">{% trans "There are no Feedback at the moment." %}</h5>
+    </div>
+    {% endif %}
   </div>
 
 
   <div class="oh-tabs__content" id="tab_2">
 
     <!-- Sticky Table for requested feedback -->
+    {% if requested_feedback.object_list %}
     <div class="oh-sticky-table">
       <div class="oh-sticky-table__table">
         <div class="oh-sticky-table__thead">
@@ -234,6 +242,11 @@
     </div>
     <!-- end of pagination -->
 
+    {% else %}
+    <div class="d-flex justify-content-center align-items-center" style="height:60vh">
+        <h5 class="oh-404__subtitle">{% trans "There are no Feedback requests at the moment." %}</h5>
+    </div>
+    {% endif %}
 
   </div>
 
@@ -241,7 +254,7 @@
   <div class="oh-tabs__content" id="tab_3">
 
 
-
+    {% if all_feedbacks.object_list %}
     <!-- Sticky Table for all feedbacks feedback -->
     <div class="oh-sticky-table">
       <div class="oh-sticky-table__table ">
@@ -350,6 +363,11 @@
     </div>
     <!-- end of pagination -->
 
+    {% else %}
+    <div class="d-flex justify-content-center align-items-center" style="height:60vh">
+        <h5 class="oh-404__subtitle">{% trans "There are no Feedback at the moment." %}</h5>
+    </div>
+    {% endif %}
 
   </div>
 </div>

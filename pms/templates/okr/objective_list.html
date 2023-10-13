@@ -5,6 +5,7 @@
 <div class="oh-tabs__contents">
   <!-- own objective-->
   <div class="oh-tabs__content" id="tab_1">
+    {% if own_objectives.object_list %}
     <div class="oh-sticky-table">
       <div class="oh-sticky-table__table">
         <div class="oh-sticky-table__thead">
@@ -197,10 +198,16 @@
     </div>
     <!-- end of pagination -->
     <!-- end of own objective -->
+    {% else %}
+    <div class="d-flex justify-content-center align-items-center" style="height:60vh">
+        <h5 class="oh-404__subtitle">{% trans "There are no Objectives at the moment." %}</h5>
+    </div>
+    {% endif %}
   </div>
 
   <div class="oh-tabs__content" id="tab_2">
     <!-- all  objectives -->
+    {% if all_objectives.object_list %}
     <div class="oh-sticky-table">
       <div class="oh-sticky-table__table">
         <div class="oh-sticky-table__thead">
@@ -393,6 +400,11 @@
     </div>
     <!-- end of pagination -->
     <!-- end of all objectives -->
+    {% else %}
+    <div class="d-flex justify-content-center align-items-center" style="height:60vh">
+        <h5 class="oh-404__subtitle">{% trans "There are no Objectives at the moment." %}</h5>
+    </div>
+    {% endif %}
   </div>
 </div>
 
