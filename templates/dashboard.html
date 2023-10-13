@@ -6,18 +6,54 @@
   .oh-card-dashboard--moveable {
     padding: 0 10px 20px 10px;
   }
-  .oh-card-dashboard {
+  .oh-card-dashboard:not(.tile) {
     cursor: default;
+    min-height: 363px;
+  }.oh-dashboard__movable-cards{
+    padding-right: 0;
+  }.oh-card-dashboard--moveable{
+    padding-right: 0;
+    padding-bottom: 10px;
   }
 </style>
 <main>
   <div class="oh-wrapper">
+  {% comment %} back button {% endcomment %}
+    <div class="d-none mt-5" id="back_button" style="width:10%">
+          <a href="{% url 'home-page' %}"
+            class="oh-btn oh-btn--secondary oh-btn--shadow ms-3"
+          >
+            <ion-icon
+              class="me-2 md hydrated"
+              name="arrow-back-outline"
+              role="img"
+              aria-label="arrow-back-outline"
+            ></ion-icon
+            >{% trans "Back" %}</a
+          >
+      </div>
+    {% comment %} end of back button {% endcomment %}
+  {% comment %} back button {% endcomment %}
+    <div class="d-none mt-5" id="back_button" style="width:10%">
+          <a href="{% url 'home-page' %}"
+            class="oh-btn oh-btn--secondary oh-btn--shadow ms-3"
+          >
+            <ion-icon
+              class="me-2 md hydrated"
+              name="arrow-back-outline"
+              role="img"
+              aria-label="arrow-back-outline"
+            ></ion-icon
+            >{% trans "Back" %}</a
+          >
+      </div>
+    {% comment %} end of back button {% endcomment %}
     <div class="oh-dashboard row" id="dashboard">
       <div class="oh-dashboard__left col-12 col-sm-12 col-md-12 col-lg-9">
         <div class="oh-dashboard__cards row">
           {% if perms.employee.view_employee %}
           <div class="col-12 col-sm-12 col-md-6 col-lg-4">
-            <div class="oh-card-dashboard oh-card-dashboard--success">
+            <div class="oh-card-dashboard oh-card-dashboard--success tile">
               <a
                 href="{% url 'candidate-view' %}?joining_date={{current_date}}"
                 style="text-decoration: none"
@@ -48,7 +84,7 @@
           </div>
           <div class="col-12 col-sm-12 col-md-6 col-lg-4">
             <div
-              class="oh-card-dashboard oh-card-dashboard oh-card-dashboard--warning"
+              class="oh-card-dashboard oh-card-dashboard oh-card-dashboard--warning tile"
             >
               <a
                 href="{% url 'candidate-view' %}?scheduled_from={{first_day_of_week}}&scheduled_till={{last_day_of_week}}"
@@ -77,7 +113,7 @@
           </div>
           <div class="col-12 col-sm-12 col-md-6 col-lg-4">
             <a href="{% url 'employee-view' %}" style="text-decoration: none">
-              <div class="oh-card-dashboard oh-card-dashboard--neutral">
+              <div class="oh-card-dashboard oh-card-dashboard--neutral tile">
                 <div class="oh-card-dashboard__header">
                   <span class="oh-card-dashboard__title"
                     >{% trans "Total Strength" %}</span
@@ -212,26 +248,28 @@
                   class="oh-card-dashboard__header oh-card-dashboard__header--divider"
                   id="attendance_header"
                 >
-                  <span class="oh-card-dashboard__title"
+                  <div class="d-flex justify-content-between mb-2">
+                    <span class="oh-card-dashboard__title"
                     >{% trans "Attendance Analytic" %}</span
                   >
+                  <select id="type" class="oh-select" name="type" onchange="changeView(this)">
+                    <option value="day">Day</option>
+                    <option value="weekly">Weekly</option>
+                    <option value="monthly">Monthly</option>
+                    <option value="date_range">Date range</option>
+                  </select>
+                  </div>
                   <div
                     class="oh-card-dashboard__body"
                     id="attandance_canvas_div"
                   >
-                    <select id="type" name="type" onchange="changeView(this)">
-                      <option value="day">Day</option>
-                      <option value="weekly">Weekly</option>
-                      <option value="monthly">Monthly</option>
-                      <option value="date_range">Date range</option>
-                    </select>
-                    <span id="day_input">
-                      <input
-                        type="date"
-                        class="mb-2 float-end pointer"
-                        id="attendance_month"
-                        onchange="changeMonth()"
-                      />
+                  <span id="day_input">
+                    <input
+                      type="date"
+                      class="mb-2 float-end pointer oh-select"
+                      id="attendance_month"
+                      onchange="changeMonth()"
+                    />
                     </span>
                     <span id="chart_input">
                       <canvas
@@ -363,7 +401,7 @@
             {% endif %} 
             {% if perms.pms.view_feedback or request.user|is_reportingmanager %}
             <div
-              class="col-12 col-sm-12 col-md-12 col-lg-6 oh-card-dashboard--moveable"
+              class="col-12 col-sm-12 col-md-12 col-lg-4 oh-card-dashboard--moveable"
               id="movable11"
             >
               <div
@@ -373,17 +411,13 @@
                   class="oh-card-dashboard__header oh-card-dashboard__header--divider"
                 >
                   <span class="oh-card-dashboard__title"
-                    >{% trans "Feedback Status" %}</span
+                  >{% trans "Feedback Status" %}</span
                   >
-                  <span
-                    class="oh-card-dashboard__title float-end"
-                    id="feedback-status-chart"
-                    style="cursor: pointer"
-                    ><ion-icon name="caret-forward"></ion-icon
-                  ></span>
                 </div>
                 <div class="oh-card-dashboard__body">
-                  <canvas id="feedbackChart" style="cursor: pointer"></canvas>
+                  <div class="oh-card-dashboard__body">
+                    <canvas id="feedbackChart" style="cursor: pointer"></canvas>
+                  </div>
                 </div>
               </div>
             </div>
