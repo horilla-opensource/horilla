@@ -40,6 +40,8 @@ def login_required(view_func):
     def wrapped_view(request, *args, **kwargs):
         path = request.path
         res = path.split('/', 2)[1].capitalize().replace('-',' ').upper()
+        if res =='PMS':
+            res ="Performance"
         request.session['title'] = res
         if path == '' or path == '/':
             request.session['title'] = 'Dashboard'.upper()
