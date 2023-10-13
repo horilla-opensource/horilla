@@ -17,6 +17,7 @@ import contextlib
 from datetime import datetime, timedelta
 from datetime import date
 import pandas as pd
+from urllib.parse import parse_qs
 from django.shortcuts import render, redirect
 from django.utils.translation import gettext_lazy as _
 from django.utils.translation import gettext as __
@@ -27,6 +28,7 @@ from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from django.views.decorators.http import require_http_methods
 from attendance.views.handle_attendance_errors import handle_attendance_errors
 from attendance.views.process_attendance_data import process_attendance_data
+from base.methods import get_key_instances
 from horilla.decorators import (
     permission_required,
     login_required,
@@ -709,14 +711,19 @@ def late_come_early_out_view(request):
     reports = filtersubordinates(
         request, reports, "attendance.view_attendancelatecomeearlyout"
     )
-    filter_obj = LateComeEarlyOutFilter()
+    filter_obj = LateComeEarlyOutFilter(request.GET,reports)
+    previous_data =request.GET.urlencode()
+    data_dict = parse_qs(previous_data)
+    get_key_instances(AttendanceLateComeEarlyOut, data_dict)
     return render(
         request,
         template,
         {
-            "data": paginator_qry(reports, request.GET.get("page")),
+            "data": paginator_qry(filter_obj.qs, request.GET.get("page")),
             "f": filter_obj,
             "gp_fields": LateComeEarlyOutReGroup.fields,
+            "filter_dict": data_dict,
+
         },
     )
 

@@ -218,6 +218,16 @@ class LateComeEarlyOutFilter(FilterSet):
     at_work_second__gte = DurationInSecondsFilter(
         field_name="attendance_id__at_work_second", lookup_expr="gte"
     )
+    department = django_filters.CharFilter(
+        field_name="employee_id__employee_work_info__department_id__department",lookup_expr="icontains"
+    )
+    year = django_filters.CharFilter(field_name="attendance_id__attendance_date",lookup_expr="year")
+    month = django_filters.CharFilter(
+        field_name="attendance_id__attendance_date",lookup_expr="month"
+    )
+
+
+    week = django_filters.CharFilter(field_name="attendance_id__attendance_date",lookup_expr="week")
 
     class Meta:
         """
@@ -247,6 +257,10 @@ class LateComeEarlyOutFilter(FilterSet):
             "attendance_clock_in",
             "attendance_clock_out",
             "attendance_date",
+            "department",
+            "year",
+            "month",
+            "week",
         ]
 
 

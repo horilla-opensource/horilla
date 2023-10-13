@@ -4,11 +4,13 @@ dashboard.py
 This module is used to register endpoints for dashboard-related requests
 """
 
-from datetime import datetime
+import calendar
+from datetime import date, datetime, timedelta
 from django.db.models import Q
 from django.shortcuts import render
 from django.http import JsonResponse
 from django.utils.translation import gettext_lazy as _
+from attendance.filters import AttendanceFilters, LateComeEarlyOutFilter
 from base.methods import filtersubordinates
 from base.models import Department, EmployeeShiftSchedule
 from employee.models import Employee
@@ -16,14 +18,11 @@ from horilla.decorators import login_required
 from attendance.models import Attendance, AttendanceLateComeEarlyOut
 
 
-
-
-
-
 def find_on_time(request, today, week_day, department=None):
     """
     This method is used to find count for on time attendances
     """
+
     on_time = 0
     attendances = Attendance.objects.filter(attendance_date=today)
     attendances = filtersubordinates(request, attendances, "attendance.view_attendance")
@@ -43,20 +42,6 @@ def find_on_time(request, today, week_day, department=None):
             if late_come_obj is None:
                 on_time = on_time + 1
     return on_time
-
-
-def find_late_come(today, department=None):
-    """
-    This method is used to find count of late comers
-    """
-    late_come_obj = AttendanceLateComeEarlyOut.objects.filter(
-        type="late_come", attendance_id__attendance_date=today
-    )
-    if department is not None:
-        late_come_obj = late_come_obj.filter(
-            employee_id__employee_work_info__department_id=department
-        )
-    return len(late_come_obj)
 
 
 def find_expected_attendances(week_day):
@@ -87,7 +72,7 @@ def dashboard(request):
     week_day = today.strftime("%A").lower()
 
     on_time = find_on_time(request, today=today, week_day=week_day)
-    late_come_obj = find_late_come(today=today)
+    late_come_obj = find_late_come(start_date=today)
 
     marked_attendances = late_come_obj + on_time
 
@@ -122,44 +107,118 @@ def dashboard(request):
     )
 
 
-def find_early_out(today, department=None):
+def total_attendance(start_date, department, end_date=None):
+    attandance = AttendanceFilters(
+        {
+            "attendance_date__gte": start_date,
+            "attendance_date__lte": end_date,
+            "employee_id__employee_work_info__department_id": department,
+        }
+    ).qs
+    return attandance
+
+
+def find_late_come(start_date, department=None, end_date=None):
+    """
+    This method is used to find count of late comers
+    """
+    if department is not None:
+        late_come_obj = LateComeEarlyOutFilter(
+            {
+                "type": "late_come",
+                "employee_id__employee_work_info__department_id": department,
+                "attendance_date__gte": start_date,
+                "attendance_date__lte": end_date,
+            }
+        ).qs
+    return late_come_obj
+
+
+def find_early_out(start_date, end_date=None, department=None):
     """
     This method is used to find early out attendances and it returns query set
     """
     if department is not None:
-        early_out_obj = AttendanceLateComeEarlyOut.objects.filter(
-            type="early_out",
-            employee_id__employee_work_info__department_id=department,
-            attendance_id__attendance_date=today,
-        )
+        early_out_obj = LateComeEarlyOutFilter(
+            {
+                "type": "early_out",
+                "employee_id__employee_work_info__department_id": department,
+                "attendance_date__gte": start_date,
+                "attendance_date__lte": end_date,
+            }
+        ).qs
     else:
-        early_out_obj = AttendanceLateComeEarlyOut.objects.filter(
-            type="early_out", attendance_id__attendance_date=today
-        )
+        early_out_obj = LateComeEarlyOutFilter(
+            {
+                "type": "early_out",
+                "attendance_date__gte": start_date,
+                "attendance_date__lte": end_date,
+            }
+        ).qs
     return early_out_obj
 
 
-def generate_data_set(request, dept):
+def get_week_start_end_dates(week):
+    # Parse the ISO week date
+    year, week_number = map(int, week.split("-W"))
+
+    # Get the date of the first day of the week
+    start_date = datetime.strptime(f"{year}-W{week_number}-1", "%Y-W%W-%w").date()
+
+    # Calculate the end date by adding 6 days to the start date
+    end_date = start_date + timedelta(days=6)
+
+    return start_date, end_date
+
+
+def get_month_start_end_dates(year_month):
+    # split year and month separately
+    year, month = map(int, year_month.split("-"))
+    # Get the first day of the month
+    start_date = datetime(year, month, 1).date()
+
+    # Get the last day of the month
+    _, last_day = calendar.monthrange(year, month)
+    end_date = datetime(year, month, last_day).date()
+
+    return start_date, end_date
+
+
+def generate_data_set(request, start_date, type, end_date, dept):
     """
     This method is used to generate all the dashboard data
     """
-    today = datetime.today()
-    week_day = today.strftime("%A").lower()
+    if type == "day":
+        start_date = start_date
+        end_date = start_date
+    if type == "weekly":
+        start_date, end_date = get_week_start_end_dates(start_date)
+    if type == "monthly":
+        start_date, end_date = get_month_start_end_dates(start_date)
+    if type == "date_range":
+        start_date = start_date
+        end_date = end_date
     # below method will find all the on-time attendance corresponding to the
     # employee shift and shift schedule.
-    on_time = find_on_time(request, today=today, week_day=week_day, department=dept)
+    attendance = total_attendance(
+        start_date=start_date, department=dept, end_date=end_date
+    )
 
     # below method will find all the late-come attendance corresponding to the
     # employee shift and schedule.
-    late_come_obj = find_late_come(today=today, department=dept)
+    late_come_obj = find_late_come(
+        start_date=start_date, department=dept, end_date=end_date
+    )
 
     # below method will find all the early-out attendance corresponding to the
     # employee shift and shift schedule
-    early_out_obj = find_early_out(department=dept, today=today)
-
+    early_out_obj = find_early_out(
+        department=dept, start_date=start_date, end_date=end_date
+    )
+    on_time = len(attendance) - len(late_come_obj)
     data = {
         "label": dept.department,
-        "data": [on_time, late_come_obj, len(early_out_obj)],
+        "data": [on_time, len(late_come_obj), len(early_out_obj)],
     }
     return data
 
@@ -175,10 +234,25 @@ def dashboard_attendance(request):
     labels = [
         _("On Time"),
         _("Late Come"),
-        _("On Break"),
+        _("Early Out"),
     ]
+    # initializing values
     data_set = []
+    start_date = date.today()
+    end_date = start_date
+    type = "date"
+
+    # if there is values in request update the values
+    if request.GET.get("date"):
+        start_date = request.GET.get("date")
+    if request.GET.get("type"):
+        type = request.GET.get("type")
+    if request.GET.get("end_date"):
+        end_date = request.GET.get("end_date")
+
+    # get all departments for filteration
     departments = Department.objects.all()
     for dept in departments:
-        data_set.append(generate_data_set(request, dept))
-    return JsonResponse({"dataSet": data_set, "labels": labels})
+        data_set.append(generate_data_set(request, start_date, type, end_date, dept))
+    message = "No data exist"
+    return JsonResponse({"dataSet": data_set, "labels": labels, "message": message})
