@@ -52,244 +52,241 @@
 <div id="enlargeImageContainer" class="enlarge-image-container"></div>
 
 <div class="oh-wrapper" id="view-container">
-  <div class="oh-card mt-4 mb-5">
-    <div class="d-flex flex-row-reverse">
-      <a href="{% url 'employee-view-update' employee.id %}" class="">
-        <img
-          src="{% static 'images/ui/edit_btn.png' %}"
-          style="width: 25px; height: auto"
-          title="{% trans 'Edit' %}"
-        />
-      </a>
-    </div>
-    <div class="row">
-      <div class="col-12 col-sm-12 col-md-12 col-lg-4">
-        <div class="d-flex align-items-center">
-          <div class="oh-profile oh-profile--lg me-3">
-            <div class="oh-profile__avatar">
-              {% if employee.employee_profile %}
-              <img
-                src="/media/{{employee.employee_profile}}"
-                class="oh-profile__image"
-                alt="Username"
-                onmouseover="enlargeImage(this)"
-                onmouseout="hideEnlargeImage()"
-              />
-              {% else %}
-              <img
-                src="https://ui-avatars.com/api/?name={{employee.employee_first_name}}+{{employee.employee_last_name}}&background=random"
-                class="oh-profile__image"
-                alt="Username"
-              />
-              {% endif %}
-            </div>
-            <span
-              class="oh-profile__active-badge oh-profile__active-badge--secondary"
-              title="{% trans 'Active' %}"
-            ></span>
-          </div>
-          <div class="oh-profile__info-container">
-            <h1 class="oh-profile__info-name">{{employee}}</h1>
-            <p class="oh-profile__info-designation">
-              {{employee.job_position_id}}
-            </p>
-          </div>
-        </div>
-      </div>
-      <div
-        class="col-12 col-sm-12 col-md-12 col-lg-8 d-flex align-items-center"
-      >
-        <ul class="oh-profile__info-list">
-          <li class="oh-profile__info-list-item">
-            <span class="oh-profile__info-label">
-              <ion-icon name="mail-outline"></ion-icon>
-              <span>{% trans "Work Email" %}:</span>
-            </span>
-            <span class="oh-profile__info-value"
-              >{{employee.employee_work_info.email}}</span
-            >
-          </li>
-          <li class="oh-profile__info-list-item">
-            <span class="oh-profile__info-label">
-              <ion-icon name="mail-outline"></ion-icon>
-              <span>{% trans "Email" %}:</span>
-            </span>
-            <span class="oh-profile__info-value">{{employee.email}}</span>
-          </li>
-          <li class="oh-profile__info-list-item">
-            <span class="oh-profile__info-label">
-              <ion-icon name="call-outline"></ion-icon>
-              <span>{% trans "Work Phone" %}:</span>
-            </span>
-            <span class="oh-profile__info-value"
-              >{{employee.employee_work_info.mobile}}</span
-            >
-          </li>
-          <li class="oh-profile__info-list-item">
-            <span class="oh-profile__info-label">
-              <ion-icon name="call-outline"></ion-icon>
-              <span>{% trans "Phone" %}:</span>
-            </span>
-            <span class="oh-profile__info-value">{{employee.phone}}</span>
-          </li>
-        </ul>
-      </div>
-    </div>
-    <div class="row">
-      <div class="col-sm-12 col-md-12 col lg-12">
-        <ul
-          class="oh-general__tabs oh-general__tabs--border oh-general__tabs--profile oh-general__tabs--no-grow oh-profile-section__tab mt-5"
-        >
-          <li class="oh-general__tab">
-            <a
-              hx-get={% url 'contract-tab' employee.id %}
-              hx-target="#personal_target"
-              class="oh-general__tab-link oh-general__tab-link--active"
-              data-action="general-tab"
-              role="button"
-              data-target="#personal_target"
-              >{% trans "About" %}</a
-            >
-          </li>
-          <li class="oh-general__tab">
-            <a
-              hx-get={% url 'shift-tab' employee.id %}
-              hx-target="#shift_target"
-              data-action="general-tab"
-              data-target="#shift_target"
-              class="oh-general__tab-link pointer"
-              role="button"
-              >{% trans "Work type & Shift" %}</a
-            >
-          </li>
-          <li class="oh-general__tab">
-            <a
-              hx-get="{% url 'attendance-tab' employee.id %}"
-              hx-target="#attendance_target"
-              data-action="general-tab"
-              data-target="#attendance_target"
-              class="oh-general__tab-link"
-              role="button"
-              >{% trans "Attendance" %}</a
-            >
-          </li>
-          <li class="oh-general__tab">
-            <a
-              href="#"
-              class="oh-general__tab-link"
-              data-action="general-tab"
-              data-target="#leave"
-              >{% trans "Leave" %}</a
-            >
-          </li>
-          <li class="oh-general__tab">
-            <a
-              href="#"
-              class="oh-general__tab-link"
-              data-action="general-tab"
-              data-target="#payroll"
-              >{% trans "Payroll" %}</a
-            >
-          </li>
-          {% comment %} <li class="oh-general__tab">
-            <a
-              href="#"
-              class="oh-general__tab-link"
-              data-action="general-tab"
-              data-target="#team"
-              >{% trans "Team" %}</a
-            >
-          </li>
-          <li class="oh-general__tab">
-            <a
-              href="#"
-              class="oh-general__tab-link"
-              data-action="general-tab"
-              data-target="#timesheet"
-              >{% trans "Timesheet" %}</a
-            >
-          </li> {% endcomment %}
-          <li class="oh-general__tab">
-            <a
-              hx-get={% url 'asset-tab' employee.id %}
-              hx-target="#asset_target"
-              data-action="general-tab"
-              data-target="#asset_target"
-              class="oh-general__tab-link pointer"
-              role="button"
-              >{% trans "Assets" %}</a
-            >
-          </li>
-          <li class="oh-general__tab">
-            <a
-              hx-get={% url 'performance-tab' employee.id %}
-              hx-target="#performance_target"
-              data-action="general-tab"
-              data-target="#performance_target"
-              class="oh-general__tab-link"
-              role="button"
-              >{% trans "Performance" %}</a
-            >
-          </li>
-        </ul>
+	<div class="oh-card mt-4 mb-5">
+		<div class="d-flex flex-row-reverse">
+			<a href="{% url 'employee-view-update' employee.id %}" class="">
+				<img
+				src="{% static 'images/ui/edit_btn.png' %}"
+				style="width: 25px; height: auto"
+				title="{% trans 'Edit' %}"
+				/>
+			</a>
+		</div>
+		<div class="row">
+			<div class="col-12 col-sm-12 col-md-12 col-lg-4">
+				<div class="d-flex align-items-center">
+					<div class="oh-profile oh-profile--lg me-3">
+						<div class="oh-profile__avatar">
+							{% if employee.employee_profile %}
+							<img
+								src="/media/{{employee.employee_profile}}"
+								class="oh-profile__image"
+								alt="Username"
+								onmouseover="enlargeImage(this)"
+								onmouseout="hideEnlargeImage()"
+							/>
+							{% else %}
+							<img
+								src="https://ui-avatars.com/api/?name={{employee.employee_first_name}}+{{employee.employee_last_name}}&background=random"
+								class="oh-profile__image"
+								alt="Username"
+							/>
+							{% endif %}
+						</div>
+						<span
+						class="oh-profile__active-badge oh-profile__active-badge--secondary"
+						title="{% trans 'Active' %}">
+						</span>
+					</div>
+					<div class="oh-profile__info-container">
+						<h1 class="oh-profile__info-name">{{employee}}</h1>
+						<p class="oh-profile__info-designation">
+						{{employee.job_position_id}}
+						</p>
+					</div>
+				</div>
+			</div>
+			<div
+				class="col-12 col-sm-12 col-md-12 col-lg-8 d-flex align-items-center"
+			>
+				<ul class="oh-profile__info-list">
+					<li class="oh-profile__info-list-item">
+						<span class="oh-profile__info-label">
+							<ion-icon name="mail-outline"></ion-icon>
+							<span>{% trans "Work Email" %}:</span>
+						</span>
+						<span class="oh-profile__info-value">{{employee.employee_work_info.email}}</span>
+					</li>
+					<li class="oh-profile__info-list-item">
+						<span class="oh-profile__info-label">
+							<ion-icon name="mail-outline"></ion-icon>
+							<span>{% trans "Email" %}:</span>
+						</span>
+						<span class="oh-profile__info-value">{{employee.email}}</span>
+					</li>
+					<li class="oh-profile__info-list-item">
+						<span class="oh-profile__info-label">
+							<ion-icon name="call-outline"></ion-icon>
+							<span>{% trans "Work Phone" %}:</span>
+						</span>
+						<span class="oh-profile__info-value">{{employee.employee_work_info.mobile}}</span>
+					</li>
+					<li class="oh-profile__info-list-item">
+						<span class="oh-profile__info-label">
+							<ion-icon name="call-outline"></ion-icon>
+							<span>{% trans "Phone" %}:</span>
+						</span>
+						<span class="oh-profile__info-value">{{employee.phone}}</span>
+					</li>
+				</ul>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-sm-12 col-md-12 col lg-12">
+				<ul
+				class="oh-general__tabs oh-general__tabs--border oh-general__tabs--profile oh-general__tabs--no-grow oh-profile-section__tab mt-5"
+				>
+					<li class="oh-general__tab">
+						<a
+						hx-get={% url 'contract-tab' employee.id %}
+						hx-target="#personal_target"
+						class="oh-general__tab-link oh-general__tab-link--active"
+						data-action="general-tab"
+						role="button"
+						data-target="#personal_target"
+						>{% trans "About" %}</a
+						>
+					</li>
+					<li class="oh-general__tab">
+						<a
+						hx-get={% url 'shift-tab' employee.id %}
+						hx-target="#shift_target"
+						data-action="general-tab"
+						data-target="#shift_target"
+						class="oh-general__tab-link pointer"
+						role="button"
+						>{% trans "Work type & Shift" %}</a
+						>
+					</li>
+					<li class="oh-general__tab">
+						<a
+						hx-get="{% url 'attendance-tab' employee.id %}"
+						hx-target="#attendance_target"
+						data-action="general-tab"
+						data-target="#attendance_target"
+						class="oh-general__tab-link"
+						role="button"
+						>{% trans "Attendance" %}</a
+						>
+					</li>
+					<li class="oh-general__tab">
+						<a
+						href="#"
+						class="oh-general__tab-link"
+						data-action="general-tab"
+						data-target="#leave"
+						>{% trans "Leave" %}</a
+						>
+					</li>
+					<li class="oh-general__tab">
+						<a
+						href="#"
+						class="oh-general__tab-link"
+						data-action="general-tab"
+						data-target="#payroll"
+						>{% trans "Payroll" %}</a
+						>
+					</li>
+					{% comment %} <li class="oh-general__tab">
+						<a
+						href="#"
+						class="oh-general__tab-link"
+						data-action="general-tab"
+						data-target="#team"
+						>{% trans "Team" %}</a
+						>
+					</li>
+					<li class="oh-general__tab">
+						<a
+						href="#"
+						class="oh-general__tab-link"
+						data-action="general-tab"
+						data-target="#timesheet"
+						>{% trans "Timesheet" %}</a
+						>
+					</li> {% endcomment %}
+					<li class="oh-general__tab">
+						<a
+						hx-get={% url 'asset-tab' employee.id %}
+						hx-target="#asset_target"
+						data-action="general-tab"
+						data-target="#asset_target"
+						class="oh-general__tab-link pointer"
+						role="button"
+						>{% trans "Assets" %}</a
+						>
+					</li>
+					<li class="oh-general__tab">
+						<a
+						hx-get={% url 'performance-tab' employee.id %}
+						hx-target="#performance_target"
+						data-action="general-tab"
+						data-target="#performance_target"
+						class="oh-general__tab-link"
+						role="button"
+						>{% trans "Performance" %}</a
+						>
+					</li>
+				</ul>
 
-        <div
-          class="oh-general__tab-target oh-profile__info-tab mb-4"
-          id="personal_target"
-        >
-          
-        </div>
+				<div
+				class="oh-general__tab-target oh-profile__info-tab mb-4"
+				id="personal_target"
+				>
+				
+				</div>
 
-        
-        <div
-          class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
-          id="payroll"
-        >
-          {% include "tabs/payroll-tab.html" %}
-        </div>
-        <div
-          class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
-          id="team"
-        >
-          <!-- #3 -->
-        </div>
+				
+				<div
+				class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
+				id="payroll"
+				>
+				{% include "tabs/payroll-tab.html" %}
+				</div>
+				<div
+				class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
+				id="team"
+				>
+				<!-- #3 -->
+				</div>
 
-        <div
-          class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
-          id="timesheet"
-        >
-          <!-- #3 -->
-        </div>
-        <div
-          class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
-          id="leave"
-        >
-          {% include "tabs/leave-tab.html" %}
-        </div>
-        <div
-          class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
-          id="performance_target"
-        >
-        </div>
-        <div
-          class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
-          id="asset_target"
-        >
-        </div>
-        <div
-          class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
-          id="attendance_target"
-        >
-        </div>
-        <div
-          class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
-          id="shift_target"
-        >
-        </div>
-      </div>
-    </div>
-  </div>
+				<div
+				class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
+				id="timesheet"
+				>
+				<!-- #3 -->
+				</div>
+				<div
+				class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
+				id="leave"
+				>
+				{% include "tabs/leave-tab.html" %}
+				</div>
+				<div
+				class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
+				id="performance_target"
+				>
+				</div>
+				<div
+				class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
+				id="asset_target"
+				>
+				</div>
+				<div
+				class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
+				id="attendance_target"
+				>
+				</div>
+				<div
+				class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
+				id="shift_target"
+				>
+				</div>
+			</div>
+		</div>
+	</div>
 </div>
 <script src="{% static 'employee/search.js' %}"></script>
+<script src="{% static 'basedOn.js' %}"></script>
 
 {% endblock content %}
