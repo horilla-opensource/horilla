@@ -14,6 +14,7 @@ provide the main entry points for interacting with the application's functionali
 import os
 import json
 import contextlib
+from urllib.parse import parse_qs
 from django.conf import settings
 from django.http import JsonResponse, HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, redirect
@@ -26,6 +27,7 @@ from django.utils.translation import gettext_lazy as _
 from notifications.signals import notify
 from horilla import settings
 from horilla.decorators import permission_required, login_required, hx_request_required
+from base.methods import get_key_instances
 from recruitment.views.paginator_qry import paginator_qry
 from recruitment.models import Recruitment, Candidate, Stage, StageNote
 from recruitment.filters import CandidateFilter, RecruitmentFilter, StageFilter
@@ -822,6 +824,8 @@ def candidate_view(request):
         template = "candidate/candidate_view.html"
     else:
         template = "candidate/candidate_empty.html"
+    data_dict = parse_qs(previous_data)
+    get_key_instances(Candidate, data_dict)
     return render(
         request,
         template,
@@ -830,6 +834,7 @@ def candidate_view(request):
             "pd": previous_data,
             "f": filter_obj,
             "view_type": view_type,
+            "filter_dict": data_dict,
         },
     )
 
@@ -940,9 +945,7 @@ def delete_profile_image(request, obj_id):
             messages.success(request, _("Profile image removed."))
     except Exception as e:
         pass
-    return redirect('rec-candidate-update', cand_id=obj_id)
-
-
+    return redirect("rec-candidate-update", cand_id=obj_id)
 
 
 @login_required

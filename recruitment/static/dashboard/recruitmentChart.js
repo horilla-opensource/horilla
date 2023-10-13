@@ -11,6 +11,15 @@ $(document).ready(function () {
       type: 'bar',
       data: data,
       options: {
+        onClick: (e, activeEls) => {
+          let datasetIndex = activeEls[0].datasetIndex;
+          let dataIndex = activeEls[0].index;
+          let datasetLabel = e.chart.data.datasets[datasetIndex].label;
+          let value = e.chart.data.datasets[datasetIndex].data[dataIndex];
+          let label = e.chart.data.labels[dataIndex];
+          localStorage.removeItem("savedFilters");
+          window.location.href = "/recruitment/candidate-view" +"?recruitment="+datasetLabel+"&stage_id__stage_type="+ label.toLowerCase()
+        }
       },
     });
   }

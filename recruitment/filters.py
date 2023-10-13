@@ -28,7 +28,7 @@ class FilterSet(django_filters.FilterSet):
         for _, filter_widget in self.filters.items():
             widget = filter_widget.field.widget
             if isinstance(
-                    widget, (forms.NumberInput, forms.EmailInput, forms.TextInput)
+                widget, (forms.NumberInput, forms.EmailInput, forms.TextInput)
             ):
                 widget.attrs.update({"class": "oh-input w-100"})
             elif isinstance(widget, (forms.Select,)):
@@ -38,7 +38,7 @@ class FilterSet(django_filters.FilterSet):
             elif isinstance(widget, (forms.Textarea)):
                 widget.attrs.update({"class": "oh-input w-100"})
             elif isinstance(
-                    widget, (forms.CheckboxInput, forms.CheckboxSelectMultiple)
+                widget, (forms.CheckboxInput, forms.CheckboxSelectMultiple)
             ):
                 widget.attrs.update({"class": "oh-switch__checkbox"})
             elif isinstance(widget, (forms.ModelChoiceField)):
@@ -74,6 +74,9 @@ class CandidateFilter(FilterSet):
         lookup_expr="lte",
         widget=forms.DateInput(attrs={"type": "date"}),
     )
+    recruitment = django_filters.CharFilter(
+        field_name="recruitment_id__title", lookup_expr="icontains"
+    )
 
     class Meta:
         """
@@ -82,6 +85,7 @@ class CandidateFilter(FilterSet):
 
         model = Candidate
         fields = [
+            "recruitment",
             "recruitment_id",
             "stage_id",
             "schedule_date",
