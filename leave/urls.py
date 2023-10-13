@@ -10,16 +10,26 @@ urlpatterns = [
     path("type-delete/<int:id>", views.leave_type_delete, name="type-delete"),
     path("type-filter", views.leave_type_filter, name="type-filter"),
     path("request-creation", views.leave_request_creation, name="request-creation"),
-    path("leave-request-creation/<int:type_id>/<int:emp_id>", views.leave_request_creation, name="leave-request-creation"),
+    path(
+        "leave-request-creation/<int:type_id>/<int:emp_id>",
+        views.leave_request_creation,
+        name="leave-request-creation",
+    ),
     path("request-view", views.leave_request_view, name="request-view"),
     path(
         "request-approve/<int:id>", views.leave_request_approve, name="request-approve"
     ),
     path(
-        "request-approve/<int:id>/<int:emp_id>", views.leave_request_approve, name="request-approve"
+        "request-approve/<int:id>/<int:emp_id>",
+        views.leave_request_approve,
+        name="request-approve",
     ),
     path("request-cancel/<int:id>", views.leave_request_cancel, name="request-cancel"),
-    path("request-cancel/<int:id>/<int:emp_id>", views.leave_request_cancel, name="request-cancel"),
+    path(
+        "request-cancel/<int:id>/<int:emp_id>",
+        views.leave_request_cancel,
+        name="request-cancel",
+    ),
     path("request-update/<int:id>", views.leave_request_update, name="request-update"),
     path("request-delete/<int:id>", views.leave_request_delete, name="request-delete"),
     path("user-request/<int:id>", views.user_leave_request, name="user-request"),
@@ -33,11 +43,27 @@ urlpatterns = [
         name="available-leave-update",
     ),
     path("assign-delete/<int:id>", views.leave_assign_delete, name="assign-delete"),
+    path(
+        "assigned-leave-bulk-delete",
+        views.leave_assign_bulk_delete,
+        name="assigned-leave-bulk-delete",
+    ),
+    path(
+        "assign-leave-type-excel",
+        views.assign_leave_type_excel,
+        name="assign-leave-type-excel",
+    ),
+    path("assign-leave-type-info-import", views.assign_leave_type_import, name="assign-leave-type-info-import"),
+    path("assigned-leaves-info-export", views.assigned_leaves_export, name="assigned-leaves-info-export"),
     path("assign-filter", views.leave_assign_filter, name="assign-filter"),
     path("holiday-view", views.holiday_view, name="holiday-view"),
+    path("holidays-excel-template", views.holidays_excel_template, name="holidays-excel-template"),
+    path("holidays-info-import", views.holidays_info_import, name="holidays-info-import"),
+    path("holiday-info-export", views.holiday_info_export, name="holiday-info-export"),
     path("holiday-creation", views.holiday_creation, name="holiday-creation"),
     path("holiday-update/<int:id>", views.holiday_update, name="holiday-update"),
     path("holiday-delete/<int:id>", views.holiday_delete, name="holiday-delete"),
+    path("holidays-bulk-delete", views.bulk_holiday_delete, name="holidays-bulk-delete"),
     path("holiday-filter", views.holiday_filter, name="holiday-filter"),
     path(
         "company-leave-creation",
@@ -76,14 +102,26 @@ urlpatterns = [
     path("user-request-one/<int:id>", views.user_request_one, name="user-request-one"),
     path("employee-leave", views.employee_leave, name="employee-leave"),
     path("overall-leave", views.overall_leave, name="overall-leave"),
-
     path("leave-dashboard", views.dashboard, name="leave-dashboard"),
-    path("leave-employee-dashboard", views.employee_dashboard, name="leave-employee-dashboard"),
+    path(
+        "leave-employee-dashboard",
+        views.employee_dashboard,
+        name="leave-employee-dashboard",
+    ),
     path("available-leaves", views.available_leave_chart, name="available-leaves"),
-    path("dashboard-leave-requests", views.dashboard_leave_request, name="dashboard-leave-requests"),
-    path("employee-leave-chart", views.employee_leave_chart, name="employee-leave-chart"),
-    path("department-leave-chart", views.department_leave_chart, name="department-leave-chart"),
+    path(
+        "dashboard-leave-requests",
+        views.dashboard_leave_request,
+        name="dashboard-leave-requests",
+    ),
+    path(
+        "employee-leave-chart", views.employee_leave_chart, name="employee-leave-chart"
+    ),
+    path(
+        "department-leave-chart",
+        views.department_leave_chart,
+        name="department-leave-chart",
+    ),
     path("leave-type-chart", views.leave_type_chart, name="leave-type-chart"),
     path("leave-over-period", views.leave_over_period, name="leave-over-period"),
-
 ]

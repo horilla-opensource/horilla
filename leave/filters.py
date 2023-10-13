@@ -4,8 +4,12 @@ various models in the Leave Management System app.
 The filters are designed to provide flexible search and filtering 
 capabilities for LeaveType, LeaveRequest,AvailableLeave, Holiday, and CompanyLeave models.
 """
+import uuid
 from django import forms
-from django_filters import FilterSet, DateFilter, filters
+import django_filters
+from django_filters import FilterSet, DateFilter, filters, NumberFilter
+
+from employee.models import Employee
 from .models import LeaveType, LeaveRequest, AvailableLeave, Holiday, CompanyLeave
 
 
@@ -77,16 +81,34 @@ class AssignedLeaveFilter(FilterSet):
     employee, assigned date and payment attributes.
     """
 
-    leave_type = filters.CharFilter(
-        field_name="leave_type_id__name", lookup_expr="icontains"
-    )
-    employee_id = filters.CharFilter(
+    # leave_type = filters.CharFilter(
+    #     field_name="leave_type_id__name", lookup_expr="icontains"
+    # )
+    search = filters.CharFilter(
         field_name="employee_id__employee_first_name", lookup_expr="icontains"
+    )
+    employee_id = django_filters.ModelMultipleChoiceFilter(
+        queryset=Employee.objects.all(),
+        widget=forms.SelectMultiple(),
     )
     assigned_date = DateFilter(
         field_name="assigned_date",
         lookup_expr="exact",
         widget=forms.DateInput(attrs={"type": "date"}),
+    )
+    available_days__gte = NumberFilter(field_name="available_days", lookup_expr="gte")
+    available_days__lte = NumberFilter(field_name="available_days", lookup_expr="lte")
+    carryforward_days__gte = NumberFilter(
+        field_name="carryforward_days", lookup_expr="gte"
+    )
+    carryforward_days__lte = NumberFilter(
+        field_name="carryforward_days", lookup_expr="lte"
+    )
+    total_leave_days__gte = NumberFilter(
+        field_name="total_leave_days", lookup_expr="gte"
+    )
+    total_leave_days__lte = NumberFilter(
+        field_name="total_leave_days", lookup_expr="lte"
     )
 
     class Meta:
@@ -95,9 +117,25 @@ class AssignedLeaveFilter(FilterSet):
         """
 
         model = AvailableLeave
-        fields = {
-            "leave_type_id": ["exact"],
-        }
+        fields = [
+            "employee_id",
+            "leave_type_id",
+            "available_days",
+            "available_days__gte",
+            "available_days__lte",
+            "carryforward_days",
+            "carryforward_days__gte",
+            "carryforward_days__lte",
+            "total_leave_days",
+            "total_leave_days__gte",
+            "total_leave_days__lte",
+            "assigned_date",
+        ]
+
+    def __init__(self, data=None, queryset=None, *, request=None, prefix=None):
+        super().__init__(data=data, queryset=queryset, request=request, prefix=prefix)
+        for field in self.form.fields.keys():
+            self.form.fields[field].widget.attrs["id"] = f"{uuid.uuid4()}"
 
 
 class LeaveRequestFilter(FilterSet):

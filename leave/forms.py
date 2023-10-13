@@ -465,3 +465,43 @@ class UserLeaveRequestForm(ModelForm):
             "description",
             "attachment",
         ]
+
+
+excluded_fields = ["id"]
+
+
+class AvailableLeaveColumnExportForm(forms.Form):
+    model_fields = AvailableLeave._meta.get_fields()
+    field_choices = [
+        (field.name, field.verbose_name)
+        for field in model_fields
+        if hasattr(field, "verbose_name") and field.name not in excluded_fields
+    ]
+    selected_fields = forms.MultipleChoiceField(
+        choices=field_choices,
+        widget=forms.CheckboxSelectMultiple,
+        initial=[
+            "employee_id",
+            "leave_type_id",
+            "total_leave_days",
+        ],
+    )
+
+
+class HolidaysColumnExportForm(forms.Form):
+    model_fields = Holiday._meta.get_fields()
+    field_choices = [
+        (field.name, field.verbose_name)
+        for field in model_fields
+        if hasattr(field, "verbose_name") and field.name not in excluded_fields
+    ]
+    selected_fields = forms.MultipleChoiceField(
+        choices=field_choices,
+        widget=forms.CheckboxSelectMultiple,
+        initial=[
+            "name",
+            "start_date",
+            "end_date",
+            "recurring",
+        ],
+    )

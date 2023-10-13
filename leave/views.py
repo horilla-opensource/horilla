@@ -1,8 +1,11 @@
 from collections import defaultdict
 import contextlib
+import json
 from urllib.parse import parse_qs
 from django.shortcuts import render, redirect
+import pandas as pd
 from horilla.decorators import login_required, hx_request_required
+from django.views.decorators.http import require_http_methods
 from .forms import *
 from .models import *
 from django.http import JsonResponse, HttpResponse
@@ -29,6 +32,32 @@ from django.utils.translation import gettext as __
 from django.utils.translation import gettext_lazy as _
 from notifications.signals import notify
 from django.db.models import ProtectedError
+
+
+def generate_error_report(error_list, error_data, file_name):
+    for item in error_list:
+        for key, value in error_data.items():
+            if key in item:
+                value.append(item[key])
+            else:
+                value.append(None)
+    keys_to_remove = [
+        key for key, value in error_data.items() if all(v is None for v in value)
+    ]
+    for key in keys_to_remove:
+        del error_data[key]
+    data_frame = pd.DataFrame(error_data, columns=error_data.keys())
+    styled_data_frame = data_frame.style.applymap(
+        lambda x: "text-align: center", subset=pd.IndexSlice[:, :]
+    )
+    response = HttpResponse(content_type="application/ms-excel")
+    response["Content-Disposition"] = f'attachment; filename="{file_name}"'
+    writer = pd.ExcelWriter(response, engine="xlsxwriter")
+    styled_data_frame.to_excel(writer, index=False, sheet_name="Sheet1")
+    worksheet = writer.sheets["Sheet1"]
+    worksheet.set_column("A:Z", 30)
+    writer.save()
+    return response
 
 
 @login_required
@@ -422,40 +451,43 @@ def leave_request_approve(request, id, emp_id=None):
     total_available_leave = (
         available_leave.available_days + available_leave.carryforward_days
     )
-    if total_available_leave >= leave_request.requested_days:
-        if leave_request.requested_days > available_leave.available_days:
-            leave = leave_request.requested_days - available_leave.available_days
-            leave_request.approved_available_days = available_leave.available_days
-            available_leave.available_days = 0
-            available_leave.carryforward_days = (
-                available_leave.carryforward_days - leave
-            )
-            leave_request.approved_carryforward_days = leave
+    if leave_request.status != "approved":
+        if total_available_leave >= leave_request.requested_days:
+            if leave_request.requested_days > available_leave.available_days:
+                leave = leave_request.requested_days - available_leave.available_days
+                leave_request.approved_available_days = available_leave.available_days
+                available_leave.available_days = 0
+                available_leave.carryforward_days = (
+                    available_leave.carryforward_days - leave
+                )
+                leave_request.approved_carryforward_days = leave
+            else:
+                temp = available_leave.available_days
+                available_leave.available_days = temp - leave_request.requested_days
+                leave_request.approved_available_days = leave_request.requested_days
+            leave_request.status = "approved"
+            available_leave.save()
+            leave_request.save()
+            messages.success(request, _("Leave request approved successfully.."))
+            with contextlib.suppress(Exception):
+                notify.send(
+                    request.user.employee_get,
+                    recipient=leave_request.employee_id.employee_user_id,
+                    verb="Your Leave request has been approved",
+                    verb_ar="تمت الموافقة على طلب الإجازة الخاص بك",
+                    verb_de="Ihr Urlaubsantrag wurde genehmigt",
+                    verb_es="Se ha aprobado su solicitud de permiso",
+                    verb_fr="Votre demande de congé a été approuvée",
+                    icon="people-circle",
+                    redirect="/leave/user-request-view",
+                )
         else:
-            temp = available_leave.available_days
-            available_leave.available_days = temp - leave_request.requested_days
-            leave_request.approved_available_days = leave_request.requested_days
-        leave_request.status = "approved"
-        available_leave.save()
-        leave_request.save()
-        messages.success(request, _("Leave request approved successfully.."))
-        with contextlib.suppress(Exception):
-            notify.send(
-                request.user.employee_get,
-                recipient=leave_request.employee_id.employee_user_id,
-                verb="Your Leave request has been approved",
-                verb_ar="تمت الموافقة على طلب الإجازة الخاص بك",
-                verb_de="Ihr Urlaubsantrag wurde genehmigt",
-                verb_es="Se ha aprobado su solicitud de permiso",
-                verb_fr="Votre demande de congé a été approuvée",
-                icon="people-circle",
-                redirect="/leave/user-request-view",
+            messages.error(
+                request,
+                f"{employee_id} dont have enough leave days to approve the request..",
             )
     else:
-        messages.error(
-            request,
-            f"{employee_id} dont have enough leave days to approve the request..",
-        )
+        messages.error(request, _("Leave request already approved"))
     if emp_id is not None:
         employee_id = emp_id
         return redirect(f"/employee/employee-view/{employee_id}/")
@@ -602,12 +634,16 @@ def leave_assign_view(request):
     page_number = request.GET.get("page")
     page_obj = paginator_qry(queryset, page_number)
     assigned_leave_filter = AssignedLeaveFilter()
+    export_filter = AssignedLeaveFilter()
+    export_column = AvailableLeaveColumnExportForm()
     return render(
         request,
         "leave/assign_view.html",
         {
             "available_leaves": page_obj,
             "form": assigned_leave_filter.form,
+            "export_filter": export_filter,
+            "export_column": export_column,
             "pd": previous_data,
         },
     )
@@ -770,6 +806,147 @@ def leave_assign_delete(request, id):
     return redirect(leave_assign_view)
 
 
+@require_http_methods(["POST"])
+def leave_assign_bulk_delete(request):
+    """
+    This method is used to delete bulk of assigned leaves
+    """
+    ids = request.POST["ids"]
+    ids = json.loads(ids)
+    for assigned_leave_id in ids:
+        try:
+            assigned_leave = AvailableLeave.objects.get(id=assigned_leave_id)
+            leave_type = assigned_leave.leave_type_id
+            employee = assigned_leave.employee_id
+            assigned_leave.delete()
+            messages.success(
+                request,
+                _("{} assigned to {} deleted.".format(leave_type, employee)),
+            )
+        except Exception as e:
+            messages.error(request, _("Assigned leave not found."))
+    return JsonResponse({"message": "Success"})
+
+
+def assign_leave_type_excel(_request):
+    """
+    Generate an empty Excel template for asisgn leave type to employee with predefined columns.
+
+    Returns:
+        HttpResponse: An HTTP response containing an empty Excel template with predefined columns.
+    """
+    try:
+        columns = [
+            "Employee Badge ID",
+            "Leave Type",
+        ]
+        data_frame = pd.DataFrame(columns=columns)
+        response = HttpResponse(content_type="application/ms-excel")
+        response[
+            "Content-Disposition"
+        ] = 'attachment; filename="assign_leave_type_excel.xlsx"'
+        data_frame.to_excel(response, index=False)
+        return response
+    except Exception as exception:
+        return HttpResponse(exception)
+
+
+@login_required
+@manager_can_enter("leave.add_availableleave")
+def assign_leave_type_import(request):
+    """
+    This function accepts a POST request containing an Excel file with assign leave type to employee data.
+    It processes the data, checks for errors, and either assigns leave types to employees
+    or generates an error report in the form of an Excel file.
+    """
+    error_data = {
+        "Employee Badge ID": [],
+        "Leave Type": [],
+        "Error1": [],
+        "Error2": [],
+        "Error3": [],
+        "Error4": [],
+    }
+    error_list = []
+    file_name = "AssignLeaveError.xlsx"
+    if request.method == "POST":
+        file = request.FILES["assign_leave_type_import"]
+        data_frame = pd.read_excel(file)
+        assign_leave_dicts = data_frame.to_dict("records")
+        for assign_leave in assign_leave_dicts:
+            try:
+                save = True
+                assign_leave_type = assign_leave["Leave Type"]
+                badge_id = assign_leave["Employee Badge ID"]
+                employee = Employee.objects.filter(badge_id__iexact=badge_id).first()
+                leave_type = LeaveType.objects.filter(
+                    name__iexact=assign_leave_type
+                ).first()
+                if employee is None:
+                    save = False
+                    assign_leave["Error1"] = _("This badge id does not exist.")
+
+                if leave_type is None:
+                    save = False
+                    assign_leave["Error2"] = _("This leave type does not exist.")
+                if AvailableLeave.objects.filter(
+                    leave_type_id=leave_type, employee_id=employee
+                ).exists():
+                    save = False
+                    assign_leave["Error3"] = _(
+                        "Leave type has already been assigned to the employee."
+                    )
+                if save:
+                    AvailableLeave(
+                        leave_type_id=leave_type,
+                        employee_id=employee,
+                        available_days=leave_type.total_days,
+                    ).save()
+                else:
+                    error_list.append(assign_leave)
+            except Exception as exception:
+                assign_leave["Error4"] = f"{str(exception)}"
+                error_list.append(assign_leave)
+        if error_list:
+            response = generate_error_report(error_list, error_data, file_name)
+            return response
+        return redirect(leave_assign_view)
+    return redirect(leave_assign_view)
+
+
+def assigned_leaves_export(request):
+    """
+    Export assigned leave data to an Excel file.
+
+    This function takes in a request containing query parameters for filtering
+    assigned leave data, selected fields, and exports the data to an Excel file.
+    """
+    assigned_leaves_export = {}
+    assigned_leaves = AssignedLeaveFilter(request.GET).qs
+    selected_fields = request.GET.getlist("selected_fields")
+    model_fields = AvailableLeave._meta.get_fields()
+    for field in model_fields:
+        field_name = field.name
+        if field_name in selected_fields:
+            assigned_leaves_export[field.verbose_name] = []
+            for assigned_leave in assigned_leaves:
+                value = getattr(assigned_leave, field_name)
+                assigned_leaves_export[field.verbose_name].append(value)
+
+    data_frame = pd.DataFrame(data=assigned_leaves_export)
+    styled_data_frame = data_frame.style.applymap(
+        lambda x: "text-align: center", subset=pd.IndexSlice[:, :]
+    )
+    response = HttpResponse(content_type="application/ms-excel")
+    response["Content-Disposition"] = f'attachment; filename="AssignLeaveExport.xlsx"'
+    writer = pd.ExcelWriter(response, engine="xlsxwriter")
+    styled_data_frame.to_excel(writer, index=False, sheet_name="Sheet1")
+    worksheet = writer.sheets["Sheet1"]
+    worksheet.set_column("A:Z", 18)
+    writer.save()
+    return response
+
+
 @login_required
 @hx_request_required
 @permission_required("leave.add_holiday")
@@ -790,12 +967,127 @@ def holiday_creation(request):
         if form.is_valid():
             form.save()
             messages.success(request, _("New holiday created successfully.."))
-            response = render(request, "leave/holiday_form.html", {"form": form})
+            response = render(
+                request, "leave/holiday/holiday_form.html", {"form": form}
+            )
             return HttpResponse(
                 response.content.decode("utf-8")
                 + "<script>location. reload();</script>"
             )
-    return render(request, "leave/holiday_form.html", {"form": form})
+    return render(request, "leave/holiday/holiday_form.html", {"form": form})
+
+
+def holidays_excel_template(request):
+    try:
+        columns = [
+            "Name of Holiday",
+            "Start Date",
+            "End Date",
+            "Recurring",
+        ]
+        data_frame = pd.DataFrame(columns=columns)
+        response = HttpResponse(content_type="application/ms-excel")
+        response[
+            "Content-Disposition"
+        ] = 'attachment; filename="assign_leave_type_excel.xlsx"'
+        data_frame.to_excel(response, index=False)
+        return response
+    except Exception as exception:
+        return HttpResponse(exception)
+
+
+def holidays_info_import(request):
+    file_name = "HolidaysImportError.xlsx"
+    error_list = []
+    error_data = {
+        "Name of Holiday": [],
+        "Start Date": [],
+        "End Date": [],
+        "Recurring": [],
+        "Error1": [],
+        "Error2": [],
+        "Error3": [],
+        "Error4": [],
+    }
+    if request.method == "POST":
+        file = request.FILES["holidays_import"]
+        data_frame = pd.read_excel(file)
+        holiday_dicts = data_frame.to_dict("records")
+        for holiday in holiday_dicts:
+            save = True
+            try:
+                name = holiday["Name of Holiday"]
+                try:
+                    start_date = pd.to_datetime(holiday["Start Date"]).date()
+                except Exception as e:
+                    save = False
+                    holiday["Error1"] = _("Invalid start date format {}").format(
+                        holiday["Start Date"]
+                    )
+                try:
+                    end_date = pd.to_datetime(holiday["End Date"]).date()
+                except Exception as e:
+                    save = False
+                    holiday["Error2"] = _("Invalid end date format {}").format(
+                        holiday["End Date"]
+                    )
+                if holiday["Recurring"].lower() in ["yes", "no"]:
+                    recurring = True if holiday["Recurring"].lower() == "yes" else False
+                else:
+                    save = False
+                    holiday["Error3"] = _("Recurring must be {} or {}").format(
+                        "yes", "no"
+                    )
+                if save:
+                    holiday = Holiday(
+                        name=name,
+                        start_date=start_date,
+                        end_date=end_date,
+                        recurring=recurring,
+                    )
+                    holiday.save()
+                else:
+                    error_list.append(holiday)
+
+            except Exception as e:
+                holiday["Error4"] = f"{str(e)}"
+                error_list.append(holiday)
+        if error_list:
+            response = generate_error_report(error_list, error_data, file_name)
+            return response
+        return redirect(holiday_view)
+    return redirect(holiday_view)
+
+
+def holiday_info_export(request):
+    holidays_export = {}
+    holidays = HolidayFilter(request.GET).qs
+    selected_fields = request.GET.getlist("selected_fields")
+    model_fields = Holiday._meta.get_fields()
+    for field in model_fields:
+        field_name = field.name
+        if field_name in selected_fields:
+            holidays_export[field.verbose_name] = []
+            for holiday in holidays:
+                value = getattr(holiday, field_name)
+                if value is True:
+                    value = "Yes"
+                elif value is False:
+                    value = "No"
+                holidays_export[field.verbose_name].append(value)
+
+    data_frame = pd.DataFrame(data=holidays_export)
+    styled_data_frame = data_frame.style.applymap(
+        lambda x: "text-align: center", subset=pd.IndexSlice[:, :]
+    )
+    response = HttpResponse(content_type="application/ms-excel")
+    response["Content-Disposition"] = f'attachment; filename="HolidaysExport.xlsx"'
+    writer = pd.ExcelWriter(response, engine="xlsxwriter")
+    styled_data_frame.to_excel(writer, index=False, sheet_name="Sheet1")
+    worksheet = writer.sheets["Sheet1"]
+    worksheet.set_column("A:Z", 18)
+    writer.save()
+    return response
 
 
 @login_required
@@ -815,10 +1107,18 @@ def holiday_view(request):
     page_number = request.GET.get("page")
     page_obj = paginator_qry(queryset, page_number)
     holiday_filter = HolidayFilter()
+    export_filter = HolidayFilter()
+    export_column = HolidaysColumnExportForm()
     return render(
         request,
-        "leave/holiday_view.html",
-        {"holidays": page_obj, "form": holiday_filter.form, "pd": previous_data},
+        "leave/holiday/holiday_view.html",
+        {
+            "holidays": page_obj,
+            "form": holiday_filter.form,
+            "pd": previous_data,
+            "export_filter": export_filter,
+            "export_column": export_column,
+        },
     )
 
 
@@ -872,13 +1172,17 @@ def holiday_update(request, id):
             form.save()
             messages.info(request, _("Holiday updated successfully.."))
             response = render(
-                request, "leave/holiday_update_form.html", {"form": form, "id": id}
+                request,
+                "leave/holiday/holiday_update_form.html",
+                {"form": form, "id": id},
             )
             return HttpResponse(
                 response.content.decode("utf-8")
                 + "<script>location. reload();</script>"
             )
-    return render(request, "leave/holiday_update_form.html", {"form": form, "id": id})
+    return render(
+        request, "leave/holiday/holiday_update_form.html", {"form": form, "id": id}
+    )
 
 
 @login_required
@@ -902,6 +1206,27 @@ def holiday_delete(request, id):
     except ProtectedError:
         messages.error(request, _("Related entries exists"))
     return redirect(holiday_view)
+
+
+@require_http_methods(["POST"])
+def bulk_holiday_delete(request):
+    """
+    This method is used to delete bulk of holidays
+    """
+    ids = request.POST["ids"]
+    ids = json.loads(ids)
+    del_ids = []
+    for holiday_id in ids:
+        try:
+            holiday = Holiday.objects.get(id=holiday_id)
+            holiday.delete()
+            del_ids.append(holiday_id)
+        except Exception as e:
+            messages.error(request, _("Holiday not found."))
+    messages.success(
+        request, _("{} Holidays have been successfully deleted.".format(len(del_ids)))
+    )
+    return JsonResponse({"message": "Success"})
 
 
 @login_required
@@ -1580,7 +1905,9 @@ def dashboard(request):
         holidays.order_by("start_date").first() if holidays.exists() else None
     )
     holidays = holidays.filter(
-        start_date__gte=today, start_date__month=today.month, start_date__year=today.year
+        start_date__gte=today,
+        start_date__month=today.month,
+        start_date__year=today.year,
     ).order_by("start_date")[1:]
 
     leave_today = LeaveRequest.objects.filter(
@@ -1623,7 +1950,9 @@ def employee_dashboard(request):
         holidays.order_by("start_date").first() if holidays.exists() else None
     )
     holidays = holidays.filter(
-        start_date__gte=today, start_date__month=today.month, start_date__year=today.year
+        start_date__gte=today,
+        start_date__month=today.month,
+        start_date__year=today.year,
     ).order_by("start_date")[1:]
 
     context = {

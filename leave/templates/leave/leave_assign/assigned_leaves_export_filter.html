@@ -1,0 +1,132 @@
+{% load i18n %}
+<div class="oh-dropdown__filter-body">
+  <div class="oh-accordion">
+    <div class="oh-accordion-header">{% trans "Excel columns" %}</div>
+    <div class="oh-accordion-body">
+      <div class="row">
+        <div class="col-sm-12 col-md-12 col-lg-6">
+          <div class="oh-input-group">
+            <label class="oh-label">
+              <input type="checkbox" id="select-all-fields" /> {% trans "Select All" %}
+            </label>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        {% for field in export_column.selected_fields %}
+        <div class="col-sm-12 col-md-12 col-lg-6">
+          <div class="oh-input-group">
+            <label class="oh-label"> {{ field }} </label>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+  <div class="oh-accordion">
+    <div class="oh-accordion-header">{% trans "Assigned Leave" %}</div>
+    <div class="oh-accordion-body">
+      <div class="row">
+        <div class="col-sm-12 col-md-12 col-lg-6">
+          <div class="oh-input-group">
+            <label class="oh-label">{% trans "Employees" %}</label>
+            {{export_filter.form.employee_id}}
+          </div>
+        </div>
+        <div class="col-sm-12 col-md-12 col-lg-6">
+          <div class="oh-input-group">
+            <label class="oh-label">{% trans "Leave Type" %}</label>
+            {{export_filter.form.leave_type_id}}
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-12 col-md-12 col-lg-6">
+          <div class="oh-input-group">
+            <label class="oh-label">{% trans "Available Days" %}</label>
+            {{export_filter.form.available_days}}
+          </div>
+        </div>
+        <div class="col-sm-12 col-md-12 col-lg-6">
+          <div class="oh-input-group">
+            <label class="oh-label">{% trans "Carryforward Days" %}</label>
+            {{export_filter.form.carryforward_days}}
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-12 col-md-12 col-lg-6">
+          <div class="oh-input-group">
+            <label class="oh-label">{% trans "Total Leave Days" %}</label>
+            {{export_filter.form.total_leave_days}}
+          </div>
+        </div>
+        <div class="col-sm-12 col-md-12 col-lg-6">
+          <div class="oh-input-group">
+            <label class="oh-label">{% trans "Assigned Date" %}</label>
+            {{export_filter.form.assigned_date}}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="oh-accordion">
+    <div class="oh-accordion-header">{% trans "Advanced" %}</div>
+    <div class="oh-accordion-body">
+      <div class="row">
+        <div class="col-sm-12 col-md-12 col-lg-6">
+          <div class="oh-input-group">
+            <label class="oh-label"
+              >{% trans "Available Days Greater or Equal" %}</label
+            >
+            {{export_filter.form.available_days__gte}}
+          </div>
+        </div>
+        <div class="col-sm-12 col-md-12 col-lg-6">
+          <div class="oh-input-group">
+            <label class="oh-label"
+              >{% trans "Available Days Less Than or Equal" %}</label
+            >
+            {{export_filter.form.available_days__lte}}
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-12 col-md-12 col-lg-6">
+          <div class="oh-input-group">
+            <label class="oh-label"
+              >{% trans "Carryforward Days Greater or Equal" %}</label
+            >
+            {{export_filter.form.carryforward_days__gte}}
+          </div>
+        </div>
+        <div class="col-sm-12 col-md-12 col-lg-6">
+          <div class="oh-input-group">
+            <label class="oh-label"
+              >{% trans "Carryforward Days Less Than or Equal" %}</label
+            >
+            {{export_filter.form.carryforward_days__lte}}
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-12 col-md-12 col-lg-6">
+          <div class="oh-input-group">
+            <label class="oh-label"
+              >{% trans "Total Leave Days Greater or Equal" %}</label
+            >
+            {{export_filter.form.total_leave_days__gte}}
+          </div>
+        </div>
+        <div class="col-sm-12 col-md-12 col-lg-6">
+          <div class="oh-input-group">
+            <label class="oh-label"
+              >{% trans "Total Leave Days Less Than or Equal" %}</label
+            >
+            {{export_filter.form.total_leave_days__lte}}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

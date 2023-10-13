@@ -145,7 +145,11 @@ class LeaveType(models.Model):
         max_length=30, choices=CHOICES, null=True, blank=True
     )
     require_attachment = models.CharField(
-        max_length=30, choices=CHOICES, null=True, blank=True, verbose_name=_("Require Attachment")
+        max_length=30,
+        choices=CHOICES,
+        null=True,
+        blank=True,
+        verbose_name=_("Require Attachment"),
     )
     exclude_company_leave = models.CharField(max_length=30, choices=CHOICES)
     exclude_holiday = models.CharField(max_length=30, choices=CHOICES)
@@ -156,10 +160,10 @@ class LeaveType(models.Model):
 
 
 class Holiday(models.Model):
-    name = models.CharField(max_length=30, null=False)
-    start_date = models.DateField()
-    end_date = models.DateField(null=True, blank=True)
-    recurring = models.BooleanField(default=False)
+    name = models.CharField(max_length=30, null=False, verbose_name=_("Name"))
+    start_date = models.DateField(verbose_name=_("Start Date"))
+    end_date = models.DateField(null=True, blank=True, verbose_name=_("End Date"))
+    recurring = models.BooleanField(default=False, verbose_name=_("Recurring"))
     objects = models.Manager()
 
     def __str__(self):
@@ -181,22 +185,34 @@ class CompanyLeave(models.Model):
 
 
 class AvailableLeave(models.Model):
+    employee_id = models.ForeignKey(
+        Employee,
+        on_delete=models.CASCADE,
+        related_name="available_leave",
+        verbose_name=_("Employee"),
+    )
     leave_type_id = models.ForeignKey(
         LeaveType,
         on_delete=models.PROTECT,
         related_name="employee_available_leave",
         blank=True,
         null=True,
+        verbose_name=_("Leave type"),
     )
-    employee_id = models.ForeignKey(
-        Employee, on_delete=models.CASCADE, related_name="available_leave"
+    available_days = models.FloatField(default=0, verbose_name=_("Available Days"))
+    carryforward_days = models.FloatField(
+        default=0, verbose_name=_("Carryforward Days")
     )
-    available_days = models.FloatField(default=0)
-    carryforward_days = models.FloatField(default=0)
-    total_leave_days = models.FloatField(default=0)
-    assigned_date = models.DateField(default=timezone.now)
-    reset_date = models.DateField(blank=True, null=True)
-    expired_date = models.DateField(blank=True, null=True)
+    total_leave_days = models.FloatField(default=0, verbose_name=_("Total Leave Days"))
+    assigned_date = models.DateField(
+        default=timezone.now, verbose_name=_("Assigned Date")
+    )
+    reset_date = models.DateField(
+        blank=True, null=True, verbose_name=_("Leave Reset Date")
+    )
+    expired_date = models.DateField(
+        blank=True, null=True, verbose_name=_("CarryForward Expired Date")
+    )
     objects = models.Manager()
 
     class Meta:
@@ -314,8 +330,12 @@ class AvailableLeave(models.Model):
 
 
 class LeaveRequest(models.Model):
-    leave_type_id = models.ForeignKey(LeaveType, on_delete=models.PROTECT,verbose_name="Leave type")
-    employee_id = models.ForeignKey(Employee, on_delete=models.CASCADE,verbose_name="Employee")
+    leave_type_id = models.ForeignKey(
+        LeaveType, on_delete=models.PROTECT, verbose_name="Leave type"
+    )
+    employee_id = models.ForeignKey(
+        Employee, on_delete=models.CASCADE, verbose_name="Employee"
+    )
     start_date = models.DateField(null=False)
     start_date_breakdown = models.CharField(
         max_length=30, choices=BREAKDOWN, default="full_day"
@@ -342,7 +362,6 @@ class LeaveRequest(models.Model):
     approved_carryforward_days = models.FloatField(default=0)
     created_at = models.DateTimeField(auto_now="True")
     objects = models.Manager()
-    
 
     def __str__(self):
         return f"{self.employee_id} | {self.leave_type_id} | {self.status}"
