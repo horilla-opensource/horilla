@@ -145,7 +145,7 @@ var feedbackStatusData = {
 // chart constructor
 if (feedbackStatusChartCtx != null) {
     var feedbackStatusChart = new Chart(feedbackStatusChartCtx, {
-        type: "line",
+        type: "pie",
         data: feedbackStatusData,
     });
 }
