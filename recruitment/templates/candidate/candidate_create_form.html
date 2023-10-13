@@ -246,6 +246,7 @@
                 placeholder="Profile"
                 id="choose_profile"
               />
+              {% if form.instance.id %}
               <div class="d-flex justify-content-center">
                 <a
                   class="oh-btn oh-btn--light-danger mr-1"
@@ -254,6 +255,7 @@
                   <ion-icon class="me-1" name="trash-outline"></ion-icon>{% trans "Delete Image" %}
                 </a>
               </div>
+              {% endif %}
             </div>
           </div>
         </div>
@@ -266,10 +268,7 @@
             $("#choose_profile").change(function (e) {
               var modal_profile = $(this)[0];
               var hidden_profile = $("#hidden_profile")[0];
-
-              console.log(modal_profile.files);
               hidden_profile.files = modal_profile.files;
-              console.log(hidden_profile.files);
 
               const file = this.files[0];
               const reader = new FileReader();
