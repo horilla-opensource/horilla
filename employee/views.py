@@ -170,6 +170,16 @@ def contract_tab(request, obj_id):
 
 @login_required
 def asset_tab(request, emp_id):
+    """
+    This function is used to view asset tab of an employee in employee individual view.
+
+    Parameters:
+    request (HttpRequest): The HTTP request object.
+    emp_id (int): The id of the employee.
+
+    Returns: return asset-tab template
+    
+    """
     assets_requests = AssetRequest.objects.filter(requested_employee_id=emp_id,asset_request_status="Requested")
     assets = AssetAssignment.objects.filter(assigned_to_employee_id=emp_id)
     context={
@@ -181,6 +191,16 @@ def asset_tab(request, emp_id):
 
 @login_required
 def profile_asset_tab(request, emp_id):
+    """
+    This function is used to view asset tab of an employee in employee profile view.
+
+    Parameters:
+    request (HttpRequest): The HTTP request object.
+    emp_id (int): The id of the employee.
+
+    Returns: return profile-asset-tab template
+    
+    """
     assets = AssetAssignment.objects.filter(assigned_to_employee_id=emp_id)
     context={
         "assets":assets,
@@ -189,6 +209,16 @@ def profile_asset_tab(request, emp_id):
 
 @login_required
 def asset_request_tab(request, emp_id):
+    """
+    This function is used to view asset request tab of an employee in employee individual view.
+
+    Parameters:
+    request (HttpRequest): The HTTP request object.
+    emp_id (int): The id of the employee.
+
+    Returns: return asset-request-tab template
+    
+    """
     assets_requests = AssetRequest.objects.filter(requested_employee_id=emp_id)
     context={
         "asset_requests":assets_requests,
@@ -197,6 +227,16 @@ def asset_request_tab(request, emp_id):
 
 @login_required
 def performance_tab(request, emp_id):
+    """
+    This function is used to view performance tab of an employee in employee individual & profile view.
+
+    Parameters:
+    request (HttpRequest): The HTTP request object.
+    emp_id (int): The id of the employee.
+
+    Returns: return performance-tab template
+    
+    """
     feedback_own = Feedback.objects.filter(employee_id=emp_id,archive=False)
     today = datetime.today()
     context={
@@ -207,6 +247,16 @@ def performance_tab(request, emp_id):
 
 @login_required
 def profile_attendance_tab(request):
+    """
+    This function is used to view attendance tab of an employee in profile view.
+
+    Parameters:
+    request (HttpRequest): The HTTP request object.
+    emp_id (int): The id of the employee.
+
+    Returns: return asset-request-tab template
+    
+    """
     user = request.user
     employee = user.employee_get
     employee_attendances = employee.employee_attendances.all()
@@ -218,6 +268,15 @@ def profile_attendance_tab(request):
 @login_required
 @manager_can_enter("employee.view_employee")
 def attendance_tab(request, emp_id):
+    """
+    This function is used to view attendance tab of an employee in individual view.
+
+    Parameters:
+    request (HttpRequest): The HTTP request object.
+    emp_id (int): The id of the employee.
+
+    Returns: return attendance-tab template
+    """
     
     requests = Attendance.objects.filter(
         is_validate_request=True,employee_id=emp_id,
@@ -234,11 +293,19 @@ def attendance_tab(request, emp_id):
 
 @login_required
 def shift_tab(request, emp_id):
-    
+    """
+    This function is used to view shift tab of an employee in employee individual & profile view.
+
+    Parameters:
+    request (HttpRequest): The HTTP request object.
+    emp_id (int): The id of the employee.
+
+    Returns: return shift-tab template
+    """   
     
     work_type_requests = WorkTypeRequest.objects.filter(employee_id=emp_id)
     rshift_assign = RotatingShiftAssign.objects.filter(is_active=True,employee_id=emp_id)
-    rwork_type_assign = RotatingWorkTypeAssign.objects.filter(is_active=True,employee_id=emp_id)
+    rwork_type_assign = RotatingWorkTypeAssign.objects.filter(employee_id=emp_id)
     shift_requests = ShiftRequest.objects.filter(employee_id=emp_id)
 
     context={
@@ -1494,7 +1561,7 @@ def dashboard_employee_gender(request):
     """
     This method is used to filter out gender vise employees
     """
-    labels = [_("Male"), _("Female"), _("Others")]
+    labels = [_("Male"), _("Female"), _("Other")]
     employees = Employee.objects.all()
     employees = filtersubordinates(request, employees, "employee.view_employee")
 
@@ -1505,7 +1572,7 @@ def dashboard_employee_gender(request):
                 "data": [
                     len(employees.filter(gender="male")),
                     len(employees.filter(gender="female")),
-                    len(employees.filter(gender="others")),
+                    len(employees.filter(gender="other")),
                 ],
             },
         ],
