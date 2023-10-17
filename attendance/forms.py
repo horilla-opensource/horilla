@@ -135,7 +135,11 @@ class AttendanceUpdateForm(ModelForm):
             # django forms not showing value inside the date, time html element.
             # so here overriding default forms instance method to set initial value
             condition = AttendanceValidationCondition.objects.first()
-            condition = strtime_seconds(condition.minimum_overtime_to_approve)
+            condition = (
+                strtime_seconds(condition.minimum_overtime_to_approve)
+                if condition.minimum_overtime_to_approve
+                else 0
+            )
             initial = {
                 "attendance_date": instance.attendance_date.strftime("%Y-%m-%d"),
                 "attendance_clock_in": instance.attendance_clock_in.strftime("%H:%M"),
@@ -153,10 +157,13 @@ class AttendanceUpdateForm(ModelForm):
             kwargs["initial"] = initial
         super().__init__(*args, **kwargs)
 
-        self.fields['attendance_overtime_approve'].label = _("Approve overtime?")
-        self.fields['attendance_validated'].label = _("Validate Attendance?")
-        if strtime_seconds(instance.attendance_overtime) < condition or not instance.attendance_validated:
-            del self.fields['attendance_overtime_approve']
+        self.fields["attendance_overtime_approve"].label = _("Approve overtime?")
+        self.fields["attendance_validated"].label = _("Validate Attendance?")
+        if (
+            strtime_seconds(instance.attendance_overtime) < condition
+            or not instance.attendance_validated
+        ):
+            del self.fields["attendance_overtime_approve"]
 
     def as_p(self, *args, **kwargs):
         """
@@ -233,7 +240,11 @@ class AttendanceForm(ModelForm):
         kwargs["initial"] = initial
         super().__init__(*args, **kwargs)
         self.fields["employee_id"].widget.attrs.update({"id": str(uuid.uuid4())})
-        self.fields["shift_id"].widget.attrs.update({"id": str(uuid.uuid4()),"onchange": "shiftChange($(this))",}
+        self.fields["shift_id"].widget.attrs.update(
+            {
+                "id": str(uuid.uuid4()),
+                "onchange": "shiftChange($(this))",
+            }
         )
         self.fields["work_type_id"].widget.attrs.update({"id": str(uuid.uuid4())})
 
