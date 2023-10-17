@@ -1,0 +1,132 @@
+{% load static i18n %}
+{% load i18n %}
+{% load widget_tweaks %}
+{% block content %}
+{% load basefilters %}
+
+<main :class="sidebarOpen ? 'oh-main__sidebar-visible' : ''">
+    <section class="oh-wrapper oh-main__topbar" x-data="{searchShow: false}">
+        <div class="oh-main__titlebar oh-main__titlebar--left">
+            <h1 class="oh-main__titlebar-title fw-bold">{% trans "Key Results" %}</h1>
+        </div>
+        
+    </section>
+    <div class="oh-wrapper">
+        <div class="row">
+            <div class="col-12 col-sm-12 col-md-12 col-lg-12">
+                <div class="oh-card my-4">
+                    <div class="oh-card__body">
+                        <ul class="oh-list-cards">
+                            {% for employee_key_result in key_results %}
+                            <li class="oh-list-cards__item">
+                                <div class="oh-list-card">
+                                    <div class="oh-list-card__header d-flex align-content-center justify-content-between mb-2">
+                                        <span class="oh-list-card__title">{{employee_key_result.employee_objective_id.objective}} / {{employee_key_result.key_result}}</span>
+                                        <div class="d-flex align-items-center justify-content-between mb-2">
+                                            <small class="oh-text--light">
+                                                <label class="fw-bold oh-text--dark">{% trans "Due" %}:</label>
+                                                {{ current_date|timesince:employee_key_result.end_date }}
+                                            </small>
+                                            <!-- checking userlevel   -->
+                                            {% if perms.pms.change_employeekeyresult or request.user|filtersubordinates %}
+                                            <button
+                                                class="oh-btn oh-btn--x-small d-flex align-items-center ms-2 "
+                                                data-toggle="oh-modal-toggle"
+                                                hx-get="{% url 'key-result-update' id=employee_key_result.id %}"
+                                                hx-target="#ObjectiveModalFormTarget"
+                                                data-target="#objectiveModalpopup" >
+                                                <ion-icon name="create-outline" class="me-1" ></ion-icon>
+                                                {% trans "Edit" %}
+                                            </button>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div class="oh-list-card__body">
+                                        <p class="oh-list-card__description oh-text--xs mt-3">
+                                            {{employee_key_result.key_result_description}}
+                                        </p>
+                                        <div class="row mb-3">
+                                            <div class="col-12 col-sm-12 col-md-6 col-lg-4">
+                                                <div class="oh-container oh-container--outline">
+                                                    <label class="oh-input__label oh-text--secondary fw-bold oh-text--xs mb-0 mt-1">
+                                                        {% trans "Start Value" %} 
+                                                    </label>
+                                                    <input 
+                                                        class="oh-input oh-input--small oh-input--block px-0" min="0"
+                                                        value="{{employee_key_result.start_value}} {{employee_key_result.progress_type}}"
+                                                        readonly />
+                                                </div>
+                                            </div>
+                                            <div class="col-12 col-sm-12 col-md-6 col-lg-4">
+                                                <div class="oh-container oh-container--outline ">
+                                                    <label class="oh-input__label oh-text--secondary fw-bold oh-text--xs mb-0 mt-1">
+                                                        {% trans "Current Value" %}
+                                                    </label>
+                                                    <input 
+                                                    type="number" class="oh-table__editable-input "  min="0"
+                                                    max="{{employee_key_result.target_value}}"
+                                                    value="{{employee_key_result.current_value}}"
+                                                    hx-post="{%url 'objective-detailed-view-current-value' kr_id=employee_key_result.id %}"
+                                                    hx-trigger="change"
+                                                    hx-target="#objective_detailed_view_activity"
+                                                    name="current_value" readonly/>
+                                                  
+                                                </div>
+                                            </div>
+                                            <div class="col-12 col-sm-12 col-md-6 col-lg-4">
+                                                <div class="oh-container oh-container--outline">
+                                                    <label class="oh-input__label oh-text--secondary fw-bold oh-text--xs mb-0 mt-1">
+                                                        {% trans "Target Value" %}
+                                                    </label>
+                                                    <input 
+                                                        class="oh-input oh-input--small oh-input--block px-0" min="0"
+                                                        value=" {{employee_key_result.target_value}} {{employee_key_result.progress_type}}"
+                                                        readonly />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="oh-list-card__footer d-flex align-items-center justify-content-between flex-wrap">
+                                        <div class="oh-input-group">
+                                            <label class="oh-label my-2 my-2 me-2" for="status">{% trans "Status" %}</label>
+                                            <select 
+                                                id="status" name="key_result_status"
+                                                hx-post=""
+                                                hx-trigger="change" class="oh-select oh-select--sm"
+                                                hx-target="#objective_detailed_view_activity">
+                                                    <option value="{{employee_key_result.status}}" selected>
+                                                        {{employee_key_result.get_status_display }}
+                                                    </option>
+                                                    {%for value,label in objective_key_result_status%}
+                                                        {% if employee_key_result.status != value %}
+                                                        <option value="{{value}}">{{label}}</option>
+                                                        {% endif%}
+                                                        ^^^^^^^^^^
+                                                    {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="oh-profile oh-profile--md">
+                                            <div class="oh-profile__avatar mr-1">
+                                                <img src="https://ui-avatars.com/api/?name={{employee_key_result.employee_id}}&background=random"
+                                                    class="oh-profile__image" alt="Rosa Luxemburg" />
+                                            </div>
+                                            <span class="oh-profile__name oh-text--dark">{{employee_key_result.employee_id}}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <!-- end of activity -->
+        </div>
+    </div>
+    <div class="oh-modal" id="objectiveModalpopup" role="dialog" aria-labelledby="objectiveModal" aria-hidden="true">
+        <div class="oh-modal__dialog" id="ObjectiveModalFormTarget">
+        </div>
+    </div>
+</main>
+
+{% endblock %}

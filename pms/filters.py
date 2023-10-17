@@ -8,7 +8,7 @@ import datetime
 import django_filters
 from django import forms
 from django_filters import DateFilter
-from pms.models import EmployeeObjective, Feedback
+from pms.models import EmployeeKeyResult, EmployeeObjective, Feedback
 
 
 class DateRangeFilter(django_filters.Filter):
@@ -153,3 +153,9 @@ class FeedbackFilter(CustomFilterSet):
         super(FeedbackFilter, self).__init__(
             data=data, queryset=queryset, request=request, prefix=prefix
         )
+
+class KeyResultFilter(CustomFilterSet):
+    
+    class Meta:
+        model = EmployeeKeyResult
+        fields = "__all__"

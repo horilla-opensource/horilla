@@ -10,7 +10,20 @@
 <!-- End of Navigation -->
 <main :class="sidebarOpen ? 'oh-main__sidebar-visible' : ''">
     <div class="oh-wrapper">
-        <div class="oh-dashboard row">
+        <div class="d-none mt-5" id="back_button" style="width:10%">
+            <a href=""
+              class="oh-btn oh-btn--secondary oh-btn--shadow ms-3"
+            >
+              <ion-icon
+                class="me-2 md hydrated"
+                name="arrow-back-outline"
+                role="img"
+                aria-label="arrow-back-outline"
+              ></ion-icon
+              >{% trans "Back" %}</a
+            >
+        </div>
+        <div class="oh-dashboard row" id="dashboard">
             <div class="oh-dashboard__left col-12 col-sm-12 col-md-12 col-lg-9">
                 <div class="oh-dashboard__cards row">
                     <div class="col-12 col-sm-12 col-md-6 col-lg-4">

@@ -1,9 +1,6 @@
 
 
 const objectiveChart = document.getElementById('objectiveChart');
-console.log('--------------------------------');
-console.log(objectiveChart);
-console.log('--------------------------------');
 // data dictionary 
 var objectiveStatusData = {
     labels: [],
@@ -21,6 +18,32 @@ if (objectiveChart != null) {
     var objectiveStatusChart = new Chart(objectiveChart, {
         type: "doughnut",
         data: objectiveStatusData,
+        options: {
+            onClick: (e, activeEls) => {
+              let datasetIndex = activeEls[0].datasetIndex;
+              let dataIndex = activeEls[0].index;
+              let datasetLabel = e.chart.data.datasets[datasetIndex].label;
+              let value = e.chart.data.datasets[datasetIndex].data[dataIndex];
+              let label = e.chart.data.labels[dataIndex];
+              let params = "?status="+label+"&archive=false"
+
+
+                $.ajax({
+                    url: "/pms/objective-list-search"+params,
+                    type: "GET",
+                    headers: {
+                        "X-Requested-With": "XMLHttpRequest",
+                    },
+                    success: (response) => {
+                        $("#dashboard").html(response)
+                    },
+                    error: (error) => {
+                        console.log('Error', error);
+                    }
+                })
+                $("#back_button").removeClass("d-none")
+            }
+        }
     });
 }
 
@@ -84,6 +107,33 @@ if (keyResultStatusChartCtx != null) {
     var keyResultStatusChart = new Chart(keyResultStatusChartCtx, {
         type: "pie",
         data: keyResultStatusData,
+        options: {
+            onClick: (e, activeEls) => {
+              let datasetIndex = activeEls[0].datasetIndex;
+              let dataIndex = activeEls[0].index;
+              let datasetLabel = e.chart.data.datasets[datasetIndex].label;
+              let value = e.chart.data.datasets[datasetIndex].data[dataIndex];
+              let label = e.chart.data.labels[dataIndex];
+              let params = "?status="+label+"&archive=false"
+
+
+                $.ajax({
+                    url: "/pms/key-result-view"+params,
+                    type: "GET",
+                    headers: {
+                        "X-Requested-With": "XMLHttpRequest",
+                    },
+                    success: (response) => {
+                        $("#dashboard").html(response)
+                    },
+                    error: (error,response) => {
+                        console.log(response)
+                        console.log('Error', error);
+                    }
+                })
+                $("#back_button").removeClass("d-none")
+            }
+        }
     });
 }
 
@@ -147,6 +197,32 @@ if (feedbackStatusChartCtx != null) {
     var feedbackStatusChart = new Chart(feedbackStatusChartCtx, {
         type: "pie",
         data: feedbackStatusData,
+        options: {
+            onClick: (e, activeEls) => {
+              let datasetIndex = activeEls[0].datasetIndex;
+              let dataIndex = activeEls[0].index;
+              let datasetLabel = e.chart.data.datasets[datasetIndex].label;
+              let value = e.chart.data.datasets[datasetIndex].data[dataIndex];
+              let label = e.chart.data.labels[dataIndex];
+              let params = "?status="+label+"&archive=false"
+
+
+                $.ajax({
+                    url: "/pms/feedback-list-search"+params,
+                    type: "GET",
+                    headers: {
+                        "X-Requested-With": "XMLHttpRequest",
+                    },
+                    success: (response) => {
+                        $("#dashboard").html(response)
+                    },
+                    error: (error) => {
+                        console.log('Error', error);
+                    }
+                })
+                $("#back_button").removeClass("d-none")
+            }
+        }
     });
 }
     

@@ -50,6 +50,11 @@ urlpatterns = [
         name="objective-detailed-view-comment",
     ),
     path(
+        "key-result-view",
+        views.key_result_view,
+        name="key-result-view",
+    ),
+    path(
         "key-result-creation/<str:obj_id>/<str:obj_type>",
         views.key_result_creation,
         name="key-result-creation",

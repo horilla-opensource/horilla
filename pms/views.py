@@ -16,7 +16,7 @@ from notifications.signals import notify
 from base.methods import get_key_instances
 from base.models import Department, JobPosition
 from employee.models import Employee, EmployeeWorkInformation
-from pms.filters import ObjectiveFilter, FeedbackFilter
+from pms.filters import KeyResultFilter, ObjectiveFilter, FeedbackFilter
 from django.db.models import ProtectedError
 from pms.models import (
     EmployeeKeyResult,
@@ -291,7 +291,7 @@ def objective_list_view(request):
 
 
 @login_required
-@hx_request_required
+# @hx_request_required
 def objective_list_search(request):
     """
     This view is used to to search objective,  returns searched and filtered objects.
@@ -601,6 +601,22 @@ def objective_archive(request, id):
         messages.info(request, _("Objective archived successfully!."))
     return redirect(f"/pms/objective-list-view?{request.environ['QUERY_STRING']}")
 
+@login_required
+@manager_can_enter(perm="pms.add_employeekeyresult")
+def key_result_view(request):
+    """
+    This view is used to view key result,
+    Args:
+        request: Request object.
+    Returns:
+        if errorr occur it will return errorr message.
+    """
+    key_results = KeyResultFilter(request.GET).qs
+    context = {
+        "key_results": key_results,
+    }
+    return render(request,"okr/key_result/key_result_view.html", context=context)
+
 
 @login_required
 @manager_can_enter(perm="pms.add_employeekeyresult")
@@ -611,7 +627,7 @@ def key_result_creation(request, obj_id, obj_type):
         id (int): Primarykey of EmployeeObjective.
         obj_type (str): type  of objecitve
     Returns:
-        if errorr occure it will return errorr message .
+        if errorr occur it will return errorr message .
     """
 
     employee = request.user.employee_get
@@ -980,7 +996,7 @@ def filter_pagination_feedback(
 
 
 @login_required
-@hx_request_required
+# @hx_request_required
 def feedback_list_search(request):
     """
     This view is used to filter or search the feedback object  ,
