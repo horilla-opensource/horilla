@@ -316,9 +316,14 @@
   <!-- answer off canvas -->
   <div class="oh-activity-sidebar" id="answerViewAccordion">
     <div class="oh-activity-sidebar__header">
-      <ion-icon name="chevron-back-outline"
-        class="oh-activity-sidebar__header-icon me-2 oh-activity-sidebar__close"
-        data-target="#answerViewAccordion"></ion-icon>
+      <span id="closanswer" style="cursor: pointer;" title="{% trans 'Close' %}">
+        <ion-icon
+          name="chevron-back-outline"
+          class="oh-activity-sidebar__header-icon me-2 oh-activity-sidebar__close"
+          id="close"
+          data-target="#activitySidebar"
+          style="font-size: 24px;"
+        ></ion-icon>
       <span class="oh-activity-sidebar__title"> {% trans "Answers" %}</span>
     </div>
     <div class="oh-activity-sidebar__body">
@@ -343,5 +348,17 @@
 
 <script src="{% static 'src/feedback/feedback_answer.js' %}"></script>
 <script src="{% static 'src/feedback/feedback_detailed_view.js' %}"></script>
+
+<script>
+  $(document).ready(function () {
+    $("#close").attr(
+      "class",
+      "oh-activity-sidebar__header-icon me-2 oh-activity-sidebar__close md hydrated"
+    );
+  });
+  $("#closanswer").click(function (e) {
+    $("#answerViewAccordion").removeClass("oh-activity-sidebar--show");
+  });
+</script>
 
 {% endblock %}
