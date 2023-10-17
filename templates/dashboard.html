@@ -252,23 +252,25 @@
                     <span class="oh-card-dashboard__title"
                     >{% trans "Attendance Analytic" %}</span
                   >
-                  <select id="type" class="oh-select" name="type" onchange="changeView(this)">
-                    <option value="day">Day</option>
-                    <option value="weekly">Weekly</option>
-                    <option value="monthly">Monthly</option>
-                    <option value="date_range">Date range</option>
-                  </select>
-                  </div>
-                  <div
-                    class="oh-card-dashboard__body"
-                    id="attandance_canvas_div"
-                  >
+                </div>
+                <div
+                class="oh-card-dashboard__body"
+                id="attandance_canvas_div"
+                >
+                <select id="type" class="oh-select" name="type" onchange="changeView(this)" style="width: 150px;padding: 3px;color:#5e5c5c;
+;                ">
+                  <option value="day">Day</option>
+                  <option value="weekly">Weekly</option>
+                  <option value="monthly">Monthly</option>
+                  <option value="date_range">Date range</option>
+                </select>
                   <span id="day_input">
                     <input
                       type="date"
                       class="mb-2 float-end pointer oh-select"
                       id="attendance_month"
                       onchange="changeMonth()"
+                      style="width: 100px;color:#5e5c5c;"
                     />
                     </span>
                     <span id="chart_input">
