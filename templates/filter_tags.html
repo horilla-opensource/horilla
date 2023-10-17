@@ -36,6 +36,9 @@
 				spanElement.text("---------");
 			}
 			$(form_submit_id).click();
+			localStorage.removeItem("savedFilters")
+			var url = window.location.href.split('?')[0];
+			window.history.replaceState({}, document.title, url)
 		}
 	}
 	$(document).ready(function () {
