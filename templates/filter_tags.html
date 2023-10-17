@@ -29,7 +29,7 @@
 			$(`[name=${item_id}]`).change();
 			let elementId = $(`[name=${item_id}]:last`).attr("id");
 			let spanElement = $(
-				`.oh-dropdown__filter-body:first #select2-id_${item_id}-container, #select2-${elementId}u-container`
+				`.oh-dropdown__filter-body:first #select2-id_${item_id}-container, #select2-${elementId}-container`
 			);
 			if (spanElement.length) {
 				spanElement.attr("title", "---------");
