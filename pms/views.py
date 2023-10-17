@@ -615,7 +615,21 @@ def key_result_creation(request, obj_id, obj_type):
     """
 
     employee = request.user.employee_get
-    key_result_form = KeyResultForm(employee=employee)
+    if obj_type == "individual":
+        objective = EmployeeObjective.objects.filter(id=int(obj_id))
+        start_date = None
+        end_date = None
+        for obj in objective:
+            start_date = obj.start_date
+            end_date = obj.end_date
+        key_result_form = KeyResultForm(employee=employee, initial={"start_date": start_date, "end_date": end_date})
+    else:
+        objective_ids = json.loads(obj_id)
+        for objective_id in objective_ids:
+            objective = EmployeeObjective.objects.filter(id=objective_id).first()
+            start_date = objective.start_date
+            end_date = objective.end_date
+        key_result_form = KeyResultForm(employee=employee, initial={"start_date": start_date, "end_date": end_date})
     context = {
         "key_result_form": key_result_form,
         "objective_id": obj_id,
@@ -678,7 +692,14 @@ def key_result_creation_htmx(request, id):
     Returns:
         if errorr occure it will return errorr message .
     """
-    context = {"key_result_form": KeyResultForm(), "objecitve_id": id}
+    object = EmployeeObjective.objects.filter(id=id)
+    start_date = None
+    end_date = None
+    for obj in object:
+        start_date = obj.start_date
+        end_date = obj.end_date
+    key_result_form = KeyResultForm(initial={"start_date": start_date, "end_date": end_date})
+    context = {"key_result_form": key_result_form, "objecitve_id": id}
     objective = EmployeeObjective.objects.get(id=id)
     if request.method == "POST":
         initial_data = {"employee_objective_id": objective}
