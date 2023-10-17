@@ -318,7 +318,15 @@
     <!-- End of Confirm Modal -->
     <div class="oh-activity-sidebar " id="allNotifications">
       <div class="oh-activity-sidebar__header">
-        <ion-icon name="chevron-back-outline" id="notificationClose" class="oh-activity-sidebar__header-icon me-2 oh-activity-sidebar__close md hydrated"  role="img" aria-label="chevron back outline"></ion-icon>
+        {% comment %} <ion-icon name="chevron-back-outline" id="notificationClose" class="oh-activity-sidebar__header-icon me-2 oh-activity-sidebar__close md hydrated"  role="img" aria-label="chevron back outline"></ion-icon> {% endcomment %}
+        <span id="notificationClose" style="cursor: pointer;" title="{% trans 'Close' %}">
+          <ion-icon
+            name="chevron-back-outline"
+            class="oh-activity-sidebar__header-icon me-2 oh-activity-sidebar__close"
+            id="close"
+            data-target="#activitySidebar"
+            style="font-size: 24px;"
+          ></ion-icon>
         <span class="oh-activity-sidebar__title"> {% trans "All Notifications" %}</span>
       </div>
       <div class="oh-activity-sidebar__body" id="allNotificationBody">
@@ -440,6 +448,17 @@
     document.body.addEventListener('htmx:configRequest', (event) => {
       event.detail.headers['X-CSRFToken'] = '{{ csrf_token }}';
     })
+
+      $(document).ready(function () {
+        $("#close").attr(
+          "class",
+          "oh-activity-sidebar__header-icon me-2 oh-activity-sidebar__close md hydrated"
+        );
+      });
+      $("#notificationClose").click(function (e) {
+        $("#allNotifications").removeClass("oh-activity-sidebar--show");
+      });
+
   </script>
   <!-- this is the master js  -->
   <script src="{% static '/index/index.js' %}"></script>

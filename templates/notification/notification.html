@@ -19,6 +19,7 @@
     </a>
 
     <div 
+    id="showallnotificationbtn"
     class="oh-navbar__notification-tray"
     x-data="{markRead: false, visible: true}" 
     x-show="open" 
@@ -51,6 +52,7 @@
       <div class="oh-navbar__notification-footer" x-show="visible">
         <a 
         {% comment %} href="{% url 'notifications:all' %}" {% endcomment %}
+        id="viewallnotification"
         data-target="#allNotifications"
         hx-get="{% url 'all-notifications' %}"
         hx-target="#allNotificationBody"
@@ -78,4 +80,9 @@
               }
           });
   }
+
+  $("#viewallnotification").click(function () {
+    $("#showallnotificationbtn").toggle();
+  });
+
 </script>
