@@ -210,7 +210,6 @@ class Candidate(models.Model):
     recruitment_id = models.ForeignKey(
         Recruitment,
         on_delete=models.PROTECT,
-        blank=True,
         null=True,
         related_name="candidate",
         verbose_name="Recruitment",
