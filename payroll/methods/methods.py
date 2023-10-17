@@ -13,7 +13,7 @@ from attendance.models import Attendance
 from payroll.models.models import Contract, Payslip
 
 
-def get_holiday_dates(range_start:date, range_end:date)->list:
+def get_holiday_dates(range_start: date, range_end: date) -> list:
     """
     :return: this functions returns a list of all holiday dates.
     """
@@ -26,9 +26,7 @@ def get_holiday_dates(range_start:date, range_end:date)->list:
     for holiday in holidays:
         holiday_dates = holiday_dates | (
             set(
-                get_date_range(
-                    start_date=holiday.start_date, end_date=holiday.end_date
-                )
+                get_date_range(start_date=holiday.start_date, end_date=holiday.end_date)
             )
         )
     return list(set(holiday_dates))
@@ -591,11 +589,11 @@ def save_payslip(**kwargs):
     instance.start_date = kwargs["start_date"]
     instance.end_date = kwargs["end_date"]
     instance.status = kwargs["status"]
-    instance.basic_pay = kwargs["basic_pay"]
-    instance.contract_wage = kwargs["contract_wage"]
-    instance.gross_pay = kwargs["gross_pay"]
-    instance.deduction = kwargs["deduction"]
-    instance.net_pay = kwargs["net_pay"]
+    instance.basic_pay = round(kwargs["basic_pay"], 2)
+    instance.contract_wage = round(kwargs["contract_wage"], 2)
+    instance.gross_pay = round(kwargs["gross_pay"], 2)
+    instance.deduction = round(kwargs["deduction"], 2)
+    instance.net_pay = round(kwargs["net_pay"], 2)
     instance.pay_head_data = kwargs["pay_data"]
     instance.save()
     return instance

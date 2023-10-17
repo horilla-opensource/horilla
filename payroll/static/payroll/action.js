@@ -78,7 +78,6 @@ $("#DeletePayslipBulk").click(function (e) {
     checkedRows.each(function () {
       ids.push($(this).val());
     });
-    alert();
     if (checkedRows.length === 0) {
       Swal.fire({
         text: textMessage,

@@ -44,7 +44,7 @@ def filing_status_view(request):
     else:
         template = "payroll/tax/filing_status_empty.html"
     context = {"status": status}
-    return render(request, template , context)
+    return render(request, template, context)
 
 
 @login_required
@@ -87,10 +87,21 @@ def update_filing_status(request, filing_status_id):
     filing_status = FilingStatus.objects.get(id=filing_status_id)
     filing_status_form = FilingStatusForm(instance=filing_status)
     if request.method == "POST":
-        tax_bracket_form = FilingStatusForm(request.POST, instance=filing_status)
-        if tax_bracket_form.is_valid():
-            tax_bracket_form.save()
-            return redirect(update_filing_status, filing_status_id=filing_status_id)
+        response = render(
+            request,
+            "payroll/tax/filing_status_edit.html",
+            {
+                "form": filing_status_form,
+            },
+        )
+        filing_status_form = FilingStatusForm(request.POST, instance=filing_status)
+        if filing_status_form.is_valid():
+            filing_status_form.save()
+            messages.success(request, _("Filing status updated successfully."))
+            return HttpResponse(
+                response.content.decode("utf-8") + "<script>location.reload();</script>"
+            )
+
     return render(
         request,
         "payroll/tax/filing_status_edit.html",
@@ -125,13 +136,13 @@ def filing_status_delete(request, filing_status_id):
 @permission_required("payroll.view_filingstatus")
 def filing_status_search(request):
     search = request.GET.get("search")
-    status = FilingStatus.objects.filter(filing_status__icontains = search)
+    status = FilingStatus.objects.filter(filing_status__icontains=search)
     previous_data = request.GET.urlencode()
     data_dict = parse_qs(previous_data)
     get_key_instances(FilingStatus, data_dict)
     context = {
-        "status" :status,
-        "pd":previous_data,
+        "status": status,
+        "pd": previous_data,
         "filter_dict": data_dict,
     }
     return render(request, "payroll/tax/filing_status_list.html", context)
@@ -187,6 +198,7 @@ def create_tax_bracket(request, filing_status_id):
                 messages.info(request, _("The maximum income will be infinite"))
                 tax_bracket_form.instance.max_income = math.inf
             tax_bracket_form.save()
+            messages.success(request, _("The tax bracket was created successfully."))
             return redirect(create_tax_bracket, filing_status_id=filing_status_id)
 
         context["form"] = tax_bracket_form
@@ -216,6 +228,9 @@ def update_tax_bracket(request, tax_bracket_id):
                 messages.info(request, _("The maximum income will be infinite"))
                 tax_bracket_form.instance.max_income = math.inf
             tax_bracket_form.save()
+            messages.success(
+                request, _("The tax bracket has been updated successfully.")
+            )
             return HttpResponse("<script>window.location.reload()</script>")
 
     context = {
