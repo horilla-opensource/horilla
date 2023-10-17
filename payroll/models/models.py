@@ -447,45 +447,48 @@ class OverrideLeaveRequest(LeaveRequest):
         period_dates = get_date_range(instance.start_date, instance.end_date)
         if instance.status == "approved":
             for date in period_dates:
-                work_entry = (
-                    WorkRecord.objects.filter(
-                        is_leave_record=True,
-                        date=date,
-                        employee_id=instance.employee_id,
+                try:
+                    work_entry = (
+                        WorkRecord.objects.filter(
+                            is_leave_record=True,
+                            date=date,
+                            employee_id=instance.employee_id,
+                        )
+                        if WorkRecord.objects.filter(
+                            is_leave_record=True,
+                            date=date,
+                            employee_id=instance.employee_id,
+                        ).exists()
+                        else WorkRecord()
                     )
-                    if WorkRecord.objects.filter(
-                        is_leave_record=True,
-                        date=date,
-                        employee_id=instance.employee_id,
-                    ).exists()
-                    else WorkRecord()
-                )
-                work_entry.employee_id = instance.employee_id
-                work_entry.is_leave_record = True
-                work_entry.day_percentage = (
-                    0.50
-                    if instance.start_date == date
-                    and instance.start_date_breakdown == "first_half"
-                    or instance.end_date == date
-                    and instance.end_date_breakdown == "second_half"
-                    else 0.00
-                )
-                # scheduler task to validate the conflict entry for half day if they
-                # take half day leave is when they mark the attendance.
-                status = (
-                    "CONF"
-                    if instance.start_date == date
-                    and instance.start_date_breakdown == "first_half"
-                    or instance.end_date == date
-                    and instance.end_date_breakdown == "second_half"
-                    else "ABS"
-                )
-                work_entry.work_record_type = status
-                work_entry.date = date
-                work_entry.message = (
-                    "Validated" if status == "ABS" else _("Half day need to validate")
-                )
-                work_entry.save()
+                    work_entry.employee_id = instance.employee_id
+                    work_entry.is_leave_record = True
+                    work_entry.day_percentage = (
+                        0.50
+                        if instance.start_date == date
+                        and instance.start_date_breakdown == "first_half"
+                        or instance.end_date == date
+                        and instance.end_date_breakdown == "second_half"
+                        else 0.00
+                    )
+                    # scheduler task to validate the conflict entry for half day if they
+                    # take half day leave is when they mark the attendance.
+                    status = (
+                        "CONF"
+                        if instance.start_date == date
+                        and instance.start_date_breakdown == "first_half"
+                        or instance.end_date == date
+                        and instance.end_date_breakdown == "second_half"
+                        else "ABS"
+                    )
+                    work_entry.work_record_type = status
+                    work_entry.date = date
+                    work_entry.message = (
+                        "Validated" if status == "ABS" else _("Half day need to validate")
+                    )
+                    work_entry.save()
+                except:
+                    pass
 
         else:
             for date in period_dates:

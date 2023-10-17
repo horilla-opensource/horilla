@@ -407,6 +407,10 @@ def contract_info_initial(request):
         if work_info.work_type_id is not None
         else "",
         "wage": work_info.basic_salary,
+        "contract_start_date": work_info.date_joining if work_info.date_joining else "",
+        "contract_end_date": work_info.contract_end_date
+        if work_info.contract_end_date
+        else "",
     }
     return JsonResponse(response_data)
 
