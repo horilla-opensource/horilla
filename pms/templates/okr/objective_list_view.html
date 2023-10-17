@@ -153,23 +153,8 @@
     </div>
   </section>
   <div class="oh-wrapper">
-    <div class="oh-tabs">
-      <ul class="oh-tabs__tablist">
-        <li class="oh-tabs__tab " data-target="#tab_1">
-          {% trans "Self Objective" %}
-          <span class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round ms-2 mr-2" id="" data-category-id="1" title="{{own_objectives|length}} objective" onclick="event.stopPropagation()">{{own_objectives|length}}</span>
-        </li>
-        <!-- normal user can't view all objective  -->
-        {% if perms.pms.view_employeeeobjective or request.user|filtersubordinates %}
-        <li class="oh-tabs__tab" data-target="#tab_2">
-          {% trans "All Objective" %}
-          <span class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round ms-2 mr-2" id="" data-category-id="1" title="{{all_objectives|length}} objective" onclick="event.stopPropagation()">{{all_objectives|length}}</span>
-        </li>
-        {% endif %}
-      </ul>
-      <div id="objective_list">
+    <div class="oh-tabs" id="objective_list">
         {% include 'okr/objective_list.html' %}
-      </div>
     </div>
   </div>
 </main>
