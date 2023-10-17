@@ -52,14 +52,14 @@
 
     <div class="oh-timeoff-modal__stats w-100 mt-3">
         <div class="oh-timeoff-modal__stat">
-            <span class="oh-timeoff-modal__stat-title">{% trans "Description" %}</span>
+            <span class="oh-timeoff-modal__stat-title">{% trans "Leave Description" %}</span>
             <div class="oh-timeoff-modal__stat-description">{{leave_request.description}}</div>
         </div>
     </div>
     {% if leave_request.reject_reason %}
-    <div class="oh-timeoff-modal__stats w-100 mt-3">
+    <div class="oh-timeoff-modal__stats w-100 mt-3 {% if leave_request.status == "cancelled" %} p-2 row-status--gray diff-cell{% endif %}">
         <div class="oh-timeoff-modal__stat">
-            <span class="oh-timeoff-modal__stat-title">{% trans "Reason" %}</span>
+            <span class="oh-timeoff-modal__stat-title">{% trans "Reason for Cancel/Reject" %}</span>
             <div class="oh-timeoff-modal__stat-description">{{leave_request.reject_reason}}</div>
         </div>
     </div>
