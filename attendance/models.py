@@ -136,16 +136,16 @@ class Attendance(models.Model):
         verbose_name=_("Attendance day"),
     )
     attendance_clock_in_date = models.DateField(
-        null=True, verbose_name=_("Check-in date")
+        null=True, verbose_name=_("Check-In Date")
     )
     attendance_clock_in = models.TimeField(
-        null=True, verbose_name=_("Check-in"), help_text=_("First Check-in Time")
+        null=True, verbose_name=_("Check-In"), help_text=_("First Check-In Time")
     )
     attendance_clock_out_date = models.DateField(
-        null=True, verbose_name=_("Check-out date")
+        null=True, verbose_name=_("Check-Out Date")
     )
     attendance_clock_out = models.TimeField(
-        null=True, verbose_name=_("Check-out"), help_text=_("Last Check-out Time")
+        null=True, verbose_name=_("Check-Out"), help_text=_("Last Check-Out Time")
     )
     attendance_worked_hour = models.CharField(
         null=True,
@@ -357,13 +357,15 @@ class Attendance(models.Model):
         if self.attendance_clock_in_date < self.attendance_date:
             raise ValidationError(
                 {
-                    "attendance_clock_in_date": "Attendance check-in date never smaller than attendance date"
+                    "attendance_clock_in_date": \
+                        "Attendance check-in date never smaller than attendance date"
                 }
             )
         if self.attendance_clock_out_date < self.attendance_clock_in_date:
             raise ValidationError(
                 {
-                    "attendance_clock_out_date": "Attendance check-out date never smaller than attendance check-in date"
+                    "attendance_clock_out_date": \
+                        "Attendance check-out date never smaller than attendance check-in date"
                 }
             )
         if self.attendance_clock_out_date >= today:
