@@ -782,17 +782,14 @@ def employee_creation(request, token):
         if form_data.is_valid():
             employee_personal_info = form_data.save(commit=False)
             employee_personal_info.employee_user_id = user
-            employee_personal_info.job_position_id = (
-                onboarding_portal.candidate_id.job_position_id
-            )
             employee_personal_info.email = candidate.email
             employee_personal_info.employee_profile = candidate.profile
             employee_personal_info.save()
+            job_position = onboarding_portal.candidate_id.job_position_id
             work_info = EmployeeWorkInformation.objects.get_or_create(
                 employee_id=employee_personal_info,
+                job_position_id=job_position,
             )
-            job_position_id = onboarding_portal.candidate_id.job_position_id
-            work_info[0].job_position_id = job_position_id
             work_info[0].date_joining = candidate.joining_date
             work_info[0].save()
             onboarding_portal.count = 3
