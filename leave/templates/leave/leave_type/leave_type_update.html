@@ -1,0 +1,305 @@
+{% extends 'index.html' %}
+{% load static %}
+{% load i18n %}
+{% block content %}
+
+{% if form.errors %}
+<!-- form errors  -->
+<div class="oh-wrapper">
+    <div class="oh-alert-container">
+
+        {% for error in form.non_field_errors %}
+        <div class="oh-alert oh-alert--animated oh-alert--danger">
+            {{ error }}
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+<section class="oh-wrapper oh-main__topbar" x-data="{searchShow: false}">
+    <div class="oh-main__titlebar oh-main__titlebar--left">
+        <form action="{% url 'type-view' %}">
+            <button class="oh-btn oh-btn--secondary oh-btn--shadow">
+                {% trans "View Leave Types" %}
+            </button>
+        </form>
+    </div>
+    
+  </section>
+
+  <div class="oh-wrapper d-flex justify-content-center">
+    <div class="oh-onboarding-card">
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="oh-onboarding-card__address-group">
+                <h2 class="oh-onboarding-card__section-title">{% trans "Update Leave Type" %}</h2>
+                <div class="row">
+                    <div class="col-sm-12 col-md-12 ">
+                        <div class="oh-input-group">
+                            <label for="" class="oh-label">{% trans "Name" %}</label>
+                            {{form.name}}
+                            {{form.name.errors}}
+                        </div>
+                    </div>
+                    <div class="col-sm-12 col-md-12 col-lg-6">
+                        <div class="oh-input-group">
+                            <label for="" class="oh-label">{% trans "Icon" %}</label>
+                            {{form.icon}}
+                            {{form.icon.errors}}
+                        </div>
+                    </div>
+                    <div class="col-sm-12 col-md-12 col-lg-6">
+                        <div class="oh-input-group">
+                            <label for="" class="oh-label">{% trans "Color" %}</label>
+                            {{form.color}}
+                            {{form.color.errors}}
+                        </div>
+                    </div>
+                    <div class="col-sm-12 col-md-12 col-lg-12">
+                        <div class="oh-input-group">
+                            <label for="" class="oh-label">{% trans "Payment Method" %}</label>
+                            {{form.payment}}
+                            {{form.payment.errors}}
+                        </div>
+                    </div>
+                    <div class="col-sm-12 col-md-12 col-lg-4">
+                        <div class="oh-input-group">
+                            <label for="" class="oh-label">{% trans "Total Days" %}</label>
+                            {{form.count}}
+                            {{form.count.errors}}
+                        </div>
+                    </div>
+                    <div class="col-sm-12 col-md-12 col-lg-4">
+                        <div class="oh-input-group">
+                            {% comment %} <label for="" class="oh-label">{% trans "Period In" %}</label> {% endcomment %}
+                            {{form.period_in}}
+                            {{form.period_in.errors}}
+                        </div>
+                    </div>
+                    <div class="col-sm-12 col-md-12 col-lg-4">
+                        <div class="oh-input-group">
+                            {% comment %} <label for="" class="oh-label">{% trans "Total Days" %}</label> {% endcomment %}
+                            {{form.total_days}}
+                            {{form.total_days.errors}}
+                        </div>
+                    </div>
+                    <div class="col-sm-12 col-md-12 ">
+                        <div class="oh-input-group">
+                            <label for="" class="oh-label">{% trans "Reset" %}</label>
+                            {{form.reset}}
+                            {{form.reset.errors}}
+                        </div>
+                    </div>
+                    <div class="col-sm-12 col-md-12 ">
+                        <div class="oh-input-group">
+                            <label for="id_reset_based" class="oh-label">{% trans "Reset Based" %}</label>
+                            {{form.reset_based}}
+                            {{form.reset_based.errors}}
+                        </div>
+                    </div>
+                    <div class="col-sm-12 col-md-12 ">
+                        <div class="oh-input-group">
+                            <label for="id_reset_month" class="oh-label">{% trans "Reset Month" %}</label>
+                            {{form.reset_month}}
+                            {{form.reset_month.errors}}
+                        </div>
+                    </div>
+                    <div class="col-sm-12 col-md-12 ">
+                        <div class="oh-input-group">
+                            <label for="id_reset_day" class="oh-label">{% trans "Reset Day" %}</label>
+                            {{form.reset_day}}
+                            {{form.reset_day.errors}}
+                        </div>
+                    </div>
+                    <div class="col-sm-12 col-md-12 ">
+                        <div class="oh-input-group">
+                            <label for="id_reset_weekend" class="oh-label">{% trans "Reset Weekday" %}</label>
+                            {{form.reset_weekend}}
+                            {{form.reset_weekend.errors}}
+                        </div>
+                    </div>
+                    <div class="col-sm-12 col-md-12 ">
+                        <div class="oh-input-group">
+                            <label for="" class="oh-label">{% trans "Carryforward Type" %}</label>
+                            {{form.carryforward_type}}
+                            {{form.carryforward_type.errors}}
+                        </div>
+                    </div>
+                    <div class="col-sm-12 col-md-12 ">
+                        <div class="oh-input-group">
+                            <label for="id_carryforward_max" class="oh-label">{% trans "Carryforward Max" %}</label>
+                            {{form.carryforward_max}}
+                            {{form.carryforward_max.errors}}
+                        </div>
+                    </div>
+                    <div class="col-sm-12 col-md-12">
+                        <div class="oh-input-group">
+                            <label for="id_carryforward_expire_in" class="oh-label">{% trans "Carryforward Expire In" %}</label>
+                            {{form.carryforward_expire_in}}
+                            {{form.carryforward_expire_in.errors}}
+                        </div>
+                    </div>
+                    <div class="col-sm-12 col-md-12">
+                        <div class="oh-input-group">
+                            <label for="id_carryforward_expire_period" class="oh-label">{% trans "Carryforward Expire Period" %}
+                                </label>
+                            {{form.carryforward_expire_period}}
+                            {{form.carryforward_expire_period.errors}}
+                        </div>
+                    </div>
+                    <div class="col-sm-12 col-md-12 col-lg-6">
+                        <div class="oh-input-group">
+                            <label for="" class="oh-label">{% trans "Require Approval" %}</label>
+                            {{form.require_approval}}
+                            {{form.require_approval.errors}}
+                        </div>
+                    </div>
+                    <div class="col-sm-12 col-md-12 col-lg-6">
+                        <div class="oh-input-group">
+                            <label for="" class="oh-label">{% trans "Require Attachment" %}</label>
+                            {{form.require_attachment}}
+                            {{form.require_attachment.errors}}
+                        </div>
+                    </div>
+                    <div class="col-sm-12 col-md-12 col-lg-6">
+                        <div class="oh-input-group">
+                            <label for="" class="oh-label">{% trans "Exclude Company Leaves" %}</label>
+                            {{form.exclude_company_leave}}
+                            {{form.exclude_company_leave.errors}}
+                        </div>
+                    </div>
+                    <div class="col-sm-12 col-md-12 col-lg-6">
+                        <div class="oh-input-group">
+                            <label for="" class="oh-label">{% trans "Exclude Holidays" %}</label>
+                            {{form.exclude_holiday}}
+                            {{form.exclude_holiday.errors}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit"
+                class="oh-btn oh-onboarding-card__button mt-4 oh-btn--secondary oh-btn--shadow w-100 mb-4"
+                role="button">
+                {% trans "Update" %}
+            </button>
+        </form>
+
+    </div>
+</div>
+
+<script>
+  $(document).ready(function () {
+    var icon = $("#id_icon");
+    icon.show();
+    var reset = $("#id_reset");
+    var reset_based_label = $("label[for='id_reset_based']");
+    var reset_based = $("#id_reset_based");
+    var reset_month_label = $("label[for='id_reset_month']");
+    var reset_month = $("#id_reset_month");
+    var reset_day_label = $("label[for='id_reset_day']");
+    var reset_day = $("#id_reset_day");
+    var reset_weekend = $("#id_reset_weekend");
+    var reset_weekend_label = $("label[for='id_reset_weekend']");
+    var carryforward_type = $("#id_carryforward_type");
+    var carryforward_max_label = $("label[for='id_carryforward_max']");
+    var carryforward_max = $("#id_carryforward_max");
+    var carryforward_expire_in_label = $("label[for='id_carryforward_expire_in']");
+    var carryforward_expire_in = $("#id_carryforward_expire_in");
+    var carryforward_expire_period_label = $("label[for='id_carryforward_expire_period']");
+    var carryforward_expire_period = $("#id_carryforward_expire_period");
+
+
+    var hiddenLabelsFields = $('[data-hidden]')
+    for (let index = 0; index < hiddenLabelsFields.length; index++) {
+      const element = hiddenLabelsFields[index];
+      var id = $(element).attr('id');
+      var label = $('label[for="' + id + '"]');
+      label.hide();      
+    }  
+
+    // Check value of reset change field and trigger action
+    reset.change(function () {
+      (this.checked) ? (reset_based.show().prop('required', true), reset_based_label.show()):(reset_based_label.hide(), reset_based.hide().prop('required',false), reset_based.val(''))
+      reset_based.is(':hidden') ? (reset_month_label.hide(), reset_month.hide().prop('required', false), reset_month.val(''), reset_day_label.hide(), reset_day.val(''), reset_day.hide().prop('required', false), reset_weekend_label.hide(), reset_weekend.hide().prop('required', false), reset_weekend.val('')) : ""
+    });
+
+    // Check value of boolean change field and trigger action
+    reset_based.change(function (e) {
+      var value = $(this).val();
+      if (value == 'weekly') {
+        reset_weekend.show().prop('required', true);
+        reset_weekend_label.show();
+        reset_month.hide().prop('required', false);
+        reset_month_label.hide()
+        reset_month.val('')
+        reset_day.hide().prop('required', false);
+        reset_day_label.hide()
+        reset_day.val('')
+      } else {
+        reset_weekend_label.hide()
+        reset_weekend.hide().prop('required', false);
+        reset_weekend.val('')
+      }
+      if (value == 'yearly') {
+        reset_weekend_label.hide()
+        reset_weekend.hide().prop('required', false);
+        reset_weekend.val('')
+        reset_month_label.show()
+        reset_month.show().prop('required', true);
+        reset_day.show().prop('required', true);
+        reset_day_label.show()
+      }
+      if (value == 'monthly') {
+        reset_day.show().prop('required', true);
+        reset_day_label.show()
+        reset_month.hide().prop('required', false);
+        reset_month_label.hide()
+        reset_month.val('')
+      }
+      if (value == '') {
+        reset_month.hide().prop('required', false);
+        reset_month_label.hide()
+        reset_month.val('')
+        reset_day.hide().prop('required', false);
+        reset_day_label.hide()
+        reset_day.val('')
+      }
+
+
+    });
+
+    carryforward_type.change(function () {
+      (this.value == 'carryforward' || this.value == 'carryforward expire') ? (carryforward_max_label.show(), carryforward_max.show().prop('required', true)) : (carryforward_max_label.hide(), carryforward_max.hide().prop('required', false), carryforward_max.val(''));
+      this.value == 'carryforward expire' ?
+        (carryforward_expire_in_label.show(), carryforward_expire_in.show().prop('required', true), carryforward_expire_period_label.show(), carryforward_expire_period.show().prop('required', true)) :
+        (carryforward_expire_in_label.hide(), carryforward_expire_in.hide().prop('required', false), carryforward_expire_in.val(''), carryforward_expire_period_label.hide(), carryforward_expire_period.hide().prop('required', false), carryforward_expire_period.val(''));
+    })
+
+   
+   
+
+    // leave total days calculation
+    $('#id_period_in, #id_count').change(function () {
+      const month = 30
+      const year = 365
+      const day = 1
+      var totalDays = 0
+      var unit = $('#id_period_in').val();
+      var count = $('#id_count').val();
+
+      if (unit == 'day') {
+        totalDays = day * count
+      } else if (unit == 'month') {
+        totalDays = month * count
+      } else if (unit == 'year') {
+        totalDays = year * count
+      }
+      $('#id_total_days').val(totalDays);
+    });
+   
+  });  
+</script>
+
+{% endblock %}

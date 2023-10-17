@@ -1,0 +1,20 @@
+{% load i18n %}
+{% if form.errors %}
+<!-- form errors  -->
+<div class="oh-wrapper">
+    <div class="oh-alert-container">
+
+        {% for error in form.non_field_errors %}
+        <div class="oh-alert oh-alert--animated oh-alert--danger">
+            {{ error }}
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+
+<form  hx-post="{% url 'request-update' id %}"  hx-encoding="multipart/form-data">
+    {% csrf_token %}
+    {{form.as_p}}
+ </form>

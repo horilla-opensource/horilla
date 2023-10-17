@@ -1,0 +1,139 @@
+{% extends 'index.html' %}
+{% block content %}
+{% load static %}
+{% load i18n %}
+
+{% if messages %}
+<div class="oh-wrapper">
+  {% for message in messages %}
+  <div class="oh-alert-container">
+    <div class="oh-alert oh-alert--animated {{ message.tags }}">
+      {{ message }}
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+
+<section class="oh-wrapper oh-main__topbar" x-data="{searchShow: false}">
+  <div class="oh-main__titlebar oh-main__titlebar--left">
+    <h1 class="oh-main__titlebar-title fw-bold mb-0">{% trans "Leave Types" %}</h1>
+    <a class="oh-main__titlebar-search-toggle" role="button" aria-label="Toggle Search"
+      @click="searchShow = !searchShow">
+      <ion-icon name="search-outline" class="oh-main__titlebar-serach-icon"></ion-icon>
+    </a>
+  </div>
+  <div class="oh-main__titlebar oh-main__titlebar--right">
+    <div class="oh-input-group oh-input__search-group" :class="searchShow ? 'oh-input__search-group--show' : ''">
+      <ion-icon name="search-outline" class="oh-input-group__icon oh-input-group__icon--left"></ion-icon>
+      <input type="text" class="oh-input oh-input__icon" aria-label="Search Input" placeholder="{% trans 'Search' %}" name="name"
+        hx-get="{% url 'type-filter' %}" hx-trigger="keyup" hx-target="#leaveTypes" />
+    </div>
+    <div class="oh-main__titlebar-button-container">
+      <div class="oh-dropdown" x-data="{open: false}">
+        <button class="oh-btn ml-2" @click="open = !open">
+          <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}<div id='filterCount'></div>
+        </button>
+        <form hx-get="{% url 'type-filter' %}" hx-target="#leaveTypes" id="filterForm">
+
+          <div class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4" x-show="open" style="display: none;"
+            @click.outside="open = false">
+            <div class="oh-dropdown__filter-body">
+              <div class="oh-accordion">
+                <div class="oh-accordion-header">{% trans "Leave Type" %}</div>
+                <div class="oh-accordion-body">
+                  <div class="row">
+                    <div class="col-sm-12 col-md-12 col-lg-6">
+                      <div class="oh-input-group">
+                        <label class="oh-label">{% trans "Name" %}</label>
+                        {{form.name}}
+                      </div>
+
+                    </div>
+                    <div class="col-sm-12 col-md-12 col-lg-6">
+                      <div class="oh-input-group">
+                        <label class="oh-label">{% trans "Payment Method" %}</label>
+                        {{form.payment}}
+                      </div>
+
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+
+            </div>
+            <div class="oh-dropdown__filter-footer">
+              <button class="oh-btn oh-btn--secondary oh-btn--small w-100 filterButton" type="submit">{% trans "Filter" %}</button>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="oh-btn-group ml-2">
+        <form action="{% url 'type-creation' %}">
+          <button class="oh-btn oh-btn--secondary oh-btn--shadow">
+            <ion-icon name="add-outline" class="me-1"></ion-icon>
+            {% trans "Create" %}
+          </button>
+        </form>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="oh-wrapper" id="leaveTypes">
+  {% include 'leave/leave_type/leave_types.html' %}
+</div>
+
+
+<!-- Time-Off -->
+<div class="oh-modal" id="editModal" role="dialog" aria-labelledby="editDialogModal" aria-hidden="true">
+  <div class="oh-modal__dialog oh-modal__dialog--timeoff">
+    <div class="oh-modal__dialog-header">
+      <span class="oh-modal__dialog-title" id="editDialogDialog">{% trans "Assign Leave" %}</span>
+      <button class="oh-modal__close" aria-label="Close">
+        <ion-icon name="close-outline"></ion-icon>
+      </button>
+    </div>
+    <div id="leaveForm">
+
+    </div>
+
+
+  </div>
+</div>
+</div>
+
+<script>
+  $(document).on('htmx:afterSwap', function () {
+    // Create a new script element
+    var scriptElement = document.createElement("script");
+    // Set the source URL of the script file to be loaded
+    scriptElement.src = "{% static 'build/js/web.frontend.min.js' %}";
+    // Append the script element to the head of the HTML document
+    document.head.appendChild(scriptElement);
+  });
+
+  $(document).on('htmx:load', '#leaveForm', function () {
+    {% include 'select2.js' %}
+    $('#id_employee_id').select2();
+  });
+
+  $('#delete-link').on('click', function(event) {
+    event.preventDefault(); // prevent the default behavior of the link
+    
+    const link = $(this);
+    const confirmation = confirm('{% trans "Are you sure you want to delete?" %}');
+    
+    if (confirmation) {
+      window.location.href = link.attr('href'); // execute the href if confirmed
+    }
+  });
+
+</script>
+
+<script src="{% static '/base/filter.js' %}"></script>
+
+
+{% endblock %}

@@ -13,22 +13,22 @@
           {% for company_leave in company_leaves %}
           <div class="oh-sticky-table__tr company_leave">
               <div class="oh-sticky-table__sd">
-                  {% if company_leave.based_on_week != None %}
-                  {% for week in weeks %}
-                  {% if week.0 == company_leave.based_on_week %}
-                  {{week.1}}
-                  {% endif %}
-                  {% endfor %}
-                  {% else %}
-                  {% trans "All" %}
-                  {% endif %}
+                    {% if company_leave.based_on_week != None %}
+                        {% for week in weeks %}
+                            {% if week.0 == company_leave.based_on_week %}
+                                {{week.1}}
+                            {% endif %}
+                        {% endfor %}
+                    {% else %}
+                        {% trans "All" %}
+                    {% endif %}
               </div>
               <div class="oh-sticky-table__sd week_days">
-                  {% for week_day in week_days %}
-                  {% if week_day.0 == company_leave.based_on_week_day %}
-                  {{week_day.1}}
-                  {% endif %}
-                  {% endfor %}
+                    {% for week_day in week_days %}
+                        {% if week_day.0 == company_leave.based_on_week_day %}
+                            {{week_day.1}}
+                        {% endif %}
+                    {% endfor %}
               </div>
 
               <div class="oh-sticky-table__td">

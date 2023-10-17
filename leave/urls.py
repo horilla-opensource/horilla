@@ -97,6 +97,11 @@ urlpatterns = [
         views.user_request_delete,
         name="user-request-delete",
     ),
+    path(
+        "user-request-cancel/<int:id>",
+        views.user_leave_cancel,
+        name="user-request-cancel",
+    ),
     path("one-request-view/<int:id>", views.one_request_view, name="one-request-view"),
     path("user-request-filter", views.user_request_filter, name="user-request-filter"),
     path("user-request-one/<int:id>", views.user_request_one, name="user-request-one"),

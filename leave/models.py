@@ -90,6 +90,7 @@ LEAVE_STATUS = (
     ("requested", _("Requested")),
     ("approved", _("Approved")),
     ("cancelled", _("Cancelled")),
+    ("rejected", _("Rejected")),
 )
 
 
@@ -361,6 +362,7 @@ class LeaveRequest(models.Model):
     approved_available_days = models.FloatField(default=0)
     approved_carryforward_days = models.FloatField(default=0)
     created_at = models.DateTimeField(auto_now="True")
+    reject_reason = models.TextField(blank=True)
     objects = models.Manager()
 
     def __str__(self):

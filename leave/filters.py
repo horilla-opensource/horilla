@@ -8,7 +8,8 @@ import uuid
 from django import forms
 import django_filters
 from django_filters import FilterSet, DateFilter, filters, NumberFilter
-
+from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext as __
 from employee.models import Employee
 from .models import LeaveType, LeaveRequest, AvailableLeave, Holiday, CompanyLeave
 
@@ -234,6 +235,7 @@ class CompanyLeaveFilter(FilterSet):
     """
 
     name = filters.CharFilter(field_name="based_on_week_day", lookup_expr="icontains")
+    search = filters.CharFilter(method="filter_week_day")
 
     class Meta:
         """ "
@@ -245,6 +247,39 @@ class CompanyLeaveFilter(FilterSet):
             "based_on_week": ["exact"],
             "based_on_week_day": ["exact"],
         }
+
+    def filter_week_day(self, queryset, _, value):
+        week_qry = CompanyLeave.objects.none()
+        weekday_values = []
+        week_values = []
+        WEEK_DAYS = [
+            ("0", __("Monday")),
+            ("1", __("Tuesday")),
+            ("2", __("Wednesday")),
+            ("3", __("Thursday")),
+            ("4", __("Friday")),
+            ("5", __("Saturday")),
+            ("6", __("Sunday")),
+        ]
+        WEEKS = [
+            (None, __("All")),
+            ("0", __("First Week")),
+            ("1", __("Second Week")),
+            ("2", __("Third Week")),
+            ("3", __("Fourth Week")),
+            ("4", __("Fifth Week")),
+        ]
+
+        for day_value, day_name in WEEK_DAYS:
+            if value.lower() in day_name.lower():
+                weekday_values.append(day_value)
+        for day_value, day_name in WEEKS:
+            if value.lower() in day_name.lower() and value.lower() != __("All").lower():
+                week_values.append(day_value)
+                week_qry = queryset.filter(based_on_week__in=week_values)
+            elif value.lower() in __("All").lower():
+                week_qry = queryset.filter(based_on_week__isnull=True)
+        return queryset.filter(based_on_week_day__in=weekday_values) | week_qry
 
 
 class UserLeaveRequestFilter(FilterSet):

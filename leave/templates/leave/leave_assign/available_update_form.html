@@ -1,0 +1,26 @@
+{% load i18n %} 
+{% if form.errors %}
+<!-- form errors  -->
+    <div class="oh-wrapper">
+        <div class="oh-alert-container">
+            {% for error in form.non_field_errors %}
+                <div class="oh-alert oh-alert--animated oh-alert--danger">{{ error }}</div>
+            {% endfor %}
+        </div>
+    </div>
+{% endif %}
+<form hx-post="{% url 'available-leave-update' id %}">
+    <div class="oh-modal__dialog-body pb-2">
+        <label class="oh-label d-block">{% trans "Available Days" %}</label>
+        {{form.available_days}} {{form.available_days.errors}}
+    </div>
+    <div class="oh-modal__dialog-body pb-2">
+        <label class="oh-label d-block">{% trans "Carryforward Days" %}</label>
+        {{form.carryforward_days}} {{form.carryforward_days.errors}}
+    </div>
+    <div class="oh-modal__dialog-footer">
+        <button type="submit" class="oh-btn oh-btn--secondary w-100">
+          {% trans "Apply" %}
+        </button>
+    </div>
+</form>

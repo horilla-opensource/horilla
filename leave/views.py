@@ -8,7 +8,7 @@ from horilla.decorators import login_required, hx_request_required
 from django.views.decorators.http import require_http_methods
 from .forms import *
 from .models import *
-from django.http import JsonResponse, HttpResponse
+from django.http import HttpResponseRedirect, JsonResponse, HttpResponse
 from employee.models import Employee
 from .filters import *
 from django.contrib import messages
@@ -80,7 +80,7 @@ def leave_type_creation(request):
             form.save()
             messages.success(request, _("New leave type Created.."))
             return redirect(leave_type_view)
-    return render(request, "leave/leave_type_creation.html", {"form": form})
+    return render(request, "leave/leave_type/leave_type_creation.html", {"form": form})
 
 
 def paginator_qry(qryset, page_number):
@@ -110,9 +110,9 @@ def leave_type_view(request):
     previous_data = request.GET.urlencode()
     leave_type_filter = LeaveTypeFilter()
     if not queryset.exists():
-        template_name = "leave/user_leave_type_empty_view.html"
+        template_name = "leave/leave_type/leave_type_empty_view.html"
     else:
-        template_name = "leave/leave_type_view.html"
+        template_name = "leave/leave_type/leave_type_view.html"
     return render(
         request,
         template_name,
@@ -171,7 +171,7 @@ def leave_type_update(request, id):
             form_data.save()
             messages.info(request, _("Leave type is updated successfully.."))
             return redirect(leave_type_view)
-    return render(request, "leave/leave_type_update.html", {"form": form})
+    return render(request, "leave/leave_type/leave_type_update.html", {"form": form})
 
 
 @login_required
@@ -275,11 +275,11 @@ def leave_request_creation(request, type_id=None, emp_id=None):
                     icon="people-circle",
                     redirect="/leave/request-view",
                 )
-            response = render(request, "leave/leave_request_form.html", {"form": form})
+            response = render(request, "leave/leave_request/leave_request_form.html", {"form": form})
             return HttpResponse(
                 response.content.decode("utf-8") + "<script>location.reload();</script>"
             )
-    return render(request, "leave/leave_request_form.html", {"form": form})
+    return render(request, "leave/leave_request/leave_request_form.html", {"form": form})
 
 
 @login_required
@@ -305,7 +305,7 @@ def leave_request_view(request):
     previous_data = request.GET.urlencode()
     return render(
         request,
-        "leave/request_view.html",
+        "leave/leave_request/request_view.html",
         {
             "leave_requests": page_obj,
             "pd": previous_data,
@@ -395,12 +395,12 @@ def leave_request_update(request, id):
                     redirect="/leave/request-view",
                 )
             response = render(
-                request, "leave/request_update_form.html", {"form": form, "id": id}
+                request, "leave/leave_request/request_update_form.html", {"form": form, "id": id}
             )
             return HttpResponse(
                 response.content.decode("utf-8") + "<script>location.reload();</script>"
             )
-    return render(request, "leave/request_update_form.html", {"form": form, "id": id})
+    return render(request, "leave/leave_request/request_update_form.html", {"form": form, "id": id})
 
 
 @login_required
@@ -498,7 +498,7 @@ def leave_request_approve(request, id, emp_id=None):
 @manager_can_enter("leave.update_leaverequest")
 def leave_request_cancel(request, id, emp_id=None):
     """
-    function used to cancel leave request.
+    function used to Reject leave request.
 
     Parameters:
     request (HttpRequest): The HTTP request object.
@@ -510,36 +510,71 @@ def leave_request_cancel(request, id, emp_id=None):
           Otherwise, it returns to the default leave request view template.
 
     """
-    leave_request = LeaveRequest.objects.get(id=id)
-    employee_id = leave_request.employee_id
-    leave_type_id = leave_request.leave_type_id
-    available_leave = AvailableLeave.objects.get(
-        leave_type_id=leave_type_id, employee_id=employee_id
-    )
-    available_leave.available_days += leave_request.approved_available_days
-    available_leave.carryforward_days += leave_request.approved_carryforward_days
-    leave_request.approved_available_days = 0
-    leave_request.approved_carryforward_days = 0
-    leave_request.status = "cancelled"
-    leave_request.save()
-    available_leave.save()
-    messages.success(request, _("Leave request cancelled successfully.."))
-    with contextlib.suppress(Exception):
-        notify.send(
-            request.user.employee_get,
-            recipient=leave_request.employee_id.employee_user_id,
-            verb="Your Leave request has been cancelled",
-            verb_ar="تم إلغاء طلب الإجازة الخاص بك",
-            verb_de="Ihr Urlaubsantrag wurde storniert",
-            verb_es="Se ha cancelado su solicitud de permiso",
-            verb_fr="Votre demande de congé a été annulée",
-            icon="people-circle",
-            redirect="/leave/user-request-view",
-        )
-    if emp_id is not None:
-        employee_id = emp_id
-        return redirect(f"/employee/employee-view/{employee_id}/")
-    return redirect(leave_request_view)
+    form = RejectForm()
+    if request.method == "POST":
+        form = RejectForm(request.POST)
+        if form.is_valid():
+            leave_request = LeaveRequest.objects.get(id=id)
+            employee_id = leave_request.employee_id
+            leave_type_id = leave_request.leave_type_id
+            available_leave = AvailableLeave.objects.get(
+                leave_type_id=leave_type_id, employee_id=employee_id
+            )
+            available_leave.available_days += leave_request.approved_available_days
+            available_leave.carryforward_days += leave_request.approved_carryforward_days
+            leave_request.approved_available_days = 0
+            leave_request.approved_carryforward_days = 0
+            leave_request.status = "rejected"
+            leave_request.reject_reason = form.cleaned_data["reason"]
+            leave_request.save()
+            available_leave.save()
+            messages.success(request, _("Leave request cancelled successfully.."))
+            with contextlib.suppress(Exception):
+                notify.send(
+                    request.user.employee_get,
+                    recipient=leave_request.employee_id.employee_user_id,
+                    verb="Your Leave request has been cancelled",
+                    verb_ar="تم إلغاء طلب الإجازة الخاص بك",
+                    verb_de="Ihr Urlaubsantrag wurde storniert",
+                    verb_es="Se ha cancelado su solicitud de permiso",
+                    verb_fr="Votre demande de congé a été annulée",
+                    icon="people-circle",
+                    redirect="/leave/user-request-view",
+                )
+            if emp_id is not None:
+                employee_id = emp_id
+                return redirect(f"/employee/employee-view/{employee_id}/")
+            return HttpResponse("<script>location.reload();</script>")
+    return render(request, "leave/leave_request/cancel_form.html", {"form": form, "id": id})
+
+@login_required
+def user_leave_cancel(request, id):
+    """
+    function used to cancel approved leave request by employee.
+
+    Parameters:
+    request (HttpRequest): The HTTP request object.
+    id : leave request id
+
+    Returns:
+    GET :  it returns to the default my leave request view template.
+
+    """
+    form = RejectForm()
+    print(request.user)
+    if request.method == "POST":
+        form = RejectForm(request.POST)
+        if form.is_valid():
+            leave_request = LeaveRequest.objects.get(id=id)
+            employee_id = leave_request.employee_id
+            if employee_id.id == request.user.id:
+                leave_request.reject_reason = form.cleaned_data["reason"]
+                leave_request.status = "cancelled"
+                leave_request.save()
+                messages.success(request, _("Leave request cancelled successfully.."))
+
+                return HttpResponse("<script>location.reload();</script>")
+    return render(request, "leave/leave_request/user_cancel_form.html", {"form": form, "id": id})
 
 
 @login_required
@@ -556,7 +591,7 @@ def one_request_view(request, id):
     """
     leave_request = LeaveRequest.objects.get(id=id)
     return render(
-        request, "leave/one_request_view.html", {"leave_request": leave_request}
+        request, "leave/leave_request/one_request_view.html", {"leave_request": leave_request}
     )
 
 
@@ -608,12 +643,12 @@ def leave_assign_one(request, id):
                     request, _("leave type is already assigned to the employee..")
                 )
         response = render(
-            request, "leave/leave_assign_one_form.html", {"form": form, "id": id}
+            request, "leave/leave_assign/leave_assign_one_form.html", {"form": form, "id": id}
         )
         return HttpResponse(
             response.content.decode("utf-8") + "<script>location.reload();</script>"
         )
-    return render(request, "leave/leave_assign_one_form.html", {"form": form, "id": id})
+    return render(request, "leave/leave_assign/leave_assign_one_form.html", {"form": form, "id": id})
 
 
 @login_required
@@ -638,7 +673,7 @@ def leave_assign_view(request):
     export_column = AvailableLeaveColumnExportForm()
     return render(
         request,
-        "leave/assign_view.html",
+        "leave/leave_assign/assign_view.html",
         {
             "available_leaves": page_obj,
             "form": assigned_leave_filter.form,
@@ -732,12 +767,12 @@ def leave_assign(request):
                                 _("Leave type is already assigned to the employee.."),
                             )
         response = render(
-            request, "leave/leave_assign_form.html", {"form": form, "id": id}
+            request, "leave/leave_assign/leave_assign_form.html", {"form": form, "id": id}
         )
         return HttpResponse(
             response.content.decode("utf-8") + "<script>location. reload();</script>"
         )
-    return render(request, "leave/leave_assign_form.html", {"form": form})
+    return render(request, "leave/leave_assign/leave_assign_form.html", {"form": form})
 
 
 @login_required
@@ -775,12 +810,12 @@ def available_leave_update(request, id):
                     redirect="/leave/user-leave",
                 )
         response = render(
-            request, "leave/available_update_form.html", {"form": form, "id": id}
+            request, "leave/leave_assign/available_update_form.html", {"form": form, "id": id}
         )
         return HttpResponse(
             response.content.decode("utf-8") + "<script>location. reload();</script>"
         )
-    return render(request, "leave/available_update_form.html", {"form": form, "id": id})
+    return render(request, "leave/leave_assign/available_update_form.html", {"form": form, "id": id})
 
 
 @login_required
@@ -1250,13 +1285,13 @@ def company_leave_creation(request):
             form.save()
             messages.success(request, _("New company leave created successfully.."))
             response = render(
-                request, "leave/company_leave_creation_form.html", {"form": form}
+                request, "leave/company_leave/company_leave_creation_form.html", {"form": form}
             )
             return HttpResponse(
                 response.content.decode("utf-8")
                 + "<script>location. reload();</script>"
             )
-    return render(request, "leave/company_leave_creation_form.html", {"form": form})
+    return render(request, "leave/company_leave/company_leave_creation_form.html", {"form": form})
 
 
 @login_required
@@ -1278,7 +1313,7 @@ def company_leave_view(request):
     company_leave_filter = CompanyLeaveFilter()
     return render(
         request,
-        "leave/company_leave_view.html",
+        "leave/company_leave/company_leave_view.html",
         {
             "company_leaves": page_obj,
             "weeks": WEEKS,
@@ -1347,7 +1382,7 @@ def company_leave_update(request, id):
             messages.info(request, _("Company leave updated successfully.."))
             response = render(
                 request,
-                "leave/company_leave_update_form.html",
+                "leave/company_leave/company_leave_update_form.html",
                 {"form": form, "id": id},
             )
             return HttpResponse(
@@ -1355,7 +1390,7 @@ def company_leave_update(request, id):
                 + "<script>location. reload();</script>"
             )
     return render(
-        request, "leave/company_leave_update_form.html", {"form": form, "id": id}
+        request, "leave/company_leave/company_leave_update_form.html", {"form": form, "id": id}
     )
 
 
@@ -1507,7 +1542,7 @@ def user_leave_request(request, id):
                         redirect="/leave/user-request-view",
                     )
                 response = render(
-                    request, "leave/user_request_form.html", {"form": form, "id": id}
+                    request, "leave/user_leave/user_request_form.html", {"form": form, "id": id}
                 )
                 return HttpResponse(
                     response.content.decode("utf-8")
@@ -1519,7 +1554,7 @@ def user_leave_request(request, id):
             )
     return render(
         request,
-        "leave/user_request_form.html",
+        "leave/user_leave/user_request_form.html",
         {"form": form, "id": id, "leave_type": leave_type},
     )
 
@@ -1601,7 +1636,7 @@ def user_request_update(request, id):
                         )
                         response = render(
                             request,
-                            "leave/user_request_update.html",
+                            "leave/user_leave/user_request_update.html",
                             {"form": form, "id": id},
                         )
                         return HttpResponse(
@@ -1614,7 +1649,7 @@ def user_request_update(request, id):
                             _("You dont have enough leave days to make the request.."),
                         )
             return render(
-                request, "leave/user_request_update.html", {"form": form, "id": id}
+                request, "leave/user_leave/user_request_update.html", {"form": form, "id": id}
             )
     except Exception as e:
         messages.error(request, _("User has no leave request.."))
@@ -1663,9 +1698,9 @@ def user_leave_view(request):
         page_obj = paginator_qry(queryset, page_number)
         assigned_leave_filter = AssignedLeaveFilter()
         if not queryset.exists():
-            template_name = "leave/user_leave_empty_view.html"
+            template_name = "leave/user_leave/user_leave_empty_view.html"
         else:
-            template_name = "leave/user_leave_view.html"
+            template_name = "leave/user_leave/user_leave_view.html"
         return render(
             request,
             template_name,
@@ -1731,7 +1766,7 @@ def user_request_view(request):
         user_request_filter = UserLeaveRequestFilter()
         return render(
             request,
-            "leave/user_request_view.html",
+            "leave/user_leave/user_request_view.html",
             {
                 "leave_requests": page_obj,
                 "form": user_request_filter.form,
@@ -1770,7 +1805,7 @@ def user_request_filter(request):
                 data_dict["status"] = [status_list[-1]]
         return render(
             request,
-            "leave/user_requests.html",
+            "leave/user_leave/user_requests.html",
             {"leave_requests": page_obj, "pd": previous_data, "filter_dict": data_dict},
         )
     except Exception as e:
@@ -1794,7 +1829,7 @@ def user_request_one(request, id):
     try:
         if request.user.employee_get == leave_request.employee_id:
             return render(
-                request, "leave/user_request_one.html", {"leave_request": leave_request}
+                request, "leave/user_leave/user_request_one.html", {"leave_request": leave_request}
             )
     except Exception as e:
         messages.error(request, _("User has no leave request.."))

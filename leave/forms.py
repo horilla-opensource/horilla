@@ -505,3 +505,9 @@ class HolidaysColumnExportForm(forms.Form):
             "recurring",
         ],
     )
+
+class RejectForm(forms.Form):
+    reason = forms.CharField(label=_("Rejection Reason"), widget=forms.Textarea(attrs={"rows":4,"class":"p-4"}))
+    class Meta:
+        model = LeaveRequest
+        fields = ["reject_reason"]

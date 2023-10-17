@@ -1,0 +1,21 @@
+{% load i18n %}
+{% if form.errors %}
+<!-- form errors  -->
+    <div class="oh-wrapper">
+        <div class="oh-alert-container">
+            {% for error in form.non_field_errors %}
+            <div class="oh-alert oh-alert--animated oh-alert--danger">
+                {{ error }}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endif %}
+<form hx-post="{% url 'request-cancel' id %}" hx-encoding="multipart/form-data">
+    <div class="col-sm-12 col-md-12 col-lg-12">
+        <label class="oh-label">{% trans "Rejection reason" %}</label>        
+        {{form.reason}}
+        {{form.errors}}
+    </div>
+    <button type="submit" class="oh-btn oh-btn--secondary ">{% trans "Submit" %}</button>
+</form>
