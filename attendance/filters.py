@@ -16,6 +16,8 @@ from attendance.models import (
     AttendanceLateComeEarlyOut,
     AttendanceActivity,
 )
+from django.utils.translation import gettext_lazy as _
+from django.db.models import Subquery, OuterRef
 
 
 class FilterSet(django_filters.FilterSet):
@@ -155,12 +157,10 @@ class AttendanceOverTimeFilter(FilterSet):
     def __init__(self, data=None, queryset=None, *, request=None, prefix=None):
         super().__init__(data=data, queryset=queryset, request=request, prefix=prefix)
 
-
 class LateComeEarlyOutFilter(FilterSet):
     """
     LateComeEarlyOutFilter class
     """
-
     search = django_filters.CharFilter(method=filter_by_name)
     attendance_date__gte = django_filters.DateFilter(
         field_name="attendance_id__attendance_date",
@@ -225,8 +225,6 @@ class LateComeEarlyOutFilter(FilterSet):
     month = django_filters.CharFilter(
         field_name="attendance_id__attendance_date",lookup_expr="month"
     )
-
-
     week = django_filters.CharFilter(field_name="attendance_id__attendance_date",lookup_expr="week")
 
     class Meta:
@@ -413,6 +411,13 @@ class AttendanceFilters(FilterSet):
     overtime_second__gte = DurationInSecondsFilter(
         field_name="overtime_second", lookup_expr="gte"
     )
+    year = django_filters.CharFilter(field_name="attendance_date",lookup_expr="year")
+    month = django_filters.CharFilter(
+        field_name="attendance_date",lookup_expr="month"
+    )
+    week = django_filters.CharFilter(field_name="attendance_date",lookup_expr="week")
+    department = django_filters.CharFilter(field_name="employee_id__employee_work_info__department_id__department",lookup_expr="icontains")
+
 
     class Meta:
         """
@@ -446,6 +451,7 @@ class AttendanceFilters(FilterSet):
             "overtime_second__lte",
             "overtime_second__gte",
             "overtime_second",
+            "department",
         ]
 
         widgets = {

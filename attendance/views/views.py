@@ -698,6 +698,25 @@ def activity_datetime(attendance_activity):
 
 
 @login_required
+def on_time_view(request):
+    """
+    This method render template to view all on come early out entries
+    """
+
+    total_attendances = AttendanceFilters(request.GET).qs
+    ids_to_exclude = AttendanceLateComeEarlyOut.objects.filter(
+        attendance_id__id__in=[attendance.id for attendance in total_attendances],type="late_come"
+    ).values_list('attendance_id__id', flat=True)
+
+    # Exclude attendances with related objects in AttendanceLateComeEarlyOut
+    total_attendances = total_attendances.exclude(id__in=ids_to_exclude)
+    context ={
+        'attendances':total_attendances,
+    }
+    return render(request,"attendance/attendance/attendance_on_time.html",
+                  context=context)
+
+@login_required
 @manager_can_enter("attendance.view_attendancelatecomeearlyout")
 def late_come_early_out_view(request):
     """
@@ -888,10 +907,14 @@ def revalidate_this_attendance(request, obj_id):
                 ),
                 verb=f"{attendance.employee_id} requested revalidation for \
                     {attendance.attendance_date} attendance",
-                verb_ar=f"{attendance.employee_id} طلب إعادة التحقق من حضور تاريخ {attendance.attendance_date}",
-                verb_de=f"{attendance.employee_id} beantragte eine Neubewertung der Teilnahme am {attendance.attendance_date}",
-                verb_es=f"{attendance.employee_id} solicitó la validación nuevamente para la asistencia del {attendance.attendance_date}",
-                verb_fr=f"{attendance.employee_id} a demandé une revalidation pour la présence du {attendance.attendance_date}",
+                verb_ar=f"{attendance.employee_id} طلب إعادة\
+                      التحقق من حضور تاريخ {attendance.attendance_date}",
+                verb_de=f"{attendance.employee_id} beantragte eine Neubewertung der \
+                    Teilnahme am {attendance.attendance_date}",
+                verb_es=f"{attendance.employee_id} solicitó la validación nuevamente \
+                    para la asistencia del {attendance.attendance_date}",
+                verb_fr=f"{attendance.employee_id} a demandé une revalidation pour la \
+                    présence du {attendance.attendance_date}",
                 redirect="/attendance/view-my-attendance",
                 icon="refresh",
             )
@@ -914,11 +937,16 @@ def approve_overtime(request, obj_id):
         notify.send(
             request.user.employee_get,
             recipient=attendance.employee_id.employee_user_id,
-            verb=f"Your {attendance.attendance_date}'s attendance overtime approved.",
-            verb_ar=f"تمت الموافقة على إضافة ساعات العمل الإضافية لتاريخ {attendance.attendance_date}.",
-            verb_de=f"Die Überstunden für den {attendance.attendance_date} wurden genehmigt.",
-            verb_es=f"Se ha aprobado el tiempo extra de asistencia para el {attendance.attendance_date}.",
-            verb_fr=f"Les heures supplémentaires pour la date {attendance.attendance_date} ont été approuvées.",
+            verb=f"Your {attendance.attendance_date}'s attendance \
+                overtime approved.",
+            verb_ar=f"تمت الموافقة على إضافة ساعات العمل الإضافية لتاريخ \
+                {attendance.attendance_date}.",
+            verb_de=f"Die Überstunden für den {attendance.attendance_date}\
+                  wurden genehmigt.",
+            verb_es=f"Se ha aprobado el tiempo extra de asistencia para el \
+                {attendance.attendance_date}.",
+            verb_fr=f"Les heures supplémentaires pour la date\
+                  {attendance.attendance_date} ont été approuvées.",
             redirect="/attendance/attendance-overtime-view",
             icon="checkmark",
         )
@@ -941,11 +969,16 @@ def approve_bulk_overtime(request):
         notify.send(
             request.user.employee_get,
             recipient=attendance.employee_id.employee_user_id,
-            verb=f"Overtime approved for {attendance.attendance_date}'s attendance",
-            verb_ar=f"تمت الموافقة على العمل الإضافي لحضور تاريخ {attendance.attendance_date}",
-            verb_de=f"Überstunden für die Anwesenheit am {attendance.attendance_date} genehmigt",
-            verb_es=f"Horas extra aprobadas para la asistencia del {attendance.attendance_date}",
-            verb_fr=f"Heures supplémentaires approuvées pour la présence du {attendance.attendance_date}",
+            verb=f"Overtime approved for\
+                  {attendance.attendance_date}'s attendance",
+            verb_ar=f"تمت الموافقة على العمل الإضافي لحضور تاريخ \
+                {attendance.attendance_date}",
+            verb_de=f"Überstunden für die Anwesenheit am \
+                {attendance.attendance_date} genehmigt",
+            verb_es=f"Horas extra aprobadas para la asistencia del \
+                {attendance.attendance_date}",
+            verb_fr=f"Heures supplémentaires approuvées pour la présence du \
+                {attendance.attendance_date}",
             redirect="/attendance/attendance-overtime-view",
             icon="checkmark",
         )

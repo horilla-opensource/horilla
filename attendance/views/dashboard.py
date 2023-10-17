@@ -11,11 +11,11 @@ from django.shortcuts import render
 from django.http import JsonResponse
 from django.utils.translation import gettext_lazy as _
 from attendance.filters import AttendanceFilters, LateComeEarlyOutFilter
+from attendance.models import Attendance, AttendanceLateComeEarlyOut
 from base.methods import filtersubordinates
 from base.models import Department, EmployeeShiftSchedule
 from employee.models import Employee
 from horilla.decorators import login_required
-from attendance.models import Attendance, AttendanceLateComeEarlyOut
 
 
 def find_on_time(request, today, week_day, department=None):
@@ -108,11 +108,14 @@ def dashboard(request):
 
 
 def total_attendance(start_date, department, end_date=None):
+    """
+    This method is used to find total attandance 
+    """
     attandance = AttendanceFilters(
         {
             "attendance_date__gte": start_date,
             "attendance_date__lte": end_date,
-            "employee_id__employee_work_info__department_id": department,
+            "department": department,
         }
     ).qs
     return attandance
@@ -120,7 +123,7 @@ def total_attendance(start_date, department, end_date=None):
 
 def find_late_come(start_date, department=None, end_date=None):
     """
-    This method is used to find count of late comers
+    This method is used to find late comers
     """
     if department is not None:
         late_come_obj = LateComeEarlyOutFilter(
@@ -159,6 +162,9 @@ def find_early_out(start_date, end_date=None, department=None):
 
 
 def get_week_start_end_dates(week):
+    """
+    This method is use to return the start and end date of the week
+    """
     # Parse the ISO week date
     year, week_number = map(int, week.split("-W"))
 
@@ -172,6 +178,9 @@ def get_week_start_end_dates(week):
 
 
 def get_month_start_end_dates(year_month):
+    """
+    This method is use to return the start and end date of the month
+    """
     # split year and month separately
     year, month = map(int, year_month.split("-"))
     # Get the first day of the month

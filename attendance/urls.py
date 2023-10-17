@@ -96,6 +96,11 @@ urlpatterns = [
     path("clock-in", attendance.views.clock_in_out.clock_in, name="clock-in"),
     path("clock-out", attendance.views.clock_in_out.clock_out, name="clock-out"),
     path(
+        "on-time-view",
+        views.on_time_view,
+        name="on-time-view",
+    ),
+    path(
         "late-come-early-out-view",
         views.late_come_early_out_view,
         name="late-come-early-out-view",
