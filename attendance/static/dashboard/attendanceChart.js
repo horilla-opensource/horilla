@@ -86,13 +86,32 @@ function createAttendanceChart(dataSet, labels) {
         } else if (type == "date_range") {
           var start_date = dateStr
           var end_date = $("#attendance_month2").val();
-          console.log(start_date);
-          console.log(end_date);
           parms = parms +"&attendance_date__gte=" + start_date +"&attendance_date__lte=" + end_date
           
         }
         localStorage.removeItem("savedFilters")
-        window.location.href = "/attendance/late-come-early-out-view" + parms
+        if (label == 'On Time'){
+
+            $.ajax({
+              url:"/attendance/on-time-view"+ parms,
+              type:'GET',
+              data:{
+                input_type : type
+              },
+              headers: {
+                "X-Requested-With": "XMLHttpRequest",
+              },
+              success: (response) => {
+                $("#back_button").removeClass("d-none");
+                $("#dashboard").html(response);
+              },
+              error: (error) => {
+              },
+            })
+          }
+        else{
+          window.location.href = "/attendance/late-come-early-out-view" + parms
+        }
       },
     },
   });
@@ -137,7 +156,7 @@ function changeView(element) {
   if (dataType === "date_range") {
     $("#attendance_month").prop("type", "date");
     $("#day_input").before(
-      '<input type="date" class="mb-2 float-end pointer" id="attendance_month2" onchange="changeMonth(this)"/>'
+      '<input type="date" class="mb-2 float-end pointer oh-select ml-2" id="attendance_month2" style="width: 100px;color:#5e5c5c;" onchange="changeMonth(this)"/>'
     );
     $("#attendance_month").val(formattedDate);
     $("#attendance_month2").val(formattedDate);
