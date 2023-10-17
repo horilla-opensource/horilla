@@ -8,7 +8,10 @@ if (savedFilters != null) {
         var value = filterDetails.filterData[fieldName];
         // Set the value of the corresponding form field
         let field = filterForm.find('[name="' + fieldName + '"]');
-        if (field.attr("data-exclude-saved-filter")!="true" && field.val() == "") {
+        if (
+          field.attr("data-exclude-saved-filter") != "true" &&
+          (field.val() == "" || field.val() == "unknown")
+        ) {
           field.val(value);
           field.first().change();
         }
