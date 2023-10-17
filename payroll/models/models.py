@@ -484,7 +484,9 @@ class OverrideLeaveRequest(LeaveRequest):
                     work_entry.work_record_type = status
                     work_entry.date = date
                     work_entry.message = (
-                        "Validated" if status == "ABS" else _("Half day need to validate")
+                        "Validated"
+                        if status == "ABS"
+                        else _("Half day need to validate")
                     )
                     work_entry.save()
                 except:
@@ -868,6 +870,16 @@ class Allowance(models.Model):
     def __str__(self) -> str:
         return str(self.title)
 
+    def save(self):
+        super().save()
+        if (
+            not self.include_active_employees
+            and not self.specific_employees.first()
+            and not self.is_condition_based
+        ):
+            self.include_active_employees = True
+            super().save()
+
 
 class Deduction(models.Model):
     """
@@ -1112,6 +1124,16 @@ class Deduction(models.Model):
     def __str__(self) -> str:
         return str(self.title)
 
+    def save(self):
+        super().save()
+        if (
+            not self.include_active_employees
+            and not self.specific_employees.first()
+            and not self.is_condition_based
+        ):
+            self.include_active_employees = True
+            super().save()
+
 
 class Payslip(models.Model):
     """
@@ -1124,7 +1146,7 @@ class Payslip(models.Model):
         ("confirmed", _("Confirmed")),
         ("paid", _("Paid")),
     ]
-    group_name = models.CharField(max_length=50,null=True,blank=True)
+    group_name = models.CharField(max_length=50, null=True, blank=True)
     reference = models.CharField(max_length=255, unique=False)
     employee_id = models.ForeignKey(
         Employee, on_delete=models.PROTECT, verbose_name=_("Employee")

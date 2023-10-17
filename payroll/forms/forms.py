@@ -2,6 +2,7 @@
 forms.py
 """
 from django import forms
+from django.forms import widgets
 from django.utils.translation import gettext_lazy as trans
 from django.template.loader import render_to_string
 from payroll.models.models import WorkRecord
@@ -55,7 +56,12 @@ class ContractForm(ModelForm):
     """
     ContactForm
     """
+
     verbose_name = trans("Contract")
+    contract_start_date = forms.DateField()
+    contract_end_date = forms.DateField()
+
+
     class Meta:
         """
         Meta class for additional options
@@ -69,23 +75,23 @@ class ContractForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields["contract_name"].widget.attrs["autocomplete"] = "off"
-        self.fields["contract_start_date"].widget.attrs["autocomplete"] = "off"
-        self.fields["contract_start_date"].widget.attrs["class"] = "oh-input w-100"
-        self.fields["contract_start_date"].widget = forms.TextInput(
-            attrs={"type": "date", "class": "oh-input w-100"}
+        self.fields["employee_id"].widget.attrs.update(
+            {"onchange": "contractInitial(this)"}
         )
-        self.fields["contract_end_date"].widget.attrs["autocomplete"] = "off"
-        self.fields["contract_end_date"].widget.attrs["class"] = "oh-input w-100"
-        self.fields["contract_end_date"].widget = forms.TextInput(
-            attrs={"type": "date", "class": "oh-input w-100"}
+        self.fields["contract_start_date"].widget = widgets.DateInput(
+            attrs={
+                "type":"date",
+                "class": "oh-input w-100",
+                "placeholder": "Select a date",
+            }
         )
-        self.fields["employee_id"].widget.attrs["data-contract-style"] = ""
-        self.fields["department"].widget.attrs["data-contract-style"] = ""
-        self.fields["job_position"].widget.attrs["data-contract-style"] = ""
-        self.fields["job_role"].widget.attrs["data-contract-style"] = ""
-        self.fields["work_type"].widget.attrs["data-contract-style"] = ""
-        self.fields["shift"].widget.attrs["data-contract-style"] = ""
+        self.fields["contract_end_date"].widget = widgets.DateInput(
+            attrs={
+                "type":"date",
+                "class": "oh-input w-100",
+                "placeholder": "Select a date",
+            }
+        )
 
     def as_p(self):
         """
