@@ -129,4 +129,5 @@ urlpatterns = [
     ),
     path("leave-type-chart", views.leave_type_chart, name="leave-type-chart"),
     path("leave-over-period", views.leave_over_period, name="leave-over-period"),
+    path("leave-request-create", views.leave_request_create, name="leave-request-create"),
 ]

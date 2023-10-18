@@ -105,16 +105,27 @@
                     </div>
                 </form>
             </div>
+            {% endif %}
+            <div class="oh-btn-group ml-2">
+                <div class="oh-dropdown" x-data="{open: false}">
+                    <button class="oh-btn  oh-btn--secondary oh-btn--shadow" data-toggle="oh-modal-toggle" data-target="#editModal1" hx-get="{% url 'leave-request-create' %}" hx-target="#createForm">
+                        <ion-icon name="add-outline" class="me-1 md hydrated" role="img" aria-label="add outline"></ion-icon>
+                        {% trans "Create" %}
+                    </button>
+
+                </div>
+            </div>
 
         </div>
     </div>
-    {% endif %}
+    
 </section>
 
 <div class="oh-wrapper" id="userRequest">
     {% if leave_requests %}
         {% include 'leave/user_leave/user_requests.html' %}
     {% else %}
+
     <div style="height: 70vh; display:flex;align-items: center;justify-content: center;" class="">
         <div style="" class="oh-404">
         <img style="display: block;width:150px;height:150px;margin: 10px auto ;" src="{% static 'images/ui/attendance.png' %}" class="mb-4" alt=""/>
@@ -126,19 +137,44 @@
 </div>
 
 
-
-<div class="oh-modal" id="editModal" role="dialog" aria-labelledby="editDialogModal" aria-hidden="true">
-    <div class="oh-modal__dialog oh-modal__dialog--timeoff">
-        <div class="oh-modal__dialog-header">
-            <span class="oh-modal__dialog-title" id="editDialogDialog">{% trans "Update Request" %}</span>
-            <button class="oh-modal__close" aria-label="Close">
-                <ion-icon name="close-outline"></ion-icon>
-            </button>
-        </div>
-        <div id="updateForm">
-
-        </div>
+<div
+  class="oh-modal"
+  id="editModal"
+  role="dialog"
+  aria-labelledby="editDialogModal"
+  aria-hidden="true"
+>
+  <div class="oh-modal__dialog">
+    <div class="oh-modal__dialog-header">
+      <h2 class="oh-modal__dialog-title" id="editDialogDialog">
+        {% trans "Update Request" %}
+      </h2>
+      <button class="oh-modal__close" aria-label="Close">
+        <ion-icon name="close-outline"></ion-icon>
+      </button>
     </div>
+    <div class="oh-modal__dialog-body" id="updateForm"></div>
+  </div>
+</div>
+
+<div
+  class="oh-modal"
+  id="editModal1"
+  role="dialog"
+  aria-labelledby="editDialogModal"
+  aria-hidden="true"
+>
+  <div class="oh-modal__dialog">
+    <div class="oh-modal__dialog-header">
+      <h2 class="oh-modal__dialog-title" id="editDialogDialog">
+        {% trans "Create Leave Request" %}
+      </h2>
+      <button class="oh-modal__close" aria-label="Close">
+        <ion-icon name="close-outline"></ion-icon>
+      </button>
+    </div>
+    <div class="oh-modal__dialog-body" id="createForm"></div>
+  </div>
 </div>
 
 <div class="oh-modal" id="tableTimeOff" role="dialog" aria-labelledby="tableTimeOffModal" aria-hidden="true">

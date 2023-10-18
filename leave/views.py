@@ -561,7 +561,6 @@ def user_leave_cancel(request, id):
 
     """
     form = RejectForm()
-    print(request.user)
     if request.method == "POST":
         form = RejectForm(request.POST)
         if form.is_valid():
@@ -2245,3 +2244,98 @@ def leave_over_period(request):
         "dataset": dataset,
     }
     return JsonResponse(response)
+
+@login_required
+def leave_request_create(request):
+    """
+    function used to create leave request from calendar.
+
+    Parameters:
+    request (HttpRequest): The HTTP request object.
+
+    Returns:
+    GET : return leave request form template
+    POST : return leave request view
+    """
+    employee = request.user.employee_get
+    emp_id = employee.id
+    emp = Employee.objects.get(id = emp_id)
+    leave = emp.available_leave.all()
+
+    leave_type = []
+    for i in leave:
+        a = i.leave_type_id  
+        leave_type.append(a)
+
+    leave_ids = [leave.id for leave in leave_type]
+    q_object = Q(id__in=leave_ids)
+    queryset = LeaveType.objects.filter(q_object)
+
+    form = UserLeaveRequestCreationForm(initial={'employee_id':emp})
+    form.fields["leave_type_id"].queryset = queryset
+    if request.method == "POST":
+        form = UserLeaveRequestCreationForm(request.POST, request.FILES)
+        if int(form.data['employee_id']) == int(emp_id):
+            if form.is_valid():
+                leave_request = form.save(commit = False)
+                attachment = leave_request.attachment
+                save = True
+                if leave_request.leave_type_id.require_attachment == "yes":
+                    if not attachment:
+                        save =False
+                        form.add_error(
+                            None, _("An attachment is required for this leave request")
+                        )
+                if leave_request.leave_type_id.require_approval == "no":
+                    employee_id = leave_request.employee_id
+                    leave_type_id = leave_request.leave_type_id
+                    available_leave = AvailableLeave.objects.get(
+                        leave_type_id=leave_type_id, employee_id=employee_id
+                    )
+                    if leave_request.requested_days > available_leave.available_days:
+                        leave = (
+                            leave_request.requested_days - available_leave.available_days
+                        )
+                        leave_request.approved_available_days = (
+                            available_leave.available_days
+                        )
+                        available_leave.available_days = 0
+                        available_leave.carryforward_days = (
+                            available_leave.carryforward_days - leave
+                        )
+                        leave_request.approved_carryforward_days = leave
+                    else:
+                        available_leave.available_days = (
+                            available_leave.available_days - leave_request.requested_days
+                        )
+                        leave_request.approved_available_days = leave_request.requested_days
+                    leave_request.status = "approved"
+                    leave_request.created_by = request.user.employee_get
+                    available_leave.save()
+                if save:
+                    leave_request.save()
+                    messages.success(request, _("Leave request created successfully.."))
+                    with contextlib.suppress(Exception):
+                        notify.send(
+                            request.user.employee_get,
+                            recipient=leave_request.employee_id.employee_work_info.reporting_manager_id.employee_user_id,
+                            verb=f"New leave request created for {leave_request.employee_id}.",
+                            verb_ar=f"تم إنشاء طلب إجازة جديد لـ {leave_request.employee_id}.",
+                            verb_de=f"Neuer Urlaubsantrag für {leave_request.employee_id} erstellt.",
+                            verb_es=f"Nueva solicitud de permiso creada para {leave_request.employee_id}.",
+                            verb_fr=f"Nouvelle demande de congé créée pour {leave_request.employee_id}.",
+                            icon="people-circle",
+                            redirect="/leave/request-view",
+                        )
+                    response = render(request, "leave/user_leave/request_form.html", {"form": form})
+                    return HttpResponse(
+                        response.content.decode("utf-8") + "<script>location.reload();</script>"
+                    )
+            return render(request, "leave/user_leave/request_form.html", {"form": form})
+        else:
+            messages.error(request, _("You don't have permission"))
+            response = render(request, "leave/user_leave/request_form.html", {"form": form})
+            return HttpResponse(
+                response.content.decode("utf-8") + "<script>location.reload();</script>"
+            )
+    return render(request, "leave/user_leave/request_form.html", {"form": form})
