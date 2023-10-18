@@ -1,5 +1,6 @@
 {% extends 'index.html' %}
 {% block content %}
+{% load basefilters %} 
 {% load static i18n %}
 {% load i18n %}
 <style>
@@ -86,6 +87,7 @@
                             </div>
                         </div>
                     </div>
+                    {% if perms.pms.view_feedback or request.user|is_reportingmanager %}
                     <div class="col-12 col-sm-12 col-md-12 col-lg-5 oh-card-dashboard--moveable">
                         <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent">
                             <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
@@ -106,6 +108,7 @@
                             </div>
                         </div>
                     </div>
+                    {% endif %}
                     <div class="col-12 col-sm-12 col-md-12 col-lg-5 mb-3 ">
                         <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent">
                             <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
