@@ -161,31 +161,10 @@
     </div>
   </section>
 
-  <div class="oh-wrapper">
-    <div class="oh-tabs">
-      <ul class="oh-tabs__tablist">
-        <li class="oh-tabs__tab oh-tabs__tab" data-target="#tab_1">
-          {% trans "Self Feedback" %}
-          <span class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round ms-2 mr-2" id="" data-category-id="1" title="{{self_feedback|length}} feedback" onclick="event.stopPropagation()">{{self_feedback|length}}</span>
-        </li>
-        <li class="oh-tabs__tab" data-target="#tab_2">
-          {% trans "Requested Feedback" %}
-          <span class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round ms-2 mr-2" id="" data-category-id="1" title="{{requested_feedback|length}} feedback" onclick="event.stopPropagation()">{{requested_feedback|length}}</span>
-        </li>
-        <!-- normal user can't view all objective  -->
-        {% if perms.pms.view_feedback or request.user|filtersubordinates %}
-        <li class="oh-tabs__tab" data-target="#tab_3">
-          {% trans "All Feedback" %}
-          <span class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round ms-2 mr-2" id="" data-category-id="1" title="{{all_feedbacks|length}} feedback" onclick="event.stopPropagation()">{{all_feedbacks|length}}</span>
-        </li>
-        {% endif %}
-
-      </ul>
-      <div id="feedback_list">
+  <div class="oh-wrapper" id="feedback_list">
+      
 
         {% include 'feedback/feedback_list.html' %}
-      </div>
-    </div>
   </div>
 </main>
 

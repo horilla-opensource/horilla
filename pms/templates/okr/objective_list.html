@@ -2,6 +2,7 @@
 {% load basefilters %}
 <!-- filter items showing here -->
 {% include 'filter_tags.html' %}
+<div class="oh-tabs" >
 
 <ul class="oh-tabs__tablist" >
   <li class="oh-tabs__tab " data-target="#tab_1">
@@ -215,7 +216,7 @@
       <!-- end of own objective -->
       {% else %}
       <div class="d-flex justify-content-center align-items-center" style="height:60vh">
-          <h5 class="oh-404__subtitle">{% trans "There are no Objectives at the moment." %}</h5>
+        <h5 class="oh-404__subtitle">{% trans "There are no Objectives available." %}</h5>
       </div>
       {% endif %}
     </div>
@@ -417,11 +418,12 @@
       <!-- end of all objectives -->
       {% else %}
       <div class="d-flex justify-content-center align-items-center" style="height:60vh">
-          <h5 class="oh-404__subtitle">{% trans "There are no Objectives at the moment." %}</h5>
+          <h5 class="oh-404__subtitle">{% trans "There are no Objectives available." %}</h5>
       </div>
       {% endif %}
     </div>
   </div>
+</div>
 </div>
 
 <script>

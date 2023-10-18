@@ -16,6 +16,26 @@
 {% endif %}
 
 {% include 'filter_tags.html' %}
+  <div class="oh-tabs">
+<ul class="oh-tabs__tablist">
+  <li class="oh-tabs__tab oh-tabs__tab" data-target="#tab_1">
+    {% trans "Self Feedback" %}
+    <span class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round ms-2 mr-2" id="" data-category-id="1" title="{{self_feedback|length}} feedback" onclick="event.stopPropagation()">{{self_feedback|length}}</span>
+  </li>
+  <li class="oh-tabs__tab" data-target="#tab_2">
+    {% trans "Requested Feedback" %}
+    <span class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round ms-2 mr-2" id="" data-category-id="1" title="{{requested_feedback|length}} feedback" onclick="event.stopPropagation()">{{requested_feedback|length}}</span>
+  </li>
+  <!-- normal user can't view all objective  -->
+  {% if perms.pms.view_feedback or request.user|filtersubordinates %}
+  <li class="oh-tabs__tab" data-target="#tab_3">
+    {% trans "All Feedback" %}
+    <span class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round ms-2 mr-2" id="" data-category-id="1" title="{{all_feedbacks|length}} feedback" onclick="event.stopPropagation()">{{all_feedbacks|length}}</span>
+  </li>
+  {% endif %}
+
+</ul>
+<div >
 <div class="oh-tabs__contents">
   <div class="oh-tabs__content oh-tabs__content" id="tab_1">
     {% if self_feedback.object_list %}
@@ -126,7 +146,7 @@
 
     {% else %}
     <div class="d-flex justify-content-center align-items-center" style="height:60vh">
-        <h5 class="oh-404__subtitle">{% trans "There are no Feedback at the moment." %}</h5>
+        <h5 class="oh-404__subtitle">{% trans "There are no Feedbacks available." %}</h5>
     </div>
     {% endif %}
   </div>
@@ -244,7 +264,7 @@
 
     {% else %}
     <div class="d-flex justify-content-center align-items-center" style="height:60vh">
-        <h5 class="oh-404__subtitle">{% trans "There are no Feedback requests at the moment." %}</h5>
+        <h5 class="oh-404__subtitle">{% trans "There are no Feedback requests available." %}</h5>
     </div>
     {% endif %}
 
@@ -365,11 +385,13 @@
 
     {% else %}
     <div class="d-flex justify-content-center align-items-center" style="height:60vh">
-        <h5 class="oh-404__subtitle">{% trans "There are no Feedback at the moment." %}</h5>
+        <h5 class="oh-404__subtitle">{% trans "There are no Feedbacks available." %}</h5>
     </div>
     {% endif %}
 
   </div>
+</div>
+</div>
 </div>
 <script>
 
@@ -387,6 +409,10 @@
     }
     $('.oh-tabs__tab').click(function (e) {
       var activeTab = $(this).attr('data-target');
+      $(".oh-tabs__content--active").toggleClass('oh-tabs__content--active');
+      $(".oh-tabs__tab--active").toggleClass('oh-tabs__tab--active');
+      $(`[data-target="${activeTab}"]`).toggleClass("oh-tabs__tab--active");
+      $(activeTab).toggleClass("oh-tabs__content--active");
       localStorage.setItem('activeTabFeedback', activeTab)
 
     });
