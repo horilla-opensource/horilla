@@ -1,6 +1,8 @@
 {% load static %}
 {% load i18n %}
 <form hx-get='{% url "search-attendance-requests" %}' id="requestFilter" hx-swap='innerHTML' hx-target='#view-container' >
+<input type="hidden" name="search" value="{{request.GET.search}}">
+<input type="hidden" name="attendance_date" value="{{request.GET.attendance_date}}">
   <div class="oh-dropdown__filter-body">
     <div class="oh-accordion">
     <div class="oh-accordion-header">{% trans "Work Info" %}</div>

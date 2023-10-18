@@ -349,7 +349,8 @@ class AttendanceFilters(FilterSet):
     """
 
     search = django_filters.CharFilter(method=filter_by_name)
-
+    employee = django_filters.CharFilter(field_name="employee_id__id")
+    date_attendance = django_filters.DateFilter(field_name="attendance_date")
     employee_id = django_filters.ModelMultipleChoiceFilter(
         queryset=Employee.objects.all(),
         widget=forms.SelectMultiple(),
