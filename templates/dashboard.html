@@ -18,7 +18,7 @@
 </style>
 <main>
   <div class="oh-wrapper">
-  {% comment %} back button {% endcomment %}
+  <!-- back button -->
     <div class="d-none mt-5" id="back_button" style="width:10%">
           <a href="{% url 'home-page' %}"
             class="oh-btn oh-btn--secondary oh-btn--shadow ms-3"
@@ -32,22 +32,7 @@
             >{% trans "Back" %}</a
           >
       </div>
-    {% comment %} end of back button {% endcomment %}
-  {% comment %} back button {% endcomment %}
-    <div class="d-none mt-5" id="back_button" style="width:10%">
-          <a href="{% url 'home-page' %}"
-            class="oh-btn oh-btn--secondary oh-btn--shadow ms-3"
-          >
-            <ion-icon
-              class="me-2 md hydrated"
-              name="arrow-back-outline"
-              role="img"
-              aria-label="arrow-back-outline"
-            ></ion-icon
-            >{% trans "Back" %}</a
-          >
-      </div>
-    {% comment %} end of back button {% endcomment %}
+    <!-- end of back button -->
     <div class="oh-dashboard row" id="dashboard">
       <div class="oh-dashboard__left col-12 col-sm-12 col-md-12 col-lg-9">
         <div class="oh-dashboard__cards row">
