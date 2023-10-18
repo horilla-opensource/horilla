@@ -4,7 +4,7 @@ models.py
 This module is used to register models for employee app
 
 """
-from datetime import date
+from datetime import date, datetime
 from django.db import models
 from django.contrib.auth.models import User, Permission
 from django.utils.translation import gettext_lazy as trans
@@ -231,7 +231,7 @@ class EmployeeWorkInformation(models.Model):
     basic_salary = models.IntegerField(null=True, blank=True, default=0)
     salary_hour = models.IntegerField(null=True, blank=True, default=0)
     additional_info = models.JSONField(null=True, blank=True)
-
+    experience = models.FloatField(null=True,blank=True, default=0)
     history = HistoricalRecords(
         related_name="employee_work_info_history",
     )
@@ -243,6 +243,27 @@ class EmployeeWorkInformation(models.Model):
     def save(self, *args, **kwargs):
         self.full_clean()
         super().save(*args, **kwargs)
+    
+    def experience_calculator(self):
+        """
+        This method is to calculate the default value for experience field
+        """
+        joining_date = self.date_joining
+        if joining_date is None:
+            return 0
+        current_date = datetime.now().date()
+
+        # Calculate the difference between the current date and joining date
+        delta = current_date - joining_date
+
+        # Calculate the total number of days
+        total_days = delta.days
+
+        # Calculate the number of experience as a float
+        experience = total_days / 365.0
+        self.experience = experience
+        self.save()
+        return self
 
 
 class EmployeeBankDetails(models.Model):
