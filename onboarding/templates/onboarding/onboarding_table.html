@@ -120,6 +120,8 @@
                         data-job-position = "{{candidate.candidate_id.job_position_id}}"
                         data-join-date="{{candidate.candidate_id.joining_date}}"
                         data-portal-count="{{candidate.candidate_id.onboarding_portal.count}}"
+                        data-toggle="oh-modal-toggle" data-target="#tableTimeOff"
+                        hx-get="{% url 'candidate-single-view' candidate.candidate_id.id %}" hx-target="#singleView"
                         >
                             <div class="oh-sticky-table__sd">
                                 <div class="oh-profile oh-profile--md">
@@ -144,7 +146,7 @@
                                 {{candidate.candidate_id.onboarding_portal.count}} / 4
                             </div>
                             </div>
-                            <div class="oh-sticky-table__td">
+                            <div class="oh-sticky-table__td" onclick="event.stopPropagation()">
                                 {% if request.user|stage_manages:stage or perms.onboarding.change_candidatestage %}
                                 <select id="" class="w-100" style="
                                     border: 1px solid hsl(213deg,22%,84%);
@@ -169,7 +171,7 @@
 
                                 {% endif %}
                             </div>
-                            <div class="oh-sticky-table__td">
+                            <div class="oh-sticky-table__td" onclick="event.stopPropagation()">
                                 <div class="oh-kanban__card-actions oh-kanban__dropdown">
                                     <button class="oh-btn oh-btn--small oh-btn--transparent oh-kanban__btn oh-kanban__dropdown-toggle" title="{% trans "Actions" %}">
                                         <ion-icon name="ellipsis-vertical-sharp" role="img" class="md hydrated" aria-label="ellipsis vertical sharp"></ion-icon>
@@ -186,7 +188,7 @@
                                 </div>
                             </div>
                             {% for task in candidate.candidate_id.candidate_task.all %}
-                            <div class="oh-sticky-table__td" id="task{{task.id}}">
+                            <div class="oh-sticky-table__td" onclick="event.stopPropagation()" id="task{{task.id}}">
                                 {% if request.user|task_manager:task or perms.onboarding.change_candidatetask %}
                                 {% include 'onboarding/candidate_task.html' %}
                                 {% else %}

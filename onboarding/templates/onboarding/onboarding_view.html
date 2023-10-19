@@ -13,6 +13,32 @@
         padding: 10px;
         height: 50px !important; /* Adjust the height value as needed */
     }
+        
+    .oh-dot--color-done {
+        background-color: hsl(148deg, 71%, 44%)
+    }
+    .oh-dot--color-scheduled {
+        background-color: hsl(40deg, 100%, 60%)
+    }
+
+    .oh-dot--color-stuck {
+        background-color: #ff0400
+    }
+    .oh-dot--color-ongoing {
+        background-color: hsl(204deg, 70%, 53%)
+    }
+
+    .oh-dot--color-todo {
+        background-color: #e3b75f80
+    }
+    .oh-dot--color-None {
+        background-color: hsla(270, 5%, 48%, 0.709)
+    }
+    
+    .oh-dot--color- {
+        background-color: hsla(270, 5%, 48%, 0.709)
+    }
+
 </style>
 <div class="oh-alert-container messages" >
         
@@ -265,6 +291,25 @@
         </div>
     </div>
 </div>
+
+
+<div class="oh-modal" id="tableTimeOff" role="dialog" aria-labelledby="tableTimeOffModal" aria-hidden="true">
+    <div class="oh-modal__dialog ">
+        <div class="oh-modal__dialog-header">
+
+            <button class="oh-modal__close" aria-label="Close">
+                <ion-icon name="close-outline"></ion-icon>
+            </button>
+        </div>
+
+        <div id="singleView">
+
+        </div>
+        
+    </div>
+</div>
+
+
 <script>
     $(document).ready(function() {
         $("#search").on("htmx:afterRequest", function(event, xhr, data) {

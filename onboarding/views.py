@@ -402,6 +402,48 @@ def candidate_delete(request, obj_id):
         )
     return redirect(candidates_view)
 
+@login_required
+@permission_required("recruitment.view_candidate")
+def candidates_single_view(request,id):
+    candidate = Candidate.objects.get(hired=True, start_onboard=True,id=id)
+    if not CandidateStage.objects.filter(candidate_id=candidate).exists():
+        try:
+            onboarding_stage = OnboardingStage.objects.filter(
+                recruitment_id=candidate.recruitment_id
+            ).order_by("sequence")[0]
+            CandidateStage(
+                candidate_id=candidate, onboarding_stage_id=onboarding_stage
+            ).save()
+        except Exception:
+            messages.error(
+                request,
+                _("%(recruitment)s has no stage..")
+                % {"recruitment": candidate.recruitment_id},
+            )
+        if tasks := OnboardingTask.objects.filter(
+            recruitment_id=candidate.recruitment_id
+        ):
+            for task in tasks:
+                if not CandidateTask.objects.filter(
+                    candidate_id=candidate, onboarding_task_id=task
+                ).exists():
+                    CandidateTask(
+                        candidate_id=candidate, onboarding_task_id=task
+                    ).save()
+
+    recruitment =candidate.recruitment_id
+    choices = CandidateTask.choice
+    context = {
+            "recruitment": recruitment,
+            "choices": choices,
+            "candidate": candidate,
+        }
+    return render(
+        request,
+        "onboarding/single_view.html",
+        context,
+    )
+
 
 def paginator_qry(qryset, page_number):
     """

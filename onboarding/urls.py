@@ -24,6 +24,7 @@ urlpatterns = [
     path("candidate-creation", views.candidate_creation, name="candidate-creation"),
     path("candidate-update/<int:obj_id>", views.candidate_update, name="candidate-update"),
     path("candidate-delete/<int:obj_id>", views.candidate_delete, name="candidate-delete"),
+    path("candidate-single-view/<int:id>", views.candidates_single_view, name="candidate-single-view"),
     path("candidates-view", views.candidates_view, name="candidates-view"),
     path("hired-candidates-view", views.hired_candidate_view, name="hired-candidates-view"),
     path("candidate-filter", views.candidate_filter, name="candidate-filter"),

@@ -1,0 +1,126 @@
+{% load i18n %} {% load onboardingfilters %} 
+<div class="oh-modal__dialog-body oh-timeoff-modal__body  pb-2">
+    <div class="oh-timeoff-modal__profile-content">
+        <div class="oh-profile">
+            <div class="oh-profile-section__edit-photo me-3" >
+                {% if candidate.profile %}
+                <img src="{{candidate.profile.url}}"
+                    class="oh-profile-section__modal-image" alt="" />
+                {% else %}
+                <img src="https://ui-avatars.com/api/?name={{candidate}}&background=random"
+                    class="oh-profile-section__modal-image" alt="" />
+                {% endif %}
+            </div>
+            <div  >
+
+                <div class="oh-timeoff-modal__profile-info mb-2">
+                    <span class="oh-timeoff-modal__user fw-bold">{{candidate}}</span>
+                </div>
+                <div class="oh-profile">
+                    <a href="{% url 'candidate-view-individual' candidate.id %}" type="button" title="View" class="oh-btn oh-btn--light-bkg w-50"> 
+                        <ion-icon name="eye-outline" role="img" class="md hydrated" aria-label="eye outline"></ion-icon>
+                    </a>
+                    <a href="{% url 'rec-candidate-update' candidate.id %}?onboarding=true" class="oh-btn oh-btn--light-bkg w-100" title="Edit" >
+                        <ion-icon name="create-outline" role="img" class="md hydrated" aria-label="create outline"></ion-icon>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="oh-timeoff-modal__stats-container">
+        <div class="oh-timeoff-modal__stat">
+            <span class="oh-timeoff-modal__stat-title">{% trans "Email" %}</span>
+            <span class="oh-timeoff-modal__stat-count">{{candidate.email}}</span>
+        </div>
+        <div class="oh-timeoff-modal__stat">
+            <span class="oh-timeoff-modal__stat-title">{% trans "Job Position" %}</span>
+            <span class="oh-timeoff-modal__stat-count">{{candidate.job_position_id}}</span>
+        </div>
+    </div>
+
+    <div class="oh-timeoff-modal__stats-container mt-3">
+        <div class="oh-timeoff-modal__stat">
+            <span class="oh-timeoff-modal__stat-title">{% trans "Contact" %}</span>
+            <span class="oh-timeoff-modal__stat-count">{{candidate.mobile}}</span>
+        </div>
+        <div class="oh-timeoff-modal__stat">
+            <span class="oh-timeoff-modal__stat-title">{% trans "Joining Date" %}</span>
+            <span class="oh-timeoff-modal__stat-count">{{candidate.joining_date}}</span>
+        </div>
+    </div>
+    <div class="oh-timeoff-modal__stats-container mt-3">
+        <div class="oh-timeoff-modal__stat">
+            <span class="oh-timeoff-modal__stat-title">{% trans "Onboarding portal stage" %}</span>
+            <span class="oh-timeoff-modal__stat-count">
+                <div class="oh-checkpoint-badge oh-checkpoint-badge--secondary" >
+                {{candidate.onboarding_portal.count}} / 4
+                </div>
+            </span>
+        </div>
+        <div class="oh-timeoff-modal__stat">
+            <span class="oh-timeoff-modal__stat-title">{% trans "Stage" %}</span>
+            <span class="oh-timeoff-modal__stat-count">
+                    {% if request.user|stage_manages:candidate.onboarding_stage.onboarding_stage_id or perms.onboarding.change_candidatestage %}
+                    <select id="" class="w-100" style="
+                        border: 1px solid hsl(213deg,22%,84%);
+                        padding: 0.3rem 0.8rem 0.3rem 0.3rem;
+                        border-radius: 0rem;" name="stage"
+                        hx-post="{% url 'candidate-stage-update' candidate.id recruitment.id %}"
+                        hx-trigger="change" hx-target="#onboardingTable{{recruitment.id}}">
+                        {% for stage in recruitment.onboardingstage_set.all %}
+                        {% if candidate.onboarding_stage.onboarding_stage_id == stage %}
+                        <option value="{{stage.id}}" selected>{{stage}}</option>
+                        {% else %}
+                        <option value="{{stage.id}}">{{stage}}</option>
+                        {% endif %}
+                        {% endfor %}
+                    </select>
+                    {% else %}
+                    {% for stage in recruitment.onboardingstage_set.all %}
+                        {% if candidate.onboarding_stage_id == stage %}
+                        {{stage}}
+                        {% endif %}
+                    {% endfor %}
+        
+                    {% endif %}
+            </span>
+        </div>
+    </div>
+
+    <div class="oh-timeoff-modal__stats w-100 mt-3 mb-3">
+        <div class="oh-timeoff-modal__stat">
+            <span class="oh-timeoff-modal__stat-count">{% trans "Tasks" %}</span>
+            <div class="row ms-2">
+                {% for task in candidate.candidate_task.all %}
+                    <div class="col-6 ps-0 pb-1">
+                        <div class="oh-timeoff-modal__stat-title mb-1 "><span class="oh-dot oh-dot--small  me-1 oh-dot--color-{{task.status}}"></span>{{task.onboarding_task_id.task_title}} </div>
+                        <div class="" id="task{{task.id}}">
+                            {% if request.user|task_manager:task or perms.onboarding.change_candidatetask %}
+                            {% include 'onboarding/candidate_task.html' %}
+                            {% else %}
+                            {% for choice in choices %}
+                            {% if choice.0 == task.status %}
+                            {{choice.1}}
+                            {% endif %}
+                            {% endfor %}
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    
+</div>
+
+<script>
+    $("select[name='task']").on("change", function() {
+        var value = $(this).val();
+        var dot = $(this).closest('.col-6').find('span.oh-dot');
+        console.log(dot)
+    
+        // Update the class
+        dot.removeClass().addClass('oh-dot oh-dot--small me-1 oh-dot--color-' + value);
+    })
+</script>
