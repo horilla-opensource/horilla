@@ -21,13 +21,108 @@
   </div>
 </div>
 {% endif %}
+<div
+  class="oh-modal"
+  id="attendanceImport"
+  role="dialog"
+  aria-labelledby="attendanceImport"
+  aria-hidden="true"
+  >
+  <div class="oh-modal__dialog">
+    <div class="oh-modal__dialog-header">
+      <h2 class="oh-modal__dialog-title" id="attendanceImportLavel">
+        {% trans "Import Attendances" %}
+      </h2>
+      <button class="oh-modal__close" aria-label="Close">
+        <ion-icon name="close-outline"></ion-icon>
+      </button>
+      <div
+        class="oh-modal__dialog-body p-0 pt-2"
+        id="attendanceImportModalBody"
+      >
+        <form
+          action="{% url 'attendance-info-import' %}"
+          enctype="multipart/form-data"
+          method="post"
+          id="attendanceImportForm"
+        >
+          {% csrf_token %}
+          <div
+            class="oh-modal__dialog-body mr-5"
+            id="uploading"
+            style="display: none"
+          >
+            <div class="loader-container">
+              <div class="loader"></div>
+              <div class="loader-text">{% trans "Uploading..." %}</div>
+            </div>
+          </div>
+          <div id="uploadContainer">
+            <label class="oh-dropdown__import-label" for="uploadFile">
+              <ion-icon
+                name="cloud-upload"
+                class="oh-dropdown__import-form-icon"
+              ></ion-icon>
+              <span class="oh-dropdown__import-form-title"
+                >{% trans "Upload a File" %}</span
+              >
+              <span class="oh-dropdown__import-form-text"
+                >{% trans "Drag and drop files here" %}</span
+              >
+            </label>
+            <input type="file" name="attendance_import" id="" required />
+          </div>
+          <button
+            type="submit"
+            class="oh-btn oh-btn--small oh-btn--secondary w-100 mt-3"
+          >
+            {% trans "Upload" %}
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
 
 <section class="oh-wrapper oh-main__topbar" x-data="{searchShow: false}">
   <div class="oh-main__titlebar oh-main__titlebar--left">
-    <h1 class="oh-main__titlebar-title fw-bold">{% trans "Attendances" %}</h1>
+    <h1 class="oh-main__titlebar-title fw-bold">
+      <a href="{% url 'attendance-view' %}" class="text-dark">
+        {% trans "Attendances" %}
+      </a>
+    </h1>
   </div>
   <div class="oh-main__titlebar oh-main__titlebar--right">
     <div class="oh-main__titlebar-button-container">
+      <div class="oh-dropdown ml-2" x-data="{open: false}">
+        <button
+          class="oh-btn oh-btn--dropdown"
+          @click="open = !open"
+          @click.outside="open = false"
+        >
+          {% trans "Actions" %}
+        </button>
+        <div
+          class="oh-dropdown__menu oh-dropdown__menu--right"
+          x-show="open"
+          style="display: none"
+        >
+          <ul class="oh-dropdown__items">
+            {% if perms.attendance.change_attendance or request.user|is_reportingmanager %}
+              <li class="oh-dropdown__item">
+                <a
+                  href="#"
+                  class="oh-dropdown__link"
+                  id="attendance-info-import"
+                  data-toggle="oh-modal-toggle"
+                  data-target="#attendanceImport"
+                  >{% trans "Import" %}</a
+                >
+              </li>
+            {% endif %} 
+          </ul>
+        </div>
+      </div>
       {% if perms.attendance.add_attendance or request.user|is_reportingmanager%}
         <button
           class="oh-btn oh-btn--secondary ml-2"
@@ -42,6 +137,7 @@
     </div>
   </div>
 </section>
+
 
 <div class="oh-wrapper-main">
   <main :class="sidebarOpen ? 'oh-main__sidebar-visible' : ''">
