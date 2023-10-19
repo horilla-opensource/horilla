@@ -56,7 +56,7 @@ def generate_error_report(error_list, error_data, file_name):
     styled_data_frame.to_excel(writer, index=False, sheet_name="Sheet1")
     worksheet = writer.sheets["Sheet1"]
     worksheet.set_column("A:Z", 30)
-    writer.save()
+    writer.close()
     return response
 
 
@@ -977,7 +977,7 @@ def assigned_leaves_export(request):
     styled_data_frame.to_excel(writer, index=False, sheet_name="Sheet1")
     worksheet = writer.sheets["Sheet1"]
     worksheet.set_column("A:Z", 18)
-    writer.save()
+    writer.close()
     return response
 
 
@@ -1120,7 +1120,7 @@ def holiday_info_export(request):
     styled_data_frame.to_excel(writer, index=False, sheet_name="Sheet1")
     worksheet = writer.sheets["Sheet1"]
     worksheet.set_column("A:Z", 18)
-    writer.save()
+    writer.close()
     return response
 
 
