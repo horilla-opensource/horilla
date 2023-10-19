@@ -175,7 +175,7 @@ def calculate_allowance(**kwargs):
         if allowance.is_condition_based:
             condition_field = allowance.field
             condition_operator = allowance.condition
-            condition_value = allowance.value
+            condition_value = allowance.value.lower().replace(" ", "_")
             employee_value = dynamic_attr(employee, condition_field)
             operator_func = operator_mapping.get(condition_operator)
             if employee_value is not None:
@@ -374,7 +374,7 @@ def calculate_pre_tax_deduction(*_args, **kwargs):
         if deduction.is_condition_based:
             condition_field = deduction.field
             condition_operator = deduction.condition
-            condition_value = deduction.value
+            condition_value = deduction.value.lower().replace(" ", "_")
             employee_value = dynamic_attr(employee, condition_field)
             operator_func = operator_mapping.get(condition_operator)
 
@@ -462,7 +462,7 @@ def calculate_post_tax_deduction(*_args, **kwargs):
         if deduction.is_condition_based:
             condition_field = deduction.field
             condition_operator = deduction.condition
-            condition_value = deduction.value
+            condition_value = deduction.value.lower().replace(" ", "_")
             employee_value = dynamic_attr(employee, condition_field)
             operator_func = operator_mapping.get(condition_operator)
             if employee_value is not None:
@@ -515,7 +515,7 @@ def calculate_post_tax_deduction(*_args, **kwargs):
     }
 
 
-def calculate_net_pay_deduction(net_pay, net_pay_deductions, day_dict):
+def calculate_net_pay_deduction(net_pay, net_pay_deductions, **kwargs):
     """
     Calculates the deductions based on the net pay amount.
 
@@ -527,11 +527,15 @@ def calculate_net_pay_deduction(net_pay, net_pay_deductions, day_dict):
     Returns:
         dict: A dictionary containing the serialized deductions and deduction amount.
     """
+    day_dict = kwargs["day_dict"]
     serialized_net_pay_deductions = []
     deductions = [item["deduction"] for item in net_pay_deductions]
     deduction_amt = []
     for deduction in deductions:
         amount = calculate_based_on_net_pay(deduction, net_pay, day_dict)
+        kwargs["amount"] = amount
+        kwargs["component"] = deduction
+        amount = if_condition_on(**kwargs)
         deduction_amt.append(amount)
     net_deduction = 0
     for deduction, amount in zip(deductions, deduction_amt):

@@ -154,7 +154,9 @@ def payroll_calculation(employee, start_date, end_date):
     update_net_pay_deductions = updated_net_pay_data["deductions"]
 
     net_pay_deductions = calculate_net_pay_deduction(
-        net_pay, post_tax_deductions["net_pay_deduction"], working_days_details
+        net_pay,
+        post_tax_deductions["net_pay_deduction"],
+        **kwargs,
     )
     net_pay_deduction_list = net_pay_deductions["net_pay_deductions"]
     for deduction in update_net_pay_deductions:
@@ -254,9 +256,6 @@ def filter_allowance(request):
     allowances = paginator_qry(allowances, request.GET.get("page"))
     data_dict = parse_qs(query_string)
     get_key_instances(Allowance, data_dict)
-    keys_to_remove = [key for key, value in data_dict.items() if value == ["unknown"]]
-    for key in keys_to_remove:
-        data_dict.pop(key)
     return render(
         request,
         template,
@@ -374,9 +373,6 @@ def filter_deduction(request):
 
     data_dict = parse_qs(query_string)
     get_key_instances(Deduction, data_dict)
-    keys_to_remove = [key for key, value in data_dict.items() if value == ["unknown"]]
-    for key in keys_to_remove:
-        data_dict.pop(key)
     return render(
         request,
         template,
@@ -606,7 +602,7 @@ def view_payslip(request):
             employee_id__employee_user_id=request.user
         )
     export_column = forms.PayslipExportColumnForm()
-    filter_form = PayslipFilter(request.GET,payslips)
+    filter_form = PayslipFilter(request.GET, payslips)
     payslips = filter_form.qs
     individual_form = forms.PayslipForm()
     bulk_form = forms.GeneratePayslipForm()
@@ -628,7 +624,6 @@ def view_payslip(request):
             "individual_form": individual_form,
             "bulk_form": bulk_form,
             "filter_dict": data_dict,
-
         },
     )
 
