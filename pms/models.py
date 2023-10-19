@@ -138,6 +138,10 @@ class EmployeeKeyResult(models.Model):
     def __str__(self):
         return f"{self.key_result} "
 
+    def save(self, *args, **kwargs):
+        if self.employee_id is None:
+            self.employee_id = self.employee_objective_id.employee_id
+        super().save(*args, **kwargs)
 
 """360degree feedback section"""
 

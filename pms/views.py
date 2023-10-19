@@ -614,6 +614,7 @@ def key_result_view(request):
     key_results = KeyResultFilter(request.GET).qs
     context = {
         "key_results": key_results,
+        "objective_key_result_status": EmployeeKeyResult.STATUS_CHOICES,
     }
     return render(request,"okr/key_result/key_result_view.html", context=context)
 

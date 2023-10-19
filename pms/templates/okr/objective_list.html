@@ -2,6 +2,28 @@
 {% load basefilters %}
 <!-- filter items showing here -->
 {% include 'filter_tags.html' %}
+<div class="d-flex flex-row-reverse">
+  <span class="m-3 review_ongoing" hx-get="{% url "objective-list-search" %}?{{pd}}&status=At Risk" hx-target="#objective_list" style="cursor: pointer">
+      <span class="oh-dot oh-dot--small me-1" style="background-color:red"></span>
+      {% trans "At Risk" %}
+    </span>
+  <span class="m-3 review_ongoing" hx-get="{% url "objective-list-search" %}?{{pd}}&status=Not Started" hx-target="#objective_list" style="cursor: pointer">
+    <span class="oh-dot oh-dot--small me-1" style="background-color:grey"></span>
+    {% trans "Not Started" %}
+  </span>
+  <span class="m-3 paid" hx-get="{% url "objective-list-search" %}?{{pd}}&status=Behind" hx-target="#objective_list" style="cursor: pointer">
+    <span class="oh-dot oh-dot--small me-1" style="background-color:orange"></span>
+    {% trans "Behind" %}
+  </span>
+  <span class="m-3 confirmed" hx-get="{% url "objective-list-search" %}?{{pd}}&status=Closed" hx-target="#objective_list" style="cursor: pointer">
+    <span class="oh-dot oh-dot--small me-1" style="background-color:rgb(103, 171, 238)"></span>
+    {% trans "Closed" %}
+  </span>
+  <span class="m-3 paid" hx-get="{% url "objective-list-search" %}?{{pd}}&status=On Track" hx-target="#objective_list" style="cursor: pointer">
+    <span class="oh-dot oh-dot--small me-1" style="background-color:yellowgreen"></span>
+    {% trans "On Track" %}
+  </span>
+</div>
 <div class="oh-tabs" >
 
 <ul class="oh-tabs__tablist" >
@@ -39,7 +61,7 @@
               <a
                 style="color: inherit; text-decoration: none"
                 href="{% url 'objective-detailed-view' emp_obj_id=own_objective.id %} "
-                class="oh-sticky-table__sd"
+                class="oh-sticky-table__sd  {% if own_objective.status == 'Closed' %}row-status--blue {% elif own_objective.status == 'On Track' %}row-status--yellow {% elif own_objective.status == 'Not Started' %}row-status--gray {% elif own_objective.status == 'Behind' %}row-status--orange {% elif own_objective.status == 'At Risk' %}row-status--red{% endif %}"
               >
                 <div class="oh-profile oh-profile--md">
                   <div class="oh-profile__avatar mr-1">
@@ -241,7 +263,7 @@
               <a
                 style="color: inherit; text-decoration: none"
                 href="{% url 'objective-detailed-view' emp_obj_id=all_objective.id %} "
-                class="oh-sticky-table__sd"
+                class="oh-sticky-table__sd {% if all_objective.status == 'Closed' %}row-status--blue {% elif all_objective.status == 'On Track' %}row-status--yellow {% elif all_objective.status == 'Not Started' %}row-status--gray {% elif all_objective.status == 'Behind' %}row-status--orange {% elif all_objective.status == 'At Risk' %}row-status--red{% endif %}"
               >
                 <div class="oh-profile oh-profile--md">
                   <div class="oh-profile__avatar mr-1">

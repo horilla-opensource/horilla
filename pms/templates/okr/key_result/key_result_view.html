@@ -3,6 +3,7 @@
 {% load widget_tweaks %}
 {% block content %}
 {% load basefilters %}
+<script src="{% static 'htmx/htmx.min.js' %}"></script>
 
 <main :class="sidebarOpen ? 'oh-main__sidebar-visible' : ''">
     <section class="oh-wrapper oh-main__topbar p-0" x-data="{searchShow: false}">
@@ -34,7 +35,8 @@
                                                 data-toggle="oh-modal-toggle"
                                                 hx-get="{% url 'key-result-update' id=employee_key_result.id %}"
                                                 hx-target="#ObjectiveModalFormTarget"
-                                                data-target="#objectiveModalpopup" >
+                                                data-target="#objectiveModalpopup" 
+                                                onclick="$('#objectiveModalpopup').toggleClass('oh-modal--show')">
                                                 <ion-icon name="create-outline" class="me-1" ></ion-icon>
                                                 {% trans "Edit" %}
                                             </button>
@@ -63,13 +65,13 @@
                                                         {% trans "Current Value" %}
                                                     </label>
                                                     <input 
-                                                    type="number" class="oh-table__editable-input "  min="0"
+                                                    type="number" class=""  min="0"
                                                     max="{{employee_key_result.target_value}}"
                                                     value="{{employee_key_result.current_value}}"
                                                     hx-post="{%url 'objective-detailed-view-current-value' kr_id=employee_key_result.id %}"
                                                     hx-trigger="change"
-                                                    hx-target="#objective_detailed_view_activity"
-                                                    name="current_value" readonly/>
+                                                    hx-target="#ObjectiveModalFormTarget"
+                                                    name="current_value" />
                                                   
                                                 </div>
                                             </div>
@@ -91,9 +93,9 @@
                                             <label class="oh-label my-2 my-2 me-2" for="status">{% trans "Status" %}</label>
                                             <select 
                                                 id="status" name="key_result_status"
-                                                hx-post=""
+                                                hx-post="{%url 'objective-detailed-view-key-result-status'  obj_id=employee_key_result.employee_objective_id.id kr_id=employee_key_result.id %}"
                                                 hx-trigger="change" class="oh-select oh-select--sm"
-                                                hx-target="#objective_detailed_view_activity">
+                                                hx-target="#ObjectiveModalFormTarget">
                                                     <option value="{{employee_key_result.status}}" selected>
                                                         {{employee_key_result.get_status_display }}
                                                     </option>
@@ -101,7 +103,6 @@
                                                         {% if employee_key_result.status != value %}
                                                         <option value="{{value}}">{{label}}</option>
                                                         {% endif%}
-                                                        ^^^^^^^^^^
                                                     {% endfor %}
                                             </select>
                                         </div>
@@ -123,8 +124,16 @@
             <!-- end of activity -->
         </div>
     </div>
-    <div class="oh-modal" id="objectiveModalpopup" role="dialog" aria-labelledby="objectiveModal" aria-hidden="true">
-        <div class="oh-modal__dialog" id="ObjectiveModalFormTarget">
+    <div 
+    class="oh-modal" 
+    id="objectiveModalpopup" 
+    role="dialog" 
+    aria-labelledby="objectiveModal" 
+    aria-hidden="true"
+    >
+        <div class="oh-modal__dialog">
+            <div class="oh-modal__dialog" id="ObjectiveModalFormTarget">aaaaaaaaaaaaaaaaaaaaa
+            </div>
         </div>
     </div>
 </main>
