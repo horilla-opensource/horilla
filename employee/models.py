@@ -95,6 +95,25 @@ class Employee(models.Model):
         if self.employee_profile:
             url = self.employee_profile.url
         return url
+    
+    def get_full_name(self):
+        """
+        Method will return employee full name
+        """
+        return (
+            self.employee_first_name + self.employee_last_name
+            if self.employee_last_name
+            else ""
+        )
+
+    def get_avatar(self):
+        """
+        Method will retun the api to the avatar or path to the profile image
+        """
+        url = f"https://ui-avatars.com/api/?name={self.get_full_name()}&background=random"
+        if self.employee_profile:
+            url = self.employee_profile.url
+        return url
 
     def __str__(self) -> str:
         last_name = (
