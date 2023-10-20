@@ -37,12 +37,12 @@
         <div class="oh-sticky-table__table ">
             <div class="oh-sticky-table__thead">
                 <div class="oh-sticky-table__tr">
-                    <div class="oh-sticky-table__th">{% trans "Employee" %}</div>
-                    <div class="oh-sticky-table__th">{% trans "Leave Type" %}</div>
-                    <div class="oh-sticky-table__th">{% trans "Start Date" %}</div>
-                    <div class="oh-sticky-table__th">{% trans "End Date" %}</div>
-                    <div class="oh-sticky-table__th">{% trans "Requested Days" %}</div>
-                    <div class="oh-sticky-table__th">{% trans "Status" %}</div>
+                    <div class="oh-sticky-table__th" hx-get="{% url 'request-filter' %}?{{pd}}&sortby=employee_id" hx-target="#leaveRequest">{% trans "Employee" %}</div>
+                    <div class="oh-sticky-table__th" hx-get="{% url 'request-filter' %}?{{pd}}&sortby=leave_type_id" hx-target="#leaveRequest">{% trans "Leave Type" %}</div>
+                    <div class="oh-sticky-table__th" hx-get="{% url 'request-filter' %}?{{pd}}&sortby=start_date" hx-target="#leaveRequest">{% trans "Start Date" %}</div>
+                    <div class="oh-sticky-table__th" hx-get="{% url 'request-filter' %}?{{pd}}&sortby=end_date" hx-target="#leaveRequest">{% trans "End Date" %}</div>
+                    <div class="oh-sticky-table__th" hx-get="{% url 'request-filter' %}?{{pd}}&sortby=requested_days" hx-target="#leaveRequest">{% trans "Requested Days" %}</div>
+                    <div class="oh-sticky-table__th" hx-get="{% url 'request-filter' %}?{{pd}}&sortby=status" hx-target="#leaveRequest">{% trans "Status" %}</div>
                     {% if  not dashboard %}
                         <div class="oh-sticky-table__th">{% trans "Options" %}</div>
                         <div class="oh-sticky-table__th">{% trans "Actions" %}</div>

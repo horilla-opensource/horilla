@@ -27,7 +27,7 @@ from django.core.paginator import Paginator
 from django.db.models.functions import TruncYear
 from horilla.decorators import permission_required
 from horilla.decorators import manager_can_enter
-from base.methods import filtersubordinates, choosesubordinates, get_key_instances
+from base.methods import filtersubordinates, choosesubordinates, get_key_instances, sortby
 from django.utils.translation import gettext as __
 from django.utils.translation import gettext_lazy as _
 from notifications.signals import notify
@@ -332,7 +332,7 @@ def leave_request_filter(request):
     """
     previous_data = request.GET.urlencode()
     queryset = LeaveRequest.objects.all()
-    queryset = filtersubordinates(request, queryset, "leave.view_leaverequest")
+    queryset = sortby(request, queryset, "sortby")
     leave_request_filter = LeaveRequestFilter(request.GET, queryset).qs
     page_number = request.GET.get("page")
     page_obj = paginator_qry(leave_request_filter, page_number)
@@ -1796,6 +1796,7 @@ def user_request_filter(request):
         queryset = user.leaverequest_set.all()
         previous_data = request.GET.urlencode()
         page_number = request.GET.get("page")
+        queryset = sortby(request, queryset, "sortby")
         user_request_filter = UserLeaveRequestFilter(request.GET, queryset).qs
         page_obj = paginator_qry(user_request_filter, page_number)
         data_dict = parse_qs(previous_data)
