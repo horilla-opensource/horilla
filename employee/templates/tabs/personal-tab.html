@@ -270,7 +270,7 @@
 					</div>
 					<div class="oh-tabs__content" id="tab_2">
 						{% include "tabs/contract-tab.html" %}
-
+						{% if perms.leave.view_contract %}
 						<div
 							class="oh-modal"
 							id="ContractModal"
@@ -284,6 +284,7 @@
 								id="OneContractTarget"
 							></div>
 						</div>
+						{% endif %}
 					</div>
 				</div>
 			</div>

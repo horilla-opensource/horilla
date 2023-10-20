@@ -151,7 +151,6 @@ def employee_view_individual(request, obj_id):
 
 
 @login_required
-@manager_can_enter("employee.view_employee")
 def contract_tab(request, obj_id):
     """
     This method is used to view profile of an employee.
@@ -160,13 +159,8 @@ def contract_tab(request, obj_id):
     employee_leaves = employee.available_leave.all()
     user = Employee.objects.filter(employee_user_id=request.user).first()
     contracts = Contract.objects.filter(employee_id=obj_id)
-    if user.reporting_manager.filter(
-        employee_id=employee
-    ).exists() or request.user.has_perm("employee.change_employee"):
-        return render(request, "tabs/personal-tab.html", {"employee": employee,"employee_leaves":employee_leaves,"contracts":contracts,})
-    return HttpResponseRedirect(
-        request.META.get("HTTP_REFERER", "/employee/employee-view")
-    )
+    return render(request, "tabs/personal-tab.html", {"employee": employee,"employee_leaves":employee_leaves,"contracts":contracts,})
+    
 
 @login_required
 def asset_tab(request, emp_id):
