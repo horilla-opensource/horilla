@@ -41,6 +41,9 @@ urlpatterns = [
         views.candidate_stage_update,
         name="candidate-stage-update",
     ),
+    path("candidate-stage-bulk-update", views.candidate_stage_bulk_update, name="candidate-stage-bulk-update"),
+    path("candidate-task-bulk-update", views.candidate_task_bulk_update, name="candidate-task-bulk-update"),
+
     path(
         "stage-name-update/<int:stage_id>/",
         views.stage_name_update,

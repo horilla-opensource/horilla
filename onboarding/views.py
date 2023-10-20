@@ -1021,6 +1021,61 @@ def candidate_stage_update(request, candidate_id, recruitment_id):
 
 
 @login_required
+@require_http_methods(["POST"])
+@stage_manager_can_enter("onboarding.change_candidatestage")
+def candidate_stage_bulk_update(request):
+    candiate_ids = request.POST["ids"]
+    recrutment_id = request.POST["recruitment"]
+    candidate_id_list = json.loads(candiate_ids)
+    stage = request.POST["stage"]
+    onboarding_stages = OnboardingStage.objects.all()
+    recruitment = Recruitment.objects.get(id=int(recrutment_id))
+    choices = CandidateTask.choice
+
+    count = CandidateStage.objects.filter(candidate_id__id__in=candidate_id_list).update(onboarding_stage_id = stage)
+    # messages.success(request,f"{count} candidate's stage updated successfully")
+    # return render(
+    #     request,
+    #     "onboarding/onboarding_table.html",
+    #     {
+    #         "recruitment": recruitment,
+    #         "onboarding_stages": onboarding_stages,
+    #         "choices": choices,
+    #     },
+    # )
+    response = render(
+        request,
+        "onboarding/onboarding_table.html",
+        {
+            "recruitment": recruitment,
+            "onboarding_stages": onboarding_stages,
+            "choices": choices,
+        },
+    )
+
+    return HttpResponse(
+        response.content.decode("utf-8") + '<div><div class="oh-alert-container"><div class="oh-alert oh-alert--animated oh-alert--info">candidate stage updated successfully</div> </div></div>'
+    )
+
+
+@login_required
+@require_http_methods(["POST"])
+@all_manager_can_enter("onboarding.change_candidatetask")
+def candidate_task_bulk_update(request):
+    candiate_ids = request.POST["ids"]
+    candidate_id_list = json.loads(candiate_ids)
+    task = request.POST["task"]
+    status = request.POST["status"]
+
+    count = CandidateTask.objects.filter(candidate_id__id__in=candidate_id_list,onboarding_task_id = task).update(status=status)
+    # messages.success(request,f"{count} candidate's task status updated successfully")
+
+    return JsonResponse(
+        {"message": _("Candidate onboarding stage updated"), "type": "success"}
+    )
+
+
+@login_required
 def hired_candidate_chart(_):
     """
     function used to show hired candidates in all recruitments.

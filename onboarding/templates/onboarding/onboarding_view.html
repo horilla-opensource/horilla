@@ -311,6 +311,44 @@
 
 
 <script>
+    function bulkStageChange(element){
+        let NewStage = $(element).val();
+        let currentStage =$(element).data("stage")
+        let checkbox = $(currentStage).find("input[type='checkbox']:checked");
+        let ids =[] 
+        let recruitment = $(element).data("recruitment")
+        let target = "#onboardingTable"+recruitment 
+        checkbox.each(function(index){
+            ids.push(parseInt($(this).val()))
+        })
+        $.ajax({
+            type: "POST",
+            url: '/onboarding/candidate-stage-bulk-update',
+            data: { 
+                "ids": JSON.stringify(ids),
+                "stage": NewStage,
+                "recruitment": recruitment,
+                
+                csrfmiddlewaretoken: getCookie("csrftoken"),
+
+             },
+            success: function (response) {
+              $(target).html($(response))
+            },
+            error: () => {
+                console.log("error")
+            }
+              
+        })
+    }
+        
+    function select_all(element) {
+        let isChecked = $(element).prop("checked");
+        let stage = $(element).data("stage");
+        $(stage).find('.checkbox-row').prop("checked", isChecked);
+    }
+    
+
     $(document).ready(function() {
         $("#search").on("htmx:afterRequest", function(event, xhr, data) {
             
