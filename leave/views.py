@@ -294,7 +294,7 @@ def leave_request_view(request):
     Returns:
     GET : return leave request view template
     """
-    queryset = LeaveRequest.objects.all()
+    queryset = LeaveRequest.objects.all().order_by("-id")
     queryset = filtersubordinates(request, queryset, "leave.view_leaverequest")
     page_number = request.GET.get("page")
     page_obj = paginator_qry(queryset, page_number)
@@ -566,7 +566,7 @@ def user_leave_cancel(request, id):
         if form.is_valid():
             leave_request = LeaveRequest.objects.get(id=id)
             employee_id = leave_request.employee_id
-            if employee_id.id == request.user.id:
+            if employee_id.employee_user_id.id == request.user.id:
                 leave_request.reject_reason = form.cleaned_data["reason"]
                 leave_request.status = "cancelled"
                 leave_request.save()
@@ -1763,6 +1763,7 @@ def user_request_view(request):
         page_number = request.GET.get("page")
         page_obj = paginator_qry(queryset, page_number)
         user_request_filter = UserLeaveRequestFilter()
+        current_date = date.today()
         return render(
             request,
             "leave/user_leave/user_request_view.html",
@@ -1770,6 +1771,7 @@ def user_request_view(request):
                 "leave_requests": page_obj,
                 "form": user_request_filter.form,
                 "pd": previous_data,
+                "current_date": current_date,                
             },
         )
     except Exception as e:

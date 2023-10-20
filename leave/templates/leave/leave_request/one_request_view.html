@@ -57,12 +57,21 @@
         </div>
     </div>
     {% if leave_request.reject_reason %}
-    <div class="oh-timeoff-modal__stats w-100 mt-3 {% if leave_request.status == "cancelled" %} p-2 row-status--gray diff-cell{% endif %}">
-        <div class="oh-timeoff-modal__stat">
-            <span class="oh-timeoff-modal__stat-title">{% trans "Reason for Cancel/Reject" %}</span>
-            <div class="oh-timeoff-modal__stat-description">{{leave_request.reject_reason}}</div>
+    {% if leave_request.status == "cancelled" %}
+        <div class="oh-timeoff-modal__stats w-100 mt-3  p-2 row-status--gray diff-cell">
+            <div class="oh-timeoff-modal__stat">
+                <span class="oh-timeoff-modal__stat-title">{% trans "Reason for Canceltion" %}</span>
+                <div class="oh-timeoff-modal__stat-description">{{leave_request.reject_reason}}</div>
+            </div>
         </div>
-    </div>
+        {% elif leave_request.status == "rejected" %}
+        <div class="oh-timeoff-modal__stats w-100 mt-3  p-2 row-status--red ">
+            <div class="oh-timeoff-modal__stat">
+                <span class="oh-timeoff-modal__stat-title">{% trans "Reason for Rejecttion" %}</span>
+                <div class="oh-timeoff-modal__stat-description">{{leave_request.reject_reason}}</div>
+            </div>
+        </div>
+    {% endif %}
     {% endif %}
     {% if leave_request.attachment %}
     <a href="{{leave_request.attachment.url}}" target="_blank" class="oh-timeoff-modal__download-link">
