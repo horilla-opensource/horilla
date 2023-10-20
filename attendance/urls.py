@@ -216,4 +216,9 @@ urlpatterns = [
         views.form_shift_dynamic_data,
         name="update-shift-details",
     ),
+    path(
+        "user-request-one-view/<int:id>",
+        views.user_request_one_view,
+        name="user-request-one-view",
+    ),
 ]

@@ -165,9 +165,11 @@
       {% for attendance in attendances %}
       <div
         class="oh-sticky-table__tr"
-        data-toggle="oh-modal-toggle"
-        data-target="#addAttendance"
         draggable="false"
+        data-toggle="oh-modal-toggle"
+        data-target="#detailAttendance"
+        hx-target="#detailAttendanceModalBody"     
+        hx-get="{% url 'user-request-one-view' attendance.id %}?my_attendance=true"
       >
         <div
           class="oh-sticky-table__sd{% if attendance.is_validate_request_approved %} row-status--blue {% elif attendance.attendance_validated %} row-status--green {% elif attendance.is_validate_request %} row-status--orange {% else %} row-status--red{% endif %}"
@@ -274,4 +276,27 @@
       {% endif %}
     </ul>
   </nav>
+</div>
+
+<div
+  class="oh-modal"
+  id="detailAttendance"
+  role="dialog"
+  aria-labelledby="detailAttendance"
+  aria-hidden="true"
+>
+  <div class="oh-modal__dialog">
+    <div class="oh-modal__dialog-header">
+      <h2 class="oh-modal__dialog-title" id="addEmployeeModalLabel">
+        {% trans "Details" %}
+      </h2>
+      <button class="oh-modal__close" aria-label="Close">
+        <ion-icon name="close-outline"></ion-icon>
+      </button>
+    </div>
+    <div
+      class="oh-modal__dialog-body"
+      id="detailAttendanceModalBody"
+    ></div>
+  </div>
 </div>

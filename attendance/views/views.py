@@ -1024,3 +1024,32 @@ def form_shift_dynamic_data(request):
             "checkout_date": attendance_clock_out_date.strftime("%Y-%m-%d"),
         }
     )
+
+@login_required
+def user_request_one_view(request, id):
+    """
+    function used to view one user attendance request.
+
+    Parameters:
+    request (HttpRequest): The HTTP request object.
+
+    Returns:
+    GET : return one user attendance request view template
+    """
+    attendance_request = Attendance.objects.get(id=id)
+
+    at_work_seconds = attendance_request.at_work_second
+    hours_at_work = at_work_seconds // 3600
+    minutes_at_work = (at_work_seconds % 3600) // 60
+    at_work = '{:02}:{:02}'.format(hours_at_work, minutes_at_work)
+
+    over_time_seconds = attendance_request.overtime_second
+    hours_over_time = over_time_seconds // 3600
+    minutes_over_time = (over_time_seconds % 3600) // 60
+    over_time = '{:02}:{:02}'.format(hours_over_time, minutes_over_time)
+
+
+    return render(
+        request, "attendance/attendance/attendance_request_one.html", 
+        {"attendance_request": attendance_request, 'at_work':at_work, 'over_time':over_time }
+    )

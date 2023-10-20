@@ -16,14 +16,15 @@
   role="dialog"
   aria-labelledby="updateAttendanceRequest"
   aria-hidden="true"
+  style='z-index:10000; !important'
 >
   <div class="oh-modal__dialog">
     <div class="oh-modal__dialog-header">
       <h2 class="oh-modal__dialog-title" id="addEmployeeModalLabel">
         {% trans "Update Attendances Request" %}
       </h2>
-      <button class="oh-modal__close" aria-label="Close">
-        <ion-icon name="close-outline"></ion-icon>
+      <button type="button" class="oh-modal_close--custom" onclick="$('#updateAttendanceRequest').removeClass('oh-modal--show');">
+        <ion-icon name="close-outline" role="img" aria-label="close outline"></ion-icon>
       </button>
     </div>
     <div
