@@ -24,15 +24,11 @@
       <div class="oh-sticky-table__table oh-table--sortable">
         <div class="oh-sticky-table__thead">
           <div class="oh-sticky-table__tr">
-            <div class="oh-sticky-table__th" >
-              <div class="d-flex">
-                <div class="">
-                  <input type="checkbox" title='{% trans "Select All" %}' class="oh-input oh-input__checkbox mt-1 mr-2 all-attendances" />
-                </div>
-                <div hx-get="{% url 'attendance-search' %}?{{pd}}&sortby=employee_id__employee_first_name" hx-target="#tab_contents">
-                  {% trans "Employee" %}
-                </div>
-              </div>
+            <div class="oh-sticky-table__th" style="width: 20px;">
+              <input type="checkbox" title='{% trans "Select All" %}' class="oh-input oh-input__checkbox mt-1 mr-2 all-attendances" style="margin-left: -5px;" />
+            </div>
+            <div class="oh-sticky-table__th"  hx-get="{% url 'attendance-search' %}?{{pd}}&sortby=employee_id__employee_first_name" hx-target="#tab_contents">
+                {% trans "Employee" %}
             </div>
             <div class="oh-sticky-table__th" hx-get="{% url 'attendance-search' %}?{{pd}}&sortby=attendance_date" hx-target="#tab_contents">{% trans "Date" %}</div>
             <div class="oh-sticky-table__th">{% trans "Day" %}</div>
@@ -56,12 +52,11 @@
               data-target="#detailAttendance"
               hx-target="#detailAttendanceModalBody"     
               hx-get="{% url 'user-request-one-view' attendance.id %}">
-            <div class="oh-sticky-table__sd">
-              <div class="d-flex">
-
-                <div class="">
+              <div class="oh-sticky-table__sd" onclick="event.stopPropagation();">
                   <input type="checkbox" id="{{attendance.id}}" class="oh-input attendance-checkbox oh-input__checkbox mt-2 mr-2 all-attendance-row" />
-                </div>
+              </div>
+            <div class="oh-sticky-table__td">
+              <div class="d-flex">
                 <div class="oh-profile oh-profile--md">
                   <div class="oh-profile__avatar mr-1">
                     <img
@@ -182,16 +177,10 @@
       <div class="oh-sticky-table__table oh-table--sortable">
         <div class="oh-sticky-table__thead">
           <div class="oh-sticky-table__tr">
-            <div class="oh-sticky-table__th"  >
-              <div class="d-flex">
-                <div class="">
-                  <input type="checkbox" title='{% trans "Select All" %}' onclick="event.stopPropagation()" class="oh-input oh-input__checkbox mt-1 mr-2 validate" />
-                </div>
-                <div hx-get="{% url 'attendance-search' %}?{{pd}}&sortby=employee_id__employee_first_name" hx-target="#tab_contents">
-                  {% trans "Employee" %}
-                </div>
-              </div>
+            <div class="oh-sticky-table__th" style="width:30px;">                  
+              <input type="checkbox" title='{% trans "Select All" %}' onclick="event.stopPropagation()" class="oh-input oh-input__checkbox mt-1 mr-2 validate" style="margin-left: -5px;"/>
             </div>
+            <div class="oh-sticky-table__th" hx-get="{% url 'attendance-search' %}?{{pd}}&sortby=employee_id__employee_first_name" hx-target="#tab_contents">{% trans "Employee" %}</div>
             <div class="oh-sticky-table__th" hx-get="{% url 'attendance-search' %}?{{pd}}&sortby=attendance_date" hx-target="#tab_contents">{% trans "Date" %}</div>
             <div class="oh-sticky-table__th">{% trans "Day" %}</div>
             <div class="oh-sticky-table__th" >{% trans "Check-In" %}</div>
@@ -217,11 +206,9 @@
               hx-target="#detailAttendanceModalBody"     
               hx-get="{% url 'user-request-one-view' attendance.id %}?validate=true">
             <div class="oh-sticky-table__sd">
-              <div class="d-flex">
-
-                <div class="">
-                  <input type="checkbox" id="{{attendance.id}}" onclick="event.stopPropagation()" class="oh-input attendance-checkbox oh-input__checkbox mt-2 mr-2 validate-row" />
-                </div>
+              <input type="checkbox" id="{{attendance.id}}" onclick="event.stopPropagation()" class="oh-input attendance-checkbox oh-input__checkbox mt-2 mr-2 validate-row" />
+            </div>
+            <div class="oh-sticky-table__td">
                 <div class="oh-profile oh-profile--md">     
                   <div class="oh-profile__avatar mr-1">
                     <img
@@ -234,8 +221,6 @@
                   >{{attendance.employee_id}}</span
                   >
                 </div>
-              </div>
-
             </div>
             <div class="oh-sticky-table__td">
               {{attendance.attendance_date}}
@@ -350,16 +335,10 @@
         <div class="oh-sticky-table__table oh-table--sortable">
           <div class="oh-sticky-table__thead">
             <div class="oh-sticky-table__tr">
-              <div class="oh-sticky-table__th" >
-                <div class="d-flex">
-                  <div class="">
-                    <input type="checkbox" title='{% trans "Select All" %}' onclick="event.stopPropagation()" class="oh-input oh-input__checkbox mt-1 mr-2 ot-attendances" />
-                  </div>
-                  <div hx-get="{% url 'attendance-search' %}?{{pd}}&sortby=employee_id__employee_first_name" hx-target="#tab_contents">
-                    {% trans "Employee" %}
-                  </div>
-                </div>
+              <div class="oh-sticky-table__th" style="width:20px;">
+                <input type="checkbox" title='{% trans "Select All" %}' onclick="event.stopPropagation()" class="oh-input oh-input__checkbox mt-1 mr-2 ot-attendances" style="margin-left: -5px;"/>
               </div>
+              <div class="oh-sticky-table__th" hx-get="{% url 'attendance-search' %}?{{pd}}&sortby=employee_id__employee_first_name" hx-target="#tab_contents">{% trans "Employee" %}</div>
               <div class="oh-sticky-table__th" hx-get="{% url 'attendance-search' %}?{{pd}}&sortby=attendance_date" hx-target="#tab_contents">{% trans "Date" %}</div>
               <div class="oh-sticky-table__th">{% trans "Day" %}</div>
               <div class="oh-sticky-table__th" >{% trans "Check-In" %}</div>
@@ -385,22 +364,20 @@
                 hx-target="#detailAttendanceModalBody"     
                 hx-get="{% url 'user-request-one-view' attendance.id %}?ot=true">
               <div class="oh-sticky-table__sd">
-                <div class="d-flex">
-                  <div class="">
-                    <input type="checkbox" id="{{attendance.id}}" onclick="event.stopPropagation()" class="oh-input attendance-checkbox oh-input__checkbox mt-2 mr-2 ot-attendance-row" />
+                <input type="checkbox" id="{{attendance.id}}" onclick="event.stopPropagation()" class="oh-input attendance-checkbox oh-input__checkbox mt-2 mr-2 ot-attendance-row" />
+              </div>
+              <div class="oh-sticky-table__td">
+                <div class="oh-profile oh-profile--md">
+                  <div class="oh-profile__avatar mr-1">
+                    <img
+                    src="https://ui-avatars.com/api/?name={{attendance.employee_id.employee_first_name}}+{{attendance.employee_id.employee_last_name}}&background=random"
+                    class="oh-profile__image"
+                    alt="Mary Magdalene"
+                    />
                   </div>
-                  <div class="oh-profile oh-profile--md">
-                    <div class="oh-profile__avatar mr-1">
-                      <img
-                      src="https://ui-avatars.com/api/?name={{attendance.employee_id.employee_first_name}}+{{attendance.employee_id.employee_last_name}}&background=random"
-                      class="oh-profile__image"
-                      alt="Mary Magdalene"
-                      />
-                    </div>
-                    <span class="oh-profile__name oh-text--dark"
-                    >{{attendance.employee_id}}</span
-                    >
-                  </div>
+                  <span class="oh-profile__name oh-text--dark"
+                  >{{attendance.employee_id}}</span
+                  >
                 </div>
               </div>
               <div class="oh-sticky-table__td">
