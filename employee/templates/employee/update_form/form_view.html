@@ -1,7 +1,6 @@
 {% extends 'index.html' %}
 {% load i18n %}
 {% block content %}
-
 <div id="view-container" class="oh-wrapper">
     <section class="oh-wrapper oh-main__topbar oh-profile-section__topbar" x-data="{searchShow: false}">
         <div class="oh-main__titlebar oh-main__titlebar--left">
@@ -40,6 +39,26 @@
         });
     
         reader.readAsDataURL(file);
+      });
+
+      // Active tab script
+      function activeCandTab() {
+        var activeTab = localStorage.getItem("activeCandTab")
+        if(activeTab != null){
+          $(".oh-general__tab-link--active").removeClass("oh-general__tab-link--active");
+          $(`[data-target='${activeTab}']`).addClass("oh-general__tab-link--active");
+          $(".oh-general__tab-target").addClass("d-none");
+          $(activeTab).removeClass("d-none");
+          if($(`[data-target="${activeTab}"]`).length>0){
+            $(`[data-target="${activeTab}"]`)[0].click();
+          }
+        }
+      }
+      activeCandTab()
+      $("[data-action=general-tab]").on("click",function (e) { 
+        e.preventDefault();
+        const targetId = $(this).attr('data-target');
+        localStorage.setItem("activeCandTab",targetId)
       });
       
     });
