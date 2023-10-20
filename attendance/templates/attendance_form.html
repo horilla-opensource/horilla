@@ -12,7 +12,7 @@
       class="oh-label"
       for="id_{{ field.name }}"
       title="{{ field.help_text|safe }}"
-      >{{ field.label }}</label
+      >{% trans field.label %}</label
       >
       <div style="width: 100%; padding: 12px;">
 
@@ -25,7 +25,7 @@
           class="oh-label"
           for="id_{{ field.name }}"
           title="{{ field.help_text|safe }}"
-          >{{ field.label }}</label
+          >{% trans field.label %}</label
           >
           {% if field.field.widget.input_type == "checkbox" %}
           <div class="oh-switch" style="width: 30px">
