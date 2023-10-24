@@ -104,4 +104,9 @@ urlpatterns = [
         views.slip_group_name_update,
         name="update-batch-group-name",
     ),
+    path(
+        "contract-bulk-delete",
+        views.contract_bulk_delete,
+        name="contract-bulk-delete",
+    ),
 ]

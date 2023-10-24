@@ -1,4 +1,5 @@
 {% load i18n %}
+{% load static %}
 {% include 'filter_tags.html' %}
 <div class="d-flex flex-row-reverse">
   <span class="m-3" hx-get="{% url 'contract-filter' %}?{{pd}}&contract_status=terminated" hx-target="#payroll-contract-container" style="cursor: pointer">
@@ -22,6 +23,14 @@
   <div class="oh-sticky-table__table">
     <div class="oh-sticky-table__thead">
       <div class="oh-sticky-table__tr">
+        <div class="oh-sticky-table__th" style="width:10px;">
+          <input
+                type="checkbox"
+                class="all-contract oh-input oh-input__checkbox"
+                id = "Allcontract"
+                title='{% trans "Select All" %}'
+              />
+        </div>
         <div class="oh-sticky-table__th">{% trans "Contract" %}</div>
         <div class="oh-sticky-table__th">{% trans "Employee" %}</div>
         <div class="oh-sticky-table__th">{% trans "Start Date" %}</div>
@@ -36,7 +45,19 @@
     <div class="oh-sticky-table__tbody">
       {% for contract in contracts %}
       <div class="oh-sticky-table__tr" draggable="true" data-toggle="oh-modal-toggle" data-target = "#ContractModal" hx-get="{% url 'single-contract-view' contract.id %}" hx-target = "#OneContractTarget">
-        <div class="oh-sticky-table__sd  {% if contract.contract_status == "active" %} row-status--yellow {% elif contract.contract_status == 'draft' %} row-status--purple {% elif contract.contract_status == 'expired' %} row-status--red {% elif contract.contract_status == 'terminated' %} row-status--black {% endif %}">{{ contract.contract_name }}</div>
+        <div class="oh-sticky-table__sd  {% if contract.contract_status == "active" %} row-status--yellow
+            {% elif contract.contract_status == 'draft' %} row-status--purple 
+            {% elif contract.contract_status == 'expired' %} row-status--red 
+            {% elif contract.contract_status == 'terminated' %} row-status--black {% endif %}" onclick="event.stopPropagation()">
+          <input
+              type="checkbox"
+              id="{{contract.id}}"
+              value="{{contract.id}}"
+              onclick="event.stopPropagation()"
+              class="oh-input payslip-checkbox oh-input__checkbox mt-2 mr-2 all-contract-row"
+            />
+            </div>
+        <div class="oh-sticky-table__td">{{ contract.contract_name }}</div>
         <div class="oh-sticky-table__td">{{ contract.employee_id }}</div>
         <div class="oh-sticky-table__td">{{ contract.contract_start_date}}</div>
         <div class="oh-sticky-table__td">
@@ -128,3 +149,15 @@
     </ul>
   </nav>
 </div>
+
+<script>
+  $("#Allcontract").click(function (e) {
+    var is_checked = $(this).is(":checked");
+    if (is_checked) {
+      $(".all-contract-row").prop("checked", true);
+    } else {
+      $(".all-contract-row").prop("checked", false);
+    }
+  });
+</script>
+<script src="{% static 'payroll/action.js' %}"></script>

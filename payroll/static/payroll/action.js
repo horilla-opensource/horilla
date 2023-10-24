@@ -5,6 +5,15 @@ var deleteMessages = {
   en: "Do you really want to delete all the selected payslips?",
   fr: "Voulez-vous vraiment supprimer tous les bulletins de paie sélectionnés?",
 };
+
+var deletecontractMessages = {
+  ar: "هل ترغب حقًا في حذف جميع العقود المحددة؟",
+  de: "Möchten Sie wirklich alle ausgewählten Verträge löschen?",
+  es: "¿Realmente quieres borrar todos los contratos seleccionados?",
+  en: "Do you really want to delete all the selected contracts?",
+  fr: "Voulez-vous vraiment supprimer tous les contrats sélectionnés?",
+};
+
 var norowMessages = {
   ar: "لم يتم تحديد أي صفوف.",
   de: "Es wurden keine Zeilen ausgewählt.",
@@ -97,6 +106,82 @@ $("#DeletePayslipBulk").click(function (e) {
           $.ajax({
             type: "POST",
             url: "/payroll/payslip-bulk-delete",
+            data: {
+              csrfmiddlewaretoken: getCookie("csrftoken"),
+              ids: JSON.stringify(ids),
+            },
+            success: function (response, textStatus, jqXHR) {
+              if (jqXHR.status === 200) {
+                location.reload(); // Reload the current page
+              } else {
+                // console.log("Unexpected HTTP status:", jqXHR.status);
+              }
+            },
+          });
+        }
+      });
+    }
+  });
+});
+
+
+$(".all-contract").change(function (e) {
+  var is_checked = $(this).is(":checked");
+  if (is_checked) {
+    $(".all-contract-row").prop("checked", true);
+    $(".all-contract-row").attr("data-checked", true);
+  } else {
+    $(".all-contract-row").prop("checked", false);
+    $(".all-contract-row").attr("data-checked", false);
+  }
+});
+
+$(".all-contract-row").change(function (e) {
+  e.preventDefault();
+  if ($(this).is(":checked")) {
+    $(this).attr("data-checked", true);
+  } else {
+    $(this).attr("data-checked", false);
+  }
+});
+
+$("#select-all-fields").change(function () {
+  const isChecked = $(this).prop("checked");
+  $('[name="selected_fields"]').prop("checked", isChecked);
+});
+
+$("#DeleteContractBulk").click(function (e) {
+  e.preventDefault();
+
+  var languageCode = null;
+  getCurrentLanguageCode(function (code) {
+    languageCode = code;
+    var confirmMessage = deletecontractMessages[languageCode];
+    var textMessage = norowMessages[languageCode];
+    var checkedRows = $(".all-contract-row").filter(":checked");
+    ids = [];
+    checkedRows.each(function () {
+      ids.push($(this).val());
+    });
+    if (checkedRows.length === 0) {
+      Swal.fire({
+        text: textMessage,
+        icon: "warning",
+        confirmButtonText: "Close",
+      });
+    } else {
+      Swal.fire({
+        text: confirmMessage,
+        icon: "error",
+        showCancelButton: true,
+        confirmButtonColor: "#008000",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Confirm",
+      }).then(function (result) {
+        if (result.isConfirmed) {
+          $.ajax({
+            type: "POST",
+            url: "/payroll/contract-bulk-delete",
             data: {
               csrfmiddlewaretoken: getCookie("csrftoken"),
               ids: JSON.stringify(ids),

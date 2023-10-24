@@ -932,3 +932,31 @@ def slip_group_name_update(request):
     return JsonResponse(
         {"type": "success", "message": "Batch name updated.", "new_name": new_name}
     )
+
+@login_required
+@permission_required("payroll.delete_contract")
+def contract_bulk_delete(request):
+    """
+    This method is used to bulk delete Contract
+    """
+    ids = request.POST["ids"]
+    ids = json.loads(ids)
+    for id in ids:
+        try:
+            contract = Contract.objects.get(id=id)
+            name = f"{contract.contract_name}"
+            contract.delete()
+            messages.success(
+                request,
+                _("{name} deleted.").format(
+                    name=name
+                ),
+            )
+        except Payslip.DoesNotExist:
+            messages.error(request, _("Contract not found."))
+        except ProtectedError:
+            messages.error(
+                request,
+                _("You cannot delete {contract}").format(contract=contract),
+            )
+    return JsonResponse({"message": "Success"})

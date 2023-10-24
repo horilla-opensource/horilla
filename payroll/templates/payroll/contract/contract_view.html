@@ -51,6 +51,37 @@
           {% include 'payroll/contract/filter_contract.html' %}
         </div>
       </div>
+
+      {% if perms.payroll.add_payslip %}
+        <div class="oh-btn-group ml-2">
+          <div class="oh-dropdown" x-data="{open: false}">
+            <button
+              class="oh-btn oh-btn--dropdown"
+              @click="open = !open"
+              @click.outside="open = false"
+            >
+              {% trans "Actions" %}
+            </button>
+            <div
+              class="oh-dropdown__menu oh-dropdown__menu--right"
+              x-show="open"
+              style="display: none; cursor: pointer"
+            >
+              <ul class="oh-dropdown__items">
+                {% if perms.contract.delete_contract %}
+                  <li class="oh-dropdown__item">
+                    <a
+                      class="oh-dropdown__link oh-dropdown__link--danger"
+                      id="DeleteContractBulk"
+                      >{% trans "Delete" %}</a>
+                  </li>
+                {% endif %}
+              </ul>
+            </div>
+          </div>
+        </div>
+      {% endif %}
+
       <div class="oh-main__titlebar-button-container">
         <div class="oh-btn-group ml-2">
           <div>

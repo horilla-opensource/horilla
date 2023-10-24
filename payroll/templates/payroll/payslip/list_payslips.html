@@ -23,21 +23,15 @@
   <div class="oh-sticky-table__table oh-table--sortable">
     <div class="oh-sticky-table__thead">
       <div class="oh-sticky-table__tr">
-        <div class="oh-sticky-table__th" >
-          <div class="d-flex">
-            <div>
-              <input
-                type="checkbox"
-                class="all-payslip oh-input oh-input__checkbox mt-1 mr-2 "
-                id = "Allpayslip"
-                title='{% trans "Select All" %}'
-              />
-            </div>
-            <div>
-              {% trans "Employee" %}
-            </div>
-          </div>
+        <div class="oh-sticky-table__th" style="width:10px;">
+          <input
+            type="checkbox"
+            class="all-payslip oh-input oh-input__checkbox"
+            id = "Allpayslip"
+            title='{% trans "Select All" %}'
+          />
         </div>
+        <div class="oh-sticky-table__th">{% trans "Employee" %}</div>
         <div class="oh-sticky-table__th">{% trans "Period" %}</div>
         <div class="oh-sticky-table__th">{% trans "Status" %}</div>
         <div class="oh-sticky-table__th">{% trans "Batch" %}</div>
@@ -60,18 +54,19 @@
               class="oh-input payslip-checkbox oh-input__checkbox mt-2 mr-2 all-payslip-row"
             />
           </div>
+      </div>
+      </div>
+      <div class="oh-sticky-table__td">
         <div class="oh-profile oh-profile--md">
           <div class="oh-profile__avatar mr-1">
             <img
-              src="https://ui-avatars.com/api/?name={{payslip.employee_id.employee_first_name}}+{{payslip.employee_id.employee_last_name}}&background=random"
+              src="https://ui-avatars.com/api/?name={{payslip.employee_id}}&background=random"
               class="oh-profile__image"
-              alt="Username"
+              alt="Mary Magdalene"
             />
           </div>
           <span class="oh-profile__name oh-text--dark">{{payslip.employee_id}}</span>
         </div>
-      </div>
-        
       </div>
       <div class="oh-sticky-table__td">
         {{payslip.start_date}} - {{payslip.end_date}}
@@ -165,5 +160,15 @@
     e.preventDefault();
     
   });
+
+  $("#Allpayslip").click(function (e) {
+    var is_checked = $(this).is(":checked");
+    if (is_checked) {
+      $(".all-payslip-row").prop("checked", true);
+    } else {
+      $(".all-payslip-row").prop("checked", false);
+    }
+  });
+
 </script>
 <script src="{% static 'payroll/action.js' %}"></script>
