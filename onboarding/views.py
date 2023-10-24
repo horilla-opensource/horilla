@@ -1033,16 +1033,7 @@ def candidate_stage_bulk_update(request):
     choices = CandidateTask.choice
 
     count = CandidateStage.objects.filter(candidate_id__id__in=candidate_id_list).update(onboarding_stage_id = stage)
-    # messages.success(request,f"{count} candidate's stage updated successfully")
-    # return render(
-    #     request,
-    #     "onboarding/onboarding_table.html",
-    #     {
-    #         "recruitment": recruitment,
-    #         "onboarding_stages": onboarding_stages,
-    #         "choices": choices,
-    #     },
-    # )
+    
     response = render(
         request,
         "onboarding/onboarding_table.html",
@@ -1076,7 +1067,7 @@ def candidate_task_bulk_update(request):
 
 
 @login_required
-def hired_candidate_chart(_):
+def hired_candidate_chart(request):
     """
     function used to show hired candidates in all recruitments.
 
@@ -1105,13 +1096,13 @@ def hired_candidate_chart(_):
             "data": data,
             "background_color": background_color,
             "border_color": border_color,
+            "message": _("No data Found...")
         },
         safe=False,
     )
 
-
 @login_required
-def onboard_candidate_chart(_):
+def onboard_candidate_chart(request):
     """
     function used to show onboard started candidates in recruitments.
 
@@ -1142,6 +1133,7 @@ def onboard_candidate_chart(_):
             "data": data,
             "background_color": background_color,
             "border_color": border_color,
+            "message": _("No data Found...")
         },
         safe=False,
     )
