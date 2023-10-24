@@ -123,7 +123,7 @@
           </div>
           {% endif %}
           <div class="oh-dashboard__movable-cards row mt-4" id="tileContainer">
-            {% if pers.leave.veiw_leaverequest %}
+            {% if perms.leave.veiw_leaverequest %}
             <div
               class="col-12 col-sm-12 col-md-12 col-lg-4 oh-card-dashboard--moveable"
               id="movable1"
@@ -154,7 +154,7 @@
               </div>
             </div>
             {% endif %} 
-						{% if pers.candidate.view_candidate or request.user|is_stagemanager %}
+						{% if perms.candidate.view_candidate or request.user|is_stagemanager %}
             <div
               class="col-12 col-sm-12 col-md-12 col-lg-6 oh-card-dashboard--moveable"
               id="movable2"
@@ -447,6 +447,22 @@
     </div>
   </div>
 </main>
+<script>
+  function isChartEmpty(chartData) {
+    if (!chartData) {
+        return true; // Return true if chartData is undefined or falsy
+    }
+    for (let i = 0; i < chartData.length; i++) {
+        if (chartData[i] && chartData[i].data) {
+            const hasNonZeroValues = chartData[i].data.some((value) => value !== 0);
+            if (hasNonZeroValues) {
+                return false; // Return false if any non-zero value is found
+            }
+        }
+    }
+    return true; // Return true if all values are zero or if chartData is empty
+}
+</script>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 

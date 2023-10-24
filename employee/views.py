@@ -23,12 +23,12 @@ from django.conf import settings
 from django.contrib import messages
 from django.core.paginator import Paginator
 from django.shortcuts import render, redirect
-from django.utils.translation import gettext_lazy as _
 from django.utils.translation import gettext as __
 from django.contrib.auth.models import User
 from django.views.decorators.http import require_http_methods
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from asset.models import AssetAssignment, AssetRequest
+from django.utils.translation import gettext_lazy as _
 from attendance.models import Attendance, AttendanceOverTime
 from notifications.signals import notify
 from horilla.decorators import (
@@ -1577,7 +1577,7 @@ def dashboard_employee_gender(request):
 
 @login_required
 @manager_can_enter("employee.view_employee")
-def dashboard_employee_department(_):
+def dashboard_employee_department(request):
     """
     This method is used to find the count of employees corresponding to the departments
     """
@@ -1593,12 +1593,12 @@ def dashboard_employee_department(_):
                 )
             )
         )
-    response = {"dataSet": [{"label": "Department", "data": count}], "labels": labels}
+    response = {"dataSet": [{"label": "Department", "data": count}], "labels": labels,"message": _("No Data Found...")}
     return JsonResponse(response)
 
 
 @login_required
-def dashboard_employee_tiles(_):
+def dashboard_employee_tiles(request):
     """
     This method returns json response.
     """
