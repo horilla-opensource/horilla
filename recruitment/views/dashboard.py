@@ -149,7 +149,7 @@ def dashboard(request):
 
 @login_required
 @manager_can_enter(perm="recruitment.view_recruitment")
-def dashboard_pipeline(_):
+def dashboard_pipeline(request):
     """
     This method is used generate recruitment dataset for the dashboard
     """
@@ -167,7 +167,7 @@ def dashboard_pipeline(_):
                 "data": data,
             }
         )
-    return JsonResponse({"dataSet": data_set, "labels": labels})
+    return JsonResponse({"dataSet": data_set, "labels": labels,"message":_("No data Found...")})
 
 
 @login_required
