@@ -9,7 +9,21 @@ $(document).ready(function () {
       dataSet = response.dataSet;
       labels = response.labels;
 
-      createAttendanceChart(dataSet, labels);
+      if (isChartEmpty(response.dataSet)) {
+        $("#dailyAnalytic").parent().html(
+					`<div style="height: 220px; display:flex;align-items: center;justify-content: center;" class="">
+					<div style="" class="">
+					<img style="display: block;width: 70px;margin: 20px auto ;" src="/static/images/ui/joiningchart.png" class="" alt=""/>
+					<h3 style="font-size:16px" class="oh-404__subtitle">${response.message}</h3>
+					</div>
+				</div>`
+				);
+      } else {
+        $("#chart_input").html(
+          '<canvas id="dailyAnalytic" style = "cursor: pointer;"></canvas>'
+        );
+        createAttendanceChart(response.dataSet, response.labels);
+      }
     },
   });
 });
@@ -132,14 +146,14 @@ function changeMonth() {
     },
     success: function (response) {
       if (isChartEmpty(response.dataSet)) {
-        $("#chart_input").html(
-          `<div style="height: 310px; display:flex;align-items: center;justify-content: center;" class="">
-            <div style="" cladailyAnalyticss="">
-            <img style="    display: block;width: 70px;margin: 20px auto ;" src="/static/images/ui/attendance.png" class="" alt=""/>
-            <h3 style="font-size:16px" class="oh-404__subtitle">${response.message}</h3>
-            </div>
-          </div>`
-        );
+        $("#dailyAnalytic").parent().html(
+					`<div style="height: 220px; display:flex;align-items: center;justify-content: center;" class="">
+					<div style="" class="">
+					<img style="display: block;width: 70px;margin: 20px auto ;" src="/static/images/ui/joiningchart.png" class="" alt=""/>
+					<h3 style="font-size:16px" class="oh-404__subtitle">${response.message}</h3>
+					</div>
+				</div>`
+				);
       } else {
         $("#chart_input").html(
           '<canvas id="dailyAnalytic" style = "cursor: pointer;"></canvas>'

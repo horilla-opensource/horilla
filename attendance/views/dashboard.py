@@ -263,5 +263,5 @@ def dashboard_attendance(request):
     departments = Department.objects.all()
     for dept in departments:
         data_set.append(generate_data_set(request, start_date, type, end_date, dept))
-    message = "No data exist"
+    message = _("No data Found...")
     return JsonResponse({"dataSet": data_set, "labels": labels, "message": message})
