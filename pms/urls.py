@@ -172,4 +172,14 @@ urlpatterns = [
         views.create_period,
         name="create-period",
     ),
+    path(
+        "objective-bulk-archive",
+        views.objective_bulk_archive,
+        name="objective-bulk-archive",
+    ),
+    path(
+        "objective-bulk-delete",
+        views.objective_bulk_delete,
+        name="objective-bulk-delete",
+    ),
 ]

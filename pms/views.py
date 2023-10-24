@@ -1831,7 +1831,7 @@ def dashboard_objective_status(request):
     is_ajax = request.headers.get("X-Requested-With") == "XMLHttpRequest"
     if is_ajax and request.method == "GET":
         objective_status = EmployeeObjective.STATUS_CHOICES
-        data = {}
+        data = {"message":_("No data Found...")}
         for status in objective_status:
             objectives = EmployeeObjective.objects.filter(status=status[0])
             objectives_count = filtersubordinates(
@@ -1850,7 +1850,7 @@ def dashboard_key_result_status(request):
     is_ajax = request.headers.get("X-Requested-With") == "XMLHttpRequest"
     if is_ajax and request.method == "GET":
         key_result_status = EmployeeKeyResult.STATUS_CHOICES
-        data = {}
+        data = {"message":_("No data Found...")}
         for i in key_result_status:
             key_results = EmployeeKeyResult.objects.filter(status=i[0])
             key_results_count = filtersubordinates(
@@ -1867,7 +1867,7 @@ def dashboard_feedback_status(request):
     is_ajax = request.headers.get("X-Requested-With") == "XMLHttpRequest"
     if is_ajax and request.method == "GET":
         feedback_status = Feedback.STATUS_CHOICES
-        data = {}
+        data = {"message":_("No data Found...")}
         for i in feedback_status:
             feedbacks = Feedback.objects.filter(status=i[0])
             feedback_count = filtersubordinates(
@@ -1911,7 +1911,58 @@ def create_period(request):
             instance = form.save()
             return JsonResponse({"id": instance.id, "name": instance.period_name, "start_date": instance.start_date, "end_date": instance.end_date})
         errors = form.errors.as_json()
-        print('-------------------------------------')
-        print(errors)
         return JsonResponse({"errors": errors})
     return render(request,"okr/create_period.html",context={"form": form})
+
+
+@login_required
+def objective_bulk_archive(request):
+    """
+    This method is used to archive/un-archive bulk objectivs
+    """
+    ids = request.POST["ids"]
+    ids = json.loads(ids)
+    is_active = False
+    message = _("un-archived")
+    if request.GET.get("is_active") == "False":
+        is_active = True
+        message = _("archived")
+    for objective_id in ids:
+        objective_obj = EmployeeObjective.objects.get(id=objective_id)
+        objective_obj.archive = is_active
+        objective_obj.save()
+        messages.success(
+            request,
+            _("{objective} is {message}").format(
+                objective=objective_obj, message=message
+            ),
+        )
+    return JsonResponse({"message": "Success"})
+
+
+@login_required
+@manager_can_enter(perm="pms.delete_employeeobjective")
+def objective_bulk_delete(request):
+    """
+    This method is used to bulk delete objective
+    """
+    ids = request.POST["ids"]
+    ids = json.loads(ids)
+    for objective_id in ids:
+        try:
+            objective = EmployeeObjective.objects.get(id=objective_id)
+            if objective.status == 'Not Started' or objective.status == 'Closed' :
+                objective.delete()
+                messages.success(
+                    request,
+                    _("%(employee)s's %(objective)s deleted") % {"objective": objective.objective, "employee":objective.employee_id},
+                )
+            else:
+                messages.warning(
+                    request,
+                    _("You can't delete objective %(objective)s with status %(status)s") % {"objective": objective.objective, "status": objective.status},
+                )
+        except EmployeeObjective.DoesNotExist:
+            messages.error(request, _("Objective not found."))
+
+    return JsonResponse({"message": "Success"})

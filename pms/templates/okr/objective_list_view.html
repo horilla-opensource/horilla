@@ -138,6 +138,52 @@
             </form>
           </div>
         </div>
+
+        <div class="oh-btn-group ml-2">
+          <div class="oh-dropdown" x-data="{open: false}">
+            <button
+              class="oh-btn oh-btn--dropdown oh-btn oh-btn--shadow"
+              @click="open = !open"
+              @click.outside="open = false"
+            >
+              {% trans "Actions" %}
+            </button>
+            <div class="oh-dropdown__menu oh-dropdown__menu--right" x-show="open" 
+            style="display: none;"
+          >
+              <ul class="oh-dropdown__items">
+    
+                <li class="oh-dropdown__item">
+                  <a href="#" class="oh-dropdown__link " id="archiveObjectives"
+    
+                    >{% trans "Archive" %}</a
+                  >
+                </li>
+
+                <li class="oh-dropdown__item">
+                  <a href="#" class="oh-dropdown__link "
+    
+                   id="unArchiveObjectives"
+                    >{% trans "Un-Archive" %}</a
+                  >
+                </li>
+
+                {% if perms.pms.delete_employeeobjective %}
+                <li class="oh-dropdown__item">
+                  <a
+                    href="#"
+                    class="oh-dropdown__link oh-dropdown__link--danger"
+                    id="deleteObjectives"
+                    >{% trans "Delete" %}</a
+                  >
+                </li>
+                {% endif %}
+    
+              </ul>
+            </div>
+          </div>
+        </div>
+
         <!-- checking  user permission for objective creation -->
       {% if perms.pms.view_questiontemplate or request.user|filtersubordinates %}
         <div class="oh-btn-group ml-2">
@@ -159,6 +205,7 @@
 </main>
 
 <script src="{% static '/base/filter.js' %}"></script>
+<script src="{% static 'src/okr/action.js' %}"></script> 
 <script>
 
 $(".fil").click(function() {
