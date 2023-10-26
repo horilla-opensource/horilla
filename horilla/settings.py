@@ -48,7 +48,6 @@ INSTALLED_APPS = [
     'corsheaders',
     'simple_history',
     'django_filters',
-    'horilla_widgets',
     'base',
     'recruitment',
     'employee',
