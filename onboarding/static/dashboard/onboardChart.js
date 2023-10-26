@@ -1,5 +1,21 @@
 $(document).ready(function () {
 	//Hired candididates recruitment wise chart
+	function isChartEmpty(chartData) {
+		if (!chartData) {
+			return true;
+		}
+		for (let i = 0; i < chartData.length; i++) {
+			
+			if (chartData[i]) {
+				const hasNonZeroValues = chartData.some((value) => value !== 0);
+				if (hasNonZeroValues) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+
 	$.ajax({
 		type: "GET",
 		url: "/onboarding/hired-candidate-chart",

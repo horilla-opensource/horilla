@@ -12,18 +12,19 @@ var objectiveStatusData = {
 	],
 };
 function isChartEmpty(chartData) {
-    if (!chartData) {
-        return true; 
-    }
-    for (let i = 0; i < chartData.length; i++) {
-        if (chartData[i] && chartData[i].data) {
-            const hasNonZeroValues = chartData[i].data.some((value) => value !== 0);
-            if (hasNonZeroValues) {
-                return false;
-            }
-        }
-    }
-    return true;
+	if (!chartData) {
+		return true;
+	}
+	for (let i = 0; i < chartData.length; i++) {
+		
+		if (chartData[i]) {
+			const hasNonZeroValues = chartData.some((value) => value !== 0);
+			if (hasNonZeroValues) {
+				return false;
+			}
+		}
+	}
+	return true;
 }
 
 // chart constructor
@@ -73,7 +74,7 @@ $.ajax({
 		"X-Requested-With": "XMLHttpRequest",
 	},
 	success: (response) => {
-		if (isChartEmpty(response.data)) {
+		if (isChartEmpty(response.objective_value)) {
 			$("#objectiveChart")
 				.parent()
 				.html(
@@ -174,7 +175,7 @@ $.ajax({
 		"X-Requested-With": "XMLHttpRequest",
 	},
 	success: (response) => {
-		if (isChartEmpty(response.data)) {
+		if (isChartEmpty(response.key_result_value)) {
 			$("#keyResultChart")
 				.parent()
 				.html(
@@ -274,7 +275,7 @@ $.ajax({
 		"X-Requested-With": "XMLHttpRequest",
 	},
 	success: (response) => {
-		if (isChartEmpty(response.data)) {
+		if (isChartEmpty(response.feedback_value)) {
 			$("#feedbackChart")
 				.parent()
 				.html(
