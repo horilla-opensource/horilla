@@ -5,7 +5,7 @@ from django.utils.translation import gettext_lazy as _
 # importing simple history
 from simple_history.models import HistoricalRecords
 from employee.models import Employee
-
+from horilla_audit.models import HorillaAuditLog, HorillaAuditInfo
 
 """Objectives and key result section"""
 
@@ -53,7 +53,7 @@ class EmployeeObjective(models.Model):
         blank=False,
         default="Not Started",
     )
-    history = HistoricalRecords()
+    history = HorillaAuditLog(bases=[HorillaAuditInfo])
     archive = models.BooleanField(default=False, null=True, blank=True)
     objects = models.Manager()
 
@@ -80,7 +80,7 @@ class Comment(models.Model):
         blank=True,
     )
     created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
-    history = HistoricalRecords(excluded_fields=["comment"])
+    history = HorillaAuditLog(excluded_fields=["comment"], bases=[HorillaAuditInfo])
     objects = models.Manager()
 
     def __str__(self):
@@ -132,7 +132,7 @@ class EmployeeKeyResult(models.Model):
     target_value = models.IntegerField(null=True, blank=True, default=0)
     start_date = models.DateField(null=True, blank=True)
     end_date = models.DateField(null=True, blank=True)
-    history = HistoricalRecords()
+    history = HorillaAuditLog(bases=[HorillaAuditInfo])
     objects = models.Manager()
 
     def __str__(self):
@@ -142,6 +142,7 @@ class EmployeeKeyResult(models.Model):
         if self.employee_id is None:
             self.employee_id = self.employee_objective_id.employee_id
         super().save(*args, **kwargs)
+
 
 """360degree feedback section"""
 
