@@ -195,16 +195,16 @@
 						data-target="#team"
 						>{% trans "Team" %}</a
 						>
-					</li>
+					</li> {% endcomment %}
 					<li class="oh-general__tab">
 						<a
 						href="#"
 						class="oh-general__tab-link"
 						data-action="general-tab"
-						data-target="#timesheet"
-						>{% trans "Timesheet" %}</a
+						data-target="#history"
+						>{% trans "History" %}</a
 						>
-					</li> {% endcomment %}
+					</li>
 					<li class="oh-general__tab">
 						<a
 						hx-get={% url 'asset-tab' employee.id %}
@@ -252,9 +252,10 @@
 
 				<div
 				class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
-				id="timesheet"
+				id="history"
 				>
-				<!-- #3 -->
+				{% include "tabs/history.html" %}
+
 				</div>
 				<div
 				class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"

@@ -19,6 +19,8 @@ from base.models import (
     Department,
     EmployeeShift,
 )
+from horilla_audit.models import HorillaAuditLog, HorillaAuditInfo
+from horilla_audit.methods import get_diff
 
 # create your model
 
@@ -52,14 +54,14 @@ class Employee(models.Model):
         blank=True,
         null=True,
         related_name="employee_get",
-        verbose_name=_("User")
+        verbose_name=_("User"),
     )
     employee_first_name = models.CharField(
-        max_length=200,
-        null=False,
-        verbose_name=_("First Name")
+        max_length=200, null=False, verbose_name=_("First Name")
     )
-    employee_last_name = models.CharField(max_length=200, null=True, blank=True, verbose_name=_("Last Name"))
+    employee_last_name = models.CharField(
+        max_length=200, null=True, blank=True, verbose_name=_("Last Name")
+    )
     employee_profile = models.ImageField(
         upload_to="employee/profile", null=True, blank=True
     )
@@ -95,7 +97,7 @@ class Employee(models.Model):
         if self.employee_profile:
             url = self.employee_profile.url
         return url
-    
+
     def get_full_name(self):
         """
         Method will return employee full name
@@ -110,7 +112,9 @@ class Employee(models.Model):
         """
         Method will retun the api to the avatar or path to the profile image
         """
-        url = f"https://ui-avatars.com/api/?name={self.get_full_name()}&background=random"
+        url = (
+            f"https://ui-avatars.com/api/?name={self.get_full_name()}&background=random"
+        )
         if self.employee_profile:
             url = self.employee_profile.url
         return url
@@ -250,9 +254,12 @@ class EmployeeWorkInformation(models.Model):
     basic_salary = models.IntegerField(null=True, blank=True, default=0)
     salary_hour = models.IntegerField(null=True, blank=True, default=0)
     additional_info = models.JSONField(null=True, blank=True)
-    experience = models.FloatField(null=True,blank=True, default=0)
-    history = HistoricalRecords(
-        related_name="employee_work_info_history",
+    experience = models.FloatField(null=True, blank=True, default=0)
+    history = HorillaAuditLog(
+        related_name="history_set",
+        bases=[
+            HorillaAuditInfo,
+        ],
     )
     objects = models.Manager()
 
@@ -262,7 +269,17 @@ class EmployeeWorkInformation(models.Model):
     def save(self, *args, **kwargs):
         self.full_clean()
         super().save(*args, **kwargs)
-    
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.skip_history = False
+
+    def tracking(self):
+        """
+        This method is used to return the tracked history of the instance
+        """
+        return get_diff(self)
+
     def experience_calculator(self):
         """
         This method is to calculate the default value for experience field
