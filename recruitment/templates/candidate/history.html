@@ -1,0 +1,66 @@
+{% load static %} {% load audit_filters %}
+<div class="row">
+  {% for history in candidate.tracking %}
+  <div class="oh-history__container">
+    <div class="oh-history_date oh-card__title oh-card__title--sm fw-bold me-2">
+      <span class="oh-history_date-content"
+        >{{history.pair.1.history_date|date:"M. d, Y, l g:i A"}}</span
+      >
+    </div>
+    <div class="d-flex">
+      <div class="oh-history_user-img">
+        <img
+          src="{{history.updated_by.get_avatar}}"
+          alt=""
+          class="oh-history_user-pic"
+        />
+        <div class="oh-history_user-state oh-user_inactive"></div>
+      </div>
+      <div class="oh-history_user-details">
+        <span class="oh-history__username">{{history.updated_by}}</span>
+        <div class="oh-history_abt pb-0">
+          {% if history.pair.0.history_title %}
+          <span class="oh-history_task-state"
+            >{{history.pair.0.history_title}}</span
+          >
+          {% endif %} {% if history.pair.0.history_description %}
+          <p class="oh-history_time">{{history.pair.0.history_description}}</p>
+          {% endif %}
+          <div class="oh-history_tabs">
+            {% for tag in history.pair.0.history_tags.all %}
+            <a href="#" class="oh-history_msging-email oh-history_tabs-items"
+              >{{tag.title}}</a
+            >
+            {% endfor %}
+          </div>
+        </div>
+        <div class="oh-history_msg-container">
+          <div class="oh-history_task-tracker">
+            <span class="oh-history_msging-email">{{history.type}}</span>
+            <ul class="ul">
+              {% for change in history.changes %}
+              <li class="oh-history_task-list">
+                <div class="oh-history_track-value">
+                  <span>{{history.pair.1|fk_history:change}}</span>
+                  <img
+                    src="{% static  '/images/ui/arrow-right-line.svg' %}"
+                    class="oh-progress_arrow"
+                    alt=""
+                  />
+                  <span class="oh-history_tracking-value"
+                    >{{history.pair.0|fk_history:change}}</span
+                  >
+                  <span class="oh-history-task-state"
+                    ><i>({{change.field}})</i></span
+                  >
+                </div>
+              </li>
+              {% endfor %}
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
