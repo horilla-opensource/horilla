@@ -84,10 +84,7 @@ $("#archiveObjectives").click(function (e) {
       languageCode = code;
       var confirmMessage = archiveMessages[languageCode];
       var textMessage = norowMessages[languageCode];
-      var checkedRows = $(".all-objects-row").filter(":checked");
-      if (checkedRows.length === 0) {
-        var checkedRows = $(".own-objects-row").filter(":checked");
-      }
+      var checkedRows = $(".objective-checkbox").filter(":checked");
       if (checkedRows.length === 0) {
             Swal.fire({
             text: textMessage,
@@ -139,10 +136,7 @@ $("#unArchiveObjectives").click(function (e) {
       languageCode = code;
       var confirmMessage = unarchiveMessages[languageCode];
       var textMessage = norowMessages[languageCode];
-      var checkedRows = $(".all-objects-row").filter(":checked");
-      if (checkedRows.length === 0) {
-        var checkedRows = $(".own-objects-row").filter(":checked");
-      }
+      var checkedRows = $(".objective-checkbox").filter(":checked");
       if (checkedRows.length === 0) {
             Swal.fire({
             text: textMessage,
@@ -194,10 +188,7 @@ $("#deleteObjectives").click(function (e) {
       languageCode = code;
       var confirmMessage = deleteMessages[languageCode];
       var textMessage = norowMessages[languageCode];
-      var checkedRows = $(".all-objects-row").filter(":checked");
-      if (checkedRows.length === 0) {
-        var checkedRows = $(".own-objects-row").filter(":checked");
-      }
+      var checkedRows = $(".objective-checkbox").filter(":checked");
       if (checkedRows.length === 0) {
             Swal.fire({
             text: textMessage,

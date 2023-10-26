@@ -182,4 +182,14 @@ urlpatterns = [
         views.objective_bulk_delete,
         name="objective-bulk-delete",
     ),
+    path(
+        "feedback-bulk-archive",
+        views.feedback_bulk_archive,
+        name="feedback-bulk-archive",
+    ),
+    path(
+        "feedback-bulk-delete",
+        views.feedback_bulk_delete,
+        name="feedback-bulk-delete",
+    ),
 ]

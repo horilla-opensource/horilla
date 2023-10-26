@@ -1285,10 +1285,10 @@ def feedback_delete(request, id):
         else:
             messages.warning(
                 request,
-                _("Feedback %(review_cycle)s is ongoing you  you can archive it!")
-                % {"review_cycle": feedback.review_cycle},
+                _("You can't delete feedback %(review_cycle)s with status %(status)s")
+                % {"review_cycle": feedback.review_cycle, "status": feedback.status},
             )
-            return redirect(feedback_detailed_view, feedback.id)
+            return redirect(feedback_list_view)
         
     except Feedback.DoesNotExist:
         messages.error(request, _("Feedback not found."))
@@ -1965,4 +1965,59 @@ def objective_bulk_delete(request):
         except EmployeeObjective.DoesNotExist:
             messages.error(request, _("Objective not found."))
 
+    return JsonResponse({"message": "Success"})
+
+
+@login_required
+def feedback_bulk_archive(request):
+    """
+    This method is used to archive/un-archive bulk feedbacks
+    """
+    ids = request.POST["ids"]
+    ids = json.loads(ids)
+    is_active = False
+    message = _("un-archived")
+    if request.GET.get("is_active") == "False":
+        is_active = True
+        message = _("archived")
+    for feedback_id in ids:
+        feedback_id = Feedback.objects.get(id=feedback_id)
+        feedback_id.archive = is_active
+        feedback_id.save()
+        messages.success(
+            request,
+            _("{feedback} is {message}").format(
+                feedback=feedback_id, message=message
+            ),
+        )
+    return JsonResponse({"message": "Success"})
+
+
+@login_required
+@manager_can_enter(perm="pms.delete_feedback")
+def feedback_bulk_delete(request):
+    """
+    This method is used to bulk delete feedbacks
+    """
+    ids = request.POST["ids"]
+    ids = json.loads(ids)
+    for feedback_id in ids:
+        try:
+            feedback = Feedback.objects.get(id=feedback_id)
+            if feedback.status == "Closed" or feedback.status == "Not Started":
+                feedback.delete()
+                messages.success(
+                    request,
+                    _("Feedback %(review_cycle)s deleted successfully!")
+                    % {"review_cycle": feedback.review_cycle},
+                )
+            else:
+                messages.warning(
+                    request,
+                    _("You can't delete feedback %(review_cycle)s with status %(status)s")
+                    % {"review_cycle": feedback.review_cycle, "status": feedback.status},
+                )
+
+        except Feedback.DoesNotExist:
+            messages.error(request, _("Feedback not found."))
     return JsonResponse({"message": "Success"})

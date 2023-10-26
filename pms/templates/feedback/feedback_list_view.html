@@ -146,6 +146,51 @@
               </form>
             </div>
           </div>
+          
+          <div class="oh-btn-group ml-2">
+            <div class="oh-dropdown" x-data="{open: false}">
+              <button
+                class="oh-btn oh-btn--dropdown oh-btn oh-btn--shadow"
+                @click="open = !open"
+                @click.outside="open = false"
+              >
+                {% trans "Actions" %}
+              </button>
+              <div class="oh-dropdown__menu oh-dropdown__menu--right" x-show="open" 
+              style="display: none;"
+            >
+                <ul class="oh-dropdown__items">
+    
+                  <li class="oh-dropdown__item">
+                    <a href="#" class="oh-dropdown__link " id="archiveFeedback"
+    
+                      >{% trans "Archive" %}</a
+                    >
+                  </li>
+
+                  <li class="oh-dropdown__item">
+                    <a href="#" class="oh-dropdown__link "
+                    id="unArchiveFeedback"
+                      >{% trans "Un-Archive" %}</a
+                    >
+                  </li>
+
+                  {% if perms.pms.delete_feedback %}
+                  <li class="oh-dropdown__item">
+                    <a
+                      href="#"
+                      class="oh-dropdown__link oh-dropdown__link--danger"
+                      id="deleteFeedback"
+                      >{% trans "Delete" %}</a
+                    >
+                  </li>
+                  {% endif %}
+    
+                </ul>
+              </div>
+            </div>
+          </div>
+
         <!-- checking  user permission for objective creation -->
       {% if perms.pms.view_questiontemplate or request.user|filtersubordinates %}
         <div class="oh-btn-group ml-2">
@@ -153,7 +198,6 @@
               <a  href="{% url 'feedback-creation' %}" class="oh-btn oh-btn--secondary" role="button">
                 <ion-icon class="me-2 md hydrated" name="add-outline" role="img" aria-label="add outline"></ion-icon>
                 {% trans "Create" %}</a>
-           
           </div>
         </div>
       {% endif %}
@@ -168,6 +212,7 @@
   </div>
 </main>
 
+<script src="{% static 'src/feedback/action.js' %}"></script> 
 <script src="{% static '/base/filter.js' %}"></script>
 <script>
 

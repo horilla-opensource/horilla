@@ -67,14 +67,16 @@
           <div class="oh-sticky-table__tbody">
             {% for own_objective in own_objectives.object_list %}
             <div class="oh-sticky-table__tr" draggable="true">
-              <div class="oh-sticky-table__sd {% if own_objective.status == 'Closed' %}row-status--blue {% elif own_objective.status == 'On Track' %}row-status--yellow {% elif own_objective.status == 'Not Started' %}row-status--gray {% elif own_objective.status == 'Behind' %}row-status--orange {% elif own_objective.status == 'At Risk' %}row-status--red{% endif %}">
+              <div class="oh-sticky-table__sd {% if own_objective.status == 'Closed' %}row-status--blue 
+                {% elif own_objective.status == 'On Track' %}row-status--yellow {% elif own_objective.status == 'Not Started' %}row-status--gray 
+                {% elif own_objective.status == 'Behind' %}row-status--orange {% elif own_objective.status == 'At Risk' %}row-status--red{% endif %}">
                 <div class="d-flex">
                   <div>
                     <input
                       type="checkbox"
                       id="{{own_objective.id}}"
                       value="{{own_objective.id}}"
-                      class="oh-input payslip-checkbox oh-input__checkbox own-objects-row ms-2"
+                      class="oh-input objective-checkbox oh-input__checkbox own-objects-row ms-2"
                     />
                   </div>
               </div>
@@ -282,14 +284,16 @@
           <div class="oh-sticky-table__tbody">
             {% for all_objective in all_objectives.object_list %}
             <div class="oh-sticky-table__tr" draggable="true">
-              <div class="oh-sticky-table__sd {% if all_objective.status == 'Closed' %}row-status--blue {% elif all_objective.status == 'On Track' %}row-status--yellow {% elif all_objective.status == 'Not Started' %}row-status--gray {% elif all_objective.status == 'Behind' %}row-status--orange {% elif all_objective.status == 'At Risk' %}row-status--red{% endif %}">
+              <div class="oh-sticky-table__sd {% if all_objective.status == 'Closed' %}row-status--blue 
+                {% elif all_objective.status == 'On Track' %}row-status--yellow {% elif all_objective.status == 'Not Started' %}row-status--gray 
+                {% elif all_objective.status == 'Behind' %}row-status--orange {% elif all_objective.status == 'At Risk' %}row-status--red{% endif %}">
                 <div class="d-flex">
                   <div>
                     <input
                       type="checkbox"
                       id="{{all_objective.id}}"
                       value="{{all_objective.id}}"
-                      class="oh-input payslip-checkbox oh-input__checkbox all-objects-row ms-2"
+                      class="oh-input objective-checkbox oh-input__checkbox all-objects-row ms-2"
                     />
                   </div>
               </div>
