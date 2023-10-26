@@ -443,13 +443,13 @@ def candidate_stage_update(request, cand_id):
     """
     stage_id = request.POST["stageId"]
     candidate_obj = Candidate.objects.get(id=cand_id)
-    history_queryset = candidate_obj.candidate_history.all().first()
+    history_queryset = candidate_obj.history_set.all().first()
     stage_obj = Stage.objects.get(id=stage_id)
     previous_stage = history_queryset.stage_id
     if previous_stage == stage_obj:
         return JsonResponse({"type": "noChange", "message": _("No change detected.")})
     # Here set the last updated schedule date on this stage if schedule exists in history
-    history_queryset = candidate_obj.candidate_history.filter(stage_id=stage_obj)
+    history_queryset = candidate_obj.history_set.filter(stage_id=stage_obj)
     schedule_date = None
     if history_queryset.exists():
         # this condition is executed when a candidate dropped back to any previous

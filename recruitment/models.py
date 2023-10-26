@@ -12,7 +12,8 @@ import django
 from django.db import models
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
-from simple_history.models import HistoricalRecords
+from horilla_audit.models import HorillaAuditLog, HorillaAuditInfo
+from horilla_audit.methods import get_diff
 from employee.models import Employee
 from base.models import JobPosition, Company
 
@@ -257,14 +258,40 @@ class Candidate(models.Model):
     canceled = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     joining_date = models.DateField(blank=True, null=True)
-    history = HistoricalRecords(
-        related_name="candidate_history",
+    history = HorillaAuditLog(
+        related_name="history_set",
+        bases=[
+            HorillaAuditInfo,
+        ],
     )
     sequence = models.IntegerField(null=True, default=0)
     objects = models.Manager()
 
     def __str__(self):
         return f"{self.name}"
+
+    def get_full_name(self):
+        """
+        Method will return employee full name
+        """
+        return str(self.name)
+
+    def get_avatar(self):
+        """
+        Method will retun the api to the avatar or path to the profile image
+        """
+        url = (
+            f"https://ui-avatars.com/api/?name={self.get_full_name()}&background=random"
+        )
+        if self.profile:
+            url = self.profile.url
+        return url
+
+    def tracking(self):
+        """
+        This method is used to return the tracked history of the instance
+        """
+        return get_diff(self)
 
     def save(self, *args, **kwargs):
         # Check if the 'stage_id' attribute is not None
