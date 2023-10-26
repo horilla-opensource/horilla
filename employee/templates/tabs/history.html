@@ -1,0 +1,449 @@
+{% comment %}
+<style>
+  .timeline {
+    width: 700px;
+    color: #545454;
+    padding: 30px 20px;
+  }
+  .timeline ul {
+    list-style-type: none;
+    border-left: 2px solid #094a68;
+    padding: 10px 5px;
+  }
+  .timeline ul li {
+    padding: 20px 20px;
+    position: relative;
+    cursor: pointer;
+    transition: 0.5s;
+  }
+  .timeline ul li .timeline-tag {
+    display: inline-block;
+    background-color: seagreen;
+    color: white;
+    border-radius: 25px;
+    padding: 2px 5px;
+    font-size: 10px;
+    text-align: center;
+  }
+  .timeline-history-tag {
+    display: inline-block;
+    border: solid orange 1px;
+    color: orange;
+    border-radius: 25px;
+    padding: 2px 5px;
+    font-size: 8px;
+    text-align: center;
+  }
+  .timeline ul li .content h3 {
+    color: #111111;
+    font-size: 17px;
+    padding-top: 5px;
+  }
+  .timeline ul li .content p {
+    font-size: 15px;
+    margin-bottom: 0px;
+  }
+  .timeline ul li:before {
+    position: absolute;
+    content: "";
+    width: 10px;
+    height: 10px;
+    background-color: #111111;
+    border-radius: 50%;
+    left: -11px;
+    top: 28px;
+    transition: 0.5s;
+  }
+  .content h3 {
+    font-weight: 700;
+  }
+  @media (max-width: 300px) {
+    .timeline {
+      width: 100%;
+      padding: 30px 5px 30px 10px;
+    }
+    .timeline ul li .content h3 {
+      color: #34ace0;
+      font-size: 15px;
+    }
+  }
+  .oh-profile--md .oh-profile__avatar--custom {
+    width: 20px;
+    height: 20px;
+  }
+  .oh-profile--md span {
+    color: #545454;
+  }
+  .high-light-history {
+    border: solid rgba(255, 255, 0, 0.272);
+    background-color: rgba(255, 255, 0, 0.023);
+    /* border-radius: 10px; */
+  }
+</style>
+<div class="timeline">
+  <ul>
+    <li>
+      <div class="content p-3 high-light-history">
+        <span class="timeline-tag">3rd January 2020</span>
+        <h3>What Is Lorem Ipsum?</h3>
+        <p>
+          Lorem Ipsum is simply dummy text of the printing and typesetting
+          industry. Lorem Ipsum has been the industry's standard dummy text ever
+          since the 1500s.
+        </p>
+        <div class="history-tags-container mb-2">
+          <span class="timeline-history-tag">Promotion</span>
+          <span class="timeline-history-tag">Transfer</span>
+          <span class="timeline-history-tag">Update</span>
+          <span class="timeline-history-tag">Employee Conversion</span>
+        </div>
+        <div>
+          <div class="oh-sticky-table mb-2">
+            <div class="oh-sticky-table__table oh-table--sortable">
+              <div class="oh-sticky-table__thead">
+                <div class="oh-sticky-table__tr">
+                  <div class="oh-sticky-table__th"></div>
+                  <div
+                    class="oh-sticky-table__th"
+                    style="border-bottom: solid yellow"
+                  ></div>
+                  <div
+                    class="oh-sticky-table__th"
+                    style="border-bottom: solid yellowgreen"
+                  ></div>
+                </div>
+              </div>
+              <div class="oh-sticky-table__tbody">
+                <div class="oh-sticky-table__tr" draggable="true">
+                  <div class="oh-sticky-table__sd">
+                    <div class="oh-profile oh-profile--md">
+                      <div class="oh-profile__avatar mr-1">
+                        <img
+                          src="https://ui-avatars.com/api/?name=Job Position&background=random"
+                          class="oh-profile__image"
+                        />
+                      </div>
+                      <span
+                        class="oh-profile__name oh-text--dark"
+                        style="font-weight: 500"
+                        >Job Position</span
+                      >
+                    </div>
+                  </div>
+                  <div class="oh-sticky-table__td">
+                    <div class="oh-profile oh-profile--md">
+                      <div class="oh-profile__avatar mr-1">
+                        <img
+                          src="https://ui-avatars.com/api/?name=Python Dev&background=random"
+                          class="oh-profile__image"
+                        />
+                      </div>
+                      <span class="oh-profile__name oh-text--dark"
+                        >Python Dev</span
+                      >
+                    </div>
+                  </div>
+                  <div class="oh-sticky-table__td">
+                    <div class="oh-profile oh-profile--md">
+                      <div class="oh-profile__avatar mr-1">
+                        <img
+                          src="https://ui-avatars.com/api/?name=Django Dev&background=random"
+                          class="oh-profile__image"
+                        />
+                      </div>
+                      <span class="oh-profile__name oh-text--dark"
+                        >Django Dev</span
+                      >
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="by">
+            <div class="oh-profile oh-profile--md">
+              <span class="oh-profile__name oh-text--dark">📌 By &nbsp;</span>
+              <div class="oh-profile__avatar oh-profile__avatar--custom mr-1">
+                <img
+                  src="https://ui-avatars.com/api/?name=Abigail+Lee&amp;background=random"
+                  class="oh-profile__image"
+                  alt="Username"
+                />
+              </div>
+              <span class="oh-profile__name oh-text--dark">Abigail Lee</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </li>
+    <li>
+      <div class="content p-3">
+        <span class="timeline-tag">3rd January 2020</span>
+        <h3>What Is Lorem Ipsum?</h3>
+        <p>
+          Lorem Ipsum is simply dummy text of the printing and typesetting
+          industry. Lorem Ipsum has been the industry's standard dummy text ever
+          since the 1500s.
+        </p>
+        <div class="history-tags-container mb-2">
+          <span class="timeline-history-tag">Promotion</span>
+          <span class="timeline-history-tag">Transfer</span>
+          <span class="timeline-history-tag">Update</span>
+          <span class="timeline-history-tag">Internal Transfer</span>
+        </div>
+        <div>
+          <div class="oh-sticky-table mb-2">
+            <div class="oh-sticky-table__table oh-table--sortable">
+              <div class="oh-sticky-table__thead">
+                <div class="oh-sticky-table__tr">
+                  <div class="oh-sticky-table__th"></div>
+                  <div
+                    class="oh-sticky-table__th"
+                    style="border-bottom: solid yellow"
+                  ></div>
+                  <div
+                    class="oh-sticky-table__th"
+                    style="border-bottom: solid yellowgreen"
+                  ></div>
+                </div>
+              </div>
+              <div class="oh-sticky-table__tbody">
+                <div class="oh-sticky-table__tr" draggable="true">
+                  <div class="oh-sticky-table__sd">
+                    <div class="oh-profile oh-profile--md">
+                      <div class="oh-profile__avatar mr-1">
+                        <img
+                          src="https://ui-avatars.com/api/?name=Job Position&background=random"
+                          class="oh-profile__image"
+                        />
+                      </div>
+                      <span
+                        class="oh-profile__name oh-text--dark"
+                        style="font-weight: 500"
+                        >Job Position</span
+                      >
+                    </div>
+                  </div>
+                  <div class="oh-sticky-table__td">
+                    <div class="oh-profile oh-profile--md">
+                      <div class="oh-profile__avatar mr-1">
+                        <img
+                          src="https://ui-avatars.com/api/?name=Python Dev&background=random"
+                          class="oh-profile__image"
+                        />
+                      </div>
+                      <span class="oh-profile__name oh-text--dark"
+                        >Python Dev</span
+                      >
+                    </div>
+                  </div>
+                  <div class="oh-sticky-table__td">
+                    <div class="oh-profile oh-profile--md">
+                      <div class="oh-profile__avatar mr-1">
+                        <img
+                          src="https://ui-avatars.com/api/?name=Django Dev&background=random"
+                          class="oh-profile__image"
+                        />
+                      </div>
+                      <span class="oh-profile__name oh-text--dark"
+                        >Django Dev</span
+                      >
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="by">
+            <div class="oh-profile oh-profile--md">
+              <span class="oh-profile__name oh-text--dark">📌 By &nbsp;</span>
+              <div class="oh-profile__avatar oh-profile__avatar--custom mr-1">
+                <img
+                  src="https://ui-avatars.com/api/?name=Abigail+Lee&amp;background=random"
+                  class="oh-profile__image"
+                  alt="Username"
+                />
+              </div>
+              <span class="oh-profile__name oh-text--dark">Abigail Lee</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </li>
+  </ul>
+</div>
+{% endcomment %} {% load static %}
+{% load audit_filters %}
+<div class="row">
+  {% comment %} <div class="oh-history_log-container">
+    <div class="oh-history_user-img">
+      <img
+        src="{% static '/images/upload/userphoto.png' %}"
+        alt=""
+        class="oh-history_user-pic"
+      />
+    </div>
+    <div class="oh-history-log_msg-section">
+      <div class="oh-history-log_msg-container">
+        <textarea
+          name=""
+          id=""
+          rows="1"
+          class="oh-history_textarea"
+          placeholder="Log an internal note..."
+        ></textarea>
+        <div class="oh-history-log_buttons">
+          <div class="oh-history_cust_btn">
+            <div class="oh-history_iconbtn">
+              <img src="./static/images/ui/emotion-happy-line (1).svg" alt="" />
+            </div>
+            <div class="oh-history_iconbtn">
+              <img src="./static/images/ui/attachment-2.svg" alt="" />
+            </div>
+          </div>
+          <div class="oh-history_log-attchbtn">
+            <div class="oh-history_iconbtn">
+              <img src="./static/images/ui/fullscreen-line.svg" alt="" />
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="d-flex m-2 justify-content-end">
+        <button class="oh-btn oh-btn--secondary oh-btn--w-100-resp">Log</button>
+      </div>
+    </div>
+  </div> {% endcomment %}
+{% for history in employee.employee_work_info.tracking %}
+  <div class="oh-history__container">
+    <div class="oh-history_date oh-card__title oh-card__title--sm fw-bold me-2">
+      <span class="oh-history_date-content">{{history.pair.1.history_date|date:"M. d, Y, l g:i A"}}</span>
+    </div>
+    <div class="d-flex">
+      <div class="oh-history_user-img">
+        <img
+          src="{{history.updated_by.get_avatar}}"
+          alt=""
+          class="oh-history_user-pic"
+        />
+        <div class="oh-history_user-state oh-user_inactive"></div>
+      </div>
+      <div class="oh-history_user-details">
+        <span class="oh-history__username ">{{history.updated_by}}</span>
+        {% comment %} <span class="oh-history_time">- 2 months ago</span> {% endcomment %}
+        <div class="oh-history_abt pb-0">
+          {% if history.pair.0.history_title %}
+          <span class="oh-history_task-state">{{history.pair.0.history_title}}</span>
+          {% endif %}
+          {% if history.pair.0.history_description %}
+          <p class="oh-history_time">
+            {{history.pair.0.history_description}}
+          </p>
+          {% endif %}
+          <div class="oh-history_tabs">
+            {% for tag in history.pair.0.history_tags.all %}
+            <a href="#" class="oh-history_msging-email oh-history_tabs-items"
+            >{{tag.title}}</a
+            >
+            {% endfor %}
+            
+          </div>
+        </div>
+        <div class="oh-history_msg-container">
+          <div class="oh-history_task-tracker">
+            <span class="oh-history_msging-email">{{history.type}}</span>
+            <ul class="ul">
+              {% for change in history.changes %}
+              <li class="oh-history_task-list">
+                <div class="oh-history_track-value">
+                  <span >{{history.pair.1|fk_history:change}}</span>
+                  <img
+                  src="{% static  '/images/ui/arrow-right-line.svg' %}"
+                  class="oh-progress_arrow"
+                  alt=""
+                  />
+                  <span class="oh-history_tracking-value">{{history.pair.0|fk_history:change}}</span>
+                  <span class="oh-history-task-state"><i>({{change.field}})</i></span>
+                </div>
+              </li>
+              {% endfor %}
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+  {% comment %}
+  <div class="oh-history__container">
+    <div class="oh-history_date oh-card__title oh-card__title--sm fw-bold me-2">
+      <span class="oh-history_date-content">June 12, 2023</span>
+    </div>
+    <div class="d-flex">
+      <div class="oh-history_user-img">
+        <img
+          src="{% static '/images/upload/userphoto.png' %}"
+          alt=""
+          class="oh-history_user-pic"
+        />
+        <div class="oh-history_user-state oh-user_inactive"></div>
+      </div>
+      <div class="oh-history_user-details">
+        <span class="oh-history__username">Sanjay</span>
+        <span class="oh-history_time">- 3 months ago</span>
+        <div class="oh-history_msg-container">
+          <a href="" class="oh-history_msging-email">@Lizaveta Ivanovna</a
+          >Please update
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="oh-history__container">
+    <div class="oh-history_date oh-card__title oh-card__title--sm fw-bold me-2">
+      <span class="oh-history_date-content">April 20, 2023</span>
+    </div>
+    <div class="d-flex">
+      <div class="oh-history_user-img">
+        <img
+          src="{% static '/images/upload/userphoto.png' %}"
+          alt=""
+          class="oh-history_user-pic"
+        />
+        <div class="oh-history_user-state oh-user_inactive"></div>
+      </div>
+      <div class="oh-history_user-details">
+        <span class="oh-history__username">Lizaveta Ivanovna</span>
+        <span class="oh-history_time">- 4 months ago</span>
+        <div class="oh-history_task-tracker">
+          <span class="oh-history_task-state">Task blocked</span>
+          <ul>
+            <li class="oh-history_task-list">
+              <div class="oh-history_track-value">
+                <span>In Progress</span>
+                <img
+                  src="{% static  '/images/ui/arrow-right-line.svg' %}"
+                  class="oh-progress_arrow"
+                  alt=""
+                />
+                <span class="oh-history_tracking-value">Blocked</span>
+              </div>
+            </li>
+            <li class="oh-history_task-list">
+              <div class="oh-history_track-value">
+                <span>In Progress</span>
+                <img
+                  src="{% static  '/images/ui/arrow-right-line.svg' %}"
+                  class="oh-progress_arrow"
+                  alt=""
+                />
+                <span class="oh-history_tracking-value">To review</span>
+                <span class="oh-history-task-state"><i>(Stage)</i></span>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endcomment %}
+</div>
