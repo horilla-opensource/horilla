@@ -27,7 +27,9 @@ $(document).ready(function () {
   // Active tab script
   function activeProfileTab() {
     var activeTab = localStorage.getItem("activeProfileTab")
-    if(activeTab != null){
+    if (!$(activeTab).length && $(`[data-target="#personal_target"]`).length) {
+      $(`[data-target="#personal_target"]`)[0].click()
+    }else if(activeTab != null){
       $(".oh-general__tab-link--active").removeClass("oh-general__tab-link--active");
       $(`[data-target='${activeTab}']`).addClass("oh-general__tab-link--active");
       $(".oh-general__tab-target").addClass("d-none");
