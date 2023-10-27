@@ -1,31 +1,18 @@
+$(document).ready(function() {
 const objectiveChart = document.getElementById("objectiveChart");
 // data dictionary
 var objectiveStatusData = {
 	labels: [],
 	datasets: [
 		{
-			label: "",
+			label: "objective",
 			data: [],
 			backgroundColor: ["#8de5b3", "#f0a8a6", "#8ed1f7", "#f8e08e", "#c2c7cc"],
 			hoverOffset: 3,
 		},
 	],
+	message:"",
 };
-function isChartEmpty(chartData) {
-	if (!chartData) {
-		return true;
-	}
-	for (let i = 0; i < chartData.length; i++) {
-		
-		if (chartData[i]) {
-			const hasNonZeroValues = chartData.some((value) => value !== 0);
-			if (hasNonZeroValues) {
-				return false;
-			}
-		}
-	}
-	return true;
-}
 
 // chart constructor
 if (objectiveChart != null) {
@@ -57,12 +44,16 @@ if (objectiveChart != null) {
 				$("#back_button").removeClass("d-none");
 			},
 		},
+		plugins: [{
+			afterRender: (chart)=>emptyChart(chart)
+		}],
 	});
 }
 
 function objectiveStatusDataUpdate(data) {
 	objectiveStatusData.labels = data.objective_label;
 	objectiveStatusData.datasets[0].data = data.objective_value;
+	objectiveStatusData.message = data.message;
 	objectiveStatusChart.update();
 }
 
@@ -74,20 +65,7 @@ $.ajax({
 		"X-Requested-With": "XMLHttpRequest",
 	},
 	success: (response) => {
-		if (isChartEmpty(response.objective_value)) {
-			$("#objectiveChart")
-				.parent()
-				.html(
-					`<div style="height: 320px; display:flex;align-items: center;justify-content: center;" class="">
-                        <div style="" class="">
-                        <img style="display: block;width: 70px;margin: 20px auto ;" src="/static/images/ui/joiningchart.png" class="" alt=""/>
-                        <h3 style="font-size:16px" class="oh-404__subtitle">${response.message}</h3>
-                        </div>
-                    </div>`
-				);
-		} else {
-			objectiveStatusDataUpdate(response);
-		}
+		objectiveStatusDataUpdate(response);
 	},
 	error: (error) => {
 		console.log("Error", error);
@@ -119,12 +97,13 @@ var keyResultStatusData = {
 	labels: [],
 	datasets: [
 		{
-			label: "",
+			label: "key result",
 			data: [],
 			backgroundColor: ["#8de5b3", "#f0a8a6", "#8ed1f7", "#f8e08e", "#c2c7cc"],
 			hoverOffset: 3,
 		},
 	],
+	message:"",
 };
 
 // chart constructor
@@ -151,19 +130,22 @@ if (keyResultStatusChartCtx != null) {
 						$("#dashboard").html(response);
 					},
 					error: (error, response) => {
-						console.log(response);
 						console.log("Error", error);
 					},
 				});
 				$("#back_button").removeClass("d-none");
 			},
 		},
+		plugins: [{
+			afterRender: (chart)=>emptyChart(chart)
+		}],
 	});
 }
 
 function keyResultStatusDataUpdate(data) {
 	keyResultStatusData.labels = data.key_result_label;
 	keyResultStatusData.datasets[0].data = data.key_result_value;
+	keyResultStatusData.message = data.message;
 	keyResultStatusChart.update();
 }
 
@@ -175,20 +157,7 @@ $.ajax({
 		"X-Requested-With": "XMLHttpRequest",
 	},
 	success: (response) => {
-		if (isChartEmpty(response.key_result_value)) {
-			$("#keyResultChart")
-				.parent()
-				.html(
-					`<div style="height: 320px; display:flex;align-items: center;justify-content: center;" class="">
-                        <div style="" class="">
-                        <img style="display: block;width: 70px;margin: 20px auto ;" src="/static/images/ui/joiningchart.png" class="" alt=""/>
-                        <h3 style="font-size:16px" class="oh-404__subtitle">${response.message}</h3>
-                        </div>
-                    </div>`
-				);
-		} else {
-			keyResultStatusDataUpdate(response);
-		}
+		keyResultStatusDataUpdate(response);
 	},
 	error: (error) => {
 		console.log("Error", error);
@@ -226,6 +195,7 @@ var feedbackStatusData = {
 			hoverOffset: 3,
 		},
 	],
+	message:"",
 };
 
 // chart constructor
@@ -258,12 +228,16 @@ if (feedbackStatusChartCtx != null) {
 				$("#back_button").removeClass("d-none");
 			},
 		},
+		plugins: [{
+			afterRender: (chart)=>emptyChart(chart)
+		}],
 	});
 }
 
 function feedbackStatusDataUpdate(data) {
 	feedbackStatusData.labels = data.feedback_label;
 	feedbackStatusData.datasets[0].data = data.feedback_value;
+	feedbackStatusData.message = data.message;
 	feedbackStatusChart.update();
 }
 
@@ -275,20 +249,7 @@ $.ajax({
 		"X-Requested-With": "XMLHttpRequest",
 	},
 	success: (response) => {
-		if (isChartEmpty(response.feedback_value)) {
-			$("#feedbackChart")
-				.parent()
-				.html(
-					`<div style="height: 320px; display:flex;align-items: center;justify-content: center;" class="">
-                        <div style="" class="">
-                        <img style="display: block;width: 70px;margin: 20px auto ;" src="/static/images/ui/joiningchart.png" class="" alt=""/>
-                        <h3 style="font-size:16px" class="oh-404__subtitle">${response.message}</h3>
-                        </div>
-                    </div>`
-				);
-		} else {
-			feedbackStatusDataUpdate(response);
-		}
+		feedbackStatusDataUpdate(response);
 	},
 	error: (error) => {
 		console.log("Error", error);
@@ -309,4 +270,5 @@ $("#feedback-status-chart").click(function (e) {
 	}
 	feedbackStatusChart.config.type = chartType;
 	feedbackStatusChart.update();
+});
 });
