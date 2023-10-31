@@ -474,6 +474,7 @@ class ShiftRequest(models.Model):
         related_name="shift_request",
         verbose_name=_("Employee"),
     )
+    is_permanent_shift = models.BooleanField(default=True)
     requested_date = models.DateField(null=True, default=django.utils.timezone.now)
     requested_till = models.DateField(
         null=True, blank=True, default=django.utils.timezone.now

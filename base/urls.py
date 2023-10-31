@@ -305,6 +305,11 @@ urlpatterns = [
         "shift-request-search", views.shift_request_search, name="shift-request-search"
     ),
     path(
+        "shift-request-details/<int:id>/",
+        views.shift_request_details,
+        name="shift-request-details",
+    ),
+    path(
         "shift-request-update/<int:id>/",
         views.shift_request_update,
         name="shift-request-update",
@@ -339,6 +344,7 @@ urlpatterns = [
         views.shift_request_bulk_delete,
         name="shift-request-bulk-delete",
     ),
+
     path("notifications", views.notifications, name="notifications"),
     path("clear-notifications", views.clear_notification, name="clear-notifications"),
     path("read-notifications", views.read_notifications, name="read-notifications"),

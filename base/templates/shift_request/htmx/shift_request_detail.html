@@ -1,0 +1,25 @@
+{% load i18n %} {% load yes_no %}
+<div class="oh-modal__dialog-header">
+    <span class="oh-modal__dialog-title" id="shiftRequestDetailTitle">
+        <h5 style="margin-bottom: 20px;">{{shift_request.employee_id}}</h5>
+    </span>
+    <button
+        type="button"
+        class="oh-modal__close"
+        data-dismiss="oh-modal"
+        aria-label="Close"
+        data-toggle="oh-modal-toggle"
+    >
+        <ion-icon name="close-outline"></ion-icon>
+    </button>
+    <div class="oh-timeoff-modal__stats-container mb-3">
+      <div class="oh-timeoff-modal__stat">
+          <span class="oh-timeoff-modal__stat-title">{% trans "Requested date" %}</span>
+          <span class="oh-timeoff-modal__stat-count">{{shift_request.requested_date}}</span>
+      </div>
+      <div class="oh-timeoff-modal__stat" style="margin-left: 20px;">
+          <span class="oh-timeoff-modal__stat-title">{% trans "Requested till" %}</span>
+          <span class="oh-timeoff-modal__stat-count">{{shift_request.requested_till}}</span>
+      </div>
+    </div>
+</div>

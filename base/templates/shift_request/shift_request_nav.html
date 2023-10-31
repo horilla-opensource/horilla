@@ -260,7 +260,7 @@ x-data="{searchShow: false}"
           hx-post="{% url 'shift-request' %}"
           hx-target="#formBody"
           >
-          {% trans "Add" %}
+          {% trans "Addssssssssss" %}
         </button>
       </div>
     </form>
@@ -270,3 +270,23 @@ x-data="{searchShow: false}"
 </div>
 
 <script src="{% static '/base/filter.js' %}"></script>
+<script>
+function toggleFunctionShiftRequestForm(){
+  console.log('rrrrrr')
+  if ($('#id_is_permanent_shift').is(":checked")){
+    $("[for=id_requested_date],[for=id_requested_till]").hide();
+    $("#id_requested_date,#id_requested_till").hide();
+  } else {
+    $("[for=id_requested_date],[for=id_requested_till]").show();
+    $("#id_requested_date,#id_requested_till").show();
+  }
+}
+$(document).ready(function(){
+  console.log('ssssssssssss')
+     $("[type=checkbox]").change(function (e) {
+      e.preventDefault();
+      toggleFunctionShiftRequestForm();
+    });
+})
+toggleFunctionShiftRequestForm();
+</script>
