@@ -1,8 +1,26 @@
 {% load i18n %}
 {% include 'filter_tags.html' %}
+<style>
+  .oh-modal_close--custom {
+    border: none;
+    background: none;
+    font-size: 1.5rem;
+    opacity: 0.7;
+    position: absolute;
+    top: 25px;
+    right: 15px;
+  }
+  .oh-timeoff-card__stat-container, .oh-timeoff-modal__stats-container{
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+  .oh-timeoff-modal__stat-title{
+    margin-top: 10px;
+  }
+</style>
 <div class="oh-layout--grid-3" >
 {% for leave_type in leave_types %}
-      <div class="oh-kanban-card">
+      <div class="oh-kanban-card" data-toggle="oh-modal-toggle" data-target="#singleModal"
+      hx-get="{% url 'leave-type-individual-view' leave_type.id %}" hx-target="#singleView">
         <div class="oh-kanban-card__avatar">
           <div class="oh-kanban-card__profile-container">
             {% if leave_type.icon %}
@@ -16,7 +34,7 @@
         <div class="oh-kanban-card__details">
           <span class="oh-kanban-card__title">{{leave_type.name}}</span>
         </div>
-        <div class="oh-kanban-card__dots">
+        <div class="oh-kanban-card__dots" onclick="event.stopPropagation()">
           <div class="oh-dropdown" x-data="{show: false}">
             <button class="oh-btn oh-btn--transparent text-muted p-3" @click="show = !show">
               <span title='{% trans "Actions" %}'> <ion-icon name="ellipsis-vertical-sharp"></ion-icon></span>

@@ -119,6 +119,23 @@ def leave_type_view(request):
         {"leave_types": page_obj, "form": leave_type_filter.form, "pd": previous_data},
     )
 
+@login_required
+@manager_can_enter("leave.view_leaverequest")
+def leave_type_individual_view(request, id):
+    """
+    function used to view one leave type.
+
+    Parameters:
+    request (HttpRequest): The HTTP request object.
+
+    Returns:
+    GET : return one leave type view template
+    """
+    leave_type = LeaveType.objects.get(id=id)
+    return render(
+        request, "leave/leave_type/leave_type_individual_view.html", {"leave_type": leave_type}
+    )
+
 
 @login_required
 @hx_request_required

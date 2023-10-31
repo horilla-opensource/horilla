@@ -6,6 +6,7 @@ from . import views
 urlpatterns = [
     path("type-creation", views.leave_type_creation, name="type-creation"),
     path("type-view", views.leave_type_view, name="type-view"),
+    path("leave-type-individual-view/<int:id>", views.leave_type_individual_view, name="leave-type-individual-view"),
     path("type-update/<int:id>", views.leave_type_update, name="type-update"),
     path("type-delete/<int:id>", views.leave_type_delete, name="type-delete"),
     path("type-filter", views.leave_type_filter, name="type-filter"),

@@ -1,0 +1,137 @@
+{% load i18n %}
+<div class="oh-modal__dialog-body oh-timeoff-modal__body  pb-3 pt-3">
+    <div class="oh-timeoff-modal__profile-content">
+        <div class="oh-profile">
+            <div class="oh-profile__avatar mr-1">
+                {% if leave_type.icon %}
+                <img src="{{leave_type.icon.url}}" class="oh-profile__image"
+                    alt="" />
+                {% else %}
+                <img src="https://ui-avatars.com/api/?name={{leave_type.name}}&background=random"
+                    class="oh-profile__image" alt="" />
+                {% endif %}
+            </div>
+        </div>
+        <div class="oh-timeoff-modal__profile-info">
+            <span class="oh-timeoff-modal__user fw-bold">{{leave_type.name}}</span>
+        </div>
+    </div>
+
+    <div class="oh-timeoff-modal__stats-container">
+        <div class="oh-timeoff-modal__stat">
+            <span class="oh-timeoff-modal__stat-title">{% trans "Period In" %}</span>
+            <span class="oh-timeoff-modal__stat-count">{{leave_type.period_in}}</span>
+        </div>        
+        <div class="oh-timeoff-modal__stat">
+            <span class="oh-timeoff-modal__stat-title">{% trans "count" %}</span>
+            <span class="oh-timeoff-modal__stat-count">{{leave_type.count}}</span>
+        </div>
+        <div class="oh-timeoff-modal__stat">
+            <span class="oh-timeoff-modal__stat-title">{% trans "Total Days" %}</span>
+            <span class="oh-timeoff-modal__stat-count">{{leave_type.total_days}}</span>
+        </div>
+        <div class="oh-timeoff-modal__stat">
+            <span class="oh-timeoff-modal__stat-title">{% trans "Reset" %}</span>
+            <span class="oh-timeoff-modal__stat-count">{{leave_type.reset}}</span>
+        </div>
+        {% if leave_type.reset_based %}
+        <div class="oh-timeoff-modal__stat">
+            <span class="oh-timeoff-modal__stat-title">{% trans "Reset Based" %}</span>
+            <span class="oh-timeoff-modal__stat-count">{{leave_type.reset_based}}</span>
+        </div>
+        {% endif %}
+        {% if leave_type.reset_month %}
+        <div class="oh-timeoff-modal__stat">
+            <span class="oh-timeoff-modal__stat-title">{% trans "Reset Month" %}</span>
+            <span class="oh-timeoff-modal__stat-count">{{leave_type.get_reset_month_display}}</span>
+        </div>
+        {% endif %}
+        {% if leave_type.reset_day %}
+        <div class="oh-timeoff-modal__stat">
+            <span class="oh-timeoff-modal__stat-title">{% trans "Reset Day" %}</span>
+            <span class="oh-timeoff-modal__stat-count">{{leave_type.reset_day}}</span>
+        </div>
+        {% endif %}
+        {% if leave_type.reset_weekend %}
+        <div class="oh-timeoff-modal__stat">
+            <span class="oh-timeoff-modal__stat-title">{% trans "Reset weekend" %}</span>
+            <span class="oh-timeoff-modal__stat-count">{{leave_type.reset_weekend}}</span>
+        </div>
+        {% endif %}
+        <div class="oh-timeoff-modal__stats ">
+            <div class="oh-timeoff-modal__stat">
+                <span class="oh-timeoff-modal__stat-title">{% trans "Carryforward Type" %}</span>
+                <div class="oh-timeoff-modal__stat-count">{{leave_type.carryforward_type}}</div>
+            </div>
+        </div>
+        {% if leave_type.carryforward_max %}
+        <div class="oh-timeoff-modal__stat">
+            <span class="oh-timeoff-modal__stat-title">{% trans "Maximum Carryforward" %}</span>
+            <span class="oh-timeoff-modal__stat-count">{{leave_type.carryforward_max}}</span>
+        </div>
+        {% endif %}
+        {% if leave_type.carryforward_expire_in %}
+        <div class="oh-timeoff-modal__stat">
+            <span class="oh-timeoff-modal__stat-title">{% trans "Carryforward Expire in" %}</span>
+            <span class="oh-timeoff-modal__stat-count">{{leave_type.carryforward_expire_in}}</span>
+        </div>
+        {% endif %}
+        {% if leave_type.carryforward_expire_period %}
+        <div class="oh-timeoff-modal__stat">
+            <span class="oh-timeoff-modal__stat-title">{% trans "Carryforward Expire period" %}</span>
+            <span class="oh-timeoff-modal__stat-count">{{leave_type.carryforward_expire_period}}</span>
+        </div>
+        {% endif %}
+        <div class="oh-timeoff-modal__stats ">
+            <div class="oh-timeoff-modal__stat">
+                <span class="oh-timeoff-modal__stat-title">{% trans "Payment Type" %}</span>
+                <div class="oh-timeoff-modal__stat-count">{{leave_type.payment}}</div>
+            </div>
+        </div>
+        <div class="oh-timeoff-modal__stats ">
+            <div class="oh-timeoff-modal__stat">
+                <span class="oh-timeoff-modal__stat-title">{% trans "Require Approval" %}</span>
+                <div class="oh-timeoff-modal__stat-count">{{leave_type.require_approval}}</div>
+            </div>
+        </div>
+        <div class="oh-timeoff-modal__stats">
+            <div class="oh-timeoff-modal__stat">
+                <span class="oh-timeoff-modal__stat-title">{% trans "Require Attachment" %}</span>
+                <div class="oh-timeoff-modal__stat-description">{{leave_type.require_attachment }}</div>
+            </div>
+        </div>
+        
+        <div class="oh-timeoff-modal__stats ">
+            <div class="oh-timeoff-modal__stat">
+                <span class="oh-timeoff-modal__stat-title">{% trans "Exclude company Leaves" %}</span>
+                <div class="oh-timeoff-modal__stat-count">{{leave_type.exclude_company_leave}}</div>
+            </div>
+        </div>
+        <div class="oh-timeoff-modal__stats ">
+            <div class="oh-timeoff-modal__stat">
+                <span class="oh-timeoff-modal__stat-title">{% trans "Exclude Holidays" %}</span>
+                <div class="oh-timeoff-modal__stat-count">{{leave_type.exclude_holiday}}</div>
+            </div>
+        </div>
+        
+    </div>
+</div>
+
+<div class="oh-modal__button-container text-center">
+    <div class="oh-btn-group">
+        <a href="{% url 'type-update' leave_type.id %}"  class="oh-btn oh-btn--info w-50">
+            <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
+            {% trans "Edit" %}
+        </a>      
+        <a data-toggle="oh-modal-toggle" data-target="#editModal"
+        hx-get="{% url 'assign-one' leave_type.id %}" hx-target="#leaveForm" class="oh-btn oh-btn--success w-50">
+            <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
+            {% trans "Assign" %}
+        </a>
+        <a href="{% url 'type-delete' leave_type.id %}" class="oh-btn oh-btn--danger w-50">
+            <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
+            {% trans "Delete" %}
+        </a>
+        
+    </div>
+</div>
