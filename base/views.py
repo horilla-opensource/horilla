@@ -236,7 +236,15 @@ def logout_user(request):
     """
     if request.user:
         logout(request)
-    return redirect("/login")
+    response = HttpResponse()
+    response.content = """
+        <script>
+            localStorage.clear();
+        </script>
+        <meta http-equiv="refresh" content="0;url=/login">
+    """
+
+    return response
 
 
 @login_required
@@ -261,15 +269,15 @@ def home(request):
 
     today = datetime.today()
     today_weekday = today.weekday()
-    first_day_of_week= today - timedelta(days=today_weekday)
+    first_day_of_week = today - timedelta(days=today_weekday)
     last_day_of_week = first_day_of_week + timedelta(days=6)
 
     context = {
-        "first_day_of_week":first_day_of_week.strftime("%Y-%m-%d"),
-        "last_day_of_week":last_day_of_week.strftime("%Y-%m-%d"),
+        "first_day_of_week": first_day_of_week.strftime("%Y-%m-%d"),
+        "last_day_of_week": last_day_of_week.strftime("%Y-%m-%d"),
     }
 
-    return render(request, "index.html",context)
+    return render(request, "index.html", context)
 
 
 @login_required
@@ -916,7 +924,7 @@ def rotating_work_type_assign_add(request):
     form = RotatingWorkTypeAssignForm()
     if request.GET.get("emp_id"):
         employee = request.GET.get("emp_id")
-        form = RotatingWorkTypeAssignForm(initial = {"employee_id":employee})
+        form = RotatingWorkTypeAssignForm(initial={"employee_id": employee})
     form = choosesubordinates(request, form, "base.add_rotatingworktypeassign")
     if request.method == "POST":
         form = RotatingWorkTypeAssignForm(request.POST)
@@ -1467,7 +1475,7 @@ def rotating_shift_assign_add(request):
     form = RotatingShiftAssignForm()
     if request.GET.get("emp_id"):
         employee = request.GET.get("emp_id")
-        form = RotatingShiftAssignForm(initial = {"employee_id":employee})
+        form = RotatingShiftAssignForm(initial={"employee_id": employee})
     form = choosesubordinates(request, form, "base.add_rotatingshiftassign")
     if request.method == "POST":
         form = RotatingShiftAssignForm(request.POST)
@@ -1830,7 +1838,7 @@ def work_type_request(request):
     "canceled"
     if request.GET.get("emp_id"):
         employee = request.GET.get("emp_id")
-        form = WorkTypeRequestForm(initial = {"employee_id":employee})
+        form = WorkTypeRequestForm(initial={"employee_id": employee})
     form = choosesubordinates(
         request,
         form,
@@ -2156,7 +2164,7 @@ def shift_request(request):
     form = ShiftRequestForm()
     if request.GET.get("emp_id"):
         employee = request.GET.get("emp_id")
-        form = ShiftRequestForm(initial = {"employee_id":employee})
+        form = ShiftRequestForm(initial={"employee_id": employee})
     form = choosesubordinates(
         request,
         form,
@@ -2251,6 +2259,23 @@ def shift_request_search(request):
             "data": paginator_qry(shift_requests, request.GET.get("page")),
             "pd": previous_data,
             "filter_dict": data_dict,
+        },
+    )
+
+
+@login_required
+def shift_request_details(request, id):
+    """
+    This method is used to show shift request details in a modal
+    args:
+        id : shift request instance id
+    """
+    shift_request = ShiftRequest.objects.get(id=id)
+    return render(
+        request,
+        "shift_request/htmx/shift_request_detail.html",
+        {
+            "shift_request": shift_request,
         },
     )
 
@@ -2642,6 +2667,7 @@ def validation_condition_create(request):
         "attendance/break_point/condition.html",
         {"form": form, "condition": condition},
     )
+
 
 @login_required
 @permission_required("attendance.change_attendancevalidationcondition")
