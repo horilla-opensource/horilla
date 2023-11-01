@@ -165,7 +165,7 @@
   </div>
 
   <div class="oh-main__titlebar oh-main__titlebar--right">
-    {% if data %}
+    {% if emp %}
     <div
       class="oh-input-group oh-input__search-group"
       :class="searchShow ? 'oh-input__search-group--show' : ''"
@@ -187,7 +187,7 @@
         aria-label="Search Input"
       />
     </div>
-    {% endif %} {% if data %}
+    {% endif %} {% if emp %}
     <ul class="oh-view-types ml-2" style="margin-bottom: 0">
       <li class="oh-view-type employee-view-type" data-view="list">
         <a
@@ -227,7 +227,7 @@
     {% endif %}
 
     <div class="oh-main__titlebar-button-container">
-      {% if data %}
+      {% if emp %}
       <div class="oh-dropdown" x-data="{open: false}">
         <button class="oh-btn ml-2" @click="open = !open">
           <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}
@@ -283,39 +283,38 @@
                   >{% trans "Import" %}</a
                 >
               </li>
-              {% if data %}
-              <li class="oh-dropdown__item">
-                <a
-                  href="#"
-                  class="oh-dropdown__link"
-                  id="employee-info-export"
-                  data-toggle="oh-modal-toggle"
-                  data-target="#employeeExport"
-                  >{% trans "Export" %}</a
-                >
-              </li>
-              {% if perms.delete_employee %}
-              <li class="oh-dropdown__item">
-                <a href="#" class="oh-dropdown__link" id="archiveEmployees"
-                  >{% trans "Archive" %}</a
-                >
-              </li>
-              {% endif %} {% if perms.delete_employee %}
-              <li class="oh-dropdown__item">
-                <a href="#" class="oh-dropdown__link" id="unArchiveEmployees"
-                  >{% trans "Un-Archive" %}</a
-                >
-              </li>
-              {% endif %} {% if perms.delete_employee %}
-              <li class="oh-dropdown__item">
-                <a
-                  href="#"
-                  class="oh-dropdown__link oh-dropdown__link--danger"
-                  id="deleteEmployees"
-                  >{% trans "Delete" %}</a
-                >
-              </li>
-              {% endif %} {% endif %}
+              {% if emp %}
+                <li class="oh-dropdown__item">
+                  <a
+                    href="#"
+                    class="oh-dropdown__link"
+                    id="employee-info-export"
+                    data-toggle="oh-modal-toggle"
+                    data-target="#employeeExport"
+                    >{% trans "Export" %}</a
+                  >
+                </li>
+                <li class="oh-dropdown__item">
+                  <a href="#" class="oh-dropdown__link" id="archiveEmployees"
+                    >{% trans "Archive" %}</a
+                  >
+                </li>
+                <li class="oh-dropdown__item">
+                  <a href="#" class="oh-dropdown__link" id="unArchiveEmployees"
+                    >{% trans "Un-Archive" %}</a
+                  >
+                </li>
+                {% if perms.delete_employee %}
+                <li class="oh-dropdown__item">
+                  <a
+                    href="#"
+                    class="oh-dropdown__link oh-dropdown__link--danger"
+                    id="deleteEmployees"
+                    >{% trans "Delete" %}</a
+                  >
+                </li>
+                {% endif %} 
+              {% endif %}
             </ul>
           </div>
         </div>

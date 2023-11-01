@@ -2,32 +2,38 @@
 {% load static %} {% load i18n %} 
 
 
-  <div id="view-container">
-      {% if messages %}
-      <div class="oh-alert-container">
-        {% for message in messages %}
-        <div class="oh-alert oh-alert--animated {{message.tags}}">{{ message }}</div>
-        {% endfor %}
-      </div>
-      {% endif %}
-      {% include 'filter_tags.html' %}
+<div id="view-container">
+  {% if messages %}
+  <div class="oh-alert-container">
+    {% for message in messages %}
+    <div class="oh-alert oh-alert--animated {{message.tags}}">{{ message }}</div>
+    {% endfor %}
+  </div>
+  {% endif %}
+  {% include 'filter_tags.html' %}
+    <div class="oh-checkpoint-badge text-success mb-2" id="selectAllInstances" style="cursor: pointer;">
+      {% trans "Select All Employees" %}
+    </div>
+    <div class="oh-checkpoint-badge text-primary mb-2" id="unselectAllInstances" style="cursor: pointer;">
+      {% trans "Unselect All Employees" %}
+    </div>
+    <div class="oh-checkpoint-badge text-danger mb-2" id="selectedshow" >
+    </div>
       <div class="oh-sticky-table">
         <div class="oh-sticky-table__table oh-table--sortable">
           <div class="oh-sticky-table__thead">
             <div class="oh-sticky-table__tr">
-              <div class="oh-sticky-table__th">
-                <div class="d-flex">
-                  <div class="">
-                    <input
-                      type="checkbox"
-                      class="oh-input oh-input__checkbox mt-1 mr-2 all-employee"
-                      title='{% trans "Select All" %}'
-                    />
-                  </div>
-                  <div  hx-target="#view-container" hx-get="{% url 'employee-view-list' %}?{{pd}}&orderby=employee_first_name">
-                    {% trans "Employee" %}
-                  </div>
-                </div>
+              <div class="oh-sticky-table__th" style="width:10px;">
+                  <input
+                    type="checkbox"
+                    class="oh-input oh-input__checkbox mt-1 all-employee"
+                    title='{% trans "Select All" %}'
+                    style="margin-left:-5px;"
+                    id="tick"
+                  />
+              </div>
+              <div class="oh-sticky-table__th" hx-target="#view-container" hx-get="{% url 'employee-view-list' %}?{{pd}}&orderby=employee_first_name">
+                {% trans "Employee" %}
               </div>
               <div class="oh-sticky-table__th">{% trans "Email" %}</div>
               <div class="oh-sticky-table__th">{% trans "Phone" %}</div>
@@ -48,14 +54,16 @@
           <div class="oh-sticky-table__tbody ui-sortable">
             <div class="oh-sticky-table__tr ui-sortable-handle">
               <div class="oh-sticky-table__sd">
+                <div class="">
+                  <input
+                    type="checkbox"
+                    id="{{emp.id}}"
+                    class="oh-input employee-checkbox oh-input__checkbox mt-2 mr-2 all-employee-row"
+                  />
+                </div>
+              </div>
+              <div class="oh-sticky-table__td">
                 <div class="d-flex">
-                  <div class="">
-                    <input
-                      type="checkbox"
-                      id="{{emp.id}}"
-                      class="oh-input employee-checkbox oh-input__checkbox mt-2 mr-2 all-employee-row"
-                    />
-                  </div>
                   <div class="oh-profile oh-profile--md">
                     <div class="oh-profile__avatar mr-1">
                       {% if emp.employee_profile %}
@@ -185,7 +193,7 @@
                       class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
                       title="{% trans 'Un-Archive' %}"
                     >
-                    <ion-icon name="Un-Archive"></ion-icon>
+                    <ion-icon name="archive"></ion-icon>
                     </button>
                   </form>
                   {% endif %}
@@ -240,6 +248,7 @@
                 hx-target="#view-container"
                 hx-get="{% url 'employee-view-list' %}?{{pd}}&page=1"
                 class="oh-pagination__link"
+                onclick=tickCheckboxes()
                 >{% trans "First" %}</a
               >
             </li>
@@ -248,6 +257,7 @@
                 hx-target="#view-container"
                 hx-get="{% url 'employee-view-list' %}?{{pd}}&page={{ data.previous_page_number }}"
                 class="oh-pagination__link"
+                onclick=tickCheckboxes()
                 >{% trans "Previous" %}</a
               >
             </li>
@@ -257,6 +267,7 @@
                 hx-target="#view-container"
                 hx-get="{% url 'employee-view-list' %}?{{pd}}&page={{ data.next_page_number }}"
                 class="oh-pagination__link"
+                onclick=tickCheckboxes()
                 >{% trans "Next" %}</a
               >
             </li>
@@ -265,6 +276,7 @@
                 hx-target="#view-container"
                 hx-get="{% url 'employee-view-list' %}?{{pd}}&page={{ data.paginator.num_pages }}"
                 class="oh-pagination__link"
+                onclick=tickCheckboxes()
                 >{% trans "Last" %}</a
               >
             </li>
@@ -277,3 +289,133 @@
 
 
 <script src="{% static 'employee/actions.js' %}"></script>
+<script>
+
+
+$(document).ready(function() {
+
+  $('#selectAllInstances').click(function() {
+
+    $("#selectedInstances").attr("data-clicked", 1);
+    $('#selectedshow').removeAttr('style');
+    var savedFilters = JSON.parse(localStorage.getItem('savedFilters'));
+
+    if (savedFilters && savedFilters['filterData'] !== null) 
+    {
+      var filter = savedFilters['filterData'];
+      
+        $.ajax({
+          url: '{% url "employee-select-filter" %}',
+          data: { page: 'all', 'filter':JSON.stringify(filter) },
+          type: 'GET',
+          dataType: 'json',
+          success: function(response) {
+
+            var employeeIds = response.employee_ids;
+      
+              if (Array.isArray(employeeIds)) {
+                  // Continue
+              } else {
+                  console.error('employee_ids is not an array:', employeeIds);
+              }
+              
+              var selectedCount = employeeIds.length;              
+              
+              for (var i = 0; i < employeeIds.length; i++) {
+                var empId = employeeIds[i];
+                $('#' + empId).prop('checked', true);
+              }
+              $("#selectedInstances").attr("data-ids", JSON.stringify(employeeIds));
+
+              count = makeListUnique(employeeIds)
+              tickCheckboxes(count)
+          },
+          error: function(xhr, status, error) {
+              console.error('Error:', error);
+          }
+        });
+
+    } 
+    else {
+
+      $.ajax({
+        url: '{% url "employee-select" %}',
+        data: { page: 'all'},
+        type: 'GET',
+        dataType: 'json',
+        success: function(response) {
+
+          var employeeIds = response.employee_ids;
+    
+            if (Array.isArray(employeeIds)) {
+                // Continue
+            } else {
+                console.error('employee_ids is not an array:', employeeIds);
+            }
+            
+            var selectedCount = employeeIds.length;
+            
+            
+            for (var i = 0; i < employeeIds.length; i++) {
+              var empId = employeeIds[i];
+              $('#' + empId).prop('checked', true);
+            }
+            $("#selectedInstances").attr("data-ids", JSON.stringify(employeeIds));
+
+            count = makeListUnique(employeeIds)
+            tickCheckboxes(count)
+        },
+        error: function(xhr, status, error) {
+            console.error('Error:', error);
+        }
+      });
+    }
+
+    $('.filterButton').click(function(){
+      $("#tick").prop('checked', false);
+      $("#selectedInstances").attr("data-clicked", 0);
+      $("#selectedInstances").attr("data-ids", JSON.stringify([]));
+      count = [];
+      tickCheckboxes(count)
+    })
+
+  });
+
+
+  $('#unselectAllInstances').click(function(){
+
+    $("#selectedInstances").attr("data-clicked", 0);
+    
+    $.ajax({
+      url: '{% url "employee-select" %}',
+      data: { page: 'all', 'filter': '{}' },
+      type: 'GET',
+      dataType: 'json',
+      success: function(response) {
+          var employeeIds = response.employee_ids;
+  
+          if (Array.isArray(employeeIds)) {
+              // Continue
+          } else {
+              console.error('employee_ids is not an array:', employeeIds);
+          }
+          
+          for (var i = 0; i < employeeIds.length; i++) {
+            var empId = employeeIds[i];
+            $('#' + empId).prop('checked', false);
+            $("#tick").prop('checked', false);
+      
+          }
+          $("#selectedInstances").attr("data-ids", JSON.stringify([]));
+
+          count = [];
+          tickCheckboxes(count)
+
+      },
+      error: function(xhr, status, error) {
+          console.error('Error:', error);
+      }
+    });
+  });
+});
+</script>

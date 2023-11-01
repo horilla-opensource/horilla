@@ -18,6 +18,7 @@ from datetime import datetime, timedelta, date
 from collections import defaultdict
 from urllib.parse import parse_qs
 import pandas as pd
+from django.db.models import Q
 from django.db.models import F, ProtectedError
 from django.conf import settings
 from django.contrib import messages
@@ -382,6 +383,7 @@ def employee_view(request):
     )
     data_dict = parse_qs(previous_data)
     get_key_instances(Employee, data_dict)
+    emp = Employee.objects.all()
     return render(
         request,
         "employee_personal_info/employee_view.html",
@@ -393,6 +395,7 @@ def employee_view(request):
             "export_form": export_form,
             "view_type": view_type,
             "filter_dict": data_dict,
+            "emp":emp
 
         },
     )
@@ -1648,3 +1651,54 @@ def widget_filter(request):
     """
     ids = EmployeeFilter(request.GET).qs.values_list("id", flat=True)
     return JsonResponse({"ids": list(ids)})
+
+
+@login_required
+def employee_select(request):
+    page_number = request.GET.get('page')
+
+    if page_number == 'all':
+        employees = Employee.objects.all()
+    else:
+        employees = Employee.objects.all().order_by('employee_first_name')
+        paginator = Paginator(employees, per_page=50)
+        page_obj = paginator.get_page(page_number)
+
+    employee_ids = [str(emp.id) for emp in employees]
+    total_count = employees.count()
+
+    context = {
+        'employee_ids': employee_ids,
+        'total_count': total_count
+    }
+
+    return JsonResponse(context, safe=False)
+
+
+@login_required
+def employee_select_filter(request):
+    page_number = request.GET.get('page')
+    filtered = request.GET.get('filter')
+    filters = json.loads(filtered) if filtered else {}
+
+    if page_number == 'all':
+        query = Q()
+
+        for key, value in filters.items():
+            if value != '' and key != 'is_active':  # Add check for is_active and non-empty values
+                kwargs = {key: value}
+                query &= Q(**kwargs)
+            elif key == 'is_active' and value in ['true', 'false']:  # Check if is_active is valid
+                kwargs = {key: value == 'true'}  # Convert 'true' to True, 'false' to False
+                query &= Q(**kwargs)
+
+        employees = Employee.objects.filter(query)
+
+        employee_ids = [str(emp.id) for emp in employees]
+        total_count = employees.count()
+
+        context = {
+            'employee_ids': employee_ids,
+            'total_count': total_count
+        }
+        return JsonResponse(context)

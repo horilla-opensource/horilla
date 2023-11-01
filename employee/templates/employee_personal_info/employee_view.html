@@ -1,5 +1,8 @@
-{% extends "index.html" %} {% block content %} {% include 'employee_nav.html' %}
+{% extends "index.html" %} {% load static %} {% load i18n %} {% block content %} {% include 'employee_nav.html' %}
 <div class="oh-wrapper">
+  <div class="oh-checkpoint-badge mb-2" id="selectedInstances" data-ids="[]" data-clicked="" style="display:none;" >
+    {% trans "Selected Employees" %}
+  </div>
   <div id="view-container">
     {% if data %}  
       {% if view_type == 'list' %} 
@@ -12,4 +15,5 @@
     {% endif %}
   </div>
 </div>
+<script src="{% static 'employee/actions.js' %}"></script>
 {% endblock %}

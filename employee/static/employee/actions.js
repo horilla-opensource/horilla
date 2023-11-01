@@ -29,6 +29,16 @@ var norowMessages = {
   en: "No rows have been selected.",
   fr: "Aucune ligne n'a été sélectionnée.",
 };
+
+var selectedemployees = {
+  ar: " موظفون محددون",
+  de: " Ausgewählte Mitarbeiter",
+  es: " Empleados seleccionados",
+  en: " Selected Employees",
+  fr: " Employés sélectionnés",
+};
+
+
 function getCookie(name) {
   let cookieValue = null;
   if (document.cookie && document.cookie !== "") {
@@ -63,15 +73,70 @@ $(".all-employee").change(function (e) {
   } else {
     $(".all-employee-row").prop("checked", false);
   }
+  addingIds()
 });
-$(".all-employee").change(function (e) {
-  var is_checked = $(this).is(":checked");
-  if (is_checked) {
-    $(".all-employee-row").prop("checked", true);
-  } else {
-    $(".all-employee-row").prop("checked", false);
+
+
+$(".all-employee-row").change(function(){
+  addingIds()
+})
+
+
+function addingIds(){
+  var ids = JSON.parse($("#selectedInstances").attr("data-ids") || "[]");
+  var selectedCount = 0;
+
+  $(".all-employee-row").each(function() {
+    if ($(this).is(":checked")) {
+      ids.push(this.id);
+    } else {
+      var index = ids.indexOf(this.id);
+      if (index > -1) {
+        ids.splice(index, 1);
+      }
+    }
+  });
+  var ids = makeListUnique(ids);
+  var selectedCount = ids.length;
+  
+  getCurrentLanguageCode(function(code){
+    languageCode = code;
+    var message = selectedemployees[languageCode];
+
+    $("#selectedInstances").attr("data-ids", JSON.stringify(ids)); 
+    $('#selectedshow').text(selectedCount + ' -' + message);
+  })
+
+}
+
+
+function tickCheckboxes(uniqueIds) {
+  
+  click = $("#selectedInstances").attr("data-clicked")
+  if ( click === '1'){
+    $(".all-employee").prop('checked',true)
   }
-});
+
+  uniqueIds.forEach(function(id) {
+    $('#' + id).prop('checked', true);
+  });
+  var selectedCount = uniqueIds.length;
+  getCurrentLanguageCode(function(code){
+    languageCode = code;
+    var message = selectedemployees[languageCode];
+    $('#selectedshow').text(selectedCount + ' -' + message);
+  })
+
+}
+
+
+function makeListUnique(list) {
+  return Array.from(new Set(list));
+}
+
+var ids = JSON.parse($("#selectedInstances").attr("data-ids") || "[]");
+tickCheckboxes(ids);
+
 $("#archiveEmployees").click(function (e) {
   e.preventDefault();
   var languageCode = null;
@@ -97,11 +162,12 @@ $("#archiveEmployees").click(function (e) {
       }).then(function (result) {
         if (result.isConfirmed) {
           e.preventDefault();
+
           ids = [];
-          checkedRows.each(function () {
-            ids.push($(this).attr("id"));
-          });
-          
+
+            ids.push($("#selectedInstances").attr("data-ids"))
+            ids = JSON.parse($("#selectedInstances").attr("data-ids"));
+            
           $.ajax({
             type: "POST",
             url: "/employee/employee-bulk-archive?is_active=False",
@@ -147,12 +213,13 @@ $("#unArchiveEmployees").click(function (e) {
         confirmButtonText: "Confirm",
       }).then(function (result) {
         if (result.isConfirmed) {
-          var checkedRows = $(".all-employee-row").filter(":checked");
+          e.preventDefault();
+
           ids = [];
-          checkedRows.each(function () {
-            ids.push($(this).attr("id"));
-          });
-          
+
+            ids.push($("#selectedInstances").attr("data-ids"))
+            ids = JSON.parse($("#selectedInstances").attr("data-ids"));
+            
           $.ajax({
             type: "POST",
             url: "/employee/employee-bulk-archive?is_active=True",
@@ -198,13 +265,13 @@ $("#deleteEmployees").click(function (e) {
         confirmButtonText: "Confirm",
       }).then(function (result) {
         if (result.isConfirmed) {
-          var checkedRows = $(".all-employee-row").filter(":checked");
+          e.preventDefault();
+
           ids = [];
-          checkedRows.each(function () {
-            ids.push($(this).attr("id"));
-          });
-          
-          $.ajax({
+            ids.push($("#selectedInstances").attr("data-ids"))
+            ids = JSON.parse($("#selectedInstances").attr("data-ids"));
+
+            $.ajax({
             type: "POST",
             url: "/employee/employee-bulk-delete",
             data: {
