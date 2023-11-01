@@ -386,42 +386,36 @@ start_time = datetime.now()
 
 # Add jobs with next_run_time set to the end of the previous job
 scheduler.add_job(
-    rotate_shift, "interval", seconds=10, id="job1", next_run_time=start_time
-)
+    rotate_shift, "interval", seconds=10, id="job1" )
 scheduler.add_job(
     rotate_work_type,
     "interval",
     seconds=10,
     id="job2",
-    next_run_time=start_time + timedelta(seconds=10),
 )
 scheduler.add_job(
     undo_shift,
     "interval",
-    seconds=10,
+    seconds=15,
     id="job3",
-    next_run_time=start_time + timedelta(seconds=20),
 )
 scheduler.add_job(
     switch_shift,
     "interval",
-    seconds=10,
+    seconds=20,
     id="job4",
-    next_run_time=start_time + timedelta(seconds=60),
 )
 scheduler.add_job(
     undo_work_type,
     "interval",
-    seconds=10,
+    seconds=25,
     id="job6",
-    next_run_time=start_time + timedelta(seconds=30),
 )
 scheduler.add_job(
     switch_work_type,
     "interval",
-    seconds=10,
+    seconds=30,
     id="job5",
-    next_run_time=start_time + timedelta(seconds=80),
 )
 
 scheduler.start()
