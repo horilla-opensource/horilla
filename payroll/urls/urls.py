@@ -27,6 +27,7 @@ urlpatterns = [
         views.view_single_contract,
         name="single-contract-view",
     ),
+    path("payslip-pdf/<int:id>", views.payslip_pdf, name="payslip-pdf"),
     path("contract-filter", views.contract_filter, name="contract-filter"),
     path("contract-create", views.work_record_create, name="contract-create"),
     path("work-record-view", views.work_record_view, name="work-record-view"),

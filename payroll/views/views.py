@@ -24,6 +24,9 @@ from payroll.methods.methods import save_payslip
 from django.utils.translation import gettext_lazy as _
 from payroll.filters import ContractFilter
 from payroll.methods.methods import paginator_qry
+import io
+from xhtml2pdf import pisa
+from django.template.loader import render_to_string
 
 # Create your views here.
 
@@ -960,3 +963,33 @@ def contract_bulk_delete(request):
                 _("You cannot delete {contract}").format(contract=contract),
             )
     return JsonResponse({"message": "Success"})
+
+def generate_pdf(template_path, context):
+
+    html = render_to_string(template_path, context)
+    
+    result = io.BytesIO()
+    pdf = pisa.pisaDocument(io.BytesIO(html.encode('utf-8')), result)
+    
+    if not pdf.err:
+        response = HttpResponse(result.getvalue(), content_type='application/pdf')
+        response['Content-Disposition'] = f'''attachment;filename="{context["employee"]}'s payslip for {context["range"]}.pdf"'''
+        return response
+    return None
+
+def payslip_pdf(request,id):
+    payslip = Payslip.objects.filter(id=id).first()
+    if payslip is not None and (
+        request.user.has_perm("payroll.view_payslip")
+        or payslip.employee_id.employee_user_id == request.user
+    ):
+        data = payslip.pay_head_data
+        data["employee"] = payslip.employee_id
+        data["payslip"] = payslip
+        data["json_data"] = data.copy()
+        data["json_data"]["employee"] = payslip.employee_id.id
+        data["json_data"]["payslip"] = payslip.id
+        data["instance"] = payslip
+        data["currency"] = PayrollSettings.objects.first().currency_symbol
+    
+    return generate_pdf('payroll/payslip/individual_pdf.html', context=data)
