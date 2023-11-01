@@ -1,7 +1,7 @@
 {% load i18n %} {% load yes_no %}
 <div class="oh-modal__dialog-header">
     <span class="oh-modal__dialog-title" id="shiftRequestDetailTitle">
-        <h5 style="margin-bottom: 20px;">{{shift_request.employee_id}}</h5>
+        <h5 style="margin-bottom: 20px;">{{work_type_request.employee_id}}</h5>
     </span>
     <button
         type="button"
@@ -15,32 +15,32 @@
     <div class="oh-timeoff-modal__stats-container mb-3">
       <div class="oh-timeoff-modal__stat">
           <span class="oh-timeoff-modal__stat-title">{% trans "Work type" %}</span>
-          <span class="oh-timeoff-modal__stat-count">{{shift_request.work_type_id}}</span>
+          <span class="oh-timeoff-modal__stat-count">{{work_type_request.work_type_id}}</span>
       </div>
       <div class="oh-timeoff-modal__stat" style="margin-left: 20px;">
           <span class="oh-timeoff-modal__stat-title">{% trans "Previous work type" %}</span>
-          <span class="oh-timeoff-modal__stat-count">{{shift_request.previous_work_type_id}}</span>
+          <span class="oh-timeoff-modal__stat-count">{{work_type_request.previous_work_type_id}}</span>
       </div>
     </div>
     <div class="oh-timeoff-modal__stats-container mb-3">
       <div class="oh-timeoff-modal__stat">
           <span class="oh-timeoff-modal__stat-title">{% trans "Requested date" %}</span>
-          <span class="oh-timeoff-modal__stat-count">{{shift_request.requested_date}}</span>
+          <span class="oh-timeoff-modal__stat-count">{{work_type_request.requested_date}}</span>
       </div>
       <div class="oh-timeoff-modal__stat" style="margin-left: 20px;">
           <span class="oh-timeoff-modal__stat-title">{% trans "Requested till" %}</span>
-          <span class="oh-timeoff-modal__stat-count">{{shift_request.requested_till}}</span>
+          <span class="oh-timeoff-modal__stat-count">{{work_type_request.requested_till}}</span>
       </div>
     </div>
     <div class="oh-timeoff-modal__stats-container mb-3">
       <div class="oh-timeoff-modal__stat">
           <span class="oh-timeoff-modal__stat-title">{% trans "Description" %}</span>
-          <span class="oh-timeoff-modal__stat-count">{{shift_request.description}}</span>
+          <span class="oh-timeoff-modal__stat-count">{{work_type_request.description}}</span>
       </div>
       <div class="oh-timeoff-modal__stat" style="margin-left: 20px;">
           <span class="oh-timeoff-modal__stat-title">{% trans "Is permenent shift" %}</span>
           <span class="oh-timeoff-modal__stat-count">
-            {% if shift_request.is_permanent_shift == True %} {% trans "Yes" %} 
+            {% if work_type_request.is_permanent_work_type == True %} {% trans "Yes" %} 
             {% else %} {% trans "No" %} 
             {% endif %}
           </span>
@@ -48,23 +48,19 @@
     </div>
     <div class="oh-modal__button-container text-center">
        <div class="oh-btn-group">
-            {% comment %} start of edit button {% endcomment %}
-            {% if shift_request.approved == False and not shift_request.canceled   %}
-            <a hx-get="{% url 'shift-request-update' shift_request.id %}" hx-target='#shiftRequestModalUpdateBody' data-toggle="oh-modal-toggle" data-target='#shiftRequestModalUpdate' class="oh-btn oh-btn--light-bkg w-50" title="{% trans 'Edit' %}"><ion-icon name="create-outline"></ion-icon></a>
+            {% if work_type_request.approved == False and not work_type_request.canceled  %}
+                <a hx-get="{% url 'work-type-request-update' work_type_request.id %}" hx-target='#workTypeRequestUpdateModalBody' data-toggle="oh-modal-toggle" data-target='#workTypeRequestUpdateModal' class="oh-btn oh-btn--light-bkg w-50" title="{% trans 'Edit' %}"><ion-icon name="create-outline"></ion-icon></a>
             {% else %}
-            <button class="oh-btn oh-btn--light-bkg w-50" disabled><ion-icon name="create-outline" ></ion-icon></button></td>
+                <button class="oh-btn oh-btn--light-bkg w-50" disabled><ion-icon name="create-outline" ></ion-icon></button></td>
             {% endif %}
-            {% comment %} end of edit button {% endcomment %}
-            {% comment %} start of remove button {% endcomment %}
-            {% if shift_request.approved == False %} 
-            <form action="{% url 'shift-request-delete' shift_request.id  %}" onsubmit="return confirm('{% trans "Are you sure you want to delete this shift request?" %}');" method='post' style="width: 50%">
+            {% if work_type_request.approved == False %}
+                <form action="{% url 'work-type-request-delete' work_type_request.id  %}" onsubmit="return confirm('{% trans "Are you sure you want to delete this work type request?" %}');" method='post' style="width: 50%">
                 {% csrf_token %}
                 <button type='submit' class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100" title="{% trans 'Remove' %}"><ion-icon name="trash-outline"></ion-icon></button>
-            </form>
+                </form>
             {% else %}
                 <button class="oh-btn oh-btn--light-bkg w-50" disabled><ion-icon name="trash-outline"></ion-icon></button></td>
-            {% endif %} 
-            {% comment %} end of remove button {% endcomment %}
+            {% endif %}
        </div>
     </div>
 </div>

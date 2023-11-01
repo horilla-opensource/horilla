@@ -46,6 +46,7 @@ class ShiftRequestFilter(FilterSet):
             "requested_date",
             "previous_shift_id",
             "shift_id",
+            "requested_till",
             "approved",
             "canceled",
             "employee_id__employee_first_name",

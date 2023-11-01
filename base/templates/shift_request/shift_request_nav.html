@@ -217,6 +217,12 @@ x-data="{searchShow: false}"
           class="oh-btn oh-btn--secondary"
           data-toggle="oh-modal-toggle"
           data-target="#shiftRequestModal"
+          {% if perms.base.add_shiftrequest or request.user|is_reportingmanager %}
+            hx-get="{% url 'shift-request' %}"
+          {% else %}
+            hx-get="{% url 'shift-request' %}?emp_id={{request.user.employee_get.id}}"
+          {% endif %}
+          hx-target="#shiftRequestTargetModal"
         >
           <ion-icon name='add-sharp' class="mr-2"></ion-icon>{% trans "Create" %}
         </button>
@@ -238,55 +244,15 @@ x-data="{searchShow: false}"
     <div class="oh-modal__dialog-header">
       <h5 class="oh-modal__dialog-title" id="shiftRequestModalLabel"
         >{% trans "Shift Request" %}</span
-      >
-      <button class="oh-modal__close" aria-label="Close" >
+      > 
+      <button class="oh-modal__close" aria-label="Close">
         <ion-icon name="close-outline" ></ion-icon>
       </button>
     </div>
-    
-    <form action="{% url 'shift-request' %}" method='post'>
-    <div class="oh-modal__dialog-body" id='shiftRequestModal'>
-        <div id="formBody">
-          <!-- htmx container -->
-          {% csrf_token %}
-          <div id="create-form-container">
-            {{form.as_p}}
-          </div>
-        </div>
-        <div class="d-flex flex-row-reverse w-100 align-items-right mt-4">
-          <button
-          type="submit"
-          class="oh-btn oh-btn--secondary  pl-5 pr-5"
-          hx-post="{% url 'shift-request' %}"
-          hx-target="#formBody"
-          >
-          {% trans "Addssssssssss" %}
-        </button>
-      </div>
-    </form>
-    </form>
+    <div class="oh-modal__dialog-body" id='shiftRequestTargetModal'>
     </div>
+
   </div>
 </div>
 
 <script src="{% static '/base/filter.js' %}"></script>
-<script>
-function toggleFunctionShiftRequestForm(){
-  console.log('rrrrrr')
-  if ($('#id_is_permanent_shift').is(":checked")){
-    $("[for=id_requested_date],[for=id_requested_till]").hide();
-    $("#id_requested_date,#id_requested_till").hide();
-  } else {
-    $("[for=id_requested_date],[for=id_requested_till]").show();
-    $("#id_requested_date,#id_requested_till").show();
-  }
-}
-$(document).ready(function(){
-  console.log('ssssssssssss')
-     $("[type=checkbox]").change(function (e) {
-      e.preventDefault();
-      toggleFunctionShiftRequestForm();
-    });
-})
-toggleFunctionShiftRequestForm();
-</script>

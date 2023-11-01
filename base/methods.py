@@ -241,7 +241,11 @@ def get_key_instances(model, data_dict):
         except (ObjectDoesNotExist, ValueError):
             pass
 
-    nested_fields = [key for key in data_dict if "__" in key and not key.endswith("gte") and not key.endswith("lte")]
+    nested_fields = [
+        key
+        for key in data_dict
+        if "__" in key and not key.endswith("gte") and not key.endswith("lte")
+    ]
     for key in nested_fields:
         field_names = key.split("__")
         field_values = data_dict[key]

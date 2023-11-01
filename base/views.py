@@ -19,6 +19,10 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import Group, User, Permission
 from attendance.forms import AttendanceValidationConditionForm
 from attendance.models import AttendanceValidationCondition
+from base.decorators import (
+    shift_request_change_permission,
+    work_type_request_change_permission,
+)
 from notifications.signals import notify
 from horilla.decorators import permission_required, login_required, manager_can_enter
 from horilla.settings import EMAIL_HOST_USER
@@ -504,8 +508,9 @@ def company_delete(request, id):
 
         model_names_str = ", ".join(model_verbose_names_set)
         messages.error(
-            request, _("This company is already in use for {}.".format(model_names_str))
+            request, _("This company is already in use for {}.").format(model_names_str)
         )
+
     return redirect(company_create)
 
 
@@ -578,8 +583,9 @@ def department_delete(request, id):
         model_names_str = ", ".join(model_verbose_names_set)
         messages.error(
             request,
-            _("This department is already in use for {}.".format(model_names_str)),
-        )
+            _("This department is already in use for {}.").format(model_names_str),
+        ),
+
     return redirect("/settings/department-creation")
 
 
@@ -652,8 +658,9 @@ def job_position_delete(request, id):
 
         messages.error(
             request,
-            _("This job position is already in use for {}.".format(model_names_str)),
-        )
+            _("This job position is already in use for {}.").format(model_names_str),
+        ),
+
     return redirect("/settings/job-position-creation")
 
 
@@ -725,8 +732,9 @@ def job_role_delete(request, id):
 
         messages.error(
             request,
-            _("This job role is already in use for {}.".format(model_names_str)),
-        )
+            _("This job role is already in use for {}.").format(model_names_str),
+        ),
+
     return redirect("/settings/job-role-create")
 
 
@@ -802,8 +810,9 @@ def work_type_delete(request, id):
 
         messages.error(
             request,
-            _("This work type is already in use for {}.".format(model_names_str)),
-        )
+            _("This work type is already in use for {}.").format(model_names_str),
+        ),
+
     return redirect("/settings/work-type-create")
 
 
@@ -879,12 +888,11 @@ def rotating_work_type_delete(request, id):
 
         messages.error(
             request,
-            _(
-                "This rotating work type is already in use for {}.".format(
-                    model_names_str
-                )
+            _("This rotating work type is already in use for {}.").format(
+                model_names_str
             ),
-        )
+        ),
+
     return redirect("/settings/rotating-work-type-create")
 
 
@@ -1221,8 +1229,8 @@ def employee_type_delete(request, id):
 
         messages.error(
             request,
-            _("This employee type is already in use for {}.".format(model_names_str)),
-        )
+            _("This employee type is already in use for {}.").format(model_names_str),
+        ),
 
     return redirect("/settings/employee-type-create")
 
@@ -1292,8 +1300,9 @@ def employee_shift_delete(request, id):
 
         model_names_str = ", ".join(model_verbose_names_set)
         messages.error(
-            request, _("This shift is already in use for {}.".format(model_names_str))
+            request, _("This shift is already in use for {}.").format(model_names_str)
         )
+
     return redirect("/settings/employee-shift-create")
 
 
@@ -1433,8 +1442,9 @@ def rotating_shift_delete(request, id):
         model_names_str = ", ".join(model_verbose_names_set)
         messages.error(
             request,
-            _("This rotating shift is already in use for {}.".format(model_names_str)),
-        )
+            _("This rotating shift is already in use for {}.").format(model_names_str),
+        ),
+
     return redirect(rotating_shift_create)
 
 
@@ -1985,23 +1995,30 @@ def work_type_request_approve(request, id):
         """
         Here the request will be approved, can send mail right here
         """
-        work_type_request.approved = True
-        work_type_request.canceled = False
-        work_type_request.save()
-        messages.success(request, _("Work type request has been approved."))
-        notify.send(
-            request.user.employee_get,
-            recipient=work_type_request.employee_id.employee_user_id,
-            verb="Your work type request has been approved.",
-            verb_ar="تمت الموافقة على طلب نوع وظيفتك.",
-            verb_de="Ihre Arbeitstypanfrage wurde genehmigt.",
-            verb_es="Su solicitud de tipo de trabajo ha sido aprobada.",
-            verb_fr="Votre demande de type de travail a été approuvée.",
-            redirect="/",
-            icon="checkmark",
-        )
+        if not work_type_request.is_any_work_type_request_exists():
+            work_type_request.approved = True
+            work_type_request.canceled = False
+            work_type_request.save()
+            messages.success(request, _("Work type request has been approved."))
+            notify.send(
+                request.user.employee_get,
+                recipient=work_type_request.employee_id.employee_user_id,
+                verb="Your work type request has been approved.",
+                verb_ar="تمت الموافقة على طلب نوع وظيفتك.",
+                verb_de="Ihre Arbeitstypanfrage wurde genehmigt.",
+                verb_es="Su solicitud de tipo de trabajo ha sido aprobada.",
+                verb_fr="Votre demande de type de travail a été approuvée.",
+                redirect="/",
+                icon="checkmark",
+            )
 
-        return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+            return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+
+        else:
+            messages.error(
+                request, _("A shift request already exists during this time period.")
+            )
+            return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
     return HttpResponse("You Do nt Have Permission")
 
 
@@ -2047,14 +2064,15 @@ def work_type_request_bulk_approve(request):
 
 
 @login_required
-def work_type_request_update(request, id):
+@work_type_request_change_permission()
+def work_type_request_update(request, work_type_request_id):
     """
     This method is used to update work type request instance
     args:
         id : work type request instance id
 
     """
-    work_type_request = WorkTypeRequest.objects.get(id=id)
+    work_type_request = WorkTypeRequest.objects.get(id=work_type_request_id)
     form = WorkTypeRequestForm(instance=work_type_request)
     form = choosesubordinates(request, form, "base.change_worktyperequest")
     form = include_employee_instance(request, form)
@@ -2109,6 +2127,19 @@ def work_type_request_delete(request, id):
     except ProtectedError:
         messages.error(request, _("You cannot delete this work type request."))
     return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+
+
+@login_required
+def work_type_request_single_view(request, work_type_request_id):
+    try:
+        work_type_request = WorkTypeRequest.objects.get(id=work_type_request_id)
+    except WorkTypeRequest.DoesNotExist:
+        messages.error(request, _("Work type request not found."))
+    return render(
+        request,
+        "work_type_request/htmx/work_type_request_single_view.html",
+        context={"work_type_request": work_type_request},
+    )
 
 
 @login_required
@@ -2170,13 +2201,16 @@ def shift_request(request):
         form,
         "base.add_shiftrequest",
     )
+    form = include_employee_instance(request, form)
     f = ShiftRequestFilter()
     if request.method == "POST":
         form = ShiftRequestForm(request.POST)
         form = choosesubordinates(request, form, "base.add_shiftrequest")
         form = include_employee_instance(request, form)
         response = render(
-            request, "shift_request/request_form.html", {"form": form, "f": f}
+            request,
+            "shift_request/htmx/shift_request_create_form.html",
+            {"form": form, "f": f},
         )
         if form.is_valid():
             instance = form.save()
@@ -2204,7 +2238,11 @@ def shift_request(request):
             return HttpResponse(
                 response.content.decode("utf-8") + "<script>location.reload();</script>"
             )
-    return render(request, "shift_request/request_form.html", {"form": form, "f": f})
+    return render(
+        request,
+        "shift_request/htmx/shift_request_create_form.html",
+        {"form": form, "f": f},
+    )
 
 
 @login_required
@@ -2281,13 +2319,14 @@ def shift_request_details(request, id):
 
 
 @login_required
-def shift_request_update(request, id):
+@shift_request_change_permission()
+def shift_request_update(request, shift_request_id):
     """
     This method is used to update shift request instance
     args:
         id : shift request instance id
     """
-    shift_request = ShiftRequest.objects.get(id=id)
+    shift_request = ShiftRequest.objects.get(id=shift_request_id)
     form = ShiftRequestForm(instance=shift_request)
     form = choosesubordinates(request, form, "base.change_shiftrequest")
     form = include_employee_instance(request, form)
@@ -2403,6 +2442,7 @@ def shift_request_approve(request, id):
     """
 
     shift_request = ShiftRequest.objects.get(id=id)
+
     if (
         is_reportingmanger(request, shift_request)
         or request.user.has_perm("approve_shiftrequest")
@@ -2413,22 +2453,28 @@ def shift_request_approve(request, id):
         here the request will be approved, can send mail right here
         """
 
-        shift_request.approved = True
-        shift_request.canceled = False
-        shift_request.save()
-        messages.success(request, _("Shift has been approved."))
-        notify.send(
-            request.user.employee_get,
-            recipient=shift_request.employee_id.employee_user_id,
-            verb="Your shift request has been approved.",
-            verb_ar="تمت الموافقة على طلبك للوردية.",
-            verb_de="Ihr Schichtantrag wurde genehmigt.",
-            verb_es="Se ha aprobado su solicitud de turno.",
-            verb_fr="Votre demande de quart a été approuvée.",
-            redirect="/",
-            icon="checkmark",
-        )
-        return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+        if not shift_request.is_any_request_exists():
+            shift_request.approved = True
+            shift_request.canceled = False
+            shift_request.save()
+            messages.success(request, _("Shift has been approved."))
+            notify.send(
+                request.user.employee_get,
+                recipient=shift_request.employee_id.employee_user_id,
+                verb="Your shift request has been approved.",
+                verb_ar="تمت الموافقة على طلبك للوردية.",
+                verb_de="Ihr Schichtantrag wurde genehmigt.",
+                verb_es="Se ha aprobado su solicitud de turno.",
+                verb_fr="Votre demande de quart a été approuvée.",
+                redirect="/",
+                icon="checkmark",
+            )
+            return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+        else:
+            messages.error(
+                request, _("A shift request already exists during this time period.")
+            )
+            return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
     return HttpResponse("You Dont Have Permission")
 
 

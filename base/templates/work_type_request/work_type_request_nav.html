@@ -227,7 +227,19 @@ x-data="{searchShow: false}"
 </div>
 </section>
 
-
+<div
+  class="oh-modal"
+  id="workTypeRequestSingleViewModal"
+  role="dialog"
+  aria-labelledby="workTypeRequestSingleViewModal"
+  aria-hidden="true"
+>
+  <div class="oh-modal__dialog">
+   <div class="oh-modal__dialog-body" id='workTypeRequestSingleViewTarget'>
+    </div>
+    </div>
+  </div>
+</div>
 
 <div
   class="oh-modal"
@@ -245,26 +257,12 @@ x-data="{searchShow: false}"
         <ion-icon name="close-outline"></ion-icon>
       </button>
     </div>
-    
-    <form action="{% url 'shift-request' %}" method='post'>
-    <div class="oh-modal__dialog-body" id='workTypeRequestModalBody'>
-        <div id="formBody">
-          {% include 'work_type_request/request_form.html' %}
-        </div>
-        <div class="d-flex flex-row-reverse w-100 align-items-right mt-4">
-          <button
-          type="submit"
-          class="oh-btn oh-btn--secondary  pl-5 pr-5"
-          hx-post="{% url 'work-type-request' %}"
-          hx-target="#formBody"
-          >
-          {% trans "Add" %}
-        </button>
-      </div>
-    </form>
-    </form>
+   <div class="oh-modal__dialog-body" id='formBody'>
+    </div>
     </div>
   </div>
 </div>
+
+
 
 <script src="{% static '/base/filter.js' %}"></script>

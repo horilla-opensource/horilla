@@ -281,7 +281,7 @@ urlpatterns = [
         name="work-type-request-bulk-approve",
     ),
     path(
-        "work-type-request-update/<int:id>/",
+        "work-type-request-update/<int:work_type_request_id>/",
         views.work_type_request_update,
         name="work-type-request-update",
     ),
@@ -289,6 +289,11 @@ urlpatterns = [
         "work-type-request-delete/<int:id>/",
         views.work_type_request_delete,
         name="work-type-request-delete",
+    ),
+    path(
+        "work-type-request-single-view/<int:work_type_request_id>/",
+        views.work_type_request_single_view,
+        name="work-type-request-single-view",
     ),
     path(
         "work-type-request-bulk-delete",
@@ -310,7 +315,7 @@ urlpatterns = [
         name="shift-request-details",
     ),
     path(
-        "shift-request-update/<int:id>/",
+        "shift-request-update/<int:shift_request_id>/",
         views.shift_request_update,
         name="shift-request-update",
     ),
@@ -344,7 +349,6 @@ urlpatterns = [
         views.shift_request_bulk_delete,
         name="shift-request-bulk-delete",
     ),
-
     path("notifications", views.notifications, name="notifications"),
     path("clear-notifications", views.clear_notification, name="clear-notifications"),
     path("read-notifications", views.read_notifications, name="read-notifications"),
@@ -354,19 +358,15 @@ urlpatterns = [
         views.delete_notification,
         name="delete-notifications",
     ),
-
     path("settings/currency", views.settings, name="currency-settings"),
-
     path(
         "settings/attendance-settings",
         views.validation_condition_create,
         name="attendance-settings",
     ),
-
     path(
         "settings/attendance-settings-update/<int:obj_id>/",
         views.validation_condition_update,
         name="attendance-settings-update",
     ),
-
 ]

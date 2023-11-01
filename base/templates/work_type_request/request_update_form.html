@@ -8,19 +8,28 @@
     {% endfor %}
 </div>
 {% endif %}
+<form
+  hx-post="{% url 'work-type-request-update' form.instance.id %}"
+  hx-target="#formBody"
+>
+  {{form.as_p}}
+</form>
+<script>
+function toggleFunctionWorkTypeRequestForm(){
+  if ($('#id_is_permanent_work_type').is(":checked")){
+    $("[for=id_requested_date],[for=id_requested_till]").hide();
+    $("#id_requested_date,#id_requested_till").hide();
+  } else {
+    $("[for=id_requested_date],[for=id_requested_till]").show();
+    $("#id_requested_date,#id_requested_till").show();
+  }
+}
 
-<form action="{% url 'work-type-request-update' form.instance.id %}" method='post'>
-    <div id="updateformBody">
-        {{form.as_p}}
-    </div>
-    <div class="d-flex flex-row-reverse w-100 align-items-right mt-4">
-        <button
-        type="submit"
-        class="oh-btn oh-btn--secondary  pl-5 pr-5"
-        hx-post="{% url 'work-type-request-update' form.instance.id %}"
-        hx-target="#workTypeRequestUpdateModalBody"
-        >
-        {% trans "Save" %}
-     </button>
-    </div>
-  </form>
+  $(document).ready(function(){
+    $("[type=checkbox]").change(function (e) {
+    e.preventDefault();
+    toggleFunctionWorkTypeRequestForm();
+    });
+  })
+  toggleFunctionWorkTypeRequestForm();
+</script>

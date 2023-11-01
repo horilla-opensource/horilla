@@ -16,6 +16,7 @@ from django.forms import DateInput
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext as _
 from django.utils.translation import gettext_lazy as _trans
+from django.template.loader import render_to_string
 from employee.models import Employee
 from base.models import (
     Company,
@@ -294,22 +295,20 @@ class CompanyForm(ModelForm):
         model = Company
         fields = "__all__"
 
-
-    def validate_image(self,file):
+    def validate_image(self, file):
         max_size = 5 * 1024 * 1024
 
         if file.size > max_size:
             raise ValidationError("File size should be less than 5MB.")
 
         # Check file extension
-        valid_extensions = ['.jpg', '.jpeg', '.png', '.webp', '.svg']
+        valid_extensions = [".jpg", ".jpeg", ".png", ".webp", ".svg"]
         ext = os.path.splitext(file.name)[1].lower()
         if ext not in valid_extensions:
             raise ValidationError("Unsupported file extension.")
-        
-    
+
     def clean_icon(self):
-        icon = self.cleaned_data.get('icon')
+        icon = self.cleaned_data.get("icon")
         if icon:
             self.validate_image(icon)
         return icon
@@ -508,7 +507,7 @@ class RotatingWorkTypeAssignForm(ModelForm):
             rotating_work_type_assign = RotatingWorkTypeAssign()
             rotating_work_type_assign.rotating_work_type_id = rotating_work_type
             rotating_work_type_assign.employee_id = employee
-            rotating_work_type_assign.is_active=self.cleaned_data["is_active"]
+            rotating_work_type_assign.is_active = self.cleaned_data["is_active"]
             rotating_work_type_assign.based_on = self.cleaned_data["based_on"]
             rotating_work_type_assign.start_date = self.cleaned_data["start_date"]
             rotating_work_type_assign.next_change_date = self.cleaned_data["start_date"]
@@ -1092,10 +1091,23 @@ class ShiftRequestForm(ModelForm):
             "requested_till": _trans("Requested Till"),
         }
 
+    def as_p(self):
+        """
+        Render the form fields as HTML table rows with Bootstrap styling.
+        """
+        context = {"form": self}
+        table_html = render_to_string("attendance_form.html", context)
+        return table_html
+
     def save(self, commit: bool = ...):
         if not self.instance.approved:
             employee = self.instance.employee_id
-            self.instance.previous_shift_id = employee.employee_work_info.shift_id
+            if hasattr(employee, "employee_work_info"):
+                self.instance.previous_shift_id = employee.employee_work_info.shift_id
+                if not self.instance.requested_till:
+                    self.instance.requested_till = (
+                        employee.employee_work_info.contract_end_date
+                    )
         return super().save(commit)
 
     # here set default filter for all the employees those have work information filled.
@@ -1130,12 +1142,25 @@ class WorkTypeRequestForm(ModelForm):
             "description": _trans("Description"),
         }
 
+    def as_p(self):
+        """
+        Render the form fields as HTML table rows with Bootstrap styling.
+        """
+        context = {"form": self}
+        table_html = render_to_string("attendance_form.html", context)
+        return table_html
+
     def save(self, commit: bool = ...):
         if not self.instance.approved:
             employee = self.instance.employee_id
-            self.instance.previous_work_type_id = (
-                employee.employee_work_info.work_type_id
-            )
+            if hasattr(employee, "employee_work_info"):
+                self.instance.previous_work_type_id = (
+                    employee.employee_work_info.work_type_id
+                )
+                if not self.instance.requested_till:
+                    self.instance.requested_till = (
+                        employee.employee_work_info.contract_end_date
+                    )
         return super().save(commit)
 
 

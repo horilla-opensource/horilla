@@ -228,31 +228,33 @@ def switch_shift():
     from django.contrib.auth.models import User
 
     today = date.today()
+
     shift_requests = ShiftRequest.objects.filter(
         canceled=False, approved=True, requested_date__exact=today, shift_changed=False
     )
-    for request in shift_requests:
-        work_info = request.employee_id.employee_work_info
-        # updating requested shift to the employee work information.
-        work_info.shift_id = request.shift_id
-        work_info.save()
-        request.approved = True
-        request.shift_changed = True
-        request.save()
-        bot = User.objects.filter(username="Horilla Bot").first()
-        if bot is not None:
-            employee = request.employee_id
-            notify.send(
-                bot,
-                recipient=employee.employee_user_id,
-                verb="Shift Changes notification",
-                verb_ar="التحول تغيير الإخطار",
-                verb_de="Benachrichtigung über Schichtänderungen",
-                verb_es="Notificación de cambios de turno",
-                verb_fr="Notification des changements de quart de travail",
-                icon="refresh",
-                redirect="/employee/employee-profile",
-            )
+    if shift_requests:
+        for request in shift_requests:
+            work_info = request.employee_id.employee_work_info
+            # updating requested shift to the employee work information.
+            work_info.shift_id = request.shift_id
+            work_info.save()
+            request.approved = True
+            request.shift_changed = True
+            request.save()
+            bot = User.objects.filter(username="Horilla Bot").first()
+            if bot is not None:
+                employee = request.employee_id
+                notify.send(
+                    bot,
+                    recipient=employee.employee_user_id,
+                    verb="Shift Changes notification",
+                    verb_ar="التحول تغيير الإخطار",
+                    verb_de="Benachrichtigung über Schichtänderungen",
+                    verb_es="Notificación de cambios de turno",
+                    verb_fr="Notification des changements de quart de travail",
+                    icon="refresh",
+                    redirect="/employee/employee-profile",
+                )
     return
 
 
@@ -272,27 +274,28 @@ def undo_shift():
         is_active=True,
         shift_changed=True,
     )
-    for request in shift_requests:
-        work_info = request.employee_id.employee_work_info
-        work_info.shift_id = request.previous_shift_id
-        work_info.save()
-        # making the instance in-active
-        request.is_active = False
-        request.save()
-        bot = User.objects.filter(username="Horilla Bot").first()
-        if bot is not None:
-            employee = request.employee_id
-            notify.send(
-                bot,
-                recipient=employee.employee_user_id,
-                verb="Shift changes notification, Requested date expired.",
-                verb_ar="التحول يغير الإخطار ، التاريخ المطلوب انتهت صلاحيته.",
-                verb_de="Benachrichtigung über Schichtänderungen, gewünschtes Datum abgelaufen.",
-                verb_es="Notificación de cambios de turno, Fecha solicitada vencida.",
-                verb_fr="Notification de changement d'équipe, la date demandée a expiré.",
-                icon="refresh",
-                redirect="/employee/employee-profile",
-            )
+    if shift_requests:
+        for request in shift_requests:
+            work_info = request.employee_id.employee_work_info
+            work_info.shift_id = request.previous_shift_id
+            work_info.save()
+            # making the instance in-active
+            request.is_active = False
+            request.save()
+            bot = User.objects.filter(username="Horilla Bot").first()
+            if bot is not None:
+                employee = request.employee_id
+                notify.send(
+                    bot,
+                    recipient=employee.employee_user_id,
+                    verb="Shift changes notification, Requested date expired.",
+                    verb_ar="التحول يغير الإخطار ، التاريخ المطلوب انتهت صلاحيته.",
+                    verb_de="Benachrichtigung über Schichtänderungen, gewünschtes Datum abgelaufen.",
+                    verb_es="Notificación de cambios de turno, Fecha solicitada vencida.",
+                    verb_fr="Notification de changement d'équipe, la date demandée a expiré.",
+                    icon="refresh",
+                    redirect="/employee/employee-profile",
+                )
     return
 
 
@@ -377,10 +380,48 @@ def undo_work_type():
 
 
 scheduler = BackgroundScheduler()
-scheduler.add_job(rotate_shift, "interval", seconds=10)
-scheduler.add_job(rotate_work_type, "interval", seconds=10)
-scheduler.add_job(switch_shift, "interval", seconds=10)
-scheduler.add_job(undo_shift, "interval", seconds=10)
-scheduler.add_job(switch_work_type, "interval", seconds=10)
-scheduler.add_job(undo_work_type, "interval", seconds=10)
+
+# Set the initial start time to the current time
+start_time = datetime.now()
+
+# Add jobs with next_run_time set to the end of the previous job
+scheduler.add_job(
+    rotate_shift, "interval", seconds=10, id="job1", next_run_time=start_time
+)
+scheduler.add_job(
+    rotate_work_type,
+    "interval",
+    seconds=10,
+    id="job2",
+    next_run_time=start_time + timedelta(seconds=10),
+)
+scheduler.add_job(
+    undo_shift,
+    "interval",
+    seconds=10,
+    id="job3",
+    next_run_time=start_time + timedelta(seconds=20),
+)
+scheduler.add_job(
+    switch_shift,
+    "interval",
+    seconds=10,
+    id="job4",
+    next_run_time=start_time + timedelta(seconds=60),
+)
+scheduler.add_job(
+    undo_work_type,
+    "interval",
+    seconds=10,
+    id="job6",
+    next_run_time=start_time + timedelta(seconds=30),
+)
+scheduler.add_job(
+    switch_work_type,
+    "interval",
+    seconds=10,
+    id="job5",
+    next_run_time=start_time + timedelta(seconds=80),
+)
+
 scheduler.start()

@@ -65,7 +65,6 @@ class Department(models.Model):
     """
 
     department = models.CharField(max_length=50, blank=False, unique=True)
-    history = HistoricalRecords()
     objects = models.Manager()
 
     def __str__(self):
@@ -254,6 +253,7 @@ class EmployeeShiftDay(models.Model):
     def __str__(self) -> str:
         return str(_(self.day).capitalize())
 
+
 class EmployeeShift(models.Model):
     """
     EmployeeShift model
@@ -415,10 +415,9 @@ class WorkTypeRequest(models.Model):
         related_name="work_type_request",
         verbose_name=_("Employee"),
     )
+    is_permanent_work_type = models.BooleanField(default=True)
     requested_date = models.DateField(null=True, default=django.utils.timezone.now)
-    requested_till = models.DateField(
-        null=True, blank=True, default=django.utils.timezone.now
-    )
+    requested_till = models.DateField(null=True, blank=True)
     work_type_id = models.ForeignKey(
         WorkType,
         on_delete=models.PROTECT,
@@ -451,7 +450,45 @@ class WorkTypeRequest(models.Model):
         ordering = [
             "requested_date",
         ]
-        unique_together = ["employee_id", "requested_date"]
+
+    def is_any_work_type_request_exists(self):
+        approved_work_type_requests_range = WorkTypeRequest.objects.filter(
+            employee_id=self.employee_id,
+            approved=True,
+            canceled=False,
+            requested_date__range=[self.requested_date, self.requested_till],
+            requested_till__range=[self.requested_date, self.requested_till],
+        ).exclude(id=self.id)
+        if approved_work_type_requests_range:
+            return True
+        approved_work_type_requests = WorkTypeRequest.objects.filter(
+            employee_id=self.employee_id,
+            approved=True,
+            canceled=False,
+            requested_date__lte=self.requested_date,
+            requested_till__gte=self.requested_date,
+        ).exclude(id=self.id)
+        if approved_work_type_requests:
+            return True
+        if self.requested_till:
+            approved_work_type_requests_2 = WorkTypeRequest.objects.filter(
+                employee_id=self.employee_id,
+                approved=True,
+                canceled=False,
+                requested_date__lte=self.requested_till,
+                requested_till__gte=self.requested_till,
+            ).exclude(id=self.id)
+            if approved_work_type_requests_2:
+                return True
+        approved_permanent_req = WorkTypeRequest.objects.filter(
+            employee_id=self.employee_id,
+            approved=True,
+            canceled=False,
+            requested_date__exact=self.requested_date,
+        )
+        if approved_permanent_req:
+            return True
+        return False
 
     def clean(self):
         if self.requested_date < django.utils.timezone.now().date():
@@ -459,6 +496,10 @@ class WorkTypeRequest(models.Model):
         if self.requested_till and self.requested_till < self.requested_date:
             raise ValidationError(
                 _("End date must be greater than or equal to start date")
+            )
+        if self.is_any_work_type_request_exists():
+            raise ValidationError(
+                _("A work type request already exists during this time period.")
             )
 
 
@@ -476,9 +517,7 @@ class ShiftRequest(models.Model):
     )
     is_permanent_shift = models.BooleanField(default=True)
     requested_date = models.DateField(null=True, default=django.utils.timezone.now)
-    requested_till = models.DateField(
-        null=True, blank=True, default=django.utils.timezone.now
-    )
+    requested_till = models.DateField(null=True, blank=True)
     shift_id = models.ForeignKey(
         EmployeeShift,
         on_delete=models.PROTECT,
@@ -511,7 +550,6 @@ class ShiftRequest(models.Model):
         ordering = [
             "requested_date",
         ]
-        unique_together = ["employee_id", "requested_date"]
 
     def clean(self):
         if self.requested_date < django.utils.timezone.now().date():
@@ -520,6 +558,49 @@ class ShiftRequest(models.Model):
             raise ValidationError(
                 _("End date must be greater than or equal to start date")
             )
+        if self.is_any_request_exists():
+            raise ValidationError(
+                _("A shift request already exists during this time period.")
+            )
+
+    def is_any_request_exists(self):
+        approved_shift_requests_range = ShiftRequest.objects.filter(
+            employee_id=self.employee_id,
+            approved=True,
+            canceled=False,
+            requested_date__range=[self.requested_date, self.requested_till],
+            requested_till__range=[self.requested_date, self.requested_till],
+        ).exclude(id=self.id)
+        if approved_shift_requests_range:
+            return True
+        approved_shift_requests = ShiftRequest.objects.filter(
+            employee_id=self.employee_id,
+            approved=True,
+            canceled=False,
+            requested_date__lte=self.requested_date,
+            requested_till__gte=self.requested_date,
+        ).exclude(id=self.id)
+        if approved_shift_requests:
+            return True
+        if self.requested_till:
+            approved_shift_requests_2 = ShiftRequest.objects.filter(
+                employee_id=self.employee_id,
+                approved=True,
+                canceled=False,
+                requested_date__lte=self.requested_till,
+                requested_till__gte=self.requested_till,
+            ).exclude(id=self.id)
+            if approved_shift_requests_2:
+                return True
+        approved_permanent_req = ShiftRequest.objects.filter(
+            employee_id=self.employee_id,
+            approved=True,
+            canceled=False,
+            requested_date__exact=self.requested_date,
+        )
+        if approved_permanent_req:
+            return True
+        return False
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
