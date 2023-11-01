@@ -6,22 +6,22 @@
       <div class="oh-sticky-table__thead">
         <div class="oh-sticky-table__tr">
           <div class="oh-sticky-table__th" style="width: 20px;">
-            <input type="checkbox" title='{% trans "Select All" %}' class="oh-input oh-input__checkbox mt-1 mr-2 all-attendances" style="margin-left: -5px;" />
+            <input type="checkbox" title='{% trans "Select All" %}' class="oh-input oh-input__checkbox mt-1 mr-2 all-attendance-activity" style="margin-left: -5px;" />
           </div>
-          <div class="oh-sticky-table__th"hx-target='#activity-table' hx-get="{% url 'attendance-activity-search' %}?{{pd}}&orderby=employee_id__employee_first_name">{% trans "Employee" %}</div>
-          <div class='oh-sticky-table__th'hx-target='#activity-table' hx-get="{% url 'attendance-activity-search' %}?{{pd}}&orderby=attendance_date">{% trans "Attendnace Date" %}</div>
-          <div class='oh-sticky-table__th'hx-target='#activity-table' hx-get="{% url 'attendance-activity-search' %}?{{pd}}&orderby=clock_in_date">{% trans "In Date" %}</div>
-          <div class='oh-sticky-table__th'hx-target='#activity-table' hx-get="{% url 'attendance-activity-search' %}?{{pd}}&orderby=">{% trans "Check In" %}</div>
-          <div class='oh-sticky-table__th'hx-target='#activity-table' hx-get="{% url 'attendance-activity-search' %}?{{pd}}&orderby=">{% trans "Check Out" %}</div>
-          <div class='oh-sticky-table__th'hx-target='#activity-table' hx-get="{% url 'attendance-activity-search' %}?{{pd}}&orderby=clock_out_date">{% trans "Out Date" %}</div>
+          <div class="oh-sticky-table__th" hx-target='#activity-table' hx-get="{% url 'attendance-activity-search' %}?{{pd}}&orderby=employee_id__employee_first_name">{% trans "Employee" %}</div>
+          <div class='oh-sticky-table__th' hx-target='#activity-table' hx-get="{% url 'attendance-activity-search' %}?{{pd}}&orderby=attendance_date">{% trans "Attendnace Date" %}</div>
+          <div class='oh-sticky-table__th' hx-target='#activity-table' hx-get="{% url 'attendance-activity-search' %}?{{pd}}&orderby=clock_in_date">{% trans "In Date" %}</div>
+          <div class='oh-sticky-table__th'>{% trans "Check In" %}</div>
+          <div class='oh-sticky-table__th'>{% trans "Check Out" %}</div>
+          <div class='oh-sticky-table__th' hx-target='#activity-table' hx-get="{% url 'attendance-activity-search' %}?{{pd}}&orderby=clock_out_date">{% trans "Out Date" %}</div>
           <div class='oh-sticky-table__th' scope="col" style="width: 80px;"></div>
-        </div>
+        </div> 
       </div>
       <div class="oh-sticky-table__tbody">
         {% for activity in data %}
           <div class="oh-sticky-table__tr" draggable="true">
             <div class="oh-sticky-table__sd" onclick="event.stopPropagation();">
-              <input type="checkbox" id="{{late_in_early_out.id}}" class="oh-input attendance-checkbox oh-input__checkbox mt-2 mr-2 all-attendance-row" />
+              <input type="checkbox" id="{{activity.id}}" class="oh-input attendance-checkbox oh-input__checkbox mt-2 mr-2 all-attendance-activity-row" />
             </div>
               <div class="oh-sticky-table__td">
                   <div class="oh-profile oh-profile--md">
@@ -45,7 +45,7 @@
           <div class="oh-sticky-table__td">
             <div class="oh-btn-group">
               
-              {% if perms.attendance.delete_attendancelatecomeearlyout %}
+              {% if perms.attendance.delete_attendanceactivity %}
               <form action="{% url 'attendance-activity-delete' activity.id  %}"
                 onclick="event.stopPropagation()" onsubmit="return confirm('{% trans "Are you sure want to delete this attendance?" %}')" 
                 hx-target="#tab_contents" method='post'>

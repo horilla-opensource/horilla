@@ -5,7 +5,7 @@
       <div class="oh-sticky-table__thead">
         <div class="oh-sticky-table__tr">
           <div class="oh-sticky-table__th" style="width: 20px;">
-            <input type="checkbox" title='{% trans "Select All" %}' class="oh-input oh-input__checkbox mt-1 mr-2 all-attendances" style="margin-left: -5px;" />
+            <input type="checkbox" title='{% trans "Select All" %}' class="oh-input oh-input__checkbox mt-1 mr-2 all-latecome" style="margin-left: -5px;" />
           </div>
           <div class='oh-sticky-table__th' scope="col" hx-target='#report-container' hx-get="{% url 'late-come-early-out-search' %}?{{pd}}&sortby=employee_id__employee_first_name">{% trans "Employee" %}</div>
           <div class='oh-sticky-table__th' scope="col" hx-target='#report-container' hx-get="{% url 'late-come-early-out-search' %}?{{pd}}&sortby=type">{% trans "Type" %}</div>
@@ -23,7 +23,7 @@
         {% for late_in_early_out in data %}
         <div class="oh-sticky-table__tr" draggable="true">
           <div class="oh-sticky-table__sd" onclick="event.stopPropagation();">
-            <input type="checkbox" id="{{late_in_early_out.id}}" class="oh-input attendance-checkbox oh-input__checkbox mt-2 mr-2 all-attendance-row" />
+            <input type="checkbox" id="{{late_in_early_out.id}}" class="oh-input attendance-checkbox oh-input__checkbox mt-2 mr-2 all-latecome-row" />
           </div>
           <div class="oh-sticky-table__td">
             <div class="oh-profile oh-profile--md">
