@@ -18,6 +18,9 @@
         </select>
       </div>
     </div>
+    <div class="oh-payslip__net-payable-right" style="min-width: 20px; height: 35px; border: 1px solid hsl(213,22%,84%);">
+      <a href="{% url 'payslip-pdf' instance.id %}" type="button" title="{% trans 'Download' %}" class="oh-btn oh-btn--gray-bkg" style="height: 9px;"> <ion-icon name="download"></ion-icon></a>
+    </div>
   </div>
   {% endif %}
   <div class="oh-payslip__header">
@@ -265,9 +268,6 @@
       </div>
     </div>
 
-    <!-- <div class="oh-modal__dialog-footer">
-    
-</form> -->
   </div>
 </div>
 <div id="messageContainer"></div>
@@ -276,14 +276,6 @@
     var endDate = "{{instance.end_date|date:'Y-m-d'}}"
     var startDate = "{{instance.start_date|date:'Y-m-d'}}"
     var status = $(this).val();
-    // var currentUrl = window.location.href;
-    // var params = new URLSearchParams(window.location.search);
-    // params.set('status', status);
-    // params.set('start_date', startDate);
-    // params.set('end_date', endDate);
-    // var newUrl = currentUrl.split('?')[0] + '?' + params.toString();
-    // window.history.pushState(null, '', newUrl);
-
 
     e.preventDefault();
     $.ajax({
