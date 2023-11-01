@@ -535,7 +535,9 @@
     // Active tab script
     function activeCandTab() {
       var activeTab = localStorage.getItem("activeCandTab")
-      if(activeTab != null){
+      if ((!$(`[data-target="${activeTab}"]`).length) && $(`[data-target="#personal"]`).length) {
+        $(`[data-target="#personal"]`)[0].click()
+      }else if(activeTab != null){
         $(".oh-general__tab-link--active").removeClass("oh-general__tab-link--active");
         $(`[data-target='${activeTab}']`).addClass("oh-general__tab-link--active");
         $(".oh-general__tab-target").addClass("d-none");
