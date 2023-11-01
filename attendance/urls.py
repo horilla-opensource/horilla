@@ -82,6 +82,16 @@ urlpatterns = [
         views.attendance_activity_delete,
         name="attendance-activity-delete",
     ),
+    path(
+        "attendance-activity-bulk-delete",
+        views.attendance_activity_bulk_delete,
+        name="attendance-activity-bulk-delete",
+    ),
+    path(
+        "attendance-activity-info-export",
+        views.attendance_activity_export,
+        name="attendance-activity-info-export",
+    ),
     path("view-my-attendance", views.view_my_attendance, name="view-my-attendance"),
     path(
         "filter-own-attendance",
@@ -114,6 +124,16 @@ urlpatterns = [
         "late-come-early-out-delete/<int:obj_id>/",
         views.late_come_early_out_delete,
         name="late-come-early-out-delete",
+    ),
+    path(
+        "late-come-early-out-bulk-delete",
+        views.late_come_early_out_bulk_delete,
+        name="late-come-early-out-bulk-delete",
+    ),
+    path(
+        "late-come-early-out-info-export",
+        views.late_come_early_out_export,
+        name="late-come-early-out-info-export",
     ),
     path(
         "validation-condition-create",

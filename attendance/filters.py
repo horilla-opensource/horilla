@@ -15,6 +15,7 @@ from attendance.models import (
     AttendanceOverTime,
     AttendanceLateComeEarlyOut,
     AttendanceActivity,
+    strtime_seconds,
 )
 from django.utils.translation import gettext_lazy as _
 from django.db.models import Subquery, OuterRef
@@ -104,26 +105,32 @@ class AttendanceOverTimeFilter(FilterSet):
     """
 
     MONTH_CHOICES = [
-        ("January", "January"),
-        ("February", "February"),
-        ("March", "March"),
-        ("April", "April"),
-        ("May", "May"),
-        ("June", "June"),
-        ("July", "July"),
-        ("August", "August"),
-        ("September", "September"),
-        ("October", "October"),
-        ("November", "November"),
-        ("December", "December"),
+        ("January", _("January")),
+        ("February", _("February")),
+        ("March", _("March")),
+        ("April", _("April")),
+        ("May", _("May")),
+        ("June", _("June")),
+        ("July", _("July")),
+        ("August", _("August")),
+        ("September", _("September")),
+        ("October", _("October")),
+        ("November", _("November")),
+        ("December", _("December")),
     ]
     search = django_filters.CharFilter(method=filter_by_name)
 
-    hour_account__gte = DurationInSecondsFilter(
+    worked_hours__gte = DurationInSecondsFilter(
         field_name="hour_account_second", lookup_expr="gte"
     )
-    hour_account__lte = DurationInSecondsFilter(
+    worked_hours__lte = DurationInSecondsFilter(
         field_name="hour_account_second", lookup_expr="lte"
+    )
+    pending_hours__lte = DurationInSecondsFilter(
+        field_name="hour_pending_second", lookup_expr="lte"
+    )
+    pending_hours__gte = DurationInSecondsFilter(
+        field_name="hour_pending_second", lookup_expr="gte"
     )
     overtime__gte = DurationInSecondsFilter(
         field_name="overtime_second", lookup_expr="gte"
@@ -143,7 +150,7 @@ class AttendanceOverTimeFilter(FilterSet):
             "employee_id",
             "month",
             "overtime",
-            "hour_account",
+            "worked_hours",
             "year",
             "employee_id__employee_work_info__department_id",
             "employee_id__employee_work_info__company_id",
@@ -157,11 +164,17 @@ class AttendanceOverTimeFilter(FilterSet):
     def __init__(self, data=None, queryset=None, *, request=None, prefix=None):
         super().__init__(data=data, queryset=queryset, request=request, prefix=prefix)
 
+
 class LateComeEarlyOutFilter(FilterSet):
     """
     LateComeEarlyOutFilter class
     """
+
     search = django_filters.CharFilter(method=filter_by_name)
+    employee_id = django_filters.ModelMultipleChoiceFilter(
+        queryset=Employee.objects.all(),
+        widget=forms.SelectMultiple(),
+    )
     attendance_date__gte = django_filters.DateFilter(
         field_name="attendance_id__attendance_date",
         lookup_expr="gte",
@@ -219,13 +232,18 @@ class LateComeEarlyOutFilter(FilterSet):
         field_name="attendance_id__at_work_second", lookup_expr="gte"
     )
     department = django_filters.CharFilter(
-        field_name="employee_id__employee_work_info__department_id__department",lookup_expr="icontains"
+        field_name="employee_id__employee_work_info__department_id__department",
+        lookup_expr="icontains",
     )
-    year = django_filters.CharFilter(field_name="attendance_id__attendance_date",lookup_expr="year")
+    year = django_filters.CharFilter(
+        field_name="attendance_id__attendance_date", lookup_expr="year"
+    )
     month = django_filters.CharFilter(
-        field_name="attendance_id__attendance_date",lookup_expr="month"
+        field_name="attendance_id__attendance_date", lookup_expr="month"
     )
-    week = django_filters.CharFilter(field_name="attendance_id__attendance_date",lookup_expr="week")
+    week = django_filters.CharFilter(
+        field_name="attendance_id__attendance_date", lookup_expr="week"
+    )
 
     class Meta:
         """
@@ -260,6 +278,11 @@ class LateComeEarlyOutFilter(FilterSet):
             "month",
             "week",
         ]
+
+    def __init__(self, data=None, queryset=None, *, request=None, prefix=None):
+        super().__init__(data=data, queryset=queryset, request=request, prefix=prefix)
+        for field in self.form.fields.keys():
+            self.form.fields[field].widget.attrs["id"] = f"{uuid.uuid4()}"
 
 
 class AttendanceActivityFilter(FilterSet):
@@ -339,6 +362,11 @@ class AttendanceActivityFilter(FilterSet):
         ]
         model = AttendanceActivity
 
+    def __init__(self, data=None, queryset=None, *, request=None, prefix=None):
+        super().__init__(data=data, queryset=queryset, request=request, prefix=prefix)
+        for field in self.form.fields.keys():
+            self.form.fields[field].widget.attrs["id"] = f"{uuid.uuid4()}"
+
 
 class AttendanceFilters(FilterSet):
     """
@@ -399,7 +427,12 @@ class AttendanceFilters(FilterSet):
     attendance_date = django_filters.DateFilter(
         widget=forms.DateInput(attrs={"type": "date"}),
     )
-
+    pending_hour__lte = DurationInSecondsFilter(
+        method="filter_pending_hour",
+    )
+    pending_hour__gte = DurationInSecondsFilter(
+        method="filter_pending_hour",
+    )
     at_work_second__lte = DurationInSecondsFilter(
         field_name="at_work_second", lookup_expr="lte"
     )
@@ -412,13 +445,31 @@ class AttendanceFilters(FilterSet):
     overtime_second__gte = DurationInSecondsFilter(
         field_name="overtime_second", lookup_expr="gte"
     )
-    year = django_filters.CharFilter(field_name="attendance_date",lookup_expr="year")
-    month = django_filters.CharFilter(
-        field_name="attendance_date",lookup_expr="month"
+    year = django_filters.CharFilter(field_name="attendance_date", lookup_expr="year")
+    month = django_filters.CharFilter(field_name="attendance_date", lookup_expr="month")
+    week = django_filters.CharFilter(field_name="attendance_date", lookup_expr="week")
+    department = django_filters.CharFilter(
+        field_name="employee_id__employee_work_info__department_id__department",
+        lookup_expr="icontains",
     )
-    week = django_filters.CharFilter(field_name="attendance_date",lookup_expr="week")
-    department = django_filters.CharFilter(field_name="employee_id__employee_work_info__department_id__department",lookup_expr="icontains")
 
+    def filter_pending_hour(self, queryset, name, value):
+        if value is not None:
+            value = strtime_seconds(value)
+            filtered_attendance = []
+            for attendance in queryset:
+                minimum_hour_second = strtime_seconds(attendance.minimum_hour)
+                worked_hour_second = attendance.at_work_second
+                pending_hour_second = minimum_hour_second - worked_hour_second
+                if name == "pending_hour__lte":
+                    if value >= pending_hour_second:
+                        filtered_attendance.append(attendance)
+                else:
+                    if value <= pending_hour_second:
+                        filtered_attendance.append(attendance)
+        return queryset.filter(
+            id__in=[attendance.id for attendance in filtered_attendance]
+        )
 
     class Meta:
         """

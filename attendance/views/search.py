@@ -3,6 +3,7 @@ search.py
 
 This is moduel is used to register end point related to the search filter functionalities
 """
+from datetime import datetime
 from urllib.parse import parse_qs
 from django.shortcuts import render
 from base.methods import filtersubordinates, sortby, get_key_instances
@@ -27,6 +28,7 @@ from attendance.models import (
     AttendanceLateComeEarlyOut,
 )
 from attendance.views.views import paginator_qry, strtime_seconds
+from django.utils.translation import gettext_lazy as _
 
 
 @login_required
@@ -35,6 +37,16 @@ def attendance_search(request):
     """
     This method is used to search attendance by employee
     """
+    month_name = ""
+    params = [
+        "employee_id",
+        "attendance_validated",
+        "attendance_date__gte",
+        "attendance_date__lte",
+    ]
+    remove_params = []
+    if params == list(request.GET.keys()):
+        remove_params = [param for param in params if param != "employee_id"]
     previous_data = request.GET.urlencode()
     field = request.GET.get("field")
     minot = strtime_seconds("00:00")
@@ -75,10 +87,21 @@ def attendance_search(request):
     ot_attendances = sortby(request, ot_attendances, "sortby")
     data_dict = parse_qs(previous_data)
     get_key_instances(Attendance, data_dict)
-    keys_to_remove = [key for key, value in data_dict.items() if value == ["unknown"]]
+    keys_to_remove = [
+        key
+        for key, value in data_dict.items()
+        if value == ["unknown"] or key in remove_params
+    ]
     for key in keys_to_remove:
         data_dict.pop(key)
-
+    if params == list(request.GET.keys()):
+        template = "attendance/attendance/validate_attendance.html"
+        if not attendances:
+            date_object = datetime.strptime(
+                request.GET.get("attendance_date__gte"), "%Y-%m-%d"
+            )
+            month_name = _(date_object.strftime("%B"))
+            template = "attendance/attendance/validate_attendance_empty.html"
     return render(
         request,
         template,
@@ -93,6 +116,7 @@ def attendance_search(request):
             "pd": previous_data,
             "field": field,
             "filter_dict": data_dict,
+            "month_name": month_name,
         },
     )
 
@@ -298,7 +322,9 @@ def search_attendance_requests(request):
         },
     )
 
+
 from django.http import JsonResponse
+
 
 @login_required
 def widget_filter(request):

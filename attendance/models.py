@@ -6,12 +6,14 @@ This module is used to register models for recruitment app
 """
 import json
 import contextlib
-from datetime import datetime
+from datetime import datetime, date, timedelta
 from django.db import models
+from django.db.models import Q
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 from base.models import EmployeeShift, EmployeeShiftDay, WorkType
 from employee.models import Employee
+from leave.models import LeaveRequest
 from attendance.methods.differentiate import get_diff_dict
 
 # Create your models here.
@@ -98,7 +100,7 @@ class AttendanceActivity(models.Model):
 
 class Attendance(models.Model):
     """
-    Attendance model_
+    Attendance model
     """
 
     status = [
@@ -220,6 +222,18 @@ class Attendance(models.Model):
         return keys
 
     # return f"Attendance ID: {self.id}"  # Adjust the representation as needed
+    def hours_pending(self):
+        """
+        This method will returns difference between minimum_hour and attendance_worked_hour
+        """
+        minimum_hours = strtime_seconds(self.minimum_hour)
+        worked_hour = strtime_seconds(self.attendance_worked_hour)
+        pending_seconds = minimum_hours - worked_hour
+        if pending_seconds < 0:
+            return "00:00"
+        else:
+            pending_hours = format_time(pending_seconds)
+            return pending_hours
 
     def save(self, *args, **kwargs):
         minimum_hour = self.minimum_hour
@@ -263,6 +277,7 @@ class Attendance(models.Model):
             self.update_ot(employee_ot.first())
         else:
             self.create_ot()
+            self.update_ot(employee_ot.first())
         approved = self.attendance_overtime_approve
         attendance_account = self.employee_id.employee_overtime.filter(
             month=self.attendance_date.strftime("%B").lower(),
@@ -308,6 +323,12 @@ class Attendance(models.Model):
             AttendanceActivity.objects.filter(
                 attendance_date=self.attendance_date, employee_id=self.employee_id
             ).delete()
+            employee_ot = self.employee_id.employee_overtime.filter(
+                month=self.attendance_date.strftime("%B").lower(),
+                year=self.attendance_date.strftime("%Y"),
+            )
+        if employee_ot.exists():
+            self.update_ot(employee_ot.first())
         # Call the superclass delete() method to delete the object
         super().delete(*args, **kwargs)
 
@@ -336,16 +357,43 @@ class Attendance(models.Model):
         Args:
             employee_ot (obj): AttendanceOverTime instance
         """
+        approved_leave_requests = self.employee_id.leaverequest_set.filter(
+            start_date__lte=self.attendance_date,
+            end_date__gte=self.attendance_date,
+            status="approved",
+        )
+
+        # Create a Q object to combine multiple conditions for the exclude clause
+        exclude_condition = Q()
+        for leave_request in approved_leave_requests:
+            exclude_condition |= Q(
+                attendance_date__range=(
+                    leave_request.start_date,
+                    leave_request.end_date,
+                )
+            )
+
+        # Filter Attendance objects
         month_attendances = Attendance.objects.filter(
             employee_id=self.employee_id,
             attendance_date__month=self.attendance_date.month,
             attendance_date__year=self.attendance_date.year,
             attendance_validated=True,
-        )
+        ).exclude(exclude_condition)
         hour_balance = 0
+        hours_pending = 0
+        minimum_hour_second = 0
         for attendance in month_attendances:
-            hour_balance = hour_balance + attendance.at_work_second
-        employee_ot.hour_account = format_time(hour_balance)
+            required_work_second = strtime_seconds(attendance.minimum_hour)
+            at_work_second = min(
+                required_work_second,
+                attendance.at_work_second,
+            )
+            hour_balance = hour_balance + at_work_second
+            minimum_hour_second += strtime_seconds(attendance.minimum_hour)
+            hours_pending = minimum_hour_second - hour_balance
+        employee_ot.worked_hours = format_time(hour_balance)
+        employee_ot.pending_hours = format_time(hours_pending)
         employee_ot.save()
         return employee_ot
 
@@ -357,15 +405,13 @@ class Attendance(models.Model):
         if self.attendance_clock_in_date < self.attendance_date:
             raise ValidationError(
                 {
-                    "attendance_clock_in_date": \
-                        "Attendance check-in date never smaller than attendance date"
+                    "attendance_clock_in_date": "Attendance check-in date never smaller than attendance date"
                 }
             )
         if self.attendance_clock_out_date < self.attendance_clock_in_date:
             raise ValidationError(
                 {
-                    "attendance_clock_out_date": \
-                        "Attendance check-out date never smaller than attendance check-in date"
+                    "attendance_clock_out_date": "Attendance check-out date never smaller than attendance check-in date"
                 }
             )
         if self.attendance_clock_out_date >= today:
@@ -391,13 +437,20 @@ class AttendanceOverTime(models.Model):
     year = models.CharField(
         default=datetime.now().strftime("%Y"), null=True, max_length=10
     )
-    hour_account = models.CharField(
+    worked_hours = models.CharField(
+        max_length=10, default="00:00", null=True, validators=[validate_time_format]
+    )
+    pending_hours = models.CharField(
         max_length=10, default="00:00", null=True, validators=[validate_time_format]
     )
     overtime = models.CharField(
         max_length=20, default="00:00", validators=[validate_time_format]
     )
     hour_account_second = models.IntegerField(
+        default=0,
+        null=True,
+    )
+    hour_pending_second = models.IntegerField(
         default=0,
         null=True,
     )
@@ -415,8 +468,23 @@ class AttendanceOverTime(models.Model):
         unique_together = [("employee_id"), ("month"), ("year")]
         ordering = ["-year", "-month_sequence"]
 
+    def month_days(self):
+        """
+        this method is used to create new AttendanceOvertime's instance if there
+        is no existing for a specific month and year
+        """
+        month = self.month_sequence + 1
+        year = int(self.year)
+        start_date = date(year, month, 1)
+        if month == 12:
+            end_date = date(year + 1, 1, 1) - timedelta(days=1)
+        else:
+            end_date = date(year, month + 1, 1) - timedelta(days=1)
+        return start_date, end_date
+
     def save(self, *args, **kwargs):
-        self.hour_account_second = strtime_seconds(self.hour_account)
+        self.hour_account_second = strtime_seconds(self.worked_hours)
+        self.hour_pending_second = strtime_seconds(self.pending_hours)
         self.overtime_second = strtime_seconds(self.overtime)
         month_name = self.month.split("-")[0]
         months = [
@@ -448,7 +516,10 @@ class AttendanceLateComeEarlyOut(models.Model):
     ]
 
     attendance_id = models.ForeignKey(
-        Attendance, on_delete=models.PROTECT, related_name="late_come_early_out"
+        Attendance,
+        on_delete=models.PROTECT,
+        related_name="late_come_early_out",
+        verbose_name=_("Attendance"),
     )
     employee_id = models.ForeignKey(
         Employee,
@@ -457,7 +528,7 @@ class AttendanceLateComeEarlyOut(models.Model):
         related_name="late_come_early_out",
         verbose_name=_("Employee"),
     )
-    type = models.CharField(max_length=20, choices=choices)
+    type = models.CharField(max_length=20, choices=choices, verbose_name=_("Type"))
     objects = models.Manager()
 
     class Meta:

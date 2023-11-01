@@ -148,6 +148,16 @@ $(document).ready(function () {
     $('[name="selected_fields"]').prop("checked", isChecked);
   });
 
+  $(".all-latecome").change(function () {
+    const isLateChecked = $(this).prop("checked");
+    $(".all-latecome-row").prop("checked", isLateChecked);
+  });
+
+  $(".all-attendance-activity").change(function () {
+    const isLateChecked = $(this).prop("checked");
+    $(".all-attendance-activity-row").prop("checked", isLateChecked);
+  });
+
   $("#attendanceImportForm").submit(function (e) {
     e.preventDefault();
 
@@ -330,6 +340,100 @@ $(document).ready(function () {
                 if (jqXHR.status === 200) {
                   location.reload();
                 } else {
+                }
+              },
+            });
+          }
+        });
+      }
+    });
+  });
+
+  $("#lateComeBulkDelete").click(function (e) {
+    e.preventDefault();
+    var languageCode = null;
+    getCurrentLanguageCode(function (code) {
+      languageCode = code;
+      var confirmMessage = deleteMessages[languageCode];
+      var textMessage = norowdeleteMessages[languageCode];
+      var checkedRows = $(".all-latecome-row").filter(":checked");
+      if (checkedRows.length === 0) {
+        Swal.fire({
+          text: textMessage,
+          icon: "warning",
+          confirmButtonText: "Close",
+        });
+      } else {
+        Swal.fire({
+          text: confirmMessage,
+          icon: "error",
+          showCancelButton: true,
+          confirmButtonColor: "#008000",
+          cancelButtonColor: "#d33",
+          confirmButtonText: "Confirm",
+        }).then(function (result) {
+          if (result.isConfirmed) {
+            ids = [];
+            checkedRows.each(function () {
+              ids.push($(this).attr("id"));
+            });
+            $.ajax({
+              type: "POST",
+              url: "/attendance/late-come-early-out-bulk-delete",
+              data: {
+                csrfmiddlewaretoken: getCookie("csrftoken"),
+                ids: JSON.stringify(ids),
+              },
+              success: function (response, textStatus, jqXHR) {
+                if (jqXHR.status === 200) {
+                  location.reload();
+                }
+              },
+            });
+          }
+        });
+      }
+    });
+  });
+
+  $("#attendanceActivityDelete").click(function (e) {
+    e.preventDefault();
+    var languageCode = null;
+    getCurrentLanguageCode(function (code) {
+      languageCode = code;
+      var confirmMessage = deleteMessages[languageCode];
+      var textMessage = norowdeleteMessages[languageCode];
+      var checkedRows = $(".all-attendance-activity-row").filter(":checked");
+      if (checkedRows.length === 0) {
+        Swal.fire({
+          text: textMessage,
+          icon: "warning",
+          confirmButtonText: "Close",
+        });
+      } else {
+        Swal.fire({
+          text: confirmMessage,
+          icon: "error",
+          showCancelButton: true,
+          confirmButtonColor: "#008000",
+          cancelButtonColor: "#d33",
+          confirmButtonText: "Confirm",
+        }).then(function (result) {
+          if (result.isConfirmed) {
+            ids = [];
+            checkedRows.each(function () {
+              ids.push($(this).attr("id"));
+            });
+            $.ajax({
+              type: "POST",
+              url: "/attendance/attendance-activity-bulk-delete",
+              data: {
+                csrfmiddlewaretoken: getCookie("csrftoken"),
+                ids: JSON.stringify(ids),
+              },
+              success: function (response, textStatus, jqXHR) {
+                if (jqXHR.status === 200) {
+                  location.reload();
                 }
               },
             });

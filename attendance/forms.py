@@ -22,6 +22,7 @@ class YourForm(forms.Form):
 """
 import json
 import uuid, datetime
+from collections import OrderedDict
 from typing import Any, Dict
 from calendar import month_name
 from django import forms
@@ -137,7 +138,7 @@ class AttendanceUpdateForm(ModelForm):
             condition = AttendanceValidationCondition.objects.first()
             condition = (
                 strtime_seconds(condition.minimum_overtime_to_approve)
-                if condition.minimum_overtime_to_approve
+                if condition and condition.minimum_overtime_to_approve
                 else 0
             )
             initial = {
@@ -358,11 +359,17 @@ class AttendanceOverTimeForm(ModelForm):
 
         model = AttendanceOverTime
         fields = "__all__"
-        exclude = ["hour_account_second", "overtime_second", "month_sequence"]
+        exclude = [
+            "hour_account_second",
+            "overtime_second",
+            "month_sequence",
+            "hour_pending_second",
+        ]
         labels = {
             "employee_id": _("Employee"),
             "year": _("Year"),
-            "hour_account": _("Hour Account"),
+            "worked_hours": _("Worked Hours"),
+            "pending_hours": _("Pending Hours"),
             "overtime": _("Overtime"),
         }
 
@@ -595,5 +602,47 @@ class AttendanceExportForm(forms.Form):
             "attendance_clock_out_date",
             "attendance_worked_hour",
             "attendance_validated",
+        ],
+    )
+
+
+class LateComeEarlyOutExportForm(forms.Form):
+    model_fields = AttendanceLateComeEarlyOut._meta.get_fields()
+    field_choices_1 = [
+        (field.name, field.verbose_name)
+        for field in model_fields
+        if hasattr(field, "verbose_name") and field.name not in excluded_fields
+    ]
+    model_fields_2 = Attendance._meta.get_fields()
+    field_choices_2 = [
+        (field.name, field.verbose_name)
+        for field in model_fields_2
+        if hasattr(field, "verbose_name") and field.name not in excluded_fields
+    ]
+    field_choices = field_choices_1 + field_choices_2
+    field_choices = list(OrderedDict.fromkeys(field_choices))
+    selected_fields = forms.MultipleChoiceField(
+        choices=field_choices,
+        widget=forms.CheckboxSelectMultiple,
+        initial=[
+            "employee_id",
+            "type",
+            "is_active",
+        ],
+    )
+
+
+class AttendanceActivityExportForm(forms.Form):
+    model_fields = AttendanceActivity._meta.get_fields()
+    field_choices = [
+        (field.name, field.verbose_name)
+        for field in model_fields
+        if hasattr(field, "verbose_name") and field.name not in excluded_fields
+    ]
+    selected_fields = forms.MultipleChoiceField(
+        choices=field_choices,
+        widget=forms.CheckboxSelectMultiple,
+        initial=[
+            "employee_id",
         ],
     )

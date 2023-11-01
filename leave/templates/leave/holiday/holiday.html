@@ -123,3 +123,14 @@
         </ul>
     </nav>
 </div>
+<script>
+  $(".all-holidays").change(function (e) {
+    var is_checked = $(this).is(":checked");
+    if (is_checked) {
+      $(".all-holidays-row").prop("checked", true);
+    } else {
+      $(".all-holidays-row").prop("checked", false);
+    }
+  });
+</script>
+

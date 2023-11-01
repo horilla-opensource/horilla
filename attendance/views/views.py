@@ -45,12 +45,15 @@ from attendance.filters import (
     AttendanceActivityFilter,
 )
 from attendance.forms import (
+    AttendanceActivityExportForm,
     AttendanceForm,
     AttendanceOverTimeForm,
     AttendanceValidationConditionForm,
     AttendanceUpdateForm,
     AttendanceExportForm,
+    LateComeEarlyOutExportForm,
 )
+
 from attendance.models import (
     Attendance,
     AttendanceActivity,
@@ -387,7 +390,7 @@ def attendance_delete(request, obj_id):
                 messages.error(
                     request,
                     _(
-                        "An attendance entry for {} already exists.".format(
+                        ("An attendance entry for {} already exists.").format(
                             model_names_str
                         )
                     ),
@@ -439,7 +442,7 @@ def attendance_bulk_delete(request):
                     messages.error(
                         request,
                         _(
-                            "An attendance entry for {} already exists.".format(
+                            ("An attendance entry for {} already exists.").format(
                                 model_names_str
                             )
                         ),
@@ -590,6 +593,7 @@ def attendance_activity_view(request):
     attendance_activities = AttendanceActivity.objects.all()
     previous_data = request.GET.urlencode()
     filter_obj = AttendanceActivityFilter()
+    export_form = AttendanceActivityExportForm()
     if attendance_activities.exists():
         template = "attendance/attendance_activity/attendance_activity_view.html"
     else:
@@ -601,7 +605,11 @@ def attendance_activity_view(request):
             "data": paginator_qry(attendance_activities, request.GET.get("page")),
             "pd": previous_data,
             "f": filter_obj,
+            "export": AttendanceActivityFilter(
+                queryset=AttendanceActivity.objects.all()
+            ),
             "gp_fields": AttendanceActivityReGroup.fields,
+            "export_form": export_form,
         },
     )
 
@@ -623,6 +631,56 @@ def attendance_activity_delete(request, obj_id):
     except ProtectedError:
         messages.error(request, _("You cannot delete this activity"))
     return redirect("/attendance/attendance-activity-view")
+
+
+@login_required
+@permission_required("attendance.delete_attendanceactivity")
+@require_http_methods(["POST"])
+def attendance_activity_bulk_delete(request):
+    """
+    This method is used to delete bulk of attendances
+    """
+    ids = request.POST["ids"]
+    ids = json.loads(ids)
+    for attendance_id in ids:
+        try:
+            AttendanceActivity.objects.get(id=attendance_id).delete()
+
+        except AttendanceActivity.DoesNotExist:
+            messages.error(request, _("Attendance not found."))
+    return JsonResponse({"message": "Success"})
+
+
+@login_required
+@permission_required("attendance.change_attendancelatecomeearlyout")
+def attendance_activity_export(request):
+    """
+    Export late come early out data to an Excel file.
+    This view function takes a GET request and exports attendance late come early out data into an Excel file.
+    The exported Excel file will include the selected fields from the AttendanceLateComeEarlyOut model.
+    """
+    today_date = date.today().strftime("%Y-%m-%d")
+    file_name = f"Attendance_activity_{today_date}.xlsx"
+    attendances = AttendanceActivityFilter(request.GET).qs
+    selected_fields = request.GET.getlist("selected_fields")
+    model_fields = AttendanceActivity._meta.get_fields()
+    attendanceActivity_data = {}
+    for field in model_fields:
+        field_name = field.name
+        if field_name in selected_fields:
+            attendanceActivity_data[field.verbose_name] = []
+            for attendance in attendances:
+                value = getattr(attendance, field_name)
+                if value is True:
+                    value = "Yes"
+                elif value is False:
+                    value = "No"
+                attendanceActivity_data[field.verbose_name].append(value)
+    data_frame = pd.DataFrame(data=attendanceActivity_data)
+    response = HttpResponse(content_type="application/ms-excel")
+    response["Content-Disposition"] = f'attachment; filename="{file_name}"'
+    data_frame.to_excel(response, index=False)
+    return response
 
 
 def employee_exists(request):
@@ -702,19 +760,20 @@ def on_time_view(request):
     """
     This method render template to view all on come early out entries
     """
-
     total_attendances = AttendanceFilters(request.GET).qs
     ids_to_exclude = AttendanceLateComeEarlyOut.objects.filter(
-        attendance_id__id__in=[attendance.id for attendance in total_attendances],type="late_come"
-    ).values_list('attendance_id__id', flat=True)
-
+        attendance_id__id__in=[attendance.id for attendance in total_attendances],
+        type="late_come",
+    ).values_list("attendance_id__id", flat=True)
     # Exclude attendances with related objects in AttendanceLateComeEarlyOut
     total_attendances = total_attendances.exclude(id__in=ids_to_exclude)
-    context ={
-        'attendances':total_attendances,
+    context = {
+        "attendances": total_attendances,
     }
-    return render(request,"attendance/attendance/attendance_on_time.html",
-                  context=context)
+    return render(
+        request, "attendance/attendance/attendance_on_time.html", context=context
+    )
+
 
 @login_required
 @manager_can_enter("attendance.view_attendancelatecomeearlyout")
@@ -730,8 +789,9 @@ def late_come_early_out_view(request):
     reports = filtersubordinates(
         request, reports, "attendance.view_attendancelatecomeearlyout"
     )
-    filter_obj = LateComeEarlyOutFilter(request.GET,reports)
-    previous_data =request.GET.urlencode()
+    filter_obj = LateComeEarlyOutFilter(request.GET, reports)
+    previous_data = request.GET.urlencode()
+    export_form = LateComeEarlyOutExportForm()
     data_dict = parse_qs(previous_data)
     get_key_instances(AttendanceLateComeEarlyOut, data_dict)
     return render(
@@ -741,8 +801,11 @@ def late_come_early_out_view(request):
             "data": paginator_qry(filter_obj.qs, request.GET.get("page")),
             "f": filter_obj,
             "gp_fields": LateComeEarlyOutReGroup.fields,
+            "export": LateComeEarlyOutFilter(
+                queryset=AttendanceLateComeEarlyOut.objects.all()
+            ),
             "filter_dict": data_dict,
-
+            "export_form": export_form,
         },
     )
 
@@ -765,6 +828,55 @@ def late_come_early_out_delete(request, obj_id):
         messages.error(request, _("You cannot delete this Late-in early-out"))
 
     return redirect("/attendance/late-come-early-out-view")
+
+
+@login_required
+@permission_required("attendance.delete_attendancelatecomeearlyout")
+@require_http_methods(["POST"])
+def late_come_early_out_bulk_delete(request):
+    """
+    This method is used to delete bulk of attendances
+    """
+    ids = request.POST["ids"]
+    ids = json.loads(ids)
+    for attendance_id in ids:
+        try:
+            AttendanceLateComeEarlyOut.objects.get(id=attendance_id).delete()
+        except AttendanceLateComeEarlyOut.DoesNotExist:
+            messages.error(request, _("Attendance not found."))
+    return JsonResponse({"message": "Success"})
+
+
+@login_required
+@permission_required("attendance.change_attendancelatecomeearlyout")
+def late_come_early_out_export(request):
+    """
+    Export late come early out data to an Excel file.
+    This view function takes a GET request and exports attendance late come early out data into an Excel file.
+    The exported Excel file will include the selected fields from the AttendanceLateComeEarlyOut model.
+    """
+    today_date = date.today().strftime("%Y-%m-%d")
+    file_name = f"Late_come_{today_date}.xlsx"
+    attendances = LateComeEarlyOutFilter(request.GET).qs
+    selected_fields = request.GET.getlist("selected_fields")
+    model_fields = AttendanceLateComeEarlyOut._meta.get_fields()
+    lateCome_data = {}
+    for field in model_fields:
+        field_name = field.name
+        if field_name in selected_fields:
+            lateCome_data[field.verbose_name] = []
+            for attendance in attendances:
+                value = getattr(attendance, field_name)
+                if value is True:
+                    value = "Yes"
+                elif value is False:
+                    value = "No"
+                lateCome_data[field.verbose_name].append(value)
+    data_frame = pd.DataFrame(data=lateCome_data)
+    response = HttpResponse(content_type="application/ms-excel")
+    response["Content-Disposition"] = f'attachment; filename="{file_name}"'
+    data_frame.to_excel(response, index=False)
+    return response
 
 
 @login_required
@@ -1025,6 +1137,7 @@ def form_shift_dynamic_data(request):
         }
     )
 
+
 @login_required
 def user_request_one_view(request, id):
     """
@@ -1041,15 +1154,19 @@ def user_request_one_view(request, id):
     at_work_seconds = attendance_request.at_work_second
     hours_at_work = at_work_seconds // 3600
     minutes_at_work = (at_work_seconds % 3600) // 60
-    at_work = '{:02}:{:02}'.format(hours_at_work, minutes_at_work)
+    at_work = "{:02}:{:02}".format(hours_at_work, minutes_at_work)
 
     over_time_seconds = attendance_request.overtime_second
     hours_over_time = over_time_seconds // 3600
     minutes_over_time = (over_time_seconds % 3600) // 60
-    over_time = '{:02}:{:02}'.format(hours_over_time, minutes_over_time)
-
+    over_time = "{:02}:{:02}".format(hours_over_time, minutes_over_time)
 
     return render(
-        request, "attendance/attendance/attendance_request_one.html", 
-        {"attendance_request": attendance_request, 'at_work':at_work, 'over_time':over_time }
+        request,
+        "attendance/attendance/attendance_request_one.html",
+        {
+            "attendance_request": attendance_request,
+            "at_work": at_work,
+            "over_time": over_time,
+        },
     )

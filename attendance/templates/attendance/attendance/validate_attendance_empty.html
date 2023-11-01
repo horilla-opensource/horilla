@@ -1,0 +1,17 @@
+{% load static %}{% load i18n %} {% include 'filter_tags.html' %}
+<div class="oh-wrapper-main">
+  <main :class="sidebarOpen ? 'oh-main__sidebar-visible' : ''">
+    <div class="oh-wrapper">
+      <div class="oh-404">
+        <img
+          style="width: 190px; height: 200px"
+          src="{% static 'images/ui/present.png' %}"
+          class="oh-404__image mb-4"
+          alt="Page not found. 404."
+        />
+        <h5 class="oh-404__subtitle">
+          {% blocktrans with month_name=month_name %}The attendances for this employee in {{ month_name }} has not been validated.{% endblocktrans %}
+      </div>
+    </div>
+  </main>
+</div>

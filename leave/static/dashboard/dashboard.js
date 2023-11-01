@@ -81,7 +81,7 @@ $(document).ready(function () {
 						//   stacked: true,
 						title: {
 							display: true,
-							text: "Week Dates",
+							text: dataSet.x_axis,
 							font: {
 								weight: "bold",
 								size: 16,
@@ -92,7 +92,7 @@ $(document).ready(function () {
 						//   stacked: true,
 						title: {
 							display: true,
-							text: "Number of leaves",
+							text: dataSet.y_axis,
 							font: {
 								weight: "bold",
 								size: 16,

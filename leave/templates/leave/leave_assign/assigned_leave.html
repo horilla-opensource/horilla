@@ -95,3 +95,13 @@
         </ul>
     </nav>
 </div>
+<script>
+    $(".all-assigned-leaves").change(function (e) {
+        var is_checked = $(this).is(":checked");
+        if (is_checked) {
+          $(".all-assigned-leaves-row").prop("checked", true);
+        } else {
+          $(".all-assigned-leaves-row").prop("checked", false);
+        }
+      });
+</script>
