@@ -46,7 +46,7 @@
 		tags = $(`
     {% if filter_dict %}
     <span class="oh-titlebar__tag oh-titlebar__tag--custom"
-      >{% trans "Filters :" %}</span
+      >{% trans 'Filters' %}:</span
     >
     {% endif %} 
     {%for field,values in filter_dict.items %} {% if values %} 
@@ -66,7 +66,7 @@
     </span>
     {% endwith %} {% endif %} {% endfor %}
     {% if filter_dict %}
-    <span class="oh-titlebar__tag oh-titlebar__tag--custom" title="Clear All" role="button" onclick="clearAllFilter($(this))"
+    <span class="oh-titlebar__tag oh-titlebar__tag--custom" title="{% trans 'Clear All' %}" role="button" onclick="clearAllFilter($(this))"
       ><ion-icon name="close-outline"></ion-icon></span
     > 
     {% endif %} 
