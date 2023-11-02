@@ -37,12 +37,12 @@ var norowMessages = {
   fr: "Aucune ligne n'a été sélectionnée.",
 };
 
-var selectedEmployees = {
-  ar: " موظفون محددون",
-  de: " Ausgewählte Mitarbeiter",
-  es: " Empleados seleccionados",
-  en: " Selected Employees",
-  fr: " Employés sélectionnés",
+var rowMessages = {
+  ar: " تم الاختيار",
+  de: " Ausgewählt",
+  es: " Seleccionado",
+  en: " Selected",
+  fr: " Sélectionné",
 };
 
 tickCheckboxes();
@@ -112,7 +112,7 @@ function addingIds() {
 
   getCurrentLanguageCode(function (code) {
     languageCode = code;
-    var message = selectedEmployees[languageCode];
+    var message = rowMessages[languageCode];
 
     $("#selectedInstances").attr("data-ids", JSON.stringify(ids));
 
@@ -141,7 +141,7 @@ function tickCheckboxes() {
   var selectedCount = uniqueIds.length;
   getCurrentLanguageCode(function (code) {
     languageCode = code;
-    var message = selectedEmployees[languageCode];
+    var message = rowMessages[languageCode];
     if (selectedCount > 0) {
       $("#exportInstances").css("display", "inline-flex");
       $("#selectedShow").css("display", "inline-flex");
