@@ -286,6 +286,17 @@ $(document).ready(function () {
 
   function contract_ending() {
     var period = $("#monthYearField").val();
+
+    var date = period.split('-');
+    var year = date[0];
+    var month = parseInt(date[1]);
+
+    var monthNames = [
+      "January", "February", "March", "April", "May", "June",
+      "July", "August", "September", "October", "November", "December"
+    ];
+    var formattedDate = `${monthNames[month - 1]} ${year}`;
+
     $.ajax({
       url: "/payroll/dashboard-contract-ending",
       type: "GET",
@@ -306,8 +317,9 @@ $(document).ready(function () {
 
             $("#contract_ending").append(elem);
           });
-          $(".contract-number").html(Object.keys(contract_end).length);
+          $(".contract-number").html(`${formattedDate} : ${contract_end.length}`);
         } else {
+          $(".contract-number").html(`${formattedDate} : ${contract_end.length}`);
           $("#contract_ending").html(
             `<div style="display:flex;align-items: center;justify-content: center; padding-top:50px" class="">
                         <div style="" class="">
