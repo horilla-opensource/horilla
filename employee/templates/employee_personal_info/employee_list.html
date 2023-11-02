@@ -14,10 +14,13 @@
     <div class="oh-checkpoint-badge text-success mb-2" id="selectAllInstances" style="cursor: pointer;">
       {% trans "Select All Employees" %}
     </div>
-    <div class="oh-checkpoint-badge text-primary mb-2" id="unselectAllInstances" style="cursor: pointer;">
+    <div class="oh-checkpoint-badge text-secondary mb-2" id="unselectAllInstances" style="cursor: pointer;">
       {% trans "Unselect All Employees" %}
     </div>
-    <div class="oh-checkpoint-badge text-danger mb-2" id="selectedshow" >
+    <div class="oh-checkpoint-badge text-info mb-2" id="exportInstances" style="cursor: pointer;">
+      {% trans "Export Employees" %}
+    </div>
+    <div class="oh-checkpoint-badge text-danger mb-2" id="selectedShow" >
     </div>
       <div class="oh-sticky-table">
         <div class="oh-sticky-table__table oh-table--sortable">
@@ -297,7 +300,7 @@ $(document).ready(function() {
   $('#selectAllInstances').click(function() {
 
     $("#selectedInstances").attr("data-clicked", 1);
-    $('#selectedshow').removeAttr('style');
+    $('#selectedShow').removeAttr('style');
     var savedFilters = JSON.parse(localStorage.getItem('savedFilters'));
 
     if (savedFilters && savedFilters['filterData'] !== null) 

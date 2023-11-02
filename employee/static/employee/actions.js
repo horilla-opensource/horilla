@@ -1,3 +1,10 @@
+var excelMessages = {
+  ar: "هل ترغب في تنزيل ملف Excel؟",
+  de: "Möchten Sie die Excel-Datei herunterladen?",
+  es: "¿Desea descargar el archivo de Excel?",
+  en: "Do you want to download the excel file?",
+  fr: "Voulez-vous télécharger le fichier Excel?",
+};
 var archiveMessages = {
   ar: "هل ترغب حقًا في أرشفة جميع الموظفين المحددين؟",
   de: "Möchten Sie wirklich alle ausgewählten Mitarbeiter archivieren?",
@@ -30,7 +37,7 @@ var norowMessages = {
   fr: "Aucune ligne n'a été sélectionnée.",
 };
 
-var selectedemployees = {
+var selectedEmployees = {
   ar: " موظفون محددون",
   de: " Ausgewählte Mitarbeiter",
   es: " Empleados seleccionados",
@@ -38,6 +45,11 @@ var selectedemployees = {
   fr: " Employés sélectionnés",
 };
 
+tickCheckboxes();
+
+function makeListUnique(list) {
+  return Array.from(new Set(list));
+}
 
 function getCookie(name) {
   let cookieValue = null;
@@ -73,20 +85,18 @@ $(".all-employee").change(function (e) {
   } else {
     $(".all-employee-row").prop("checked", false);
   }
-  addingIds()
+  addingIds();
 });
 
+$(".all-employee-row").change(function () {
+  addingIds();
+});
 
-$(".all-employee-row").change(function(){
-  addingIds()
-})
-
-
-function addingIds(){
+function addingIds() {
   var ids = JSON.parse($("#selectedInstances").attr("data-ids") || "[]");
   var selectedCount = 0;
 
-  $(".all-employee-row").each(function() {
+  $(".all-employee-row").each(function () {
     if ($(this).is(":checked")) {
       ids.push(this.id);
     } else {
@@ -96,46 +106,100 @@ function addingIds(){
       }
     }
   });
-  var ids = makeListUnique(ids);
-  var selectedCount = ids.length;
-  
-  getCurrentLanguageCode(function(code){
+
+  ids = makeListUnique(ids);
+  selectedCount = ids.length;
+
+  getCurrentLanguageCode(function (code) {
     languageCode = code;
-    var message = selectedemployees[languageCode];
+    var message = selectedEmployees[languageCode];
 
-    $("#selectedInstances").attr("data-ids", JSON.stringify(ids)); 
-    $('#selectedshow').text(selectedCount + ' -' + message);
-  })
+    $("#selectedInstances").attr("data-ids", JSON.stringify(ids));
 
+    if (selectedCount === 0) {
+      $("#selectedShow").css("display", "none");
+      $("#exportInstances").css("display", "none");
+    } else {
+      $("#exportInstances").css("display", "inline-flex");
+      $("#selectedShow").css("display", "inline-flex");
+      $("#selectedShow").text(selectedCount + " - " + message);
+    }
+  });
 }
 
-
-function tickCheckboxes(uniqueIds) {
-  
-  click = $("#selectedInstances").attr("data-clicked")
-  if ( click === '1'){
-    $(".all-employee").prop('checked',true)
+function tickCheckboxes() {
+  var ids = JSON.parse($("#selectedInstances").attr("data-ids") || "[]");
+  uniqueIds = makeListUnique(ids);
+  click = $("#selectedInstances").attr("data-clicked");
+  if (click === "1") {
+    $(".all-employee").prop("checked", true);
   }
 
-  uniqueIds.forEach(function(id) {
-    $('#' + id).prop('checked', true);
+  uniqueIds.forEach(function (id) {
+    $("#" + id).prop("checked", true);
   });
   var selectedCount = uniqueIds.length;
-  getCurrentLanguageCode(function(code){
+  getCurrentLanguageCode(function (code) {
     languageCode = code;
-    var message = selectedemployees[languageCode];
-    $('#selectedshow').text(selectedCount + ' -' + message);
-  })
-
+    var message = selectedEmployees[languageCode];
+    if (selectedCount > 0) {
+      $("#exportInstances").css("display", "inline-flex");
+      $("#selectedShow").css("display", "inline-flex");
+      $("#selectedShow").text(selectedCount + " -" + message);
+    } else {
+      $("#selectedShow").css("display", "none");
+      $("#exportInstances").css("display", "none");
+    }
+  });
 }
 
-
-function makeListUnique(list) {
-  return Array.from(new Set(list));
-}
-
-var ids = JSON.parse($("#selectedInstances").attr("data-ids") || "[]");
-tickCheckboxes(ids);
+$("#exportInstances").click(function (e) {
+  var currentDate = new Date().toISOString().slice(0, 10);
+  var languageCode = null;
+  ids = [];
+  ids.push($("#selectedInstances").attr("data-ids"));
+  ids = JSON.parse($("#selectedInstances").attr("data-ids"));
+  getCurrentLanguageCode(function (code) {
+    languageCode = code;
+    var confirmMessage = excelMessages[languageCode];
+    Swal.fire({
+      text: confirmMessage,
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#008000",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Confirm",
+    }).then(function (result) {
+      if (result.isConfirmed) {
+        $.ajax({
+          type: "GET",
+          url: "/employee/work-info-export",
+          data: {
+            ids: JSON.stringify(ids),
+          },
+          dataType: "binary",
+          xhrFields: {
+            responseType: "blob",
+          },
+          success: function (response) {
+            const file = new Blob([response], {
+              type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            });
+            const url = URL.createObjectURL(file);
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = "employee_export_" + currentDate + ".xlsx";
+            document.body.appendChild(link);
+            link.click();
+          },
+          error: function (xhr, textStatus, errorThrown) {
+            console.error("Error downloading file:", errorThrown);
+          },
+        });
+      }
+    });
+  });
+});
 
 $("#archiveEmployees").click(function (e) {
   e.preventDefault();
@@ -162,12 +226,10 @@ $("#archiveEmployees").click(function (e) {
       }).then(function (result) {
         if (result.isConfirmed) {
           e.preventDefault();
-
           ids = [];
+          ids.push($("#selectedInstances").attr("data-ids"));
+          ids = JSON.parse($("#selectedInstances").attr("data-ids"));
 
-            ids.push($("#selectedInstances").attr("data-ids"))
-            ids = JSON.parse($("#selectedInstances").attr("data-ids"));
-            
           $.ajax({
             type: "POST",
             url: "/employee/employee-bulk-archive?is_active=False",
@@ -217,9 +279,9 @@ $("#unArchiveEmployees").click(function (e) {
 
           ids = [];
 
-            ids.push($("#selectedInstances").attr("data-ids"))
-            ids = JSON.parse($("#selectedInstances").attr("data-ids"));
-            
+          ids.push($("#selectedInstances").attr("data-ids"));
+          ids = JSON.parse($("#selectedInstances").attr("data-ids"));
+
           $.ajax({
             type: "POST",
             url: "/employee/employee-bulk-archive?is_active=True",
@@ -268,10 +330,10 @@ $("#deleteEmployees").click(function (e) {
           e.preventDefault();
 
           ids = [];
-            ids.push($("#selectedInstances").attr("data-ids"))
-            ids = JSON.parse($("#selectedInstances").attr("data-ids"));
+          ids.push($("#selectedInstances").attr("data-ids"));
+          ids = JSON.parse($("#selectedInstances").attr("data-ids"));
 
-            $.ajax({
+          $.ajax({
             type: "POST",
             url: "/employee/employee-bulk-delete",
             data: {

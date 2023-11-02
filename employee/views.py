@@ -90,9 +90,19 @@ def employee_profile(request):
     user_leaves = employee.available_leave.all()
     employee = Employee.objects.filter(employee_user_id=user).first()
     assets = AssetAssignment.objects.filter(assigned_to_employee_id=employee)
-    feedback_own = Feedback.objects.filter(employee_id=employee,archive=False)
-    today=datetime.today()
-    return render(request, "employee/profile/profile_view.html", {"employee": employee,"user_leaves":user_leaves,"assets":assets,"self_feedback":feedback_own,"current_date":today,})
+    feedback_own = Feedback.objects.filter(employee_id=employee, archive=False)
+    today = datetime.today()
+    return render(
+        request,
+        "employee/profile/profile_view.html",
+        {
+            "employee": employee,
+            "user_leaves": user_leaves,
+            "assets": assets,
+            "self_feedback": feedback_own,
+            "current_date": today,
+        },
+    )
 
 
 @login_required
@@ -145,7 +155,14 @@ def employee_view_individual(request, obj_id):
     if user.reporting_manager.filter(
         employee_id=employee
     ).exists() or request.user.has_perm("employee.change_employee"):
-        return render(request, "employee/view/individual.html", {"employee": employee,"employee_leaves":employee_leaves,})
+        return render(
+            request,
+            "employee/view/individual.html",
+            {
+                "employee": employee,
+                "employee_leaves": employee_leaves,
+            },
+        )
     return HttpResponseRedirect(
         request.META.get("HTTP_REFERER", "/employee/employee-view")
     )
@@ -160,8 +177,16 @@ def contract_tab(request, obj_id):
     employee_leaves = employee.available_leave.all()
     user = Employee.objects.filter(employee_user_id=request.user).first()
     contracts = Contract.objects.filter(employee_id=obj_id)
-    return render(request, "tabs/personal-tab.html", {"employee": employee,"employee_leaves":employee_leaves,"contracts":contracts,})
-    
+    return render(
+        request,
+        "tabs/personal-tab.html",
+        {
+            "employee": employee,
+            "employee_leaves": employee_leaves,
+            "contracts": contracts,
+        },
+    )
+
 
 @login_required
 def asset_tab(request, emp_id):
@@ -173,16 +198,19 @@ def asset_tab(request, emp_id):
     emp_id (int): The id of the employee.
 
     Returns: return asset-tab template
-    
+
     """
-    assets_requests = AssetRequest.objects.filter(requested_employee_id=emp_id,asset_request_status="Requested")
+    assets_requests = AssetRequest.objects.filter(
+        requested_employee_id=emp_id, asset_request_status="Requested"
+    )
     assets = AssetAssignment.objects.filter(assigned_to_employee_id=emp_id)
-    context={
-        "assets":assets,
-        "requests":assets_requests,
-        "employee":emp_id,
+    context = {
+        "assets": assets,
+        "requests": assets_requests,
+        "employee": emp_id,
     }
-    return render(request,"tabs/asset-tab.html",context=context)
+    return render(request, "tabs/asset-tab.html", context=context)
+
 
 @login_required
 def profile_asset_tab(request, emp_id):
@@ -194,13 +222,14 @@ def profile_asset_tab(request, emp_id):
     emp_id (int): The id of the employee.
 
     Returns: return profile-asset-tab template
-    
+
     """
     assets = AssetAssignment.objects.filter(assigned_to_employee_id=emp_id)
-    context={
-        "assets":assets,
+    context = {
+        "assets": assets,
     }
-    return render(request,"tabs/profile-asset-tab.html",context=context)
+    return render(request, "tabs/profile-asset-tab.html", context=context)
+
 
 @login_required
 def asset_request_tab(request, emp_id):
@@ -212,13 +241,14 @@ def asset_request_tab(request, emp_id):
     emp_id (int): The id of the employee.
 
     Returns: return asset-request-tab template
-    
+
     """
     assets_requests = AssetRequest.objects.filter(requested_employee_id=emp_id)
-    context={
-        "asset_requests":assets_requests,
+    context = {
+        "asset_requests": assets_requests,
     }
-    return render(request,"tabs/asset-request-tab.html",context=context)
+    return render(request, "tabs/asset-request-tab.html", context=context)
+
 
 @login_required
 def performance_tab(request, emp_id):
@@ -230,15 +260,16 @@ def performance_tab(request, emp_id):
     emp_id (int): The id of the employee.
 
     Returns: return performance-tab template
-    
+
     """
-    feedback_own = Feedback.objects.filter(employee_id=emp_id,archive=False)
+    feedback_own = Feedback.objects.filter(employee_id=emp_id, archive=False)
     today = datetime.today()
-    context={
-        "self_feedback":feedback_own,
-        "current_date":today,
+    context = {
+        "self_feedback": feedback_own,
+        "current_date": today,
     }
-    return render(request,"tabs/performance-tab.html",context=context)
+    return render(request, "tabs/performance-tab.html", context=context)
+
 
 @login_required
 def profile_attendance_tab(request):
@@ -250,15 +281,16 @@ def profile_attendance_tab(request):
     emp_id (int): The id of the employee.
 
     Returns: return asset-request-tab template
-    
+
     """
     user = request.user
     employee = user.employee_get
     employee_attendances = employee.employee_attendances.all()
-    context={
-        "attendances":employee_attendances,
+    context = {
+        "attendances": employee_attendances,
     }
-    return render(request,"tabs/profile-attendance-tab.html",context)
+    return render(request, "tabs/profile-attendance-tab.html", context)
+
 
 @login_required
 @manager_can_enter("employee.view_employee")
@@ -272,19 +304,23 @@ def attendance_tab(request, emp_id):
 
     Returns: return attendance-tab template
     """
-    
+
     requests = Attendance.objects.filter(
-        is_validate_request=True,employee_id=emp_id,
+        is_validate_request=True,
+        employee_id=emp_id,
     )
-    validate_attendances = Attendance.objects.filter(attendance_validated=False,employee_id=emp_id)
+    validate_attendances = Attendance.objects.filter(
+        attendance_validated=False, employee_id=emp_id
+    )
     accounts = AttendanceOverTime.objects.filter(employee_id=emp_id)
 
-    context={
-        "requests":requests,
-        "accounts":accounts,
-        "validate_attendances":validate_attendances,
+    context = {
+        "requests": requests,
+        "accounts": accounts,
+        "validate_attendances": validate_attendances,
     }
-    return render(request,"tabs/attendance-tab.html",context=context)
+    return render(request, "tabs/attendance-tab.html", context=context)
+
 
 @login_required
 def shift_tab(request, emp_id):
@@ -296,21 +332,24 @@ def shift_tab(request, emp_id):
     emp_id (int): The id of the employee.
 
     Returns: return shift-tab template
-    """   
-    
+    """
+
     work_type_requests = WorkTypeRequest.objects.filter(employee_id=emp_id)
-    rshift_assign = RotatingShiftAssign.objects.filter(is_active=True,employee_id=emp_id)
+    rshift_assign = RotatingShiftAssign.objects.filter(
+        is_active=True, employee_id=emp_id
+    )
     rwork_type_assign = RotatingWorkTypeAssign.objects.filter(employee_id=emp_id)
     shift_requests = ShiftRequest.objects.filter(employee_id=emp_id)
 
-    context={
-        "work_data":work_type_requests,
-        "rshift_assign":rshift_assign,
-        "rwork_type_assign":rwork_type_assign,
-        "shift_data":shift_requests,
-        "employee":emp_id,
+    context = {
+        "work_data": work_type_requests,
+        "rshift_assign": rshift_assign,
+        "rwork_type_assign": rwork_type_assign,
+        "shift_data": shift_requests,
+        "employee": emp_id,
     }
-    return render(request,"tabs/shift-tab.html",context=context)
+    return render(request, "tabs/shift-tab.html", context=context)
+
 
 @login_required
 @require_http_methods(["POST"])
@@ -367,6 +406,7 @@ def paginator_qry(qryset, page_number):
     qryset = paginator.get_page(page_number)
     return qryset
 
+
 @login_required
 @manager_can_enter("employee.view_employee")
 def employee_view(request):
@@ -376,7 +416,9 @@ def employee_view(request):
     view_type = request.GET.get("view")
     previous_data = request.GET.urlencode()
     page_number = request.GET.get("page")
-    filter_obj = EmployeeFilter(request.GET,queryset=Employee.objects.filter(is_active=True))
+    filter_obj = EmployeeFilter(
+        request.GET, queryset=Employee.objects.filter(is_active=True)
+    )
     export_form = EmployeeExportExcelForm()
     employees = filtersubordinatesemployeemodel(
         request, filter_obj.qs, "employee.view_employee"
@@ -395,10 +437,10 @@ def employee_view(request):
             "export_form": export_form,
             "view_type": view_type,
             "filter_dict": data_dict,
-            "emp":emp
-
+            "emp": emp,
         },
     )
+
 
 @login_required
 @permission_required("employee.add_employee")
@@ -1407,14 +1449,21 @@ def work_info_import(request):
         return HttpResponse("Imported successfully")
     return response
 
+
 def work_info_export(request):
     """
     This method is used to export employee data to xlsx
     """
     employees_data = {}
     selected_columns = []
+    form = EmployeeExportExcelForm()
     employees = EmployeeFilter(request.GET).qs
     selected_fields = request.GET.getlist("selected_fields")
+    if not selected_fields:
+        selected_fields = form.fields["selected_fields"].initial
+        ids = request.GET.get("ids")
+        id_list = json.loads(ids)
+        employees = Employee.objects.filter(id__in=id_list)
     for field in excel_columns:
         value = field[0]
         key = field[1]
@@ -1442,6 +1491,7 @@ def work_info_export(request):
     data_frame.to_excel(response, index=False)
 
     return response
+
 
 def birthday():
     """
@@ -1596,7 +1646,11 @@ def dashboard_employee_department(request):
                 )
             )
         )
-    response = {"dataSet": [{"label": "Department", "data": count}], "labels": labels,"message": _("No Data Found...")}
+    response = {
+        "dataSet": [{"label": "Department", "data": count}],
+        "labels": labels,
+        "message": _("No Data Found..."),
+    }
     return JsonResponse(response)
 
 
@@ -1626,7 +1680,10 @@ def dashboard_employee_tiles(request):
     # filtering newbies on this week
 
     data["newbies_week"] = Candidate.objects.filter(
-        joining_date__range=[date.today() - timedelta(days=date.today().weekday()), date.today() + timedelta(days=6-date.today().weekday())]
+        joining_date__range=[
+            date.today() - timedelta(days=date.today().weekday()),
+            date.today() + timedelta(days=6 - date.today().weekday()),
+        ]
     ).count()
     try:
         data[
@@ -1655,41 +1712,45 @@ def widget_filter(request):
 
 @login_required
 def employee_select(request):
-    page_number = request.GET.get('page')
+    page_number = request.GET.get("page")
 
-    if page_number == 'all':
+    if page_number == "all":
         employees = Employee.objects.all()
     else:
-        employees = Employee.objects.all().order_by('employee_first_name')
+        employees = Employee.objects.all().order_by("employee_first_name")
         paginator = Paginator(employees, per_page=50)
         page_obj = paginator.get_page(page_number)
 
     employee_ids = [str(emp.id) for emp in employees]
     total_count = employees.count()
 
-    context = {
-        'employee_ids': employee_ids,
-        'total_count': total_count
-    }
+    context = {"employee_ids": employee_ids, "total_count": total_count}
 
     return JsonResponse(context, safe=False)
 
 
 @login_required
 def employee_select_filter(request):
-    page_number = request.GET.get('page')
-    filtered = request.GET.get('filter')
+    page_number = request.GET.get("page")
+    filtered = request.GET.get("filter")
     filters = json.loads(filtered) if filtered else {}
 
-    if page_number == 'all':
+    if page_number == "all":
         query = Q()
 
         for key, value in filters.items():
-            if value != '' and key != 'is_active':  # Add check for is_active and non-empty values
+            if (
+                value != "" and key != "is_active"
+            ):  # Add check for is_active and non-empty values
                 kwargs = {key: value}
                 query &= Q(**kwargs)
-            elif key == 'is_active' and value in ['true', 'false']:  # Check if is_active is valid
-                kwargs = {key: value == 'true'}  # Convert 'true' to True, 'false' to False
+            elif key == "is_active" and value in [
+                "true",
+                "false",
+            ]:  # Check if is_active is valid
+                kwargs = {
+                    key: value == "true"
+                }  # Convert 'true' to True, 'false' to False
                 query &= Q(**kwargs)
 
         employees = Employee.objects.filter(query)
@@ -1697,8 +1758,5 @@ def employee_select_filter(request):
         employee_ids = [str(emp.id) for emp in employees]
         total_count = employees.count()
 
-        context = {
-            'employee_ids': employee_ids,
-            'total_count': total_count
-        }
+        context = {"employee_ids": employee_ids, "total_count": total_count}
         return JsonResponse(context)
