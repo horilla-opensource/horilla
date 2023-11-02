@@ -5,35 +5,9 @@
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<title>{{employee}}'s Payslip</title>
-		<link
-			rel="apple-touch-icon"
-			sizes="180x180"
-			href="{% static 'favicons/apple-touch-icon.png' %}"
-		/>
-		<link
-			rel="icon"
-			type="image/png"
-			sizes="32x32"
-			href="{% static 'favicons/favicon-32x32.png' %}"
-		/>
-		<link
-			rel="icon"
-			type="image/png"
-			sizes="16x16"
-			href="{% static 'favicons/favicon-16x16.png' %}"
-		/>
-		<link
-			rel="stylesheet"
-			href="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.20/dist/sweetalert2.min.css"
-		/>
 
 		<meta name="msapplication-TileColor" content="#da532c" />
 		<meta name="theme-color" content="#ffffff" />
-		<link rel="stylesheet" href="{% static 'build/css/style.min.css' %}" />
-		<link
-			rel="stylesheet"
-			href="{% static 'build/css/summernote-lite.min.css' %}"
-		/>
 	</head>
 	<body>
 		<style>
@@ -84,12 +58,6 @@
 						{% trans "Payslip" %}
 					</h1>
 					<h2 class="oh-payslip__title oh-payslip__title--h2">{{range}}</h2>
-				</div>
-				<div class="oh-payslip__header-left">
-					<img
-						src="{{employee.employee_work_info.company_id.icon.url}}"
-						style="width: 50px"
-					/>
 				</div>
 			</div>
 			<div class="oh-payslip__body">
