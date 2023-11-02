@@ -49,31 +49,11 @@
   </div>
 </div>
 <script>
-  $("#historyFormContainer").ready(function () {
-    $("#historyFormContainer")
-      .find("select[multiple]")
-      .select2({
-        createTag: function (params) {
-          var term = $.trim(params.term);
-
-          if (term === "") {
-            return null;
-          }
-          jq;
-
-          return {
-            id: term,
-            text: term,
-            newTag: true, // add additional parameters
-          };
-        },
-        tags: true,
-        tokenSeparators: [",", " "],
-      });
+  $("#historyModalBody").ready(function () {
     $("form[method=post] button").click(function (e) {
-      $("#historyModal").addClass("oh-modal--show");
-      if (!$(this).hasClass("history-modal-button")) {
+      if ($(this).closest("form").find("#historyModal").length && !$(this).closest("form").find("#historyModal.oh-modal--show").length) {
         e.preventDefault();
+        $("#historyModal").addClass("oh-modal--show");
       }
     });
   });
