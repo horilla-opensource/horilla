@@ -11,11 +11,13 @@ This module is part of the recruitment project and is intended to
 provide the main entry points for interacting with the application's functionality.
 """
 
+from datetime import datetime
 import os
 import json
 import contextlib
 from urllib.parse import parse_qs
 from django.conf import settings
+from django.db.models import Q
 from django.http import JsonResponse, HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.core import serializers
@@ -1036,3 +1038,44 @@ def stage_sequence_update(request):
         stage.sequence = seq
         stage.save()
     return JsonResponse({"type": "success", "message": "Stage sequence updated"})
+
+@login_required
+def candidate_select(request):
+    page_number = request.GET.get('page')
+
+    if page_number == 'all':
+        employees = Candidate.objects.all()
+
+    employee_ids = [str(emp.id) for emp in employees]
+    total_count = employees.count()
+
+    context = {
+        'employee_ids': employee_ids,
+        'total_count': total_count
+    }
+
+    return JsonResponse(context, safe=False)
+
+
+@login_required
+def candidate_select_filter(request):
+    page_number = request.GET.get('page')
+    filtered = request.GET.get('filter')
+    filters = json.loads(filtered) if filtered else {}
+
+    if page_number == 'all':
+        candidate_filter = CandidateFilter(filters, queryset=Candidate.objects.all())
+
+
+        # Get the filtered queryset
+        filtered_candidates = candidate_filter.qs
+        
+        employee_ids = [str(emp.id) for emp in filtered_candidates]
+        total_count = filtered_candidates.count()
+
+        context = {
+            'employee_ids': employee_ids,
+            'total_count': total_count
+        }
+
+        return JsonResponse(context)

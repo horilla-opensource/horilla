@@ -17,21 +17,58 @@ var unarchivecanMessages = {
 
   
 var deletecanMessages = {
-    ar: "هل ترغب حقًا في حذف جميع المرشحين المحددين؟",
-    de: "Möchten Sie wirklich alle ausgewählten Kandidaten löschen?",
+  ar: "هل ترغب حقًا في حذف جميع المرشحين المحددين؟",
+  de: "Möchten Sie wirklich alle ausgewählten Kandidaten löschen?",
     es: "¿Realmente deseas eliminar a todos los candidatos seleccionados?",
     en: "Do you really want to delete all the selected candidates?",
     fr: "Voulez-vous vraiment supprimer tous les candidats sélectionnés?",
+  };
+  
+var norowMessages = {
+  ar: "لم يتم تحديد أي صفوف.",
+  de: "Es wurden keine Zeilen ausgewählt.",
+  es: "No se han seleccionado filas.",
+  en: "No rows have been selected.",
+  fr: "Aucune ligne n'a été sélectionnée.",
 };
 
-  var norowMessages = {
-    ar: "لم يتم تحديد أي صفوف.",
-    de: "Es wurden keine Zeilen ausgewählt.",
-    es: "No se han seleccionado filas.",
-    en: "No rows have been selected.",
-    fr: "Aucune ligne n'a été sélectionnée.",
-  };
+var rowMessages = {
+  ar: " تم الاختيار",
+  de: " Ausgewählt",
+  es: " Seleccionado",
+  en: " Selected",
+  fr: " Sélectionné",
+};
 
+tickcandidateCheckboxes();
+
+function getCookie(name) {
+  let cookieValue = null;
+  if (document.cookie && document.cookie !== "") {
+    const cookies = document.cookie.split(";");
+    for (let i = 0; i < cookies.length; i++) {
+      const cookie = cookies[i].trim();
+      // Does this cookie string begin with the name we want?
+      if (cookie.substring(0, name.length + 1) === name + "=") {
+        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+        break;
+      }
+    }
+  }
+  return cookieValue;
+}
+
+function getCurrentLanguageCode(callback) {
+  $.ajax({
+    type: "GET",
+    url: "/employee/get-language-code/",
+    success: function (response) {
+      console.log(response);
+      var languageCode = response.language_code;
+      callback(languageCode); // Pass the language code to the callback
+    },
+  });
+}
 
 
 $(".all-candidate").change(function (e) {
@@ -41,34 +78,73 @@ $(".all-candidate").change(function (e) {
     } else {
         $(".all-candidate-row").prop("checked", false);
     }
+    addingcandidateIds()
 });
 
-function getCookie(name) {
-    let cookieValue = null;
-    if (document.cookie && document.cookie !== "") {
-      const cookies = document.cookie.split(";");
-      for (let i = 0; i < cookies.length; i++) {
-        const cookie = cookies[i].trim();
-        // Does this cookie string begin with the name we want?
-        if (cookie.substring(0, name.length + 1) === name + "=") {
-          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-          break;
-        }
+$(".all-candidate-row").change(function(){
+    addingcandidateIds()
+})
+
+
+function addingcandidateIds(){
+  var ids = JSON.parse($("#selectedInstances").attr("data-ids") || "[]");
+  var selectedCount = 0;
+
+  $(".all-candidate-row").each(function() {
+    if ($(this).is(":checked")) {
+      ids.push(this.id);
+    } else {
+      var index = ids.indexOf(this.id);
+      if (index > -1) {
+        ids.splice(index, 1);
       }
     }
-    return cookieValue;
-  }
+  });
+  var ids = makeListUnique1(ids);
+  var selectedCount = ids.length;
   
-  function getCurrentLanguageCode(callback) {
-    $.ajax({
-      type: "GET",
-      url: "/employee/get-language-code/",
-      success: function (response) {
-        var languageCode = response.language_code;
-        callback(languageCode); // Pass the language code to the callback
-      },
-    });
+  getCurrentLanguageCode(function(code){
+    languageCode = code;
+    var message = rowMessages[languageCode];
+
+    $("#selectedInstances").attr("data-ids", JSON.stringify(ids)); 
+    $('#selectedshow').text(selectedCount + ' -' + message);
+  })
+
+}
+
+
+function tickcandidateCheckboxes() {
+  var ids = JSON.parse($("#selectedInstances").attr("data-ids") || "[]");
+  var uniqueIds = makeListUnique1(ids)
+  var selectedCount = uniqueIds.length;
+  var message1 = rowMessages[languageCode];
+
+
+  $('#selectedshow').text(selectedCount + ' -' + message1);
+  click = $("#selectedInstances").attr("data-clicked")
+  if ( click === '1'){
+    $(".all-candidate").prop('checked',true)
+    $('#Allcandidate').prop('checked',true)
   }
+  uniqueIds.forEach(function(id) {
+    $('#' + id).prop('checked', true);
+  });
+
+  getCurrentLanguageCode(function(code){
+    languageCode = code;
+    var message1 = rowMessages[languageCode];
+    $('#selectedshow').text(selectedCount + ' -' + message1);
+  })
+
+}
+
+
+function makeListUnique1(list) {
+  return Array.from(new Set(list));
+}
+
+
 
 $("#archiveCandidates").click(function (e) {
     e.preventDefault();
@@ -77,7 +153,7 @@ $("#archiveCandidates").click(function (e) {
     getCurrentLanguageCode(function (code) {
       languageCode = code;
       var confirmMessage = archivecanMessages[languageCode];
-      var textMessage = norowMessages[languageCode];
+      var textMessage = rowMessages[languageCode];
       var checkedRows = $(".all-candidate-row").filter(":checked");
       if (checkedRows.length === 0) {
             Swal.fire({
@@ -96,11 +172,12 @@ $("#archiveCandidates").click(function (e) {
             }).then(function (result) {
             if (result.isConfirmed) {
                 e.preventDefault();
+
                 ids = [];
-                checkedRows.each(function () {
-                ids.push($(this).attr("id"));
-            });
-            
+
+                ids.push($("#selectedInstances").attr("data-ids"))
+                ids = JSON.parse($("#selectedInstances").attr("data-ids"));
+                
             $.ajax({
                 type: "POST",
                 url: "/recruitment/candidate-bulk-archive?is_active=False",
@@ -149,9 +226,9 @@ $("#unArchiveCandidates").click(function (e) {
             if (result.isConfirmed) {
                 e.preventDefault();
                 ids = [];
-                checkedRows.each(function () {
-                ids.push($(this).attr("id"));
-                });
+
+                ids.push($("#selectedInstances").attr("data-ids"))
+                ids = JSON.parse($("#selectedInstances").attr("data-ids"));
                 
                 $.ajax({
                     type: "POST",
@@ -201,9 +278,9 @@ $("#deleteCandidates").click(function (e) {
             if (result.isConfirmed) {
                 e.preventDefault();
                 ids = [];
-                checkedRows.each(function () {
-                ids.push($(this).attr("id"));
-                });
+
+                ids.push($("#selectedInstances").attr("data-ids"))
+                ids = JSON.parse($("#selectedInstances").attr("data-ids"));
                 
                 $.ajax({
                     type: "POST",

@@ -247,4 +247,7 @@ urlpatterns = [
         recruitment.views.surveys.single_survey,
         name="single-survey-view",
     ),
+    path('candidate-select/', views.candidate_select, name='candidate-select'),
+    path('candidate-select-filter/', views.candidate_select_filter, name='candidate-select-filter'),
+
 ]

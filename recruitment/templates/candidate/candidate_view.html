@@ -1,20 +1,23 @@
 {% extends 'index.html' %}
 {% block content %}
+{% load static %}
 {% load i18n %}
 
 <div class="oh-wrapper">
   {% include 'candidate/candidate_nav.html' %}
+  <div class="oh-checkpoint-badge mb-2" id="selectedInstances" data-ids="[]" data-clicked="" style="display:none;" >
+  </div>
   
   <div class="d-flex flex-row-reverse">
-    <span class="m-3" hx-get="{% url "search-candidate" %}?{{pd}}&canceled=true" hx-target="#section" style="cursor: pointer">
+    <span class="m-3" onclick="$('[name=canceled]').val('true');$('[name=canceled]').first().change(); $('.filterButton').click()" style="cursor: pointer">
       <span class="oh-dot oh-dot--small me-1" style="background-color:red"></span>
       {% trans "Canceled" %}
     </span>
-    <span class="m-3" hx-get="{% url "search-candidate" %}?{{pd}}&hired=false" hx-target="#section" style="cursor: pointer">
+    <span class="m-3" onclick="$('[name=hired]').val('false'); $('[name=hired]').first().change(); $('.filterButton').click()" style="cursor: pointer">
       <span class="oh-dot oh-dot--small me-1" style="background-color:rgba(128, 128, 128, 0.482)"></span>
       {% trans "Not-Hired" %}
     </span>
-    <span class="m-3" hx-get="{% url "search-candidate" %}?{{pd}}&hired=true" hx-target="#section" style="cursor: pointer">
+    <span class="m-3" onclick="$('[name=hired]').val('true'); $('[name=hired]').first().change(); $('.filterButton').click()" style="cursor: pointer">
       <span class="oh-dot oh-dot--small me-1" style="background-color:yellowgreen"></span>
       {% trans "Hired" %}
     </span>
@@ -62,6 +65,7 @@
   });
 
 </script>
+<script src="{% static '/candidate/bulk.js' %}"></script>
 
 
 {% endblock %}
