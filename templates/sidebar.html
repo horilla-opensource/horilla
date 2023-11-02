@@ -499,6 +499,13 @@
                 >{% trans "My Leave Requests" %}</a
               >
             </li>
+            <li class="oh-sidebar__submenu-item">
+              <a
+                href="{% url 'user-leave-allocation-request-view' %}"
+                class="oh-sidebar__submenu-link"
+                >{% trans "My Leave Allocation Requests" %}</a
+              >
+            </li>
             {% if perms.leave.view_leavetype %}
             <li class="oh-sidebar__submenu-item">
               <a href="{% url 'type-view' %}" class="oh-sidebar__submenu-link"
@@ -511,7 +518,8 @@
                 >{% trans "Assigned Leaves" %}</a
               >
             </li>
-            {% endif %} {% if perms.leave.view_leaverequest or request.user|is_reportingmanager %}
+            {% endif %} 
+            {% if perms.leave.view_leaverequest or request.user|is_reportingmanager %}
             <li class="oh-sidebar__submenu-item">
               <a
                 href="{% url 'request-view' %}"
@@ -519,7 +527,17 @@
                 >{% trans "Leave Requests" %}</a
               >
             </li>
-            {% endif %} {% if perms.leave.view_holiday %}
+            {% endif %} 
+            {% if perms.leave.view_leaveallocationrequest or request.user|is_reportingmanager %}
+            <li class="oh-sidebar__submenu-item">
+              <a
+                href="{% url 'leave-allocation-request-view' %}"
+                class="oh-sidebar__submenu-link"
+                >{% trans "Leave Allocation Requests" %}</a
+              >
+            </li>
+            {% endif %} 
+            {% if perms.leave.view_holiday %}
             <li class="oh-sidebar__submenu-item">
               <a
                 href="{% url 'holiday-view' %}"

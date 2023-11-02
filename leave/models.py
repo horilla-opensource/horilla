@@ -504,3 +504,28 @@ class LeaveRequest(models.Model):
             self.approved_available_days = self.requested_days
         self.status = "approved"
         available_leave.save()
+
+class LeaveAllocationRequest(models.Model):
+    leave_type_id = models.ForeignKey(
+        LeaveType, on_delete=models.PROTECT, verbose_name="Leave type"
+    )
+    employee_id = models.ForeignKey(
+        Employee, on_delete=models.CASCADE, verbose_name="Employee"
+    )
+    requested_days = models.FloatField(blank=True, null=True)
+    requested_date = models.DateField(default=timezone.now)
+    created_by = models.ForeignKey(
+        Employee,
+        on_delete=models.PROTECT,
+        blank=True,
+        null=True,
+        related_name="leave_allocation_request_created",
+    )
+    description = models.TextField()
+    attachment = models.FileField(
+        null=True, blank=True, upload_to="leave/leave_attachment"
+    )
+    status = models.CharField(max_length=30, choices=LEAVE_STATUS, default="requested")
+    created_at = models.DateTimeField(auto_now="True")
+    reject_reason = models.TextField(blank=True)
+    objects = models.Manager()

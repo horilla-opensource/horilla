@@ -11,7 +11,7 @@ from django_filters import FilterSet, DateFilter, filters, NumberFilter
 from django.utils.translation import gettext_lazy as _
 from django.utils.translation import gettext as __
 from employee.models import Employee
-from .models import LeaveType, LeaveRequest, AvailableLeave, Holiday, CompanyLeave
+from .models import LeaveType, LeaveRequest, AvailableLeave, Holiday, CompanyLeave,LeaveAllocationRequest
 
 
 class FilterSet(FilterSet):
@@ -142,10 +142,9 @@ class AssignedLeaveFilter(FilterSet):
 class LeaveRequestFilter(FilterSet):
     """
     Filter class for LeaveRequest model.
-    This filter allows searching LeaveRequest objects based on employee,
-    date range, leave type, and status.
+    This filter allows searching LeaveRequest objects 
+    based on employee,date range, leave type, and status.
     """
-
     employee_id = filters.CharFilter(
         field_name="employee_id__employee_first_name", lookup_expr="icontains"
     )
@@ -316,7 +315,7 @@ class UserLeaveRequestFilter(FilterSet):
     )
 
     class Meta:
-        """ "
+        """ 
         Meta class defines the model and fields to filter
         """
 
@@ -324,4 +323,31 @@ class UserLeaveRequestFilter(FilterSet):
         fields = {
             "leave_type_id": ["exact"],
             "status": ["exact"],
+        }
+
+class LeaveAllocationRequestFilter(FilterSet):
+    """
+    Filter class for LeaveAllocationRequest model specific to user leave requests.
+    This filter allows searching user-specific LeaveRequest objects
+    based on leave type, date range, and status.
+    """
+
+    leave_type = filters.CharFilter(
+        field_name="leave_type_id__name", lookup_expr="icontains"
+    )
+    employee_id = filters.CharFilter(
+        field_name="employee_id__employee_first_name", lookup_expr="icontains"
+    )
+    number_of_days = filters.NumberFilter(
+        field_name='requested_days',
+        lookup_expr='let'
+    )
+    class Meta:
+        """ 
+        Meta class defines the model and fields to filter
+        """
+        model = LeaveAllocationRequest
+        fields = {
+            'created_by':["exact"],
+            "status":["exact"]
         }

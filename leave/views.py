@@ -2359,3 +2359,86 @@ def leave_request_create(request):
                 response.content.decode("utf-8") + "<script>location.reload();</script>"
             )
     return render(request, "leave/user_leave/request_form.html", {"form": form})
+
+@login_required
+@manager_can_enter("leave.view_leaveallocationrequest")
+def leave_allocation_request_view(request):
+    """
+    function used to view leave allocation request.
+
+    Parameters:
+    request (HttpRequest): The HTTP request object.
+
+    Returns:
+    GET : return leave allocation request view template
+    """
+    queryset = LeaveAllocationRequest.objects.all().order_by('-id')
+    queryset = filtersubordinates(request,queryset,'leave.view_leaveallocationrequest')
+    page_number = request.GET.get('page')
+    page_obj = paginator_qry(queryset,page_number)
+    previous_data = request.GET.urlencode()
+    leave_allocation_request_filter = LeaveAllocationRequestFilter()
+    context={
+        'leave_allocation_requests' :page_obj,
+        "pd": previous_data,
+        "form": leave_allocation_request_filter.form,
+    }
+    return render(
+        request,
+        'leave/leave_allocation_request/leave_allocation_request_view.html',
+        context=context
+    )
+
+@login_required
+def user_leave_allocation_request_view(request):
+    
+    employee = request.user.employee_get
+    leave_allocation_requests = LeaveAllocationRequest.objects.filter(employee_id=employee.id)
+    print (leave_allocation_requests)
+    context = { 'leave_allocation_requests' :leave_allocation_requests,
+               "user_request_view":True,
+               }
+    return render(request,'leave/leave_allocation_request/leave_allocation_request_view.html',context=context)
+
+@login_required
+def leave_allocation_request_single_view(request,req_id):
+    leave_allocation_request = LeaveAllocationRequest.objects.get(id=req_id)
+    print(leave_allocation_request)
+    return render(
+        request,
+        'leave/leave_allocation_request/leave_allocation_request_single_view.html',
+        {'leave_allocation_request':leave_allocation_request}    
+    )
+@login_required
+def leave_allocation_request_create(request):
+    employee = request.user.employee_get
+    form = LeaveAllocationRequestForm()
+    if request.method == 'POST':
+        form = LeaveAllocationRequestForm(request.POST)
+        if form.is_valid():
+            form.save
+            messages.success(request,_("New Leave allocation request is created"))
+            response = render(
+                request,
+                "leave/leave_allocation_request/leave_allocation_request_create.html",
+                {'form':form}
+            )
+            return HttpResponse(
+                response.content.decode("utf-8")
+                + "<script>location. reload();</script>"
+            )
+    context = {
+        'form':form
+    }
+    return render(request,
+                  'leave/leave_allocation_request/leave_allocation_request_create.html',
+                  context=context)
+
+@login_required
+def leave_allocation_request_filter(request):
+    leave_allocation_requests = request.user
+    context = { 'leave_allocation_requests' :leave_allocation_requests,
+               }
+    return render(request,
+                  'leave/leave_allocation_request/leave_allocation_request_view.html',
+                  context=context)

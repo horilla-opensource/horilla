@@ -6,7 +6,7 @@ from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 from django.template.loader import render_to_string
 from employee.models import Employee
-from .models import LeaveType, LeaveRequest, AvailableLeave, Holiday, CompanyLeave
+from .models import LeaveType, LeaveRequest, AvailableLeave, Holiday, CompanyLeave, LeaveAllocationRequest
 from .methods import (
     calculate_requested_days,
     leave_requested_dates,
@@ -561,3 +561,19 @@ class UserLeaveRequestCreationForm(ModelForm):
             'employee_id': forms.HiddenInput()
         }
        
+class LeaveAllocationRequestForm(ModelForm):
+    class Meta:
+        model = LeaveAllocationRequest
+        fields = [
+            'leave_type_id',
+            'employee_id',
+            'requested_days',
+            'description',
+        ]
+    def as_p(self, *args, **kwargs):
+        """
+        Render the form fields as HTML table rows with Bootstrap styling.
+        """
+        context = {"form": self}
+        table_html = render_to_string("attendance_form.html", context)
+        return table_html

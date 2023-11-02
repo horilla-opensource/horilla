@@ -131,4 +131,29 @@ urlpatterns = [
     path("leave-type-chart", views.leave_type_chart, name="leave-type-chart"),
     path("leave-over-period", views.leave_over_period, name="leave-over-period"),
     path("leave-request-create", views.leave_request_create, name="leave-request-create"),
+    path('leave-allocation-request-view',
+         views.leave_allocation_request_view,
+         name='leave-allocation-request-view',
+    ),
+    path('user-leave-allocation-request-view',
+         views.user_leave_allocation_request_view,
+         name='user-leave-allocation-request-view',
+    ),
+    path(
+        'leave-allocation-request-create',
+        views.leave_allocation_request_create,
+        name= "leave-allocation-request-create"
+    ),
+    path(
+        'leave-allocation-request-filter',
+        views.leave_allocation_request_filter,
+        name= "leave-allocation-request-filter"
+    ),
+    path(
+        'leave-allocation-request-single-view/<int:req_id>',
+        views.leave_allocation_request_single_view,
+        name= "leave-allocation-request-single-view"
+    ),
+    
+
 ]
