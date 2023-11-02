@@ -54,11 +54,7 @@
                         <div class="oh-input-group w-100 d-flex justify-content-center">
                             <div class="oh-profile-section__edit-photo me-4 mb-3" data-toggle="oh-modal-toggle"
                                 data-target="#uploadPhotoModal">
-                                {% if candidate.profile %}
-                                <img src="{{candidate.profile.url}}" class="oh-profile-section__avatar" alt="{{candidate.name}}"/>
-                                {% else %}
-                                <img src="https://ui-avatars.com/api/?name={{candidate}}&background=random" class="oh-profile-section__avatar" alt="{{candidate.name}}"/>
-                                {% endif %}
+                                <img src="{{candidate.get_avatar}}" class="oh-profile-section__avatar" alt="{{candidate.name}}"/>
                             </div>
                         </div>
                         <h2 class="oh-onboarding-card__greeting text-center">Welcome Aboard</h2>
@@ -91,13 +87,8 @@
                         <div class="oh-modal__dialog-body">
                             <div class="oh-profile-section__image-container">
                                 <div class="oh-profile-section__modal-avatar">
-                                    {% if candidate.profile %}
-                                    <img src="{{candidate.profile.url}}"
+                                    <img src="{{candidate.get_avatar}}"
                                         class="oh-profile-section__modal-image oh-upload-photo" alt="User Photo" />
-                                    {% else %}
-                                    <img src="https://ui-avatars.com/api/?name={{candidate}}&background=random"
-                                        class="oh-profile-section__modal-image oh-upload-photo" alt="User Photo" />
-                                    {% endif %}
                                 </div>
                                 <input type="file"
                                     class="oh-input oh-input--file oh-input--file-sm mt-4 oh-upload-input"

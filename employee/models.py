@@ -5,6 +5,8 @@ This module is used to register models for employee app
 
 """
 from datetime import date, datetime
+import os
+from django.conf import settings
 from django.db import models
 from django.contrib.auth.models import User, Permission
 from django.utils.translation import gettext_lazy as trans
@@ -116,7 +118,12 @@ class Employee(models.Model):
             f"https://ui-avatars.com/api/?name={self.get_full_name()}&background=random"
         )
         if self.employee_profile:
-            url = self.employee_profile.url
+            image_url = self.employee_profile.url.split("/media/")[1]
+            media_root = settings.MEDIA_ROOT
+            image_path = os.path.join(media_root, image_url)
+            
+            if os.path.exists(image_path):
+                url = self.employee_profile.url
         return url
 
     def __str__(self) -> str:

@@ -9,6 +9,7 @@ import os
 import json
 from django import forms
 import django
+from django.conf import settings
 from django.db import models
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
@@ -284,7 +285,13 @@ class Candidate(models.Model):
             f"https://ui-avatars.com/api/?name={self.get_full_name()}&background=random"
         )
         if self.profile:
-            url = self.profile.url
+            image_url = self.profile.url.split("/media/")[1]
+            media_root = settings.MEDIA_ROOT
+
+            image_path = os.path.join(media_root, image_url)
+            if os.path.exists(image_path):
+                url = self.profile.url
+
         return url
 
     def tracking(self):

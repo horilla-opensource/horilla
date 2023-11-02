@@ -3,13 +3,8 @@
     <div class="oh-timeoff-modal__profile-content">
         <div class="oh-profile">
             <div class="oh-profile-section__edit-photo me-3" >
-                {% if candidate.profile %}
-                <img src="{{candidate.profile.url}}"
+                <img src="{{candidate.get_avatar}}"
                     class="oh-profile-section__modal-image" alt="" />
-                {% else %}
-                <img src="https://ui-avatars.com/api/?name={{candidate}}&background=random"
-                    class="oh-profile-section__modal-image" alt="" />
-                {% endif %}
             </div>
             <div  >
 
