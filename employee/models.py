@@ -5,7 +5,6 @@ This module is used to register models for employee app
 
 """
 from datetime import date, datetime
-import os
 from django.conf import settings
 from django.db import models
 from django.contrib.auth.models import User, Permission
@@ -23,6 +22,7 @@ from base.models import (
 )
 from horilla_audit.models import HorillaAuditLog, HorillaAuditInfo
 from horilla_audit.methods import get_diff
+from django.core.files.storage import default_storage
 
 # create your model
 
@@ -118,11 +118,9 @@ class Employee(models.Model):
             f"https://ui-avatars.com/api/?name={self.get_full_name()}&background=random"
         )
         if self.employee_profile:
-            image_url = self.employee_profile.url.split("/media/")[1]
-            media_root = settings.MEDIA_ROOT
-            image_path = os.path.join(media_root, image_url)
+            full_filename = settings.MEDIA_ROOT + self.employee_profile.name
             
-            if os.path.exists(image_path):
+            if default_storage.exists(full_filename):
                 url = self.employee_profile.url
         return url
 
