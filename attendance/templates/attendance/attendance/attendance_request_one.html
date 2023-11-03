@@ -1,10 +1,20 @@
 {% load i18n %}
+<div class="oh-modal__dialog oh-modal__dialog--navigation m-0 p-0">
+    <button hx-get="{% url "user-request-one-view" previous_instance %}?instances_ids={{instance_ids_json}}&validate={{request.GET.validate}}&ot={{request.GET.ot}}" hx-target="#detailAttendanceModalBody" class="oh-modal__diaglog-nav oh-modal__nav-prev">
+        <ion-icon name="chevron-back-outline" class="md hydrated" role="img"
+        aria-label="chevron back outline"></ion-icon>
+    </button>
 
+    <button hx-get="{% url "user-request-one-view" next_instance %}?instances_ids={{instance_ids_json}}&validate={{request.GET.validate}}&ot={{request.GET.ot}}" hx-target="#detailAttendanceModalBody" class="oh-modal__diaglog-nav oh-modal__nav-next">
+        <ion-icon name="chevron-forward-outline" class="md hydrated" role="img"
+        aria-label="chevron forward outline"></ion-icon>
+    </button>
+</div>
 <div class="oh-modal__dialog-header">
     <div class="oh-timeoff-modal__profile-content">
         <div class="oh-profile mb-2">
             <div class="oh-profile__avatar">
-                <img src="https://ui-avatars.com/api/?name={{attendance_request.employee_id}}&background=random"
+                <img src="{{attendance_request.employee_id.get_avatar}}"
                     class="oh-profile__image me-2" alt="Mary Magdalene" />
             </div>
             <div class="oh-timeoff-modal__profile-info">

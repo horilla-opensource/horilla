@@ -48,9 +48,9 @@
               <div class="oh-profile oh-profile--md">
                 <div class="oh-profile__avatar mr-1">
                   <img
-                    src="https://ui-avatars.com/api/?name={{attendance.employee_id.employee_first_name}}+{{attendance.employee_id.employee_last_name}}&background=random"
+                    src="{{attendance.employee_id.get_avatar}}"
                     class="oh-profile__image"
-                    alt="Mary Magdalene"
+                    alt=""
                   />
                 </div>
                 <span class="oh-profile__name oh-text--dark"
@@ -96,7 +96,7 @@
                 <a
                 data-toggle="oh-modal-toggle"
                 data-target="#validateAttendanceRequest"
-                hx-get = "{% url 'validate-attendance-request' attendance.id %}"
+                hx-get = "{% url 'validate-attendance-request' attendance.id %}?requests_ids={{requests_ids}}"
                   hx-target="#validateAttendanceRequestModalBody"
                   class="oh-btn oh-btn--light-bkg w-100"
                   title="{% trans 'View and Edit' %}"
@@ -192,16 +192,16 @@
           <div class="oh-sticky-table__tr" draggable="true" data-toggle="oh-modal-toggle"
                 data-target="#detailAttendance"
                 hx-target="#detailAttendanceModalBody"     
-                hx-get="{% url 'user-request-one-view' attendance.id %}?all_attendance=true">
+                hx-get="{% url 'user-request-one-view' attendance.id %}?all_attendance=true&instances_ids={{attendances_ids}}">
             <div
               class="oh-sticky-table__sd {% if attendance.attendance_validated %}row-status--yellow {% else %}row-status--purple{% endif %}"
             >
               <div class="oh-profile oh-profile--md">
                 <div class="oh-profile__avatar mr-1">
                   <img
-                    src="https://ui-avatars.com/api/?name={{attendance.employee_id.employee_first_name}}+{{attendance.employee_id.employee_last_name}}&background=random"
+                  src="{{attendance.employee_id.get_avatar}}"
                     class="oh-profile__image"
-                    alt="Mary Magdalene"
+                    alt=""
                   />
                 </div>
                 <span class="oh-profile__name oh-text--dark"
@@ -280,7 +280,7 @@
           </button>
         </div>
         <div
-          class="oh-modal__dialog-body"
+          class="oh-modal__dialog-body oh-modal__dialog-body oh-modal__dialog-relative"
           id="detailAttendanceModalBody"
         ></div>
       </div>

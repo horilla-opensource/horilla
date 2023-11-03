@@ -98,7 +98,7 @@
                       data-toggle="oh-modal-toggle"
                       data-target="#detailAttendance"
                       hx-target="#detailAttendanceModalBody"
-                      hx-get="{% url 'user-request-one-view' attendance.id %}"
+                      hx-get="{% url 'user-request-one-view' attendance.id %}?instances_ids={{attendances_ids}}"
                       >
                         <div class="oh-sticky-table__sd" onclick="event.stopPropagation();">
                           <input
@@ -112,7 +112,7 @@
                                 <div class="oh-profile oh-profile--md">
                                     <div class="oh-profile__avatar mr-1">
                                         <img
-                                          src="https://ui-avatars.com/api/?name={{attendance.employee_id.employee_first_name}}+{{attendance.employee_id.employee_last_name}}&background=random"
+                                          src="{{attendance.employee_id.get_avatar}}"
                                           class="oh-profile__image"
                                           alt="Mary Magdalene"
                                         />
@@ -329,7 +329,7 @@
                       data-toggle="oh-modal-toggle"
                       data-target="#detailAttendance"
                       hx-target="#detailAttendanceModalBody"
-                      hx-get="{% url 'user-request-one-view' attendance.id %}?validate=true"
+                      hx-get="{% url 'user-request-one-view' attendance.id %}?validate=true&instances_ids={{validate_attendances_ids}}"
                       >
                         <div class="oh-sticky-table__sd">
                           <input
@@ -343,7 +343,7 @@
                             <div class="oh-profile oh-profile--md">
                                 <div class="oh-profile__avatar mr-1">
                                   <img
-                                    src="https://ui-avatars.com/api/?name={{attendance.employee_id.employee_first_name}}+{{attendance.employee_id.employee_last_name}}&background=random"
+                                  src="{{attendance.employee_id.get_avatar}}"
                                     class="oh-profile__image"
                                     alt="Mary Magdalene"
                                   />
@@ -572,7 +572,7 @@
                       data-toggle="oh-modal-toggle"
                       data-target="#detailAttendance"
                       hx-target="#detailAttendanceModalBody"
-                      hx-get="{% url 'user-request-one-view' attendance.id %}?ot=true"
+                      hx-get="{% url 'user-request-one-view' attendance.id %}?ot=true&instances_ids={{ot_attendances_ids}}"
                       >
                         <div class="oh-sticky-table__sd">
                             <input
@@ -586,7 +586,7 @@
                             <div class="oh-profile oh-profile--md">
                                 <div class="oh-profile__avatar mr-1">
                                   <img
-                                    src="https://ui-avatars.com/api/?name={{attendance.employee_id.employee_first_name}}+{{attendance.employee_id.employee_last_name}}&background=random"
+                                  src="{{attendance.employee_id.get_avatar}}"
                                     class="oh-profile__image"
                                     alt="Mary Magdalene"
                                   />
@@ -762,7 +762,7 @@
                 <ion-icon name="close-outline"></ion-icon>
             </button>
         </div>
-        <div class="oh-modal__dialog-body" id="detailAttendanceModalBody"></div>
+        <div class="oh-modal__dialog-body oh-modal__dialog-relative" id="detailAttendanceModalBody"></div>
     </div>
 </div>
 

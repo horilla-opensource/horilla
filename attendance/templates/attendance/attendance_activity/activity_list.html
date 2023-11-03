@@ -24,36 +24,36 @@
               <input type="checkbox" id="{{activity.id}}" class="oh-input attendance-checkbox oh-input__checkbox mt-2 mr-2 all-attendance-activity-row" />
             </div>
               <div class="oh-sticky-table__td">
-                  <div class="oh-profile oh-profile--md">
-                      <div class="oh-profile__avatar mr-1">
-                          <img
-                    src="https://ui-avatars.com/api/?name={{activity.employee_id.employee_first_name}}+{{activity.employee_id.employee_last_name}}&background=random"
+                <div class="oh-profile oh-profile--md">
+                  <div class="oh-profile__avatar mr-1">
+                    <img
+                    src="{{activity.employee_id.get_avatar}}"
                     class="oh-profile__image"
-                    alt="Mary Magdalene"
+                    alt=""
                   />
+                  </div>
+                    <span class="oh-profile__name oh-text--dark"
+                    >{{activity.employee_id}}</span
+                    >
+                  </div>
               </div>
-                <span class="oh-profile__name oh-text--dark"
-                >{{activity.employee_id}}</span
-                >
-              </div>
-          </div>
-          <div class="oh-sticky-table__td">{{activity.attendance_date}}</div>
-          <div class="oh-sticky-table__td">{{activity.clock_in_date}}</div>
-          <div class="oh-sticky-table__td">{{activity.clock_in}}</div>
-          <div class="oh-sticky-table__td">{{activity.clock_out}}</div>
-          <div class="oh-sticky-table__td">{{activity.clock_out_date}}</div>
-          <div class="oh-sticky-table__td">
-            <div class="oh-btn-group">
-              
-              {% if perms.attendance.delete_attendanceactivity %}
-              <form action="{% url 'attendance-activity-delete' activity.id  %}"
-                onclick="event.stopPropagation()" onsubmit="return confirm('{% trans "Are you sure want to delete this attendance?" %}')" 
-                hx-target="#tab_contents" method='post'>
-                {% csrf_token %}
-                <button type='submit' class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100" title="{% trans 'Remove' %}"><ion-icon name="trash-outline"></ion-icon></button>
-              </form>
-              {% endif %}
-            </div>      
+              <div class="oh-sticky-table__td">{{activity.attendance_date}}</div>
+              <div class="oh-sticky-table__td">{{activity.clock_in_date}}</div>
+              <div class="oh-sticky-table__td">{{activity.clock_in}}</div>
+              <div class="oh-sticky-table__td">{{activity.clock_out}}</div>
+              <div class="oh-sticky-table__td">{{activity.clock_out_date}}</div>
+              <div class="oh-sticky-table__td">
+              <div class="oh-btn-group">
+                
+                {% if perms.attendance.delete_attendanceactivity %}
+                <form action="{% url 'attendance-activity-delete' activity.id  %}"
+                  onclick="event.stopPropagation()" onsubmit="return confirm('{% trans "Are you sure want to delete this attendance?" %}')" 
+                  hx-target="#tab_contents" method='post'>
+                  {% csrf_token %}
+                  <button type='submit' class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100" title="{% trans 'Remove' %}"><ion-icon name="trash-outline"></ion-icon></button>
+                </form>
+                {% endif %}
+              </div>      
           </div>      
         </div>
         {% endfor %}

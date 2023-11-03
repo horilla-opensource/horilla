@@ -39,7 +39,7 @@
     hx-target="#attendance-container"
   >
     <span
-      class="oh-dot oh-dot--small me-1"
+      class="oh-dot oh-dot--smallui-avatars.com me-1"
       style="background-color: orange"
     ></span>
     {% trans "Requested" %}
@@ -177,7 +177,7 @@
           <div class="oh-profile oh-profile--md">
             <div class="oh-profile__avatar mr-1">
               <img
-                src="https://ui-avatars.com/api/?name={{attendance.employee_id.employee_first_name}}+{{attendance.employee_id.employee_last_name}}&background=random"
+                src="{{attendance.employee_id.get_avatar}}"
                 class="oh-profile__image"
                 alt="Mary Magdalene"
               />

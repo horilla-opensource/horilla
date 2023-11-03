@@ -35,25 +35,25 @@
       <div class="oh-sticky-table__tr oh-table__toggle-child" data-group="{{attendance_list.grouper}}">
         
         <div class="oh-sticky-table__sd">
-            <div class="oh-profile oh-profile--md">
-                <div class="oh-profile__avatar mr-1">
-                    <img
-              src="https://ui-avatars.com/api/?name={{activity.employee_id.employee_first_name}}+{{activity.employee_id.employee_last_name}}&background=random"
-              class="oh-profile__image"
-              alt="Mary Magdalene"
-            />
+          <div class="oh-profile oh-profile--md">
+            <div class="oh-profile__avatar mr-1">
+              <img
+                src="{{activity.employee_id.get_avatar}}"
+                class="oh-profile__image"
+                alt=""
+              />
+            </div>
+            <span class="oh-profile__name oh-text--dark"
+            >{{activity.employee_id}}</span
+            >
+          </div>
         </div>
-          <span class="oh-profile__name oh-text--dark"
-          >{{activity.employee_id}}</span
-          >
-        </div>
-    </div>
-    <div class="oh-sticky-table__td">{{activity.attendance_date}}</div>
-    <div class="oh-sticky-table__td">{{activity.clock_in_date}}</div>
-    <div class="oh-sticky-table__td">{{activity.clock_in}}</div>
-    <div class="oh-sticky-table__td">{{activity.clock_out}}</div>
-    <div class="oh-sticky-table__td">{{activity.clock_out_date}}</div>
-          
+        <div class="oh-sticky-table__td">{{activity.attendance_date}}</div>
+        <div class="oh-sticky-table__td">{{activity.clock_in_date}}</div>
+        <div class="oh-sticky-table__td">{{activity.clock_in}}</div>
+        <div class="oh-sticky-table__td">{{activity.clock_out}}</div>
+        <div class="oh-sticky-table__td">{{activity.clock_out_date}}</div>
+              
       </div>
       {% endfor %}
     </div>   
