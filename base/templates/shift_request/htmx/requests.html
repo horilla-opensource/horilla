@@ -53,7 +53,7 @@
                   </div>
                   <div class="oh-profile oh-profile--md">
                     <div class="oh-profile__avatar mr-1">
-                      <img src="https://ui-avatars.com/api/?name={{shift_request.employee_id}}&amp;background=random" class="oh-profile__image" alt="Username">
+                      <img src="{{shift_request.employee_id.get_avatar}}" class="oh-profile__image" alt="Username">
                     </div>
                     <span class="oh-profile__name oh-text--dark">{{shift_request.employee_id}}</span>
                   </div>
