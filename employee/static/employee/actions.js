@@ -208,8 +208,10 @@ $("#archiveEmployees").click(function (e) {
     languageCode = code;
     var confirmMessage = archiveMessages[languageCode];
     var textMessage = norowMessages[languageCode];
-    var checkedRows = $(".all-employee-row").filter(":checked");
-    if (checkedRows.length === 0) {
+    ids = [];
+    ids.push($("#selectedInstances").attr("data-ids"));
+    ids = JSON.parse($("#selectedInstances").attr("data-ids"));
+    if (ids.length === 0) {
       Swal.fire({
         text: textMessage,
         icon: "warning",
@@ -258,8 +260,10 @@ $("#unArchiveEmployees").click(function (e) {
     languageCode = code;
     var confirmMessage = unarchiveMessages[languageCode];
     var textMessage = norowMessages[languageCode];
-    var checkedRows = $(".all-employee-row").filter(":checked");
-    if (checkedRows.length === 0) {
+    ids = [];
+    ids.push($("#selectedInstances").attr("data-ids"));
+    ids = JSON.parse($("#selectedInstances").attr("data-ids"));
+    if (ids.length === 0) {
       Swal.fire({
         text: textMessage,
         icon: "warning",
@@ -310,8 +314,10 @@ $("#deleteEmployees").click(function (e) {
     languageCode = code;
     var confirmMessage = deleteMessages[languageCode];
     var textMessage = norowMessages[languageCode];
-    var checkedRows = $(".all-employee-row").filter(":checked");
-    if (checkedRows.length === 0) {
+    ids = [];
+    ids.push($("#selectedInstances").attr("data-ids"));
+    ids = JSON.parse($("#selectedInstances").attr("data-ids"));
+    if (ids.length === 0) {
       Swal.fire({
         text: textMessage,
         icon: "warning",
