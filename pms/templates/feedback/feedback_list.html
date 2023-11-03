@@ -104,7 +104,7 @@
             <a href="{% url 'feedback-detailed-view' id=feedback.id %}" style="color: inherit;text-decoration: none;" class="oh-sticky-table__sd">
               <div class="oh-profile oh-profile--md">
                 <div class="oh-profile__avatar mr-1">
-                  <img src="https://ui-avatars.com/api/?name={{feedback.employee_id}}&background=random" class="oh-profile__image"/>
+                  <img src="{{feedback.employee_id.get_avatar}}" class="oh-profile__image"/>
                 </div>
                 <span class="oh-profile__name oh-text--dark">{{feedback.employee_id}}</span>
               </div>
@@ -242,7 +242,7 @@
             <a href="{% url 'feedback-detailed-view' id=feedback.id %}" style="color: inherit;text-decoration: none;" class="oh-sticky-table__sd">
               <div class="oh-profile oh-profile--md">
                 <div class="oh-profile__avatar mr-1">
-                  <img src="https://ui-avatars.com/api/?name={{feedback.employee_id}}&background=random" class="oh-profile__image"/>
+                  <img src="{{feedback.employee_id.get_avatar}}" class="oh-profile__image"/>
                 </div>
                 <span class="oh-profile__name oh-text--dark">{{feedback.employee_id}}</span>
               </div>
@@ -384,7 +384,7 @@
             <a href="{% url 'feedback-detailed-view' id=feedback.id %}" style="color: inherit;text-decoration: none;" class="oh-sticky-table__sd">
               <div class="oh-profile oh-profile--md">
                 <div class="oh-profile__avatar mr-1">
-                  <img src="https://ui-avatars.com/api/?name={{feedback.employee_id}}&background=random" class="oh-profile__image"/>
+                  <img src="{{feedback.employee_id.get_avatar}}" class="oh-profile__image"/>
                 </div>
                 <span class="oh-profile__name oh-text--dark">{{feedback.employee_id}}</span>
               </div>

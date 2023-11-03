@@ -146,24 +146,6 @@
                     <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
                         <span class="oh-card-dashboard__title"> {% trans "OKR At-Risk" %}</span>
                     </div>
-                    {% comment %} <div class="oh-card-dashboard__body">
-                        <ul class="oh-card-dashboard__user-list">
-                           {% for okr in okr_at_risk %}
-                           <li class="oh-card-dashboard__user-item">
-                            <a href="{%url 'objective-detailed-view'  emp_obj_id=okr.id %}">
-                               <div class="oh-profile oh-profile--md">
-                                   <div class="oh-profile__avatar mr-1">
-                                       <img src="https://ui-avatars.com/api/?name=Beth+Gibbons&background=random"
-                                       class="oh-profile__image" alt="Beth Gibbons" />
-                                    </div>
-                                    <span class="oh-profile__name oh-text--dark">{{okr.employee_id}}</span>
-                                </div>
-                            </a>
-                            </li>
-                            {% endfor %}
-                             
-                        </ul>
-                    </div> {% endcomment %}
                     <div class="oh-card-dashboard__body">
                         {% if okr_at_risk %}
                             <ul class="oh-card-dashboard__user-list">
@@ -172,8 +154,8 @@
                                     <a href="{%url 'objective-detailed-view'  emp_obj_id=okr.id %}">
                                         <div class="oh-profile oh-profile--md">
                                             <div class="oh-profile__avatar mr-1">
-                                                <img src="https://ui-avatars.com/api/?name=Beth+Gibbons&background=random"
-                                                class="oh-profile__image" alt="Beth Gibbons" />
+                                                <img src="{{okr.employee_id.get_avatar}}"
+                                                class="oh-profile__image" alt="" />
                                             </div>
                                             <span class="oh-profile__name oh-text--dark">{{okr.employee_id}}</span>
                                         </div>
