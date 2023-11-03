@@ -66,6 +66,14 @@ $(document).ready(function () {
       $(".validate-row").prop("checked", false);
     }
   });
+  $(".all-hour-account").change(function (e) {
+    var is_checked = $(this).is(":checked");
+    if (is_checked) {
+      $(".all-hour-account-row").prop("checked", true);
+    } else {
+      $(".all-hour-account-row").prop("checked", false);
+    }
+  });
 
   $(".all-attendances").change(function (e) {
     var is_checked = $(this).is(":checked");

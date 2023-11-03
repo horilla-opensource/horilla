@@ -48,6 +48,7 @@ from attendance.filters import (
 from attendance.forms import (
     AttendanceActivityExportForm,
     AttendanceForm,
+    AttendanceOverTimeExportForm,
     AttendanceOverTimeForm,
     AttendanceValidationConditionForm,
     AttendanceUpdateForm,
@@ -486,7 +487,7 @@ def view_my_attendance(request):
         template,
         {
             "attendances": paginator_qry(employee_attendances, request.GET.get("page")),
-            "attendances_ids":attendances_ids,
+            "attendances_ids": attendances_ids,
             "f": filter,
         },
     )
@@ -533,6 +534,8 @@ def attendance_overtime_view(request):
     form = AttendanceOverTimeForm()
     form = choosesubordinates(request, form, "attendance.add_attendanceovertime")
     filter_obj = AttendanceOverTimeFilter()
+    export_obj = AttendanceOverTimeFilter()
+    export_fields = AttendanceOverTimeExportForm()
     return render(
         request,
         template,
@@ -541,9 +544,50 @@ def attendance_overtime_view(request):
             "form": form,
             "pd": previous_data,
             "f": filter_obj,
+            "export_obj": export_obj,
+            "export_fields": export_fields,
             "gp_fields": AttendanceOvertimeReGroup.fields,
         },
     )
+
+
+def attendance_account_export(request):
+    """
+    Export attendance account data to an Excel file.
+
+    This view function takes a GET request and exports attendance account data into an Excel file.
+    The exported Excel file will include the selected fields from the AttendanceOverTime model,
+
+    """
+    today_date = date.today().strftime("%Y-%m-%d")
+    file_name = f"Attendance_Account_{today_date}.xlsx"
+    attendance_accounts = AttendanceOverTimeFilter(request.GET).qs
+    selected_fields = request.GET.getlist("selected_fields")
+    model_fields = AttendanceOverTime._meta.get_fields()
+    accounts_data = {}
+    for field in model_fields:
+        field_name = field.name
+        if field_name in selected_fields:
+            accounts_data[field.verbose_name] = []
+            for account in attendance_accounts:
+                value = getattr(account, field_name)
+                if field_name == "month":
+                    value = value.title()
+                accounts_data[field.verbose_name].append(value)
+
+    data_frame = pd.DataFrame(data=accounts_data)
+    data_frame = data_frame.style.applymap(
+        lambda x: "text-align: center", subset=pd.IndexSlice[:, :]
+    )
+    response = HttpResponse(content_type="application/ms-excel")
+    response["Content-Disposition"] = f'attachment; filename="{file_name}"'
+    data_frame.to_excel(response, index=False)
+    writer = pd.ExcelWriter(response, engine="xlsxwriter")
+    data_frame.to_excel(writer, index=False, sheet_name="Sheet1")
+    worksheet = writer.sheets["Sheet1"]
+    worksheet.set_column("A:Z", 20)
+    writer.close()
+    return response
 
 
 @login_required
@@ -594,6 +638,34 @@ def attendance_overtime_delete(request, obj_id):
     except ProtectedError:
         messages.error(request, _("You cannot delete this attendance OT"))
     return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+
+
+@login_required
+@permission_required("attendance.delete_attendanceovertime")
+def attendance_account_bulk_delete(request):
+    """
+    This method is used to bulk delete for Payslip
+    """
+    ids = request.POST["ids"]
+    ids = json.loads(ids)
+    for id in ids:
+        try:
+            hour_account = AttendanceOverTime.objects.get(id=id)
+            hour_account.delete()
+            messages.success(
+                request,
+                _("{employee} {month} payslip deleted.").format(
+                    employee=hour_account.employee_id, month=hour_account.month
+                ),
+            )
+        except AttendanceOverTime.DoesNotExist:
+            messages.error(request, _("Payslip not found."))
+        except ProtectedError:
+            messages.error(
+                request,
+                _("You cannot delete {hour_account}").format(hour_account=hour_account),
+            )
+    return JsonResponse({"message": "Success"})
 
 
 @login_required

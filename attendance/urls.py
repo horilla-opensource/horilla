@@ -48,6 +48,11 @@ urlpatterns = [
         name="attendance-overtime-create",
     ),
     path(
+        "attendance-account-info-export",
+        views.attendance_account_export,
+        name="attendance-account-info-export",
+    ),
+    path(
         "attendance-overtime-view",
         views.attendance_overtime_view,
         name="attendance-overtime-view",

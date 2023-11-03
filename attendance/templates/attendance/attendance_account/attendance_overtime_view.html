@@ -1,8 +1,8 @@
 {% extends 'index.html' %}{% block content %}
+{% load static %}
 {% include 'attendance/attendance_account/nav.html' %}
 <div class="oh-wrapper">
   {% include 'attendance/attendance_account/overtime_list.html' %}
 </div>
-
-
+<script src="{% static 'attendance/action.js' %}"></script>
 {% endblock %}

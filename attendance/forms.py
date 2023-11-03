@@ -570,12 +570,12 @@ excluded_fields = [
     "id",
     "requested_data",
     "at_work_second",
-    "overtime_second",
     "approved_overtime_second",
     "is_validate_request",
     "is_validate_request_approved",
     "request_description",
     "request_type",
+    "month_sequence",
     "objects",
 ]
 
@@ -644,5 +644,26 @@ class AttendanceActivityExportForm(forms.Form):
         widget=forms.CheckboxSelectMultiple,
         initial=[
             "employee_id",
+        ],
+    )
+
+
+class AttendanceOverTimeExportForm(forms.Form):
+    model_fields = AttendanceOverTime._meta.get_fields()
+    field_choices = [
+        (field.name, field.verbose_name)
+        for field in model_fields
+        if hasattr(field, "verbose_name") and field.name not in excluded_fields
+    ]
+    selected_fields = forms.MultipleChoiceField(
+        choices=field_choices,
+        widget=forms.CheckboxSelectMultiple,
+        initial=[
+            "employee_id",
+            "month",
+            "year",
+            "worked_hours",
+            "pending_hours",
+            "overtime",
         ],
     )

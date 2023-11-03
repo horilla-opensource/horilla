@@ -432,31 +432,51 @@ class AttendanceOverTime(models.Model):
         related_name="employee_overtime",
         verbose_name=_("Employee"),
     )
-    month = models.CharField(max_length=10)
+    month = models.CharField(
+        max_length=10,
+        verbose_name=_("Month"),
+    )
     month_sequence = models.PositiveSmallIntegerField(default=0)
     year = models.CharField(
-        default=datetime.now().strftime("%Y"), null=True, max_length=10
+        default=datetime.now().strftime("%Y"),
+        null=True,
+        max_length=10,
+        verbose_name=_("Year"),
     )
     worked_hours = models.CharField(
-        max_length=10, default="00:00", null=True, validators=[validate_time_format]
+        max_length=10,
+        default="00:00",
+        null=True,
+        validators=[validate_time_format],
+        verbose_name=_("Worked Hours"),
     )
     pending_hours = models.CharField(
-        max_length=10, default="00:00", null=True, validators=[validate_time_format]
+        max_length=10,
+        default="00:00",
+        null=True,
+        validators=[validate_time_format],
+        verbose_name=_("Pending Hours"),
     )
     overtime = models.CharField(
-        max_length=20, default="00:00", validators=[validate_time_format]
+        max_length=20,
+        default="00:00",
+        validators=[validate_time_format],
+        verbose_name=_("Overtime Hours"),
     )
     hour_account_second = models.IntegerField(
         default=0,
         null=True,
+        verbose_name=_("Worked Seconds"),
     )
     hour_pending_second = models.IntegerField(
         default=0,
         null=True,
+        verbose_name=_("Pending Seconds"),
     )
     overtime_second = models.IntegerField(
         default=0,
         null=True,
+        verbose_name=_("Overtime Seconds"),
     )
     objects = models.Manager()
 
