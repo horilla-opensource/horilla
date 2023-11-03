@@ -3,13 +3,8 @@
     <div class="oh-timeoff-modal__profile-content">
         <div class="oh-profile">
             <div class="oh-profile__avatar mr-1">
-                {% if leave_request.leave_type_id.icon %}
-                <img src="{{leave_request.leave_type_id.icon.url}}" class="oh-profile__image"
-                    alt="{{leave_request.leave_type_id}}" />
-                {% else %}
-                <img src="https://ui-avatars.com/api/?name={{leave_request.employee_id}}&background=random"
-                    class="oh-profile__image" alt="Mary Magdalene" />
-                {% endif %}
+                <img src="{{leave_request.leave_type_id.get_avatar}}" class="oh-profile__image"
+                    alt="" />
             </div>
         </div>
         <div class="oh-timeoff-modal__profile-info">

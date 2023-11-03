@@ -3,13 +3,8 @@
     <div class="oh-timeoff-modal__profile-content">
         <div class="oh-profile">
             <div class="oh-profile__avatar mr-1">
-                {% if leave_allocation_request.employee_id.employee_profile %}
-                <img src="{{leave_allocation_request.employee_id.employee_profile.url}}" class="oh-profile__image"
+                <img src="{{leave_allocation_request.employee_id.get_avatar}}" class="oh-profile__image"
                     alt="" />
-                {% else %}
-                <img src="https://ui-avatars.com/api/?name={{leave_allocation_request.employee_id}}&background=random"
-                    class="oh-profile__image" alt="" />
-                {% endif %}
             </div>
         </div>
         <div class="oh-timeoff-modal__profile-info">

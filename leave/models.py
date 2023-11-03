@@ -8,6 +8,8 @@ from dateutil.relativedelta import relativedelta
 from django.utils.translation import gettext_lazy as _
 from employee.models import Employee
 from .methods import calculate_requested_days
+from django.core.files.storage import default_storage
+from django.conf import settings
 
 
 # Create your models here.
@@ -156,6 +158,20 @@ class LeaveType(models.Model):
     exclude_company_leave = models.CharField(max_length=30, choices=CHOICES)
     exclude_holiday = models.CharField(max_length=30, choices=CHOICES)
     objects = models.Manager()
+
+    def get_avatar(self):
+        """
+        Method will retun the api to the avatar or path to the profile image
+        """
+        url = (
+            f"https://ui-avatars.com/api/?name={self.name}&background=random"
+        )
+        if self.icon:
+            full_filename = settings.MEDIA_ROOT + self.icon.name
+            
+            if default_storage.exists(full_filename):
+                url = self.icon.url
+        return url
 
     def __str__(self):
         return self.name

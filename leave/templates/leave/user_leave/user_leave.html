@@ -6,13 +6,8 @@
         hx-get="{% url 'user-request' user_leave.leave_type_id.id %}" hx-target="#requestForm">
         <div class="oh-kanban-card__avatar">
             <div class="oh-kanban-card__profile-container">
-                {% if user_leave.leave_type_id.icon %}
-                <img src="{{user_leave.leave_type_id.icon.url }}" class="oh-kanban-card__profile-image"
+                <img src="{{user_leave.leave_type_id.get_avatar }}" class="oh-kanban-card__profile-image"
                     alt="Leave Icon" />
-                {% else %}
-                <img src="https://ui-avatars.com/api/?name={{user_leave.leave_type_id}}&background=random"
-                    class="oh-kanban-card__profile-image" alt="Leave Icon" />
-                {% endif %}
             </div>
         </div>
         <div class="oh-kanban-card__details">

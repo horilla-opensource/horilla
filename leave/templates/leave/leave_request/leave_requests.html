@@ -56,13 +56,8 @@
                     <div class="oh-sticky-table__sd {% if leave_request.status == "requested" %} row-status--blue {% elif leave_request.status == "approved" %} row-status--yellow {% elif leave_request.status == "cancelled" %} row-status--gray {% elif leave_request.status == "rejected" %}row-status--red{% endif %}" >
                         <div class="oh-profile oh-profile--md">
                             <div class="oh-profile__avatar mr-1">
-                                {% if leave_request.employee_id.employee_profile %}
-                                <img src="{{leave_request.employee_id.employee_profile.url}}" class="oh-profile__image"
+                                <img src="{{leave_request.employee_id.get_avatar}}" class="oh-profile__image"
                                     alt="" />
-                                {% else %}
-                                <img src="https://ui-avatars.com/api/?name={{leave_request.employee_id}}&background=random"
-                                    class="oh-profile__image" alt="" />
-                                {% endif %}
                             </div>
                             <span class="oh-profile__name oh-text--dark">{{leave_request.employee_id}}</span>
                         </div>

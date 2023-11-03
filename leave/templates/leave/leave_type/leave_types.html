@@ -23,12 +23,7 @@
       hx-get="{% url 'leave-type-individual-view' leave_type.id %}" hx-target="#singleView">
         <div class="oh-kanban-card__avatar">
           <div class="oh-kanban-card__profile-container">
-            {% if leave_type.icon %}
-            <img src="{{leave_type.icon.url}}" class="oh-kanban-card__profile-image" alt="Username" />
-            {% else %}
-            <img src="https://ui-avatars.com/api/?name={{leave_type.name}}&background=random"
-              class="oh-kanban-card__profile-image" alt="Username" />
-            {% endif %}
+            <img src="{{leave_type.get_avatar}}" class="oh-kanban-card__profile-image" alt="Username" />
           </div>
         </div>
         <div class="oh-kanban-card__details">
