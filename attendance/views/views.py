@@ -28,6 +28,7 @@ from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from django.views.decorators.http import require_http_methods
 from attendance.views.handle_attendance_errors import handle_attendance_errors
 from attendance.views.process_attendance_data import process_attendance_data
+from attendance.methods.closest_numbers import closest_numbers
 from base.methods import get_key_instances
 from horilla.decorators import (
     permission_required,
@@ -296,7 +297,11 @@ def attendance_view(request):
         template = "attendance/attendance/attendance_view.html"
     else:
         template = "attendance/attendance/attendance_empty.html"
-
+    validate_attendances_ids = json.dumps(
+        list(validate_attendances.values_list("id", flat=True))
+    )
+    ot_attendances_ids = json.dumps(list(ot_attendances.values_list("id", flat=True)))
+    attendances_ids = json.dumps(list(attendances.values_list("id", flat=True)))
     return render(
         request,
         template,
@@ -310,6 +315,9 @@ def attendance_view(request):
             "overtime_attendances": paginator_qry(
                 ot_attendances, request.GET.get("opage")
             ),
+            "validate_attendances_ids": validate_attendances_ids,
+            "ot_attendances_ids": ot_attendances_ids,
+            "attendances_ids": attendances_ids,
             "f": filter_obj,
             "export": AttendanceFilters(queryset=Attendance.objects.all()),
             "pd": previous_data,
@@ -1160,7 +1168,9 @@ def user_request_one_view(request, id):
     hours_over_time = over_time_seconds // 3600
     minutes_over_time = (over_time_seconds % 3600) // 60
     over_time = "{:02}:{:02}".format(hours_over_time, minutes_over_time)
-
+    instance_ids_json = request.GET["instances_ids"]
+    instance_ids = json.loads(instance_ids_json)
+    previous_instance, next_instance = closest_numbers(instance_ids, id)
     return render(
         request,
         "attendance/attendance/attendance_request_one.html",
@@ -1168,5 +1178,8 @@ def user_request_one_view(request, id):
             "attendance_request": attendance_request,
             "at_work": at_work,
             "over_time": over_time,
+            "previous_instance": previous_instance,
+            "next_instance": next_instance,
+            "instance_ids_json": instance_ids_json,
         },
     )

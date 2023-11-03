@@ -3,6 +3,7 @@ search.py
 
 This is moduel is used to register end point related to the search filter functionalities
 """
+import json
 from datetime import datetime
 from urllib.parse import parse_qs
 from django.shortcuts import render
@@ -102,6 +103,11 @@ def attendance_search(request):
             )
             month_name = _(date_object.strftime("%B"))
             template = "attendance/attendance/validate_attendance_empty.html"
+    validate_attendances_ids = json.dumps(
+        list(validate_attendances.values_list("id", flat=True))
+    )
+    ot_attendances_ids = json.dumps(list(ot_attendances.values_list("id", flat=True)))
+    attendances_ids = json.dumps(list(attendances.values_list("id", flat=True)))
     return render(
         request,
         template,
@@ -113,6 +119,9 @@ def attendance_search(request):
             "overtime_attendances": paginator_qry(
                 ot_attendances, request.GET.get("opage")
             ),
+            "validate_attendances_ids": validate_attendances_ids,
+            "ot_attendances_ids": ot_attendances_ids,
+            "attendances_ids": attendances_ids,
             "pd": previous_data,
             "field": field,
             "filter_dict": data_dict,

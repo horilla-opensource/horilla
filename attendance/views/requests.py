@@ -8,24 +8,32 @@ import copy
 from urllib.parse import parse_qs
 from django.shortcuts import render
 from django.contrib import messages
-from django.http import HttpResponse,HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect
 from notifications.signals import notify
 from horilla.decorators import login_required, manager_can_enter
-from base.methods import filtersubordinates, is_reportingmanager, choosesubordinates, get_key_instances
+from base.methods import (
+    filtersubordinates,
+    is_reportingmanager,
+    choosesubordinates,
+    get_key_instances,
+)
 from employee.models import Employee
 from attendance.models import Attendance
 from attendance.forms import AttendanceRequestForm, NewRequestForm
 from attendance.methods.differentiate import get_diff_dict
 from attendance.views.views import paginator_qry
 from attendance.filters import AttendanceFilters
+from attendance.methods.closest_numbers import closest_numbers
+
 
 def get_employee_last_name(attendance):
     """
-    This method is used to return the last name 
+    This method is used to return the last name
     """
     if attendance.employee_id.employee_last_name:
         return attendance.employee_id.employee_last_name
-    return ''
+    return ""
+
 
 @login_required
 def request_attendance(request):
@@ -58,7 +66,7 @@ def request_attendance_view(request):
         employee_id__employee_user_id=request.user,
         is_validate_request=True,
     )
-    requests = AttendanceFilters(request.GET,requests).qs
+    requests = AttendanceFilters(request.GET, requests).qs
     previous_data = request.GET.urlencode()
     data_dict = parse_qs(previous_data)
     get_key_instances(Attendance, data_dict)
@@ -80,12 +88,16 @@ def request_attendance_view(request):
         template = "requests/attendance/view-requests.html"
     else:
         template = "requests/attendance/requests_empty.html"
+    requests_ids = json.dumps(list(requests.values_list("id", flat=True)))
+    attendances_ids = json.dumps(list(attendances.values_list("id", flat=True)))
     return render(
         request,
         template,
         {
             "requests": paginator_qry(requests, None),
             "attendances": paginator_qry(attendances, None),
+            "requests_ids": requests_ids,
+            "attendances_ids": attendances_ids,
             "f": filter_obj,
             "filter_dict": data_dict,
         },
@@ -102,7 +114,7 @@ def request_new(request):
     form.fields["employee_id"].queryset = form.fields[
         "employee_id"
     ].queryset | Employee.objects.filter(employee_user_id=request.user)
-    form.fields['employee_id'].initial = request.user.employee_get.id
+    form.fields["employee_id"].initial = request.user.employee_get.id
     if request.method == "POST":
         form = NewRequestForm(request.POST)
         form = choosesubordinates(request, form, "attendance.change_attendance")
@@ -161,22 +173,23 @@ def attendance_request_changes(request, attendance_id):
             messages.success(request, "Attendance update request created.")
             employee = attendance.employee_id
             if attendance.employee_id.employee_work_info.reporting_manager_id:
-                reporting_manager = attendance.employee_id.employee_work_info.\
-                    reporting_manager_id.employee_user_id
+                reporting_manager = (
+                    attendance.employee_id.employee_work_info.reporting_manager_id.employee_user_id
+                )
                 user_last_name = get_employee_last_name(attendance)
                 notify.send(
                     request.user,
-                    recipient = reporting_manager,
-                    verb = f"{employee.employee_first_name} {user_last_name}'s\
+                    recipient=reporting_manager,
+                    verb=f"{employee.employee_first_name} {user_last_name}'s\
                           attendance update request for {attendance.attendance_date} is created",
-                    verb_ar = f"تم إنشاء طلب تحديث الحضور لـ {employee.employee_first_name} \
+                    verb_ar=f"تم إنشاء طلب تحديث الحضور لـ {employee.employee_first_name} \
                         {user_last_name }في {attendance.attendance_date}",
-                    verb_de = f"Die Anfrage zur Aktualisierung der Anwesenheit von \
+                    verb_de=f"Die Anfrage zur Aktualisierung der Anwesenheit von \
                         {employee.employee_first_name} {user_last_name} \
                             für den {attendance.attendance_date} wurde erstellt",
-                    verb_es = f"Se ha creado la solicitud de actualización de asistencia para {employee.employee_first_name}\
+                    verb_es=f"Se ha creado la solicitud de actualización de asistencia para {employee.employee_first_name}\
                           {user_last_name} el {attendance.attendance_date}",
-                    verb_fr = f"La demande de mise à jour de présence de {employee.employee_first_name}\
+                    verb_fr=f"La demande de mise à jour de présence de {employee.employee_first_name}\
                           {user_last_name} pour le {attendance.attendance_date} a été créée",
                     redirect=f"/attendance/request-attendance-view?search={employee}&attendance_date={attendance.attendance_date}",
                     icon="checkmark-circle-outline",
@@ -215,13 +228,20 @@ def validate_attendance_request(request, attendance_id):
         first_dict = empty_data
     else:
         other_dict = json.loads(attendance.requested_data)
+    requests_ids_json = request.GET["requests_ids"]
 
+    previous_instance_id, next_instance_id = closest_numbers(
+        json.loads(requests_ids_json), attendance_id
+    )
     return render(
         request,
         "requests/attendance/individual_view.html",
         {
             "data": get_diff_dict(first_dict, other_dict, Attendance),
             "attendance": attendance,
+            "previous": previous_instance_id,
+            "next": next_instance_id,
+            "requests_ids":requests_ids_json,
         },
     )
 
@@ -246,35 +266,36 @@ def approve_validate_attendance_request(request, attendance_id):
     notify.send(
         request.user,
         recipient=employee.employee_user_id,
-        verb = f"Your attendance request for \
+        verb=f"Your attendance request for \
             {attendance.attendance_date} is validated",
-        verb_ar = f"تم التحقق من طلب حضورك في تاريخ \
+        verb_ar=f"تم التحقق من طلب حضورك في تاريخ \
             {attendance.attendance_date}",
-        verb_de = f"Ihr Anwesenheitsantrag für das Datum \
+        verb_de=f"Ihr Anwesenheitsantrag für das Datum \
             {attendance.attendance_date} wurde bestätigt",
-        verb_es = f"Se ha validado su solicitud de asistencia \
+        verb_es=f"Se ha validado su solicitud de asistencia \
             para la fecha {attendance.attendance_date}",
-        verb_fr = f"Votre demande de présence pour la date \
+        verb_fr=f"Votre demande de présence pour la date \
             {attendance.attendance_date} est validée",
         redirect=f"/attendance/request-attendance-view?search={employee}&attendance_date={attendance.attendance_date}",
         icon="checkmark-circle-outline",
     )
     if attendance.employee_id.employee_work_info.reporting_manager_id:
-        reporting_manager = attendance.employee_id.employee_work_info.\
-            reporting_manager_id.employee_user_id
+        reporting_manager = (
+            attendance.employee_id.employee_work_info.reporting_manager_id.employee_user_id
+        )
         user_last_name = get_employee_last_name(attendance)
         notify.send(
             request.user,
-            recipient = reporting_manager,
-            verb = f"{employee.employee_first_name} {user_last_name}'s\
+            recipient=reporting_manager,
+            verb=f"{employee.employee_first_name} {user_last_name}'s\
                   attendance request for {attendance.attendance_date} is validated",
-            verb_ar = f"تم التحقق من طلب الحضور لـ {employee.employee_first_name} \
+            verb_ar=f"تم التحقق من طلب الحضور لـ {employee.employee_first_name} \
                 {user_last_name} في {attendance.attendance_date}",
-            verb_de = f"Die Anwesenheitsanfrage von {employee.employee_first_name} \
+            verb_de=f"Die Anwesenheitsanfrage von {employee.employee_first_name} \
                 {user_last_name} für den {attendance.attendance_date} wurde validiert",
-            verb_es = f"Se ha validado la solicitud de asistencia de \
+            verb_es=f"Se ha validado la solicitud de asistencia de \
                 {employee.employee_first_name} {user_last_name} para el {attendance.attendance_date}",
-            verb_fr = f"La demande de présence de {employee.employee_first_name} \
+            verb_fr=f"La demande de présence de {employee.employee_first_name} \
                 {user_last_name} pour le {attendance.attendance_date} a été validée",
             redirect=f"/attendance/request-attendance-view?search={employee}&attendance_date={attendance.attendance_date}",
             icon="checkmark-circle-outline",
@@ -310,10 +331,10 @@ def cancel_attendance_request(request, attendance_id):
             request.user,
             recipient=employee.employee_user_id,
             verb=f"Your attendance request for {attendance.attendance_date} is cancelled",
-            verb_ar = f"تم إلغاء طلب حضورك في تاريخ {attendance.attendance_date}",
-            verb_de = f"Ihr Antrag auf Teilnahme am {attendance.attendance_date} wurde storniert",
-            verb_es = f"Se ha cancelado su solicitud de asistencia para el {attendance.attendance_date}",
-            verb_fr = f"Votre demande de participation pour le {attendance.attendance_date} a été annulée",
+            verb_ar=f"تم إلغاء طلب حضورك في تاريخ {attendance.attendance_date}",
+            verb_de=f"Ihr Antrag auf Teilnahme am {attendance.attendance_date} wurde storniert",
+            verb_es=f"Se ha cancelado su solicitud de asistencia para el {attendance.attendance_date}",
+            verb_fr=f"Votre demande de participation pour le {attendance.attendance_date} a été annulée",
             redirect="/attendance/request-attendance-view",
             icon="close-circle-outline",
         )
