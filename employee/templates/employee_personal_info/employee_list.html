@@ -69,19 +69,11 @@
                 <div class="d-flex">
                   <div class="oh-profile oh-profile--md">
                     <div class="oh-profile__avatar mr-1">
-                      {% if emp.employee_profile %}
                       <img
-                        src="/media/{{emp.employee_profile}}"
-                        class="oh-profile__image"
+                      src="{{emp.get_avatar}}"
+                      class="oh-profile__image"
                         alt="Username"
                       />
-                      {% else %}
-                      <img
-                        src="https://ui-avatars.com/api/?name={{emp.employee_first_name}}+{{emp.employee_last_name}}&background=random"
-                        class="oh-profile__image"
-                        alt="Username"
-                      />
-                      {% endif %}
                     </div>
                     <span class="oh-profile__name oh-text--dark">{{emp}}</span>
                   </div>

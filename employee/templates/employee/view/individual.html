@@ -67,21 +67,15 @@
 				<div class="d-flex align-items-center">
 					<div class="oh-profile oh-profile--lg me-3">
 						<div class="oh-profile__avatar">
-							{% if employee.employee_profile %}
 							<img
-								src="/media/{{employee.employee_profile}}"
+								src="{{employee.get_avatar}}"
 								class="oh-profile__image"
 								alt="Username"
+								{% if employee.employee_profile %}
 								onmouseover="enlargeImage(this)"
 								onmouseout="hideEnlargeImage()"
+								{% endif %}
 							/>
-							{% else %}
-							<img
-								src="https://ui-avatars.com/api/?name={{employee.employee_first_name}}+{{employee.employee_last_name}}&background=random"
-								class="oh-profile__image"
-								alt="Username"
-							/>
-							{% endif %}
 						</div>
 						<span
 						class="oh-profile__active-badge oh-profile__active-badge--secondary"

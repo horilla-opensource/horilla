@@ -13,19 +13,11 @@
                 data-toggle="oh-modal-toggle"
                 data-target="#uploadPhotoModal"
               >                  
-                {% if form.instance.employee_profile %}
                 <img
-                src="/media/{{form.instance.employee_profile}}"
+                src="{{form.instance.get_avatar}}"
                 class="oh-profile-section__avatar preview"
                 alt="Username"
                 />
-                {% else %}
-                <img
-                src="https://ui-avatars.com/api/?name={{form.instance.employee_first_name}}+{{form.instance.employee_last_name}}&background=random"
-                class="oh-profile-section__avatar preview"
-                alt="Username"
-                />
-                {% endif %}
                 </div>
               </div>
           </div>
@@ -183,19 +175,11 @@
         <form hx-post="{% url 'update-own-profile-image' %}" hx-target="#uploadPhotoModal"  method='post' id="file-form">
           {% csrf_token %}
           <div class="oh-profile-section__modal-avatar">
-            {% if form.instance.employee_profile %}
             <img
-            src="/media/{{form.instance.employee_profile}}"
+            src="{{form.instance.get_avatar}}"
             class="oh-profile-section__modal-image preview"
             alt="Username"
             />
-            {% else %}
-            <img
-            src="https://ui-avatars.com/api/?name={{form.instance.employee_first_name}}+{{form.instance.employee_last_name}}&background=random"
-            class="oh-profile-section__modal-image preview"
-            alt="Username"
-            />
-            {% endif %}
           </div>
           <input type="file" name='employee_profile' id="id_employee_profile" class="oh-input oh-input--file oh-input--file-sm mt-4" />
           <div class="d-flex justify-content-between w-100 align-items-center mt-4">

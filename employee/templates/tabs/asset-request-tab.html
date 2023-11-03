@@ -24,7 +24,7 @@
           <div class="oh-sticky-table__sd" data-toggle="oh-modal-toggle" data-target="#requestStatus{{asset_request.id}}" >
             <div class="oh-profile oh-profile--md">
               <div class="oh-profile__avatar mr-1">
-                <img src="https://ui-avatars.com/api/?name=Magdalene&background=random" class="oh-profile__image"
+                <img src="{{asset_request.requested_employee_id.get_avatar}}" class="oh-profile__image"
                   alt="Mary Magdalene" />
               </div>
               <span class="oh-profile__name oh-text--dark">{{asset_request.requested_employee_id}}

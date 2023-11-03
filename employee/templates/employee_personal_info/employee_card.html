@@ -35,23 +35,13 @@
   <div  class="oh-kanban-card" style="color: inherit;text-decoration: none;">
     <a href="{% url 'employee-view-individual' emp.id %}" style="color: inherit;text-decoration: none; display: flex;">
     <div class="oh-kanban-card__avatar">
-      {% if emp.employee_profile %}
-        <div class="oh-kanban-card__profile-container profile-picture">
+        <div class="oh-kanban-card__profile-container {% if emp.employee_profile %} profile-picture {% endif %}">
           <img
-          src="/media/{{emp.employee_profile}}"
+          src="{{emp.get_avatar}}"
           class="oh-kanban-card__profile-image"
-          alt="Username"
+          alt=""
           />
         </div>
-        {% else %}
-        <div class="oh-kanban-card__profile-container">
-          <img
-          src="https://ui-avatars.com/api/?name={{emp.employee_first_name}}+{{emp.employee_last_name}}&background=random"
-          class="oh-kanban-card__profile-image"
-          alt="Username"
-          />
-        </div>
-        {% endif %}
     </div>
     
     <div class="oh-kanban-card__details">

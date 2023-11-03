@@ -333,19 +333,11 @@
         	    			  <div class="d-flex">
         	    			    <div class="oh-profile oh-profile--md">
         	    			      <div class="oh-profile__avatar mr-1">
-        	    			      	{% if rshift.employee_id.employee_profile %}
-        	    			      		<img
-        	    			      		  src="/media/{{rshift.employee_id.employee_profile}}"
-        	    			      		  class="oh-profile__image"
-        	    			      		  alt="Username"
-        	    			      		/>
-        	    			      	{% else %}
         	    			      		<img
         	    			      		  src="https://ui-avatars.com/api/?name={{rshift.employee_id.employee_first_name}}+{{rshift.employee_id.employee_last_name}}&background=random"
         	    			      		  class="oh-profile__image"
         	    			      		  alt="Username"
         	    			      		/>
-        	    			      	{% endif %}
         	    			      </div>
         	    			      <span class="oh-profile__name oh-text--dark"
         	    			        >{{rshift.employee_id}}</span
@@ -485,19 +477,11 @@
         	    				<div class="d-flex">
         	    				  <div class="oh-profile oh-profile--md">
         	    				    <div class="oh-profile__avatar mr-1">
-        	    				      {% if rwork_type.employee_id.employee_profile %}
-        	    				      <img
-        	    				        src="/media/{{rwork_type.employee_id.employee_profile}}"
-        	    				        class="oh-profile__image"
-        	    				        alt="Username"
-        	    				      />
-        	    				      {% else %}
         	    				      <img
         	    				        src="https://ui-avatars.com/api/?name={{rwork_type.employee_id.employee_first_name}}+{{rwork_type.employee_id.employee_last_name}}&background=random"
         	    				        class="oh-profile__image"
         	    				        alt="Username"
         	    				      />
-        	    				      {% endif %}
         	    				    </div>
         	    				    <span class="oh-profile__name oh-text--dark"
         	    				      >{{rwork_type.employee_id}}</span
