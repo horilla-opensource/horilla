@@ -126,6 +126,7 @@ urlpatterns = [
     ),
     path("candidate-view-list", views.candidate_view_list, name="candidate-view-list"),
     path("candidate-view-card", views.candidate_view_card, name="candidate-view-card"),
+    path("candidate-info-export", views.candidate_export, name="candidate-info-export"),
     path(
         "candidate-view/<int:cand_id>/",
         views.candidate_view_individual,

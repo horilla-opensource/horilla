@@ -31,22 +31,14 @@
         <div class="d-flex align-items-center">
           <div class="oh-profile oh-profile--lg me-3">
             <div class="oh-profile__avatar">
-              {% if candidate.profile %}
               <img
-                src="{{candidate.profile.url}}"
+                src="{{candidate.get_avatar}}"
                 class="oh-profile-section__avatar preview"
                 alt="Username"
                 style="border-radius:10%"
                 onmouseover="enlargeImage(this)"
                 onmouseout="hideEnlargeImage()"
               />
-              {% else %}
-              <img
-                src="https://ui-avatars.com/api/?name={{candidate}}&background=random"
-                class="oh-profile-section__avatar preview"
-                alt="Username"
-              />
-              {% endif %}
             </div>
             <span
               class="oh-profile__active-badge oh-profile__active-badge--secondary"
@@ -321,7 +313,7 @@
                     data-target="#activitySidebar"
                     hx-swap="innerHTML"
                     hx-target="#activitySidebar"
-                    id=deleteNote
+                    id="deleteNote"
                   >
                     <ion-icon name="close-outline" style="font-size: 24px"></ion-icon
                   ></span>
@@ -337,7 +329,7 @@
                 <span class="oh-activity-sidebar__a">
                   {% trans "by" %}
                   <img
-                    src="https://ui-avatars.com/api/?name={{note.updated_by.employee_first_name}}+{{note.updated_by.employee_last_name}}&amp;background=random"
+                    src="https://ui-avatars.com/api/?name={{note.updated_by.get_full_name}}&amp;background=random"
                     style="width: 1.5em; border-radius: 100%"
                     alt="User"
                   />
@@ -547,7 +539,6 @@
     activeCandTab()
     $("[data-action=general-tab]").click(function (e) { 
       e.preventDefault();
-      console.log(this);
       const targetId = $(this).attr('data-target');
       localStorage.setItem("activeCandTab",targetId)
     });

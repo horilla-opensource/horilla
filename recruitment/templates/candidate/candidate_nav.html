@@ -1,4 +1,40 @@
 {% load i18n %}{% load static %}
+<div
+  class="oh-modal"
+  id="candidateExport"
+  role="dialog"
+  aria-labelledby="candidateExport"
+  aria-hidden="true"
+ >
+  <div class="oh-modal__dialog">
+    <div class="oh-modal__dialog-header">
+      <h2 class="oh-modal__dialog-title" id="candidateExportLavel">
+        {% trans "Export Candidates" %}
+      </h2>
+      <button class="oh-modal__close" aria-label="Close">
+        <ion-icon name="close-outline"></ion-icon>
+      </button>
+      <div
+        class="oh-modal__dialog-body p-0 pt-2"
+        id="candidateExportModalBody"
+      >
+        <form
+          action="{%url 'candidate-info-export' %}"
+          method="get"
+          onsubmit="event.stopPropagation();$(this).parents().find('.oh-modal--show').last().toggleClass('oh-modal--show');"
+          id="candidateExportForm"
+        >
+          {% csrf_token %} {% include 'candidate/export_filter.html'%}
+          <div class="oh-dropdown__filter-footer">
+            <button class="oh-btn oh-btn--secondary oh-btn--small w-100">
+              {% trans "Export" %}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
 <section
 class="oh-wrapper oh-main__topbar"
 x-data="{searchShow: false}"
@@ -92,7 +128,18 @@ x-data="{searchShow: false}"
         style="display: none;"
       >
           <ul class="oh-dropdown__items">
-
+            <li class="oh-dropdown__item">
+              {% if perms.delete_candidates %}
+              <a
+                href="#"
+                class="oh-dropdown__link"
+                id="candidate-info-export"
+                data-toggle="oh-modal-toggle"
+                data-target="#candidateExport"
+                >{% trans "Export" %}</a
+              >
+              {% endif %}
+            </li>
             {% if perms.delete_candidates %}
             <li class="oh-dropdown__item">
               <a href="#" class="oh-dropdown__link " id="archiveCandidates"
@@ -143,42 +190,43 @@ x-data="{searchShow: false}"
 </section>
 <script>
   $(document).ready(function () {
-  
     function candidateFilter(element) {
-      var search = $('#candidate-search').val();
-      const form = document.querySelector('#filterForm');
+      var search = $("#candidate-search").val();
+      const form = document.querySelector("#filterForm");
       const formData = new FormData(form);
       const queryString = new URLSearchParams(formData).toString();
       const searchParams = new URLSearchParams(queryString);
       const queryObject = Object.fromEntries(searchParams.entries());
-      view = $(element).attr('data-view');
-      queryObject['search'] = search
-      queryObject['view'] = view
-      stringQueyObject = JSON.stringify(queryObject)
+      view = $(element).attr("data-view");
+      queryObject["search"] = search;
+      queryObject["view"] = view;
+      stringQueyObject = JSON.stringify(queryObject);
       // $('#list').attr('hx-vals', stringQueyObject);
       // $('#card').attr('hx-vals', stringQueyObject);
     }
 
-    $('#candidate-search').keyup(function (e) { 
-      $('.candidate-view-type').attr('hx-vals',`{"search":"${$(this).val()}"}`)
+    $("#candidate-search").keyup(function (e) {
+      $(".candidate-view-type").attr(
+        "hx-vals",
+        `{"search":"${$(this).val()}"}`
+      );
     });
-    $(".candidate-view-type").on("click",function (e) {  
-      let view = $(this).attr("data-view");  
-      var currentURL = window.location.href;     
-      if (view != undefined){        
-        if (/\?view=[^&]+/.test(currentURL)) {          
-          newURL = currentURL.replace(/\?view=[^&]+/, "?view="+view);      
-        }        
-        else {          
-          var separator = currentURL.includes('?') ? '&' : '?';  
-          newURL = currentURL + separator + "view="+view;        
-        }       
-        history.pushState({}, "", newURL);       
-        $('#candidate-search').attr('hx-vals',`{"view":"${view}"}`);     
-        $('#filterForm').attr("hx-vals", `{"view":"${view}"}`);
-        $(".oh-btn--view-active").removeClass("oh-btn--view-active")
-        $(this).children("a").addClass("oh-btn--view-active")
-      }    
+    $(".candidate-view-type").on("click", function (e) {
+      let view = $(this).attr("data-view");
+      var currentURL = window.location.href;
+      if (view != undefined) {
+        if (/\?view=[^&]+/.test(currentURL)) {
+          newURL = currentURL.replace(/\?view=[^&]+/, "?view=" + view);
+        } else {
+          var separator = currentURL.includes("?") ? "&" : "?";
+          newURL = currentURL + separator + "view=" + view;
+        }
+        history.pushState({}, "", newURL);
+        $("#candidate-search").attr("hx-vals", `{"view":"${view}"}`);
+        $("#filterForm").attr("hx-vals", `{"view":"${view}"}`);
+        $(".oh-btn--view-active").removeClass("oh-btn--view-active");
+        $(this).children("a").addClass("oh-btn--view-active");
+      }
     });
   });
 </script>

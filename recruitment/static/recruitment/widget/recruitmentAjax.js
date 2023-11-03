@@ -29,7 +29,6 @@ $(document).ready(function () {
       data: { recId: recId },
       success: function (response) {
         var openPositions = JSON.parse(response.openPositions);
-        console.log(openPositions)
         recruitmentInfo = JSON.parse(response.recruitmentInfo);
         var selectElement = $("#id_job_position_id");
 

@@ -11,7 +11,7 @@ This module is part of the recruitment project and is intended to
 provide the main entry points for interacting with the application's functionality.
 """
 
-from datetime import datetime
+from datetime import date, datetime
 import os
 import json
 import contextlib
@@ -21,6 +21,7 @@ from django.db.models import Q
 from django.http import JsonResponse, HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.core import serializers
+import pandas as pd
 from base.models import JobPosition
 from django.contrib import messages
 from django.views.decorators.http import require_http_methods
@@ -36,6 +37,7 @@ from recruitment.filters import CandidateFilter, RecruitmentFilter, StageFilter
 from recruitment.methods import recruitment_manages
 from recruitment.decorators import manager_can_enter, recruitment_manager_can_enter
 from recruitment.forms import (
+    CandidateExportForm,
     RecruitmentCreationForm,
     CandidateCreationForm,
     StageCreationForm,
@@ -822,6 +824,8 @@ def candidate_view(request):
     candidates = Candidate.objects.filter(is_active=True)
     candidate_all = Candidate.objects.all()
     filter_obj = CandidateFilter(request.GET, queryset=candidates)
+    export_fields = CandidateExportForm()
+    export_obj = CandidateFilter(request.GET, queryset=candidates)
     if candidate_all.exists():
         template = "candidate/candidate_view.html"
     else:
@@ -835,10 +839,58 @@ def candidate_view(request):
             "data": paginator_qry(filter_obj.qs, request.GET.get("page")),
             "pd": previous_data,
             "f": filter_obj,
+            "export_fields": export_fields,
+            "export_obj": export_obj,
             "view_type": view_type,
             "filter_dict": data_dict,
         },
     )
+
+
+def candidate_export(request):
+    """
+    Export candidate data to an Excel file.
+
+    This view function takes a GET request and exports candidate data into an Excel file.
+    The exported Excel file will include the selected fields from the Candidate model
+    """
+    form = CandidateExportForm()
+    candidates = CandidateFilter(request.GET).qs
+    today_date = date.today().strftime("%Y-%m-%d")
+    file_name = f"Candidate_file_{today_date}.xlsx"
+    selected_fields = request.GET.getlist("selected_fields")
+    model_fields = Candidate._meta.get_fields()
+    candidate_data = {}
+    if not selected_fields:
+        selected_fields = form.fields["selected_fields"].initial
+        ids = request.GET.get("ids")
+        id_list = json.loads(ids)
+        candidates = Candidate.objects.filter(id__in=id_list)
+    for field in model_fields:
+        field_name = field.name
+        if field_name in selected_fields:
+            candidate_data[field.verbose_name] = []
+            for candidate in candidates:
+                value = getattr(candidate, field_name)
+                if value is True:
+                    value = _("Yes")
+                elif value is False:
+                    value = _("No")
+                candidate_data[field.verbose_name].append(value)
+
+    data_frame = pd.DataFrame(data=candidate_data)
+    data_frame = data_frame.style.applymap(
+        lambda x: "text-align: center", subset=pd.IndexSlice[:, :]
+    )
+    response = HttpResponse(content_type="application/ms-excel")
+    response["Content-Disposition"] = f'attachment; filename="{file_name}"'
+    data_frame.to_excel(response, index=False)
+    writer = pd.ExcelWriter(response, engine="xlsxwriter")
+    data_frame.to_excel(writer, index=False, sheet_name="Sheet1")
+    worksheet = writer.sheets["Sheet1"]
+    worksheet.set_column("A:Z", 20)
+    writer.close()
+    return response
 
 
 @login_required
@@ -1039,43 +1091,37 @@ def stage_sequence_update(request):
         stage.save()
     return JsonResponse({"type": "success", "message": "Stage sequence updated"})
 
+
 @login_required
 def candidate_select(request):
-    page_number = request.GET.get('page')
+    page_number = request.GET.get("page")
 
-    if page_number == 'all':
-        employees = Candidate.objects.all()
+    if page_number == "all":
+        employees = Candidate.objects.filter(is_active=True)
 
     employee_ids = [str(emp.id) for emp in employees]
     total_count = employees.count()
 
-    context = {
-        'employee_ids': employee_ids,
-        'total_count': total_count
-    }
+    context = {"employee_ids": employee_ids, "total_count": total_count}
 
     return JsonResponse(context, safe=False)
 
 
 @login_required
 def candidate_select_filter(request):
-    page_number = request.GET.get('page')
-    filtered = request.GET.get('filter')
+    page_number = request.GET.get("page")
+    filtered = request.GET.get("filter")
     filters = json.loads(filtered) if filtered else {}
 
-    if page_number == 'all':
+    if page_number == "all":
         candidate_filter = CandidateFilter(filters, queryset=Candidate.objects.all())
-
 
         # Get the filtered queryset
         filtered_candidates = candidate_filter.qs
-        
+
         employee_ids = [str(emp.id) for emp in filtered_candidates]
         total_count = filtered_candidates.count()
 
-        context = {
-            'employee_ids': employee_ids,
-            'total_count': total_count
-        }
+        context = {"employee_ids": employee_ids, "total_count": total_count}
 
         return JsonResponse(context)

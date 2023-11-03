@@ -19,7 +19,10 @@
 <div class="oh-checkpoint-badge text-secondary mb-2" id="unselectAllInstances" style="cursor: pointer;">
   {% trans "Unselect All Candidates" %}
 </div>
-<div class="oh-checkpoint-badge text-danger mb-2" id="selectedshow" >
+<div class="oh-checkpoint-badge text-info mb-2" id="exportCandidates" style="cursor: pointer;">
+    {% trans "Export Candidates" %}
+</div>
+<div class="oh-checkpoint-badge text-danger mb-2" id="selectedCandidate" >
 </div>
 
 <div class="oh-sticky-table">
@@ -28,7 +31,7 @@
       <div class="oh-sticky-table__tr">
         <div class="oh-sticky-table__th" style="width:10px;">
           <input type="checkbox" class="oh-input oh-input__checkbox mt-1 mr-2 all-candidate" title="Select All" 
-          id = "Allcandidate"/>
+          id = "allCandidate"/>
         </div>
         <div class="oh-sticky-table__th" hx-target='#section' hx-get="{% url 'search-candidate' %}?{{pd}}&orderby=name&view=list">{% trans "Candidates" %}</div>
         <div class="oh-sticky-table__th">{% trans "Email" %}</div>
@@ -43,7 +46,10 @@
     {% for cand in data %}
     <div class="oh-sticky-table__tbody ui-sortable">
       <div class="oh-sticky-table__tr ui-sortable-handle">
-        <div class="oh-sticky-table__sd">
+        <div class="oh-sticky-table__sd {% if cand.canceled %} row-status--red
+        {% elif cand.hired %} row-status--yellow  
+        {% else %} row-status--purple
+        {% endif %}">
           <div class="">
             <input
               type="checkbox"
@@ -56,8 +62,9 @@
           <div class="d-flex">
             <div class="oh-profile oh-profile--md">
               <div class="oh-profile__avatar mr-1">
-                <img src="https://ui-avatars.com/api/?name={{cand}}&background=random" class="oh-profile__image"
-                  alt="Username" />
+                <img src="{{cand.get_avatar}}"
+                class="oh-profile__image"
+                alt="Username" />
               </div>
               <span class="oh-profile__name oh-text--dark">{{cand}}</span>
             </div>
@@ -82,7 +89,7 @@
           <div class="oh-btn-group">
             {% if perms.recruitment.change_candidate %}
             <a href="{% url 'rec-candidate-update' cand.id %}" hx-target='#updateFormContainer' hx-swap='innerHTML'
-              class="oh-btn oh-btn--light-bkg w-100" title="Edit"><ion-icon name="create-outline"></ion-icon></a>
+              class="oh-btn oh-btn--light-bkg w-50" title="Edit"><ion-icon name="create-outline"></ion-icon></a>
             {% endif %}
             {% if perms.recruitment.delete_candidate %}
             {% if cand.is_active %}
@@ -139,23 +146,23 @@
       {% if data.has_previous %}
       <li class="oh-pagination__item oh-pagination__item--wide">
         <a hx-target='#section' hx-get="{% url 'search-candidate' %}?{{pd}}&page=1&view=list"
-          class="oh-pagination__link" onclick=tickcandidateCheckboxes()>{% trans "First" %}</a>
+          class="oh-pagination__link" onclick=tickCandidateCheckboxes()>{% trans "First" %}</a>
       </li>
       <li class="oh-pagination__item oh-pagination__item--wide">
         <a hx-target='#section'
           hx-get="{% url 'search-candidate' %}?{{pd}}&page={{ data.previous_page_number }}&view=list"
-          class="oh-pagination__link" onclick=tickcandidateCheckboxes()>{% trans "Previous" %}</a>
+          class="oh-pagination__link" onclick=tickCandidateCheckboxes()>{% trans "Previous" %}</a>
       </li>
       {% endif %}
       {% if data.has_next %}
       <li class="oh-pagination__item oh-pagination__item--wide">
         <a hx-target='#section' hx-get="{% url 'search-candidate' %}?{{pd}}&page={{ data.next_page_number }}&view=list"
-          class="oh-pagination__link" onclick=tickcandidateCheckboxes()>{% trans "Next" %}</a>
+          class="oh-pagination__link" onclick=tickCandidateCheckboxes()>{% trans "Next" %}</a>
       </li>
       <li class="oh-pagination__item oh-pagination__item--wide">
         <a hx-target='#section'
           hx-get="{% url 'search-candidate' %}?{{pd}}&page={{ data.paginator.num_pages }}&view=list"
-          class="oh-pagination__link" onclick=tickcandidateCheckboxes()>{% trans "Last" %}</a>
+          class="oh-pagination__link" onclick=tickCandidateCheckboxes()>{% trans "Last" %}</a>
       </li>
       {% endif %}
 
@@ -166,143 +173,189 @@
 <script src="{% static '/candidate/bulk.js' %}"></script>
 
 <script>
-$("#Allcandidate").click(function (e) {
-  var is_checked = $(this).is(":checked");
-  if (is_checked) {
-    $(".all-candidate-row").prop("checked", true);
-  } else {
-    $(".all-candidate-row").prop("checked", false);
-  }
-  addingcandidateIds()
-});
-$(".all-candidate-row").change(function(){
-  addingcandidateIds()
-});
+  $("#allCandidate").click(function (e) {
+    var is_checked = $(this).is(":checked");
+    if (is_checked) {
+      $(".all-candidate-row").prop("checked", true);
+    } else {
+      $(".all-candidate-row").prop("checked", false);
+    }
+    addingCandidateIds();
+  });
 
-$(document).ready(function() {
-  
-  $('#selectAllInstances').click(function() {
+  $(".all-candidate-row").change(function () {
+    addingCandidateIds();
+  });
 
-    $("#selectedInstances").attr("data-clicked", 1);
-
-    var savedFilters = JSON.parse(localStorage.getItem('savedFilters'));
-
-    if (savedFilters && savedFilters['filterData'] !== null) 
-    {
-      var filter = savedFilters['filterData'];
-      
+  $(document).ready(function () {
+    var excelMessages = {
+      ar: "هل ترغب في تنزيل ملف Excel؟",
+      de: "Möchten Sie die Excel-Datei herunterladen?",
+      es: "¿Desea descargar el archivo de Excel?",
+      en: "Do you want to download the excel file?",
+      fr: "Voulez-vous télécharger le fichier Excel?",
+    };
+    var ids = JSON.parse($("#selectedInstances").attr("data-ids") || "[]");
+    var uniqueIds = makeListUnique1(ids);
+    var selectedCount = uniqueIds.length;
+    var message1 = rowMessages[languageCode];
+    if (selectedCount > 0) {
+      $("#exportCandidates").css("display", "inline-flex");
+      $("#selectedCandidate").text(selectedCount + " -" + message1);
+      $("#selectedCandidate").css("display", "inline-flex");
+    } else {
+      $("#exportCandidates").css("display", "none");
+      $("#selectedCandidate").css("display", "none");
+    }
+    $("#selectAllInstances").click(function () {
+      $("#selectedInstances").attr("data-clicked", 1);
+      var savedFilters = JSON.parse(localStorage.getItem("savedFilters"));
+      if (savedFilters && savedFilters["filterData"] !== null) {
+        var filter = savedFilters["filterData"];
         $.ajax({
           url: '{% url "candidate-select-filter" %}',
-          data: { page: 'all', 'filter':JSON.stringify(filter) },
-          type: 'GET',
-          dataType: 'json',
-          success: function(response) {
-
+          data: { page: "all", filter: JSON.stringify(filter) },
+          type: "GET",
+          dataType: "json",
+          success: function (response) {
             var employeeIds = response.employee_ids;
-      
-              if (Array.isArray(employeeIds)) {
-                  // Continue
-              } else {
-                  console.error('candidate_ids is not an array:', employeeIds);
-              }
-              
+            if (Array.isArray(employeeIds)) {
+              // Continue
+            } else {
+              console.error("candidate_ids is not an array:", employeeIds);
+            }
+              var selectedCount = employeeIds.length;              
               var selectedCount = employeeIds.length;              
               
-              for (var i = 0; i < employeeIds.length; i++) {
-                var empId = employeeIds[i];
-                $('#' + empId).prop('checked', true);
-              }
-              $("#selectedInstances").attr("data-ids", JSON.stringify(employeeIds));
-
-              count = makeListUnique1(employeeIds)
-              tickcandidateCheckboxes(count)
-          },
-          error: function(xhr, status, error) {
-              console.error('Error:', error);
-          }
-        });
-
-    } 
-    else {
-
-      $.ajax({
-        url: '{% url "candidate-select" %}',
-        data: { page: 'all'},
-        type: 'GET',
-        dataType: 'json',
-        success: function(response) {
-
-          var employeeIds = response.employee_ids;
-    
-            if (Array.isArray(employeeIds)) {
-                // Continue
-            } else {
-                console.error('candidate_ids is not an array:', employeeIds);
-            }
-            
             var selectedCount = employeeIds.length;
-            
+              
             for (var i = 0; i < employeeIds.length; i++) {
               var empId = employeeIds[i];
-              $('#' + empId).prop('checked', true);
+              $("#" + empId).prop("checked", true);
             }
-            $("#selectedInstances").attr("data-ids", JSON.stringify(employeeIds));
-
-            count = makeListUnique1(employeeIds)
-            tickcandidateCheckboxes(count)
-        },
-        error: function(xhr, status, error) {
-            console.error('Error:', error);
-        }
-      });
-    }
-
-    $('.filterButton').click(function(){
-      $(".all-candidate").prop('checked', false);
-      $("#selectedInstances").attr("data-clicked", 0);
-      $("#selectedInstances").attr("data-ids", JSON.stringify([]));
-      count = [];
-      tickcandidateCheckboxes(count)
-    })
-
-  });
-
-
-  $('#unselectAllInstances').click(function(){
-
-    $("#selectedInstances").attr("data-clicked", 0);
-    
-    $.ajax({
-      url: '{% url "candidate-select" %}',
-      data: { page: 'all', 'filter': '{}' },
-      type: 'GET',
-      dataType: 'json',
-      success: function(response) {
-          var employeeIds = response.employee_ids;
-  
-          if (Array.isArray(employeeIds)) {
+            $("#selectedInstances").attr(
+              "data-ids",
+              JSON.stringify(employeeIds)
+            );
+            count = makeListUnique1(employeeIds);
+            tickCandidateCheckboxes(count);
+          },
+          error: function (xhr, status, error) {
+            console.error("Error:", error);
+          },
+        });
+      } else {
+        $.ajax({
+          url: '{% url "candidate-select" %}',
+          data: { page: "all" },
+          type: "GET",
+          dataType: "json",
+          success: function (response) {
+            var employeeIds = response.employee_ids;
+            if (Array.isArray(employeeIds)) {
               // Continue
+            } else {
+              console.error("candidate_ids is not an array:", employeeIds);
+            }
+            var selectedCount = employeeIds.length;
+            for (var i = 0; i < employeeIds.length; i++) {
+              var empId = employeeIds[i];
+              $("#" + empId).prop("checked", true);
+            }
+            $("#selectedInstances").attr(
+              "data-ids",
+              JSON.stringify(employeeIds)
+            );
+            count = makeListUnique1(employeeIds);
+            tickCandidateCheckboxes(count);
+          },
+          error: function (xhr, status, error) {
+            console.error("Error:", error);
+          },
+        });
+      }
+      $(".filterButton").click(function () {
+        $(".all-candidate").prop("checked", false);
+        $("#selectedInstances").attr("data-clicked", 0);
+        $("#selectedInstances").attr("data-ids", JSON.stringify([]));
+        count = [];
+        tickCandidateCheckboxes(count);
+      });
+    });
+    $("#unselectAllInstances").click(function () {
+      $("#selectedInstances").attr("data-clicked", 0);
+      $.ajax({
+        url: '{% url "candidate-select" %}',
+        data: { page: "all", filter: "{}" },
+        type: "GET",
+        dataType: "json",
+        success: function (response) {
+          var employeeIds = response.employee_ids;
+          if (Array.isArray(employeeIds)) {
+            // Continue
           } else {
-              console.error('employee_ids is not an array:', employeeIds);
+            console.error("employee_ids is not an array:", employeeIds);
           }
-          
           for (var i = 0; i < employeeIds.length; i++) {
             var empId = employeeIds[i];
-            $('#' + empId).prop('checked', false);
-            $("#Allcandidate").prop('checked', false);
-      
+            $("#" + empId).prop("checked", false);
+            $("#allCandidate").prop("checked", false);
           }
           $("#selectedInstances").attr("data-ids", JSON.stringify([]));
-
           count = [];
-          tickcandidateCheckboxes(count)
-
-      },
-      error: function(xhr, status, error) {
-          console.error('Error:', error);
-      }
+          tickCandidateCheckboxes(count);
+        },
+        error: function (xhr, status, error) {
+          console.error("Error:", error);
+        },
+      });
+    });
+    $("#exportCandidates").click(function (e) {
+      var currentDate = new Date().toISOString().slice(0, 10);
+      var languageCode = null;
+      ids = [];
+      ids.push($("#selectedInstances").attr("data-ids"));
+      ids = JSON.parse($("#selectedInstances").attr("data-ids"));
+      getCurrentLanguageCode(function (code) {
+        languageCode = code;
+        var confirmMessage = excelMessages[languageCode];
+        Swal.fire({
+          text: confirmMessage,
+          icon: "question",
+          showCancelButton: true,
+          confirmButtonColor: "#008000",
+          cancelButtonColor: "#d33",
+          confirmButtonText: "Confirm",
+        }).then(function (result) {
+          if (result.isConfirmed) {
+            $.ajax({
+              type: "GET",
+              url: "/recruitment/candidate-info-export",
+              data: {
+                ids: JSON.stringify(ids),
+              },
+              dataType: "binary",
+              xhrFields: {
+                responseType: "blob",
+              },
+              success: function (response) {
+                const file = new Blob([response], {
+                  type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                });
+                const url = URL.createObjectURL(file);
+                const link = document.createElement("a");
+                link.href = url;
+                link.download = "Candidate_file_" + currentDate + ".xlsx";
+                document.body.appendChild(link);
+                link.click();
+              },
+              error: function (xhr, textStatus, errorThrown) {
+                console.error("Error downloading file:", errorThrown);
+              },
+            });
+          }
+        });
+      });
     });
   });
-});
-  
 </script>

@@ -41,19 +41,11 @@
               data-toggle="oh-modal-toggle"
               data-target="#uploadPhotoModal"
             >
-              {% if form.instance.profile %}
               <img
-                src="/media/{{form.instance.profile}}"
-                class="oh-profile-section__modal-image preview"
+              src="{{form.instance.get_avatar}}"
+              class="oh-profile-section__modal-image preview"
                 alt="Username"
               />
-              {% else %}
-              <img
-                src="https://ui-avatars.com/api/?name={{form.name.value}}"
-                class="oh-profile-section__modal-image preview"
-                alt="Username"
-              />
-              {% endif %}
             </div>
           </div>
         </div>
@@ -225,19 +217,11 @@
             <div class="oh-profile-section__image-container">
               {% csrf_token %}
               <div class="oh-profile-section__modal-avatar">
-                {% if form.instance.profile %}
                 <img
-                  src="/media/{{form.instance.profile}}"
+                  src="{{form.instance.get_avatar}}"
                   class="oh-profile-section__modal-image preview"
                   alt="Username"
                 />
-                {% else %}
-                <img
-                  src="https://ui-avatars.com/api/?name={{form.name.value}}"
-                  class="oh-profile-section__modal-image preview"
-                  alt="Username"
-                />
-                {% endif %}
               </div>
               <input
                 type="file"

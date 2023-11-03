@@ -17,6 +17,7 @@ from horilla_audit.models import HorillaAuditLog, HorillaAuditInfo
 from horilla_audit.methods import get_diff
 from employee.models import Employee
 from base.models import JobPosition, Company
+from django.core.files.storage import default_storage
 
 # Create your models here.
 
@@ -203,11 +204,8 @@ class Candidate(models.Model):
     """
 
     choices = [("male", _("Male")), ("female", _("Female")), ("other", _("Other"))]
-    name = models.CharField(max_length=100, null=True)
-    profile = models.ImageField(
-        upload_to="recruitment/profile",
-        null=True,
-    )
+    name = models.CharField(max_length=100, null=True, verbose_name=_("Name"))
+    profile = models.ImageField(upload_to="recruitment/profile", null=True)
     portfolio = models.URLField(max_length=200, blank=True)
     recruitment_id = models.ForeignKey(
         Recruitment,
@@ -217,22 +215,26 @@ class Candidate(models.Model):
         verbose_name="Recruitment",
     )
     job_position_id = models.ForeignKey(
-        JobPosition, on_delete=models.PROTECT, null=True, blank=True
+        JobPosition,
+        on_delete=models.PROTECT,
+        null=True,
+        blank=True,
+        verbose_name=_("Job Position"),
     )
     stage_id = models.ForeignKey(
         Stage, on_delete=models.PROTECT, null=True, verbose_name="Stage"
     )
-    schedule_date = models.DateTimeField(blank=True, null=True)
-    email = models.EmailField(
-        max_length=254,
-        unique=True,
+    schedule_date = models.DateTimeField(
+        blank=True, null=True, verbose_name=_("Schedule date")
     )
+    email = models.EmailField(max_length=254, unique=True, verbose_name=_("Email"))
     mobile = models.CharField(
         max_length=15,
         blank=True,
         validators=[
             validate_mobile,
         ],
+        verbose_name=_("Phone"),
     )
     resume = models.FileField(
         upload_to="recruitment/resume",
@@ -246,19 +248,32 @@ class Candidate(models.Model):
         null=True,
         blank=True,
         related_name="candidate_referral",
+        verbose_name=_("Referral"),
     )
-    address = models.TextField(null=True, blank=True)
-    country = models.CharField(max_length=30, null=True, blank=True)
-    dob = models.DateField(null=True, blank=True)
-    state = models.CharField(max_length=30, null=True, blank=True)
-    city = models.CharField(max_length=30, null=True, blank=True)
-    zip = models.CharField(max_length=30, null=True, blank=True)
-    gender = models.CharField(max_length=15, choices=choices, null=True)
-    start_onboard = models.BooleanField(default=False)
-    hired = models.BooleanField(default=False)
-    canceled = models.BooleanField(default=False)
-    is_active = models.BooleanField(default=True)
-    joining_date = models.DateField(blank=True, null=True)
+    address = models.TextField(null=True, blank=True, verbose_name=_("Address"))
+    country = models.CharField(
+        max_length=30, null=True, blank=True, verbose_name=_("Country")
+    )
+    dob = models.DateField(null=True, blank=True, verbose_name=_("Date of Birth"))
+    state = models.CharField(
+        max_length=30, null=True, blank=True, verbose_name=_("State")
+    )
+    city = models.CharField(
+        max_length=30, null=True, blank=True, verbose_name=_("City")
+    )
+    zip = models.CharField(
+        max_length=30, null=True, blank=True, verbose_name=_("Zip Code")
+    )
+    gender = models.CharField(
+        max_length=15, choices=choices, null=True, verbose_name=_("Gender")
+    )
+    start_onboard = models.BooleanField(default=False, verbose_name=_("Start Onboard"))
+    hired = models.BooleanField(default=False, verbose_name=_("Hired"))
+    canceled = models.BooleanField(default=False, verbose_name=_("Canceled"))
+    is_active = models.BooleanField(default=True, verbose_name=_("Is Active"))
+    joining_date = models.DateField(
+        blank=True, null=True, verbose_name=_("Joining Date")
+    )
     history = HorillaAuditLog(
         related_name="history_set",
         bases=[
@@ -285,11 +300,9 @@ class Candidate(models.Model):
             f"https://ui-avatars.com/api/?name={self.get_full_name()}&background=random"
         )
         if self.profile:
-            image_url = self.profile.url.split("/media/")[1]
-            media_root = settings.MEDIA_ROOT
-
-            image_path = os.path.join(media_root, image_url)
-            if os.path.exists(image_path):
+            full_filename = settings.MEDIA_ROOT + self.profile.name
+            
+            if default_storage.exists(full_filename):
                 url = self.profile.url
 
         return url

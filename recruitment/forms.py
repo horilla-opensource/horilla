@@ -47,8 +47,8 @@ class ModelForm(forms.ModelForm):
         for field_name, field in self.fields.items():
             widget = field.widget
             if isinstance(
-                    widget,
-                    (forms.NumberInput, forms.EmailInput, forms.TextInput, forms.FileInput),
+                widget,
+                (forms.NumberInput, forms.EmailInput, forms.TextInput, forms.FileInput),
             ):
                 label = _(field.label)
                 field.widget.attrs.update(
@@ -80,11 +80,11 @@ class ModelForm(forms.ModelForm):
                     }
                 )
             elif isinstance(
-                    widget,
-                    (
-                        forms.CheckboxInput,
-                        forms.CheckboxSelectMultiple,
-                    ),
+                widget,
+                (
+                    forms.CheckboxInput,
+                    forms.CheckboxSelectMultiple,
+                ),
             ):
                 field.widget.attrs.update({"class": "oh-switch__checkbox "})
 
@@ -113,11 +113,11 @@ class RegistrationForm(forms.ModelForm):
                     }
                 )
             elif isinstance(
-                    widget,
-                    (
-                        forms.CheckboxInput,
-                        forms.CheckboxSelectMultiple,
-                    ),
+                widget,
+                (
+                    forms.CheckboxInput,
+                    forms.CheckboxSelectMultiple,
+                ),
             ):
                 field.widget.attrs.update({"class": "oh-switch__checkbox "})
 
@@ -132,14 +132,14 @@ class DropDownForm(forms.ModelForm):
         for field_name, field in self.fields.items():
             widget = field.widget
             if isinstance(
-                    widget,
-                    (
-                        forms.NumberInput,
-                        forms.EmailInput,
-                        forms.TextInput,
-                        forms.FileInput,
-                        forms.URLInput,
-                    ),
+                widget,
+                (
+                    forms.NumberInput,
+                    forms.EmailInput,
+                    forms.TextInput,
+                    forms.FileInput,
+                    forms.URLInput,
+                ),
             ):
                 if field.label is not None:
                     label = _(field.label)
@@ -168,11 +168,11 @@ class DropDownForm(forms.ModelForm):
                         }
                     )
             elif isinstance(
-                    widget,
-                    (
-                        forms.CheckboxInput,
-                        forms.CheckboxSelectMultiple,
-                    ),
+                widget,
+                (
+                    forms.CheckboxInput,
+                    forms.CheckboxSelectMultiple,
+                ),
             ):
                 field.widget.attrs.update({"class": "oh-switch__checkbox "})
 
@@ -289,15 +289,15 @@ class CandidateCreationForm(ModelForm):
         if self.instance.name is not None:
             self.errors.pop("job_position_id", None)
             if (
-                    self.instance.job_position_id is None
-                    or self.data["job_position_id"] == ""
+                self.instance.job_position_id is None
+                or self.data["job_position_id"] == ""
             ):
                 raise forms.ValidationError(
                     {"job_position_id": "This field is required"}
                 )
             if (
-                    self.instance.job_position_id
-                    not in self.instance.recruitment_id.open_positions.all()
+                self.instance.job_position_id
+                not in self.instance.recruitment_id.open_positions.all()
             ):
                 raise forms.ValidationError({"job_position_id": "Choose valid choice"})
         return super().clean()
@@ -488,11 +488,11 @@ class QuestionForm(ModelForm):
             "job_position_ids",
         ]
         labels = {
-            "question":_("Question"),
-            "sequence":_("Sequence"),
-            "type":_("Type"),
-            "options":_("Options"),
-            "is_mandatory":_("Is Mandatory"),
+            "question": _("Question"),
+            "sequence": _("Sequence"),
+            "type": _("Type"),
+            "options": _("Options"),
+            "is_mandatory": _("Is Mandatory"),
         }
 
     def as_p(self, *args, **kwargs):
@@ -545,3 +545,30 @@ class SurveyForm(forms.Form):
         return
         # for question in questions:
         # self
+
+
+exclude_fields = ["id", "profile", "portfolio", "resume", "sequence"]
+
+
+class CandidateExportForm(forms.Form):
+    model_fields = Candidate._meta.get_fields()
+    field_choices = [
+        (field.name, field.verbose_name)
+        for field in model_fields
+        if hasattr(field, "verbose_name") and field.name not in exclude_fields
+    ]
+    selected_fields = forms.MultipleChoiceField(
+        choices=field_choices,
+        widget=forms.CheckboxSelectMultiple,
+        initial=[
+            "name",
+            "recruitment_id",
+            "job_position_id",
+            "stage_id",
+            "schedule_date",
+            "email",
+            "mobile",
+            "hired",
+            "joining_date",
+        ],
+    )

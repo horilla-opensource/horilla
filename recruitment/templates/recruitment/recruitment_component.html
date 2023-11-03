@@ -88,7 +88,7 @@
                               <div class="oh-profile oh-profile--md">
                                 <div class="oh-profile__avatar mr-1">
                                   <img
-                                  src="https://ui-avatars.com/api/?name={{manager.employee_first_name}}+{{manager.employee_last_name}}&background=random"
+                                  src="https://ui-avatars.com/api/?name={{manager.get_full_name}}&background=random"
                                   class="oh-profile__image"
                                   alt="Baby C."
                                   />
@@ -120,9 +120,6 @@
                                 >{{jb.job_position|truncatechars:5}}.</span
                                 >
                               </div>
-                              {% comment %} <a hx-post="{% url 'remove-job' jb.id rec.id %}?{{pd}}&page={{data.number}}" hx-target="#recruitment-container"class="oh-user-panel__remove">
-                                <ion-icon name="close-outline"></ion-icon>
-                              </a> {% endcomment %}
                             </span>
                             {% endfor %}
                             <span class="count-span">{{rec.open_positions.all|length}} {% trans "Jobs" %}</span>

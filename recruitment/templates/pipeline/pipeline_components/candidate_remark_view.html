@@ -31,7 +31,7 @@
           >{{note.description}}</span
         >
         <span class="oh-activity-sidebar__a">
-            {% trans "by" %} <img src="https://ui-avatars.com/api/?name={{note.updated_by.employee_first_name}}+{{note.updated_by.employee_last_name}}&amp;background=random" style="width: 1.5em; border-radius: 100%;" alt="User"> {{note.updated_by}} @{{note.stage_id}}
+            {% trans "by" %} <img src="https://ui-avatars.com/api/?name={{note.updated_by.get_full_name}}&amp;background=random" style="width: 1.5em; border-radius: 100%;" alt="User"> {{note.updated_by}} @{{note.stage_id}}
         </span>
       </li>
       {% endfor %}

@@ -4,6 +4,7 @@ filters.py
 This page is used to register filter for recruitment models
 
 """
+import uuid
 import django_filters
 from django import forms
 from recruitment.models import Candidate, Recruitment, Stage, RecruitmentSurvey
@@ -114,6 +115,8 @@ class CandidateFilter(FilterSet):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.form.fields["is_active"].initial = True
+        for field in self.form.fields.keys():
+            self.form.fields[field].widget.attrs["id"] = f"{uuid.uuid4()}"
 
 
 BOOLEAN_CHOICES = (
