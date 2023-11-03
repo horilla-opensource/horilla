@@ -169,7 +169,7 @@
         data-toggle="oh-modal-toggle"
         data-target="#detailAttendance"
         hx-target="#detailAttendanceModalBody"     
-        hx-get="{% url 'user-request-one-view' attendance.id %}?my_attendance=true"
+        hx-get="{% url 'user-request-one-view' attendance.id %}?my_attendance=true&instances_ids={{attendances_ids}}"
       >
         <div
           class="oh-sticky-table__sd{% if attendance.is_validate_request_approved %} row-status--blue {% elif attendance.attendance_validated %} row-status--green {% elif attendance.is_validate_request %} row-status--orange {% else %} row-status--red{% endif %}"
@@ -295,7 +295,7 @@
       </button>
     </div>
     <div
-      class="oh-modal__dialog-body"
+      class="oh-modal__dialog-body oh-modal__dialog-body oh-modal__dialog-relative"
       id="detailAttendanceModalBody"
     ></div>
   </div>

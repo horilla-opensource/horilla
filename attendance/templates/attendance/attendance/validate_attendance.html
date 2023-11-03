@@ -88,7 +88,7 @@
                   data-toggle="oh-modal-toggle"
                   data-target="#detailAttendance"
                   hx-target="#detailAttendanceModalBody"
-                  hx-get="{% url 'user-request-one-view' attendance.id %}"
+                  hx-get="{% url 'user-request-one-view' attendance.id %}?instances_ids={{attendances_ids}}"
                   >
                     <div class="oh-sticky-table__sd">
                         <div class="d-flex">
@@ -250,7 +250,7 @@
                 <ion-icon name="close-outline"></ion-icon>
             </button>
         </div>
-        <div class="oh-modal__dialog-body" id="detailAttendanceModalBody"></div>
+        <div class="oh-modal__dialog-body oh-modal__dialog-body oh-modal__dialog-relative" id="detailAttendanceModalBody"></div>
     </div>
 </div>
 

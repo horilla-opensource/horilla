@@ -478,11 +478,15 @@ def view_my_attendance(request):
         template = "attendance/own_attendance/view_own_attendances.html"
     else:
         template = "attendance/own_attendance/own_empty.html"
+    attendances_ids = json.dumps(
+        list(employee_attendances.values_list("id", flat=True))
+    )
     return render(
         request,
         template,
         {
             "attendances": paginator_qry(employee_attendances, request.GET.get("page")),
+            "attendances_ids":attendances_ids,
             "f": filter,
         },
     )
