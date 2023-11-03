@@ -105,9 +105,9 @@ class Employee(models.Model):
         Method will return employee full name
         """
         return (
-            self.employee_first_name + self.employee_last_name
+            f"{self.employee_first_name } {self.employee_last_name}"
             if self.employee_last_name
-            else ""
+            else self.employee_first_name
         )
 
     def get_avatar(self):
