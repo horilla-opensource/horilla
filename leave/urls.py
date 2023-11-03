@@ -154,6 +154,25 @@ urlpatterns = [
         views.leave_allocation_request_single_view,
         name= "leave-allocation-request-single-view"
     ),
-    
+    path(
+        'leave-allocation-request-update/<int:req_id>',
+        views.leave_allocation_request_update,
+        name= "leave-allocation-request-update"
+    ),
+    path(
+        'leave-allocation-request-approve/<int:req_id>',
+        views.leave_allocation_request_approve,
+        name= "leave-allocation-request-approve"
+    ),
+    path(
+        'leave-allocation-request-reject/<int:req_id>',
+        views.leave_allocation_request_reject,
+        name= "leave-allocation-request-reject"
+    ),
+    path(
+        'leave-allocation-request-delete/<int:req_id>',
+        views.leave_allocation_request_delete,
+        name= "leave-allocation-request-delete"
+    ),
 
 ]

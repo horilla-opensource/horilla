@@ -562,14 +562,7 @@ class UserLeaveRequestCreationForm(ModelForm):
         }
        
 class LeaveAllocationRequestForm(ModelForm):
-    class Meta:
-        model = LeaveAllocationRequest
-        fields = [
-            'leave_type_id',
-            'employee_id',
-            'requested_days',
-            'description',
-        ]
+    
     def as_p(self, *args, **kwargs):
         """
         Render the form fields as HTML table rows with Bootstrap styling.
@@ -577,3 +570,11 @@ class LeaveAllocationRequestForm(ModelForm):
         context = {"form": self}
         table_html = render_to_string("attendance_form.html", context)
         return table_html
+    class Meta:
+        model = LeaveAllocationRequest
+        fields = [
+            'leave_type_id',
+            'employee_id',
+            'requested_days',
+            'description'
+        ]

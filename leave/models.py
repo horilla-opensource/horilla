@@ -1,4 +1,5 @@
 import calendar
+from collections.abc import Iterable
 from datetime import datetime, timedelta
 from django.db import models
 from django.utils import timezone
@@ -529,3 +530,9 @@ class LeaveAllocationRequest(models.Model):
     created_at = models.DateTimeField(auto_now="True")
     reject_reason = models.TextField(blank=True)
     objects = models.Manager()
+
+    def __str__(self):
+        return f"{self.employee_id}| {self.leave_type_id}| {self.id}"
+    
+    def save(self, *args, **kwargs):
+        super().save(*args,**kwargs)

@@ -2394,9 +2394,10 @@ def user_leave_allocation_request_view(request):
     
     employee = request.user.employee_get
     leave_allocation_requests = LeaveAllocationRequest.objects.filter(employee_id=employee.id)
-    print (leave_allocation_requests)
+    leave_allocation_request_filter = LeaveAllocationRequestFilter()
     context = { 'leave_allocation_requests' :leave_allocation_requests,
                "user_request_view":True,
+               "form":leave_allocation_request_filter.form
                }
     return render(request,'leave/leave_allocation_request/leave_allocation_request_view.html',context=context)
 
@@ -2416,7 +2417,9 @@ def leave_allocation_request_create(request):
     if request.method == 'POST':
         form = LeaveAllocationRequestForm(request.POST)
         if form.is_valid():
-            form.save
+            leave_allocation_request = form.save(commit=False)
+            leave_allocation_request.created_by = employee
+            leave_allocation_request.save()
             messages.success(request,_("New Leave allocation request is created"))
             response = render(
                 request,
@@ -2436,9 +2439,39 @@ def leave_allocation_request_create(request):
 
 @login_required
 def leave_allocation_request_filter(request):
-    leave_allocation_requests = request.user
-    context = { 'leave_allocation_requests' :leave_allocation_requests,
-               }
+    queryset = LeaveAllocationRequest.objects.all()
+    queryset = sortby(request,queryset,"sortby")
+    leave_allocation_requests_filtered = LeaveAllocationRequestFilter(request.GET,queryset).qs
+    page_number = request.GET.get('page')
+    page_obj = paginator_qry(leave_allocation_requests_filtered,page_number)
+    previous_data = request.GET.urlencode()
+    data_dict = parse_qs(previous_data)
+    data_dict = get_key_instances(LeaveAllocationRequest,data_dict)
+    context = { 
+        'leave_allocation_requests' :page_obj,
+        'pd':previous_data,
+        'filter_dict':data_dict           
+    }
     return render(request,
-                  'leave/leave_allocation_request/leave_allocation_request_view.html',
+                  'leave/leave_allocation_request/leave_allocation_request_list.html',
                   context=context)
+
+@login_required
+def leave_allocation_request_update(request,req_id):
+    print('-----update-----')
+    return f"update"
+
+@login_required
+def leave_allocation_request_approve(request,req_id):
+    print('-----approve-----')
+    return f"update"
+
+@login_required
+def leave_allocation_request_reject(request,req_id):
+    print('-----reject-----')
+    return f"update"
+
+@login_required
+def leave_allocation_request_delete(request,req_id):
+    print('-----delete-----')
+    return f"update"

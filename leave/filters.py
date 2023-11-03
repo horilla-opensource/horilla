@@ -335,7 +335,7 @@ class LeaveAllocationRequestFilter(FilterSet):
     leave_type = filters.CharFilter(
         field_name="leave_type_id__name", lookup_expr="icontains"
     )
-    employee_id = filters.CharFilter(
+    employee = filters.CharFilter(
         field_name="employee_id__employee_first_name", lookup_expr="icontains"
     )
     number_of_days = filters.NumberFilter(
@@ -349,5 +349,7 @@ class LeaveAllocationRequestFilter(FilterSet):
         model = LeaveAllocationRequest
         fields = {
             'created_by':["exact"],
-            "status":["exact"]
+            "status":["exact"],
+            "leave_type_id":["exact"],
+            "employee_id":["exact"]
         }

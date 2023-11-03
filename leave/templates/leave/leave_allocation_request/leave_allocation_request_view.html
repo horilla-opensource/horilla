@@ -49,12 +49,12 @@
                 <button class="oh-btn ml-2" @click="open = !open">
                     <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}<div id='filterCount'><div>
                 </button>
-                <form method="post" hx-get="{% url 'user-request-filter' %}" hx-target="#userRequest" id='filterForm'>
+                <form method="post" hx-get="{% url 'leave-allocation-request-filter' %}" hx-target="#userRequest" id='filterForm'>
                     <div class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4" x-show="open"
                         style="display: none;" @click.outside="open = false">
                         <div class="oh-dropdown__filter-body">
                             <div class="oh-accordion" >
-                                <div class="oh-accordion-header" onclick="event.stopImmediatePropagation();$(this).parent().toggleClass('oh-accordion--show');">{% trans "Leave Request" %}</div>
+                                <div class="oh-accordion-header" onclick="event.stopImmediatePropagation();$(this).parent().toggleClass('oh-accordion--show');">{% trans "Leave Allocation Request" %}</div>
                                 <div class="oh-accordion-body" >
                                     <div class="row" >
                                         <div class="col-sm-12 col-md-12 col-lg-12">
@@ -65,17 +65,29 @@
                                         </div>
                                         <div class="col-sm-12 col-md-12 col-lg-6">
                                             <div class="oh-input-group">
-                                                <label class="oh-label">{% trans "Start Date" %}</label>
-                                                {{form.start_date}}
+                                                <label class="oh-label">{% trans "Employee" %}</label>
+                                                {{form.employee_id}}
                                             </div>
                                         </div>
-
                                         <div class="col-sm-12 col-md-12 col-lg-6">
                                             <div class="oh-input-group">
-                                                <label class="oh-label">{% trans "End Date" %}</label>
-                                                {{form.end_date}}
+                                                <label class="oh-label">{% trans "Created By" %}</label>
+                                                {{form.created_by}}
                                             </div>
                                         </div>
+                                        <div class="col-sm-12 col-md-12 col-lg-6">
+                                            <div class="oh-input-group">
+                                                <label class="oh-label">{% trans "Requested days Up To" %}</label>
+                                                {{form.number_of_days}}
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-12 col-md-12 col-lg-6">
+                                            <div class="oh-input-group">
+                                                <label class="oh-label">{% trans "Requested days More Than " %}</label>
+                                                {{form.number_of_days}}
+                                            </div>
+                                        </div>
+                                        
                                         <div class="col-sm-12 col-md-12">
                                             <div class="oh-input-group">
                                                 <label class="oh-label">{% trans "Status" %}</label>
@@ -87,22 +99,22 @@
                             </div>
 
                             <div class="oh-accordion" >
-                                <div class="oh-accordion-header" onclick="event.stopImmediatePropagation();$(this).parent().toggleClass('oh-accordion--show');">{% trans "Advanced" %}</div>
+                                <div class="oh-accordion-header" onclick="event.stopImmediatePropagation();$(this).parent().toggleClass('oh-accordion--show');">{% trans "Group By" %}</div>
                                 <div class="oh-accordion-body">
                                     <div class="row">
-                                        <div class="col-sm-12 col-md-12 col-lg-6">
+                                        {% comment %} <div class="col-sm-12 col-md-12 col-lg-6">
                                             <div class="oh-input-group">
-                                                <label class="oh-label">{% trans "From Date" %}</label>
-                                                {{form.from_date}}
+                                                <label class="oh-label">{% trans "Leave Type" %}</label>
+                                                {{form.leave_type_id}}
                                             </div>
-                                        </div>
+                                        </div> {% endcomment %}
 
-                                        <div class="col-sm-12 col-md-12 col-lg-6">
+                                        {% comment %} <div class="col-sm-12 col-md-12 col-lg-6">
                                             <div class="oh-input-group">
-                                                <label class="oh-label">{% trans "To Date" %}</label>
-                                                {{form.to_date}}
+                                                <label class="oh-label">{% trans "Created By" %}</label>
+                                                {{form.created_by}}
                                             </div>
-                                        </div>
+                                        </div> {% endcomment %}
                                     </div>
                                 </div>
                             </div>
@@ -212,7 +224,7 @@
 
     $(document).on('htmx:load', '#updateForm', function () {
         {% include 'select2.js' %}
-        $('#startDate #id_start_date_breakdown').select2();
+        $('#id_leave_type_id').select2();
         $('#endDate #id_end_date_breakdown').select2();
     });
     $('#delete-link').on('click', function (event) {
