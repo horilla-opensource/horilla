@@ -32,7 +32,7 @@
     </div>
     <div class="oh-sticky-table__tbody">
       {% for rwork_type in rwork_type_assign %}
-      <div class="oh-sticky-table__tr" draggable="true">
+      <div class="oh-sticky-table__tr" hx-get="{% url "rwork-individual-view" rwork_type.id %}" data-toggle="oh-modal-toggle" data-target="#rotating-work-type-detail-modal" hx-target="#rotatingWorkTypeAssignDetail" draggable="true">
         <div class="oh-sticky-table__sd">
           <div class="d-flex">
             <div class="">
@@ -82,7 +82,7 @@
         <div class="oh-sticky-table__td">{{rwork_type.next_change_date}}</div>
         <div class="oh-sticky-table__td">{{rwork_type.next_work_type}}</div>
         <div class="oh-sticky-table__td">
-          <div class="oh-btn-group">
+          <div class="oh-btn-group" onclick="event.stopPropagation()">
             {% if perms.base.change_rotatingworktypeassign or request.user|is_reportingmanager  %}
             <a
               hx-get="{% url 'rotating-work-type-assign-update' rwork_type.id %}"

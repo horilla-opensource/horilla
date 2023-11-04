@@ -369,4 +369,14 @@ urlpatterns = [
         views.validation_condition_update,
         name="attendance-settings-update",
     ),
+    path(
+        "rwork-individual-view/<int:instance_id>/",
+        views.rotating_work_individual_view,
+        name="rwork-individual-view",
+    ),
+    path(
+        "rshit-individual-view/<int:instance_id>/",
+        views.rotating_shift_individual_view,
+        name="rshift-individual-view",
+    ),
 ]

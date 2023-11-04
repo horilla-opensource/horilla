@@ -2735,3 +2735,22 @@ def validation_condition_update(request, obj_id):
         "attendance/break_point/condition.html",
         {"form": form, "condition": condition},
     )
+
+
+@login_required
+@permission_required("base.view_rotatingworktypeassign")
+def rotating_work_individual_view(request, instance_id):
+    """
+    This view is used render detailed view of the rotating work type assign
+    """
+    instance = RotatingWorkTypeAssign.objects.get(id=instance_id)
+    return render(request, "base/rotating_work_type/individual_view.html",{"instance":instance})
+
+@login_required
+@permission_required("base.view_rotatingworktypeassign")
+def rotating_shift_individual_view(request, instance_id):
+    """
+    This view is used render detailed view of the rotating shit assign
+    """
+    instance = RotatingShiftAssign.objects.get(id=instance_id)
+    return render(request, "base/rotating_shift/individual_view.html",{"instance":instance})

@@ -1,0 +1,152 @@
+{% load i18n %}
+<div class="oh-modal__dialog oh-modal__dialog--navigation m-0 p-0">
+  <button class="oh-modal__diaglog-nav oh-modal__nav-prev">
+    <ion-icon
+      name="chevron-back-outline"
+      class="md hydrated"
+      role="img"
+      aria-label="chevron back outline"
+    ></ion-icon>
+  </button>
+
+  <button class="oh-modal__diaglog-nav oh-modal__nav-next">
+    <ion-icon
+      name="chevron-forward-outline"
+      class="md hydrated"
+      role="img"
+      aria-label="chevron forward outline"
+    ></ion-icon>
+  </button>
+</div>
+
+<div class="oh-timeoff-modal__profile-content">
+  <div class="oh-profile mb-2">
+    <div class="oh-profile__avatar">
+      <img
+        src="{{instance.employee_id.get_avatar}}"
+        class="oh-profile__image me-2"
+        alt="Mary Magdalene"
+      />
+    </div>
+    <div class="oh-timeoff-modal__profile-info">
+      <span class="oh-timeoff-modal__user fw-bold"
+        >{{instance.employee_id}}</span
+      >
+      <span
+        class="oh-timeoff-modal__user m-0"
+        style="font-size: 18px; color: #4d4a4a"
+      >
+        {{instance.employee_id.employee_work_info.department_id}} /
+        {{instance.employee_id.employee_work_info.job_position_id}}</span
+      >
+    </div>
+  </div>
+</div>
+<div class="oh-modal__dialog-header" style="padding-top: 5px;">
+    <div class="oh-timeoff-modal__stats-container">
+        <div class="oh-timeoff-modal__stat" >
+            <span class="oh-timeoff-modal__stat-title">{% trans "Title" %}</span>
+            <span class="oh-timeoff-modal__stat-count">{{instance.get_based_on_display}}</span>
+        </div>
+        <div class="oh-timeoff-modal__stat" >
+            <span class="oh-timeoff-modal__stat-title">{% trans "Based On" %}</span>
+            <span class="oh-timeoff-modal__stat-count">
+                {{instance.based_on}}
+            </span>
+        </div>
+    </div>
+    <div class="oh-timeoff-modal__stats-container mt-3 mb-3">
+        <div class="oh-timeoff-modal__stat">
+            <span class="oh-timeoff-modal__stat-title">{% trans "Rotate" %}</span>
+            <span class="oh-timeoff-modal__stat-count">
+                {% if instance.based_on == 'after' %}
+                Rotate after {{instance.rotate_after_day}} days
+                {% elif instance.based_on == "weekly" %}
+                Weekly every {{instance.rotate_every_weekend}}
+                {% elif instance.based_on == "monthly" %}
+                {% if instance.rotate_every == "1" %}
+                Rotate every {{instance.rotate_every}}st day of month 
+                {% elif instance.rotate_every == "2" %}
+                Rotate every {{instance.rotate_every}}nd day of month 
+                {% elif instance.rotate_every == "3" %}
+                Rotate every {{instance.rotate_every}}rd day of month 
+                {% elif instance.rotate_every == "last" %}
+                Rotate every last day of month 
+                {% else %}
+                Rotate every {{instance.rotate_every}}th day of month 
+                {% endif %}
+                {% endif %}
+            </span>
+        </div>
+        <div class="oh-timeoff-modal__stat">
+            <span class="oh-timeoff-modal__stat-title">{% trans "Start Date" %}</span>
+            <span class="oh-timeoff-modal__stat-count">{{instance.start_date}}</span>
+        </div>
+    </div>
+    <div class="oh-timeoff-modal__stats-container mt-3 mb-3">
+        <div class="oh-timeoff-modal__stat" >
+            <span class="oh-timeoff-modal__stat-title">{% trans "Current Shift" %}</span>
+            <span class="oh-timeoff-modal__stat-count">{{instance.current_shift}}</span>
+        </div>
+        <div class="oh-timeoff-modal__stat" >
+            <span class="oh-timeoff-modal__stat-title">{% trans "Next Shift" %}</span>
+            <span class="oh-timeoff-modal__stat-count">
+                {{instance.next_shift}}
+            </span>
+        </div>
+    </div>
+    
+    <div class="oh-timeoff-modal__stats-container mt-3 mb-3" >
+        <div class="oh-timeoff-modal__stat" >
+            <span class="oh-timeoff-modal__stat-title">{% trans "Next Change Date" %}</span>
+            <span class="oh-timeoff-modal__stat-count">
+                {{instance.next_change_date}}
+            </span>
+        </div>
+        <div class="oh-timeoff-modal__stat" >
+            <span class="oh-timeoff-modal__stat-title"></span>
+            <span class="oh-timeoff-modal__stat-count">
+            </span>
+        </div>
+    </div>
+    <div class="oh-modal__button-container text-center mt-3">
+        <div class="oh-btn-group">
+            
+            <a class="oh-btn oh-btn--info" hx-get="{% url "rotating-shift-assign-update" instance.id %}" hx-target="#rotatingShiftAssignUpdateModalBody" data-toggle="oh-modal-toggle" data-target="#rotating-shift-update-modal" style="width: 50%;">
+                <ion-icon name="create-outline">
+                </ion-icon>Edit
+            </a>
+            <form  class="oh-btn oh-btn--primary" style="width: 50%;" onsubmit="return confirm('Do you Want to archive this rotating Shift assign?')"  action="{% url "rotating-shift-assign-archive" instance.id %}">
+                <input type="hidden" name="is_active" value="False" id="">
+                <button style="background: none;
+                    color: inherit;
+                    border: none;
+                    padding: 0;
+                    font: inherit;
+                    cursor: pointer;
+                    outline: inherit;">
+                    <ion-icon name="archive-outline">
+                    </ion-icon>
+                    {% if instance.is_active %}
+                    Archive
+                    {% else %}
+                    Un-archive
+                    {% endif %}
+                </button>
+            </form>
+            <form  class="oh-btn oh-btn--secondary" method="post" style="width: 50%;" onsubmit="return confirm('Do you Want to archive this rotating Shift assign?')"  action="{% url "rotating-shift-assign-delete" instance.id %}">
+                {% csrf_token %}
+                <button style="background: none;
+                    color: inherit;
+                    border: none;
+                    padding: 0;
+                    font: inherit;
+                    cursor: pointer;
+                    outline: inherit;">
+                    <ion-icon name="trash-outline">
+                    </ion-icon>Delete
+                </button>
+            </form>               
+        </div>
+    </div>
+</div>

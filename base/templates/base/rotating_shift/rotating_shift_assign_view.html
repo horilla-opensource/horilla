@@ -34,7 +34,7 @@
         </div>
         <div class="oh-sticky-table__tbody">
           {% for rshift in rshift_assign %}
-          <div class="oh-sticky-table__tr" draggable="true">
+          <div class="oh-sticky-table__tr" draggable="true" hx-get="{% url "rshift-individual-view" rshift.id %}" hx-target="#rotatingShiftAssignDetail" data-toggle="oh-modal-toggle" data-target="#rotating-shift-detail-modal-detail-modal">
             <div class="oh-sticky-table__sd">
               <div class="d-flex">
                 <div class="">
@@ -82,7 +82,7 @@
             <div class="oh-sticky-table__td">{{rshift.next_change_date}}</div>
             <div class="oh-sticky-table__td">{{rshift.next_shift}}</div>
             <div class="oh-sticky-table__td">
-              <div class="oh-btn-group">
+              <div class="oh-btn-group" onclick="event.stopPropagation()">
                 {% if perms.base.change_rotatingshiftassign  or request.user|is_reportingmanager %}
                 <a
                   hx-get="{% url 'rotating-shift-assign-update' rshift.id %}"
