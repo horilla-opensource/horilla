@@ -282,3 +282,14 @@ class SurveyFilter(FilterSet):
         exclude = [
             "sequence",
         ]
+
+class CandidateReGroup:
+    """
+    Class to keep the field name for group by option
+    """
+    fields = [
+        ("","select"),
+        ("recruitment_id","Recruitment"),
+        ("job_position_id","Job Position"),
+        ("hired", "Status"),
+    ]

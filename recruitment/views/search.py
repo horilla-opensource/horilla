@@ -86,6 +86,13 @@ def candidate_search(request):
     if request.GET.get("view") == "list":
         template = "candidate/candidate_list.html"
     candidates = sortby(request, candidates, "orderby")
+            
+    field = request.GET.get("field")
+    if field != "" and field is not None:
+        field_copy = field.replace(".", "__")
+        candidates = candidates.order_by(field_copy)
+        template = "candidate/group_by.html"
+
     candidates = paginator_qry(candidates, request.GET.get("page"))
     return render(
         request,
@@ -94,6 +101,7 @@ def candidate_search(request):
             "data": candidates,
             "pd": previous_data,
             "filter_dict": data_dict,
+            "field":field,
         },
     )
 
@@ -116,19 +124,21 @@ def candidate_filter_view(request):
     """
     This method is used for filter,pagination and search candidate.
     """
-    templete = "candidate/candidate_card.html"
+    candidates = Candidate.objects.filter(is_active=True)
+    template = "candidate/candidate_card.html"
     if request.GET.get('view') == 'list':
-        templete = "candidate/candidate_list.html"
+        template = "candidate/candidate_list.html"
+
     previous_data = request.GET.urlencode()
     filter_obj = CandidateFilter(
-        request.GET, queryset=Candidate.objects.filter(is_active=True)
+        request.GET, queryset=candidates
     )
     paginator = Paginator(filter_obj.qs, 24)
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
     return render(
         request,
-        templete,
+        template,
         {"data": page_obj, "pd": previous_data},
     )
 

@@ -33,7 +33,7 @@ from horilla.decorators import permission_required, login_required, hx_request_r
 from base.methods import get_key_instances
 from recruitment.views.paginator_qry import paginator_qry
 from recruitment.models import Recruitment, Candidate, Stage, StageNote
-from recruitment.filters import CandidateFilter, RecruitmentFilter, StageFilter
+from recruitment.filters import CandidateFilter, CandidateReGroup, RecruitmentFilter, StageFilter
 from recruitment.methods import recruitment_manages
 from recruitment.decorators import manager_can_enter, recruitment_manager_can_enter
 from recruitment.forms import (
@@ -843,6 +843,7 @@ def candidate_view(request):
             "export_obj": export_obj,
             "view_type": view_type,
             "filter_dict": data_dict,
+            "gp_fields" : CandidateReGroup.fields
         },
     )
 
