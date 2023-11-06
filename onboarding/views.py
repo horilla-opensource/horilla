@@ -405,7 +405,10 @@ def candidate_delete(request, obj_id):
 @login_required
 @permission_required("recruitment.view_candidate")
 def candidates_single_view(request,id):
-    candidate = Candidate.objects.get(hired=True, start_onboard=True,id=id)
+    """
+    Canidate individual view for the onboarded candidates
+    """
+    candidate = Candidate.objects.get(id=id)
     if not CandidateStage.objects.filter(candidate_id=candidate).exists():
         try:
             onboarding_stage = OnboardingStage.objects.filter(
