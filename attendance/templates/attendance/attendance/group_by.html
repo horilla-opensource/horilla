@@ -30,7 +30,7 @@
     {% for attendance_list in attendances_grouper %}
     <div class="oh-accordion-meta">
       <div class="oh-accordion-meta__item">
-        <div class="oh-accordion-meta__header">
+        <div class="oh-accordion-meta__header" onclick='$(this).toggleClass("oh-accordion-meta__header--show")'>
           <span class="oh-accordion-meta__title pt-3 pb-3">
             <div class="oh-tabs__input-badge-container">
               <span
@@ -41,44 +41,6 @@
               {{attendance_list.grouper}}
             </div>
           </span>
-          <!-- <div class="oh-accordion-meta__actions">
-            <div class="oh-dropdown" x-data="{open: false}">
-              <button
-                class="oh-btn oh-stop-prop oh-accordion-meta__btn"
-                @click="open = !open"
-                @click.outside="open = false"
-              >
-                Actions
-                <ion-icon
-                  class="ms-2 oh-accordion-meta__btn-icon"
-                  name="caret-down-outline"
-                ></ion-icon>
-              </button>
-              <div
-                class="oh-dropdown__menu oh-dropdown__menu--right"
-                x-show="open"
-              >
-                <ul class="oh-dropdown__items">
-                  <li class="oh-dropdown__item">
-                    <a href="#" class="oh-dropdown__link">Arrange</a>
-                  </li>
-                  <li class="oh-dropdown__item">
-                    <a href="#" class="oh-dropdown__link">Forward</a>
-                  </li>
-                  <li class="oh-dropdown__item">
-                    <a href="#" class="oh-dropdown__link">Archive</a>
-                  </li>
-                  <li class="oh-dropdown__item">
-                    <a
-                      href="#"
-                      class="oh-dropdown__link oh-dropdown__link--danger"
-                      >Delete</a
-                    >
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div> -->
         </div>
         <div class="oh-accordion-meta__body d-none">
           <div class="oh-sticky-table oh-sticky-table--no-overflow mb-5">
@@ -255,7 +217,7 @@
     {% for attendance_list in attendances_grouper %}
     <div class="oh-accordion-meta">
       <div class="oh-accordion-meta__item">
-        <div class="oh-accordion-meta__header">
+        <div class="oh-accordion-meta__header" onclick='$(this).toggleClass("oh-accordion-meta__header--show")'>
           <span class="oh-accordion-meta__title  pt-3 pb-3">
             <div class="oh-tabs__input-badge-container">
               <span
@@ -266,44 +228,6 @@
               {{attendance_list.grouper}}
             </div>
           </span>
-          <!-- <div class="oh-accordion-meta__actions">
-            <div class="oh-dropdown" x-data="{open: false}">
-              <button
-                class="oh-btn oh-stop-prop oh-accordion-meta__btn"
-                @click="open = !open"
-                @click.outside="open = false"
-              >
-                Actions
-                <ion-icon
-                  class="ms-2 oh-accordion-meta__btn-icon"
-                  name="caret-down-outline"
-                ></ion-icon>
-              </button>
-              <div
-                class="oh-dropdown__menu oh-dropdown__menu--right"
-                x-show="open"
-              >
-                <ul class="oh-dropdown__items">
-                  <li class="oh-dropdown__item">
-                    <a href="#" class="oh-dropdown__link">Arrange</a>
-                  </li>
-                  <li class="oh-dropdown__item">
-                    <a href="#" class="oh-dropdown__link">Forward</a>
-                  </li>
-                  <li class="oh-dropdown__item">
-                    <a href="#" class="oh-dropdown__link">Archive</a>
-                  </li>
-                  <li class="oh-dropdown__item">
-                    <a
-                      href="#"
-                      class="oh-dropdown__link oh-dropdown__link--danger"
-                      >Delete</a
-                    >
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div> -->
         </div>
         <div class="oh-accordion-meta__body d-none">
           <div class="oh-sticky-table oh-sticky-table--no-overflow mb-5">
@@ -479,7 +403,7 @@
     {% for attendance_list in attendances_grouper %}
     <div class="oh-accordion-meta">
       <div class="oh-accordion-meta__item">
-        <div class="oh-accordion-meta__header">
+        <div class="oh-accordion-meta__header" onclick='$(this).toggleClass("oh-accordion-meta__header--show")'>
           <span class="oh-accordion-meta__title pt-3 pb-3">
             <div class="oh-tabs__input-badge-container">
               <span
@@ -490,44 +414,6 @@
               {{attendance_list.grouper}}
             </div>
           </span>
-          <!-- <div class="oh-accordion-meta__actions">
-            <div class="oh-dropdown" x-data="{open: false}">
-              <button
-                class="oh-btn oh-stop-prop oh-accordion-meta__btn"
-                @click="open = !open"
-                @click.outside="open = false"
-              >
-                Actions
-                <ion-icon
-                  class="ms-2 oh-accordion-meta__btn-icon"
-                  name="caret-down-outline"
-                ></ion-icon>
-              </button>
-              <div
-                class="oh-dropdown__menu oh-dropdown__menu--right"
-                x-show="open"
-              >
-                <ul class="oh-dropdown__items">
-                  <li class="oh-dropdown__item">
-                    <a href="#" class="oh-dropdown__link">Arrange</a>
-                  </li>
-                  <li class="oh-dropdown__item">
-                    <a href="#" class="oh-dropdown__link">Forward</a>
-                  </li>
-                  <li class="oh-dropdown__item">
-                    <a href="#" class="oh-dropdown__link">Archive</a>
-                  </li>
-                  <li class="oh-dropdown__item">
-                    <a
-                      href="#"
-                      class="oh-dropdown__link oh-dropdown__link--danger"
-                      >Delete</a
-                    >
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div> -->
         </div>
         <div class="oh-accordion-meta__body d-none">
           <div class="oh-sticky-table oh-sticky-table--no-overflow mb-5">
