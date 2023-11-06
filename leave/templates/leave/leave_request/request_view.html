@@ -96,6 +96,33 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="oh-accordion">
+                              <div class="oh-accordion-header">{% trans "Group By" %}</div>
+                                <div class="oh-accordion-body">
+                                    <div class="row">
+                                        <div class="col-sm-12 col-md-12 col-lg-6">
+                                            <div class="oh-input-group">
+                                                <label class="oh-label">{% trans "Field" %}</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-12 col-md-12 col-lg-6">
+                                            <div class="oh-input-group">
+                                                <select
+                                                    class="oh-select mt-1"
+                                                    id="id_field"
+                                                    name="field"
+                                                    class="select2-selection select2-selection--single"
+                                                    id="gp"
+                                                >
+                                                    {% for field in gp_fields %}
+                                                    <option value="{{ field.0 }}">{% trans field.1 %}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                              </div>
+                            </div>
 
                         </div>
                         <div class="oh-dropdown__filter-footer">
@@ -268,6 +295,11 @@
             $("#filterCount").text("(" + count + ")");
         }
       });
+    $(document).ready(function () {
+    $(".oh-accordion-meta__header").on("click",function{
+        $(this).sibling(".oh-accordion-meta__body").toggleClass("d-none")
+    })
+    });
     
 </script>
 {% endblock %}

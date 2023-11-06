@@ -308,6 +308,12 @@
           window.location.href = link.attr('href'); // execute the href if confirmed
       }
   });
+  $(document).ready(function () {
+    $(".oh-accordion-meta__header").on("click",function{
+        $(this).sibling(".oh-accordion-meta__body").toggleClass("d-none")
+    })
+});
+
 </script>
 
 <script src="{% static '/base/filter.js' %}"></script>

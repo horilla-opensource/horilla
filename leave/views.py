@@ -330,6 +330,7 @@ def leave_request_view(request):
             "requests": requests,
             "approved_requests": approved_requests,
             "rejected_requests": rejected_requests,
+            "gp_fields": LeaveRequestReGroup.fields,
         },
     )
 
@@ -349,25 +350,35 @@ def leave_request_filter(request):
     """
     previous_data = request.GET.urlencode()
     queryset = LeaveRequest.objects.all()
+    field = request.GET.get("field")
     queryset = sortby(request, queryset, "sortby")
     leave_request_filter = LeaveRequestFilter(request.GET, queryset).qs
     page_number = request.GET.get("page")
+    template = "leave/leave_request/leave_requests.html",
+    if field != "" and field is not None:
+        field_copy = field.replace(".", "__")
+        leave_request_filter = leave_request_filter.order_by(field_copy)
+        template = "leave/leave_request/group_by.html"
+
     page_obj = paginator_qry(leave_request_filter, page_number)
     data_dict = []
+
     if not request.GET.get("dashboard"):
         data_dict = parse_qs(previous_data)
         get_key_instances(LeaveRequest, data_dict)
+
     if "status" in data_dict:
         status_list = data_dict["status"]
         if len(status_list) > 1:
             data_dict["status"] = [status_list[-1]]
     return render(
         request,
-        "leave/leave_request/leave_requests.html",
+        template,
         {
             "leave_requests": page_obj,
             "pd": previous_data,
             "filter_dict": data_dict,
+            "field": field,
             "dashboard": request.GET.get("dashboard"),
         },
     )
@@ -696,6 +707,7 @@ def leave_assign_view(request):
             "export_filter": export_filter,
             "export_column": export_column,
             "pd": previous_data,
+            "gp_fields": LeaveAssignReGroup.fields,
         },
     )
 
@@ -717,14 +729,21 @@ def leave_assign_filter(request):
     queryset = filtersubordinates(request, queryset, "leave.view_availableleave")
     assigned_leave_filter = AssignedLeaveFilter(request.GET, queryset).qs
     previous_data = request.GET.urlencode()
+    field = request.GET.get("field")
     page_number = request.GET.get("page")
+    template = "leave/leave_assign/assigned_leave.html",
+    if field != "" and field is not None:
+        field_copy = field.replace(".", "__")
+        assigned_leave_filter = assigned_leave_filter.order_by(field_copy)
+        template = "leave/leave_assign/group_by.html"
+
     page_obj = paginator_qry(assigned_leave_filter, page_number)
     data_dict = parse_qs(previous_data)
     get_key_instances(AvailableLeave, data_dict)
     return render(
         request,
-        "leave/leave_assign/assigned_leave.html",
-        {"available_leaves": page_obj, "pd": previous_data, "filter_dict": data_dict},
+        template,
+        {"available_leaves": page_obj, "pd": previous_data, "filter_dict": data_dict,"field":field,},
     )
 
 
@@ -1788,7 +1807,8 @@ def user_request_view(request):
                 "leave_requests": page_obj,
                 "form": user_request_filter.form,
                 "pd": previous_data,
-                "current_date": current_date,                
+                "current_date": current_date,   
+                "gp_fields": MyLeaveRequestReGroup.fields,
             },
         )
     except Exception as e:
@@ -1813,8 +1833,15 @@ def user_request_filter(request):
         queryset = user.leaverequest_set.all()
         previous_data = request.GET.urlencode()
         page_number = request.GET.get("page")
+        field = request.GET.get("field")
         queryset = sortby(request, queryset, "sortby")
         user_request_filter = UserLeaveRequestFilter(request.GET, queryset).qs
+        template = "leave/user_leave/leave_requests.html",
+        if field != "" and field is not None:
+            field_copy = field.replace(".", "__")
+            user_request_filter = user_request_filter.order_by(field_copy)
+            template = "leave/user_leave/group_by.html"
+
         page_obj = paginator_qry(user_request_filter, page_number)
         data_dict = parse_qs(previous_data)
         get_key_instances(LeaveRequest, data_dict)
@@ -1824,8 +1851,8 @@ def user_request_filter(request):
                 data_dict["status"] = [status_list[-1]]
         return render(
             request,
-            "leave/user_leave/user_requests.html",
-            {"leave_requests": page_obj, "pd": previous_data, "filter_dict": data_dict},
+            template,
+            {"leave_requests": page_obj, "pd": previous_data, "filter_dict": data_dict,"field":field,"current_date" : date.today()},
         )
     except Exception as e:
         messages.error(request, _("User is not an employee.."))
