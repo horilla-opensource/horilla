@@ -21,6 +21,8 @@ $(document).ready(function () {
 					],
 				},
 				options: {
+					responsive: true,
+
 					scales: {
 						y: {
 							beginAtZero: true,
@@ -72,6 +74,8 @@ $(document).ready(function () {
 					// emptyImageSrc:'/static/images/ui/sunbed.png'
 				},
 				options: {
+					responsive: true,
+
 					scales: {
 						y: {
 							beginAtZero: true,

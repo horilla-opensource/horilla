@@ -770,6 +770,11 @@ function emptyChart(chart,args,options) {
     if (!flag){
       const {ctx, canvas} = chart;
       chart.clear();
+      const parent = canvas.parentElement; 
+
+      // Set canvas width/height to match
+      canvas.width = parent.clientWidth;
+      canvas.height = parent.clientHeight;
       // Calculate center position    
       const x = canvas.width / 2;
       const y = (canvas.height - 70) / 2;

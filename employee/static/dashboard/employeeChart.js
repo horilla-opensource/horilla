@@ -10,7 +10,9 @@ $(document).ready(function () {
 		employeeChart = new Chart(ctx, {
 			type: "doughnut",
 			data: data,
-			options: {},
+			options: {
+				responsive: true,
+				maintainAspectRatio:false,},
 			plugins: [
 				{
 					afterRender: (chart) => emptyChart(chart),
@@ -45,7 +47,9 @@ $(document).ready(function () {
 		genderChart = new Chart(ctx, {
 			type: "doughnut",
 			data: data,
-			options: {},
+			options: {
+				responsive: true,
+				maintainAspectRatio:false,},
 			plugins: [
 				{
 					afterRender: (chart) => emptyChart(chart),
@@ -81,7 +85,9 @@ $(document).ready(function () {
 		departmentChart = new Chart(ctx, {
 			type: "doughnut",
 			data: data,
-			options: {},
+			options: {
+				responsive: true,
+				maintainAspectRatio:false,},
 			plugins: [
 				{
 					afterRender: (chart) => emptyChart(chart),

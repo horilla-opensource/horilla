@@ -8,10 +8,6 @@ $(document).ready(function () {
 			// Code to handle the response
 			dataSet = response.dataSet;
 			labels = response.labels;
-
-			$("#chart_input").html(
-				'<canvas id="dailyAnalytic" style = "cursor: pointer;"></canvas>'
-			);
 			createAttendanceChart(response.dataSet, response.labels);
 		},
 	});
@@ -44,19 +40,6 @@ var day = ("0" + today.getDate()).slice(-2);
 var formattedDate = year + "-" + month + "-" + day;
 var currentWeek = getWeekNumber(today);
 
-function isChartEmpty(chartData) {
-	if (!chartData) {
-		return true;
-	}
-	for (let i = 0; i < chartData.length; i++) {
-		const hasNonZeroValues = chartData[i].data.some((value) => value !== 0);
-		if (hasNonZeroValues) {
-			return false; // Return false if any non-zero value is found
-		}
-	}
-	return true; // Return true if all values are zero
-}
-
 function createAttendanceChart(dataSet, labels) {
 	data = {
 		labels: labels,
@@ -69,6 +52,7 @@ function createAttendanceChart(dataSet, labels) {
 		type: "bar",
 		data: data,
 		options: {
+			responsive: true,
 			onClick: (e, activeEls) => {
 				let datasetIndex = activeEls[0].datasetIndex;
 				let dataIndex = activeEls[0].index;
@@ -144,23 +128,10 @@ function changeMonth() {
 			end_date: end_date,
 		},
 		success: function (response) {
-			if (isChartEmpty(response.dataSet)) {
-				$("#dailyAnalytic")
-					.parent()
-					.html(
-						`<div style="height: 220px; display:flex;align-items: center;justify-content: center;" class="">
-					<div style="" class="">
-					<img style="display: block;width: 70px;margin: 20px auto ;" src="/static/images/ui/joiningchart.png" class="" alt=""/>
-					<h3 style="font-size:16px" class="oh-404__subtitle">${response.message}</h3>
-					</div>
-				</div>`
-					);
-			} else {
-				$("#chart_input").html(
-					'<canvas id="dailyAnalytic" style = "cursor: pointer;"></canvas>'
-				);
+			
+				attendanceChart.destroy()
 				createAttendanceChart(response.dataSet, response.labels);
-			}
+			
 		},
 		error: (error) => {},
 	});

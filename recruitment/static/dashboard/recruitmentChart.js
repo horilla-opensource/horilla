@@ -11,6 +11,8 @@ $(document).ready(function () {
 			type: "bar",
 			data: data,
 			options: {
+				responsive: true,
+
 				onClick: (e, activeEls) => {
 					let datasetIndex = activeEls[0].datasetIndex;
 					let dataIndex = activeEls[0].index;

@@ -8,7 +8,7 @@
   }
   .oh-card-dashboard:not(.tile) {
     cursor: default;
-    min-height: 363px;
+    min-height: 425px;
   }.oh-dashboard__movable-cards{
     padding-right: 0;
   }.oh-card-dashboard--moveable{
@@ -233,15 +233,10 @@
                   class="oh-card-dashboard__header oh-card-dashboard__header--divider"
                   id="attendance_header"
                 >
-                  <div class="d-flex justify-content-between mb-2">
-                    <span class="oh-card-dashboard__title"
-                    >{% trans "Attendance Analytic" %}</span
-                  >
-                </div>
-                <div
-                class="oh-card-dashboard__body"
-                id="attandance_canvas_div"
+                <div class="oh-card-dashboard__title mb-2"
+                >{% trans "Attendance Analytic" %}</div
                 >
+                <div class="d-flex justify-content-between mb-2">
                 <select id="type" class="oh-select" name="type" onchange="changeView(this)" style="width: 150px;padding: 3px;color:#5e5c5c;
 ;                ">
                   <option value="day">Day</option>
@@ -258,12 +253,14 @@
                       style="width: 100px;color:#5e5c5c;"
                     />
                     </span>
-                    <span id="chart_input">
+                  </div>
+                  <div
+                  class="oh-card-dashboard__body"
+                  >
                       <canvas
                         id="dailyAnalytic"
                         style="cursor: pointer"
                       ></canvas>
-                    </span>
                   </div>
                 </div>
               </div>

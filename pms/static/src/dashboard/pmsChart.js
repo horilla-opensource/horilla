@@ -20,6 +20,8 @@ if (objectiveChart != null) {
 		type: "doughnut",
 		data: objectiveStatusData,
 		options: {
+			responsive: true,
+			maintainAspectRatio:false,
 			onClick: (e, activeEls) => {
 				let datasetIndex = activeEls[0].datasetIndex;
 				let dataIndex = activeEls[0].index;
@@ -112,6 +114,8 @@ if (keyResultStatusChartCtx != null) {
 		type: "pie",
 		data: keyResultStatusData,
 		options: {
+			responsive: true,
+			maintainAspectRatio:false,
 			onClick: (e, activeEls) => {
 				let datasetIndex = activeEls[0].datasetIndex;
 				let dataIndex = activeEls[0].index;
@@ -204,6 +208,8 @@ if (feedbackStatusChartCtx != null) {
 		type: "pie",
 		data: feedbackStatusData,
 		options: {
+			responsive: true,
+			maintainAspectRatio:false,
 			onClick: (e, activeEls) => {
 				let datasetIndex = activeEls[0].datasetIndex;
 				let dataIndex = activeEls[0].index;
