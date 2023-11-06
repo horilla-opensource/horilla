@@ -7,7 +7,7 @@ from collections import defaultdict
 from urllib.parse import parse_qs
 import pandas as pd
 import json
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 from django.utils import timezone
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, JsonResponse, HttpResponseRedirect
@@ -16,13 +16,14 @@ from django.db.models import Q, ProtectedError
 from horilla.decorators import login_required, permission_required
 from base.methods import generate_colors, get_key_instances
 from employee.models import Employee, EmployeeWorkInformation
+from attendance.methods.closest_numbers import closest_numbers
 from payroll.models.models import Payslip, WorkRecord, Contract
 from payroll.forms.forms import ContractForm, WorkRecordForm
 from payroll.models.tax_models import PayrollSettings
-from payroll.forms.component_forms import PayrollSettingsForm
+from payroll.forms.component_forms import ContractExportFieldForm, PayrollSettingsForm
 from payroll.methods.methods import save_payslip
 from django.utils.translation import gettext_lazy as _
-from payroll.filters import ContractFilter
+from payroll.filters import ContractFilter, PayslipFilter
 from payroll.methods.methods import paginator_qry
 import io
 from xhtml2pdf import pisa
@@ -31,10 +32,10 @@ from django.template.loader import render_to_string
 # Create your views here.
 
 status_choices = {
-    "draft": "Draft",
-    "review_ongoing": "Review Ongoing",
-    "confirmed": "Confirmed",
-    "paid": "Paid",
+    "draft": _("Draft"),
+    "review_ongoing": _("Review Ongoing"),
+    "confirmed": _("Confirmed"),
+    "paid": _("Paid"),
 }
 
 
@@ -128,9 +129,19 @@ def contract_view(request):
         template = "payroll/contract/contract_view.html"
     else:
         template = "payroll/contract/contract_empty.html"
+    contract_ids = contracts.values_list("id", flat=True)
+    contract_ids_json = json.dumps(list(contract_ids))
     contracts = paginator_qry(contracts, request.GET.get("page"))
     filter_form = ContractFilter(request.GET)
-    context = {"contracts": contracts, "f": filter_form}
+    export_filter = ContractFilter(request.GET)
+    export_column = ContractExportFieldForm()
+    context = {
+        "contracts": contracts,
+        "f": filter_form,
+        "export_filter": export_filter,
+        "export_column": export_column,
+        "contract_ids": contract_ids_json,
+    }
 
     return render(request, template, context)
 
@@ -157,6 +168,13 @@ def view_single_contract(request, contract_id):
         "contract": contract,
         "dashboard": dashboard,
     }
+    contract_ids_json = request.GET.get("instances_ids")
+    if contract_ids_json:
+        contract_ids = json.loads(contract_ids_json)
+        previous_id, next_id = closest_numbers(contract_ids, contract_id)
+        context["next"] = next_id
+        context["previous"] = previous_id
+        context["contract_ids"] = contract_ids_json
     return render(request, "payroll/contract/contract_single_view.html", context)
 
 
@@ -177,6 +195,8 @@ def contract_filter(request):
     contracts_filter = ContractFilter(request.GET)
     template = "payroll/contract/contract_list.html"
     contracts = contracts_filter.qs
+    contract_ids = contracts.values_list("id", flat=True)
+    contract_ids_json = json.dumps(list(contract_ids))
     contracts = paginator_qry(contracts, request.GET.get("page"))
     data_dict = parse_qs(query_string)
     get_key_instances(Contract, data_dict)
@@ -194,6 +214,7 @@ def contract_filter(request):
             "contracts": contracts,
             "pd": query_string,
             "filter_dict": data_dict,
+            "contract_ids": contract_ids_json,
         },
     )
 
@@ -936,6 +957,79 @@ def slip_group_name_update(request):
         {"type": "success", "message": "Batch name updated.", "new_name": new_name}
     )
 
+
+@login_required
+@permission_required("payroll.add_contract")
+def contract_export(request):
+    """
+    This view exports payslip data based on selected fields and filters,
+    and generates an Excel file for download.
+    """
+    contract_status = {
+        "draft": _("Draft"),
+        "active": _("Active"),
+        "expired": _("Expired"),
+        "terminated": _("Terminated"),
+    }
+
+    pay_choices = {
+        "weekly": _("Weekly"),
+        "monthly": _("Monthly"),
+        "semi_monthly": _("Semi-Monthly"),
+    }
+
+    wage_choices = {
+        "hourly": _("Hourly"),
+        "daily": _("Daily"),
+        "monthly": _("Monthly"),
+    }
+
+    form = ContractExportFieldForm()
+    contracts = ContractFilter(request.GET).qs
+    today_date = date.today().strftime("%Y-%m-%d")
+    file_name = f"Contract_excel_{today_date}.xlsx"
+    selected_fields = request.GET.getlist("selected_fields")
+    model_fields = Contract._meta.get_fields()
+    contract_data = {}
+    if not selected_fields:
+        selected_fields = form.fields["selected_fields"].initial
+        ids = request.GET.get("ids")
+        id_list = json.loads(ids)
+        contracts = Contract.objects.filter(id__in=id_list)
+    for field in model_fields:
+        field_name = field.name
+        if field_name in selected_fields:
+            verbose_name = _(field.verbose_name.capitalize())
+            contract_data[verbose_name] = []
+            for contract in contracts:
+                value = getattr(contract, field_name)
+                if value is True:
+                    value = _("Yes")
+                elif value is False:
+                    value = _("No")
+                if field_name == "contract_status":
+                    value = contract_status.get(value, "")
+                elif field_name == "pay_frequency":
+                    value = pay_choices.get(value, "")
+                elif field_name == "wage_type":
+                    value = wage_choices.get(value, "")
+                contract_data[verbose_name].append(value)
+
+    data_frame = pd.DataFrame(data=contract_data)
+    data_frame = data_frame.style.applymap(
+        lambda x: "text-align: center", subset=pd.IndexSlice[:, :]
+    )
+    response = HttpResponse(content_type="application/ms-excel")
+    response["Content-Disposition"] = f'attachment; filename="{file_name}"'
+    data_frame.to_excel(response, index=False)
+    writer = pd.ExcelWriter(response, engine="xlsxwriter")
+    data_frame.to_excel(writer, index=False, sheet_name="Sheet1")
+    worksheet = writer.sheets["Sheet1"]
+    worksheet.set_column("A:Z", 20)
+    writer.close()
+    return response
+
+
 @login_required
 @permission_required("payroll.delete_contract")
 def contract_bulk_delete(request):
@@ -951,9 +1045,7 @@ def contract_bulk_delete(request):
             contract.delete()
             messages.success(
                 request,
-                _("{name} deleted.").format(
-                    name=name
-                ),
+                _("{name} deleted.").format(name=name),
             )
         except Payslip.DoesNotExist:
             messages.error(request, _("Contract not found."))
@@ -964,20 +1056,23 @@ def contract_bulk_delete(request):
             )
     return JsonResponse({"message": "Success"})
 
-def generate_pdf(template_path, context):
 
+def generate_pdf(template_path, context):
     html = render_to_string(template_path, context)
-    
+
     result = io.BytesIO()
-    pdf = pisa.pisaDocument(io.BytesIO(html.encode('utf-8')), result)
-    
+    pdf = pisa.pisaDocument(io.BytesIO(html.encode("utf-8")), result)
+
     if not pdf.err:
-        response = HttpResponse(result.getvalue(), content_type='application/pdf')
-        response['Content-Disposition'] = f'''attachment;filename="{context["employee"]}'s payslip for {context["range"]}.pdf"'''
+        response = HttpResponse(result.getvalue(), content_type="application/pdf")
+        response[
+            "Content-Disposition"
+        ] = f'''attachment;filename="{context["employee"]}'s payslip for {context["range"]}.pdf"'''
         return response
     return None
 
-def payslip_pdf(request,id):
+
+def payslip_pdf(request, id):
     payslip = Payslip.objects.filter(id=id).first()
     if payslip is not None and (
         request.user.has_perm("payroll.view_payslip")
@@ -991,5 +1086,75 @@ def payslip_pdf(request,id):
         data["json_data"]["payslip"] = payslip.id
         data["instance"] = payslip
         data["currency"] = PayrollSettings.objects.first().currency_symbol
-    
-    return generate_pdf('payroll/payslip/individual_pdf.html', context=data)
+
+    return generate_pdf("payroll/payslip/individual_pdf.html", context=data)
+
+
+@login_required
+def contract_select(request):
+    page_number = request.GET.get("page")
+
+    if page_number == "all":
+        employees = Contract.objects.filter(is_active=True)
+
+    contract_ids = [str(emp.id) for emp in employees]
+    total_count = employees.count()
+
+    context = {"contract_ids": contract_ids, "total_count": total_count}
+
+    return JsonResponse(context, safe=False)
+
+
+@login_required
+def contract_select_filter(request):
+    page_number = request.GET.get("page")
+    filtered = request.GET.get("filter")
+    filters = json.loads(filtered) if filtered else {}
+
+    if page_number == "all":
+        contract_filter = ContractFilter(filters, queryset=Contract.objects.all())
+
+        # Get the filtered queryset
+        filtered_employees = contract_filter.qs
+
+        contract_ids = [str(emp.id) for emp in filtered_employees]
+        total_count = filtered_employees.count()
+
+        context = {"contract_ids": contract_ids, "total_count": total_count}
+
+        return JsonResponse(context)
+
+
+@login_required
+def payslip_select(request):
+    page_number = request.GET.get("page")
+
+    if page_number == "all":
+        employees = Payslip.objects.all()
+
+    payslip_ids = [str(emp.id) for emp in employees]
+    total_count = employees.count()
+
+    context = {"payslip_ids": payslip_ids, "total_count": total_count}
+
+    return JsonResponse(context, safe=False)
+
+
+@login_required
+def payslip_select_filter(request):
+    page_number = request.GET.get("page")
+    filtered = request.GET.get("filter")
+    filters = json.loads(filtered) if filtered else {}
+
+    if page_number == "all":
+        payslip_filter = PayslipFilter(filters, queryset=Payslip.objects.all())
+
+        # Get the filtered queryset
+        filtered_employees = payslip_filter.qs
+
+        payslip_ids = [str(emp.id) for emp in filtered_employees]
+        total_count = filtered_employees.count()
+
+        context = {"payslip_ids": payslip_ids, "total_count": total_count}
+
+        return JsonResponse(context)

@@ -105,9 +105,22 @@ urlpatterns = [
         views.slip_group_name_update,
         name="update-batch-group-name",
     ),
+    path("contract-export", views.contract_export, name="contract-export"),
     path(
         "contract-bulk-delete",
         views.contract_bulk_delete,
         name="contract-bulk-delete",
+    ),
+    path("contract-select/", views.contract_select, name="contract-select"),
+    path(
+        "contract-select-filter/",
+        views.contract_select_filter,
+        name="contract-select-filter",
+    ),
+    path("payslip-select/", views.payslip_select, name="payslip-select"),
+    path(
+        "payslip-select-filter/",
+        views.payslip_select_filter,
+        name="payslip-select-filter",
     ),
 ]

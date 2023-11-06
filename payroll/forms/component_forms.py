@@ -277,3 +277,29 @@ class PayslipExportColumnForm(forms.Form):
             "status",
         ],
     )
+
+
+exclude_fields = ["id", "contract_document", "is_active", "note", "note"]
+
+
+class ContractExportFieldForm(forms.Form):
+    model_fields = Contract._meta.get_fields()
+    field_choices = [
+        (field.name, _(field.verbose_name.capitalize()))
+        for field in model_fields
+        if hasattr(field, "verbose_name") and field.name not in exclude_fields
+    ]
+    selected_fields = forms.MultipleChoiceField(
+        choices=field_choices,
+        widget=forms.CheckboxSelectMultiple,
+        initial=[
+            "contract_name",
+            "employee_id",
+            "contract_start_date",
+            "contract_end_date",
+            "wage_type",
+            "wage",
+            "filing_status",
+            "contract_status",
+        ],
+    )

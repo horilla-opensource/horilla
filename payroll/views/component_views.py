@@ -5,7 +5,7 @@ This module is used to write methods to the component_urls patterns respectively
 """
 import json
 import operator
-from datetime import datetime
+from datetime import date, datetime
 from urllib.parse import parse_qs
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.http import HttpResponse, JsonResponse
@@ -15,6 +15,7 @@ from django.utils.translation import gettext_lazy as _
 import pandas as pd
 from horilla.decorators import login_required, permission_required
 from base.methods import get_key_instances
+from attendance.methods.closest_numbers import closest_numbers
 import payroll.models.models
 from payroll.models.models import Allowance, Deduction, Payslip
 from payroll.methods.payslip_calc import (
@@ -217,12 +218,17 @@ def view_allowance(request):
     This method is used render template to view all the allowance instances
     """
     allowances = payroll.models.models.Allowance.objects.all()
+    allowance_ids = json.dumps(list(allowances.values_list("id", flat=True)))
     allowance_filter = AllowanceFilter(request.GET)
     allowances = paginator_qry(allowances, request.GET.get("page"))
     return render(
         request,
         "payroll/allowance/view_allowance.html",
-        {"allowances": allowances, "f": allowance_filter},
+        {
+            "allowances": allowances,
+            "f": allowance_filter,
+            "allowance_ids": allowance_ids,
+        },
     )
 
 
@@ -233,10 +239,20 @@ def view_single_allowance(request, allowance_id):
     This method is used render template to view the selected allowance instances
     """
     allowance = payroll.models.models.Allowance.objects.get(id=allowance_id)
+    allownace_ids_json = request.GET.get("instances_ids")
+    context = {
+        "allowance": allowance,
+    }
+    if allownace_ids_json:
+        allowance_ids = json.loads(allownace_ids_json)
+        previos_id, next_id = closest_numbers(allowance_ids, allowance_id)
+        context["next"] = next_id
+        context["previous"] = previos_id
+        context["allowance_ids"] = allowance_ids
     return render(
         request,
         "payroll/allowance/view_single_allowance.html",
-        {"allowance": allowance},
+        context,
     )
 
 
@@ -253,6 +269,7 @@ def filter_allowance(request):
     template = card_view
     if request.GET.get("view") == "list":
         template = list_view
+    allowance_ids = json.dumps(list(allowances.values_list("id", flat=True)))
     allowances = paginator_qry(allowances, request.GET.get("page"))
     data_dict = parse_qs(query_string)
     get_key_instances(Allowance, data_dict)
@@ -263,6 +280,7 @@ def filter_allowance(request):
             "allowances": allowances,
             "pd": query_string,
             "filter_dict": data_dict,
+            "allowance_ids": allowance_ids,
         },
     )
 
@@ -332,12 +350,17 @@ def view_deduction(request):
     """
 
     deductions = payroll.models.models.Deduction.objects.all()
+    deduction_ids = json.dumps(list(deductions.values_list("id", flat=True)))
     deduction_filter = DeductionFilter(request.GET)
     deductions = paginator_qry(deductions, request.GET.get("page"))
     return render(
         request,
         "payroll/deduction/view_deduction.html",
-        {"deductions": deductions, "f": deduction_filter},
+        {
+            "deductions": deductions,
+            "f": deduction_filter,
+            "deduction_ids": deduction_ids,
+        },
     )
 
 
@@ -349,10 +372,18 @@ def view_single_deduction(request, deduction_id):
     """
 
     deduction = payroll.models.models.Deduction.objects.get(id=deduction_id)
+    context = {"deduction": deduction}
+    deduction_ids_json = request.GET.get("instances_ids")
+    if deduction_ids_json:
+        deduction_ids = json.loads(deduction_ids_json)
+        previous_id, next_id = closest_numbers(deduction_ids, deduction_id)
+        context["next"] = next_id
+        context["previous"] = previous_id
+        context["deduction_ids"] = deduction_ids
     return render(
         request,
         "payroll/deduction/view_single_deduction.html",
-        {"deduction": deduction},
+        context,
     )
 
 
@@ -369,8 +400,8 @@ def filter_deduction(request):
     template = card_view
     if request.GET.get("view") == "list":
         template = list_view
+    deduction_ids = json.dumps(list(deductions.values_list("id", flat=True)))
     deductions = paginator_qry(deductions, request.GET.get("page"))
-
     data_dict = parse_qs(query_string)
     get_key_instances(Deduction, data_dict)
     return render(
@@ -380,6 +411,7 @@ def filter_deduction(request):
             "deductions": deductions,
             "pd": query_string,
             "filter_dict": data_dict,
+            "deduction_ids":deduction_ids,
         },
     )
 
@@ -640,7 +672,7 @@ def filter_payslip(request):
         payslips = payroll.models.models.Payslip.objects.filter(
             employee_id__employee_user_id=request.user
         )
-    template = "payroll/payslip/list_payslips.html"
+    template = "payroll/payslip/payslip_table.html"
     field = request.GET.get("group_by")
     if field in Payslip.__dict__.keys():
         template = "payroll/payslip/group_payslips.html"
@@ -666,6 +698,8 @@ def filter_payslip(request):
     )
 
 
+@login_required
+@permission_required("payroll.add_payslip")
 def payslip_export(request):
     """
     This view exports payslip data based on selected fields and filters,
@@ -680,7 +714,16 @@ def payslip_export(request):
     selected_columns = []
     payslips_data = {}
     payslips = PayslipFilter(request.GET).qs
+    today_date = date.today().strftime("%Y-%m-%d")
+    file_name = f"Payslip_excel_{today_date}.xlsx"
     selected_fields = request.GET.getlist("selected_fields")
+    form = forms.PayslipExportColumnForm()
+
+    if not selected_fields:
+        selected_fields = form.fields["selected_fields"].initial
+        ids = request.GET.get("ids")
+        id_list = json.loads(ids)
+        payslips = Payslip.objects.filter(id__in=id_list)
 
     for field in forms.excel_columns:
         value = field[0]
@@ -705,14 +748,17 @@ def payslip_export(request):
             payslips_data[column_name].append(data)
 
     data_frame = pd.DataFrame(data=payslips_data)
-    styled_data_frame = data_frame.style.applymap(
+    data_frame = data_frame.style.applymap(
         lambda x: "text-align: center", subset=pd.IndexSlice[:, :]
     )
     response = HttpResponse(content_type="application/ms-excel")
-    response["Content-Disposition"] = 'attachment; filename="payslip_export.xlsx'
-
-    styled_data_frame.to_excel(response, index=False, engine="openpyxl")
-
+    response["Content-Disposition"] = f'attachment; filename="{file_name}"'
+    data_frame.to_excel(response, index=False)
+    writer = pd.ExcelWriter(response, engine="xlsxwriter")
+    data_frame.to_excel(writer, index=False, sheet_name="Sheet1")
+    worksheet = writer.sheets["Sheet1"]
+    worksheet.set_column("A:Z", 20)
+    writer.close()
     return response
 
 

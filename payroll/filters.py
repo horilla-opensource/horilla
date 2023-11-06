@@ -33,6 +33,28 @@ class ContractFilter(FilterSet):
         field_name="contract_end_date",
         widget=forms.DateInput(attrs={"type": "date"}),
     )
+    contract_start_date_from = django_filters.DateFilter(
+        widget=forms.DateInput(attrs={"type": "date"}),
+        field_name="contract_start_date",
+        lookup_expr="gte",
+    )
+    contract_start_date_till = django_filters.DateFilter(
+        widget=forms.DateInput(attrs={"type": "date"}),
+        field_name="contract_start_date",
+        lookup_expr="lte",
+    )
+    contract_end_date_from = django_filters.DateFilter(
+        widget=forms.DateInput(attrs={"type": "date"}),
+        field_name="contract_end_date",
+        lookup_expr="gte",
+    )
+    contract_end_date_till = django_filters.DateFilter(
+        widget=forms.DateInput(attrs={"type": "date"}),
+        field_name="contract_end_date",
+        lookup_expr="lte",
+    )
+    basic_pay__lte = django_filters.NumberFilter(field_name="wage", lookup_expr="lte")
+    basic_pay__gte = django_filters.NumberFilter(field_name="wage", lookup_expr="gte")
 
     class Meta:
         """
@@ -50,6 +72,11 @@ class ContractFilter(FilterSet):
             "pay_frequency",
             "contract_status",
         ]
+
+    def __init__(self, data=None, queryset=None, *, request=None, prefix=None):
+        super().__init__(data=data, queryset=queryset, request=request, prefix=prefix)
+        for field in self.form.fields.keys():
+            self.form.fields[field].widget.attrs["id"] = f"{uuid.uuid4()}"
 
     def filter_by_contract(self, queryset, _, value):
         """
@@ -229,8 +256,8 @@ class PayslipFilter(FilterSet):
         field_name="employee_id__employee_work_info__department_id__department",
         lookup_expr="icontains",
     )
-    month = django_filters.CharFilter(field_name="start_date",lookup_expr="month")
-    year = django_filters.CharFilter(field_name="start_date",lookup_expr="year")
+    month = django_filters.CharFilter(field_name="start_date", lookup_expr="month")
+    year = django_filters.CharFilter(field_name="start_date", lookup_expr="year")
 
     class Meta:
         """

@@ -1,4 +1,12 @@
-var deleteMessages = {
+var excelMessages = {
+  ar: "هل ترغب في تنزيل ملف Excel؟",
+  de: "Möchten Sie die Excel-Datei herunterladen?",
+  es: "¿Desea descargar el archivo de Excel?",
+  en: "Do you want to download the excel file?",
+  fr: "Voulez-vous télécharger le fichier Excel?",
+};
+
+var deletePayslipMessages = {
   ar: "هل تريد حقًا حذف جميع كشوف الدفع المحددة؟",
   de: "Sind Sie sicher, dass Sie alle ausgewählten Gehaltsabrechnungen löschen möchten?",
   es: "¿Realmente quieres eliminar todas las nóminas seleccionadas?",
@@ -6,7 +14,7 @@ var deleteMessages = {
   fr: "Voulez-vous vraiment supprimer tous les bulletins de paie sélectionnés?",
 };
 
-var deletecontractMessages = {
+var deleteContractMessages = {
   ar: "هل ترغب حقًا في حذف جميع العقود المحددة؟",
   de: "Möchten Sie wirklich alle ausgewählten Verträge löschen?",
   es: "¿Realmente quieres borrar todos los contratos seleccionados?",
@@ -14,13 +22,33 @@ var deletecontractMessages = {
   fr: "Voulez-vous vraiment supprimer tous les contrats sélectionnés?",
 };
 
-var norowMessages = {
+var noRowMessages = {
   ar: "لم يتم تحديد أي صفوف.",
   de: "Es wurden keine Zeilen ausgewählt.",
   es: "No se han seleccionado filas.",
   en: "No rows have been selected.",
   fr: "Aucune ligne n'a été sélectionnée.",
 };
+
+var rowMessages = {
+  ar: " تم الاختيار",
+  de: " Ausgewählt",
+  es: " Seleccionado",
+  en: " Selected",
+  fr: " Sélectionné",
+};
+
+tickContractCheckboxes();
+
+function makeEmpListUnique(list) {
+  return Array.from(new Set(list));
+}
+
+tickPayslipCheckboxes();
+
+function makePayslipListUnique(list) {
+  return Array.from(new Set(list));
+}
 
 function getCookie(name) {
   let cookieValue = null;
@@ -49,24 +77,12 @@ function getCurrentLanguageCode(callback) {
   });
 }
 
-$(".all-payslip").change(function (e) {
-  var is_checked = $(this).is(":checked");
-  if (is_checked) {
-    $(".all-payslip-row").prop("checked", true);
-    $(".all-payslip-row").attr("data-checked", true);
-  } else {
-    $(".all-payslip-row").prop("checked", false);
-    $(".all-payslip-row").attr("data-checked", false);
-  }
-});
+// -------------------------------
+//        PAYSLIP SECTION
+// -------------------------------
 
-$(".all-payslip-row").change(function (e) {
-  e.preventDefault();
-  if ($(this).is(":checked")) {
-    $(this).attr("data-checked", true);
-  } else {
-    $(this).attr("data-checked", false);
-  }
+$(".all-payslip-row").change(function () {
+  addingPayslipIds();
 });
 
 $("#select-all-fields").change(function () {
@@ -74,20 +90,251 @@ $("#select-all-fields").change(function () {
   $('[name="selected_fields"]').prop("checked", isChecked);
 });
 
-$("#DeletePayslipBulk").click(function (e) {
+function addingPayslipIds() {
+  var ids = JSON.parse($("#selectedPayslip").attr("data-ids") || "[]");
+  var selectedCount = 0;
+
+  $(".all-payslip-row").each(function () {
+    if ($(this).is(":checked")) {
+      ids.push(this.id);
+    } else {
+      var index = ids.indexOf(this.id);
+      if (index > -1) {
+        ids.splice(index, 1);
+      }
+    }
+  });
+
+  ids = makePayslipListUnique(ids);
+  selectedCount = ids.length;
+
+  getCurrentLanguageCode(function (code) {
+    languageCode = code;
+    var message = rowMessages[languageCode];
+
+    $("#selectedPayslip").attr("data-ids", JSON.stringify(ids));
+
+    if (selectedCount === 0) {
+      $("#selectedSlipShow").css("display", "none");
+      $("#exportContracts").css("display", "none");
+    } else {
+      $("#exportPayslips").css("display", "inline-flex");
+      $("#selectedSlipShow").css("display", "inline-flex");
+      $("#selectedSlipShow").text(selectedCount + " - " + message);
+    }
+  });
+}
+
+function tickPayslipCheckboxes() {
+  var ids = JSON.parse($("#selectedPayslip").attr("data-ids") || "[]");
+  uniqueIds = makePayslipListUnique(ids);
+  click = $("#selectedPayslip").attr("data-clicked");
+  if (click === "1") {
+    $(".all-payslip").prop("checked", true);
+  }
+
+  uniqueIds.forEach(function (id) {
+    $("#" + id).prop("checked", true);
+  });
+
+  var selectedCount = uniqueIds.length;
+  getCurrentLanguageCode(function (code) {
+    languageCode = code;
+    var message = rowMessages[languageCode];
+    if (selectedCount > 0) {
+      $("#exportPayslips").css("display", "inline-flex");
+      $("#selectedSlipShow").css("display", "inline-flex");
+      $("#selectedSlipShow").text(selectedCount + " -" + message);
+    } else {
+      $("#selectedSlipShow").css("display", "none");
+      $("#exportPayslips").css("display", "none");
+    }
+  });
+}
+
+function selectAllPayslip() {
+  var allPayslipCount = 0;
+  $("#selectedPayslip").attr("data-clicked", 1);
+  var savedFilters = JSON.parse(localStorage.getItem("savedFilters"));
+  if (savedFilters && savedFilters["filterData"] !== null) {
+    var filter = savedFilters["filterData"];
+
+    $.ajax({
+      url: "/payroll/payslip-select-filter",
+      data: { page: "all", filter: JSON.stringify(filter) },
+      type: "GET",
+      dataType: "json",
+      success: function (response) {
+        var payslipIds = response.payslip_ids;
+
+        if (Array.isArray(payslipIds)) {
+          // Continue
+        } else {
+          console.error("employee_ids is not an array:", payslipIds);
+        }
+
+        allPayslipCount = payslipIds.length;
+
+        for (var i = 0; i < payslipIds.length; i++) {
+          var empId = payslipIds[i];
+          $("#" + empId).prop("checked", true);
+        }
+        $("#selectedPayslip").attr("data-ids", JSON.stringify(payslipIds));
+
+        count = makePayslipListUnique(payslipIds);
+        tickPayslipCheckboxes(count);
+      },
+      error: function (xhr, status, error) {
+        console.error("Error:", error);
+      },
+    });
+  } else {
+    $.ajax({
+      url: "/payroll/payslip-select",
+      data: { page: "all" },
+      type: "GET",
+      dataType: "json",
+      success: function (response) {
+        var payslipIds = response.payslip_ids;
+
+        if (Array.isArray(payslipIds)) {
+          // Continue
+        } else {
+          console.error("employee_ids is not an array:", payslipIds);
+        }
+
+        allPayslipCount = payslipIds.length;
+
+        for (var i = 0; i < payslipIds.length; i++) {
+          var empId = payslipIds[i];
+          $("#" + empId).prop("checked", true);
+        }
+        $("#selectedPayslip").attr("data-ids", JSON.stringify(payslipIds));
+
+        count = makePayslipListUnique(payslipIds);
+        tickPayslipCheckboxes(count);
+      },
+      error: function (xhr, status, error) {
+        console.error("Error:", error);
+      },
+    });
+  }
+
+  $(".filterButton").click(function () {
+    var ids = JSON.parse($("#selectedPayslip").attr("data-ids") || "[]");
+    uniqueIds = makePayslipListUnique(ids);
+    selectedCount = uniqueIds.length;
+    if (allPayslipCount === selectedCount) {
+      $(".all-payslip").prop("checked", false);
+      $("#selectedPayslip").attr("data-clicked", 0);
+      $("#selectedPayslip").attr("data-ids", JSON.stringify([]));
+      count = [];
+      tickPayslipCheckboxes(count);
+    }
+  });
+}
+
+function unselectAllPayslip() {
+  $("#selectedPayslip").attr("data-clicked", 0);
+
+  $.ajax({
+    url: "/payroll/payslip-select",
+    data: { page: "all", filter: "{}" },
+    type: "GET",
+    dataType: "json",
+    success: function (response) {
+      var payslipIds = response.payslip_ids;
+
+      if (Array.isArray(payslipIds)) {
+        // Continue
+      } else {
+        console.error("employee_ids is not an array:", payslipIds);
+      }
+
+      for (var i = 0; i < payslipIds.length; i++) {
+        var empId = payslipIds[i];
+        $("#" + empId).prop("checked", false);
+        $(".all-payslip").prop("checked", false);
+      }
+      $("#selectedPayslip").attr("data-ids", JSON.stringify([]));
+
+      count = [];
+      tickPayslipCheckboxes(count);
+    },
+    error: function (xhr, status, error) {
+      console.error("Error:", error);
+    },
+  });
+}
+$("#exportPayslips").click(function (e) {
+  var currentDate = new Date().toISOString().slice(0, 10);
+  var languageCode = null;
+  ids = [];
+  ids.push($("#selectedPayslip").attr("data-ids"));
+  ids = JSON.parse($("#selectedPayslip").attr("data-ids"));
+  getCurrentLanguageCode(function (code) {
+    languageCode = code;
+    var confirmMessage = excelMessages[languageCode];
+    var textMessage = noRowMessages[languageCode];
+    if (ids.length === 0) {
+      Swal.fire({
+        text: textMessage,
+        icon: "warning",
+        confirmButtonText: "Close",
+      });
+    } else {
+      Swal.fire({
+        text: confirmMessage,
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonColor: "#008000",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Confirm",
+      }).then(function (result) {
+        if (result.isConfirmed) {
+          $.ajax({
+            type: "GET",
+            url: "/payroll/payslip-info-export",
+            data: {
+              ids: JSON.stringify(ids),
+            },
+            dataType: "binary",
+            xhrFields: {
+              responseType: "blob",
+            },
+            success: function (response) {
+              const file = new Blob([response], {
+                type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+              });
+              const url = URL.createObjectURL(file);
+              const link = document.createElement("a");
+              link.href = url;
+              link.download = "Payslip_excel_" + currentDate + ".xlsx";
+              document.body.appendChild(link);
+              link.click();
+            },
+            error: function (xhr, textStatus, errorThrown) {
+              console.error("Error downloading file:", errorThrown);
+            },
+          });
+        }
+      });
+    }
+  });
+});
+
+$("#deletePayslipBulk").click(function (e) {
   e.preventDefault();
 
   var languageCode = null;
   getCurrentLanguageCode(function (code) {
     languageCode = code;
-    var confirmMessage = deleteMessages[languageCode];
-    var textMessage = norowMessages[languageCode];
-    var checkedRows = $(".all-payslip-row").filter(":checked");
+    var confirmMessage = deletePayslipMessages[languageCode];
+    var textMessage = noRowMessages[languageCode];
     ids = [];
-    checkedRows.each(function () {
-      ids.push($(this).val());
-    });
-    if (checkedRows.length === 0) {
+    ids.push($("#selectedPayslip").attr("data-ids"));
+    ids = JSON.parse($("#selectedPayslip").attr("data-ids"));
+    if (ids.length === 0) {
       Swal.fire({
         text: textMessage,
         icon: "warning",
@@ -124,31 +371,239 @@ $("#DeletePayslipBulk").click(function (e) {
   });
 });
 
+// -------------------------------
+//        CONTRACT SECTION
+// -------------------------------
 
-$(".all-contract").change(function (e) {
-  var is_checked = $(this).is(":checked");
-  if (is_checked) {
-    $(".all-contract-row").prop("checked", true);
-    $(".all-contract-row").attr("data-checked", true);
-  } else {
-    $(".all-contract-row").prop("checked", false);
-    $(".all-contract-row").attr("data-checked", false);
+function addingContractIds() {
+  var ids = JSON.parse($("#selectedInstances").attr("data-ids") || "[]");
+  var selectedCount = 0;
+
+  $(".all-contract-row").each(function () {
+    if ($(this).is(":checked")) {
+      ids.push(this.id);
+    } else {
+      var index = ids.indexOf(this.id);
+      if (index > -1) {
+        ids.splice(index, 1);
+      }
+    }
+  });
+
+  ids = makeEmpListUnique(ids);
+  selectedCount = ids.length;
+
+  getCurrentLanguageCode(function (code) {
+    languageCode = code;
+    var message = rowMessages[languageCode];
+
+    $("#selectedInstances").attr("data-ids", JSON.stringify(ids));
+
+    if (selectedCount === 0) {
+      $("#selectedShow").css("display", "none");
+      $("#exportContracts").css("display", "none");
+    } else {
+      $("#exportContracts").css("display", "inline-flex");
+      $("#selectedShow").css("display", "inline-flex");
+      $("#selectedShow").text(selectedCount + " - " + message);
+    }
+  });
+}
+
+function tickContractCheckboxes() {
+  var ids = JSON.parse($("#selectedInstances").attr("data-ids") || "[]");
+  uniqueIds = makeEmpListUnique(ids);
+  click = $("#selectedInstances").attr("data-clicked");
+  if (click === "1") {
+    $(".all-contract").prop("checked", true);
   }
-});
 
-$(".all-contract-row").change(function (e) {
-  e.preventDefault();
-  if ($(this).is(":checked")) {
-    $(this).attr("data-checked", true);
+  uniqueIds.forEach(function (id) {
+    $("#" + id).prop("checked", true);
+  });
+  var selectedCount = uniqueIds.length;
+  getCurrentLanguageCode(function (code) {
+    languageCode = code;
+    var message = rowMessages[languageCode];
+    if (selectedCount > 0) {
+      $("#exportContracts").css("display", "inline-flex");
+      $("#selectedShow").css("display", "inline-flex");
+      $("#selectedShow").text(selectedCount + " -" + message);
+    } else {
+      $("#selectedShow").css("display", "none");
+      $("#exportContracts").css("display", "none");
+    }
+  });
+}
+
+function selectAllContracts() {
+  $("#selectedInstances").attr("data-clicked", 1);
+  var allContractCount = 0;
+  var savedFilters = JSON.parse(localStorage.getItem("savedFilters"));
+  if (savedFilters && savedFilters["filterData"] !== null) {
+    var filter = savedFilters["filterData"];
+    $.ajax({
+      url: "/payroll/contract-select-filter",
+      data: { page: "all", filter: JSON.stringify(filter) },
+      type: "GET",
+      dataType: "json",
+      success: function (response) {
+        var contractIds = response.contract_ids;
+
+        if (Array.isArray(contractIds)) {
+          // Continue
+        } else {
+          console.error("contractIds is not an array:", contractIds);
+        }
+
+        allContractCount = contractIds.length;
+
+        for (var i = 0; i < contractIds.length; i++) {
+          var empId = contractIds[i];
+          $("#" + empId).prop("checked", true);
+        }
+        $("#selectedInstances").attr("data-ids", JSON.stringify(contractIds));
+
+        count = makeEmpListUnique(contractIds);
+        tickContractCheckboxes(count);
+      },
+      error: function (xhr, status, error) {
+        console.error("Error:", error);
+      },
+    });
   } else {
-    $(this).attr("data-checked", false);
-  }
-});
+    $.ajax({
+      url: "/payroll/contract-select",
+      data: { page: "all" },
+      type: "GET",
+      dataType: "json",
+      success: function (response) {
+        var contractIds = response.contract_ids;
+        if (Array.isArray(contractIds)) {
+          // Continue
+        } else {
+          console.error("contractIds is not an array:", contractIds);
+        }
 
-$("#select-all-fields").change(function () {
-  const isChecked = $(this).prop("checked");
-  $('[name="selected_fields"]').prop("checked", isChecked);
-});
+        allContractCount = contractIds.length;
+
+        for (var i = 0; i < contractIds.length; i++) {
+          var empId = contractIds[i];
+          $("#" + empId).prop("checked", true);
+        }
+        $("#selectedInstances").attr("data-ids", JSON.stringify(contractIds));
+
+        count = makeEmpListUnique(contractIds);
+        tickContractCheckboxes(count);
+      },
+      error: function (xhr, status, error) {
+        console.error("Error:", error);
+      },
+    });
+  }
+
+  $(".filterButton").click(function () {
+    var ids = JSON.parse($("#selectedInstances").attr("data-ids") || "[]");
+    uniqueIds = makeEmpListUnique(ids);
+    selectedCount = uniqueIds.length;
+    if (allContractCount === selectedCount) {
+      $(".all-contract").prop("checked", false);
+      $("#selectedInstances").attr("data-clicked", 0);
+      $("#selectedInstances").attr("data-ids", JSON.stringify([]));
+      count = [];
+      tickContractCheckboxes(count);
+    }
+  });
+}
+
+function unselectAllContracts() {
+  $("#selectedInstances").attr("data-clicked", 0);
+  $.ajax({
+    url: "/payroll/contract-select",
+    data: { page: "all", filter: "{}" },
+    type: "GET",
+    dataType: "json",
+    success: function (response) {
+      var contractIds = response.contract_ids;
+
+      if (Array.isArray(contractIds)) {
+        // Continue
+      } else {
+        console.error("contractIds is not an array:", contractIds);
+      }
+
+      for (var i = 0; i < contractIds.length; i++) {
+        var contractId = contractIds[i];
+        $("#" + contractId).prop("checked", false);
+        $(".all-contract").prop("checked", false);
+      }
+      $("#selectedInstances").attr("data-ids", JSON.stringify([]));
+
+      count = [];
+      tickContractCheckboxes(count);
+    },
+    error: function (xhr, status, error) {
+      console.error("Error:", error);
+    },
+  });
+}
+
+function exportContractRequest() {
+  var currentDate = new Date().toISOString().slice(0, 10);
+  var languageCode = null;
+  ids = [];
+  ids.push($("#selectedInstances").attr("data-ids"));
+  ids = JSON.parse($("#selectedInstances").attr("data-ids"));
+  getCurrentLanguageCode(function (code) {
+    languageCode = code;
+    var confirmMessage = excelMessages[languageCode];
+    var textMessage = noRowMessages[languageCode];
+    if (ids.length === 0) {
+      Swal.fire({
+        text: textMessage,
+        icon: "warning",
+        confirmButtonText: "Close",
+      });
+    } else {
+      Swal.fire({
+        text: confirmMessage,
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonColor: "#008000",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Confirm",
+      }).then(function (result) {
+        if (result.isConfirmed) {
+          $.ajax({
+            type: "GET",
+            url: "/payroll/contract-export",
+            data: {
+              ids: JSON.stringify(ids),
+            },
+            dataType: "binary",
+            xhrFields: {
+              responseType: "blob",
+            },
+            success: function (response) {
+              const file = new Blob([response], {
+                type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+              });
+              const url = URL.createObjectURL(file);
+              const link = document.createElement("a");
+              link.href = url;
+              link.download = "Contract_excel_" + currentDate + ".xlsx";
+              document.body.appendChild(link);
+              link.click();
+            },
+            error: function (xhr, textStatus, errorThrown) {
+              console.error("Error downloading file:", errorThrown);
+            },
+          });
+        }
+      });
+    }
+  });
+}
 
 $("#DeleteContractBulk").click(function (e) {
   e.preventDefault();
@@ -156,14 +611,12 @@ $("#DeleteContractBulk").click(function (e) {
   var languageCode = null;
   getCurrentLanguageCode(function (code) {
     languageCode = code;
-    var confirmMessage = deletecontractMessages[languageCode];
-    var textMessage = norowMessages[languageCode];
-    var checkedRows = $(".all-contract-row").filter(":checked");
+    var confirmMessage = deleteContractMessages[languageCode];
+    var textMessage = noRowMessages[languageCode];
     ids = [];
-    checkedRows.each(function () {
-      ids.push($(this).val());
-    });
-    if (checkedRows.length === 0) {
+    ids.push($("#selectedInstances").attr("data-ids"));
+    ids = JSON.parse($("#selectedInstances").attr("data-ids"));
+    if (ids.length === 0) {
       Swal.fire({
         text: textMessage,
         icon: "warning",
@@ -179,6 +632,10 @@ $("#DeleteContractBulk").click(function (e) {
         confirmButtonText: "Confirm",
       }).then(function (result) {
         if (result.isConfirmed) {
+          ids = [];
+          ids.push($("#selectedInstances").attr("data-ids"));
+          ids = JSON.parse($("#selectedInstances").attr("data-ids"));
+
           $.ajax({
             type: "POST",
             url: "/payroll/contract-bulk-delete",

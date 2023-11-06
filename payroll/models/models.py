@@ -124,15 +124,27 @@ class Contract(models.Model):
         related_name="contract_set",
         verbose_name=_("Employee"),
     )
-    contract_start_date = models.DateField()
-    contract_end_date = models.DateField(null=True, blank=True)
+    contract_start_date = models.DateField(verbose_name=_("Start date"))
+    contract_end_date = models.DateField(
+        null=True, blank=True, verbose_name=_("End date")
+    )
     wage_type = models.CharField(
         choices=WAGE_CHOICES, max_length=250, default="monthly"
     )
+    pay_frequency = models.CharField(
+        max_length=20, null=True, choices=PAY_FREQUENCY_CHOICES, default="monthly"
+    )
     wage = models.FloatField(verbose_name=_("Basic Salary"), null=True, default=0)
-    calculate_daily_leave_amount = models.BooleanField(default=True)
-    deduction_for_one_leave_amount = models.FloatField(null=True, blank=True, default=0)
-    deduct_leave_from_basic_pay = models.BooleanField(default=True)
+    filing_status = models.ForeignKey(
+        FilingStatus,
+        on_delete=models.PROTECT,
+        related_name="contracts",
+        null=True,
+        blank=True,
+    )
+    contract_status = models.CharField(
+        choices=CONTRACT_STATUS_CHOICES, max_length=250, default="draft"
+    )
     department = models.ForeignKey(
         Department,
         on_delete=models.PROTECT,
@@ -168,21 +180,12 @@ class Contract(models.Model):
         blank=True,
         related_name="contracts",
     )
-    filing_status = models.ForeignKey(
-        FilingStatus,
-        on_delete=models.PROTECT,
-        related_name="contracts",
-        null=True,
-        blank=True,
-    )
-    pay_frequency = models.CharField(
-        max_length=20, null=True, choices=PAY_FREQUENCY_CHOICES, default="monthly"
-    )
     contract_document = models.FileField(upload_to="uploads/", null=True, blank=True)
     is_active = models.BooleanField(default=True)
-    contract_status = models.CharField(
-        choices=CONTRACT_STATUS_CHOICES, max_length=250, default="draft"
-    )
+    calculate_daily_leave_amount = models.BooleanField(default=True)
+    deduction_for_one_leave_amount = models.FloatField(null=True, blank=True, default=0)
+    deduct_leave_from_basic_pay = models.BooleanField(default=True)
+
     note = models.TextField(null=True, blank=True)
 
     objects = models.Manager()

@@ -1,4 +1,4 @@
-{% extends 'index.html' %} {% block content %}{% load i18n %}
+{% extends 'index.html' %} {% block content %}{% load i18n %} {% load static %}
 
 <div
   class="oh-modal"
@@ -138,7 +138,7 @@
         placeholder="{% trans 'Search' %}"
         hx-get="{% url 'filter-payslip' %}?group_by={{request.GET.group_by}}"
         hx-trigger="keyup changed delay:500ms, search"
-        hx-target="#payroll-payslip-container"
+        hx-target="#payslips-table"
         hx-swap="innerHTML"
       />
     </div>
@@ -233,7 +233,7 @@
                   <li class="oh-dropdown__item">
                     <a
                       class="oh-dropdown__link oh-dropdown__link--danger"
-                      id="DeletePayslipBulk"
+                      id="deletePayslipBulk"
                       >{% trans "Delete" %}</a>
                   </li>
                 {% endif %}
@@ -263,6 +263,10 @@
     {% endif %}
   </div>
 </section>
+
+<div class="oh-checkpoint-badge mb-2" id="selectedPayslip" data-ids="[]" data-clicked="0" style="display:none;" >
+  {% trans "Selected Employees" %}
+</div>
 <div class="oh-tabs oh-wrapper">
   <div class="oh-tabs__contents">
     <div
@@ -445,4 +449,5 @@
     </script>
   </div>
 </div>
+<script src="{% static 'payroll/action.js' %}"></script>
 {% endblock content %}
