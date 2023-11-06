@@ -71,9 +71,11 @@ from base.models import (
 )
 from base.filters import (
     ShiftRequestFilter,
+    ShiftRequestReGroup,
     WorkTypeRequestFilter,
     RotatingShiftAssignFilters,
     RotatingWorkTypeAssignFilter,
+    WorkTypeRequestReGroup,
 )
 from base.methods import (
     choosesubordinates,
@@ -1856,6 +1858,7 @@ def work_type_request_view(request):
             "f": f,
             "form": form,
             "requests_ids": requests_ids,
+            "gp_fields": WorkTypeRequestReGroup.fields,
         },
     )
 
@@ -1867,6 +1870,7 @@ def work_type_request_search(request):
     """
     employee = Employee.objects.filter(employee_user_id=request.user).first()
     previous_data = request.GET.urlencode()
+    field = request.GET.get("field")
     f = WorkTypeRequestFilter(request.GET)
     work_typ_requests = filtersubordinates(request, f.qs, "base.add_worktyperequest")
     if set(WorkTypeRequest.objects.filter(employee_id=employee)).issubset(set(f.qs)):
@@ -1874,17 +1878,24 @@ def work_type_request_search(request):
             employee_id=employee
         )
     work_typ_requests = sortby(request, work_typ_requests, "orderby")
+    template="work_type_request/htmx/requests.html"
+    if field != "" and field is not None:
+        field_copy = field.replace(".", "__")
+        work_typ_requests = work_typ_requests.order_by(f"-{field_copy}")
+        template = "work_type_request/htmx/group_by.html"
+
     requests_ids = json.dumps(list(work_typ_requests.values_list("id", flat=True)))
     data_dict = parse_qs(previous_data)
     get_key_instances(WorkTypeRequest, data_dict)
     return render(
         request,
-        "work_type_request/htmx/requests.html",
+        template,
         {
             "data": paginator_qry(work_typ_requests, request.GET.get("page")),
             "pd": previous_data,
             "filter_dict": data_dict,
             "requests_ids": requests_ids,
+            "field":field,
         },
     )
 
@@ -2331,6 +2342,7 @@ def shift_request_view(request):
             "f": f,
             "form": form,
             "requests_ids": requests_ids,
+            "gp_fields": ShiftRequestReGroup.fields,
         },
     )
 
@@ -2343,6 +2355,7 @@ def shift_request_search(request):
     employee = Employee.objects.filter(employee_user_id=request.user).first()
     previous_data = request.GET.urlencode()
     f = ShiftRequestFilter(request.GET)
+    field = request.GET.get("field")
     shift_requests = filtersubordinates(request, f.qs, "base.add_shiftrequest")
     if set(ShiftRequest.objects.filter(employee_id=employee)).issubset(set(f.qs)):
         shift_requests = shift_requests | ShiftRequest.objects.filter(
@@ -2351,15 +2364,22 @@ def shift_request_search(request):
     shift_requests = sortby(request, shift_requests, "orderby")
     requests_ids = json.dumps(list(shift_requests.values_list("id", flat=True)))
     data_dict = parse_qs(previous_data)
+    template="shift_request/htmx/requests.html"
+    if field != "" and field is not None:
+        field_copy = field.replace(".", "__")
+        shift_requests = shift_requests.order_by(f"-{field_copy}")
+        template = "shift_request/htmx/group_by.html"
+
     get_key_instances(ShiftRequest, data_dict)
     return render(
         request,
-        "shift_request/htmx/requests.html",
+        template,
         {
             "data": paginator_qry(shift_requests, request.GET.get("page")),
             "pd": previous_data,
             "filter_dict": data_dict,
             "requests_ids": requests_ids,
+            "field":field,
         },
     )
 

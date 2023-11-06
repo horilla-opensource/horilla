@@ -199,3 +199,27 @@ class RotatingWorkTypeAssignFilter(FilterSet):
             "employee_id__employee_work_info__company_id",
             "employee_id__employee_work_info__shift_id",
         ]
+
+class ShiftRequestReGroup:
+    """
+    Class to keep the field name for group by option
+    """
+    fields = [
+        ("","Select"),
+        ("employee_id","Employee"),
+        ("shift_id","Requested Shift"),
+        ("previous_shift_id","Current Shift"),
+        ("requested_date","Requested Date"),
+    ]
+
+class WorkTypeRequestReGroup:
+    """
+    Class to keep the field name for group by option
+    """
+    fields = [
+        ("","Select"),
+        ("employee_id","Employee"),
+        ("work_type_id","Requested Work Type"),
+        ("previous_work_type_id","Current Work Type"),
+        ("requested_date","Requested Date"),
+    ]
