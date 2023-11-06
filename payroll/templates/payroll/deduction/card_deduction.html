@@ -2,7 +2,7 @@
 {% include 'filter_tags.html' %}
 <div class="oh-layout--grid-3">
       {% for deduction in deductions %}
-      <div class="oh-kanban-card" data-toggle="oh-modal-toggle" data-target="#DeductionModal" hx-get="{% url 'single-deduction-view' deduction.id %}" hx-target = "#OneDeductionTarget" >
+      <div class="oh-kanban-card" data-toggle="oh-modal-toggle" data-target="#DeductionModal" hx-get="{% url 'single-deduction-view' deduction.id %}?instances_ids={{deduction_ids}}" hx-target = "#OneDeductionTarget" >
         <div class="oh-kanban-card__avatar">
         <div class="oh-kanban-card__profile-container">
             <img

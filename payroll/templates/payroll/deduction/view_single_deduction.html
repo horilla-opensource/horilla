@@ -1,4 +1,17 @@
 {% load i18n %} {% load yes_no %}
+{% if request.GET.instances_ids %}
+<div class="oh-modal__dialog oh-modal__dialog--navigation m-0 p-0">
+    <button hx-get="{% url 'single-deduction-view' previous %}?instances_ids={{deduction_ids}}" hx-target = "#OneDeductionTarget" class="oh-modal__diaglog-nav oh-modal__nav-prev">
+        <ion-icon name="chevron-back-outline" class="md hydrated" role="img"
+        aria-label="chevron back outline"></ion-icon>
+    </button>
+
+    <button hx-get="{% url 'single-deduction-view' next  %}?instances_ids={{deduction_ids}}" hx-target = "#OneDeductionTarget" class="oh-modal__diaglog-nav oh-modal__nav-next">
+        <ion-icon name="chevron-forward-outline" class="md hydrated" role="img"
+        aria-label="chevron forward outline"></ion-icon>
+    </button>
+</div>
+{% endif %}
 <div class="oh-modal__dialog-header">
   <span class="oh-modal__dialog-title" id="addEmployeeObjectiveModalLabel">
     <h5 style="margin-bottom: 20px;">{{deduction.title}}</h5>
