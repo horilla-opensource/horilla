@@ -1,22 +1,17 @@
 {% load i18n %}
+{% if request.GET.instances_ids %}
 <div class="oh-modal__dialog oh-modal__dialog--navigation m-0 p-0">
-  <button class="oh-modal__diaglog-nav oh-modal__nav-prev">
-    <ion-icon
-      name="chevron-back-outline"
-      class="md hydrated"
-      role="img"
-      aria-label="chevron back outline"
-    ></ion-icon>
-  </button>
+    <button hx-get="{% url 'rshift-individual-view' previous %}?instances_ids={{assign_ids}}" hx-target = "#rotatingShiftAssignDetail" class="oh-modal__diaglog-nav oh-modal__nav-prev">
+        <ion-icon name="chevron-back-outline" class="md hydrated" role="img"
+        aria-label="chevron back outline"></ion-icon>
+    </button>
 
-  <button class="oh-modal__diaglog-nav oh-modal__nav-next">
-    <ion-icon
-      name="chevron-forward-outline"
-      class="md hydrated"
-      role="img"
-      aria-label="chevron forward outline"
-    ></ion-icon>
-  </button>
+    <button hx-get="{% url 'rshift-individual-view' next  %}?instances_ids={{assign_ids}}" hx-target = "#rotatingShiftAssignDetail" class="oh-modal__diaglog-nav oh-modal__nav-next">
+        <ion-icon name="chevron-forward-outline" class="md hydrated" role="img"
+        aria-label="chevron forward outline"></ion-icon>
+    </button>
+</div>
+{% endif %}
 </div>
 
 <div class="oh-timeoff-modal__profile-content">

@@ -911,6 +911,7 @@ def rotating_work_type_assign(request):
     rwork_type_assign = filtersubordinates(
         request, rwork_type_assign, "base.view_rotatingworktypeassign"
     )
+    assign_ids = json.dumps(list(rwork_type_assign.values_list("id", flat=True)))
 
     return render(
         request,
@@ -920,6 +921,7 @@ def rotating_work_type_assign(request):
             "rwork_type_assign": paginator_qry(
                 rwork_type_assign, request.GET.get("page")
             ),
+            "assign_ids": assign_ids,
         },
     )
 
@@ -988,6 +990,7 @@ def rotating_work_type_assign_view(request):
         request, rwork_type_assign, "base.view_rotatingworktypeassign"
     )
     rwork_type_assign = sortby(request, rwork_type_assign, "orderby")
+    assign_ids = json.dumps(list(rwork_type_assign.values_list("id", flat=True)))
     data_dict = parse_qs(previous_data)
     get_key_instances(RotatingWorkTypeAssign, data_dict)
     return render(
@@ -999,8 +1002,27 @@ def rotating_work_type_assign_view(request):
             ),
             "pd": previous_data,
             "filter_dict": data_dict,
+            "assign_ids": assign_ids,
         },
     )
+
+
+@login_required
+@manager_can_enter("base.view_rotatingworktypeassign")
+def rotating_work_individual_view(request, instance_id):
+    """
+    This view is used render detailed view of the rotating work type assign
+    """
+    instance = RotatingWorkTypeAssign.objects.get(id=instance_id)
+    context = {"instance": instance}
+    assign_ids_json = request.GET.get("instances_ids")
+    if assign_ids_json:
+        assign_ids = json.loads(assign_ids_json)
+        previous_id, next_id = closest_numbers(assign_ids, instance_id)
+        context["previous"] = previous_id
+        context["next"] = next_id
+        context["assign_ids"] = assign_ids_json
+    return render(request, "base/rotating_work_type/individual_view.html", context)
 
 
 @login_required
@@ -1462,9 +1484,11 @@ def rotating_shift_assign(request):
         queryset=RotatingShiftAssign.objects.filter(is_active=True)
     )
     rshift_assign = filter.qs
+
     rshift_assign = filtersubordinates(
         request, rshift_assign, "base.view_rotatingshiftassign"
     )
+    assign_ids = json.dumps(list(rshift_assign.values_list("id", flat=True)))
 
     return render(
         request,
@@ -1473,6 +1497,7 @@ def rotating_shift_assign(request):
             "form": form,
             "f": filter,
             "rshift_assign": paginator_qry(rshift_assign, request.GET.get("page")),
+            "assign_ids": assign_ids,
         },
     )
 
@@ -1540,6 +1565,7 @@ def rotating_shift_assign_view(request):
         request, rshift_assign, "base.view_rotatingshiftassign"
     )
     rshift_assign = sortby(request, rshift_assign, "orderby")
+    assign_ids = json.dumps(list(rshift_assign.values_list("id", flat=True)))
     data_dict = parse_qs(previous_data)
     get_key_instances(RotatingShiftAssign, data_dict)
     return render(
@@ -1549,8 +1575,27 @@ def rotating_shift_assign_view(request):
             "rshift_assign": paginator_qry(rshift_assign, request.GET.get("page")),
             "pd": previous_data,
             "filter_dict": data_dict,
+            "assign_ids": assign_ids,
         },
     )
+
+
+@login_required
+@manager_can_enter("base.view_rotatingworktypeassign")
+def rotating_shift_individual_view(request, instance_id):
+    """
+    This view is used render detailed view of the rotating shit assign
+    """
+    instance = RotatingShiftAssign.objects.get(id=instance_id)
+    context = {"instance": instance}
+    assing_ids_json = request.GET.get("instances_ids")
+    if assing_ids_json:
+        assign_ids = json.loads(assing_ids_json)
+        previous_id, next_id = closest_numbers(assign_ids, instance_id)
+        context["previous"] = previous_id
+        context["next"] = next_id
+        context["assign_ids"] = assign_ids
+    return render(request, "base/rotating_shift/individual_view.html", context)
 
 
 @login_required
@@ -2135,7 +2180,11 @@ def work_type_request_delete(request, id):
 
 
 @login_required
+@manager_can_enter("base.view_worktyperequest")
 def work_type_request_single_view(request, work_type_request_id):
+    """
+    This method is used to view details of an work type request
+    """
     work_type_request = WorkTypeRequest.objects.get(id=work_type_request_id)
     context = {"work_type_request": work_type_request}
     requests_ids_json = request.GET.get("instances_ids")
@@ -2316,6 +2365,7 @@ def shift_request_search(request):
 
 
 @login_required
+@manager_can_enter("base.view_shiftrequest")
 def shift_request_details(request, id):
     """
     This method is used to show shift request details in a modal
@@ -2756,28 +2806,4 @@ def validation_condition_update(request, obj_id):
         request,
         "attendance/break_point/condition.html",
         {"form": form, "condition": condition},
-    )
-
-
-@login_required
-@permission_required("base.view_rotatingworktypeassign")
-def rotating_work_individual_view(request, instance_id):
-    """
-    This view is used render detailed view of the rotating work type assign
-    """
-    instance = RotatingWorkTypeAssign.objects.get(id=instance_id)
-    return render(
-        request, "base/rotating_work_type/individual_view.html", {"instance": instance}
-    )
-
-
-@login_required
-@permission_required("base.view_rotatingworktypeassign")
-def rotating_shift_individual_view(request, instance_id):
-    """
-    This view is used render detailed view of the rotating shit assign
-    """
-    instance = RotatingShiftAssign.objects.get(id=instance_id)
-    return render(
-        request, "base/rotating_shift/individual_view.html", {"instance": instance}
     )
