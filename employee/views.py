@@ -57,7 +57,7 @@ from base.methods import (
     get_key_instances,
     sortby,
 )
-from employee.filters import EmployeeFilter
+from employee.filters import EmployeeFilter, EmployeeReGroup
 from employee.forms import (
     EmployeeExportExcelForm,
     EmployeeForm,
@@ -438,6 +438,7 @@ def employee_view(request):
             "view_type": view_type,
             "filter_dict": data_dict,
             "emp": emp,
+            "gp_fields": EmployeeReGroup.fields,
         },
     )
 
@@ -775,10 +776,10 @@ def employee_filter_view(request):
     This method is used to filter employee.
     """
     previous_data = request.GET.urlencode()
+    field = request.GET.get("field")
     employees = filtersubordinatesemployeemodel(
         request, Employee.objects.all(), "employee.view_employee"
     )
-    filter_obj = EmployeeFilter(request.GET, queryset=employees)
     page_number = request.GET.get("page")
     template = "employee_personal_info/employee_card.html"
     view = request.GET.get("view")
@@ -786,6 +787,13 @@ def employee_filter_view(request):
     get_key_instances(Employee, data_dict)
     if view == "list":
         template = "employee_personal_info/employee_list.html"
+    if field != "" and field is not None:
+        field_copy = field.replace(".", "__")
+        employees = employees.order_by(field_copy)
+        employees = employees.exclude(employee_work_info__isnull = True)
+        template = "employee_personal_info/group_by.html"
+    filter_obj = EmployeeFilter(request.GET, queryset=employees)
+
     return render(
         request,
         template,
@@ -793,6 +801,7 @@ def employee_filter_view(request):
             "data": paginator_qry(filter_obj.qs, page_number),
             "f": filter_obj,
             "pd": previous_data,
+            "field": field,
             "filter_dict": data_dict,
         },
     )

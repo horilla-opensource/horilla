@@ -83,3 +83,18 @@ class EmployeeFilter(FilterSet):
         self.form.initial["is_active"] = True
         for field in self.form.fields.keys():
             self.form.fields[field].widget.attrs["id"] = f"{uuid.uuid4()}"
+
+class EmployeeReGroup:
+    """
+    Class to keep the field name for group by option
+    """
+    fields = [
+        ("","select"),
+        ("employee_work_info.job_position_id","Job Position"),
+        ("employee_work_info.department_id","Department"),
+        ("employee_work_info.shift_id","Shift"),
+        ("employee_work_info.work_type_id","Work Type"),
+        ("employee_work_info.job_role_id","Job Role"),
+        ("employee_work_info.reporting_manager_id","Reporting Manager"),
+        ("employee_work_info.company_id","Company"),
+    ]

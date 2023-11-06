@@ -110,7 +110,7 @@
         name="page"
         class="oh-pagination__input"
         value="{{data.number}}"
-        hx-get="{% url 'employee-view-card' %}?{{pd}}"
+        hx-get="{% url 'employee-filter-view' %}?{{pd}}"
         hx-target="#view-container"
         min="1"
       />
@@ -119,18 +119,18 @@
     <ul class="oh-pagination__items">
       {% if data.has_previous %}
       <li class="oh-pagination__item oh-pagination__item--wide">
-        <a hx-target='#view-container' hx-get="{% url 'employee-view-card' %}?{{pd}}&page=1" class="oh-pagination__link">{% trans "First" %}</a>
+        <a hx-target='#view-container' hx-get="{% url 'employee-filter-view' %}?{{pd}}&page=1" class="oh-pagination__link">{% trans "First" %}</a>
       </li>
       <li class="oh-pagination__item oh-pagination__item--wide">
-        <a hx-target='#view-container' hx-get="{% url 'employee-view-card' %}?{{pd}}&page={{ data.previous_page_number }}" class="oh-pagination__link">{% trans "Previous" %}</a>
+        <a hx-target='#view-container' hx-get="{% url 'employee-filter-view' %}?{{pd}}&page={{ data.previous_page_number }}" class="oh-pagination__link">{% trans "Previous" %}</a>
       </li>
       {% endif %}
       {% if data.has_next %}
       <li class="oh-pagination__item oh-pagination__item--wide">
-        <a hx-target='#view-container' hx-get="{% url 'employee-view-card' %}?{{pd}}&page={{ data.next_page_number }}" class="oh-pagination__link">{% trans "Next" %}</a>
+        <a hx-target='#view-container' hx-get="{% url 'employee-filter-view' %}?{{pd}}&page={{ data.next_page_number }}" class="oh-pagination__link">{% trans "Next" %}</a>
       </li>
       <li class="oh-pagination__item oh-pagination__item--wide">
-        <a hx-target='#view-container' hx-get="{% url 'employee-view-card' %}?{{pd}}&page={{ data.paginator.num_pages }}" class="oh-pagination__link">{% trans "Last" %}</a>
+        <a hx-target='#view-container' hx-get="{% url 'employee-filter-view' %}?{{pd}}&page={{ data.paginator.num_pages }}" class="oh-pagination__link">{% trans "Last" %}</a>
       </li>
       {% endif %}
 
