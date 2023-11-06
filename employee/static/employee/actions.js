@@ -29,7 +29,7 @@ var deleteMessages = {
   fr: "Voulez-vous vraiment supprimer tous les employés sélectionnés?",
 };
 
-var norowMessages = {
+var noRowMessages = {
   ar: "لم يتم تحديد أي صفوف.",
   de: "Es wurden keine Zeilen ausgewählt.",
   es: "No se han seleccionado filas.",
@@ -153,6 +153,123 @@ function tickCheckboxes() {
   });
 }
 
+function selectAllInstances() {
+  var allEmployeeCount = 0;
+  $("#selectedInstances").attr("data-clicked", 1);
+  $("#selectedShow").removeAttr("style");
+  var savedFilters = JSON.parse(localStorage.getItem("savedFilters"));
+
+  if (savedFilters && savedFilters["filterData"] !== null) {
+    var filter = savedFilters["filterData"];
+
+    $.ajax({
+      url: "/employee/employee-select-filter",
+      data: { page: "all", filter: JSON.stringify(filter) },
+      type: "GET",
+      dataType: "json",
+      success: function (response) {
+        var employeeIds = response.employee_ids;
+
+        if (Array.isArray(employeeIds)) {
+          // Continue
+        } else {
+          console.error("employee_ids is not an array:", employeeIds);
+        }
+
+        allEmployeeCount = employeeIds.length;
+
+        for (var i = 0; i < employeeIds.length; i++) {
+          var empId = employeeIds[i];
+          $("#" + empId).prop("checked", true);
+        }
+        $("#selectedInstances").attr("data-ids", JSON.stringify(employeeIds));
+
+        count = makeListUnique(employeeIds);
+        tickCheckboxes(count);
+      },
+      error: function (xhr, status, error) {
+        console.error("Error:", error);
+      },
+    });
+  } else {
+    $.ajax({
+      url: "/employee/employee-select",
+      data: { page: "all" },
+      type: "GET",
+      dataType: "json",
+      success: function (response) {
+        var employeeIds = response.employee_ids;
+
+        if (Array.isArray(employeeIds)) {
+          // Continue
+        } else {
+          console.error("employee_ids is not an array:", employeeIds);
+        }
+
+        allEmployeeCount = employeeIds.length;
+
+        for (var i = 0; i < employeeIds.length; i++) {
+          var empId = employeeIds[i];
+          $("#" + empId).prop("checked", true);
+        }
+        $("#selectedInstances").attr("data-ids", JSON.stringify(employeeIds));
+
+        count = makeListUnique(employeeIds);
+        tickCheckboxes(count);
+      },
+      error: function (xhr, status, error) {
+        console.error("Error:", error);
+      },
+    });
+  }
+
+  $(".filterButton").click(function () {
+    var ids = JSON.parse($("#selectedInstances").attr("data-ids") || "[]");
+    uniqueIds = makeListUnique(ids);
+    selectedCount = uniqueIds.length;
+    if (allEmployeeCount === selectedCount) {
+      $("#tick").prop("checked", false);
+      $("#selectedInstances").attr("data-clicked", 0);
+      $("#selectedInstances").attr("data-ids", JSON.stringify([]));
+      count = [];
+      tickCheckboxes(count);
+    }
+  });
+}
+
+function unselectAllInstances() {
+  $("#selectedInstances").attr("data-clicked", 0);
+
+  $.ajax({
+    url: "/employee/employee-select",
+    data: { page: "all", filter: "{}" },
+    type: "GET",
+    dataType: "json",
+    success: function (response) {
+      var employeeIds = response.employee_ids;
+
+      if (Array.isArray(employeeIds)) {
+        // Continue
+      } else {
+        console.error("employee_ids is not an array:", employeeIds);
+      }
+
+      for (var i = 0; i < employeeIds.length; i++) {
+        var empId = employeeIds[i];
+        $("#" + empId).prop("checked", false);
+        $("#tick").prop("checked", false);
+      }
+      $("#selectedInstances").attr("data-ids", JSON.stringify([]));
+
+      count = [];
+      tickCheckboxes(count);
+    },
+    error: function (xhr, status, error) {
+      console.error("Error:", error);
+    },
+  });
+}
+
 $("#exportInstances").click(function (e) {
   var currentDate = new Date().toISOString().slice(0, 10);
   var languageCode = null;
@@ -207,7 +324,7 @@ $("#archiveEmployees").click(function (e) {
   getCurrentLanguageCode(function (code) {
     languageCode = code;
     var confirmMessage = archiveMessages[languageCode];
-    var textMessage = norowMessages[languageCode];
+    var textMessage = noRowMessages[languageCode];
     ids = [];
     ids.push($("#selectedInstances").attr("data-ids"));
     ids = JSON.parse($("#selectedInstances").attr("data-ids"));
@@ -259,7 +376,7 @@ $("#unArchiveEmployees").click(function (e) {
   getCurrentLanguageCode(function (code) {
     languageCode = code;
     var confirmMessage = unarchiveMessages[languageCode];
-    var textMessage = norowMessages[languageCode];
+    var textMessage = noRowMessages[languageCode];
     ids = [];
     ids.push($("#selectedInstances").attr("data-ids"));
     ids = JSON.parse($("#selectedInstances").attr("data-ids"));
@@ -313,7 +430,7 @@ $("#deleteEmployees").click(function (e) {
   getCurrentLanguageCode(function (code) {
     languageCode = code;
     var confirmMessage = deleteMessages[languageCode];
-    var textMessage = norowMessages[languageCode];
+    var textMessage = noRowMessages[languageCode];
     ids = [];
     ids.push($("#selectedInstances").attr("data-ids"));
     ids = JSON.parse($("#selectedInstances").attr("data-ids"));
