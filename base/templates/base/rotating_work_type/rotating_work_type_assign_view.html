@@ -32,7 +32,7 @@
     </div>
     <div class="oh-sticky-table__tbody">
       {% for rwork_type in rwork_type_assign %}
-      <div class="oh-sticky-table__tr" hx-get="{% url "rwork-individual-view" rwork_type.id %}" data-toggle="oh-modal-toggle" data-target="#rotating-work-type-detail-modal" hx-target="#rotatingWorkTypeAssignDetail" draggable="true">
+      <div class="oh-sticky-table__tr" hx-get="{% url "rwork-individual-view" rwork_type.id %}?instances_ids={{assign_ids}}" data-toggle="oh-modal-toggle" data-target="#rotating-work-type-detail-modal" hx-target="#rotatingWorkTypeAssignDetail" draggable="true">
         <div class="oh-sticky-table__sd">
           <div class="d-flex">
             <div class="">
