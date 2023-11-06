@@ -1,4 +1,23 @@
 {% load i18n %} {% load yes_no %}
+{% if request.GET.instances_ids %}
+<div class="oh-modal__dialog oh-modal__dialog--navigation m-0 p-0">
+    <button 
+        hx-get="{% url 'shift-request-details' previous %}?instances_ids={{requests_ids}}" 
+        hx-target="#shiftRequestDetailTarget"  
+        class="oh-modal__diaglog-nav oh-modal__nav-prev">
+        <ion-icon name="chevron-back-outline" class="md hydrated" role="img"
+        aria-label="chevron back outline"></ion-icon>
+    </button>
+
+    <button  
+        hx-get="{% url 'shift-request-details' next %}?instances_ids={{requests_ids}}" 
+        hx-target="#shiftRequestDetailTarget"  
+        class="oh-modal__diaglog-nav oh-modal__nav-next">
+        <ion-icon name="chevron-forward-outline" class="md hydrated" role="img"
+        aria-label="chevron forward outline"></ion-icon>
+    </button>
+</div>
+{% endif %}
 <div class="oh-modal__dialog-header">
     <span class="oh-modal__dialog-title" id="shiftRequestDetailTitle">
         <h5 style="margin-bottom: 20px;">{{shift_request.employee_id}}</h5>

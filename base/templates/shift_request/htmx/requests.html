@@ -37,7 +37,7 @@
           <div class="oh-sticky-table__tbody">
             <div class="oh-sticky-table__tr" 
                 draggable="true"
-                hx-get="{% url 'shift-request-details' shift_request.id %}" 
+                hx-get="{% url 'shift-request-details' shift_request.id %}?instances_ids={{requests_ids}}" 
                 hx-target="#shiftRequestDetailTarget" 
                 data-toggle='oh-modal-toggle' 
                 data-target = '#shiftRequestDetailModal' 

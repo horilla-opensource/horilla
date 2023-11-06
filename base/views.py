@@ -19,6 +19,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import Group, User, Permission
 from attendance.forms import AttendanceValidationConditionForm
 from attendance.models import AttendanceValidationCondition
+from attendance.methods.closest_numbers import closest_numbers
 from base.decorators import (
     shift_request_change_permission,
     work_type_request_change_permission,
@@ -1793,6 +1794,7 @@ def work_type_request_view(request):
     work_type_requests = work_type_requests | WorkTypeRequest.objects.filter(
         employee_id=employee
     )
+    requests_ids = json.dumps(list(work_type_requests.values_list("id", flat=True)))
     f = WorkTypeRequestFilter()
     form = WorkTypeRequestForm()
     form = choosesubordinates(
@@ -1808,6 +1810,7 @@ def work_type_request_view(request):
             "data": paginator_qry(work_type_requests, request.GET.get("page")),
             "f": f,
             "form": form,
+            "requests_ids": requests_ids,
         },
     )
 
@@ -1826,6 +1829,7 @@ def work_type_request_search(request):
             employee_id=employee
         )
     work_typ_requests = sortby(request, work_typ_requests, "orderby")
+    requests_ids = json.dumps(list(work_typ_requests.values_list("id", flat=True)))
     data_dict = parse_qs(previous_data)
     get_key_instances(WorkTypeRequest, data_dict)
     return render(
@@ -1835,6 +1839,7 @@ def work_type_request_search(request):
             "data": paginator_qry(work_typ_requests, request.GET.get("page")),
             "pd": previous_data,
             "filter_dict": data_dict,
+            "requests_ids": requests_ids,
         },
     )
 
@@ -2131,14 +2136,19 @@ def work_type_request_delete(request, id):
 
 @login_required
 def work_type_request_single_view(request, work_type_request_id):
-    try:
-        work_type_request = WorkTypeRequest.objects.get(id=work_type_request_id)
-    except WorkTypeRequest.DoesNotExist:
-        messages.error(request, _("Work type request not found."))
+    work_type_request = WorkTypeRequest.objects.get(id=work_type_request_id)
+    context = {"work_type_request": work_type_request}
+    requests_ids_json = request.GET.get("instances_ids")
+    if requests_ids_json:
+        requests_ids = json.loads(requests_ids_json)
+        previous_id, next_id = closest_numbers(requests_ids, work_type_request_id)
+        context["requests_ids"] = requests_ids_json
+        context["previous"] = previous_id
+        context["next"] = next_id
     return render(
         request,
         "work_type_request/htmx/work_type_request_single_view.html",
-        context={"work_type_request": work_type_request},
+        context,
     )
 
 
@@ -2255,6 +2265,7 @@ def shift_request_view(request):
         request, ShiftRequest.objects.all(), "base.add_shiftrequest"
     )
     shift_requests = shift_requests | ShiftRequest.objects.filter(employee_id=employee)
+    requests_ids = json.dumps(list(shift_requests.values_list("id", flat=True)))
     f = ShiftRequestFilter()
     form = ShiftRequestForm()
     form = choosesubordinates(
@@ -2270,6 +2281,7 @@ def shift_request_view(request):
             "data": paginator_qry(shift_requests, request.GET.get("page")),
             "f": f,
             "form": form,
+            "requests_ids": requests_ids,
         },
     )
 
@@ -2288,6 +2300,7 @@ def shift_request_search(request):
             employee_id=employee
         )
     shift_requests = sortby(request, shift_requests, "orderby")
+    requests_ids = json.dumps(list(shift_requests.values_list("id", flat=True)))
     data_dict = parse_qs(previous_data)
     get_key_instances(ShiftRequest, data_dict)
     return render(
@@ -2297,6 +2310,7 @@ def shift_request_search(request):
             "data": paginator_qry(shift_requests, request.GET.get("page")),
             "pd": previous_data,
             "filter_dict": data_dict,
+            "requests_ids": requests_ids,
         },
     )
 
@@ -2309,12 +2323,20 @@ def shift_request_details(request, id):
         id : shift request instance id
     """
     shift_request = ShiftRequest.objects.get(id=id)
+    requests_ids_json = request.GET.get("instances_ids")
+    context = {
+        "shift_request": shift_request,
+    }
+    if requests_ids_json:
+        requests_ids = json.loads(requests_ids_json)
+        previous_id, next_id = closest_numbers(requests_ids, id)
+        context["previous"] = previous_id
+        context["next"] = next_id
+        context["requests_ids"] = requests_ids_json
     return render(
         request,
         "shift_request/htmx/shift_request_detail.html",
-        {
-            "shift_request": shift_request,
-        },
+        context,
     )
 
 
@@ -2744,7 +2766,10 @@ def rotating_work_individual_view(request, instance_id):
     This view is used render detailed view of the rotating work type assign
     """
     instance = RotatingWorkTypeAssign.objects.get(id=instance_id)
-    return render(request, "base/rotating_work_type/individual_view.html",{"instance":instance})
+    return render(
+        request, "base/rotating_work_type/individual_view.html", {"instance": instance}
+    )
+
 
 @login_required
 @permission_required("base.view_rotatingworktypeassign")
@@ -2753,4 +2778,6 @@ def rotating_shift_individual_view(request, instance_id):
     This view is used render detailed view of the rotating shit assign
     """
     instance = RotatingShiftAssign.objects.get(id=instance_id)
-    return render(request, "base/rotating_shift/individual_view.html",{"instance":instance})
+    return render(
+        request, "base/rotating_shift/individual_view.html", {"instance": instance}
+    )
