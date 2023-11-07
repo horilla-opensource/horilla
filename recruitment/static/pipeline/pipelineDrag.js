@@ -57,7 +57,7 @@ function stageSequenceGet(stage) {
       sequence: JSON.stringify(sequence),
     },
     success: function (response) {
-      count_element();
+      // count_element();
     },
   });
 }

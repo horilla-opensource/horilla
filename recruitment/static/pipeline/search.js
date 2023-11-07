@@ -26,21 +26,36 @@ $(document).ready(function () {
       var candidate = $(this).attr("data-candidate");
       if (candidate.toLowerCase().includes(search)) {
         $(this).show();
+        $(this).addClass("search-highlight");
       } else {
         $(this).hide();
+        $(this).removeClass("search-highlight");
+
       }
-      let stageId = $(this).parent().attr("data-stage-id");
-      var count = $(this).parent().find(".candidate:visible").length;
-      badge = $(`#stageCount${stageId}`).html(count);
-      $(`#stageCount${stageId}`).attr("title", `${count} candidates`);
     });
-    $(".oh-filter-tag.filter-field.pipelineSearch").remove();
+    if (search == "") {
+      $(".search-highlight").removeClass("search-highlight");        
+      $('div.change-cand').show();
+
+    }
+    $(".pipelineSearch").remove();
+    $(`[name="job_pos_id"]`).val("")
+    $(`[name="job_pos_id"]`).change()
+    $("#filter_item").click()
+
     if (search != "") {
-      $(".oh-filter-tag-container.filter-value").append(
-        '<span class="oh-filter-tag filter-field pipelineSearch" onclick="closeTag(this)">Search : ' +
+      $("#filterTagContainerSectionNav").append(
+          '<span class="oh-titlebar__tag filter-field pipelineSearch">Search :' +
           search +
-          '<button class="oh-filter-tag__close" id="close"><ion-icon name="close-outline" role="img" class="md hydrated" aria-label="close outline"></ion-icon></button></span>'
+          `<button class="oh-titlebar__tag-close" onclick="$('#pipelineSearch').val('');$('#pipelineSearch').keyup()">
+            <ion-icon name="close-outline">
+            </ion-icon>
+          </button>
+        </span>`
       );
+      $('div.change-cand:not(.search-highlight)').hide();
+    }else{
+      $('div.change').show()
     }
   });
   function count_element() {
@@ -74,11 +89,15 @@ $(document).ready(function () {
           $(this).hide();
         }
       });
-      $(".oh-filter-tag-container.filter-value").append(
-        '<span class="oh-filter-tag filter-field job_pos_id" onclick="closeTag(this)">Job position : ' +
-          search +
-          '<button class="oh-filter-tag__close" id="close"><ion-icon name="close-outline" role="img" class="md hydrated" aria-label="close outline"></ion-icon></button></span>'
-      );
+      $("#filterTagContainerSectionNav").append(
+        '<span class="oh-titlebar__tag filter-field pipelineSearch">Search :' +
+        search +
+        `<button class="oh-titlebar__tag-close" onclick="$('#pipelineSearch').val('');$('#pipelineSearch').keyup()">
+          <ion-icon name="close-outline">
+          </ion-icon>
+        </button>
+      </span>`
+    );
     }
   }
 
