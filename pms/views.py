@@ -16,7 +16,7 @@ from notifications.signals import notify
 from base.methods import get_key_instances
 from base.models import Department, JobPosition
 from employee.models import Employee, EmployeeWorkInformation
-from pms.filters import KeyResultFilter, ObjectiveFilter, FeedbackFilter
+from pms.filters import KeyResultFilter, ObjectiveFilter, FeedbackFilter, ObjectiveReGroup
 from django.db.models import ProtectedError
 from pms.models import (
     EmployeeKeyResult,
@@ -214,6 +214,7 @@ def objective_filter_pagination(request, objective_own, objective_all):
     """
     previous_data = request.GET.urlencode()
     initial_data = {"archive": False}  # set initial value of archive filter to False
+    field = request.GET.get("field")
     if request.GET.get("status") != "Closed":
         objective_own = objective_own
         objective_all = objective_all
@@ -222,9 +223,13 @@ def objective_filter_pagination(request, objective_own, objective_all):
     )
     objective_filter_all = ObjectiveFilter(
         request.GET or initial_data, queryset=objective_all
-    )
+    ).qs
+    if field != "" and field is not None:
+        field_copy = field.replace(".", "__")
+        objective_filter_all = objective_filter_all.order_by(field_copy)
+
     objective_paginator_own = Paginator(objective_filter_own.qs, 50)
-    objective_paginator_all = Paginator(objective_filter_all.qs, 50)
+    objective_paginator_all = Paginator(objective_filter_all, 50)
     page_number = request.GET.get("page")
     objectives_own = objective_paginator_own.get_page(page_number)
     objectives_all = objective_paginator_all.get_page(page_number)
@@ -239,6 +244,8 @@ def objective_filter_pagination(request, objective_own, objective_all):
         "pg": previous_data,
         "current_date": now,
         "filter_dict": data_dict,
+        "gp_fields":ObjectiveReGroup.fields,
+        "field":field,
     }
     return context
 
@@ -336,8 +343,10 @@ def objective_list_search(request):
         )
         objective_all = EmployeeObjective.objects.none()
         context = objective_filter_pagination(request, objective_own, objective_all)
-
-    return render(request, "okr/objective_list.html", context)
+    template = "okr/objective_list.html"
+    if request.GET.get("field") != "" and request.GET.get("field") is not None:
+        template = "okr/group_by.html"
+    return render(request, template, context)
 
 
 def objective_history(emp_obj_id):

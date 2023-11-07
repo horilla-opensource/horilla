@@ -159,3 +159,14 @@ class KeyResultFilter(CustomFilterSet):
     class Meta:
         model = EmployeeKeyResult
         fields = "__all__"
+
+
+class ObjectiveReGroup:
+    """
+    Class to keep the field name for group by option
+    """
+    fields = [
+        ("","select"),
+        ("employee_id","Owner"),
+        ("status","Status"),
+        ]

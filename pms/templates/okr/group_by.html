@@ -1,0 +1,495 @@
+{% load attendancefilters %} {% load basefilters %} {% load static %} 
+{% load i18n %} {% include 'filter_tags.html' %}
+
+
+
+
+{% load i18n %}
+{% load static %}
+{% load basefilters %}
+<!-- filter items showing here -->
+{% include 'filter_tags.html' %}
+<div class="d-flex flex-row-reverse">
+  <span class="m-3 review_ongoing" hx-get="{% url "objective-list-search" %}?{{pd}}&status=At Risk" hx-target="#objective_list" style="cursor: pointer">
+      <span class="oh-dot oh-dot--small me-1" style="background-color:red"></span>
+      {% trans "At Risk" %}
+    </span>
+  <span class="m-3 review_ongoing" hx-get="{% url "objective-list-search" %}?{{pd}}&status=Not Started" hx-target="#objective_list" style="cursor: pointer">
+    <span class="oh-dot oh-dot--small me-1" style="background-color:grey"></span>
+    {% trans "Not Started" %}
+  </span>
+  <span class="m-3 paid" hx-get="{% url "objective-list-search" %}?{{pd}}&status=Behind" hx-target="#objective_list" style="cursor: pointer">
+    <span class="oh-dot oh-dot--small me-1" style="background-color:orange"></span>
+    {% trans "Behind" %}
+  </span>
+  <span class="m-3 confirmed" hx-get="{% url "objective-list-search" %}?{{pd}}&status=Closed" hx-target="#objective_list" style="cursor: pointer">
+    <span class="oh-dot oh-dot--small me-1" style="background-color:rgb(103, 171, 238)"></span>
+    {% trans "Closed" %}
+  </span>
+  <span class="m-3 paid" hx-get="{% url "objective-list-search" %}?{{pd}}&status=On Track" hx-target="#objective_list" style="cursor: pointer">
+    <span class="oh-dot oh-dot--small me-1" style="background-color:yellowgreen"></span>
+    {% trans "On Track" %}
+  </span>
+</div>
+<div class="oh-tabs" >
+
+<ul class="oh-tabs__tablist" >
+  <li class="oh-tabs__tab " data-target="#tab_1">
+    {% trans "Self Objective" %}
+    <span class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round ms-2 mr-2" id="" data-category-id="1" title="{{own_objectives|length}} objective" onclick="event.stopPropagation()">{{own_objectives|length}}</span>
+  </li>
+  <!-- normal user can't view all objective  -->
+  {% if perms.pms.view_employeeeobjective or request.user|filtersubordinates %}
+  <li class="oh-tabs__tab" data-target="#tab_2">
+    {% trans "All Objective" %}
+    <span class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round ms-2 mr-2" id="" data-category-id="1" title="{{all_objectives|length}} objective" onclick="event.stopPropagation()">{{all_objectives|length}}</span>
+  </li>
+  {% endif %}
+</ul>
+<div >
+  <div class="oh-tabs__contents">
+    <!-- own objective-->
+    <div class="oh-tabs__content" id="tab_1">
+      {% if own_objectives.object_list %}
+      <div class="oh-sticky-table">
+        <div class="oh-sticky-table__table">
+          <div class="oh-sticky-table__thead">
+            <div class="oh-sticky-table__tr">
+              <div class="oh-sticky-table__th" style="width:10px;">
+                <input
+                  type="checkbox"
+                  class="own-objects oh-input oh-input__checkbox"
+                  id = "Ownobjectives"
+                  title='{% trans "Select All" %}'
+                />
+              </div>
+              <div class="oh-sticky-table__th">{% trans "Owner" %}</div>
+              <div class="oh-sticky-table__th">{% trans "Objective" %}</div>
+              <div class="oh-sticky-table__th">{% trans "Due In" %}</div>
+              <div class="oh-sticky-table__th">{% trans "Status" %}</div>
+              <div class="oh-sticky-table__th"></div>
+            </div>
+          </div>
+          <div class="oh-sticky-table__tbody">
+            {% for own_objective in own_objectives.object_list %}
+            <div class="oh-sticky-table__tr" draggable="true">
+              <div class="oh-sticky-table__sd {% if own_objective.status == 'Closed' %}row-status--blue 
+                {% elif own_objective.status == 'On Track' %}row-status--yellow {% elif own_objective.status == 'Not Started' %}row-status--gray 
+                {% elif own_objective.status == 'Behind' %}row-status--orange {% elif own_objective.status == 'At Risk' %}row-status--red{% endif %}">
+                <div class="d-flex">
+                  <div>
+                    <input
+                      type="checkbox"
+                      id="{{own_objective.id}}"
+                      value="{{own_objective.id}}"
+                      class="oh-input objective-checkbox oh-input__checkbox own-objects-row ms-2"
+                    />
+                  </div>
+              </div>
+              </div>
+              <a class="oh-sticky-table__td" style="color: inherit; text-decoration: none"
+                href="{% url 'objective-detailed-view' emp_obj_id=own_objective.id %} ">
+                <div class="oh-profile oh-profile--md">
+                  <div class="oh-profile__avatar mr-1">
+                    <img
+                      src="{{own_objective.employee_id.get_avatar}}"
+                      class="oh-profile__image"
+                    />
+                  </div>
+                  <span class="oh-profile__name oh-text--dark">{{own_objective.employee_id}}</span>
+                </div>
+              </a>
+              <a
+                style="color: inherit; text-decoration: none"
+                href="{% url 'objective-detailed-view' emp_obj_id=own_objective.id %} "
+                class="oh-sticky-table__td"
+                >{{own_objective.objective}}</a
+              >
+              <a
+                style="color: inherit; text-decoration: none"
+                href="{% url 'objective-detailed-view' emp_obj_id=own_objective.id %} "
+                class="oh-sticky-table__td"
+              >
+                {{ current_date|timesince:own_objective.end_date }}
+              </a>
+              <a
+                style="color: inherit; text-decoration: none"
+                href="{% url 'objective-detailed-view' emp_obj_id=own_objective.id %} "
+                class="oh-sticky-table__td"
+              >
+                <div class="d-flex align-items-center">
+                  <span
+                    class="oh-dot oh-dot--small  me-1 oh-dot--color{{own_objective.status}}"
+                  ></span
+                  ><span>{{own_objective.get_status_display}}</span>
+                </div>
+              </a>
+              <div class="oh-sticky-table__td">
+                <div class="oh-btn-group">
+                  {% if own_objective.archive %}
+                  <form
+                    action="{%url 'objective-archive' id=own_objective.id %}?{{pg}}"
+                    onsubmit="return confirm('{% trans "Do you want un-archive this OKR ?" %}')"
+                    method="post"
+                    style="display: contents"
+                  >
+                    {% csrf_token %}
+                    <button
+                      class="oh-btn oh-btn--danger-outline w-100"
+                      title="{% trans 'Un-archive' %}"
+                    >
+                      <ion-icon
+                        name="archive-sharp"
+                        role="img"
+                        class="md hydrated"
+                        aria-label="archive sharp"
+                      ></ion-icon>
+                    </button>
+                  </form>
+                  {% else %}
+                  <form
+                    action="{%url 'objective-archive' id=own_objective.id %}?{{pg}}"
+                    onsubmit="return confirm('{% trans "Do you want archive this OKR ?" %}')"
+                    method="post"
+                    style="display: contents"
+                  >
+                    {% csrf_token %}
+                    <button
+                      class="oh-btn oh-btn--danger-outline w-100"
+                      title="{% trans 'Archive' %}"
+                    >
+                      <ion-icon
+                        name="archive-sharp"
+                        role="img"
+                        class="md hydrated"
+                        aria-label="archive sharp"
+                      ></ion-icon>
+                    </button>
+                  </form>
+                  {% endif %} {% if perms.pms.delete_employeeobjective %}
+                  <form
+                    action="{% url 'objective-delete' obj_id=own_objective.id %}"
+                    onsubmit="return confirm('{% trans "Do you want Delete this OKR ?" %}')"
+                    method="post"
+                    style="display: contents"
+                  >
+                    {% csrf_token %}
+                    <button
+                      class="oh-btn oh-btn--danger-outline w-100"
+                      title="{% trans 'Delete' %}"
+                    >
+                      <ion-icon
+                        name="trash-outline"
+                        role="img"
+                        class="md hydrated"
+                        aria-label="trash outline"
+                      ></ion-icon>
+                    </button>
+                  </form>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+      <!-- pagination start -->
+      <div class="oh-pagination">
+        <span
+          class="oh-pagination__page"
+          data-toggle="modal"
+          data-target="#addEmployeeModal"
+        ></span>
+        <nav class="oh-pagination__nav">
+          <div class="oh-pagination__input-container me-3">
+            <span class="oh-pagination__label me-1">{% trans "Page" %}</span>
+            <input
+              type="number"
+              name="page"
+              class="oh-pagination__input"
+              value="{{own_objectives.number }}"
+              min="1"
+              hx-get="{% url 'objective-list-search' %}?{{pg}}"
+              hx-target="#objective_list"
+            />
+            <span class="oh-pagination__label"
+              >{% trans "of" %} {{ own_objectives.paginator.num_pages }}</span
+            >
+          </div>
+          <ul class="oh-pagination__items">
+            {% if own_objectives.has_previous %}
+            <li class="oh-pagination__item oh-pagination__item--wide">
+              <a
+                hx-get="{% url 'objective-list-search' %}?{{pg}}&page=1"
+                class="oh-pagination__link"
+                hx-target="#objective_list"
+                >{% trans "First" %}</a
+              >
+            </li>
+            <li class="oh-pagination__item oh-pagination__item--wide">
+              <a
+                hx-get="{% url 'objective-list-search' %}?{{pg}}&page={{ own_objectives.previous_page_number }}"
+                class="oh-pagination__link"
+                hx-target="#objective_list"
+                >{% trans "Previous" %}</a
+              >
+            </li>
+            {%endif %} {% if own_objectives.has_next %}
+            <li class="oh-pagination__item oh-pagination__item--wide">
+              <a
+                hx-get="{% url 'objective-list-search' %}?{{pg}}&page={{ own_objectives.next_page_number }}"
+                class="btn btn-outline-secondary"
+                hx-target="#objective_list"
+                >{% trans "Next" %}</a
+              >
+            </li>
+            <li class="oh-pagination__item oh-pagination__item--wide">
+              <a
+                hx-get="{% url 'objective-list-search' %}?{{pg}}&page={{ own_objectives.paginator.num_pages }}"
+                hx-target="#objective_list"
+                class="oh-pagination__link"
+                >{% trans "Last" %}</a
+              >
+            </li>
+            {% endif %}
+          </ul>
+        </nav>
+      </div>
+      <!-- end of pagination -->
+      <!-- end of own objective -->
+      {% else %}
+      <div class="d-flex justify-content-center align-items-center" style="height:60vh">
+        <h5 class="oh-404__subtitle">{% trans "There are no Objectives available." %}</h5>
+      </div>
+      {% endif %}
+    </div>
+
+    <div class="oh-tabs__content" id="tab_2">
+      <!-- all  objectives -->
+        <div class="oh-card">
+            {% dynamic_regroup all_objectives.object_list by field as okr_grouper %} 
+            {% for okr_list in okr_grouper %}
+            <div class="oh-accordion-meta">
+                <div class="oh-accordion-meta__item">
+                    <div
+                        class="oh-accordion-meta__header"
+                        onclick='$(this).toggleClass("oh-accordion-meta__header--show");'
+                    >
+                        <span class="oh-accordion-meta__title pt-3 pb-3">
+                            <div class="oh-tabs__input-badge-container">
+                                <span
+                                    class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round mr-1"
+                                >
+                                    {{okr_list.list|length}}
+                                </span>
+                                {{okr_list.grouper}}
+                            </div>
+                        </span>
+                    </div>
+                    <div class="oh-accordion-meta__body d-none">
+                        <div class="oh-sticky-table oh-sticky-table--no-overflow mb-5">
+        
+                            <div class="oh-sticky-table">
+                                <div class="oh-sticky-table__table">
+                                    <div class="oh-sticky-table__thead">
+                                        <div class="oh-sticky-table__tr">
+                                            <div class="oh-sticky-table__th" style="width:10px;">
+                                                <input
+                                                type="checkbox"
+                                                class="all-objects oh-input oh-input__checkbox"
+                                                id = "Allobjectives"
+                                                title='{% trans "Select All" %}'
+                                                />
+                                            </div>
+                                            <div class="oh-sticky-table__th">{% trans "Owner" %}</div>
+                                            <div class="oh-sticky-table__th">{% trans "Objective" %}</div>
+                                            <div class="oh-sticky-table__th">{% trans "Due In" %}</div>
+                                            <div class="oh-sticky-table__th">{% trans "Status" %}</div>
+                                            <div class="oh-sticky-table__th"></div>
+                                        </div>
+                                    </div>
+                                    <div class="oh-sticky-table__tbody">
+                                        {% for all_objective in okr_list.list %}
+                                        <div class="oh-sticky-table__tr" draggable="true">
+                                            <div class="oh-sticky-table__sd {% if all_objective.status == 'Closed' %}row-status--blue 
+                                                {% elif all_objective.status == 'On Track' %}row-status--yellow {% elif all_objective.status == 'Not Started' %}row-status--gray 
+                                                {% elif all_objective.status == 'Behind' %}row-status--orange {% elif all_objective.status == 'At Risk' %}row-status--red{% endif %}">
+                                                <div class="d-flex">
+                                                    <div>
+                                                        <input
+                                                        type="checkbox"
+                                                        id="{{all_objective.id}}"
+                                                        value="{{all_objective.id}}"
+                                                        class="oh-input objective-checkbox oh-input__checkbox all-objects-row ms-2"
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <a class="oh-sticky-table__td" style="color: inherit; text-decoration: none"
+                                            href="{% url 'objective-detailed-view' emp_obj_id=all_objective.id %} "
+                                            >
+                                                <div class="oh-profile oh-profile--md">
+                                                    <div class="oh-profile__avatar mr-1">
+                                                        <img
+                                                        src="{{all_objective.employee_id.get_avatar}}"
+                                                        class="oh-profile__image"
+                                                        />
+                                                    </div>
+                                                    <span class="oh-profile__name oh-text--dark">{{all_objective.employee_id}}</span>
+                                                </div>
+                                            </a>
+                                            <a
+                                                style="color: inherit; text-decoration: none"
+                                                href="{% url 'objective-detailed-view' emp_obj_id=all_objective.id %} "
+                                                class="oh-sticky-table__td"
+                                                >{{all_objective.objective}}</a
+                                            >
+                                            <a
+                                                style="color: inherit; text-decoration: none"
+                                                href="{% url 'objective-detailed-view' emp_obj_id=all_objective.id %} "
+                                                class="oh-sticky-table__td"
+                                            >
+                                                {{ current_date|timesince:all_objective.end_date }}</a
+                                            >
+                                            <a
+                                                style="color: inherit; text-decoration: none"
+                                                href="{% url 'objective-detailed-view' emp_obj_id=all_objective.id %} "
+                                                class="oh-sticky-table__td"
+                                            >
+                                                <div class="d-flex align-items-center">
+                                                    <span
+                                                        class="oh-dot oh-dot--small  me-1 oh-dot--color{{all_objective.status}}"
+                                                    ></span
+                                                    ><span>{{all_objective.get_status_display}}</span>
+                                                </div>
+                                            </a>
+                                            <div class="oh-sticky-table__td">
+                                                <div class="oh-btn-group">
+                                                    {% if all_objective.archive %}
+                                                    <form
+                                                        action="{%url 'objective-archive' id=all_objective.id %}?{{pg}}"
+                                                        onsubmit="return confirm('{% trans "Do you want un-archive this OKR ?" %}')"
+                                                        method="post"
+                                                        style="display: contents"
+                                                    >
+                                                        {% csrf_token %}
+                                                        <button
+                                                        class="oh-btn oh-btn--danger-outline w-100"
+                                                        title="{% trans 'Un-archive' %}"
+                                                        >
+                                                            <ion-icon
+                                                                name="archive-sharp"
+                                                                role="img"
+                                                                class="md hydrated"
+                                                                aria-label="archive sharp"
+                                                            ></ion-icon>
+                                                        </button>
+                                                    </form>
+                                                    {% else %}
+                                                    <form
+                                                        action="{%url 'objective-archive' id=all_objective.id %}?{{pg}}"
+                                                        onsubmit="return confirm('{% trans "Do you want archive this OKR ?" %}')"
+                                                        method="post"
+                                                        style="display: contents"
+                                                    >
+                                                        {% csrf_token %}
+                                                        <button
+                                                        class="oh-btn oh-btn--danger-outline w-100"
+                                                        title="{% trans 'Archive' %}"
+                                                        >
+                                                        <ion-icon
+                                                            name="archive-sharp"
+                                                            role="img"
+                                                            class="md hydrated"
+                                                            aria-label="archive sharp"
+                                                        ></ion-icon>
+                                                        </button>
+                                                    </form>
+                                                    {% endif %} {% if perms.pms.delete_employeeobjective %}
+                                                    <form
+                                                        action="{% url 'objective-delete' obj_id=all_objective.id %}"
+                                                        onsubmit="return confirm('{% trans "Do you want delete this OKR ?" %}')"
+                                                        method="post"
+                                                        style="display: contents"
+                                                    >
+                                                        {% csrf_token %}
+                                                        <button
+                                                        class="oh-btn oh-btn--danger-outline w-100"
+                                                        title="{% trans 'Delete' %}"
+                                                        >
+                                                        <ion-icon
+                                                            name="trash-outline"
+                                                            role="img"
+                                                            class="md hydrated"
+                                                            aria-label="trash outline"
+                                                        ></ion-icon>
+                                                        </button>
+                                                    </form>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<script src="{% static 'src/okr/action.js' %}"></script>
+
+<script>
+  // TO recogonise recently used tab
+  $(document).ready(function () {
+    var activeTab = localStorage.getItem("activeTabPms");
+    if (activeTab != null) {
+      var tab = $(`[data-target="${activeTab}"]`);
+      var tabContent = $(activeTab);
+      $(tab).addClass( "oh-tabs__tab--active");
+      $(tabContent).addClass( "oh-tabs__content--active");
+    } else {
+      $('[data-target="#tab_1"]').attr(
+        "class",
+        "oh-tabs__tab oh-tabs__tab--active"
+      );
+      $("#tab_1").attr("class", "oh-tabs__content oh-tabs__content--active");
+    }
+    $(".oh-tabs__tab").click(function (e) {
+      var activeTab = $(this).attr("data-target");
+      $(".oh-tabs__content--active").toggleClass('oh-tabs__content--active');
+      $(".oh-tabs__tab--active").toggleClass('oh-tabs__tab--active');
+      $(`[data-target="${activeTab}"]`).toggleClass("oh-tabs__tab--active");
+      $(activeTab).toggleClass("oh-tabs__content--active");
+      localStorage.setItem("activeTabPms", activeTab);
+    });
+  });
+
+    $("#Allobjectives").click(function (e) {
+      var is_checked = $(this).is(":checked");
+      if (is_checked) {
+        $(".all-objects-row").prop("checked", true);
+      } else {
+        $(".all-objects-row").prop("checked", false);
+      }
+    });
+    
+    $("#Ownobjectives").click(function (e) {
+      var is_checked = $(this).is(":checked");
+      if (is_checked) {
+        $(".own-objects-row").prop("checked", true);
+      } else {
+        $(".own-objects-row").prop("checked", false);
+      }
+    });
+    
+</script>
