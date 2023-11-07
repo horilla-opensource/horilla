@@ -1,4 +1,9 @@
 {% extends 'index.html' %} {% load i18n %} {% block content %} {% load static %} {% load recruitmentfilters %}
+<style>
+  .search-highlight{
+    background-color: rgba(255, 68, 0, 0.076);
+  }
+</style>
 <script>
   $(document).ready(function () {
     $(".pipeline-toggle").click(function (e) {
