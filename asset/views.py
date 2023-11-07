@@ -25,7 +25,9 @@ from asset.forms import (
 )
 from asset.filters import (
     AssetAllocationFilter,
+    AssetAllocationReGroup,
     AssetRequestFilter,
+    AssetRequestReGroup,
     CustomAssetFilter,
     AssetCategoryFilter,
     AssetExportFilter,
@@ -635,6 +637,8 @@ def asset_allocate_return(request, asset_id):
 
 def filter_pagination_asset_request_allocation(request):
     asset_request_alloaction_search = request.GET.get("search")
+    request_field = request.GET.get("request_field")
+    allocation_field = request.GET.get("allocation_field")
     if asset_request_alloaction_search is None:
         asset_request_alloaction_search = ""
     employee = request.user.employee_get
@@ -667,13 +671,22 @@ def filter_pagination_asset_request_allocation(request):
     assets_filtered = CustomAssetFilter(request.GET, queryset=assets)
     asset_request_filtered = AssetRequestFilter(
         request.GET, queryset=asset_requests_queryset
-    )
+    ).qs
+    if request_field != "" and request_field is not None:
+        request_field_copy = request_field.replace(".", "__")
+        asset_request_filtered = asset_request_filtered.order_by(request_field_copy)
+
     asset_allocation_filtered = AssetAllocationFilter(
         request.GET, queryset=asset_allocations_queryset
-    )
+    ).qs
+
+    if allocation_field != "" and allocation_field is not None:
+        allocation_field_copy = allocation_field.replace(".", "__")
+        asset_allocation_filtered = asset_allocation_filtered.order_by(allocation_field_copy)
+
     asset_paginator = Paginator(assets_filtered.qs, 20)
-    asset_request_paginator = Paginator(asset_request_filtered.qs, 20)
-    asset_allocation_paginator = Paginator(asset_allocation_filtered.qs, 20)
+    asset_request_paginator = Paginator(asset_request_filtered, 20)
+    asset_allocation_paginator = Paginator(asset_allocation_filtered, 20)
     page_number = request.GET.get("page")
     assets = asset_paginator.get_page(page_number)
     asset_requests = asset_request_paginator.get_page(page_number)
@@ -687,10 +700,14 @@ def filter_pagination_asset_request_allocation(request):
         "asset_requests": asset_requests,
         "asset_allocations": asset_allocations,
         "assets_filter_form": assets_filtered.form,
-        "asset_request_filter_form": asset_request_filtered.form,
-        "asset_allocation_filter_form": asset_allocation_filtered.form,
+        "asset_request_filter_form": AssetRequestFilter(request.GET, queryset=asset_requests_queryset).form,
+        "asset_allocation_filter_form": AssetAllocationFilter(request.GET, queryset=asset_allocations_queryset).form,
         "pg": previous_data,
         "filter_dict":data_dict,
+        "gp_request_fields": AssetRequestReGroup.fields,
+        "gp_Allocation_fields": AssetAllocationReGroup.fields,
+        "request_field":request_field,
+        "allocation_field":allocation_field,
     }
 
 
@@ -704,8 +721,13 @@ def asset_request_alloaction_view(request):
         HttpResponse: The HTTP response object with the rendered HTML template.
     """
     context = filter_pagination_asset_request_allocation(request)
+    template = "request_allocation/asset_request_allocation_view.html"
+
+    if request.GET.get("request_field") != "" and request.GET.get("request_field") is not None or request.GET.get("allocation_field") != "" and request.GET.get("allocation_field") is not None:
+        template = "request_allocation/group_by.html"
+
     return render(
-        request, "request_allocation/asset_request_allocation_view.html", context
+        request, template , context
     )
 
 
@@ -718,8 +740,12 @@ def asset_request_alloaction_view_search_filter(request):
         Rendered HTTP response with the filtered and paginated asset request allocation list.
     """
     context = filter_pagination_asset_request_allocation(request)
+    template = "request_allocation/asset_request_allocation_list.html"
+    if request.GET.get("request_field") != "" and request.GET.get("request_field") is not None or request.GET.get("allocation_field") != "" and request.GET.get("allocation_field") is not None:
+        template = "request_allocation/group_by.html"
+
     return render(
-        request, "request_allocation/asset_request_allocation_list.html", context
+        request, template, context
     )
 
 

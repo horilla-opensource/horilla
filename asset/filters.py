@@ -204,3 +204,29 @@ class AssetCategoryFilter(CustomFilterSet):
         super(AssetCategoryFilter, self).__init__(*args, **kwargs)
         for visible in self.form.visible_fields():
             visible.field.widget.attrs["id"] = str(uuid.uuid4())
+
+
+class AssetRequestReGroup:
+    """
+    Class to keep the field name for group by option
+    """
+
+    fields = [
+        ("", "Select"),
+        ("requested_employee_id", "Employee"),
+        ("asset_category_id", "Asset Category"),
+        ("asset_request_date", "Request Date"),
+        ("asset_request_status", "Status"),
+        ]
+    
+class AssetAllocationReGroup:
+    """
+    Class to keep the field name for group by option
+    """
+
+    fields = [
+        ("", "Select"),
+        ("assigned_to_employee_id", "Employee"),
+        ("assigned_date", "Assigned Date"),
+        ("return_date", "Return Date"),
+        ]

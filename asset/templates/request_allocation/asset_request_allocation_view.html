@@ -81,10 +81,27 @@
                                                 </div>
                                             </div>
                                             <div class="col-sm-12 col-md-12 col-lg-12">
-                                                <div class="oh-input-group">
-                                                    <label class="oh-label">{% trans "Description" %}</label>
-                                                    {{ asset_request_filter_form.description| attr:"class:oh-input oh-input--textarea oh-input--block" }}
-                                                </div>
+                                                <div class="row">
+                                                    <div class="col-sm-12 col-md-12 col-lg-6">
+                                                      <div class="oh-input-group">
+                                                        <label class="oh-label">{% trans "Group By" %}</label>
+                                                      </div>
+                                                    </div>
+                                                    <div class="col-sm-12 col-md-12 col-lg-6 w-100">
+                                                      <div class="oh-input-group">
+                                                        <select
+                                                          class="oh-select mt-1"
+                                                          name="request_field"
+                                                          class="select2-selection select2-selection--single"
+                                                          id="gp_request"
+                                                        >
+                                                          {% for field in gp_request_fields %}
+                                                          <option value="{{ field.0 }}">{% trans field.1 %}</option>
+                                                          {% endfor %}
+                                                        </select>
+                                                      </div>
+                                                    </div>
+                                                  </div>
                                             </div>
                                         </div>
                                     </div>
@@ -126,10 +143,27 @@
                                                 </div>
                                             </div>
                                             <div class="col-sm-12 col-md-12 col-lg-12">
-                                                <div class="oh-input-group">
-                                                    <label class="oh-label">{% trans "Return Condition" %}</label>
-                                                    {{ asset_allocation_filter_form.return_condition| attr:"class:oh-input oh-input--textarea oh-input--block" }}
-                                                </div>
+                                                <div class="row">
+                                                    <div class="col-sm-12 col-md-12 col-lg-6">
+                                                      <div class="oh-input-group">
+                                                        <label class="oh-label">{% trans "Group By" %}</label>
+                                                      </div>
+                                                    </div>
+                                                    <div class="col-sm-12 col-md-12 col-lg-6 w-100">
+                                                      <div class="oh-input-group">
+                                                        <select
+                                                          class="oh-select mt-1"
+                                                          name="allocation_field"
+                                                          class="select2-selection select2-selection--single"
+                                                          id="gp_allocation"
+                                                        >
+                                                          {% for field in gp_Allocation_fields %}
+                                                          <option value="{{ field.0 }}">{% trans field.1 %}</option>
+                                                          {% endfor %}
+                                                        </select>
+                                                      </div>
+                                                    </div>
+                                                  </div>
                                             </div>
                                         </div>
                                     </div>
