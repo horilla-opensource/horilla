@@ -321,13 +321,12 @@
           url: '{% url "payslip-status-update-no-id" %}',
           data: {
             csrfmiddlewaretoken: getCookie("csrftoken"),
-            ids: JSON.stringify(ids),
+            ids: $("#selectedPayslip").attr("data-ids"),
             status: status,
           },
           success: function (response) {
             if (containerId == undefined) {
               allSelectedElements
-                .parent()
                 .parent()
                 .parent()
                 .attr("class", `oh-sticky-table__sd row-status--${color}`);
