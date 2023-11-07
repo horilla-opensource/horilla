@@ -678,7 +678,14 @@
     </ul>
   </div>
 </div>
-
+<style>
+  .highlight-selected{
+    background-color: rgba(255, 68, 0, 0.134);
+  }
+  .highlight-selected:hover{
+    background-color: rgba(255, 68, 0, 0.1);
+  }
+</style>
 <script>
   $("#sidebar").mouseover(function (e) {
     e.preventDefault();
@@ -798,4 +805,36 @@ function emptyChart(chart,args,options) {
       }   
     }
 }
+function highlightSelected() {
+    $.each($(".oh-sticky-table__tbody .oh-sticky-table__tr .centered-div [type=checkbox]"), function (indexInArray, checkbox) { 
+      $(checkbox).closest(".oh-sticky-table__tr").removeClass("highlight-selected")
+    });
+    $.each($(".oh-sticky-table__tbody .oh-sticky-table__tr .centered-div [type=checkbox]:checked"), function (indexInArray, checkbox) { 
+      $(checkbox).closest(".oh-sticky-table__tr").addClass("highlight-selected")
+    });
+}
+$(document).ready(function () {
+  $("[type=checkbox]").change(function (e) {
+    highlightSelected()
+  });
+  $("div.oh-checkpoint-badge").click(function (e) { 
+    setTimeout(() => {
+      highlightSelected()
+    }, 50);    
+  });
+
+});
+$(document).on("htmx:afterSwap", function (e) {
+  setTimeout(() => {
+  highlightSelected()
+  }, 210);
+  $("[type=checkbox]").change(function (e) {
+    highlightSelected()
+  });
+  $("span.oh-checkpoint-badge").click(function (e) { 
+    setTimeout(() => {
+      highlightSelected()
+    }, 50);   
+  });
+});
 </script>
