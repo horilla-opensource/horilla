@@ -107,8 +107,8 @@ def attendance_search(request):
     validate_attendances_ids = json.dumps(
         list(validate_attendances.values_list("id", flat=True))
     )
-    ot_attendances_ids = json.dumps(list(ot_attendances.values_list("id", flat=True)))
-    attendances_ids = json.dumps(list(attendances.values_list("id", flat=True)))
+    ot_attendances_ids = json.dumps(list(paginator_qry(ot_attendances, request.GET.get("opage")).object_list.values_list("id", flat=True)))
+    attendances_ids = json.dumps(list(paginator_qry(attendances, request.GET.get("page")).object_list.values_list("id", flat=True)))
     return render(
         request,
         template,
@@ -261,7 +261,7 @@ def filter_own_attendance(request):
     keys_to_remove = [key for key, value in data_dict.items() if value == ["unknown"]]
     for key in keys_to_remove:
         data_dict.pop(key)
-    attendances_ids = json.dumps(list(attendances.values_list("id", flat=True)))
+    attendances_ids = json.dumps(list(paginator_qry(attendances, request.GET.get("page")).object_list.values_list("id", flat=True)))
     return render(
         request,
         "attendance/own_attendance/attendances.html",
@@ -323,8 +323,8 @@ def search_attendance_requests(request):
     for key in keys_to_remove:
         data_dict.pop(key)
 
-    requests_ids = json.dumps(list(requests.values_list("id", flat=True)))
-    attendances_ids = json.dumps(list(attendances.values_list("id", flat=True)))
+    requests_ids = json.dumps(list(paginator_qry(requests, request.GET.get("rpage")).object_list.values_list("id", flat=True)))
+    attendances_ids = json.dumps(list(paginator_qry(attendances, request.GET.get("page")).object_list.values_list("id", flat=True)))
     return render(
         request,
         "requests/attendance/request_lines.html",
