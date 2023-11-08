@@ -20,7 +20,7 @@
 <div class="oh-layout--grid-3" >
 {% for leave_type in leave_types %}
       <div class="oh-kanban-card" data-toggle="oh-modal-toggle" data-target="#singleModal"
-      hx-get="{% url 'leave-type-individual-view' leave_type.id %}" hx-target="#singleView">
+      hx-get="{% url 'leave-type-individual-view' leave_type.id %}?instances_ids={{requests_ids}}" hx-target="#singleView">
         <div class="oh-kanban-card__avatar">
           <div class="oh-kanban-card__profile-container">
             <img src="{{leave_type.get_avatar}}" class="oh-kanban-card__profile-image" alt="Username" />

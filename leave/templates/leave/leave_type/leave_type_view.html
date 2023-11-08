@@ -39,8 +39,8 @@
           <div class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4" x-show="open" style="display: none;"
             @click.outside="open = false">
             <div class="oh-dropdown__filter-body">
-              <div class="oh-accordion">
-                <div class="oh-accordion-header">{% trans "Leave Type" %}</div>
+              <div class="">
+                <div class="oh-accordion-header" onclick="event.stopPropagation();$(this).parent().toggleClass('oh-accordion--show');">{% trans "Leave Type" %}</div>
                 <div class="oh-accordion-body">
                   <div class="row">
                     <div class="col-sm-12 col-md-12 col-lg-6">
@@ -122,7 +122,7 @@
         <ion-icon name="close-outline"></ion-icon>
       </button>
     </div>
-    <div class="oh-modal__dialog-body" id="singleView"></div>
+    <div class="oh-modal__dialog-body  oh-modal__dialog-relative" id="singleView"></div>
   </div>
 </div>
 

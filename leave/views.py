@@ -4,6 +4,7 @@ import json
 from urllib.parse import parse_qs
 from django.shortcuts import render, redirect
 import pandas as pd
+from attendance.methods.closest_numbers import closest_numbers
 from horilla.decorators import login_required, hx_request_required
 from django.views.decorators.http import require_http_methods
 from .forms import *
@@ -108,7 +109,8 @@ def leave_type_view(request):
     page_number = request.GET.get("page")
     page_obj = paginator_qry(queryset, page_number)
     previous_data = request.GET.urlencode()
-    leave_type_filter = LeaveTypeFilter()
+    leave_type_filter = LeaveTypeFilter()    
+    requests_ids = json.dumps(list(queryset.values_list("id", flat=True)))
     if not queryset.exists():
         template_name = "leave/leave_type/leave_type_empty_view.html"
     else:
@@ -116,7 +118,7 @@ def leave_type_view(request):
     return render(
         request,
         template_name,
-        {"leave_types": page_obj, "form": leave_type_filter.form, "pd": previous_data},
+        {"leave_types": page_obj, "form": leave_type_filter.form, "pd": previous_data,"requests_ids": requests_ids,},
     )
 
 @login_required
@@ -132,8 +134,17 @@ def leave_type_individual_view(request, id):
     GET : return one leave type view template
     """
     leave_type = LeaveType.objects.get(id=id)
+    requests_ids_json = request.GET.get("instances_ids")
+    context =  {"leave_type": leave_type}
+
+    if requests_ids_json:
+        requests_ids = json.loads(requests_ids_json)
+        previous_id, next_id = closest_numbers(requests_ids, id)
+        context["previous"] = previous_id
+        context["next"] = next_id
+        context["requests_ids"] = requests_ids_json
     return render(
-        request, "leave/leave_type/leave_type_individual_view.html", {"leave_type": leave_type}
+        request, "leave/leave_type/leave_type_individual_view.html", context
     )
 
 
@@ -155,12 +166,13 @@ def leave_type_filter(request):
     leave_type_filter = LeaveTypeFilter(request.GET, queryset).qs
     page_obj = paginator_qry(leave_type_filter, page_number)
     previous_data = request.GET.urlencode()
+    requests_ids = json.dumps(list(leave_type_filter.values_list("id", flat=True)))
     data_dict = parse_qs(previous_data)
     get_key_instances(LeaveType, data_dict)
     return render(
         request,
         "leave/leave_type/leave_types.html",
-        {"leave_types": page_obj, "pd": previous_data, "filter_dict": data_dict},
+        {"leave_types": page_obj, "pd": previous_data, "filter_dict": data_dict,"requests_ids": requests_ids,},
     )
 
 
