@@ -9,7 +9,7 @@
   {% for question in questions %}
   <div class="oh-kanban-card" data-toggle="oh-modal-toggle"
       data-target="#detailSurvey"
-      hx-get="{% url 'single-survey-view' question.id %}"
+      hx-get="{% url 'single-survey-view' question.id %}?instances_ids={{requests_ids}}"
       hx-target="#detailSurveyModalBody">
 
       <div class="oh-kanban-card__details">
@@ -79,7 +79,7 @@
       </button>
     </div>
     <div
-      class="oh-modal__dialog-body"
+      class="oh-modal__dialog-body oh-modal__dialog-relative"
       id="detailSurveyModalBody"
     ></div>
   </div>

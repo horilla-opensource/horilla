@@ -12,6 +12,7 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.http import HttpResponse
 from django.utils.translation import gettext_lazy as _
+from base.methods import closest_numbers
 from horilla.decorators import login_required, permission_required
 from recruitment.models import Recruitment
 from recruitment.forms import ApplicationForm, SurveyForm, QuestionForm
@@ -125,6 +126,7 @@ def view_question_template(request):
     """
     questions = RecruitmentSurvey.objects.all()
     filter_obj = SurveyFilter()
+    requests_ids = json.dumps(list(paginator_qry(questions, request.GET.get("page")).object_list.values_list("id", flat=True)))
     if questions.exists():
         template = "survey/view_question_templates.html"
     else:
@@ -135,6 +137,7 @@ def view_question_template(request):
         {
             "questions": paginator_qry(questions, request.GET.get("page")),
             "f": filter_obj,
+            "requests_ids":requests_ids,
         },
     )
 
@@ -271,4 +274,12 @@ def single_survey(request, survey_id):
     This view method is used to single view of question template
     """
     question = RecruitmentSurvey.objects.get(id=survey_id)
-    return render(request, "survey/view_single_template.html", {'question' : question})
+    requests_ids_json = request.GET.get("instances_ids")
+    context = {'question' : question}
+    if requests_ids_json:
+        requests_ids = json.loads(requests_ids_json)
+        previous_id, next_id = closest_numbers(requests_ids, survey_id)
+        context["previous"] = previous_id
+        context["next"] = next_id
+        context["requests_ids"] = requests_ids_json
+    return render(request, "survey/view_single_template.html", context)

@@ -5,6 +5,7 @@ This module is used to register search/filter views methods
 """
 
 
+import json
 from urllib.parse import parse_qs
 from django.shortcuts import render
 from django.core.paginator import Paginator
@@ -152,6 +153,7 @@ def filter_survey(request):
     previous_data = request.GET.urlencode()
     filter_obj = SurveyFilter(request.GET)
     questions = filter_obj.qs
+    requests_ids = json.dumps(list(paginator_qry(questions, request.GET.get("page")).object_list.values_list("id", flat=True)))
     data_dict = parse_qs(previous_data)
     get_key_instances(RecruitmentSurvey, data_dict)
     return render(
@@ -161,5 +163,6 @@ def filter_survey(request):
             "questions": paginator_qry(questions, request.GET.get("page")),
             "pd": previous_data,
             "filter_dict": data_dict,
+            "requests_ids":requests_ids,
         },
     )
