@@ -570,11 +570,19 @@ class LeaveAllocationRequestForm(ModelForm):
         context = {"form": self}
         table_html = render_to_string("attendance_form.html", context)
         return table_html
+    
     class Meta:
         model = LeaveAllocationRequest
         fields = [
             'leave_type_id',
             'employee_id',
             'requested_days',
-            'description'
+            'description',
+            'attachment',
         ]
+
+class LeaveAllocationRequestRejectForm(forms.Form):
+    reason = forms.CharField(label=_("Rejection Reason"), widget=forms.Textarea(attrs={"rows":4,"class":"p-4 oh-input w-100"}))
+    class Meta:
+        model = LeaveAllocationRequest
+        fields = ["reject_reason"]

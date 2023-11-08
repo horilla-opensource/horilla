@@ -135,9 +135,44 @@ urlpatterns = [
          views.leave_allocation_request_view,
          name='leave-allocation-request-view',
     ),
-    path('user-leave-allocation-request-view',
-         views.user_leave_allocation_request_view,
-         name='user-leave-allocation-request-view',
+    path(
+        'leave-allocation-request-create',
+        views.leave_allocation_request_create,
+        name= "leave-allocation-request-create"
+    ),
+    path(
+        'leave-allocation-request-filter',
+        views.leave_allocation_request_filter,
+        name= "leave-allocation-request-filter"
+    ),
+    path(
+        'leave-allocation-request-single-view/<int:req_id>',
+        views.leave_allocation_request_single_view,
+        name= "leave-allocation-request-single-view"
+    ),
+    path(
+        'leave-allocation-request-update/<int:req_id>',
+        views.leave_allocation_request_update,
+        name= "leave-allocation-request-update"
+    ),
+    path(
+        'leave-allocation-request-approve/<int:req_id>',
+        views.leave_allocation_request_approve,
+        name= "leave-allocation-request-approve"
+    ),
+    path(
+        'leave-allocation-request-reject/<int:req_id>',
+        views.leave_allocation_request_reject,
+        name= "leave-allocation-request-reject"
+    ),
+    path(
+        'leave-allocation-request-delete/<int:req_id>',
+        views.leave_allocation_request_delete,
+        name= "leave-allocation-request-delete"
+    ),
+     path('leave-allocation-request-view',
+         views.leave_allocation_request_view,
+         name='leave-allocation-request-view',
     ),
     path(
         'leave-allocation-request-create',
@@ -164,6 +199,7 @@ urlpatterns = [
         views.leave_allocation_request_approve,
         name= "leave-allocation-request-approve"
     ),
+
     path(
         'leave-allocation-request-reject/<int:req_id>',
         views.leave_allocation_request_reject,

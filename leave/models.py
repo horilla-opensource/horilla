@@ -94,8 +94,14 @@ LEAVE_STATUS = (
     ("approved", _("Approved")),
     ("cancelled", _("Cancelled")),
     ("rejected", _("Rejected")),
+    ("cancelled_and_rejected", _("Cancelled & Rejected")),
 )
 
+LEAVE_ALLOCATION_STATUS = (
+    ("requested", _("Requested")),
+    ("approved", _("Approved")),
+    ("rejected", _("Rejected")),
+)
 
 WEEKS = [
     ("0", _("First Week")),
@@ -542,7 +548,7 @@ class LeaveAllocationRequest(models.Model):
     attachment = models.FileField(
         null=True, blank=True, upload_to="leave/leave_attachment"
     )
-    status = models.CharField(max_length=30, choices=LEAVE_STATUS, default="requested")
+    status = models.CharField(max_length=30, choices=LEAVE_ALLOCATION_STATUS, default="requested")
     created_at = models.DateTimeField(auto_now="True")
     reject_reason = models.TextField(blank=True)
     objects = models.Manager()

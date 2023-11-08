@@ -11,7 +11,7 @@
         </div>
     </div>
 {% endif %}
-<form  hx-post="{% url 'leave-allocation-request-create' %}"  
+<form  hx-post="{% url 'leave-allocation-request-update' req_id %}"  
     hx-encoding="multipart/form-data">
     {% csrf_token %}
     {{form.as_p}}

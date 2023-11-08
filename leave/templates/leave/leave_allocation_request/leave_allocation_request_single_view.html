@@ -1,10 +1,16 @@
 {% load i18n %}
-<div class="oh-modal__dialog-body oh-timeoff-modal__body  pb-2">
+{% load basefilters %}
+<div class="oh-modal__dialog-body  ">
     <div class="oh-timeoff-modal__profile-content">
         <div class="oh-profile">
             <div class="oh-profile__avatar mr-1">
+                {% if leave_allocation_request.employee_id.employee_profile %}
                 <img src="{{leave_allocation_request.employee_id.get_avatar}}" class="oh-profile__image"
                     alt="" />
+                {% else %}
+                <img src="https://ui-avatars.com/api/?name={{leave_allocation_request.employee_id}}&background=random"
+                    class="oh-profile__image" alt="" />
+                {% endif %}
             </div>
         </div>
         <div class="oh-timeoff-modal__profile-info">
@@ -14,7 +20,7 @@
     </div>
     <div class="oh-timeoff-modal__stats-container mt-3">
         <div class="oh-timeoff-modal__stat">
-            <span class="oh-timeoff-modal__stat-title">{% trans "Days" %}</span>
+            <span class="oh-timeoff-modal__stat-title">{% trans "Requested Days" %}</span>
             <span class="oh-timeoff-modal__stat-count">{{leave_allocation_request.requested_days}}</span>
         </div>
         <div class="oh-timeoff-modal__stat">
@@ -35,59 +41,109 @@
 
     <div class="oh-timeoff-modal__stats w-100 mt-3">
         <div class="oh-timeoff-modal__stat">
-            <span class="oh-timeoff-modal__stat-title">{% trans "Leave Description" %}</span>
+            <span class="oh-timeoff-modal__stat-title">{% trans "Description" %}</span>
             <div class="oh-timeoff-modal__stat-description">{{leave_allocation_request.description}}</div>
         </div>
     </div>
     {% if leave_allocation_request.reject_reason %}
-    {% if leave_allocation_request.status == "cancelled" %}
-        <div class="oh-timeoff-modal__stats w-100 mt-3  p-2 row-status--gray diff-cell">
-            <div class="oh-timeoff-modal__stat">
-                <span class="oh-timeoff-modal__stat-title">{% trans "Reason for Cancellation" %}</span>
-                <div class="oh-timeoff-modal__stat-description">{{leave_allocation_request.reject_reason}}</div>
+        {% if leave_allocation_request.status == "rejected" %}
+            <div class="oh-timeoff-modal__stats w-100 mt-3  p-2 row-status--red ">
+                <div class="oh-timeoff-modal__stat">
+                    <span class="oh-timeoff-modal__stat-title">{% trans "Reason for Rejection" %}</span>
+                    <div class="oh-timeoff-modal__stat-description">{{leave_allocation_request.reject_reason}}</div>
+                </div>
             </div>
-        </div>
-        {% elif leave_allocation_request.status == "rejected" %}
-        <div class="oh-timeoff-modal__stats w-100 mt-3  p-2 row-status--red ">
-            <div class="oh-timeoff-modal__stat">
-                <span class="oh-timeoff-modal__stat-title">{% trans "Reason for Rejection" %}</span>
-                <div class="oh-timeoff-modal__stat-description">{{leave_allocation_request.reject_reason}}</div>
-            </div>
-        </div>
-    {% endif %}
+        {% endif %}
     {% endif %}
     {% if leave_allocation_request.attachment %}
-    <a href="{{leave_request.attachment.url}}" target="_blank" class="oh-timeoff-modal__download-link">
-        <ion-icon class="me-1" name="download-outline"></ion-icon>
-        <span class="oh-timeoff-modal__download-link-text"></span>
-        {% trans "View attachment" %}
-    </a>
+        <a href="{{leave_allocation_request.attachment.url}}" target="_blank" class="oh-timeoff-modal__download-link justify-content-center" >
+            <ion-icon class="me-1" name="download-outline" ></ion-icon>
+            <span class="oh-timeoff-modal__download-link-text " ></span>
+            {% trans "View attachment" %}
+        </a>
     {% endif %}
+
+    <div class="oh-modal__button-container text-center">
+        <div class="oh-btn-group">
+            {% if my_request %}
+                {% if leave_allocation_request.status ==  'requested' %}
+                    <button  
+                        class="oh-btn oh-btn--info w-100 " 
+                        title="{% trans 'Edit' %}" 
+                        data-toggle="oh-modal-toggle"
+                        data-target="#editModal" 
+                        hx-get="{% url 'leave-allocation-request-update' leave_allocation_request.id %}"
+                        hx-target="#editTarget">
+                        <ion-icon name="create-outline" role="img" 
+                        class="md hydrated" aria-label="create outline">
+                        </ion-icon>{% trans "Edit" %}
+                    </button>
+                {% else %}
+                    <button 
+                        class="oh-btn oh-btn--info  w-100" disabled>
+                        <ion-icon name="create-outline" ></ion-icon>
+                    </button></td>
+                {% endif %}
+                {% if leave_allocation_request.status !=  'approved' %}
+                    <a class="oh-btn oh-btn--danger w-100" id="delete-link"
+                        href="{% url 'leave-allocation-request-delete' leave_allocation_request.id %}" 
+                        onclick="return confirm('{% trans "Are you sure you want to delete ?" %}');" 
+                        title="{% trans 'Delete' %}">
+                        <ion-icon
+                            name="trash-outline"
+                            role="img"
+                            class="md hydrated"
+                            aria-label="create outline"
+                        >
+                        </ion-icon>{% trans "Delete" %}
+                    </a>
+                {% else %}
+                    <button class="oh-btn oh-btn--danger  w-100" disabled>
+                        <ion-icon name="trash-outline"></ion-icon>
+                    </button></td>
+                {% endif %}
+            {% else %}
+                {% if perms.leave.Change_leaveallocationrequest or request.user|is_reportingmanager %}
+                    {% if leave_allocation_request.status == 'requested' %}
+                        <a 
+                            href="{% url 'leave-allocation-request-approve' leave_allocation_request.id %}" 
+                            class="oh-btn oh-btn--success w-100"
+                            title="{% trans 'Approve' %}"                        >
+                            <ion-icon class="me-1 " name="checkmark-outline"></ion-icon>
+                            {% trans "Approve" %}
+                        </a>
+                    {% else %}
+                        <a href="" class="oh-btn oh-btn--success oh-btn--disabled w-100"
+                            title="{% trans 'Approved' %}" 
+                            onclick="event.preventDefault()">
+                            <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
+                            {% trans "Approve" %}
+                        </a>
+                    {% endif %}
+                    {% if leave_allocation_request.status == 'requested' or leave_allocation_request.status == 'approved' %}
+                        <a 
+                            hx-get="{% url 'leave-allocation-request-reject' leave_allocation_request.id %}" 
+                            data-target="#rejectModal"
+                            hx-target="#rejectTarget"
+                            class="oh-btn oh-btn--danger w-100"
+                            data-toggle="oh-modal-toggle"
+                            title="{% trans 'Reject' %}" 
+                        >
+                            <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
+                            {% trans "Reject" %}
+                        </a>
+                    {% else %}
+                        <a href="" class="oh-btn oh-btn--danger oh-btn--disabled w-100"
+                            title="{% trans 'Rejected' %}" 
+                            onclick="event.preventDefault()">
+                            <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
+                            {% trans "Reject" %}
+                        </a>
+                    {% endif %}
+
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
 </div>
 
-<div class="oh-modal__dialog-footer oh-timeoff-modal__footer">
-    {% if leave_request.status != 'approved'%}
-    <a href="" class="oh-btn oh-btn--success">
-        <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
-        {% trans "Approve" %}
-    </a>
-    {% else %}
-    <a href="" class="oh-btn oh-btn--success oh-btn--disabled"
-        onclick="event.preventDefault()">
-        <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
-        {% trans "Approve" %}
-    </a>
-    {% endif %}
-    {% if leave_request.status != 'cancelled' %}
-    <a href="" class="oh-btn oh-btn--danger">
-        <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
-        {% trans "Cancel" %}
-    </a>
-    {% else %}
-    <a href="" class="oh-btn oh-btn--danger oh-btn--disabled
-    " onclick="event.preventDefault()">
-        <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
-        {% trans "Cancel" %}
-    </a>
-    {% endif %}
-</div>

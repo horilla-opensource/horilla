@@ -2,6 +2,18 @@
 {% block content %}
 {% load static %}
 {% load i18n %}
+{% load basefilters %}
+<style>
+.oh-modal_close--custom{
+    border:none;
+    background:none;
+    font-size: 1.5rem;
+    opacity:0.7;
+    position: absolute;
+    top:25px;
+    right:15px;
+}
+</style>
 {% comment %} start of messages {% endcomment %}
 {% if messages %}
     <div class="oh-wrapper">
@@ -18,38 +30,33 @@
 
 {% comment %} start of nav bar {% endcomment %}
 <section class="oh-wrapper oh-main__topbar" x-data="{searchShow: false}">
-    {% if user_request_view %}
-        <div class="oh-main__titlebar oh-main__titlebar--left">
-            <h1 class="oh-main__titlebar-title fw-bold">{% trans "My Leave Allocation Requests" %}</h1>
-            <a class="oh-main__titlebar-search-toggle" role="button" aria-label="Toggle Search"
-                @click="searchShow = !searchShow">
-                <ion-icon name="search-outline" class="oh-main__titlebar-serach-icon"></ion-icon>
-            </a>
-        </div>
-    {% else %}
-        <div class="oh-main__titlebar oh-main__titlebar--left">
-            <h1 class="oh-main__titlebar-title fw-bold">{% trans "Leave Allocation Requests" %}</h1>
-            <a class="oh-main__titlebar-search-toggle" role="button" aria-label="Toggle Search"
-                @click="searchShow = !searchShow">
-                <ion-icon name="search-outline" class="oh-main__titlebar-serach-icon"></ion-icon>
-            </a>
-        </div>
-    {% endif %}
+    <div class="oh-main__titlebar oh-main__titlebar--left">
+        <h1 class="oh-main__titlebar-title fw-bold">{% trans "Leave Allocation Requests" %}</h1>
+        <a class="oh-main__titlebar-search-toggle" role="button" aria-label="Toggle Search"
+            @click="searchShow = !searchShow">
+            <ion-icon name="search-outline" class="oh-main__titlebar-serach-icon"></ion-icon>
+        </a>
+    </div>
     <div class="oh-main__titlebar oh-main__titlebar--right">
-        {% if leave_allocation_requests %}
+        {% if my_leave_allocation_requests %}
             {% comment %} start of search {% endcomment %}
             <div class="oh-input-group oh-input__search-group" :class="searchShow ? 'oh-input__search-group--show' : ''">
                 <ion-icon name="search-outline" class="oh-input-group__icon oh-input-group__icon--left"></ion-icon>
-                <input type="text" class="oh-input oh-input__icon" aria-label="Search Input" placeholder="{% trans 'Search' %}"
-                    name="leave_type" hx-get="{% url 'leave-allocation-request-filter' %}" hx-trigger="keyup"
-                    hx-target="#userRequest" />
+                <input 
+                    type="text" class="oh-input oh-input__icon" 
+                    aria-label="Search Input" placeholder="{% trans 'Search' %}"
+                    name="search" 
+                    hx-get="{% url 'leave-allocation-request-filter' %}" 
+                    hx-trigger="keyup"
+                    hx-target="#view-container" 
+                />
             </div>
             {% comment %} start of filter {% endcomment %}
             <div class="oh-dropdown" x-data="{open: false}">
                 <button class="oh-btn ml-2" @click="open = !open">
                     <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}<div id='filterCount'><div>
                 </button>
-                <form method="post" hx-get="{% url 'leave-allocation-request-filter' %}" hx-target="#userRequest" id='filterForm'>
+                <form method="post" hx-get="{% url 'leave-allocation-request-filter' %}" hx-target="#view-container" id='filterForm'>
                     <div class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4" x-show="open"
                         style="display: none;" @click.outside="open = false">
                         <div class="oh-dropdown__filter-body">
@@ -78,13 +85,13 @@
                                         <div class="col-sm-12 col-md-12 col-lg-6">
                                             <div class="oh-input-group">
                                                 <label class="oh-label">{% trans "Requested days Up To" %}</label>
-                                                {{form.number_of_days}}
+                                                {{form.number_of_days_up_to}}
                                             </div>
                                         </div>
                                         <div class="col-sm-12 col-md-12 col-lg-6">
                                             <div class="oh-input-group">
                                                 <label class="oh-label">{% trans "Requested days More Than " %}</label>
-                                                {{form.number_of_days}}
+                                                {{form.number_of_days_more_than}}
                                             </div>
                                         </div>
                                         
@@ -99,29 +106,44 @@
                             </div>
 
                             <div class="oh-accordion" >
-                                <div class="oh-accordion-header" onclick="event.stopImmediatePropagation();$(this).parent().toggleClass('oh-accordion--show');">{% trans "Group By" %}</div>
+                                <div class="oh-accordion-header" 
+                                    onclick="event.stopImmediatePropagation();$(this).parent().toggleClass('oh-accordion--show');"> 
+                                    {% trans "Group By" %}
+                                </div>
                                 <div class="oh-accordion-body">
                                     <div class="row">
-                                        {% comment %} <div class="col-sm-12 col-md-12 col-lg-6">
+                                        <div class="col-sm-12 col-md-12 col-lg-6">
                                             <div class="oh-input-group">
-                                                <label class="oh-label">{% trans "Leave Type" %}</label>
-                                                {{form.leave_type_id}}
+                                                <label class="oh-label">{% trans "Fields" %}</label>
                                             </div>
-                                        </div> {% endcomment %}
+                                        </div> 
 
-                                        {% comment %} <div class="col-sm-12 col-md-12 col-lg-6">
+                                        <div class="col-sm-12 col-md-12 col-lg-6">
                                             <div class="oh-input-group">
-                                                <label class="oh-label">{% trans "Created By" %}</label>
-                                                {{form.created_by}}
+                                                <select
+                                                    class="oh-select mt-1 w-100"
+                                                    id="id_field"
+                                                    name="field"
+                                                    class="select2-selection select2-selection--single"
+                                                    id="gp"
+                                                >
+                                                    {% for field in gp_fields %}
+                                                    <option value="{{ field.0 }}">{% trans field.1 %}</option>
+                                                    {% endfor %}
+                                                </select>
                                             </div>
-                                        </div> {% endcomment %}
+                                        </div> 
                                     </div>
                                 </div>
                             </div>
 
                         </div>
                         <div class="oh-dropdown__filter-footer">
-                            <button class="oh-btn oh-btn--secondary oh-btn--small w-100 filterButton" type="submit">{% trans "Filter" %}</button>
+                            <button 
+                                class="oh-btn oh-btn--secondary oh-btn--small w-100 filterButton" 
+                                type="submit"
+                            >{% trans "Filter" %}
+                            </button>
                         </div>
                     </div>
                 </form>
@@ -133,9 +155,9 @@
             <div class="oh-dropdown" x-data="{open: false}">
                 <button class="oh-btn  oh-btn--secondary oh-btn--shadow" 
                     data-toggle="oh-modal-toggle" 
-                    data-target="#editModal1" 
+                    data-target="#createModal1" 
                     hx-get="{% url 'leave-allocation-request-create' %}" 
-                    hx-target="#createForm">
+                    hx-target="#createTarget">
                     <ion-icon name="add-outline" class="me-1 md hydrated" role="img" aria-label="add outline"></ion-icon>
                     {% trans "Create" %}
                 </button>
@@ -144,10 +166,55 @@
         {% comment %} end of create button {% endcomment %}     
     </div>
 </section>
+
+
 {% comment %} start of request view {% endcomment %}
 <div class="oh-wrapper" id="userRequest">
-    {% if leave_allocation_requests %}
-        {% include 'leave/leave_allocation_request/leave_allocation_request_list.html' %}
+    {% if leave_allocation_requests or my_leave_allocation_requests %}
+        {% comment %} start of Quick filters {% endcomment %}
+        <div class="d-flex flex-row-reverse">
+            <span 
+                class="m-3 review_ongoing" 
+                hx-get="{% url 'leave-allocation-request-filter' %}?{{pd}}&status=rejected" 
+                hx-target="#view-container" style="cursor: pointer"
+            >
+                <span class="oh-dot oh-dot--small me-1" style="background-color:red"></span>
+                {% trans "Rejected" %}
+            </span>
+            <span 
+                class="m-3 confirmed" 
+                hx-get="{% url 'leave-allocation-request-filter' %}?{{pd}}&status=requested" 
+                hx-target="#view-container" style="cursor: pointer"
+            >
+                <span class="oh-dot oh-dot--small me-1" style="background-color:rgb(103, 171, 238)"></span>
+                {% trans "Requested" %}
+            </span>
+            <span 
+                class="m-3 paid" 
+                hx-get="{% url 'leave-allocation-request-filter' %}?{{pd}}&status=approved" 
+                hx-target="#view-container" style="cursor: pointer"
+            >
+                <span class="oh-dot oh-dot--small me-1" style="background-color:yellowgreen"></span>
+                {% trans "Approved" %}
+            </span>
+        </div>
+        {% comment %} end of quick filters {% endcomment %}
+        <!-- start of contents -->
+        <div class="oh-tabs">
+            <ul class="oh-tabs__tablist">
+                <li class="oh-tabs__tab oh-tabs__tab--active" data-target="#tab_1">
+                    {% trans "My leave allocation request" %}
+                </li>
+                {% if request.user|is_reportingmanager %}
+                    <li class="oh-tabs__tab" data-target="#tab_2">
+                        {% trans "Leave allocation requests" %}
+                    </li>
+                {% endif %}
+            </ul> 
+                {% include "leave/leave_allocation_request/leave_allocation_request_list.html" %}
+            </div>  
+        </div>
+        <!-- end of contents -->
     {% else %}
         <div style="height: 70vh; display:flex;align-items: center;justify-content: center;" class="">
             <div style="" class="oh-404">
@@ -158,7 +225,28 @@
     {% endif %}
 </div>
 {% comment %} end of request view {% endcomment %}
+
 {% comment %} modals {% endcomment %}
+<div
+  class="oh-modal"
+  id="singleViewModal"
+  role="dialog"
+  aria-labelledby="singleViewModal"
+  aria-hidden="true"
+>
+    <div class="oh-modal__dialog">
+        <div class="oh-modal__dialog-header">
+            <h2 class="oh-modal__dialog-title" id="singleViewTitle">
+                {% trans "Leave Allocation Request" %}
+            </h2>
+            <button class="oh-modal__close" aria-label="Close">
+                <ion-icon name="close-outline"></ion-icon>
+            </button>
+        </div>
+        <div class="oh-modal__dialog-body" id="singleViewTarget"></div>
+    </div>
+</div>
+
 <div
   class="oh-modal"
   id="editModal"
@@ -171,74 +259,63 @@
       <h2 class="oh-modal__dialog-title" id="editDialogDialog">
         {% trans "Update Request" %}
       </h2>
-      <button class="oh-modal__close" aria-label="Close">
+      <button class="oh-modal_close--custom" aria-label="Close">
         <ion-icon name="close-outline"></ion-icon>
       </button>
     </div>
-    <div class="oh-modal__dialog-body" id="updateForm"></div>
+    <div class="oh-modal__dialog-body" id="editTarget"></div>
   </div>
 </div>
 
 <div
   class="oh-modal"
-  id="editModal1"
+  id="createModal1"
   role="dialog"
-  aria-labelledby="editDialogModal"
+  aria-labelledby="createDialogModal"
   aria-hidden="true"
 >
   <div class="oh-modal__dialog">
     <div class="oh-modal__dialog-header">
-      <h2 class="oh-modal__dialog-title" id="editDialogDialog">
+      <h2 class="oh-modal__dialog-title" id="createTitle">
         {% trans "Create Leave Allocation Request" %}
       </h2>
       <button class="oh-modal__close" aria-label="Close">
         <ion-icon name="close-outline"></ion-icon>
       </button>
     </div>
-    <div class="oh-modal__dialog-body" id="createForm"></div>
+    <div class="oh-modal__dialog-body" id="createTarget"></div>
   </div>
 </div>
 
-<div class="oh-modal" id="tableTimeOff" role="dialog" aria-labelledby="tableTimeOffModal" aria-hidden="true">
-    <div class="oh-modal__dialog oh-modal__dialog--timeoff oh-timeoff-modal">
-        <div class="oh-modal__dialog-header">
-            <button class="oh-modal__close" aria-label="Close">
-                <ion-icon name="close-outline"></ion-icon>
-            </button>
-        </div>
-        <div id="userRequestView">
-        </div>
+
+<div
+  class="oh-modal"
+  id="rejectModal"
+  role="dialog"
+  aria-labelledby="rejectDialogModal"
+  aria-hidden="true"
+>
+  <div class="oh-modal__dialog">
+    <div class="oh-modal__dialog-header">
+      <h2 class="oh-modal__dialog-title" id="rejectTitle">
+        {% trans "Reject Leave Allocation Request" %}
+      </h2>
+      <button class="oh-modal_close--custom" aria-label="Close">
+        <ion-icon name="close-outline"></ion-icon>
+      </button>
     </div>
+    <div class="oh-modal__dialog-body" id="rejectTarget"></div>
+  </div>
 </div>
 
 <script>
-    $(document).on('htmx:load', '#userRequest', function () {
-        // Create a new script element
-        var scriptElement = document.createElement("script");
-        // Set the source URL of the script file to be loaded
-        scriptElement.src = "{% static 'build/js/web.frontend.min.js' %}";
-        // Append the script element to the head of the HTML document
-        document.head.appendChild(scriptElement);
-
+    $(document).ready(function(){
+        $('.oh-modal_close--custom').click(function(){
+            $(this).closest('.oh-modal').removeClass('oh-modal--show');
+        });
     });
-
-    $(document).on('htmx:load', '#updateForm', function () {
-        {% include 'select2.js' %}
-        $('#id_leave_type_id').select2();
-        $('#endDate #id_end_date_breakdown').select2();
-    });
-    $('#delete-link').on('click', function (event) {
-        event.preventDefault(); // prevent the default behavior of the link
-
-        const link = $(this);
-        const confirmation = confirm('{% trans "Are you sure you want to delete?" %}');
-
-        if (confirmation) {
-            window.location.href = link.attr('href'); // execute the href if confirmed
-        }
-    });
-
 </script>
+
 
 <script src="{% static '/base/filter.js' %}"></script>
 

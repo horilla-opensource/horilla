@@ -335,12 +335,16 @@ class LeaveAllocationRequestFilter(FilterSet):
     leave_type = filters.CharFilter(
         field_name="leave_type_id__name", lookup_expr="icontains"
     )
-    employee = filters.CharFilter(
+    search = filters.CharFilter(
         field_name="employee_id__employee_first_name", lookup_expr="icontains"
     )
-    number_of_days = filters.NumberFilter(
+    number_of_days_up_to = filters.NumberFilter(
         field_name='requested_days',
-        lookup_expr='let'
+        lookup_expr='lte'
+    )
+    number_of_days_more_than = filters.NumberFilter(
+        field_name='requested_days',
+        lookup_expr='gte'
     )
     class Meta:
         """ 
@@ -353,7 +357,7 @@ class LeaveAllocationRequestFilter(FilterSet):
             "leave_type_id":["exact"],
             "employee_id":["exact"]
         }
-
+        
 class LeaveRequestReGroup:
     """
     Class to keep the field name for group by option
@@ -396,4 +400,21 @@ class LeaveAssignReGroup:
         ("carryforward_days","Carry Forward Days"),
         ("total_leave_days","Total Leave Days Days"),
         ("assigned_date", "Assigned Date"),
+        ]
+    
+class LeaveAllocationRequestReGroup:
+    """
+    Class to keep the field name for group by option
+    """
+    fields = [
+        ("","select"),
+        ("employee_id","Employee"),
+        ("leave_type_id","Leave Type"),
+        ("status","Status"),
+        ("requested_days","Requested Days"),
+        ("employee_id.employee_work_info.reporting_manager_id", "Reporting Manager"),
+        ("employee_id.employee_work_info.department_id", "Department"),
+        ("employee_id.employee_work_info.job_position_id", "Job Position"),
+        ("employee_id.employee_work_info.employee_type_id", "Employment Type"),
+        ("employee_id.employee_work_info.company_id", "Company"),
         ]

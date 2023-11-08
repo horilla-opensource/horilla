@@ -11,8 +11,13 @@
         </div>
     </div>
 {% endif %}
-<form  hx-post="{% url 'leave-allocation-request-create' %}"  
+<form 
+    hx-post="{% url 'leave-allocation-request-reject' req_id %}" 
     hx-encoding="multipart/form-data">
-    {% csrf_token %}
-    {{form.as_p}}
+    <div class="col-sm-12 col-md-12 col-lg-12">
+        <label class="oh-label">{% trans "Rejection reason" %}</label>        
+        {{form.reason}}
+        {{form.errors}}
+    </div>
+    <button type="submit" class="oh-btn oh-btn--secondary ">{% trans "Submit" %}</button>
 </form>

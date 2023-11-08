@@ -499,13 +499,13 @@
                 >{% trans "My Leave Requests" %}</a
               >
             </li>
-            {% comment %} <li class="oh-sidebar__submenu-item">
+            <li class="oh-sidebar__submenu-item">
               <a
-                href="{% url 'user-leave-allocation-request-view' %}"
+                href="{% url 'leave-allocation-request-view' %}"
                 class="oh-sidebar__submenu-link"
-                >{% trans "My Leave Allocation Requests" %}</a
+                >{% trans "Leave Allocation Requests" %}</a
               >
-            </li> {% endcomment %}
+            </li>
             {% if perms.leave.view_leavetype %}
             <li class="oh-sidebar__submenu-item">
               <a href="{% url 'type-view' %}" class="oh-sidebar__submenu-link"
@@ -528,15 +528,6 @@
               >
             </li>
             {% endif %} 
-            {% comment %} {% if perms.leave.view_leaveallocationrequest or request.user|is_reportingmanager %}
-            <li class="oh-sidebar__submenu-item">
-              <a
-                href="{% url 'leave-allocation-request-view' %}"
-                class="oh-sidebar__submenu-link"
-                >{% trans "Leave Allocation Requests" %}</a
-              >
-            </li>
-            {% endif %}  {% endcomment %}
             {% if perms.leave.view_holiday %}
             <li class="oh-sidebar__submenu-item">
               <a
@@ -820,7 +811,7 @@ $(document).ready(function () {
   $("div.oh-checkpoint-badge").click(function (e) { 
     setTimeout(() => {
       highlightSelected()
-    }, 100);    
+    }, 50);    
   });
 
 });
