@@ -220,18 +220,6 @@ function selectAllPayslip() {
     });
   }
 
-  $(".filterButton").click(function () {
-    var ids = JSON.parse($("#selectedPayslip").attr("data-ids") || "[]");
-    uniqueIds = makePayslipListUnique(ids);
-    selectedCount = uniqueIds.length;
-    if (allPayslipCount === selectedCount) {
-      $(".all-payslip").prop("checked", false);
-      $("#selectedPayslip").attr("data-clicked", 0);
-      $("#selectedPayslip").attr("data-ids", JSON.stringify([]));
-      count = [];
-      tickPayslipCheckboxes(count);
-    }
-  });
 }
 
 function unselectAllPayslip() {
