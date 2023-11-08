@@ -179,7 +179,8 @@ function selectAllPayslip() {
           var empId = payslipIds[i];
           $("#" + empId).prop("checked", true);
         }
-        $("#selectedPayslip").attr("data-ids", JSON.stringify(payslipIds));
+        var previousIds = $("#selectedPayslip").attr("data-ids")
+        $("#selectedPayslip").attr("data-ids", JSON.stringify(Array.from(new Set([...payslipIds,...JSON.parse(previousIds)]))));
 
         count = makePayslipListUnique(payslipIds);
         tickPayslipCheckboxes(count);
