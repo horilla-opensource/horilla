@@ -19,7 +19,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import Group, User, Permission
 from attendance.forms import AttendanceValidationConditionForm
 from attendance.models import AttendanceValidationCondition
-from attendance.methods.closest_numbers import closest_numbers
+from base.methods import closest_numbers
 from base.decorators import (
     shift_request_change_permission,
     work_type_request_change_permission,
@@ -913,7 +913,7 @@ def rotating_work_type_assign(request):
     rwork_type_assign = filtersubordinates(
         request, rwork_type_assign, "base.view_rotatingworktypeassign"
     )
-    assign_ids = json.dumps(list(rwork_type_assign.values_list("id", flat=True)))
+    assign_ids = json.dumps(list(paginator_qry(rwork_type_assign, request.GET.get("page")).object_list.values_list("id", flat=True)))
 
     return render(
         request,
@@ -992,7 +992,7 @@ def rotating_work_type_assign_view(request):
         request, rwork_type_assign, "base.view_rotatingworktypeassign"
     )
     rwork_type_assign = sortby(request, rwork_type_assign, "orderby")
-    assign_ids = json.dumps(list(rwork_type_assign.values_list("id", flat=True)))
+    assign_ids = json.dumps(list(paginator_qry(rwork_type_assign, request.GET.get("page")).object_list.values_list("id", flat=True)))
     data_dict = parse_qs(previous_data)
     get_key_instances(RotatingWorkTypeAssign, data_dict)
     return render(
@@ -1490,7 +1490,7 @@ def rotating_shift_assign(request):
     rshift_assign = filtersubordinates(
         request, rshift_assign, "base.view_rotatingshiftassign"
     )
-    assign_ids = json.dumps(list(rshift_assign.values_list("id", flat=True)))
+    assign_ids = json.dumps(list(paginator_qry(rshift_assign, request.GET.get("page")).object_list.values_list("id", flat=True)))
 
     return render(
         request,
@@ -1567,7 +1567,7 @@ def rotating_shift_assign_view(request):
         request, rshift_assign, "base.view_rotatingshiftassign"
     )
     rshift_assign = sortby(request, rshift_assign, "orderby")
-    assign_ids = json.dumps(list(rshift_assign.values_list("id", flat=True)))
+    assign_ids = json.dumps(list(paginator_qry(rshift_assign, request.GET.get("page")).object_list.values_list("id", flat=True)))
     data_dict = parse_qs(previous_data)
     get_key_instances(RotatingShiftAssign, data_dict)
     return render(
@@ -1841,7 +1841,7 @@ def work_type_request_view(request):
     work_type_requests = work_type_requests | WorkTypeRequest.objects.filter(
         employee_id=employee
     )
-    requests_ids = json.dumps(list(work_type_requests.values_list("id", flat=True)))
+    requests_ids = json.dumps(list(paginator_qry(work_type_requests, request.GET.get("page")).object_list.values_list("id", flat=True)))
     f = WorkTypeRequestFilter()
     form = WorkTypeRequestForm()
     form = choosesubordinates(
@@ -1884,7 +1884,7 @@ def work_type_request_search(request):
         work_typ_requests = work_typ_requests.order_by(f"-{field_copy}")
         template = "work_type_request/htmx/group_by.html"
 
-    requests_ids = json.dumps(list(work_typ_requests.values_list("id", flat=True)))
+    requests_ids = json.dumps(list(paginator_qry(work_typ_requests, request.GET.get("page")).object_list.values_list("id", flat=True)))
     data_dict = parse_qs(previous_data)
     get_key_instances(WorkTypeRequest, data_dict)
     return render(
@@ -2325,7 +2325,7 @@ def shift_request_view(request):
         request, ShiftRequest.objects.all(), "base.add_shiftrequest"
     )
     shift_requests = shift_requests | ShiftRequest.objects.filter(employee_id=employee)
-    requests_ids = json.dumps(list(shift_requests.values_list("id", flat=True)))
+    requests_ids = json.dumps(list(paginator_qry(shift_requests, request.GET.get("page")).object_list.values_list("id", flat=True)))
     f = ShiftRequestFilter()
     form = ShiftRequestForm()
     form = choosesubordinates(
@@ -2362,7 +2362,7 @@ def shift_request_search(request):
             employee_id=employee
         )
     shift_requests = sortby(request, shift_requests, "orderby")
-    requests_ids = json.dumps(list(shift_requests.values_list("id", flat=True)))
+    requests_ids = json.dumps(list( paginator_qry(shift_requests, request.GET.get("page")).object_list.values_list("id", flat=True)))
     data_dict = parse_qs(previous_data)
     template="shift_request/htmx/requests.html"
     if field != "" and field is not None:

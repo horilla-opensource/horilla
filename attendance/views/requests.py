@@ -23,7 +23,7 @@ from attendance.forms import AttendanceRequestForm, NewRequestForm
 from attendance.methods.differentiate import get_diff_dict
 from attendance.views.views import paginator_qry
 from attendance.filters import AttendanceFilters
-from attendance.methods.closest_numbers import closest_numbers
+from base.methods import closest_numbers
 
 
 def get_employee_last_name(attendance):
@@ -88,8 +88,8 @@ def request_attendance_view(request):
         template = "requests/attendance/view-requests.html"
     else:
         template = "requests/attendance/requests_empty.html"
-    requests_ids = json.dumps(list(requests.values_list("id", flat=True)))
-    attendances_ids = json.dumps(list(attendances.values_list("id", flat=True)))
+    requests_ids = json.dumps(list(paginator_qry(requests, None).object_list.values_list("id", flat=True)))
+    attendances_ids = json.dumps(list(paginator_qry(attendances, None).object_list.values_list("id", flat=True)))
     return render(
         request,
         template,

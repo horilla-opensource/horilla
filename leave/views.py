@@ -4,7 +4,7 @@ import json
 from urllib.parse import parse_qs
 from django.shortcuts import render, redirect
 import pandas as pd
-from attendance.methods.closest_numbers import closest_numbers
+from base.methods import closest_numbers
 from horilla.decorators import login_required, hx_request_required
 from django.views.decorators.http import require_http_methods
 from .forms import *
@@ -329,6 +329,7 @@ def leave_request_view(request):
     page_obj = paginator_qry(queryset, page_number)
     leave_request_filter = LeaveRequestFilter()
     requests = queryset.filter(status="requested").count()
+    requests_ids = json.dumps(list(page_obj.object_list.values_list("id", flat=True)))
     approved_requests = queryset.filter(status="approved").count()
     rejected_requests = queryset.filter(status="cancelled").count()
     previous_data = request.GET.urlencode()
@@ -343,6 +344,7 @@ def leave_request_view(request):
             "approved_requests": approved_requests,
             "rejected_requests": rejected_requests,
             "gp_fields": LeaveRequestReGroup.fields,
+            "requests_ids": requests_ids,
         },
     )
 
@@ -373,7 +375,9 @@ def leave_request_filter(request):
         template = "leave/leave_request/group_by.html"
 
     page_obj = paginator_qry(leave_request_filter, page_number)
-    data_dict = []
+    requests_ids = json.dumps(list(page_obj.object_list.values_list("id", flat=True)))
+    data_dict = []    
+
 
     if not request.GET.get("dashboard"):
         data_dict = parse_qs(previous_data)
@@ -392,6 +396,7 @@ def leave_request_filter(request):
             "filter_dict": data_dict,
             "field": field,
             "dashboard": request.GET.get("dashboard"),
+            "requests_ids": requests_ids,
         },
     )
 
@@ -629,8 +634,17 @@ def one_request_view(request, id):
     GET : return one leave request view template
     """
     leave_request = LeaveRequest.objects.get(id=id)
+    context = {"leave_request": leave_request,}
+    requests_ids_json = request.GET.get("instances_ids")
+
+    if requests_ids_json:
+        requests_ids = json.loads(requests_ids_json)
+        previous_id, next_id = closest_numbers(requests_ids, id)
+        context["previous"] = previous_id
+        context["next"] = next_id
+        context["requests_ids"] = requests_ids_json
     return render(
-        request, "leave/leave_request/one_request_view.html", {"leave_request": leave_request}
+        request, "leave/leave_request/one_request_view.html", context
     )
 
 

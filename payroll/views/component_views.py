@@ -15,7 +15,7 @@ from django.utils.translation import gettext_lazy as _
 import pandas as pd
 from horilla.decorators import login_required, permission_required
 from base.methods import get_key_instances
-from attendance.methods.closest_numbers import closest_numbers
+from base.methods import closest_numbers
 import payroll.models.models
 from payroll.models.models import Allowance, Deduction, Payslip
 from payroll.methods.payslip_calc import (
@@ -218,9 +218,9 @@ def view_allowance(request):
     This method is used render template to view all the allowance instances
     """
     allowances = payroll.models.models.Allowance.objects.all()
-    allowance_ids = json.dumps(list(allowances.values_list("id", flat=True)))
     allowance_filter = AllowanceFilter(request.GET)
     allowances = paginator_qry(allowances, request.GET.get("page"))
+    allowance_ids = json.dumps(list(allowances.object_list.values_list("id", flat=True)))
     return render(
         request,
         "payroll/allowance/view_allowance.html",
@@ -239,15 +239,15 @@ def view_single_allowance(request, allowance_id):
     This method is used render template to view the selected allowance instances
     """
     allowance = payroll.models.models.Allowance.objects.get(id=allowance_id)
-    allownace_ids_json = request.GET.get("instances_ids")
+    allowance_ids_json = request.GET.get("instances_ids")
     context = {
         "allowance": allowance,
     }
-    if allownace_ids_json:
-        allowance_ids = json.loads(allownace_ids_json)
-        previos_id, next_id = closest_numbers(allowance_ids, allowance_id)
+    if allowance_ids_json:
+        allowance_ids = json.loads(allowance_ids_json)
+        previous_id, next_id = closest_numbers(allowance_ids, allowance_id)
         context["next"] = next_id
-        context["previous"] = previos_id
+        context["previous"] = previous_id
         context["allowance_ids"] = allowance_ids
     return render(
         request,
@@ -269,8 +269,8 @@ def filter_allowance(request):
     template = card_view
     if request.GET.get("view") == "list":
         template = list_view
-    allowance_ids = json.dumps(list(allowances.values_list("id", flat=True)))
     allowances = paginator_qry(allowances, request.GET.get("page"))
+    allowance_ids = json.dumps(list(allowances.object_list.values_list("id", flat=True)))
     data_dict = parse_qs(query_string)
     get_key_instances(Allowance, data_dict)
     return render(
@@ -287,7 +287,7 @@ def filter_allowance(request):
 
 @login_required
 @permission_required("payroll.change_allowance")
-def update_allowance(request, allowance_id):
+def update_allowance(request, allowance_id, **kwargs):
     """
     This method is used to update the allowance
     Args:
@@ -350,9 +350,9 @@ def view_deduction(request):
     """
 
     deductions = payroll.models.models.Deduction.objects.all()
-    deduction_ids = json.dumps(list(deductions.values_list("id", flat=True)))
     deduction_filter = DeductionFilter(request.GET)
     deductions = paginator_qry(deductions, request.GET.get("page"))
+    deduction_ids = json.dumps(list(deductions.object_list.values_list("id", flat=True)))
     return render(
         request,
         "payroll/deduction/view_deduction.html",
@@ -400,8 +400,8 @@ def filter_deduction(request):
     template = card_view
     if request.GET.get("view") == "list":
         template = list_view
-    deduction_ids = json.dumps(list(deductions.values_list("id", flat=True)))
     deductions = paginator_qry(deductions, request.GET.get("page"))
+    deduction_ids = json.dumps(list(deductions.object_list.values_list("id", flat=True)))
     data_dict = parse_qs(query_string)
     get_key_instances(Deduction, data_dict)
     return render(
@@ -411,14 +411,14 @@ def filter_deduction(request):
             "deductions": deductions,
             "pd": query_string,
             "filter_dict": data_dict,
-            "deduction_ids":deduction_ids,
+            "deduction_ids": deduction_ids,
         },
     )
 
 
 @login_required
 @permission_required("payroll.change_deduction")
-def update_deduction(request, deduction_id):
+def update_deduction(request, deduction_id, **kwargs):
     """
     This method is used to update the deduction instance
     """

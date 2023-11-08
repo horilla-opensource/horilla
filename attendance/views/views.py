@@ -28,7 +28,7 @@ from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from django.views.decorators.http import require_http_methods
 from attendance.views.handle_attendance_errors import handle_attendance_errors
 from attendance.views.process_attendance_data import process_attendance_data
-from attendance.methods.closest_numbers import closest_numbers
+from base.methods import closest_numbers
 from base.methods import get_key_instances
 from horilla.decorators import (
     permission_required,

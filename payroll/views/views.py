@@ -16,7 +16,7 @@ from django.db.models import Q, ProtectedError
 from horilla.decorators import login_required, permission_required
 from base.methods import generate_colors, get_key_instances
 from employee.models import Employee, EmployeeWorkInformation
-from attendance.methods.closest_numbers import closest_numbers
+from base.methods import closest_numbers
 from payroll.models.models import Payslip, WorkRecord, Contract
 from payroll.forms.forms import ContractForm, WorkRecordForm
 from payroll.models.tax_models import PayrollSettings
@@ -64,7 +64,7 @@ def contract_create(request):
 
 @login_required
 @permission_required("payroll.change_contract")
-def contract_update(request, contract_id):
+def contract_update(request, contract_id, **kwargs):
     """
     Update an existing contract.
 
@@ -129,9 +129,9 @@ def contract_view(request):
         template = "payroll/contract/contract_view.html"
     else:
         template = "payroll/contract/contract_empty.html"
-    contract_ids = contracts.values_list("id", flat=True)
-    contract_ids_json = json.dumps(list(contract_ids))
     contracts = paginator_qry(contracts, request.GET.get("page"))
+    contract_ids = contracts.object_list.values_list("id", flat=True)
+    contract_ids_json = json.dumps(list(contract_ids))
     filter_form = ContractFilter(request.GET)
     export_filter = ContractFilter(request.GET)
     export_column = ContractExportFieldForm()
@@ -195,9 +195,9 @@ def contract_filter(request):
     contracts_filter = ContractFilter(request.GET)
     template = "payroll/contract/contract_list.html"
     contracts = contracts_filter.qs
-    contract_ids = contracts.values_list("id", flat=True)
-    contract_ids_json = json.dumps(list(contract_ids))
     contracts = paginator_qry(contracts, request.GET.get("page"))
+    contract_ids = contracts.object_list.values_list("id", flat=True)
+    contract_ids_json = json.dumps(list(contract_ids))
     data_dict = parse_qs(query_string)
     get_key_instances(Contract, data_dict)
     keys_to_remove = [key for key, value in data_dict.items() if value == ["unknown"]]
