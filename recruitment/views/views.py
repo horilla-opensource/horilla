@@ -33,7 +33,12 @@ from horilla.decorators import permission_required, login_required, hx_request_r
 from base.methods import get_key_instances
 from recruitment.views.paginator_qry import paginator_qry
 from recruitment.models import Recruitment, Candidate, Stage, StageNote
-from recruitment.filters import CandidateFilter, CandidateReGroup, RecruitmentFilter, StageFilter
+from recruitment.filters import (
+    CandidateFilter,
+    CandidateReGroup,
+    RecruitmentFilter,
+    StageFilter,
+)
 from recruitment.methods import recruitment_manages
 from recruitment.decorators import manager_can_enter, recruitment_manager_can_enter
 from recruitment.forms import (
@@ -843,7 +848,7 @@ def candidate_view(request):
             "export_obj": export_obj,
             "view_type": view_type,
             "filter_dict": data_dict,
-            "gp_fields" : CandidateReGroup.fields
+            "gp_fields": CandidateReGroup.fields,
         },
     )
 
@@ -938,7 +943,7 @@ def candidate_view_card(request):
 
 @login_required
 @permission_required(perm="recruitment.view_candidate")
-def candidate_view_individual(request, cand_id):
+def candidate_view_individual(request, cand_id, **kwargs):
     """
     This method is used to view profile of candidate.
     """
@@ -948,7 +953,7 @@ def candidate_view_individual(request, cand_id):
 
 @login_required
 @manager_can_enter(perm="recruitment.change_candidate")
-def candidate_update(request, cand_id):
+def candidate_update(request, cand_id, **kwargs):
     """
     Used to update or change the candidate
     Args:

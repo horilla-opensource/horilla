@@ -5,6 +5,7 @@ This module is used to map url path with view methods.
 """
 
 from django.urls import path
+from recruitment.models import Candidate
 from recruitment.views import views
 import recruitment.views.actions
 import recruitment.views.dashboard
@@ -39,7 +40,7 @@ urlpatterns = [
         recruitment.views.actions.recruitment_delete,
         name="recruitment-delete",
     ),
-    path("pipeline", views.recruitment_pipeline, name="pipeline"),
+    path("pipeline/", views.recruitment_pipeline, name="pipeline"),
     path("pipeline-card", views.recruitment_pipeline_card, name="pipeline-card"),
     path(
         "pipeline-search-candidate",
@@ -113,7 +114,7 @@ urlpatterns = [
         name="note-delete-individual",
     ),
     path("send-mail/<int:cand_id>/", views.form_send_mail, name="send-mail"),
-    path("candidate-view", views.candidate_view, name="candidate-view"),
+    path("candidate-view/", views.candidate_view, name="candidate-view"),
     path(
         "candidate-filter-view",
         recruitment.views.search.candidate_filter_view,
@@ -131,11 +132,13 @@ urlpatterns = [
         "candidate-view/<int:cand_id>/",
         views.candidate_view_individual,
         name="candidate-view-individual",
+        kwargs={'model':Candidate}
     ),
     path(
         "candidate-update/<int:cand_id>/",
         views.candidate_update,
         name="rec-candidate-update",
+        kwargs={'model':Candidate}
     ),
     path(
         "delete-profile-image/<int:obj_id>/",

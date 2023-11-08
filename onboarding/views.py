@@ -402,11 +402,12 @@ def candidate_delete(request, obj_id):
         )
     return redirect(candidates_view)
 
+
 @login_required
 @permission_required("recruitment.view_candidate")
-def candidates_single_view(request,id):
+def candidates_single_view(request, id, **kwargs):
     """
-    Canidate individual view for the onboarded candidates
+    Candidate individual view for the onboarding candidates
     """
     candidate = Candidate.objects.get(id=id)
     if not CandidateStage.objects.filter(candidate_id=candidate).exists():
@@ -434,13 +435,13 @@ def candidates_single_view(request,id):
                         candidate_id=candidate, onboarding_task_id=task
                     ).save()
 
-    recruitment =candidate.recruitment_id
+    recruitment = candidate.recruitment_id
     choices = CandidateTask.choice
     context = {
-            "recruitment": recruitment,
-            "choices": choices,
-            "candidate": candidate,
-        }
+        "recruitment": recruitment,
+        "choices": choices,
+        "candidate": candidate,
+    }
     return render(
         request,
         "onboarding/single_view.html",
@@ -543,12 +544,12 @@ def email_send(request):
     if request.method != "POST":
         return JsonResponse("", safe=False)
     candidates = request.POST.get("candidates")
-    json_mylist = json.loads(candidates)
-    if len(json_mylist) <= 0:
+    json_list = json.loads(candidates)
+    if len(json_list) <= 0:
         return JsonResponse(
             {"message": _("No candidate has chosen."), "tags": "danger"}
         )
-    for cand_id in json_mylist:
+    for cand_id in json_list:
         candidate = Candidate.objects.get(id=cand_id)
         if candidate.start_onboard is False:
             token = secrets.token_hex(15)
@@ -1035,8 +1036,10 @@ def candidate_stage_bulk_update(request):
     recruitment = Recruitment.objects.get(id=int(recrutment_id))
     choices = CandidateTask.choice
 
-    count = CandidateStage.objects.filter(candidate_id__id__in=candidate_id_list).update(onboarding_stage_id = stage)
-    
+    count = CandidateStage.objects.filter(
+        candidate_id__id__in=candidate_id_list
+    ).update(onboarding_stage_id=stage)
+
     response = render(
         request,
         "onboarding/onboarding_table.html",
@@ -1048,7 +1051,8 @@ def candidate_stage_bulk_update(request):
     )
 
     return HttpResponse(
-        response.content.decode("utf-8") + '<div><div class="oh-alert-container"><div class="oh-alert oh-alert--animated oh-alert--info">candidate stage updated successfully</div> </div></div>'
+        response.content.decode("utf-8")
+        + '<div><div class="oh-alert-container"><div class="oh-alert oh-alert--animated oh-alert--info">candidate stage updated successfully</div> </div></div>'
     )
 
 
@@ -1061,7 +1065,9 @@ def candidate_task_bulk_update(request):
     task = request.POST["task"]
     status = request.POST["status"]
 
-    count = CandidateTask.objects.filter(candidate_id__id__in=candidate_id_list,onboarding_task_id = task).update(status=status)
+    count = CandidateTask.objects.filter(
+        candidate_id__id__in=candidate_id_list, onboarding_task_id=task
+    ).update(status=status)
     # messages.success(request,f"{count} candidate's task status updated successfully")
 
     return JsonResponse(
@@ -1099,10 +1105,11 @@ def hired_candidate_chart(request):
             "data": data,
             "background_color": background_color,
             "border_color": border_color,
-            "message": _("No data Found...")
+            "message": _("No data Found..."),
         },
         safe=False,
     )
+
 
 @login_required
 def onboard_candidate_chart(request):
@@ -1136,7 +1143,7 @@ def onboard_candidate_chart(request):
             "data": data,
             "background_color": background_color,
             "border_color": border_color,
-            "message": _("No data Found...")
+            "message": _("No data Found..."),
         },
         safe=False,
     )
