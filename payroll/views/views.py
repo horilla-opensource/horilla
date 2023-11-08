@@ -368,7 +368,7 @@ def bulk_update_payslip_status(request):
 
 @login_required
 # @permission_required("payroll.view_payslip")
-def view_created_payslip(request, payslip_id):
+def view_created_payslip(request, payslip_id, **kwargs):
     """
     This method is used to view the saved payslips
     """

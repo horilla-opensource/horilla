@@ -64,7 +64,7 @@ urlpatterns = [
         component_views.view_individual_payslip,
         name="view-individual-payslip",
     ),
-    path("view-payslip", component_views.view_payslip, name="view-payslip"),
+    path("view-payslip/", component_views.view_payslip, name="view-payslip"),
     path(
         "hx-create-allowance",
         component_views.hx_create_allowance,

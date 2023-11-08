@@ -5,7 +5,7 @@ This module is used to map url pattern or request path with view functions
 """
 from django.urls import path, include
 from payroll.views import views
-from payroll.models.models import Contract
+from payroll.models.models import Contract, Payslip
 
 urlpatterns = [
     path("", include("payroll.urls.component_urls")),
@@ -58,6 +58,7 @@ urlpatterns = [
         "view-payslip/<int:payslip_id>/",
         views.view_created_payslip,
         name="view-created-payslip",
+        kwargs={"model": Payslip},
     ),
     path(
         "delete-payslip/<int:payslip_id>/", views.delete_payslip, name="delete-payslip"
