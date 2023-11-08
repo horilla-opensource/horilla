@@ -569,7 +569,7 @@ def paginator_qry(qryset, page_number):
     """
     This method is used to paginate queryset
     """
-    paginator = Paginator(qryset, 5)
+    paginator = Paginator(qryset, 50)
     qryset = paginator.get_page(page_number)
     return qryset
 
