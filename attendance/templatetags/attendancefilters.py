@@ -16,6 +16,11 @@ from attendance.models import AttendanceValidationCondition
 register = template.Library()
 
 
+@register.filter(name="is_string")
+def is_string(value):
+    return isinstance(value, str)
+
+
 @register.filter(name="checkminimumot")
 def checkminimumot(ot=None):
     """
