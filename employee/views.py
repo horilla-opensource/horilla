@@ -145,7 +145,7 @@ def self_info_update(request):
 
 @login_required
 @manager_can_enter("employee.view_employee")
-def employee_view_individual(request, obj_id):
+def employee_view_individual(request, obj_id, **kwargs):
     """
     This method is used to view profile of an employee.
     """
@@ -169,7 +169,7 @@ def employee_view_individual(request, obj_id):
 
 
 @login_required
-def contract_tab(request, obj_id):
+def contract_tab(request, obj_id, **kwargs):
     """
     This method is used to view profile of an employee.
     """
@@ -462,7 +462,7 @@ def employee_view_new(request):
 
 @login_required
 @manager_can_enter("employee.change_employee")
-def employee_view_update(request, obj_id):
+def employee_view_update(request, obj_id, **kwargs):
     """
     This method is used to render update form for employee.
     """
@@ -790,7 +790,7 @@ def employee_filter_view(request):
     if field != "" and field is not None:
         field_copy = field.replace(".", "__")
         employees = employees.order_by(field_copy)
-        employees = employees.exclude(employee_work_info__isnull = True)
+        employees = employees.exclude(employee_work_info__isnull=True)
         template = "employee_personal_info/group_by.html"
     filter_obj = EmployeeFilter(request.GET, queryset=employees)
 
@@ -1204,7 +1204,7 @@ def employee_import(request):
         # Convert the DataFrame to a list of dictionaries
         employee_dicts = data_frame.to_dict("records")
         # Create or update Employee objects from the list of dictionaries
-        errolist = []
+        error_list = []
         for employee_dict in employee_dicts:
             try:
                 phone = employee_dict["phone"]
@@ -1234,7 +1234,7 @@ def employee_import(request):
                     employee.phone = phone
                     employee.save()
             except Exception:
-                errolist.append(employee_dict)
+                error_list.append(employee_dict)
         return HttpResponse(
             """
     <div class='alert-success p-3 border-rounded'>
@@ -1724,7 +1724,7 @@ def employee_select(request):
     page_number = request.GET.get("page")
 
     if page_number == "all":
-        employees = Employee.objects.filter(is_active = True)
+        employees = Employee.objects.filter(is_active=True)
 
     employee_ids = [str(emp.id) for emp in employees]
     total_count = employees.count()
@@ -1736,23 +1736,19 @@ def employee_select(request):
 
 @login_required
 def employee_select_filter(request):
-
-    page_number = request.GET.get('page')
-    filtered = request.GET.get('filter')
+    page_number = request.GET.get("page")
+    filtered = request.GET.get("filter")
     filters = json.loads(filtered) if filtered else {}
 
-    if page_number == 'all':
+    if page_number == "all":
         employee_filter = EmployeeFilter(filters, queryset=Employee.objects.all())
 
         # Get the filtered queryset
         filtered_employees = employee_filter.qs
-        
+
         employee_ids = [str(emp.id) for emp in filtered_employees]
         total_count = filtered_employees.count()
 
-        context = {
-            'employee_ids': employee_ids,
-            'total_count': total_count
-        }
+        context = {"employee_ids": employee_ids, "total_count": total_count}
 
         return JsonResponse(context)

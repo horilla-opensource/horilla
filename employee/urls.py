@@ -5,6 +5,7 @@ This module is used to map url path with view methods.
 """
 from django.urls import path
 from employee import views
+from employee.models import Employee
 
 urlpatterns = [
     path("get-language-code/", views.get_language_code, name="get-language-code"),
@@ -13,6 +14,7 @@ urlpatterns = [
         "employee-view/<int:obj_id>/",
         views.employee_view_individual,
         name="employee-view-individual",
+        kwargs={"model": Employee},
     ),
     path("edit-profile", views.self_info_update, name="edit-profile"),
     path(
@@ -40,12 +42,13 @@ urlpatterns = [
         views.employee_profile_bank_details,
         name="employee-profile-bank-update",
     ),
-    path("employee-view", views.employee_view, name="employee-view"),
+    path("employee-view/", views.employee_view, name="employee-view"),
     path("employee-view-new", views.employee_view_new, name="employee-view-new"),
     path(
         "employee-view-update/<int:obj_id>/",
         views.employee_view_update,
         name="employee-view-update",
+        kwargs={"model": Employee},
     ),
     path(
         "employee-create-personal-info",
@@ -156,14 +159,29 @@ urlpatterns = [
     ),
     path("employee-widget-filter", views.widget_filter, name="employee-widget-filter"),
     path("asset-tab/<int:emp_id>", views.asset_tab, name="asset-tab"),
-    path("profile-asset-tab/<int:emp_id>", views.profile_asset_tab, name="profile-asset-tab"),
-    path("profile-attendance-tab", views.profile_attendance_tab, name="profile-attendance-tab"),
-    path("asset-request-tab/<int:emp_id>", views.asset_request_tab, name="asset-request-tab"),
+    path(
+        "profile-asset-tab/<int:emp_id>",
+        views.profile_asset_tab,
+        name="profile-asset-tab",
+    ),
+    path(
+        "profile-attendance-tab",
+        views.profile_attendance_tab,
+        name="profile-attendance-tab",
+    ),
+    path(
+        "asset-request-tab/<int:emp_id>",
+        views.asset_request_tab,
+        name="asset-request-tab",
+    ),
     path("performance-tab/<int:emp_id>", views.performance_tab, name="performance-tab"),
     path("attendance-tab/<int:emp_id>", views.attendance_tab, name="attendance-tab"),
     path("shift-tab/<int:emp_id>", views.shift_tab, name="shift-tab"),
-    path("contract-tab/<int:obj_id>", views.contract_tab, name="contract-tab"),
-    path('employee-select/', views.employee_select, name='employee-select'),
-    path('employee-select-filter/', views.employee_select_filter, name='employee-select-filter'),
-
+    path("contract-tab/<int:obj_id>", views.contract_tab, name="contract-tab",kwargs={'model':Employee}),
+    path("employee-select/", views.employee_select, name="employee-select"),
+    path(
+        "employee-select-filter/",
+        views.employee_select_filter,
+        name="employee-select-filter",
+    ),
 ]
