@@ -6,6 +6,15 @@
     .diff-cell{
         background: rgba(255, 166, 0, 0.158);
     }
+    .oh-modal_close--custom {
+        border: none;
+        background: none;
+        font-size: 1.5rem;
+        opacity: 0.7;
+        position: absolute;
+        top: 25px;
+        right: 15px;
+    }
 </style>
 {% if messages %}
 <div class="oh-wrapper">
@@ -233,9 +242,9 @@
   <div class="oh-modal__dialog">
     <div class="oh-modal__dialog-header">
       <h2 class="oh-modal__dialog-title" id="editModal1ModalLabel">
-        {% trans "Leave Request Create" %}
+        {% trans "Reason for rejection" %}
       </h2>
-      <button class="oh-modal__close" aria-label="Close">
+      <button class="oh-modal_close--custom" onclick="$('#rejectModal').removeClass('oh-modal--show');" aria-label="Close">
         <ion-icon name="close-outline"></ion-icon>
       </button>
     </div>

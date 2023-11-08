@@ -107,16 +107,8 @@
         {% trans "Approve" %}
     </a>
     {% endif %}
-    {% if leave_request.status != 'cancelled' %}
-    <a href="{% url 'request-cancel' leave_request.id %}" class="oh-btn oh-btn--danger">
+    <a hx-get="{% url 'request-cancel' leave_request.id %}" data-toggle="oh-modal-toggle" data-target="#rejectModal" hx-target="#rejectForm" class="oh-btn oh-btn--danger">
         <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
-        {% trans "Cancel" %}
+        {% trans "Reject" %}
     </a>
-    {% else %}
-    <a href="{% url 'request-cancel' leave_request.id %}" class="oh-btn oh-btn--danger oh-btn--disabled
-    " onclick="event.preventDefault()">
-        <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
-        {% trans "Cancel" %}
-    </a>
-    {% endif %}
 </div>

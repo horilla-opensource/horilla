@@ -17,7 +17,11 @@
     <span class="m-3 review_ongoing" hx-get="{% url "request-filter" %}?{{pd}}&status=rejected" hx-target="#leaveRequest" style="cursor: pointer">
         <span class="oh-dot oh-dot--small me-1" style="background-color:red"></span>
         {% trans "Rejected" %}
-      </span>
+    </span>
+    <span class="m-3 review_ongoing" hx-get="{% url "request-filter" %}?{{pd}}&status=cancelled_and_rejected" hx-target="#leaveRequest" style="cursor: pointer">
+      <span class="oh-dot oh-dot--small me-1" style="background-color:#000"></span>
+      {% trans "Cancelled & rejected" %}
+    </span>
     <span class="m-3 review_ongoing" hx-get="{% url "request-filter" %}?{{pd}}&status=cancelled" hx-target="#leaveRequest" style="cursor: pointer">
       <span class="oh-dot oh-dot--small me-1" style="background-color:grey"></span>
       {% trans "Cancelled" %}
@@ -53,7 +57,7 @@
                 {% for leave_request in leave_requests %}
                 <div class="oh-sticky-table__tr" draggable="true" data-toggle="oh-modal-toggle" data-target="#tableTimeOff"
                 hx-get="{% url 'one-request-view' leave_request.id %}?instances_ids={{requests_ids}}" hx-target="#requestView">
-                    <div class="oh-sticky-table__sd {% if leave_request.status == "requested" %} row-status--blue {% elif leave_request.status == "approved" %} row-status--yellow {% elif leave_request.status == "cancelled" %} row-status--gray {% elif leave_request.status == "rejected" %}row-status--red{% endif %}" >
+                    <div class="oh-sticky-table__sd {% if leave_request.status == "requested" %} row-status--blue {% elif leave_request.status == "cancelled_and_rejected" %} row-status--black {% elif leave_request.status == "approved" %} row-status--yellow {% elif leave_request.status == "cancelled" %} row-status--gray {% elif leave_request.status == "rejected" %}row-status--red{% endif %}" >
                         <div class="oh-profile oh-profile--md">
                             <div class="oh-profile__avatar mr-1">
                                 <img src="{{leave_request.employee_id.get_avatar}}" class="oh-profile__image"
@@ -82,7 +86,7 @@
                                 <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
                             </a>
                             {% endif %}
-                            {% if leave_request.status != 'rejected' %}
+                            {% if leave_request.status != 'rejected' and leave_request.status != 'cancelled_and_rejected' and leave_request.end_date >= current_date %}
                             <a type="submit" data-toggle="oh-modal-toggle"
                                 data-target="#rejectModal" hx-get="{% url 'request-cancel' leave_request.id %}" hx-target="#rejectForm" title="{% trans 'Reject' %}"
                                 class="oh-btn oh-btn--danger w-100">
