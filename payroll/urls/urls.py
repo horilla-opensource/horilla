@@ -5,6 +5,7 @@ This module is used to map url pattern or request path with view functions
 """
 from django.urls import path, include
 from payroll.views import views
+from payroll.models.models import Contract
 
 urlpatterns = [
     path("", include("payroll.urls.component_urls")),
@@ -15,13 +16,14 @@ urlpatterns = [
         "update-contract/<int:contract_id>",
         views.contract_update,
         name="update-contract",
+        kwargs={"model": Contract},
     ),
     path(
         "delete-contract/<int:contract_id>",
         views.contract_delete,
         name="delete-contract",
     ),
-    path("view-contract", views.contract_view, name="view-contract"),
+    path("view-contract/", views.contract_view, name="view-contract"),
     path(
         "single-contract-view/<int:contract_id>/",
         views.view_single_contract,
@@ -66,7 +68,7 @@ urlpatterns = [
         name="contract-info-initial",
     ),
     path(
-        "view-payroll-dashboard",
+        "view-payroll-dashboard/",
         views.view_payroll_dashboard,
         name="view-payroll-dashboard",
     ),
