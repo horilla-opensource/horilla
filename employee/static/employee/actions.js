@@ -212,7 +212,8 @@ function selectAllInstances() {
           var empId = employeeIds[i];
           $("#" + empId).prop("checked", true);
         }
-        $("#selectedInstances").attr("data-ids", JSON.stringify(employeeIds));
+        var previousIds = $("#selectedInstances").attr("data-ids")
+        $("#selectedInstances").attr("data-ids", JSON.stringify(Array.from(new Set([...employeeIds,...JSON.parse(previousIds)]))));
 
         count = makeListUnique(employeeIds);
         tickCheckboxes(count);
@@ -223,18 +224,6 @@ function selectAllInstances() {
     });
   }
 
-  $(".filterButton").click(function () {
-    var ids = JSON.parse($("#selectedInstances").attr("data-ids") || "[]");
-    uniqueIds = makeListUnique(ids);
-    selectedCount = uniqueIds.length;
-    if (allEmployeeCount === selectedCount) {
-      $("#tick").prop("checked", false);
-      $("#selectedInstances").attr("data-clicked", 0);
-      $("#selectedInstances").attr("data-ids", JSON.stringify([]));
-      count = [];
-      tickCheckboxes(count);
-    }
-  });
 }
 
 function unselectAllInstances() {
