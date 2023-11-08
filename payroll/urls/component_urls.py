@@ -5,10 +5,11 @@ This module is used to bind the urls related to payslip and its pay-heads method
 """
 from django.urls import path
 from payroll.views import component_views
+from payroll.models.models import Allowance, Deduction
 
 urlpatterns = [
     path("create-allowance", component_views.create_allowance, name="create-allowance"),
-    path("view-allowance", component_views.view_allowance, name="view-allowance"),
+    path("view-allowance/", component_views.view_allowance, name="view-allowance"),
     path(
         "single-allowance-view/<int:allowance_id>",
         component_views.view_single_allowance,
@@ -19,6 +20,7 @@ urlpatterns = [
         "update-allowance/<int:allowance_id>/",
         component_views.update_allowance,
         name="update-allowance",
+        kwargs={"model": Allowance},
     ),
     path(
         "delete-allowance/<int:allowance_id>/",
@@ -26,7 +28,7 @@ urlpatterns = [
         name="delete-allowance",
     ),
     path("create-deduction", component_views.create_deduction, name="create-deduction"),
-    path("view-deduction", component_views.view_deduction, name="view-deduction"),
+    path("view-deduction/", component_views.view_deduction, name="view-deduction"),
     path(
         "single-deduction-view/<int:deduction_id>",
         component_views.view_single_deduction,
@@ -37,6 +39,7 @@ urlpatterns = [
         "update-deduction/<int:deduction_id>/",
         component_views.update_deduction,
         name="update-deduction",
+        kwargs={"model": Deduction},
     ),
     path(
         "delete-deduction/<int:deduction_id>/",
@@ -45,9 +48,17 @@ urlpatterns = [
     ),
     path("create-payslip", component_views.create_payslip, name="create-payslip"),
     path("generate-payslip", component_views.generate_payslip, name="generate-payslip"),
-    path('validate-start-date', component_views.validate_start_date, name='validate-start-date'),
+    path(
+        "validate-start-date",
+        component_views.validate_start_date,
+        name="validate-start-date",
+    ),
     path("filter-payslip", component_views.filter_payslip, name="filter-payslip"),
-    path("payslip-info-export", component_views.payslip_export, name="payslip-info-export"),
+    path(
+        "payslip-info-export",
+        component_views.payslip_export,
+        name="payslip-info-export",
+    ),
     path(
         "view-individual-payslip/<int:employee_id>/<str:start_date>/<str:end_date>/",
         component_views.view_individual_payslip,
