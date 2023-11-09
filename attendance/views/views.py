@@ -301,8 +301,20 @@ def attendance_view(request):
     validate_attendances_ids = json.dumps(
         list(validate_attendances.values_list("id", flat=True))
     )
-    ot_attendances_ids = json.dumps(list(paginator_qry(ot_attendances, request.GET.get("opage")).object_list.values_list("id", flat=True)))
-    attendances_ids = json.dumps(list(paginator_qry(attendances, request.GET.get("page")).object_list.values_list("id", flat=True)))
+    ot_attendances_ids = json.dumps(
+        list(
+            paginator_qry(
+                ot_attendances, request.GET.get("opage")
+            ).object_list.values_list("id", flat=True)
+        )
+    )
+    attendances_ids = json.dumps(
+        list(
+            paginator_qry(attendances, request.GET.get("page")).object_list.values_list(
+                "id", flat=True
+            )
+        )
+    )
     return render(
         request,
         template,
@@ -559,12 +571,20 @@ def attendance_account_export(request):
     The exported Excel file will include the selected fields from the AttendanceOverTime model,
 
     """
+    accounts_data = {}
+    form = AttendanceOverTimeExportForm()
     today_date = date.today().strftime("%Y-%m-%d")
     file_name = f"Attendance_Account_{today_date}.xlsx"
-    attendance_accounts = AttendanceOverTimeFilter(request.GET).qs
-    selected_fields = request.GET.getlist("selected_fields")
     model_fields = AttendanceOverTime._meta.get_fields()
-    accounts_data = {}
+    selected_fields = request.GET.getlist("selected_fields")
+    attendance_accounts = AttendanceOverTimeFilter(request.GET).qs
+
+    if not selected_fields:
+        ids = request.GET.get("ids")
+        id_list = json.loads(ids)
+        attendance_accounts = AttendanceOverTime.objects.filter(id__in=id_list)
+        selected_fields = form.fields["selected_fields"].initial
+
     for field in model_fields:
         field_name = field.name
         if field_name in selected_fields:
@@ -732,9 +752,7 @@ def attendance_activity_bulk_delete(request):
             activity.delete()
             messages.success(
                 request,
-                _("{employee} activity deleted.").format(
-                    employee=activity.employee_id
-                ),
+                _("{employee} activity deleted.").format(employee=activity.employee_id),
             )
 
         except AttendanceActivity.DoesNotExist:
@@ -1292,24 +1310,22 @@ def hour_attendance_select(request):
 
 @login_required
 def hour_attendance_select_filter(request):
-
-    page_number = request.GET.get('page')
-    filtered = request.GET.get('filter')
+    page_number = request.GET.get("page")
+    filtered = request.GET.get("filter")
     filters = json.loads(filtered) if filtered else {}
 
-    if page_number == 'all':
-        employee_filter = AttendanceOverTimeFilter(filters, queryset=AttendanceOverTime.objects.all())
+    if page_number == "all":
+        employee_filter = AttendanceOverTimeFilter(
+            filters, queryset=AttendanceOverTime.objects.all()
+        )
 
         # Get the filtered queryset
         filtered_employees = employee_filter.qs
-        
+
         employee_ids = [str(emp.id) for emp in filtered_employees]
         total_count = filtered_employees.count()
 
-        context = {
-            'employee_ids': employee_ids,
-            'total_count': total_count
-        }
+        context = {"employee_ids": employee_ids, "total_count": total_count}
 
         return JsonResponse(context)
 
@@ -1331,26 +1347,25 @@ def activity_attendance_select(request):
 
 @login_required
 def activity_attendance_select_filter(request):
-
-    page_number = request.GET.get('page')
-    filtered = request.GET.get('filter')
+    page_number = request.GET.get("page")
+    filtered = request.GET.get("filter")
     filters = json.loads(filtered) if filtered else {}
 
-    if page_number == 'all':
-        employee_filter = AttendanceActivityFilter(filters, queryset=AttendanceActivity.objects.all())
+    if page_number == "all":
+        employee_filter = AttendanceActivityFilter(
+            filters, queryset=AttendanceActivity.objects.all()
+        )
 
         # Get the filtered queryset
         filtered_employees = employee_filter.qs
-        
+
         employee_ids = [str(emp.id) for emp in filtered_employees]
         total_count = filtered_employees.count()
 
-        context = {
-            'employee_ids': employee_ids,
-            'total_count': total_count
-        }
+        context = {"employee_ids": employee_ids, "total_count": total_count}
 
         return JsonResponse(context)
+
 
 @login_required
 def latecome_attendance_select(request):
@@ -1369,23 +1384,21 @@ def latecome_attendance_select(request):
 
 @login_required
 def latecome_attendance_select_filter(request):
-
-    page_number = request.GET.get('page')
-    filtered = request.GET.get('filter')
+    page_number = request.GET.get("page")
+    filtered = request.GET.get("filter")
     filters = json.loads(filtered) if filtered else {}
 
-    if page_number == 'all':
-        employee_filter = LateComeEarlyOutFilter(filters, queryset=AttendanceLateComeEarlyOut.objects.all())
+    if page_number == "all":
+        employee_filter = LateComeEarlyOutFilter(
+            filters, queryset=AttendanceLateComeEarlyOut.objects.all()
+        )
 
         # Get the filtered queryset
         filtered_employees = employee_filter.qs
-        
+
         employee_ids = [str(emp.id) for emp in filtered_employees]
         total_count = filtered_employees.count()
 
-        context = {
-            'employee_ids': employee_ids,
-            'total_count': total_count
-        }
+        context = {"employee_ids": employee_ids, "total_count": total_count}
 
         return JsonResponse(context)

@@ -26,7 +26,7 @@ var deleteMessages = {
   en: "Do you really want to delete all the selected attendances?",
   fr: "Voulez-vous vraiment supprimer toutes les présences sélectionnées?",
 };
-var norowvalidateMessages = {
+var noRowValidateMessages = {
   ar: "لم يتم تحديد أي صفوف من فحص الحضور.",
   de: "Im Feld „Anwesenheit validieren“ sind keine Zeilen ausgewählt.",
   es: "No se selecciona ninguna fila de Validar asistencia.",
@@ -54,7 +54,13 @@ var rowMessages = {
   en: " Selected",
   fr: " Sélectionné",
 };
-
+var excelMessages = {
+  ar: "هل ترغب في تنزيل ملف Excel؟",
+  de: "Möchten Sie die Excel-Datei herunterladen?",
+  es: "¿Desea descargar el archivo de Excel?",
+  en: "Do you want to download the excel file?",
+  fr: "Voulez-vous télécharger le fichier Excel?",
+};
 tickCheckboxes();
 function makeListUnique(list) {
   return Array.from(new Set(list));
@@ -88,12 +94,16 @@ $(".validate").change(function (e) {
     $(".validate-row").prop("checked", false);
   }
 });
+
 $(".all-hour-account").change(function (e) {
   var is_checked = $(this).is(":checked");
+  var closest = $(this)
+    .closest(".oh-sticky-table__thead")
+    .siblings(".oh-sticky-table__tbody");
   if (is_checked) {
-    $(".all-hour-account-row").prop("checked", true);
+    $(closest).children().find(".all-hour-account-row").prop("checked", true);
   } else {
-    $(".all-hour-account-row").prop("checked", false);
+    $(closest).children().find(".all-hour-account-row").prop("checked", false);
   }
 });
 
@@ -113,12 +123,12 @@ function tickCheckboxes() {
     languageCode = code;
     var message = rowMessages[languageCode];
     if (selectedCount > 0) {
-      $("#exportInstances").css("display", "inline-flex");
+      $("#exportAccounts").css("display", "inline-flex");
       $("#selectedShow").css("display", "inline-flex");
       $("#selectedShow").text(selectedCount + " -" + message);
     } else {
       $("#selectedShow").css("display", "none");
-      $("#exportInstances").css("display", "none");
+      $("#exportAccounts").css("display", "none");
     }
   });
 }
@@ -172,6 +182,154 @@ function ticklatecomeCheckboxes() {
       $("#selectedShowLatecome").css("display", "none");
       $("#exportLatecome").css("display", "none");
     }
+  });
+}
+
+function selectAllHourAcconts() {
+  $("#selectedShow").show();
+  $("#exportAccounts").show();
+
+  $("#selectedInstances").attr("data-clicked", 1);
+  $("#selectedShow").removeAttr("style");
+  var savedFilters = JSON.parse(localStorage.getItem("savedFilters"));
+
+  if (savedFilters && savedFilters["filterData"] !== null) {
+    var filter = savedFilters["filterData"];
+
+    $.ajax({
+      url: "/attendance/hour-attendance-select-filter",
+      data: { page: "all", filter: JSON.stringify(filter) },
+      type: "GET",
+      dataType: "json",
+      success: function (response) {
+        var employeeIds = response.employee_ids;
+
+        if (Array.isArray(employeeIds)) {
+          // Continue
+        } else {
+          console.error("employee_ids is not an array:", employeeIds);
+        }
+
+        var selectedCount = employeeIds.length;
+
+        for (var i = 0; i < employeeIds.length; i++) {
+          var empId = employeeIds[i];
+          $("#" + empId).prop("checked", true);
+        }
+        $("#selectedInstances").attr("data-ids", JSON.stringify(employeeIds));
+
+        count = makeListUnique(employeeIds);
+        tickCheckboxes(count);
+      },
+      error: function (xhr, status, error) {
+        console.error("Error:", error);
+      },
+    });
+  } else {
+    $.ajax({
+      url: "/attendance/hour-attendance-select",
+      data: { page: "all" },
+      type: "GET",
+      dataType: "json",
+      success: function (response) {
+        console.log(response);
+
+        var employeeIds = response.employee_ids;
+
+        if (Array.isArray(employeeIds)) {
+          // Continue
+        } else {
+          console.error("employee_ids is not an array:", employeeIds);
+        }
+
+        var selectedCount = employeeIds.length;
+
+        for (var i = 0; i < employeeIds.length; i++) {
+          var empId = employeeIds[i];
+          $("#" + empId).prop("checked", true);
+        }
+        $("#selectedInstances").attr("data-ids", JSON.stringify(employeeIds));
+        var previousIds = $("#selectedInstances").attr("data-ids");
+        $("#selectedInstances").attr(
+          "data-ids",
+          JSON.stringify(
+            Array.from(new Set([...employeeIds, ...JSON.parse(previousIds)]))
+          )
+        );
+
+        count = makeListUnique(employeeIds);
+        tickCheckboxes(count);
+      },
+      error: function (xhr, status, error) {
+        console.error("Error:", error);
+      },
+    });
+  }
+}
+
+function addingHourAccountsIds() {
+  var ids = JSON.parse($("#selectedInstances").attr("data-ids") || "[]");
+  var selectedCount = 0;
+
+  $(".all-hour-account-row").each(function () {
+    if ($(this).is(":checked")) {
+      ids.push(this.id);
+    } else {
+      var index = ids.indexOf(this.id);
+      if (index > -1) {
+        ids.splice(index, 1);
+      }
+    }
+  });
+
+  ids = makeListUnique(ids);
+  selectedCount = ids.length;
+  getCurrentLanguageCode(function (code) {
+    languageCode = code;
+    var message = rowMessages[languageCode];
+    $("#selectedInstances").attr("data-ids", JSON.stringify(ids));
+
+    if (selectedCount === 0) {
+      $("#selectedShow").css("display", "none");
+      $("#exportAccounts").css("display", "none");
+    } else {
+      $("#exportAccounts").css("display", "inline-flex");
+      $("#selectedShow").css("display", "inline-flex");
+      $("#selectedShow").text(selectedCount + " - " + message);
+    }
+  });
+}
+
+function unselectAllHourAcconts() {
+  $("#selectedInstances").attr("data-clicked", 0);
+
+  $.ajax({
+    url: "/attendance/hour-attendance-select",
+    data: { page: "all", filter: "{}" },
+    type: "GET",
+    dataType: "json",
+    success: function (response) {
+      var employeeIds = response.employee_ids;
+
+      if (Array.isArray(employeeIds)) {
+        // Continue
+      } else {
+        console.error("employee_ids is not an array:", employeeIds);
+      }
+
+      for (var i = 0; i < employeeIds.length; i++) {
+        var empId = employeeIds[i];
+        $("#" + empId).prop("checked", false);
+        $("#allHourAccount").prop("checked", false);
+      }
+      $("#selectedInstances").attr("data-ids", JSON.stringify([]));
+
+      count = [];
+      tickCheckboxes(count);
+    },
+    error: function (xhr, status, error) {
+      console.error("Error:", error);
+    },
   });
 }
 
@@ -263,7 +421,10 @@ $(".all-latecome").change(function () {
 
 $(".all-attendance-activity").change(function () {
   const isLateChecked = $(this).prop("checked");
-  $(".all-attendance-activity-row").prop("checked", isLateChecked);
+  var closest = $(this)
+    .closest(".oh-sticky-table__thead")
+    .siblings(".oh-sticky-table__tbody");
+    $(closest).children().find(".all-attendance-activity-row").prop("checked", isLateChecked);
 });
 
 $("#attendanceImportForm").submit(function (e) {
@@ -319,7 +480,7 @@ $("#validateAttendances").click(function (e) {
   getCurrentLanguageCode(function (code) {
     languageCode = code;
     var confirmMessage = validateMessages[languageCode];
-    var textMessage = norowvalidateMessages[languageCode];
+    var textMessage = noRowValidateMessages[languageCode];
     var checkedRows = $(".validate-row").filter(":checked");
     if (checkedRows.length === 0) {
       Swal.fire({
@@ -406,6 +567,54 @@ $("#approveOt").click(function (e) {
         }
       });
     }
+  });
+});
+
+$("#exportAccounts").click(function (e) {
+  var currentDate = new Date().toISOString().slice(0, 10);
+  var languageCode = null;
+  ids = [];
+  ids.push($("#selectedInstances").attr("data-ids"));
+  ids = JSON.parse($("#selectedInstances").attr("data-ids"));
+  getCurrentLanguageCode(function (code) {
+    languageCode = code;
+    var confirmMessage = excelMessages[languageCode];
+    Swal.fire({
+      text: confirmMessage,
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#008000",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Confirm",
+    }).then(function (result) {
+      if (result.isConfirmed) {
+        $.ajax({
+          type: "GET",
+          url: "/attendance/attendance-account-info-export",
+          data: {
+            ids: JSON.stringify(ids),
+          },
+          dataType: "binary",
+          xhrFields: {
+            responseType: "blob",
+          },
+          success: function (response) {
+            const file = new Blob([response], {
+              type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            });
+            const url = URL.createObjectURL(file);
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = "Hour_account" + currentDate + ".xlsx";
+            document.body.appendChild(link);
+            link.click();
+          },
+          error: function (xhr, textStatus, errorThrown) {
+            console.error("Error downloading file:", errorThrown);
+          },
+        });
+      }
+    });
   });
 });
 
@@ -564,7 +773,7 @@ $("#hourAccountbulkDelete").click(function (e) {
     ids.push($("#selectedInstances").attr("data-ids"));
     ids = JSON.parse($("#selectedInstances").attr("data-ids"));
     if (ids.length === 0) {
-        Swal.fire({
+      Swal.fire({
         text: textMessage,
         icon: "warning",
         confirmButtonText: "Close",
