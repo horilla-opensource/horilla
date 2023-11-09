@@ -18,50 +18,18 @@
             {{attendance_list.grouper}}
           </div>
         </span>
-        <!-- <div class="oh-accordion-meta__actions">
-          <div class="oh-dropdown" x-data="{open: false}">
-            <button
-              class="oh-btn oh-stop-prop oh-accordion-meta__btn"
-              @click="open = !open"
-              @click.outside="open = false"
-            >
-              Actions
-              <ion-icon
-                class="ms-2 oh-accordion-meta__btn-icon"
-                name="caret-down-outline"
-              ></ion-icon>
-            </button>
-            <div
-              class="oh-dropdown__menu oh-dropdown__menu--right"
-              x-show="open"
-            >
-              <ul class="oh-dropdown__items">
-                <li class="oh-dropdown__item">
-                  <a href="#" class="oh-dropdown__link">Arrange</a>
-                </li>
-                <li class="oh-dropdown__item">
-                  <a href="#" class="oh-dropdown__link">Forward</a>
-                </li>
-                <li class="oh-dropdown__item">
-                  <a href="#" class="oh-dropdown__link">Archive</a>
-                </li>
-                <li class="oh-dropdown__item">
-                  <a
-                    href="#"
-                    class="oh-dropdown__link oh-dropdown__link--danger"
-                    >Delete</a
-                  >
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div> -->
       </div>
       <div class="oh-accordion-meta__body d-none">
         <div class="oh-sticky-table oh-sticky-table--no-overflow mb-5">
           <div class="oh-sticky-table__table">
             <div class="oh-sticky-table__thead">
               <div class="oh-sticky-table__tr">
+                <div class="oh-sticky-table__th" style="width:10px;">
+                  <div class="centered-div">
+                    <input type="checkbox" class="oh-input oh-input__checkbox all-hour-account" title="Select All" 
+                        id = "allHourAccount"/>
+                  </div>
+                </div>
                 <div class="oh-sticky-table__th">{% trans "Employee" %}</div>
                 <div class="oh-sticky-table__th">{% trans "Month" %}</div>
                 <div class="oh-sticky-table__th">{% trans "Year" %}</div>
@@ -74,9 +42,18 @@
             <div class="oh-sticky-table__tbody">
               {% for ot in attendance_list.list %}
               <div
-                class="oh-sticky-table__tr oh-multiple-table-sort__movable"
+                class="oh-sticky-table__tr" hx-get="{% url 'attendance-search' %}?employee_id={{ot.employee_id.id}}&attendance_validated=true&attendance_date__gte={{ dates.0|date:"Y-m-d" }}&attendance_date__lte={{ dates.1|date:"Y-m-d" }}" hx-target="#ot-table" draggable="true" onclick="hiding()"
               >
-                <div class="oh-sticky-table__sd">
+                <div class="oh-sticky-table__sd" onclick="event.stopPropagation();">
+                  <div class="centered-div">
+                    <input
+                    type="checkbox"
+                    id="{{ot.id}}"
+                    class="form-check-input all-hour-account-row"
+                    />
+                  </div>
+							  </div>
+                <div class="oh-sticky-table__td">
                   <div class="oh-profile oh-profile--md">
                     <div class="oh-profile__avatar mr-1">
                       <img
@@ -159,125 +136,6 @@
     </nav>
   </div>
 </div>
-{% comment %} 
-<div class="oh-sticky-table">
-  <div class="oh-sticky-table__table oh-table__sticky-collaspable-sort">
-    <div class="oh-sticky-table__thead">
-      <div class="oh-sticky-table__tr">
-        <div class="oh-sticky-table__th">{% trans "Employee" %}</div>
-        <div class="oh-sticky-table__th">{% trans "Month" %}</div>
-        <div class="oh-sticky-table__th">{% trans "Year" %}</div>
-        <div class="oh-sticky-table__th">{% trans "Worked Hours" %}</div>
-        <div class="oh-sticky-table__th">{% trans "Overtime" %}</div>
-        <div class="oh-sticky-table__th"></div>
-      </div>
-    </div>
-    <!-- grouper -->
-    {% dynamic_regroup accounts by field as accounts_grouper %}
-    {% for attendance_list in accounts_grouper %}
-    <div class="oh-sticky-table__tbody" draggable="true">
-      <div class="oh-sticky-table__tr oh-table__toggle-parent" data-target="{{attendance_list.grouper}}">
-        <div class="oh-sticky-table__sd">
-          <div class="d-flex align-items-center">
-            <button class="oh-btn oh-btn--transparent oh-table__toggle-button"></button>
-            <span class="ms-2">
-              <div class="oh-tabs__input-badge-container">
-                <span class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round mr-1">
-                  {{attendance_list.list|length}}
-                </span>
-                {{attendance_list.grouper}}
-              </div>
-            </span>
-          </div>
-        </div>
-        <div class="oh-sticky-table__td"></div>
-        <div class="oh-sticky-table__td"></div>
-        <div class="oh-sticky-table__td"></div>
-        <div class="oh-sticky-table__td"></div>
-        <div class="oh-sticky-table__td"></div>
-      </div>
-      <!-- data -->
-      {% for ot in attendance_list.list %}
-      <div class="oh-sticky-table__tr oh-table__toggle-child" data-group="{{attendance_list.grouper}}">
-        
-        <div class="oh-sticky-table__sd">
-          <div class="oh-profile oh-profile--md">
-            <div class="oh-profile__avatar mr-1">
-              <img
-                src="https://ui-avatars.com/api/?name={{ot.employee_id.employee_first_name}}+{{ot.employee_id.employee_last_name}}&background=random"
-                class="oh-profile__image"
-                alt="Mary Magdalene"
-              />
-            </div>
-            <span class="oh-profile__name oh-text--dark"
-            >{{ot.employee_id}}</span
-            >
-          </div>
-        </div>
-          <div class="oh-sticky-table__td">{% with  month=ot.month|capfirst  %}{% trans month %}{% endwith %}</div>
-          <div class="oh-sticky-table__td">{{ot.year}}</div>
-          <div class="oh-sticky-table__td">{{ot.worked_hours}}</div>
-          <div class="oh-sticky-table__td">{{ot.overtime}}</div>
-          <div class="oh-sticky-table__td">
-            <div class="oh-btn-group">
-              {% if perms.recruitment.change_attendanceovertime or request.user|is_reportingmanager %}
-              <a hx-get="{% url 'attendance-overtime-update' ot.id %}" hx-target='#updateAttendanceOTModalBody' data-toggle='oh-modal-toggle' data-target='#updateOtModal'  class="oh-btn oh-btn--light-bkg w-50" title="{% trans 'Edit' %}"><ion-icon name="create-outline"></ion-icon></a>
-              {% endif %}
-              {% if perms.recruitment.delete_attendance %}
-                <button data-id={{ot.id}} class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-50 deletebutton" title="{% trans 'Remove' %}"><ion-icon name="trash-outline"></ion-icon></button>
-              {% endif %}
-            </div>  
-          </div>
-      </div>
-      {% endfor %}
-    </div>   
-    {% endfor %}             
-  </div>
-</div>
-
-
-<div class="oh-pagination">
-  <span
-    class="oh-pagination__page"
-    >
-    {% trans "Page" %} {{ accounts.number }} {% trans "of" %} {{ accounts.paginator.num_pages }}.
-    </span
-  >
-  <nav class="oh-pagination__nav">
-    <div class="oh-pagination__input-container me-3">
-      <span class="oh-pagination__label me-1">{% trans "Page" %}</span>
-      <input
-        type="number"
-        name="page"
-        class="oh-pagination__input"
-        value="{{accounts.number}}"
-        hx-get="{% url 'attendance-ot-search' %}?{{pd}}"
-        hx-target="#ot-table"
-        min="1"
-      />
-      <span class="oh-pagination__label">{% trans "of" %} {{accounts.paginator.num_pages}}</span>
-    </div>
-    <ul class="oh-pagination__items">
-      {% if accounts.has_previous %}
-      <li class="oh-pagination__item oh-pagination__item--wide">
-        <a hx-target='#ot-table' hx-get="{% url 'attendance-ot-search' %}?{{pd}}&page=1" class="oh-pagination__link">{% trans "First" %}</a>
-      </li>
-      <li class="oh-pagination__item oh-pagination__item--wide">
-        <a hx-target='#ot-table' hx-get="{% url 'attendance-ot-search' %}?{{pd}}&page={{ accounts.previous_page_number }}" class="oh-pagination__link">{% trans "Previous" %}</a>
-      </li>
-      {% endif %}
-      {% if accounts.has_next %}
-      <li class="oh-pagination__item oh-pagination__item--wide">
-        <a hx-target='#ot-table' hx-get="{% url 'attendance-ot-search' %}?{{pd}}&page={{ accounts.next_page_number }}" class="oh-pagination__link">{% trans "Next" %}</a>
-      </li>
-      <li class="oh-pagination__item oh-pagination__item--wide">
-        <a hx-target='#ot-table' hx-get="{% url 'attendance-ot-search' %}?{{pd}}&page={{ accounts.paginator.num_pages }}" class="oh-pagination__link">{% trans "Last" %}</a>
-      </li>
-      {% endif %}
-    </ul>
-  </nav>
-</div> {% endcomment %}
-
 {% if perms.attendance.change_attendanceovertime or request.user|is_reportingmanager %}
 <div
 class="oh-modal"
@@ -302,20 +160,40 @@ aria-hidden="true"
 </div>
 {% endif %}
 
-
-
 <script>
-  $(document).ready( function () {
+  $(document).ready(function () {
+    $("#selectAllInstances").show();
+    $("#unselectAllInstances").show();
 
-    $('.deletebutton').click(function(){
-      var id = $(this).attr('data-id');
+    $(".all-hour-account-row").change(function () {
+      addingHourAccountsIds();
+      $("#selectedShow").show();
+      $("#exportAccounts").show();
+    });
+
+    $(".all-hour-account").change(function () {
+      addingHourAccountsIds();
+
+      $("#selectedShow").show();
+      $("#exportAccounts").show();
+    });
+
+    $("#selectAllInstances").click(function () {
+      selectAllHourAcconts();
+    });
+
+    $("#unselectAllInstances").click(function () {
+      unselectAllHourAcconts();
+    });
+    $(".deletebutton").click(function () {
+      var id = $(this).attr("data-id");
       var url = `/attendance/attendance-overtime-delete/${id}/`;
-  
+
       // Create a form element
-      var form = $('<form></form>');
-      form.attr('method', 'POST');
-      form.attr('action', url);
-  
+      var form = $("<form></form>");
+      form.attr("method", "POST");
+      form.attr("action", url);
+
       // Create a hidden input field for the CSRF token
       var csrf_token = $('input[name="csrfmiddlewaretoken"]').val();
       var csrf_input = $('<input type="hidden" name="csrfmiddlewaretoken">');
@@ -327,19 +205,17 @@ aria-hidden="true"
       form.submit();
     });
 
-
-    
-    $('.oh-table__sticky-collaspable-sort').click(function (e) { 
-   e.preventDefault();
-   let clickedEl = $(e.target).closest(".oh-table__toggle-parent");
-   let targetSelector = clickedEl.data("target");
-   let toggleBtn = clickedEl.find(".oh-table__toggle-button");
-   $(`[data-group='${targetSelector}']`).toggleClass(
-     "oh-table__toggle-child--show"
-   );
-   if (toggleBtn) {
-     toggleBtn.toggleClass("oh-table__toggle-button--show");
-   }
- });
+    $(".oh-table__sticky-collaspable-sort").click(function (e) {
+      e.preventDefault();
+      let clickedEl = $(e.target).closest(".oh-table__toggle-parent");
+      let targetSelector = clickedEl.data("target");
+      let toggleBtn = clickedEl.find(".oh-table__toggle-button");
+      $(`[data-group='${targetSelector}']`).toggleClass(
+        "oh-table__toggle-child--show"
+      );
+      if (toggleBtn) {
+        toggleBtn.toggleClass("oh-table__toggle-button--show");
+      }
+    });
   });
 </script>
