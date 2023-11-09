@@ -1,65 +1,97 @@
 {% load i18n %}
 {% load attendancefilters %}
 {% include 'filter_tags.html' %}
-<div class="oh-sticky-table">
-  <div class="oh-sticky-table__table oh-table__sticky-collaspable-sort">
-    <div class="oh-sticky-table__thead">
-      <div class="oh-sticky-table__tr">
-        <div class="oh-sticky-table__th">{% trans "Employee" %}</div>
-        <div class='oh-sticky-table__th'>{% trans "Attendnace Date" %}</div>
-          <div class='oh-sticky-table__th'>{% trans "In Date" %}</div>
-          <div class='oh-sticky-table__th'>{% trans "Check-In" %}</div>
-          <div class='oh-sticky-table__th'>{% trans "Check-Out" %}</div>
-          <div class='oh-sticky-table__th'>{% trans "Out Date" %}</div>
+<style>
+  .oh-accordion-meta__item{
+    margin-bottom: 0;
+  }
+</style>
+{% dynamic_regroup data by field as attendances_grouper %}
+{% for attendance_list in attendances_grouper %}
+<div class="oh-accordion-meta">
+  <div class="oh-accordion-meta__item">
+    <div class="oh-accordion-meta__header">
+      <span class="oh-accordion-meta__title pt-3 pb-3">
+        <div class="oh-tabs__input-badge-container">
+          <span
+            class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round mr-1"
+          >
+            {{attendance_list.list|length}}
+          </span>
+          {{attendance_list.grouper}}
+        </div>
+      </span>
+    </div>
+    <div class="oh-accordion-meta__body d-none">
+      <div class="oh-sticky-table oh-sticky-table--no-overflow mb-5">
+        <div class="oh-sticky-table" >
+          <div class="oh-sticky-table__table oh-table--sortable">
+            <div class="oh-sticky-table__thead">
+              <div class="oh-sticky-table__tr">
+                <div class="oh-sticky-table__th" style="width: 20px;">
+                  <div class="centered-div">
+                    <input type="checkbox" title='{% trans "Select All" %}' 
+                          class="oh-input oh-input__checkbox all-attendance-activity"/>
+                  </div>
+                </div>
+                <div class="oh-sticky-table__th" hx-target='#activity-table' hx-get="{% url 'attendance-activity-search' %}?{{pd}}&orderby=employee_id__employee_first_name">{% trans "Employee" %}</div>
+                <div class='oh-sticky-table__th' hx-target='#activity-table' hx-get="{% url 'attendance-activity-search' %}?{{pd}}&orderby=attendance_date">{% trans "Attendnace Date" %}</div>
+                <div class='oh-sticky-table__th' hx-target='#activity-table' hx-get="{% url 'attendance-activity-search' %}?{{pd}}&orderby=clock_in_date">{% trans "In Date" %}</div>
+                <div class='oh-sticky-table__th'>{% trans "Check In" %}</div>
+                <div class='oh-sticky-table__th'>{% trans "Check Out" %}</div>
+                <div class='oh-sticky-table__th' hx-target='#activity-table' hx-get="{% url 'attendance-activity-search' %}?{{pd}}&orderby=clock_out_date">{% trans "Out Date" %}</div>
+                <div class='oh-sticky-table__th' scope="col" style="width: 80px;"></div>
+              </div> 
+            </div>
+            <div class="oh-sticky-table__tbody">
+              {% for activity in attendance_list.list %}
+                <div class="oh-sticky-table__tr" draggable="true">
+                  <div class="oh-sticky-table__sd" onclick="event.stopPropagation();">
+                    <div class="centered-div">
+                      <input type="checkbox" id="{{activity.id}}" 
+                        class="oh-input attendance-checkbox oh-input__checkbox all-attendance-activity-row" />
+                    </div>
+                  </div>
+                    <div class="oh-sticky-table__td">
+                      <div class="oh-profile oh-profile--md">
+                        <div class="oh-profile__avatar mr-1">
+                          <img
+                          src="{{activity.employee_id.get_avatar}}"
+                          class="oh-profile__image"
+                          alt=""
+                        />
+                        </div>
+                          <span class="oh-profile__name oh-text--dark"
+                          >{{activity.employee_id}}</span
+                          >
+                        </div>
+                    </div>
+                    <div class="oh-sticky-table__td">{{activity.attendance_date}}</div>
+                    <div class="oh-sticky-table__td">{{activity.clock_in_date}}</div>
+                    <div class="oh-sticky-table__td">{{activity.clock_in}}</div>
+                    <div class="oh-sticky-table__td">{{activity.clock_out}}</div>
+                    <div class="oh-sticky-table__td">{{activity.clock_out_date}}</div>
+                    <div class="oh-sticky-table__td">
+                      
+                      {% if perms.attendance.delete_attendanceactivity %}
+                      <form action="{% url 'attendance-activity-delete' activity.id  %}"
+                        onclick="event.stopPropagation()" onsubmit="return confirm('{% trans "Are you sure want to delete this attendance?" %}')" 
+                        hx-target="#tab_contents" method='post'>
+                        {% csrf_token %}
+                        <button type='submit' class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100" title="{% trans 'Remove' %}"><ion-icon name="trash-outline"></ion-icon></button>
+                      </form>
+                      {% endif %}
+                </div>      
+              </div>
+              {% endfor %}
+          </div>
+      </div>
       </div>
     </div>
-    <!-- grouper -->
-    {% dynamic_regroup data by field as attendances_grouper %}
-    {% for attendance_list in attendances_grouper %}
-    <div class="oh-sticky-table__tbody" draggable="true">
-      <div class="oh-sticky-table__tr oh-table__toggle-parent" data-target="{{attendance_list.grouper}}">
-        <div class="oh-sticky-table__sd">
-          <div class="d-flex align-items-center">
-            <button class="oh-btn oh-btn--transparent oh-table__toggle-button"></button>
-            <span class="ms-2">{{attendance_list.grouper}}</span>
-          </div>
-        </div>
-        <div class="oh-sticky-table__td"></div>
-        <div class="oh-sticky-table__td"></div>
-        <div class="oh-sticky-table__td"></div>
-        <div class="oh-sticky-table__td"></div>
-        <div class="oh-sticky-table__td"></div>
-      </div>
-      <!-- data -->
-      {% for activity in attendance_list.list %}
-      <div class="oh-sticky-table__tr oh-table__toggle-child" data-group="{{attendance_list.grouper}}">
-        
-        <div class="oh-sticky-table__sd">
-          <div class="oh-profile oh-profile--md">
-            <div class="oh-profile__avatar mr-1">
-              <img
-                src="{{activity.employee_id.get_avatar}}"
-                class="oh-profile__image"
-                alt=""
-              />
-            </div>
-            <span class="oh-profile__name oh-text--dark"
-            >{{activity.employee_id}}</span
-            >
-          </div>
-        </div>
-        <div class="oh-sticky-table__td">{{activity.attendance_date}}</div>
-        <div class="oh-sticky-table__td">{{activity.clock_in_date}}</div>
-        <div class="oh-sticky-table__td">{{activity.clock_in}}</div>
-        <div class="oh-sticky-table__td">{{activity.clock_out}}</div>
-        <div class="oh-sticky-table__td">{{activity.clock_out_date}}</div>
-              
-      </div>
-      {% endfor %}
-    </div>   
-    {% endfor %}             
   </div>
 </div>
+{% endfor %}
+
 
 
 </div>

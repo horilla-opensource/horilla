@@ -1,10 +1,4 @@
 {% load static %} {% load i18n %}
-<form
-  hx-get='{% url "attendance-activity-search" %}'
-  id="filterForm"
-  hx-swap="innerHTML"
-  hx-target="#activity-table"
->
   <div class="oh-dropdown__filter-body">
     <div class="oh-accordion">
       <div class="oh-accordion-header">{% trans "Work Info" %}</div>
@@ -49,7 +43,6 @@
         </div>
       </div>
     </div>
-    {% comment %} {{f.form}} {% endcomment %}
     <div class="oh-accordion">
       <div class="oh-accordion-header">{% trans "Attendance Activity" %}</div>
       <div class="oh-accordion-body">
@@ -112,33 +105,6 @@
         </div>
       </div>
     </div>
-    <div class="oh-accordion">
-      <div class="oh-accordion-header">{% trans "Group By" %}</div>
-      <div class="oh-accordion-body">
-        <div class="row">
-          <div class="col-sm-12 col-md-12 col-lg-6">
-            <div class="oh-input-group">
-              <label class="oh-label">{% trans "Field" %}</label>
-            </div>
-          </div>
-          <div class="col-sm-12 col-md-12 col-lg-6">
-            <div class="oh-input-group">
-              <select
-                class="oh-select mt-1 w-100"
-                id="id_field"
-                name="field"
-                class="select2-selection select2-selection--single"
-                id="gp"
-              >
-                {% for field in gp_fields %}
-                <option value="{{ field.0 }}">{% trans field.1 %}</option>
-                {% endfor %}
-              </select>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
   </div>
   <div class="oh-dropdown__filter-footer">
     <button
@@ -148,5 +114,4 @@
       {% trans "Filter" %}
     </button>
   </div>
-</form>
 <script src="{% static '/base/filter.js' %}"></script>
