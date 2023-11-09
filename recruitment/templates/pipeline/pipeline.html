@@ -1,5 +1,61 @@
 {% extends 'index.html' %} {% load i18n %} {% block content %} {% load static %} {% load recruitmentfilters %}
 <style>
+  .avatars {
+    display: flex;
+    padding: 8px 10px 8px 10px;
+  }
+
+  .avatars__item {
+    background-color: #596376;
+    border: 2px solid white;
+    border-radius: 100%;
+    color: #ffffff;
+    display: block;
+    font-family: sans-serif;
+    font-size: 12px;
+    font-weight: 100;
+    height: 26px;
+    width: 26px;
+    line-height: 17px;
+    text-align: center;
+    transition: margin 0.1s ease-in-out;
+    overflow: hidden;
+    margin-left: -10px;
+  }
+
+  .avatars__item:first-child {
+    z-index: 5;
+  }
+
+  .avatars__item:nth-child(2) {
+    z-index: 4;
+  }
+
+  .avatars__item:nth-child(3) {
+    z-index: 3;
+  }
+
+  .avatars__item:nth-child(4) {
+    z-index: 2;
+  }
+
+  .avatars__item:nth-child(5) {
+    z-index: 1;
+  }
+
+  .avatars__item:last-child {
+    z-index: 0;
+  }
+
+  .avatars__item img {
+    width: 100%;
+  }
+
+  .avatars:hover .avatars__item {
+    margin-right: 10px;
+  }
+</style>
+<style>
   .search-highlight{
     background-color: rgba(255, 68, 0, 0.076);
   }
@@ -101,6 +157,13 @@
                 />
               </div>
             </div>
+            <div class="d-flex justify-content-between custom-scroll">
+              <div class="avatars" id="avatarsContainer">
+                {% for manager in stage.stage_managers.all %}
+                  <a href="#" class="avatars__item" title="{{manager}}"><img class="avatar" src="{{manager.get_avatar}}" alt=""></a>
+                {% endfor %}
+              </div>
+            </div>
             <div class="d-flex">
               {% if perms.add_candidate or request.user|is_stagemanager %}
               {% include 'pipeline/form/candidate_drop_down_form.html' %}
@@ -165,6 +228,11 @@
               <div class="oh-sticky-table__table oh-table__movable">
                 <div class="oh-sticky-table__thead">
                   <div class="oh-sticky-table__tr oh-table-config__tr">
+                    <div class="oh-sticky-table__th" style="width: 50px">
+                      <div class="centered-div">
+                        <input type="checkbox" class="oh-input oh-input__checkbox stage-candidates" data-stage-id="{{stage.id}}" title="Select All" id="tick">
+                      </div>
+                    </div>
                     <div class="oh-sticky-table__th oh-table-config__th" style="width: 235px;">
                       <span> {% trans "Candidate" %} </span>
                     </div>
@@ -179,7 +247,14 @@
                       <span> {% trans "Contact" %} </span>
                     </div>
                     <div class="oh-sticky-table__th oh-table-config__th">{% trans "Stage" %}</div>
-                    <div class="oh-sticky-table__th oh-table-config__th" style="width: 200px;" ></div>
+                    <div class="oh-sticky-table__th oh-table-config__th" style="width: 200px;" >
+                      <select name="bulk_stage" class="oh-select w-100" data-stage-id="{{stage.id}}">
+                        <option value="" style="color: gray !important;" selected>Stage bulk update</option>
+                        {% for stage in rec.stage_set.all|dictsort:"sequence" %}
+                        <option value="{{stage.id}}">{{stage}}</option>
+                        {% endfor %}
+                      </select>
+                    </div>
                   </div>
                 </div>
                 <div
@@ -191,7 +266,7 @@
                   id="candidateContainer{{stage.id}}"
                 >
                   {% for cand in stage.active_candidates.all%} {% if cand.is_active %}
-
+                  
                   <div
                     class="oh-sticky-table__tr oh-table-config__tr candidate ui-droppable ui-sortable-handle cand change-cand "
                     data-candidate-id="{{cand.id}}"
@@ -201,6 +276,11 @@
                     data-candidate="{{cand.name}}"
                     data-job-position ="{{cand.job_position_id}}"
                   >
+                    <div class="oh-sticky-table__sd">
+                      <div class="centered-div">
+                        <input type="checkbox" id="65" class="oh-input candidate-checkbox oh-input__checkbox stage-candidate-row">
+                      </div>
+                    </div>
                     <a
                       class="oh-sticky-table__sd oh-table-config__td"
                       style="text-decoration: none;width: 400px !important;"
@@ -315,5 +395,44 @@
     </div>
   </div>
 </div>
+<script>
+  $(document).ready(function () {
+    $(".stage-candidates").change(function (e) { 
+      var stageId = $(this).attr("data-stage-id");
+      $(`[data-container='candidate'][data-stage-id=${stageId}] [type=checkbox].stage-candidate-row`).prop("checked",false);
+      $(`[data-container='candidate'][data-stage-id=${stageId}] [type=checkbox].stage-candidate-row`).change()
+      if ($(this).is(":checked")) {
+        setTimeout(() => {
+          $(`[data-container='candidate'][data-stage-id=${stageId}] [type=checkbox].stage-candidate-row`).prop("checked",true)
+          $(`[data-container='candidate'][data-stage-id=${stageId}] [type=checkbox].stage-candidate-row`).change()
 
+        }, 100);
+      }else{
+        
+      }    
+    });
+    $("[name=bulk_stage]").change(function (e) { 
+      e.preventDefault();
+      var currentStageId = $(this).attr("data-stage-id");
+      var nextStageId = $(this).val();
+      var select = $(`.stage-change[data-stage-id=${currentStageId}]`).filter(function() {
+        var checked = $(this).closest(".oh-sticky-table__tr").find("[type=checkbox]").is(":checked")
+        return checked
+      });
+      select.attr("data-stage-id",nextStageId)
+      if (!select.length) {
+        $("#ohMessages").html(`
+        <div class="oh-alert-container">
+          <div class="oh-alert oh-alert--animated oh-alert--info">
+            No candidates are selected on '${$(`[hx-post="/recruitment/stage-title-update/${currentStageId}/"]`).val()}' stage
+          </div>
+        </div>
+        `);
+      }
+      select.val(nextStageId)
+      select.change()
+      $(this).val("");
+    });
+  });
+</script>
 {% include 'pipeline/footer_components.html' %} {% endblock %}
