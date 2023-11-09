@@ -21,7 +21,7 @@ urlpatterns = [
     path(
         "attendance-info-export", views.attendance_export, name="attendance-info-export"
     ),
-    path("attendance-view", views.attendance_view, name="attendance-view"),
+    path("attendance-view/", views.attendance_view, name="attendance-view"),
     path(
         "attendance-search",
         attendance.views.search.attendance_search,
@@ -53,7 +53,7 @@ urlpatterns = [
         name="attendance-account-info-export",
     ),
     path(
-        "attendance-overtime-view",
+        "attendance-overtime-view/",
         views.attendance_overtime_view,
         name="attendance-overtime-view",
     ),
@@ -73,7 +73,7 @@ urlpatterns = [
         name="attendance-overtime-delete",
     ),
     path(
-        "attendance-activity-view",
+        "attendance-activity-view/",
         views.attendance_activity_view,
         name="attendance-activity-view",
     ),
@@ -97,7 +97,7 @@ urlpatterns = [
         views.attendance_activity_export,
         name="attendance-activity-info-export",
     ),
-    path("view-my-attendance", views.view_my_attendance, name="view-my-attendance"),
+    path("view-my-attendance/", views.view_my_attendance, name="view-my-attendance"),
     path(
         "filter-own-attendance",
         attendance.views.search.filter_own_attendance,
@@ -111,12 +111,12 @@ urlpatterns = [
     path("clock-in", attendance.views.clock_in_out.clock_in, name="clock-in"),
     path("clock-out", attendance.views.clock_in_out.clock_out, name="clock-out"),
     path(
-        "on-time-view",
+        "on-time-view/",
         views.on_time_view,
         name="on-time-view",
     ),
     path(
-        "late-come-early-out-view",
+        "late-come-early-out-view/",
         views.late_come_early_out_view,
         name="late-come-early-out-view",
     ),
@@ -182,7 +182,7 @@ urlpatterns = [
     ),
     path("dashboard", attendance.views.dashboard.dashboard, name="dashboard"),
     path(
-        "dashboard-attendance",
+        "dashboard-attendance/",
         attendance.views.dashboard.dashboard_attendance,
         name="dashboard-attendance",
     ),
@@ -192,7 +192,7 @@ urlpatterns = [
         name="request-attendance",
     ),
     path(
-        "request-attendance-view",
+        "request-attendance-view/",
         attendance.views.requests.request_attendance_view,
         name="request-attendance-view",
     ),
@@ -246,4 +246,32 @@ urlpatterns = [
         views.user_request_one_view,
         name="user-request-one-view",
     ),
+    path('hour-attendance-select/', 
+        views.hour_attendance_select, 
+        name='hour-attendance-select'),
+
+    path('hour-attendance-select-filter/', 
+        views.hour_attendance_select_filter, 
+        name='hour-attendance-select-filter'),
+
+    path('attendance-account-bulk-delete', 
+        views.attendance_account_bulk_delete, 
+        name='attendance-account-bulk-delete'),
+
+    path('activity-attendance-select/', 
+        views.activity_attendance_select, 
+        name='activity-attendance-select'),
+
+    path('activity-attendance-select-filter/', 
+        views.activity_attendance_select_filter, 
+        name='activity-attendance-select-filter'),
+
+    path('latecome-attendance-select/', 
+        views.latecome_attendance_select, 
+        name='latecome-attendance-select'),
+
+    path('latecome-attendance-select-filter/', 
+        views.latecome_attendance_select_filter, 
+        name='latecome-attendance-select-filter'),
+
 ]

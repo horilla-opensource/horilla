@@ -107,8 +107,8 @@ def attendance_search(request):
     validate_attendances_ids = json.dumps(
         list(validate_attendances.values_list("id", flat=True))
     )
-    ot_attendances_ids = json.dumps(list(paginator_qry(ot_attendances, request.GET.get("opage")).object_list.values_list("id", flat=True)))
-    attendances_ids = json.dumps(list(paginator_qry(attendances, request.GET.get("page")).object_list.values_list("id", flat=True)))
+    ot_attendances_ids = json.dumps(list(ot_attendances.values_list("id", flat=True)))
+    attendances_ids = json.dumps(list(attendances.values_list("id", flat=True)))    
     return render(
         request,
         template,

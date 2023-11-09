@@ -301,8 +301,8 @@ def attendance_view(request):
     validate_attendances_ids = json.dumps(
         list(validate_attendances.values_list("id", flat=True))
     )
-    ot_attendances_ids = json.dumps(list(ot_attendances.values_list("id", flat=True)))
-    attendances_ids = json.dumps(list(attendances.values_list("id", flat=True)))
+    ot_attendances_ids = json.dumps(list(paginator_qry(ot_attendances, request.GET.get("opage")).object_list.values_list("id", flat=True)))
+    attendances_ids = json.dumps(list(paginator_qry(attendances, request.GET.get("page")).object_list.values_list("id", flat=True)))
     return render(
         request,
         template,
@@ -654,12 +654,12 @@ def attendance_account_bulk_delete(request):
             hour_account.delete()
             messages.success(
                 request,
-                _("{employee} {month} payslip deleted.").format(
-                    employee=hour_account.employee_id, month=hour_account.month
+                _("{employee} hour account deleted.").format(
+                    employee=hour_account.employee_id
                 ),
             )
         except AttendanceOverTime.DoesNotExist:
-            messages.error(request, _("Payslip not found."))
+            messages.error(request, _("Hour account not found."))
         except ProtectedError:
             messages.error(
                 request,
@@ -728,7 +728,14 @@ def attendance_activity_bulk_delete(request):
     ids = json.loads(ids)
     for attendance_id in ids:
         try:
-            AttendanceActivity.objects.get(id=attendance_id).delete()
+            activity = AttendanceActivity.objects.get(id=attendance_id)
+            activity.delete()
+            messages.success(
+                request,
+                _("{employee} activity deleted.").format(
+                    employee=activity.employee_id
+                ),
+            )
 
         except AttendanceActivity.DoesNotExist:
             messages.error(request, _("Attendance not found."))
@@ -925,7 +932,14 @@ def late_come_early_out_bulk_delete(request):
     ids = json.loads(ids)
     for attendance_id in ids:
         try:
-            AttendanceLateComeEarlyOut.objects.get(id=attendance_id).delete()
+            latecome = AttendanceLateComeEarlyOut.objects.get(id=attendance_id)
+            latecome.delete()
+            messages.success(
+                request,
+                _("{employee} Late-in early-out deleted.").format(
+                    employee=latecome.employee_id
+                ),
+            )
         except AttendanceLateComeEarlyOut.DoesNotExist:
             messages.error(request, _("Attendance not found."))
     return JsonResponse({"message": "Success"})
@@ -1259,3 +1273,119 @@ def user_request_one_view(request, id):
             "instance_ids_json": instance_ids_json,
         },
     )
+
+
+@login_required
+def hour_attendance_select(request):
+    page_number = request.GET.get("page")
+
+    if page_number == "all":
+        employees = AttendanceOverTime.objects.all()
+
+    employee_ids = [str(emp.id) for emp in employees]
+    total_count = employees.count()
+
+    context = {"employee_ids": employee_ids, "total_count": total_count}
+
+    return JsonResponse(context, safe=False)
+
+
+@login_required
+def hour_attendance_select_filter(request):
+
+    page_number = request.GET.get('page')
+    filtered = request.GET.get('filter')
+    filters = json.loads(filtered) if filtered else {}
+
+    if page_number == 'all':
+        employee_filter = AttendanceOverTimeFilter(filters, queryset=AttendanceOverTime.objects.all())
+
+        # Get the filtered queryset
+        filtered_employees = employee_filter.qs
+        
+        employee_ids = [str(emp.id) for emp in filtered_employees]
+        total_count = filtered_employees.count()
+
+        context = {
+            'employee_ids': employee_ids,
+            'total_count': total_count
+        }
+
+        return JsonResponse(context)
+
+
+@login_required
+def activity_attendance_select(request):
+    page_number = request.GET.get("page")
+
+    if page_number == "all":
+        employees = AttendanceActivity.objects.all()
+
+    employee_ids = [str(emp.id) for emp in employees]
+    total_count = employees.count()
+
+    context = {"employee_ids": employee_ids, "total_count": total_count}
+
+    return JsonResponse(context, safe=False)
+
+
+@login_required
+def activity_attendance_select_filter(request):
+
+    page_number = request.GET.get('page')
+    filtered = request.GET.get('filter')
+    filters = json.loads(filtered) if filtered else {}
+
+    if page_number == 'all':
+        employee_filter = AttendanceActivityFilter(filters, queryset=AttendanceActivity.objects.all())
+
+        # Get the filtered queryset
+        filtered_employees = employee_filter.qs
+        
+        employee_ids = [str(emp.id) for emp in filtered_employees]
+        total_count = filtered_employees.count()
+
+        context = {
+            'employee_ids': employee_ids,
+            'total_count': total_count
+        }
+
+        return JsonResponse(context)
+
+@login_required
+def latecome_attendance_select(request):
+    page_number = request.GET.get("page")
+
+    if page_number == "all":
+        employees = AttendanceLateComeEarlyOut.objects.all()
+
+    employee_ids = [str(emp.id) for emp in employees]
+    total_count = employees.count()
+
+    context = {"employee_ids": employee_ids, "total_count": total_count}
+
+    return JsonResponse(context, safe=False)
+
+
+@login_required
+def latecome_attendance_select_filter(request):
+
+    page_number = request.GET.get('page')
+    filtered = request.GET.get('filter')
+    filters = json.loads(filtered) if filtered else {}
+
+    if page_number == 'all':
+        employee_filter = LateComeEarlyOutFilter(filters, queryset=AttendanceLateComeEarlyOut.objects.all())
+
+        # Get the filtered queryset
+        filtered_employees = employee_filter.qs
+        
+        employee_ids = [str(emp.id) for emp in filtered_employees]
+        total_count = filtered_employees.count()
+
+        context = {
+            'employee_ids': employee_ids,
+            'total_count': total_count
+        }
+
+        return JsonResponse(context)

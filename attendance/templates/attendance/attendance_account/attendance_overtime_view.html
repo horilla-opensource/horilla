@@ -1,8 +1,24 @@
 {% extends 'index.html' %}{% block content %}
-{% load static %}
+{% load static %}{% load i18n %}
 {% include 'attendance/attendance_account/nav.html' %}
+
+<div class="oh-checkpoint-badge mb-2" id="selectedInstances" data-ids="[]" data-clicked="" style="display:none;" >
+  {% trans "Selected Attendance" %}
+</div>
+
 <div class="oh-wrapper">
+  <div class="oh-checkpoint-badge text-success mb-2" id="selectAllInstances" style="cursor: pointer;">
+      {% trans "Select All Attendance" %}
+  </div>
+  <div class="oh-checkpoint-badge text-secondary mb-2" id="unselectAllInstances" style="cursor: pointer;">
+    {% trans "Unselect All Attendance" %}
+  </div>
+  <div class="oh-checkpoint-badge text-info mb-2" id="exportInstances" style="cursor: pointer;">
+    {% trans "Export Attendance" %}
+  </div>
+  <div class="oh-checkpoint-badge text-danger mb-2" id="selectedShow" >
+  </div>
   {% include 'attendance/attendance_account/overtime_list.html' %}
 </div>
-<script src="{% static 'attendance/action.js' %}"></script>
+<script src="{% static 'attendance/actions.js' %}"></script>
 {% endblock %}

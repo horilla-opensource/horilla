@@ -1,4 +1,5 @@
 {% load i18n %}
+{% load static %}
 {% include 'filter_tags.html' %}
 <div id="activity-table"> 
 <div class="oh-sticky-table" >
@@ -6,7 +7,10 @@
       <div class="oh-sticky-table__thead">
         <div class="oh-sticky-table__tr">
           <div class="oh-sticky-table__th" style="width: 20px;">
-            <input type="checkbox" title='{% trans "Select All" %}' class="oh-input oh-input__checkbox mt-1 mr-2 all-attendance-activity" style="margin-left: -5px;" />
+            <div class="centered-div">
+              <input type="checkbox" title='{% trans "Select All" %}' 
+                    class="oh-input oh-input__checkbox all-attendance-activity"/>
+            </div>
           </div>
           <div class="oh-sticky-table__th" hx-target='#activity-table' hx-get="{% url 'attendance-activity-search' %}?{{pd}}&orderby=employee_id__employee_first_name">{% trans "Employee" %}</div>
           <div class='oh-sticky-table__th' hx-target='#activity-table' hx-get="{% url 'attendance-activity-search' %}?{{pd}}&orderby=attendance_date">{% trans "Attendnace Date" %}</div>
@@ -21,7 +25,10 @@
         {% for activity in data %}
           <div class="oh-sticky-table__tr" draggable="true">
             <div class="oh-sticky-table__sd" onclick="event.stopPropagation();">
-              <input type="checkbox" id="{{activity.id}}" class="oh-input attendance-checkbox oh-input__checkbox mt-2 mr-2 all-attendance-activity-row" />
+              <div class="centered-div">
+                <input type="checkbox" id="{{activity.id}}" 
+                  class="oh-input attendance-checkbox oh-input__checkbox all-attendance-activity-row" />
+              </div>
             </div>
               <div class="oh-sticky-table__td">
                 <div class="oh-profile oh-profile--md">
@@ -43,7 +50,6 @@
               <div class="oh-sticky-table__td">{{activity.clock_out}}</div>
               <div class="oh-sticky-table__td">{{activity.clock_out_date}}</div>
               <div class="oh-sticky-table__td">
-              <div class="oh-btn-group">
                 
                 {% if perms.attendance.delete_attendanceactivity %}
                 <form action="{% url 'attendance-activity-delete' activity.id  %}"
@@ -53,7 +59,6 @@
                   <button type='submit' class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100" title="{% trans 'Remove' %}"><ion-icon name="trash-outline"></ion-icon></button>
                 </form>
                 {% endif %}
-              </div>      
           </div>      
         </div>
         {% endfor %}
@@ -85,18 +90,18 @@
     <ul class="oh-pagination__items">
       {% if data.has_previous %}
       <li class="oh-pagination__item oh-pagination__item--wide">
-        <a hx-target='#activity-table' hx-get="{% url 'attendance-activity-search' %}?{{pd}}&page=1" class="oh-pagination__link">{% trans "First" %}</a>
+        <a hx-target='#activity-table' hx-get="{% url 'attendance-activity-search' %}?{{pd}}&page=1" class="oh-pagination__link" onclick="tickactivityCheckboxes()">{% trans "First" %}</a>
       </li>
       <li class="oh-pagination__item oh-pagination__item--wide">
-        <a hx-target='#activity-table' hx-get="{% url 'attendance-activity-search' %}?{{pd}}&page={{ data.previous_page_number }}" class="oh-pagination__link">{% trans "Previous" %}</a>
+        <a hx-target='#activity-table' hx-get="{% url 'attendance-activity-search' %}?{{pd}}&page={{ data.previous_page_number }}" class="oh-pagination__link" onclick="tickactivityCheckboxes()">{% trans "Previous" %}</a>
       </li>
       {% endif %}
       {% if data.has_next %}
       <li class="oh-pagination__item oh-pagination__item--wide">
-        <a hx-target='#activity-table' hx-get="{% url 'attendance-activity-search' %}?{{pd}}&page={{ data.next_page_number }}" class="oh-pagination__link">{% trans "Next" %}</a>
+        <a hx-target='#activity-table' hx-get="{% url 'attendance-activity-search' %}?{{pd}}&page={{ data.next_page_number }}" class="oh-pagination__link" onclick="tickactivityCheckboxes()">{% trans "Next" %}</a>
       </li>
       <li class="oh-pagination__item oh-pagination__item--wide">
-        <a hx-target='#activity-table' hx-get="{% url 'attendance-activity-search' %}?{{pd}}&page={{ data.paginator.num_pages }}" class="oh-pagination__link">{% trans "Last" %}</a>
+        <a hx-target='#activity-table' hx-get="{% url 'attendance-activity-search' %}?{{pd}}&page={{ data.paginator.num_pages }}" class="oh-pagination__link" onclick="tickactivityCheckboxes()">{% trans "Last" %}</a>
       </li>
       {% endif %}
     </ul>
@@ -104,3 +109,171 @@
 </div>
 </div>
 
+<script>
+
+	function addingactivityIds() {
+		var ids = JSON.parse($("#selectedActivity").attr("data-ids") || "[]");
+		var selectedCount = 0;
+		
+		$(".all-attendance-activity-row").each(function () {
+			if ($(this).is(":checked")) {
+			ids.push(this.id);
+			} else {
+			var index = ids.indexOf(this.id);
+			if (index > -1) {
+				ids.splice(index, 1);
+			}
+			}
+		});
+		
+		ids = makeactivityListUnique(ids);
+		selectedCount = ids.length;
+		
+		getCurrentLanguageCode(function (code) {
+			languageCode = code;
+			var message = rowMessages[languageCode];
+		
+			$("#selectedActivity").attr("data-ids", JSON.stringify(ids));
+		
+			if (selectedCount === 0) {
+			$("#selectedShowActivity").css("display", "none");
+			$("#exportActivity").css("display", "none");
+			} else {
+			$("#exportActivity").css("display", "inline-flex");
+			$("#selectedShowActivity").css("display", "inline-flex");
+			$("#selectedShowActivity").text(selectedCount + " - " + message);
+			}
+		});
+		}
+
+	$(document).ready(function() {
+		
+		$(".all-attendance-activity-row").change(function () {
+			addingactivityIds();
+		});
+
+		$(".all-attendance-activity").change(function () {
+			addingactivityIds();
+		});
+
+		$('#selectAllActivity').click(function() {
+
+			$("#selectedActivity").attr("data-clicked", 1);
+			$('#selectedShowActivity').removeAttr('style');
+			var savedFilters = JSON.parse(localStorage.getItem('savedFilters'));
+
+			if (savedFilters && savedFilters['filterData'] !== null) 
+			{
+				var filter = savedFilters['filterData'];
+				
+				$.ajax({
+					url: '{% url "activity-attendance-select-filter" %}',
+					data: { page: 'all', 'filter':JSON.stringify(filter) },
+					type: 'GET',
+					dataType: 'json',
+					success: function(response) {
+
+					var employeeIds = response.employee_ids;
+				
+						if (Array.isArray(employeeIds)) {
+							// Continue
+						} else {
+							console.error('employee_ids is not an array:', employeeIds);
+						}
+						
+						var selectedCount = employeeIds.length;              
+						
+						for (var i = 0; i < employeeIds.length; i++) {
+						var empId = employeeIds[i];
+						$('#' + empId).prop('checked', true);
+						}
+						$("#selectedActivity").attr("data-ids", JSON.stringify(employeeIds));
+
+						count = makeactivityListUnique(employeeIds)
+						tickactivityCheckboxes(count)
+					},
+					error: function(xhr, status, error) {
+						console.error('Error:', error);
+					}
+				});
+
+			} 
+			else {
+
+				$.ajax({
+				url: '{% url "activity-attendance-select" %}',
+				data: { page: 'all'},
+				type: 'GET',
+				dataType: 'json',
+				success: function(response) {
+					console.log(response)
+
+					var employeeIds = response.employee_ids;
+			
+					if (Array.isArray(employeeIds)) {
+						// Continue
+					} else {
+						console.error('employee_ids is not an array:', employeeIds);
+					}
+					
+					var selectedCount = employeeIds.length;
+					
+					
+					for (var i = 0; i < employeeIds.length; i++) {
+						var empId = employeeIds[i];
+						$('#' + empId).prop('checked', true);
+					}
+					var previousIds = $("#selectedActivity").attr("data-ids")
+        			$("#selectedActivity").attr("data-ids", JSON.stringify(Array.from(new Set([...employeeIds,...JSON.parse(previousIds)]))));
+
+
+
+					count = makeactivityListUnique(employeeIds)
+					tickactivityCheckboxes(count)
+				},
+				error: function(xhr, status, error) {
+					console.error('Error:', error);
+				}
+				});
+			}
+
+		});
+
+		$('#unselectAllActivity').click(function(){
+
+			$("#selectedActivity").attr("data-clicked", 0);
+			
+			$.ajax({
+				url: '{% url "activity-attendance-select" %}',
+				data: { page: 'all', 'filter': '{}' },
+				type: 'GET',
+				dataType: 'json',
+				success: function(response) {
+					var employeeIds = response.employee_ids;
+			
+					if (Array.isArray(employeeIds)) {
+						// Continue
+					} else {
+						console.error('employee_ids is not an array:', employeeIds);
+					}
+					
+					for (var i = 0; i < employeeIds.length; i++) {
+					var empId = employeeIds[i];
+					$('#' + empId).prop('checked', false);
+					$(".all-attendance-activity").prop('checked', false);
+				
+					}
+					$("#selectedActivity").attr("data-ids", JSON.stringify([]));
+
+					count = [];
+					tickactivityCheckboxes(count)
+
+				},
+				error: function(xhr, status, error) {
+					console.error('Error:', error);
+				}
+			});
+		});
+	});
+</script>
+<script src="/static/attendance/actions.js"></script>
