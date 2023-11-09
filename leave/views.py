@@ -2436,15 +2436,16 @@ def leave_allocation_request_view(request):
     queryset = filtersubordinates(request,queryset,'leave.view_leaveallocationrequest')
     page_number = request.GET.get('page')
     leave_allocation_requests = paginator_qry(queryset,page_number)
+    requests_ids = json.dumps(list(leave_allocation_requests.object_list.values_list("id", flat=True)))
     my_leave_allocation_requests = LeaveAllocationRequest.objects.filter(employee_id=employee.id).order_by("-id")
     my_page_number = request.GET.get('m_page')
     my_leave_allocation_requests = paginator_qry(my_leave_allocation_requests,my_page_number)
+    my_requests_ids = json.dumps(list(my_leave_allocation_requests.object_list.values_list("id", flat=True)))
+    
     leave_allocation_request_filter = LeaveAllocationRequestFilter()
     previous_data = request.GET.urlencode()
     data_dict = parse_qs(previous_data)
-    data_dict = get_key_instances(LeaveAllocationRequest,data_dict)
-    
-
+    data_dict = get_key_instances(LeaveAllocationRequest,data_dict)    
     context={
         'leave_allocation_requests' :leave_allocation_requests,
         'my_leave_allocation_requests':my_leave_allocation_requests,
@@ -2452,6 +2453,9 @@ def leave_allocation_request_view(request):
         "form": leave_allocation_request_filter.form,
         "filter_dict":data_dict,
         "gp_fields": LeaveAllocationRequestReGroup.fields,
+        'requests_ids':requests_ids,
+        'my_requests_ids':my_requests_ids,
+
     }
     return render(
         request,
@@ -2472,16 +2476,24 @@ def leave_allocation_request_single_view(request,req_id):
     return leave allocation request single view
     """
     my_request = False
-    if request.GET.get('my_request'):
+    if request.GET.get("my_request") == "True":
         my_request = True
+    requests_ids_json = request.GET.get("instances_ids")
+    if requests_ids_json:
+        requests_ids = json.loads(requests_ids_json)
+        previous_id, next_id = closest_numbers(requests_ids, req_id)
     leave_allocation_request = LeaveAllocationRequest.objects.get(id=req_id)
+    context={
+            'leave_allocation_request':leave_allocation_request,
+            'my_request':my_request,
+            'instances_ids':requests_ids_json,
+            'previous':previous_id,
+            'next':next_id,
+    } 
     return render(
         request,
         'leave/leave_allocation_request/leave_allocation_request_single_view.html',
-        {
-            'leave_allocation_request':leave_allocation_request,
-            'my_request':my_request
-        }    
+        context=context
     )
 @login_required
 def leave_allocation_request_create(request):
@@ -2553,7 +2565,6 @@ def leave_allocation_request_filter(request):
     leave_allocation_requests_filtered = filtersubordinates(request,leave_allocation_requests_filtered,'leave.view_leaveallocationrequest')
     my_leave_allocation_requests = LeaveAllocationRequest.objects.filter(employee_id=employee.id).order_by("-id")
     my_leave_allocation_requests = LeaveAllocationRequestFilter(request.GET,my_leave_allocation_requests).qs
-    my_leave_allocation_requests = filtersubordinates(request,my_leave_allocation_requests,"leave.view_leaveallocationrequest")
     template = 'leave/leave_allocation_request/leave_allocation_request_list.html'
     if field != "" and field is not None:
         field_copy = field.replace(".", "__")
@@ -2563,11 +2574,12 @@ def leave_allocation_request_filter(request):
     my_page_number = request.GET.get('m_page')
     page_number = request.GET.get('page')
     leave_allocation_requests = paginator_qry(leave_allocation_requests_filtered,page_number)
+    requests_ids = json.dumps(list(leave_allocation_requests.object_list.values_list("id", flat=True)))
+    my_requests_ids = json.dumps(list(leave_allocation_requests.object_list.values_list("id", flat=True)))
     my_leave_allocation_requests = paginator_qry(my_leave_allocation_requests,my_page_number)
     previous_data = request.GET.urlencode()
     data_dict = parse_qs(previous_data)
     data_dict = get_key_instances(LeaveAllocationRequest,data_dict)
-
     if 'm_page' in data_dict:
         data_dict.pop('m_page')
     context = { 
@@ -2575,7 +2587,9 @@ def leave_allocation_request_filter(request):
         'my_leave_allocation_requests':my_leave_allocation_requests,
         'pd':previous_data,
         'filter_dict':data_dict,
-        "field": field,           
+        "field": field,  
+        'requests_ids':requests_ids,
+        'my_requests_ids':my_requests_ids        
     }
     return render(request,
                   template,

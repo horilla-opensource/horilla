@@ -24,7 +24,7 @@
                             <div class="oh-sticky-table__tr" draggable="true"  
                                 data-toggle="oh-modal-toggle"
                                 data-target="#singleViewModal"
-                                hx-get="{% url 'leave-allocation-request-single-view' leave_allocation_request.id %}?my_request=True" 
+                                hx-get="{% url 'leave-allocation-request-single-view' leave_allocation_request.id %}?my_request=True&instances_ids={{my_requests_ids}}" 
                                 hx-target="#singleViewTarget">
                                 <div class="oh-sticky-table__sd
                                     {% if leave_allocation_request.status == 'requested' %} row-status--blue 
@@ -163,7 +163,7 @@
                                 <div class="oh-sticky-table__tr" draggable="true"  
                                     data-toggle="oh-modal-toggle"
                                     data-target="#singleViewModal"
-                                    hx-get="{% url 'leave-allocation-request-single-view' leave_allocation_request.id %}" 
+                                    hx-get="{% url 'leave-allocation-request-single-view' leave_allocation_request.id %}?instances_ids={{requests_ids}}" 
                                     hx-target="#singleViewTarget">
                                     <div class="oh-sticky-table__sd {% if leave_allocation_request.status == "requested" %} row-status--blue 
                                         {% elif leave_allocation_request.status == "approved" %} row-status--yellow 
@@ -183,10 +183,10 @@
                                             <span class="oh-profile__name oh-text--dark">{{leave_allocation_request.employee_id}}</span>
                                         </div>
                                     </div>
-                                    <div class="oh-sticky-table__td {% if leave_allocation_request.status == 'cancelled' %} diff-cell{% endif %}">{{leave_allocation_request.leave_type_id}}</div>
-                                    <div class="oh-sticky-table__td {% if leave_allocation_request.status == 'cancelled' %} diff-cell{% endif %}">{{leave_allocation_request.requested_days}}</div>
-                                    <div class="oh-sticky-table__td {% if leave_allocation_request.status == 'cancelled' %} diff-cell{% endif %}">{{leave_allocation_request.created_by}}</div>
-                                    <div class="oh-sticky-table__td {% if leave_allocation_request.status == 'cancelled' %} diff-cell{% endif %}">{{leave_allocation_request.get_status_display}}</div>
+                                    <div class="oh-sticky-table__td {% if leave_allocation_request.status == 'rejected' %} diff-cell{% endif %}">{{leave_allocation_request.leave_type_id}}{{leave_allocation_request.id}}</div>
+                                    <div class="oh-sticky-table__td {% if leave_allocation_request.status == 'rejected' %} diff-cell{% endif %}">{{leave_allocation_request.requested_days}}</div>
+                                    <div class="oh-sticky-table__td {% if leave_allocation_request.status == 'rejected' %} diff-cell{% endif %}">{{leave_allocation_request.created_by}}</div>
+                                    <div class="oh-sticky-table__td {% if leave_allocation_request.status == 'rejected' %} diff-cell{% endif %}">{{leave_allocation_request.get_status_display}}</div>
                                     <div class="oh-sticky-table__td">{{ leave_allocation_request.description}}</div>
                                     <div class="oh-sticky-table__td" onclick="event.stopPropagation()">
                                         <div class="oh-btn-group">
