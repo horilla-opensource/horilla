@@ -451,7 +451,9 @@ function selectAllContracts() {
           var empId = contractIds[i];
           $("#" + empId).prop("checked", true);
         }
-        $("#selectedInstances").attr("data-ids", JSON.stringify(contractIds));
+        var previousIds = $("#selectedInstances").attr("data-ids");
+        $("#selectedInstances").attr("data-ids", JSON.stringify(Array.from(new Set([...contractIds,...JSON.parse(previousIds)]))));
+        console.log(Array.from(new Set([...contractIds,...JSON.parse(previousIds)])));
 
         count = makeEmpListUnique(contractIds);
         tickContractCheckboxes(count);
@@ -491,18 +493,6 @@ function selectAllContracts() {
     });
   }
 
-  $(".filterButton").click(function () {
-    var ids = JSON.parse($("#selectedInstances").attr("data-ids") || "[]");
-    uniqueIds = makeEmpListUnique(ids);
-    selectedCount = uniqueIds.length;
-    if (allContractCount === selectedCount) {
-      $(".all-contract").prop("checked", false);
-      $("#selectedInstances").attr("data-clicked", 0);
-      $("#selectedInstances").attr("data-ids", JSON.stringify([]));
-      count = [];
-      tickContractCheckboxes(count);
-    }
-  });
 }
 
 function unselectAllContracts() {
