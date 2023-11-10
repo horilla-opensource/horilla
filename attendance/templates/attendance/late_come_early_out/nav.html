@@ -55,6 +55,7 @@
       ></ion-icon>
     </a>
   </div>
+<form hx-get='{% url "late-come-early-out-search" %}' id="filterForm" hx-swap='innerHTML' hx-target='#report-container' >
   <div class="oh-main__titlebar oh-main__titlebar--right">
     <div
       class="oh-input-group oh-input__search-group"
@@ -89,6 +90,43 @@
           style="display: none;"
         >
           {% include 'attendance/late_come_early_out/late_come_early_out_filters.html' %}
+        </div>
+      </div>
+      <div class="oh-dropdown" x-data="{open: false}">
+        <button class="oh-btn ml-2" @click="open = !open">
+          <ion-icon name="library-outline" class="mr-1"></ion-icon>{% trans "Group By" %}
+          <div id="filterCount"></div>
+        </button>
+        <div
+        class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4"
+        x-show="open"
+        @click.outside="open = false"
+        style="display: none"
+        >            
+        <div class="oh-accordion">
+          <div class="oh-accordion-header">{% trans "Group By" %}</div>
+            <div class="row">
+              <div class="col-sm-12 col-md-12 col-lg-6">
+                <div class="oh-input-group">
+                  <label class="oh-label">{% trans "Field" %}</label>
+                </div>
+              </div>
+              <div class="col-sm-12 col-md-12 col-lg-6">
+                <div class="oh-input-group">
+                  <select
+                    class="oh-select mt-1 w-100"
+                    id="id_field"
+                    name="field"
+                    class="select2-selection select2-selection--single"
+                  >
+                    {% for field in gp_fields %}
+                    <option value="{{ field.0 }}">{% trans field.1 %}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
       <div class="oh-dropdown ml-2" x-data="{open: false}">
@@ -132,10 +170,16 @@
       </div>
     </div>
   </div>
+</form>
   <script>
     $('#attendance-search').keydown(function (e) { 
       var val = $(this).val();
       $('.pg').attr('hx-vals', `{"search":${val}}`);
     });
+    $(document).ready(function(){
+      $('#id_field').on('change',function(){
+        $('.filterButton')[0].click();
+      })
+    })
   </script>
 </section>

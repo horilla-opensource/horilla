@@ -1,82 +1,104 @@
 {% load i18n %}
 {% load attendancefilters %}
 {% include 'filter_tags.html' %}
-<div class="oh-sticky-table">
-  <div class="oh-sticky-table__table oh-table__sticky-collaspable-sort">
-    <div class="oh-sticky-table__thead">
-      <div class="oh-sticky-table__tr">
-        <div class='oh-sticky-table__th' scope="col">{% trans "Employee" %}</div>
-          <div class='oh-sticky-table__th' scope="col">{% trans "Type" %}</div>
-          <div class='oh-sticky-table__th' scope="col">{% trans "Attendance Date" %}</div>
-          <div class='oh-sticky-table__th' scope="col">{% trans "Check-In" %}</div>
-          <div class='oh-sticky-table__th' scope="col">{% trans "In Date" %}</div>
-          <div class='oh-sticky-table__th' scope="col">{% trans "Check-Out" %}</div>
-          <div class='oh-sticky-table__th' scope="col">{% trans "Out Date" %}</div>
-          <div class='oh-sticky-table__th' scope="col">{% trans "Min Hour" %}</div>
-          <div class='oh-sticky-table__th' scope="col">{% trans "At Work" %}</div>
-      </div>
-    </div>
-    <!-- grouper -->
-    {% dynamic_regroup data by field as reports_grouper %}
-    {% for attendance_list in reports_grouper %}
-    <div class="oh-sticky-table__tbody" draggable="true">
-      <div class="oh-sticky-table__tr oh-table__toggle-parent" data-target="{{attendance_list.grouper}}">
-        <div class="oh-sticky-table__sd">
-          <div class="d-flex align-items-center">
-            <button class="oh-btn oh-btn--transparent oh-table__toggle-button"></button>
-            <span class="ms-2">
-              <div class="oh-tabs__input-badge-container">
-                <span class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round mr-1">
-                  {{attendance_list.list|length}}
-                </span>
-                {{attendance_list.grouper}}
-              </div>
-            </span>
-          </div>
-        </div>
-        <div class="oh-sticky-table__td"></div>
-        <div class="oh-sticky-table__td"></div>
-        <div class="oh-sticky-table__td"></div>
-        <div class="oh-sticky-table__td"></div>
-        <div class="oh-sticky-table__td"></div>
-        <div class="oh-sticky-table__td"></div>
-        <div class="oh-sticky-table__td"></div>
-        <div class="oh-sticky-table__td"></div>
-      </div>
-      <!-- data -->
-      {% for late_in_early_out in attendance_list.list %}
-      <div class="oh-sticky-table__tr oh-table__toggle-child" data-group="{{attendance_list.grouper}}">
-        
-        <div class="oh-sticky-table__sd">
-          <div class="oh-profile oh-profile--md">
-            <div class="oh-profile__avatar mr-1">
-              <img
-                src="{{late_in_early_out.employee_id.get_avatar}}"
-                class="oh-profile__image"
-                alt=""
-              />
-            </div>
-            <span class="oh-profile__name oh-text--dark"
-              >{{late_in_early_out.employee_id}}</span
-            >
-          </div>
-        </div>
-        <div class='oh-sticky-table__td'>{{late_in_early_out.type}}</div>
-        <div class='oh-sticky-table__td'>{{late_in_early_out.attendance_id.attendance_date}}</div>
-        <div class='oh-sticky-table__td'>{{late_in_early_out.attendance_id.attendance_clock_in}}</div>
-        <div class='oh-sticky-table__td'>{{late_in_early_out.attendance_id.attendance_clock_in_date}}</div>
-        <div class='oh-sticky-table__td'>{{late_in_early_out.attendance_id.attendance_clock_out}}</div>
-        <div class='oh-sticky-table__td'>{{late_in_early_out.attendance_id.attendance_clock_out_date}}</div>
-        <div class='oh-sticky-table__td'>{{late_in_early_out.attendance_id.minimum_hour}}</div>
-        <div class='oh-sticky-table__td'>{{late_in_early_out.attendance_id.attendance_worked_hour}}</div>
+{% dynamic_regroup data by field as reports_grouper %}
+{% for attendance_list in reports_grouper %}
 
-          
-      </div>
-      {% endfor %}
-    </div>   
-    {% endfor %}             
+<div class="oh-accordion-meta">
+  <div class="oh-accordion-meta__item">
+    <div class="oh-accordion-meta__header">
+      <span class="oh-accordion-meta__title pt-3 pb-3">
+        <div class="oh-tabs__input-badge-container">
+          <span
+            class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round mr-1"
+          >
+            {{attendance_list.list|length}}
+          </span>
+          {{attendance_list.grouper}}
+        </div>
+      </span>
+    </div>
+    <div class="oh-accordion-meta__body d-none">
+      <div class="oh-sticky-table oh-sticky-table--no-overflow mb-5">
+        <div div class="oh-sticky-table" >
+          <div class="oh-sticky-table__table oh-table--sortable">
+            <div class="oh-sticky-table__thead">
+              <div class="oh-sticky-table__tr">
+                <div class="oh-sticky-table__th" style="width: 20px;">
+                  <div class="centered-div">
+                    <input type="checkbox" title='{% trans "Select All" %}' class="oh-input oh-input__checkbox all-latecome"/>
+                  </div>
+                </div>
+                <div class='oh-sticky-table__th' scope="col" hx-target='#report-container' hx-get="{% url 'late-come-early-out-search' %}?{{pd}}&sortby=employee_id__employee_first_name">{% trans "Employee" %}</div>
+                <div class='oh-sticky-table__th' scope="col" hx-target='#report-container' hx-get="{% url 'late-come-early-out-search' %}?{{pd}}&sortby=type">{% trans "Type" %}</div>
+                <div class='oh-sticky-table__th' scope="col" hx-target='#report-container' hx-get="{% url 'late-come-early-out-search' %}?{{pd}}&sortby=attendance_id__attendance_date">{% trans "Attendance Date" %}</div>
+                <div class='oh-sticky-table__th' scope="col" hx-target='#report-container' hx-get="{% url 'late-come-early-out-search' %}?{{pd}}&sortby=">{% trans "Check-In" %}</div>
+                <div class='oh-sticky-table__th' scope="col" hx-target='#report-container' hx-get="{% url 'late-come-early-out-search' %}?{{pd}}&sortby=attendance_id__attendance_clock_in_date">{% trans "In Date" %}</div>
+                <div class='oh-sticky-table__th' scope="col" hx-target='#report-container' hx-get="{% url 'late-come-early-out-search' %}?{{pd}}&sortby=">{% trans "Check-Out" %}</div>
+                <div class='oh-sticky-table__th' scope="col" hx-target='#report-container' hx-get="{% url 'late-come-early-out-search' %}?{{pd}}&sortby=attendance_id__attendance_clock_out_date">{% trans "Out Date" %}</div>
+                <div class='oh-sticky-table__th' scope="col" hx-target='#report-container' hx-get="{% url 'late-come-early-out-search' %}?{{pd}}&sortby=">{% trans "Min Hour" %}</div>
+                <div class='oh-sticky-table__th' scope="col" hx-target='#report-container' hx-get="{% url 'late-come-early-out-search' %}?{{pd}}&sortby=attendance_id__at_work_second">{% trans "At Work" %}</div>
+                <div class='oh-sticky-table__th' scope="col" style="width: 80px;"></div>
+              </div>
+            </div>
+            <div class="oh-sticky-table__tbody">
+              {% for late_in_early_out in attendance_list.list %}
+              <div class="oh-sticky-table__tr" draggable="true">
+                <div class="oh-sticky-table__sd" onclick="event.stopPropagation();">
+                  <div class="centered-div">
+                    <input type="checkbox" id="{{late_in_early_out.id}}" class="oh-input attendance-checkbox oh-input__checkbox all-latecome-row" />
+                  </div>
+                </div>
+                <div class="oh-sticky-table__td">
+                  <div class="oh-profile oh-profile--md">
+                    <div class="oh-profile__avatar mr-1">
+                      <img
+                        src="{{late_in_early_out.employee_id.get_avatar}}"
+                        class="oh-profile__image"
+                        alt=""
+                      />
+                    </div>
+                    <span class="oh-profile__name oh-text--dark"
+                      >{{late_in_early_out.employee_id}}</span
+                    >
+                  </div>
+                </div>
+                <div class='oh-sticky-table__td'>
+                  {% if late_in_early_out.type == 'late_come' %}
+                  {% trans "Late Come" %}
+                  {% else %}
+                  {% trans "Early Out" %}
+                  {% endif %}
+                </div>
+                <div class='oh-sticky-table__td'>{{late_in_early_out.attendance_id.attendance_date}}</div>
+                <div class='oh-sticky-table__td'>{{late_in_early_out.attendance_id.attendance_clock_in}}</div>
+                <div class='oh-sticky-table__td'>{{late_in_early_out.attendance_id.attendance_clock_in_date}}</div>
+                <div class='oh-sticky-table__td'>{{late_in_early_out.attendance_id.attendance_clock_out}}</div>
+                <div class='oh-sticky-table__td'>{{late_in_early_out.attendance_id.attendance_clock_out_date}}</div>
+                <div class='oh-sticky-table__td'>{{late_in_early_out.attendance_id.minimum_hour}}</div>
+                <div class='oh-sticky-table__td'>{{late_in_early_out.attendance_id.attendance_worked_hour}}</div>
+                <div class="oh-sticky-table__td">
+                  <div class="oh-btn-group">
+                    
+                    {% if perms.attendance.delete_attendancelatecomeearlyout %}
+                    <form action="{% url 'late-come-early-out-delete' late_in_early_out.id  %}"
+                      onclick="event.stopPropagation()" onsubmit="return confirm('{% trans "Are you sure want to delete this attendance?" %}')" 
+                      hx-target="#tab_contents" method='post'>
+                      {% csrf_token %}
+                      <button type='submit' class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100" title="{% trans 'Remove' %}"><ion-icon name="trash-outline"></ion-icon></button>
+                    </form>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+    </div>
   </div>
 </div>
+{% endfor %}
 
 <div class="oh-pagination">
   <span
