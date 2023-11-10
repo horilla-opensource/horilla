@@ -151,4 +151,23 @@
       toggleBtn.toggleClass("oh-table__toggle-button--show");
     }
   });
+  $(document).ready(function () {
+    $(".all-attendance-activity-row").change(function () {
+      addingActivityIds();
+    });
+
+    $(".all-attendance-activity").change(function () {
+      addingActivityIds();
+    });
+
+    $("#selectAllActivity").click(function () {
+      selectAllActivity();
+    });
+
+    $("#unselectAllActivity").click(function () {
+      unselectAllActivity();
+    });
+  });
 </script>
+
+{% comment %} <script src="/static/attendance/actions.js"></script> {% endcomment %}
