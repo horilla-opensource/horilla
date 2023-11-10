@@ -635,7 +635,7 @@ class LateComeEarlyOutExportForm(forms.Form):
 class AttendanceActivityExportForm(forms.Form):
     model_fields = AttendanceActivity._meta.get_fields()
     field_choices = [
-        (field.name, field.verbose_name)
+        (field.name, field.verbose_name.title())
         for field in model_fields
         if hasattr(field, "verbose_name") and field.name not in excluded_fields
     ]
@@ -644,6 +644,11 @@ class AttendanceActivityExportForm(forms.Form):
         widget=forms.CheckboxSelectMultiple,
         initial=[
             "employee_id",
+            "attendance_date",
+            "clock_in_date",
+            "clock_in",
+            "clock_out_date",
+            "clock_out",
         ],
     )
 

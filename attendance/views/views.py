@@ -720,7 +720,7 @@ def attendance_activity_view(request):
 
 @login_required
 @permission_required("attendance.delete_attendanceactivity")
-@require_http_methods(["POST", "DELTE"])
+@require_http_methods(["POST", "DELETE"])
 def attendance_activity_delete(request, obj_id):
     """
     This method is used to delete attendance activity
@@ -764,14 +764,21 @@ def attendance_activity_bulk_delete(request):
 @permission_required("attendance.change_attendancelatecomeearlyout")
 def attendance_activity_export(request):
     """
-    Export late come early out data to an Excel file.
-    This view function takes a GET request and exports attendance late come early out data into an Excel file.
-    The exported Excel file will include the selected fields from the AttendanceLateComeEarlyOut model.
+    Export attendance activity data to an Excel file.
+    This view function takes a GET request and exports attendance activity data into an Excel file.
+    The exported Excel file will include the selected fields from the AttendanceActivity model.
     """
     today_date = date.today().strftime("%Y-%m-%d")
     file_name = f"Attendance_activity_{today_date}.xlsx"
     attendances = AttendanceActivityFilter(request.GET).qs
     selected_fields = request.GET.getlist("selected_fields")
+    form = AttendanceActivityExportForm()
+
+    if not selected_fields:
+        selected_fields = form.fields["selected_fields"].initial
+        ids = request.GET.get("ids")
+        id_list = json.loads(ids)
+        attendances = AttendanceActivity.objects.filter(id__in=id_list)
     model_fields = AttendanceActivity._meta.get_fields()
     attendanceActivity_data = {}
     for field in model_fields:
@@ -781,14 +788,22 @@ def attendance_activity_export(request):
             for attendance in attendances:
                 value = getattr(attendance, field_name)
                 if value is True:
-                    value = "Yes"
+                    value = _("Yes")
                 elif value is False:
-                    value = "No"
+                    value = _("No")
                 attendanceActivity_data[field.verbose_name].append(value)
     data_frame = pd.DataFrame(data=attendanceActivity_data)
+    data_frame = data_frame.style.applymap(
+        lambda x: "text-align: center", subset=pd.IndexSlice[:, :]
+    )
     response = HttpResponse(content_type="application/ms-excel")
     response["Content-Disposition"] = f'attachment; filename="{file_name}"'
     data_frame.to_excel(response, index=False)
+    writer = pd.ExcelWriter(response, engine="xlsxwriter")
+    data_frame.to_excel(writer, index=False, sheet_name="Sheet1")
+    worksheet = writer.sheets["Sheet1"]
+    worksheet.set_column("A:Z", 20)
+    writer.close()
     return response
 
 

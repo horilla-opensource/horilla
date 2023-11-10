@@ -50,7 +50,6 @@
               <div class="oh-sticky-table__td">{{activity.clock_out}}</div>
               <div class="oh-sticky-table__td">{{activity.clock_out_date}}</div>
               <div class="oh-sticky-table__td">
-                
                 {% if perms.attendance.delete_attendanceactivity %}
                 <form action="{% url 'attendance-activity-delete' activity.id  %}"
                   onclick="event.stopPropagation()" onsubmit="return confirm('{% trans "Are you sure want to delete this attendance?" %}')" 
@@ -110,170 +109,22 @@
 </div>
 
 <script>
+  $(document).ready(function () {
+    $(".all-attendance-activity-row").change(function () {
+      addingActivityIds();
+    });
 
-	function addingactivityIds() {
-		var ids = JSON.parse($("#selectedActivity").attr("data-ids") || "[]");
-		var selectedCount = 0;
-		
-		$(".all-attendance-activity-row").each(function () {
-			if ($(this).is(":checked")) {
-			ids.push(this.id);
-			} else {
-			var index = ids.indexOf(this.id);
-			if (index > -1) {
-				ids.splice(index, 1);
-			}
-			}
-		});
-		
-		ids = makeactivityListUnique(ids);
-		selectedCount = ids.length;
-		
-		getCurrentLanguageCode(function (code) {
-			languageCode = code;
-			var message = rowMessages[languageCode];
-		
-			$("#selectedActivity").attr("data-ids", JSON.stringify(ids));
-		
-			if (selectedCount === 0) {
-			$("#selectedShowActivity").css("display", "none");
-			$("#exportActivity").css("display", "none");
-			} else {
-			$("#exportActivity").css("display", "inline-flex");
-			$("#selectedShowActivity").css("display", "inline-flex");
-			$("#selectedShowActivity").text(selectedCount + " - " + message);
-			}
-		});
-		}
+    $(".all-attendance-activity").change(function () {
+      addingActivityIds();
+    });
 
-	$(document).ready(function() {
-		
-		$(".all-attendance-activity-row").change(function () {
-			addingactivityIds();
-		});
+    $("#selectAllActivity").click(function () {
+      selectAllActivity();
+    });
 
-		$(".all-attendance-activity").change(function () {
-			addingactivityIds();
-		});
-
-		$('#selectAllActivity').click(function() {
-
-			$("#selectedActivity").attr("data-clicked", 1);
-			$('#selectedShowActivity').removeAttr('style');
-			var savedFilters = JSON.parse(localStorage.getItem('savedFilters'));
-
-			if (savedFilters && savedFilters['filterData'] !== null) 
-			{
-				var filter = savedFilters['filterData'];
-				
-				$.ajax({
-					url: '{% url "activity-attendance-select-filter" %}',
-					data: { page: 'all', 'filter':JSON.stringify(filter) },
-					type: 'GET',
-					dataType: 'json',
-					success: function(response) {
-
-					var employeeIds = response.employee_ids;
-				
-						if (Array.isArray(employeeIds)) {
-							// Continue
-						} else {
-							console.error('employee_ids is not an array:', employeeIds);
-						}
-						
-						var selectedCount = employeeIds.length;              
-						
-						for (var i = 0; i < employeeIds.length; i++) {
-						var empId = employeeIds[i];
-						$('#' + empId).prop('checked', true);
-						}
-						$("#selectedActivity").attr("data-ids", JSON.stringify(employeeIds));
-
-						count = makeactivityListUnique(employeeIds)
-						tickactivityCheckboxes(count)
-					},
-					error: function(xhr, status, error) {
-						console.error('Error:', error);
-					}
-				});
-
-			} 
-			else {
-
-				$.ajax({
-				url: '{% url "activity-attendance-select" %}',
-				data: { page: 'all'},
-				type: 'GET',
-				dataType: 'json',
-				success: function(response) {
-					console.log(response)
-
-					var employeeIds = response.employee_ids;
-			
-					if (Array.isArray(employeeIds)) {
-						// Continue
-					} else {
-						console.error('employee_ids is not an array:', employeeIds);
-					}
-					
-					var selectedCount = employeeIds.length;
-					
-					
-					for (var i = 0; i < employeeIds.length; i++) {
-						var empId = employeeIds[i];
-						$('#' + empId).prop('checked', true);
-					}
-					var previousIds = $("#selectedActivity").attr("data-ids")
-        			$("#selectedActivity").attr("data-ids", JSON.stringify(Array.from(new Set([...employeeIds,...JSON.parse(previousIds)]))));
-
-
-
-					count = makeactivityListUnique(employeeIds)
-					tickactivityCheckboxes(count)
-				},
-				error: function(xhr, status, error) {
-					console.error('Error:', error);
-				}
-				});
-			}
-
-		});
-
-		$('#unselectAllActivity').click(function(){
-
-			$("#selectedActivity").attr("data-clicked", 0);
-			
-			$.ajax({
-				url: '{% url "activity-attendance-select" %}',
-				data: { page: 'all', 'filter': '{}' },
-				type: 'GET',
-				dataType: 'json',
-				success: function(response) {
-					var employeeIds = response.employee_ids;
-			
-					if (Array.isArray(employeeIds)) {
-						// Continue
-					} else {
-						console.error('employee_ids is not an array:', employeeIds);
-					}
-					
-					for (var i = 0; i < employeeIds.length; i++) {
-					var empId = employeeIds[i];
-					$('#' + empId).prop('checked', false);
-					$(".all-attendance-activity").prop('checked', false);
-				
-					}
-					$("#selectedActivity").attr("data-ids", JSON.stringify([]));
-
-					count = [];
-					tickactivityCheckboxes(count)
-
-				},
-				error: function(xhr, status, error) {
-					console.error('Error:', error);
-				}
-			});
-		});
-	});
+    $("#unselectAllActivity").click(function () {
+      unselectAllActivity();
+    });
+  });
 </script>
 <script src="/static/attendance/actions.js"></script>

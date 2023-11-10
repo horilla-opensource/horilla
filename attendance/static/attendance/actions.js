@@ -367,6 +367,151 @@ function getCookie(name) {
   return cookieValue;
 }
 
+function addingActivityIds() {
+  var ids = JSON.parse($("#selectedActivity").attr("data-ids") || "[]");
+  var selectedCount = 0;
+
+  $(".all-attendance-activity-row").each(function () {
+    if ($(this).is(":checked")) {
+      ids.push(this.id);
+    } else {
+      var index = ids.indexOf(this.id);
+      if (index > -1) {
+        ids.splice(index, 1);
+      }
+    }
+  });
+
+  ids = makeactivityListUnique(ids);
+  selectedCount = ids.length;
+
+  getCurrentLanguageCode(function (code) {
+    languageCode = code;
+    var message = rowMessages[languageCode];
+
+    $("#selectedActivity").attr("data-ids", JSON.stringify(ids));
+
+    if (selectedCount === 0) {
+      $("#selectedShowActivity").css("display", "none");
+      $("#exportActivity").css("display", "none");
+    } else {
+      $("#exportActivity").css("display", "inline-flex");
+      $("#selectedShowActivity").css("display", "inline-flex");
+      $("#selectedShowActivity").text(selectedCount + " - " + message);
+    }
+  });
+}
+
+function selectAllActivity() {
+  $("#selectedActivity").attr("data-clicked", 1);
+  $("#selectedShowActivity").removeAttr("style");
+  var savedFilters = JSON.parse(localStorage.getItem("savedFilters"));
+
+  if (savedFilters && savedFilters["filterData"] !== null) {
+    var filter = savedFilters["filterData"];
+
+    $.ajax({
+      url: "/attendance/activity-attendance-select-filter",
+      data: { page: "all", filter: JSON.stringify(filter) },
+      type: "GET",
+      dataType: "json",
+      success: function (response) {
+        var employeeIds = response.employee_ids;
+
+        if (Array.isArray(employeeIds)) {
+          // Continue
+        } else {
+          console.error("employee_ids is not an array:", employeeIds);
+        }
+
+        var selectedCount = employeeIds.length;
+
+        for (var i = 0; i < employeeIds.length; i++) {
+          var empId = employeeIds[i];
+          $("#" + empId).prop("checked", true);
+        }
+        $("#selectedActivity").attr("data-ids", JSON.stringify(employeeIds));
+
+        count = makeactivityListUnique(employeeIds);
+        tickactivityCheckboxes(count);
+      },
+      error: function (xhr, status, error) {
+        console.error("Error:", error);
+      },
+    });
+  } else {
+    $.ajax({
+      url: "/attendance/activity-attendance-select",
+      data: { page: "all" },
+      type: "GET",
+      dataType: "json",
+      success: function (response) {
+        console.log(response);
+
+        var employeeIds = response.employee_ids;
+
+        if (Array.isArray(employeeIds)) {
+          // Continue
+        } else {
+          console.error("employee_ids is not an array:", employeeIds);
+        }
+
+        var selectedCount = employeeIds.length;
+
+        for (var i = 0; i < employeeIds.length; i++) {
+          var empId = employeeIds[i];
+          $("#" + empId).prop("checked", true);
+        }
+        var previousIds = $("#selectedActivity").attr("data-ids");
+        $("#selectedActivity").attr(
+          "data-ids",
+          JSON.stringify(
+            Array.from(new Set([...employeeIds, ...JSON.parse(previousIds)]))
+          )
+        );
+
+        count = makeactivityListUnique(employeeIds);
+        tickactivityCheckboxes(count);
+      },
+      error: function (xhr, status, error) {
+        console.error("Error:", error);
+      },
+    });
+  }
+}
+
+function unselectAllActivity() {
+  $("#selectedActivity").attr("data-clicked", 0);
+  $.ajax({
+    url: "/attendance/activity-attendance-select",
+    data: { page: "all", filter: "{}" },
+    type: "GET",
+    dataType: "json",
+    success: function (response) {
+      var employeeIds = response.employee_ids;
+
+      if (Array.isArray(employeeIds)) {
+        // Continue
+      } else {
+        console.error("employee_ids is not an array:", employeeIds);
+      }
+
+      for (var i = 0; i < employeeIds.length; i++) {
+        var empId = employeeIds[i];
+        $("#" + empId).prop("checked", false);
+        $(".all-attendance-activity").prop("checked", false);
+      }
+      $("#selectedActivity").attr("data-ids", JSON.stringify([]));
+
+      count = [];
+      tickactivityCheckboxes(count);
+    },
+    error: function (xhr, status, error) {
+      console.error("Error:", error);
+    },
+  });
+}
+
 $("#attendance-info-import").click(function (e) {
   e.preventDefault();
   var languageCode = null;
@@ -424,7 +569,10 @@ $(".all-attendance-activity").change(function () {
   var closest = $(this)
     .closest(".oh-sticky-table__thead")
     .siblings(".oh-sticky-table__tbody");
-    $(closest).children().find(".all-attendance-activity-row").prop("checked", isLateChecked);
+  $(closest)
+    .children()
+    .find(".all-attendance-activity-row")
+    .prop("checked", isLateChecked);
 });
 
 $("#attendanceImportForm").submit(function (e) {
@@ -714,6 +862,53 @@ $("#lateComeBulkDelete").click(function (e) {
   });
 });
 
+$("#exportActivity").click(function (e) {
+  var currentDate = new Date().toISOString().slice(0, 10);
+  var languageCode = null;
+  ids = [];
+  ids.push($("#selectedActivity").attr("data-ids"));
+  ids = JSON.parse($("#selectedActivity").attr("data-ids"));
+  getCurrentLanguageCode(function (code) {
+    languageCode = code;
+    var confirmMessage = excelMessages[languageCode];
+    Swal.fire({
+      text: confirmMessage,
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#008000",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Confirm",
+    }).then(function (result) {
+      if (result.isConfirmed) {
+        $.ajax({
+          type: "GET",
+          url: "/attendance/attendance-activity-info-export",
+          data: {
+            ids: JSON.stringify(ids),
+          },
+          dataType: "binary",
+          xhrFields: {
+            responseType: "blob",
+          },
+          success: function (response) {
+            const file = new Blob([response], {
+              type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            });
+            const url = URL.createObjectURL(file);
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = "Attendance_activity" + currentDate + ".xlsx";
+            document.body.appendChild(link);
+            link.click();
+          },
+          error: function (xhr, textStatus, errorThrown) {
+            console.error("Error downloading file:", errorThrown);
+          },
+        });
+      }
+    });
+  });
+});
 $("#attendanceActivityDelete").click(function (e) {
   e.preventDefault();
   var languageCode = null;
