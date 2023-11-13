@@ -223,7 +223,7 @@ class HolidayFilter(FilterSet):
     )
 
     class Meta:
-        """ "
+        """ 
         Meta class defines the model and fields to filter
         """
 
