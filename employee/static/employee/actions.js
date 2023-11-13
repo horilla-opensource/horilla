@@ -231,7 +231,7 @@ function unselectAllInstances() {
 
   $.ajax({
     url: "/employee/employee-select",
-    data: { page: "all", filter: "{}" },
+    data: { page: "unselect", filter: "{}" },
     type: "GET",
     dataType: "json",
     success: function (response) {

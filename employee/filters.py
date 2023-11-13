@@ -18,12 +18,16 @@ class EmployeeFilter(FilterSet):
     Args:
         FilterSet (class): custom filter set class to apply styling
     """
+
     search = django_filters.CharFilter(method="filter_by_name")
 
     employee_first_name = django_filters.CharFilter(lookup_expr="icontains")
     employee_last_name = django_filters.CharFilter(lookup_expr="icontains")
     country = django_filters.CharFilter(lookup_expr="icontains")
-    department = django_filters.CharFilter(field_name="employee_work_info__department_id__department",lookup_expr="icontains")
+    department = django_filters.CharFilter(
+        field_name="employee_work_info__department_id__department",
+        lookup_expr="icontains",
+    )
     # gender = django_filters.ChoiceFilter(field_name="gender",lookup_expr="iexact")
 
     user_permissions = django_filters.ModelMultipleChoiceFilter(
@@ -32,11 +36,17 @@ class EmployeeFilter(FilterSet):
     groups = django_filters.ModelMultipleChoiceFilter(
         queryset=Group.objects.all(),
     )
+    is_active = django_filters.ChoiceFilter(
+        field_name="is_active",
+        label="Is Active",
+        choices=[(True, "Yes"), (False, "No")],
+    )
 
     class Meta:
         """
         Meta class to add the additional info
         """
+
         model = Employee
         fields = [
             "employee_first_name",
@@ -80,21 +90,25 @@ class EmployeeFilter(FilterSet):
 
     def __init__(self, data=None, queryset=None, *, request=None, prefix=None):
         super().__init__(data=data, queryset=queryset, request=request, prefix=prefix)
-        self.form.initial["is_active"] = True
+        self.form.fields["is_active"].initial = True
+        print()
+        # self.filters['is_active'].extra['widget'].update({'initial': True})
         for field in self.form.fields.keys():
             self.form.fields[field].widget.attrs["id"] = f"{uuid.uuid4()}"
+
 
 class EmployeeReGroup:
     """
     Class to keep the field name for group by option
     """
+
     fields = [
-        ("","select"),
-        ("employee_work_info.job_position_id","Job Position"),
-        ("employee_work_info.department_id","Department"),
-        ("employee_work_info.shift_id","Shift"),
-        ("employee_work_info.work_type_id","Work Type"),
-        ("employee_work_info.job_role_id","Job Role"),
-        ("employee_work_info.reporting_manager_id","Reporting Manager"),
-        ("employee_work_info.company_id","Company"),
+        ("", "select"),
+        ("employee_work_info.job_position_id", "Job Position"),
+        ("employee_work_info.department_id", "Department"),
+        ("employee_work_info.shift_id", "Shift"),
+        ("employee_work_info.work_type_id", "Work Type"),
+        ("employee_work_info.job_role_id", "Job Role"),
+        ("employee_work_info.reporting_manager_id", "Reporting Manager"),
+        ("employee_work_info.company_id", "Company"),
     ]

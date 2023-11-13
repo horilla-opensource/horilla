@@ -1,308 +1,297 @@
-{% load static %} {% load i18n %}
-
-<div id="view-container">
-  {% if messages %}
-  <div class="oh-alert-container">
-    {% for message in messages %}
-    <div class="oh-alert oh-alert--animated {{message.tags}}">
-      {{ message }}
+{% include 'filter_tags.html' %}
+{% load static %} {% load i18n %} {% if messages %}
+<div class="oh-alert-container">
+  {% for message in messages %}
+  <div class="oh-alert oh-alert--animated {{message.tags}}">{{ message }}</div>
+  {% endfor %}
+</div>
+{% endif %} 
+<div
+  class="oh-checkpoint-badge text-success mb-2"
+  id="selectAllInstances"
+  style="cursor: pointer"
+>
+  {% trans "Select All Employees" %}
+</div>
+<div
+  class="oh-checkpoint-badge text-secondary mb-2"
+  id="unselectAllInstances"
+  style="cursor: pointer"
+>
+  {% trans "Unselect All Employees" %}
+</div>
+<div
+  class="oh-checkpoint-badge text-info mb-2"
+  id="exportInstances"
+  style="cursor: pointer"
+>
+  {% trans "Export Employees" %}
+</div>
+<div class="oh-checkpoint-badge text-danger mb-2" id="selectedShow"></div>
+<div class="oh-sticky-table">
+  <div class="oh-sticky-table__table oh-table--sortable">
+    <div class="oh-sticky-table__thead">
+      <div class="oh-sticky-table__tr">
+        <div class="oh-sticky-table__th" style="width: 50px">
+          <div class="centered-div">
+            <input
+              type="checkbox"
+              class="oh-input oh-input__checkbox all-employee"
+              title='{% trans "Select All" %}'
+              id="tick"
+            />
+          </div>
+        </div>
+        <div
+          class="oh-sticky-table__th"
+          hx-target="#view-container"
+          hx-get="{% url 'employee-filter-view' %}?{{pd}}&orderby=employee_first_name"
+        >
+          {% trans "Employee" %}
+        </div>
+        <div class="oh-sticky-table__th">{% trans "Email" %}</div>
+        <div class="oh-sticky-table__th">{% trans "Phone" %}</div>
+        <div
+          class="oh-sticky-table__th"
+          hx-target="#view-container"
+          hx-get="{% url 'employee-filter-view' %}?{{pd}}&orderby=badge_id"
+        >
+          {% trans "Badge Id" %}
+        </div>
+        <div class="oh-sticky-table__th">{% trans "Job Position" %}</div>
+        <div class="oh-sticky-table__th">{% trans "Department" %}</div>
+        <div class="oh-sticky-table__th">{% trans "Shift" %}</div>
+        <div class="oh-sticky-table__th">{% trans "Work Type" %}</div>
+        <div class="oh-sticky-table__th">{% trans "Job Role" %}</div>
+        <div
+          class="oh-sticky-table__th"
+          hx-target="#view-container"
+          hx-get="{% url 'employee-filter-view' %}?{{pd}}&orderby=employee_work_info__reporting_manager_id"
+        >
+          {% trans "Reporting Manager" %}
+        </div>
+        <div class="oh-sticky-table__th">{% trans "Company" %}</div>
+        <div class="oh-sticky-table__th">{% trans "Work Email" %}</div>
+        <div
+          class="oh-sticky-table__th"
+          hx-target="#view-container"
+          hx-get="{% url 'employee-filter-view' %}?{{pd}}&orderby=date_joining"
+        >
+          {% trans "Date of Joining" %}
+        </div>
+        <div class="oh-sticky-table__th"></div>
+      </div>
+    </div>
+    {% for emp in data %}
+    <div class="oh-sticky-table__tbody ui-sortable">
+      <div class="oh-sticky-table__tr ui-sortable-handle">
+        <div class="oh-sticky-table__sd">
+          <div class="centered-div">
+            <input
+              type="checkbox"
+              id="{{emp.id}}"
+              class="oh-input employee-checkbox oh-input__checkbox all-employee-row"
+            />
+          </div>
+        </div>
+        <div class="oh-sticky-table__td">
+          <div class="d-flex">
+            <div class="oh-profile oh-profile--md">
+              <div class="oh-profile__avatar mr-1">
+                <img
+                  src="{{emp.get_avatar}}"
+                  class="oh-profile__image"
+                  alt="Username"
+                />
+              </div>
+              <span class="oh-profile__name oh-text--dark">{{emp}}</span>
+            </div>
+          </div>
+        </div>
+        <a
+          href="{% url 'employee-view-individual' emp.id %}"
+          style="color: inherit; text-decoration: none"
+          class="oh-sticky-table__td"
+          >{{emp.email}}</a
+        >
+        <a
+          href="{% url 'employee-view-individual' emp.id %}"
+          style="color: inherit; text-decoration: none"
+          class="oh-sticky-table__td"
+          >{{emp.phone}}</a
+        >
+        <a
+          href="{% url 'employee-view-individual' emp.id %}"
+          style="color: inherit; text-decoration: none"
+          class="oh-sticky-table__td"
+          >{{emp.badge_id}}</a
+        >
+        <a
+          href="{% url 'employee-view-individual' emp.id %}"
+          style="color: inherit; text-decoration: none"
+          class="oh-sticky-table__td"
+          >{{emp.employee_work_info.job_position_id}}</a
+        >
+        <a
+          href="{% url 'employee-view-individual' emp.id %}"
+          style="color: inherit; text-decoration: none"
+          class="oh-sticky-table__td"
+          >{{emp.employee_work_info.department_id}}</a
+        >
+        <a
+          href="{% url 'employee-view-individual' emp.id %}"
+          style="color: inherit; text-decoration: none"
+          class="oh-sticky-table__td"
+          >{{emp.employee_work_info.shift_id}}</a
+        >
+        <a
+          href="{% url 'employee-view-individual' emp.id %}"
+          style="color: inherit; text-decoration: none"
+          class="oh-sticky-table__td"
+          >{{emp.employee_work_info.work_type_id}}</a
+        >
+        <a
+          href="{% url 'employee-view-individual' emp.id %}"
+          style="color: inherit; text-decoration: none"
+          class="oh-sticky-table__td"
+          >{{emp.employee_work_info.job_role_id}}</a
+        >
+        <a
+          href="{% url 'employee-view-individual' emp.id %}"
+          style="color: inherit; text-decoration: none"
+          class="oh-sticky-table__td"
+          >{{emp.employee_work_info.reporting_manager_id}}</a
+        >
+        <a
+          href="{% url 'employee-view-individual' emp.id %}"
+          style="color: inherit; text-decoration: none"
+          class="oh-sticky-table__td"
+          >{{emp.employee_work_info.company_id}}</a
+        >
+        <a
+          href="{% url 'employee-view-individual' emp.id %}"
+          style="color: inherit; text-decoration: none"
+          class="oh-sticky-table__td"
+          >{{emp.employee_work_info.email}}</a
+        >
+        <a
+          href="{% url 'employee-view-individual' emp.id %}"
+          style="color: inherit; text-decoration: none"
+          class="oh-sticky-table__td"
+          >{{emp.employee_work_info.date_joining}}</a
+        >
+        <div
+          style="color: inherit; text-decoration: none"
+          class="oh-sticky-table__td"
+        >
+          <div class="oh-btn-group">
+            {% if perms.employee.change_employee %}
+            <a
+              href="{% url 'employee-view-update' emp.id %}"
+              class="oh-btn oh-btn--light-bkg w-100"
+              title="{% trans 'Edit' %}"
+              ><ion-icon name="create-outline"></ion-icon
+            ></a>
+            {% endif %} {% if perms.employee.delete_employee %} {% if emp.is_active %}
+            <form action="{% url 'employee-archive' emp.id %}" 
+                onsubmit="return confirm('{% trans "Do you want to archive this employee?" %}')" method="post" > 
+              {% csrf_token %}
+              <button
+                type="submit"
+                class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+                title="{% trans 'Archive' %}"
+              >
+                <ion-icon name="archive"></ion-icon>
+              </button>
+            </form>
+            {% else %}
+            <form action="{% url 'employee-archive' emp.id %}" onsubmit="return confirm('{% trans "Do you want to un archive this employee?" %}')" method="post" > 
+                {% csrf_token %}
+                <button
+                  type="submit"
+                  class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+                  title="{% trans 'Un-Archive' %}"
+                >
+                  <ion-icon name="archive"></ion-icon>
+                </button>
+              </form>
+            {% endif %} {% endif %} {% if perms.employee.delete_employee %}
+            <form action="{% url 'employee-delete' emp.id %}?view=list" onsubmit="return confirm('{% trans "Are you sure want to delete this employee?" %}')" method="post" > {% csrf_token %}
+              <button
+                type="submit"
+                class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+                title="{% trans 'Remove' %}"
+              >
+                <ion-icon name="trash-outline"></ion-icon>
+              </button>
+            </form>
+            {% endif %}
+          </div>
+        </div>
+      </div>
     </div>
     {% endfor %}
   </div>
-  {% endif %} {% include 'filter_tags.html' %}
-  <div
-    class="oh-checkpoint-badge text-success mb-2"
-    id="selectAllInstances"
-    style="cursor: pointer"
-  >
-    {% trans "Select All Employees" %}
-  </div>
-  <div
-    class="oh-checkpoint-badge text-secondary mb-2"
-    id="unselectAllInstances"
-    style="cursor: pointer"
-  >
-    {% trans "Unselect All Employees" %}
-  </div>
-  <div
-    class="oh-checkpoint-badge text-info mb-2"
-    id="exportInstances"
-    style="cursor: pointer"
-  >
-    {% trans "Export Employees" %}
-  </div>
-  <div class="oh-checkpoint-badge text-danger mb-2" id="selectedShow"></div>
-  <div class="oh-sticky-table">
-    <div class="oh-sticky-table__table oh-table--sortable">
-      <div class="oh-sticky-table__thead">
-        <div class="oh-sticky-table__tr">
-          <div class="oh-sticky-table__th" style="width: 50px">
-            <div class="centered-div">
-              <input
-                type="checkbox"
-                class="oh-input oh-input__checkbox all-employee"
-                title='{% trans "Select All" %}'
-                id="tick"
-              />
-            </div>
-          </div>
-          <div
-            class="oh-sticky-table__th"
-            hx-target="#view-container"
-            hx-get="{% url 'employee-filter-view' %}?{{pd}}&orderby=employee_first_name"
-          >
-            {% trans "Employee" %}
-          </div>
-          <div class="oh-sticky-table__th">{% trans "Email" %}</div>
-          <div class="oh-sticky-table__th">{% trans "Phone" %}</div>
-          <div
-            class="oh-sticky-table__th"
-            hx-target="#view-container"
-            hx-get="{% url 'employee-filter-view' %}?{{pd}}&orderby=badge_id"
-          >
-            {% trans "Badge Id" %}
-          </div>
-          <div class="oh-sticky-table__th">{% trans "Job Position" %}</div>
-          <div class="oh-sticky-table__th">{% trans "Department" %}</div>
-          <div class="oh-sticky-table__th">{% trans "Shift" %}</div>
-          <div class="oh-sticky-table__th">{% trans "Work Type" %}</div>
-          <div class="oh-sticky-table__th">{% trans "Job Role" %}</div>
-          <div
-            class="oh-sticky-table__th"
-            hx-target="#view-container"
-            hx-get="{% url 'employee-filter-view' %}?{{pd}}&orderby=employee_work_info__reporting_manager_id"
-          >
-            {% trans "Reporting Manager" %}
-          </div>
-          <div class="oh-sticky-table__th">{% trans "Company" %}</div>
-          <div class="oh-sticky-table__th">{% trans "Work Email" %}</div>
-          <div
-            class="oh-sticky-table__th"
-            hx-target="#view-container"
-            hx-get="{% url 'employee-filter-view' %}?{{pd}}&orderby=date_joining"
-          >
-            {% trans "Date of Joining" %}
-          </div>
-          <div class="oh-sticky-table__th"></div>
-        </div>
-      </div>
-      {% for emp in data %}
-      <div class="oh-sticky-table__tbody ui-sortable">
-        <div class="oh-sticky-table__tr ui-sortable-handle">
-          <div class="oh-sticky-table__sd">
-            <div class="centered-div">
-              <input
-                type="checkbox"
-                id="{{emp.id}}"
-                class="oh-input employee-checkbox oh-input__checkbox all-employee-row"
-              />
-            </div>
-          </div>
-          <div class="oh-sticky-table__td">
-            <div class="d-flex">
-              <div class="oh-profile oh-profile--md">
-                <div class="oh-profile__avatar mr-1">
-                  <img
-                    src="{{emp.get_avatar}}"
-                    class="oh-profile__image"
-                    alt="Username"
-                  />
-                </div>
-                <span class="oh-profile__name oh-text--dark">{{emp}}</span>
-              </div>
-            </div>
-          </div>
-          <a
-            href="{% url 'employee-view-individual' emp.id %}"
-            style="color: inherit; text-decoration: none"
-            class="oh-sticky-table__td"
-            >{{emp.email}}</a
-          >
-          <a
-            href="{% url 'employee-view-individual' emp.id %}"
-            style="color: inherit; text-decoration: none"
-            class="oh-sticky-table__td"
-            >{{emp.phone}}</a
-          >
-          <a
-            href="{% url 'employee-view-individual' emp.id %}"
-            style="color: inherit; text-decoration: none"
-            class="oh-sticky-table__td"
-            >{{emp.badge_id}}</a
-          >
-          <a
-            href="{% url 'employee-view-individual' emp.id %}"
-            style="color: inherit; text-decoration: none"
-            class="oh-sticky-table__td"
-            >{{emp.employee_work_info.job_position_id}}</a
-          >
-          <a
-            href="{% url 'employee-view-individual' emp.id %}"
-            style="color: inherit; text-decoration: none"
-            class="oh-sticky-table__td"
-            >{{emp.employee_work_info.department_id}}</a
-          >
-          <a
-            href="{% url 'employee-view-individual' emp.id %}"
-            style="color: inherit; text-decoration: none"
-            class="oh-sticky-table__td"
-            >{{emp.employee_work_info.shift_id}}</a
-          >
-          <a
-            href="{% url 'employee-view-individual' emp.id %}"
-            style="color: inherit; text-decoration: none"
-            class="oh-sticky-table__td"
-            >{{emp.employee_work_info.work_type_id}}</a
-          >
-          <a
-            href="{% url 'employee-view-individual' emp.id %}"
-            style="color: inherit; text-decoration: none"
-            class="oh-sticky-table__td"
-            >{{emp.employee_work_info.job_role_id}}</a
-          >
-          <a
-            href="{% url 'employee-view-individual' emp.id %}"
-            style="color: inherit; text-decoration: none"
-            class="oh-sticky-table__td"
-            >{{emp.employee_work_info.reporting_manager_id}}</a
-          >
-          <a
-            href="{% url 'employee-view-individual' emp.id %}"
-            style="color: inherit; text-decoration: none"
-            class="oh-sticky-table__td"
-            >{{emp.employee_work_info.company_id}}</a
-          >
-          <a
-            href="{% url 'employee-view-individual' emp.id %}"
-            style="color: inherit; text-decoration: none"
-            class="oh-sticky-table__td"
-            >{{emp.employee_work_info.email}}</a
-          >
-          <a
-            href="{% url 'employee-view-individual' emp.id %}"
-            style="color: inherit; text-decoration: none"
-            class="oh-sticky-table__td"
-            >{{emp.employee_work_info.date_joining}}</a
-          >
-          <div
-            style="color: inherit; text-decoration: none"
-            class="oh-sticky-table__td"
-          >
-            <div class="oh-btn-group">
-              {% if perms.employee.change_employee %}
-              <a
-                href="{% url 'employee-view-update' emp.id %}"
-                class="oh-btn oh-btn--light-bkg w-100"
-                title="{% trans 'Edit' %}"
-                ><ion-icon name="create-outline"></ion-icon
-              ></a>
-              {% endif %} 
-              {% if perms.employee.delete_employee %} 
-                {% if emp.is_active %} 
-                  <form action="{% url 'employee-archive' emp.id %}" 
-                        onsubmit="return confirm('{% trans "Do you want to archive this employee?" %}')" method="post" > 
-                      {% csrf_token %}
-                      <button
-                        type="submit"
-                        class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
-                        title="{% trans 'Archive' %}"
-                      >
-                        <ion-icon name="archive"></ion-icon>
-                      </button>
-                    </form>
-                {% else %} 
-                  <form action="{% url 'employee-archive' emp.id %}"
-                        onsubmit="return confirm('{% trans "Do you want to un archive this employee?" %}')"
-                        method="post" > 
-                    {% csrf_token %}
-                    <button
-                      type="submit"
-                      class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
-                      title="{% trans 'Un-Archive' %}"
-                    >
-                      <ion-icon name="archive"></ion-icon>
-                    </button>
-                  </form>
-                {% endif %} 
-              {% endif %} 
-              {% if perms.employee.delete_employee %}
-                <form action="{% url 'employee-delete' emp.id %}?view=list"
-                      onsubmit="return confirm('{% trans "Are you sure want to delete this employee?" %}')" method="post" > {% csrf_token %}
-                  <button
-                    type="submit"
-                    class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
-                    title="{% trans 'Remove' %}"
-                  >
-                    <ion-icon name="trash-outline"></ion-icon>
-                  </button>
-              {% endif %}
-            </div>
-          </div>
-        </div>
-      </div>
-      {% endfor %}
-    </div>
-  </div>
+</div>
 
-  <div class="oh-pagination">
-    <span class="oh-pagination__page">
-      {% trans "Page" %} {{ data.number }} {% trans "of" %} {{ data.paginator.num_pages }}.
-    </span>
-    <nav class="oh-pagination__nav">
-      <div class="oh-pagination__input-container me-3">
-        <span class="oh-pagination__label me-1">{% trans "Page" %}</span>
-        <input
-          type="number"
-          name="page"
-          class="oh-pagination__input"
-          value="{{data.number}}"
-          hx-get="{% url 'employee-filter-view' %}?{{pd}}"
+<div class="oh-pagination">
+  <span class="oh-pagination__page">
+    {% trans "Page" %} {{ data.number }} {% trans "of" %} {{ data.paginator.num_pages }}.
+  </span>
+  <nav class="oh-pagination__nav">
+    <div class="oh-pagination__input-container me-3">
+      <span class="oh-pagination__label me-1">{% trans "Page" %}</span>
+      <input
+        type="number"
+        name="page"
+        class="oh-pagination__input"
+        value="{{data.number}}"
+        hx-get="{% url 'employee-filter-view' %}?{{pd}}"
+        hx-target="#view-container"
+        min="1"
+      />
+      <span class="oh-pagination__label"
+        >{% trans "of" %} {{data.paginator.num_pages}}</span
+      >
+    </div>
+    <ul class="oh-pagination__items">
+      {% if data.has_previous %}
+      <li class="oh-pagination__item oh-pagination__item--wide">
+        <a
           hx-target="#view-container"
-          min="1"
-        />
-        <span class="oh-pagination__label"
-          >{% trans "of" %} {{data.paginator.num_pages}}</span
+          hx-get="{% url 'employee-filter-view' %}?{{pd}}&page=1"
+          class="oh-pagination__link"
+          >{% trans "First" %}</a
         >
-      </div>
-      <ul class="oh-pagination__items">
-        {% if data.has_previous %}
-        <li class="oh-pagination__item oh-pagination__item--wide">
-          <a
-            hx-target="#view-container"
-            hx-get="{% url 'employee-filter-view' %}?{{pd}}&page=1"
-            class="oh-pagination__link"
-            >{% trans "First" %}</a
-          >
-        </li>
-        <li class="oh-pagination__item oh-pagination__item--wide">
-          <a
-            hx-target="#view-container"
-            hx-get="{% url 'employee-filter-view' %}?{{pd}}&page={{ data.previous_page_number }}"
-            class="oh-pagination__link"
-            >{% trans "Previous" %}</a
-          >
-        </li>
-        {% endif %} {% if data.has_next %}
-        <li class="oh-pagination__item oh-pagination__item--wide">
-          <a
-            hx-target="#view-container"
-            hx-get="{% url 'employee-filter-view' %}?{{pd}}&page={{ data.next_page_number }}"
-            class="oh-pagination__link"
-            >{% trans "Next" %}</a
-          >
-        </li>
-        <li class="oh-pagination__item oh-pagination__item--wide">
-          <a
-            hx-target="#view-container"
-            hx-get="{% url 'employee-filter-view' %}?{{pd}}&page={{ data.paginator.num_pages }}"
-            class="oh-pagination__link"
-            >{% trans "Last" %}</a
-          >
-        </li>
-        {% endif %}
-      </ul>
-    </nav>
-  </div>
+      </li>
+      <li class="oh-pagination__item oh-pagination__item--wide">
+        <a
+          hx-target="#view-container"
+          hx-get="{% url 'employee-filter-view' %}?{{pd}}&page={{ data.previous_page_number }}"
+          class="oh-pagination__link"
+          >{% trans "Previous" %}</a
+        >
+      </li>
+      {% endif %} {% if data.has_next %}
+      <li class="oh-pagination__item oh-pagination__item--wide">
+        <a
+          hx-target="#view-container"
+          hx-get="{% url 'employee-filter-view' %}?{{pd}}&page={{ data.next_page_number }}"
+          class="oh-pagination__link"
+          >{% trans "Next" %}</a
+        >
+      </li>
+      <li class="oh-pagination__item oh-pagination__item--wide">
+        <a
+          hx-target="#view-container"
+          hx-get="{% url 'employee-filter-view' %}?{{pd}}&page={{ data.paginator.num_pages }}"
+          class="oh-pagination__link"
+          >{% trans "Last" %}</a
+        >
+      </li>
+      {% endif %}
+    </ul>
+  </nav>
 </div>
 
 <script src="{% static 'employee/actions.js' %}"></script>
