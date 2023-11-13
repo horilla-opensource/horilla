@@ -220,7 +220,7 @@ def view_allowance(request):
     allowances = payroll.models.models.Allowance.objects.all()
     allowance_filter = AllowanceFilter(request.GET)
     allowances = paginator_qry(allowances, request.GET.get("page"))
-    allowance_ids = json.dumps(list(allowances.object_list.values_list("id", flat=True)))
+    allowance_ids = json.dumps([instance.id for instance in allowances.object_list])
     return render(
         request,
         "payroll/allowance/view_allowance.html",
@@ -270,7 +270,7 @@ def filter_allowance(request):
     if request.GET.get("view") == "list":
         template = list_view
     allowances = paginator_qry(allowances, request.GET.get("page"))
-    allowance_ids = json.dumps(list(allowances.object_list.values_list("id", flat=True)))
+    allowance_ids = json.dumps([instance.id for instance in allowances.object_list])
     data_dict = parse_qs(query_string)
     get_key_instances(Allowance, data_dict)
     return render(
@@ -352,7 +352,7 @@ def view_deduction(request):
     deductions = payroll.models.models.Deduction.objects.all()
     deduction_filter = DeductionFilter(request.GET)
     deductions = paginator_qry(deductions, request.GET.get("page"))
-    deduction_ids = json.dumps(list(deductions.object_list.values_list("id", flat=True)))
+    deduction_ids = json.dumps([instance.id for instance in deductions.object_list])
     return render(
         request,
         "payroll/deduction/view_deduction.html",
@@ -401,7 +401,7 @@ def filter_deduction(request):
     if request.GET.get("view") == "list":
         template = list_view
     deductions = paginator_qry(deductions, request.GET.get("page"))
-    deduction_ids = json.dumps(list(deductions.object_list.values_list("id", flat=True)))
+    deduction_ids = json.dumps([instance.id for instance in deductions.object_list])
     data_dict = parse_qs(query_string)
     get_key_instances(Deduction, data_dict)
     return render(

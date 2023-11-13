@@ -1,35 +1,7 @@
 {% load i18n %}
 {% load static %}
 {% include 'filter_tags.html' %}
-<div class="d-flex flex-row-reverse">
-  <span class="m-3" onclick="$('[name=contract_status]').val('terminated'); $('[name=contract_status]').first().change(); $('filterButoon').click()" style="cursor: pointer">
-    <span class="oh-dot oh-dot--small me-1" style="background-color:black"></span>
-    {% trans "Terminated" %}
-  </span>
-  <span class="m-3" onclick="$('[name=contract_status]').val('expired'); $('[name=contract_status]').first().change(); $('.filterButton').click()" style="cursor: pointer">
-    <span class="oh-dot oh-dot--small me-1" style="background-color:red"></span>
-    {% trans "Expired" %}
-  </span>
-  <span class="m-3" onclick="$('[name=contract_status]').val('draft'); $('[name=contract_status]').first().change(); $('.filterButton').click()" style="cursor: pointer">
-    <span class="oh-dot oh-dot--small me-1" style="background-color:rgba(128, 128, 128, 0.482)"></span>
-    {% trans "Draft" %}
-  </span>
-  <span class="m-3" onclick="$('[name=contract_status]').val('active'); $('[name=contract_status]').first().change(); $('.filterButton').click()" style="cursor: pointer">
-    <span class="oh-dot oh-dot--small me-1" style="background-color:yellowgreen"></span>
-    {% trans "Active" %}
-  </span>
-</div>
-<div class="oh-checkpoint-badge text-success mb-2" id="selectAllContracts" style="cursor: pointer;">
-  {% trans "Select All Contracts" %}
-</div>
-<div class="oh-checkpoint-badge text-secondary mb-2" id="unselectAllContracts" style="cursor: pointer;">
-  {% trans "Unselect All Contracts" %}
-</div>
-<div class="oh-checkpoint-badge text-info mb-2" id="exportContracts" style="cursor: pointer;">
-  {% trans "Export Contracts" %}
-</div>
-<div class="oh-checkpoint-badge text-danger mb-2" id="selectedShow" >
-</div>
+
 <div class="oh-sticky-table">
   <div class="oh-sticky-table__table">
     <div class="oh-sticky-table__thead">

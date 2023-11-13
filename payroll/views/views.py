@@ -23,7 +23,7 @@ from payroll.models.tax_models import PayrollSettings
 from payroll.forms.component_forms import ContractExportFieldForm, PayrollSettingsForm
 from payroll.methods.methods import save_payslip
 from django.utils.translation import gettext_lazy as _
-from payroll.filters import ContractFilter, PayslipFilter
+from payroll.filters import ContractFilter, ContractReGroup, PayslipFilter
 from payroll.methods.methods import paginator_qry
 import io
 from xhtml2pdf import pisa
@@ -129,9 +129,10 @@ def contract_view(request):
         template = "payroll/contract/contract_view.html"
     else:
         template = "payroll/contract/contract_empty.html"
+
+    field =  request.GET.get("field")
     contracts = paginator_qry(contracts, request.GET.get("page"))
-    contract_ids = contracts.object_list.values_list("id", flat=True)
-    contract_ids_json = json.dumps(list(contract_ids))
+    contract_ids_json = json.dumps([instance.id for instance in contracts.object_list])
     filter_form = ContractFilter(request.GET)
     export_filter = ContractFilter(request.GET)
     export_column = ContractExportFieldForm()
@@ -141,6 +142,7 @@ def contract_view(request):
         "export_filter": export_filter,
         "export_column": export_column,
         "contract_ids": contract_ids_json,
+        "gp_fields":ContractReGroup.fields,
     }
 
     return render(request, template, context)
@@ -195,9 +197,13 @@ def contract_filter(request):
     contracts_filter = ContractFilter(request.GET)
     template = "payroll/contract/contract_list.html"
     contracts = contracts_filter.qs
+    field =  request.GET.get("field")
+    if field != "" and field is not None:
+        field_copy = field.replace(".", "__")
+        contracts = contracts.order_by(field_copy)
+        template = "payroll/contract/group_by.html"
     contracts = paginator_qry(contracts, request.GET.get("page"))
-    contract_ids = contracts.object_list.values_list("id", flat=True)
-    contract_ids_json = json.dumps(list(contract_ids))
+    contract_ids_json = json.dumps([instance.id for instance in contracts.object_list])
     data_dict = parse_qs(query_string)
     get_key_instances(Contract, data_dict)
     keys_to_remove = [key for key, value in data_dict.items() if value == ["unknown"]]
@@ -215,6 +221,7 @@ def contract_filter(request):
             "pd": query_string,
             "filter_dict": data_dict,
             "contract_ids": contract_ids_json,
+            "field": field,
         },
     )
 

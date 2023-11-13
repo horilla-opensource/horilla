@@ -1,0 +1,183 @@
+{% load i18n %} {% load attendancefilters %} {% include 'filter_tags.html' %}
+<div class="oh-card">
+	{% dynamic_regroup contracts by field as contract_grouper %} {% for contract_list in contract_grouper %}
+
+	<div class="oh-accordion-meta">
+		<div class="oh-accordion-meta__item">
+			<div class="oh-accordion-meta__header" onclick='$(this).toggleClass("oh-accordion-meta__header--show");'>
+				<span class="oh-accordion-meta__title pt-3 pb-3">
+					<div class="oh-tabs__input-badge-container">
+						<span
+							class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round mr-1"
+						>
+							{{contract_list.list|length}}
+						</span>
+						{{contract_list.grouper}}
+					</div>
+				</span>
+			</div>
+			<div class="oh-accordion-meta__body d-none">
+				<div class="oh-sticky-table oh-sticky-table--no-overflow mb-5">
+					<div class="oh-sticky-table">
+						<div class="oh-sticky-table__table">
+						  	<div class="oh-sticky-table__thead">
+								<div class="oh-sticky-table__tr">
+									<div class="oh-sticky-table__th" style="width:10px;">
+										<div class="centered-div">
+										<input
+											type="checkbox"
+											class="all-contract oh-input oh-input__checkbox Allcontract"
+											id = ""
+											title='{% trans "Select All" %}'
+										/>
+										</div>
+									</div>
+									<div class="oh-sticky-table__th">{% trans "Contract" %}</div>
+									<div class="oh-sticky-table__th">{% trans "Employee" %}</div>
+									<div class="oh-sticky-table__th">{% trans "Start Date" %}</div>
+									<div class="oh-sticky-table__th">{% trans "End Date" %}</div>
+									<div class="oh-sticky-table__th">{% trans "Wage Type" %}</div>
+									<div class="oh-sticky-table__th">{% trans "Basic Salary" %}</div>
+									<div class="oh-sticky-table__th">{% trans "Filing Status" %}</div>
+									<div class="oh-sticky-table__th">{% trans "Status" %}</div>
+									<div class="oh-sticky-table__th"></div>
+								</div>
+						  </div>
+						  <div class="oh-sticky-table__tbody">
+							{% for contract in contract_list.list %}
+							<div class="oh-sticky-table__tr" draggable="true" data-toggle="oh-modal-toggle" data-target = "#ContractModal" hx-get="{% url 'single-contract-view' contract.id %}?instances_ids={{contract_ids}}" hx-target = "#OneContractTarget">
+								<div class="oh-sticky-table__sd  {% if contract.contract_status == "active" %} row-status--yellow
+									{% elif contract.contract_status == 'draft' %} row-status--purple 
+									{% elif contract.contract_status == 'expired' %} row-status--red 
+									{% elif contract.contract_status == 'terminated' %} row-status--black {% endif %}" onclick="event.stopPropagation()">
+									<div class="centered-div">
+										<input
+										type="checkbox"
+										id="{{contract.id}}"
+										value="{{contract.id}}"
+										class="oh-input payslip-checkbox oh-input__checkbox all-contract-row"
+										/>
+									</div>
+								</div>
+								<div class="oh-sticky-table__td">{{ contract.contract_name }}</div>
+								<div class="oh-sticky-table__td">{{ contract.employee_id }}</div>
+								<div class="oh-sticky-table__td">{{ contract.contract_start_date}}</div>
+								<div class="oh-sticky-table__td">
+									{% if contract.contract_end_date %}{{ contract.contract_end_date}}{% endif %}
+								</div>
+								<div class="oh-sticky-table__td">
+									{{ contract.get_wage_type_display}}
+								</div>
+								<div class="oh-sticky-table__td">{{ contract.wage}}</div>
+								<div class="oh-sticky-table__td">{{ contract.filing_status}}</div>
+								<div class="oh-sticky-table__td">
+									{{ contract.get_contract_status_display}}
+								</div>
+								<div class="oh-sticky-table__td">
+									<div class="oh-btn-group">
+										<a
+										onclick="event.stopPropagation()"
+											class="oh-btn oh-btn--light-bkg w-100"
+											href="{% url 'update-contract' contract.id %}"
+											title='{% trans "Update" %}'
+										>
+											<ion-icon
+											name="create-outline"
+											role="img"
+											class="md hydrated"
+											style="color: blue"
+											aria-label="create outline"
+											></ion-icon>
+										</a>
+										<a
+											onclick = "event.preventDefault();event.stopPropagation(); confirm(`{% trans 'Do you want to delete this Contract?' %}`)"
+											class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+											href="{% url 'delete-contract' contract.id %}"
+											title='{% trans "Delete" %}'
+										>
+											<ion-icon
+											name="trash-outline"
+											role="img"
+											class="md hydrated"
+											aria-label="trash outline"
+											></ion-icon>
+										</a>
+									</div>
+								</div>
+							</div>
+							{% endfor %}
+						  </div>
+						</div>
+					  </div>
+        		</div>
+			</div>
+		</div>
+		{% endfor %}
+
+		<div class="oh-pagination">
+			<span
+			  class="oh-pagination__page"
+			>
+			  {% trans "Page" %} {{ contracts.number }} {% trans "of" %} {{ contracts.paginator.num_pages }}.
+			</span
+			>
+			<nav class="oh-pagination__nav">
+				<div class="oh-pagination__input-container me-3">
+					<span class="oh-pagination__label me-1">{% trans "Page" %}</span>
+					<input
+					type="number"
+					name="page"
+					class="oh-pagination__input"
+					value="{{contracts.number}}"
+					hx-get="{% url 'contract-filter' %}?{{pd}}"
+					hx-target="#payroll-contract-container"
+					min="1"
+					/>
+					<span class="oh-pagination__label">{% trans "of" %} {{contracts.paginator.num_pages}}</span>
+				</div>
+				<ul class="oh-pagination__items">
+					{% if contracts.has_previous %}
+					<li class="oh-pagination__item oh-pagination__item--wide">
+						<a hx-target='#payroll-contract-container' hx-get="{% url 'contract-filter' %}?{{pd}}&page=1" class="oh-pagination__link" onclick=tickContractCheckboxes()>{% trans "First" %}</a>
+					</li>
+					<li class="oh-pagination__item oh-pagination__item--wide">
+						<a hx-target='#payroll-contract-container' hx-get="{% url 'contract-filter' %}?{{pd}}&page={{ contracts.previous_page_number }}" class="oh-pagination__link" onclick=tickContractCheckboxes()>{% trans "Previous" %}</a>
+					</li>
+					{% endif %}
+					{% if contracts.has_next %}
+					<li class="oh-pagination__item oh-pagination__item--wide">
+						<a hx-target='#payroll-contract-container' hx-get="{% url 'contract-filter' %}?{{pd}}&page={{ contracts.next_page_number }}" class="oh-pagination__link" onclick=tickContractCheckboxes()>{% trans "Next" %}</a>
+					</li>
+					<li class="oh-pagination__item oh-pagination__item--wide">
+						<a hx-target='#payroll-contract-container' hx-get="{% url 'contract-filter' %}?{{pd}}&page={{ contracts.paginator.num_pages }}" class="oh-pagination__link" onclick=tickContractCheckboxes()>{% trans "Last" %}</a>
+					</li>
+					{% endif %}
+			
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<script>
+	$(document).ready(function(){
+		
+		$(".Allcontract").click(function (e) {
+			var is_checked = $(this).is(":checked");
+			var closest = $(this)
+				.closest(".oh-sticky-table__thead")
+				.siblings(".oh-sticky-table__tbody");
+			$(closest)
+				.children()
+				.find(".all-contract-row")
+				.prop("checked", is_checked);
+			addingContractIds();
+		  });
+		  $("#exportContracts").click(function (e) {
+			exportContractRequest();
+		  });
+		
+		  $(".all-contract-row").change(function () {
+			addingContractIds();
+		  });
+	})
+</script>

@@ -1,14 +1,6 @@
 {% load static %} 
 {% load i18n %}
 
-<form
-  hx-get='{% url "contract-filter" %}'
-  id="filterForm"
-  hx-swap="innerHTML"
-  hx-target="#payroll-contract-container"
-  style="
-    width: 460px;"
->
   <div class="oh-dropdown__filter-body">
     <div class="oh-accordion">
       <div class="oh-accordion-header">{% trans "Contract" %}</div>
@@ -114,7 +106,6 @@
       {% trans "Filter" %}
     </button>
   </div>
-</form>
 
 <script>
   $("#filterForm").submit(function (e) {
