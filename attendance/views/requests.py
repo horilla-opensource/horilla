@@ -88,8 +88,8 @@ def request_attendance_view(request):
         template = "requests/attendance/view-requests.html"
     else:
         template = "requests/attendance/requests_empty.html"
-    requests_ids = json.dumps(list(paginator_qry(requests, None).object_list.values_list("id", flat=True)))
-    attendances_ids = json.dumps(list(paginator_qry(attendances, None).object_list.values_list("id", flat=True)))
+    requests_ids = json.dumps([instance.id for instance in paginator_qry(requests, None).object_list])
+    attendances_ids = json.dumps([instance.id for instance in paginator_qry(attendances, None).object_list])
     return render(
         request,
         template,

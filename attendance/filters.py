@@ -139,6 +139,10 @@ class AttendanceOverTimeFilter(FilterSet):
         field_name="overtime_second", lookup_expr="lte"
     )
     month = django_filters.ChoiceFilter(choices=MONTH_CHOICES, lookup_expr="icontains")
+    department_name = django_filters.CharFilter(
+        field_name="employee_id__employee_work_info__department_id__department",
+        lookup_expr="icontains",
+    )
 
     class Meta:
         """
@@ -152,6 +156,7 @@ class AttendanceOverTimeFilter(FilterSet):
             "overtime",
             "worked_hours",
             "year",
+            "department_name",
             "employee_id__employee_work_info__department_id",
             "employee_id__employee_work_info__company_id",
             "employee_id__employee_work_info__job_position_id",
