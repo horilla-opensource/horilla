@@ -9,7 +9,7 @@ from employee.models import Employee
 
 urlpatterns = [
     path("get-language-code/", views.get_language_code, name="get-language-code"),
-    path("employee-profile", views.employee_profile, name="employee-profile"),
+    path("employee-profile/", views.employee_profile, name="employee-profile"),
     path(
         "employee-view/<int:obj_id>/",
         views.employee_view_individual,
