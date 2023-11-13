@@ -246,32 +246,40 @@ urlpatterns = [
         views.user_request_one_view,
         name="user-request-one-view",
     ),
-    path('hour-attendance-select/', 
-        views.hour_attendance_select, 
-        name='hour-attendance-select'),
-
-    path('hour-attendance-select-filter/', 
-        views.hour_attendance_select_filter, 
-        name='hour-attendance-select-filter'),
-
-    path('attendance-account-bulk-delete', 
-        views.attendance_account_bulk_delete, 
-        name='attendance-account-bulk-delete'),
-
-    path('activity-attendance-select/', 
-        views.activity_attendance_select, 
-        name='activity-attendance-select'),
-
-    path('activity-attendance-select-filter/', 
-        views.activity_attendance_select_filter, 
-        name='activity-attendance-select-filter'),
-
-    path('latecome-attendance-select/', 
-        views.latecome_attendance_select, 
-        name='latecome-attendance-select'),
-
-    path('latecome-attendance-select-filter/', 
-        views.latecome_attendance_select_filter, 
-        name='latecome-attendance-select-filter'),
-
+    path(
+        "hour-attendance-select/",
+        views.hour_attendance_select,
+        name="hour-attendance-select",
+    ),
+    path(
+        "hour-attendance-select-filter/",
+        views.hour_attendance_select_filter,
+        name="hour-attendance-select-filter",
+    ),
+    path(
+        "attendance-account-bulk-delete",
+        views.attendance_account_bulk_delete,
+        name="attendance-account-bulk-delete",
+    ),
+    path(
+        "activity-attendance-select/",
+        views.activity_attendance_select,
+        name="activity-attendance-select",
+    ),
+    path(
+        "activity-attendance-select-filter/",
+        views.activity_attendance_select_filter,
+        name="activity-attendance-select-filter",
+    ),
+    path(
+        "latecome-attendance-select/",
+        views.latecome_attendance_select,
+        name="latecome-attendance-select",
+    ),
+    path(
+        "latecome-attendance-select-filter/",
+        views.latecome_attendance_select_filter,
+        name="latecome-attendance-select-filter",
+    ),
+    path("pending-hours/",attendance.views.dashboard.pending_hours,name="pending-hours")
 ]

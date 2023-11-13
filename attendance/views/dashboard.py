@@ -6,12 +6,16 @@ This module is used to register endpoints for dashboard-related requests
 
 import calendar
 from datetime import date, datetime, timedelta
-from django.db.models import Q
+from django.db.models import Q, Sum
 from django.shortcuts import render
 from django.http import JsonResponse
 from django.utils.translation import gettext_lazy as _
-from attendance.filters import AttendanceFilters, LateComeEarlyOutFilter
-from attendance.models import Attendance, AttendanceLateComeEarlyOut
+from attendance.filters import (
+    AttendanceFilters,
+    LateComeEarlyOutFilter,
+    AttendanceOverTimeFilter,
+)
+from attendance.models import Attendance, AttendanceLateComeEarlyOut, AttendanceOverTime
 from base.methods import filtersubordinates
 from base.models import Department, EmployeeShiftSchedule
 from employee.models import Employee
@@ -109,7 +113,7 @@ def dashboard(request):
 
 def total_attendance(start_date, department, end_date=None):
     """
-    This method is used to find total attandance 
+    This method is used to find total attandance
     """
     attandance = AttendanceFilters(
         {
@@ -265,3 +269,56 @@ def dashboard_attendance(request):
         data_set.append(generate_data_set(request, start_date, type, end_date, dept))
     message = _("No data Found...")
     return JsonResponse({"dataSet": data_set, "labels": labels, "message": message})
+
+
+def worked_hour_data(labels, records):
+    """
+    To find all the worked hours
+    """
+    data = {
+        "label": "Worked Hours",
+        "backgroundColor": "rgba(75, 192, 192, 0.6)",
+    }
+    dept_records = []
+    for dept in labels:
+        total_sum = records.filter(
+            employee_id__employee_work_info__department_id__department=dept
+        ).aggregate(total_sum=Sum("hour_account_second"))["total_sum"]
+        dept_records.append(total_sum / 3600 if total_sum else 0)
+    data["data"] = dept_records
+    return data
+
+
+def pending_hour_data(labels, records):
+    """
+    To find all the pending hours
+    """
+    data = {
+        "label": "Pending Hours",
+        "backgroundColor": "rgba(255, 99, 132, 0.6)",
+    }
+    dept_records = []
+    for dept in labels:
+        total_sum = records.filter(
+            employee_id__employee_work_info__department_id__department=dept
+        ).aggregate(total_sum=Sum("hour_pending_second"))["total_sum"]
+        dept_records.append(total_sum / 3600 if total_sum else 0)
+    data["data"] = dept_records
+    return data
+
+
+def pending_hours(request):
+    """
+    pending hours chart dashboard view
+    """
+    records = AttendanceOverTimeFilter(request.GET).qs
+    labels = list(Department.objects.values_list("department", flat=True))
+    data = {
+        "labels": labels,
+        "datasets": [
+            pending_hour_data(labels, records),
+            worked_hour_data(labels, records),
+        ],
+    }
+
+    return JsonResponse({"data": data})

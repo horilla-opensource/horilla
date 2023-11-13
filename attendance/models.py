@@ -505,6 +505,9 @@ class AttendanceOverTime(models.Model):
     def save(self, *args, **kwargs):
         self.hour_account_second = strtime_seconds(self.worked_hours)
         self.hour_pending_second = strtime_seconds(self.pending_hours)
+        print('-----------')
+        print(self.pending_hours)
+        print('-----------')
         self.overtime_second = strtime_seconds(self.overtime)
         month_name = self.month.split("-")[0]
         months = [
