@@ -7,19 +7,17 @@
     <div class="oh-sticky-table__table oh-table--sortable">
       <div class="oh-sticky-table__thead">
         <div class="oh-sticky-table__tr">
-          <div class="oh-sticky-table__th" >
-            <div class="d-flex">
-              <div class="">
-                <input
-                  type="checkbox"
-                  class="oh-input oh-input__checkbox mt-1 mr-2 all-work-type-requests"
-                  title='{% trans "Select All" %}'
-                />
-              </div>
-              <div  hx-get="{% url 'work-type-request-search' %}?{{pd}}&orderby=employee_id__employee_first_name" hx-target="#view-container">
-                {% trans "Employee" %}
-              </div>
+          <div class="oh-sticky-table__th" style="width:10px">
+            <div class="centered-div">
+              <input
+                type="checkbox"
+                class="oh-input oh-input__checkbox all-work-type-requests"
+                title='{% trans "Select All" %}'
+              />
             </div>
+          </div>
+          <div class="oh-sticky-table__th" hx-get="{% url 'work-type-request-search' %}?{{pd}}&orderby=employee_id__employee_first_name" hx-target="#view-container">
+            {% trans "Employee" %}
           </div>
           <div class="oh-sticky-table__th">{% trans "Requested Work Type" %}</div>
           <div class="oh-sticky-table__th">{% trans "Previous/Current Work Type" %}</div>
@@ -42,21 +40,21 @@
           data-toggle='oh-modal-toggle' 
           draggable="true"
         >
-          <div class="oh-sticky-table__sd">
-            <div class="d-flex">
-              <div class="">
-                <input
-                  type="checkbox"
-                  id="{{work_type_request.id}}"
-                  class="oh-input employee-checkbox oh-input__checkbox mt-2 mr-2 all-work-type-requests-row"
-                />
+          <div class="oh-sticky-table__sd" onclick="event.stopPropagation();">
+            <div class="centered-div">
+              <input
+                type="checkbox"
+                id="{{work_type_request.id}}"
+                class="oh-input employee-checkbox oh-input__checkbox all-work-type-requests-row"
+              />
+            </div>
+          </div>
+          <div class="oh-sticky-table__td">
+            <div class="oh-profile oh-profile--md">
+              <div class="oh-profile__avatar mr-1">
+                <img src="{{work_type_request.employee_id.get_avatar}}" class="oh-profile__image" alt="Username">
               </div>
-              <div class="oh-profile oh-profile--md">
-                <div class="oh-profile__avatar mr-1">
-                  <img src="{{work_type_request.employee_id.get_avatar}}" class="oh-profile__image" alt="Username">
-                </div>
-                <span class="oh-profile__name oh-text--dark">{{work_type_request.employee_id}}</span>
-              </div>
+              <span class="oh-profile__name oh-text--dark">{{work_type_request.employee_id}}</span>
             </div>
           </div>
           <div class="oh-sticky-table__td">{{work_type_request.work_type_id}}</div>

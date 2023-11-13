@@ -8,19 +8,17 @@
       <div class="oh-sticky-table__table oh-table--sortable">
         <div class="oh-sticky-table__thead">
           <div class="oh-sticky-table__tr">
-            <div class="oh-sticky-table__th">
-              <div class="d-flex">
-                <div class="">
+            <div class="oh-sticky-table__th" style="width:10px">
+              <div class="centered-div">
                   <input
-                    type="checkbox"
-                    class="oh-input oh-input__checkbox mt-1 mr-2 all-rshift"
-                    title='{% trans "Select All" %}'
-                  />
-                </div>
-                <div  hx-target="#view-container" hx-get="{% url 'rotating-shift-assign-view' %}?{{pd}}&orderby=employee_id__employee_first_name">
-                  {% trans "Employee" %}
-                </div>
+                  type="checkbox"
+                  class="oh-input oh-input__checkbox all-rshift"
+                  title='{% trans "Select All" %}'
+                />
               </div>
+            </div>
+            <div class="oh-sticky-table__th" hx-target="#view-container" hx-get="{% url 'rotating-shift-assign-view' %}?{{pd}}&orderby=employee_id__employee_first_name">
+              {% trans "Employee" %}
             </div>
             <div class="oh-sticky-table__th">{% trans "Title" %}</div>
             <div class="oh-sticky-table__th">{% trans "Based On" %}</div>
@@ -35,25 +33,25 @@
         <div class="oh-sticky-table__tbody">
           {% for rshift in rshift_assign %}
           <div class="oh-sticky-table__tr" draggable="true" hx-get="{% url "rshift-individual-view" rshift.id %}?instances_ids={{assign_ids}}" hx-target="#rotatingShiftAssignDetail" data-toggle="oh-modal-toggle" data-target="#rotating-shift-detail-modal-detail-modal">
-            <div class="oh-sticky-table__sd">
-              <div class="d-flex">
-                <div class="">
-                  <input
-                    type="checkbox"
-                    id="{{rshift.id}}"
-                    class="oh-input rshift-checkbox oh-input__checkbox mt-2 mr-2 all-rshift-row"
+            <div class="oh-sticky-table__sd" onclick="event.stopPropagation();">
+              <div class="centered-div">
+                <input
+                  type="checkbox"
+                  id="{{rshift.id}}"
+                  class="oh-input rshift-checkbox oh-input__checkbox all-rshift-row"
+                />
+              </div>
+            </div>
+            <div class="oh-sticky-table__td">
+              <div class="oh-profile oh-profile--md">
+                <div class="oh-profile__avatar mr-1">
+                  <img
+                  src="{{rshift.employee_id.get_avatar}}"
+                  class="oh-profile__image"
+                    alt=""
                   />
                 </div>
-                <div class="oh-profile oh-profile--md">
-                  <div class="oh-profile__avatar mr-1">
-                    <img
-                    src="{{rshift.employee_id.get_avatar}}"
-                    class="oh-profile__image"
-                      alt=""
-                    />
-                  </div>
                   <span class="oh-profile__name oh-text--dark">{{rshift.employee_id}}</span>
-                </div>
               </div>
             </div>
             <div class="oh-sticky-table__td">{{rshift.rotating_shift_id}}</div>

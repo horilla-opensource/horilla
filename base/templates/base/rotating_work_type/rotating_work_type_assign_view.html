@@ -6,19 +6,17 @@
   <div class="oh-sticky-table__table oh-table--sortable">
     <div class="oh-sticky-table__thead">
       <div class="oh-sticky-table__tr">
-        <div class="oh-sticky-table__th" >
-          <div class="d-flex">
-            <div class="">
-              <input
+        <div class="oh-sticky-table__th" style="width:10px">
+          <div class="centered-div">
+            <input
                 type="checkbox"
-                class="oh-input oh-input__checkbox mt-1 mr-2 all-rwork-type"
+                class="oh-input oh-input__checkbox all-rwork-type"
                 title='{% trans "Select All" %}'
               />
-            </div>
-            <div hx-target="#view-container" hx-get="{% url 'rotating-work-type-assign-view' %}?{{pd}}&orderby=employee_id__employee_first_name">
-              {% trans "Employee" %}
-            </div>
           </div>
+        </div>
+        <div class="oh-sticky-table__th" hx-target="#view-container" hx-get="{% url 'rotating-work-type-assign-view' %}?{{pd}}&orderby=employee_id__employee_first_name">
+          {% trans "Employee" %}
         </div>
         <div class="oh-sticky-table__th">{% trans "Title" %}</div>
         <div class="oh-sticky-table__th">{% trans "Based On" %}</div>
@@ -33,25 +31,25 @@
     <div class="oh-sticky-table__tbody">
       {% for rwork_type in rwork_type_assign %}
       <div class="oh-sticky-table__tr" hx-get="{% url "rwork-individual-view" rwork_type.id %}?instances_ids={{assign_ids}}" data-toggle="oh-modal-toggle" data-target="#rotating-work-type-detail-modal" hx-target="#rotatingWorkTypeAssignDetail" draggable="true">
-        <div class="oh-sticky-table__sd">
-          <div class="d-flex">
-            <div class="">
-              <input
+        <div class="oh-sticky-table__sd" onclick="event.stopPropagation();">
+          <div class="centered-div">
+            <input
                 type="checkbox"
                 id="{{rwork_type.id}}"
-                class="oh-input rwork-type-checkbox oh-input__checkbox mt-2 mr-2 all-rwork-type-row"
+                class="oh-input rwork-type-checkbox oh-input__checkbox all-rwork-type-row"
+              />
+          </div>
+        </div>
+        <div class="oh-sticky-table__td">
+          <div class="oh-profile oh-profile--md">
+            <div class="oh-profile__avatar mr-1">
+              <img
+                src="{{rwork_type.employee_id.get_avatar}}"
+                class="oh-profile__image"
+                alt="Username"
               />
             </div>
-            <div class="oh-profile oh-profile--md">
-              <div class="oh-profile__avatar mr-1">
-                <img
-                  src="{{rwork_type.employee_id.get_avatar}}"
-                  class="oh-profile__image"
-                  alt="Username"
-                />
-              </div>
-              <span class="oh-profile__name oh-text--dark">{{rwork_type.employee_id}}</span>
-            </div>
+            <span class="oh-profile__name oh-text--dark">{{rwork_type.employee_id}}</span>
           </div>
         </div>
         <div class="oh-sticky-table__td">
