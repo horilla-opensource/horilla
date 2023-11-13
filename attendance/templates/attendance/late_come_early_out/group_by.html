@@ -1,6 +1,7 @@
 {% load i18n %}
 {% load attendancefilters %}
 {% include 'filter_tags.html' %}
+<div class="oh-card">
 {% dynamic_regroup data by field as reports_grouper %}
 {% for attendance_list in reports_grouper %}
 
@@ -141,8 +142,9 @@
     </ul>
   </nav>
 </div>
+</div>
 <script>
-     $('.oh-table__sticky-collaspable-sort').click(function (e) { 
+  $(".oh-table__sticky-collaspable-sort").click(function (e) {
     e.preventDefault();
     let clickedEl = $(e.target).closest(".oh-table__toggle-parent");
     let targetSelector = clickedEl.data("target");

@@ -42,7 +42,7 @@ aria-hidden="true"
         class="oh-modal__dialog-body p-0 pt-2"
         id="hourAccountExportModalBody"
       >
-        <form
+          <form
           action="{%url 'attendance-account-info-export' %}"
           method="get"
           onsubmit="event.stopPropagation();$(this).parents().find('.oh-modal--show').last().toggleClass('oh-modal--show');"
@@ -81,12 +81,6 @@ aria-hidden="true"
       ></ion-icon>
     </a>
   </div>
-  <form
-    hx-get='{% url "attendance-ot-search" %}'
-    hx-swap="innerHTML"
-    hx-target="#ot-table"
-    id="filterForm"
-    >
   <div class="oh-main__titlebar oh-main__titlebar--right">
     <div
       class="oh-input-group oh-input__search-group"
@@ -110,8 +104,15 @@ aria-hidden="true"
       />
     </div>
     <div class="oh-main__titlebar-button-container">
+      <form
+        hx-get='{% url "attendance-ot-search" %}'
+        hx-swap="innerHTML"
+        hx-target="#ot-table"
+        id="filterForm"
+        class="d-flex"
+        >
       <div class="oh-dropdown" x-data="{open: false}">
-        <button class="oh-btn ml-2" @click="open = !open">
+        <button class="oh-btn ml-2" @click="open = !open" onclick="event.preventDefault()">
           <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}<div id="filterCount"></div>
         </button>
         <div
@@ -125,7 +126,7 @@ aria-hidden="true"
         </div>
       </div>
       <div class="oh-dropdown" x-data="{open: false}">
-        <button class="oh-btn ml-2" @click="open = !open">
+        <button class="oh-btn ml-2" @click="open = !open" onclick="event.preventDefault()">
           <ion-icon name="library-outline" class="mr-1"></ion-icon>{% trans "Group By" %}
           <div id="filterCount"></div>
         </button>
@@ -136,7 +137,7 @@ aria-hidden="true"
         style="display: none"
         >            
         <div class="oh-accordion">
-          <div class="oh-accordion-header">{% trans "Group By" %}</div>
+          <label>{% trans "Group By" %}</label>
             <div class="row">
               <div class="col-sm-12 col-md-12 col-lg-6">
                 <div class="oh-input-group">
@@ -161,6 +162,7 @@ aria-hidden="true"
           </div>
         </div>
       </div>
+      </form>
       <div class="oh-dropdown ml-2" x-data="{open: false}">
         <button
           class="oh-btn oh-btn--dropdown"
@@ -218,7 +220,6 @@ aria-hidden="true"
       {% endif %}  
     </div>
   </div>
-</form>
   <script>
     $('#attendance-search').keydown(function (e) { 
       var val = $(this).val();

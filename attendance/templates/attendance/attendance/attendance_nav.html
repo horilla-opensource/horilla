@@ -185,12 +185,6 @@
       ></ion-icon>
     </a>
   </div>
-  <form
-    hx-get='{% url "attendance-search" %}'
-    id="filterForm"
-    hx-swap="innerHTML"
-    hx-target="#tab_contents"
-  >
   <div class="oh-main__titlebar oh-main__titlebar--right">
     <div
       class="oh-input-group oh-input__search-group"
@@ -214,8 +208,15 @@
       />
     </div>
     <div class="oh-main__titlebar-button-container">
+      <form
+      hx-get='{% url "attendance-search" %}'
+      id="filterForm"
+      hx-swap="innerHTML"
+      hx-target="#tab_contents"
+      class="d-flex"
+    >
       <div class="oh-dropdown" x-data="{open: false}">
-        <button class="oh-btn ml-2" @click="open = !open">
+        <button class="oh-btn ml-2" @click="open = !open" onclick="event.preventDefault()">
           <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}
           <div id="filterCount"></div>
         </button>
@@ -229,7 +230,7 @@
         </div>
       </div>
       <div class="oh-dropdown" x-data="{open: false}">
-        <button class="oh-btn ml-2" @click="open = !open">
+        <button class="oh-btn ml-2" @click="open = !open" onclick="event.preventDefault()">
           <ion-icon name="library-outline" class="mr-1"></ion-icon>{% trans "Group By" %}
           <div id="filterCount"></div>
         </button>
@@ -240,7 +241,7 @@
         style="display: none"
         >            
         <div class="oh-accordion">
-          <div class="oh-accordion-header">{% trans "Group By" %}</div>
+          <label>{% trans "Group By" %}</label>
             <div class="row">
               <div class="col-sm-12 col-md-12 col-lg-6">
                 <div class="oh-input-group">
@@ -265,6 +266,7 @@
           </div>
         </div>
       </div>
+    </form>
       <div class="oh-dropdown ml-2" x-data="{open: false}">
         <button
           class="oh-btn oh-btn--dropdown"
@@ -341,7 +343,6 @@
       {% endif %}
     </div>
   </div>
-  </form>
   <script>
     $("#attendance-search").keydown(function (e) {
       var val = $(this).val();

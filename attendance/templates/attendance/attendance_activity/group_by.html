@@ -1,11 +1,7 @@
 {% load i18n %}
 {% load attendancefilters %}
 {% include 'filter_tags.html' %}
-<style>
-  .oh-accordion-meta__item{
-    margin-bottom: 0;
-  }
-</style>
+<div class="oh-card">
 {% dynamic_regroup data by field as attendances_grouper %}
 {% for attendance_list in attendances_grouper %}
 <div class="oh-accordion-meta">
@@ -136,7 +132,7 @@
     </ul>
   </nav>
 </div>
-
+</div>
 
 <script>
      $('.oh-table__sticky-collaspable-sort').click(function (e) { 
