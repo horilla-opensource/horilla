@@ -144,7 +144,7 @@
 		class="oh-main__titlebar-title fw-bold mb-0 text-dark"
 		hx-target="#view-container"
 		style="cursor: pointer"
-		>{% trans "People" %}</a
+		>{% trans "Employees" %}</a
 		>
 		<a
 		class="oh-main__titlebar-search-toggle"
@@ -158,203 +158,204 @@
 			></ion-icon>
 		</a>
 	</div>
-	<form
-	hx-get='{% url "employee-filter-view" %}'
-	id="filterForm"
-	hx-target="#view-container"
-	>
 
-		<div class="oh-main__titlebar oh-main__titlebar--right">
-			{% if emp %}
-			<div
-			class="oh-input-group oh-input__search-group"
-			:class="searchShow ? 'oh-input__search-group--show' : ''"
+	<div class="oh-main__titlebar oh-main__titlebar--right">
+		{% if emp %}
+		<div
+		class="oh-input-group oh-input__search-group"
+		:class="searchShow ? 'oh-input__search-group--show' : ''"
+		>
+			<ion-icon
+				name="search-outline"
+				class="oh-input-group__icon oh-input-group__icon--left"
+			></ion-icon>
+			<input
+				type="text"
+				hx-get="{% url 'search-employee' %}"
+				placeholder="{% trans 'Search' %}"
+				name="search"
+				hx-vals='{"view":"card"}'
+				id="employee-search"
+				hx-trigger="keyup changed delay:.2s"
+				hx-target="#view-container"
+				class="oh-input oh-input__icon"
+				aria-label="Search Input"
+			/>
+		</div>
+		{% endif %} {% if emp %}
+		<ul class="oh-view-types ml-2" style="margin-bottom: 0">
+			<li class="oh-view-type employee-view-type" data-view="list">
+				<a
+				id="list"
+				hx-get="{% url 'employee-filter-view' %}?view=list"
+				hx-target="#view-container"
+				class="oh-btn oh-btn--view {% if request.GET.view == 'list' %} oh-btn--view-active {% endif %}"
+				title='{% trans "List" %}'
+				><ion-icon name="list-outline"></ion-icon
+				></a>
+			</li>
+			<li class="oh-view-type employee-view-type" data-view="card">
+				<a
+				id="card"
+				hx-get="{% url 'employee-filter-view' %}?view=card"
+				hx-target="#view-container"
+				class="oh-btn oh-btn--view {% if request.GET.view != 'list' %} oh-btn--view-active {% endif %}"
+				title='{% trans "Card" %}'
+				><ion-icon name="grid-outline"></ion-icon
+				></a>
+			</li>
+		</ul>
+		{% endif %}
+
+		<div class="oh-main__titlebar-button-container">
+			
+			<form
+			hx-get='{% url "employee-filter-view" %}'
+			id="filterForm"
+			hx-target="#view-container"
+			class="d-flex"
 			>
-				<ion-icon
-					name="search-outline"
-					class="oh-input-group__icon oh-input-group__icon--left"
-				></ion-icon>
-				<input
-					type="text"
-					hx-get="{% url 'search-employee' %}"
-					placeholder="{% trans 'Search' %}"
-					name="search"
-					hx-vals='{"view":"card"}'
-					id="employee-search"
-					hx-trigger="keyup changed delay:.2s"
-					hx-target="#view-container"
-					class="oh-input oh-input__icon"
-					aria-label="Search Input"
-				/>
-			</div>
-			{% endif %} {% if emp %}
-			<ul class="oh-view-types ml-2" style="margin-bottom: 0">
-				<li class="oh-view-type employee-view-type" data-view="list">
-					<a
-					id="list"
-					hx-get="{% url 'employee-filter-view' %}?view=list"
-					hx-target="#view-container"
-					class="oh-btn oh-btn--view {% if request.GET.view == 'list' %} oh-btn--view-active {% endif %}"
-					title='{% trans "List" %}'
-					><ion-icon name="list-outline"></ion-icon
-					></a>
-				</li>
-				<li class="oh-view-type employee-view-type" data-view="card">
-					<a
-					id="card"
-					hx-get="{% url 'employee-filter-view' %}?view=card"
-					hx-target="#view-container"
-					class="oh-btn oh-btn--view {% if request.GET.view != 'list' %} oh-btn--view-active {% endif %}"
-					title='{% trans "Card" %}'
-					><ion-icon name="grid-outline"></ion-icon
-					></a>
-				</li>
-			</ul>
-			{% endif %}
-
-			<div class="oh-main__titlebar-button-container">
-				
-					{% if emp %}
-					<div class="oh-dropdown" x-data="{open: false}">
-						<button class="oh-btn ml-2" @click="open = !open">
-							<ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}
-							<div id="filterCount"></div>
-						</button>
-						<div
-						class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4"
-						x-show="open"
-						@click.outside="open = false"
-						style="display: none"
-						>
-							{% include 'employee_filters.html' %}
-							<div class="oh-dropdown__filter-footer">
-								<button 
-									class="oh-btn oh-btn--secondary oh-btn--small w-100 filterButton"
-									id="#employeeFilter"
-									onclick="employeeFilter(this)"
-								>
-									{% trans "Filter" %}
-								</button>
-							</div>
+				{% if emp %}
+				<div class="oh-dropdown" x-data="{open: false}">
+					<button class="oh-btn ml-2" @click="open = !open" onclick="event.preventDefault()">
+						<ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}
+						<div id="filterCount"></div>
+					</button>
+					<div
+					class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4"
+					x-show="open"
+					@click.outside="open = false"
+					style="display: none"
+					>
+						{% include 'employee_filters.html' %}
+						<div class="oh-dropdown__filter-footer">
+							<button 
+								class="oh-btn oh-btn--secondary oh-btn--small w-100 filterButton"
+								id="#employeeFilter"
+								onclick="employeeFilter(this)"
+							>
+								{% trans "Filter" %}
+							</button>
 						</div>
 					</div>
-					<div class="oh-dropdown" x-data="{open: false}">
-						<button class="oh-btn ml-2" @click="open = !open">
-							<ion-icon name="library-outline" class="mr-1"></ion-icon>{% trans "Group By" %}
-							<div id="filterCount"></div>
-						</button>
-						<div
-						class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4"
-						x-show="open"
-						@click.outside="open = false"
-						style="display: none"
-						>            
-							<div class="oh-accordion">
-								<div class="oh-accordion-header">{% trans "Group By" %}</div>
-								<div class="row">
-									<div class="col-sm-12 col-md-12 col-lg-6">
-										<div class="oh-input-group">
-											<label class="oh-label">{% trans "Field" %}</label>
-										</div>
+				</div>
+				<div class="oh-dropdown" x-data="{open: false}">
+					<button class="oh-btn ml-2" @click="open = !open" onclick="event.preventDefault()">
+						<ion-icon name="library-outline" class="mr-1"></ion-icon>{% trans "Group By" %}
+						<div id="filterCount"></div>
+					</button>
+					<div
+					class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4"
+					x-show="open"
+					@click.outside="open = false"
+					style="display: none"
+					>            
+						<div class="oh-accordion">
+							<label>{% trans "Group By" %}</label>
+							<div class="row">
+								<div class="col-sm-12 col-md-12 col-lg-6">
+									<div class="oh-input-group">
+										<label class="oh-label">{% trans "Field" %}</label>
 									</div>
-									<div class="col-sm-12 col-md-12 col-lg-6">
-										<div class="oh-input-group">
-											<select
-											class="oh-select mt-1 w-100"
-											id="id_field"
-											name="field"
-											class="select2-selection select2-selection--single"
-											>
-												{% for field in gp_fields %}
-												<option value="{{ field.0 }}">{% trans field.1 %}</option>
-												{% endfor %}
-											</select>
-										</div>
+								</div>
+								<div class="col-sm-12 col-md-12 col-lg-6">
+									<div class="oh-input-group">
+										<select
+										class="oh-select mt-1 w-100"
+										id="id_field"
+										name="field"
+										class="select2-selection select2-selection--single"
+										>
+											{% for field in gp_fields %}
+											<option value="{{ field.0 }}">{% trans field.1 %}</option>
+											{% endfor %}
+										</select>
 									</div>
 								</div>
 							</div>
 						</div>
 					</div>
-					{% endif %}
-				<div class="oh-btn-group ml-2">
-					<div class="oh-dropdown" x-data="{open: false}">
-						<button
-							class="oh-btn oh-btn--dropdown"
-							@click="open = !open"
-							@click.outside="open = false"
-						>
-							{% trans "Actions" %}
-						</button>
-						<div
-							class="oh-dropdown__menu oh-dropdown__menu--right"
-							x-show="open"
-							style="display: none"
-						>
-							<ul class="oh-dropdown__items">
+				</div>
+				{% endif %}
+			</form>
+			<div class="oh-btn-group ml-2">
+				<div class="oh-dropdown" x-data="{open: false}">
+					<button
+						class="oh-btn oh-btn--dropdown"
+						@click="open = !open"
+						@click.outside="open = false"
+					>
+						{% trans "Actions" %}
+					</button>
+					<div
+						class="oh-dropdown__menu oh-dropdown__menu--right"
+						x-show="open"
+						style="display: none"
+					>
+						<ul class="oh-dropdown__items">
+							<li class="oh-dropdown__item">
+								<a
+								href="#"
+								class="oh-dropdown__link"
+								id="work-info-import"
+								data-toggle="oh-modal-toggle"
+								data-target="#workInfoImport"
+								>
+									{% trans "Import" %}
+								</a>
+							</li>
+							{% if emp %}
 								<li class="oh-dropdown__item">
 									<a
-									href="#"
-									class="oh-dropdown__link"
-									id="work-info-import"
-									data-toggle="oh-modal-toggle"
-									data-target="#workInfoImport"
-									>
-										{% trans "Import" %}
+										href="#"
+										class="oh-dropdown__link"
+										id="employee-info-export"
+										data-toggle="oh-modal-toggle"
+										data-target="#employeeExport"
+										>
+										{% trans "Export" %}
 									</a>
 								</li>
-								{% if emp %}
+								<li class="oh-dropdown__item">
+									<a href="#" class="oh-dropdown__link" id="archiveEmployees">
+										{% trans "Archive" %}
+									</a>
+								</li>
+								<li class="oh-dropdown__item">
+									<a href="#" class="oh-dropdown__link" id="unArchiveEmployees">
+										{% trans "Un-Archive" %}
+									</a>
+								</li>
+								{% if perms.delete_employee %}
 									<li class="oh-dropdown__item">
 										<a
-											href="#"
-											class="oh-dropdown__link"
-											id="employee-info-export"
-											data-toggle="oh-modal-toggle"
-											data-target="#employeeExport"
-											>
-											{% trans "Export" %}
+										href="#"
+										class="oh-dropdown__link oh-dropdown__link--danger"
+										id="deleteEmployees">
+											{% trans "Delete" %}
 										</a>
 									</li>
-									<li class="oh-dropdown__item">
-										<a href="#" class="oh-dropdown__link" id="archiveEmployees">
-											{% trans "Archive" %}
-										</a>
-									</li>
-									<li class="oh-dropdown__item">
-										<a href="#" class="oh-dropdown__link" id="unArchiveEmployees">
-											{% trans "Un-Archive" %}
-										</a>
-									</li>
-									{% if perms.delete_employee %}
-										<li class="oh-dropdown__item">
-											<a
-											href="#"
-											class="oh-dropdown__link oh-dropdown__link--danger"
-											id="deleteEmployees">
-												{% trans "Delete" %}
-											</a>
-										</li>
-									{% endif %} 
-								{% endif %}
-							</ul>
-						</div>
+								{% endif %} 
+							{% endif %}
+						</ul>
 					</div>
-				</div>
-				<div class="oh-btn-group ml-2">
-					{% if perms.employee.add_employee %}
-					<div class="oh-dropdown">
-						<a
-							href='{% url "employee-view-new" %}'
-							class="oh-btn oh-btn--secondary"
-						>
-							<ion-icon name="add-outline"></ion-icon>
-							{% trans "Create" %}
-						</a>
-					</div>
-					{% endif %}
 				</div>
 			</div>
+			<div class="oh-btn-group ml-2">
+				{% if perms.employee.add_employee %}
+				<div class="oh-dropdown">
+					<a
+						href='{% url "employee-view-new" %}'
+						class="oh-btn oh-btn--secondary"
+					>
+						<ion-icon name="add-outline"></ion-icon>
+						{% trans "Create" %}
+					</a>
+				</div>
+				{% endif %}
+			</div>
 		</div>
-	</form>
+	</div>
 
 </section>
 <script>
