@@ -153,7 +153,7 @@ def filter_survey(request):
     previous_data = request.GET.urlencode()
     filter_obj = SurveyFilter(request.GET)
     questions = filter_obj.qs
-    requests_ids = json.dumps(list(paginator_qry(questions, request.GET.get("page")).object_list.values_list("id", flat=True)))
+    requests_ids = json.dumps([instance.id for instance in paginator_qry(questions, request.GET.get("page")).object_list])
     data_dict = parse_qs(previous_data)
     get_key_instances(RecruitmentSurvey, data_dict)
     return render(

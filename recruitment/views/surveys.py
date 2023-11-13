@@ -126,7 +126,7 @@ def view_question_template(request):
     """
     questions = RecruitmentSurvey.objects.all()
     filter_obj = SurveyFilter()
-    requests_ids = json.dumps(list(paginator_qry(questions, request.GET.get("page")).object_list.values_list("id", flat=True)))
+    requests_ids = json.dumps([instance.id for instance in paginator_qry(questions, request.GET.get("page")).object_list])
     if questions.exists():
         template = "survey/view_question_templates.html"
     else:
