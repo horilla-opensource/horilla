@@ -6,7 +6,14 @@ from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 from django.template.loader import render_to_string
 from employee.models import Employee
-from .models import LeaveType, LeaveRequest, AvailableLeave, Holiday, CompanyLeave, LeaveAllocationRequest
+from .models import (
+    LeaveType,
+    LeaveRequest,
+    AvailableLeave,
+    Holiday,
+    CompanyLeave,
+    LeaveAllocationRequest,
+)
 from .methods import (
     calculate_requested_days,
     leave_requested_dates,
@@ -491,6 +498,8 @@ class AvailableLeaveColumnExportForm(forms.Form):
         initial=[
             "employee_id",
             "leave_type_id",
+            "available_days",
+            "carryforward_days",
             "total_leave_days",
         ],
     )
@@ -514,55 +523,76 @@ class HolidaysColumnExportForm(forms.Form):
         ],
     )
 
+
 class RejectForm(forms.Form):
-    reason = forms.CharField(label=_("Rejection Reason"), widget=forms.Textarea(attrs={"rows":4,"class":"p-4 oh-input w-100"}))
+    reason = forms.CharField(
+        label=_("Rejection Reason"),
+        widget=forms.Textarea(attrs={"rows": 4, "class": "p-4 oh-input w-100"}),
+    )
+
     class Meta:
         model = LeaveRequest
         fields = ["reject_reason"]
 
-class UserLeaveRequestCreationForm(ModelForm):
-    start_date = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
-    end_date = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
-    
 
+class UserLeaveRequestCreationForm(ModelForm):
+    start_date = forms.DateField(widget=forms.DateInput(attrs={"type": "date"}))
+    end_date = forms.DateField(widget=forms.DateInput(attrs={"type": "date"}))
 
     def clean(self):
         cleaned_data = super().clean()
-        start_date = cleaned_data.get('start_date')
-        end_date = cleaned_data.get('end_date')
-        employee_id = cleaned_data.get('employee_id')
-        leave_type_id = cleaned_data.get('leave_type_id')
-        overlapping_requests = LeaveRequest.objects.filter(employee_id=employee_id,
-            start_date__lte=end_date, end_date__gte=start_date
+        start_date = cleaned_data.get("start_date")
+        end_date = cleaned_data.get("end_date")
+        employee_id = cleaned_data.get("employee_id")
+        leave_type_id = cleaned_data.get("leave_type_id")
+        overlapping_requests = LeaveRequest.objects.filter(
+            employee_id=employee_id, start_date__lte=end_date, end_date__gte=start_date
         )
 
         if not start_date <= end_date:
-            raise forms.ValidationError(_("End date should not be less than start date."))
-        
-        if not AvailableLeave.objects.filter(employee_id=employee_id, leave_type_id=leave_type_id).exists():
+            raise forms.ValidationError(
+                _("End date should not be less than start date.")
+            )
+
+        if not AvailableLeave.objects.filter(
+            employee_id=employee_id, leave_type_id=leave_type_id
+        ).exists():
             raise forms.ValidationError(_("Employee has no leave type.."))
 
         if overlapping_requests.exists():
-            raise forms.ValidationError(_("Employee has already a leave request for this date range.."))
-        
-        available_leave = AvailableLeave.objects.get(employee_id=employee_id, leave_type_id=leave_type_id)
-        total_leave_days = available_leave.available_days + available_leave.carryforward_days
-        requested_days = (end_date - start_date).days +  1
+            raise forms.ValidationError(
+                _("Employee has already a leave request for this date range..")
+            )
+
+        available_leave = AvailableLeave.objects.get(
+            employee_id=employee_id, leave_type_id=leave_type_id
+        )
+        total_leave_days = (
+            available_leave.available_days + available_leave.carryforward_days
+        )
+        requested_days = (end_date - start_date).days + 1
 
         if not requested_days <= total_leave_days:
             raise forms.ValidationError(_("Employee doesn't have enough leave days.."))
 
         return cleaned_data
-   
+
     class Meta:
         model = LeaveRequest
-        fields = ['leave_type_id', 'employee_id', 'start_date', 'start_date_breakdown','end_date','end_date_breakdown', 'description', 'attachment']
-        widgets = {
-            'employee_id': forms.HiddenInput()
-        }
-       
+        fields = [
+            "leave_type_id",
+            "employee_id",
+            "start_date",
+            "start_date_breakdown",
+            "end_date",
+            "end_date_breakdown",
+            "description",
+            "attachment",
+        ]
+        widgets = {"employee_id": forms.HiddenInput()}
+
+
 class LeaveAllocationRequestForm(ModelForm):
-    
     def as_p(self, *args, **kwargs):
         """
         Render the form fields as HTML table rows with Bootstrap styling.
@@ -570,19 +600,24 @@ class LeaveAllocationRequestForm(ModelForm):
         context = {"form": self}
         table_html = render_to_string("attendance_form.html", context)
         return table_html
-    
+
     class Meta:
         model = LeaveAllocationRequest
         fields = [
-            'leave_type_id',
-            'employee_id',
-            'requested_days',
-            'description',
-            'attachment',
+            "leave_type_id",
+            "employee_id",
+            "requested_days",
+            "description",
+            "attachment",
         ]
 
+
 class LeaveAllocationRequestRejectForm(forms.Form):
-    reason = forms.CharField(label=_("Rejection Reason"), widget=forms.Textarea(attrs={"rows":4,"class":"p-4 oh-input w-100"}))
+    reason = forms.CharField(
+        label=_("Rejection Reason"),
+        widget=forms.Textarea(attrs={"rows": 4, "class": "p-4 oh-input w-100"}),
+    )
+
     class Meta:
         model = LeaveAllocationRequest
         fields = ["reject_reason"]
