@@ -53,7 +53,6 @@ x-data="{searchShow: false}"
     ></ion-icon>
   </a>
 </div>
-<form hx-get='{% url "search-candidate" %}' id="filterForm" hx-target='#section'>
 
 <div class="oh-main__titlebar oh-main__titlebar--right">
   
@@ -102,9 +101,10 @@ x-data="{searchShow: false}"
   </ul>
 
   <div class="oh-main__titlebar-button-container">
+    <form hx-get='{% url "search-candidate" %}' id="filterForm" hx-target='#section' class="d-flex">
 
     <div class="oh-dropdown" x-data="{open: false}">
-      <button class="oh-btn ml-2" @click="open = !open">
+      <button class="oh-btn ml-2" @click="open = !open" onclick="event.preventDefault()">
         <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}<div id="filterCount"></div>
       </button>
       <div
@@ -118,7 +118,7 @@ x-data="{searchShow: false}"
     </div>
     
     <div class="oh-dropdown" x-data="{open: false}">
-      <button class="oh-btn ml-2" @click="open = !open">
+      <button class="oh-btn ml-2" @click="open = !open" onclick="event.preventDefault()">
         <ion-icon name="library-outline" class="mr-1"></ion-icon>{% trans "Group By" %}
         <div id="filterCount"></div>
       </button>
@@ -129,7 +129,7 @@ x-data="{searchShow: false}"
       style="display: none"
       >            
       <div class="oh-accordion">
-        <div class="oh-accordion-header">{% trans "Group By" %}</div>
+        <label>{% trans "Group By" %}</label>
           <div class="row">
             <div class="col-sm-12 col-md-12 col-lg-6">
               <div class="oh-input-group">
@@ -154,6 +154,7 @@ x-data="{searchShow: false}"
         </div>
       </div>
     </div>
+    </form>
     <div class="oh-btn-group ml-2">
       <div class="oh-dropdown" x-data="{open: false}">
         <button
@@ -226,7 +227,6 @@ x-data="{searchShow: false}"
     </div>
   </div>
 </div>
-</form>
 </section>
 <script>
   $(document).ready(function () {
