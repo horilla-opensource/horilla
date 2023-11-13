@@ -26,9 +26,14 @@ from .methods import (
 import random
 from django.core.paginator import Paginator
 from django.db.models.functions import TruncYear
-from horilla.decorators import permission_required,manager_can_enter
+from horilla.decorators import permission_required, manager_can_enter
 from .decorators import *
-from base.methods import filtersubordinates, choosesubordinates, get_key_instances, sortby
+from base.methods import (
+    filtersubordinates,
+    choosesubordinates,
+    get_key_instances,
+    sortby,
+)
 from django.utils.translation import gettext as __
 from django.utils.translation import gettext_lazy as _
 from notifications.signals import notify
@@ -109,7 +114,7 @@ def leave_type_view(request):
     page_number = request.GET.get("page")
     page_obj = paginator_qry(queryset, page_number)
     previous_data = request.GET.urlencode()
-    leave_type_filter = LeaveTypeFilter()    
+    leave_type_filter = LeaveTypeFilter()
     requests_ids = json.dumps(list(queryset.values_list("id", flat=True)))
     if not queryset.exists():
         template_name = "leave/leave_type/leave_type_empty_view.html"
@@ -118,8 +123,14 @@ def leave_type_view(request):
     return render(
         request,
         template_name,
-        {"leave_types": page_obj, "form": leave_type_filter.form, "pd": previous_data,"requests_ids": requests_ids,},
+        {
+            "leave_types": page_obj,
+            "form": leave_type_filter.form,
+            "pd": previous_data,
+            "requests_ids": requests_ids,
+        },
     )
+
 
 @login_required
 @manager_can_enter("leave.view_leaverequest")
@@ -135,7 +146,7 @@ def leave_type_individual_view(request, id):
     """
     leave_type = LeaveType.objects.get(id=id)
     requests_ids_json = request.GET.get("instances_ids")
-    context =  {"leave_type": leave_type}
+    context = {"leave_type": leave_type}
 
     if requests_ids_json:
         requests_ids = json.loads(requests_ids_json)
@@ -143,9 +154,7 @@ def leave_type_individual_view(request, id):
         context["previous"] = previous_id
         context["next"] = next_id
         context["requests_ids"] = requests_ids_json
-    return render(
-        request, "leave/leave_type/leave_type_individual_view.html", context
-    )
+    return render(request, "leave/leave_type/leave_type_individual_view.html", context)
 
 
 @login_required
@@ -172,13 +181,18 @@ def leave_type_filter(request):
     return render(
         request,
         "leave/leave_type/leave_types.html",
-        {"leave_types": page_obj, "pd": previous_data, "filter_dict": data_dict,"requests_ids": requests_ids,},
+        {
+            "leave_types": page_obj,
+            "pd": previous_data,
+            "filter_dict": data_dict,
+            "requests_ids": requests_ids,
+        },
     )
 
 
 @login_required
 @permission_required("leave.update_leavetype")
-def leave_type_update(request, id):
+def leave_type_update(request, id, **kwargs):
     """
     function used to update leave type.
 
@@ -304,11 +318,15 @@ def leave_request_creation(request, type_id=None, emp_id=None):
                     icon="people-circle",
                     redirect="/leave/request-view",
                 )
-            response = render(request, "leave/leave_request/leave_request_form.html", {"form": form})
+            response = render(
+                request, "leave/leave_request/leave_request_form.html", {"form": form}
+            )
             return HttpResponse(
                 response.content.decode("utf-8") + "<script>location.reload();</script>"
             )
-    return render(request, "leave/leave_request/leave_request_form.html", {"form": form})
+    return render(
+        request, "leave/leave_request/leave_request_form.html", {"form": form}
+    )
 
 
 @login_required
@@ -345,7 +363,7 @@ def leave_request_view(request):
             "rejected_requests": rejected_requests,
             "gp_fields": LeaveRequestReGroup.fields,
             "requests_ids": requests_ids,
-            'current_date':date.today()
+            "current_date": date.today(),
         },
     )
 
@@ -369,7 +387,7 @@ def leave_request_filter(request):
     queryset = sortby(request, queryset, "sortby")
     leave_request_filter = LeaveRequestFilter(request.GET, queryset).qs
     page_number = request.GET.get("page")
-    template = "leave/leave_request/leave_requests.html",
+    template = ("leave/leave_request/leave_requests.html",)
     if field != "" and field is not None:
         field_copy = field.replace(".", "__")
         leave_request_filter = leave_request_filter.order_by(field_copy)
@@ -377,8 +395,7 @@ def leave_request_filter(request):
 
     page_obj = paginator_qry(leave_request_filter, page_number)
     requests_ids = json.dumps(list(page_obj.object_list.values_list("id", flat=True)))
-    data_dict = []    
-
+    data_dict = []
 
     if not request.GET.get("dashboard"):
         data_dict = parse_qs(previous_data)
@@ -441,12 +458,18 @@ def leave_request_update(request, id):
                     redirect="/leave/request-view",
                 )
             response = render(
-                request, "leave/leave_request/request_update_form.html", {"form": form, "id": id}
+                request,
+                "leave/leave_request/request_update_form.html",
+                {"form": form, "id": id},
             )
             return HttpResponse(
                 response.content.decode("utf-8") + "<script>location.reload();</script>"
             )
-    return render(request, "leave/leave_request/request_update_form.html", {"form": form, "id": id})
+    return render(
+        request,
+        "leave/leave_request/request_update_form.html",
+        {"form": form, "id": id},
+    )
 
 
 @login_required
@@ -567,11 +590,13 @@ def leave_request_cancel(request, id, emp_id=None):
                 leave_type_id=leave_type_id, employee_id=employee_id
             )
             available_leave.available_days += leave_request.approved_available_days
-            available_leave.carryforward_days += leave_request.approved_carryforward_days
+            available_leave.carryforward_days += (
+                leave_request.approved_carryforward_days
+            )
             leave_request.approved_available_days = 0
             leave_request.approved_carryforward_days = 0
             status = leave_request.status
-            if status == 'cancelled':
+            if status == "cancelled":
                 leave_request.status = "cancelled_and_rejected"
             else:
                 leave_request.status = "rejected"
@@ -595,7 +620,10 @@ def leave_request_cancel(request, id, emp_id=None):
                 employee_id = emp_id
                 return redirect(f"/employee/employee-view/{employee_id}/")
             return HttpResponse("<script>location.reload();</script>")
-    return render(request, "leave/leave_request/cancel_form.html", {"form": form, "id": id})
+    return render(
+        request, "leave/leave_request/cancel_form.html", {"form": form, "id": id}
+    )
+
 
 @login_required
 def user_leave_cancel(request, id):
@@ -610,20 +638,34 @@ def user_leave_cancel(request, id):
     GET :  it returns to the default my leave request view template.
 
     """
-    form = RejectForm()
-    if request.method == "POST":
-        form = RejectForm(request.POST)
-        if form.is_valid():
-            leave_request = LeaveRequest.objects.get(id=id)
-            employee_id = leave_request.employee_id
-            if employee_id.employee_user_id.id == request.user.id:
-                leave_request.reject_reason = form.cleaned_data["reason"]
-                leave_request.status = "cancelled"
-                leave_request.save()
-                messages.success(request, _("Leave request cancelled successfully.."))
-
-                return HttpResponse("<script>location.reload();</script>")
-    return render(request, "leave/leave_request/user_cancel_form.html", {"form": form, "id": id})
+    leave_request = LeaveRequest.objects.get(id=id)
+    employee_id = leave_request.employee_id
+    if employee_id.employee_user_id.id == request.user.id:
+        current_date = date.today()
+        if (
+            leave_request.status == "approved"
+            and leave_request.end_date >= current_date
+        ):
+            form = RejectForm()
+            if request.method == "POST":
+                form = RejectForm(request.POST)
+                if form.is_valid():
+                    leave_request.reject_reason = form.cleaned_data["reason"]
+                    leave_request.status = "cancelled"
+                    leave_request.save()
+                    messages.success(
+                        request, _("Leave request cancelled successfully..")
+                    )
+                    return HttpResponse("<script>location.reload();</script>")
+            return render(
+                request,
+                "leave/leave_request/user_cancel_form.html",
+                {"form": form, "id": id},
+            )
+        messages.error(request, _("You can't cancel this leave request."))
+        return HttpResponse("<script>location.reload();</script>")
+    messages.error(request, _("You don't have the permission."))
+    return HttpResponse("<script>location.reload();</script>")
 
 
 @login_required
@@ -639,7 +681,9 @@ def one_request_view(request, id):
     GET : return one leave request view template
     """
     leave_request = LeaveRequest.objects.get(id=id)
-    context = {"leave_request": leave_request,}
+    context = {
+        "leave_request": leave_request,
+    }
     requests_ids_json = request.GET.get("instances_ids")
 
     if requests_ids_json:
@@ -648,9 +692,7 @@ def one_request_view(request, id):
         context["previous"] = previous_id
         context["next"] = next_id
         context["requests_ids"] = requests_ids_json
-    return render(
-        request, "leave/leave_request/one_request_view.html", context
-    )
+    return render(request, "leave/leave_request/one_request_view.html", context)
 
 
 @login_required
@@ -701,12 +743,18 @@ def leave_assign_one(request, id):
                     request, _("leave type is already assigned to the employee..")
                 )
         response = render(
-            request, "leave/leave_assign/leave_assign_one_form.html", {"form": form, "id": id}
+            request,
+            "leave/leave_assign/leave_assign_one_form.html",
+            {"form": form, "id": id},
         )
         return HttpResponse(
             response.content.decode("utf-8") + "<script>location.reload();</script>"
         )
-    return render(request, "leave/leave_assign/leave_assign_one_form.html", {"form": form, "id": id})
+    return render(
+        request,
+        "leave/leave_assign/leave_assign_one_form.html",
+        {"form": form, "id": id},
+    )
 
 
 @login_required
@@ -762,7 +810,7 @@ def leave_assign_filter(request):
     previous_data = request.GET.urlencode()
     field = request.GET.get("field")
     page_number = request.GET.get("page")
-    template = "leave/leave_assign/assigned_leave.html",
+    template = ("leave/leave_assign/assigned_leave.html",)
     if field != "" and field is not None:
         field_copy = field.replace(".", "__")
         assigned_leave_filter = assigned_leave_filter.order_by(field_copy)
@@ -774,7 +822,12 @@ def leave_assign_filter(request):
     return render(
         request,
         template,
-        {"available_leaves": page_obj, "pd": previous_data, "filter_dict": data_dict,"field":field,},
+        {
+            "available_leaves": page_obj,
+            "pd": previous_data,
+            "filter_dict": data_dict,
+            "field": field,
+        },
     )
 
 
@@ -833,7 +886,9 @@ def leave_assign(request):
                                 _("Leave type is already assigned to the employee.."),
                             )
         response = render(
-            request, "leave/leave_assign/leave_assign_form.html", {"form": form, "id": id}
+            request,
+            "leave/leave_assign/leave_assign_form.html",
+            {"form": form, "id": id},
         )
         return HttpResponse(
             response.content.decode("utf-8") + "<script>location. reload();</script>"
@@ -876,12 +931,18 @@ def available_leave_update(request, id):
                     redirect="/leave/user-leave",
                 )
         response = render(
-            request, "leave/leave_assign/available_update_form.html", {"form": form, "id": id}
+            request,
+            "leave/leave_assign/available_update_form.html",
+            {"form": form, "id": id},
         )
         return HttpResponse(
             response.content.decode("utf-8") + "<script>location. reload();</script>"
         )
-    return render(request, "leave/leave_assign/available_update_form.html", {"form": form, "id": id})
+    return render(
+        request,
+        "leave/leave_assign/available_update_form.html",
+        {"form": form, "id": id},
+    )
 
 
 @login_required
@@ -1023,9 +1084,15 @@ def assigned_leaves_export(request):
     assigned leave data, selected fields, and exports the data to an Excel file.
     """
     assigned_leaves_export = {}
+    form = AvailableLeaveColumnExportForm()
+    model_fields = AvailableLeave._meta.get_fields()
     assigned_leaves = AssignedLeaveFilter(request.GET).qs
     selected_fields = request.GET.getlist("selected_fields")
-    model_fields = AvailableLeave._meta.get_fields()
+    if not selected_fields:
+        selected_fields = form.fields["selected_fields"].initial
+        ids = request.GET.get("ids")
+        id_list = json.loads(ids)
+        assigned_leaves = AvailableLeave.objects.filter(id__in=id_list)
     for field in model_fields:
         field_name = field.name
         if field_name in selected_fields:
@@ -1161,10 +1228,16 @@ def holidays_info_import(request):
 
 
 def holiday_info_export(request):
+    form = HolidaysColumnExportForm()
     holidays_export = {}
     holidays = HolidayFilter(request.GET).qs
     selected_fields = request.GET.getlist("selected_fields")
     model_fields = Holiday._meta.get_fields()
+    if not selected_fields:
+        ids = request.GET.get("ids")
+        id_list = json.loads(ids)
+        holidays = Holiday.objects.filter(id__in=id_list)
+        selected_fields = form.fields["selected_fields"].initial
     for field in model_fields:
         field_name = field.name
         if field_name in selected_fields:
@@ -1172,9 +1245,9 @@ def holiday_info_export(request):
             for holiday in holidays:
                 value = getattr(holiday, field_name)
                 if value is True:
-                    value = "Yes"
+                    value = _("Yes")
                 elif value is False:
-                    value = "No"
+                    value = _("No")
                 holidays_export[field.verbose_name].append(value)
 
     data_frame = pd.DataFrame(data=holidays_export)
@@ -1351,13 +1424,17 @@ def company_leave_creation(request):
             form.save()
             messages.success(request, _("New company leave created successfully.."))
             response = render(
-                request, "leave/company_leave/company_leave_creation_form.html", {"form": form}
+                request,
+                "leave/company_leave/company_leave_creation_form.html",
+                {"form": form},
             )
             return HttpResponse(
                 response.content.decode("utf-8")
                 + "<script>location. reload();</script>"
             )
-    return render(request, "leave/company_leave/company_leave_creation_form.html", {"form": form})
+    return render(
+        request, "leave/company_leave/company_leave_creation_form.html", {"form": form}
+    )
 
 
 @login_required
@@ -1456,7 +1533,9 @@ def company_leave_update(request, id):
                 + "<script>location. reload();</script>"
             )
     return render(
-        request, "leave/company_leave/company_leave_update_form.html", {"form": form, "id": id}
+        request,
+        "leave/company_leave/company_leave_update_form.html",
+        {"form": form, "id": id},
     )
 
 
@@ -1608,7 +1687,9 @@ def user_leave_request(request, id):
                         redirect="/leave/user-request-view",
                     )
                 response = render(
-                    request, "leave/user_leave/user_request_form.html", {"form": form, "id": id}
+                    request,
+                    "leave/user_leave/user_request_form.html",
+                    {"form": form, "id": id},
                 )
                 return HttpResponse(
                     response.content.decode("utf-8")
@@ -1715,7 +1796,9 @@ def user_request_update(request, id):
                             _("You dont have enough leave days to make the request.."),
                         )
             return render(
-                request, "leave/user_leave/user_request_update.html", {"form": form, "id": id}
+                request,
+                "leave/user_leave/user_request_update.html",
+                {"form": form, "id": id},
             )
     except Exception as e:
         messages.error(request, _("User has no leave request.."))
@@ -1829,6 +1912,9 @@ def user_request_view(request):
         previous_data = request.GET.urlencode()
         page_number = request.GET.get("page")
         page_obj = paginator_qry(queryset, page_number)
+        request_ids = json.dumps(
+            list(page_obj.object_list.values_list("id", flat=True))
+        )
         user_request_filter = UserLeaveRequestFilter()
         current_date = date.today()
         return render(
@@ -1838,8 +1924,9 @@ def user_request_view(request):
                 "leave_requests": page_obj,
                 "form": user_request_filter.form,
                 "pd": previous_data,
-                "current_date": current_date,   
+                "current_date": current_date,
                 "gp_fields": MyLeaveRequestReGroup.fields,
+                "request_ids": request_ids,
             },
         )
     except Exception as e:
@@ -1867,24 +1954,31 @@ def user_request_filter(request):
         field = request.GET.get("field")
         queryset = sortby(request, queryset, "sortby")
         user_request_filter = UserLeaveRequestFilter(request.GET, queryset).qs
-        template = "leave/user_leave/leave_requests.html",
+        template = ("leave/user_leave/user_requests.html",)
         if field != "" and field is not None:
             field_copy = field.replace(".", "__")
             user_request_filter = user_request_filter.order_by(field_copy)
             template = "leave/user_leave/group_by.html"
 
         page_obj = paginator_qry(user_request_filter, page_number)
+        request_ids = json.dumps(
+            list(page_obj.object_list.values_list("id", flat=True))
+        )
         data_dict = parse_qs(previous_data)
         get_key_instances(LeaveRequest, data_dict)
         if "status" in data_dict:
             status_list = data_dict["status"]
             if len(status_list) > 1:
                 data_dict["status"] = [status_list[-1]]
-        return render(
-            request,
-            template,
-            {"leave_requests": page_obj, "pd": previous_data, "filter_dict": data_dict,"field":field,"current_date" : date.today()},
-        )
+        context = {
+            "leave_requests": page_obj,
+            "pd": previous_data,
+            "filter_dict": data_dict,
+            "field": field,
+            "current_date": date.today(),
+            "request_ids": request_ids,
+        }
+        return render(request, template, context=context)
     except Exception as e:
         messages.error(request, _("User is not an employee.."))
         return redirect("/")
@@ -1905,8 +1999,19 @@ def user_request_one(request, id):
     leave_request = LeaveRequest.objects.get(id=id)
     try:
         if request.user.employee_get == leave_request.employee_id:
+            requests_ids_json = request.GET.get("instances_ids")
+            if requests_ids_json:
+                requests_ids = json.loads(requests_ids_json)
+                previous_id, next_id = closest_numbers(requests_ids, id)
             return render(
-                request, "leave/user_leave/user_request_one.html", {"leave_request": leave_request}
+                request,
+                "leave/user_leave/user_request_one.html",
+                {
+                    "leave_request": leave_request,
+                    "instances_ids": requests_ids_json,
+                    "previous": previous_id,
+                    "next": next_id,
+                },
             )
     except Exception as e:
         messages.error(request, _("User has no leave request.."))
@@ -2323,6 +2428,7 @@ def leave_over_period(request):
     }
     return JsonResponse(response)
 
+
 @login_required
 def leave_request_create(request):
     """
@@ -2337,30 +2443,30 @@ def leave_request_create(request):
     """
     employee = request.user.employee_get
     emp_id = employee.id
-    emp = Employee.objects.get(id = emp_id)
+    emp = Employee.objects.get(id=emp_id)
     leave = emp.available_leave.all()
 
     leave_type = []
     for i in leave:
-        a = i.leave_type_id  
+        a = i.leave_type_id
         leave_type.append(a)
 
     leave_ids = [leave.id for leave in leave_type]
     q_object = Q(id__in=leave_ids)
     queryset = LeaveType.objects.filter(q_object)
 
-    form = UserLeaveRequestCreationForm(initial={'employee_id':emp})
+    form = UserLeaveRequestCreationForm(initial={"employee_id": emp})
     form.fields["leave_type_id"].queryset = queryset
     if request.method == "POST":
         form = UserLeaveRequestCreationForm(request.POST, request.FILES)
-        if int(form.data['employee_id']) == int(emp_id):
+        if int(form.data["employee_id"]) == int(emp_id):
             if form.is_valid():
-                leave_request = form.save(commit = False)
+                leave_request = form.save(commit=False)
                 attachment = leave_request.attachment
                 save = True
                 if leave_request.leave_type_id.require_attachment == "yes":
                     if not attachment:
-                        save =False
+                        save = False
                         form.add_error(
                             None, _("An attachment is required for this leave request")
                         )
@@ -2372,7 +2478,8 @@ def leave_request_create(request):
                     )
                     if leave_request.requested_days > available_leave.available_days:
                         leave = (
-                            leave_request.requested_days - available_leave.available_days
+                            leave_request.requested_days
+                            - available_leave.available_days
                         )
                         leave_request.approved_available_days = (
                             available_leave.available_days
@@ -2384,9 +2491,12 @@ def leave_request_create(request):
                         leave_request.approved_carryforward_days = leave
                     else:
                         available_leave.available_days = (
-                            available_leave.available_days - leave_request.requested_days
+                            available_leave.available_days
+                            - leave_request.requested_days
                         )
-                        leave_request.approved_available_days = leave_request.requested_days
+                        leave_request.approved_available_days = (
+                            leave_request.requested_days
+                        )
                     leave_request.status = "approved"
                     leave_request.created_by = request.user.employee_get
                     available_leave.save()
@@ -2405,14 +2515,19 @@ def leave_request_create(request):
                             icon="people-circle",
                             redirect="/leave/request-view",
                         )
-                    response = render(request, "leave/user_leave/request_form.html", {"form": form})
+                    response = render(
+                        request, "leave/user_leave/request_form.html", {"form": form}
+                    )
                     return HttpResponse(
-                        response.content.decode("utf-8") + "<script>location.reload();</script>"
+                        response.content.decode("utf-8")
+                        + "<script>location.reload();</script>"
                     )
             return render(request, "leave/user_leave/request_form.html", {"form": form})
         else:
             messages.error(request, _("You don't have permission"))
-            response = render(request, "leave/user_leave/request_form.html", {"form": form})
+            response = render(
+                request, "leave/user_leave/request_form.html", {"form": form}
+            )
             return HttpResponse(
                 response.content.decode("utf-8") + "<script>location.reload();</script>"
             )
@@ -2433,38 +2548,47 @@ def leave_allocation_request_view(request):
     """
     employee = request.user.employee_get
     queryset = LeaveAllocationRequest.objects.all().order_by("-id")
-    queryset = filtersubordinates(request,queryset,'leave.view_leaveallocationrequest')
-    page_number = request.GET.get('page')
-    leave_allocation_requests = paginator_qry(queryset,page_number)
-    requests_ids = json.dumps(list(leave_allocation_requests.object_list.values_list("id", flat=True)))
-    my_leave_allocation_requests = LeaveAllocationRequest.objects.filter(employee_id=employee.id).order_by("-id")
-    my_page_number = request.GET.get('m_page')
-    my_leave_allocation_requests = paginator_qry(my_leave_allocation_requests,my_page_number)
-    my_requests_ids = json.dumps(list(my_leave_allocation_requests.object_list.values_list("id", flat=True)))
-    
+    queryset = filtersubordinates(
+        request, queryset, "leave.view_leaveallocationrequest"
+    )
+    page_number = request.GET.get("page")
+    leave_allocation_requests = paginator_qry(queryset, page_number)
+    requests_ids = json.dumps(
+        list(leave_allocation_requests.object_list.values_list("id", flat=True))
+    )
+    my_leave_allocation_requests = LeaveAllocationRequest.objects.filter(
+        employee_id=employee.id
+    ).order_by("-id")
+    my_page_number = request.GET.get("m_page")
+    my_leave_allocation_requests = paginator_qry(
+        my_leave_allocation_requests, my_page_number
+    )
+    my_requests_ids = json.dumps(
+        list(my_leave_allocation_requests.object_list.values_list("id", flat=True))
+    )
     leave_allocation_request_filter = LeaveAllocationRequestFilter()
     previous_data = request.GET.urlencode()
     data_dict = parse_qs(previous_data)
-    data_dict = get_key_instances(LeaveAllocationRequest,data_dict)    
-    context={
-        'leave_allocation_requests' :leave_allocation_requests,
-        'my_leave_allocation_requests':my_leave_allocation_requests,
+    data_dict = get_key_instances(LeaveAllocationRequest, data_dict)
+    context = {
+        "leave_allocation_requests": leave_allocation_requests,
+        "my_leave_allocation_requests": my_leave_allocation_requests,
         "pd": previous_data,
         "form": leave_allocation_request_filter.form,
-        "filter_dict":data_dict,
+        "filter_dict": data_dict,
         "gp_fields": LeaveAllocationRequestReGroup.fields,
-        'requests_ids':requests_ids,
-        'my_requests_ids':my_requests_ids,
-
+        "requests_ids": requests_ids,
+        "my_requests_ids": my_requests_ids,
     }
     return render(
         request,
-        'leave/leave_allocation_request/leave_allocation_request_view.html',
-        context=context
+        "leave/leave_allocation_request/leave_allocation_request_view.html",
+        context=context,
     )
 
+
 @login_required
-def leave_allocation_request_single_view(request,req_id):
+def leave_allocation_request_single_view(request, req_id):
     """
     function used to present the leave allocation request detailed view.
 
@@ -2483,18 +2607,20 @@ def leave_allocation_request_single_view(request,req_id):
         requests_ids = json.loads(requests_ids_json)
         previous_id, next_id = closest_numbers(requests_ids, req_id)
     leave_allocation_request = LeaveAllocationRequest.objects.get(id=req_id)
-    context={
-            'leave_allocation_request':leave_allocation_request,
-            'my_request':my_request,
-            'instances_ids':requests_ids_json,
-            'previous':previous_id,
-            'next':next_id,
-    } 
+    context = {
+        "leave_allocation_request": leave_allocation_request,
+        "my_request": my_request,
+        "instances_ids": requests_ids_json,
+        "previous": previous_id,
+        "next": next_id,
+    }
     return render(
         request,
-        'leave/leave_allocation_request/leave_allocation_request_single_view.html',
-        context=context
+        "leave/leave_allocation_request/leave_allocation_request_single_view.html",
+        context=context,
     )
+
+
 @login_required
 def leave_allocation_request_create(request):
     """
@@ -2508,43 +2634,46 @@ def leave_allocation_request_create(request):
     POST : return leave allocation request view
     """
     employee = request.user.employee_get
-    form = LeaveAllocationRequestForm(initial = {'employee_id':employee})
-    form = choosesubordinates(request,form,"leave.add_leaveallocationrequest")
-    form.fields["employee_id"].queryset =  form.fields["employee_id"].queryset| Employee.objects.filter(employee_user_id =request.user )
-    if request.method == 'POST':
-        form = LeaveAllocationRequestForm(request.POST,request.FILES)
+    form = LeaveAllocationRequestForm(initial={"employee_id": employee})
+    form = choosesubordinates(request, form, "leave.add_leaveallocationrequest")
+    form.fields["employee_id"].queryset = form.fields[
+        "employee_id"
+    ].queryset | Employee.objects.filter(employee_user_id=request.user)
+    if request.method == "POST":
+        form = LeaveAllocationRequestForm(request.POST, request.FILES)
         if form.is_valid():
             leave_allocation_request = form.save(commit=False)
             leave_allocation_request.created_by = employee
             leave_allocation_request.save()
-            messages.success(request,_("New Leave allocation request is created"))
+            messages.success(request, _("New Leave allocation request is created"))
             with contextlib.suppress(Exception):
                 notify.send(
                     request.user.employee_get,
-                    recipient = leave_allocation_request.employee_id.employee_work_info.reporting_manager_id.employee_user_id,
-                    verb = f"New leave allocation request created for {leave_allocation_request.employee_id}.",
-                    verb_ar = f"تم إنشاء طلب تخصيص إجازة جديد لـ {leave_allocation_request.employee_id}.",
-                    verb_de = f"Neue Anfrage zur Urlaubszuweisung erstellt für {leave_allocation_request.employee_id}.",
-                    verb_es = f"Nueva solicitud de asignación de permisos creada para {leave_allocation_request.employee_id}.",
-                    verb_fr = f"Nouvelle demande d'allocation de congé créée pour {leave_allocation_request.employee_id}.",
+                    recipient=leave_allocation_request.employee_id.employee_work_info.reporting_manager_id.employee_user_id,
+                    verb=f"New leave allocation request created for {leave_allocation_request.employee_id}.",
+                    verb_ar=f"تم إنشاء طلب تخصيص إجازة جديد لـ {leave_allocation_request.employee_id}.",
+                    verb_de=f"Neue Anfrage zur Urlaubszuweisung erstellt für {leave_allocation_request.employee_id}.",
+                    verb_es=f"Nueva solicitud de asignación de permisos creada para {leave_allocation_request.employee_id}.",
+                    verb_fr=f"Nouvelle demande d'allocation de congé créée pour {leave_allocation_request.employee_id}.",
                     icon="people-cicle",
-                    redirect = "/leave/leave-allocation-request-view"
+                    redirect="/leave/leave-allocation-request-view",
                 )
             response = render(
                 request,
                 "leave/leave_allocation_request/leave_allocation_request_create.html",
-                {'form':form}
+                {"form": form},
             )
             return HttpResponse(
                 response.content.decode("utf-8")
                 + "<script>location. reload();</script>"
             )
-    context = {
-        'form':form
-    }
-    return render(request,
-                  'leave/leave_allocation_request/leave_allocation_request_create.html',
-                  context=context)
+    context = {"form": form}
+    return render(
+        request,
+        "leave/leave_allocation_request/leave_allocation_request_create.html",
+        context=context,
+    )
+
 
 @login_required
 def leave_allocation_request_filter(request):
@@ -2558,46 +2687,65 @@ def leave_allocation_request_filter(request):
     GET : return leave allocation request view template
     """
     employee = request.user.employee_get
-    field = request.GET.get('field')
+    field = request.GET.get("field")
     queryset = LeaveAllocationRequest.objects.all()
-    queryset = sortby(request,queryset,"sortby")
-    leave_allocation_requests_filtered = LeaveAllocationRequestFilter(request.GET,queryset).qs
-    leave_allocation_requests_filtered = filtersubordinates(request,leave_allocation_requests_filtered,'leave.view_leaveallocationrequest')
-    my_leave_allocation_requests = LeaveAllocationRequest.objects.filter(employee_id=employee.id).order_by("-id")
-    my_leave_allocation_requests = LeaveAllocationRequestFilter(request.GET,my_leave_allocation_requests).qs
-    template = 'leave/leave_allocation_request/leave_allocation_request_list.html'
+    queryset = sortby(request, queryset, "sortby")
+    leave_allocation_requests_filtered = LeaveAllocationRequestFilter(
+        request.GET, queryset
+    ).qs
+    leave_allocation_requests_filtered = filtersubordinates(
+        request, leave_allocation_requests_filtered, "leave.view_leaveallocationrequest"
+    )
+    my_leave_allocation_requests = LeaveAllocationRequest.objects.filter(
+        employee_id=employee.id
+    ).order_by("-id")
+    my_leave_allocation_requests = LeaveAllocationRequestFilter(
+        request.GET, my_leave_allocation_requests
+    ).qs
+    template = "leave/leave_allocation_request/leave_allocation_request_list.html"
     if field != "" and field is not None:
         field_copy = field.replace(".", "__")
-        leave_allocation_requests_filtered = leave_allocation_requests_filtered.order_by(field_copy)
+        leave_allocation_requests_filtered = (
+            leave_allocation_requests_filtered.order_by(field_copy)
+        )
         my_leave_allocation_requests = my_leave_allocation_requests.order_by(field_copy)
-        template = "leave/leave_allocation_request/leave_allocation_request_group_by.html"
-    my_page_number = request.GET.get('m_page')
-    page_number = request.GET.get('page')
-    leave_allocation_requests = paginator_qry(leave_allocation_requests_filtered,page_number)
-    requests_ids = json.dumps(list(leave_allocation_requests.object_list.values_list("id", flat=True)))
-    my_requests_ids = json.dumps(list(leave_allocation_requests.object_list.values_list("id", flat=True)))
-    my_leave_allocation_requests = paginator_qry(my_leave_allocation_requests,my_page_number)
+        template = (
+            "leave/leave_allocation_request/leave_allocation_request_group_by.html"
+        )
+    my_page_number = request.GET.get("m_page")
+    page_number = request.GET.get("page")
+    leave_allocation_requests = paginator_qry(
+        leave_allocation_requests_filtered, page_number
+    )
+    requests_ids = json.dumps(
+        list(leave_allocation_requests.object_list.values_list("id", flat=True))
+    )
+    my_requests_ids = json.dumps(
+        list(leave_allocation_requests.object_list.values_list("id", flat=True))
+    )
+    my_leave_allocation_requests = paginator_qry(
+        my_leave_allocation_requests, my_page_number
+    )
     previous_data = request.GET.urlencode()
     data_dict = parse_qs(previous_data)
-    data_dict = get_key_instances(LeaveAllocationRequest,data_dict)
-    if 'm_page' in data_dict:
-        data_dict.pop('m_page')
-    context = { 
-        'leave_allocation_requests' :leave_allocation_requests,
-        'my_leave_allocation_requests':my_leave_allocation_requests,
-        'pd':previous_data,
-        'filter_dict':data_dict,
-        "field": field,  
-        'requests_ids':requests_ids,
-        'my_requests_ids':my_requests_ids        
+    data_dict = get_key_instances(LeaveAllocationRequest, data_dict)
+    if "m_page" in data_dict:
+        data_dict.pop("m_page")
+    context = {
+        "leave_allocation_requests": leave_allocation_requests,
+        "my_leave_allocation_requests": my_leave_allocation_requests,
+        "pd": previous_data,
+        "filter_dict": data_dict,
+        "field": field,
+        "requests_ids": requests_ids,
+        "my_requests_ids": my_requests_ids,
     }
-    return render(request,
-                  template,
-                  context=context)
+    return render(request, template, context=context)
+
 
 @login_required
 @leave_allocation_change_permission()
-def leave_allocation_request_update(request,req_id):
+def leave_allocation_request_update(request, req_id):
     """
     function used to update leave allocation request.
 
@@ -2611,46 +2759,52 @@ def leave_allocation_request_update(request,req_id):
     """
     leave_allocation_request = LeaveAllocationRequest.objects.get(id=req_id)
     form = LeaveAllocationRequestForm(instance=leave_allocation_request)
-    form = choosesubordinates(request,form,"leave.add_leaveallocationrequest")
-    form.fields["employee_id"].queryset =  form.fields["employee_id"].queryset| Employee.objects.filter(employee_user_id =request.user )
-    if request.method == 'POST':
+    form = choosesubordinates(request, form, "leave.add_leaveallocationrequest")
+    form.fields["employee_id"].queryset = form.fields[
+        "employee_id"
+    ].queryset | Employee.objects.filter(employee_user_id=request.user)
+    if request.method == "POST":
         form = LeaveAllocationRequestForm(
-            request.POST,request.FILES,instance=leave_allocation_request
+            request.POST, request.FILES, instance=leave_allocation_request
         )
         if form.is_valid():
             leave_allocation_request = form.save(commit=False)
             leave_allocation_request.created_by = request.user.employee_get
             leave_allocation_request.save()
-            messages.info(request,_("Leave allocation request is updated successfully."))
+            messages.info(
+                request, _("Leave allocation request is updated successfully.")
+            )
             with contextlib.suppress(Exception):
                 notify.send(
                     request.user.employee_get,
-                    recipient = leave_allocation_request.employee_id.employee_work_info.reporting_manager_id.employee_user_id,
-                    verb = f"Leave allocation request updated for {leave_allocation_request.employee_id}.",
-                    verb_ar = f"تم تحديث طلب تخصيص الإجازة لـ {leave_allocation_request.employee_id}.",
-                    verb_de = f"Urlaubszuteilungsanforderung aktualisiert für {leave_allocation_request.employee_id}.",
-                    verb_es = f"Solicitud de asignación de licencia actualizada para {leave_allocation_request.employee_id}.",
-                    verb_fr = f"Demande d'allocation de congé mise à jour pour {leave_allocation_request.employee_id}.",
+                    recipient=leave_allocation_request.employee_id.employee_work_info.reporting_manager_id.employee_user_id,
+                    verb=f"Leave allocation request updated for {leave_allocation_request.employee_id}.",
+                    verb_ar=f"تم تحديث طلب تخصيص الإجازة لـ {leave_allocation_request.employee_id}.",
+                    verb_de=f"Urlaubszuteilungsanforderung aktualisiert für {leave_allocation_request.employee_id}.",
+                    verb_es=f"Solicitud de asignación de licencia actualizada para {leave_allocation_request.employee_id}.",
+                    verb_fr=f"Demande d'allocation de congé mise à jour pour {leave_allocation_request.employee_id}.",
                     icon="people-cicle",
-                    redirect = "/leave/leave-allocation-request-view"
+                    redirect="/leave/leave-allocation-request-view",
                 )
-            response = render (
-                request,'leave/leave_allocation_request/leave_allocation_request_update.html',
-                {"form":form,"req_id":req_id}
+            response = render(
+                request,
+                "leave/leave_allocation_request/leave_allocation_request_update.html",
+                {"form": form, "req_id": req_id},
             )
             return HttpResponse(
-                            response.content.decode("utf-8")
-                            + "<script>location. reload();</script>"
-                            )
+                response.content.decode("utf-8")
+                + "<script>location. reload();</script>"
+            )
     return render(
         request,
-        'leave/leave_allocation_request/leave_allocation_request_update.html',
-        {"form":form,"req_id":req_id}  
+        "leave/leave_allocation_request/leave_allocation_request_update.html",
+        {"form": form, "req_id": req_id},
     )
+
 
 @login_required
 @leave_allocation_reject_permission()
-def leave_allocation_request_approve(request,req_id):
+def leave_allocation_request_approve(request, req_id):
     """
     function used to approve a leave allocation request.
 
@@ -2662,44 +2816,48 @@ def leave_allocation_request_approve(request,req_id):
     GET :It returns to the default leave allocation request view template.
     """
     leave_allocation_request = LeaveAllocationRequest.objects.get(id=req_id)
-    if leave_allocation_request.status == 'requested' :
+    if leave_allocation_request.status == "requested":
         employee = leave_allocation_request.employee_id
-        if employee.available_leave.all().filter(leave_type_id = leave_allocation_request.leave_type_id).exists():
-            available_leave = employee.available_leave.all().filter(leave_type_id = leave_allocation_request.leave_type_id).first()
+        if (
+            employee.available_leave.all()
+            .filter(leave_type_id=leave_allocation_request.leave_type_id)
+            .exists()
+        ):
+            available_leave = (
+                employee.available_leave.all()
+                .filter(leave_type_id=leave_allocation_request.leave_type_id)
+                .first()
+            )
         else:
             available_leave = AvailableLeave(
-                leave_type_id = leave_allocation_request.leave_type_id,
-                employee_id = employee
+                leave_type_id=leave_allocation_request.leave_type_id,
+                employee_id=employee,
             )
         available_leave.available_days += leave_allocation_request.requested_days
         available_leave.save()
-        leave_allocation_request.status = 'approved'
+        leave_allocation_request.status = "approved"
         leave_allocation_request.save()
-        messages.success(
-            request,
-            _("Leave allocation request approved successfully")
-        )
+        messages.success(request, _("Leave allocation request approved successfully"))
         with contextlib.suppress(Exception):
             notify.send(
                 request.user.employee_get,
-                recipient = leave_allocation_request.employee_id.employee_user_id,
-                verb = "Your leave allocation request has been approved",
-                verb_ar = "تمت الموافقة على طلب تخصيص إجازتك",
-                verb_de = "Ihr Antrag auf Urlaubszuweisung wurde genehmigt",
-                verb_es = "Se ha aprobado su solicitud de asignación de vacaciones",
-                verb_fr = "Votre demande d'allocation de congé a été approuvée",
+                recipient=leave_allocation_request.employee_id.employee_user_id,
+                verb="Your leave allocation request has been approved",
+                verb_ar="تمت الموافقة على طلب تخصيص إجازتك",
+                verb_de="Ihr Antrag auf Urlaubszuweisung wurde genehmigt",
+                verb_es="Se ha aprobado su solicitud de asignación de vacaciones",
+                verb_fr="Votre demande d'allocation de congé a été approuvée",
                 icon="people-circle",
-                redirect = "/leave/leave-allocation-request-view",
+                redirect="/leave/leave-allocation-request-view",
             )
     else:
-        messages.error(
-            request,_("The leave allocation request can't be approved")
-        )
+        messages.error(request, _("The leave allocation request can't be approved"))
     return redirect(leave_allocation_request_view)
+
 
 @login_required
 @leave_allocation_reject_permission()
-def leave_allocation_request_reject(request,req_id):
+def leave_allocation_request_reject(request, req_id):
     """
     function used to Reject leave allocation request.
 
@@ -2712,9 +2870,12 @@ def leave_allocation_request_reject(request,req_id):
 
     """
     leave_allocation_request = LeaveAllocationRequest.objects.get(id=req_id)
-    if leave_allocation_request.status == 'requested' or leave_allocation_request.status == 'approved':
+    if (
+        leave_allocation_request.status == "requested"
+        or leave_allocation_request.status == "approved"
+    ):
         form = LeaveAllocationRequestRejectForm()
-        if request.method == 'POST':
+        if request.method == "POST":
             form = LeaveAllocationRequestRejectForm(request.POST)
             if form.is_valid():
                 leave_allocation_request.reject_reason = form.cleaned_data["reason"]
@@ -2723,44 +2884,44 @@ def leave_allocation_request_reject(request,req_id):
                     requested_days = leave_allocation_request.requested_days
                     available_leave = AvailableLeave.objects.filter(
                         leave_type_id=leave_type,
-                        employee_id=leave_allocation_request.employee_id).first()
-                    available_leave.available_days = max(0,available_leave.available_days - requested_days)
+                        employee_id=leave_allocation_request.employee_id,
+                    ).first()
+                    available_leave.available_days = max(
+                        0, available_leave.available_days - requested_days
+                    )
 
                     available_leave.save()
                 leave_allocation_request.status = "rejected"
                 leave_allocation_request.save()
                 messages.success(
-                    request,
-                    _("Leave allocation request rejected successfully")
+                    request, _("Leave allocation request rejected successfully")
                 )
                 with contextlib.suppress(Exception):
                     notify.send(
                         request.user.employee_get,
-                        recipient = leave_allocation_request.employee_id.employee_user_id,
-                        verb = "Your leave allocation request has been rejected",
-                        verb_ar = "تم رفض طلب تخصيص إجازتك",
-                        verb_de = "Ihr Antrag auf Urlaubszuweisung wurde abgelehnt",
-                        verb_es = "Se ha rechazado su solicitud de asignación de vacaciones",
-                        verb_fr = "Votre demande d'allocation de congé a été rejetée",
+                        recipient=leave_allocation_request.employee_id.employee_user_id,
+                        verb="Your leave allocation request has been rejected",
+                        verb_ar="تم رفض طلب تخصيص إجازتك",
+                        verb_de="Ihr Antrag auf Urlaubszuweisung wurde abgelehnt",
+                        verb_es="Se ha rechazado su solicitud de asignación de vacaciones",
+                        verb_fr="Votre demande d'allocation de congé a été rejetée",
                         icon="people-circle",
-                        redirect = "/leave/leave-allocation-request-view",
+                        redirect="/leave/leave-allocation-request-view",
                     )
                 return HttpResponse("<script>location.reload();</script>")
         return render(
             request,
-            'leave/leave_allocation_request/leave_allocation_request_reject_form.html',
-            {'form':form,'req_id':req_id}
+            "leave/leave_allocation_request/leave_allocation_request_reject_form.html",
+            {"form": form, "req_id": req_id},
         )
     else:
-        messages.error(
-                    request,
-                    _("The leave allocation request can't be rejected")
-                )
+        messages.error(request, _("The leave allocation request can't be rejected"))
         return HttpResponse("<script>location.reload();</script>")
+
 
 @login_required
 @leave_allocation_delete_permission()
-def leave_allocation_request_delete(request,req_id):
+def leave_allocation_request_delete(request, req_id):
     """
     function used to delete leave allocation request.
 
@@ -2771,12 +2932,89 @@ def leave_allocation_request_delete(request,req_id):
     Returns:
     GET : return leave allocation request view template
     """
-    try:
-        LeaveAllocationRequest.objects.get(id=req_id).delete()
-        messages.success(request, _("Leave allocation request deleted successfully.."))
-    except LeaveRequest.DoesNotExist:
-        messages.error(request, _("Leave allocation request not found."))
-    except ProtectedError:
-        messages.error(request, _("Related entries exists"))
-    return redirect(leave_allocation_request_view)
-    
+    leave_allocation_request = LeaveAllocationRequest.objects.get(id=req_id)
+    if leave_allocation_request.status != "approved":
+        try:
+            leave_allocation_request.delete()
+            messages.success(
+                request, _("Leave allocation request deleted successfully..")
+            )
+        except LeaveRequest.DoesNotExist:
+            messages.error(request, _("Leave allocation request not found."))
+        except ProtectedError:
+            messages.error(request, _("Related entries exists"))
+        return redirect(leave_allocation_request_view)
+    messages.error(request, _("Approved request cant't delete."))
+    return HttpResponse("<script>location.reload();</script>")
+
+
+@login_required
+def assigned_leave_select(request):
+    page_number = request.GET.get("page")
+
+    if page_number == "all":
+        employees = AvailableLeave.objects.all()
+
+    employee_ids = [str(emp.id) for emp in employees]
+    total_count = employees.count()
+
+    context = {"employee_ids": employee_ids, "total_count": total_count}
+
+    return JsonResponse(context, safe=False)
+
+
+@login_required
+def assigned_leave_select_filter(request):
+    page_number = request.GET.get("page")
+    filtered = request.GET.get("filter")
+    filters = json.loads(filtered) if filtered else {}
+
+    if page_number == "all":
+        employee_filter = AssignedLeaveFilter(
+            filters, queryset=AvailableLeave.objects.all()
+        )
+
+        # Get the filtered queryset
+        filtered_employees = employee_filter.qs
+
+        employee_ids = [str(emp.id) for emp in filtered_employees]
+        total_count = filtered_employees.count()
+
+        context = {"employee_ids": employee_ids, "total_count": total_count}
+
+        return JsonResponse(context)
+
+
+@login_required
+def holiday_select(request):
+    page_number = request.GET.get("page")
+
+    if page_number == "all":
+        employees = Holiday.objects.all()
+
+    employee_ids = [str(emp.id) for emp in employees]
+    total_count = employees.count()
+
+    context = {"employee_ids": employee_ids, "total_count": total_count}
+
+    return JsonResponse(context, safe=False)
+
+
+@login_required
+def holiday_select_filter(request):
+    page_number = request.GET.get("page")
+    filtered = request.GET.get("filter")
+    filters = json.loads(filtered) if filtered else {}
+
+    if page_number == "all":
+        employee_filter = HolidayFilter(filters, queryset=Holiday.objects.all())
+
+        # Get the filtered queryset
+        filtered_employees = employee_filter.qs
+
+        employee_ids = [str(emp.id) for emp in filtered_employees]
+        total_count = filtered_employees.count()
+
+        context = {"employee_ids": employee_ids, "total_count": total_count}
+
+        return JsonResponse(context)
