@@ -5,7 +5,7 @@
     {% for leave_request_list in leave_request_grouper %}
     <div class="oh-accordion-meta">
         <div class="oh-accordion-meta__item">
-            <div class="oh-accordion-meta__header" onclick='$(this).toggleClass("oh-accordion-meta__header--show");'>
+            <div class="oh-accordion-meta__header">
                 <span class="oh-accordion-meta__title pt-3 pb-3">
                     <div class="oh-tabs__input-badge-container">
                         <span
@@ -149,3 +149,10 @@
     </div>
 </div>
 
+<script>
+    $(document).ready(function () {
+        $(".oh-accordion-meta__header").on("click",function (){
+            $(this).siblings(".oh-accordion-meta__body").toggleClass("d-none")
+        })
+    })
+</script>
