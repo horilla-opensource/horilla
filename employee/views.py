@@ -777,14 +777,15 @@ def employee_filter_view(request):
     """
     previous_data = request.GET.urlencode()
     field = request.GET.get("field")
+    employees = EmployeeFilter(request.GET).qs
     employees = filtersubordinatesemployeemodel(
-        request, Employee.objects.all(), "employee.view_employee"
+        request, employees, "employee.view_employee"
     )
     page_number = request.GET.get("page")
-    template = "employee_personal_info/employee_card.html"
     view = request.GET.get("view")
     data_dict = parse_qs(previous_data)
     get_key_instances(Employee, data_dict)
+    template = "employee_personal_info/employee_card.html"
     if view == "list":
         template = "employee_personal_info/employee_list.html"
     if field != "" and field is not None:
@@ -1721,8 +1722,12 @@ def widget_filter(request):
 
 @login_required
 def employee_select(request):
+    """
+    This method is used to return all the id of the employees to select the employee row
+    """
     page_number = request.GET.get("page")
 
+    employees = Employee.objects.all()
     if page_number == "all":
         employees = Employee.objects.filter(is_active=True)
 
@@ -1736,6 +1741,9 @@ def employee_select(request):
 
 @login_required
 def employee_select_filter(request):
+    """
+    This method is used to return all the ids of the filtered employees
+    """
     page_number = request.GET.get("page")
     filtered = request.GET.get("filter")
     filters = json.loads(filtered) if filtered else {}
