@@ -13,41 +13,20 @@
           <div class="row">
             <div class="col-sm-12 col-md-12 col-lg-6">
               <div class="oh-input-group">
-                <label class="oh-label">{% trans "Start Date" %}</label>
-                {{form.start_date}}
+                <label class="oh-label">{% trans "From Date" %}</label>
+                {{form.from_date}}
               </div>
             </div>
-
             <div class="col-sm-12 col-md-12 col-lg-6">
               <div class="oh-input-group">
-                <label class="oh-label">{% trans "End Date" %}</label>
-                {{form.end_date}}
+                <label class="oh-label">{% trans "To Date" %}</label>
+                  {{form.to_date}}
               </div>
             </div>
             <div class="col-sm-12 col-md-12">
               <div class="oh-input-group">
                 <label class="oh-label">{% trans "Recurring" %}</label>
-                {{form.recurring}}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="oh-accordion">
-        <div class="oh-accordion-header">{% trans "Advanced" %}</div>
-        <div class="oh-accordion-body">
-          <div class="row">
-            <div class="col-sm-12 col-md-12 col-lg-6">
-              <div class="oh-input-group">
-                <label class="oh-label">{% trans "From Date" %}</label>
-                {{form.from_date}}
-              </div>
-            </div>
-
-            <div class="col-sm-12 col-md-12 col-lg-6">
-              <div class="oh-input-group">
-                <label class="oh-label">{% trans "To Date" %}</label>
-                {{form.to_date}}
+                  {{form.recurring}}
               </div>
             </div>
           </div>
