@@ -219,11 +219,6 @@
           dataType: "json",
           success: function (response) {
             var employeeIds = response.employee_ids;
-            if (Array.isArray(employeeIds)) {
-              // Continue
-            } else {
-              console.error("candidate_ids is not an array:", employeeIds);
-            }
               var selectedCount = employeeIds.length;              
               var selectedCount = employeeIds.length;              
               
@@ -250,11 +245,6 @@
           dataType: "json",
           success: function (response) {
             var employeeIds = response.employee_ids;
-            if (Array.isArray(employeeIds)) {
-              // Continue
-            } else {
-              console.error("candidate_ids is not an array:", employeeIds);
-            }
             var selectedCount = employeeIds.length;
             for (var i = 0; i < employeeIds.length; i++) {
               var empId = employeeIds[i];
@@ -277,16 +267,11 @@
       $("#selectedInstances").attr("data-clicked", 0);
       $.ajax({
         url: '{% url "candidate-select" %}',
-        data: { page: "all", filter: "{}" },
+        data: { page: "unselect", filter: "{}" },
         type: "GET",
         dataType: "json",
         success: function (response) {
           var employeeIds = response.employee_ids;
-          if (Array.isArray(employeeIds)) {
-            // Continue
-          } else {
-            console.error("employee_ids is not an array:", employeeIds);
-          }
           for (var i = 0; i < employeeIds.length; i++) {
             var empId = employeeIds[i];
             $("#" + empId).prop("checked", false);

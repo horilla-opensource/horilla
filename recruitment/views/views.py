@@ -1104,6 +1104,8 @@ def candidate_select(request):
 
     if page_number == "all":
         employees = Candidate.objects.filter(is_active=True)
+    else:
+        employees = Candidate.objects.all()
 
     employee_ids = [str(emp.id) for emp in employees]
     total_count = employees.count()
