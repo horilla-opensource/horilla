@@ -16,7 +16,12 @@ from notifications.signals import notify
 from base.methods import get_key_instances
 from base.models import Department, JobPosition
 from employee.models import Employee, EmployeeWorkInformation
-from pms.filters import KeyResultFilter, ObjectiveFilter, FeedbackFilter, ObjectiveReGroup
+from pms.filters import (
+    KeyResultFilter,
+    ObjectiveFilter,
+    FeedbackFilter,
+    ObjectiveReGroup,
+)
 from django.db.models import ProtectedError
 from pms.models import (
     EmployeeKeyResult,
@@ -187,16 +192,18 @@ def objective_delete(request, obj_id):
     """
     try:
         objective = EmployeeObjective.objects.get(id=obj_id)
-        if objective.status == 'Not Started' or objective.status == 'Closed' :
+        if objective.status == "Not Started" or objective.status == "Closed":
             objective.delete()
             messages.success(
                 request,
-                _("Objective %(objective)s deleted") % {"objective": objective.objective},
+                _("Objective %(objective)s deleted")
+                % {"objective": objective.objective},
             )
         else:
             messages.warning(
                 request,
-                _("You can't delete objective %(objective)s with status %(status)s") % {"objective": objective.objective, "status": objective.status},
+                _("You can't delete objective %(objective)s with status %(status)s")
+                % {"objective": objective.objective, "status": objective.status},
             )
     except EmployeeObjective.DoesNotExist:
         messages.error(request, _("Objective not found."))
@@ -244,8 +251,8 @@ def objective_filter_pagination(request, objective_own, objective_all):
         "pg": previous_data,
         "current_date": now,
         "filter_dict": data_dict,
-        "gp_fields":ObjectiveReGroup.fields,
-        "field":field,
+        "gp_fields": ObjectiveReGroup.fields,
+        "field": field,
     }
     return context
 
@@ -264,8 +271,9 @@ def objective_list_view(request):
     )
 
     if request.user.has_perm("pms.view_employeeobjective"):
-        objective_own = EmployeeObjective.objects.filter(employee_id=employee
-    ) | EmployeeObjective.objects.filter(emp_obj_id__employee_id=employee)
+        objective_own = EmployeeObjective.objects.filter(
+            employee_id=employee
+        ) | EmployeeObjective.objects.filter(emp_obj_id__employee_id=employee)
         objective_own = objective_own.distinct()
         objective_all = EmployeeObjective.objects.all()
         context = objective_filter_pagination(request, objective_own, objective_all)
@@ -273,20 +281,20 @@ def objective_list_view(request):
     elif is_manager:
         # if user is a manager
         employees_ids = [employee.id for employee in is_manager]
-        objective_own = EmployeeObjective.objects.filter(employee_id=employee
+        objective_own = EmployeeObjective.objects.filter(
+            employee_id=employee
         ) | EmployeeObjective.objects.filter(emp_obj_id__employee_id=employee)
         objective_own = objective_own.distinct()
         objective_all = EmployeeObjective.objects.filter(
             employee_id__in=employees_ids
-        )| EmployeeObjective.objects.filter(
-            emp_obj_id__employee_id__in=employees_ids
-        )
+        ) | EmployeeObjective.objects.filter(emp_obj_id__employee_id__in=employees_ids)
         objective_all = objective_all.distinct()
         context = objective_filter_pagination(request, objective_own, objective_all)
     else:
         # for normal user
-        objective_own = EmployeeObjective.objects.filter(employee_id=employee
-            ) | EmployeeObjective.objects.filter(emp_obj_id__employee_id=employee)
+        objective_own = EmployeeObjective.objects.filter(
+            employee_id=employee
+        ) | EmployeeObjective.objects.filter(emp_obj_id__employee_id=employee)
         objective_own = objective_own.distinct()
         objective_all = EmployeeObjective.objects.none()
         context = objective_filter_pagination(request, objective_own, objective_all)
@@ -398,7 +406,7 @@ def objective_history(emp_obj_id):
 
 
 @login_required
-def objective_detailed_view(request, emp_obj_id):
+def objective_detailed_view(request, emp_obj_id, **kwargs):
     """
     this function is used to update the key result of objectives
         args:
@@ -527,15 +535,13 @@ def objective_detailed_view_key_result_status(request, obj_id, kr_id):
     target_value = employee_key_result.target_value
 
     if current_value >= target_value:
-        employee_key_result.status = 'Closed'
+        employee_key_result.status = "Closed"
     else:
         employee_key_result.status = status
     employee_key_result.save()
     messages.info(request, _("Status has been updated"))
     # return redirect(objective_detailed_view_activity, id=obj_id)
-    response = (
-                redirect(objective_detailed_view_activity, id=obj_id)
-            )
+    response = redirect(objective_detailed_view_activity, id=obj_id)
     return HttpResponse(
         response.content.decode("utf-8") + "<script>location.reload();</script>"
     )
@@ -568,7 +574,7 @@ def objective_detailed_view_current_value(request, kr_id):
 
         elif int(current_value) == target_value:
             employee_key_result.current_value = current_value
-            employee_key_result.status = 'Closed'
+            employee_key_result.status = "Closed"
             employee_key_result.save()
             messages.info(
                 request,
@@ -576,13 +582,11 @@ def objective_detailed_view_current_value(request, kr_id):
                 % {"employee_key_result": employee_key_result},
             )
             # return redirect(objective_detailed_view_activity, objective_id)
-            response = (
-                redirect(objective_detailed_view_activity, objective_id)
-            )
+            response = redirect(objective_detailed_view_activity, objective_id)
             return HttpResponse(
                 response.content.decode("utf-8") + "<script>location.reload();</script>"
             )
-        
+
         elif int(current_value) > target_value:
             messages.warning(request, _("Current value is greater than target value"))
             return redirect(objective_detailed_view_activity, objective_id)
@@ -610,6 +614,7 @@ def objective_archive(request, id):
         messages.info(request, _("Objective archived successfully!."))
     return redirect(f"/pms/objective-list-view?{request.environ['QUERY_STRING']}")
 
+
 @login_required
 @manager_can_enter(perm="pms.add_employeekeyresult")
 def key_result_view(request):
@@ -625,7 +630,7 @@ def key_result_view(request):
         "key_results": key_results,
         "objective_key_result_status": EmployeeKeyResult.STATUS_CHOICES,
     }
-    return render(request,"okr/key_result/key_result_view.html", context=context)
+    return render(request, "okr/key_result/key_result_view.html", context=context)
 
 
 @login_required
@@ -648,14 +653,18 @@ def key_result_creation(request, obj_id, obj_type):
         for obj in objective:
             start_date = obj.start_date
             end_date = obj.end_date
-        key_result_form = KeyResultForm(employee=employee, initial={"start_date": start_date, "end_date": end_date})
+        key_result_form = KeyResultForm(
+            employee=employee, initial={"start_date": start_date, "end_date": end_date}
+        )
     else:
         objective_ids = json.loads(obj_id)
         for objective_id in objective_ids:
             objective = EmployeeObjective.objects.filter(id=objective_id).first()
             start_date = objective.start_date
             end_date = objective.end_date
-        key_result_form = KeyResultForm(employee=employee, initial={"start_date": start_date, "end_date": end_date})
+        key_result_form = KeyResultForm(
+            employee=employee, initial={"start_date": start_date, "end_date": end_date}
+        )
     context = {
         "key_result_form": key_result_form,
         "objective_id": obj_id,
@@ -724,7 +733,9 @@ def key_result_creation_htmx(request, id):
     for obj in object:
         start_date = obj.start_date
         end_date = obj.end_date
-    key_result_form = KeyResultForm(initial={"start_date": start_date, "end_date": end_date})
+    key_result_form = KeyResultForm(
+        initial={"start_date": start_date, "end_date": end_date}
+    )
     context = {"key_result_form": key_result_form, "objecitve_id": id}
     objective = EmployeeObjective.objects.get(id=id)
     if request.method == "POST":
@@ -1073,10 +1084,7 @@ def feedback_list_view(request):
     feedback_requested_ids = Feedback.objects.filter(
         Q(manager_id=employee) | Q(colleague_id=employee) | Q(subordinate_id=employee)
     ).values_list("id", flat=True)
-    feedback_own = (
-        Feedback.objects.filter(employee_id=employee)
-        .filter(archive=False)
-    )
+    feedback_own = Feedback.objects.filter(employee_id=employee).filter(archive=False)
     feedback_requested = Feedback.objects.filter(pk__in=feedback_requested_ids).filter(
         archive=False
     )
@@ -1108,7 +1116,7 @@ def feedback_list_view(request):
 
 
 @login_required
-def feedback_detailed_view(request, id):
+def feedback_detailed_view(request, id, **kwargs):
     """
     This view is used to for detailed view of feedback,
     Args:
@@ -1283,14 +1291,18 @@ def feedback_delete(request, id):
     try:
         feedback = Feedback.objects.filter(id=id).first()
         answered = Answer.objects.filter(feedback_id=feedback).first()
-        if feedback.status == "Closed" or feedback.status == "Not Started" and not answered:
+        if (
+            feedback.status == "Closed"
+            or feedback.status == "Not Started"
+            and not answered
+        ):
             feedback.delete()
             messages.success(
                 request,
                 _("Feedback %(review_cycle)s deleted successfully!")
                 % {"review_cycle": feedback.review_cycle},
             )
-            
+
         else:
             messages.warning(
                 request,
@@ -1298,12 +1310,13 @@ def feedback_delete(request, id):
                 % {"review_cycle": feedback.review_cycle, "status": feedback.status},
             )
             return redirect(feedback_list_view)
-        
+
     except Feedback.DoesNotExist:
         messages.error(request, _("Feedback not found."))
     except ProtectedError:
         messages.error(request, _("Related entries exists"))
     return redirect(feedback_list_view)
+
 
 @login_required
 @hx_request_required
@@ -1538,12 +1551,13 @@ def question_delete(request, id):
         messages.error(
             request, _("Failed to delete question: Question template is in use.")
         )
-        
+
     except Question.DoesNotExist:
         messages.error(request, _("Question not found."))
     except ProtectedError:
         messages.error(request, _("Related entries exists"))
     return redirect(question_template_detailed_view, temp_id)
+
 
 @login_required
 @manager_can_enter(perm="pms.add_questiontemplate")
@@ -1587,14 +1601,12 @@ def question_template_view(request):
         template = "feedback/question_template/question_template_view.html"
     else:
         template = "feedback/question_template/question_template_empty.html"
-    return render(
-        request, template, context
-    )
+    return render(request, template, context)
 
 
 @login_required
 @manager_can_enter(perm="pms.view_questiontemplate")
-def question_template_detailed_view(request, template_id):
+def question_template_detailed_view(request, template_id, **kwargs):
     """
     This view is used to  view question template object.
     Args:
@@ -1668,7 +1680,7 @@ def question_template_delete(request, template_id):
             messages.info(request, _("This template is using in a feedback"))
             return redirect(question_template_view)
         question_template.delete()
-        messages.success(request, _("The question template is deleted successfully !."))        
+        messages.success(request, _("The question template is deleted successfully !."))
     except QuestionTemplate.DoesNotExist:
         messages.error(request, _("question template not found."))
     except ProtectedError:
@@ -1761,7 +1773,7 @@ def period_delete(request, period_id):
     try:
         obj_period = Period.objects.get(id=period_id)
         obj_period.delete()
-        messages.info(request, _("Period deleted successfully."))       
+        messages.info(request, _("Period deleted successfully."))
     except Period.DoesNotExist:
         messages.error(request, _("Period not found."))
     except ProtectedError:
@@ -1840,7 +1852,7 @@ def dashboard_objective_status(request):
     is_ajax = request.headers.get("X-Requested-With") == "XMLHttpRequest"
     if is_ajax and request.method == "GET":
         objective_status = EmployeeObjective.STATUS_CHOICES
-        data = {"message":_("No data Found...")}
+        data = {"message": _("No data Found...")}
         for status in objective_status:
             objectives = EmployeeObjective.objects.filter(status=status[0])
             objectives_count = filtersubordinates(
@@ -1859,7 +1871,7 @@ def dashboard_key_result_status(request):
     is_ajax = request.headers.get("X-Requested-With") == "XMLHttpRequest"
     if is_ajax and request.method == "GET":
         key_result_status = EmployeeKeyResult.STATUS_CHOICES
-        data = {"message":_("No data Found...")}
+        data = {"message": _("No data Found...")}
         for i in key_result_status:
             key_results = EmployeeKeyResult.objects.filter(status=i[0])
             key_results_count = filtersubordinates(
@@ -1876,7 +1888,7 @@ def dashboard_feedback_status(request):
     is_ajax = request.headers.get("X-Requested-With") == "XMLHttpRequest"
     if is_ajax and request.method == "GET":
         feedback_status = Feedback.STATUS_CHOICES
-        data = {"message":_("No data Found...")}
+        data = {"message": _("No data Found...")}
         for i in feedback_status:
             feedbacks = Feedback.objects.filter(status=i[0])
             feedback_count = filtersubordinates(
@@ -1908,20 +1920,27 @@ def filtersubordinates(request, queryset, perm=None):
 @login_required
 def create_period(request):
     """
-    This is an ajax method to return json response to create stage related 
+    This is an ajax method to return json response to create stage related
     to the project in the task-all form fields
     """
-    
-    if request.method == 'GET':
+
+    if request.method == "GET":
         form = PeriodForm()
-    if request.method == 'POST':
+    if request.method == "POST":
         form = PeriodForm(request.POST)
         if form.is_valid():
             instance = form.save()
-            return JsonResponse({"id": instance.id, "name": instance.period_name, "start_date": instance.start_date, "end_date": instance.end_date})
+            return JsonResponse(
+                {
+                    "id": instance.id,
+                    "name": instance.period_name,
+                    "start_date": instance.start_date,
+                    "end_date": instance.end_date,
+                }
+            )
         errors = form.errors.as_json()
         return JsonResponse({"errors": errors})
-    return render(request,"okr/create_period.html",context={"form": form})
+    return render(request, "okr/create_period.html", context={"form": form})
 
 
 @login_required
@@ -1960,16 +1979,21 @@ def objective_bulk_delete(request):
     for objective_id in ids:
         try:
             objective = EmployeeObjective.objects.get(id=objective_id)
-            if objective.status == 'Not Started' or objective.status == 'Closed' :
+            if objective.status == "Not Started" or objective.status == "Closed":
                 objective.delete()
                 messages.success(
                     request,
-                    _("%(employee)s's %(objective)s deleted") % {"objective": objective.objective, "employee":objective.employee_id},
+                    _("%(employee)s's %(objective)s deleted")
+                    % {
+                        "objective": objective.objective,
+                        "employee": objective.employee_id,
+                    },
                 )
             else:
                 messages.warning(
                     request,
-                    _("You can't delete objective %(objective)s with status %(status)s") % {"objective": objective.objective, "status": objective.status},
+                    _("You can't delete objective %(objective)s with status %(status)s")
+                    % {"objective": objective.objective, "status": objective.status},
                 )
         except EmployeeObjective.DoesNotExist:
             messages.error(request, _("Objective not found."))
@@ -1995,9 +2019,7 @@ def feedback_bulk_archive(request):
         feedback_id.save()
         messages.success(
             request,
-            _("{feedback} is {message}").format(
-                feedback=feedback_id, message=message
-            ),
+            _("{feedback} is {message}").format(feedback=feedback_id, message=message),
         )
     return JsonResponse({"message": "Success"})
 
@@ -2023,8 +2045,13 @@ def feedback_bulk_delete(request):
             else:
                 messages.warning(
                     request,
-                    _("You can't delete feedback %(review_cycle)s with status %(status)s")
-                    % {"review_cycle": feedback.review_cycle, "status": feedback.status},
+                    _(
+                        "You can't delete feedback %(review_cycle)s with status %(status)s"
+                    )
+                    % {
+                        "review_cycle": feedback.review_cycle,
+                        "status": feedback.status,
+                    },
                 )
 
         except Feedback.DoesNotExist:

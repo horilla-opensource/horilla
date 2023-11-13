@@ -1,5 +1,6 @@
 from django.urls import path
 from . import views
+from . import models
 
 
 urlpatterns = [
@@ -23,6 +24,7 @@ urlpatterns = [
         "objective-detailed-view/<int:emp_obj_id>",
         views.objective_detailed_view,
         name="objective-detailed-view",
+        kwargs={"model": models.EmployeeObjective},
     ),
     path(
         "objective-detailed-view-objective-status/<int:id>",
@@ -99,6 +101,7 @@ urlpatterns = [
         "feedback-detailed-view/<int:id>",
         views.feedback_detailed_view,
         name="feedback-detailed-view",
+        kwargs={"model": models.Feedback},
     ),
     path(
         "feedback-detailed-view-answer/<int:id>/<int:emp_id>",
@@ -135,6 +138,7 @@ urlpatterns = [
         "question-template-detailed-view/<int:template_id>",
         views.question_template_detailed_view,
         name="question-template-detailed-view",
+        kwargs={"model": models.QuestionTemplate},
     ),
     path(
         "question-template-update/<int:template_id>/",

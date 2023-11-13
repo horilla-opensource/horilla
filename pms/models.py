@@ -58,7 +58,7 @@ class EmployeeObjective(models.Model):
     objects = models.Manager()
 
     def __str__(self):
-        return f"{self.employee_id.employee_first_name}   -{self.objective}"
+        return f"{self.employee_id.employee_first_name} - {self.objective}"
 
 
 class Comment(models.Model):
