@@ -11,7 +11,14 @@ from django_filters import FilterSet, DateFilter, filters, NumberFilter
 from django.utils.translation import gettext_lazy as _
 from django.utils.translation import gettext as __
 from employee.models import Employee
-from .models import LeaveType, LeaveRequest, AvailableLeave, Holiday, CompanyLeave,LeaveAllocationRequest
+from .models import (
+    LeaveType,
+    LeaveRequest,
+    AvailableLeave,
+    Holiday,
+    CompanyLeave,
+    LeaveAllocationRequest,
+)
 
 
 class FilterSet(FilterSet):
@@ -142,9 +149,10 @@ class AssignedLeaveFilter(FilterSet):
 class LeaveRequestFilter(FilterSet):
     """
     Filter class for LeaveRequest model.
-    This filter allows searching LeaveRequest objects 
+    This filter allows searching LeaveRequest objects
     based on employee,date range, leave type, and status.
     """
+
     employee_id = filters.CharFilter(
         field_name="employee_id__employee_first_name", lookup_expr="icontains"
     )
@@ -223,6 +231,11 @@ class HolidayFilter(FilterSet):
         fields = {
             "recurring": ["exact"],
         }
+
+    def __init__(self, data=None, queryset=None, *, request=None, prefix=None):
+        super().__init__(data=data, queryset=queryset, request=request, prefix=prefix)
+        for field in self.form.fields.keys():
+            self.form.fields[field].widget.attrs["id"] = f"{uuid.uuid4()}"
 
 
 class CompanyLeaveFilter(FilterSet):
@@ -315,7 +328,7 @@ class UserLeaveRequestFilter(FilterSet):
     )
 
     class Meta:
-        """ 
+        """
         Meta class defines the model and fields to filter
         """
 
@@ -324,6 +337,7 @@ class UserLeaveRequestFilter(FilterSet):
             "leave_type_id": ["exact"],
             "status": ["exact"],
         }
+
 
 class LeaveAllocationRequestFilter(FilterSet):
     """
@@ -339,36 +353,38 @@ class LeaveAllocationRequestFilter(FilterSet):
         field_name="employee_id__employee_first_name", lookup_expr="icontains"
     )
     number_of_days_up_to = filters.NumberFilter(
-        field_name='requested_days',
-        lookup_expr='lte'
+        field_name="requested_days", lookup_expr="lte"
     )
     number_of_days_more_than = filters.NumberFilter(
-        field_name='requested_days',
-        lookup_expr='gte'
+        field_name="requested_days", lookup_expr="gte"
     )
+
     class Meta:
-        """ 
+        """
         Meta class defines the model and fields to filter
         """
+
         model = LeaveAllocationRequest
         fields = {
-            'created_by':["exact"],
-            "status":["exact"],
-            "leave_type_id":["exact"],
-            "employee_id":["exact"]
+            "created_by": ["exact"],
+            "status": ["exact"],
+            "leave_type_id": ["exact"],
+            "employee_id": ["exact"],
         }
-        
+
+
 class LeaveRequestReGroup:
     """
     Class to keep the field name for group by option
     """
+
     fields = [
-        ("","select"),
-        ("employee_id","Employee"),
-        ("leave_type_id","Leave Type"),
-        ("start_date","Start Date"),
-        ("status","Status"),
-        ("requested_days","Requested Days"),
+        ("", "select"),
+        ("employee_id", "Employee"),
+        ("leave_type_id", "Leave Type"),
+        ("start_date", "Start Date"),
+        ("status", "Status"),
+        ("requested_days", "Requested Days"),
         ("employee_id.employee_work_info.reporting_manager_id", "Reporting Manager"),
         ("employee_id.employee_work_info.department_id", "Department"),
         ("employee_id.employee_work_info.job_position_id", "Job Position"),
@@ -376,15 +392,17 @@ class LeaveRequestReGroup:
         ("employee_id.employee_work_info.company_id", "Company"),
     ]
 
+
 class MyLeaveRequestReGroup:
     """
     Class to keep the field name for group by option
     """
+
     fields = [
-        ("","select"),
-        ("leave_type_id","Leave Type"),
-        ("status","Status"),
-        ("requested_days","Requested Days"),
+        ("", "select"),
+        ("leave_type_id", "Leave Type"),
+        ("status", "Status"),
+        ("requested_days", "Requested Days"),
     ]
 
 
@@ -392,29 +410,32 @@ class LeaveAssignReGroup:
     """
     Class to keep the field name for group by option
     """
+
     fields = [
-        ("","select"),
-        ("employee_id","Employee"),
-        ("leave_type_id","Leave Type"),
-        ("available_days","Available Days"),
-        ("carryforward_days","Carry Forward Days"),
-        ("total_leave_days","Total Leave Days Days"),
+        ("", "select"),
+        ("employee_id", "Employee"),
+        ("leave_type_id", "Leave Type"),
+        ("available_days", "Available Days"),
+        ("carryforward_days", "Carry Forward Days"),
+        ("total_leave_days", "Total Leave Days Days"),
         ("assigned_date", "Assigned Date"),
-        ]
-    
+    ]
+
+
 class LeaveAllocationRequestReGroup:
     """
     Class to keep the field name for group by option
     """
+
     fields = [
-        ("","select"),
-        ("employee_id","Employee"),
-        ("leave_type_id","Leave Type"),
-        ("status","Status"),
-        ("requested_days","Requested Days"),
+        ("", "select"),
+        ("employee_id", "Employee"),
+        ("leave_type_id", "Leave Type"),
+        ("status", "Status"),
+        ("requested_days", "Requested Days"),
         ("employee_id.employee_work_info.reporting_manager_id", "Reporting Manager"),
         ("employee_id.employee_work_info.department_id", "Department"),
         ("employee_id.employee_work_info.job_position_id", "Job Position"),
         ("employee_id.employee_work_info.employee_type_id", "Employment Type"),
         ("employee_id.employee_work_info.company_id", "Company"),
-        ]
+    ]
