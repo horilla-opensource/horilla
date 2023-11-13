@@ -1,5 +1,4 @@
-{% load static %} {% load basefilters %} {% load recruitmentfilters %} 
-{% load i18n %} {% load tz %} {% now "Y-m-d" as current_date %}
+{% load static %} {% load basefilters %} {% load recruitmentfilters %} {% load i18n %} {% load tz %} {% now "Y-m-d" as current_date %}
 <div id="mainNav"></div>
 <!-- End of Navigation -->
 <style>
@@ -9,29 +8,32 @@
   .oh-card-dashboard:not(.tile) {
     cursor: default;
     min-height: 425px;
-  }.oh-dashboard__movable-cards{
+  }
+  .oh-dashboard__movable-cards {
     padding-right: 0;
-  }.oh-card-dashboard--moveable{
+  }
+  .oh-card-dashboard--moveable {
     padding-right: 0;
     padding-bottom: 10px;
   }
 </style>
 <main>
   <div class="oh-wrapper">
-  <!-- back button -->
-    <div class="d-none mt-5" id="back_button" style="width:10%">
-          <a href="{% url 'home-page' %}"
-            class="oh-btn oh-btn--secondary oh-btn--shadow ms-3"
-          >
-            <ion-icon
-              class="me-2 md hydrated"
-              name="arrow-back-outline"
-              role="img"
-              aria-label="arrow-back-outline"
-            ></ion-icon
-            >{% trans "Back" %}</a
-          >
-      </div>
+    <!-- back button -->
+    <div class="d-none mt-5" id="back_button" style="width: 10%">
+      <a
+        href="{% url 'home-page' %}"
+        class="oh-btn oh-btn--secondary oh-btn--shadow ms-3"
+      >
+        <ion-icon
+          class="me-2 md hydrated"
+          name="arrow-back-outline"
+          role="img"
+          aria-label="arrow-back-outline"
+        ></ion-icon
+        >{% trans "Back" %}</a
+      >
+    </div>
     <!-- end of back button -->
     <div class="oh-dashboard row" id="dashboard">
       <div class="oh-dashboard__left col-12 col-sm-12 col-md-12 col-lg-9">
@@ -153,8 +155,7 @@
                 </div>
               </div>
             </div>
-            {% endif %} 
-						{% if perms.candidate.view_candidate or request.user|is_stagemanager %}
+            {% endif %} {% if perms.candidate.view_candidate or request.user|is_stagemanager %}
             <div
               class="col-12 col-sm-12 col-md-12 col-lg-6 oh-card-dashboard--moveable"
               id="movable2"
@@ -196,8 +197,7 @@
                 </div>
               </div>
             </div>
-            {% endif %} 
-						{% if request.user|is_stagemanager or perms.recruitment.view_recruitment %}
+            {% endif %} {% if request.user|is_stagemanager or perms.recruitment.view_recruitment %}
             <div
               class="col-12 col-sm-12 col-md-12 col-lg-6 oh-card-dashboard--moveable"
               id="movable8"
@@ -220,8 +220,7 @@
                 </div>
               </div>
             </div>
-            {% endif %} 
-						{% if request.user|is_reportingmanager or perms.attendance.view_attendance %}
+            {% endif %} {% if request.user|is_reportingmanager or perms.attendance.view_attendance %}
             <div
               class="col-12 col-sm-12 col-md-12 col-lg-6 oh-card-dashboard--moveable"
               id="movable4"
@@ -233,40 +232,72 @@
                   class="oh-card-dashboard__header oh-card-dashboard__header--divider"
                   id="attendance_header"
                 >
-                <div class="oh-card-dashboard__title mb-2"
-                >{% trans "Attendance Analytic" %}</div
-                >
-                <div class="d-flex justify-content-between mb-2">
-                <select id="type" class="oh-select" name="type" onchange="changeView(this)" style="width: 150px;padding: 3px;color:#5e5c5c;
-;                ">
-                  <option value="day">Day</option>
-                  <option value="weekly">Weekly</option>
-                  <option value="monthly">Monthly</option>
-                  <option value="date_range">Date range</option>
-                </select>
-                  <span id="day_input">
-                    <input
-                      type="date"
-                      class="mb-2 float-end pointer oh-select"
-                      id="attendance_month"
-                      onchange="changeMonth()"
-                      style="width: 100px;color:#5e5c5c;"
-                    />
+                  <div class="oh-card-dashboard__title mb-2">
+                    {% trans "Attendance Analytic" %}
+                  </div>
+                  <div class="d-flex justify-content-between mb-2">
+                    <select
+                      id="type"
+                      class="oh-select"
+                      name="type"
+                      onchange="changeView(this)"
+                      style="width: 150px; padding: 3px; color: #5e5c5c"
+                    >
+                      <option value="day">Day</option>
+                      <option value="weekly">Weekly</option>
+                      <option value="monthly">Monthly</option>
+                      <option value="date_range">Date range</option>
+                    </select>
+                    <span id="day_input">
+                      <input
+                        type="date"
+                        class="mb-2 float-end pointer oh-select"
+                        id="attendance_month"
+                        onchange="changeMonth()"
+                        style="width: 100px; color: #5e5c5c"
+                      />
                     </span>
                   </div>
-                  <div
-                  class="oh-card-dashboard__body"
-                  >
-                      <canvas
-                        id="dailyAnalytic"
-                        style="cursor: pointer"
-                      ></canvas>
+                  <div class="oh-card-dashboard__body">
+                    <canvas id="dailyAnalytic" style="cursor: pointer"></canvas>
                   </div>
                 </div>
               </div>
             </div>
-            {% endif %} 
-            {% if request.user|is_reportingmanager or perms.attendance.view_employee %}
+            {% endif %} {% if request.user|is_reportingmanager or perms.attendance.view_attendance %}
+            <div
+              class="col-12 col-sm-12 col-md-12 col-lg-6 oh-card-dashboard--moveable"
+              id="pendingHours"
+            >
+              <div
+                class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent"
+              >
+                <div
+                  class="oh-card-dashboard__header oh-card-dashboard__header--divider"
+                  id="pendingHoursHeader"
+                >
+                  <div class="oh-card-dashboard__title mb-2">
+                    {% trans "Hours Chart" %}
+                  </div>
+                  <div class="d-flex justify-content-between mb-2">
+                    <input
+                      type="month"
+                      class="mb-2 float-end pointer oh-select"
+                      id="hourAccountMonth"
+                      onchange="dynamicMonth($(this))"
+                      style="width: 100px; color: #5e5c5c"
+                    />
+                  </div>
+                  <div class="oh-card-dashboard__body">
+                    <canvas
+                      id="pendingHoursCanvas"
+                      style="cursor: pointer"
+                    ></canvas>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {% endif %} {% if request.user|is_reportingmanager or perms.attendance.view_employee %}
             <div
               class="col-12 col-sm-12 col-md-12 col-lg-4 oh-card-dashboard--moveable"
               id="movable5"
@@ -282,15 +313,11 @@
                   >
                 </div>
                 <div class="oh-card-dashboard__body">
-                  <canvas
-                    id="totalEmployees"
-                    style="cursor: pointer"
-                  ></canvas>
+                  <canvas id="totalEmployees" style="cursor: pointer"></canvas>
                 </div>
               </div>
             </div>
-            {% endif %} 
-            {% if perms.employee.view_employee or request.user|is_reportingmanager %}
+            {% endif %} {% if perms.employee.view_employee or request.user|is_reportingmanager %}
             <div
               class="col-12 col-sm-12 col-md-12 col-lg-4 oh-card-dashboard--moveable"
               id="movable6"
@@ -306,15 +333,11 @@
                   >
                 </div>
                 <div class="oh-card-dashboard__body">
-                  <canvas
-                    id="departmentChart"
-                    style="cursor: pointer"
-                  ></canvas>
+                  <canvas id="departmentChart" style="cursor: pointer"></canvas>
                 </div>
               </div>
             </div>
-            {% endif %} 
-            {% if perms.employee.view_employee or request.user|is_reportingmanager %}
+            {% endif %} {% if perms.employee.view_employee or request.user|is_reportingmanager %}
             <div
               class="col-12 col-sm-12 col-md-12 col-lg-4 oh-card-dashboard--moveable"
               id="movable7"
@@ -334,8 +357,7 @@
                 </div>
               </div>
             </div>
-            {% endif %} 
-            {% if perms.pms.view_employeeobjective or request.user|is_reportingmanager %}
+            {% endif %} {% if perms.pms.view_employeeobjective or request.user|is_reportingmanager %}
             <div
               class="col-12 col-sm-12 col-md-12 col-lg-4 oh-card-dashboard--moveable"
               id="movable9"
@@ -351,15 +373,11 @@
                   >
                 </div>
                 <div class="oh-card-dashboard__body">
-                  <canvas
-                    id="objectiveChart"
-                    style="cursor: pointer"
-                  ></canvas>
+                  <canvas id="objectiveChart" style="cursor: pointer"></canvas>
                 </div>
               </div>
             </div>
-            {% endif %}
-             {% if perms.pms.view_employeekeyresult or request.user|is_reportingmanager %}
+            {% endif %} {% if perms.pms.view_employeekeyresult or request.user|is_reportingmanager %}
             <div
               class="col-12 col-sm-12 col-md-12 col-lg-4 oh-card-dashboard--moveable"
               id="movable10"
@@ -375,15 +393,11 @@
                   >
                 </div>
                 <div class="oh-card-dashboard__body">
-                  <canvas
-                    id="keyResultChart"
-                    style="cursor: pointer"
-                  ></canvas>
+                  <canvas id="keyResultChart" style="cursor: pointer"></canvas>
                 </div>
               </div>
             </div>
-            {% endif %} 
-            {% if perms.pms.view_feedback or request.user|is_reportingmanager %}
+            {% endif %} {% if perms.pms.view_feedback or request.user|is_reportingmanager %}
             <div
               class="col-12 col-sm-12 col-md-12 col-lg-4 oh-card-dashboard--moveable"
               id="movable11"
@@ -395,7 +409,7 @@
                   class="oh-card-dashboard__header oh-card-dashboard__header--divider"
                 >
                   <span class="oh-card-dashboard__title"
-                  >{% trans "Feedback Status" %}</span
+                    >{% trans "Feedback Status" %}</span
                   >
                 </div>
                 <div class="oh-card-dashboard__body">
@@ -449,12 +463,10 @@
 
 {% if perms.recruitment.view_recruitment or request.user|is_stagemanager %}
 <script src="{% static 'dashboard/recruitmentChart.js' %}"></script>
-{% endif %} 
-{% if perms.employee.view_employee or request.user|is_reportingmanager %}
+{% endif %} {% if perms.employee.view_employee or request.user|is_reportingmanager %}
 <script src="{% static 'dashboard/employeeChart.js' %}"></script>
 <script src="{% static 'dashboard/getBirthday.js' %}"></script>
-{% endif %} 
-{% if perms.employee.view_attendance or request.user|is_reportingmanager %}
+{% endif %} {% if perms.employee.view_attendance or request.user|is_reportingmanager %}
 <script src="{% static 'dashboard/attendanceChart.js' %}"></script>
 {% endif %}
 
@@ -467,6 +479,15 @@
 <script src="{% static 'src/dashboard/pmsChart.js' %}"></script>
 <script>
   $(document).ready(function () {
+    var tileOrder = []
+    $.each(
+      $(".oh-card-dashboard--moveable"),
+      function (indexInArray, valueOfElement) {
+        tileOrder.push($(valueOfElement).attr("id"));
+      }
+    );
+    localStorage.setItem("tileOrder", JSON.stringify(tileOrder));
+
     function orderDashboardTile() {
       var orderIds = JSON.parse(localStorage.getItem("tileOrder"));
       const parentContainer = $("#tileContainer");
