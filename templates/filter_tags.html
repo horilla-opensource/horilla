@@ -41,6 +41,12 @@
 			window.history.replaceState({}, document.title, url)
 		}
 	}
+	function fieldLabel(value,field) {
+		if (field =="field") {
+			return $(`[value="${value}"]`).html()
+		}
+		return value
+	}
 	$(document).ready(function () {
 		var nav = $("#filterTagContainerSectionNav");
 		tags = $(`
@@ -52,8 +58,10 @@
     {%for field,values in filter_dict.items %} {% if values %} 
     {% with translation_field=field|filter_field %}
     <span class="oh-titlebar__tag filter-field" >
-      {% trans translation_field %} : {% for value in values%} 
-      {% with trans_value=value|capfirst %} {% trans trans_value %} {% endwith %} {% endfor %}
+      {% trans translation_field %} : 
+	  {% for value in values %}
+		${fieldLabel("{{value}}","{{field}}")}
+	  {% endfor %}
       <button class="oh-titlebar__tag-close" onclick="clearFilterFromTag($(this))" data-x-field="{{field}}">
         <ion-icon
           name="close-outline"
