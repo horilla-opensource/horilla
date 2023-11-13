@@ -1,4 +1,4 @@
-{% load i18n %}
+{% load i18n %} {% load static %}
 <!-- Sticky Table -->
 {% include 'filter_tags.html' %}
 <div class="oh-sticky-table">
@@ -6,7 +6,10 @@
         <div class="oh-sticky-table__thead">
             <div class="oh-sticky-table__tr">
                 <div class="oh-sticky-table__th" style="width: 10px">
-                    <input type="checkbox" title='{% trans "Select All" %}' class="oh-input oh-input__checkbox mr-2 all-assigned-leaves" />
+                    <div class="centered-div">
+                        <input type="checkbox" title='{% trans "Select All" %}' 
+                        class="oh-input oh-input__checkbox all-assigned-leaves" />
+                    </div>
                 </div>
                 <div class="oh-sticky-table__th">{% trans "Employee" %}</div>
                 <div class="oh-sticky-table__th">{% trans "Leave Type" %}</div>
@@ -21,10 +24,12 @@
             {% for available_leave in available_leaves %}
             <div class="oh-sticky-table__tr" draggable="true">
                 <div class="oh-sticky-table__sd">
-                    <input type="checkbox" id="{{available_leave.id}}" class="oh-input assigned-leaves-checkbox oh-input__checkbox mt-2 mr-2 all-assigned-leaves-row" />
+                    <div class="centered-div">
+                        <input type="checkbox" id="{{available_leave.id}}" 
+                        class="oh-input assigned-leaves-checkbox oh-input__checkbox all-assigned-leaves-row" />
+                    </div>
                 </div>
                 <div class="oh-sticky-table__td">
-                    
                     <div class="oh-profile oh-profile--md">
                         <div class="oh-profile__avatar mr-1">
                             <img src="{{available_leave.employee_id.get_avatar}}"
@@ -95,13 +100,23 @@
         </ul>
     </nav>
 </div>
+
 <script>
-    $(".all-assigned-leaves").change(function (e) {
-        var is_checked = $(this).is(":checked");
-        if (is_checked) {
-          $(".all-assigned-leaves-row").prop("checked", true);
-        } else {
-          $(".all-assigned-leaves-row").prop("checked", false);
-        }
-      });
+  $(document).ready(function () {
+    tickLeaveCheckboxes();
+
+    $(".all-assigned-leaves-row").change(function () {
+      addingAssignedLeaveIds();
+    });
+
+    $(".all-assigned-leaves").change(function () {
+      var is_checked = $(this).is(":checked");
+      if (is_checked) {
+        $(".all-assigned-leaves-row").prop("checked", true);
+      } else {
+        $(".all-assigned-leaves-row").prop("checked", false);
+      }
+      addingAssignedLeaveIds();
+    });
+  });
 </script>

@@ -1,4 +1,5 @@
 {% extends 'index.html' %} {% block content %} {% load static %} {% load i18n %}
+<!-- start of message  -->
 {% if messages %}
 <div class="oh-wrapper">
   {% for message in messages %}
@@ -10,8 +11,11 @@
   {% endfor %}
 </div>
 {% endif %}
+<!-- end of messages -->
 
+<!-- start of nav bar -->
 <section class="oh-wrapper oh-main__topbar" x-data="{searchShow: false}">
+  <!-- start of title -->
   <div class="oh-main__titlebar oh-main__titlebar--left">
     <h1 class="oh-main__titlebar-title fw-bold">{% trans "Holidays" %}</h1>
     <a
@@ -26,8 +30,11 @@
       ></ion-icon>
     </a>
   </div>
+  <!-- end of title -->
+
   <div class="oh-main__titlebar oh-main__titlebar--right">
     {% if holidays %}
+    <!-- start of search -->
     <div
       class="oh-input-group oh-input__search-group"
       :class="searchShow ? 'oh-input__search-group--show' : ''"
@@ -47,15 +54,22 @@
         hx-target="#holidays"
       />
     </div>
+    <!-- end of search -->
+
+    <!-- start of Nav bar buttons -->
     <div class="oh-main__titlebar-button-container">
+      <!-- start of filter -->
       <div class="oh-dropdown" x-data="{open: false}">
-        <button class="oh-btn ml-2" @click="open = !open">
+        <button  class="oh-btn ml-2" @click="open = !open">
           <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}
           <div id="filterCount"></div>
         </button>
         {% include "leave/holiday/holiday_filter.html" %}
       </div>
+      <!-- end of filter -->
       {% endif %}
+
+      <!-- start of Actions -->
       <div class="oh-dropdown ml-2" x-data="{open: false}">
         <button
           class="oh-btn oh-btn--dropdown"
@@ -103,6 +117,9 @@
           </ul>
         </div>
       </div>
+      <!-- end of actions -->
+
+      <!-- start of create -->
       <div class="oh-btn-group ml-2">
         <div class="oh-dropdown" x-data="{open: false}">
           <button
@@ -117,34 +134,53 @@
           </button>
         </div>
       </div>
+      <!-- end of create -->
     </div>
+    <!-- end of nav bar buttons -->
   </div>
 </section>
-<div class="oh-wrapper" id="holidays">
-  {% if holidays %} {% include 'leave/holiday/holiday.html' %} {% else %}
-  <div
-    style="
-      height: 70vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    "
-    class=""
-  >
-    <div style="" class="oh-404">
-      <img
-        style="display: block; width: 150px; height: 150px; margin: 10px auto"
-        src="{% static 'images/ui/leave_types.png' %}"
-        class="mb-4"
-        alt=""
-      />
-      <h3 style="font-size: 20px" class="oh-404__subtitle">
-        {% trans "There are no holidays at the moment." %}
-      </h3>
+<!-- end of nav bar -->
+
+{% if holidays %}
+  
+    <div class="oh-checkpoint-badge mb-2" id="selectedHolidays" data-ids="[]" data-clicked="" style="display:none;" >
+      {% trans "Selected Holidays" %}
     </div>
-  </div>
+  
+{% endif %}
+
+<!--start of holiday display  -->
+<div class="oh-wrapper" id="holidays">
+  {% if holidays %} 
+    {% include 'leave/holiday/holiday.html' %} 
+  {% else %}
+    <!--start of empty page  -->
+    <div
+      style="
+        height: 70vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      "
+      class=""
+    >
+      <div style="" class="oh-404">
+        <img
+          style="display: block; width: 150px; height: 150px; margin: 10px auto"
+          src="{% static 'images/ui/leave_types.png' %}"
+          class="mb-4"
+          alt=""
+        />
+        <h3 style="font-size: 20px" class="oh-404__subtitle">
+          {% trans "There are no holidays at the moment." %}
+        </h3>
+      </div>
+    </div>
+    <!-- end of empty page -->
   {% endif %}
 </div>
+<!-- end of Holiday display -->
+
 <!-- Holiday creation -->
 <div
   class="oh-modal"
@@ -166,7 +202,9 @@
   </div>
 </div>
 
-<!-- Update Holiday -->
+<!-- start of modals -->
+
+<!-- start of Update Holiday -->
 <div
   class="oh-modal"
   id="editModal2"
@@ -186,8 +224,9 @@
     <div id="updateForm"></div>
   </div>
 </div>
+<!-- end of update modal -->
 
-<!-- Import Holiday Modal -->
+<!-- start Import Holiday Modal -->
 <div
   class="oh-modal"
   id="holidayImport"
@@ -247,7 +286,9 @@
     </div>
   </div>
 </div>
+<!-- end of holiday import modal  -->
 
+<!-- start of holiday export modal -->
 <div
   class="oh-modal"
   id="holidayExport"
@@ -285,7 +326,8 @@
     </div>
   </div>
 </div>
-
+<!-- end of holiday export modal -->
+<!-- end of modals -->
 <script>
   $(document).on("htmx:load", "#holidays", function () {
     // Create a new script element
@@ -322,5 +364,11 @@
 </script>
 
 <script src="{% static '/base/filter.js' %}"></script>
+<script src="{% static '/holiday/action.js' %}"></script>
+<script>
+  $(document).ready(function () {
+    $("[name=recurring]").select2
+  });
+</script>
 
 {% endblock %}

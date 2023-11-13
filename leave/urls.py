@@ -1,13 +1,23 @@
 from django.urls import path
 from django import views
 from . import views
+from . import models
 
 
 urlpatterns = [
     path("type-creation", views.leave_type_creation, name="type-creation"),
-    path("type-view", views.leave_type_view, name="type-view"),
-    path("leave-type-individual-view/<int:id>", views.leave_type_individual_view, name="leave-type-individual-view"),
-    path("type-update/<int:id>", views.leave_type_update, name="type-update"),
+    path("type-view/", views.leave_type_view, name="type-view"),
+    path(
+        "leave-type-individual-view/<int:id>",
+        views.leave_type_individual_view,
+        name="leave-type-individual-view",
+    ),
+    path(
+        "type-update/<int:id>",
+        views.leave_type_update,
+        name="type-update",
+        kwargs={"model": models.LeaveType},
+    ),
     path("type-delete/<int:id>", views.leave_type_delete, name="type-delete"),
     path("type-filter", views.leave_type_filter, name="type-filter"),
     path("request-creation", views.leave_request_creation, name="request-creation"),
@@ -54,17 +64,33 @@ urlpatterns = [
         views.assign_leave_type_excel,
         name="assign-leave-type-excel",
     ),
-    path("assign-leave-type-info-import", views.assign_leave_type_import, name="assign-leave-type-info-import"),
-    path("assigned-leaves-info-export", views.assigned_leaves_export, name="assigned-leaves-info-export"),
+    path(
+        "assign-leave-type-info-import",
+        views.assign_leave_type_import,
+        name="assign-leave-type-info-import",
+    ),
+    path(
+        "assigned-leaves-info-export",
+        views.assigned_leaves_export,
+        name="assigned-leaves-info-export",
+    ),
     path("assign-filter", views.leave_assign_filter, name="assign-filter"),
     path("holiday-view", views.holiday_view, name="holiday-view"),
-    path("holidays-excel-template", views.holidays_excel_template, name="holidays-excel-template"),
-    path("holidays-info-import", views.holidays_info_import, name="holidays-info-import"),
+    path(
+        "holidays-excel-template",
+        views.holidays_excel_template,
+        name="holidays-excel-template",
+    ),
+    path(
+        "holidays-info-import", views.holidays_info_import, name="holidays-info-import"
+    ),
     path("holiday-info-export", views.holiday_info_export, name="holiday-info-export"),
     path("holiday-creation", views.holiday_creation, name="holiday-creation"),
     path("holiday-update/<int:id>", views.holiday_update, name="holiday-update"),
     path("holiday-delete/<int:id>", views.holiday_delete, name="holiday-delete"),
-    path("holidays-bulk-delete", views.bulk_holiday_delete, name="holidays-bulk-delete"),
+    path(
+        "holidays-bulk-delete", views.bulk_holiday_delete, name="holidays-bulk-delete"
+    ),
     path("holiday-filter", views.holiday_filter, name="holiday-filter"),
     path(
         "company-leave-creation",
@@ -130,85 +156,103 @@ urlpatterns = [
     ),
     path("leave-type-chart", views.leave_type_chart, name="leave-type-chart"),
     path("leave-over-period", views.leave_over_period, name="leave-over-period"),
-    path("leave-request-create", views.leave_request_create, name="leave-request-create"),
-    path('leave-allocation-request-view',
-         views.leave_allocation_request_view,
-         name='leave-allocation-request-view',
+    path(
+        "leave-request-create", views.leave_request_create, name="leave-request-create"
     ),
     path(
-        'leave-allocation-request-create',
+        "leave-allocation-request-view",
+        views.leave_allocation_request_view,
+        name="leave-allocation-request-view",
+    ),
+    path(
+        "leave-allocation-request-create",
         views.leave_allocation_request_create,
-        name= "leave-allocation-request-create"
+        name="leave-allocation-request-create",
     ),
     path(
-        'leave-allocation-request-filter',
+        "leave-allocation-request-filter",
         views.leave_allocation_request_filter,
-        name= "leave-allocation-request-filter"
+        name="leave-allocation-request-filter",
     ),
     path(
-        'leave-allocation-request-single-view/<int:req_id>',
+        "leave-allocation-request-single-view/<int:req_id>",
         views.leave_allocation_request_single_view,
-        name= "leave-allocation-request-single-view"
+        name="leave-allocation-request-single-view",
     ),
     path(
-        'leave-allocation-request-update/<int:req_id>',
+        "leave-allocation-request-update/<int:req_id>",
         views.leave_allocation_request_update,
-        name= "leave-allocation-request-update"
+        name="leave-allocation-request-update",
     ),
     path(
-        'leave-allocation-request-approve/<int:req_id>',
+        "leave-allocation-request-approve/<int:req_id>",
         views.leave_allocation_request_approve,
-        name= "leave-allocation-request-approve"
+        name="leave-allocation-request-approve",
     ),
     path(
-        'leave-allocation-request-reject/<int:req_id>',
+        "leave-allocation-request-reject/<int:req_id>",
         views.leave_allocation_request_reject,
-        name= "leave-allocation-request-reject"
+        name="leave-allocation-request-reject",
     ),
     path(
-        'leave-allocation-request-delete/<int:req_id>',
+        "leave-allocation-request-delete/<int:req_id>",
         views.leave_allocation_request_delete,
-        name= "leave-allocation-request-delete"
-    ),
-     path('leave-allocation-request-view',
-         views.leave_allocation_request_view,
-         name='leave-allocation-request-view',
+        name="leave-allocation-request-delete",
     ),
     path(
-        'leave-allocation-request-create',
+        "leave-allocation-request-view",
+        views.leave_allocation_request_view,
+        name="leave-allocation-request-view",
+    ),
+    path(
+        "leave-allocation-request-create",
         views.leave_allocation_request_create,
-        name= "leave-allocation-request-create"
+        name="leave-allocation-request-create",
     ),
     path(
-        'leave-allocation-request-filter',
+        "leave-allocation-request-filter",
         views.leave_allocation_request_filter,
-        name= "leave-allocation-request-filter"
+        name="leave-allocation-request-filter",
     ),
     path(
-        'leave-allocation-request-single-view/<int:req_id>',
+        "leave-allocation-request-single-view/<int:req_id>",
         views.leave_allocation_request_single_view,
-        name= "leave-allocation-request-single-view"
+        name="leave-allocation-request-single-view",
     ),
     path(
-        'leave-allocation-request-update/<int:req_id>',
+        "leave-allocation-request-update/<int:req_id>",
         views.leave_allocation_request_update,
-        name= "leave-allocation-request-update"
+        name="leave-allocation-request-update",
     ),
     path(
-        'leave-allocation-request-approve/<int:req_id>',
+        "leave-allocation-request-approve/<int:req_id>",
         views.leave_allocation_request_approve,
-        name= "leave-allocation-request-approve"
+        name="leave-allocation-request-approve",
     ),
-
     path(
-        'leave-allocation-request-reject/<int:req_id>',
+        "leave-allocation-request-reject/<int:req_id>",
         views.leave_allocation_request_reject,
-        name= "leave-allocation-request-reject"
+        name="leave-allocation-request-reject",
     ),
     path(
-        'leave-allocation-request-delete/<int:req_id>',
+        "leave-allocation-request-delete/<int:req_id>",
         views.leave_allocation_request_delete,
-        name= "leave-allocation-request-delete"
+        name="leave-allocation-request-delete",
     ),
-
+    path(
+        "assigned-leave-select/",
+        views.assigned_leave_select,
+        name="assigned-leave-select",
+    ),
+    path(
+        "assigned-leave-select-filter/",
+        views.assigned_leave_select_filter,
+        name="assigned-leave-select-filter",
+    ),
+    path("holiday-select/", views.holiday_select, name="holiday-select"),
+    path(
+        "holiday-select-filter/",
+        views.holiday_select_filter,
+        name="holiday-select-filter",
+    ),
 ]

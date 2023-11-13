@@ -211,6 +211,36 @@
   </div>
 </section>
 
+{% if available_leaves %}
+  <div class="ms-5">
+    <div class="oh-checkpoint-badge mb-2" id="selectedLeaves" data-ids="[]" data-clicked="" style="display:none;" >
+      {% trans "Selected Leaves" %}
+    </div>
+    <div
+      class="oh-checkpoint-badge text-success mb-2"
+      id="selectAllLeaves"
+      style="cursor: pointer"
+    >
+      {% trans "Select All Leaves" %}
+    </div>
+    <div
+      class="oh-checkpoint-badge text-secondary mb-2"
+      id="unselectAllLeaves"
+      style="cursor: pointer"
+    >
+      {% trans "Unselect All Leaves" %}
+    </div>
+    <div
+      class="oh-checkpoint-badge text-info mb-2"
+      id="exportAssignedLeaves"
+      style="cursor: pointer; display: none"
+    >
+      {% trans "Export Leaves" %}
+    </div>
+    <div class="oh-checkpoint-badge text-danger mb-2" id="selectedShowLeaves" style="display: none"></div>
+  </div>
+{% endif %}
+
 <div class="oh-wrapper" id="assignedLeaves">
   {% if available_leaves %} 
     {% include 'leave/leave_assign/assigned_leave.html'%} 
@@ -282,38 +312,37 @@
 
 <script>
 
-  $(document).on('htmx:load', '#assignedLeaves', function () {
-      // Create a new script element
-      var scriptElement = document.createElement("script");
-      // Set the source URL of the script file to be loaded
-      scriptElement.src = "{% static 'build/js/web.frontend.min.js' %}";
-      // Append the script element to the head of the HTML document
-      document.head.appendChild(scriptElement);
+    $(document).on('htmx:load', '#assignedLeaves', function () {
+        // Create a new script element
+        var scriptElement = document.createElement("script");
+        // Set the source URL of the script file to be loaded
+        scriptElement.src = "{% static 'build/js/web.frontend.min.js' %}";
+        // Append the script element to the head of the HTML document
+        document.head.appendChild(scriptElement);
+    });
+
+    $(document).on('htmx:load', '#assignLeaveForm', function () {
+        {% include 'select2.js' %}
+        $('#leaveTypeAssign #id_leave_type_id').select2();
+        $('#employeeAssign #id_employee_id').select2();
+    });
+
+    $('#delete-link').on('click', function (event) {
+
+        event.preventDefault(); // prevent the default behavior of the link
+
+        const link = $(this);
+        const confirmation = confirm("{% trans 'Are you sure you want to delete?' %}");
+
+        if (confirmation) {
+            window.location.href = link.attr('href'); // execute the href if confirmed
+        }
+    });
+    $(document).ready(function () {
+      $(".oh-accordion-meta__header").on("click", function() {
+          $(this).siblings(".oh-accordion-meta__body").toggleClass("d-none");
+      });
   });
-
-  $(document).on('htmx:load', '#assignLeaveForm', function () {
-      {% include 'select2.js' %}
-      $('#leaveTypeAssign #id_leave_type_id').select2();
-      $('#employeeAssign #id_employee_id').select2();
-  });
-
-  $('#delete-link').on('click', function (event) {
-
-      event.preventDefault(); // prevent the default behavior of the link
-
-      const link = $(this);
-      const confirmation = confirm("{% trans 'Are you sure you want to delete?' %}");
-
-      if (confirmation) {
-          window.location.href = link.attr('href'); // execute the href if confirmed
-      }
-  });
-  $(document).ready(function () {
-    $(".oh-accordion-meta__header").on("click",function{
-        $(this).sibling(".oh-accordion-meta__body").toggleClass("d-none")
-    })
-});
-
 </script>
 
 <script src="{% static '/base/filter.js' %}"></script>

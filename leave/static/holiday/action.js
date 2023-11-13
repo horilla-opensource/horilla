@@ -1,124 +1,343 @@
-$(document).ready(function () {
-  var deleteMessages = {
-    ar: "هل تريد حقًا حذف جميع العطل المحددة؟",
-    de: "Möchten Sie wirklich alle ausgewählten Feiertage löschen?",
-    es: "¿Realmente quieres eliminar todas las vacaciones seleccionadas?",
-    en: "Do you really want to delete all the selected holidays?",
-    fr: "Voulez-vous vraiment supprimer toutes les vacances sélectionnées?",
-  };
+var rowMessages = {
+  ar: " تم الاختيار",
+  de: " Ausgewählt",
+  es: " Seleccionado",
+  en: " Selected",
+  fr: " Sélectionné",
+};
 
-  var no_rows_deleteMessages = {
-    ar: "لم تتم تحديد صفوف لحذف العطلات.",
-    de: "Es wurden keine Zeilen zum Löschen von Feiertagen ausgewählt.",
-    es: "No se han seleccionado filas para eliminar las vacaciones.",
-    en: "No rows are selected for deleting holidays.",
-    fr: "Aucune ligne n'a été sélectionnée pour supprimer les vacances.",
-  };
-  var downloadMessages = {
-    ar: "هل ترغب في تنزيل القالب؟",
-    de: "Möchten Sie die Vorlage herunterladen?",
-    es: "¿Quieres descargar la plantilla?",
-    en: "Do you want to download the template?",
-    fr: "Voulez-vous télécharger le modèle ?",
-  };
+var deleteHolidayMessages = {
+  ar: "هل تريد حقًا حذف جميع العطل المحددة؟",
+  de: "Möchten Sie wirklich alle ausgewählten Feiertage löschen?",
+  es: "¿Realmente quieres eliminar todas las vacaciones seleccionadas?",
+  en: "Do you really want to delete all the selected holidays?",
+  fr: "Voulez-vous vraiment supprimer toutes les vacances sélectionnées?",
+};
 
-  $("#bulkHolidaysDelete").click(function (e) {
-    e.preventDefault();
-    var languageCode = null;
-    getCurrentLanguageCode(function (code) {
-      languageCode = code;
-      var confirmMessage = deleteMessages[languageCode];
-      var textMessage = no_rows_deleteMessages[languageCode];
-      var checkedRows = $(".holiday-checkbox").filter(":checked");
-      console.log(checkedRows);
-      if (checkedRows.length === 0) {
-        Swal.fire({
-          text: textMessage,
-          icon: "warning",
-          confirmButtonText: "Close",
-        });
+var no_rows_deleteMessages = {
+  ar: "لم تتم تحديد صفوف لحذف العطلات.",
+  de: "Es wurden keine Zeilen zum Löschen von Feiertagen ausgewählt.",
+  es: "No se han seleccionado filas para eliminar las vacaciones.",
+  en: "No rows are selected for deleting holidays.",
+  fr: "Aucune ligne n'a été sélectionnée pour supprimer les vacances.",
+};
+var downloadMessages = {
+  ar: "هل ترغب في تنزيل القالب؟",
+  de: "Möchten Sie die Vorlage herunterladen?",
+  es: "¿Quieres descargar la plantilla?",
+  en: "Do you want to download the template?",
+  fr: "Voulez-vous télécharger le modèle ?",
+};
+
+tickHolidayCheckboxes();
+function makeHolidayListUnique(list) {
+  return Array.from(new Set(list));
+}
+
+function getCurrentLanguageCode(callback) {
+  $.ajax({
+    type: "GET",
+    url: "/employee/get-language-code/",
+    success: function (response) {
+      var languageCode = response.language_code;
+      callback(languageCode); // Pass the language code to the callback
+    },
+  });
+}
+
+function tickHolidayCheckboxes() {
+  var ids = JSON.parse($("#selectedHolidays").attr("data-ids") || "[]");
+  uniqueIds = makeHolidayListUnique(ids);
+  click = $("#selectedHolidays").attr("data-clicked");
+  if (click === "1") {
+    $(".all-holidays").prop("checked", true);
+  }
+  uniqueIds.forEach(function (id) {
+    $("#" + id).prop("checked", true);
+  });
+  var selectedCount = uniqueIds.length;
+  getCurrentLanguageCode(function (code) {
+    languageCode = code;
+    var message = rowMessages[languageCode];
+    if (selectedCount > 0) {
+      $("#exportHolidays").css("display", "inline-flex");
+      $("#selectedShowHolidays").css("display", "inline-flex");
+      $("#selectedShowHolidays").text(selectedCount + " -" + message);
+    } else {
+      $("#selectedShowHolidays").css("display", "none");
+      $("#exportHolidays").css("display", "none");
+    }
+  });
+}
+
+function addingHolidayIds() {
+  var ids = JSON.parse($("#selectedHolidays").attr("data-ids") || "[]");
+  var selectedCount = 0;
+
+  $(".all-holidays-row").each(function () {
+    if ($(this).is(":checked")) {
+      ids.push(this.id);
+    } else {
+      var index = ids.indexOf(this.id);
+      if (index > -1) {
+        ids.splice(index, 1);
+      }
+    }
+  });
+
+  ids = makeHolidayListUnique(ids);
+  selectedCount = ids.length;
+
+  getCurrentLanguageCode(function (code) {
+    languageCode = code;
+    var message = rowMessages[languageCode];
+    $("#selectedHolidays").attr("data-ids", JSON.stringify(ids));
+    if (selectedCount === 0) {
+      $("#selectedShowHolidays").css("display", "none");
+      $("#exportHolidays").css("display", "none");
+    } else {
+      $("#exportHolidays").css("display", "inline-flex");
+      $("#selectedShowHolidays").css("display", "inline-flex");
+      $("#selectedShowHolidays").text(selectedCount + " - " + message);
+    }
+  });
+}
+
+function selectAllHolidays() {
+  $("#selectedHolidays").attr("data-clicked", 1);
+  $("#selectedShowHolidays").removeAttr("style");
+  var savedFilters = JSON.parse(localStorage.getItem("savedFilters"));
+
+  if (savedFilters && savedFilters["filterData"] !== null) {
+    var filter = savedFilters["filterData"];
+    $.ajax({
+      url: "/leave/holiday-select-filter",
+      data: { page: "all", filter: JSON.stringify(filter) },
+      type: "GET",
+      dataType: "json",
+      success: function (response) {
+        var employeeIds = response.employee_ids;
+
+        if (Array.isArray(employeeIds)) {
+          // Continue
+        } else {
+          console.error("employee_ids is not an array:", employeeIds);
+        }
+
+        for (var i = 0; i < employeeIds.length; i++) {
+          var empId = employeeIds[i];
+          $("#" + empId).prop("checked", true);
+        }
+        $("#selectedHolidays").attr("data-ids", JSON.stringify(employeeIds));
+
+        count = makeHolidayListUnique(employeeIds);
+        tickHolidayCheckboxes(count);
+      },
+      error: function (xhr, status, error) {
+        console.error("Error:", error);
+      },
+    });
+  } else {
+    $.ajax({
+      url: "/leave/holiday-select",
+      data: { page: "all" },
+      type: "GET",
+      dataType: "json",
+      success: function (response) {
+        var employeeIds = response.employee_ids;
+        if (Array.isArray(employeeIds)) {
+          // Continue
+        } else {
+          console.error("employee_ids is not an array:", employeeIds);
+        }
+
+        for (var i = 0; i < employeeIds.length; i++) {
+          var empId = employeeIds[i];
+          $("#" + empId).prop("checked", true);
+        }
+        var previousIds = $("#selectedHolidays").attr("data-ids");
+        $("#selectedHolidays").attr(
+          "data-ids",
+          JSON.stringify(
+            Array.from(new Set([...employeeIds, ...JSON.parse(previousIds)]))
+          )
+        );
+        count = makeHolidayListUnique(employeeIds);
+        tickHolidayCheckboxes(count);
+      },
+      error: function (xhr, status, error) {
+        console.error("Error:", error);
+      },
+    });
+  }
+}
+
+function unselectAllHolidays() {
+  $("#selectedHolidays").attr("data-clicked", 0);
+  $.ajax({
+    url: "/leave/holiday-select",
+    data: { page: "all", filter: "{}" },
+    type: "GET",
+    dataType: "json",
+    success: function (response) {
+      var employeeIds = response.employee_ids;
+
+      if (Array.isArray(employeeIds)) {
+        // Continue
       } else {
-        Swal.fire({
-          text: confirmMessage,
-          icon: "error",
-          showCancelButton: true,
-          confirmButtonColor: "#008000",
-          cancelButtonColor: "#d33",
-          confirmButtonText: "Confirm",
-        }).then(function (result) {
-          if (result.isConfirmed) {
-            ids = [];
-            checkedRows.each(function () {
-              ids.push($(this).attr("id"));
+        console.error("employee_ids is not an array:", employeeIds);
+      }
+
+      for (var i = 0; i < employeeIds.length; i++) {
+        var empId = employeeIds[i];
+        $("#" + empId).prop("checked", false);
+        $(".all-holidays").prop("checked", false);
+      }
+      $("#selectedHolidays").attr("data-ids", JSON.stringify([]));
+
+      count = [];
+      tickHolidayCheckboxes(count);
+    },
+    error: function (xhr, status, error) {
+      console.error("Error:", error);
+    },
+  });
+}
+
+function exportHolidays() {
+  var currentDate = new Date().toISOString().slice(0, 10);
+  var language_code = null;
+  getCurrentLanguageCode(function (code) {
+    language_code = code;
+    var confirmMessage = excelMessages[language_code];
+    ids = [];
+    ids = JSON.parse($("#selectedHolidays").attr("data-ids"));
+    Swal.fire({
+      text: confirmMessage,
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#008000",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Confirm",
+    }).then(function (result) {
+      if (result.isConfirmed) {
+        $.ajax({
+          type: "GET",
+          url: "/leave/holiday-info-export",
+          data: {
+            ids: JSON.stringify(ids),
+          },
+          dataType: "binary",
+          xhrFields: {
+            responseType: "blob",
+          },
+          success: function (response) {
+            const file = new Blob([response], {
+              type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
             });
-            $.ajax({
-              type: "POST",
-              url: "/leave/holidays-bulk-delete",
-              data: {
-                csrfmiddlewaretoken: getCookie("csrftoken"),
-                ids: JSON.stringify(ids),
-              },
-              success: function (response, textStatus, jqXHR) {
-                if (jqXHR.status === 200) {
-                  location.reload();
-                } else {
-                }
-              },
-            });
-          }
+            const url = URL.createObjectURL(file);
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = "holiday_leaves" + currentDate + ".xlsx";
+            document.body.appendChild(link);
+            link.click();
+          },
+          error: function (xhr, textStatus, errorThrown) {
+            console.error("Error downloading file:", errorThrown);
+          },
         });
       }
     });
   });
+}
 
-  $(".all-holidays").change(function (e) {
-    var is_checked = $(this).is(":checked");
-    if (is_checked) {
-      $(".all-holidays-row").prop("checked", true);
+$("#bulkHolidaysDelete").click(function (e) {
+  e.preventDefault();
+  var languageCode = null;
+  getCurrentLanguageCode(function (code) {
+    languageCode = code;
+    var confirmMessage = deleteHolidayMessages[languageCode];
+    var textMessage = no_rows_deleteMessages[languageCode];
+    ids = [];
+    ids.push($("#selectedHolidays").attr("data-ids"));
+    ids = JSON.parse($("#selectedHolidays").attr("data-ids"));
+    if (ids.length === 0) {
+      Swal.fire({
+        text: textMessage,
+        icon: "warning",
+        confirmButtonText: "Close",
+      });
     } else {
-      $(".all-holidays-row").prop("checked", false);
-    }
-  });
-
-  $("#holidays-info-import").click(function (e) {
-    e.preventDefault();
-    var languageCode = null;
-    getCurrentLanguageCode(function (code) {
-      languageCode = code;
-      var confirmMessage = downloadMessages[languageCode];
       Swal.fire({
         text: confirmMessage,
-        icon: "question",
+        icon: "error",
         showCancelButton: true,
         confirmButtonColor: "#008000",
         cancelButtonColor: "#d33",
         confirmButtonText: "Confirm",
       }).then(function (result) {
         if (result.isConfirmed) {
+          ids = [];
+          ids.push($("#selectedHolidays").attr("data-ids"));
+          ids = JSON.parse($("#selectedHolidays").attr("data-ids"));
           $.ajax({
-            type: "GET",
-            url: "holidays-excel-template",
-            dataType: "binary",
-            xhrFields: {
-              responseType: "blob",
+            type: "POST",
+            url: "/leave/holidays-bulk-delete",
+            data: {
+              csrfmiddlewaretoken: getCookie("csrftoken"),
+              ids: JSON.stringify(ids),
             },
-            success: function (response) {
-              const file = new Blob([response], {
-                type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-              });
-              const url = URL.createObjectURL(file);
-              const link = document.createElement("a");
-              link.href = url;
-              link.download = "holiday_excel.xlsx";
-              document.body.appendChild(link);
-              link.click();
-            },
-            error: function (xhr, textStatus, errorThrown) {
-              console.error("Error downloading file:", errorThrown);
+            success: function (response, textStatus, jqXHR) {
+              if (jqXHR.status === 200) {
+                location.reload();
+              } else {
+              }
             },
           });
         }
       });
+    }
+  });
+});
+
+$("#holidays-info-import").click(function (e) {
+  e.preventDefault();
+  var languageCode = null;
+  getCurrentLanguageCode(function (code) {
+    languageCode = code;
+    var confirmMessage = downloadMessages[languageCode];
+    Swal.fire({
+      text: confirmMessage,
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#008000",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Confirm",
+    }).then(function (result) {
+      if (result.isConfirmed) {
+        $.ajax({
+          type: "GET",
+          url: "holidays-excel-template",
+          dataType: "binary",
+          xhrFields: {
+            responseType: "blob",
+          },
+          success: function (response) {
+            const file = new Blob([response], {
+              type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            });
+            const url = URL.createObjectURL(file);
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = "holiday_excel.xlsx";
+            document.body.appendChild(link);
+            link.click();
+          },
+          error: function (xhr, textStatus, errorThrown) {
+            console.error("Error downloading file:", errorThrown);
+          },
+        });
+      }
     });
   });
 });
