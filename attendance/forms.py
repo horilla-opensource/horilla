@@ -568,6 +568,7 @@ class NewRequestForm(AttendanceRequestForm):
 
 excluded_fields = [
     "id",
+    "attendance_id__employee_id",
     "requested_data",
     "at_work_second",
     "approved_overtime_second",
@@ -615,7 +616,7 @@ class LateComeEarlyOutExportForm(forms.Form):
     ]
     model_fields_2 = Attendance._meta.get_fields()
     field_choices_2 = [
-        (field.name, field.verbose_name)
+        ("attendance_id__" + field.name, field.verbose_name)
         for field in model_fields_2
         if hasattr(field, "verbose_name") and field.name not in excluded_fields
     ]
@@ -627,7 +628,11 @@ class LateComeEarlyOutExportForm(forms.Form):
         initial=[
             "employee_id",
             "type",
-            "is_active",
+            "attendance_id__attendance_date",
+            "attendance_id__attendance_clock_in_date",
+            "attendance_id__attendance_clock_in",
+            "attendance_id__attendance_clock_out_date",
+            "attendance_id__attendance_clock_out",
         ],
     )
 

@@ -299,21 +299,28 @@ def attendance_view(request):
     else:
         template = "attendance/attendance/attendance_empty.html"
     validate_attendances_ids = json.dumps(
-        list(validate_attendances.values_list("id", flat=True))
+        [
+            instance.id
+            for instance in paginator_qry(
+                validate_attendances, request.GET.get("vpage")
+            ).object_list
+        ]
     )
     ot_attendances_ids = json.dumps(
-        list(
-            paginator_qry(
+        [
+            instance.id
+            for instance in paginator_qry(
                 ot_attendances, request.GET.get("opage")
-            ).object_list.values_list("id", flat=True)
-        )
+            ).object_list
+        ]
     )
     attendances_ids = json.dumps(
-        list(
-            paginator_qry(attendances, request.GET.get("page")).object_list.values_list(
-                "id", flat=True
-            )
-        )
+        [
+            instance.id
+            for instance in paginator_qry(
+                attendances, request.GET.get("page")
+            ).object_list
+        ]
     )
     return render(
         request,
@@ -492,7 +499,12 @@ def view_my_attendance(request):
     else:
         template = "attendance/own_attendance/own_empty.html"
     attendances_ids = json.dumps(
-        list(employee_attendances.values_list("id", flat=True))
+        [
+            instance.id
+            for instance in paginator_qry(
+                employee_attendances, request.GET.get("page")
+            ).object_list
+        ]
     )
     return render(
         request,
@@ -535,19 +547,20 @@ def attendance_overtime_view(request):
     This method is used to view attendance account or overtime account.
     """
     previous_data = request.GET.urlencode()
-    accounts = AttendanceOverTime.objects.all()
-    if accounts.exists():
+    filter_obj = AttendanceOverTimeFilter(request.GET)
+    if filter_obj.qs.exists():
         template = "attendance/attendance_account/attendance_overtime_view.html"
     else:
         template = "attendance/attendance_account/overtime_empty.html"
     accounts = filtersubordinates(
-        request, accounts, "attendance.view_attendanceovertime"
+        request, filter_obj.qs, "attendance.view_attendanceovertime"
     )
     form = AttendanceOverTimeForm()
     form = choosesubordinates(request, form, "attendance.add_attendanceovertime")
-    filter_obj = AttendanceOverTimeFilter()
     export_obj = AttendanceOverTimeFilter()
     export_fields = AttendanceOverTimeExportForm()
+    data_dict = parse_qs(previous_data)
+    get_key_instances(AttendanceOverTime, data_dict)
     return render(
         request,
         template,
@@ -559,6 +572,7 @@ def attendance_overtime_view(request):
             "export_obj": export_obj,
             "export_fields": export_fields,
             "gp_fields": AttendanceOvertimeReGroup.fields,
+            "filter_dict": data_dict,
         },
     )
 
@@ -965,12 +979,12 @@ def late_come_early_out_bulk_delete(request):
     ids = json.loads(ids)
     for attendance_id in ids:
         try:
-            latecome = AttendanceLateComeEarlyOut.objects.get(id=attendance_id)
-            latecome.delete()
+            late_come = AttendanceLateComeEarlyOut.objects.get(id=attendance_id)
+            late_come.delete()
             messages.success(
                 request,
                 _("{employee} Late-in early-out deleted.").format(
-                    employee=latecome.employee_id
+                    employee=late_come.employee_id
                 ),
             )
         except AttendanceLateComeEarlyOut.DoesNotExist:
@@ -986,27 +1000,53 @@ def late_come_early_out_export(request):
     This view function takes a GET request and exports attendance late come early out data into an Excel file.
     The exported Excel file will include the selected fields from the AttendanceLateComeEarlyOut model.
     """
+    late_come_data = {}
+    selected_columns = []
+    form = LateComeEarlyOutExportForm()
     today_date = date.today().strftime("%Y-%m-%d")
     file_name = f"Late_come_{today_date}.xlsx"
     attendances = LateComeEarlyOutFilter(request.GET).qs
     selected_fields = request.GET.getlist("selected_fields")
-    model_fields = AttendanceLateComeEarlyOut._meta.get_fields()
-    lateCome_data = {}
-    for field in model_fields:
-        field_name = field.name
-        if field_name in selected_fields:
-            lateCome_data[field.verbose_name] = []
-            for attendance in attendances:
-                value = getattr(attendance, field_name)
-                if value is True:
-                    value = "Yes"
-                elif value is False:
-                    value = "No"
-                lateCome_data[field.verbose_name].append(value)
-    data_frame = pd.DataFrame(data=lateCome_data)
+
+    if not selected_fields:
+        selected_fields = form.fields["selected_fields"].initial
+        ids = request.GET.get("ids")
+        id_list = json.loads(ids)
+        attendances = AttendanceLateComeEarlyOut.objects.filter(id__in=id_list)
+
+    for field in form.fields["selected_fields"].choices:
+        value = field[0]
+        key = field[1]
+        if value in selected_fields:
+            selected_columns.append((value, key))
+
+    for column_value, column_name in selected_columns:
+        nested_attributes = column_value.split("__")
+        late_come_data[column_name] = []
+        for attendance in attendances:
+            value = attendance
+            for attr in nested_attributes:
+                value = getattr(value, attr, None)
+                if value is None:
+                    break
+            data = str(value) if value is not None else ""
+            if data == "True":
+                data = _("Yes")
+            elif data == "False":
+                data = _("No")
+            late_come_data[column_name].append(data)
+
+    data_frame = pd.DataFrame(data=late_come_data)
+    data_frame = data_frame.style.applymap(
+        lambda x: "text-align: center", subset=pd.IndexSlice[:, :]
+    )
     response = HttpResponse(content_type="application/ms-excel")
     response["Content-Disposition"] = f'attachment; filename="{file_name}"'
-    data_frame.to_excel(response, index=False)
+    writer = pd.ExcelWriter(response, engine="xlsxwriter")
+    data_frame.to_excel(writer, index=False, sheet_name="Sheet1")
+    worksheet = writer.sheets["Sheet1"]
+    worksheet.set_column("A:Z", 20)
+    writer.close()
     return response
 
 
