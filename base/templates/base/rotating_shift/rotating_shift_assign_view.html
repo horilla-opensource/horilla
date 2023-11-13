@@ -2,6 +2,29 @@
 {% load i18n %}
 {% load basefilters %}
 <div class="oh-wrapper">
+  <div
+  class="oh-checkpoint-badge text-success mb-2"
+  id="selectAllRShifts"
+  style="cursor: pointer"
+>
+  {% trans "Select All Shifts" %}
+</div>
+<div
+  class="oh-checkpoint-badge text-secondary mb-2"
+  id="unselectAllRShifts"
+  style="cursor: pointer"
+>
+  {% trans "Unselect All Shifts" %}
+</div>
+{% comment %} <div
+  class="oh-checkpoint-badge text-info mb-2"
+  id="exportRShifts"
+  style="cursor: pointer; display: none"
+>
+  {% trans "Export Shifts" %}
+</div> {% endcomment %}
+<div class="oh-checkpoint-badge text-danger mb-2" id="selectedShowRShifts" style="display: none"></div>
+
   <div id="view-container">
     {% include 'filter_tags.html' %}
     <div class="oh-sticky-table">
@@ -196,3 +219,132 @@
 </div>
 
 <script src="{% static '/base/actions.js' %}"></script>
+<script>
+  function addingRShiftIds() {
+		var ids = JSON.parse($("#selectedRShifts").attr("data-ids") || "[]");
+		var selectedCount = 0;
+		
+		$(".all-rshift-row").each(function () {
+			if ($(this).is(":checked")) {
+			ids.push(this.id);
+			} else {
+			var index = ids.indexOf(this.id);
+			if (index > -1) {
+				ids.splice(index, 1);
+			}
+			}
+		});
+		
+		ids = makeRShiftListUnique(ids);
+		selectedCount = ids.length;
+		
+		getCurrentLanguageCode(function (code) {
+			languageCode = code;
+			var message = rowMessages[languageCode];
+			$("#selectedRShifts").attr("data-ids", JSON.stringify(ids));
+			if (selectedCount === 0) {
+			$("#selectedShowRShifts").css("display", "none");
+			$("#exportRShifts").css("display", "none");
+			} else {
+			$("#exportRShifts").css("display", "inline-flex");
+			$("#selectedShowRShifts").css("display", "inline-flex");
+			$("#selectedShowRShifts").text(selectedCount + " - " + message);
+			}
+		});
+	}
+
+	$(document).ready(function() {
+		
+		$(".all-rshift-row").change(function () {
+			addingRShiftIds();
+		});
+
+		$(".all-rshift").change(function () {
+			addingRShiftIds();
+		});
+
+		tickRShiftCheckboxes();
+
+		$('#selectAllRShifts').click(function() {
+			$("#selectedRShifts").attr("data-clicked", 1);
+			$('#selectedShowRShifts').removeAttr('style');
+			var savedFilters = JSON.parse(localStorage.getItem('savedFilters'));
+
+			if (savedFilters && savedFilters['filterData'] !== null) 
+			{
+				var filter = savedFilters['filterData'];
+				$.ajax({
+					url: '{% url "r-shift-select-filter" %}',
+					data: { page: 'all', 'filter':JSON.stringify(filter) },
+					type: 'GET',
+					dataType: 'json',
+					success: function(response) {
+					var employeeIds = response.employee_ids;
+						var selectedCount = employeeIds.length;	
+						for (var i = 0; i < employeeIds.length; i++) {
+              var empId = employeeIds[i];
+              $('#' + empId).prop('checked', true);
+						}
+						$("#selectedRShifts").attr("data-ids", JSON.stringify(employeeIds));
+
+						count = makeRShiftListUnique(employeeIds)
+						tickRShiftCheckboxes(count)
+					},
+					error: function(xhr, status, error) {
+						console.error('Error:', error);
+					}
+				});
+			} 
+			else {
+
+				$.ajax({
+				url: '{% url "r-shift-select" %}',
+				data: { page: 'all'},
+				type: 'GET',
+				dataType: 'json',
+				success: function(response) {
+					var employeeIds = response.employee_ids;					
+					var selectedCount = employeeIds.length;
+					for (var i = 0; i < employeeIds.length; i++) {
+						var empId = employeeIds[i];
+						$('#' + empId).prop('checked', true);
+					}
+					var previousIds = $("#selectedRShifts").attr("data-ids")
+        	$("#selectedRShifts").attr("data-ids", JSON.stringify(Array.from(new Set([...employeeIds,...JSON.parse(previousIds)]))));
+					count = makeRShiftListUnique(employeeIds)
+					tickRShiftCheckboxes(count)
+				},
+				error: function(xhr, status, error) {
+					console.error('Error:', error);
+				}
+				});
+			}
+		});
+
+		$('#unselectAllRShifts').click(function(){
+			$("#selectedRShifts").attr("data-clicked", 0);
+			$.ajax({
+				url: '{% url "r-shift-select" %}',
+				data: { page: 'unselect', 'filter': '{}' },
+				type: 'GET',
+				dataType: 'json',
+				success: function(response) {
+					var employeeIds = response.employee_ids;
+					for (var i = 0; i < employeeIds.length; i++) {
+            var empId = employeeIds[i];
+            $('#' + empId).prop('checked', false);
+            $(".all-rshift").prop('checked', false);
+					}
+					$("#selectedRShifts").attr("data-ids", JSON.stringify([]));
+
+					count = [];
+					tickRShiftCheckboxes(count)
+				},
+				error: function(xhr, status, error) {
+					console.error('Error:', error);
+				}
+			});
+		});
+	});
+
+</script>

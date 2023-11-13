@@ -3,6 +3,9 @@
 {% block content %}
 
 {% include 'work_type_request/work_type_request_nav.html' %}
+<div class="oh-checkpoint-badge mb-2" id="selectedWorktypes" data-ids="[]" data-clicked="" style="display:none;" >
+  {% trans "Selected Worktypes" %}
+</div>
 <div id="view-container" class="oh-wrapper">
   {% if data %}
     {% include 'work_type_request/htmx/requests.html' %}
@@ -10,8 +13,6 @@
     {% include 'work_type_request/htmx/empty_request.html' %}
   {% endif %}
 </div>
-
-
 
 <div
   class="oh-modal"

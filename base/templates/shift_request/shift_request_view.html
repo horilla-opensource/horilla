@@ -4,6 +4,9 @@
 {% load basefilters %}
 {% load attendancefilters %}
 {% include 'shift_request/shift_request_nav.html' %}
+<div class="oh-checkpoint-badge mb-2" id="selectedShifts" data-ids="[]" data-clicked="" style="display:none;" >
+  {% trans "Selected Shifts" %}
+</div>
 <div id="view-container" class="oh-wrapper">
   {% if data %}
     {% include 'shift_request/htmx/requests.html' %}

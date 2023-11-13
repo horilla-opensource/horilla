@@ -1,7 +1,8 @@
 {% extends 'index.html' %} {% block content %} {% load static %} {% load i18n %}
 {% include 'base/rotating_work_type/rotating_work_type_assign_nav.html' %}
-
-</style>
+<div class="oh-checkpoint-badge mb-2" id="selectedRWorktypes" data-ids="[]" data-clicked="" style="display:none;" >
+  {% trans "Selected Worktypes" %}
+</div>
 <div class="oh-wrapper">
   <div id="view-container">
   {% if rwork_type_assign %}

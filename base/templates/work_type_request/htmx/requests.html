@@ -3,6 +3,29 @@
 {% load static %}
 {% load i18n %}
 {% include 'filter_tags.html' %}
+<div
+class="oh-checkpoint-badge text-success mb-2"
+id="selectAllWorktypes"
+style="cursor: pointer"
+>
+  {% trans "Select All Worktypes" %}
+</div>
+<div
+class="oh-checkpoint-badge text-secondary mb-2"
+id="unselectAllWorktypes"
+style="cursor: pointer"
+>
+  {% trans "Unselect All Worktypes" %}
+</div>
+{% comment %} <div
+class="oh-checkpoint-badge text-info mb-2"
+id="exportWorktypes"
+style="cursor: pointer; display: none"
+>
+  {% trans "Export Worktypes" %}
+</div> {% endcomment %}
+<div class="oh-checkpoint-badge text-danger mb-2" id="selectedShowWorktypes" style="display: none"></div>
+
 <div class="oh-sticky-table">
     <div class="oh-sticky-table__table oh-table--sortable">
       <div class="oh-sticky-table__thead">
@@ -145,3 +168,132 @@
 </div>
 
 <script src="{% static '/base/actions.js' %}"></script>
+<script>
+  function addingWorktypeIds() {
+		var ids = JSON.parse($("#selectedWorktypes").attr("data-ids") || "[]");
+		var selectedCount = 0;
+		
+		$(".all-work-type-requests-row").each(function () {
+			if ($(this).is(":checked")) {
+			ids.push(this.id);
+			} else {
+			var index = ids.indexOf(this.id);
+			if (index > -1) {
+				ids.splice(index, 1);
+			}
+			}
+		});
+		
+		ids = makeWorktypeListUnique(ids);
+		selectedCount = ids.length;
+		
+		getCurrentLanguageCode(function (code) {
+			languageCode = code;
+			var message = rowMessages[languageCode];
+			$("#selectedWorktypes").attr("data-ids", JSON.stringify(ids));
+			if (selectedCount === 0) {
+			$("#selectedShowWorktypes").css("display", "none");
+			$("#exportWorktypes").css("display", "none");
+			} else {
+			$("#exportWorktypes").css("display", "inline-flex");
+			$("#selectedShowWorktypes").css("display", "inline-flex");
+			$("#selectedShowWorktypes").text(selectedCount + " - " + message);
+			}
+		});
+	}
+
+	$(document).ready(function() {
+		
+		$(".all-work-type-requests-row").change(function () {
+			addingWorktypeIds();
+		});
+
+		$(".all-work-type-requests").change(function () {
+			addingWorktypeIds();
+		});
+
+		tickWorktypeCheckboxes();
+
+		$('#selectAllWorktypes').click(function() {
+			$("#selectedWorktypes").attr("data-clicked", 1);
+			$('#selectedShowWorktypes').removeAttr('style');
+			var savedFilters = JSON.parse(localStorage.getItem('savedFilters'));
+
+			if (savedFilters && savedFilters['filterData'] !== null) 
+			{
+				var filter = savedFilters['filterData'];
+				$.ajax({
+					url: '{% url "work-type-select-filter" %}',
+					data: { page: 'all', 'filter':JSON.stringify(filter) },
+					type: 'GET',
+					dataType: 'json',
+					success: function(response) {
+					var employeeIds = response.employee_ids;
+						var selectedCount = employeeIds.length;	
+						for (var i = 0; i < employeeIds.length; i++) {
+              var empId = employeeIds[i];
+              $('#' + empId).prop('checked', true);
+						}
+						$("#selectedWorktypes").attr("data-ids", JSON.stringify(employeeIds));
+
+						count = makeWorktypeListUnique(employeeIds)
+						tickWorktypeCheckboxes(count)
+					},
+					error: function(xhr, status, error) {
+						console.error('Error:', error);
+					}
+				});
+			} 
+			else {
+
+				$.ajax({
+				url: '{% url "work-type-select" %}',
+				data: { page: 'all'},
+				type: 'GET',
+				dataType: 'json',
+				success: function(response) {
+					var employeeIds = response.employee_ids;
+					var selectedCount = employeeIds.length;
+					for (var i = 0; i < employeeIds.length; i++) {
+						var empId = employeeIds[i];
+						$('#' + empId).prop('checked', true);
+					}
+					var previousIds = $("#selectedWorktypes").attr("data-ids")
+        	$("#selectedWorktypes").attr("data-ids", JSON.stringify(Array.from(new Set([...employeeIds,...JSON.parse(previousIds)]))));
+					count = makeWorktypeListUnique(employeeIds)
+					tickWorktypeCheckboxes(count)
+				},
+				error: function(xhr, status, error) {
+					console.error('Error:', error);
+				}
+				});
+			}
+		});
+
+		$('#unselectAllWorktypes').click(function(){
+			$("#selectedWorktypes").attr("data-clicked", 0);
+			$.ajax({
+				url: '{% url "work-type-select" %}',
+				data: { page: 'all', 'filter': '{}' },
+				type: 'GET',
+				dataType: 'json',
+				success: function(response) {
+					var employeeIds = response.employee_ids;
+					for (var i = 0; i < employeeIds.length; i++) {
+            var empId = employeeIds[i];
+            $('#' + empId).prop('checked', false);
+            $(".all-work-type-requests").prop('checked', false);
+					}
+					$("#selectedWorktypes").attr("data-ids", JSON.stringify([]));
+
+					count = [];
+					tickWorktypeCheckboxes(count)
+				},
+				error: function(xhr, status, error) {
+					console.error('Error:', error);
+				}
+			});
+		});
+	});
+
+</script>

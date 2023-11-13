@@ -14,7 +14,7 @@ var unarchiveMessages = {
   fr: "Voulez-vous vraiment désarchiver toutes les allocations sélectionnées?",
 };
 
-var deleteMessages = {
+var deleterequestMessages = {
   ar: "هل ترغب حقًا في حذف كل الحجوزات المحددة؟",
   de: "Möchten Sie wirklich alle ausgewählten Zuweisungen löschen?",
   es: "Realmente quieres eliminar todas las asignaciones seleccionadas?",
@@ -50,6 +50,33 @@ var norowMessages = {
   en: "No rows have been selected.",
   fr: "Aucune ligne n'a été sélectionnée.",
 };
+var rowMessages = {
+  ar: " تم الاختيار",
+  de: " Ausgewählt",
+  es: " Seleccionado",
+  en: " Selected",
+  fr: " Sélectionné",
+};
+
+tickShiftCheckboxes();
+function makeShiftListUnique(list) {
+  return Array.from(new Set(list));
+}
+
+tickWorktypeCheckboxes();
+function makeWorktypeListUnique(list) {
+  return Array.from(new Set(list));
+}
+
+tickRShiftCheckboxes();
+function makeRShiftListUnique(list) {
+  return Array.from(new Set(list));
+}
+
+tickRWorktypeCheckboxes();
+function makeRWorktypeListUnique(list) {
+  return Array.from(new Set(list));
+}
 
 function getCookie(name) {
   let cookieValue = null;
@@ -87,6 +114,30 @@ $(".all-rshift").change(function (e) {
   }
 });
 
+function tickRShiftCheckboxes() {
+  var ids = JSON.parse($("#selectedRShifts").attr("data-ids") || "[]");
+  uniqueIds = makeRShiftListUnique(ids);
+  click = $("#selectedRShifts").attr("data-clicked");
+  if (click === "1") {
+    $(".all-rshift").prop("checked", true);
+  }
+  uniqueIds.forEach(function (id) {
+    $("#" + id).prop("checked", true);
+  });
+  var selectedCount = uniqueIds.length;
+  getCurrentLanguageCode(function (code) {
+    languageCode = code;
+    var message = rowMessages[languageCode];
+    if (selectedCount > 0) {
+      $("#exportRShifts").css("display", "inline-flex");
+      $("#selectedShowRShifts").css("display", "inline-flex");
+      $("#selectedShowRShifts").text(selectedCount + " -" + message);
+    } else {
+      $("#selectedShowRShifts").css("display", "none");
+      $("#exportRShifts").css("display", "none");
+    }
+  });
+}
 
 $("#archiveRotatingShiftAssign").click(function (e) {
   e.preventDefault();
@@ -96,8 +147,10 @@ $("#archiveRotatingShiftAssign").click(function (e) {
     languageCode = code;
     var confirmMessage = archiveMessages[languageCode];
     var textMessage = norowMessages[languageCode];
-    var checkedRows = $(".all-rshift-row").filter(":checked");
-    if (checkedRows.length === 0) {
+    ids = [];
+    ids.push($("#selectedRShifts").attr("data-ids"));
+    ids = JSON.parse($("#selectedRShifts").attr("data-ids"));
+    if (ids.length === 0) {
       Swal.fire({
         text: textMessage,
         icon: "warning",
@@ -114,9 +167,8 @@ $("#archiveRotatingShiftAssign").click(function (e) {
       }).then(function (result) {
         if (result.isConfirmed) {
           ids = [];
-          checkedRows.each(function () {
-            ids.push($(this).attr("id"));
-          });
+          ids.push($("#selectedRShifts").attr("data-ids"));
+          ids = JSON.parse($("#selectedRShifts").attr("data-ids"));
           $.ajax({
             type: "POST",
             url: "/rotating-shift-assign-bulk-archive?is_active=False",
@@ -146,8 +198,10 @@ $("#unArchiveRotatingShiftAssign").click(function (e) {
     languageCode = code;
     var confirmMessage = unarchiveMessages[languageCode];
     var textMessage = norowMessages[languageCode];
-    var checkedRows = $(".all-rshift-row").filter(":checked");
-    if (checkedRows.length === 0) {
+    ids = [];
+    ids.push($("#selectedRShifts").attr("data-ids"));
+    ids = JSON.parse($("#selectedRShifts").attr("data-ids"));
+    if (ids.length === 0) {
       Swal.fire({
         text: textMessage,
         icon: "warning",
@@ -164,9 +218,8 @@ $("#unArchiveRotatingShiftAssign").click(function (e) {
       }).then(function (result) {
         if (result.isConfirmed) {
           ids = [];
-          checkedRows.each(function () {
-            ids.push($(this).attr("id"));
-          });
+          ids.push($("#selectedRShifts").attr("data-ids"));
+          ids = JSON.parse($("#selectedRShifts").attr("data-ids"));
           $.ajax({
             type: "POST",
             url: "/rotating-shift-assign-bulk-archive?is_active=True",
@@ -194,10 +247,12 @@ $("#deleteRotatingShiftAssign").click(function (e) {
   var languageCode = null;
   getCurrentLanguageCode(function (code) {
     languageCode = code;
-    var confirmMessage = deleteMessages[languageCode];
+    var confirmMessage = deleterequestMessages[languageCode];
     var textMessage = norowMessages[languageCode];
-    var checkedRows = $(".all-rshift-row").filter(":checked");
-    if (checkedRows.length === 0) {
+    ids = [];
+    ids.push($("#selectedRShifts").attr("data-ids"));
+    ids = JSON.parse($("#selectedRShifts").attr("data-ids"));
+    if (ids.length === 0) {
       Swal.fire({
         text: textMessage,
         icon: "warning",
@@ -214,9 +269,8 @@ $("#deleteRotatingShiftAssign").click(function (e) {
       }).then(function (result) {
         if (result.isConfirmed) {
           ids = [];
-          checkedRows.each(function () {
-            ids.push($(this).attr("id"));
-          });
+          ids.push($("#selectedRShifts").attr("data-ids"));
+          ids = JSON.parse($("#selectedRShifts").attr("data-ids"));
           $.ajax({
             type: "POST",
             url: "/rotating-shift-assign-bulk-delete",
@@ -247,6 +301,30 @@ $(".all-rwork-type").change(function (e) {
   }
 });
 
+function tickRWorktypeCheckboxes() {
+  var ids = JSON.parse($("#selectedRWorktypes").attr("data-ids") || "[]");
+  uniqueIds = makeWorktypeListUnique(ids);
+  click = $("#selectedRWorktypes").attr("data-clicked");
+  if (click === "1") {
+    $(".all-rwork-type").prop("checked", true);
+  }
+  uniqueIds.forEach(function (id) {
+    $("#" + id).prop("checked", true);
+  });
+  var selectedCount = uniqueIds.length;
+  getCurrentLanguageCode(function (code) {
+    languageCode = code;
+    var message = rowMessages[languageCode];
+    if (selectedCount > 0) {
+      $("#exportRWorktypes").css("display", "inline-flex");
+      $("#selectedShowRWorktypes").css("display", "inline-flex");
+      $("#selectedShowRWorktypes").text(selectedCount + " -" + message);
+    } else {
+      $("#selectedShowRWorktypes").css("display", "none");
+      $("#exportRWorktypes").css("display", "none");
+    }
+  });
+}
 
 $("#archiveRotatingWorkTypeAssign").click(function (e) {
   e.preventDefault();
@@ -256,8 +334,10 @@ $("#archiveRotatingWorkTypeAssign").click(function (e) {
     languageCode = code;
     var confirmMessage = archiveMessages[languageCode];
     var textMessage = norowMessages[languageCode];
-    var checkedRows = $(".all-rwork-type-row").filter(":checked");
-    if (checkedRows.length === 0) {
+    ids = [];
+    ids.push($("#selectedRWorktypes").attr("data-ids"));
+    ids = JSON.parse($("#selectedRWorktypes").attr("data-ids"));
+    if (ids.length === 0) {
       Swal.fire({
         text: textMessage,
         icon: "warning",
@@ -274,9 +354,8 @@ $("#archiveRotatingWorkTypeAssign").click(function (e) {
       }).then(function (result) {
         if (result.isConfirmed) {
           ids = [];
-          checkedRows.each(function () {
-            ids.push($(this).attr("id"));
-          });
+          ids.push($("#selectedRWorktypes").attr("data-ids"));
+          ids = JSON.parse($("#selectedRWorktypes").attr("data-ids"));
           $.ajax({
             type: "POST",
             url: "/rotating-work-type-assign-bulk-archive?is_active=False",
@@ -304,8 +383,10 @@ $("#unArchiveRotatingWorkTypeAssign").click(function (e) {
     languageCode = code;
     var confirmMessage = unarchiveMessages[languageCode];
     var textMessage = norowMessages[languageCode];
-    var checkedRows = $(".all-rwork-type-row").filter(":checked");
-    if (checkedRows.length === 0) {
+    ids = [];
+    ids.push($("#selectedRWorktypes").attr("data-ids"));
+    ids = JSON.parse($("#selectedRWorktypes").attr("data-ids"));
+    if (ids.length === 0) {
       Swal.fire({
         text: textMessage,
         icon: "warning",
@@ -322,10 +403,8 @@ $("#unArchiveRotatingWorkTypeAssign").click(function (e) {
       }).then(function (result) {
         if (result.isConfirmed) {
           ids = [];
-          checkedRows.each(function () {
-            ids.push($(this).attr("id"));
-          });
-
+          ids.push($("#selectedRWorktypes").attr("data-ids"));
+          ids = JSON.parse($("#selectedRWorktypes").attr("data-ids"));
           $.ajax({
             type: "POST",
             url: "/rotating-work-type-assign-bulk-archive?is_active=True",
@@ -353,10 +432,12 @@ $("#deleteRotatingWorkTypeAssign").click(function (e) {
   var languageCode = null;
   getCurrentLanguageCode(function (code) {
     languageCode = code;
-    var confirmMessage = deleteMessages[languageCode];
+    var confirmMessage = deleterequestMessages[languageCode];
     var textMessage = norowMessages[languageCode];
-    var checkedRows = $(".all-rwork-type-row").filter(":checked");
-    if (checkedRows.length === 0) {
+    ids = [];
+    ids.push($("#selectedRWorktypes").attr("data-ids"));
+    ids = JSON.parse($("#selectedRWorktypes").attr("data-ids"));
+    if (ids.length === 0) {
       Swal.fire({
         text: textMessage,
         icon: "warning",
@@ -373,10 +454,8 @@ $("#deleteRotatingWorkTypeAssign").click(function (e) {
       }).then(function (result) {
         if (result.isConfirmed) {
           ids = [];
-          checkedRows.each(function () {
-            ids.push($(this).attr("id"));
-          });
-
+          ids.push($("#selectedRWorktypes").attr("data-ids"));
+          ids = JSON.parse($("#selectedRWorktypes").attr("data-ids"));      
           $.ajax({
             type: "POST",
             url: "/rotating-work-type-assign-bulk-delete",
@@ -407,6 +486,30 @@ $(".all-shift-requests").change(function (e) {
   }
 });
 
+function tickShiftCheckboxes() {
+  var ids = JSON.parse($("#selectedShifts").attr("data-ids") || "[]");
+  uniqueIds = makeShiftListUnique(ids);
+  click = $("#selectedShifts").attr("data-clicked");
+  if (click === "1") {
+    $(".all-shift-requests").prop("checked", true);
+  }
+  uniqueIds.forEach(function (id) {
+    $("#" + id).prop("checked", true);
+  });
+  var selectedCount = uniqueIds.length;
+  getCurrentLanguageCode(function (code) {
+    languageCode = code;
+    var message = rowMessages[languageCode];
+    if (selectedCount > 0) {
+      $("#exportShifts").css("display", "inline-flex");
+      $("#selectedShowShifts").css("display", "inline-flex");
+      $("#selectedShowShifts").text(selectedCount + " -" + message);
+    } else {
+      $("#selectedShowShifts").css("display", "none");
+      $("#exportShifts").css("display", "none");
+    }
+  });
+}
 
 $("#approveShiftRequest").click(function (e) {
   e.preventDefault();
@@ -416,8 +519,10 @@ $("#approveShiftRequest").click(function (e) {
     languageCode = code;
     var confirmMessage = approveMessages[languageCode];
     var textMessage = norowMessages[languageCode];
-    var checkedRows = $(".all-shift-requests-row").filter(":checked");
-    if (checkedRows.length === 0) {
+    ids = [];
+    ids.push($("#selectedShifts").attr("data-ids"));
+    ids = JSON.parse($("#selectedShifts").attr("data-ids"));
+    if (ids.length === 0) {
       Swal.fire({
         text: textMessage,
         icon: "warning",
@@ -435,10 +540,8 @@ $("#approveShiftRequest").click(function (e) {
       }).then(function (result) {
         if (result.isConfirmed) {
           ids = [];
-          checkedRows.each(function () {
-            ids.push($(this).attr("id"));
-          });
-
+          ids.push($("#selectedShifts").attr("data-ids"));
+          ids = JSON.parse($("#selectedShifts").attr("data-ids"));
           $.ajax({
             type: "POST",
             url: "/shift-request-bulk-approve",
@@ -468,8 +571,10 @@ $("#cancelShiftRequest").click(function (e) {
     languageCode = code;
     var confirmMessage = cancelMessages[languageCode];
     var textMessage = norowMessages[languageCode];
-    var checkedRows = $(".all-shift-requests-row").filter(":checked");
-    if (checkedRows.length === 0) {
+    ids = [];
+    ids.push($("#selectedShifts").attr("data-ids"));
+    ids = JSON.parse($("#selectedShifts").attr("data-ids"));
+    if (ids.length === 0) {
       Swal.fire({
         text: textMessage,
         icon: "warning",
@@ -486,10 +591,8 @@ $("#cancelShiftRequest").click(function (e) {
       }).then(function (result) {
         if (result.isConfirmed) {
           ids = [];
-          checkedRows.each(function () {
-            ids.push($(this).attr("id"));
-          });
-
+          ids.push($("#selectedShifts").attr("data-ids"));
+          ids = JSON.parse($("#selectedShifts").attr("data-ids"));      
           $.ajax({
             type: "POST",
             url: "/shift-request-bulk-cancel",
@@ -519,8 +622,10 @@ $("#deleteShiftRequest").click(function (e) {
     languageCode = code;
     var confirmMessage = requestDeleteMessages[languageCode];
     var textMessage = norowMessages[languageCode];
-    var checkedRows = $(".all-shift-requests-row").filter(":checked");
-    if (checkedRows.length === 0) {
+    ids = [];
+    ids.push($("#selectedShifts").attr("data-ids"));
+    ids = JSON.parse($("#selectedShifts").attr("data-ids"));
+    if (ids.length === 0) {
       Swal.fire({
         text: textMessage,
         icon: "warning",
@@ -536,11 +641,9 @@ $("#deleteShiftRequest").click(function (e) {
         confirmButtonText: "Confirm",
       }).then(function (result) {
         if (result.isConfirmed) {
-          var ids = [];
-          checkedRows.each(function () {
-            ids.push($(this).attr("id"));
-          });
-
+          ids = [];
+          ids.push($("#selectedShifts").attr("data-ids"));
+          ids = JSON.parse($("#selectedShifts").attr("data-ids"));      
           $.ajax({
             type: "POST",
             url: "/shift-request-bulk-delete",
@@ -571,6 +674,30 @@ $(".all-work-type-requests").change(function (e) {
   }
 });
 
+function tickWorktypeCheckboxes() {
+  var ids = JSON.parse($("#selectedWorktypes").attr("data-ids") || "[]");
+  uniqueIds = makeWorktypeListUnique(ids);
+  click = $("#selectedWorktypes").attr("data-clicked");
+  if (click === "1") {
+    $(".all-work-type-requests").prop("checked", true);
+  }
+  uniqueIds.forEach(function (id) {
+    $("#" + id).prop("checked", true);
+  });
+  var selectedCount = uniqueIds.length;
+  getCurrentLanguageCode(function (code) {
+    languageCode = code;
+    var message = rowMessages[languageCode];
+    if (selectedCount > 0) {
+      $("#exportWorktypes").css("display", "inline-flex");
+      $("#selectedShowWorktypes").css("display", "inline-flex");
+      $("#selectedShowWorktypes").text(selectedCount + " -" + message);
+    } else {
+      $("#selectedShowWorktypes").css("display", "none");
+      $("#exportWorktypes").css("display", "none");
+    }
+  });
+}
 
 $("#approveWorkTypeRequest").click(function (e) {
   e.preventDefault();
@@ -580,8 +707,10 @@ $("#approveWorkTypeRequest").click(function (e) {
     languageCode = code;
     var confirmMessage = approveMessages[languageCode];
     var textMessage = norowMessages[languageCode];
-    var checkedRows = $(".all-work-type-requests-row").filter(":checked");
-    if (checkedRows.length === 0) {
+    ids = [];
+    ids.push($("#selectedWorktypes").attr("data-ids"));
+    ids = JSON.parse($("#selectedWorktypes").attr("data-ids"));
+    if (ids.length === 0) {
       Swal.fire({
         text: textMessage,
         icon: "warning",
@@ -599,10 +728,8 @@ $("#approveWorkTypeRequest").click(function (e) {
         if (result.isConfirmed) {
           e.preventDefault();
           ids = [];
-          checkedRows.each(function () {
-            ids.push($(this).attr("id"));
-          });
-
+          ids.push($("#selectedWorktypes").attr("data-ids"));
+          ids = JSON.parse($("#selectedWorktypes").attr("data-ids"));      
           $.ajax({
             type: "POST",
             url: "/work-type-request-bulk-approve",
@@ -632,8 +759,10 @@ $("#cancelWorkTypeRequest").click(function (e) {
     languageCode = code;
     var confirmMessage = cancelMessages[languageCode];
     var textMessage = norowMessages[languageCode];
-    var checkedRows = $(".all-work-type-requests-row").filter(":checked");
-    if (checkedRows.length === 0) {
+    ids = [];
+    ids.push($("#selectedWorktypes").attr("data-ids"));
+    ids = JSON.parse($("#selectedWorktypes").attr("data-ids"));
+    if (ids.length === 0) {
       Swal.fire({
         text: textMessage,
         icon: "warning",
@@ -650,10 +779,8 @@ $("#cancelWorkTypeRequest").click(function (e) {
       }).then(function (result) {
         if (result.isConfirmed) {
           ids = [];
-          checkedRows.each(function () {
-            ids.push($(this).attr("id"));
-          });
-
+          ids.push($("#selectedWorktypes").attr("data-ids"));
+          ids = JSON.parse($("#selectedWorktypes").attr("data-ids"));      
           $.ajax({
             type: "POST",
             url: "/work-type-request-bulk-cancel",
@@ -683,8 +810,10 @@ $("#deleteWorkTypeRequest").click(function (e) {
     languageCode = code;
     var confirmMessage = requestDeleteMessages[languageCode];
     var textMessage = norowMessages[languageCode];
-    var checkedRows = $(".all-work-type-requests-row").filter(":checked");
-    if (checkedRows.length === 0) {
+    ids = [];
+    ids.push($("#selectedWorktypes").attr("data-ids"));
+    ids = JSON.parse($("#selectedWorktypes").attr("data-ids"));
+    if (ids.length === 0) {
       Swal.fire({
         text: textMessage,
         icon: "warning",
@@ -702,10 +831,8 @@ $("#deleteWorkTypeRequest").click(function (e) {
         if (result.isConfirmed) {
           e.preventDefault();
           ids = [];
-          checkedRows.each(function () {
-            ids.push($(this).attr("id"));
-          });
-
+          ids.push($("#selectedWorktypes").attr("data-ids"));
+          ids = JSON.parse($("#selectedWorktypes").attr("data-ids"));
           $.ajax({
             type: "POST",
             url: "/work-type-request-bulk-delete",

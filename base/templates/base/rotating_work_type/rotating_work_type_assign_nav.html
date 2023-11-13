@@ -17,7 +17,7 @@
     </a>
   </div>
   <div class="oh-main__titlebar oh-main__titlebar--right">
-    {% if rwork_type_assign %}
+    {% if rwork_all %}
       <div
         class="oh-input-group oh-input__search-group"
         :class="searchShow ? 'oh-input__search-group--show' : ''"
@@ -39,7 +39,7 @@
       </div>
     {% endif %}
     <div class="oh-main__titlebar-button-container">
-      {% if rwork_type_assign %}
+      {% if rwork_all %}
         <div class="oh-dropdown" x-data="{open: false}">
           <button class="oh-btn ml-2" @click="open = !open">
             <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}

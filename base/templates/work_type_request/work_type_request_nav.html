@@ -44,48 +44,6 @@ x-data="{searchShow: false}"
   {% endif %}
   <div class="oh-main__titlebar-button-container">
     {% if data %}
-      {% if 'employee' in perms or request.user|is_reportingmanager %}
-      <div class="oh-btn-group ml-2">
-        <div class="oh-dropdown" x-data="{open: false}">
-          <button
-            class="oh-btn oh-btn--dropdown "
-            @click="open = !open"
-            @click.outside="open = false"
-          >
-            {% trans "Actions" %}
-          </button>
-          <div class="oh-dropdown__menu oh-dropdown__menu--right" x-show="open" style="display: none;">
-            <ul class="oh-dropdown__items">
-            
-              {% if perms.base.change_worktyperequest or request.user|is_reportingmanager %}
-              <li class="oh-dropdown__item">
-                <a href="#" class="oh-dropdown__link " id="approveWorkTypeRequest" 
-                  >{% trans "Approve Requests" %}</a
-                >
-              </li>
-              {% endif %} 
-              {% if perms.base.change_worktyperequest or request.user|is_reportingmanager %}
-              <li class="oh-dropdown__item">
-                <a href="#" class="oh-dropdown__link " id="cancelWorkTypeRequest" 
-                  >{% trans "Cancel Requests" %}</a
-                >
-              </li>
-              {% endif %} 
-              {% if perms.delete_employee %}
-              <li class="oh-dropdown__item">
-                <a
-                  href="#"
-                  class="oh-dropdown__link oh-dropdown__link--danger"
-                  id="deleteWorkTypeRequest"
-                  >{% trans "Delete" %}</a
-                >
-              </li>
-              {% endif %}
-            </ul>
-          </div>
-        </div>
-      </div>
-      {% endif %}
       <div class="oh-dropdown" x-data="{open: false}">
         <button class="oh-btn ml-2" @click="open = !open">
           <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}<div id='filterCount'></div>
@@ -236,6 +194,48 @@ x-data="{searchShow: false}"
         </form>
         </div>
       </div>
+      {% if 'employee' in perms or request.user|is_reportingmanager %}
+      <div class="oh-btn-group ml-2">
+        <div class="oh-dropdown" x-data="{open: false}">
+          <button
+            class="oh-btn oh-btn--dropdown "
+            @click="open = !open"
+            @click.outside="open = false"
+          >
+            {% trans "Actions" %}
+          </button>
+          <div class="oh-dropdown__menu oh-dropdown__menu--right" x-show="open" style="display: none;">
+            <ul class="oh-dropdown__items">
+            
+              {% if perms.base.change_worktyperequest or request.user|is_reportingmanager %}
+              <li class="oh-dropdown__item">
+                <a href="#" class="oh-dropdown__link " id="approveWorkTypeRequest" 
+                  >{% trans "Approve Requests" %}</a
+                >
+              </li>
+              {% endif %} 
+              {% if perms.base.change_worktyperequest or request.user|is_reportingmanager %}
+              <li class="oh-dropdown__item">
+                <a href="#" class="oh-dropdown__link " id="cancelWorkTypeRequest" 
+                  >{% trans "Cancel Requests" %}</a
+                >
+              </li>
+              {% endif %} 
+              {% if perms.delete_employee %}
+              <li class="oh-dropdown__item">
+                <a
+                  href="#"
+                  class="oh-dropdown__link oh-dropdown__link--danger"
+                  id="deleteWorkTypeRequest"
+                  >{% trans "Delete" %}</a
+                >
+              </li>
+              {% endif %}
+            </ul>
+          </div>
+        </div>
+      </div>
+      {% endif %}
     {% endif %}
     <div class="oh-btn-group ml-2">
       <div class="oh-dropdown" x-data="{open: false}">
