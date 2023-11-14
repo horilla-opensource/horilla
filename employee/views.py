@@ -1622,7 +1622,7 @@ def dashboard_employee_gender(request):
     This method is used to filter out gender vise employees
     """
     labels = [_("Male"), _("Female"), _("Other")]
-    employees = Employee.objects.all()
+    employees = Employee.objects.filter(is_active=True)
     employees = filtersubordinates(request, employees, "employee.view_employee")
 
     response = {
@@ -1655,7 +1655,7 @@ def dashboard_employee_department(request):
         count.append(
             len(
                 Employee.objects.filter(
-                    employee_work_info__department_id__department=dept
+                    employee_work_info__department_id__department=dept,is_active=True
                 )
             )
         )
