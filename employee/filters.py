@@ -39,7 +39,7 @@ class EmployeeFilter(FilterSet):
     is_active = django_filters.ChoiceFilter(
         field_name="is_active",
         label="Is Active",
-        choices=[(True, "Yes"), (False, "No")],
+        choices=[(True, "Yes"), (False, "No"),],
     )
 
     class Meta:
@@ -91,8 +91,6 @@ class EmployeeFilter(FilterSet):
     def __init__(self, data=None, queryset=None, *, request=None, prefix=None):
         super().__init__(data=data, queryset=queryset, request=request, prefix=prefix)
         self.form.fields["is_active"].initial = True
-        print()
-        # self.filters['is_active'].extra['widget'].update({'initial': True})
         for field in self.form.fields.keys():
             self.form.fields[field].widget.attrs["id"] = f"{uuid.uuid4()}"
 

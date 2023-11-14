@@ -27,7 +27,7 @@ from django.shortcuts import render, redirect
 from django.utils.translation import gettext as __
 from django.contrib.auth.models import User
 from django.views.decorators.http import require_http_methods
-from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse, QueryDict
 from asset.models import AssetAssignment, AssetRequest
 from django.utils.translation import gettext_lazy as _
 from attendance.models import Attendance, AttendanceOverTime
@@ -775,9 +775,13 @@ def employee_filter_view(request):
     """
     This method is used to filter employee.
     """
-    previous_data = request.GET.urlencode()
+    get_copy = request.GET.copy()
+    if request.GET.get("is_active") is None or len(request.GET.get("is_active")) == 0:
+        get_copy["is_active"] = True
+    previous_data = get_copy.urlencode()
     field = request.GET.get("field")
-    employees = EmployeeFilter(request.GET).qs
+    filter_obj = EmployeeFilter(get_copy)
+    employees = filter_obj.qs
     employees = filtersubordinatesemployeemodel(
         request, employees, "employee.view_employee"
     )
@@ -793,7 +797,6 @@ def employee_filter_view(request):
         employees = employees.order_by(field_copy)
         employees = employees.exclude(employee_work_info__isnull=True)
         template = "employee_personal_info/group_by.html"
-    filter_obj = EmployeeFilter(request.GET, queryset=employees)
 
     return render(
         request,
