@@ -179,24 +179,24 @@
         <div class="d-flex flex-row-reverse">
             <span 
                 class="m-3 review_ongoing" 
-                hx-get="{% url 'leave-allocation-request-filter' %}?{{pd}}&status=rejected" 
-                hx-target="#view-container" style="cursor: pointer"
+                onclick="$('[name=status]').val('rejected');$('[name=status]').first().change();$('.filterButton').click()"
+                style="cursor: pointer"
             >
                 <span class="oh-dot oh-dot--small me-1" style="background-color:red"></span>
                 {% trans "Rejected" %}
             </span>
             <span 
                 class="m-3 confirmed" 
-                hx-get="{% url 'leave-allocation-request-filter' %}?{{pd}}&status=requested" 
-                hx-target="#view-container" style="cursor: pointer"
+                onclick="$('[name=status]').val('requested');$('[name=status]').first().change();$('.filterButton').click()" 
+                style="cursor: pointer"
             >
                 <span class="oh-dot oh-dot--small me-1" style="background-color:rgb(103, 171, 238)"></span>
                 {% trans "Requested" %}
             </span>
             <span 
                 class="m-3 paid" 
-                hx-get="{% url 'leave-allocation-request-filter' %}?{{pd}}&status=approved" 
-                hx-target="#view-container" style="cursor: pointer"
+                onclick="$('[name=status]').val('approved');$('[name=status]').first().change();$('.filterButton').click()" 
+                style="cursor: pointer"
             >
                 <span class="oh-dot oh-dot--small me-1" style="background-color:yellowgreen"></span>
                 {% trans "Approved" %}
