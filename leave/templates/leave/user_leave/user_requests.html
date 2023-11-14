@@ -1,17 +1,6 @@
 {% load i18n %}
-{% if messages %}
-{% load static %}
+{% load static %}   
 
-<div class="oh-wrapper">
-    {% for message in messages %}
-    <div class="oh-alert-container">
-        <div class="oh-alert oh-alert--animated {{ message.tags }}">
-        {{ message }}
-        </div>
-    </div>
-    {% endfor %}
-</div>
-{% endif %}
 {% include 'filter_tags.html' %}
 <div class="d-flex flex-row-reverse">
     <span class="m-3" style="cursor:pointer;" onclick="$('[name=status]').val('rejected');$('[name=status]').first().change();$('.filterButton').click()">

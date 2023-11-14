@@ -7,17 +7,6 @@
         background: rgba(255, 166, 0, 0.158);
     }
 </style>
-{% if messages %}
-<div class="oh-wrapper">
-    {% for message in messages %}
-    <div class="oh-alert-container">
-        <div class="oh-alert oh-alert--animated {{ message.tags }}">
-            {{ message }}
-        </div>
-    </div>
-    {% endfor %}
-</div>
-{% endif %}
 
 <section class="oh-wrapper oh-main__topbar" x-data="{searchShow: false}">
     <div class="oh-main__titlebar oh-main__titlebar--left">
