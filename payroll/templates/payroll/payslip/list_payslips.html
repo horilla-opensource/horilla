@@ -1,53 +1,5 @@
 {% load i18n %} {% load static i18n %} {% include 'filter_tags.html' %}
-<div
-  class="d-flex flex-row-reverse"
-  style="padding-bottom: 10px; justify-content: right; align-items: center"
->
-  <span
-    class="draft"
-    onclick="$('[name=status]').val('draft'); $('[name=status]').first().change(); $('.filterButton').click()"
-    style="cursor: pointer; margin-left: 5px"
-  >
-    <span
-      class="oh-dot oh-dot--small me-1"
-      style="background-color: gray"
-    ></span>
-    {% trans "Draft" %}
-  </span>
-  <span
-    class="review_ongoing"
-    onclick="$('[name=status]').val('review_ongoing'); $('[name=status]').first().change(); $('.filterButton').click()"
-    style="cursor: pointer; margin-left: 5px"
-  >
-    <span
-      class="oh-dot oh-dot--small me-1"
-      style="background-color: orange"
-    ></span>
-    {% trans "Review Ongoing" %}
-  </span>
-  <span
-    class="confirmed"
-    onclick="$('[name=status]').val('confirmed'); $('[name=status]').first().change(); $('.filterButton').click()"
-    style="cursor: pointer; margin-left: 5px"
-  >
-    <span
-      class="oh-dot oh-dot--small me-1"
-      style="background-color: rgb(103, 171, 238)"
-    ></span>
-    {% trans "Confirmed" %}
-  </span>
-  <span
-    class="paid"
-    onclick="$('[name=status]').val('paid'); $('[name=status]').first().change(); $('.filterButton').click()"
-    style="cursor: pointer; margin-left: 5px"
-  >
-    <span
-      class="oh-dot oh-dot--small me-1"
-      style="background-color: yellowgreen"
-    ></span>
-    {% trans "Paid" %}
-  </span>
-</div>
+
 <div
   class="oh-checkpoint-badge text-success mb-2"
   id="selectAllPayslip"

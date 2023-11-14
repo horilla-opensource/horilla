@@ -14,7 +14,7 @@ from django.http import HttpResponse, JsonResponse, HttpResponseRedirect
 from django.contrib import messages
 from django.db.models import Q, ProtectedError
 from horilla.decorators import login_required, permission_required
-from base.methods import generate_colors, get_key_instances
+from base.methods import export_data, generate_colors, get_key_instances
 from employee.models import Employee, EmployeeWorkInformation
 from base.methods import closest_numbers
 from payroll.models.models import Payslip, WorkRecord, Contract
@@ -130,7 +130,7 @@ def contract_view(request):
     else:
         template = "payroll/contract/contract_empty.html"
 
-    field =  request.GET.get("field")
+    field = request.GET.get("field")
     contracts = paginator_qry(contracts, request.GET.get("page"))
     contract_ids_json = json.dumps([instance.id for instance in contracts.object_list])
     filter_form = ContractFilter(request.GET)
@@ -142,7 +142,7 @@ def contract_view(request):
         "export_filter": export_filter,
         "export_column": export_column,
         "contract_ids": contract_ids_json,
-        "gp_fields":ContractReGroup.fields,
+        "gp_fields": ContractReGroup.fields,
     }
 
     return render(request, template, context)
@@ -197,7 +197,7 @@ def contract_filter(request):
     contracts_filter = ContractFilter(request.GET)
     template = "payroll/contract/contract_list.html"
     contracts = contracts_filter.qs
-    field =  request.GET.get("field")
+    field = request.GET.get("field")
     if field != "" and field is not None:
         field_copy = field.replace(".", "__")
         contracts = contracts.order_by(field_copy)
@@ -968,73 +968,13 @@ def slip_group_name_update(request):
 @login_required
 @permission_required("payroll.add_contract")
 def contract_export(request):
-    """
-    This view exports payslip data based on selected fields and filters,
-    and generates an Excel file for download.
-    """
-    contract_status = {
-        "draft": _("Draft"),
-        "active": _("Active"),
-        "expired": _("Expired"),
-        "terminated": _("Terminated"),
-    }
-
-    pay_choices = {
-        "weekly": _("Weekly"),
-        "monthly": _("Monthly"),
-        "semi_monthly": _("Semi-Monthly"),
-    }
-
-    wage_choices = {
-        "hourly": _("Hourly"),
-        "daily": _("Daily"),
-        "monthly": _("Monthly"),
-    }
-
-    form = ContractExportFieldForm()
-    contracts = ContractFilter(request.GET).qs
-    today_date = date.today().strftime("%Y-%m-%d")
-    file_name = f"Contract_excel_{today_date}.xlsx"
-    selected_fields = request.GET.getlist("selected_fields")
-    model_fields = Contract._meta.get_fields()
-    contract_data = {}
-    if not selected_fields:
-        selected_fields = form.fields["selected_fields"].initial
-        ids = request.GET.get("ids")
-        id_list = json.loads(ids)
-        contracts = Contract.objects.filter(id__in=id_list)
-    for field in model_fields:
-        field_name = field.name
-        if field_name in selected_fields:
-            verbose_name = _(field.verbose_name.capitalize())
-            contract_data[verbose_name] = []
-            for contract in contracts:
-                value = getattr(contract, field_name)
-                if value is True:
-                    value = _("Yes")
-                elif value is False:
-                    value = _("No")
-                if field_name == "contract_status":
-                    value = contract_status.get(value, "")
-                elif field_name == "pay_frequency":
-                    value = pay_choices.get(value, "")
-                elif field_name == "wage_type":
-                    value = wage_choices.get(value, "")
-                contract_data[verbose_name].append(value)
-
-    data_frame = pd.DataFrame(data=contract_data)
-    data_frame = data_frame.style.applymap(
-        lambda x: "text-align: center", subset=pd.IndexSlice[:, :]
+    return export_data(
+        request=request,
+        model=Contract,
+        filter_class=ContractFilter,
+        form_class=ContractExportFieldForm,
+        file_name="Contract_export",
     )
-    response = HttpResponse(content_type="application/ms-excel")
-    response["Content-Disposition"] = f'attachment; filename="{file_name}"'
-    data_frame.to_excel(response, index=False)
-    writer = pd.ExcelWriter(response, engine="xlsxwriter")
-    data_frame.to_excel(writer, index=False, sheet_name="Sheet1")
-    worksheet = writer.sheets["Sheet1"]
-    worksheet.set_column("A:Z", 20)
-    writer.close()
-    return response
 
 
 @login_required

@@ -264,6 +264,7 @@
   </div>
 </section>
 
+{% include "payroll/payslip/payslips_quick_filter.html" %}
 <div class="oh-checkpoint-badge mb-2" id="selectedPayslip" data-ids="[]" data-clicked="0" style="display:none;" >
   {% trans "Selected Employees" %}
 </div>
@@ -276,8 +277,10 @@
     >
       <div id="payroll-payslip-container">
         {% if request.GET.group_by %} 
+        <div id="payslips-table">
           {% include 'payroll/payslip/group_payslips.html' %} 
-        {% else %} 
+        </div>
+        {% else %}
           {% include 'payroll/payslip/list_payslips.html' %} {% endif %}
       </div>
     </div>

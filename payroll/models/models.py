@@ -117,7 +117,9 @@ class Contract(models.Model):
         ("terminated", _("Terminated")),
     )
 
-    contract_name = models.CharField(max_length=250, help_text=_("Contract Title"))
+    contract_name = models.CharField(
+        max_length=250, help_text=_("Contract Title"), verbose_name=_("Contract")
+    )
     employee_id = models.ForeignKey(
         Employee,
         on_delete=models.PROTECT,
@@ -129,10 +131,17 @@ class Contract(models.Model):
         null=True, blank=True, verbose_name=_("End date")
     )
     wage_type = models.CharField(
-        choices=WAGE_CHOICES, max_length=250, default="monthly"
+        choices=WAGE_CHOICES,
+        max_length=250,
+        default="monthly",
+        verbose_name=_("Wage Type"),
     )
     pay_frequency = models.CharField(
-        max_length=20, null=True, choices=PAY_FREQUENCY_CHOICES, default="monthly"
+        max_length=20,
+        null=True,
+        choices=PAY_FREQUENCY_CHOICES,
+        default="monthly",
+        verbose_name=_("Pay Frequency"),
     )
     wage = models.FloatField(verbose_name=_("Basic Salary"), null=True, default=0)
     filing_status = models.ForeignKey(
@@ -141,9 +150,13 @@ class Contract(models.Model):
         related_name="contracts",
         null=True,
         blank=True,
+        verbose_name=_("Filing Status")
     )
     contract_status = models.CharField(
-        choices=CONTRACT_STATUS_CHOICES, max_length=250, default="draft"
+        choices=CONTRACT_STATUS_CHOICES,
+        max_length=250,
+        default="draft",
+        verbose_name=_("Status"),
     )
     department = models.ForeignKey(
         Department,
@@ -151,6 +164,7 @@ class Contract(models.Model):
         null=True,
         blank=True,
         related_name="contracts",
+        verbose_name=_("Department"),
     )
     job_position = models.ForeignKey(
         JobPosition,
@@ -158,6 +172,7 @@ class Contract(models.Model):
         null=True,
         blank=True,
         related_name="contracts",
+        verbose_name=_("Job Position"),
     )
     job_role = models.ForeignKey(
         JobRole,
@@ -165,6 +180,7 @@ class Contract(models.Model):
         null=True,
         blank=True,
         related_name="contracts",
+        verbose_name=_("Job Role"),
     )
     shift = models.ForeignKey(
         EmployeeShift,
@@ -172,6 +188,7 @@ class Contract(models.Model):
         null=True,
         blank=True,
         related_name="contracts",
+        verbose_name=_("Shift"),
     )
     work_type = models.ForeignKey(
         WorkType,
@@ -179,12 +196,22 @@ class Contract(models.Model):
         null=True,
         blank=True,
         related_name="contracts",
+        verbose_name=_("Work Type"),
     )
     contract_document = models.FileField(upload_to="uploads/", null=True, blank=True)
     is_active = models.BooleanField(default=True)
-    calculate_daily_leave_amount = models.BooleanField(default=True)
-    deduction_for_one_leave_amount = models.FloatField(null=True, blank=True, default=0)
-    deduct_leave_from_basic_pay = models.BooleanField(default=True)
+    calculate_daily_leave_amount = models.BooleanField(
+        default=True, verbose_name=_("Calculate Daily Leave Amount")
+    )
+    deduction_for_one_leave_amount = models.FloatField(
+        null=True,
+        blank=True,
+        default=0,
+        verbose_name=_("Deduction For One Leave Amount"),
+    )
+    deduct_leave_from_basic_pay = models.BooleanField(
+        default=True, verbose_name=_("Deduct Leave From Basic Pay")
+    )
 
     note = models.TextField(null=True, blank=True)
 

@@ -285,7 +285,7 @@ exclude_fields = ["id", "contract_document", "is_active", "note", "note"]
 class ContractExportFieldForm(forms.Form):
     model_fields = Contract._meta.get_fields()
     field_choices = [
-        (field.name, _(field.verbose_name.capitalize()))
+        (field.name, field.verbose_name)
         for field in model_fields
         if hasattr(field, "verbose_name") and field.name not in exclude_fields
     ]

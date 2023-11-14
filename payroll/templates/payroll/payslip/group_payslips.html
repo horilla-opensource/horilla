@@ -1,23 +1,5 @@
 {% load i18n %} {% load attendancefilters static %}
 {% include 'filter_tags.html' %}
-<div class="d-flex flex-row-reverse" style="padding-bottom: 10px;justify-content: right; align-items: center;" >
-  <span class="draft" hx-get="{% url "filter-payslip" %}?{{pd}}&status=draft&group_by=group_name" hx-target="#payroll-payslip-container" style="cursor: pointer; margin-left: 5px;">
-    <span class="oh-dot oh-dot--small me-1" style="background-color:gray"></span>
-    {% trans "Draft" %}
-  </span>
-  <span class="review_ongoing" hx-get="{% url "filter-payslip" %}?{{pd}}&status=review_ongoing&group_by=group_name" hx-target="#payroll-payslip-container" style="cursor: pointer; margin-left: 5px;">
-    <span class="oh-dot oh-dot--small me-1" style="background-color:orange"></span>
-    {% trans "Review Ongoing" %}
-  </span>
-  <span class="confirmed" hx-get="{% url "filter-payslip" %}?{{pd}}&status=confirmed&group_by=group_name" hx-target="#payroll-payslip-container" style="cursor: pointer; margin-left: 5px;">
-    <span class="oh-dot oh-dot--small me-1" style="background-color:rgb(103, 171, 238)"></span>
-    {% trans "Confirmed" %}
-  </span>
-  <span class="paid" hx-get="{% url "filter-payslip" %}?{{pd}}&status=paid&group_by=group_name" hx-target="#payroll-payslip-container" style="cursor: pointer; margin-left: 5px;">
-    <span class="oh-dot oh-dot--small me-1" style="background-color:yellowgreen"></span>
-    {% trans "Paid" %}
-  </span>
-</div>
 <div class="oh-card">
   {% dynamic_regroup payslips by "group_name" as group_payslips %} 
   {% for payslip in group_payslips %}
