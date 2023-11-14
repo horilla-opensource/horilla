@@ -2,6 +2,7 @@
 This module contains custom Django filters for filtering querysets related to Shift Requests,
 Work Type Requests, Rotating Shift and Rotating Work Type Assign.
 """
+import uuid
 import django_filters
 from horilla.filters import FilterSet, filter_by_name
 from django_filters import CharFilter
@@ -63,6 +64,11 @@ class ShiftRequestFilter(FilterSet):
             "employee_id__employee_work_info__shift_id",
         ]
 
+    def __init__(self, data=None, queryset=None, *, request=None, prefix=None):
+        super().__init__(data=data, queryset=queryset, request=request, prefix=prefix)
+        for field in self.form.fields.keys():
+            self.form.fields[field].widget.attrs["id"] = f"{uuid.uuid4()}"
+
 
 class WorkTypeRequestFilter(FilterSet):
     """
@@ -111,6 +117,11 @@ class WorkTypeRequestFilter(FilterSet):
             "employee_id__employee_work_info__company_id",
             "employee_id__employee_work_info__shift_id",
         ]
+
+    def __init__(self, data=None, queryset=None, *, request=None, prefix=None):
+        super().__init__(data=data, queryset=queryset, request=request, prefix=prefix)
+        for field in self.form.fields.keys():
+            self.form.fields[field].widget.attrs["id"] = f"{uuid.uuid4()}"
 
 
 class RotatingShiftAssignFilters(FilterSet):
@@ -200,26 +211,63 @@ class RotatingWorkTypeAssignFilter(FilterSet):
             "employee_id__employee_work_info__shift_id",
         ]
 
+
 class ShiftRequestReGroup:
     """
     Class to keep the field name for group by option
     """
+
     fields = [
-        ("","Select"),
-        ("employee_id","Employee"),
-        ("shift_id","Requested Shift"),
-        ("previous_shift_id","Current Shift"),
-        ("requested_date","Requested Date"),
+        ("", "Select"),
+        ("employee_id", "Employee"),
+        ("shift_id", "Requested Shift"),
+        ("previous_shift_id", "Current Shift"),
+        ("requested_date", "Requested Date"),
     ]
+
 
 class WorkTypeRequestReGroup:
     """
     Class to keep the field name for group by option
     """
+
     fields = [
-        ("","Select"),
-        ("employee_id","Employee"),
-        ("work_type_id","Requested Work Type"),
-        ("previous_work_type_id","Current Work Type"),
-        ("requested_date","Requested Date"),
+        ("", "Select"),
+        ("employee_id", "Employee"),
+        ("work_type_id", "Requested Work Type"),
+        ("previous_work_type_id", "Current Work Type"),
+        ("requested_date", "Requested Date"),
+    ]
+
+
+class RotatingWorkTypeRequestReGroup:
+    """
+    Class to keep the field name for group by option
+    """
+
+    fields = [
+        ("", "Select"),
+        ("employee_id", "Employee"),
+        ("rotating_work_type_id", "Rotating Work Type"),
+        ("current_work_type", "Current Work Type"),
+        ("based_on", "Based On"),
+        ("employee_id.employee_work_info.department_id", "Department"),
+        ("employee_id.employee_work_info.job_role_id", "Job Role"),
+        ("employee_id.employee_work_info.reporting_manager_id", "Reporting Manager"),
+    ]
+
+
+class RotatingShiftRequestReGroup:
+    """
+    Class to keep the field name for group by option
+    """
+
+    fields = [
+        ("", "Select"),
+        ("employee_id", "Employee"),
+        ("rotating_shift_id", "Rotating Shift"),
+        ("based_on", "Based On"),
+        ("employee_id.employee_work_info.department_id", "Department"),
+        ("employee_id.employee_work_info.job_role_id", "Job Role"),
+        ("employee_id.employee_work_info.reporting_manager_id", "Reporting Manager"),
     ]
