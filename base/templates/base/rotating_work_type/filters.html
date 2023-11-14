@@ -1,10 +1,5 @@
 {% load i18n %}
 {% load static %}
-<form
-  hx-get='{% url "rotating-work-type-assign-view" %}'
-  id="filterForm"
-  hx-target="#view-container"
->
   <div class="oh-dropdown__filter-body">
     <div class="oh-accordion">
       <div class="oh-accordion-header">{% trans "Rotating Work Type" %}</div>
@@ -96,11 +91,9 @@
     <button
       class="oh-btn oh-btn--secondary oh-btn--small w-100 filterButton"
       id="employeeFilter"
-      {% comment %} onclick="employeeFilter(this)" {% endcomment %}
     >
       {% trans "Filter" %}
     </button>
   </div>
-</form>
 
 <script src="{% static '/base/filter.js' %}"></script>
