@@ -1,9 +1,14 @@
+from datetime import date
+import json
 import random
 from django.apps import apps
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import ForeignKey, ManyToManyField, OneToOneField
+from django.http import HttpResponse
 from django.utils.translation import gettext as _
+import pandas as pd
 from employee.models import Employee
+from horilla.decorators import login_required
 
 
 def filtersubordinates(request, queryset, perm=None):
@@ -315,3 +320,63 @@ def closest_numbers(numbers: list, input_number: int) -> tuple:
     except:
         pass
     return (previous_number, next_number)
+
+
+@login_required
+def export_data(request, model, form_class, filter_class, file_name):
+    fields_mapping = {
+        "draft": _("Draft"),
+        "active": _("Active"),
+        "expired": _("Expired"),
+        "terminated": _("Terminated"),
+        "weekly": _("Weekly"),
+        "monthly": _("Monthly"),
+        "semi_monthly": _("Semi-Monthly"),
+        "hourly": _("Hourly"),
+        "daily": _("Daily"),
+        "monthly": _("Monthly"),
+    }
+    today_date = date.today().strftime("%Y-%m-%d")
+    file_name = f"{file_name}_{today_date}.xlsx"
+    request_export = {}
+
+    form = form_class()
+    model_fields = model._meta.get_fields()
+    requests = filter_class(request.GET).qs
+
+    selected_fields = request.GET.getlist("selected_fields")
+    if not selected_fields:
+        selected_fields = form.fields["selected_fields"].initial
+        ids = request.GET.get("ids")
+        id_list = json.loads(ids)
+        requests = model.objects.filter(id__in=id_list)
+
+    for field in model_fields:
+        field_name = field.name
+        if field_name in selected_fields:
+            request_export[field.verbose_name] = []
+            for req in requests:
+                value = getattr(req, field_name)
+                if value is True:
+                    value = _("Yes")
+                elif value is False:
+                    value = _("No")
+                if value in fields_mapping:
+                    value = fields_mapping[value]
+                request_export[field.verbose_name].append(value)
+
+    data_frame = pd.DataFrame(data=request_export)
+    styled_data_frame = data_frame.style.applymap(
+        lambda x: "text-align: center", subset=pd.IndexSlice[:, :]
+    )
+
+    response = HttpResponse(content_type="application/ms-excel")
+    response["Content-Disposition"] = f'attachment; filename="{file_name}"'
+
+    writer = pd.ExcelWriter(response, engine="xlsxwriter")
+    styled_data_frame.to_excel(writer, index=False, sheet_name="Sheet1")
+    worksheet = writer.sheets["Sheet1"]
+    worksheet.set_column("A:Z", 18)
+    writer.close()
+
+    return response

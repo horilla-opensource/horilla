@@ -46,7 +46,7 @@ x-data="{searchShow: false}"
       {% if data %}
     <form hx-get="{% url 'work-type-request-search' %}" hx-target='#view-container' id='filterForm' class="d-flex">
         <div class="oh-dropdown" x-data="{open: false}">
-          <button class="oh-btn ml-2" @click="open = !open">
+          <button class="oh-btn ml-2" @click="open = !open" onclick="event.preventDefault()">
             <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}<div id='filterCount'></div>
           </button>
           <div
@@ -216,7 +216,17 @@ x-data="{searchShow: false}"
           </button>
           <div class="oh-dropdown__menu oh-dropdown__menu--right" x-show="open" style="display: none;">
             <ul class="oh-dropdown__items">
-            
+              {% if perms.base.change_worktyperequest or request.user|is_reportingmanager %}
+              <li class="oh-dropdown__item">
+                <a
+                  href="#"
+                  class="oh-dropdown__link"
+                  data-toggle="oh-modal-toggle"
+                  data-target="#workTypeRequestsExport"
+                  >{% trans "Export" %}</a
+                >
+              </li>
+              {% endif %}
               {% if perms.base.change_worktyperequest or request.user|is_reportingmanager %}
               <li class="oh-dropdown__item">
                 <a href="#" class="oh-dropdown__link " id="approveWorkTypeRequest" 
@@ -299,7 +309,42 @@ x-data="{searchShow: false}"
     </div>
   </div>
 </div>
-
+<div
+  class="oh-modal"
+  id="workTypeRequestsExport"
+  role="dialog"
+  aria-labelledby="workTypeRequestsExport"
+  aria-hidden="true"
+  >
+  <div class="oh-modal__dialog">
+    <div class="oh-modal__dialog-header">
+      <h2 class="oh-modal__dialog-title" id="workTypeRequestsExportLavel">
+        {% trans "Export Work Type Requests" %}
+      </h2>
+      <button class="oh-modal__close" aria-label="Close">
+        <ion-icon name="close-outline"></ion-icon>
+      </button>
+      <div
+        class="oh-modal__dialog-body p-0 pt-2"
+        id="workTypeRequestsExportModalBody"
+      >
+        <form
+          action="{%url 'work-type-request-info-export' %}"
+          method="get"
+          onsubmit="event.stopPropagation();$(this).parents().find('.oh-modal--show').last().toggleClass('oh-modal--show');"
+          id="workTypeRequestsExportForm"
+        >
+          {% csrf_token %} {% include "work_type_request/work_type_request_export.html" %}
+          <div class="oh-dropdown__filter-footer">
+            <button class="oh-btn oh-btn--secondary oh-btn--small w-100">
+              {% trans "Export" %}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
 
 <script>
   $(document).ready(function(){

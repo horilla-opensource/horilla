@@ -1308,3 +1308,51 @@ class ResetPasswordForm(forms.Form):
         if user is not None:
             user.set_password(self.data["password"])
             user.save()
+
+
+excluded_fields = ["id", "is_active", "shift_changed","work_type_changed"]
+
+
+class ShiftRequestColumnForm(forms.Form):
+    model_fields = ShiftRequest._meta.get_fields()
+    field_choices = [
+        (field.name, field.verbose_name)
+        for field in model_fields
+        if hasattr(field, "verbose_name") and field.name not in excluded_fields
+    ]
+    selected_fields = forms.MultipleChoiceField(
+        choices=field_choices,
+        widget=forms.CheckboxSelectMultiple,
+        initial=[
+            "employee_id",
+            "shift_id",
+            "requested_date",
+            "requested_till",
+            "previous_shift_id",
+            "approved",
+        ],
+    )
+
+
+class WorkTypeRequestColumnForm(forms.Form):
+    model_fields = WorkTypeRequest._meta.get_fields()
+    field_choices = [
+        (field.name, field.verbose_name)
+        for field in model_fields
+        if hasattr(field, "verbose_name") and field.name not in excluded_fields
+    ]
+    selected_fields = forms.MultipleChoiceField(
+        choices=field_choices,
+        widget=forms.CheckboxSelectMultiple,
+        initial=[
+            "employee_id",
+            "work_type_id",
+            "requested_date",
+            "requested_till",
+            "previous_shift_id",
+            "approved",
+        ],
+    )
+    
+    
+    

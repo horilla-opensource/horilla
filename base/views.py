@@ -3,7 +3,7 @@ views.py
 
 This module is used to map url pattens with django views or methods
 """
-from datetime import date, timedelta, datetime
+from datetime import timedelta, datetime
 from urllib.parse import parse_qs
 import uuid
 import json
@@ -19,7 +19,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import Group, User, Permission
 from attendance.forms import AttendanceValidationConditionForm
 from attendance.models import AttendanceValidationCondition
-from base.methods import closest_numbers
+from base.methods import closest_numbers, export_data
 from base.decorators import (
     shift_request_change_permission,
     work_type_request_change_permission,
@@ -36,6 +36,7 @@ from base.forms import (
     EmployeeShiftForm,
     EmployeeShiftScheduleForm,
     EmployeeTypeForm,
+    ShiftRequestColumnForm,
     WorkTypeForm,
     UserGroupForm,
     RotatingShiftForm,
@@ -44,6 +45,7 @@ from base.forms import (
     RotatingWorkTypeAssignForm,
     RotatingShiftAssignForm,
     ShiftRequestForm,
+    WorkTypeRequestColumnForm,
     WorkTypeRequestForm,
     RotatingShiftAssignUpdateForm,
     RotatingWorkTypeAssignUpdateForm,
@@ -916,7 +918,14 @@ def rotating_work_type_assign(request):
     rwork_type_assign = filtersubordinates(
         request, rwork_type_assign, "base.view_rotatingworktypeassign"
     )
-    assign_ids = json.dumps([instance.id for instance in paginator_qry(rwork_type_assign, request.GET.get("page")).object_list])
+    assign_ids = json.dumps(
+        [
+            instance.id
+            for instance in paginator_qry(
+                rwork_type_assign, request.GET.get("page")
+            ).object_list
+        ]
+    )
     return render(
         request,
         "base/rotating_work_type/rotating_work_type_assign.html",
@@ -926,9 +935,8 @@ def rotating_work_type_assign(request):
                 rwork_type_assign, request.GET.get("page")
             ),
             "assign_ids": assign_ids,
-            'rwork_all' : rwork_all,
+            "rwork_all": rwork_all,
             "gp_fields": RotatingWorkTypeRequestReGroup.fields,
-
         },
     )
 
@@ -991,7 +999,7 @@ def rotating_work_type_assign_view(request):
 
     previous_data = request.GET.urlencode()
     rwork_type_assign = RotatingWorkTypeAssignFilter(request.GET).qs
-    field = request.GET.get('field')
+    field = request.GET.get("field")
     rwork_type_assign = rwork_type_assign.filter(is_active=True)
     if request.GET.get("is_active") == "false":
         rwork_type_assign = rwork_type_assign.filter(is_active=False)
@@ -1007,8 +1015,15 @@ def rotating_work_type_assign_view(request):
         template = "base/rotating_work_type/htmx/group_by.html"
 
     rwork_type_assign = sortby(request, rwork_type_assign, "orderby")
-    assign_ids = json.dumps([instance.id for instance in paginator_qry(rwork_type_assign, request.GET.get("page")).object_list])
-    
+    assign_ids = json.dumps(
+        [
+            instance.id
+            for instance in paginator_qry(
+                rwork_type_assign, request.GET.get("page")
+            ).object_list
+        ]
+    )
+
     return render(
         request,
         template,
@@ -1506,7 +1521,14 @@ def rotating_shift_assign(request):
     rshift_assign = filtersubordinates(
         request, rshift_assign, "base.view_rotatingshiftassign"
     )
-    assign_ids = json.dumps([instance.id for instance in paginator_qry(rshift_assign, request.GET.get("page")).object_list])
+    assign_ids = json.dumps(
+        [
+            instance.id
+            for instance in paginator_qry(
+                rshift_assign, request.GET.get("page")
+            ).object_list
+        ]
+    )
 
     return render(
         request,
@@ -1516,7 +1538,7 @@ def rotating_shift_assign(request):
             "f": filter,
             "rshift_assign": paginator_qry(rshift_assign, request.GET.get("page")),
             "assign_ids": assign_ids,
-            "rshift_all" : rshift_all,
+            "rshift_all": rshift_all,
             "gp_fields": RotatingShiftRequestReGroup.fields,
         },
     )
@@ -1579,8 +1601,11 @@ def rotating_shift_assign_view(request):
     """
     previous_data = request.GET.urlencode()
     rshift_assign = RotatingShiftAssignFilters(request.GET).qs
-    field = request.GET.get('field')
-    if request.GET.get("is_active") is None or request.GET.get("is_active") == "unknown":
+    field = request.GET.get("field")
+    if (
+        request.GET.get("is_active") is None
+        or request.GET.get("is_active") == "unknown"
+    ):
         rshift_assign = rshift_assign.filter(is_active=True)
     rshift_assign = filtersubordinates(
         request, rshift_assign, "base.view_rotatingshiftassign"
@@ -1593,7 +1618,14 @@ def rotating_shift_assign_view(request):
         rshift_assign = rshift_assign.order_by(field_copy)
         template = "base/rotating_shift/htmx/group_by.html"
     rshift_assign = sortby(request, rshift_assign, "orderby")
-    assign_ids = json.dumps([instance.id for instance in paginator_qry(rshift_assign, request.GET.get("page")).object_list])
+    assign_ids = json.dumps(
+        [
+            instance.id
+            for instance in paginator_qry(
+                rshift_assign, request.GET.get("page")
+            ).object_list
+        ]
+    )
     return render(
         request,
         template,
@@ -1866,8 +1898,17 @@ def work_type_request_view(request):
     work_type_requests = work_type_requests | WorkTypeRequest.objects.filter(
         employee_id=employee
     )
-    requests_ids = json.dumps([instance.id for instance in paginator_qry(work_type_requests, request.GET.get("page")).object_list])
+    requests_ids = json.dumps(
+        [
+            instance.id
+            for instance in paginator_qry(
+                work_type_requests, request.GET.get("page")
+            ).object_list
+        ]
+    )
     f = WorkTypeRequestFilter()
+    export_filter = WorkTypeRequestFilter()
+    export_fields = WorkTypeRequestColumnForm()
     form = WorkTypeRequestForm()
     form = choosesubordinates(
         request,
@@ -1882,9 +1923,22 @@ def work_type_request_view(request):
             "data": paginator_qry(work_type_requests, request.GET.get("page")),
             "f": f,
             "form": form,
+            "export_filter": export_filter,
+            "export_fields": export_fields,
             "requests_ids": requests_ids,
             "gp_fields": WorkTypeRequestReGroup.fields,
         },
+    )
+
+
+@login_required
+def work_type_request_export(request):
+    return export_data(
+        request,
+        WorkTypeRequest,
+        WorkTypeRequestColumnForm,
+        WorkTypeRequestFilter,
+        "Work_type_request",
     )
 
 
@@ -1903,13 +1957,20 @@ def work_type_request_search(request):
             employee_id=employee
         )
     work_typ_requests = sortby(request, work_typ_requests, "orderby")
-    template="work_type_request/htmx/requests.html"
+    template = "work_type_request/htmx/requests.html"
     if field != "" and field is not None:
         field_copy = field.replace(".", "__")
         work_typ_requests = work_typ_requests.order_by(f"-{field_copy}")
         template = "work_type_request/htmx/group_by.html"
 
-    requests_ids = json.dumps([instance.id for instance in paginator_qry(work_typ_requests, request.GET.get("page")).object_list])
+    requests_ids = json.dumps(
+        [
+            instance.id
+            for instance in paginator_qry(
+                work_typ_requests, request.GET.get("page")
+            ).object_list
+        ]
+    )
     data_dict = parse_qs(previous_data)
     get_key_instances(WorkTypeRequest, data_dict)
     return render(
@@ -1920,7 +1981,7 @@ def work_type_request_search(request):
             "pd": previous_data,
             "filter_dict": data_dict,
             "requests_ids": requests_ids,
-            "field":field,
+            "field": field,
         },
     )
 
@@ -2350,9 +2411,18 @@ def shift_request_view(request):
         request, ShiftRequest.objects.all(), "base.add_shiftrequest"
     )
     shift_requests = shift_requests | ShiftRequest.objects.filter(employee_id=employee)
-    requests_ids = json.dumps([instance.id for instance in paginator_qry(shift_requests, request.GET.get("page")).object_list])
+    requests_ids = json.dumps(
+        [
+            instance.id
+            for instance in paginator_qry(
+                shift_requests, request.GET.get("page")
+            ).object_list
+        ]
+    )
     f = ShiftRequestFilter()
     form = ShiftRequestForm()
+    export_fields = ShiftRequestColumnForm()
+    export_filter = ShiftRequestFilter()
     form = choosesubordinates(
         request,
         form,
@@ -2366,9 +2436,22 @@ def shift_request_view(request):
             "data": paginator_qry(shift_requests, request.GET.get("page")),
             "f": f,
             "form": form,
+            "export_fields": export_fields,
+            "export_filter": export_filter,
             "requests_ids": requests_ids,
             "gp_fields": ShiftRequestReGroup.fields,
         },
+    )
+
+
+@login_required
+def shift_request_export(request):
+    return export_data(
+        request,
+        ShiftRequest,
+        ShiftRequestColumnForm,
+        ShiftRequestFilter,
+        "Shift_requests",
     )
 
 
@@ -2387,9 +2470,16 @@ def shift_request_search(request):
             employee_id=employee
         )
     shift_requests = sortby(request, shift_requests, "orderby")
-    requests_ids = json.dumps([instance.id for instance in paginator_qry(shift_requests, request.GET.get("page")).object_list])
+    requests_ids = json.dumps(
+        [
+            instance.id
+            for instance in paginator_qry(
+                shift_requests, request.GET.get("page")
+            ).object_list
+        ]
+    )
     data_dict = parse_qs(previous_data)
-    template="shift_request/htmx/requests.html"
+    template = "shift_request/htmx/requests.html"
     if field != "" and field is not None:
         field_copy = field.replace(".", "__")
         shift_requests = shift_requests.order_by(f"-{field_copy}")
@@ -2404,7 +2494,7 @@ def shift_request_search(request):
             "pd": previous_data,
             "filter_dict": data_dict,
             "requests_ids": requests_ids,
-            "field":field,
+            "field": field,
         },
     )
 
@@ -2876,7 +2966,9 @@ def shift_select_filter(request):
     filters = json.loads(filtered) if filtered else {}
 
     if page_number == "all":
-        employee_filter = ShiftRequestFilter(filters, queryset=ShiftRequest.objects.all())
+        employee_filter = ShiftRequestFilter(
+            filters, queryset=ShiftRequest.objects.all()
+        )
 
         # Get the filtered queryset
         filtered_employees = employee_filter.qs
@@ -2887,7 +2979,7 @@ def shift_select_filter(request):
         context = {"employee_ids": employee_ids, "total_count": total_count}
 
         return JsonResponse(context)
-    
+
 
 @login_required
 def work_type_select(request):
@@ -2911,7 +3003,9 @@ def work_type_select_filter(request):
     filters = json.loads(filtered) if filtered else {}
 
     if page_number == "all":
-        employee_filter = WorkTypeRequestFilter(filters, queryset=WorkTypeRequest.objects.all())
+        employee_filter = WorkTypeRequestFilter(
+            filters, queryset=WorkTypeRequest.objects.all()
+        )
 
         # Get the filtered queryset
         filtered_employees = employee_filter.qs
@@ -2948,7 +3042,9 @@ def rotating_shift_select_filter(request):
     filters = json.loads(filtered) if filtered else {}
 
     if page_number == "all":
-        employee_filter = RotatingShiftAssignFilters(filters, queryset=RotatingShiftAssign.objects.all())
+        employee_filter = RotatingShiftAssignFilters(
+            filters, queryset=RotatingShiftAssign.objects.all()
+        )
 
         # Get the filtered queryset
         filtered_employees = employee_filter.qs
@@ -2985,7 +3081,9 @@ def rotating_work_type_select_filter(request):
     filters = json.loads(filtered) if filtered else {}
 
     if page_number == "all":
-        employee_filter = RotatingWorkTypeAssignFilter(filters, queryset=RotatingWorkTypeAssign.objects.all())
+        employee_filter = RotatingWorkTypeAssignFilter(
+            filters, queryset=RotatingWorkTypeAssign.objects.all()
+        )
 
         # Get the filtered queryset
         filtered_employees = employee_filter.qs

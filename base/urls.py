@@ -256,6 +256,11 @@ urlpatterns = [
         name="work-type-request-view",
     ),
     path(
+        "work-type-request-info-export",
+        views.work_type_request_export,
+        name="work-type-request-info-export",
+    ),
+    path(
         "work-type-request-search",
         views.work_type_request_search,
         name="work-type-request-search",
@@ -305,6 +310,11 @@ urlpatterns = [
         "shift-requests/shift-request-view",
         views.shift_request_view,
         name="shift-request-view",
+    ),
+    path(
+        "shift-request-info-export",
+        views.shift_request_export,
+        name="shift-request-info-export",
     ),
     path(
         "shift-request-search", views.shift_request_search, name="shift-request-search"
@@ -379,33 +389,29 @@ urlpatterns = [
         views.rotating_shift_individual_view,
         name="rshift-individual-view",
     ),
-    path("shift-select/",
-        views.shift_select,
-        name="shift-select"),
+    path("shift-select/", views.shift_select, name="shift-select"),
     path(
         "shift-select-filter/",
         views.shift_select_filter,
         name="shift-select-filter",
     ),
-    path("work-type-select/",
-        views.work_type_select,
-        name="work-type-select"),
+    path("work-type-select/", views.work_type_select, name="work-type-select"),
     path(
         "work-type-filter/",
         views.work_type_select_filter,
         name="work-type-select-filter",
     ),
-    path("r-shift-select/",
-        views.rotating_shift_select,
-        name="r-shift-select"),
+    path("r-shift-select/", views.rotating_shift_select, name="r-shift-select"),
     path(
         "r-shift-select-filter/",
         views.rotating_shift_select_filter,
         name="r-shift-select-filter",
     ),
-    path("r-work-type-select/",
+    path(
+        "r-work-type-select/",
         views.rotating_work_type_select,
-        name="r-work-type-select"),
+        name="r-work-type-select",
+    ),
     path(
         "r-work-type-filter/",
         views.rotating_work_type_select_filter,

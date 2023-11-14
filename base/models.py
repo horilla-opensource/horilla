@@ -415,14 +415,11 @@ class WorkTypeRequest(models.Model):
         related_name="work_type_request",
         verbose_name=_("Employee"),
     )
-    is_permanent_work_type = models.BooleanField(default=True)
-    requested_date = models.DateField(null=True, default=django.utils.timezone.now)
-    requested_till = models.DateField(null=True, blank=True)
     work_type_id = models.ForeignKey(
         WorkType,
         on_delete=models.PROTECT,
         related_name="requested_work_type",
-        verbose_name=_("Work Type"),
+        verbose_name=_("Requesting Work Type"),
     )
     previous_work_type_id = models.ForeignKey(
         WorkType,
@@ -430,10 +427,20 @@ class WorkTypeRequest(models.Model):
         null=True,
         blank=True,
         related_name="previous_work_type",
+        verbose_name=_("Previous Work Type"),
     )
-    description = models.TextField(null=True)
-    approved = models.BooleanField(default=False)
-    canceled = models.BooleanField(default=False)
+    requested_date = models.DateField(
+        null=True, default=django.utils.timezone.now, verbose_name=_("Requested Date")
+    )
+    requested_till = models.DateField(
+        null=True, blank=True, verbose_name=_("Requested Till")
+    )
+    is_permanent_work_type = models.BooleanField(
+        default=True, verbose_name=_("Permanent Request")
+    )
+    description = models.TextField(null=True, verbose_name=_("Description"))
+    approved = models.BooleanField(default=False, verbose_name=_("Approved"))
+    canceled = models.BooleanField(default=False, verbose_name=_("Canceled"))
     work_type_changed = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     objects = models.Manager()
@@ -515,14 +522,11 @@ class ShiftRequest(models.Model):
         related_name="shift_request",
         verbose_name=_("Employee"),
     )
-    is_permanent_shift = models.BooleanField(default=True)
-    requested_date = models.DateField(null=True, default=django.utils.timezone.now)
-    requested_till = models.DateField(null=True, blank=True)
     shift_id = models.ForeignKey(
         EmployeeShift,
         on_delete=models.PROTECT,
         related_name="requested_shift",
-        verbose_name=_("Shift"),
+        verbose_name=_("Requesting Shift"),
     )
     previous_shift_id = models.ForeignKey(
         EmployeeShift,
@@ -530,10 +534,20 @@ class ShiftRequest(models.Model):
         null=True,
         blank=True,
         related_name="previous_shift",
+        verbose_name=_("Previous Shift"),
     )
-    description = models.TextField(null=True)
-    approved = models.BooleanField(default=False)
-    canceled = models.BooleanField(default=False)
+    requested_date = models.DateField(
+        null=True, default=django.utils.timezone.now, verbose_name=_("Requested Date")
+    )
+    requested_till = models.DateField(
+        null=True, blank=True, verbose_name=_("Requested Till")
+    )
+    description = models.TextField(null=True, verbose_name=_("Description"))
+    is_permanent_shift = models.BooleanField(
+        default=True, verbose_name=_("Permanent Request")
+    )
+    approved = models.BooleanField(default=False, verbose_name=_("Approved"))
+    canceled = models.BooleanField(default=False, verbose_name=_("Canceled"))
     shift_changed = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     objects = models.Manager()

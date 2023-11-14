@@ -1,3 +1,11 @@
+var excelMessages = {
+  ar: "هل ترغب في تنزيل ملف Excel؟",
+  de: "Möchten Sie die Excel-Datei herunterladen?",
+  es: "¿Desea descargar el archivo de Excel?",
+  en: "Do you want to download the excel file?",
+  fr: "Voulez-vous télécharger le fichier Excel?",
+};
+
 var archiveMessages = {
   ar: "هل ترغب حقًا في أرشفة كل الحضور المحدد؟",
   de: "Möchten Sie wirklich alle ausgewählten Anwesenheiten archivieren?",
@@ -14,7 +22,7 @@ var unarchiveMessages = {
   fr: "Voulez-vous vraiment désarchiver toutes les allocations sélectionnées?",
 };
 
-var deleterequestMessages = {
+var deleteRequestMessages = {
   ar: "هل ترغب حقًا في حذف كل الحجوزات المحددة؟",
   de: "Möchten Sie wirklich alle ausgewählten Zuweisungen löschen?",
   es: "Realmente quieres eliminar todas las asignaciones seleccionadas?",
@@ -247,7 +255,7 @@ $("#deleteRotatingShiftAssign").click(function (e) {
   var languageCode = null;
   getCurrentLanguageCode(function (code) {
     languageCode = code;
-    var confirmMessage = deleterequestMessages[languageCode];
+    var confirmMessage = deleteRequestMessages[languageCode];
     var textMessage = norowMessages[languageCode];
     ids = [];
     ids.push($("#selectedRShifts").attr("data-ids"));
@@ -432,7 +440,7 @@ $("#deleteRotatingWorkTypeAssign").click(function (e) {
   var languageCode = null;
   getCurrentLanguageCode(function (code) {
     languageCode = code;
-    var confirmMessage = deleterequestMessages[languageCode];
+    var confirmMessage = deleteRequestMessages[languageCode];
     var textMessage = norowMessages[languageCode];
     ids = [];
     ids.push($("#selectedRWorktypes").attr("data-ids"));
@@ -455,7 +463,7 @@ $("#deleteRotatingWorkTypeAssign").click(function (e) {
         if (result.isConfirmed) {
           ids = [];
           ids.push($("#selectedRWorktypes").attr("data-ids"));
-          ids = JSON.parse($("#selectedRWorktypes").attr("data-ids"));      
+          ids = JSON.parse($("#selectedRWorktypes").attr("data-ids"));
           $.ajax({
             type: "POST",
             url: "/rotating-work-type-assign-bulk-delete",
@@ -508,6 +516,52 @@ function tickShiftCheckboxes() {
       $("#selectedShowShifts").css("display", "none");
       $("#exportShifts").css("display", "none");
     }
+  });
+}
+function exportShiftRequests() {
+  var currentDate = new Date().toISOString().slice(0, 10);
+  var language_code = null;
+  getCurrentLanguageCode(function (code) {
+    language_code = code;
+    var confirmMessage = excelMessages[language_code];
+    ids = [];
+    ids = JSON.parse($("#selectedShifts").attr("data-ids"));
+    Swal.fire({
+      text: confirmMessage,
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#008000",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Confirm",
+    }).then(function (result) {
+      if (result.isConfirmed) {
+        $.ajax({
+          type: "GET",
+          url: "/shift-request-info-export",
+          data: {
+            ids: JSON.stringify(ids),
+          },
+          dataType: "binary",
+          xhrFields: {
+            responseType: "blob",
+          },
+          success: function (response) {
+            const file = new Blob([response], {
+              type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            });
+            const url = URL.createObjectURL(file);
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = "Shift_requests" + currentDate + ".xlsx";
+            document.body.appendChild(link);
+            link.click();
+          },
+          error: function (xhr, textStatus, errorThrown) {
+            console.error("Error downloading file:", errorThrown);
+          },
+        });
+      }
+    });
   });
 }
 
@@ -592,7 +646,7 @@ $("#cancelShiftRequest").click(function (e) {
         if (result.isConfirmed) {
           ids = [];
           ids.push($("#selectedShifts").attr("data-ids"));
-          ids = JSON.parse($("#selectedShifts").attr("data-ids"));      
+          ids = JSON.parse($("#selectedShifts").attr("data-ids"));
           $.ajax({
             type: "POST",
             url: "/shift-request-bulk-cancel",
@@ -643,7 +697,7 @@ $("#deleteShiftRequest").click(function (e) {
         if (result.isConfirmed) {
           ids = [];
           ids.push($("#selectedShifts").attr("data-ids"));
-          ids = JSON.parse($("#selectedShifts").attr("data-ids"));      
+          ids = JSON.parse($("#selectedShifts").attr("data-ids"));
           $.ajax({
             type: "POST",
             url: "/shift-request-bulk-delete",
@@ -699,6 +753,53 @@ function tickWorktypeCheckboxes() {
   });
 }
 
+function exportWorkTypeRequets() {
+  var currentDate = new Date().toISOString().slice(0, 10);
+  var language_code = null;
+  getCurrentLanguageCode(function (code) {
+    language_code = code;
+    var confirmMessage = excelMessages[language_code];
+    ids = [];
+    ids = JSON.parse($("#selectedWorktypes").attr("data-ids"));
+    Swal.fire({
+      text: confirmMessage,
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#008000",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Confirm",
+    }).then(function (result) {
+      if (result.isConfirmed) {
+        $.ajax({
+          type: "GET",
+          url: "/work-type-request-info-export",
+          data: {
+            ids: JSON.stringify(ids),
+          },
+          dataType: "binary",
+          xhrFields: {
+            responseType: "blob",
+          },
+          success: function (response) {
+            const file = new Blob([response], {
+              type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            });
+            const url = URL.createObjectURL(file);
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = "Work_type_requests" + currentDate + ".xlsx";
+            document.body.appendChild(link);
+            link.click();
+          },
+          error: function (xhr, textStatus, errorThrown) {
+            console.error("Error downloading file:", errorThrown);
+          },
+        });
+      }
+    });
+  });
+}
+
 $("#approveWorkTypeRequest").click(function (e) {
   e.preventDefault();
 
@@ -729,7 +830,7 @@ $("#approveWorkTypeRequest").click(function (e) {
           e.preventDefault();
           ids = [];
           ids.push($("#selectedWorktypes").attr("data-ids"));
-          ids = JSON.parse($("#selectedWorktypes").attr("data-ids"));      
+          ids = JSON.parse($("#selectedWorktypes").attr("data-ids"));
           $.ajax({
             type: "POST",
             url: "/work-type-request-bulk-approve",
@@ -780,7 +881,7 @@ $("#cancelWorkTypeRequest").click(function (e) {
         if (result.isConfirmed) {
           ids = [];
           ids.push($("#selectedWorktypes").attr("data-ids"));
-          ids = JSON.parse($("#selectedWorktypes").attr("data-ids"));      
+          ids = JSON.parse($("#selectedWorktypes").attr("data-ids"));
           $.ajax({
             type: "POST",
             url: "/work-type-request-bulk-cancel",
