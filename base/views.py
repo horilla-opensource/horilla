@@ -70,6 +70,8 @@ from base.models import (
     WorkTypeRequest,
 )
 from base.filters import (
+    RotatingShiftRequestReGroup,
+    RotatingWorkTypeRequestReGroup,
     ShiftRequestFilter,
     ShiftRequestReGroup,
     WorkTypeRequestFilter,
@@ -924,7 +926,9 @@ def rotating_work_type_assign(request):
                 rwork_type_assign, request.GET.get("page")
             ),
             "assign_ids": assign_ids,
-            'rwork_all' : rwork_all
+            'rwork_all' : rwork_all,
+            "gp_fields": RotatingWorkTypeRequestReGroup.fields,
+
         },
     )
 
@@ -987,18 +991,27 @@ def rotating_work_type_assign_view(request):
 
     previous_data = request.GET.urlencode()
     rwork_type_assign = RotatingWorkTypeAssignFilter(request.GET).qs
-    if request.GET.get("is_active") is None:
-        rwork_type_assign = rwork_type_assign.filter(is_active=True)
+    field = request.GET.get('field')
+    rwork_type_assign = rwork_type_assign.filter(is_active=True)
+    if request.GET.get("is_active") == "false":
+        rwork_type_assign = rwork_type_assign.filter(is_active=False)
     rwork_type_assign = filtersubordinates(
         request, rwork_type_assign, "base.view_rotatingworktypeassign"
     )
-    rwork_type_assign = sortby(request, rwork_type_assign, "orderby")
-    assign_ids = json.dumps([instance.id for instance in paginator_qry(rwork_type_assign, request.GET.get("page")).object_list])
+    template = "base/rotating_work_type/rotating_work_type_assign_view.html"
     data_dict = parse_qs(previous_data)
     get_key_instances(RotatingWorkTypeAssign, data_dict)
+    if field != "" and field is not None:
+        field_copy = field.replace(".", "__")
+        rwork_type_assign = rwork_type_assign.order_by(field_copy)
+        template = "base/rotating_work_type/htmx/group_by.html"
+
+    rwork_type_assign = sortby(request, rwork_type_assign, "orderby")
+    assign_ids = json.dumps([instance.id for instance in paginator_qry(rwork_type_assign, request.GET.get("page")).object_list])
+    
     return render(
         request,
-        "base/rotating_work_type/rotating_work_type_assign_view.html",
+        template,
         {
             "rwork_type_assign": paginator_qry(
                 rwork_type_assign, request.GET.get("page")
@@ -1006,6 +1019,7 @@ def rotating_work_type_assign_view(request):
             "pd": previous_data,
             "filter_dict": data_dict,
             "assign_ids": assign_ids,
+            "field": field,
         },
     )
 
@@ -1502,7 +1516,8 @@ def rotating_shift_assign(request):
             "f": filter,
             "rshift_assign": paginator_qry(rshift_assign, request.GET.get("page")),
             "assign_ids": assign_ids,
-            'rshift_all' : rshift_all
+            "rshift_all" : rshift_all,
+            "gp_fields": RotatingShiftRequestReGroup.fields,
         },
     )
 
@@ -1564,23 +1579,30 @@ def rotating_shift_assign_view(request):
     """
     previous_data = request.GET.urlencode()
     rshift_assign = RotatingShiftAssignFilters(request.GET).qs
-    if request.GET.get("is_active") is None:
+    field = request.GET.get('field')
+    if request.GET.get("is_active") is None or request.GET.get("is_active") == "unknown":
         rshift_assign = rshift_assign.filter(is_active=True)
     rshift_assign = filtersubordinates(
         request, rshift_assign, "base.view_rotatingshiftassign"
     )
-    rshift_assign = sortby(request, rshift_assign, "orderby")
-    assign_ids = json.dumps([instance.id for instance in paginator_qry(rshift_assign, request.GET.get("page")).object_list])
     data_dict = parse_qs(previous_data)
     get_key_instances(RotatingShiftAssign, data_dict)
+    template = "base/rotating_shift/rotating_shift_assign_view.html"
+    if field != "" and field is not None:
+        field_copy = field.replace(".", "__")
+        rshift_assign = rshift_assign.order_by(field_copy)
+        template = "base/rotating_shift/htmx/group_by.html"
+    rshift_assign = sortby(request, rshift_assign, "orderby")
+    assign_ids = json.dumps([instance.id for instance in paginator_qry(rshift_assign, request.GET.get("page")).object_list])
     return render(
         request,
-        "base/rotating_shift/rotating_shift_assign_view.html",
+        template,
         {
             "rshift_assign": paginator_qry(rshift_assign, request.GET.get("page")),
             "pd": previous_data,
             "filter_dict": data_dict,
             "assign_ids": assign_ids,
+            "field": field,
         },
     )
 
@@ -1593,9 +1615,9 @@ def rotating_shift_individual_view(request, instance_id):
     """
     instance = RotatingShiftAssign.objects.get(id=instance_id)
     context = {"instance": instance}
-    assing_ids_json = request.GET.get("instances_ids")
-    if assing_ids_json:
-        assign_ids = json.loads(assing_ids_json)
+    assign_ids_json = request.GET.get("instances_ids")
+    if assign_ids_json:
+        assign_ids = json.loads(assign_ids_json)
         previous_id, next_id = closest_numbers(assign_ids, instance_id)
         context["previous"] = previous_id
         context["next"] = next_id
