@@ -16,7 +16,7 @@
         right: 15px;
     }
 </style>
-{% if messages %}
+{% comment %} {% if messages %}
 <div class="oh-wrapper">
     {% for message in messages %}
     <div class="oh-alert-container">
@@ -26,7 +26,7 @@
     </div>
     {% endfor %}
 </div>
-{% endif %}
+{% endif %} {% endcomment %}
 
 <section class="oh-wrapper oh-main__topbar" x-data="{searchShow: false}">
     <div class="oh-main__titlebar oh-main__titlebar--left">
