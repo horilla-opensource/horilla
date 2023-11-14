@@ -22,7 +22,7 @@ from attendance.models import Attendance
 from attendance.forms import AttendanceRequestForm, NewRequestForm
 from attendance.methods.differentiate import get_diff_dict
 from attendance.views.views import paginator_qry
-from attendance.filters import AttendanceFilters
+from attendance.filters import AttendanceFilters, AttendanceRequestReGroup
 from base.methods import closest_numbers
 
 
@@ -100,6 +100,7 @@ def request_attendance_view(request):
             "attendances_ids": attendances_ids,
             "f": filter_obj,
             "filter_dict": data_dict,
+            "gp_fields": AttendanceRequestReGroup.fields,
         },
     )
 

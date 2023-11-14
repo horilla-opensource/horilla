@@ -291,6 +291,7 @@ def own_attendance_sort(request):
 
 @login_required
 def search_attendance_requests(request):
+    field = request.GET.get("field")
     requests = Attendance.objects.filter(
         is_validate_request=True,
     )
@@ -321,11 +322,18 @@ def search_attendance_requests(request):
     for key in keys_to_remove:
         data_dict.pop(key)
 
+    template = "requests/attendance/request_lines.html"
+    if field != "" and field is not None:
+        field_copy = field.replace(".", "__")
+        requests = requests.order_by(field_copy)
+        attendances = attendances.order_by(field_copy)
+        template = "requests/attendance/group_by.html"
+
     requests_ids = json.dumps([instance.id for instance in paginator_qry(requests, request.GET.get("rpage")).object_list])
     attendances_ids = json.dumps([instance.id for instance in paginator_qry(attendances, request.GET.get("page")).object_list])
     return render(
         request,
-        "requests/attendance/request_lines.html",
+        template,
         {
             "requests": paginator_qry(requests, request.GET.get("rpage")),
             "attendances": paginator_qry(attendances, request.GET.get("page")),
@@ -333,6 +341,7 @@ def search_attendance_requests(request):
             "attendances_ids": attendances_ids,
             "pd": previous_data,
             "filter_dict": data_dict,
+            "field": field,
         },
     )
 

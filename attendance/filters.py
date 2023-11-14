@@ -617,3 +617,25 @@ class AttendanceActivityReGroup:
         ("employee_id.employee_work_info.employee_type_id", "Employment Type"),
         ("employee_id.employee_work_info.company_id", "Company"),
     ]
+
+
+class AttendanceRequestReGroup:
+    """
+    Class to keep the field name for group by option
+    """
+
+    fields = [
+        ("", "Select"),
+        ("employee_id", "Employee"),
+        ("attendance_day", "Attendance Date"),
+        ("attendance_clock_in_date", "In Date"),
+        ("attendance_clock_out_date", "Out Date"),
+        ("employee_id.country", "Country"),
+        ("employee_id.employee_work_info.reporting_manager_id", "Reporting Manager"),
+        ("employee_id.employee_work_info.shift_id", "Shift"),
+        ("employee_id.employee_work_info.work_type_id", "Work Type"),
+        ("employee_id.employee_work_info.department_id", "Department"),
+        ("employee_id.employee_work_info.job_position_id", "Job Position"),
+        ("employee_id.employee_work_info.employee_type_id", "Employment Type"),
+        ("employee_id.employee_work_info.company_id", "Company"),
+    ]
