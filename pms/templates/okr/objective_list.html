@@ -4,23 +4,23 @@
 <!-- filter items showing here -->
 {% include 'filter_tags.html' %}
 <div class="d-flex flex-row-reverse">
-  <span class="m-3 review_ongoing" hx-get="{% url "objective-list-search" %}?{{pd}}&status=At Risk" hx-target="#objective_list" style="cursor: pointer">
+  <span class="m-3 review_ongoing" onclick="$('[name=status]').val('At Risk');$('[name=status]').first().change();$('.filterButton').click()" style="cursor: pointer">
       <span class="oh-dot oh-dot--small me-1" style="background-color:red"></span>
       {% trans "At Risk" %}
     </span>
-  <span class="m-3 review_ongoing" hx-get="{% url "objective-list-search" %}?{{pd}}&status=Not Started" hx-target="#objective_list" style="cursor: pointer">
+  <span class="m-3 review_ongoing" onclick="$('[name=status]').val('Not Started');$('[name=status]').first().change();$('.filterButton').click()" style="cursor: pointer">
     <span class="oh-dot oh-dot--small me-1" style="background-color:grey"></span>
     {% trans "Not Started" %}
   </span>
-  <span class="m-3 paid" hx-get="{% url "objective-list-search" %}?{{pd}}&status=Behind" hx-target="#objective_list" style="cursor: pointer">
+  <span class="m-3 paid" onclick="$('[name=status]').val('Behind');$('[name=status]').first().change();$('.filterButton').click()" style="cursor: pointer">
     <span class="oh-dot oh-dot--small me-1" style="background-color:orange"></span>
     {% trans "Behind" %}
   </span>
-  <span class="m-3 confirmed" hx-get="{% url "objective-list-search" %}?{{pd}}&status=Closed" hx-target="#objective_list" style="cursor: pointer">
+  <span class="m-3 confirmed" onclick="$('[name=status]').val('Closed');$('[name=status]').first().change();$('.filterButton').click()" style="cursor: pointer">
     <span class="oh-dot oh-dot--small me-1" style="background-color:rgb(103, 171, 238)"></span>
     {% trans "Closed" %}
   </span>
-  <span class="m-3 paid" hx-get="{% url "objective-list-search" %}?{{pd}}&status=On Track" hx-target="#objective_list" style="cursor: pointer">
+  <span class="m-3 paid" onclick="$('[name=status]').val('On Track');$('[name=status]').first().change();$('.filterButton').click()" style="cursor: pointer">
     <span class="oh-dot oh-dot--small me-1" style="background-color:yellowgreen"></span>
     {% trans "On Track" %}
   </span>
