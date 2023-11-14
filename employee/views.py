@@ -413,8 +413,11 @@ def employee_view(request):
     """
     This method is used to render template for view all employee
     """
+    get_copy = request.GET.copy()
+    if request.GET.get("is_active") is None or len(request.GET.get("is_active")) == 0:
+        get_copy["is_active"] = True
     view_type = request.GET.get("view")
-    previous_data = request.GET.urlencode()
+    previous_data = get_copy.urlencode()
     page_number = request.GET.get("page")
     filter_obj = EmployeeFilter(
         request.GET, queryset=Employee.objects.filter(is_active=True)
