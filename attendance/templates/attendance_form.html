@@ -4,8 +4,6 @@
   <div class="oh-profile-section__card">
     <div class="row">
       <div class="col-12">{{form.non_field_errors}}</div>
-
-      {{form.non_field_errors}}
       {% for field in form.visible_fields %}
       {% if field.field.widget|is_select_multiple or field.field.widget|is_text_area %}
       <label
