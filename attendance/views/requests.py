@@ -262,6 +262,9 @@ def approve_validate_attendance_request(request, attendance_id):
     if attendance.requested_data is not None:
         requested_data = json.loads(attendance.requested_data)
         Attendance.objects.filter(id=attendance_id).update(**requested_data)
+        #DUE TO AFFECT THE OVERTIME CALCULATION ON SAVE METHOD, SAVE THE INSTANCE ONCE MORE
+        attendance = Attendance.objects.get(id=attendance_id)
+        attendance.save()
     messages.success(request, "Attendance request has been approved")
     employee = attendance.employee_id
     notify.send(
