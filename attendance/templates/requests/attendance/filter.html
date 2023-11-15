@@ -1,6 +1,5 @@
 {% load static %}
 {% load i18n %}
-<input type="hidden" name="search" value="{{request.GET.search}}">
 <input type="hidden" name="attendance_date" value="{{request.GET.attendance_date}}">
   <div class="oh-dropdown__filter-body">
     <div class="oh-accordion">
@@ -48,7 +47,6 @@
       </div>
     </div>
   </div>
-  {% comment %} {{f.form}} {% endcomment %}
   <div class="oh-accordion">
     <div class="oh-accordion-header">{% trans "Attendance" %}</div>
     <div class="oh-accordion-body">
@@ -155,6 +153,5 @@
         $("#filterCount").text("(" + count + ")");
       }
     });
-    // $('#field').attr('hx-vals',`{'data':${formData}}` );
   });
 </script>

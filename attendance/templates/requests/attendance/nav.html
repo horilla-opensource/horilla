@@ -125,7 +125,7 @@
   </div>
   <div class="oh-main__titlebar oh-main__titlebar--right">
     {% if perms.attendance.view_attendance or request.user|is_reportingmanager %}
-    <form hx-get='{% url "search-attendance-requests" %}' id="requestFilter" hx-swap='innerHTML' hx-target='#view-container' class="d-flex" >
+    <form hx-get='{% url "search-attendance-requests" %}' id="requestFilter" hx-swap='innerHTML' hx-target='#view-container' class="d-flex" onkeyup="$('.filterButton')[0].click();" >
       <div
         class="oh-input-group oh-input__search-group"
         :class="searchShow ? 'oh-input__search-group--show' : ''"
