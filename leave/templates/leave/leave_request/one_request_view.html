@@ -69,46 +69,57 @@
         </div>
     </div>
     {% if leave_request.reject_reason %}
-    {% if leave_request.status == "cancelled" %}
-        <div class="oh-timeoff-modal__stats w-100 mt-3  p-2 row-status--gray diff-cell">
-            <div class="oh-timeoff-modal__stat">
-                <span class="oh-timeoff-modal__stat-title">{% trans "Reason for Cancellation" %}</span>
-                <div class="oh-timeoff-modal__stat-description">{{leave_request.reject_reason}}</div>
+        {% if leave_request.status == "cancelled" %}
+            <div class="oh-timeoff-modal__stats w-100 mt-3  p-2 row-status--gray diff-cell">
+                <div class="oh-timeoff-modal__stat">
+                    <span class="oh-timeoff-modal__stat-title">{% trans "Reason for Cancellation" %}</span>
+                    <div class="oh-timeoff-modal__stat-description">{{leave_request.reject_reason}}</div>
+                </div>
             </div>
-        </div>
-        {% elif leave_request.status == "rejected" %}
-        <div class="oh-timeoff-modal__stats w-100 mt-3  p-2 row-status--red ">
-            <div class="oh-timeoff-modal__stat">
-                <span class="oh-timeoff-modal__stat-title">{% trans "Reason for Rejection" %}</span>
-                <div class="oh-timeoff-modal__stat-description">{{leave_request.reject_reason}}</div>
+        {% elif leave_request.status == "rejected"  or leave_request.status == "cancelled_and_rejected" %}
+            <div class="oh-timeoff-modal__stats w-100 mt-3  p-2 row-status--red ">
+                <div class="oh-timeoff-modal__stat">
+                    <span class="oh-timeoff-modal__stat-title">{% trans "Reason for Rejection" %}</span>
+                    <div class="oh-timeoff-modal__stat-description">{{leave_request.reject_reason}}</div>
+                </div>
             </div>
-        </div>
-    {% endif %}
+        {% endif %}
     {% endif %}
     {% if leave_request.attachment %}
-    <a href="{{leave_request.attachment.url}}" target="_blank" class="oh-timeoff-modal__download-link">
-        <ion-icon class="me-1" name="download-outline"></ion-icon>
-        <span class="oh-timeoff-modal__download-link-text"></span>
-        {% trans "View attachment" %}
-    </a>
+        <a href="{{leave_request.attachment.url}}" target="_blank" class="oh-timeoff-modal__download-link">
+            <ion-icon class="me-1" name="download-outline"></ion-icon>
+            <span class="oh-timeoff-modal__download-link-text"></span>
+            {% trans "View attachment" %}
+        </a>
     {% endif %}
 </div>
 
 <div class="oh-modal__dialog-footer oh-timeoff-modal__footer">
-    {% if leave_request.status != 'approved'%}
-    <a href="{% url 'request-approve' leave_request.id %}" class="oh-btn oh-btn--success">
-        <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
-        {% trans "Approve" %}
-    </a>
+    {% if leave_request.status == 'requested' %}
+        <a type="submit" href="{% url 'request-approve' leave_request.id %}" title="{% trans 'Approve' %}"
+            class="oh-btn oh-btn--success w-100">
+            <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
+        </a>
     {% else %}
-    <a href="{% url 'request-approve' leave_request.id %}" class="oh-btn oh-btn--success oh-btn--disabled"
-        onclick="event.preventDefault()">
-        <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
-        {% trans "Approve" %}
-    </a>
+        <a type="submit" href="#" title="{% trans 'Approve' %}"
+            class="oh-btn oh-btn--success oh-btn--disabled
+            w-100">
+            <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
+        </a>
     {% endif %}
-    <a hx-get="{% url 'request-cancel' leave_request.id %}" data-toggle="oh-modal-toggle" data-target="#rejectModal" hx-target="#rejectForm" class="oh-btn oh-btn--danger">
-        <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
-        {% trans "Reject" %}
-    </a>
+    {% if leave_request.status != 'rejected' and leave_request.status != 'cancelled_and_rejected' and leave_request.end_date >= current_date %}
+        <a type="submit" data-toggle="oh-modal-toggle"
+            data-target="#rejectModal" hx-get="{% url 'request-cancel' leave_request.id %}" hx-target="#rejectForm" title="{% trans 'Reject' %}"
+            class="oh-btn oh-btn--danger w-100">
+            <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
+
+        </a>
+    {% else %}
+        <a type="submit" href="#" title="{% trans 'Reject' %}"
+            class="oh-btn oh-btn--danger oh-btn--disabled
+            w-100" >
+            <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
+
+        </a>
+    {% endif %}
 </div>

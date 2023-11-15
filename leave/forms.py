@@ -571,6 +571,8 @@ class UserLeaveRequestCreationForm(ModelForm):
             available_leave.available_days + available_leave.carryforward_days
         )
         requested_days = (end_date - start_date).days + 1
+        print(f'reqdays = {requested_days}')
+        cleaned_data["requested_days"]=requested_days
 
         if not requested_days <= total_leave_days:
             raise forms.ValidationError(_("Employee doesn't have enough leave days.."))
@@ -588,6 +590,7 @@ class UserLeaveRequestCreationForm(ModelForm):
             "end_date_breakdown",
             "description",
             "attachment",
+            'requested_days',
         ]
         widgets = {"employee_id": forms.HiddenInput()}
 
