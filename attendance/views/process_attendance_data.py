@@ -11,6 +11,10 @@ from attendance.models import Attendance
 from base.models import EmployeeShift, WorkType
 
 
+def format_time(time_obj):
+    return time_obj.strftime("%H:%M") if time_obj else None
+
+
 def process_attendance_data(attendance_dicts):
     """
     Process a list of attendance data dictionaries and save valid records to the database,
@@ -154,11 +158,11 @@ def process_attendance_data(attendance_dicts):
                     work_type_id=work_type,
                     attendance_date=attendance_date,
                     attendance_clock_in_date=check_in_date,
-                    attendance_clock_in=str(check_in).strip(),
+                    attendance_clock_in=format_time(check_in),
                     attendance_clock_out_date=check_out_date,
-                    attendance_clock_out=str(check_out).strip(),
-                    attendance_worked_hour=str(worked_hour).strip(),
-                    minimum_hour=str(minimum_hour).strip(),
+                    attendance_clock_out=format_time(check_out),
+                    attendance_worked_hour=format_time(worked_hour),
+                    minimum_hour=format_time(minimum_hour),
                 )
                 attendance.save()
             else:
