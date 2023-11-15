@@ -80,14 +80,21 @@ class AttendanceActivity(models.Model):
         related_name="employee_attendance_activities",
         verbose_name=_("Employee"),
     )
-    attendance_date = models.DateField(null=True, validators=[attendance_date_validate])
-    clock_in_date = models.DateField(null=True)
-    shift_day = models.ForeignKey(
-        EmployeeShiftDay, null=True, on_delete=models.DO_NOTHING
+    attendance_date = models.DateField(
+        null=True,
+        validators=[attendance_date_validate],
+        verbose_name=_("Attendance Date"),
     )
-    clock_in = models.TimeField()
-    clock_out = models.TimeField(null=True)
-    clock_out_date = models.DateField(null=True)
+    shift_day = models.ForeignKey(
+        EmployeeShiftDay,
+        null=True,
+        on_delete=models.DO_NOTHING,
+        verbose_name=_("Shift Day"),
+    )
+    clock_in_date = models.DateField(null=True, verbose_name=_("In Date"))
+    clock_in = models.TimeField(verbose_name=_("Check In"))
+    clock_out_date = models.DateField(null=True, verbose_name=_("Out Date"))
+    clock_out = models.TimeField(null=True, verbose_name=_("Check Out"))
     objects = models.Manager()
 
     class Meta:
@@ -175,7 +182,9 @@ class Attendance(models.Model):
         default=False, verbose_name=_("Attendance validated")
     )
     at_work_second = models.IntegerField(null=True, blank=True)
-    overtime_second = models.IntegerField(null=True, blank=True)
+    overtime_second = models.IntegerField(
+        null=True, blank=True, verbose_name=_("Overtime In Second")
+    )
     approved_overtime_second = models.IntegerField(default=0)
     is_validate_request = models.BooleanField(
         default=False, verbose_name=_("Is validate request")

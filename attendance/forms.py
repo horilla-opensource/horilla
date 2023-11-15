@@ -640,7 +640,7 @@ class LateComeEarlyOutExportForm(forms.Form):
 class AttendanceActivityExportForm(forms.Form):
     model_fields = AttendanceActivity._meta.get_fields()
     field_choices = [
-        (field.name, field.verbose_name.title())
+        (field.name, field.verbose_name)
         for field in model_fields
         if hasattr(field, "verbose_name") and field.name not in excluded_fields
     ]

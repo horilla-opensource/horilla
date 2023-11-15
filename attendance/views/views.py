@@ -28,7 +28,7 @@ from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from django.views.decorators.http import require_http_methods
 from attendance.views.handle_attendance_errors import handle_attendance_errors
 from attendance.views.process_attendance_data import process_attendance_data
-from base.methods import closest_numbers
+from base.methods import closest_numbers, export_data
 from base.methods import get_key_instances
 from horilla.decorators import (
     permission_required,
@@ -233,37 +233,15 @@ def attendance_import(request):
     return redirect(attendance_view)
 
 
+@login_required
 def attendance_export(request):
-    """
-    Export attendance data to an Excel file.
-
-    This view function takes a GET request and exports attendance data into an Excel file.
-    The exported Excel file will include the selected fields from the Attendance model,
-    and the data will be ordered by attendance date.
-    """
-    today_date = date.today().strftime("%Y-%m-%d")
-    file_name = f"Attendance_{today_date}.xlsx"
-    attendances = AttendanceFilters(request.GET).qs.order_by("attendance_date")
-    selected_fields = request.GET.getlist("selected_fields")
-    model_fields = Attendance._meta.get_fields()
-    attendance_data = {}
-    for field in model_fields:
-        field_name = field.name
-        if field_name in selected_fields:
-            attendance_data[field.verbose_name] = []
-            for attendance in attendances:
-                value = getattr(attendance, field_name)
-                if value is True:
-                    value = "Yes"
-                elif value is False:
-                    value = "No"
-                attendance_data[field.verbose_name].append(value)
-
-    data_frame = pd.DataFrame(data=attendance_data)
-    response = HttpResponse(content_type="application/ms-excel")
-    response["Content-Disposition"] = f'attachment; filename="{file_name}"'
-    data_frame.to_excel(response, index=False)
-    return response
+    return export_data(
+        request=request,
+        model=Attendance,
+        filter_class=AttendanceFilters,
+        form_class=AttendanceExportForm,
+        file_name="Attendance_export",
+    )
 
 
 @login_required
@@ -578,50 +556,13 @@ def attendance_overtime_view(request):
 
 
 def attendance_account_export(request):
-    """
-    Export attendance account data to an Excel file.
-
-    This view function takes a GET request and exports attendance account data into an Excel file.
-    The exported Excel file will include the selected fields from the AttendanceOverTime model,
-
-    """
-    accounts_data = {}
-    form = AttendanceOverTimeExportForm()
-    today_date = date.today().strftime("%Y-%m-%d")
-    file_name = f"Attendance_Account_{today_date}.xlsx"
-    model_fields = AttendanceOverTime._meta.get_fields()
-    selected_fields = request.GET.getlist("selected_fields")
-    attendance_accounts = AttendanceOverTimeFilter(request.GET).qs
-
-    if not selected_fields:
-        ids = request.GET.get("ids")
-        id_list = json.loads(ids)
-        attendance_accounts = AttendanceOverTime.objects.filter(id__in=id_list)
-        selected_fields = form.fields["selected_fields"].initial
-
-    for field in model_fields:
-        field_name = field.name
-        if field_name in selected_fields:
-            accounts_data[field.verbose_name] = []
-            for account in attendance_accounts:
-                value = getattr(account, field_name)
-                if field_name == "month":
-                    value = value.title()
-                accounts_data[field.verbose_name].append(value)
-
-    data_frame = pd.DataFrame(data=accounts_data)
-    data_frame = data_frame.style.applymap(
-        lambda x: "text-align: center", subset=pd.IndexSlice[:, :]
+    return export_data(
+        request=request,
+        model=AttendanceOverTime,
+        filter_class=AttendanceOverTimeFilter,
+        form_class=AttendanceOverTimeExportForm,
+        file_name="Attendance_Account",
     )
-    response = HttpResponse(content_type="application/ms-excel")
-    response["Content-Disposition"] = f'attachment; filename="{file_name}"'
-    data_frame.to_excel(response, index=False)
-    writer = pd.ExcelWriter(response, engine="xlsxwriter")
-    data_frame.to_excel(writer, index=False, sheet_name="Sheet1")
-    worksheet = writer.sheets["Sheet1"]
-    worksheet.set_column("A:Z", 20)
-    writer.close()
-    return response
 
 
 @login_required
@@ -775,50 +716,15 @@ def attendance_activity_bulk_delete(request):
 
 
 @login_required
-@permission_required("attendance.change_attendancelatecomeearlyout")
+@permission_required("attendance.change_attendanceactivity")
 def attendance_activity_export(request):
-    """
-    Export attendance activity data to an Excel file.
-    This view function takes a GET request and exports attendance activity data into an Excel file.
-    The exported Excel file will include the selected fields from the AttendanceActivity model.
-    """
-    today_date = date.today().strftime("%Y-%m-%d")
-    file_name = f"Attendance_activity_{today_date}.xlsx"
-    attendances = AttendanceActivityFilter(request.GET).qs
-    selected_fields = request.GET.getlist("selected_fields")
-    form = AttendanceActivityExportForm()
-
-    if not selected_fields:
-        selected_fields = form.fields["selected_fields"].initial
-        ids = request.GET.get("ids")
-        id_list = json.loads(ids)
-        attendances = AttendanceActivity.objects.filter(id__in=id_list)
-    model_fields = AttendanceActivity._meta.get_fields()
-    attendanceActivity_data = {}
-    for field in model_fields:
-        field_name = field.name
-        if field_name in selected_fields:
-            attendanceActivity_data[field.verbose_name] = []
-            for attendance in attendances:
-                value = getattr(attendance, field_name)
-                if value is True:
-                    value = _("Yes")
-                elif value is False:
-                    value = _("No")
-                attendanceActivity_data[field.verbose_name].append(value)
-    data_frame = pd.DataFrame(data=attendanceActivity_data)
-    data_frame = data_frame.style.applymap(
-        lambda x: "text-align: center", subset=pd.IndexSlice[:, :]
+    return export_data(
+        request=request,
+        model=AttendanceActivity,
+        filter_class=AttendanceActivityFilter,
+        form_class=AttendanceActivityExportForm,
+        file_name="Attendance_activity",
     )
-    response = HttpResponse(content_type="application/ms-excel")
-    response["Content-Disposition"] = f'attachment; filename="{file_name}"'
-    data_frame.to_excel(response, index=False)
-    writer = pd.ExcelWriter(response, engine="xlsxwriter")
-    data_frame.to_excel(writer, index=False, sheet_name="Sheet1")
-    worksheet = writer.sheets["Sheet1"]
-    worksheet.set_column("A:Z", 20)
-    writer.close()
-    return response
 
 
 def employee_exists(request):
