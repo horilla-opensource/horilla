@@ -140,15 +140,11 @@
   </div>
 </section>
 <!-- end of nav bar -->
-
-{% if holidays %}
   
-    <div class="oh-checkpoint-badge mb-2" id="selectedHolidays" data-ids="[]" data-clicked="" style="display:none;" >
-      {% trans "Selected Holidays" %}
-    </div>
+<div class="oh-checkpoint-badge mb-2" id="selectedHolidays" data-ids="[]" data-clicked="" style="display:none;" >
+  {% trans "Selected Holidays" %}
+</div>
   
-{% endif %}
-
 <!--start of holiday display  -->
 <div class="oh-wrapper" id="holidays">
   {% if holidays %} 

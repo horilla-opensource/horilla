@@ -255,4 +255,19 @@ urlpatterns = [
         views.holiday_select_filter,
         name="holiday-select-filter",
     ),
+    path(
+        "leave-request-bulk-delete",
+        views.leave_request_bulk_delete,
+        name="leave-request-bulk-delete",
+    ),
+    path(
+        "leave-request-select",
+        views.leave_request_select,
+        name="leave-request-select",
+    ),
+    path(
+        "leave-request-select-filter",
+        views.leave_request_select_filter,
+        name="leave-request-select-filtert",
+    ),
 ]

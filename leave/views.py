@@ -4,7 +4,7 @@ import json
 from urllib.parse import parse_qs
 from django.shortcuts import render, redirect
 import pandas as pd
-from base.methods import closest_numbers
+from base.methods import closest_numbers, export_data
 from horilla.decorators import login_required, hx_request_required
 from django.views.decorators.http import require_http_methods
 from .forms import *
@@ -1076,43 +1076,15 @@ def assign_leave_type_import(request):
     return redirect(leave_assign_view)
 
 
+@login_required
 def assigned_leaves_export(request):
-    """
-    Export assigned leave data to an Excel file.
-
-    This function takes in a request containing query parameters for filtering
-    assigned leave data, selected fields, and exports the data to an Excel file.
-    """
-    assigned_leaves_export = {}
-    form = AvailableLeaveColumnExportForm()
-    model_fields = AvailableLeave._meta.get_fields()
-    assigned_leaves = AssignedLeaveFilter(request.GET).qs
-    selected_fields = request.GET.getlist("selected_fields")
-    if not selected_fields:
-        selected_fields = form.fields["selected_fields"].initial
-        ids = request.GET.get("ids")
-        id_list = json.loads(ids)
-        assigned_leaves = AvailableLeave.objects.filter(id__in=id_list)
-    for field in model_fields:
-        field_name = field.name
-        if field_name in selected_fields:
-            assigned_leaves_export[field.verbose_name] = []
-            for assigned_leave in assigned_leaves:
-                value = getattr(assigned_leave, field_name)
-                assigned_leaves_export[field.verbose_name].append(value)
-
-    data_frame = pd.DataFrame(data=assigned_leaves_export)
-    styled_data_frame = data_frame.style.applymap(
-        lambda x: "text-align: center", subset=pd.IndexSlice[:, :]
+    return export_data(
+        request=request,
+        model=AvailableLeave,
+        filter_class=AssignedLeaveFilter,
+        form_class=AvailableLeaveColumnExportForm,
+        file_name="Assign_Leave",
     )
-    response = HttpResponse(content_type="application/ms-excel")
-    response["Content-Disposition"] = f'attachment; filename="AssignLeaveExport.xlsx"'
-    writer = pd.ExcelWriter(response, engine="xlsxwriter")
-    styled_data_frame.to_excel(writer, index=False, sheet_name="Sheet1")
-    worksheet = writer.sheets["Sheet1"]
-    worksheet.set_column("A:Z", 18)
-    writer.close()
-    return response
 
 
 @login_required
@@ -1227,42 +1199,15 @@ def holidays_info_import(request):
     return redirect(holiday_view)
 
 
+@login_required
 def holiday_info_export(request):
-    form = HolidaysColumnExportForm()
-    holidays_export = {}
-    holidays = HolidayFilter(request.GET).qs
-    selected_fields = request.GET.getlist("selected_fields")
-    model_fields = Holiday._meta.get_fields()
-    if not selected_fields:
-        ids = request.GET.get("ids")
-        id_list = json.loads(ids)
-        holidays = Holiday.objects.filter(id__in=id_list)
-        selected_fields = form.fields["selected_fields"].initial
-    for field in model_fields:
-        field_name = field.name
-        if field_name in selected_fields:
-            holidays_export[field.verbose_name] = []
-            for holiday in holidays:
-                value = getattr(holiday, field_name)
-                if value is True:
-                    value = _("Yes")
-                elif value is False:
-                    value = _("No")
-                holidays_export[field.verbose_name].append(value)
-
-    data_frame = pd.DataFrame(data=holidays_export)
-    styled_data_frame = data_frame.style.applymap(
-        lambda x: "text-align: center", subset=pd.IndexSlice[:, :]
+    return export_data(
+        request=request,
+        model=Holiday,
+        filter_class=HolidayFilter,
+        form_class=HolidaysColumnExportForm,
+        file_name="Holidays_export",
     )
-    response = HttpResponse(content_type="application/ms-excel")
-    response["Content-Disposition"] = f'attachment; filename="HolidaysExport.xlsx"'
-    writer = pd.ExcelWriter(response, engine="xlsxwriter")
-    styled_data_frame.to_excel(writer, index=False, sheet_name="Sheet1")
-    worksheet = writer.sheets["Sheet1"]
-    worksheet.set_column("A:Z", 18)
-    writer.close()
-    return response
-
 
 @login_required
 @permission_required("leave.view_holiday")
@@ -3008,6 +2953,64 @@ def holiday_select_filter(request):
 
     if page_number == "all":
         employee_filter = HolidayFilter(filters, queryset=Holiday.objects.all())
+
+        # Get the filtered queryset
+        filtered_employees = employee_filter.qs
+
+        employee_ids = [str(emp.id) for emp in filtered_employees]
+        total_count = filtered_employees.count()
+
+        context = {"employee_ids": employee_ids, "total_count": total_count}
+
+        return JsonResponse(context)
+
+
+@require_http_methods(["POST"])
+@login_required
+@manager_can_enter("leave.delete_leaverequest")
+def leave_request_bulk_delete(request):
+    """
+    This method is used to delete bulk of assigned leaves
+    """
+    ids = request.POST["ids"]
+    ids = json.loads(ids)
+    for leave_request_id in ids:
+        try:
+            leave_request = LeaveRequest.objects.get(id=leave_request_id)
+            employee = leave_request.employee_id
+            # leave_request.delete()
+            messages.success(
+                request,
+                _("{}'s leave request deleted.".format(employee)),
+            )
+        except Exception as e:
+            messages.error(request, _("Leave request not found."))
+    return JsonResponse({"message": "Success"})
+
+
+@login_required
+def leave_request_select(request):
+    page_number = request.GET.get("page")
+
+    if page_number == "all":
+        employees = LeaveRequest.objects.all()
+
+    employee_ids = [str(emp.id) for emp in employees]
+    total_count = employees.count()
+
+    context = {"employee_ids": employee_ids, "total_count": total_count}
+
+    return JsonResponse(context, safe=False)
+
+
+@login_required
+def leave_request_select_filter(request):
+    page_number = request.GET.get("page")
+    filtered = request.GET.get("filter")
+    filters = json.loads(filtered) if filtered else {}
+
+    if page_number == "all":
+        employee_filter = LeaveRequestFilter(filters, queryset=LeaveRequest.objects.all())
 
         # Get the filtered queryset
         filtered_employees = employee_filter.qs

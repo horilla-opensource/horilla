@@ -35,12 +35,48 @@
       {% trans "Approved" %}
     </span>
   </div>
+  <!-- start of selection buttons -->
+  <div
+    class="oh-checkpoint-badge text-success mb-2"
+    id="selectAllLeaverequests"
+    style="cursor: pointer"
+    >
+      {% trans "Select All Requests" %}
+    </div>
+    <div
+    class="oh-checkpoint-badge text-secondary mb-2"
+    id="unselectAllLeaverequests"
+    style="cursor: pointer"
+    >
+      {% trans "Unselect All Requests" %}
+    </div>
+    <div
+    class="oh-checkpoint-badge text-info mb-2"
+    id="exportLeaverequests"
+    style="cursor: pointer; display: none"
+    >
+      {% trans "Export Requests" %}
+</div>
+<div class="oh-checkpoint-badge text-danger mb-2" id="selectedShowLeaverequests" style="display: none"></div>
+<!-- end of selection buttons -->
 {% endif %}
+
 {% if leave_requests %}
     <div class="oh-sticky-table">
         <div class="oh-sticky-table__table ">
             <div class="oh-sticky-table__thead">
                 <div class="oh-sticky-table__tr">
+                    {% if not request.GET.dashboard %}
+                        <div class="oh-sticky-table__th" style="width: 10px">
+                            <div class="centered-div">
+                                <input
+                                type="checkbox"
+                                title='{% trans "Select All" %}'
+                                class="oh-input oh-input__checkbox all-leave-requests"
+                                />
+                            </div>
+                        </div>
+                    {% endif %}
                     <div class="oh-sticky-table__th" hx-get="{% url 'request-filter' %}?{{pd}}&sortby=employee_id" hx-target="#leaveRequest">{% trans "Employee" %}</div>
                     <div class="oh-sticky-table__th" hx-get="{% url 'request-filter' %}?{{pd}}&sortby=leave_type_id" hx-target="#leaveRequest">{% trans "Leave Type" %}</div>
                     <div class="oh-sticky-table__th" hx-get="{% url 'request-filter' %}?{{pd}}&sortby=start_date" hx-target="#leaveRequest">{% trans "Start Date" %}</div>
@@ -57,7 +93,20 @@
                 {% for leave_request in leave_requests %}
                 <div class="oh-sticky-table__tr" draggable="true" data-toggle="oh-modal-toggle" data-target="#tableTimeOff"
                 hx-get="{% url 'one-request-view' leave_request.id %}?instances_ids={{requests_ids}}" hx-target="#requestView">
-                    <div class="oh-sticky-table__sd {% if leave_request.status == "requested" %} row-status--blue {% elif leave_request.status == "cancelled_and_rejected" %} row-status--black {% elif leave_request.status == "approved" %} row-status--yellow {% elif leave_request.status == "cancelled" %} row-status--gray {% elif leave_request.status == "rejected" %}row-status--red{% endif %}" >
+                    {% if not request.GET.dashboard %}
+                        <div class="oh-sticky-table__sd {% if leave_request.status == "requested" %} row-status--blue {% elif leave_request.status == "cancelled_and_rejected" %} row-status--black 
+                                {% elif leave_request.status == "approved" %} row-status--yellow {% elif leave_request.status == "cancelled" %} row-status--gray 
+                                {% elif leave_request.status == "rejected" %}row-status--red{% endif %}" onclick="event.stopPropagation()">
+                            <div class="centered-div">
+                                <input
+                                type="checkbox"
+                                id="{{leave_request.id}}"
+                                class="oh-input holiday-checkbox oh-input__checkbox all-leave-requests-row"
+                                />
+                            </div>
+                        </div>
+                    {% endif %}
+                    <div class="oh-sticky-table__td">
                         <div class="oh-profile oh-profile--md">
                             <div class="oh-profile__avatar mr-1">
                                 <img src="{{leave_request.employee_id.get_avatar}}" class="oh-profile__image"
@@ -180,3 +229,35 @@
     </nav>
 </div>
 {% endif %}
+<script>
+    $(".all-leave-requests").change(function (e) {
+      var is_checked = $(this).is(":checked");
+      if (is_checked) {
+        $(".all-leave-requests-row").prop("checked", true);
+      } else {
+        $(".all-leave-requests-row").prop("checked", false);
+      }
+    });
+  
+    $(document).ready(function () {
+      tickLeaverequestsCheckboxes();
+      $(".all-leave-requests-row").change(function () {
+        addingLeaverequestsIds();
+      });
+  
+      $(".all-leave-requests").change(function () {
+        addingLeaverequestsIds();
+      });
+      $("#selectAllLeaverequests").click(function () {
+        selectAllLeaverequests();
+      });
+      $("#unselectAllLeaverequests").click(function () {
+        unselectAllLeaverequests();
+      });
+      $("#exportLeaverequests").click(function (e) {
+        exportLeaverequests();
+      });
+    });
+  </script>
+  <script src="{% static '/holiday/action.js' %}"></script>
+  
