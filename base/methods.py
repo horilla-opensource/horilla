@@ -325,6 +325,9 @@ def closest_numbers(numbers: list, input_number: int) -> tuple:
 @login_required
 def export_data(request, model, form_class, filter_class, file_name):
     fields_mapping = {
+        "male": _("Male"),
+        "female": _("Female"),
+        "other": _("Other"),
         "draft": _("Draft"),
         "active": _("Active"),
         "expired": _("Expired"),
@@ -363,6 +366,8 @@ def export_data(request, model, form_class, filter_class, file_name):
                     value = _("No")
                 if value in fields_mapping:
                     value = fields_mapping[value]
+                if value == "None":
+                    value = " "
                 request_export[field.verbose_name].append(value)
 
     data_frame = pd.DataFrame(data=request_export)
