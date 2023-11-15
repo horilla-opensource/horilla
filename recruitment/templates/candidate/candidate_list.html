@@ -30,8 +30,9 @@
     <div class="oh-sticky-table__thead">
       <div class="oh-sticky-table__tr">
         <div class="oh-sticky-table__th" style="width:10px;">
-          <input type="checkbox" class="oh-input oh-input__checkbox mt-1 mr-2 all-candidate" title="Select All" 
-          id = "allCandidate"/>
+          <div class="centered-div">
+            <input type="checkbox" class="oh-input oh-input__checkbox all-candidate" title="Select All"  id = "allCandidate"/>
+          </div>
         </div>
         <div class="oh-sticky-table__th" hx-target='#section' hx-get="{% url 'search-candidate' %}?{{pd}}&orderby=name&view=list">{% trans "Candidates" %}</div>
         <div class="oh-sticky-table__th">{% trans "Email" %}</div>

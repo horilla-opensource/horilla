@@ -30,7 +30,7 @@ from django.utils.translation import gettext_lazy as _
 from notifications.signals import notify
 from horilla import settings
 from horilla.decorators import permission_required, login_required, hx_request_required
-from base.methods import get_key_instances
+from base.methods import export_data, get_key_instances
 from recruitment.views.paginator_qry import paginator_qry
 from recruitment.models import Recruitment, Candidate, Stage, StageNote
 from recruitment.filters import (
@@ -853,50 +853,15 @@ def candidate_view(request):
     )
 
 
+@login_required
 def candidate_export(request):
-    """
-    Export candidate data to an Excel file.
-
-    This view function takes a GET request and exports candidate data into an Excel file.
-    The exported Excel file will include the selected fields from the Candidate model
-    """
-    form = CandidateExportForm()
-    candidates = CandidateFilter(request.GET).qs
-    today_date = date.today().strftime("%Y-%m-%d")
-    file_name = f"Candidate_file_{today_date}.xlsx"
-    selected_fields = request.GET.getlist("selected_fields")
-    model_fields = Candidate._meta.get_fields()
-    candidate_data = {}
-    if not selected_fields:
-        selected_fields = form.fields["selected_fields"].initial
-        ids = request.GET.get("ids")
-        id_list = json.loads(ids)
-        candidates = Candidate.objects.filter(id__in=id_list)
-    for field in model_fields:
-        field_name = field.name
-        if field_name in selected_fields:
-            candidate_data[field.verbose_name] = []
-            for candidate in candidates:
-                value = getattr(candidate, field_name)
-                if value is True:
-                    value = _("Yes")
-                elif value is False:
-                    value = _("No")
-                candidate_data[field.verbose_name].append(value)
-
-    data_frame = pd.DataFrame(data=candidate_data)
-    data_frame = data_frame.style.applymap(
-        lambda x: "text-align: center", subset=pd.IndexSlice[:, :]
+    return export_data(
+        request=request,
+        model=Candidate,
+        filter_class=CandidateFilter,
+        form_class=CandidateExportForm,
+        file_name="Candidate_export",
     )
-    response = HttpResponse(content_type="application/ms-excel")
-    response["Content-Disposition"] = f'attachment; filename="{file_name}"'
-    data_frame.to_excel(response, index=False)
-    writer = pd.ExcelWriter(response, engine="xlsxwriter")
-    data_frame.to_excel(writer, index=False, sheet_name="Sheet1")
-    worksheet = writer.sheets["Sheet1"]
-    worksheet.set_column("A:Z", 20)
-    writer.close()
-    return response
 
 
 @login_required
