@@ -30,8 +30,13 @@ $(document).ready(function () {
 				var clickedBarIndex = activeBars[0].index;
 				var clickedLabel = data.labels[clickedBarIndex];
 				localStorage.removeItem("savedFilters");
+				var active = "True";
+				if (clickedLabel.toLowerCase()!="active") {
+					active = "False"
+				}
+
 				window.location.href =
-					"/employee/employee-view?is_active=" + clickedLabel.toLowerCase();
+					"/employee/employee-view?is_active=" + active;
 			}
 		});
 	}

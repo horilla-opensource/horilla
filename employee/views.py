@@ -417,7 +417,7 @@ def employee_view(request):
     previous_data = request.GET.urlencode()
     page_number = request.GET.get("page")
     filter_obj = EmployeeFilter(
-        request.GET, queryset=Employee.objects.filter(is_active=True)
+        request.GET, queryset=Employee.objects.all()
     )
     export_form = EmployeeExportExcelForm()
     employees = filtersubordinatesemployeemodel(
