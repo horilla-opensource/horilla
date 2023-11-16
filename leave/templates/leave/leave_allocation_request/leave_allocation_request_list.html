@@ -48,8 +48,8 @@
                                 <div class="oh-sticky-table__td {% if leave_allocation_request.status == 'rejected' %} diff-cell{% endif %}">{{leave_allocation_request.requested_days}}</div>
                                 <div class="oh-sticky-table__td {% if leave_allocation_request.status == 'rejected' %} diff-cell{% endif %}">{{leave_allocation_request.created_by}}</div>
                                 <div class="oh-sticky-table__td {% if leave_allocation_request.status == 'rejected' %} diff-cell{% endif %}">{{leave_allocation_request.get_status_display}}</div>
-                                <div class="oh-sticky-table__td">{{ leave_allocation_request.description}}</div>
-                                <div class="oh-sticky-table__td" onclick="event.stopPropagation()">
+                                <div class="oh-sticky-table__td {% if leave_allocation_request.status == 'rejected' %} diff-cell{% endif %}">{{ leave_allocation_request.description}}</div>
+                                <div class="oh-sticky-table__td {% if leave_allocation_request.status == 'rejected' %} diff-cell{% endif %}" onclick="event.stopPropagation()">
                                     <div class="oh-btn-group">
                                         {% if leave_allocation_request.status ==  'requested' %}
                                             <button  
@@ -183,12 +183,12 @@
                                             <span class="oh-profile__name oh-text--dark">{{leave_allocation_request.employee_id}}</span>
                                         </div>
                                     </div>
-                                    <div class="oh-sticky-table__td {% if leave_allocation_request.status == 'rejected' %} diff-cell{% endif %}">{{leave_allocation_request.leave_type_id}}{{leave_allocation_request.id}}</div>
+                                    <div class="oh-sticky-table__td {% if leave_allocation_request.status == 'rejected' %} diff-cell{% endif %}">{{leave_allocation_request.leave_type_id}}</div>
                                     <div class="oh-sticky-table__td {% if leave_allocation_request.status == 'rejected' %} diff-cell{% endif %}">{{leave_allocation_request.requested_days}}</div>
                                     <div class="oh-sticky-table__td {% if leave_allocation_request.status == 'rejected' %} diff-cell{% endif %}">{{leave_allocation_request.created_by}}</div>
                                     <div class="oh-sticky-table__td {% if leave_allocation_request.status == 'rejected' %} diff-cell{% endif %}">{{leave_allocation_request.get_status_display}}</div>
-                                    <div class="oh-sticky-table__td">{{ leave_allocation_request.description}}</div>
-                                    <div class="oh-sticky-table__td" onclick="event.stopPropagation()">
+                                    <div class="oh-sticky-table__td {% if leave_allocation_request.status == 'rejected' %} diff-cell{% endif %}">{{ leave_allocation_request.description}}</div>
+                                    <div class="oh-sticky-table__td {% if leave_allocation_request.status == 'rejected' %} diff-cell{% endif %}" onclick="event.stopPropagation()">
                                         <div class="oh-btn-group">
                                             {% if leave_allocation_request.status ==  'requested' %}
                                                 <button  
@@ -220,7 +220,7 @@
                                             {% endif %}
                                         </div>
                                     </div>
-                                    <div class="oh-sticky-table__td" onclick="event.stopPropagation()">
+                                    <div class="oh-sticky-table__td {% if leave_allocation_request.status == 'rejected' %} diff-cell{% endif %}" onclick="event.stopPropagation()">
                                         <div class="oh-btn-group" >
 
                                             {% if perms.leave.change_leaveallocationrequest or request.user|is_reportingmanager %}
