@@ -486,7 +486,7 @@
         tileOrder.push($(valueOfElement).attr("id"));
       }
     );
-    localStorage.setItem("tileOrder", JSON.stringify(tileOrder));
+    // localStorage.setItem("tileOrder", JSON.stringify(tileOrder));
 
     function orderDashboardTile() {
       var orderIds = JSON.parse(localStorage.getItem("tileOrder"));
@@ -522,7 +522,7 @@
           }
         );
         localStorage.setItem("tileOrder", JSON.stringify(tileOrder));
-      }, 0);
+      }, 10);
     });
   });
 </script>
