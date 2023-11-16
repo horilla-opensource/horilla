@@ -906,54 +906,13 @@ def late_come_early_out_export(request):
     This view function takes a GET request and exports attendance late come early out data into an Excel file.
     The exported Excel file will include the selected fields from the AttendanceLateComeEarlyOut model.
     """
-    late_come_data = {}
-    selected_columns = []
-    form = LateComeEarlyOutExportForm()
-    today_date = date.today().strftime("%Y-%m-%d")
-    file_name = f"Late_come_{today_date}.xlsx"
-    attendances = LateComeEarlyOutFilter(request.GET).qs
-    selected_fields = request.GET.getlist("selected_fields")
-
-    if not selected_fields:
-        selected_fields = form.fields["selected_fields"].initial
-        ids = request.GET.get("ids")
-        id_list = json.loads(ids)
-        attendances = AttendanceLateComeEarlyOut.objects.filter(id__in=id_list)
-
-    for field in form.fields["selected_fields"].choices:
-        value = field[0]
-        key = field[1]
-        if value in selected_fields:
-            selected_columns.append((value, key))
-
-    for column_value, column_name in selected_columns:
-        nested_attributes = column_value.split("__")
-        late_come_data[column_name] = []
-        for attendance in attendances:
-            value = attendance
-            for attr in nested_attributes:
-                value = getattr(value, attr, None)
-                if value is None:
-                    break
-            data = str(value) if value is not None else ""
-            if data == "True":
-                data = _("Yes")
-            elif data == "False":
-                data = _("No")
-            late_come_data[column_name].append(data)
-
-    data_frame = pd.DataFrame(data=late_come_data)
-    data_frame = data_frame.style.applymap(
-        lambda x: "text-align: center", subset=pd.IndexSlice[:, :]
+    return export_data(
+        request=request,
+        model=AttendanceLateComeEarlyOut,
+        filter_class=LateComeEarlyOutFilter,
+        form_class=LateComeEarlyOutExportForm,
+        file_name="Late_come_",
     )
-    response = HttpResponse(content_type="application/ms-excel")
-    response["Content-Disposition"] = f'attachment; filename="{file_name}"'
-    writer = pd.ExcelWriter(response, engine="xlsxwriter")
-    data_frame.to_excel(writer, index=False, sheet_name="Sheet1")
-    worksheet = writer.sheets["Sheet1"]
-    worksheet.set_column("A:Z", 20)
-    writer.close()
-    return response
 
 
 @login_required
