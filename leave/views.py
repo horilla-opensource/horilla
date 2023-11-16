@@ -1,43 +1,43 @@
-from collections import defaultdict
+"""
+views.py
+"""
 import contextlib
 import json
-from urllib.parse import parse_qs
-from django.shortcuts import render, redirect
 import pandas as pd
-from base.methods import closest_numbers, export_data
-from horilla.decorators import login_required, hx_request_required
-from django.views.decorators.http import require_http_methods
-from .forms import *
-from .models import *
-from django.http import HttpResponseRedirect, JsonResponse, HttpResponse
-from employee.models import Employee
-from .filters import *
-from django.contrib import messages
-from django.db.models import Q
 from datetime import datetime, timedelta, date
-from django.utils import timezone
-from base.models import *
-from .methods import (
-    calculate_requested_days,
-    leave_requested_dates,
-    holiday_dates_list,
-    company_leave_dates_list,
-)
-import random
+from collections import defaultdict
+from urllib.parse import parse_qs
+from django.db.models import Q
+from django.shortcuts import render, redirect
+from django.db.models import ProtectedError
+from django.utils.translation import gettext as __
 from django.core.paginator import Paginator
-from django.db.models.functions import TruncYear
+from django.contrib import messages
+from django.http import JsonResponse, HttpResponse
+from django.views.decorators.http import require_http_methods
+from django.utils.translation import gettext_lazy as _
+from horilla.decorators import login_required, hx_request_required
 from horilla.decorators import permission_required, manager_can_enter
-from .decorators import *
+from base.methods import closest_numbers, export_data
+from base.models import *
 from base.methods import (
     filtersubordinates,
     choosesubordinates,
     get_key_instances,
     sortby,
 )
-from django.utils.translation import gettext as __
-from django.utils.translation import gettext_lazy as _
 from notifications.signals import notify
-from django.db.models import ProtectedError
+from leave.models import *
+from leave.forms import *
+from leave.decorators import *
+from leave.filters import *
+from employee.models import Employee
+from .methods import (
+    calculate_requested_days,
+    leave_requested_dates,
+    holiday_dates_list,
+    company_leave_dates_list,
+)
 
 
 def generate_error_report(error_list, error_data, file_name):
@@ -2014,50 +2014,15 @@ def overall_leave(request):
     GET : return Json response of labels, data
     """
 
-    selected = request.GET.get("selected")
     labels = []
     data = []
     departments = Department.objects.all()
-    today = date.today()
-    today_leave_requests = LeaveRequest.objects.filter(
-        Q(start_date__lte=today) & Q(end_date__gte=today) & Q(status="approved")
-    )
-    start_of_week = today - timedelta(days=today.weekday())
-    end_of_week = start_of_week + timedelta(days=6)
-    weekly_leave_requests = LeaveRequest.objects.filter(
-        status="approved", start_date__lte=end_of_week, end_date__gte=start_of_week
-    )
-    start_of_month = today.replace(day=1)
-    end_of_month = start_of_month.replace(day=28) + timedelta(days=4)
-    if end_of_month.month != today.month:
-        end_of_month = end_of_month - timedelta(days=end_of_month.day)
-    monthly_leave_requests = LeaveRequest.objects.filter(
-        status="approved", start_date__lte=end_of_month, end_date__gte=start_of_month
-    )
-    start_of_year = today.replace(month=1, day=1)
-    end_of_year = today.replace(month=12, day=31)
-    yearly_leave_requests = (
-        LeaveRequest.objects.filter(
-            status="approved", start_date__lte=end_of_year, end_date__gte=start_of_year
-        )
-        .annotate(year=TruncYear("start_date"))
-        .filter(year=start_of_year)
-    )
-    if selected == "month":
-        leave_requests = monthly_leave_requests
-    elif selected == "week":
-        leave_requests = weekly_leave_requests
-    elif selected == "year":
-        leave_requests = yearly_leave_requests
-    else:
-        leave_requests = today_leave_requests
-    employees = [leave_request.employee_id for leave_request in leave_requests]
+    leave_requests = LeaveRequestFilter(request.GET).qs
     for department in departments:
         labels.append(department.department)
-        count = sum(
-            employee.employee_work_info.department_id == department
-            for employee in employees
-        )
+        count = leave_requests.filter(
+            employee_id__employee_work_info__department_id=department
+        ).count()
         data.append(count)
     return JsonResponse({"labels": labels, "data": data})
 
