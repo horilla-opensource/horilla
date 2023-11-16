@@ -99,8 +99,8 @@
           <div id="assetRequestAllocationTarget"></div>
           {% for asset_request in asset_requests %}
           <!-- asset request looping -->
-          <div class="oh-sticky-table__tr" draggable="true">
-            <div class="oh-sticky-table__sd" data-toggle="oh-modal-toggle" data-target="#requestStatus{{asset_request.id}}" >
+          <div class="oh-sticky-table__tr" draggable="true" data-toggle="oh-modal-toggle" data-target="#requestStatus{{asset_request.id}}">
+            <div class="oh-sticky-table__sd" >
               <div class="oh-profile oh-profile--md">
                 <div class="oh-profile__avatar mr-1">
                   <img src="{{asset_request.requested_employee_id.get_avatar}}" class="oh-profile__image"

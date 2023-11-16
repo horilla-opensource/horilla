@@ -27,12 +27,13 @@
   </div>
   <div class="oh-sticky-table__tbody" id="assetPaginatorTarget">
     {% for asset in assets %}
-    <div class="oh-sticky-table__tr oh-multiple-table-sort__movable" id="assetDelete{{asset.id}}">
-      <div class="oh-sticky-table__sd" 
-           data-toggle="oh-modal-toggle" 
-           data-target="#assetInfoModal"
-           hx-get="{%url 'asset-information' asset_id=asset.id %}" 
-           hx-target="#assetInfomation">
+    <div class="oh-sticky-table__tr oh-multiple-table-sort__movable" 
+    id="assetDelete{{asset.id}}"
+    data-toggle="oh-modal-toggle" 
+    data-target="#assetInfoModal"
+    hx-get="{%url 'asset-information' asset_id=asset.id %}" 
+    hx-target="#assetInfomation">
+      <div class="oh-sticky-table__sd">
         <div class="oh-profile oh-profile--md">
           <div class="oh-profile__avatar mr-1">
             <img src="https://ui-avatars.com/api/?name={{asset.asset_name}}&background=random" class="oh-profile__image"
@@ -73,10 +74,12 @@
           hx-get="{% url 'asset-update'  asset_id=asset.id %}?{{pg}}" 
           title="{% trans 'Update' %}" 
           hx-target="#AssetModal"
+          onclick="event.stopPropagation()"
           id="oh-btn-asset-update-modal"> 
           <ion-icon name="create-outline" role="img" class="md hydrated" aria-label="create outline"></ion-icon>
         </a>
         <form action="{% url 'asset-delete' asset_id=asset.id %}?{{pg}}" 
+            onclick="event.stopPropagation()"
             onsubmit="return confirm('{% trans "Do you want to delete this asset?" %}')" 
             method="post" style="display: contents"> {% csrf_token %} 
             <button class="oh-btn oh-btn--danger-outline  w-100" title="{% trans 'Delete' %}"> 
