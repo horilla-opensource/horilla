@@ -338,6 +338,14 @@ def export_data(request, model, form_class, filter_class, file_name):
         "hourly": _("Hourly"),
         "daily": _("Daily"),
         "monthly": _("Monthly"),
+        "full_day": _("Full Day"),
+        "first_half": _("First Half"),
+        "second_half": _("Second Half"),
+        "requested": _("Requested"),
+        "approved": _("Approved"),
+        "cancelled": _("Cancelled"),
+        "rejected": _("Rejected"),
+        "cancelled_and_rejected": _("Cancelled & Rejected"),
     }
     today_date = date.today().strftime("%Y-%m-%d")
     file_name = f"{file_name}_{today_date}.xlsx"
@@ -345,21 +353,21 @@ def export_data(request, model, form_class, filter_class, file_name):
 
     form = form_class()
     model_fields = model._meta.get_fields()
-    requests = filter_class(request.GET).qs
+    export_objects = filter_class(request.GET).qs
 
     selected_fields = request.GET.getlist("selected_fields")
     if not selected_fields:
         selected_fields = form.fields["selected_fields"].initial
         ids = request.GET.get("ids")
         id_list = json.loads(ids)
-        requests = model.objects.filter(id__in=id_list)
+        export_objects = model.objects.filter(id__in=id_list)
 
     for field in model_fields:
         field_name = field.name
         if field_name in selected_fields:
             request_export[field.verbose_name] = []
-            for req in requests:
-                value = getattr(req, field_name)
+            for obj in export_objects:
+                value = getattr(obj, field_name)
                 if value is True:
                     value = _("Yes")
                 elif value is False:
@@ -368,8 +376,9 @@ def export_data(request, model, form_class, filter_class, file_name):
                     value = fields_mapping[value]
                 if value == "None":
                     value = " "
+                if field_name == "month":
+                    value = _(value.title())
                 request_export[field.verbose_name].append(value)
-
     data_frame = pd.DataFrame(data=request_export)
     styled_data_frame = data_frame.style.applymap(
         lambda x: "text-align: center", subset=pd.IndexSlice[:, :]
