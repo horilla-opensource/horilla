@@ -1,131 +1,190 @@
-{% extends 'index.html' %} 
-{% block content %}
-{% load static %}
-{% load i18n %}
+{% extends 'index.html' %} {% block content %} {% load static %} {% load i18n %}
 <style>
-  .settings-label{
-    font-weight:bold;
-    font-size:15px;
-  }
-  .perm-count {
-    width: 100%;
-    display: flex;
-    padding: 0.5rem 0rem;
-    font-style: italic;
-    color: hsl(0deg,0%,37%);
-    width: 100%;
-    
-  }
+	.settings-label {
+		font-weight: bold;
+		font-size: 15px;
+	}
+	.perm-count {
+		width: 100%;
+		display: flex;
+		padding: 0.5rem 0rem;
+		font-style: italic;
+		color: hsl(0deg, 0%, 37%);
+		width: 100%;
+	}
 </style>
 
 <section class="oh-wrapper oh-main__topbar">
-  <div
-    class="oh-main__titlebar oh-main__titlebar--left oh-d-flex-column--resp oh-mb-3--small"
-  >
-    <h1 class="oh-main__titlebar-title fw-bold">{% trans "Settings" %}</h1>
-  </div>
-  <div class="oh-main__titlebar oh-main__titlebar--right"></div>
+	<div
+		class="oh-main__titlebar oh-main__titlebar--left oh-d-flex-column--resp oh-mb-3--small"
+	>
+		<h1 class="oh-main__titlebar-title fw-bold">{% trans "Settings" %}</h1>
+	</div>
+	<div class="oh-main__titlebar oh-main__titlebar--right"></div>
 </section>
 <div class="oh-wrapper">
-  <div class="oh-card">
-    <div class="row">
-      <div class="col-12 col-sm-12 col-md-12 col-lg-3">
-        <button
-          class="oh-btn oh-btn--light oh-inner-sidebar-toggle w-100"
-          data-action="toggle"
-          data-target="#mobileMenu"
-          data-class="oh-resp-hidden--lg"
-        >
-          <ion-icon class="me-2" name="menu-outline"></ion-icon>{% trans "All Settings" %}
-        </button>
-        <div class="oh-inner-sidebar oh-resp-hidden--lg" style="font-weight:bold;" id="mobileMenu">
-          <ul class="oh-inner-sidebar__items">
-            <li class="oh-inner-sidebar__item">
-              <a
-                id="department"
-                href="{% url 'department-creation' %}"
-                class="oh-inner-sidebar__link oh-dropdown__link"
-                >{% trans "Department" %}</a
-              >
-            </li>
-            <li class="oh-inner-sidebar__item">
-              <a 
-              id="jobPosition"
-              href="{% url 'job-position-creation' %}" class="oh-inner-sidebar__link oh-dropdown__link ">{% trans "Job Positions" %}</a>
-            </li>
-            <li class="oh-inner-sidebar__item">
-              <a id="jobRole" href="{% url 'job-role-create' %}" class="oh-inner-sidebar__link oh-dropdown__link">{% trans "Job Role" %}</a>
-            </li>
-            <li class="oh-inner-sidebar__item">
-              <a id="workType" href="{% url 'work-type-create' %}" class="oh-inner-sidebar__link oh-dropdown__link">{% trans "Work Type" %}</a>
-            </li>
-            <li class="oh-inner-sidebar__item">
-              <a id="rotatingWorkType" href="{% url 'rotating-work-type-create' %}" class="oh-inner-sidebar__link oh-dropdown__link">{% trans "Rotating Work Type" %}</a>
-            </li>
-    
-            <li class="oh-inner-sidebar__item">
-              <a id="employeeType" href="{% url 'employee-type-create' %}" class="oh-inner-sidebar__link oh-dropdown__link">{% trans "Employee Type" %}</a>
-            </li>
-            <li class="oh-inner-sidebar__item">
-              <a id="employeeShift" href="{% url 'employee-shift-create' %}" class="oh-inner-sidebar__link oh-dropdown__link">{% trans "Employee Shift" %}</a>
-            </li>
-            <li class="oh-inner-sidebar__item">
-              <a id="employeeShiftSchedule" href="{% url 'employee-shift-schedule-create' %}" class="oh-inner-sidebar__link oh-dropdown__link"
-                >{% trans "Employee Shift Schedule" %}</a
-              >
-            </li>
-            <li class="oh-inner-sidebar__item">
-              <a id="rotatingShift" href="{% url 'rotating-shift-create' %}" class="oh-inner-sidebar__link oh-dropdown__link">{% trans "Rotating Shift" %}</a>
-            </li>
-            {% comment %} <li class="oh-inner-sidebar__item">
-              <a id="condition" href="{% url 'validation-condition-create' %}" class="oh-inner-sidebar__link oh-dropdown__link"
-                >{% trans "Attendance Break Point" %}</a>
-            </li> {% endcomment %}
-            <li class="oh-inner-sidebar__item">
-              <a id="condition" href="{% url 'attendance-settings' %}" class="oh-inner-sidebar__link oh-dropdown__link"
-                >{% trans "Attendance Break Point" %}</a>
-            </li>
-            <li class="oh-inner-sidebar__item">
-              <a id="employeePermission" href="{% url 'employee-permission-assign' %}" class="oh-inner-sidebar__link oh-dropdown__link"
-                >{% trans "Employee Permission" %}</a>
-            </li>
-            <li class="oh-inner-sidebar__item">
-              <a id="userGroup" href="{% url 'user-group-create' %}" class="oh-inner-sidebar__link oh-dropdown__link">{% trans "User Group" %}</a>
-            </li>
-            <li class="oh-inner-sidebar__item">
-              <a id="userGroupAssign" href="{% url 'user-group-assign' %}" class="oh-inner-sidebar__link oh-dropdown__link">{% trans "User Group Assign" %}</a>
-            </li>
-            <li class="oh-inner-sidebar__item">
-              <a id="company" href="{% url 'company-create' %}" class="oh-inner-sidebar__link oh-dropdown__link">{% trans "Company" %}</a>
-            </li>
-            <li class="oh-inner-sidebar__item">
-              <a id="currency" href="{% url 'currency-settings' %}" class="oh-inner-sidebar__link oh-dropdown__link">{% trans "Currency" %}</a>
-            </li>
-          </ul>
-        </div>
-      </div>
-      <div class="col-12 col-sm-12 col-md-12 col-lg-9">
-        {% block settings %}
-        
-        {% endblock settings %}
-      </div>
-    </div>
-  </div>
+	<div class="oh-card">
+		<div class="row">
+			<div class="col-12 col-sm-12 col-md-12 col-lg-3">
+				<button
+					class="oh-btn oh-btn--light oh-inner-sidebar-toggle w-100"
+					data-action="toggle"
+					data-target="#mobileMenu"
+					data-class="oh-resp-hidden--lg"
+				>
+					<ion-icon class="me-2" name="menu-outline"></ion-icon>{% trans "All
+					Settings" %}
+				</button>
+				<div
+					class="oh-inner-sidebar oh-resp-hidden--lg"
+					style="font-weight: bold"
+					id="mobileMenu"
+				>
+					<ul class="oh-inner-sidebar__items">
+						<li class="oh-inner-sidebar__item">
+							<a
+								id="department"
+								href="{% url 'department-creation' %}"
+								class="oh-inner-sidebar__link oh-dropdown__link"
+								>{% trans "Department" %}</a
+							>
+						</li>
+						<li class="oh-inner-sidebar__item">
+							<a
+								id="jobPosition"
+								href="{% url 'job-position-creation' %}"
+								class="oh-inner-sidebar__link oh-dropdown__link"
+								>{% trans "Job Positions" %}</a
+							>
+						</li>
+						<li class="oh-inner-sidebar__item">
+							<a
+								id="jobRole"
+								href="{% url 'job-role-create' %}"
+								class="oh-inner-sidebar__link oh-dropdown__link"
+								>{% trans "Job Role" %}</a
+							>
+						</li>
+						<li class="oh-inner-sidebar__item">
+							<a
+								id="workType"
+								href="{% url 'work-type-create' %}"
+								class="oh-inner-sidebar__link oh-dropdown__link"
+								>{% trans "Work Type" %}</a
+							>
+						</li>
+						<li class="oh-inner-sidebar__item">
+							<a
+								id="rotatingWorkType"
+								href="{% url 'rotating-work-type-create' %}"
+								class="oh-inner-sidebar__link oh-dropdown__link"
+								>{% trans "Rotating Work Type" %}</a
+							>
+						</li>
+
+						<li class="oh-inner-sidebar__item">
+							<a
+								id="employeeType"
+								href="{% url 'employee-type-create' %}"
+								class="oh-inner-sidebar__link oh-dropdown__link"
+								>{% trans "Employee Type" %}</a
+							>
+						</li>
+						<li class="oh-inner-sidebar__item">
+							<a
+								id="employeeShift"
+								href="{% url 'employee-shift-create' %}"
+								class="oh-inner-sidebar__link oh-dropdown__link"
+								>{% trans "Employee Shift" %}</a
+							>
+						</li>
+						<li class="oh-inner-sidebar__item">
+							<a
+								id="employeeShiftSchedule"
+								href="{% url 'employee-shift-schedule-create' %}"
+								class="oh-inner-sidebar__link oh-dropdown__link"
+								>{% trans "Employee Shift Schedule" %}</a
+							>
+						</li>
+						<li class="oh-inner-sidebar__item">
+							<a
+								id="rotatingShift"
+								href="{% url 'rotating-shift-create' %}"
+								class="oh-inner-sidebar__link oh-dropdown__link"
+								>{% trans "Rotating Shift" %}</a
+							>
+						</li>
+						<li class="oh-inner-sidebar__item">
+							<a
+								id="condition"
+								href="{% url 'attendance-settings' %}"
+								class="oh-inner-sidebar__link oh-dropdown__link"
+								>{% trans "Attendance Break Point" %}</a
+							>
+						</li>
+						<li class="oh-inner-sidebar__item">
+							<a
+								id="employeePermission"
+								href="{% url 'employee-permission-assign' %}"
+								class="oh-inner-sidebar__link oh-dropdown__link"
+								>{% trans "Employee Permission" %}</a
+							>
+						</li>
+						<li class="oh-inner-sidebar__item">
+							<a
+								id="userGroup"
+								href="{% url 'user-group-create' %}"
+								class="oh-inner-sidebar__link oh-dropdown__link"
+								>{% trans "User Group" %}</a
+							>
+						</li>
+						<li class="oh-inner-sidebar__item">
+							<a
+								id="userGroupAssign"
+								href="{% url 'user-group-assign' %}"
+								class="oh-inner-sidebar__link oh-dropdown__link"
+								>{% trans "User Group Assign" %}</a
+							>
+						</li>
+						<li class="oh-inner-sidebar__item">
+							<a
+								id="company"
+								href="{% url 'company-create' %}"
+								class="oh-inner-sidebar__link oh-dropdown__link"
+								>{% trans "Company" %}</a
+							>
+						</li>
+						<li class="oh-inner-sidebar__item">
+							<a
+								id="currency"
+								href="{% url 'currency-settings' %}"
+								class="oh-inner-sidebar__link oh-dropdown__link"
+								>{% trans "Currency" %}</a
+							>
+						</li>
+					</ul>
+				</div>
+			</div>
+			<div class="col-12 col-sm-12 col-md-12 col-lg-9">
+				{% block settings %} {% endblock settings %}
+			</div>
+		</div>
+	</div>
 </div>
 <script>
-  $(document).ready(function () {
-    var path = location.pathname
-    var menu = $(`a[href="${path}"].oh-inner-sidebar__link.oh-dropdown__link`)
-    if (menu.length == 0) {
-      var path = localStorage.getItem("lastActiveTab")
-      menu = $(`a[href="${path}"].oh-inner-sidebar__link.oh-dropdown__link`)
-    }
-    menu.addClass("oh-inner-sidebar__link--active");
-    menu.attr('style', 'border:1px solid #FF820D ; border-radius:2px;');
-    menu[0].scrollIntoView({ behavior: "smooth", block: "center" })
-    if (menu.length != undefined) {
-      localStorage.setItem("lastActiveTab",path)
-    }
-  })
+	$(document).ready(function () {
+		var path = location.pathname;
+		var menu = $(`a[href="${path}"].oh-inner-sidebar__link.oh-dropdown__link`);
+		if (menu.length == 0) {
+			var path = localStorage.getItem("lastActiveTab");
+			menu = $(`a[href="${path}"].oh-inner-sidebar__link.oh-dropdown__link`);
+		}
+		menu.addClass("oh-inner-sidebar__link--active");
+		menu.attr("style", "border:1px solid #FF820D ; border-radius:2px;");
+		menu[0].scrollIntoView({ behavior: "smooth", block: "center" });
+		if (menu.length != undefined) {
+			localStorage.setItem("lastActiveTab", path);
+		}
+	});
 </script>
 {% endblock content %}
