@@ -4,8 +4,11 @@ various models in the Leave Management System app.
 The filters are designed to provide flexible search and filtering 
 capabilities for LeaveType, LeaveRequest,AvailableLeave, Holiday, and CompanyLeave models.
 """
+from datetime import datetime, timedelta
 import uuid
 from django import forms
+from django.db.models import Q
+from django.db.models.functions import TruncYear
 import django_filters
 from django_filters import FilterSet, DateFilter, filters, NumberFilter
 from django.utils.translation import gettext_lazy as _
@@ -153,6 +156,8 @@ class LeaveRequestFilter(FilterSet):
     based on employee,date range, leave type, and status.
     """
 
+    overall_leave = django_filters.CharFilter(method="overall_leave_filter")
+
     employee_id = filters.CharFilter(
         field_name="employee_id__employee_first_name", lookup_expr="icontains"
     )
@@ -178,6 +183,10 @@ class LeaveRequestFilter(FilterSet):
         lookup_expr="exact",
         widget=forms.DateInput(attrs={"type": "date"}),
     )
+    department_name = django_filters.CharFilter(
+        field_name="employee_id__employee_work_info__department_id__department",
+        lookup_expr="icontains",
+    )
 
     class Meta:
         """ "
@@ -185,10 +194,56 @@ class LeaveRequestFilter(FilterSet):
         """
 
         model = LeaveRequest
-        fields = {
-            "leave_type_id": ["exact"],
-            "status": ["exact"],
-        }
+        fields = [
+            "leave_type_id",
+            "status",
+            "department_name",
+            "overall_leave",
+        ]
+
+    def overall_leave_filter(self, queryset, _, value):
+        """
+        Overall leave custom filter method
+        """
+        today = datetime.today()
+
+        today_leave_requests = queryset.filter(
+            Q(start_date__lte=today) & Q(end_date__gte=today) & Q(status="approved")
+        )
+        start_of_week = today - timedelta(days=today.weekday())
+        end_of_week = start_of_week + timedelta(days=6)
+        weekly_leave_requests = queryset.filter(
+            status="approved", start_date__lte=end_of_week, end_date__gte=start_of_week
+        )
+        start_of_month = today.replace(day=1)
+        end_of_month = start_of_month.replace(day=28) + timedelta(days=4)
+        if end_of_month.month != today.month:
+            end_of_month = end_of_month - timedelta(days=end_of_month.day)
+        monthly_leave_requests = queryset.filter(
+            status="approved",
+            start_date__lte=end_of_month,
+            end_date__gte=start_of_month,
+        )
+        start_of_year = today.replace(month=1, day=1)
+        end_of_year = today.replace(month=12, day=31)
+        yearly_leave_requests = (
+            queryset.filter(
+                status="approved",
+                start_date__lte=end_of_year,
+                end_date__gte=start_of_year,
+            )
+            .annotate(year=TruncYear("start_date"))
+            .filter(year=start_of_year)
+        )
+        if value == "month":
+            queryset = monthly_leave_requests
+        elif value == "week":
+            queryset = weekly_leave_requests
+        elif value == "year":
+            queryset = yearly_leave_requests
+        else:
+            queryset = today_leave_requests
+        return queryset
 
     def __init__(self, data=None, queryset=None, *, request=None, prefix=None):
         super().__init__(data=data, queryset=queryset, request=request, prefix=prefix)

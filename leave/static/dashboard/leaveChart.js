@@ -26,7 +26,7 @@ $(document).ready(function () {
 
 	$.ajax({
 		type: "GET",
-		url: "/leave/overall-leave",
+		url: "/leave/overall-leave?overall_leave=today",
 		dataType: "json",
 		success: function (response) {
 			overAllLeave.data.labels = response.labels;
@@ -41,7 +41,7 @@ $(document).ready(function () {
 		var myChart1 = document.getElementById("overAllLeave");
 		$.ajax({
 			type: "GET",
-			url: `/leave/overall-leave?selected=${selected}`,
+			url: `/leave/overall-leave?overall_leave=${selected}`,
 			dataType: "json",
 			success: function (response) {
 				overAllLeave.data.labels = response.labels;
