@@ -478,14 +478,35 @@
 <!-- PMS chart -->
 <script src="{% static 'src/dashboard/pmsChart.js' %}"></script>
 <script>
+  function setDifference(setA, setB) {
+    if (setB.length > setA.length) {
+      temp = setA
+      setA = setB
+      setB = temp
+    }
+    return [...setA.filter(element => !setB.includes(element))];
+  }
   $(document).ready(function () {
-    var tileOrder = []
-    $.each(
-      $(".oh-card-dashboard--moveable"),
-      function (indexInArray, valueOfElement) {
-        tileOrder.push($(valueOfElement).attr("id"));
+    if (localStorage.getItem("tileOrder")) {
+      var tileOrder = []
+      $.each(
+        $(".oh-card-dashboard--moveable"),
+        function (indexInArray, valueOfElement) {
+          tileOrder.push($(valueOfElement).attr("id"));
+        }
+      );
+      var storedIds = JSON.parse(localStorage.getItem("tileOrder"))
+      var existingElements = $(".oh-card-dashboard--moveable[id]")
+      var existingElementsIds = [];
+      $.each(existingElements, function (indexInArray, valueOfElement) { 
+        existingElementsIds.push($(this).attr("id"))
+      });
+      var newOrderIds = [...storedIds ,...setDifference(storedIds,existingElementsIds)]
+      if (storedIds.length != existingElementsIds.length) {
+        localStorage.setItem("tileOrder",JSON.stringify(newOrderIds))
       }
-    );
+
+    }
     // localStorage.setItem("tileOrder", JSON.stringify(tileOrder));
 
     function orderDashboardTile() {
