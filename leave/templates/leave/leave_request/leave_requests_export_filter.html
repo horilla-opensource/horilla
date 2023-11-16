@@ -1,0 +1,93 @@
+{% load i18n %}
+<div class="oh-dropdown__filter-body">
+  <div class="oh-accordion">
+    <div
+      class="oh-accordion-header"
+      onclick="event.stopImmediatePropagation();$(this).parent().toggleClass('oh-accordion--show');"
+    >
+      {% trans "Excel columns" %}
+    </div>
+    <div class="oh-accordion-body">
+      <div class="row">
+        <div class="col-sm-12 col-md-12 col-lg-6">
+          <div class="oh-input-group">
+            <label class="oh-label">
+              <input type="checkbox" id="select-all-fields" /> {% trans "Select All" %}
+            </label>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        {% for field in excel_column.selected_fields %}
+        <div class="col-sm-4 col-md-4 col-lg-4">
+          <div class="oh-input-group">
+            <label class="oh-label"> {{ field|capfirst }} </label>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+  <div class="oh-accordion">
+    <div
+      class="oh-accordion-header"
+      onclick="event.stopImmediatePropagation();$(this).parent().toggleClass('oh-accordion--show');"
+    >
+      {% trans "Leave Request" %}
+    </div>
+    <div class="oh-accordion-body">
+      <div class="row">
+        <div class="col-sm-12 col-md-12 col-lg-12">
+          <div class="oh-input-group">
+            <label class="oh-label">{% trans "Leave Type" %}</label>
+            {{export_filter.leave_type_id}}
+          </div>
+        </div>
+        <div class="col-sm-12 col-md-12 col-lg-6">
+          <div class="oh-input-group">
+            <label class="oh-label">{% trans "Start Date" %}</label>
+            {{export_filter.start_date}}
+          </div>
+        </div>
+
+        <div class="col-sm-12 col-md-12 col-lg-6">
+          <div class="oh-input-group">
+            <label class="oh-label">{% trans "End Date" %}</label>
+            {{export_filter.end_date}}
+          </div>
+        </div>
+        <div class="col-sm-12 col-md-12">
+          <div class="oh-input-group">
+            <label class="oh-label">{% trans "Status" %}</label>
+            {{export_filter.status}}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="oh-accordion">
+    <div
+      class="oh-accordion-header"
+      onclick="event.stopImmediatePropagation();$(this).parent().toggleClass('oh-accordion--show');"
+    >
+      {% trans "Advanced" %}
+    </div>
+    <div class="oh-accordion-body">
+      <div class="row">
+        <div class="col-sm-12 col-md-12 col-lg-6">
+          <div class="oh-input-group">
+            <label class="oh-label">{% trans "From Date" %}</label>
+            {{export_filter.from_date}}
+          </div>
+        </div>
+
+        <div class="col-sm-12 col-md-12 col-lg-6">
+          <div class="oh-input-group">
+            <label class="oh-label">{% trans "To Date" %}</label>
+            {{export_filter.to_date}}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

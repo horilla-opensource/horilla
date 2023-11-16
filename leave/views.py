@@ -346,6 +346,8 @@ def leave_request_view(request):
     page_number = request.GET.get("page")
     page_obj = paginator_qry(queryset, page_number)
     leave_request_filter = LeaveRequestFilter()
+    excel_column = LeaveRequestExportForm()
+    export_filter = LeaveRequestFilter()
     requests = queryset.filter(status="requested").count()
     requests_ids = json.dumps(list(page_obj.object_list.values_list("id", flat=True)))
     approved_requests = queryset.filter(status="approved").count()
@@ -362,9 +364,23 @@ def leave_request_view(request):
             "approved_requests": approved_requests,
             "rejected_requests": rejected_requests,
             "gp_fields": LeaveRequestReGroup.fields,
+            "excel_column": excel_column,
+            "export_filter": export_filter.form,
             "requests_ids": requests_ids,
             "current_date": date.today(),
         },
+    )
+
+
+@login_required
+@manager_can_enter("leave.view_leaverequest")
+def leave_requests_export(request):
+    return export_data(
+        request=request,
+        model=LeaveRequest,
+        filter_class=LeaveRequestFilter,
+        form_class=LeaveRequestExportForm,
+        file_name="Leave_requests",
     )
 
 
@@ -1208,6 +1224,7 @@ def holiday_info_export(request):
         form_class=HolidaysColumnExportForm,
         file_name="Holidays_export",
     )
+
 
 @login_required
 @permission_required("leave.view_holiday")
@@ -2061,7 +2078,7 @@ def dashboard(request):
     leave_requests = LeaveRequest.objects.filter(start_date__month=today.month)
     requested = LeaveRequest.objects.filter(status="requested")
     approved = LeaveRequest.objects.filter(status="approved")
-    cancelled = LeaveRequest.objects.filter(status="cancelled")
+    rejected = LeaveRequest.objects.filter(status="rejected")
     holidays = Holiday.objects.filter(start_date__gte=today)
     next_holiday = (
         holidays.order_by("start_date").first() if holidays.exists() else None
@@ -2080,7 +2097,7 @@ def dashboard(request):
         "leave_requests": leave_requests,
         "requested": requested,
         "approved": approved,
-        "cancelled": cancelled,
+        "rejected": rejected,
         "next_holiday": next_holiday,
         "holidays": holidays,
         "leave_today_employees": leave_today,
@@ -2105,7 +2122,7 @@ def employee_dashboard(request):
     leave_requests = LeaveRequest.objects.filter(employee_id=user)
     requested = leave_requests.filter(status="requested")
     approved = leave_requests.filter(status="approved")
-    cancelled = leave_requests.filter(status="cancelled")
+    rejected = leave_requests.filter(status="rejected")
 
     holidays = Holiday.objects.filter(start_date__gte=today)
     next_holiday = (
@@ -2123,7 +2140,7 @@ def employee_dashboard(request):
         ),
         "requested": requested,
         "approved": approved,
-        "cancelled": cancelled,
+        "rejected": rejected,
         "next_holiday": next_holiday,
         "holidays": holidays,
         "dashboard": "dashboard",
@@ -2970,7 +2987,7 @@ def holiday_select_filter(request):
 @manager_can_enter("leave.delete_leaverequest")
 def leave_request_bulk_delete(request):
     """
-    This method is used to delete bulk of assigned leaves
+    This method is used to delete bulk of leaves requests
     """
     ids = request.POST["ids"]
     ids = json.loads(ids)
@@ -2978,7 +2995,7 @@ def leave_request_bulk_delete(request):
         try:
             leave_request = LeaveRequest.objects.get(id=leave_request_id)
             employee = leave_request.employee_id
-            # leave_request.delete()
+            leave_request.delete()
             messages.success(
                 request,
                 _("{}'s leave request deleted.".format(employee)),
@@ -3010,7 +3027,76 @@ def leave_request_select_filter(request):
     filters = json.loads(filtered) if filtered else {}
 
     if page_number == "all":
-        employee_filter = LeaveRequestFilter(filters, queryset=LeaveRequest.objects.all())
+        employee_filter = LeaveRequestFilter(
+            filters, queryset=LeaveRequest.objects.all()
+        )
+
+        # Get the filtered queryset
+        filtered_employees = employee_filter.qs
+
+        employee_ids = [str(emp.id) for emp in filtered_employees]
+        total_count = filtered_employees.count()
+
+        context = {"employee_ids": employee_ids, "total_count": total_count}
+
+        return JsonResponse(context)
+
+
+@require_http_methods(["POST"])
+@login_required
+def user_request_bulk_delete(request):
+    """
+    This method is used to delete bulk of leaves requests
+    """
+    ids = request.POST["ids"]
+    ids = json.loads(ids)
+    for leave_request_id in ids:
+        try:
+            leave_request = LeaveRequest.objects.get(id=leave_request_id)
+            status = leave_request.status
+            if leave_request.status == "requested":
+                leave_request.delete()
+                messages.success(
+                    request,
+                    _("Leave request deleted."),
+                )
+            else:
+                messages.error(
+                    request,
+                    _("You cannot delete leave request with status {}.".format(status)),
+                )
+        except Exception as e:
+            messages.error(request, _("Leave request not found."))
+    return JsonResponse({"message": "Success"})
+
+
+@login_required
+def user_request_select(request):
+    page_number = request.GET.get("page")
+    user = request.user.employee_get
+
+    if page_number == "all":
+        employees = LeaveRequest.objects.filter(employee_id=user)
+
+    employee_ids = [str(emp.id) for emp in employees]
+    total_count = employees.count()
+
+    context = {"employee_ids": employee_ids, "total_count": total_count}
+
+    return JsonResponse(context, safe=False)
+
+
+@login_required
+def user_request_select_filter(request):
+    page_number = request.GET.get("page")
+    filtered = request.GET.get("filter")
+    filters = json.loads(filtered) if filtered else {}
+    user = request.user.employee_get
+
+    if page_number == "all":
+        employee_filter = UserLeaveRequestFilter(
+            filters, queryset=LeaveRequest.objects.filter(employee_id=user)
+        )
 
         # Get the filtered queryset
         filtered_employees = employee_filter.qs

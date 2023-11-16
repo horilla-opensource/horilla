@@ -25,7 +25,6 @@
                     hx-target="#userRequest" />
             </div>
             <div class="oh-main__titlebar-button-container">
-                {% comment %} start of filter {% endcomment %}
                 <div class="oh-dropdown" x-data="{open: false}">
                     <button class="oh-btn ml-2" @click="open = !open">
                         <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}<div id='filterCount'><div>
@@ -122,7 +121,31 @@
                         </div>
                     </form>
                 </div>
-                {% comment %} end of filter {% endcomment %}
+                <div class="oh-dropdown ml-2" x-data="{open: false}">
+                    <button
+                      class="oh-btn oh-btn--dropdown"
+                      @click="open = !open"
+                      @click.outside="open = false"
+                    >
+                      {% trans "Actions" %}
+                    </button>
+                    <div
+                      class="oh-dropdown__menu oh-dropdown__menu--right"
+                      x-show="open"
+                      style="display: none"
+                    >
+                      <ul class="oh-dropdown__items">
+                        <li class="oh-dropdown__item">
+                          <a
+                            href="#"
+                            id="userrequestbulkDelete"
+                            class="oh-dropdown__link oh-dropdown__link--danger"
+                            >{% trans "Delete" %}</a
+                          >
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
         {% endif %}
             <div class="oh-btn-group ml-2">
                 <div class="oh-dropdown" x-data="{open: false}">
@@ -136,6 +159,10 @@
     </div>
 </section>
 
+<div class="oh-checkpoint-badge mb-2" id="selectedUserrequests" data-ids="[]" data-clicked="" style="display:none;" >
+    {% trans "Selected Requests" %}
+</div>
+  
 <div class="oh-wrapper" id="userRequest">
     {% if leave_requests %}
         {% include 'leave/user_leave/user_requests.html' %}
@@ -148,7 +175,6 @@
         </div>
     {% endif %}
 </div>
-
 
 <div
   class="oh-modal"
@@ -229,6 +255,7 @@
   </div>
 </div>
 
+<script src="{% static '/leave_request/action.js' %}"></script>
 <script>
     $(document).on('htmx:load', '#userRequest', function () {
         // Create a new script element
@@ -264,7 +291,6 @@
 </script>
 
 <script src="{% static '/base/filter.js' %}"></script>
-
 
 <script src="./build/js/web.frontend.min.js"></script>
 

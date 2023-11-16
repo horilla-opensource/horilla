@@ -24,12 +24,46 @@
             {% trans "Approved" %}
         </span>
     </div>
+<!-- start of selection buttons -->
+<div
+    class="oh-checkpoint-badge text-success mb-2"
+    id="selectAllUserrequests"
+    style="cursor: pointer"
+>
+    {% trans "Select All Requests" %}
+</div>
+<div
+    class="oh-checkpoint-badge text-secondary mb-2"
+    id="unselectAllUserrequests"
+    style="cursor: pointer"
+>
+    {% trans "Unselect All Requests" %}
+</div>
+{% comment %} <div
+    class="oh-checkpoint-badge text-info mb-2"
+    id="exportUserrequests"
+    style="cursor: pointer; display: none"
+>
+    {% trans "Export Requests" %}
+</div> {% endcomment %}
+<div class="oh-checkpoint-badge text-danger mb-2" id="selectedShowUserrequests" style="display: none"></div>
+<!-- end of selection buttons -->
+
 
     {% if leave_requests %}
     <div class="oh-sticky-table">
         <div class="oh-sticky-table__table oh-table--sortable">
             <div class="oh-sticky-table__thead">
                 <div class="oh-sticky-table__tr">
+                    <div class="oh-sticky-table__th" style="width: 10px">
+                        <div class="centered-div">
+                            <input
+                            type="checkbox"
+                            title='{% trans "Select All" %}'
+                            class="oh-input oh-input__checkbox all-user-requests"
+                            />
+                        </div>
+                    </div>
                     <div class="oh-sticky-table__th" hx-get="{% url 'user-request-filter' %}?{{pd}}&sortby=leave_type_id" hx-target="#userRequest">{% trans "Leave Type" %}</div>
                     <div class="oh-sticky-table__th" hx-get="{% url 'user-request-filter' %}?{{pd}}&sortby=start_date" hx-target="#userRequest">{% trans "Start Date" %}</div>
                     <div class="oh-sticky-table__th" hx-get="{% url 'user-request-filter' %}?{{pd}}&sortby=end_date" hx-target="#userRequest">{% trans "End Date" %}</div>
@@ -44,7 +78,18 @@
                 <div class="oh-sticky-table__tr" data-toggle="oh-modal-toggle" data-target="#tableTimeOff"
                     hx-get="{% url 'user-request-one' leave_request.id %}?instances_ids={{request_ids}}" 
                     hx-target="#userRequestView">
-                    <div class="oh-sticky-table__sd {% if leave_request.status == "requested" %}row-status--orange {% elif leave_request.status == "cancelled_and_rejected" %} row-status--black {% elif leave_request.status == "cancelled" %} row-status--gray {% elif leave_request.status == "approved" %} row-status--yellow {% elif leave_request.status == "rejected" %} row-status--red{% endif %}" >
+                    <div class="oh-sticky-table__sd {% if leave_request.status == "requested" %}row-status--orange 
+                        {% elif leave_request.status == "cancelled_and_rejected" %} row-status--black {% elif leave_request.status == "cancelled" %} row-status--gray 
+                        {% elif leave_request.status == "approved" %} row-status--yellow {% elif leave_request.status == "rejected" %} row-status--red{% endif %}" onclick="event.stopPropagation()">
+                        <div class="centered-div">
+                            <input
+                            type="checkbox"
+                            id="{{leave_request.id}}"
+                            class="oh-input oh-input__checkbox all-user-requests-row"
+                            />
+                        </div>
+                    </div>
+                    <div class="oh-sticky-table__td">
                         <div class="oh-profile oh-profile--md">
                             <div class="oh-profile__avatar mr-1">
                                 <img src="{{leave_request.leave_type_id.get_avatar}}" class="oh-profile__image"
@@ -155,4 +200,35 @@
         </div>
     </div>
 {% endif %}
+
+<script>
+    $(".all-user-requests").change(function (e) {
+      var is_checked = $(this).is(":checked");
+      if (is_checked) {
+        $(".all-user-requests-row").prop("checked", true);
+      } else {
+        $(".all-user-requests-row").prop("checked", false);
+      }
+    });
+  
+    $(document).ready(function () {
+      tickUserrequestsCheckboxes();
+      $(".all-user-requests-row").change(function () {
+        addingUserrequestsIds();
+      });
+  
+      $(".all-user-requests").change(function () {
+        addingUserrequestsIds();
+      });
+      $("#selectAllUserrequests").click(function () {
+        selectAllUserrequests();
+      });
+      $("#unselectAllUserrequests").click(function () {
+        unselectAllUserrequests();
+      });
+      $("#exportUserrequests").click(function (e) {
+        exportUserrequests();
+      });
+    });
+  </script>
 

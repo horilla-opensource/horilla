@@ -26,6 +26,11 @@ urlpatterns = [
         views.leave_request_creation,
         name="leave-request-creation",
     ),
+    path(
+        "leave-requests-info-export",
+        views.leave_requests_export,
+        name="leave-requests-info-export",
+    ),
     path("request-view", views.leave_request_view, name="request-view"),
     path(
         "request-approve/<int:id>", views.leave_request_approve, name="request-approve"
@@ -268,6 +273,21 @@ urlpatterns = [
     path(
         "leave-request-select-filter",
         views.leave_request_select_filter,
-        name="leave-request-select-filtert",
+        name="leave-request-select-filter",
+    ),
+    path(
+        "user-request-bulk-delete",
+        views.user_request_bulk_delete,
+        name="user-request-bulk-delete",
+    ),
+    path(
+        "user-request-select",
+        views.user_request_select,
+        name="user-request-select",
+    ),
+    path(
+        "user-request-select-filter",
+        views.user_request_select_filter,
+        name="user-request-select-filter",
     ),
 ]

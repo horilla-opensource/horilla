@@ -169,12 +169,10 @@ class LeaveType(models.Model):
         """
         Method will retun the api to the avatar or path to the profile image
         """
-        url = (
-            f"https://ui-avatars.com/api/?name={self.name}&background=random"
-        )
+        url = f"https://ui-avatars.com/api/?name={self.name}&background=random"
         if self.icon:
             full_filename = settings.MEDIA_ROOT + self.icon.name
-            
+
             if default_storage.exists(full_filename):
                 url = self.icon.url
         return url
@@ -354,38 +352,57 @@ class AvailableLeave(models.Model):
 
 
 class LeaveRequest(models.Model):
-    leave_type_id = models.ForeignKey(
-        LeaveType, on_delete=models.PROTECT, verbose_name="Leave type"
-    )
     employee_id = models.ForeignKey(
-        Employee, on_delete=models.CASCADE, verbose_name="Employee"
+        Employee, on_delete=models.CASCADE, verbose_name=_("Employee")
     )
-    start_date = models.DateField(null=False)
+    leave_type_id = models.ForeignKey(
+        LeaveType, on_delete=models.PROTECT, verbose_name=_("Leave Type")
+    )
+    start_date = models.DateField(null=False, verbose_name=_("Start Date"))
     start_date_breakdown = models.CharField(
-        max_length=30, choices=BREAKDOWN, default="full_day"
+        max_length=30,
+        choices=BREAKDOWN,
+        default="full_day",
+        verbose_name=_("Start Date Breakdown"),
     )
-    end_date = models.DateField(null=True, blank=True)
+    end_date = models.DateField(null=True, blank=True, verbose_name=_("End Date"))
     end_date_breakdown = models.CharField(
-        max_length=30, choices=BREAKDOWN, default="full_day"
+        max_length=30,
+        choices=BREAKDOWN,
+        default="full_day",
+        verbose_name=_("End Date Breakdown"),
     )
-    requested_days = models.FloatField(blank=True, null=True)
-    requested_date = models.DateField(default=timezone.now)
+    requested_days = models.FloatField(
+        blank=True, null=True, verbose_name=_("Requested Days")
+    )
+    description = models.TextField(verbose_name=_("Description"))
+    attachment = models.FileField(
+        null=True,
+        blank=True,
+        upload_to="leave/leave_attachment",
+        verbose_name=_("Attachment"),
+    )
+    status = models.CharField(
+        max_length=30,
+        choices=LEAVE_STATUS,
+        default="requested",
+        verbose_name=_("Status"),
+    )
+    requested_date = models.DateField(
+        default=timezone.now, verbose_name=_("Created Date")
+    )
     created_by = models.ForeignKey(
         Employee,
         on_delete=models.PROTECT,
         blank=True,
         null=True,
         related_name="leave_request_created",
+        verbose_name=_("Created By"),
     )
-    description = models.TextField()
-    attachment = models.FileField(
-        null=True, blank=True, upload_to="leave/leave_attachment"
-    )
-    status = models.CharField(max_length=30, choices=LEAVE_STATUS, default="requested")
     approved_available_days = models.FloatField(default=0)
     approved_carryforward_days = models.FloatField(default=0)
     created_at = models.DateTimeField(auto_now="True")
-    reject_reason = models.TextField(blank=True)
+    reject_reason = models.TextField(blank=True, verbose_name=_("Reject Reason"))
     objects = models.Manager()
 
     def __str__(self):
@@ -528,6 +545,7 @@ class LeaveRequest(models.Model):
         self.status = "approved"
         available_leave.save()
 
+
 class LeaveAllocationRequest(models.Model):
     leave_type_id = models.ForeignKey(
         LeaveType, on_delete=models.PROTECT, verbose_name="Leave type"
@@ -548,13 +566,15 @@ class LeaveAllocationRequest(models.Model):
     attachment = models.FileField(
         null=True, blank=True, upload_to="leave/leave_attachment"
     )
-    status = models.CharField(max_length=30, choices=LEAVE_ALLOCATION_STATUS, default="requested")
+    status = models.CharField(
+        max_length=30, choices=LEAVE_ALLOCATION_STATUS, default="requested"
+    )
     created_at = models.DateTimeField(auto_now="True")
     reject_reason = models.TextField(blank=True)
     objects = models.Manager()
 
     def __str__(self):
         return f"{self.employee_id}| {self.leave_type_id}| {self.id}"
-    
+
     def save(self, *args, **kwargs):
-        super().save(*args,**kwargs)
+        super().save(*args, **kwargs)

@@ -190,6 +190,11 @@ class LeaveRequestFilter(FilterSet):
             "status": ["exact"],
         }
 
+    def __init__(self, data=None, queryset=None, *, request=None, prefix=None):
+        super().__init__(data=data, queryset=queryset, request=request, prefix=prefix)
+        for field in self.form.fields.keys():
+            self.form.fields[field].widget.attrs["id"] = f"{uuid.uuid4()}"
+
 
 class HolidayFilter(FilterSet):
     """
@@ -223,7 +228,7 @@ class HolidayFilter(FilterSet):
     )
 
     class Meta:
-        """ 
+        """
         Meta class defines the model and fields to filter
         """
 

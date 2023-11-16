@@ -1,4 +1,4 @@
-var deleteleaverequestMessages = {
+var deleteLeaveRequestMessages = {
   ar: "هل تريد حقًا حذف جميع طلبات الإجازة المحددة؟",
   de: "Möchten Sie wirklich alle ausgewählten Urlaubsanfragen löschen?",
   es: "¿Realmente desea eliminar todas las solicitudes de permiso seleccionadas?",
@@ -7,23 +7,36 @@ var deleteleaverequestMessages = {
 };
 
 var noRowMessages = {
-    ar: "لم يتم تحديد أي صفوف.",
-    de: "Es wurden keine Zeilen ausgewählt.",
-    es: "No se han seleccionado filas.",
-    en: "No rows have been selected.",
-    fr: "Aucune ligne n'a été sélectionnée.",
+  ar: "لم يتم تحديد أي صفوف.",
+  de: "Es wurden keine Zeilen ausgewählt.",
+  es: "No se han seleccionado filas.",
+  en: "No rows have been selected.",
+  fr: "Aucune ligne n'a été sélectionnée.",
 };
 
 var rowMessages = {
-    ar: " تم الاختيار",
-    de: " Ausgewählt",
-    es: " Seleccionado",
-    en: " Selected",
-    fr: " Sélectionné",
+  ar: " تم الاختيار",
+  de: " Ausgewählt",
+  es: " Seleccionado",
+  en: " Selected",
+  fr: " Sélectionné",
+};
+
+var excelMessages = {
+  ar: "هل ترغب في تنزيل ملف Excel؟",
+  de: "Möchten Sie die Excel-Datei herunterladen?",
+  es: "¿Desea descargar el archivo de Excel?",
+  en: "Do you want to download the excel file?",
+  fr: "Voulez-vous télécharger le fichier Excel?",
 };
 
 tickLeaverequestsCheckboxes();
 function makeLeaverequestsListUnique(list) {
+  return Array.from(new Set(list));
+}
+
+tickUserrequestsCheckboxes();
+function makeUserrequestsListUnique(list) {
   return Array.from(new Set(list));
 }
 
@@ -37,6 +50,10 @@ function getCurrentLanguageCode(callback) {
     },
   });
 }
+
+// ---------------------------------------
+//            LEAVE REQUEST
+// ---------------------------------------
 
 function tickLeaverequestsCheckboxes() {
   var ids = JSON.parse($("#selectedLeaverequests").attr("data-ids") || "[]");
@@ -110,18 +127,14 @@ function selectAllLeaverequests() {
       dataType: "json",
       success: function (response) {
         var employeeIds = response.employee_ids;
-
-        if (Array.isArray(employeeIds)) {
-          // Continue
-        } else {
-          console.error("employee_ids is not an array:", employeeIds);
-        }
-
         for (var i = 0; i < employeeIds.length; i++) {
           var empId = employeeIds[i];
           $("#" + empId).prop("checked", true);
         }
-        $("#selectedLeaverequests").attr("data-ids", JSON.stringify(employeeIds));
+        $("#selectedLeaverequests").attr(
+          "data-ids",
+          JSON.stringify(employeeIds)
+        );
 
         count = makeLeaverequestsListUnique(employeeIds);
         tickLeaverequestsCheckboxes(count);
@@ -138,12 +151,6 @@ function selectAllLeaverequests() {
       dataType: "json",
       success: function (response) {
         var employeeIds = response.employee_ids;
-        if (Array.isArray(employeeIds)) {
-          // Continue
-        } else {
-          console.error("employee_ids is not an array:", employeeIds);
-        }
-
         for (var i = 0; i < employeeIds.length; i++) {
           var empId = employeeIds[i];
           $("#" + empId).prop("checked", true);
@@ -174,13 +181,6 @@ function unselectAllLeaverequests() {
     dataType: "json",
     success: function (response) {
       var employeeIds = response.employee_ids;
-
-      if (Array.isArray(employeeIds)) {
-        // Continue
-      } else {
-        console.error("employee_ids is not an array:", employeeIds);
-      }
-
       for (var i = 0; i < employeeIds.length; i++) {
         var empId = employeeIds[i];
         $("#" + empId).prop("checked", false);
@@ -196,55 +196,295 @@ function unselectAllLeaverequests() {
     },
   });
 }
-
+function exportLeaverequests() {
+  var currentDate = new Date().toISOString().slice(0, 10);
+  var language_code = null;
+  getCurrentLanguageCode(function (code) {
+    language_code = code;
+    var confirmMessage = excelMessages[language_code];
+    ids = [];
+    ids = JSON.parse($("#selectedLeaverequests").attr("data-ids"));
+    Swal.fire({
+      text: confirmMessage,
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#008000",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Confirm",
+    }).then(function (result) {
+      if (result.isConfirmed) {
+        $.ajax({
+          type: "GET",
+          url: "/leave/leave-requests-info-export",
+          data: {
+            ids: JSON.stringify(ids),
+          },
+          dataType: "binary",
+          xhrFields: {
+            responseType: "blob",
+          },
+          success: function (response) {
+            const file = new Blob([response], {
+              type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            });
+            const url = URL.createObjectURL(file);
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = "Leave_requests" + currentDate + ".xlsx";
+            document.body.appendChild(link);
+            link.click();
+          },
+          error: function (xhr, textStatus, errorThrown) {
+            console.error("Error downloading file:", errorThrown);
+          },
+        });
+      }
+    });
+  });
+}
 
 $("#leaverequestbulkDelete").click(function (e) {
-    e.preventDefault();
-    var languageCode = null;
-    getCurrentLanguageCode(function (code) {
-        languageCode = code;
-        var confirmMessage = deleteleaverequestMessages[languageCode];
-        var textMessage = noRowMessages[languageCode];
-        ids = [];
-        ids.push($("#selectedLeaverequests").attr("data-ids"));
-        ids = JSON.parse($("#selectedLeaverequests").attr("data-ids"));
-        if (ids.length === 0) {
-            Swal.fire({
-            text: textMessage,
-            icon: "warning",
-            confirmButtonText: "Close",
-        });
-        } else {
-        Swal.fire({
-            text: confirmMessage,
-            icon: "error",
-            showCancelButton: true,
-            confirmButtonColor: "#008000",
-            cancelButtonColor: "#d33",
-            confirmButtonText: "Confirm",
-        }).then(function (result) {
-            if (result.isConfirmed) {
-            e.preventDefault();
-            ids = [];
-            ids.push($("#selectedLeaverequests").attr("data-ids"));
-            ids = JSON.parse($("#selectedLeaverequests").attr("data-ids"));
-            $.ajax({
-                type: "POST",
-                url: "/leave/leave-request-bulk-delete",
-                data: {
-                csrfmiddlewaretoken: getCookie("csrftoken"),
-                ids: JSON.stringify(ids),
-                },
-                success: function (response, textStatus, jqXHR) {
-                if (jqXHR.status === 200) {
-                    location.reload();
-                } else {
-                }
-                },
-            });
-            }
-        });
+  e.preventDefault();
+  var languageCode = null;
+  getCurrentLanguageCode(function (code) {
+    languageCode = code;
+    var confirmMessage = deleteLeaveRequestMessages[languageCode];
+    var textMessage = noRowMessages[languageCode];
+    ids = [];
+    ids.push($("#selectedLeaverequests").attr("data-ids"));
+    ids = JSON.parse($("#selectedLeaverequests").attr("data-ids"));
+    if (ids.length === 0) {
+      Swal.fire({
+        text: textMessage,
+        icon: "warning",
+        confirmButtonText: "Close",
+      });
+    } else {
+      Swal.fire({
+        text: confirmMessage,
+        icon: "error",
+        showCancelButton: true,
+        confirmButtonColor: "#008000",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Confirm",
+      }).then(function (result) {
+        if (result.isConfirmed) {
+          e.preventDefault();
+          ids = [];
+          ids.push($("#selectedLeaverequests").attr("data-ids"));
+          ids = JSON.parse($("#selectedLeaverequests").attr("data-ids"));
+          $.ajax({
+            type: "POST",
+            url: "/leave/leave-request-bulk-delete",
+            data: {
+              csrfmiddlewaretoken: getCookie("csrftoken"),
+              ids: JSON.stringify(ids),
+            },
+            success: function (response, textStatus, jqXHR) {
+              if (jqXHR.status === 200) {
+                location.reload();
+              } else {
+              }
+            },
+          });
         }
-    });
+      });
+    }
+  });
 });
-  
+
+// ---------------------------------------
+//              USER LEAVE
+// ---------------------------------------
+
+function tickUserrequestsCheckboxes() {
+  var ids = JSON.parse($("#selectedUserrequests").attr("data-ids") || "[]");
+  uniqueIds = makeUserrequestsListUnique(ids);
+  click = $("#selectedUserrequests").attr("data-clicked");
+  if (click === "1") {
+    $(".all-user-requests").prop("checked", true);
+  }
+  uniqueIds.forEach(function (id) {
+    $("#" + id).prop("checked", true);
+  });
+  var selectedCount = uniqueIds.length;
+  getCurrentLanguageCode(function (code) {
+    languageCode = code;
+    var message = rowMessages[languageCode];
+    if (selectedCount > 0) {
+      $("#exportUserrequests").css("display", "inline-flex");
+      $("#selectedShowUserrequests").css("display", "inline-flex");
+      $("#selectedShowUserrequests").text(selectedCount + " -" + message);
+    } else {
+      $("#selectedShowUserrequests").css("display", "none");
+      $("#exportUserrequests").css("display", "none");
+    }
+  });
+}
+
+function addingUserrequestsIds() {
+  var ids = JSON.parse($("#selectedUserrequests").attr("data-ids") || "[]");
+  var selectedCount = 0;
+
+  $(".all-user-requests-row").each(function () {
+    if ($(this).is(":checked")) {
+      ids.push(this.id);
+    } else {
+      var index = ids.indexOf(this.id);
+      if (index > -1) {
+        ids.splice(index, 1);
+      }
+    }
+  });
+
+  ids = makeUserrequestsListUnique(ids);
+  selectedCount = ids.length;
+
+  getCurrentLanguageCode(function (code) {
+    languageCode = code;
+    var message = rowMessages[languageCode];
+    $("#selectedUserrequests").attr("data-ids", JSON.stringify(ids));
+    if (selectedCount === 0) {
+      $("#selectedShowUserrequests").css("display", "none");
+      $("#exportUserrequests").css("display", "none");
+    } else {
+      $("#exportUserrequests").css("display", "inline-flex");
+      $("#selectedShowUserrequests").css("display", "inline-flex");
+      $("#selectedShowUserrequests").text(selectedCount + " - " + message);
+    }
+  });
+}
+
+function selectAllUserrequests() {
+  $("#selectedUserrequests").attr("data-clicked", 1);
+  $("#selectedShowUserrequests").removeAttr("style");
+  var savedFilters = JSON.parse(localStorage.getItem("savedFilters"));
+
+  if (savedFilters && savedFilters["filterData"] !== null) {
+    var filter = savedFilters["filterData"];
+    $.ajax({
+      url: "/leave/user-request-select-filter",
+      data: { page: "all", filter: JSON.stringify(filter) },
+      type: "GET",
+      dataType: "json",
+      success: function (response) {
+        var employeeIds = response.employee_ids;
+        for (var i = 0; i < employeeIds.length; i++) {
+          var empId = employeeIds[i];
+          $("#" + empId).prop("checked", true);
+        }
+        $("#selectedUserrequests").attr(
+          "data-ids",
+          JSON.stringify(employeeIds)
+        );
+
+        count = makeUserrequestsListUnique(employeeIds);
+        tickUserrequestsCheckboxes(count);
+      },
+      error: function (xhr, status, error) {
+        console.error("Error:", error);
+      },
+    });
+  } else {
+    $.ajax({
+      url: "/leave/user-request-select",
+      data: { page: "all" },
+      type: "GET",
+      dataType: "json",
+      success: function (response) {
+        var employeeIds = response.employee_ids;
+        for (var i = 0; i < employeeIds.length; i++) {
+          var empId = employeeIds[i];
+          $("#" + empId).prop("checked", true);
+        }
+        var previousIds = $("#selectedUserrequests").attr("data-ids");
+        $("#selectedUserrequests").attr(
+          "data-ids",
+          JSON.stringify(
+            Array.from(new Set([...employeeIds, ...JSON.parse(previousIds)]))
+          )
+        );
+        count = makeUserrequestsListUnique(employeeIds);
+        tickUserrequestsCheckboxes(count);
+      },
+      error: function (xhr, status, error) {
+        console.error("Error:", error);
+      },
+    });
+  }
+}
+
+function unselectAllUserrequests() {
+  $("#selectedUserrequests").attr("data-clicked", 0);
+  $.ajax({
+    url: "/leave/user-request-select",
+    data: { page: "all", filter: "{}" },
+    type: "GET",
+    dataType: "json",
+    success: function (response) {
+      var employeeIds = response.employee_ids;
+      for (var i = 0; i < employeeIds.length; i++) {
+        var empId = employeeIds[i];
+        $("#" + empId).prop("checked", false);
+        $(".all-user-requests").prop("checked", false);
+      }
+      $("#selectedUserrequests").attr("data-ids", JSON.stringify([]));
+
+      count = [];
+      tickUserrequestsCheckboxes(count);
+    },
+    error: function (xhr, status, error) {
+      console.error("Error:", error);
+    },
+  });
+}
+
+$("#userrequestbulkDelete").click(function (e) {
+  e.preventDefault();
+  var languageCode = null;
+  getCurrentLanguageCode(function (code) {
+    languageCode = code;
+    var confirmMessage = deleteLeaveRequestMessages[languageCode];
+    var textMessage = noRowMessages[languageCode];
+    ids = [];
+    ids.push($("#selectedUserrequests").attr("data-ids"));
+    ids = JSON.parse($("#selectedUserrequests").attr("data-ids"));
+    if (ids.length === 0) {
+      Swal.fire({
+        text: textMessage,
+        icon: "warning",
+        confirmButtonText: "Close",
+      });
+    } else {
+      Swal.fire({
+        text: confirmMessage,
+        icon: "error",
+        showCancelButton: true,
+        confirmButtonColor: "#008000",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Confirm",
+      }).then(function (result) {
+        if (result.isConfirmed) {
+          e.preventDefault();
+          ids = [];
+          ids.push($("#selectedUserrequests").attr("data-ids"));
+          ids = JSON.parse($("#selectedUserrequests").attr("data-ids"));
+          $.ajax({
+            type: "POST",
+            url: "/leave/user-request-bulk-delete",
+            data: {
+              csrfmiddlewaretoken: getCookie("csrftoken"),
+              ids: JSON.stringify(ids),
+            },
+            success: function (response, textStatus, jqXHR) {
+              if (jqXHR.status === 200) {
+                location.reload();
+              } else {
+              }
+            },
+          });
+        }
+      });
+    }
+  });
+});

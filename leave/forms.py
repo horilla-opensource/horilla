@@ -482,7 +482,13 @@ class UserLeaveRequestForm(ModelForm):
         ]
 
 
-excluded_fields = ["id"]
+excluded_fields = [
+    "id",
+    "approved_available_days",
+    "approved_carryforward_days",
+    "created_at",
+    "attachment",
+]
 
 
 class AvailableLeaveColumnExportForm(forms.Form):
@@ -571,8 +577,8 @@ class UserLeaveRequestCreationForm(ModelForm):
             available_leave.available_days + available_leave.carryforward_days
         )
         requested_days = (end_date - start_date).days + 1
-        print(f'reqdays = {requested_days}')
-        cleaned_data["requested_days"]=requested_days
+        print(f"reqdays = {requested_days}")
+        cleaned_data["requested_days"] = requested_days
 
         if not requested_days <= total_leave_days:
             raise forms.ValidationError(_("Employee doesn't have enough leave days.."))
@@ -590,7 +596,7 @@ class UserLeaveRequestCreationForm(ModelForm):
             "end_date_breakdown",
             "description",
             "attachment",
-            'requested_days',
+            "requested_days",
         ]
         widgets = {"employee_id": forms.HiddenInput()}
 
@@ -624,3 +630,28 @@ class LeaveAllocationRequestRejectForm(forms.Form):
     class Meta:
         model = LeaveAllocationRequest
         fields = ["reject_reason"]
+
+
+class LeaveRequestExportForm(forms.Form):
+    model_fields = LeaveRequest._meta.get_fields()
+    field_choices = [
+        (field.name, field.verbose_name)
+        for field in model_fields
+        if hasattr(field, "verbose_name") and field.name not in excluded_fields
+    ]
+
+    selected_fields = forms.MultipleChoiceField(
+        choices=field_choices,
+        widget=forms.CheckboxSelectMultiple,
+        initial=[
+            "employee_id",
+            "leave_type_id",
+            "start_date",
+            "start_date_breakdown",
+            "end_date",
+            "end_date_breakdown",
+            "requested_days",
+            "description",
+            "status",
+        ],
+    )
