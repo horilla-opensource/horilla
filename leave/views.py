@@ -386,7 +386,7 @@ def leave_requests_export(request):
 
 @login_required
 @hx_request_required
-@manager_can_enter("leave.view_leaverequest")
+# @manager_can_enter("leave.view_leaverequest")
 def leave_request_filter(request):
     """
     function used to filter leave request.

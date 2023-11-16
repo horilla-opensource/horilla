@@ -208,7 +208,11 @@ class LeaveRequestCreationForm(ModelForm):
             raise forms.ValidationError(
                 _("End date should not be less than start date.")
             )
-
+        if start_date == end_date:
+            if start_date_breakdown != end_date_breakdown:
+                raise forms.ValidationError(
+                    _("There is a mismatch in the breakdown of the start date and end date.")
+                )
         if not AvailableLeave.objects.filter(
             employee_id=employee_id, leave_type_id=leave_type_id
         ).exists():
@@ -301,7 +305,11 @@ class LeaveRequestUpdationForm(ModelForm):
             raise forms.ValidationError(
                 _("End date should not be less than start date.")
             )
-
+        if start_date == end_date:
+            if start_date_breakdown != end_date_breakdown:
+                raise forms.ValidationError(
+                    _("There is a mismatch in the breakdown of the start date and end date.")
+                )
         if not AvailableLeave.objects.filter(
             employee_id=employee_id, leave_type_id=leave_type_id
         ).exists():
@@ -451,7 +459,14 @@ class UserLeaveRequestForm(ModelForm):
         cleaned_data = super().clean()
         start_date = cleaned_data.get("start_date")
         end_date = cleaned_data.get("end_date")
+        start_date_breakdown = cleaned_data.get("start_date_breakdown")
+        end_date_breakdown = cleaned_data.get('end_date_breakdown')
 
+        if start_date == end_date:
+            if start_date_breakdown != end_date_breakdown:
+                raise forms.ValidationError(
+                    _("There is a mismatch in the breakdown of the start date and end date.")
+                )
         if not start_date <= end_date:
             raise forms.ValidationError(
                 _("End date should not be less than start date.")
@@ -545,12 +560,22 @@ class UserLeaveRequestCreationForm(ModelForm):
     start_date = forms.DateField(widget=forms.DateInput(attrs={"type": "date"}))
     end_date = forms.DateField(widget=forms.DateInput(attrs={"type": "date"}))
 
+    def as_p(self, *args, **kwargs):
+        """
+        Render the form fields as HTML table rows with Bootstrap styling.
+        """
+        context = {"form": self}
+        table_html = render_to_string("attendance_form.html", context)
+        return table_html
+    
     def clean(self):
         cleaned_data = super().clean()
         start_date = cleaned_data.get("start_date")
         end_date = cleaned_data.get("end_date")
         employee_id = cleaned_data.get("employee_id")
         leave_type_id = cleaned_data.get("leave_type_id")
+        start_date_breakdown = cleaned_data.get("start_date_breakdown")
+        end_date_breakdown = cleaned_data.get('end_date_breakdown')
         overlapping_requests = LeaveRequest.objects.filter(
             employee_id=employee_id, start_date__lte=end_date, end_date__gte=start_date
         )
@@ -559,7 +584,11 @@ class UserLeaveRequestCreationForm(ModelForm):
             raise forms.ValidationError(
                 _("End date should not be less than start date.")
             )
-
+        if start_date == end_date:
+            if start_date_breakdown != end_date_breakdown:
+                raise forms.ValidationError(
+                    _("There is a mismatch in the breakdown of the start date and end date.")
+                )
         if not AvailableLeave.objects.filter(
             employee_id=employee_id, leave_type_id=leave_type_id
         ).exists():
@@ -577,7 +606,6 @@ class UserLeaveRequestCreationForm(ModelForm):
             available_leave.available_days + available_leave.carryforward_days
         )
         requested_days = (end_date - start_date).days + 1
-        print(f"reqdays = {requested_days}")
         cleaned_data["requested_days"] = requested_days
 
         if not requested_days <= total_leave_days:
@@ -598,7 +626,10 @@ class UserLeaveRequestCreationForm(ModelForm):
             "attachment",
             "requested_days",
         ]
-        widgets = {"employee_id": forms.HiddenInput()}
+        widgets = {
+            "employee_id": forms.HiddenInput(),
+            'requested_days': forms.HiddenInput()     
+        }
 
 
 class LeaveAllocationRequestForm(ModelForm):
