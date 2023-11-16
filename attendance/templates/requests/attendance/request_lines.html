@@ -41,7 +41,12 @@
         </div>
         {% for attendance in requests %}
         <div class="oh-sticky-table__tbody">
-          <div class="oh-sticky-table__tr" draggable="true">
+          <div class="oh-sticky-table__tr" 
+            draggable="true" 
+            data-toggle="oh-modal-toggle"
+            data-target="#validateAttendanceRequest"
+            hx-get = "{% url 'validate-attendance-request' attendance.id %}?requests_ids={{requests_ids}}"
+            hx-target="#validateAttendanceRequestModalBody">
             <div
               class="oh-sticky-table__sd {% if attendance.attendance_validated %}row-status--yellow {% else %}row-status--purple{% endif %}"
             >
@@ -94,10 +99,6 @@
             <div class="oh-sticky-table__td oh-sticky-table__right">
               <div class="oh-btn-group">
                 <a
-                data-toggle="oh-modal-toggle"
-                data-target="#validateAttendanceRequest"
-                hx-get = "{% url 'validate-attendance-request' attendance.id %}?requests_ids={{requests_ids}}"
-                  hx-target="#validateAttendanceRequestModalBody"
                   class="oh-btn oh-btn--light-bkg w-100"
                   title="{% trans 'View and Edit' %}"
                   
@@ -112,7 +113,7 @@
                   type="submit"
                   class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
                   title="{% trans 'Re-validate Request' %}"
-                  onclick="return confirm('{% trans "Are you sure want to cancel the request?" %}')"
+                  onclick="event.stopPropagation();return confirm('{% trans "Are you sure want to cancel the request?" %}');"
                   href="{% url 'cancel-validate-attendance-request' attendance.id %}"
                 >
                 <ion-icon name="close-circle-outline"></ion-icon>
