@@ -346,28 +346,42 @@ def export_data(request, model, form_class, filter_class, file_name):
         "cancelled": _("Cancelled"),
         "rejected": _("Rejected"),
         "cancelled_and_rejected": _("Cancelled & Rejected"),
+        "late_come": _("Late Come"),
+        "early_out": _("Early Out"),
     }
+
+    selected_columns = []
     today_date = date.today().strftime("%Y-%m-%d")
     file_name = f"{file_name}_{today_date}.xlsx"
-    request_export = {}
+    data_export = {}
 
     form = form_class()
     model_fields = model._meta.get_fields()
     export_objects = filter_class(request.GET).qs
-
     selected_fields = request.GET.getlist("selected_fields")
+
     if not selected_fields:
         selected_fields = form.fields["selected_fields"].initial
         ids = request.GET.get("ids")
         id_list = json.loads(ids)
         export_objects = model.objects.filter(id__in=id_list)
 
-    for field in model_fields:
-        field_name = field.name
+    for field in form.fields["selected_fields"].choices:
+        value = field[0]
+        key = field[1]
+        if value in selected_fields:
+            selected_columns.append((value, key))
+
+    for field_name, verbose_name in selected_columns:
         if field_name in selected_fields:
-            request_export[field.verbose_name] = []
+            data_export[verbose_name] = []
             for obj in export_objects:
-                value = getattr(obj, field_name)
+                value = obj
+                nested_attributes = field_name.split("__")
+                for attr in nested_attributes:
+                    value = getattr(value, attr, None)
+                    if value is None:
+                        break
                 if value is True:
                     value = _("Yes")
                 elif value is False:
@@ -378,8 +392,9 @@ def export_data(request, model, form_class, filter_class, file_name):
                     value = " "
                 if field_name == "month":
                     value = _(value.title())
-                request_export[field.verbose_name].append(value)
-    data_frame = pd.DataFrame(data=request_export)
+                data_export[verbose_name].append(value)
+
+    data_frame = pd.DataFrame(data=data_export)
     styled_data_frame = data_frame.style.applymap(
         lambda x: "text-align: center", subset=pd.IndexSlice[:, :]
     )
