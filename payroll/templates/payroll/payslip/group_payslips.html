@@ -19,7 +19,7 @@
             <input type="text" class="oh-tabs__movable-title  oh-table__editable-input--batch" value="{{payslip.grouper}}" name="" id="{{payslip.grouper}}Grouper" data-previous-name="{{payslip.grouper}}">
           </span>
         </span>
-        <div class="oh-accordion-meta__actions" onclick="event.stopPropagation()">
+        <div class="oh-accordion-meta__actions" onclick="event.stopPropagation()" style="width:12%">
           <select name="update_selected" onclick="event.stopPropagation()" class="oh-select" data-accordion-id="{{payslip.grouper}}Container">
             <option value="">------</option>
             <option value="draft">{% trans "Draft" %}</option>
@@ -60,6 +60,7 @@
                       <input
                         type="checkbox"
                         value="{{payslip.id}}"
+                        onchange="$(this).attr('data-checked', $(this).is(':checked'));"
                         class="oh-input oh-input__checkbox mt-2 mr-2 all-payslip-row payslip-row"
                       />
                     </div>

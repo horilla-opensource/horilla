@@ -673,10 +673,10 @@ def filter_payslip(request):
             employee_id__employee_user_id=request.user
         )
     template = "payroll/payslip/payslip_table.html"
-    field = request.GET.get("group_by")
-    if field in Payslip.__dict__.keys():
+    field = request.GET.get("view")
+    if field =="card":
         template = "payroll/payslip/group_payslips.html"
-        payslips = payslips.filter(group_name__isnull=False).order_by("-" + field)
+        payslips = payslips.filter(group_name__isnull=False)
     payslips = paginator_qry(payslips, request.GET.get("page"))
     data_dict = []
     if not request.GET.get("dashboard"):
