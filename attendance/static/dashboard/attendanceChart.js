@@ -139,7 +139,7 @@ function changeView(element) {
   var dataType = $(element).val();
   if (dataType === "date_range") {
     $("#attendance_month").prop("type", "date");
-    $("#day_input").before(
+    $("#day_input").after(
       '<input type="date" class="mb-2 float-end pointer oh-select ml-2" id="attendance_month2" style="width: 100px;color:#5e5c5c;" onchange="changeMonth(this)"/>'
     );
     $("#attendance_month").val(formattedDate);

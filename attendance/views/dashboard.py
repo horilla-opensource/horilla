@@ -113,16 +113,16 @@ def dashboard(request):
 
 def total_attendance(start_date, department, end_date=None):
     """
-    This method is used to find total attandance
+    This method is used to find total attendance
     """
-    attandance = AttendanceFilters(
+    attendance = AttendanceFilters(
         {
             "attendance_date__gte": start_date,
             "attendance_date__lte": end_date,
             "department": department,
         }
     ).qs
-    return attandance
+    return attendance
 
 
 def find_late_come(start_date, department=None, end_date=None):
@@ -263,7 +263,7 @@ def dashboard_attendance(request):
     if request.GET.get("end_date"):
         end_date = request.GET.get("end_date")
 
-    # get all departments for filteration
+    # get all departments for filtration
     departments = Department.objects.all()
     for dept in departments:
         data_set.append(generate_data_set(request, start_date, type, end_date, dept))
