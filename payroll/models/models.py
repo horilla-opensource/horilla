@@ -468,10 +468,9 @@ class OverrideLeaveRequest(LeaveRequest):
         """
         if (
             instance.start_date == instance.end_date
-            and instance.end_date_breakdown != "full_day"
+            and  instance.end_date_breakdown != instance.start_date_breakdown
         ):
-            instance.end_date_breakdown = "full_day"
-
+            instance.end_date_breakdown = instance.start_date_breakdown
             super(LeaveRequest, instance).save()
 
         period_dates = get_date_range(instance.start_date, instance.end_date)
