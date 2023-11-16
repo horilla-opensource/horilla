@@ -189,9 +189,9 @@
           <li class="oh-view-type employee-view-type" data-view="list">
             <a
               id="list"
-			  onclick="$('#employeeViewType').val('list');setTimeout(() => {
-				$('.filterButton')[0].click();
-			  }, 10);"
+              onclick="$('#employeeViewType').val('list');setTimeout(() => {
+              $('.filterButton')[0].click();
+              }, 10);"
               class="oh-btn oh-btn--view {% if request.GET.view == 'list' %} oh-btn--view-active {% endif %}"
               title='{% trans "List" %}'
               ><ion-icon name="list-outline"></ion-icon
@@ -200,9 +200,9 @@
           <li class="oh-view-type employee-view-type" data-view="card">
             <a
               id="card"
-			  onclick="$('#employeeViewType').val('card');setTimeout(() => {
-				$('.filterButton')[0].click();
-			  }, 10);"
+              onclick="$('#employeeViewType').val('card');setTimeout(() => {
+              $('.filterButton')[0].click();
+              }, 10);"
               class="oh-btn oh-btn--view {% if request.GET.view != 'list' %} oh-btn--view-active {% endif %}"
               title='{% trans "Card" %}'
               ><ion-icon name="grid-outline"></ion-icon
@@ -408,8 +408,26 @@
     $("#id_field").on("change", function () {
       $(".filterButton")[0].click();
     });
+    function filterFormSubmit(formId) {
+      var formData = $("#" + formId).serialize();
+      var count = 0;
+      formData.split("&").forEach(function (field) {
+        var parts = field.split("=");
+        var value = parts[1];
+        if (value && value !== "unknown" && parts[0] != 'field' && parts[0] != 'view') {
+          count++;
+        }
+      });
+      $("#filterCount").empty();
+      if (count > 0) {
+        $("#filterCount").text(`(${count})`);
+      }
+    }
+    
+    $("#filterForm").submit(function (e) {
+      filterFormSubmit("filterForm");
+    });
   });
 </script>
 <script src="{% static 'employee/importExport.js' %}"></script>
 <script src="{% static 'employee/search.js' %}"></script>
-

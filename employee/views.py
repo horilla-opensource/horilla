@@ -413,11 +413,8 @@ def employee_view(request):
     """
     This method is used to render template for view all employee
     """
-    get_copy = request.GET.copy()
-    if request.GET.get("is_active") is None or len(request.GET.get("is_active")) == 0:
-        get_copy["is_active"] = True
     view_type = request.GET.get("view")
-    previous_data = get_copy.urlencode()
+    previous_data = request.GET.urlencode()
     page_number = request.GET.get("page")
     filter_obj = EmployeeFilter(
         request.GET, queryset=Employee.objects.filter(is_active=True)
@@ -778,13 +775,11 @@ def employee_filter_view(request):
     """
     This method is used to filter employee.
     """
-    get_copy = request.GET.copy()
-    if request.GET.get("is_active") is None or len(request.GET.get("is_active")) == 0:
-        get_copy["is_active"] = True
-    previous_data = get_copy.urlencode()
+    previous_data = request.GET.urlencode()
     field = request.GET.get("field")
-    filter_obj = EmployeeFilter(get_copy)
-    employees = filter_obj.qs
+    employees = EmployeeFilter(request.GET).qs
+    if request.GET.get("is_active") != "False":
+        employees=employees.filter(is_active=True)
     employees = filtersubordinatesemployeemodel(
         request, employees, "employee.view_employee"
     )
@@ -805,8 +800,8 @@ def employee_filter_view(request):
         request,
         template,
         {
-            "data": paginator_qry(filter_obj.qs, page_number),
-            "f": filter_obj,
+            "data": paginator_qry(employees, page_number),
+            "f": EmployeeFilter(request.GET),
             "pd": previous_data,
             "field": field,
             "filter_dict": data_dict,
