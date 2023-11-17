@@ -25,7 +25,12 @@ from base.decorators import (
     work_type_request_change_permission,
 )
 from notifications.signals import notify
-from horilla.decorators import permission_required, login_required, manager_can_enter
+from horilla.decorators import (
+    delete_permission,
+    permission_required,
+    login_required,
+    manager_can_enter,
+)
 from horilla.settings import EMAIL_HOST_USER
 from employee.models import Employee
 from base.forms import (
@@ -427,23 +432,30 @@ def user_group_update(request, id):
 
 
 @login_required
-@permission_required("base.delete_group")
-@require_http_methods(["POST"])
-def user_group_delete(request, id):
-    """
-    This method is used to delete user group
-    args:
-        id : group instance id
-
-    """
+@delete_permission()
+@require_http_methods(["POST", "DELETE"])
+def object_delete(request, id, **kwargs):
+    model = kwargs["model"]
+    redirect_path = kwargs["redirect"]
     try:
-        user_group = Group.objects.get(id=id).delete()
-        messages.success(request, _("User group deleted."))
-    except Group.DoesNotExist:
-        messages.error(request, _("User group not found."))
-    except ProtectedError:
-        messages.error(request, _("You cannot delete this user group."))
-    return redirect("/settings/user-group-create")
+        instance = model.objects.get(id=id)
+        instance.delete()
+        messages.success(
+            request, _("The {} has been deleted successfully.").format(instance)
+        )
+    except model.DoesNotExist:
+        messages.error(request, _("{} not found.").format(model._meta.verbose_name))
+    except ProtectedError as e:
+        model_verbose_names_set = set()
+        for obj in e.protected_objects:
+            model_verbose_names_set.add(_(obj._meta.verbose_name.capitalize()))
+
+        model_names_str = ", ".join(model_verbose_names_set)
+        messages.error(
+            request,
+            _("This {} is already in use for {}.").format(instance, model_names_str),
+        ),
+    return redirect(redirect_path)
 
 
 @login_required
@@ -493,35 +505,6 @@ def company_update(request, id):
 
 
 @login_required
-@permission_required("base.base.delete_company")
-@require_http_methods(["POST"])
-def company_delete(request, id):
-    """
-    This method is used to delete company
-    args:
-        id : company instance id
-
-    """
-
-    try:
-        company = Company.objects.get(id=id).delete()
-        messages.success(request, _("Company deleted."))
-    except Company.DoesNotExist:
-        messages.error(request, _("Company not found."))
-    except ProtectedError as e:
-        model_verbose_names_set = set()
-        for obj in e.protected_objects:
-            model_verbose_names_set.add(_(obj._meta.verbose_name.capitalize()))
-
-        model_names_str = ", ".join(model_verbose_names_set)
-        messages.error(
-            request, _("This company is already in use for {}.").format(model_names_str)
-        )
-
-    return redirect(company_create)
-
-
-@login_required
 @permission_required("base.add_department")
 def department(request):
     """
@@ -565,35 +548,6 @@ def department_update(request, id):
         "base/department/department.html",
         {"form": form, "departments": departments},
     )
-
-
-@login_required
-@permission_required("base.delete_department")
-@require_http_methods(["POST", "DELETE"])
-def department_delete(request, id):
-    """
-    This method is used to delete department instance
-    args:
-        id : department instance id
-    """
-
-    try:
-        departments = Department.objects.get(id=id).delete()
-        messages.success(request, _("Department deleted."))
-    except Department.DoesNotExist:
-        messages.error(request, _("Department not found."))
-    except ProtectedError as e:
-        model_verbose_names_set = set()
-        for obj in e.protected_objects:
-            model_verbose_names_set.add(_(obj._meta.verbose_name.capitalize()))
-
-        model_names_str = ", ".join(model_verbose_names_set)
-        messages.error(
-            request,
-            _("This department is already in use for {}.").format(model_names_str),
-        ),
-
-    return redirect("/settings/department-creation")
 
 
 @login_required
@@ -643,35 +597,6 @@ def job_position_update(request, id):
 
 
 @login_required
-@permission_required("base.delete_jobposition")
-@require_http_methods(["POST"])
-def job_position_delete(request, id):
-    """
-    This method is used to delete job position
-    args:
-        id : job position id
-    """
-
-    try:
-        job_position = JobPosition.objects.get(id=id).delete()
-        messages.success(request, _("Job Position Deleted."))
-    except JobPosition.DoesNotExist:
-        messages.error(request, _("JobPosition not found."))
-    except ProtectedError as e:
-        model_verbose_names_set = set()
-        for obj in e.protected_objects:
-            model_verbose_names_set.add(_(obj._meta.verbose_name.capitalize()))
-        model_names_str = ", ".join(model_verbose_names_set)
-
-        messages.error(
-            request,
-            _("This job position is already in use for {}.").format(model_names_str),
-        ),
-
-    return redirect("/settings/job-position-creation")
-
-
-@login_required
 @permission_required("base.add_jobrole")
 def job_role_create(request):
     """
@@ -714,35 +639,6 @@ def job_role_update(request, id):
     return render(
         request, "base/job_role/job_role.html", {"form": form, "job_positions": jobs}
     )
-
-
-@login_required
-@permission_required("base.delete_jobrole")
-@require_http_methods(["POST"])
-def job_role_delete(request, id):
-    """
-    This method is used to delete job role
-    args:
-        id : job role instance id
-    """
-    try:
-        job_role = JobRole.objects.get(id=id).delete()
-        messages.success(request, _("Job Role Deleted."))
-    except JobRole.DoesNotExist:
-        messages.error(request, _("Job role not found."))
-    except ProtectedError as e:
-        model_verbose_names_set = set()
-        for obj in e.protected_objects:
-            model_verbose_names_set.add(_(obj._meta.verbose_name.capitalize()))
-
-        model_names_str = ", ".join(model_verbose_names_set)
-
-        messages.error(
-            request,
-            _("This job role is already in use for {}.").format(model_names_str),
-        ),
-
-    return redirect("/settings/job-role-create")
 
 
 @login_required
@@ -795,35 +691,6 @@ def work_type_update(request, id):
 
 
 @login_required
-@permission_required("base.delete_worktype")
-@require_http_methods(["POST", "DELETE"])
-def work_type_delete(request, id):
-    """
-    This method is used to delete work type instance
-    args:
-        id : work type instance id
-    """
-    try:
-        work_type = WorkType.objects.get(id=id).delete()
-        messages.success(request, _("Work type deleted."))
-    except WorkType.DoesNotExist:
-        messages.error(request, _("Work type not found."))
-    except ProtectedError as e:
-        model_verbose_names_set = set()
-        for obj in e.protected_objects:
-            model_verbose_names_set.add(_(obj._meta.verbose_name.capitalize()))
-
-        model_names_str = ", ".join(model_verbose_names_set)
-
-        messages.error(
-            request,
-            _("This work type is already in use for {}.").format(model_names_str),
-        ),
-
-    return redirect("/settings/work-type-create")
-
-
-@login_required
 @permission_required("base.add_rotatingworktype")
 def rotating_work_type_create(request):
     """
@@ -869,38 +736,6 @@ def rotating_work_type_update(request, id):
         "base/rotating_work_type/rotating_work_type.html",
         {"form": form, "rwork_type": RotatingWorkType.objects.all()},
     )
-
-
-@login_required
-@permission_required("base.delete_rotatingworktype")
-@require_http_methods(["POST", "DELETE"])
-def rotating_work_type_delete(request, id):
-    """
-    This method is used to delete rotating work type
-    args:
-        id : rotating work type id
-
-    """
-    try:
-        rotating_work_type = RotatingWorkType.objects.get(id=id).delete()
-        messages.success(request, _("Rotating work type deleted."))
-    except RotatingWorkType.DoesNotExist:
-        messages.error(request, _("Rotating work type not found."))
-    except ProtectedError as e:
-        model_verbose_names_set = set()
-        for obj in e.protected_objects:
-            model_verbose_names_set.add(_(obj._meta.verbose_name.capitalize()))
-
-        model_names_str = ", ".join(model_verbose_names_set)
-
-        messages.error(
-            request,
-            _("This rotating work type is already in use for {}.").format(
-                model_names_str
-            ),
-        ),
-
-    return redirect("/settings/rotating-work-type-create")
 
 
 @login_required
@@ -1262,35 +1097,6 @@ def employee_type_update(request, id):
 
 
 @login_required
-@permission_required("base.delete_employeetype")
-@require_http_methods(["POST"])
-def employee_type_delete(request, id):
-    """
-    This method is used to delete employee type
-    args:
-        id : employee type id
-    """
-    try:
-        employee_type = EmployeeType.objects.get(id=id).delete()
-        messages.success(request, _("Employee type deleted."))
-    except EmployeeType.DoesNotExist:
-        messages.error(request, _("Employee type not found."))
-    except ProtectedError as e:
-        model_verbose_names_set = set()
-        for obj in e.protected_objects:
-            model_verbose_names_set.add(_(obj._meta.verbose_name.capitalize()))
-
-        model_names_str = ", ".join(model_verbose_names_set)
-
-        messages.error(
-            request,
-            _("This employee type is already in use for {}.").format(model_names_str),
-        ),
-
-    return redirect("/settings/employee-type-create")
-
-
-@login_required
 @permission_required("base.add_employeeshift")
 def employee_shift_create(request):
     """
@@ -1334,34 +1140,6 @@ def employee_shift_update(request, id):
 
 
 @login_required
-@permission_required("base.delete_employeeshift")
-@require_http_methods(["POST"])
-def employee_shift_delete(request, id):
-    """
-    This method is used to delete shift
-    args:
-        id : employee shift instance id
-    """
-
-    try:
-        employee_shift = EmployeeShift.objects.get(id=id).delete()
-        messages.success(request, _("Employee shift deleted."))
-    except EmployeeShift.DoesNotExist:
-        messages.error(request, _("This shift not found."))
-    except ProtectedError as e:
-        model_verbose_names_set = set()
-        for obj in e.protected_objects:
-            model_verbose_names_set.add(_(obj._meta.verbose_name.capitalize()))
-
-        model_names_str = ", ".join(model_verbose_names_set)
-        messages.error(
-            request, _("This shift is already in use for {}.").format(model_names_str)
-        )
-
-    return redirect("/settings/employee-shift-create")
-
-
-@login_required
 @permission_required("base.add_employeeshiftschedule")
 def employee_shift_schedule_create(request):
     """
@@ -1402,25 +1180,6 @@ def employee_shift_schedule_update(request, id):
             messages.success(request, _("Shift schedule created."))
             return redirect(employee_shift_schedule_create)
     return render(request, "base/shift/schedule.html", {"form": form, "shifts": shifts})
-
-
-@login_required
-@permission_required("base.delete_employeeshiftschedule")
-@require_http_methods(["POST"])
-def employee_shift_schedule_delete(request, id):
-    """
-    This method is used to delete employee shift instance
-    args:
-        id : employee shift instance id
-    """
-    try:
-        employee_shift_schedule = EmployeeShiftSchedule.objects.get(id=id).delete()
-        messages.success(request, _("Shift schedule deleted."))
-    except EmployeeShiftSchedule.DoesNotExist:
-        messages.error(request, _("Shift schedule not found."))
-    except ProtectedError:
-        messages.error(request, _("You cannot delete this schedule"))
-    return redirect("/settings/employee-shift-schedule-create")
 
 
 @login_required
@@ -1472,35 +1231,6 @@ def rotating_shift_update(request, id):
             ),
         },
     )
-
-
-@login_required
-@permission_required("base.delete_rotatingshift")
-@require_http_methods(["POST"])
-def rotating_shift_delete(request, id):
-    """
-    This method is used to delete rotating shift
-    args:
-        id : rotating shift instance id
-
-    """
-    try:
-        rotating_shift = RotatingShift.objects.get(id=id).delete()
-        messages.success(request, _("Rotating shift deleted."))
-    except RotatingShift.DoesNotExist:
-        messages.error(request, _("Rotating shift not found."))
-    except ProtectedError as e:
-        model_verbose_names_set = set()
-        for obj in e.protected_objects:
-            model_verbose_names_set.add(_(obj._meta.verbose_name.capitalize()))
-
-        model_names_str = ", ".join(model_verbose_names_set)
-        messages.error(
-            request,
-            _("This rotating shift is already in use for {}.").format(model_names_str),
-        ),
-
-    return redirect(rotating_shift_create)
 
 
 @login_required

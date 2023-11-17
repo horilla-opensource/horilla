@@ -1,5 +1,18 @@
 from django.urls import path
 from base import views
+from base.models import (
+    Company,
+    Department,
+    EmployeeShift,
+    EmployeeShiftSchedule,
+    EmployeeType,
+    JobPosition,
+    JobRole,
+    RotatingShift,
+    RotatingWorkType,
+    WorkType,
+)
+from django.contrib.auth.models import Group
 
 urlpatterns = [
     path("", views.home, name="home-page"),
@@ -19,7 +32,10 @@ urlpatterns = [
         name="user-group-update",
     ),
     path(
-        "user-group-delete/<int:id>/", views.user_group_delete, name="user-group-delete"
+        "user-group-delete/<int:id>/",
+        views.object_delete,
+        name="user-group-delete",
+        kwargs={"model": Group, "redirect": "/settings/user-group-create"},
     ),
     path(
         "group-permission-remove/<int:pid>/<int:gid>/",
@@ -55,7 +71,12 @@ urlpatterns = [
     path(
         "settings/company-update/<int:id>/", views.company_update, name="company-update"
     ),
-    path("company-delete/<int:id>/", views.company_delete, name="company-delete"),
+    path(
+        "company-delete/<int:id>/",
+        views.object_delete,
+        name="company-delete",
+        kwargs={"model": Company, "redirect": "/settings/company-create"},
+    ),
     path("settings/department-creation", views.department, name="department-creation"),
     path(
         "settings/department-update/<int:id>/",
@@ -63,7 +84,10 @@ urlpatterns = [
         name="department-update",
     ),
     path(
-        "department-delete/<int:id>/", views.department_delete, name="department-delete"
+        "department-delete/<int:id>/",
+        views.object_delete,
+        name="department-delete",
+        kwargs={"model": Department, "redirect": "/settings/department-creation"},
     ),
     path(
         "settings/job-position-creation",
@@ -77,8 +101,9 @@ urlpatterns = [
     ),
     path(
         "job-position-delete/<int:id>/",
-        views.job_position_delete,
+        views.object_delete,
         name="job-position-delete",
+        kwargs={"model": JobPosition, "redirect": "/settings/job-position-creation"},
     ),
     path("settings/job-role-create", views.job_role_create, name="job-role-create"),
     path(
@@ -86,14 +111,24 @@ urlpatterns = [
         views.job_role_update,
         name="job-role-update",
     ),
-    path("job-role-delete/<int:id>/", views.job_role_delete, name="job-role-delete"),
+    path(
+        "job-role-delete/<int:id>/",
+        views.object_delete,
+        name="job-role-delete",
+        kwargs={"model": JobRole, "redirect": "/settings/job-role-create"},
+    ),
     path("settings/work-type-create", views.work_type_create, name="work-type-create"),
     path(
         "settings/work-type-update/<int:id>/",
         views.work_type_update,
         name="work-type-update",
     ),
-    path("work-type-delete/<int:id>/", views.work_type_delete, name="work-type-delete"),
+    path(
+        "work-type-delete/<int:id>/",
+        views.object_delete,
+        name="work-type-delete",
+        kwargs={"model": WorkType, "redirect": "/settings/work-type-create"},
+    ),
     path(
         "settings/rotating-work-type-create",
         views.rotating_work_type_create,
@@ -106,8 +141,12 @@ urlpatterns = [
     ),
     path(
         "rotating-work-type-delete/<int:id>/",
-        views.rotating_work_type_delete,
+        views.object_delete,
         name="rotating-work-type-delete",
+        kwargs={
+            "model": RotatingWorkType,
+            "redirect": "/settings/rotating-work-type-create",
+        },
     ),
     path(
         "employee/rotating-work-type-assign",
@@ -161,8 +200,12 @@ urlpatterns = [
     ),
     path(
         "employee-type-delete/<int:id>/",
-        views.employee_type_delete,
+        views.object_delete,
         name="employee-type-delete",
+        kwargs={
+            "model": EmployeeType,
+            "redirect": "/settings/employee-type-create",
+        },
     ),
     path(
         "settings/employee-shift-create",
@@ -176,8 +219,12 @@ urlpatterns = [
     ),
     path(
         "employee-shift-delete/<int:id>/",
-        views.employee_shift_delete,
+        views.object_delete,
         name="employee-shift-delete",
+        kwargs={
+            "model": EmployeeShift,
+            "redirect": "/settings/employee-shift-create",
+        },
     ),
     path(
         "settings/employee-shift-schedule-create",
@@ -191,8 +238,12 @@ urlpatterns = [
     ),
     path(
         "employee-shift-schedule-delete/<int:id>/",
-        views.employee_shift_schedule_delete,
+        views.object_delete,
         name="employee-shift-schedule-delete",
+        kwargs={
+            "model": EmployeeShiftSchedule,
+            "redirect": "/settings/employee-shift-schedule-create",
+        },
     ),
     path(
         "settings/rotating-shift-create",
@@ -206,8 +257,12 @@ urlpatterns = [
     ),
     path(
         "rotating-shift-delete/<int:id>/",
-        views.rotating_shift_delete,
+        views.object_delete,
         name="rotating-shift-delete",
+        kwargs={
+            "model": RotatingShift,
+            "redirect": "/settings/rotating-shift-create",
+        },
     ),
     path(
         "employee/rotating-shift-assign",

@@ -53,6 +53,8 @@ class Company(models.Model):
         Meta class to add additional options
         """
 
+        verbose_name = _("Company")
+        verbose_name_plural = _("Companies")
         unique_together = ["company", "address"]
 
     def __str__(self) -> str:
@@ -66,6 +68,10 @@ class Department(models.Model):
 
     department = models.CharField(max_length=50, blank=False, unique=True)
     objects = models.Manager()
+
+    class Meta:
+        verbose_name = _("Department")
+        verbose_name_plural = _("Departments")
 
     def __str__(self):
         return str(self.department)
@@ -86,6 +92,14 @@ class JobPosition(models.Model):
     )
     objects = models.Manager()
 
+    class Meta:
+        """
+        Meta class to add additional options
+        """
+
+        verbose_name = _("Job Position")
+        verbose_name_plural = _("Job Positions")
+
     def __str__(self):
         return str(self.job_position)
 
@@ -104,6 +118,8 @@ class JobRole(models.Model):
         Meta class to add additional options
         """
 
+        verbose_name = _("Job Role")
+        verbose_name_plural = _("Job Roles")
         unique_together = ("job_position_id", "job_role")
 
     def __str__(self):
@@ -117,6 +133,14 @@ class WorkType(models.Model):
 
     work_type = models.CharField(max_length=50)
     objects = models.Manager()
+
+    class Meta:
+        """
+        Meta class to add additional options
+        """
+
+        verbose_name = _("Work Type")
+        verbose_name_plural = _("Work Types")
 
     def __str__(self) -> str:
         return str(self.work_type)
@@ -146,6 +170,14 @@ class RotatingWorkType(models.Model):
         verbose_name=_("Employee"),
     )
     objects = models.Manager()
+
+    class Meta:
+        """
+        Meta class to add additional options
+        """
+
+        verbose_name = _("Rotating Work Type")
+        verbose_name_plural = _("Rotating Work Types")
 
     def __str__(self) -> str:
         return str(self.name)
@@ -216,6 +248,8 @@ class RotatingWorkTypeAssign(models.Model):
         Meta class to add additional options
         """
 
+        verbose_name = _("Rotating Work Type Assign")
+        verbose_name_plural = _("Rotating Work Type Assigns")
         ordering = ["-next_change_date", "-employee_id__employee_first_name"]
 
     def clean(self):
@@ -238,6 +272,14 @@ class EmployeeType(models.Model):
     employee_type = models.CharField(max_length=50)
     objects = models.Manager()
 
+    class Meta:
+        """
+        Meta class to add additional options
+        """
+
+        verbose_name = _("Employee Type")
+        verbose_name_plural = _("Employee Types")
+
     def __str__(self) -> str:
         return str(self.employee_type)
 
@@ -249,6 +291,14 @@ class EmployeeShiftDay(models.Model):
 
     day = models.CharField(max_length=20, choices=DAY)
     objects = models.Manager()
+
+    class Meta:
+        """
+        Meta class to add additional options
+        """
+
+        verbose_name = _("Employee Shift Day")
+        verbose_name_plural = _("Employee Shift Days")
 
     def __str__(self) -> str:
         return str(_(self.day).capitalize())
@@ -276,6 +326,14 @@ class EmployeeShift(models.Model):
         max_length=6, default="200:00", validators=[validate_time_format]
     )
     objects = models.Manager()
+
+    class Meta:
+        """
+        Meta class to add additional options
+        """
+
+        verbose_name = _("Employee Shift")
+        verbose_name_plural = _("Employee Shifts")
 
     def __str__(self) -> str:
         return str(self.employee_shift)
@@ -305,6 +363,8 @@ class EmployeeShiftSchedule(models.Model):
         Meta class to add additional options
         """
 
+        verbose_name = _("Employee Shift Schedule")
+        verbose_name_plural = _("Employee Shift Schedules")
         unique_together = [["shift_id", "day"]]
 
     def __str__(self) -> str:
@@ -338,6 +398,14 @@ class RotatingShift(models.Model):
         verbose_name=_("Shift 2"),
     )
     objects = models.Manager()
+
+    class Meta:
+        """
+        Meta class to add additional options
+        """
+
+        verbose_name = _("Rotating Shift")
+        verbose_name_plural = _("Rotating Shifts")
 
     def __str__(self) -> str:
         return str(self.name)
@@ -389,6 +457,8 @@ class RotatingShiftAssign(models.Model):
         Meta class to add additional options
         """
 
+        verbose_name = _("Rotating Shift Assign")
+        verbose_name_plural = _("Rotating Shift Assigns")
         ordering = ["-next_change_date", "-employee_id__employee_first_name"]
 
     def clean(self):
@@ -450,6 +520,8 @@ class WorkTypeRequest(models.Model):
         Meta class to add additional options
         """
 
+        verbose_name = _("Work Type Request")
+        verbose_name_plural = _("Work Type Requests")
         permissions = (
             ("approve_worktyperequest", "Approve Work Type Request"),
             ("cancel_worktyperequest", "Cancel Work Type Request"),
@@ -557,6 +629,8 @@ class ShiftRequest(models.Model):
         Meta class to add additional options
         """
 
+        verbose_name = _("Shift Request")
+        verbose_name_plural = _("Shift Requests")
         permissions = (
             ("approve_shiftrequest", "Approve Shift Request"),
             ("cancel_shiftrequest", "Cancel Shift Request"),

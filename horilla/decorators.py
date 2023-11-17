@@ -16,6 +16,19 @@ def permission_required(function, perm):
     return _function
 
 
+decorator_with_arguments = lambda decorator: lambda *args, **kwargs: lambda func: decorator(func, *args, **kwargs)
+@decorator_with_arguments
+def delete_permission(function):
+    def _function(request, *args, **kwargs):
+        if request.user.has_perm( kwargs["model"]._meta.app_label + ".delete_" +  kwargs["model"]._meta.model_name):
+            return function(request, *args, **kwargs)
+        else:
+            messages.info(request,'You dont have permission for delete.')
+            return HttpResponseRedirect(request. META. get('HTTP_REFERER', '/'))
+
+    return _function
+
+
 
 decorator_with_arguments = lambda decorator: lambda *args, **kwargs: lambda func: decorator(func, *args, **kwargs)
 @decorator_with_arguments
