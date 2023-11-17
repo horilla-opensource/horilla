@@ -58,6 +58,7 @@ function getCurrentLanguageCode(callback) {
 function tickLeaverequestsCheckboxes() {
   var ids = JSON.parse($("#selectedLeaverequests").attr("data-ids") || "[]");
   uniqueIds = makeLeaverequestsListUnique(ids);
+  toggleHighlight(uniqueIds);
   click = $("#selectedLeaverequests").attr("data-clicked");
   if (click === "1") {
     $(".all-leave-requests").prop("checked", true);
@@ -186,6 +187,9 @@ function unselectAllLeaverequests() {
         $("#" + empId).prop("checked", false);
         $(".all-leave-requests").prop("checked", false);
       }
+      var ids = JSON.parse($("#selectedLeaverequests").attr("data-ids") || "[]");
+      uniqueIds = makeLeaverequestsListUnique(ids);
+      toggleHighlight(uniqueIds);
       $("#selectedLeaverequests").attr("data-ids", JSON.stringify([]));
 
       count = [];
@@ -300,6 +304,7 @@ $("#leaverequestbulkDelete").click(function (e) {
 function tickUserrequestsCheckboxes() {
   var ids = JSON.parse($("#selectedUserrequests").attr("data-ids") || "[]");
   uniqueIds = makeUserrequestsListUnique(ids);
+  toggleHighlight(uniqueIds);
   click = $("#selectedUserrequests").attr("data-clicked");
   if (click === "1") {
     $(".all-user-requests").prop("checked", true);
@@ -428,6 +433,9 @@ function unselectAllUserrequests() {
         $("#" + empId).prop("checked", false);
         $(".all-user-requests").prop("checked", false);
       }
+      var ids = JSON.parse($("#selectedUserrequests").attr("data-ids") || "[]");
+      var uniqueIds = makeListUnique(ids);
+      toggleHighlight(uniqueIds);
       $("#selectedUserrequests").attr("data-ids", JSON.stringify([]));
 
       count = [];

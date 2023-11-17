@@ -85,6 +85,7 @@
                             <input
                             type="checkbox"
                             id="{{leave_request.id}}"
+                            onchange="highlightRow($(this))"
                             class="oh-input oh-input__checkbox all-user-requests-row"
                             />
                         </div>
@@ -205,9 +206,9 @@
     $(".all-user-requests").change(function (e) {
       var is_checked = $(this).is(":checked");
       if (is_checked) {
-        $(".all-user-requests-row").prop("checked", true);
+        $(".all-user-requests-row").prop("checked", true).closest(".oh-sticky-table__tr").addClass("highlight-selected");
       } else {
-        $(".all-user-requests-row").prop("checked", false);
+        $(".all-user-requests-row").prop("checked", false).closest(".oh-sticky-table__tr").removeClass("highlight-selected");
       }
     });
   
