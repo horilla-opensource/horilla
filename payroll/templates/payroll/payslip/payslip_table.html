@@ -34,6 +34,7 @@
                 type="checkbox"
                 id="{{payslip.id}}"
                 value="{{payslip.id}}"
+                onchange="highlightRow($(this))"
                 class="oh-input payslip-checkbox oh-input__checkbox all-payslip-row"
               />
             </div>
@@ -147,9 +148,11 @@
   $("#Allpayslip").click(function (e) {
     var is_checked = $(this).is(":checked");
     if (is_checked) {
-      $(".all-payslip-row").prop("checked", true);
+      $(".all-payslip-row").prop("checked", true).closest(".oh-sticky-table__tr")
+      .addClass("highlight-selected");
     } else {
-      $(".all-payslip-row").prop("checked", false);
+      $(".all-payslip-row").prop("checked", false).closest(".oh-sticky-table__tr")
+      .removeClass("highlight-selected");;
     }
     addingPayslipIds();
   });
