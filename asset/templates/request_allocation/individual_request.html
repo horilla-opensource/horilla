@@ -1,0 +1,110 @@
+{% load static %} {% load i18n %}
+
+<div class="oh-modal__dialog oh-modal__dialog--navigation m-0 p-0">
+    <button
+      hx-get="{% url 'asset-request-individual-view' previous %}?requests_ids={{requests_ids}}"
+      hx-target="#singleRequest"
+      class="oh-modal__diaglog-nav oh-modal__nav-prev"
+    >
+        <ion-icon
+            name="chevron-back-outline"
+            class="md hydrated"
+            role="img"
+            aria-label="chevron back outline"
+        ></ion-icon>
+    </button>
+  
+    <button
+      hx-get="{% url 'asset-request-individual-view' next %}?requests_ids={{requests_ids}}"
+      hx-target="#singleRequest"
+      class="oh-modal__diaglog-nav oh-modal__nav-next"
+    >
+        <ion-icon
+            name="chevron-forward-outline"
+            class="md hydrated"
+            role="img"
+            aria-label="chevron forward outline"
+        ></ion-icon>
+    </button>
+</div>
+
+<div class="oh-timeoff-modal__profile-content pt-4">
+    <div class="oh-profile mb-2">
+        <div class="oh-profile__avatar">
+            <img
+            src="{{asset_request.requested_employee_id.get_avatar}}"
+            class="oh-profile__image me-2"
+            alt="Mary Magdalene"
+            />
+        </div>
+        <div class="oh-timeoff-modal__profile-info">
+            <span class="oh-timeoff-modal__user fw-bold m-0"
+            >{{asset_request.requested_employee_id.get_full_name}}</span
+            >
+            <span
+            class="oh-timeoff-modal__user m-0"
+            style="font-size: 18px; color: #4d4a4a"
+            >
+            {{asset_request.requested_employee_id.employee_work_info.department_id}} /
+            {{asset_request.requested_employee_id.employee_work_info.job_position_id}}</span
+            >
+        </div>
+    </div>
+</div>
+
+<div class="oh-timeoff-modal__stats-container">
+	<div class="oh-timeoff-modal__stat">
+		<span class="oh-timeoff-modal__stat-title"
+			>{% trans "Requested Date" %} </span
+		>
+		<span class="oh-timeoff-modal__stat-count"
+			>{{asset_request.asset_request_date}}</span
+		>
+	</div>
+	<div class="oh-timeoff-modal__stat">
+		<span class="oh-timeoff-modal__stat-title">{% trans "Category" %}</span>
+		<span class="oh-timeoff-modal__stat-count"
+			>{{asset_request.asset_category_id}}</span
+		>
+	</div>
+</div>
+
+<div class="oh-timeoff-modal__stats mt-3 w-100">
+	<div class="oh-timeoff-modal__stat">
+		<span class="oh-timeoff-modal__stat-title"
+			>{% trans "Request Description" %}</span
+		>
+		<div class="oh-timeoff-modal__stat-description">
+			{{asset_request.description}}
+		</div>
+	</div>
+</div>
+
+<div class="oh-modal__button-container text-center w-100 m-4">
+	{% if perms.asset.add_assetassignment %} 
+        {% if	asset_request.asset_request_status == 'Requested' %}
+        <div class="oh-btn-group">
+            <a
+                class="oh-btn oh-btn--success w-100"
+                role="button"
+                data-toggle="oh-modal-toggle"
+                data-target="#asset-request-allocation-modal"
+                hx-get="{% url 'asset-request-approve' req_id=asset_request.id %}"
+                hx-target="#asset-request-allocation-modal-target"
+            >
+                <ion-icon name="checkmark-outline"></ion-icon>{% trans 'Approve' %}
+            </a>
+            <form
+                action="{% url 'asset-request-reject' req_id=asset_request.id %}"
+                method="post"
+                class="w-100"
+            >
+                {% csrf_token %}
+                <button class="oh-btn oh-btn--danger w-100">
+                    <ion-icon name="close-outline"></ion-icon> {% trans 'Reject' %}
+                </button>
+            </form>
+        </div>
+        {% endif %} 
+    {% endif %}
+</div>

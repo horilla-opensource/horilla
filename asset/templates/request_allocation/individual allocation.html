@@ -1,0 +1,124 @@
+{% load static %} {% load i18n %}
+<div class="oh-modal__dialog oh-modal__dialog--navigation m-0 p-0">
+    <button
+      hx-get="{% url 'asset-allocation-individual-view' previous %}?allocations_ids={{allocations_ids}}"
+      hx-target="#singleAllocate"
+      class="oh-modal__diaglog-nav oh-modal__nav-prev"
+    >
+        <ion-icon
+            name="chevron-back-outline"
+            class="md hydrated"
+            role="img"
+            aria-label="chevron back outline"
+        ></ion-icon>
+    </button>
+  
+    <button
+      hx-get="{% url 'asset-allocation-individual-view' next %}?allocations_ids={{allocations_ids}}"
+      hx-target="#singleAllocate"
+      class="oh-modal__diaglog-nav oh-modal__nav-next"
+    >
+        <ion-icon
+            name="chevron-forward-outline"
+            class="md hydrated"
+            role="img"
+            aria-label="chevron forward outline"
+        ></ion-icon>
+    </button>
+</div>
+
+<div class="oh-timeoff-modal__profile-content pt-4">
+    <div class="oh-profile mb-2">
+        <div class="oh-profile__avatar">
+            <img
+            src="{{asset_allocation.assigned_to_employee_id.get_avatar}}"
+            class="oh-profile__image me-2"
+            alt="Mary Magdalene"
+            />
+        </div>
+        <div class="oh-timeoff-modal__profile-info">
+            <span class="oh-timeoff-modal__user fw-bold m-0"
+            >{{asset_allocation.assigned_to_employee_id.get_full_name}}</span
+            >
+            <span
+            class="oh-timeoff-modal__user m-0"
+            style="font-size: 18px; color: #4d4a4a"
+            >
+            {{asset_allocation.assigned_to_employee_id.employee_work_info.department_id}} /
+            {{asset_allocation.assigned_to_employee_id.employee_work_info.job_position_id}}</span
+            >
+        </div>
+    </div>
+</div>
+
+<div class="oh-timeoff-modal__stats-container">
+	<div class="oh-timeoff-modal__stat">
+		<span class="oh-timeoff-modal__stat-title"
+			>{% trans "Returned Status" %}
+		</span>
+		<span class="oh-timeoff-modal__stat-count"
+			>{{asset_allocation.return_status}}</span
+		>
+	</div>
+	<div class="oh-timeoff-modal__stat">
+		<span class="oh-timeoff-modal__stat-title"
+			>{% trans "Allocated User" %}</span
+		>
+		<span class="oh-timeoff-modal__stat-count"
+			>{{asset_allocation.assigned_by_employee_id}}</span
+		>
+	</div>
+</div>
+
+<div class="oh-timeoff-modal__stats-container mt-3">
+	<div class="oh-timeoff-modal__stat">
+		<span class="oh-timeoff-modal__stat-title"
+			>{% trans "Allocated Date" %}
+		</span>
+		<span class="oh-timeoff-modal__stat-count"
+			>{{asset_allocation.assigned_date}}</span
+		>
+	</div>
+	<div class="oh-timeoff-modal__stat">
+		<span class="oh-timeoff-modal__stat-title"
+			>{% trans "Returned Date" %}
+		</span>
+		<span class="oh-timeoff-modal__stat-count"
+			>{{asset_allocation.return_date}}</span
+		>
+	</div>
+</div>
+<div class="oh-timeoff-modal__stats-container mt-3">
+	<div class="oh-timeoff-modal__stat w-100">
+		<span class="oh-timeoff-modal__stat-title">{% trans "Asset" %}</span>
+		<span class="oh-timeoff-modal__stat-count"
+			>{{asset_allocation.asset_id}}</span
+		>
+	</div>
+</div>
+
+<div class="oh-timeoff-modal__stats mt-3 w-100">
+	<div class="oh-timeoff-modal__stat">
+		<span class="oh-timeoff-modal__stat-title"
+			>{% trans "Return Description" %}</span
+		>
+		<div class="oh-timeoff-modal__stat-description">
+			{{asset_allocation.return_condition}}
+		</div>
+	</div>
+</div>
+
+<div class="oh-modal__button-container text-center w-100 mt-3">
+	{% if not asset_allocation.return_status %}
+	<button
+		class="oh-btn oh-btn--secondary w-100"
+		role="button"
+		data-toggle="oh-modal-toggle"
+		data-target="#asset-request-allocation-modal"
+		hx-get="{% url 'asset-allocate-return'  asset_id=asset_allocation.asset_id.id %}"
+		hx-target="#asset-request-allocation-modal-target"
+	>
+		<ion-icon name="return-down-back-sharp"></ion-icon>{% trans "Return" %}
+	</button>
+	{% endif %}
+</div>

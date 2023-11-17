@@ -2,6 +2,7 @@
 asset.py
 
 This module is used to """
+import json
 from urllib.parse import parse_qs
 import pandas as pd
 from django.db.models import ProtectedError
@@ -10,7 +11,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib import messages
 from django.core.paginator import Paginator
 from django.utils.translation import gettext_lazy as _
-from base.methods import get_key_instances
+from base.methods import closest_numbers, get_key_instances
 from notifications.signals import notify
 from horilla.decorators import login_required, hx_request_required
 from horilla.decorators import permission_required
@@ -691,6 +692,19 @@ def filter_pagination_asset_request_allocation(request):
     assets = asset_paginator.get_page(page_number)
     asset_requests = asset_request_paginator.get_page(page_number)
     asset_allocations = asset_allocation_paginator.get_page(page_number)
+    requests_ids = json.dumps(
+        [
+            instance.id
+            for instance in asset_requests.object_list
+        ]
+    )
+    allocations_ids = json.dumps(
+        [
+            instance.id
+            for instance in asset_allocations.object_list
+        ]
+    )
+
     data_dict = parse_qs(previous_data)
     get_key_instances(AssetRequest, data_dict)
     get_key_instances(AssetAssignment, data_dict)
@@ -708,6 +722,8 @@ def filter_pagination_asset_request_allocation(request):
         "gp_Allocation_fields": AssetAllocationReGroup.fields,
         "request_field":request_field,
         "allocation_field":allocation_field,
+        "requests_ids":requests_ids,
+        "allocations_ids":allocations_ids
     }
 
 
@@ -746,6 +762,39 @@ def asset_request_alloaction_view_search_filter(request):
 
     return render(
         request, template, context
+    )
+
+def asset_request_individual_view(request,id):
+    asset_request = AssetRequest.objects.get(id=id)
+    context = {"asset_request":asset_request}
+    requests_ids_json = request.GET.get("requests_ids")
+    if requests_ids_json:
+        requests_ids = json.loads(requests_ids_json)
+        previous_id, next_id = closest_numbers(requests_ids, id)
+        context["requests_ids"] = requests_ids_json
+        context["previous"] = previous_id
+        context["next"] = next_id
+    return render(
+        request,
+        "request_allocation/individual_request.html",
+        context
+    )
+
+
+def asset_allocation_individual_view(request,id):
+    asset_allocation = AssetAssignment.objects.get(id=id)
+    context = {"asset_allocation":asset_allocation}
+    allocation_ids_json = request.GET.get("allocations_ids")
+    if allocation_ids_json:
+        allocation_ids = json.loads(allocation_ids_json)
+        previous_id, next_id = closest_numbers(allocation_ids, id)
+        context["allocations_ids"] = allocation_ids_json
+        context["previous"] = previous_id
+        context["next"] = next_id
+    return render(
+        request,
+        "request_allocation/individual allocation.html",
+        context
     )
 
 

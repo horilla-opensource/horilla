@@ -46,6 +46,17 @@ urlpatterns = [
         name="asset-request-allocation-view",
     ),
     path(
+        "asset-request-individual-view/<int:id>",
+        views.asset_request_individual_view,
+        name="asset-request-individual-view",
+    ),
+
+    path(
+        "asset-allocation-individual-view/<int:id>",
+        views.asset_allocation_individual_view,
+        name="asset-allocation-individual-view",
+    ),
+    path(
         "asset-request-allocation-view-search-filter",
         views.asset_request_alloaction_view_search_filter,
         name="asset-request-allocation-view-search-filter",
