@@ -101,6 +101,7 @@
                                 <input
                                 type="checkbox"
                                 id="{{leave_request.id}}"
+                                onchange="highlightRow($(this))"
                                 class="oh-input holiday-checkbox oh-input__checkbox all-leave-requests-row"
                                 />
                             </div>
@@ -233,9 +234,9 @@
     $(".all-leave-requests").change(function (e) {
       var is_checked = $(this).is(":checked");
       if (is_checked) {
-        $(".all-leave-requests-row").prop("checked", true);
+        $(".all-leave-requests-row").prop("checked", true).closest(".oh-sticky-table__tr").addClass("highlight-selected");
       } else {
-        $(".all-leave-requests-row").prop("checked", false);
+        $(".all-leave-requests-row").prop("checked", false).closest(".oh-sticky-table__tr").removeClass("highlight-selected");
       }
     });
   
