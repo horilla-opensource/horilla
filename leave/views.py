@@ -341,7 +341,7 @@ def leave_request_view(request):
     Returns:
     GET : return leave request view template
     """
-    queryset = LeaveRequest.objects.all().order_by("-id")
+    queryset = LeaveRequestFilter(request.GET).qs.order_by("-id")
     queryset = filtersubordinates(request, queryset, "leave.view_leaverequest")
     page_number = request.GET.get("page")
     page_obj = paginator_qry(queryset, page_number)
@@ -353,6 +353,8 @@ def leave_request_view(request):
     approved_requests = queryset.filter(status="approved").count()
     rejected_requests = queryset.filter(status="cancelled").count()
     previous_data = request.GET.urlencode()
+    data_dict = parse_qs(previous_data)
+    get_key_instances(LeaveRequest, data_dict)
     return render(
         request,
         "leave/leave_request/request_view.html",
@@ -368,6 +370,7 @@ def leave_request_view(request):
             "export_filter": export_filter.form,
             "requests_ids": requests_ids,
             "current_date": date.today(),
+            "filter_dict": data_dict,
         },
     )
 
