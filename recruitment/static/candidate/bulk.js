@@ -70,9 +70,15 @@ function getCurrentLanguageCode(callback) {
 $(".all-candidate").change(function (e) {
   var is_checked = $(this).is(":checked");
   if (is_checked) {
-    $(".all-candidate-row").prop("checked", true);
+    $(".all-candidate-row")
+      .prop("checked", true)
+      .closest(".oh-sticky-table__tr")
+      .addClass("highlight-selected");
   } else {
-    $(".all-candidate-row").prop("checked", false);
+    $(".all-candidate-row")
+      .prop("checked", false)
+      .closest(".oh-sticky-table__tr")
+      .removeClass("highlight-selected");
   }
   addingCandidateIds();
 });
@@ -115,6 +121,7 @@ function addingCandidateIds() {
 function tickCandidateCheckboxes() {
   var ids = JSON.parse($("#selectedInstances").attr("data-ids") || "[]");
   var uniqueIds = makeListUnique1(ids);
+  toggleHighlight(uniqueIds);
   var selectedCount = uniqueIds.length;
   var message = rowMessages[languageCode];
   click = $("#selectedInstances").attr("data-clicked");

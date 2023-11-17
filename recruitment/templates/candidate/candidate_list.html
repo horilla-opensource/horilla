@@ -55,6 +55,7 @@
             <input
               type="checkbox"
               id="{{cand.id}}"
+              onchange="highlightRow($(this))"
               class="oh-input candidate-checkbox oh-input__checkbox all-candidate-row"
             />
           </div>
@@ -278,6 +279,9 @@
             $("#" + empId).prop("checked", false);
             $("#allCandidate").prop("checked", false);
           }
+          var ids = JSON.parse($("#selectedInstances").attr("data-ids") || "[]");
+          var uniqueIds = makeListUnique(ids);
+          toggleHighlight(uniqueIds);
           $("#selectedInstances").attr("data-ids", JSON.stringify([]));
           count = [];
           tickCandidateCheckboxes(count);
