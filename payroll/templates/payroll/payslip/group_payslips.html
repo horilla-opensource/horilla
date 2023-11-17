@@ -60,6 +60,7 @@
                       <input
                         type="checkbox"
                         value="{{payslip.id}}"
+                        onchange="highlightRow($(this))"
                         onchange="$(this).attr('data-checked', $(this).is(':checked'));"
                         class="oh-input oh-input__checkbox mt-2 mr-2 all-payslip-row payslip-row"
                       />
@@ -168,10 +169,14 @@
     e.preventDefault();
     var accordionId = $(this).attr("data-accordion-id");
     $(`[id="${accordionId}"] .payslip-row`).prop("checked",false)
+    .closest(".oh-sticky-table__tr")
+    .removeClass("highlight-selected");
     $(`[id="${accordionId}"] .payslip-row`).attr("data-checked", false);
 
     if ($(this).is(":checked")) {
       $(`[id="${accordionId}"] .payslip-row`).prop("checked",true)
+      .closest(".oh-sticky-table__tr")
+      .addClass("highlight-selected");
       $(`[id="${accordionId}"] .payslip-row`).attr("data-checked", true);
     }
   });
