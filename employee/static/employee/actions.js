@@ -81,9 +81,15 @@ function getCurrentLanguageCode(callback) {
 $(".all-employee").change(function (e) {
   var is_checked = $(this).is(":checked");
   if (is_checked) {
-    $(".all-employee-row").prop("checked", true).closest(".oh-sticky-table__tr").addClass("highlight-selected");
+    $(".all-employee-row")
+      .prop("checked", true)
+      .closest(".oh-sticky-table__tr")
+      .addClass("highlight-selected");
   } else {
-    $(".all-employee-row").prop("checked", false).closest(".oh-sticky-table__tr").removeClass("highlight-selected");
+    $(".all-employee-row")
+      .prop("checked", false)
+      .closest(".oh-sticky-table__tr")
+      .removeClass("highlight-selected");
   }
   addingIds();
 });
@@ -130,12 +136,7 @@ function addingIds() {
 function tickCheckboxes() {
   var ids = JSON.parse($("#selectedInstances").attr("data-ids") || "[]");
   var uniqueIds = makeListUnique(ids);
-  $.each(uniqueIds, function (indexInArray, id) { 
-     $(`#${id}`).closest(".oh-sticky-table__tr").removeClass("highlight-selected")
-     if ($(`#${id}`).is(":checked")) {
-      $(`#${id}`).closest(".oh-sticky-table__tr").addClass("highlight-selected")
-    }
-  });
+  toggleHighlight(uniqueIds);
   click = $("#selectedInstances").attr("data-clicked");
   if (click === "1") {
     $(".all-employee").prop("checked", true);
@@ -218,8 +219,13 @@ function selectAllInstances() {
           var empId = employeeIds[i];
           $("#" + empId).prop("checked", true);
         }
-        var previousIds = $("#selectedInstances").attr("data-ids")
-        $("#selectedInstances").attr("data-ids", JSON.stringify(Array.from(new Set([...employeeIds,...JSON.parse(previousIds)]))));
+        var previousIds = $("#selectedInstances").attr("data-ids");
+        $("#selectedInstances").attr(
+          "data-ids",
+          JSON.stringify(
+            Array.from(new Set([...employeeIds, ...JSON.parse(previousIds)]))
+          )
+        );
 
         count = makeListUnique(employeeIds);
         tickCheckboxes(count);
@@ -229,7 +235,6 @@ function selectAllInstances() {
       },
     });
   }
-
 }
 
 function unselectAllInstances() {
@@ -256,12 +261,8 @@ function unselectAllInstances() {
       }
       var ids = JSON.parse($("#selectedInstances").attr("data-ids") || "[]");
       var uniqueIds = makeListUnique(ids);
-      $.each(uniqueIds, function (indexInArray, id) { 
-         $(`#${id}`).closest(".oh-sticky-table__tr").removeClass("highlight-selected")
-         if ($(`#${id}`).is(":checked")) {
-          $(`#${id}`).closest(".oh-sticky-table__tr").addClass("highlight-selected")
-        }
-      });
+      toggleHighlight(uniqueIds);
+
       $("#selectedInstances").attr("data-ids", JSON.stringify([]));
 
       count = [];
