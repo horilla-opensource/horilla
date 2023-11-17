@@ -1,5 +1,9 @@
 {% load i18n %}{% load widget_tweaks %} {% load attendancefilters %}
-
+{% for field in form %}
+  {% if field.field.widget.is_hidden %}
+    {{ field }}
+  {% endif %}
+{% endfor %}
 <div class="oh-general__tab-target oh-profile-section" id="personal">
   <div class="oh-profile-section__card">
     <div class="row">
