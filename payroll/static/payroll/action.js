@@ -128,6 +128,7 @@ function addingPayslipIds() {
 function tickPayslipCheckboxes() {
   var ids = JSON.parse($("#selectedPayslip").attr("data-ids") || "[]");
   uniqueIds = makePayslipListUnique(ids);
+  toggleHighlight(uniqueIds);
   click = $("#selectedPayslip").attr("data-clicked");
   if (click === "1") {
     $(".all-payslip").prop("checked", true);
@@ -179,8 +180,13 @@ function selectAllPayslip() {
           var empId = payslipIds[i];
           $("#" + empId).prop("checked", true);
         }
-        var previousIds = $("#selectedPayslip").attr("data-ids")
-        $("#selectedPayslip").attr("data-ids", JSON.stringify(Array.from(new Set([...payslipIds,...JSON.parse(previousIds)]))));
+        var previousIds = $("#selectedPayslip").attr("data-ids");
+        $("#selectedPayslip").attr(
+          "data-ids",
+          JSON.stringify(
+            Array.from(new Set([...payslipIds, ...JSON.parse(previousIds)]))
+          )
+        );
 
         count = makePayslipListUnique(payslipIds);
         tickPayslipCheckboxes(count);
@@ -220,7 +226,6 @@ function selectAllPayslip() {
       },
     });
   }
-
 }
 
 function unselectAllPayslip() {
@@ -245,6 +250,9 @@ function unselectAllPayslip() {
         $("#" + empId).prop("checked", false);
         $(".all-payslip").prop("checked", false);
       }
+      var ids = JSON.parse($("#selectedPayslip").attr("data-ids") || "[]");
+      uniqueIds = makePayslipListUnique(ids);
+      toggleHighlight(uniqueIds);
       $("#selectedPayslip").attr("data-ids", JSON.stringify([]));
 
       count = [];
@@ -402,6 +410,7 @@ function addingContractIds() {
 function tickContractCheckboxes() {
   var ids = JSON.parse($("#selectedInstances").attr("data-ids") || "[]");
   uniqueIds = makeEmpListUnique(ids);
+  toggleHighlight(uniqueIds);
   click = $("#selectedInstances").attr("data-clicked");
   if (click === "1") {
     $(".all-contract").prop("checked", true);
@@ -452,8 +461,15 @@ function selectAllContracts() {
           $("#" + empId).prop("checked", true);
         }
         var previousIds = $("#selectedInstances").attr("data-ids");
-        $("#selectedInstances").attr("data-ids", JSON.stringify(Array.from(new Set([...contractIds,...JSON.parse(previousIds)]))));
-        console.log(Array.from(new Set([...contractIds,...JSON.parse(previousIds)])));
+        $("#selectedInstances").attr(
+          "data-ids",
+          JSON.stringify(
+            Array.from(new Set([...contractIds, ...JSON.parse(previousIds)]))
+          )
+        );
+        console.log(
+          Array.from(new Set([...contractIds, ...JSON.parse(previousIds)]))
+        );
 
         count = makeEmpListUnique(contractIds);
         tickContractCheckboxes(count);
@@ -492,7 +508,6 @@ function selectAllContracts() {
       },
     });
   }
-
 }
 
 function unselectAllContracts() {
@@ -516,6 +531,9 @@ function unselectAllContracts() {
         $("#" + contractId).prop("checked", false);
         $(".all-contract").prop("checked", false);
       }
+      var ids = JSON.parse($("#selectedInstances").attr("data-ids") || "[]");
+      uniqueIds = makeEmpListUnique(ids);
+      toggleHighlight(uniqueIds);
       $("#selectedInstances").attr("data-ids", JSON.stringify([]));
 
       count = [];

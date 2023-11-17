@@ -38,6 +38,7 @@
               <input
                 type="checkbox"
                 id="{{contract.id}}"
+                onchange="highlightRow($(this))"
                 value="{{contract.id}}"
                 class="oh-input payslip-checkbox oh-input__checkbox all-contract-row"
               />
@@ -140,9 +141,11 @@
   $("#Allcontract").click(function (e) {
     var is_checked = $(this).is(":checked");
     if (is_checked) {
-      $(".all-contract-row").prop("checked", true);
+      $(".all-contract-row").prop("checked", true).closest(".oh-sticky-table__tr")
+      .addClass("highlight-selected");
     } else {
-      $(".all-contract-row").prop("checked", false);
+      $(".all-contract-row").prop("checked", false).closest(".oh-sticky-table__tr")
+      .removeClass("highlight-selected");
     }
     addingContractIds();
   });
