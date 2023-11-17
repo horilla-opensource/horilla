@@ -796,43 +796,11 @@ function emptyChart(chart,args,options) {
       }   
     }
 }
-function highlightSelected() {
-    $.each($(".oh-sticky-table__tbody .oh-sticky-table__tr .centered-div [type=checkbox]"), function (indexInArray, checkbox) { 
-      $(checkbox).closest(".oh-sticky-table__tr").removeClass("highlight-selected")
-    });
-    $.each($(".oh-sticky-table__tbody .oh-sticky-table__tr .centered-div [type=checkbox]:checked"), function (indexInArray, checkbox) { 
-      $(checkbox).closest(".oh-sticky-table__tr").addClass("highlight-selected")
-    });
-}
-$(document).ready(function () {
-  $("[type=checkbox]").change(function (e) {
-    highlightSelected()
-  });
-  $("div.oh-checkpoint-badge").click(function (e) { 
-    setTimeout(() => {
-      highlightSelected()
-    }, 50);    
-  });
 
-});
-$(document).on("htmx:afterSwap", function (e) {
-  setTimeout(() => {
-  highlightSelected()
-  }, 210);
-  $("div.oh-checkpoint-badge").click(function (e) { 
-    setTimeout(() => {
-      highlightSelected()
-    }, 100);    
-  });
-  $("[type=checkbox]").change(function (e) {
-    setTimeout(() => {
-      highlightSelected()
-    }, 100);
-  });
-  $("form").submit(function (e) {
-    setTimeout(() => {
-      highlightSelected()
-    }, 100);
-  });
-});
+function highlightRow(checkbox) {
+  checkbox.closest(".oh-sticky-table__tr").removeClass("highlight-selected")
+  if (checkbox.is(":checked")) {
+    checkbox.closest(".oh-sticky-table__tr").addClass("highlight-selected")
+  }
+}
 </script>
