@@ -301,7 +301,7 @@ class Candidate(models.Model):
         )
         if self.profile:
             full_filename = settings.MEDIA_ROOT + self.profile.name
-            
+
             if default_storage.exists(full_filename):
                 url = self.profile.url
 
@@ -349,8 +349,8 @@ class StageNote(models.Model):
     """
 
     candidate_id = models.ForeignKey(Candidate, on_delete=models.CASCADE)
-    title = models.CharField(max_length=50, null=True)
-    description = models.TextField()
+    title = models.CharField(max_length=50, null=True, verbose_name=_("Title"))
+    description = models.TextField(verbose_name=_("Description"))
     stage_id = models.ForeignKey(Stage, on_delete=models.CASCADE)
     updated_by = models.ForeignKey(Employee, on_delete=models.CASCADE)
     objects = models.Manager()
