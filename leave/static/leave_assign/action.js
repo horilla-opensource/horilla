@@ -57,6 +57,7 @@ function getCurrentLanguageCode(callback) {
 function tickLeaveCheckboxes() {
   var ids = JSON.parse($("#selectedLeaves").attr("data-ids") || "[]");
   uniqueIds = makeLeaveListUnique(ids);
+  toggleHighlight(uniqueIds);
   click = $("#selectedLeaves").attr("data-clicked");
   if (click === "1") {
     $(".all-assigned-leaves").prop("checked", true);
@@ -186,6 +187,9 @@ $("#unselectAllLeaves").click(function (e) {
           $("#" + empId).prop("checked", false);
           $(".all-assigned-leaves").prop("checked", false);
         }
+        var ids = JSON.parse($("#selectedLeaves").attr("data-ids") || "[]");
+        uniqueIds = makeLeaveListUnique(ids);
+        toggleHighlight(uniqueIds);
         $("#selectedLeaves").attr("data-ids", JSON.stringify([]));
         count = [];
         tickLeaveCheckboxes(count);

@@ -25,7 +25,7 @@
             <div class="oh-sticky-table__tr" draggable="true">
                 <div class="oh-sticky-table__sd">
                     <div class="centered-div">
-                        <input type="checkbox" id="{{available_leave.id}}" 
+                        <input type="checkbox" id="{{available_leave.id}}" onchange="highlightRow($(this))"
                         class="oh-input assigned-leaves-checkbox oh-input__checkbox all-assigned-leaves-row" />
                     </div>
                 </div>
@@ -112,9 +112,9 @@
     $(".all-assigned-leaves").change(function () {
       var is_checked = $(this).is(":checked");
       if (is_checked) {
-        $(".all-assigned-leaves-row").prop("checked", true);
+        $(".all-assigned-leaves-row").prop("checked", true).closest(".oh-sticky-table__tr").addClass("highlight-selected");
       } else {
-        $(".all-assigned-leaves-row").prop("checked", false);
+        $(".all-assigned-leaves-row").prop("checked", false).closest(".oh-sticky-table__tr").removeClass("highlight-selected");
       }
       addingAssignedLeaveIds();
     });
