@@ -26,7 +26,9 @@
           <div class="oh-sticky-table__tr" draggable="true">
             <div class="oh-sticky-table__sd" onclick="event.stopPropagation();">
               <div class="centered-div">
-                <input type="checkbox" id="{{activity.id}}" 
+                <input type="checkbox" 
+                  id="{{activity.id}}" 
+                  onchange="highlightRow($(this))"
                   class="oh-input attendance-checkbox oh-input__checkbox all-attendance-activity-row" />
               </div>
             </div>
