@@ -81,9 +81,9 @@ function getCurrentLanguageCode(callback) {
 $(".all-employee").change(function (e) {
   var is_checked = $(this).is(":checked");
   if (is_checked) {
-    $(".all-employee-row").prop("checked", true);
+    $(".all-employee-row").prop("checked", true).closest(".oh-sticky-table__tr").addClass("highlight-selected");
   } else {
-    $(".all-employee-row").prop("checked", false);
+    $(".all-employee-row").prop("checked", false).closest(".oh-sticky-table__tr").removeClass("highlight-selected");
   }
   addingIds();
 });
@@ -129,7 +129,13 @@ function addingIds() {
 
 function tickCheckboxes() {
   var ids = JSON.parse($("#selectedInstances").attr("data-ids") || "[]");
-  uniqueIds = makeListUnique(ids);
+  var uniqueIds = makeListUnique(ids);
+  $.each(uniqueIds, function (indexInArray, id) { 
+     $(`#${id}`).closest(".oh-sticky-table__tr").removeClass("highlight-selected")
+     if ($(`#${id}`).is(":checked")) {
+      $(`#${id}`).closest(".oh-sticky-table__tr").addClass("highlight-selected")
+    }
+  });
   click = $("#selectedInstances").attr("data-clicked");
   if (click === "1") {
     $(".all-employee").prop("checked", true);
@@ -248,6 +254,14 @@ function unselectAllInstances() {
         $("#" + empId).prop("checked", false);
         $("#tick").prop("checked", false);
       }
+      var ids = JSON.parse($("#selectedInstances").attr("data-ids") || "[]");
+      var uniqueIds = makeListUnique(ids);
+      $.each(uniqueIds, function (indexInArray, id) { 
+         $(`#${id}`).closest(".oh-sticky-table__tr").removeClass("highlight-selected")
+         if ($(`#${id}`).is(":checked")) {
+          $(`#${id}`).closest(".oh-sticky-table__tr").addClass("highlight-selected")
+        }
+      });
       $("#selectedInstances").attr("data-ids", JSON.stringify([]));
 
       count = [];
