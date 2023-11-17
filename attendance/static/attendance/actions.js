@@ -101,15 +101,26 @@ $(".all-hour-account").change(function (e) {
     .closest(".oh-sticky-table__thead")
     .siblings(".oh-sticky-table__tbody");
   if (is_checked) {
-    $(closest).children().find(".all-hour-account-row").prop("checked", true);
+    $(closest)
+      .children()
+      .find(".all-hour-account-row")
+      .prop("checked", true)
+      .closest(".oh-sticky-table__tr")
+      .addClass("highlight-selected");
   } else {
-    $(closest).children().find(".all-hour-account-row").prop("checked", false);
+    $(closest)
+      .children()
+      .find(".all-hour-account-row")
+      .prop("checked", false)
+      .closest(".oh-sticky-table__tr")
+      .removeClass("highlight-selected");
   }
 });
 
 function tickCheckboxes() {
   var ids = JSON.parse($("#selectedInstances").attr("data-ids") || "[]");
   uniqueIds = makeListUnique(ids);
+  toggleHighlight(uniqueIds);
   click = $("#selectedInstances").attr("data-clicked");
   if (click === "1") {
     $(".all-hour-account").prop("checked", true);
@@ -136,6 +147,7 @@ function tickCheckboxes() {
 function tickactivityCheckboxes() {
   var ids = JSON.parse($("#selectedActivity").attr("data-ids") || "[]");
   uniqueIds = makeactivityListUnique(ids);
+  toggleHighlight(uniqueIds);
   click = $("#selectedActivity").attr("data-clicked");
   if (click === "1") {
     $(".all-attendance-activity").prop("checked", true);
@@ -162,6 +174,7 @@ function tickactivityCheckboxes() {
 function ticklatecomeCheckboxes() {
   var ids = JSON.parse($("#selectedLatecome").attr("data-ids") || "[]");
   uniqueIds = makelatecomeListUnique(ids);
+  toggleHighlight(uniqueIds);
   click = $("#selectedLatecome").attr("data-clicked");
   if (click === "1") {
     $(".all-latecome").prop("checked", true);
@@ -322,6 +335,10 @@ function unselectAllHourAcconts() {
         $("#" + empId).prop("checked", false);
         $("#allHourAccount").prop("checked", false);
       }
+      var ids = JSON.parse($("#selectedInstances").attr("data-ids") || "[]");
+      var uniqueIds = makeListUnique(ids);
+      toggleHighlight(uniqueIds);
+
       $("#selectedInstances").attr("data-ids", JSON.stringify([]));
 
       count = [];
@@ -535,6 +552,9 @@ function unselectAllActivity() {
         $("#" + empId).prop("checked", false);
         $(".all-attendance-activity").prop("checked", false);
       }
+      var ids = JSON.parse($("#selectedActivity").attr("data-ids") || "[]");
+      var uniqueIds = makeListUnique(ids);
+      toggleHighlight(uniqueIds);
       $("#selectedActivity").attr("data-ids", JSON.stringify([]));
 
       count = [];
@@ -696,6 +716,9 @@ $("#unselectAllLatecome").click(function () {
         $("#" + empId).prop("checked", false);
         $(".all-latecome").prop("checked", false);
       }
+      var ids = JSON.parse($("#selectedLatecome").attr("data-ids") || "[]");
+      var uniqueIds = makeListUnique(ids);
+      toggleHighlight(uniqueIds);
       $("#selectedLatecome").attr("data-ids", JSON.stringify([]));
 
       count = [];
@@ -713,25 +736,27 @@ $("#select-all-fields").change(function () {
 });
 
 $(".all-latecome").change(function () {
-  const isLateChecked = $(this).prop("checked");
-  var closest = $(this)
-    .closest(".oh-sticky-table__thead")
-    .siblings(".oh-sticky-table__tbody");
-  $(closest)
-    .children()
-    .find(".all-latecome-row")
-    .prop("checked", isLateChecked);
+  $(".all-latecome-row")
+    .prop("checked", false)
+    .closest(".oh-sticky-table__tr")
+    .removeClass("highlight-selected");
+  if ($(this).is(":checked")) {
+    $(".all-latecome-row")
+      .prop("checked", true)
+      .closest(".oh-sticky-table__tr")
+      .addClass("highlight-selected");
+  }
 });
 
 $(".all-attendance-activity").change(function () {
-  const isLateChecked = $(this).prop("checked");
-  var closest = $(this)
-    .closest(".oh-sticky-table__thead")
-    .siblings(".oh-sticky-table__tbody");
-  $(closest)
-    .children()
-    .find(".all-attendance-activity-row")
-    .prop("checked", isLateChecked);
+  $(".all-attendance-activity-row").prop("checked",false)
+    .closest(".oh-sticky-table__tr")
+    .removeClass("highlight-selected");
+  if ($(this).is(":checked")) {
+    $(".all-attendance-activity-row").prop("checked",true)
+    .closest(".oh-sticky-table__tr")
+    .addClass("highlight-selected");
+  }
 });
 
 $("#attendanceImportForm").submit(function (e) {
