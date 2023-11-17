@@ -196,4 +196,14 @@ urlpatterns = [
         views.feedback_bulk_delete,
         name="feedback-bulk-delete",
     ),
+    path(
+        "objective-select",
+        views.objective_select,
+        name="objective-select",
+    ),
+    path(
+        "objective-select-filter",
+        views.objective_select_filter,
+        name="objective-select-filter",
+    ),
 ]

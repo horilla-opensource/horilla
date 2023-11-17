@@ -2057,3 +2057,54 @@ def feedback_bulk_delete(request):
         except Feedback.DoesNotExist:
             messages.error(request, _("Feedback not found."))
     return JsonResponse({"message": "Success"})
+
+
+@login_required
+def objective_select(request):
+    """
+    This method is used to return all the id of the employees to select the employee row
+    """
+    page_number = request.GET.get("page")
+    table = request.GET.get("tableName")
+    user = request.user.employee_get
+    employees = EmployeeObjective.objects.all()
+    if page_number == "all":
+        if table == 'all':
+            employees = EmployeeObjective.objects.filter(archive=False)
+        else:
+            employees = EmployeeObjective.objects.filter(employee_id=user, archive=False)
+
+    employee_ids = [str(emp.id) for emp in employees]
+    total_count = employees.count()
+
+    context = {"employee_ids": employee_ids, "total_count": total_count}
+
+    return JsonResponse(context, safe=False)
+
+
+@login_required
+def objective_select_filter(request):
+    """
+    This method is used to return all the ids of the filtered employees
+    """
+    page_number = request.GET.get("page")
+    filtered = request.GET.get("filter")
+    filters = json.loads(filtered) if filtered else {}
+    table = request.GET.get("tableName")
+    user = request.user.employee_get
+
+    employee_filter = ObjectiveFilter(filters, queryset=EmployeeObjective.objects.all())
+    if page_number == "all":
+        if table == 'all':
+            employee_filter = ObjectiveFilter(filters, queryset=EmployeeObjective.objects.all())
+        else:
+            employee_filter = ObjectiveFilter(filters, queryset=EmployeeObjective.objects.filter(employee_id=user))
+        # Get the filtered queryset
+        filtered_employees = employee_filter.qs
+
+        employee_ids = [str(emp.id) for emp in filtered_employees]
+        total_count = filtered_employees.count()
+
+        context = {"employee_ids": employee_ids, "total_count": total_count}
+
+        return JsonResponse(context)
