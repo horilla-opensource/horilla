@@ -278,7 +278,7 @@
                   >
                     <div class="oh-sticky-table__sd">
                       <div class="centered-div">
-                        <input type="checkbox" id="65" class="oh-input candidate-checkbox oh-input__checkbox stage-candidate-row">
+                        <input type="checkbox" id="65" class="oh-input candidate-checkbox oh-input__checkbox stage-candidate-row" onchange="highlightRow($(this))">
                       </div>
                     </div>
                     <a
@@ -399,14 +399,13 @@
   $(document).ready(function () {
     $(".stage-candidates").change(function (e) { 
       var stageId = $(this).attr("data-stage-id");
-      $(`[data-container='candidate'][data-stage-id=${stageId}] [type=checkbox].stage-candidate-row`).prop("checked",false);
+      $(`[data-container='candidate'][data-stage-id=${stageId}] [type=checkbox].stage-candidate-row`).prop("checked",false).closest(".oh-sticky-table__tr")
+      .removeClass("highlight-selected");;
       $(`[data-container='candidate'][data-stage-id=${stageId}] [type=checkbox].stage-candidate-row`).change()
       if ($(this).is(":checked")) {
-        setTimeout(() => {
-          $(`[data-container='candidate'][data-stage-id=${stageId}] [type=checkbox].stage-candidate-row`).prop("checked",true)
-          $(`[data-container='candidate'][data-stage-id=${stageId}] [type=checkbox].stage-candidate-row`).change()
-
-        }, 100);
+        $(`[data-container='candidate'][data-stage-id=${stageId}] [type=checkbox].stage-candidate-row`).prop("checked",true).closest(".oh-sticky-table__tr")
+        .addClass("highlight-selected");
+        $(`[data-container='candidate'][data-stage-id=${stageId}] [type=checkbox].stage-candidate-row`).change()
       }else{
         
       }    
