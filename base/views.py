@@ -2937,9 +2937,10 @@ def validation_condition_update(request, obj_id):
         if form.is_valid():
             form.save()
             messages.success(request, _("Attendance Break-point settings updated."))
+            return HttpResponse("<script>window.location.reload</script>")
     return render(
         request,
-        "attendance/break_point/condition.html",
+        "attendance/break_point/condition_form.html",
         {"form": form, "condition": condition},
     )
 
