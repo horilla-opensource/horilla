@@ -61,6 +61,7 @@
                 <input
                   type="checkbox"
                   id="{{rshift.id}}"
+                  onchange="highlightRow($(this))"
                   class="oh-input rshift-checkbox oh-input__checkbox all-rshift-row"
                 />
               </div>
@@ -335,6 +336,9 @@
             $('#' + empId).prop('checked', false);
             $(".all-rshift").prop('checked', false);
 					}
+          var ids = JSON.parse($("#selectedRShifts").attr("data-ids") || "[]");
+          var uniqueIds = makeListUnique(ids);
+          toggleHighlight(uniqueIds);
 					$("#selectedRShifts").attr("data-ids", JSON.stringify([]));
 
 					count = [];

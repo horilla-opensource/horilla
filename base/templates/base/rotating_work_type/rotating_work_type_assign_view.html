@@ -59,6 +59,7 @@ style="cursor: pointer; display: none"
             <input
                 type="checkbox"
                 id="{{rwork_type.id}}"
+                onchange="highlightRow($(this))"
                 class="oh-input rwork-type-checkbox oh-input__checkbox all-rwork-type-row"
               />
           </div>
@@ -335,6 +336,9 @@ style="cursor: pointer; display: none"
             $('#' + empId).prop('checked', false);
             $(".all-rwork-type").prop('checked', false);
 					}
+          var ids = JSON.parse($("#selectedRWorktypes").attr("data-ids") || "[]");
+          var uniqueIds = makeListUnique(ids);
+          toggleHighlight(uniqueIds);
 					$("#selectedRWorktypes").attr("data-ids", JSON.stringify([]));
 
 					count = [];

@@ -68,6 +68,7 @@ style="cursor: pointer; display: none"
               <input
                 type="checkbox"
                 id="{{work_type_request.id}}"
+                onchange="highlightRow($(this))"
                 class="oh-input employee-checkbox oh-input__checkbox all-work-type-requests-row"
               />
             </div>
@@ -290,6 +291,9 @@ style="cursor: pointer; display: none"
             $("#" + empId).prop("checked", false);
             $(".all-work-type-requests").prop("checked", false);
           }
+          var ids = JSON.parse($("#selectedWorktypes").attr("data-ids") || "[]");
+          var uniqueIds = makeListUnique(ids);
+          toggleHighlight(uniqueIds);
           $("#selectedWorktypes").attr("data-ids", JSON.stringify([]));
 
           count = [];

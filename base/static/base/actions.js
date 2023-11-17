@@ -116,15 +116,16 @@ function getCurrentLanguageCode(callback) {
 $(".all-rshift").change(function (e) {
   var is_checked = $(this).is(":checked");
   if (is_checked) {
-    $(".all-rshift-row").prop("checked", true);
+    $(".all-rshift-row").prop("checked", true).closest(".oh-sticky-table__tr").addClass("highlight-selected");
   } else {
-    $(".all-rshift-row").prop("checked", false);
+    $(".all-rshift-row").prop("checked", false).closest(".oh-sticky-table__tr").removeClass("highlight-selected");
   }
 });
 
 function tickRShiftCheckboxes() {
   var ids = JSON.parse($("#selectedRShifts").attr("data-ids") || "[]");
   uniqueIds = makeRShiftListUnique(ids);
+  toggleHighlight(uniqueIds);
   click = $("#selectedRShifts").attr("data-clicked");
   if (click === "1") {
     $(".all-rshift").prop("checked", true);
@@ -303,15 +304,16 @@ $("#deleteRotatingShiftAssign").click(function (e) {
 $(".all-rwork-type").change(function (e) {
   var is_checked = $(this).is(":checked");
   if (is_checked) {
-    $(".all-rwork-type-row").prop("checked", true);
+    $(".all-rwork-type-row").prop("checked", true).closest(".oh-sticky-table__tr").addClass("highlight-selected");
   } else {
-    $(".all-rwork-type-row").prop("checked", false);
+    $(".all-rwork-type-row").prop("checked", false).closest(".oh-sticky-table__tr").removeClass("highlight-selected");
   }
 });
 
 function tickRWorktypeCheckboxes() {
   var ids = JSON.parse($("#selectedRWorktypes").attr("data-ids") || "[]");
   uniqueIds = makeWorktypeListUnique(ids);
+  toggleHighlight(uniqueIds);
   click = $("#selectedRWorktypes").attr("data-clicked");
   if (click === "1") {
     $(".all-rwork-type").prop("checked", true);
@@ -488,15 +490,16 @@ $("#deleteRotatingWorkTypeAssign").click(function (e) {
 $(".all-shift-requests").change(function (e) {
   var is_checked = $(this).is(":checked");
   if (is_checked) {
-    $(".all-shift-requests-row").prop("checked", true);
+    $(".all-shift-requests-row").prop("checked", true).closest(".oh-sticky-table__tr").addClass("highlight-selected");
   } else {
-    $(".all-shift-requests-row").prop("checked", false);
+    $(".all-shift-requests-row").prop("checked", false).closest(".oh-sticky-table__tr").removeClass("highlight-selected");
   }
 });
 
 function tickShiftCheckboxes() {
   var ids = JSON.parse($("#selectedShifts").attr("data-ids") || "[]");
   uniqueIds = makeShiftListUnique(ids);
+  toggleHighlight(uniqueIds);
   click = $("#selectedShifts").attr("data-clicked");
   if (click === "1") {
     $(".all-shift-requests").prop("checked", true);
@@ -722,15 +725,16 @@ $("#deleteShiftRequest").click(function (e) {
 $(".all-work-type-requests").change(function (e) {
   var is_checked = $(this).is(":checked");
   if (is_checked) {
-    $(".all-work-type-requests-row").prop("checked", true);
+    $(".all-work-type-requests-row").prop("checked", true).closest(".oh-sticky-table__tr").addClass("highlight-selected");
   } else {
-    $(".all-work-type-requests-row").prop("checked", false);
+    $(".all-work-type-requests-row").prop("checked", false).closest(".oh-sticky-table__tr").removeClass("highlight-selected");
   }
 });
 
 function tickWorktypeCheckboxes() {
   var ids = JSON.parse($("#selectedWorktypes").attr("data-ids") || "[]");
   uniqueIds = makeWorktypeListUnique(ids);
+  toggleHighlight(uniqueIds);
   click = $("#selectedWorktypes").attr("data-clicked");
   if (click === "1") {
     $(".all-work-type-requests").prop("checked", true);
