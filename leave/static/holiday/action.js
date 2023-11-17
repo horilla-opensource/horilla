@@ -48,6 +48,7 @@ function getCurrentLanguageCode(callback) {
 function tickHolidayCheckboxes() {
   var ids = JSON.parse($("#selectedHolidays").attr("data-ids") || "[]");
   uniqueIds = makeHolidayListUnique(ids);
+  toggleHighlight(uniqueIds);
   click = $("#selectedHolidays").attr("data-clicked");
   if (click === "1") {
     $(".all-holidays").prop("checked", true);
@@ -86,6 +87,7 @@ function addingHolidayIds() {
   });
 
   ids = makeHolidayListUnique(ids);
+  toggleHighlight(ids)
   selectedCount = ids.length;
 
   getCurrentLanguageCode(function (code) {
@@ -193,6 +195,9 @@ function unselectAllHolidays() {
         $("#" + empId).prop("checked", false);
         $(".all-holidays").prop("checked", false);
       }
+      var ids = JSON.parse($("#selectedHolidays").attr("data-ids") || "[]");
+      var uniqueIds = makeListUnique(ids);
+      toggleHighlight(uniqueIds)
       $("#selectedHolidays").attr("data-ids", JSON.stringify([]));
 
       count = [];

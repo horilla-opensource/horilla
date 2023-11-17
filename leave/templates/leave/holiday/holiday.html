@@ -52,6 +52,7 @@
                             <input
                             type="checkbox"
                             id="{{holiday.id}}"
+                            onchange="highlightRow($(this))"
                             class="oh-input holiday-checkbox oh-input__checkbox all-holidays-row"
                             />
                         </div>
@@ -183,9 +184,11 @@
   $(".all-holidays").change(function (e) {
     var is_checked = $(this).is(":checked");
     if (is_checked) {
-      $(".all-holidays-row").prop("checked", true);
+      $(".all-holidays-row").prop("checked", true).closest(".oh-sticky-table__tr")
+      .addClass("highlight-selected");;
     } else {
-      $(".all-holidays-row").prop("checked", false);
+      $(".all-holidays-row").prop("checked", false).closest(".oh-sticky-table__tr")
+      .removeClass("highlight-selected");;
     }
   });
 
