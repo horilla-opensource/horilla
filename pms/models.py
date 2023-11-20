@@ -1,6 +1,7 @@
 from django.db import models
 from django.forms import ValidationError
 from django.utils.translation import gettext_lazy as _
+from base.models import Company
 
 # importing simple history
 from simple_history.models import HistoricalRecords
@@ -16,6 +17,7 @@ class Period(models.Model):
     period_name = models.CharField(max_length=150, unique=True)
     start_date = models.DateField()
     end_date = models.DateField()
+    company_id = models.ForeignKey(Company,null=True, editable=False, on_delete=models.PROTECT)
     objects = models.Manager()
 
     def __str__(self):
@@ -84,7 +86,7 @@ class Comment(models.Model):
     objects = models.Manager()
 
     def __str__(self):
-        return f"{self.employee_id.employee_first_name}  -{self.comment} "
+        return f"{self.employee_id.employee_first_name} - {self.comment} "
 
 
 class EmployeeKeyResult(models.Model):
@@ -153,6 +155,7 @@ class QuestionTemplate(models.Model):
     question_template = models.CharField(
         max_length=100, null=False, blank=False, unique=True
     )
+    company_id = models.ForeignKey(Company,null=True, editable=False, on_delete=models.PROTECT)
     objects = models.Manager()
 
     def __str__(self):
@@ -255,7 +258,7 @@ class Feedback(models.Model):
     objects = models.Manager()
 
     def __str__(self):
-        return f"{self.employee_id.employee_first_name}    - {self.review_cycle}"
+        return f"{self.employee_id.employee_first_name} - {self.review_cycle}"
 
 
 class Answer(models.Model):
@@ -282,7 +285,7 @@ class Answer(models.Model):
     objects = models.Manager()
 
     def __str__(self):
-        return f"{self.employee_id.employee_first_name}  -{self.answer}"
+        return f"{self.employee_id.employee_first_name} - {self.answer}"
 
 
 class KeyResultFeedback(models.Model):
