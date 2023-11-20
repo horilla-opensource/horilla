@@ -14,7 +14,7 @@ urlpatterns = [
     path(
         "asset-information/<int:asset_id>/", views.asset_information, name="asset-information"
     ),
-    path("asset-category-view", views.asset_category_view, name="asset-category-view"),
+    path("asset-category-view/", views.asset_category_view, name="asset-category-view"),
     path(
         "asset-category-view-search-filter",
         views.asset_category_view_search_filter,
