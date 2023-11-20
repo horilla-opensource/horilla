@@ -489,10 +489,17 @@ $("#deleteRotatingWorkTypeAssign").click(function (e) {
 
 $(".all-shift-requests").change(function (e) {
   var is_checked = $(this).is(":checked");
+  var closest = $(this)
+    .closest(".oh-sticky-table__thead")
+    .siblings(".oh-sticky-table__tbody");
   if (is_checked) {
-    $(".all-shift-requests-row").prop("checked", true).closest(".oh-sticky-table__tr").addClass("highlight-selected");
+    $(closest).children().find(".all-shift-requests-row").prop("checked", true)
+    .closest(".oh-sticky-table__tr")
+    .addClass("highlight-selected");
   } else {
-    $(".all-shift-requests-row").prop("checked", false).closest(".oh-sticky-table__tr").removeClass("highlight-selected");
+    $(closest).children().find(".all-shift-requests-row").prop("checked", false)
+    .closest(".oh-sticky-table__tr")
+    .removeClass("highlight-selected");;
   }
 });
 
