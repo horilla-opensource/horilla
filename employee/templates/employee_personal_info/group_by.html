@@ -1,5 +1,27 @@
 {% load attendancefilters %} {% load basefilters %} {% load static %}
-{% load i18n %} {% include 'filter_tags.html' %} 
+{% load i18n %} {% include 'filter_tags.html' %}
+<div
+  class="oh-checkpoint-badge text-success mb-2"
+  id="selectAllInstances"
+  style="cursor: pointer"
+>
+  {% trans "Select All Employees" %}
+</div>
+<div
+  class="oh-checkpoint-badge text-secondary mb-2"
+  id="unselectAllInstances"
+  style="cursor: pointer"
+>
+  {% trans "Unselect All Employees" %}
+</div>
+<div
+  class="oh-checkpoint-badge text-info mb-2"
+  id="exportInstances"
+  style="cursor: pointer"
+>
+  {% trans "Export Employees" %}
+</div>
+<div class="oh-checkpoint-badge text-danger mb-2" id="selectedShow"></div>
 <div class="oh-card">
     {% dynamic_regroup data by field as employee_grouper %}
     {% for employee_list in employee_grouper %}
@@ -58,6 +80,7 @@
                           <input
                             type="checkbox"
                             id="{{emp.id}}"
+                            onchange="highlightRow($(this))"
                             class="oh-input employee-checkbox oh-input__checkbox mt-2 mr-2 all-employee-row"
                           />
                         </div>
@@ -281,3 +304,16 @@
         </nav>
       </div>
   </div>
+  <script src="{% static 'employee/actions.js' %}"></script>
+  <script>
+    $(document).ready(function () {
+      tickCheckboxes();
+      $("#selectAllInstances").click(function () {
+        selectAllInstances();
+      });
+  
+      $("#unselectAllInstances").click(function () {
+        unselectAllInstances();
+      });
+    });
+  </script>

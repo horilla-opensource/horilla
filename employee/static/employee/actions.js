@@ -80,16 +80,17 @@ function getCurrentLanguageCode(callback) {
 
 $(".all-employee").change(function (e) {
   var is_checked = $(this).is(":checked");
+  var closest = $(this)
+    .closest(".oh-sticky-table__thead")
+    .siblings(".oh-sticky-table__tbody");
   if (is_checked) {
-    $(".all-employee-row")
-      .prop("checked", true)
-      .closest(".oh-sticky-table__tr")
-      .addClass("highlight-selected");
+    $(closest).children().find(".all-employee-row").prop("checked", true)
+    .closest(".oh-sticky-table__tr")
+    .addClass("highlight-selected");
   } else {
-    $(".all-employee-row")
-      .prop("checked", false)
-      .closest(".oh-sticky-table__tr")
-      .removeClass("highlight-selected");
+    $(closest).children().find(".all-employee-row").prop("checked", false)
+    .closest(".oh-sticky-table__tr")
+    .removeClass("highlight-selected");;
   }
   addingIds();
 });
