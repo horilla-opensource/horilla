@@ -89,7 +89,7 @@ class Recruitment(models.Model):
         blank=True,
         db_constraint=False,
         related_name="recruitment",
-        verbose_name="Job Position",
+        verbose_name=_("Job Position"),
     )
     vacancy = models.IntegerField(blank=True, null=True)
     recruitment_managers = models.ManyToManyField(Employee)
@@ -98,7 +98,7 @@ class Recruitment(models.Model):
         on_delete=models.PROTECT,
         null=True,
         blank=True,
-        verbose_name="Company",
+        verbose_name=_("Company"),
     )
     start_date = models.DateField(default=django.utils.timezone.now)
     end_date = models.DateField(blank=True, null=True)
@@ -164,7 +164,7 @@ class Stage(models.Model):
         Recruitment,
         on_delete=models.CASCADE,
         related_name="stage_set",
-        verbose_name="Recruitment",
+        verbose_name=_("Recruitment"),
     )
     stage_managers = models.ManyToManyField(Employee)
     stage = models.CharField(max_length=50)
@@ -212,7 +212,7 @@ class Candidate(models.Model):
         on_delete=models.PROTECT,
         null=True,
         related_name="candidate",
-        verbose_name="Recruitment",
+        verbose_name=_("Recruitment"),
     )
     job_position_id = models.ForeignKey(
         JobPosition,
@@ -222,7 +222,10 @@ class Candidate(models.Model):
         verbose_name=_("Job Position"),
     )
     stage_id = models.ForeignKey(
-        Stage, on_delete=models.PROTECT, null=True, verbose_name="Stage"
+        Stage,
+        on_delete=models.PROTECT,
+        null=True,
+        verbose_name=_("Stage"),
     )
     schedule_date = models.DateTimeField(
         blank=True, null=True, verbose_name=_("Schedule date")
@@ -377,8 +380,14 @@ class RecruitmentSurvey(models.Model):
         ("rating", _("Rating")),
     ]
     question = models.TextField(null=False)
-    recruitment_ids = models.ManyToManyField(Recruitment, verbose_name="Recruitment")
-    job_position_ids = models.ManyToManyField(JobPosition, verbose_name="Job Positions")
+    recruitment_ids = models.ManyToManyField(
+        Recruitment,
+        verbose_name=_("Recruitment"),
+    )
+    job_position_ids = models.ManyToManyField(
+        JobPosition,
+        verbose_name=_("Job Positions"),
+    )
     sequence = models.IntegerField(null=True, default=0)
     type = models.CharField(
         max_length=15,
@@ -407,10 +416,16 @@ class RecruitmentSurveyAnswer(models.Model):
 
     candidate_id = models.ForeignKey(Candidate, on_delete=models.CASCADE)
     recruitment_id = models.ForeignKey(
-        Recruitment, on_delete=models.PROTECT, verbose_name="Recruitment", null=True
+        Recruitment,
+        on_delete=models.PROTECT,
+        verbose_name=_("Recruitment"),
+        null=True,
     )
     job_position_id = models.ForeignKey(
-        JobPosition, on_delete=models.PROTECT, verbose_name="Job position", null=True
+        JobPosition,
+        on_delete=models.PROTECT,
+        verbose_name=_("Job Position"),
+        null=True,
     )
     answer_json = models.JSONField()
     attachment = models.FileField(
