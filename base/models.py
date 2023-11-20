@@ -56,6 +56,7 @@ class Company(models.Model):
         verbose_name = _("Company")
         verbose_name_plural = _("Companies")
         unique_together = ["company", "address"]
+        app_label = "base"
 
     def __str__(self) -> str:
         return str(self.company)
@@ -67,6 +68,7 @@ class Department(models.Model):
     """
 
     department = models.CharField(max_length=50, blank=False, unique=True)
+    company_id = models.ForeignKey(Company,null=True,editable=False,on_delete=models.PROTECT)
     objects = models.Manager()
 
     class Meta:
@@ -90,6 +92,7 @@ class JobPosition(models.Model):
         related_name="job_position",
         verbose_name=_("Department"),
     )
+    company_id = models.ForeignKey(Company,null=True,editable=False,on_delete=models.PROTECT)
     objects = models.Manager()
 
     class Meta:
@@ -111,6 +114,7 @@ class JobRole(models.Model):
         JobPosition, on_delete=models.PROTECT, verbose_name=_("Job Position")
     )
     job_role = models.CharField(max_length=50, blank=False, null=True)
+    company_id = models.ForeignKey(Company,null=True,editable=False,on_delete=models.PROTECT)
     objects = models.Manager()
 
     class Meta:
@@ -132,6 +136,7 @@ class WorkType(models.Model):
     """
 
     work_type = models.CharField(max_length=50)
+    company_id = models.ForeignKey(Company,null=True,editable=False,on_delete=models.PROTECT)
     objects = models.Manager()
 
     class Meta:
@@ -270,6 +275,7 @@ class EmployeeType(models.Model):
     """
 
     employee_type = models.CharField(max_length=50)
+    company_id = models.ForeignKey(Company,null=True,editable=False,on_delete=models.PROTECT)
     objects = models.Manager()
 
     class Meta:
@@ -290,6 +296,7 @@ class EmployeeShiftDay(models.Model):
     """
 
     day = models.CharField(max_length=20, choices=DAY)
+    company_id = models.ForeignKey(Company,null=True,editable=False,on_delete=models.PROTECT)
     objects = models.Manager()
 
     class Meta:
@@ -325,6 +332,7 @@ class EmployeeShift(models.Model):
     full_time = models.CharField(
         max_length=6, default="200:00", validators=[validate_time_format]
     )
+    company_id = models.ForeignKey(Company,null=True,editable=False,on_delete=models.PROTECT)
     objects = models.Manager()
 
     class Meta:
@@ -356,6 +364,7 @@ class EmployeeShiftSchedule(models.Model):
     start_time = models.TimeField(null=True)
     end_time = models.TimeField(null=True)
     is_night_shift = models.BooleanField(default=False)
+    company_id = models.ForeignKey(Company,null=True,editable=False,on_delete=models.PROTECT)
     objects = models.Manager()
 
     class Meta:
