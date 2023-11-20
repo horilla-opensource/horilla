@@ -345,7 +345,7 @@
     function select_all(element) {
         let isChecked = $(element).prop("checked");
         let stage = $(element).data("stage");
-        $(stage).find('.checkbox-row').prop("checked", isChecked);
+        $(stage).find('.checkbox-row').prop("checked", isChecked).change();
     }
     
 

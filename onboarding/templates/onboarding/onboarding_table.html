@@ -178,6 +178,7 @@
                                                   value="{{candidate.candidate_id.id}}"
                                                   class="oh-input payslip-checkbox oh-input__checkbox mt-2 mr-2 checkbox-row"
                                                   onclick="event.stopPropagation()"
+                                                  onchange="$(this).closest('.oh-sticky-table__tr').toggleClass('highlight-selected', $(this).is(':checked'))"
                                                 />
                                               </div>
                                             <div class="oh-profile__avatar mr-1">
