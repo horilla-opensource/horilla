@@ -431,6 +431,7 @@
       select.val(nextStageId)
       select.change()
       $(this).val("");
+      $(this).closest(".oh-table-config__tr").find(".stage-candidates").prop("checked",false).change()
     });
   });
 </script>
