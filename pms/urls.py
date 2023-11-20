@@ -10,7 +10,7 @@ urlpatterns = [
         views.objective_list_search,
         name="objective-list-search",
     ),
-    path("objective-list-view", views.objective_list_view, name="objective-list-view"),
+    path("objective-list-view/", views.objective_list_view, name="objective-list-view"),
     path(
         "objective-update/<int:obj_id>", views.objective_update, name="objective-update"
     ),
@@ -69,7 +69,7 @@ urlpatterns = [
     path(
         "key-result-update/<int:id>", views.key_result_update, name="key-result-update"
     ),
-    path("feedback-view", views.feedback_list_view, name="feedback-view"),
+    path("feedback-view/", views.feedback_list_view, name="feedback-view"),
     path(
         "feedback-list-search", views.feedback_list_search, name="feedback-list-search"
     ),
@@ -130,7 +130,7 @@ urlpatterns = [
         name="question-template-creation",
     ),
     path(
-        "question-template-view",
+        "question-template-view/",
         views.question_template_view,
         name="question-template-view",
     ),
