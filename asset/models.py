@@ -7,6 +7,7 @@ within an Asset Management System.
 from django.db import models
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
+from base.models import Company
 from employee.models import Employee
 
 
@@ -18,6 +19,7 @@ class AssetCategory(models.Model):
     asset_category_name = models.CharField(max_length=255, unique=True)
     asset_category_description = models.TextField()
     objects = models.Manager()
+    company_id = models.ForeignKey(Company,null=True, editable=False, on_delete=models.PROTECT)
 
     def __str__(self):
         return f"{self.asset_category_name}"
@@ -30,6 +32,7 @@ class AssetLot(models.Model):
 
     lot_number = models.CharField(max_length=30, null=False, blank=False, unique=True)
     lot_description = models.TextField(null=True, blank=True)
+    company_id = models.ForeignKey(Company,null=True, editable=False, on_delete=models.PROTECT)
     objects = models.Manager()
 
     def __str__(self):
