@@ -12,7 +12,7 @@ from django.db.models.signals import pre_save, pre_delete
 from django.http import QueryDict
 from employee.models import EmployeeWorkInformation
 from employee.models import Employee, Department, JobPosition
-from base.models import EmployeeShift, WorkType, JobRole
+from base.models import Company, EmployeeShift, WorkType, JobRole
 from attendance.models import (
     validate_time_format,
 )
@@ -82,7 +82,7 @@ class FilingStatus(models.Model):
         blank=True,
         verbose_name=_("Description"),
     )
-
+    company_id = models.ForeignKey(Company,null=True, editable=False, on_delete=models.PROTECT)
     objects = models.Manager()
 
     def __str__(self) -> str:
@@ -804,6 +804,7 @@ class Allowance(models.Model):
     if_amount = models.FloatField(
         default=0.00, help_text=_("The amount of the pay-head")
     )
+    company_id = models.ForeignKey(Company,null=True, editable=False, on_delete=models.PROTECT)
     objects = models.Manager()
 
     class Meta:
@@ -1092,7 +1093,7 @@ class Deduction(models.Model):
     if_amount = models.FloatField(
         default=0.00, help_text=_("The amount of the pay-head")
     )
-
+    company_id = models.ForeignKey(Company,null=True, editable=False, on_delete=models.PROTECT)
     objects = models.Manager()
 
     def clean(self):
