@@ -182,6 +182,35 @@ class UpdateLeaveTypeForm(ConditionForm):
             del self.errors["exceed_days"]
         return cleaned_data
 
+def cal_effective_requested_days(start_date,end_date,leave_type_id,requested_days):
+    requested_dates = leave_requested_dates(start_date, end_date)
+    holidays = Holiday.objects.all()
+    holiday_dates = holiday_dates_list(holidays)
+    company_leaves = CompanyLeave.objects.all()
+    company_leave_dates = company_leave_dates_list(company_leaves, start_date)
+    if (
+        leave_type_id.exclude_company_leave == "yes"
+        and leave_type_id.exclude_holiday == "yes"
+    ):
+        total_leaves = list(set(holiday_dates + company_leave_dates))
+        total_leave_count = sum(
+            requested_date in total_leaves for requested_date in requested_dates
+        )
+        requested_days = requested_days - total_leave_count
+    else:
+        holiday_count = 0
+        if leave_type_id.exclude_holiday == "yes":
+            for requested_date in requested_dates:
+                if requested_date in holiday_dates:
+                    holiday_count += 1
+            requested_days = requested_days - holiday_count
+        if leave_type_id.exclude_company_leave == "yes":
+            company_leave_count = sum(
+                requested_date in company_leave_dates
+                for requested_date in requested_dates
+            )
+            requested_days = requested_days - company_leave_count
+    return requested_days
 
 class LeaveRequestCreationForm(ModelForm):
     start_date = forms.DateField(widget=forms.DateInput(attrs={"type": "date"}))
@@ -232,34 +261,35 @@ class LeaveRequestCreationForm(ModelForm):
         requested_days = calculate_requested_days(
             start_date, end_date, start_date_breakdown, end_date_breakdown
         )
-        requested_dates = leave_requested_dates(start_date, end_date)
-        holidays = Holiday.objects.all()
-        holiday_dates = holiday_dates_list(holidays)
-        company_leaves = CompanyLeave.objects.all()
-        company_leave_dates = company_leave_dates_list(company_leaves, start_date)
-        if (
-            leave_type_id.exclude_company_leave == "yes"
-            and leave_type_id.exclude_holiday == "yes"
-        ):
-            total_leaves = list(set(holiday_dates + company_leave_dates))
-            total_leave_count = sum(
-                requested_date in total_leaves for requested_date in requested_dates
-            )
-            requested_days = requested_days - total_leave_count
-        else:
-            holiday_count = 0
-            if leave_type_id.exclude_holiday == "yes":
-                for requested_date in requested_dates:
-                    if requested_date in holiday_dates:
-                        holiday_count += 1
-                requested_days = requested_days - holiday_count
-            if leave_type_id.exclude_company_leave == "yes":
-                company_leave_count = sum(
-                    requested_date in company_leave_dates
-                    for requested_date in requested_dates
-                )
-                requested_days = requested_days - company_leave_count
-        if not requested_days <= total_leave_days:
+        # requested_dates = leave_requested_dates(start_date, end_date)
+        # holidays = Holiday.objects.all()
+        # holiday_dates = holiday_dates_list(holidays)
+        # company_leaves = CompanyLeave.objects.all()
+        # company_leave_dates = company_leave_dates_list(company_leaves, start_date)
+        # if (
+        #     leave_type_id.exclude_company_leave == "yes"
+        #     and leave_type_id.exclude_holiday == "yes"
+        # ):
+        #     total_leaves = list(set(holiday_dates + company_leave_dates))
+        #     total_leave_count = sum(
+        #         requested_date in total_leaves for requested_date in requested_dates
+        #     )
+        #     requested_days = requested_days - total_leave_count
+        # else:
+        #     holiday_count = 0
+        #     if leave_type_id.exclude_holiday == "yes":
+        #         for requested_date in requested_dates:
+        #             if requested_date in holiday_dates:
+        #                 holiday_count += 1
+        #         requested_days = requested_days - holiday_count
+        #     if leave_type_id.exclude_company_leave == "yes":
+        #         company_leave_count = sum(
+        #             requested_date in company_leave_dates
+        #             for requested_date in requested_dates
+        #         )
+        #         requested_days = requested_days - company_leave_count
+        effective_requested_days = cal_effective_requested_days(start_date=start_date,end_date=end_date,leave_type_id=leave_type_id,requested_days=requested_days)
+        if not effective_requested_days <= total_leave_days:
             raise forms.ValidationError(_("Employee doesn't have enough leave days.."))
 
         return cleaned_data

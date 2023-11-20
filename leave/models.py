@@ -6,6 +6,7 @@ from django.utils import timezone
 from django.core.exceptions import ValidationError
 from dateutil.relativedelta import relativedelta
 from django.utils.translation import gettext_lazy as _
+from base.models import Company
 from employee.models import Employee
 from .methods import calculate_requested_days
 from django.core.files.storage import default_storage
@@ -163,7 +164,11 @@ class LeaveType(models.Model):
     )
     exclude_company_leave = models.CharField(max_length=30, choices=CHOICES)
     exclude_holiday = models.CharField(max_length=30, choices=CHOICES)
+    company_id = models.ForeignKey(Company,null=True, editable=False, on_delete=models.PROTECT)
     objects = models.Manager()
+
+    class Meta:
+        ordering = ['-id'] 
 
     def get_avatar(self):
         """
@@ -186,6 +191,7 @@ class Holiday(models.Model):
     start_date = models.DateField(verbose_name=_("Start Date"))
     end_date = models.DateField(null=True, blank=True, verbose_name=_("End Date"))
     recurring = models.BooleanField(default=False, verbose_name=_("Recurring"))
+    company_id = models.ForeignKey(Company,null=True, editable=False, on_delete=models.PROTECT)
     objects = models.Manager()
 
     def __str__(self):
@@ -197,6 +203,7 @@ class CompanyLeave(models.Model):
         max_length=100, choices=WEEKS, blank=True, null=True
     )
     based_on_week_day = models.CharField(max_length=100, choices=WEEK_DAYS)
+    company_id = models.ForeignKey(Company,null=True, editable=False, on_delete=models.PROTECT)
     objects = models.Manager()
 
     class Meta:
