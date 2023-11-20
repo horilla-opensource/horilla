@@ -210,7 +210,7 @@ class Contract(models.Model):
         verbose_name=_("Deduction For One Leave Amount"),
     )
     deduct_leave_from_basic_pay = models.BooleanField(
-        default=True, verbose_name=_("Deduct Leave From Basic Pay")
+        default=True, verbose_name=_("Deduct From Basic Pay")
     )
 
     note = models.TextField(null=True, blank=True)

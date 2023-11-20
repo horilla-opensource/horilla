@@ -404,8 +404,7 @@
 			history.pushState({ path: updatedUrl }, '', updatedUrl);
 		}
       $(document).ready(function () {
-        $("form")
-          .not(".filter-form")
+        $(`[action="/payroll/create-payslip"], [action="/payroll/generate-payslip"]`)
           .submit(function (e) {
             e.preventDefault();
 
