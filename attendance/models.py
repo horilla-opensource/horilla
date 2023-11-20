@@ -11,7 +11,7 @@ from django.db import models
 from django.db.models import Q
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
-from base.models import EmployeeShift, EmployeeShiftDay, WorkType
+from base.models import Company, EmployeeShift, EmployeeShiftDay, WorkType
 from employee.models import Employee
 from leave.models import LeaveRequest
 from attendance.methods.differentiate import get_diff_dict
@@ -586,6 +586,7 @@ class AttendanceValidationCondition(models.Model):
     overtime_cutoff = models.CharField(
         blank=True, null=True, max_length=10, validators=[validate_time_format]
     )
+    company_id = models.ForeignKey(Company,null=True, editable=False, on_delete=models.PROTECT)
     objects = models.Manager()
 
     def clean(self):
