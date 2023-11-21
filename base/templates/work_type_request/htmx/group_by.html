@@ -1,5 +1,28 @@
 {% load attendancefilters %} {% load basefilters %} {% load static %}
-{% load i18n %} {% include 'filter_tags.html' %} 
+{% load i18n %} {% include 'filter_tags.html' %}
+<div
+class="oh-checkpoint-badge text-success mb-2"
+id="selectAllWorktypes"
+style="cursor: pointer"
+>
+  {% trans "Select All Worktypes" %}
+</div>
+<div
+class="oh-checkpoint-badge text-secondary mb-2"
+id="unselectAllWorktypes"
+style="cursor: pointer"
+>
+  {% trans "Unselect All Worktypes" %}
+</div>
+<div
+class="oh-checkpoint-badge text-info mb-2"
+id="exportWorktypes"
+style="cursor: pointer; display: none"
+>
+  {% trans "Export Worktypes" %}
+</div>
+<div class="oh-checkpoint-badge text-danger mb-2" id="selectedShowWorktypes" style="display: none"></div>
+
 <div class="oh-card">
     {% dynamic_regroup data by field as work_type_grouper %}
     {% for work_type_request_list in work_type_grouper %}
@@ -23,19 +46,17 @@
 						<div class="oh-sticky-table__table oh-table--sortable">
 							<div class="oh-sticky-table__thead">
 								<div class="oh-sticky-table__tr">
-									<div class="oh-sticky-table__th" >
-										<div class="d-flex">
-											<div class="">
-												<input
-													type="checkbox"
-													class="oh-input oh-input__checkbox mt-1 mr-2 all-work-type-requests"
-													title='{% trans "Select All" %}'
-												/>
-											</div>
-											<div  hx-get="{% url 'work-type-request-search' %}?{{pd}}&orderby=employee_id__employee_first_name" hx-target="#view-container">
-											{% trans "Employee" %}
-											</div>
+									<div class="oh-sticky-table__th" style="width:10px;">
+										<div class="centered-div">
+											<input
+												type="checkbox"
+												class="oh-input oh-input__checkbox all-work-type-requests"
+												title='{% trans "Select All" %}'
+											/>
 										</div>
+									</div>
+									<div class="oh-sticky-table__th" hx-get="{% url 'work-type-request-search' %}?{{pd}}&orderby=employee_id__employee_first_name" hx-target="#view-container">
+										{% trans "Employee" %}
 									</div>
 									<div class="oh-sticky-table__th">{% trans "Requested Work Type" %}</div>
 									<div class="oh-sticky-table__th">{% trans "Previous/Current Work Type" %}</div>
@@ -58,21 +79,22 @@
 									data-toggle='oh-modal-toggle' 
 									draggable="true"
 								>
-									<div class="oh-sticky-table__sd">
-										<div class="d-flex">
-											<div class="">
-												<input
-													type="checkbox"
-													id="{{work_type_request.id}}"
-													class="oh-input employee-checkbox oh-input__checkbox mt-2 mr-2 all-work-type-requests-row"
-												/>
+									<div class="oh-sticky-table__sd" onclick="event.stopPropagation()">
+										<div class="centered-div">
+											<input
+												type="checkbox"
+												id="{{work_type_request.id}}"
+												onchange="highlightRow($(this))"
+												class="oh-input employee-checkbox oh-input__checkbox all-work-type-requests-row"
+											/>
+										</div>
+									</div>
+									<div class="oh-sticky-table__td">
+										<div class="oh-profile oh-profile--md">
+											<div class="oh-profile__avatar mr-1">
+												<img src="{{work_type_request.employee_id.get_avatar}}" class="oh-profile__image" alt="Username">
 											</div>
-											<div class="oh-profile oh-profile--md">
-												<div class="oh-profile__avatar mr-1">
-													<img src="{{work_type_request.employee_id.get_avatar}}" class="oh-profile__image" alt="Username">
-												</div>
-												<span class="oh-profile__name oh-text--dark">{{work_type_request.employee_id}}</span>
-											</div>
+											<span class="oh-profile__name oh-text--dark">{{work_type_request.employee_id}}</span>
 										</div>
 									</div>
 									<div class="oh-sticky-table__td">{{work_type_request.work_type_id}}</div>
@@ -162,3 +184,144 @@
 		</nav>
 	</div>
 </div>
+<script>
+	function addingWorktypeIds() {
+	  var ids = JSON.parse($("#selectedWorktypes").attr("data-ids") || "[]");
+	  var selectedCount = 0;
+  
+	  $(".all-work-type-requests-row").each(function () {
+		if ($(this).is(":checked")) {
+		  ids.push(this.id);
+		} else {
+		  var index = ids.indexOf(this.id);
+		  if (index > -1) {
+			ids.splice(index, 1);
+		  }
+		}
+	  });
+  
+	  ids = makeWorktypeListUnique(ids);
+	  selectedCount = ids.length;
+  
+	  getCurrentLanguageCode(function (code) {
+		languageCode = code;
+		var message = rowMessages[languageCode];
+		$("#selectedWorktypes").attr("data-ids", JSON.stringify(ids));
+		if (selectedCount === 0) {
+		  $("#selectedShowWorktypes").css("display", "none");
+		  $("#exportWorktypes").css("display", "none");
+		} else {
+		  $("#exportWorktypes").css("display", "inline-flex");
+		  $("#selectedShowWorktypes").css("display", "inline-flex");
+		  $("#selectedShowWorktypes").text(selectedCount + " - " + message);
+		}
+	  });
+	}
+  
+	$(document).ready(function () {
+	  $(".all-work-type-requests-row").change(function () {
+		addingWorktypeIds();
+	  });
+  
+	  $(".all-work-type-requests").change(function () {
+		addingWorktypeIds();
+	  });
+  
+	  tickWorktypeCheckboxes();
+  
+	  $("#selectAllWorktypes").click(function () {
+		$("#selectedWorktypes").attr("data-clicked", 1);
+		$("#selectedShowWorktypes").removeAttr("style");
+		var savedFilters = JSON.parse(localStorage.getItem("savedFilters"));
+  
+		if (savedFilters && savedFilters["filterData"] !== null) {
+		  var filter = savedFilters["filterData"];
+		  $.ajax({
+			url: '{% url "work-type-select-filter" %}',
+			data: { page: "all", filter: JSON.stringify(filter) },
+			type: "GET",
+			dataType: "json",
+			success: function (response) {
+			  var employeeIds = response.employee_ids;
+			  var selectedCount = employeeIds.length;
+			  for (var i = 0; i < employeeIds.length; i++) {
+				var empId = employeeIds[i];
+				$("#" + empId).prop("checked", true);
+			  }
+			  $("#selectedWorktypes").attr(
+				"data-ids",
+				JSON.stringify(employeeIds)
+			  );
+  
+			  count = makeWorktypeListUnique(employeeIds);
+			  tickWorktypeCheckboxes(count);
+			},
+			error: function (xhr, status, error) {
+			  console.error("Error:", error);
+			},
+		  });
+		} else {
+		  $.ajax({
+			url: '{% url "work-type-select" %}',
+			data: { page: "all" },
+			type: "GET",
+			dataType: "json",
+			success: function (response) {
+			  var employeeIds = response.employee_ids;
+			  var selectedCount = employeeIds.length;
+			  for (var i = 0; i < employeeIds.length; i++) {
+				var empId = employeeIds[i];
+				$("#" + empId).prop("checked", true);
+			  }
+			  var previousIds = $("#selectedWorktypes").attr("data-ids");
+			  $("#selectedWorktypes").attr(
+				"data-ids",
+				JSON.stringify(
+				  Array.from(
+					new Set([...employeeIds, ...JSON.parse(previousIds)])
+				  )
+				)
+			  );
+			  count = makeWorktypeListUnique(employeeIds);
+			  tickWorktypeCheckboxes(count);
+			},
+			error: function (xhr, status, error) {
+			  console.error("Error:", error);
+			},
+		  });
+		}
+	  });
+  
+	  $("#unselectAllWorktypes").click(function () {
+		$("#selectedWorktypes").attr("data-clicked", 0);
+		$.ajax({
+		  url: '{% url "work-type-select" %}',
+		  data: { page: "all", filter: "{}" },
+		  type: "GET",
+		  dataType: "json",
+		  success: function (response) {
+			var employeeIds = response.employee_ids;
+			for (var i = 0; i < employeeIds.length; i++) {
+			  var empId = employeeIds[i];
+			  $("#" + empId).prop("checked", false);
+			  $(".all-work-type-requests").prop("checked", false);
+			}
+			var ids = JSON.parse($("#selectedWorktypes").attr("data-ids") || "[]");
+			var uniqueIds = makeListUnique(ids);
+			toggleHighlight(uniqueIds);
+			$("#selectedWorktypes").attr("data-ids", JSON.stringify([]));
+  
+			count = [];
+			tickWorktypeCheckboxes(count);
+		  },
+		  error: function (xhr, status, error) {
+			console.error("Error:", error);
+		  },
+		});
+	  });
+	  $("#exportWorktypes").click(function () {
+		exportWorkTypeRequets();
+	  });
+	});
+  </script>
+  

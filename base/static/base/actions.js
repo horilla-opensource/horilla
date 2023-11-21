@@ -115,10 +115,23 @@ function getCurrentLanguageCode(callback) {
 
 $(".all-rshift").change(function (e) {
   var is_checked = $(this).is(":checked");
+  var closest = $(this)
+    .closest(".oh-sticky-table__thead")
+    .siblings(".oh-sticky-table__tbody");
   if (is_checked) {
-    $(".all-rshift-row").prop("checked", true).closest(".oh-sticky-table__tr").addClass("highlight-selected");
+    $(closest)
+      .children()
+      .find(".all-rshift-row")
+      .prop("checked", true)
+      .closest(".oh-sticky-table__tr")
+      .addClass("highlight-selected");
   } else {
-    $(".all-rshift-row").prop("checked", false).closest(".oh-sticky-table__tr").removeClass("highlight-selected");
+    $(closest)
+      .children()
+      .find(".all-rshift-row")
+      .prop("checked", false)
+      .closest(".oh-sticky-table__tr")
+      .removeClass("highlight-selected");
   }
 });
 
@@ -147,6 +160,54 @@ function tickRShiftCheckboxes() {
     }
   });
 }
+
+$("#exportRShifts").click(function (e) {
+  var currentDate = new Date().toISOString().slice(0, 10);
+  var language_code = null;
+  getCurrentLanguageCode(function (code) {
+    language_code = code;
+    var confirmMessage = excelMessages[language_code];
+    ids = [];
+    ids = JSON.parse($("#selectedRShifts").attr("data-ids"));
+    Swal.fire({
+      text: confirmMessage,
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#008000",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Confirm",
+    }).then(function (result) {
+      if (result.isConfirmed) {
+        $.ajax({
+          type: "GET",
+          url: "/rotating-shift-assign-info-export",
+          data: {
+            ids: JSON.stringify(ids),
+          },
+          dataType: "binary",
+          xhrFields: {
+            responseType: "blob",
+          },
+          success: function (response) {
+            const file = new Blob([response], {
+              type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            });
+            const url = URL.createObjectURL(file);
+            const link = document.createElement("a");
+            link.href = url;
+            link.download =
+              "Rotating_shift_assign_export" + currentDate + ".xlsx";
+            document.body.appendChild(link);
+            link.click();
+          },
+          error: function (xhr, textStatus, errorThrown) {
+            console.error("Error downloading file:", errorThrown);
+          },
+        });
+      }
+    });
+  });
+});
 
 $("#archiveRotatingShiftAssign").click(function (e) {
   e.preventDefault();
@@ -303,10 +364,23 @@ $("#deleteRotatingShiftAssign").click(function (e) {
 
 $(".all-rwork-type").change(function (e) {
   var is_checked = $(this).is(":checked");
+  var closest = $(this)
+    .closest(".oh-sticky-table__thead")
+    .siblings(".oh-sticky-table__tbody");
   if (is_checked) {
-    $(".all-rwork-type-row").prop("checked", true).closest(".oh-sticky-table__tr").addClass("highlight-selected");
+    $(closest)
+      .children()
+      .find(".all-rwork-type-row")
+      .prop("checked", true)
+      .closest(".oh-sticky-table__tr")
+      .addClass("highlight-selected");
   } else {
-    $(".all-rwork-type-row").prop("checked", false).closest(".oh-sticky-table__tr").removeClass("highlight-selected");
+    $(closest)
+      .children()
+      .find(".all-rwork-type-row")
+      .prop("checked", false)
+      .closest(".oh-sticky-table__tr")
+      .removeClass("highlight-selected");
   }
 });
 
@@ -335,6 +409,53 @@ function tickRWorktypeCheckboxes() {
     }
   });
 }
+
+$("#exportRWorktypes").click(function (e) {
+  var currentDate = new Date().toISOString().slice(0, 10);
+  var language_code = null;
+  getCurrentLanguageCode(function (code) {
+    language_code = code;
+    var confirmMessage = excelMessages[language_code];
+    ids = [];
+    ids = JSON.parse($("#selectedRWorktypes").attr("data-ids"));
+    Swal.fire({
+      text: confirmMessage,
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#008000",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Confirm",
+    }).then(function (result) {
+      if (result.isConfirmed) {
+        $.ajax({
+          type: "GET",
+          url: "/rotating-work-type-assign-export",
+          data: {
+            ids: JSON.stringify(ids),
+          },
+          dataType: "binary",
+          xhrFields: {
+            responseType: "blob",
+          },
+          success: function (response) {
+            const file = new Blob([response], {
+              type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            });
+            const url = URL.createObjectURL(file);
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = "Rotating_work_type_assign" + currentDate + ".xlsx";
+            document.body.appendChild(link);
+            link.click();
+          },
+          error: function (xhr, textStatus, errorThrown) {
+            console.error("Error downloading file:", errorThrown);
+          },
+        });
+      }
+    });
+  });
+});
 
 $("#archiveRotatingWorkTypeAssign").click(function (e) {
   e.preventDefault();
@@ -493,13 +614,19 @@ $(".all-shift-requests").change(function (e) {
     .closest(".oh-sticky-table__thead")
     .siblings(".oh-sticky-table__tbody");
   if (is_checked) {
-    $(closest).children().find(".all-shift-requests-row").prop("checked", true)
-    .closest(".oh-sticky-table__tr")
-    .addClass("highlight-selected");
+    $(closest)
+      .children()
+      .find(".all-shift-requests-row")
+      .prop("checked", true)
+      .closest(".oh-sticky-table__tr")
+      .addClass("highlight-selected");
   } else {
-    $(closest).children().find(".all-shift-requests-row").prop("checked", false)
-    .closest(".oh-sticky-table__tr")
-    .removeClass("highlight-selected");;
+    $(closest)
+      .children()
+      .find(".all-shift-requests-row")
+      .prop("checked", false)
+      .closest(".oh-sticky-table__tr")
+      .removeClass("highlight-selected");
   }
 });
 
@@ -731,10 +858,23 @@ $("#deleteShiftRequest").click(function (e) {
 
 $(".all-work-type-requests").change(function (e) {
   var is_checked = $(this).is(":checked");
+  var closest = $(this)
+    .closest(".oh-sticky-table__thead")
+    .siblings(".oh-sticky-table__tbody");
   if (is_checked) {
-    $(".all-work-type-requests-row").prop("checked", true).closest(".oh-sticky-table__tr").addClass("highlight-selected");
+    $(closest)
+      .children()
+      .find(".all-work-type-requests-row")
+      .prop("checked", true)
+      .closest(".oh-sticky-table__tr")
+      .addClass("highlight-selected");
   } else {
-    $(".all-work-type-requests-row").prop("checked", false).closest(".oh-sticky-table__tr").removeClass("highlight-selected");
+    $(closest)
+      .children()
+      .find(".all-work-type-requests-row")
+      .prop("checked", false)
+      .closest(".oh-sticky-table__tr")
+      .removeClass("highlight-selected");
   }
 });
 
