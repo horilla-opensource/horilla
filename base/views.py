@@ -41,6 +41,8 @@ from base.forms import (
     EmployeeShiftForm,
     EmployeeShiftScheduleForm,
     EmployeeTypeForm,
+    RotatingShiftAssignExportForm,
+    RotatingWorkTypeAssignExportForm,
     ShiftRequestColumnForm,
     WorkTypeForm,
     UserGroupForm,
@@ -412,7 +414,7 @@ def group_remove_user(request, uid, gid):
 
 @login_required
 @permission_required("change_group")
-def user_group_update(request, id):
+def user_group_update(request, id, **kwargs):
     """
     This method is used to render updating form template for user permission group
     args:
@@ -483,7 +485,7 @@ def company_create(request):
 
 @login_required
 @permission_required("base.change_company")
-def company_update(request, id):
+def company_update(request, id, **kwargs):
     """
     This method is used to update company
     args:
@@ -528,7 +530,7 @@ def department(request):
 
 @login_required
 @permission_required("base.change_department")
-def department_update(request, id):
+def department_update(request, id, **kwargs):
     """
     This method is used to update department
     args:
@@ -573,7 +575,7 @@ def job_position(request):
 
 @login_required
 @permission_required("base.change_jobposition")
-def job_position_update(request, id):
+def job_position_update(request, id, **kwargs):
     """
     This method is used to update job position
     args:
@@ -619,7 +621,7 @@ def job_role_create(request):
 
 @login_required
 @permission_required("base.change_jobrole")
-def job_role_update(request, id):
+def job_role_update(request, id, **kwargs):
     """
     This method is used to update job role instance
     args:
@@ -666,7 +668,7 @@ def work_type_create(request):
 
 @login_required
 @permission_required("base.change_worktype")
-def work_type_update(request, id):
+def work_type_update(request, id, **kwargs):
     """
     This method is used to update work type instance
     args:
@@ -715,7 +717,7 @@ def rotating_work_type_create(request):
 
 @login_required
 @permission_required("base.change_rotatingworktype")
-def rotating_work_type_update(request, id):
+def rotating_work_type_update(request, id, **kwargs):
     """
     This method is used to update rotating work type instance.
     args:
@@ -766,6 +768,8 @@ def rotating_work_type_assign(request):
         "base/rotating_work_type/rotating_work_type_assign.html",
         {
             "f": filter,
+            "export_filter": RotatingWorkTypeAssignFilter(),
+            "export_columns": RotatingWorkTypeAssignExportForm(),
             "rwork_type_assign": paginator_qry(
                 rwork_type_assign, request.GET.get("page")
             ),
@@ -927,6 +931,18 @@ def rotating_work_type_assign_update(request, id):
 
 @login_required
 @manager_can_enter("base.change_rotatingworktypeassign")
+def rotating_work_type_assign_export(request):
+    return export_data(
+        request=request,
+        model=RotatingWorkTypeAssign,
+        filter_class=RotatingWorkTypeAssignFilter,
+        form_class=RotatingWorkTypeAssignExportForm,
+        file_name="Rotating_work_type_assign",
+    )
+
+
+@login_required
+@manager_can_enter("base.change_rotatingworktypeassign")
 def rotating_work_type_assign_archive(request, id):
     """
     This method is used to archive or un-archive rotating work type assigns
@@ -1072,7 +1088,7 @@ def employee_type_create(request):
 
 @login_required
 @permission_required("base.change_employeetype")
-def employee_type_update(request, id):
+def employee_type_update(request, id, **kwargs):
     """
     This method is used to update employee type instance
     args:
@@ -1118,7 +1134,7 @@ def employee_shift_create(request):
 
 @login_required
 @permission_required("base.change_employeeshiftupdate")
-def employee_shift_update(request, id):
+def employee_shift_update(request, id, **kwargs):
     """
     This method is used to update employee shift instance
     args:
@@ -1161,7 +1177,7 @@ def employee_shift_schedule_create(request):
 
 @login_required
 @permission_required("base.change_employeeshiftschedule")
-def employee_shift_schedule_update(request, id):
+def employee_shift_schedule_update(request, id, **kwargs):
     """
     This method is used to update employee shift instance
     args:
@@ -1205,7 +1221,7 @@ def rotating_shift_create(request):
 
 @login_required
 @permission_required("base.change_rotatingshift")
-def rotating_shift_update(request, id):
+def rotating_shift_update(request, id, **kwargs):
     """
     This method is used to update rotating shift instance
     args:
@@ -1266,6 +1282,8 @@ def rotating_shift_assign(request):
         {
             "form": form,
             "f": filter,
+            "export_filter": RotatingShiftAssignFilters(),
+            "export_columns": RotatingShiftAssignExportForm(),
             "rshift_assign": paginator_qry(rshift_assign, request.GET.get("page")),
             "assign_ids": assign_ids,
             "rshift_all": rshift_all,
@@ -1423,6 +1441,18 @@ def rotating_shift_assign_update(request, id):
         {
             "update_form": form,
         },
+    )
+
+
+@login_required
+@manager_can_enter("base.change_rotatingshiftassign")
+def rotating_shift_assign_export(request):
+    return export_data(
+        request=request,
+        model=RotatingShiftAssign,
+        filter_class=RotatingShiftAssignFilters,
+        form_class=RotatingShiftAssignExportForm,
+        file_name="Rotating_shift_assign_export",
     )
 
 
