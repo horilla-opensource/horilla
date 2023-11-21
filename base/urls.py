@@ -23,13 +23,14 @@ urlpatterns = [
     path("logout", views.logout_user, name="logout"),
     path("settings", views.common_settings, name="settings"),
     path(
-        "settings/user-group-create", views.user_group_create, name="user-group-create"
+        "settings/user-group-create/", views.user_group_create, name="user-group-create"
     ),
     path("user-group-view", views.user_group_view, name="user-group-view"),
     path(
         "settings/user-group-update/<int:id>/",
         views.user_group_update,
         name="user-group-update",
+        kwargs={"model": Group},
     ),
     path(
         "user-group-delete/<int:id>/",
@@ -45,14 +46,14 @@ urlpatterns = [
     path(
         "user-group-assign-view", views.group_assign_view, name="user-group-assign-view"
     ),
-    path("settings/user-group-assign", views.group_assign, name="user-group-assign"),
+    path("settings/user-group-assign/", views.group_assign, name="user-group-assign"),
     path(
         "group-remove-user/<int:uid>/<int:gid>/",
         views.group_remove_user,
         name="group-remove-user",
     ),
     path(
-        "settings/employee-permission-assign",
+        "settings/employee-permission-assign/",
         views.employee_permission_assign,
         name="employee-permission-assign",
     ),
@@ -66,10 +67,13 @@ urlpatterns = [
         views.remove_permission,
         name="remove-permission",
     ),
-    path("settings/company-create", views.company_create, name="company-create"),
+    path("settings/company-create/", views.company_create, name="company-create"),
     # path('company-view', views.company_view,name='company-view'),
     path(
-        "settings/company-update/<int:id>/", views.company_update, name="company-update"
+        "settings/company-update/<int:id>/",
+        views.company_update,
+        name="company-update",
+        kwargs={"model": Company},
     ),
     path(
         "company-delete/<int:id>/",
@@ -77,11 +81,12 @@ urlpatterns = [
         name="company-delete",
         kwargs={"model": Company, "redirect": "/settings/company-create"},
     ),
-    path("settings/department-creation", views.department, name="department-creation"),
+    path("settings/department-creation/", views.department, name="department-creation"),
     path(
         "settings/department-update/<int:id>/",
         views.department_update,
         name="department-update",
+        kwargs={"model": Department},
     ),
     path(
         "department-delete/<int:id>/",
@@ -90,7 +95,7 @@ urlpatterns = [
         kwargs={"model": Department, "redirect": "/settings/department-creation"},
     ),
     path(
-        "settings/job-position-creation",
+        "settings/job-position-creation/",
         views.job_position,
         name="job-position-creation",
     ),
@@ -98,6 +103,7 @@ urlpatterns = [
         "settings/job-position-update/<int:id>/",
         views.job_position_update,
         name="job-position-update",
+        kwargs={"model": JobPosition},
     ),
     path(
         "job-position-delete/<int:id>/",
@@ -105,11 +111,12 @@ urlpatterns = [
         name="job-position-delete",
         kwargs={"model": JobPosition, "redirect": "/settings/job-position-creation"},
     ),
-    path("settings/job-role-create", views.job_role_create, name="job-role-create"),
+    path("settings/job-role-create/", views.job_role_create, name="job-role-create"),
     path(
         "settings/job-role-update/<int:id>/",
         views.job_role_update,
         name="job-role-update",
+        kwargs={"model": JobRole},
     ),
     path(
         "job-role-delete/<int:id>/",
@@ -117,11 +124,12 @@ urlpatterns = [
         name="job-role-delete",
         kwargs={"model": JobRole, "redirect": "/settings/job-role-create"},
     ),
-    path("settings/work-type-create", views.work_type_create, name="work-type-create"),
+    path("settings/work-type-create/", views.work_type_create, name="work-type-create"),
     path(
         "settings/work-type-update/<int:id>/",
         views.work_type_update,
         name="work-type-update",
+        kwargs={"model": WorkType},
     ),
     path(
         "work-type-delete/<int:id>/",
@@ -130,7 +138,7 @@ urlpatterns = [
         kwargs={"model": WorkType, "redirect": "/settings/work-type-create"},
     ),
     path(
-        "settings/rotating-work-type-create",
+        "settings/rotating-work-type-create/",
         views.rotating_work_type_create,
         name="rotating-work-type-create",
     ),
@@ -138,6 +146,7 @@ urlpatterns = [
         "settings/rotating-work-type-update/<int:id>/",
         views.rotating_work_type_update,
         name="rotating-work-type-update",
+        kwargs={"model": RotatingWorkType},
     ),
     path(
         "rotating-work-type-delete/<int:id>/",
@@ -162,6 +171,11 @@ urlpatterns = [
         "rotating-work-type-assign-view",
         views.rotating_work_type_assign_view,
         name="rotating-work-type-assign-view",
+    ),
+    path(
+        "rotating-work-type-assign-export",
+        views.rotating_work_type_assign_export,
+        name="rotating-work-type-assign-export",
     ),
     path(
         "settings/rotating-work-type-assign-update/<int:id>/",
@@ -189,7 +203,7 @@ urlpatterns = [
         name="rotating-work-type-assign-delete",
     ),
     path(
-        "settings/employee-type-create",
+        "settings/employee-type-create/",
         views.employee_type_create,
         name="employee-type-create",
     ),
@@ -197,6 +211,7 @@ urlpatterns = [
         "settings/employee-type-update/<int:id>/",
         views.employee_type_update,
         name="employee-type-update",
+        kwargs={"model": EmployeeType},
     ),
     path(
         "employee-type-delete/<int:id>/",
@@ -208,7 +223,7 @@ urlpatterns = [
         },
     ),
     path(
-        "settings/employee-shift-create",
+        "settings/employee-shift-create/",
         views.employee_shift_create,
         name="employee-shift-create",
     ),
@@ -216,6 +231,7 @@ urlpatterns = [
         "settings/employee-shift-update/<int:id>/",
         views.employee_shift_update,
         name="employee-shift-update",
+        kwargs={"model": EmployeeShift},
     ),
     path(
         "employee-shift-delete/<int:id>/",
@@ -227,7 +243,7 @@ urlpatterns = [
         },
     ),
     path(
-        "settings/employee-shift-schedule-create",
+        "settings/employee-shift-schedule-create/",
         views.employee_shift_schedule_create,
         name="employee-shift-schedule-create",
     ),
@@ -235,6 +251,7 @@ urlpatterns = [
         "settings/employee-shift-schedule-update/<int:id>/",
         views.employee_shift_schedule_update,
         name="employee-shift-schedule-update",
+        kwargs={"model": EmployeeShiftSchedule},
     ),
     path(
         "employee-shift-schedule-delete/<int:id>/",
@@ -246,7 +263,7 @@ urlpatterns = [
         },
     ),
     path(
-        "settings/rotating-shift-create",
+        "settings/rotating-shift-create/",
         views.rotating_shift_create,
         name="rotating-shift-create",
     ),
@@ -254,6 +271,7 @@ urlpatterns = [
         "settings/rotating-shift-update/<int:id>/",
         views.rotating_shift_update,
         name="rotating-shift-update",
+        kwargs={"model": RotatingShift},
     ),
     path(
         "rotating-shift-delete/<int:id>/",
@@ -278,6 +296,11 @@ urlpatterns = [
         "rotating-shift-assign-view",
         views.rotating_shift_assign_view,
         name="rotating-shift-assign-view",
+    ),
+    path(
+        "rotating-shift-assign-info-export",
+        views.rotating_shift_assign_export,
+        name="rotating-shift-assign-info-export",
     ),
     path(
         "settings/rotating-shift-assign-update/<int:id>/",
@@ -306,7 +329,7 @@ urlpatterns = [
     ),
     path("work-type-request", views.work_type_request, name="work-type-request"),
     path(
-        "work-type-requests/work-type-request-view",
+        "employee/work-type-request-view",
         views.work_type_request_view,
         name="work-type-request-view",
     ),
@@ -362,7 +385,7 @@ urlpatterns = [
     ),
     path("shift-request", views.shift_request, name="shift-request"),
     path(
-        "shift-requests/shift-request-view",
+        "employee/shift-request-view",
         views.shift_request_view,
         name="shift-request-view",
     ),
@@ -423,9 +446,9 @@ urlpatterns = [
         views.delete_notification,
         name="delete-notifications",
     ),
-    path("settings/currency", views.settings, name="currency-settings"),
+    path("settings/currency/", views.settings, name="currency-settings"),
     path(
-        "settings/attendance-settings",
+        "settings/attendance-settings/",
         views.validation_condition_create,
         name="attendance-settings",
     ),
