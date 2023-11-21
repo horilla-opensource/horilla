@@ -3392,9 +3392,8 @@ msgstr "Modifier Fréquentation"
 
 #: attendance/templates/attendance/attendance/validate_attendance_empty.html:13
 #, python-format
-msgid ""
-"The attendances for this employee in %(month_name)s has not been validated."
-msgstr "Les Fréquentation à cet employé dans% (Month_name) n'ont pas été validées."
+msgid "The attendances for this employee in %(month_name)s has not been validated."
+msgstr "Les Fréquentation à cet employé dans %(month_name)s n'ont pas été validées."
 
 #: attendance/templates/attendance/attendance_account/attendance_account_export_filter.html:103
 #: attendance/templates/attendance/attendance_account/attendance_account_filter.html:80
