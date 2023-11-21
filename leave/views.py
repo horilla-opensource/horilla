@@ -434,6 +434,7 @@ def leave_request_filter(request):
             "field": field,
             "dashboard": request.GET.get("dashboard"),
             "requests_ids": requests_ids,
+            "current_date":date.today(),           
         },
     )
 

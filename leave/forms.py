@@ -261,33 +261,6 @@ class LeaveRequestCreationForm(ModelForm):
         requested_days = calculate_requested_days(
             start_date, end_date, start_date_breakdown, end_date_breakdown
         )
-        # requested_dates = leave_requested_dates(start_date, end_date)
-        # holidays = Holiday.objects.all()
-        # holiday_dates = holiday_dates_list(holidays)
-        # company_leaves = CompanyLeave.objects.all()
-        # company_leave_dates = company_leave_dates_list(company_leaves, start_date)
-        # if (
-        #     leave_type_id.exclude_company_leave == "yes"
-        #     and leave_type_id.exclude_holiday == "yes"
-        # ):
-        #     total_leaves = list(set(holiday_dates + company_leave_dates))
-        #     total_leave_count = sum(
-        #         requested_date in total_leaves for requested_date in requested_dates
-        #     )
-        #     requested_days = requested_days - total_leave_count
-        # else:
-        #     holiday_count = 0
-        #     if leave_type_id.exclude_holiday == "yes":
-        #         for requested_date in requested_dates:
-        #             if requested_date in holiday_dates:
-        #                 holiday_count += 1
-        #         requested_days = requested_days - holiday_count
-        #     if leave_type_id.exclude_company_leave == "yes":
-        #         company_leave_count = sum(
-        #             requested_date in company_leave_dates
-        #             for requested_date in requested_dates
-        #         )
-        #         requested_days = requested_days - company_leave_count
         effective_requested_days = cal_effective_requested_days(start_date=start_date,end_date=end_date,leave_type_id=leave_type_id,requested_days=requested_days)
         if not effective_requested_days <= total_leave_days:
             raise forms.ValidationError(_("Employee doesn't have enough leave days.."))
@@ -357,34 +330,8 @@ class LeaveRequestUpdationForm(ModelForm):
         requested_days = calculate_requested_days(
             start_date, end_date, start_date_breakdown, end_date_breakdown
         )
-        requested_dates = leave_requested_dates(start_date, end_date)
-        holidays = Holiday.objects.all()
-        holiday_dates = holiday_dates_list(holidays)
-        company_leaves = CompanyLeave.objects.all()
-        company_leave_dates = company_leave_dates_list(company_leaves, start_date)
-        if (
-            leave_type_id.exclude_company_leave == "yes"
-            and leave_type_id.exclude_holiday == "yes"
-        ):
-            total_leaves = list(set(holiday_dates + company_leave_dates))
-            total_leave_count = sum(
-                requested_date in total_leaves for requested_date in requested_dates
-            )
-            requested_days = requested_days - total_leave_count
-        else:
-            holiday_count = 0
-            if leave_type_id.exclude_holiday == "yes":
-                for requested_date in requested_dates:
-                    if requested_date in holiday_dates:
-                        holiday_count += 1
-                requested_days = requested_days - holiday_count
-            if leave_type_id.exclude_company_leave == "yes":
-                company_leave_count = sum(
-                    requested_date in company_leave_dates
-                    for requested_date in requested_dates
-                )
-                requested_days = requested_days - company_leave_count
-        if not requested_days <= total_leave_days:
+        effective_requested_days = cal_effective_requested_days(start_date=start_date,end_date=end_date,leave_type_id=leave_type_id,requested_days=requested_days)
+        if not effective_requested_days <= total_leave_days:
             raise forms.ValidationError(_("Employee doesn't have enough leave days.."))
 
         return cleaned_data
@@ -489,8 +436,13 @@ class UserLeaveRequestForm(ModelForm):
         cleaned_data = super().clean()
         start_date = cleaned_data.get("start_date")
         end_date = cleaned_data.get("end_date")
+        employee_id = cleaned_data.get("employee_id")
         start_date_breakdown = cleaned_data.get("start_date_breakdown")
         end_date_breakdown = cleaned_data.get('end_date_breakdown')
+        leave_type_id = cleaned_data.get("leave_type_id")
+        # overlapping_requests = LeaveRequest.objects.filter(
+        #     employee_id=employee_id, start_date__lte=end_date, end_date__gte=start_date
+        # ).exclude(id=self.instance.id)
 
         if start_date == end_date:
             if start_date_breakdown != end_date_breakdown:
@@ -501,7 +453,18 @@ class UserLeaveRequestForm(ModelForm):
             raise forms.ValidationError(
                 _("End date should not be less than start date.")
             )
-
+        requested_days = calculate_requested_days(
+            start_date, end_date, start_date_breakdown, end_date_breakdown
+        )
+        available_leave = AvailableLeave.objects.get(
+            employee_id=employee_id, leave_type_id=leave_type_id
+        )
+        total_leave_days = (
+            available_leave.available_days + available_leave.carryforward_days
+        )
+        effective_requested_days = cal_effective_requested_days(start_date=start_date,end_date=end_date,leave_type_id=leave_type_id,requested_days=requested_days)
+        if not effective_requested_days <= total_leave_days:
+            raise forms.ValidationError(_("Employee doesn't have enough nnn leave days.."))
         return cleaned_data
 
     def __init__(self, *args, employee=None, **kwargs):
@@ -518,6 +481,8 @@ class UserLeaveRequestForm(ModelForm):
     class Meta:
         model = LeaveRequest
         fields = [
+            "employee_id",
+            "leave_type_id",
             "start_date",
             "start_date_breakdown",
             "end_date",
@@ -525,6 +490,10 @@ class UserLeaveRequestForm(ModelForm):
             "description",
             "attachment",
         ]
+        widgets = {
+            "employee_id": forms.HiddenInput(),
+            'leave_type_id': forms.HiddenInput()     
+        }
 
 
 excluded_fields = [
@@ -639,7 +608,7 @@ class UserLeaveRequestCreationForm(ModelForm):
         cleaned_data["requested_days"] = requested_days
 
         if not requested_days <= total_leave_days:
-            raise forms.ValidationError(_("Employee doesn't have enough leave days.."))
+            raise forms.ValidationError(_("Employee doesn't have enough ppp leave days.."))
 
         return cleaned_data
 
