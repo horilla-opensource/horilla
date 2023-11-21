@@ -347,11 +347,43 @@
     </div>
       <nav class="oh-navbar">
         <div class="oh-wrapper oh-navbar__wrapper">
-          <div class="oh-navbar__toggle-container">
+          {% comment %} <div class="oh-navbar__toggle-container">
             <a href="#" class="oh-navbar__toggle-link oh-link__unstyled" @click="sidebarOpen = !sidebarOpen">
               <img src="{% static 'images/ui/menu.svg' %}" width="24" height="24" class="oh-navbar__toggle-menu"
                 loading="lazy" />
               <span class="oh-tabs__movable-title" style="color: rgb(0, 0, 14);">{% trans request.session.title %}</span>
+            </a>
+          </div> {% endcomment %}
+          <div class="oh-navbar__toggle-container">
+            <a href="#" class="oh-navbar__toggle-link oh-link__unstyled" @click="sidebarOpen = !sidebarOpen">
+              <img src="{% static 'images/ui/menu.svg' %}" width="24" height="24" class="oh-navbar__toggle-menu"
+                loading="lazy" />
+            </a>
+              <!-- <span class="oh-navbar__page-title">Attendances</span> -->
+              {% if breadcrumbs %}
+              {% comment %} {{breadcrumbs}} {% endcomment %}
+                <ul class="oh-navbar__breadcrumb">
+                  {% for breadcrumb in breadcrumbs %}
+                    {% if forloop.last %}
+                      <li class="oh-navbar__breadcrumb-item">
+                        {% if breadcrumb.found %}
+                          <a href="{{breadcrumb.url}}" class="oh-navbar__breadcrumb-link active">{% trans breadcrumb.name %}</a>
+                        {% else %}
+                          <a href="#" class="oh-navbar__breadcrumb-link active">{% trans breadcrumb.name %}</a>
+                        {% endif %}
+                      </li>
+                    {% else %}
+                      <li class="oh-navbar__breadcrumb-item">
+                        {% if breadcrumb.found %}
+                          <a href="{{breadcrumb.url}}" class="oh-navbar__breadcrumb-link">{% trans breadcrumb.name %}</a>
+                        {% else %}
+                          <a href="#" class="oh-navbar__breadcrumb-link">{% trans breadcrumb.name %}</a>
+                        {% endif %}
+                      </li>
+                    {% endif %}
+                  {% endfor %}
+                </ul>
+              {% endif %}
             </a>
           </div>
           <div class="oh-navbar__systray">
