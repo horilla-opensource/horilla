@@ -1310,7 +1310,7 @@ class ResetPasswordForm(forms.Form):
             user.save()
 
 
-excluded_fields = ["id", "is_active", "shift_changed","work_type_changed"]
+excluded_fields = ["id", "is_active", "shift_changed", "work_type_changed"]
 
 
 class ShiftRequestColumnForm(forms.Form):
@@ -1353,6 +1353,47 @@ class WorkTypeRequestColumnForm(forms.Form):
             "approved",
         ],
     )
-    
-    
-    
+
+
+class RotatingShiftAssignExportForm(forms.Form):
+    model_fields = RotatingShiftAssign._meta.get_fields()
+    field_choices = [
+        (field.name, field.verbose_name)
+        for field in model_fields
+        if hasattr(field, "verbose_name") and field.name not in excluded_fields
+    ]
+    selected_fields = forms.MultipleChoiceField(
+        choices=field_choices,
+        widget=forms.CheckboxSelectMultiple,
+        initial=[
+            "employee_id",
+            "rotating_shift_id",
+            "start_date",
+            "next_change_date",
+            "current_shift",
+            "next_shift",
+            "based_on",
+        ],
+    )
+
+
+class RotatingWorkTypeAssignExportForm(forms.Form):
+    model_fields = RotatingWorkTypeAssign._meta.get_fields()
+    field_choices = [
+        (field.name, field.verbose_name)
+        for field in model_fields
+        if hasattr(field, "verbose_name") and field.name not in excluded_fields
+    ]
+    selected_fields = forms.MultipleChoiceField(
+        choices=field_choices,
+        widget=forms.CheckboxSelectMultiple,
+        initial=[
+            "employee_id",
+            "rotating_work_type_id",
+            "start_date",
+            "next_change_date",
+            "current_work_type",
+            "next_work_type",
+            "based_on",
+        ],
+    )

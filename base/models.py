@@ -68,7 +68,9 @@ class Department(models.Model):
     """
 
     department = models.CharField(max_length=50, blank=False, unique=True)
-    company_id = models.ForeignKey(Company,null=True,editable=False,on_delete=models.PROTECT)
+    company_id = models.ForeignKey(
+        Company, null=True, editable=False, on_delete=models.PROTECT
+    )
     objects = models.Manager()
 
     class Meta:
@@ -92,7 +94,9 @@ class JobPosition(models.Model):
         related_name="job_position",
         verbose_name=_("Department"),
     )
-    company_id = models.ForeignKey(Company,null=True,editable=False,on_delete=models.PROTECT)
+    company_id = models.ForeignKey(
+        Company, null=True, editable=False, on_delete=models.PROTECT
+    )
     objects = models.Manager()
 
     class Meta:
@@ -114,7 +118,9 @@ class JobRole(models.Model):
         JobPosition, on_delete=models.PROTECT, verbose_name=_("Job Position")
     )
     job_role = models.CharField(max_length=50, blank=False, null=True)
-    company_id = models.ForeignKey(Company,null=True,editable=False,on_delete=models.PROTECT)
+    company_id = models.ForeignKey(
+        Company, null=True, editable=False, on_delete=models.PROTECT
+    )
     objects = models.Manager()
 
     class Meta:
@@ -136,7 +142,9 @@ class WorkType(models.Model):
     """
 
     work_type = models.CharField(max_length=50)
-    company_id = models.ForeignKey(Company,null=True,editable=False,on_delete=models.PROTECT)
+    company_id = models.ForeignKey(
+        Company, null=True, editable=False, on_delete=models.PROTECT
+    )
     objects = models.Manager()
 
     class Meta:
@@ -222,29 +230,51 @@ class RotatingWorkTypeAssign(models.Model):
         verbose_name=_("Employee"),
     )
     rotating_work_type_id = models.ForeignKey(
-        RotatingWorkType, on_delete=models.PROTECT, verbose_name=_("Rotating work type")
+        RotatingWorkType, on_delete=models.PROTECT, verbose_name=_("Rotating Work Type")
     )
-    next_change_date = models.DateField(null=True)
-    start_date = models.DateField(default=django.utils.timezone.now)
-    based_on = models.CharField(
-        max_length=10, choices=BASED_ON, null=False, blank=False
+    start_date = models.DateField(
+        default=django.utils.timezone.now, verbose_name=_("Start Date")
     )
-    rotate_after_day = models.IntegerField(
-        default=7, verbose_name=_("Rotate after day")
-    )
-    rotate_every_weekend = models.CharField(
-        max_length=10, default="monday", choices=DAY, blank=True, null=True
-    )
-    rotate_every = models.CharField(max_length=10, default="1", choices=DAY_DATE)
+    next_change_date = models.DateField(null=True, verbose_name=_("Next Switch"))
     current_work_type = models.ForeignKey(
         WorkType,
         null=True,
         on_delete=models.PROTECT,
         related_name="current_work_type",
+        verbose_name=_("Current Work Type"),
     )
     next_work_type = models.ForeignKey(
-        WorkType, null=True, on_delete=models.PROTECT, related_name="next_work_type"
+        WorkType,
+        null=True,
+        on_delete=models.PROTECT,
+        related_name="next_work_type",
+        verbose_name=_("Next Work Type"),
     )
+    based_on = models.CharField(
+        max_length=10,
+        choices=BASED_ON,
+        null=False,
+        blank=False,
+        verbose_name=_("Based On"),
+    )
+    rotate_after_day = models.IntegerField(
+        default=7, verbose_name=_("Rotate After Day")
+    )
+    rotate_every_weekend = models.CharField(
+        max_length=10,
+        default="monday",
+        choices=DAY,
+        blank=True,
+        null=True,
+        verbose_name=_("Rotate Every Weekend"),
+    )
+    rotate_every = models.CharField(
+        max_length=10,
+        default="1",
+        choices=DAY_DATE,
+        verbose_name=_("Rotate Every Month"),
+    )
+
     is_active = models.BooleanField(default=True)
     objects = models.Manager()
 
@@ -275,7 +305,9 @@ class EmployeeType(models.Model):
     """
 
     employee_type = models.CharField(max_length=50)
-    company_id = models.ForeignKey(Company,null=True,editable=False,on_delete=models.PROTECT)
+    company_id = models.ForeignKey(
+        Company, null=True, editable=False, on_delete=models.PROTECT
+    )
     objects = models.Manager()
 
     class Meta:
@@ -296,7 +328,9 @@ class EmployeeShiftDay(models.Model):
     """
 
     day = models.CharField(max_length=20, choices=DAY)
-    company_id = models.ForeignKey(Company,null=True,editable=False,on_delete=models.PROTECT)
+    company_id = models.ForeignKey(
+        Company, null=True, editable=False, on_delete=models.PROTECT
+    )
     objects = models.Manager()
 
     class Meta:
@@ -332,7 +366,9 @@ class EmployeeShift(models.Model):
     full_time = models.CharField(
         max_length=6, default="200:00", validators=[validate_time_format]
     )
-    company_id = models.ForeignKey(Company,null=True,editable=False,on_delete=models.PROTECT)
+    company_id = models.ForeignKey(
+        Company, null=True, editable=False, on_delete=models.PROTECT
+    )
     objects = models.Manager()
 
     class Meta:
@@ -364,7 +400,9 @@ class EmployeeShiftSchedule(models.Model):
     start_time = models.TimeField(null=True)
     end_time = models.TimeField(null=True)
     is_night_shift = models.BooleanField(default=False)
-    company_id = models.ForeignKey(Company,null=True,editable=False,on_delete=models.PROTECT)
+    company_id = models.ForeignKey(
+        Company, null=True, editable=False, on_delete=models.PROTECT
+    )
     objects = models.Manager()
 
     class Meta:
@@ -435,28 +473,49 @@ class RotatingShiftAssign(models.Model):
     rotating_shift_id = models.ForeignKey(
         RotatingShift, on_delete=models.PROTECT, verbose_name=_("Rotating Shift")
     )
-    next_change_date = models.DateField(null=True)
     start_date = models.DateField(
-        default=django.utils.timezone.now,
+        default=django.utils.timezone.now, verbose_name=_("Start Date")
     )
-    based_on = models.CharField(
-        max_length=10, choices=BASED_ON, null=False, blank=False
-    )
-    rotate_after_day = models.IntegerField(null=True, blank=True, default=7)
-    rotate_every_weekend = models.CharField(
-        max_length=10, default="monday", choices=DAY, blank=True, null=True
-    )
-    rotate_every = models.CharField(
-        max_length=10, blank=True, null=True, default="1", choices=DAY_DATE
-    )
+    next_change_date = models.DateField(null=True, verbose_name=_("Next Switch"))
     current_shift = models.ForeignKey(
         EmployeeShift,
         on_delete=models.PROTECT,
         null=True,
         related_name="current_shift",
+        verbose_name=_("Current Shift"),
     )
     next_shift = models.ForeignKey(
-        EmployeeShift, on_delete=models.PROTECT, null=True, related_name="next_shift"
+        EmployeeShift,
+        on_delete=models.PROTECT,
+        null=True,
+        related_name="next_shift",
+        verbose_name=_("Next Shift"),
+    )
+    based_on = models.CharField(
+        max_length=10,
+        choices=BASED_ON,
+        null=False,
+        blank=False,
+        verbose_name=_("Based On"),
+    )
+    rotate_after_day = models.IntegerField(
+        null=True, blank=True, default=7, verbose_name=_("Rotate After Day")
+    )
+    rotate_every_weekend = models.CharField(
+        max_length=10,
+        default="monday",
+        choices=DAY,
+        blank=True,
+        null=True,
+        verbose_name=_("Rotate Every Weekend"),
+    )
+    rotate_every = models.CharField(
+        max_length=10,
+        blank=True,
+        null=True,
+        default="1",
+        choices=DAY_DATE,
+        verbose_name=_("Rotate Every Month"),
     )
     is_active = models.BooleanField(default=True)
     objects = models.Manager()

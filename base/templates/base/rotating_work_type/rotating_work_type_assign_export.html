@@ -1,0 +1,111 @@
+{% load i18n %} {% load static %}
+<div class="oh-dropdown__filter-body">
+  <div class="oh-accordion">
+    <div class="oh-accordion-header">{% trans "Excel columns" %}</div>
+    <div class="oh-accordion-body">
+      <div class="row">
+        <div class="col-sm-12 col-md-12 col-lg-6">
+          <div class="oh-input-group">
+            <label class="oh-label">
+              <input type="checkbox" id="select-all-fields" /> {% trans "Select All" %}
+            </label>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        {% for field in export_columns.selected_fields %}
+        <div class="col-sm-12 col-md-12 col-lg-6">
+          <div class="oh-input-group">
+            <label class="oh-label"> {{ field }} </label>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+  <div class="oh-accordion">
+    <div class="oh-accordion-header">{% trans "Rotating Work Type" %}</div>
+    <div class="oh-accordion-body">
+      <div class="row">
+        <div class="col-sm-12 col-md-12 col-lg-6">
+          <div class="oh-input-group">
+            <label class="oh-label">{% trans "Employee" %}</label>
+            {{export_filter.form.employee_id}}
+          </div>
+          <div class="oh-input-group">
+            <label class="oh-label">{% trans "Based On" %}</label>
+            {{export_filter.form.based_on}}
+          </div>
+          <div class="oh-input-group">
+            <label class="oh-label">{% trans "Current Shift" %}</label>
+            {{export_filter.form.current_work_type}}
+          </div>
+        </div>
+        <div class="col-sm-12 col-md-12 col-lg-6">
+          <div class="oh-input-group">
+            <label class="oh-label">{% trans "Rotating Shift" %}</label>
+            {{export_filter.form.rotating_work_type_id}}
+          </div>
+          <div class="oh-input-group">
+            <label class="oh-label">{% trans "Next Switch" %}</label>
+            {{export_filter.form.next_change_date}}
+          </div>
+          <div class="oh-input-group">
+            <label class="oh-label">{% trans "Next Shift" %}</label>
+            {{export_filter.form.next_work_type}}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="oh-accordion">
+    <div class="oh-accordion-header">{% trans "Work Info" %}</div>
+    <div class="oh-accordion-body">
+      <div class="row">
+        <div class="col-sm-12 col-md-12 col-lg-6">
+          <div class="oh-input-group">
+            <label class="oh-label">{% trans "Company" %}</label>
+            {{export_filter.form.employee_id__employee_work_info__company_id}}
+          </div>
+          <div class="oh-input-group">
+            <label class="oh-label">{% trans "Department" %}</label>
+            {{export_filter.form.employee_id__employee_work_info__department_id}}
+          </div>
+          <div class="oh-input-group">
+            <label class="oh-label">{% trans "Shift" %}</label>
+            {{export_filter.form.employee_id__employee_work_info__shift_id}}
+          </div>
+        </div>
+        <div class="col-sm-12 col-md-12 col-lg-6">
+          <div class="oh-input-group">
+            <label class="oh-label">{% trans "Reporting Manager" %}</label>
+            {{export_filter.form.employee_id__employee_work_info__reporting_manager_id}}
+          </div>
+          <div class="oh-input-group">
+            <label class="oh-label">{% trans "Job Position" %}</label>
+            {{export_filter.form.employee_id__employee_work_info__job_position_id}}
+          </div>
+          <div class="oh-input-group">
+            <label class="oh-label">{% trans "Work Type" %}</label>
+            {{export_filter.form.employee_id__employee_work_info__work_type_id}}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="oh-accordion">
+    <div class="oh-accordion-header">{% trans "Advanced" %}</div>
+    <div class="oh-accordion-body">
+      <div class="row">
+        <div class="col-sm-12 col-md-12 col-lg-6">
+          <div class="oh-input-group">
+            <div class="oh-input-group">
+              <label class="oh-label">{% trans "Is Active" %}?</label>
+              {{export_filter.form.is_active}}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

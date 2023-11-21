@@ -334,6 +334,7 @@ def export_data(request, model, form_class, filter_class, file_name):
         "terminated": _("Terminated"),
         "weekly": _("Weekly"),
         "monthly": _("Monthly"),
+        "after": _("After"),
         "semi_monthly": _("Semi-Monthly"),
         "hourly": _("Hourly"),
         "daily": _("Daily"),
