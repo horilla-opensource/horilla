@@ -19,6 +19,7 @@ from django.utils.translation import gettext_lazy as _
 from horilla.decorators import login_required, hx_request_required
 from horilla.decorators import permission_required, manager_can_enter
 from base.methods import closest_numbers, export_data
+from base.threading import MailSendThread
 from base.models import *
 from base.methods import (
     filtersubordinates,
@@ -570,6 +571,9 @@ def leave_request_approve(request, id, emp_id=None):
                     icon="people-circle",
                     redirect="/leave/user-request-view",
                 )
+            
+            mail_thread = MailSendThread(request, leave_request, type="approve")
+            mail_thread.start()
         else:
             messages.error(
                 request,
@@ -636,6 +640,9 @@ def leave_request_cancel(request, id, emp_id=None):
                     icon="people-circle",
                     redirect="/leave/user-request-view",
                 )
+            
+            mail_thread = MailSendThread(request, leave_request, type="reject")
+            mail_thread.start()
             if emp_id is not None:
                 employee_id = emp_id
                 return redirect(f"/employee/employee-view/{employee_id}/")
@@ -676,6 +683,9 @@ def user_leave_cancel(request, id):
                     messages.success(
                         request, _("Leave request cancelled successfully..")
                     )
+                    
+                    mail_thread = MailSendThread(request, leave_request, type="cancel")
+                    mail_thread.start()
                     return HttpResponse("<script>location.reload();</script>")
             return render(
                 request,
@@ -2446,6 +2456,9 @@ def leave_request_create(request):
                             icon="people-circle",
                             redirect="/leave/request-view",
                         )
+                    
+                    mail_thread = MailSendThread(request, leave_request, type="request")
+                    mail_thread.start()
                     response = render(
                         request, "leave/user_leave/request_form.html", {"form": form}
                     )

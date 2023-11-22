@@ -195,6 +195,7 @@ class LeaveRequestFilter(FilterSet):
 
         model = LeaveRequest
         fields = [
+            "id",
             "leave_type_id",
             "status",
             "department_name",

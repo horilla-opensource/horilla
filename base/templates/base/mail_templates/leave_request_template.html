@@ -1,0 +1,50 @@
+{% load i18n %}
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>{{ subject }}</title>
+	</head>
+	<body>
+		<div
+			style="
+				width: 50%;
+				margin: 0 auto;
+				border: 2px solid #6c757d;
+				background: #f0f0ff;
+				padding: 30px 80px;
+			"
+		>
+			<h2 style="color: #007bff;text-align: center;margin-bottom:40px ;font-size: 24px;">{{ subject }}</h2>
+
+			<p style="font-size: 16px">
+				<strong>{% trans "Employee:" %}</strong> {{ leave_request.employee_id }}
+			</p>
+			<p style="font-size: 16px">
+				<strong>{% trans "Reject Reason:" %}</strong>
+				{{leave_request.reject_reason }}
+			</p>
+			<p style="font-size: 16px">
+				<strong>{% trans "Start Date:" %}</strong> {{ leave_request.start_date }}
+			</p>
+			<p style="font-size: 16px">
+				<strong>{% trans "End Date:" %}</strong> {{ leave_request.end_date }}
+			</p>
+
+			<p style="font-size: 16px">
+				<strong>{% trans "Description:" %}</strong><br /> <br />{{	leave_request.description }}
+			</p>
+
+			<p style="font-size: 16px">
+				{% trans "Click" %}
+				<a href="{{ url }}" style="color: #007bff">{% trans "here" %}</a> {% trans "to view the leave request." %}
+			</p>
+
+			<p style="color: #6c757d">
+				{% trans "This is an automated message. Please do not reply." %}
+			</p>
+		</div>
+	</body>
+</html>

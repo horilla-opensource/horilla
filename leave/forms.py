@@ -278,8 +278,8 @@ class LeaveRequestCreationForm(ModelForm):
     class Meta:
         model = LeaveRequest
         fields = [
-            "leave_type_id",
             "employee_id",
+            "leave_type_id",
             "start_date",
             "start_date_breakdown",
             "end_date",
@@ -608,7 +608,7 @@ class UserLeaveRequestCreationForm(ModelForm):
         cleaned_data["requested_days"] = requested_days
 
         if not requested_days <= total_leave_days:
-            raise forms.ValidationError(_("Employee doesn't have enough ppp leave days.."))
+            raise forms.ValidationError(_("Employee doesn't have enough leave days.."))
 
         return cleaned_data
 
