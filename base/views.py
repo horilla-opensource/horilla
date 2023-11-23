@@ -4,7 +4,7 @@ views.py
 This module is used to map url pattens with django views or methods
 """
 from datetime import timedelta, datetime
-from urllib.parse import parse_qs
+from urllib.parse import parse_qs, urlencode
 import uuid
 import json
 from django.db.models import ProtectedError
@@ -138,12 +138,24 @@ def login_user(request):
     if request.method == "POST":
         username = request.POST["username"]
         password = request.POST["password"]
+        next_url = request.GET.get("next")
+        query_params = request.GET.dict()
+        if 'next' in query_params:
+            del query_params['next']
+
+        params = f'{urlencode(query_params)}'
+        
         user = authenticate(request, username=username, password=password)
         if user is None:
             messages.error(request, _("Invalid username or password."))
             return redirect("/login")
         login(request, user)
         messages.success(request, _("Login Success"))
+        if next_url:
+            url = f'{next_url}'
+            if params:
+                url += f'?{params}'
+            return redirect(url)
         return redirect("/")
     return render(request, "login.html")
 
@@ -2697,7 +2709,7 @@ def validation_condition_update(request, obj_id):
         if form.is_valid():
             form.save()
             messages.success(request, _("Attendance Break-point settings updated."))
-            return HttpResponse("<script>window.location.reload</script>")
+            return HttpResponse("<script>window.location.reload()</script>")
     return render(
         request,
         "attendance/break_point/condition_form.html",
