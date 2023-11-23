@@ -1553,8 +1553,8 @@ def user_leave_request(request, id):
     POST : user my leave view template
     """
     employee = request.user.employee_get
-    form = UserLeaveRequestForm(employee=employee)
     leave_type = LeaveType.objects.get(id=id)
+    form = UserLeaveRequestForm(initial={'employee_id':employee,'leave_type_id':leave_type})
     if request.method == "POST":
         form = UserLeaveRequestForm(request.POST, request.FILES)
         start_date = datetime.strptime(request.POST.get("start_date"), "%Y-%m-%d")
@@ -1887,11 +1887,11 @@ def user_request_view(request):
         queryset = user.leaverequest_set.all()
         previous_data = request.GET.urlencode()
         page_number = request.GET.get("page")
-        page_obj = paginator_qry(queryset, page_number)
+        user_request_filter = LeaveRequestFilter(request.GET,queryset=queryset)
+        page_obj = paginator_qry(user_request_filter.qs, page_number)        
         request_ids = json.dumps(
             list(page_obj.object_list.values_list("id", flat=True))
         )
-        user_request_filter = UserLeaveRequestFilter()
         current_date = date.today()
         return render(
             request,

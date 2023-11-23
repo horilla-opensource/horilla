@@ -113,7 +113,7 @@
                     {% if  not dashboard %}
                     <div class="oh-sticky-table__td" onclick="event.stopPropagation()">
                         <div class="oh-btn-group" >
-                            {% if leave_request.status == 'requested' or leave_request.status == 'rejected' %}
+                            {% if leave_request.status == 'requested' %}
                             <a type="submit" href="{% url 'request-approve' leave_request.id %}" title="{% trans 'Approve' %}"
                                 class="oh-btn oh-btn--success w-100">
                                 <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
