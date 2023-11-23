@@ -120,31 +120,36 @@ def dashboard(request):
     total_candidates = len(candidates)
     total_hired_candidates = len(hired_candidates)
     conversion_ratio = 0
+    hired_ratio = 0
+    total_candidate_ratio = 0
     acceptance_ratio = 0
     if total_candidates != 0:
-        acceptance_ratio = f"{((total_hired_candidates / total_candidates) * 100):.1f}"
-
+        conversion_ratio = f"{((total_hired_candidates / total_candidates) * 100):.1f}"
     if total_vacancy != 0:
-        conversion_ratio = f"{((total_hired_candidates / total_vacancy) * 100):.1f}"
+        hired_ratio = f"{((total_hired_candidates / total_vacancy) * 100):.1f}"
+        total_candidate_ratio = f"{((total_candidates / total_vacancy) * 100):.1f}"
+    if total_hired_candidates != 0:
+        acceptance_ratio = f"{((onboarding_count / total_hired_candidates) * 100):.1f}"
     return render(
         request,
         "dashboard/dashboard.html",
         {
             "total_candidates": total_candidates,
+            "total_candidate_ratio" : total_candidate_ratio,
             "total_hired_candidates": total_hired_candidates,
             "conversion_ratio": conversion_ratio,
+            "acceptance_ratio": acceptance_ratio,
             "onboard_candidates": hired_candidates.filter(start_onboard=True),
             "job_data": job_data,
             "total_vacancy": total_vacancy,
             "recruitment_manager_mapping": recruitment_manager_mapping,
-            "acceptance_ratio": acceptance_ratio,
+            "hired_ratio": hired_ratio,
             'joining' : joining,
             "dep_vacancy" : dep_vacancy,
             "stage_chart_count" : stage_chart_count,
             "onboarding_count" : onboarding_count,
         },
     )
-
 
 
 @login_required
