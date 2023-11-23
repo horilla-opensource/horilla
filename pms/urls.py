@@ -4,7 +4,7 @@ from . import models
 
 
 urlpatterns = [
-    path("objective-creation", views.objective_creation, name="objective-creation"),
+    path("objective-creation/", views.objective_creation, name="objective-creation"),
     path(
         "objective-list-search",
         views.objective_list_search,
@@ -86,6 +86,7 @@ urlpatterns = [
         "feedback-answer-get/<int:id>",
         views.feedback_answer_get,
         name="feedback-answer-get",
+        kwargs={"model": models.Feedback},
     ),
     path(
         "feedback-answer-post/<int:id>",
@@ -96,6 +97,7 @@ urlpatterns = [
         "feedback-answer-view/<int:id>",
         views.feedback_answer_view,
         name="feedback-answer-view",
+        kwargs={"model": models.Feedback},
     ),
     path(
         "feedback-detailed-view/<int:id>",

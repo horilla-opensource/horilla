@@ -1153,7 +1153,7 @@ def feedback_detailed_view_answer(request, id, emp_id):
 
 
 @login_required
-def feedback_answer_get(request, id):
+def feedback_answer_get(request, id, **kwargs):
     """
     This view is used to render the feedback questions ,
     Args:
@@ -1249,7 +1249,7 @@ def feedback_answer_post(request, id):
 
 
 @login_required
-def feedback_answer_view(request, id):
+def feedback_answer_view(request, id, **kwargs):
     """
     This view is used to  view the feedback for employee.
     Args:
@@ -2069,10 +2069,12 @@ def objective_select(request):
     user = request.user.employee_get
     employees = EmployeeObjective.objects.all()
     if page_number == "all":
-        if table == 'all':
+        if table == "all":
             employees = EmployeeObjective.objects.filter(archive=False)
         else:
-            employees = EmployeeObjective.objects.filter(employee_id=user, archive=False)
+            employees = EmployeeObjective.objects.filter(
+                employee_id=user, archive=False
+            )
 
     employee_ids = [str(emp.id) for emp in employees]
     total_count = employees.count()
@@ -2095,10 +2097,14 @@ def objective_select_filter(request):
 
     employee_filter = ObjectiveFilter(filters, queryset=EmployeeObjective.objects.all())
     if page_number == "all":
-        if table == 'all':
-            employee_filter = ObjectiveFilter(filters, queryset=EmployeeObjective.objects.all())
+        if table == "all":
+            employee_filter = ObjectiveFilter(
+                filters, queryset=EmployeeObjective.objects.all()
+            )
         else:
-            employee_filter = ObjectiveFilter(filters, queryset=EmployeeObjective.objects.filter(employee_id=user))
+            employee_filter = ObjectiveFilter(
+                filters, queryset=EmployeeObjective.objects.filter(employee_id=user)
+            )
         # Get the filtered queryset
         filtered_employees = employee_filter.qs
 
