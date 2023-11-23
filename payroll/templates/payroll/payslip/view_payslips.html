@@ -176,7 +176,7 @@
 				</li>
 			</ul>
 			<div class="oh-dropdown" x-data="{open: false}">
-				<button class="oh-btn ml-2" @click="open = !open">
+				<button class="oh-btn ml-2" @click="open = !open" onclick="event.preventDefault()">
 					<ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}
 					<div id="filterCount"></div>
 				</button>
@@ -197,6 +197,7 @@
 					class="oh-btn oh-btn--dropdown"
 					@click="open = !open"
 					@click.outside="open = false"
+          onclick="event.preventDefault()"
 					>
 					{% trans "Actions" %}
 					</button>

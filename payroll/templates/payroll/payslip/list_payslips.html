@@ -1,31 +1,7 @@
 {% load i18n %} {% load static i18n %} {% include 'filter_tags.html' %}
-
-<div
-  class="oh-checkpoint-badge text-success mb-2"
-  id="selectAllPayslip"
-  style="cursor: pointer"
->
-  {% trans "Select All Payslips" %}
-</div>
-<div
-  class="oh-checkpoint-badge text-secondary mb-2"
-  id="unselectAllPayslip"
-  style="cursor: pointer"
->
-  {% trans "Unselect All Payslips" %}
-</div>
-<div
-  class="oh-checkpoint-badge text-info mb-2"
-  id="exportPayslips"
-  style="cursor: pointer"
->
-  {% trans "Export Payslips" %}
-</div>
-<div class="oh-checkpoint-badge text-danger mb-2" id="selectedSlipShow"></div>
 <div id="payslips-table">
   {% include "payroll/payslip/payslip_table.html" %}
 </div>
-
 <script>
   $(document).ready(function () {
     $("#selectAllPayslip").click(function () {

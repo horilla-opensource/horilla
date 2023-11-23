@@ -328,10 +328,11 @@ $("#deletePayslipBulk").click(function (e) {
     languageCode = code;
     var confirmMessage = deletePayslipMessages[languageCode];
     var textMessage = noRowMessages[languageCode];
+    var checkedRows = $(".payslip-checkbox").filter(":checked");
     ids = [];
     ids.push($("#selectedPayslip").attr("data-ids"));
     ids = JSON.parse($("#selectedPayslip").attr("data-ids"));
-    if (ids.length === 0) {
+    if (ids.length === 0 & checkedRows.length === 0) {
       Swal.fire({
         text: textMessage,
         icon: "warning",
@@ -347,6 +348,18 @@ $("#deletePayslipBulk").click(function (e) {
         confirmButtonText: "Confirm",
       }).then(function (result) {
         if (result.isConfirmed) {
+          if (ids.length === 0) {
+            e.preventDefault();
+              ids=[]
+              checkedRows.each(function(){
+              ids.push($(this).attr("id"));
+            })
+          } else if(checkedRows.length === 0) {
+            e.preventDefault();
+            ids = [];
+            ids.push($("#selectedPayslip").attr("data-ids"));
+            ids = JSON.parse($("#selectedPayslip").attr("data-ids"));
+          }
           $.ajax({
             type: "POST",
             url: "/payroll/payslip-bulk-delete",

@@ -1,6 +1,28 @@
 {% load static %}
 {% load i18n %}
 {% include 'filter_tags.html' %}
+  <div
+    class="oh-checkpoint-badge text-success mb-2"
+    id="selectAllPayslip"
+    style="cursor: pointer"
+  >
+    {% trans "Select All Payslips" %}
+  </div>
+  <div
+    class="oh-checkpoint-badge text-secondary mb-2"
+    id="unselectAllPayslip"
+    style="cursor: pointer"
+  >
+    {% trans "Unselect All Payslips" %}
+  </div>
+  <div
+    class="oh-checkpoint-badge text-info mb-2"
+    id="exportPayslips"
+    style="cursor: pointer"
+  >
+    {% trans "Export Payslips" %}
+  </div>
+  <div class="oh-checkpoint-badge text-danger mb-2" id="selectedSlipShow"></div>
 <div class="oh-sticky-table">
     <div class="oh-sticky-table__table oh-table--sortable">
       <div class="oh-sticky-table__thead">
@@ -164,5 +186,16 @@
   $(document).ready(function () {
     tickPayslipCheckboxes();
   });
+
+  $(document).ready(function () {
+    $("#selectAllPayslip").click(function () {
+      selectAllPayslip();
+    });
+
+    $("#unselectAllPayslip").click(function () {
+      unselectAllPayslip();
+    });
+  });
+  
 </script>
 <script src="{% static 'payroll/action.js' %}"></script>

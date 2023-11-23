@@ -35,12 +35,14 @@
             <div class="oh-sticky-table__thead">
               <div class="oh-sticky-table__tr">
                 <div class="oh-sticky-table__th" style="width:10px;">
-                  <input
-                    type="checkbox"
-                    title="Select all users"
-                    class="oh-input oh-input__checkbox mt-1 mr-2 select-all-payslip-row"
-                    data-accordion-id="{{payslip.grouper}}Container"
-                  />
+                  <div class="centered-div">
+                    <input
+                      type="checkbox"
+                      title="Select all users"
+                      class="oh-input oh-input__checkbox select-all-payslip-row"
+                      data-accordion-id="{{payslip.grouper}}Container"
+                    />
+                  </div>
                 </div>
                 <div class="oh-sticky-table__th">{% trans "Employee" %}</div>
                 <div class="oh-sticky-table__th">{% trans "Period" %}</div>
@@ -55,16 +57,15 @@
               {% for payslip in payslip.list %}
               <div class="oh-sticky-table__tr oh-multiple-table-sort__movable">
                 <div class="oh-sticky-table__sd {% if payslip.status == "review_ongoing" %}row-status--orange {% elif payslip.status == "confirmed" %} row-status--blue {% elif payslip.status == "paid" %} row-status--yellow {% elif payslip.status == "draft" %} row-status--gray{% endif %}">
-                  <div class="d-flex">
-                    <div>
-                      <input
-                        type="checkbox"
-                        value="{{payslip.id}}"
-                        onchange="highlightRow($(this))"
-                        onchange="$(this).attr('data-checked', $(this).is(':checked'));"
-                        class="oh-input oh-input__checkbox mt-2 mr-2 all-payslip-row payslip-row"
-                      />
-                    </div>
+                  <div class="centered-div">
+                    <input
+                      type="checkbox"
+                      id="{{payslip.id}}"
+                      value="{{payslip.id}}"
+                      onchange="highlightRow($(this))"
+                      onchange="$(this).attr('data-checked', $(this).is(':checked'));"
+                      class="oh-input payslip-checkbox oh-input__checkbox all-payslip-row payslip-row"
+                    />
                   </div>
                 </div>
                 <div class="oh-sticky-table__td">
