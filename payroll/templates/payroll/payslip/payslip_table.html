@@ -1,6 +1,7 @@
 {% load static %}
 {% load i18n %}
 {% include 'filter_tags.html' %}
+{% if not request.GET.dashboard %}
   <div
     class="oh-checkpoint-badge text-success mb-2"
     id="selectAllPayslip"
@@ -23,6 +24,7 @@
     {% trans "Export Payslips" %}
   </div>
   <div class="oh-checkpoint-badge text-danger mb-2" id="selectedSlipShow"></div>
+{% endif %}
 <div class="oh-sticky-table">
     <div class="oh-sticky-table__table oh-table--sortable">
       <div class="oh-sticky-table__thead">
