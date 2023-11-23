@@ -1,5 +1,7 @@
+from urllib.parse import urlencode
 from django.http import HttpResponse,HttpResponseRedirect
 from django.shortcuts import redirect
+from django.urls import reverse
 from employee.models import Employee, EmployeeWorkInformation
 from django.contrib import messages
 
@@ -59,7 +61,12 @@ def login_required(view_func):
         if path == '' or path == '/':
             request.session['title'] = 'Dashboard'.upper()
         if not request.user.is_authenticated:
-            return redirect('/login')
+            login_url = reverse('login')
+            params = urlencode(request.GET)
+            url = f'{login_url}?next={request.path}'
+            if params:
+                url += f'&{params}'
+            return redirect(url)
         return view_func(request, *args, **kwargs)
     return wrapped_view
 
