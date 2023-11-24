@@ -138,7 +138,7 @@
   }
 </style>
 <div id="slectContainer{{self.attrs.id}}">
-  <select name="{{field_name}}" id="{{self.attrs.id}}" class="w-100" multiple>
+  <select name="{{field_name}}" id="{{self.attrs.id}}" {% if required  %}required{% endif %} class="w-100" multiple>
     {% for instance in queryset %}
     <option value="{{instance.id}}">{{instance}}</option>
     {% endfor %}

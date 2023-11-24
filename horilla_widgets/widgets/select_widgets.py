@@ -19,9 +19,11 @@ class HorillaMultiSelectWidget(forms.Widget):
         filter_instance_contex_name=None,
         filter_template_path=None,
         instance=None,
+        required=False,
         **kwargs
     ) -> None:
         self.filter_route_name = filter_route_name
+        self.required = required
         self.filter_class = filter_class
         self.filter_instance_contex_name = filter_instance_contex_name
         self.filter_template_path = filter_template_path
@@ -42,6 +44,7 @@ class HorillaMultiSelectWidget(forms.Widget):
         context["self"] = self
         context["filter_template_path"] = self.filter_template_path
         context["filter_route_name"] = self.filter_route_name
+        context["required"] = self.required
         self.attrs["id"] = ("id_" + name ) if self.attrs.get('id') is None else self.attrs.get("id")
         context[self.filter_instance_contex_name] = self.filter_class
         return context
