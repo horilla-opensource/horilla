@@ -290,4 +290,10 @@ urlpatterns = [
         views.user_request_select_filter,
         name="user-request-select-filter",
     ),
+    
+    # path(
+    #     "leave-type-widget-filter",
+    #     views.leave_type_widget_filter,
+    #     name="leave-type-widget-filter",
+    # ),
 ]

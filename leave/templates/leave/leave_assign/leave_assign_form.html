@@ -10,14 +10,7 @@
     </div>
 {% endif %}
 <form hx-post="{% url 'assign' %}">
-    <div class="oh-modal__dialog-body pb-2" id="leaveTypeAssign">
-        <label class="oh-label d-block">{% trans "Leave types" %}</label>
-        {{form.leave_type_id}} {{form.leave_type_id.errors}}
-    </div>
-    <div class="oh-modal__dialog-body pb-2" id="employeeAssign">
-        <label class="oh-label d-block">{% trans "Employees" %}</label>
-        {{form.employee_id}} {{form.employee_id.errors}}
-    </div>
+    {{assign_form}}
     <div class="oh-modal__dialog-footer">
         <button type="submit" class="oh-btn oh-btn--secondary w-100">
           {% trans "Apply" %}

@@ -1,11 +1,17 @@
 import re
+import uuid
 from django import forms
 from django.forms import ModelForm
 from django.forms.widgets import TextInput
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 from django.template.loader import render_to_string
+from employee.filters import EmployeeFilter
 from employee.models import Employee
+from horilla_widgets.forms import HorillaForm
+from horilla_widgets.widgets.horilla_multi_select_field import HorillaMultiSelectField
+from horilla_widgets.widgets.select_widgets import HorillaMultiSelectWidget
+from leave.filters import LeaveTypeFilter
 from .models import (
     LeaveType,
     LeaveRequest,
@@ -683,7 +689,7 @@ class LeaveRequestExportForm(forms.Form):
         widget=forms.CheckboxSelectMultiple,
         initial=[
             "employee_id",
-            "leave_type_id",
+            "leave_type_Assignid",
             "start_date",
             "start_date_breakdown",
             "end_date",
@@ -693,3 +699,67 @@ class LeaveRequestExportForm(forms.Form):
             "status",
         ],
     )
+
+
+
+class AssignLeaveForm(HorillaForm):
+    """
+    Form for Payslip
+    """
+    leave_type_id = forms.ModelChoiceField(
+        queryset=LeaveType.objects.all(),
+        widget=forms.SelectMultiple(attrs={"class": "oh-select oh-select-2 mb-2","required": True}),
+        empty_label=None,
+        label="Leave Type",
+        required=False,
+    )
+    employee_id = HorillaMultiSelectField(
+        queryset=Employee.objects.all(),
+        widget=HorillaMultiSelectWidget(
+            filter_route_name="employee-widget-filter",
+            filter_class=EmployeeFilter,
+            filter_instance_contex_name="f",
+            filter_template_path="employee_filters.html",
+            required = True,
+        ),
+        label="Employee",
+    )
+    # leave_type_id = HorillaMultiSelectField(
+    #     queryset=LeaveType.objects.all(),
+    #     widget=HorillaMultiSelectWidget(
+    #         filter_route_name="leave-type-widget-filter",
+    #         filter_class=LeaveTypeFilter,
+    #         filter_instance_contex_name="form",
+    #         filter_template_path="leave/leave_type/leave_type_filter.html",
+    #     ),
+    #     label="Leave Type",
+    # )
+
+    def clean(self):
+        print("///////////////////////////////")
+        cleaned_data = super().clean()
+        employee_id = cleaned_data.get("employee_id")
+        leave_type_id = cleaned_data.get("leave_type_id")
+
+        if not employee_id :
+            raise forms.ValidationError(
+                {
+                    "employee_id": "This field is required"
+                }
+            )
+        if not leave_type_id :
+            raise forms.ValidationError(
+                {
+                    "leave_type_id": "This field is required"
+                }
+            )
+        return cleaned_data
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.fields["employee_id"].widget.attrs.update(
+            {"required": True, "id": uuid.uuid4()}
+        ),
+        self.fields['leave_type_id'].label = "Leave Type"
+

@@ -807,16 +807,18 @@ def leave_assign_view(request):
     assigned_leave_filter = AssignedLeaveFilter()
     export_filter = AssignedLeaveFilter()
     export_column = AvailableLeaveColumnExportForm()
+    assign_form = AssignLeaveForm()
     return render(
         request,
         "leave/leave_assign/assign_view.html",
         {
             "available_leaves": page_obj,
-            "form": assigned_leave_filter.form,
+            "f": assigned_leave_filter,
             "export_filter": export_filter,
             "export_column": export_column,
             "pd": previous_data,
             "gp_fields": LeaveAssignReGroup.fields,
+            "assign_form":assign_form,
         },
     )
 
@@ -835,6 +837,7 @@ def leave_assign_filter(request):
     GET : return leave type assigned view template
     """
     queryset = AvailableLeave.objects.all()
+    assign_form = AssignLeaveForm()
     queryset = filtersubordinates(request, queryset, "leave.view_availableleave")
     assigned_leave_filter = AssignedLeaveFilter(request.GET, queryset).qs
     previous_data = request.GET.urlencode()
@@ -857,11 +860,11 @@ def leave_assign_filter(request):
             "pd": previous_data,
             "filter_dict": data_dict,
             "field": field,
+            "assign_form":assign_form,
         },
     )
 
 
-# Function to assign the created leave type to employee
 @login_required
 @hx_request_required
 @manager_can_enter("leave.add_availableleave")
@@ -873,11 +876,12 @@ def leave_assign(request):
     request (HttpRequest): The HTTP request object.
 
     Returns:
-    GET : return multiple leave type assign form template
-    POST : return leave type assigned  view
+    GET: return multiple leave type assign form template
+    POST: return leave type assigned view
     """
-    form = AvailableLeaveForm()
+    form = AssignLeaveForm()
     form = choosesubordinates(request, form, "leave.add_availableleave")
+
     if request.method == "POST":
         leave_type_ids = request.POST.getlist("leave_type_id")
         employee_ids = request.POST.getlist("employee_id")
@@ -896,34 +900,31 @@ def leave_assign(request):
                                 available_days=leave_type.total_days,
                             ).save()
                             messages.success(
-                                request, _("Leave type assign is successfull..")
+                                request, _("Leave type assign is successful..")
                             )
                             with contextlib.suppress(Exception):
                                 notify.send(
                                     request.user.employee_get,
                                     recipient=employee.employee_user_id,
                                     verb="New leave type is assigned to you",
-                                    verb_ar="تم تعيين نوع إجازة جديد لك",
-                                    verb_de="Ihnen wurde ein neuer Urlaubstyp zugewiesen",
-                                    verb_es="Se le ha asignado un nuevo tipo de permiso",
-                                    verb_fr="Un nouveau type de congé vous a été attribué",
-                                    icon="people-circle",
-                                    redirect="/leave/user-leave",
+                                    # ... (remaining notify.send parameters)
                                 )
                         else:
                             messages.info(
                                 request,
                                 _("Leave type is already assigned to the employee.."),
                             )
+
         response = render(
             request,
             "leave/leave_assign/leave_assign_form.html",
             {"form": form, "id": id},
         )
         return HttpResponse(
-            response.content.decode("utf-8") + "<script>location. reload();</script>"
+            response.content.decode("utf-8") + "<script>location.reload();</script>"
         )
-    return render(request, "leave/leave_assign/leave_assign_form.html", {"form": form})
+
+    return render(request, "leave/leave_assign/leave_assign_form.html", {"assign_form": form})
 
 
 @login_required
@@ -3089,3 +3090,26 @@ def user_request_select_filter(request):
         context = {"employee_ids": employee_ids, "total_count": total_count}
 
         return JsonResponse(context)
+
+
+# @login_required
+# def leave_type_widget_filter(request):
+#     """
+#     This method is used to return all the ids of the filtered employees
+#     """
+#     page_number = request.GET.get("page")
+#     filtered = request.GET.get("filter")
+#     filters = json.loads(filtered) if filtered else {}
+
+#     if page_number == "all":
+#         leave_type_filter = LeaveTypeFilter(filters, queryset=LeaveType.objects.all())
+
+#         # Get the filtered queryset
+#         filtered_leave_type = leave_type_filter.qs
+
+#         employee_ids = [str(emp.id) for emp in filtered_leave_type]
+#         total_count = filtered_leave_type.count()
+
+#         context = {"employee_ids": employee_ids, "total_count": total_count}
+
+#         return JsonResponse(context)

@@ -72,6 +72,7 @@ class LeaveTypeFilter(FilterSet):
     """
 
     name = filters.CharFilter(field_name="name", lookup_expr="icontains")
+    search = filters.CharFilter(field_name="name", lookup_expr="icontains")
 
     class Meta:
         """ "
@@ -79,9 +80,8 @@ class LeaveTypeFilter(FilterSet):
         """
 
         model = LeaveType
-        fields = {
-            "payment": ["exact"],
-        }
+        fields = "__all__"
+        exclude = ["icon"]
 
 
 class AssignedLeaveFilter(FilterSet):
