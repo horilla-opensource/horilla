@@ -74,7 +74,15 @@
         {% for key_result in key_result_feedback %}
           <li class="oh-activity-sidebar__qa-item">
             <span class="oh-activity-sidebar__q"> {{forloop.counter}}. {{key_result.key_result_id.key_result}}</span>
-            <span class="oh-activity-sidebar__a"> {{key_result.answer.answer}}.</span>
+            <span
+              class="oh-input-picker {% if key_result.answer.answer == 'Perfect' %} oh-input-picker--likert likert-colour oh-input-picker--selected oh-input-picker--4
+                     {% elif key_result.answer.answer == 'Good' %} oh-input-picker--likert likert-colour oh-input-picker--selected oh-input-picker--3
+                     {% elif key_result.answer.answer == 'Average' %} oh-input-picker--likert likert-colour oh-input-picker--selected oh-input-picker--2
+                     {% elif key_result.answer.answer == 'Bad' %} oh-input-picker--likert likert-colour oh-input-picker--selected oh-input-picker--1
+                     {% endif %}"
+            > 
+              {{key_result.answer.answer}}.
+            </span>
           </li>
         {% endfor %}
       {% endif %}

@@ -6,18 +6,7 @@
 {% endblock styles %}
 
 {% block content %}
-{% if messages %}
-<!-- form errors  -->
-<div class="oh-wrapper">
-  <div class="oh-alert-container">
-    {% for message in messages %}
-    <div class="oh-alert oh-alert--animated {{message.tags}}">
-      {{message}}
-    </div>
-    {% endfor %}
-  </div>
-</div>
-{% endif %}
+
 
 {% if objective_form.errors %}
 <!-- form non field errors  -->
@@ -30,7 +19,7 @@
         {% endfor %}
     </div>
 </div>
-{% endif %}
+{% endif %} 
 
 <main class="oh-onboarding">
   <div class="oh-onboarding-card">

@@ -313,9 +313,9 @@ def objective_list_search(request):
     Returns:
         All the filtered and searched object will based on userlevel.
     """
-    objective_owner = request.GET.get("search")
-    if objective_owner is None:
-        objective_owner = ""
+    search_val = request.GET.get("search")
+    if search_val is None:
+        search_val = ""
 
     user = request.user
     employee = Employee.objects.filter(employee_user_id=user).first()
@@ -327,9 +327,9 @@ def objective_list_search(request):
         # based on permission
         objective_own = EmployeeObjective.objects.filter(
             employee_id=request.user.employee_get
-        ).filter(employee_id__employee_first_name__icontains=objective_owner)
+        ).filter(objective__icontains=search_val)
         objective_all = EmployeeObjective.objects.filter(
-            employee_id__employee_first_name__icontains=objective_owner
+            objective__icontains=search_val
         )
         context = objective_filter_pagination(request, objective_own, objective_all)
 
@@ -337,17 +337,17 @@ def objective_list_search(request):
         # if user is a manager
         employees_ids = [employee.id for employee in is_manager]
         objective_own = EmployeeObjective.objects.filter(employee_id=employee).filter(
-            employee_id__employee_first_name__icontains=objective_owner
+            objective__icontains=search_val
         )
         objective_all = EmployeeObjective.objects.filter(
             employee_id__in=employees_ids
-        ).filter(employee_id__employee_first_name__icontains=objective_owner)
+        ).filter(objective__icontains=search_val)
         context = objective_filter_pagination(request, objective_own, objective_all)
 
     else:
         # for normal user
         objective_own = EmployeeObjective.objects.filter(employee_id=employee).filter(
-            employee_id__employee_first_name__icontains=objective_owner
+            objective__icontains=search_val
         )
         objective_all = EmployeeObjective.objects.none()
         context = objective_filter_pagination(request, objective_own, objective_all)
