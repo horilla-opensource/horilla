@@ -1,0 +1,45 @@
+{% load i18n %}
+<div class="oh-dropdown__filter-body">
+    <div class="">
+        <div
+            class="oh-accordion-header"
+        >
+            {% trans "Leave Type" %}
+        </div>
+        <div class="oh-accordion-body">
+            <div class="row">
+                <div class="col-sm-12 col-md-12 col-lg-6">
+                    <div class="oh-input-group">
+                        <label class="oh-label">{% trans "Name" %}</label>
+                        {{form.name}}
+                    </div>
+                </div>
+                <div class="col-sm-12 col-md-12 col-lg-6">
+                    <div class="oh-input-group">
+                        <label class="oh-label"
+                            >{% trans "Payment Method" %}</label
+                        >
+                        {{form.payment}}
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-12 col-md-12 col-lg-6">
+                    <div class="oh-input-group">
+                        <label class="oh-label">{% trans "Reset" %}</label>
+                        {{form.reset}}
+                    </div>
+                </div>
+                <div class="col-sm-12 col-md-12 col-lg-6">
+                    <div class="oh-input-group">
+                        <label class="oh-label"
+                            >{% trans "Carry Forward Type" %}</label
+                        >
+                        {{form.carryforward_type}}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
