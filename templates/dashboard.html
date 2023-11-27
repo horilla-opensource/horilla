@@ -16,6 +16,22 @@
     padding-right: 0;
     padding-bottom: 10px;
   }
+  .progress {
+    height: 20px;
+    width: 110px;
+    background-color: lightgrey;
+    border:2px solid #27C20C;
+    border-radius: 5px;
+    overflow: hidden;
+  }
+  .progress-bar {
+    height: 100%;
+    background-color: #27C20C; /* Set your desired progress bar color */
+  }
+  .progress-text {
+    width: 100%;
+    text-align: center;
+  }
 </style>
 <main>
   <div class="oh-wrapper">
@@ -442,7 +458,7 @@
           </ul>
         </div>
         <div
-          class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent"
+          class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent mb-3"
         >
           <div
             class="oh-card-dashboard__header oh-card-dashboard__header--divider"
@@ -453,6 +469,52 @@
             <ul class="oh-card-dashboard__user-list" id="leaveEmployee"></ul>
           </div>
         </div>
+
+        <div
+          class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent"
+        > 
+        
+          <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
+            <span class="oh-card-dashboard__title">{% trans "Employee Work Information" %}</span>
+          </div>
+          
+          <!-- Search bar -->
+          <div class="oh-search-bar mb-3">
+            <input type="text" id="employeeSearch" placeholder="Search Employee">
+          </div>
+          
+          <div class="oh-table" style="max-height: 425px; overflow-y: auto;">
+            <table>
+                <thead>
+                  <tr>
+                    <th style="font-weight:bold; font-size:15px; color:black;">{% trans "Employee" %}</th>
+                    <!-- Add more table headers as needed -->
+                    <th style="font-weight:bold; font-size:15px; color:black;">{% trans "Progress" %}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for employee_info in employees_with_pending %}
+                    <tr>
+                      <td>
+                        <a href="{% url 'employee-view-update' employee_info.employee.employee_id.id %}">
+                          {{ employee_info.employee.employee_id }}</a>
+                      </td>
+                      <td style="position: relative;">
+                        <a href="{% url 'employee-view-update' employee_info.employee.employee_id.id %}">
+                          <div class="progress">
+                            <div class="progress-bar" role="progressbar" style="width: {{ employee_info.completed_field_count }}%;"></div>
+                          </div>
+                          <div class="progress-text">{{ employee_info.completed_field_count }}% {% trans "Completed" %}</div>
+                        </a>
+                      </td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+            </table>
+          </div>
+
+        </div>
+
       </div>
       {% endif %}
     </div>
@@ -545,5 +607,21 @@
         localStorage.setItem("tileOrder", JSON.stringify(tileOrder));
       }, 10);
     });
+  });
+
+  $(document).ready(function() {
+      // Add an input event listener to the search bar
+      $("#employeeSearch").on("input", function() {
+          // Get the value entered in the search bar
+          var searchValue = $(this).val().toLowerCase();
+
+          // Iterate through each table row and hide/show based on the search value
+          $("table tbody tr").each(function() {
+              var employeeId = $(this).find("td:first-child").text().toLowerCase();
+
+              // Toggle the visibility of the row based on whether it contains the search value
+              $(this).toggle(employeeId.includes(searchValue));
+          });
+      });
   });
 </script>

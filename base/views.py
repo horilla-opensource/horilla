@@ -32,7 +32,7 @@ from horilla.decorators import (
     manager_can_enter,
 )
 from horilla.settings import EMAIL_HOST_USER
-from employee.models import Employee
+from employee.models import Employee, EmployeeWorkInformation
 from base.forms import (
     CompanyForm,
     DepartmentForm,
@@ -276,6 +276,12 @@ def logout_user(request):
 
     return response
 
+class Workinfo:
+    def __init__(self,employee) -> None:
+        self.employee_work_info = employee
+        self.employee_id = employee
+        self.id = employee.id
+        pass
 
 @login_required
 def home(request):
@@ -302,9 +308,36 @@ def home(request):
     first_day_of_week = today - timedelta(days=today_weekday)
     last_day_of_week = first_day_of_week + timedelta(days=6)
 
+    employees_with_pending = []
+        
+    # List of field names to focus on
+    fields_to_focus = ['job_position_id','department_id','work_type_id','employee_type_id','job_role_id','reporting_manager_id','company_id','location','email','mobile',
+                       'shift_id','date_joining','contract_end_date','basic_salary','salary_hour']
+
+    for employee in EmployeeWorkInformation.objects.all():
+        completed_field_count = sum(1 for field_name in fields_to_focus if getattr(employee, field_name) is not None)
+        if completed_field_count < 14:
+            # Create a dictionary with employee information and pending field count
+            percent = f"{((completed_field_count / 14) * 100):.1f}"
+            employee_info = {
+                'employee': employee,
+                'completed_field_count': percent,
+            }
+            employees_with_pending.append(employee_info)        
+        else:
+            pass
+
+    emps = Employee.objects.filter(employee_work_info__isnull = True)
+    for emp in emps:
+        employees_with_pending.append({
+            'employee': Workinfo(employee=emp),
+                'completed_field_count': '0',
+        })
+
     context = {
         "first_day_of_week": first_day_of_week.strftime("%Y-%m-%d"),
         "last_day_of_week": last_day_of_week.strftime("%Y-%m-%d"),
+        'employees_with_pending': employees_with_pending
     }
 
     return render(request, "index.html", context)

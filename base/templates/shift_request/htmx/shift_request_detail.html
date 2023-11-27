@@ -71,7 +71,7 @@
             {% if shift_request.approved == False and not shift_request.canceled   %}
             <a hx-get="{% url 'shift-request-update' shift_request.id %}" hx-target='#shiftRequestModalUpdateBody' data-toggle="oh-modal-toggle" data-target='#shiftRequestModalUpdate' class="oh-btn oh-btn--info w-50" title="{% trans 'Edit' %}"><ion-icon name="create-outline"></ion-icon></a>
             {% else %}
-            <button class="oh-btn oh-btn--info" disabled><ion-icon name="create-outline" ></ion-icon></button></td>
+            <button class="oh-btn oh-btn--info w-50" disabled><ion-icon name="create-outline" ></ion-icon></button></td>
             {% endif %}
             {% comment %} end of edit button {% endcomment %}
             {% comment %} start of remove button {% endcomment %}
