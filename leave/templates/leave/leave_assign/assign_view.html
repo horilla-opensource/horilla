@@ -380,16 +380,6 @@
 	})
 </script>
 <script>
-
-	$(document).on('htmx:load', '#assignedLeaves', function () {
-		// Create a new script element
-		var scriptElement = document.createElement("script");
-		// Set the source URL of the script file to be loaded
-		scriptElement.src = "{% static 'build/js/web.frontend.min.js' %}";
-		// Append the script element to the head of the HTML document
-		document.head.appendChild(scriptElement);
-	});
-
 	$(document).on('htmx:load', '#assignLeaveForm', function () {
 		{% include 'select2.js' %}
 		$('#leaveTypeAssign #id_leave_type_id').select2();
@@ -398,21 +388,14 @@
 
 	$('#delete-link').on('click', function (event) {
 
-		event.preventDefault(); // prevent the default behavior of the link
+		event.preventDefault();
 
 		const link = $(this);
 		const confirmation = confirm("{% trans 'Are you sure you want to delete?' %}");
 
 		if (confirmation) {
-			window.location.href = link.attr('href'); // execute the href if confirmed
+			window.location.href = link.attr('href');
 		}
-	});
-	$(document).ready(function () {	
-
-		$(".oh-accordion-meta__header").on("click", function  {
-			$(this).toggleClass("oh-accordion-meta__header--show");
-			$(this).siblings(".oh-accordion-meta__body").toggleClass("d-none");
-		});
 	});
 </script>
 
