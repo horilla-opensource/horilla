@@ -419,16 +419,10 @@ def objective_detailed_view(request, emp_obj_id, **kwargs):
     key_results = EmployeeKeyResult.objects.filter(employee_objective_id=objective)
     comments = Comment.objects.filter(employee_objective_id=objective)
     key_results_all = objective.emp_obj_id.all()
-
     # progress of objective calculation
-    completed_key_result = [
-        obj.current_value
-        for obj in key_results_all
-        if obj.current_value == obj.target_value
-    ]
     total_kr = key_results_all.count()
     try:
-        progress = int((len(completed_key_result) / total_kr) * 100)
+        progress = round(sum(kr.progress_percentage for kr in key_results_all) / (total_kr), 2)
     except (ZeroDivisionError, TypeError):
         progress = 0
 

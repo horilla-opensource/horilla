@@ -134,23 +134,31 @@
                                 <div class="oh-list-card">
                                     <div class="oh-list-card__header d-flex align-content-center justify-content-between mb-2">
                                         <span class="oh-list-card__title">{{employee_key_result.key_result}}</span>
-                                        <div class="d-flex align-items-center justify-content-between mb-2">
-                                            <small class="oh-text--light">
-                                                <label class="fw-bold oh-text--dark">{% trans "Due" %}:</label>
-                                                {{ current_date|timesince:employee_key_result.end_date }}
-                                            </small>
-                                            <!-- checking userlevel   -->
-                                            {% if perms.pms.change_employeekeyresult or request.user|filtersubordinates %}
-                                            <button
-                                                class="oh-btn oh-btn--x-small d-flex align-items-center ms-2 "
-                                                data-toggle="oh-modal-toggle"
-                                                hx-get="{% url 'key-result-update' id=employee_key_result.id %}"
-                                                hx-target="#ObjectiveModalFormTarget"
-                                                data-target="#objectiveModalpopup" >
-                                                <ion-icon name="create-outline" class="me-1" ></ion-icon>
-                                                {% trans "Edit" %}
-                                            </button>
-                                            {% endif %}
+                                        <div class="col-sm-12 col-md-12 col-lg-3">
+                                            <div class="d-flex align-items-center justify-content-between mb-2">
+                                                <small class="oh-text--light">
+                                                    <label class="fw-bold oh-text--dark">{% trans "Due" %}:</label>
+                                                    {{ current_date|timesince:employee_key_result.end_date }}
+                                                </small>
+                                                <!-- checking userlevel   -->
+                                                {% if perms.pms.change_employeekeyresult or request.user|filtersubordinates %}
+                                                <button
+                                                    class="oh-btn oh-btn--x-small d-flex align-items-center ms-2 "
+                                                    data-toggle="oh-modal-toggle"
+                                                    hx-get="{% url 'key-result-update' id=employee_key_result.id %}"
+                                                    hx-target="#ObjectiveModalFormTarget"
+                                                    data-target="#objectiveModalpopup" >
+                                                    <ion-icon name="create-outline" class="me-1" ></ion-icon>
+                                                    {% trans "Edit" %}
+                                                </button>
+                                                {% endif %}
+                                            </div>
+                                            <div class="oh-progress-container">
+                                                <div class="oh-progress" role="progressbar">
+                                                     <div class="oh-progress__bar oh-progress__bar--secondary" style="width: calc({% if employee_key_result.progress_percentage > 100 %} 100% {% else %} {{ employee_key_result.progress_percentage }}% {% endif %})"></div>
+                                                </div>
+                                                <span class="oh-progress-container__percentage" >{{employee_key_result.progress_percentage}}%</span>
+                                            </div>
                                         </div>
                                     </div>
                                     <div class="oh-list-card__body">
