@@ -92,7 +92,6 @@
 	{% include 'leave/leave_type/leave_types.html' %}
 </div>
 
-<!-- Time-Off -->
 <div
 	class="oh-modal"
 	id="editModal"
@@ -140,30 +139,20 @@
 		></div>
 	</div>
 </div>
-
 <script>
-	$(document).on('htmx:afterSwap', function () {
-	  // Create a new script element
-	  var scriptElement = document.createElement("script");
-	  // Set the source URL of the script file to be loaded
-	  scriptElement.src = "{% static 'build/js/web.frontend.min.js' %}";
-	  // Append the script element to the head of the HTML document
-	  document.head.appendChild(scriptElement);
-	});
-
 	$(document).on('htmx:load', '#leaveForm', function () {
 	  {% include 'select2.js' %}
 	  $('#id_employee_id').select2();
 	});
 
 	$('#delete-link').on('click', function(event) {
-	  event.preventDefault(); // prevent the default behavior of the link
+	  event.preventDefault();
 
 	  const link = $(this);
 	  const confirmation = confirm('{% trans "Are you sure you want to delete?" %}');
 
 	  if (confirmation) {
-	    window.location.href = link.attr('href'); // execute the href if confirmed
+	    window.location.href = link.attr('href');
 	  }
 	});
 </script>

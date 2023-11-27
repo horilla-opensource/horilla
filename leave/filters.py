@@ -73,6 +73,10 @@ class LeaveTypeFilter(FilterSet):
 
     name = filters.CharFilter(field_name="name", lookup_expr="icontains")
     search = filters.CharFilter(field_name="name", lookup_expr="icontains")
+    carry_forward_gte = filters.CharFilter(field_name="carryforward_max", lookup_expr="gte")
+    carry_forward_lte = filters.CharFilter(field_name="carryforward_max", lookup_expr="lte")
+    total_days_gte = filters.CharFilter(field_name="total_days", lookup_expr="gte")
+    total_days_lte = filters.CharFilter(field_name="total_days", lookup_expr="lte")
 
     class Meta:
         """ "

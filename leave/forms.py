@@ -11,7 +11,6 @@ from employee.models import Employee
 from horilla_widgets.forms import HorillaForm
 from horilla_widgets.widgets.horilla_multi_select_field import HorillaMultiSelectField
 from horilla_widgets.widgets.select_widgets import HorillaMultiSelectWidget
-from leave.filters import LeaveTypeFilter
 from .models import (
     LeaveType,
     LeaveRequest,
@@ -736,7 +735,6 @@ class AssignLeaveForm(HorillaForm):
     # )
 
     def clean(self):
-        print("///////////////////////////////")
         cleaned_data = super().clean()
         employee_id = cleaned_data.get("employee_id")
         leave_type_id = cleaned_data.get("leave_type_id")
