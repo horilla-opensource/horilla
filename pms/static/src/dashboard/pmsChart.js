@@ -28,7 +28,7 @@ if (objectiveChart != null) {
 				let datasetLabel = e.chart.data.datasets[datasetIndex].label;
 				let value = e.chart.data.datasets[datasetIndex].data[dataIndex];
 				let label = e.chart.data.labels[dataIndex];
-				let params = "?status=" + label + "&archive=false";
+				let params = "?status=" + label + "&archive=false" + "&dashboard=True";
 
 				$.ajax({
 					url: "/pms/objective-list-search" + params,

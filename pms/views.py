@@ -316,7 +316,7 @@ def objective_list_search(request):
     search_val = request.GET.get("search")
     if search_val is None:
         search_val = ""
-
+    
     user = request.user
     employee = Employee.objects.filter(employee_user_id=user).first()
     is_manager = Employee.objects.filter(
@@ -422,7 +422,7 @@ def objective_detailed_view(request, emp_obj_id, **kwargs):
     # progress of objective calculation
     total_kr = key_results_all.count()
     try:
-        progress = round(sum(kr.progress_percentage for kr in key_results_all) / (total_kr), 2)
+        progress = int(sum(kr.progress_percentage for kr in key_results_all) / (total_kr))
     except (ZeroDivisionError, TypeError):
         progress = 0
 
