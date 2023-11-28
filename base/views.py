@@ -329,7 +329,7 @@ def home(request):
 
     emps = Employee.objects.filter(employee_work_info__isnull = True)
     for emp in emps:
-        employees_with_pending.append({
+        employees_with_pending.insert(0,{
             'employee': Workinfo(employee=emp),
                 'completed_field_count': '0',
         })
