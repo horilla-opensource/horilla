@@ -338,9 +338,11 @@ class KeyResultForm(forms.ModelForm):
         employee_objective_id = self.initial.get("employee_objective_id")
         start_date = cleaned_data.get("start_date")
         end_date = cleaned_data.get("end_date")
+        target_value = cleaned_data.get("target_value")
+        current_value = cleaned_data.get("current_value")
 
         validate_date(start_date, end_date)
-
+        # date comparing with objective start and end date
         if employee_objective_id and start_date and end_date:
             if start_date < employee_objective_id.start_date:
                 raise ValidationError("Start date should be after Objective start date")
@@ -349,7 +351,11 @@ class KeyResultForm(forms.ModelForm):
                 raise ValidationError("End date should be below Objective end date")
         else:
             raise forms.ValidationError("Employee Objective not found")
-
+        # target value and current value comparison
+        if target_value <= 0:
+            raise ValidationError("Target value should be greater than zero")
+        if current_value > target_value:
+            raise forms.ValidationError("Current value cannot be greater than target value")
         return cleaned_data
 
 

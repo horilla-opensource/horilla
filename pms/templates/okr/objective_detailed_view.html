@@ -62,7 +62,7 @@
                                   </button>
                                   {% endif %}
                                 </div>
-                                <div class="oh-progress-container">
+                                <div class="oh-progress-container" name="objective_progress_container">
                                   <div class="oh-progress" role="progressbar">
                                     <div class="oh-progress__bar oh-progress__bar--secondary" style="width:  calc({{progress}}% )"></div>
                                   </div>
@@ -157,7 +157,7 @@
                                                 <div class="oh-progress" role="progressbar">
                                                      <div class="oh-progress__bar oh-progress__bar--secondary" style="width: calc({% if employee_key_result.progress_percentage > 100 %} 100% {% else %} {{ employee_key_result.progress_percentage }}% {% endif %})"></div>
                                                 </div>
-                                                <span class="oh-progress-container__percentage" >{{employee_key_result.progress_percentage}}%</span>
+                                                <span class="oh-progress-container__percentage" name= "key_result_percentage">{{employee_key_result.progress_percentage}}%</span>
                                             </div>
                                         </div>
                                     </div>
@@ -183,13 +183,15 @@
                                                         {% trans "Current Value" %}
                                                     </label>
                                                     <input 
+                                                    id = {{employee_key_result.id}}
                                                     type="number" class="oh-table__editable-input "  min="0"
                                                     max="{{employee_key_result.target_value}}"
                                                     value="{{employee_key_result.current_value}}"
                                                     hx-post="{%url 'objective-detailed-view-current-value' kr_id=employee_key_result.id %}"
                                                     hx-trigger="change"
                                                     hx-target="#objective_detailed_view_activity"
-                                                    name="current_value" readonly/>
+                                                    name="current_value" readonly
+                                                    onchange="progress(this)"/>
                                                   
                                                 </div>
                                             </div>
@@ -198,7 +200,8 @@
                                                     <label class="oh-input__label oh-text--secondary fw-bold oh-text--xs mb-0 mt-1">
                                                         {% trans "Target Value" %}
                                                     </label>
-                                                    <input 
+                                                    <input
+                                                        name ="target_value"
                                                         class="oh-input oh-input--small oh-input--block px-0" min="0"
                                                         value=" {{employee_key_result.target_value}} {{employee_key_result.progress_type}}"
                                                         readonly />
@@ -271,4 +274,44 @@
     </div>
 </main>
 
+<script>
+    
+    function progress (element) {
+        var currentValue = $(element).val()
+        keyResultCard = $(element).closest('.oh-list-card');
+        var targetValue = keyResultCard.find('[name="target_value"]').val()
+        // Extract only the numeric part using a regular expression
+        var numericValue = parseFloat(targetValue.replace(/[^\d.]/g, ''));
+        var prgressPercentage = parseInt( currentValue*100/numericValue )
+        progressContainer = keyResultCard.find('.oh-progress-container')
+        progressContainer.html(
+            '<div class="oh-progress" role="progressbar">' +
+                '<div class="oh-progress__bar oh-progress__bar--secondary" style="width: calc(' + prgressPercentage + '%)"></div>' +
+            '</div>' +
+            '<span class="oh-progress-container__percentage" name="key_result_percentage">' + prgressPercentage + '%</span>'
+        );
+
+        // Iterate over each span and get its text content
+        var total_percentage = 0
+        var total_kr = 0
+        $('[name = key_result_percentage]').each(function() {
+            strPercentage =  $(this).text();
+            numPercentage = parseFloat(strPercentage.replace(/[^\d.]/g, ''));
+            total_percentage += numPercentage 
+            total_kr += 1  
+        }); 
+        totalProgress = parseInt( total_percentage/total_kr)
+        obhectiveProgressContainer = $(element).closest('.oh-wrapper').find('[name=objective_progress_container]')
+        obhectiveProgressContainer.html(
+            '<div class="oh-progress" role="progressbar">' +
+                '<div class="oh-progress__bar oh-progress__bar--secondary" style="width: calc(' + totalProgress + '%)"></div>' +
+            '</div>' +
+            '<span class="oh-progress-container__percentage" name="key_result_percentage">' + totalProgress + '%</span>'
+        )   
+    }
+
+</script>
+
 {% endblock %}
+
+

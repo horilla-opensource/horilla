@@ -144,7 +144,9 @@ class EmployeeKeyResult(models.Model):
     def save(self, *args, **kwargs):
         if self.employee_id is None:
             self.employee_id = self.employee_objective_id.employee_id
-        self.progress_percentage = (int(self.current_value)/int(self.target_value))*100
+        if self.target_value != 0:
+            self.progress_percentage = (int(self.current_value)/int(self.target_value))*100
+        
         super().save(*args, **kwargs)
 
 
