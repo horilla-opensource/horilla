@@ -13,11 +13,14 @@ from django.conf import settings
 from django.db import models
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 from horilla_audit.models import HorillaAuditLog, HorillaAuditInfo
 from horilla_audit.methods import get_diff
 from employee.models import Employee
 from base.models import JobPosition, Company
 from django.core.files.storage import default_storage
+
 
 # Create your models here.
 
@@ -147,6 +150,20 @@ class Recruitment(models.Model):
         super().save(*args, **kwargs)  # Save the Recruitment instance first
         if self.is_event_based and self.open_positions is None:
             raise ValidationError({"open_positions": _("This field is required")})
+
+
+@receiver(post_save, sender=Recruitment)
+def create_initial_stage(sender, instance, created, **kwargs):
+    """
+    This is post save method, used to create initial stage for the recruitment
+    """
+    if created:
+        initial_stage = Stage()
+        initial_stage.sequence = 0
+        initial_stage.recruitment_id = instance
+        initial_stage.stage = "Initial"
+        initial_stage.stage_type = "initial"
+        initial_stage.save()
 
 
 class Stage(models.Model):
