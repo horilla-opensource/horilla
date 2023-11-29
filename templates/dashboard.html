@@ -313,7 +313,7 @@
                 </div>
               </div>
             </div>
-            {% endif %} {% if request.user|is_reportingmanager or perms.attendance.view_employee %}
+            {% endif %}
             <div
               class="col-12 col-sm-12 col-md-12 col-lg-4 oh-card-dashboard--moveable"
               id="movable5"
@@ -333,7 +333,6 @@
                 </div>
               </div>
             </div>
-            {% endif %} {% if perms.employee.view_employee or request.user|is_reportingmanager %}
             <div
               class="col-12 col-sm-12 col-md-12 col-lg-4 oh-card-dashboard--moveable"
               id="movable6"
@@ -353,7 +352,6 @@
                 </div>
               </div>
             </div>
-            {% endif %} {% if perms.employee.view_employee or request.user|is_reportingmanager %}
             <div
               class="col-12 col-sm-12 col-md-12 col-lg-4 oh-card-dashboard--moveable"
               id="movable7"
@@ -373,7 +371,7 @@
                 </div>
               </div>
             </div>
-            {% endif %} {% if perms.pms.view_employeeobjective or request.user|is_reportingmanager %}
+             {% if perms.pms.view_employeeobjective or request.user|is_reportingmanager %}
             <div
               class="col-12 col-sm-12 col-md-12 col-lg-4 oh-card-dashboard--moveable"
               id="movable9"
@@ -439,7 +437,6 @@
           </div>
         </div>
       </div>
-      {% if perms.leave.view_leaverequest or request.user|is_reportingmanager%}
       <div class="oh-dashboard__right col-12 col-sm-12 col-md-12 col-lg-3">
         <div class="oh-dashboard__events">
           <div
@@ -447,14 +444,6 @@
             id="birthdayContainer"
           ></div>
           <ul class="oh-dashboard__events-nav" id="birthdayDots">
-            {% comment %}
-            <li
-              class="oh-dashboard__events-nav-item oh-dashboard__events-nav-item--active"
-              data-target="0"
-            ></li>
-            <li class="oh-dashboard__events-nav-item" data-target="1"></li>
-            <li class="oh-dashboard__events-nav-item" data-target="2"></li>
-            {% endcomment %}
           </ul>
         </div>
         <div
@@ -469,7 +458,7 @@
             <ul class="oh-card-dashboard__user-list" id="leaveEmployee"></ul>
           </div>
         </div>
-
+        {% if perms.leave.view_leaverequest or request.user|is_reportingmanager%}
         <div
           class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent"
         > 
@@ -514,31 +503,32 @@
           </div>
 
         </div>
+        {% endif %}
 
       </div>
-      {% endif %}
     </div>
   </div>
 </main>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
+<script src="{% static 'dashboard/getBirthday.js' %}"></script>
+<script src="{% static 'dashboard/onLeave.js' %}"></script>
+<script src="{% static 'dashboard/employeeChart.js' %}"></script>
 {% if perms.recruitment.view_recruitment or request.user|is_stagemanager %}
+<script src="{% static 'dashboard/leaveChart.js' %}"></script>
 <script src="{% static 'dashboard/recruitmentChart.js' %}"></script>
 {% endif %} {% if perms.employee.view_employee or request.user|is_reportingmanager %}
-<script src="{% static 'dashboard/employeeChart.js' %}"></script>
-<script src="{% static 'dashboard/getBirthday.js' %}"></script>
 {% endif %} {% if perms.employee.view_attendance or request.user|is_reportingmanager %}
 <script src="{% static 'dashboard/attendanceChart.js' %}"></script>
-{% endif %}
-
-<!-- leave dashboard -->
-<script src="{% static 'dashboard/leaveChart.js' %}"></script>
 <!-- onbaording dashboard -->
 <script src="{% static 'dashboard/onboardChart.js' %}"></script>
 
 <!-- PMS chart -->
 <script src="{% static 'src/dashboard/pmsChart.js' %}"></script>
+{% endif %}
+
+<!-- leave dashboard -->
 <script>
   function setDifference(setA, setB) {
     if (setB.length > setA.length) {
