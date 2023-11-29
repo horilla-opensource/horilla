@@ -1522,7 +1522,6 @@ def birthday():
 
 
 @login_required
-@manager_can_enter("employee.view_employee")
 def get_employees_birthday(_):
     """
     This method is used to render all upcoming birthday employee details to fill the dashboard.
@@ -1587,7 +1586,6 @@ def dashboard(request):
 
 
 @login_required
-@manager_can_enter("employee.view_employee")
 def dashboard_employee(request):
     """
     Active and in-active employee dashboard
@@ -1597,7 +1595,6 @@ def dashboard_employee(request):
         _("In-Active"),
     ]
     employees = Employee.objects.all()
-    employees = filtersubordinates(request, employees, "employee.view_employee")
     response = {
         "dataSet": [
             {
@@ -1614,14 +1611,12 @@ def dashboard_employee(request):
 
 
 @login_required
-@manager_can_enter("employee.view_employee")
 def dashboard_employee_gender(request):
     """
     This method is used to filter out gender vise employees
     """
     labels = [_("Male"), _("Female"), _("Other")]
     employees = Employee.objects.filter(is_active=True)
-    employees = filtersubordinates(request, employees, "employee.view_employee")
 
     response = {
         "dataSet": [
@@ -1640,7 +1635,6 @@ def dashboard_employee_gender(request):
 
 
 @login_required
-@manager_can_enter("employee.view_employee")
 def dashboard_employee_department(request):
     """
     This method is used to find the count of employees corresponding to the departments
