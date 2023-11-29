@@ -13,6 +13,7 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.utils.translation import gettext_lazy as _
 import pandas as pd
+from employee.models import Employee
 from horilla.decorators import login_required, permission_required
 from base.methods import get_key_instances
 from base.methods import closest_numbers
@@ -669,9 +670,16 @@ def filter_payslip(request):
     if request.user.has_perm("payroll.view_payslip"):
         payslips = PayslipFilter(request.GET).qs
     else:
-        payslips = payroll.models.models.Payslip.objects.filter(
-            employee_id__employee_user_id=request.user
-        )
+        emp_request = request.GET.copy()
+        employee = Employee.objects.filter(employee_user_id = request.user.id).first()
+        employee_id = employee.id
+        emp_request["employee_id"] = str(employee_id)
+        print(emp_request)
+        payslips = PayslipFilter(emp_request).qs
+        # payslips = PayslipFilter(request.GET).qs
+        # payslips = payroll.models.models.Payslip.objects.filter(
+        #     employee_id__employee_user_id=request.user
+        # )
     template = "payroll/payslip/payslip_table.html"
     field = request.GET.get("view")
     if field == "card":

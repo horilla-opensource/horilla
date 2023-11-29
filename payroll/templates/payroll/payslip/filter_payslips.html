@@ -8,12 +8,14 @@
 		<div class="oh-accordion-header">{% trans "Payslip" %}</div>
 		<div class="oh-accordion-body">
 			<div class="row">
-				<div class="col-sm-12">
-					<div class="oh-input-group">
-						<label class="oh-label">{% trans "Employee" %}</label>
-						{{ f.form.employee_id }}
+				{% if perms.payroll.view_payslip %}
+					<div class="col-sm-12">
+						<div class="oh-input-group">
+							<label class="oh-label">{% trans "Employee" %}</label>
+							{{ f.form.employee_id }}
+						</div>
 					</div>
-				</div>
+				{% endif %}
 			</div>
 			<div class="row">
 				<div class="col-sm-6">

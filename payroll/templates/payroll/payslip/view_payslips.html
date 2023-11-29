@@ -175,21 +175,21 @@
 					></ion-icon></a>
 				</li>
 			</ul>
+      {% endif %}
 			<div class="oh-dropdown" x-data="{open: false}">
-				<button class="oh-btn ml-2" @click="open = !open" onclick="event.preventDefault()">
-					<ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}
+        <button class="oh-btn ml-2" @click="open = !open" onclick="event.preventDefault()">
+          <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}
 					<div id="filterCount"></div>
 				</button>
 				<div
-					class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4"
-					x-show="open"
-					@click.outside="open = false"
-					style="display: none"
+        class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4"
+        x-show="open"
+        @click.outside="open = false"
+        style="display: none"
 				>
-					{% include 'payroll/payslip/filter_payslips.html' %}
-				</div>
-			</div>
-		{% endif %} 
+        {% include 'payroll/payslip/filter_payslips.html' %}
+      </div>
+    </div>
 		{% if perms.payroll.add_payslip %}
 			<div class="oh-btn-group ml-2">
 				<div class="oh-dropdown" x-data="{open: false}">
@@ -241,7 +241,7 @@
 									>
 								</li>
 							{% endif %}
-							{% if perms.payroll.add_payslip %}
+							{% if perms.payroll.delete_payslip %}
 							<li class="oh-dropdown__item">
 								<a
 								class="oh-dropdown__link oh-dropdown__link--danger"
