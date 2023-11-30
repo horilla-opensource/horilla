@@ -1,19 +1,21 @@
 {% load attendancefilters %} {% load basefilters %} {% load static %}
 {% load i18n %} {% include 'filter_tags.html' %}
-<div
-class="oh-checkpoint-badge text-success mb-2"
-id="selectAllShifts"
-style="cursor: pointer"
->
-  {% trans "Select All Shifts" %}
-</div>
-<div
-class="oh-checkpoint-badge text-secondary mb-2"
-id="unselectAllShifts"
-style="cursor: pointer"
->
-  {% trans "Unselect All Shifts" %}
-</div>
+{% if perms.base.view_shiftrequest %}
+	<div
+	class="oh-checkpoint-badge text-success mb-2"
+	id="selectAllShifts"
+	style="cursor: pointer"
+	>
+	{% trans "Select All Shifts" %}
+	</div>
+	<div
+	class="oh-checkpoint-badge text-secondary mb-2"
+	id="unselectAllShifts"
+	style="cursor: pointer"
+	>
+	{% trans "Unselect All Shifts" %}
+	</div>
+{% endif %}
 <div
 class="oh-checkpoint-badge text-info mb-2"
 id="exportShifts"

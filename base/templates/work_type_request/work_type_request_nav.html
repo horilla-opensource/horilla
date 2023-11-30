@@ -216,16 +216,16 @@ x-data="{searchShow: false}"
           </button>
           <div class="oh-dropdown__menu oh-dropdown__menu--right" x-show="open" style="display: none;">
             <ul class="oh-dropdown__items">
-              {% if perms.base.change_worktyperequest or request.user|is_reportingmanager %}
-              <li class="oh-dropdown__item">
-                <a
-                  href="#"
-                  class="oh-dropdown__link"
-                  data-toggle="oh-modal-toggle"
-                  data-target="#workTypeRequestsExport"
-                  >{% trans "Export" %}</a
-                >
-              </li>
+              {% if perms.base.view_worktyperequest %}
+                <li class="oh-dropdown__item">
+                  <a
+                    href="#"
+                    class="oh-dropdown__link"
+                    data-toggle="oh-modal-toggle"
+                    data-target="#workTypeRequestsExport"
+                    >{% trans "Export" %}</a
+                  >
+                </li>
               {% endif %}
               {% if perms.base.change_worktyperequest or request.user|is_reportingmanager %}
               <li class="oh-dropdown__item">
@@ -240,8 +240,7 @@ x-data="{searchShow: false}"
                   >{% trans "Cancel Requests" %}</a
                 >
               </li>
-              {% endif %} 
-              {% if perms.delete_employee %}
+
               <li class="oh-dropdown__item">
                 <a
                   href="#"

@@ -2082,7 +2082,6 @@ def work_type_request_delete(request, id):
 
 
 @login_required
-@manager_can_enter("base.view_worktyperequest")
 def work_type_request_single_view(request, work_type_request_id):
     """
     This method is used to view details of an work type request
@@ -2305,7 +2304,6 @@ def shift_request_search(request):
 
 
 @login_required
-@manager_can_enter("base.view_shiftrequest")
 def shift_request_details(request, id):
     """
     This method is used to show shift request details in a modal

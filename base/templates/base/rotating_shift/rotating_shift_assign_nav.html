@@ -113,7 +113,7 @@
             style="display: none"
           >
             <ul class="oh-dropdown__items">
-              {% if perms.base.change_rotatingshiftassign or request.user|is_reportingmanager %}
+              {% if perms.base.change_rotatingshiftassign %}
                 <li class="oh-dropdown__item">
                   <a
                     href="#"
@@ -144,7 +144,7 @@
                   >
                 </li>
               {% endif %} 
-              {% if perms.base.delete_rotatingshiftassign %}
+              {% if request.user|is_reportingmanager %}
                 <li class="oh-dropdown__item">
                   <a
                     href="#"

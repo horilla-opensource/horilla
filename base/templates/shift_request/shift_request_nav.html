@@ -273,17 +273,17 @@
             style="display: none"
           >
             <ul class="oh-dropdown__items">
-              {% if perms.change_employee or request.user|is_reportingmanager %}
-              <li class="oh-dropdown__item">
-                <a
-                  href="#"
-                  class="oh-dropdown__link"
-                  data-toggle="oh-modal-toggle"
-                  data-target="#shiftRequestsExport"
-                  >{% trans "Export" %}</a
-                >
-              </li>
-              {% endif %} {% if perms.change_employee or request.user|is_reportingmanager %}
+              {% if perms.base.view_shiftrequest %}
+                <li class="oh-dropdown__item">
+                  <a
+                    href="#"
+                    class="oh-dropdown__link"
+                    data-toggle="oh-modal-toggle"
+                    data-target="#shiftRequestsExport"
+                    >{% trans "Export" %}</a
+                  >
+                </li>
+              {% endif %} {% if perms.base.change_shiftrequest or request.user|is_reportingmanager %}
               <li class="oh-dropdown__item">
                 <a
                   href="#"
@@ -292,7 +292,7 @@
                   >{% trans "Approve Requests" %}</a
                 >
               </li>
-              {% endif %} {% if perms.change_employee or request.user|is_reportingmanager %}
+              {% endif %} {% if perms.base.change_shiftrequest or request.user|is_reportingmanager %}
               <li class="oh-dropdown__item">
                 <a
                   href="#"
@@ -301,7 +301,7 @@
                   >{% trans "Cancel Requests" %}</a
                 >
               </li>
-              {% endif %} {% if perms.delete_employee %}
+
               <li class="oh-dropdown__item">
                 <a
                   href="#"

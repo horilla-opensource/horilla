@@ -3,20 +3,22 @@
 {% load static %}
 {% load i18n %}
 {% include 'filter_tags.html' %}
-<div
-class="oh-checkpoint-badge text-success mb-2"
-id="selectAllShifts"
-style="cursor: pointer"
->
-  {% trans "Select All Shifts" %}
-</div>
-<div
-class="oh-checkpoint-badge text-secondary mb-2"
-id="unselectAllShifts"
-style="cursor: pointer"
->
-  {% trans "Unselect All Shifts" %}
-</div>
+{% if perms.base.view_shiftrequest %}
+  <div
+  class="oh-checkpoint-badge text-success mb-2"
+  id="selectAllShifts"
+  style="cursor: pointer"
+  >
+    {% trans "Select All Shifts" %}
+  </div>
+  <div
+  class="oh-checkpoint-badge text-secondary mb-2"
+  id="unselectAllShifts"
+  style="cursor: pointer"
+  >
+    {% trans "Unselect All Shifts" %}
+  </div>
+{% endif %}
 <div
 class="oh-checkpoint-badge text-info mb-2"
 id="exportShifts"
@@ -93,7 +95,12 @@ style="cursor: pointer;"
                   {% else %}
                     <button class="oh-btn oh-btn--light-bkg w-50" disabled><ion-icon name="create-outline" ></ion-icon></button></td>
                   {% endif %}
-                  {% if shift_request.approved == False %} 
+                  {% if shift_request.approved == False and shift_request.canceled == False %} 
+                    <form action="{% url 'shift-request-delete' shift_request.id  %}" onsubmit="return confirm('{% trans "Are you sure you want to delete this shift request?" %}');" method='post' class="w-50">
+                      {% csrf_token %}
+                      <button type='submit' class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100" title="{% trans 'Remove' %}"><ion-icon name="trash-outline"></ion-icon></button>
+                    </form>
+                  {% elif perms.base.change_shiftrequest or request.user|is_reportingmanager %}
                     <form action="{% url 'shift-request-delete' shift_request.id  %}" onsubmit="return confirm('{% trans "Are you sure you want to delete this shift request?" %}');" method='post' class="w-50">
                       {% csrf_token %}
                       <button type='submit' class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100" title="{% trans 'Remove' %}"><ion-icon name="trash-outline"></ion-icon></button>
