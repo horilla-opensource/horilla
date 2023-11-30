@@ -9,7 +9,7 @@
     </div>
     {% endfor %}
 </div>
-{% endif %}
+{% endif %} 
 
 <ul class="oh-activity-list " style="height: 300px; overflow: auto;">
     <li class="oh-activity-list__comment-item">
@@ -36,21 +36,24 @@
     <!-- history section -->
     {% for history_object in historys %}
         {% for history in history_object.delta.changes %}
-        <li class="oh-activity-list__item">
-            <div class="oh-activity-list__photo oh-activity-list__photo--small me-2">
-                <img src="https://ui-avatars.com/api/?name={{history_object.changed_user}}&background=random"
-                    class="oh-activity-list__image" alt="Albert Camus" />
-            </div>
-            <small class="oh-activity-list__description"><strong>{{history_object.changed_user}} </strong> 
-                {% trans "updated key result" %}
-                <strong>{{history.field |title|cut:'_'}}</strong> {% trans "from" %}
-                <strong>{{history.old}}</strong> to <strong>{{history.new}}</strong></small>
-        </li>
-        <li>
-            <small>
-                {{history_object.changed_date}}
-            </small>
-        </li>
+            {% if not history.field == 'progress_percentage' %}
+                <li class="oh-activity-list__item">
+                    <div class="oh-activity-list__photo oh-activity-list__photo--small me-2">
+                        <img src="https://ui-avatars.com/api/?name={{history_object.changed_user}}&background=random"
+                            class="oh-activity-list__image" alt="Albert Camus" />
+                    </div>
+                    <small class="oh-activity-list__description"><strong>{{history_object.changed_user}} </strong> 
+                        {% trans "updated" %}
+                        <strong>{{history_object.k_r}}</strong>,
+                        <strong> {{history.field |title|cut:'_'}}</strong> {% trans "from" %}
+                        <strong>{{history.old}}</strong> to <strong>{{history.new}}</strong></small>
+                </li>
+                <li>
+                    <small>
+                        {{history_object.changed_date}}
+                    </small>
+                </li>
+            {% endif %}
         {% endfor %}
     {% endfor %}
 </ul>

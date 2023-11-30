@@ -255,7 +255,8 @@
                         </div>
                         <div class="oh-input-group mt-4">
                             <form hx-post="{%url 'objective-detailed-view-comment' id=employee_objective.id %}" id="commentForm"
-                                hx-target="#objective_detailed_view_activity">
+                                hx-target="#objective_detailed_view_activity" onsubmit="clearComment()">
+                                
                                 {{comment_form.comment}}
                                 <button type="submit" class="oh-btn oh-btn--small oh-btn--secondary ms-auto" >
                                     <ion-icon name="chatbox-outline" class="me-2" ></ion-icon>{% trans "Comment" %}
@@ -275,7 +276,16 @@
 </main>
 
 <script>
-    
+    function clearComment(){
+        setTimeout(() => {
+             // Clear existing content
+            $("#id_comment").val("");
+            // Add a new placeholder
+            $("#id_comment").attr("placeholder", "Add a comment...");
+        }, 0);
+   
+    }
+
     function progress (element) {
         var currentValue = $(element).val()
         keyResultCard = $(element).closest('.oh-list-card');

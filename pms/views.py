@@ -385,11 +385,13 @@ def objective_history(emp_obj_id):
             history_user_id = delta.new_record.history_user
             history_change_date = delta.new_record.history_date
             employee = Employee.objects.filter(employee_user_id=history_user_id).first()
+            key_result = delta.new_record.key_result
             changed_key_results.append(
                 {
                     "delta": delta,
                     "changed_user": employee,
                     "changed_date": history_change_date,
+                    "k_r":key_result,
                 }
             )
 
