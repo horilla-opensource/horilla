@@ -22,7 +22,6 @@ import notifications.urls
 
 
 urlpatterns = [
-    path('admin/',admin.site.urls),
     path('',include('base.urls')),
     path('recruitment/',include('recruitment.urls')),
     path('employee/',include('employee.urls')),
