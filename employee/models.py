@@ -20,6 +20,7 @@ from base.models import (
     Department,
     EmployeeShift,
 )
+from base.horilla_company_manager import HorillaCompanyManager
 from horilla_audit.models import HorillaAuditLog, HorillaAuditInfo
 from horilla_audit.methods import get_diff
 from django.core.files.storage import default_storage
@@ -89,7 +90,9 @@ class Employee(models.Model):
     emergency_contact_relation = models.CharField(max_length=20, null=True, blank=True)
     is_active = models.BooleanField(default=True)
     additional_info = models.JSONField(null=True, blank=True)
-    objects = models.Manager()
+    objects = HorillaCompanyManager(
+        related_company_field="employee_work_info__company_id"
+    )
 
     def get_image(self):
         """
@@ -119,7 +122,7 @@ class Employee(models.Model):
         )
         if self.employee_profile:
             full_filename = settings.MEDIA_ROOT + self.employee_profile.name
-            
+
             if default_storage.exists(full_filename):
                 url = self.employee_profile.url
         return url
@@ -266,7 +269,7 @@ class EmployeeWorkInformation(models.Model):
             HorillaAuditInfo,
         ],
     )
-    objects = models.Manager()
+    objects = HorillaCompanyManager()
 
     def __str__(self) -> str:
         return f"{self.employee_id} - {self.job_position_id}"
@@ -333,7 +336,9 @@ class EmployeeBankDetails(models.Model):
         max_length=50, null=True, blank=True, verbose_name="Bank Code #2"
     )
     additional_info = models.JSONField(null=True, blank=True)
-    objects = models.Manager()
+    objects = HorillaCompanyManager(
+        related_company_field="employee_id__employee_work_info__company_id"
+    )
 
     def __str__(self) -> str:
         return f"{self.employee_id}-{self.bank_name}"

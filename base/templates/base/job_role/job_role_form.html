@@ -1,0 +1,33 @@
+{% load i18n %}
+
+<form 
+    {% if job_role.id %}
+	    hx-post="{% url 'job-role-update' job_role.id %}"
+	{% else %}
+	    hx-post="{% url 'job-role-create' %}"
+	{% endif %}
+	hx-target="#jobRoleForm"
+	method="post"
+>
+	{% csrf_token %}
+    {{form.non_field_errors}}
+	<div class="oh-inner-sidebar-content__body">
+		<div class="oh-input-group mb-2">
+			<label class="settings-label mb-1" >
+				{% trans "Job Position" %}
+			</label>
+			{{form.job_position_id.errors}} {{form.job_position_id}}
+		</div>
+		<div class="oh-input-group mb-2">
+			<label class="settings-label mb-1" > {% trans "Job Role" %} </label>
+			{{form.job_role.errors}} {{form.job_role}}
+		</div>
+	</div>
+	<button
+		type="submit"
+		class="oh-btn oh-btn--secondary mt-2 mr-0 oh-btn--w-100-resp"
+	>
+		{% trans "Save Changes" %}
+	</button>
+	<div class="oh-inner-sidebar-content__footer"></div>
+</form>

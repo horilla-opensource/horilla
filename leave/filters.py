@@ -22,46 +22,10 @@ from .models import (
     CompanyLeave,
     LeaveAllocationRequest,
 )
+from base.filters import FilterSet
 
 
-class FilterSet(FilterSet):
-    """
-    Custom FilterSet class for styling filter widgets.
-    """
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        for field_name, field in self.filters.items():
-            filter_widget = self.filters[field_name]
-            widget = filter_widget.field.widget
-            if isinstance(
-                widget, (forms.NumberInput, forms.EmailInput, forms.TextInput)
-            ):
-                filter_widget.field.widget.attrs.update({"class": "oh-input w-100"})
-            elif isinstance(widget, (forms.Select,)):
-                filter_widget.field.widget.attrs.update(
-                    {
-                        "class": "oh-select oh-select-2 select2-hidden-accessible",
-                    }
-                )
-            elif isinstance(widget, (forms.Textarea)):
-                filter_widget.field.widget.attrs.update({"class": "oh-input w-100"})
-            elif isinstance(
-                widget,
-                (
-                    forms.CheckboxInput,
-                    forms.CheckboxSelectMultiple,
-                ),
-            ):
-                filter_widget.field.widget.attrs.update(
-                    {"class": "oh-switch__checkbox"}
-                )
-            elif isinstance(widget, (forms.ModelChoiceField)):
-                filter_widget.field.widget.attrs.update(
-                    {
-                        "class": "oh-select oh-select-2 select2-hidden-accessible",
-                    }
-                )
 
 
 class LeaveTypeFilter(FilterSet):

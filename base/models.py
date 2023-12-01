@@ -7,8 +7,7 @@ import django
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 from django.db import models
-from simple_history.models import HistoricalRecords
-from django.template import defaultfilters
+from base.horilla_company_manager import HorillaCompanyManager
 
 
 # Create your models here.
@@ -60,22 +59,41 @@ class Company(models.Model):
 
     def __str__(self) -> str:
         return str(self.company)
+    
 
+from base.thread_local_middleware import _thread_locals
 
+from django import forms
 class Department(models.Model):
     """
     Department model
     """
 
-    department = models.CharField(max_length=50, blank=False, unique=True)
-    company_id = models.ForeignKey(
-        Company, null=True, editable=False, on_delete=models.PROTECT
-    )
-    objects = models.Manager()
+    department = models.CharField(max_length=50, blank=False)
+    company_id = models.ManyToManyField(Company, blank=True, verbose_name=_("Company"))
+
+    objects = HorillaCompanyManager()
 
     class Meta:
         verbose_name = _("Department")
         verbose_name_plural = _("Departments")
+        
+    def clean(self, *args, **kwargs):
+        super().clean(*args, **kwargs)
+        request = getattr(_thread_locals, "request", None)
+        if request and request.POST:
+            company = request.POST.getlist('company_id', None)
+            department = request.POST.get('department', None)
+            if Department.objects.filter(company_id__id__in=company,department = department).exclude(id= self.id).exists():
+                raise ValidationError(
+                    "This department already exists in this company"
+                )
+        return 
+    
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        self.clean(*args, **kwargs)
+        return self
 
     def __str__(self):
         return str(self.department)
@@ -90,14 +108,12 @@ class JobPosition(models.Model):
     department_id = models.ForeignKey(
         Department,
         on_delete=models.PROTECT,
-        blank=True,
         related_name="job_position",
         verbose_name=_("Department"),
     )
-    company_id = models.ForeignKey(
-        Company, null=True, editable=False, on_delete=models.PROTECT
-    )
-    objects = models.Manager()
+    company_id = models.ManyToManyField(Company, blank=True, verbose_name=_("Company"))
+
+    objects = HorillaCompanyManager("department_id__company_id")
 
     class Meta:
         """
@@ -118,10 +134,9 @@ class JobRole(models.Model):
         JobPosition, on_delete=models.PROTECT, verbose_name=_("Job Position")
     )
     job_role = models.CharField(max_length=50, blank=False, null=True)
-    company_id = models.ForeignKey(
-        Company, null=True, editable=False, on_delete=models.PROTECT
-    )
-    objects = models.Manager()
+    company_id = models.ManyToManyField(Company, blank=True, verbose_name=_("Company"))
+
+    objects = HorillaCompanyManager("job_position_id__department_id__company_id")
 
     class Meta:
         """
@@ -142,10 +157,9 @@ class WorkType(models.Model):
     """
 
     work_type = models.CharField(max_length=50)
-    company_id = models.ForeignKey(
-        Company, null=True, editable=False, on_delete=models.PROTECT
-    )
-    objects = models.Manager()
+    company_id = models.ManyToManyField(Company, blank=True, verbose_name=_("Company"))
+
+    objects = HorillaCompanyManager()
 
     class Meta:
         """
@@ -157,7 +171,24 @@ class WorkType(models.Model):
 
     def __str__(self) -> str:
         return str(self.work_type)
-
+        
+    def clean(self, *args, **kwargs):
+        super().clean(*args, **kwargs)
+        request = getattr(_thread_locals, "request", None)
+        if request and request.POST:
+            company = request.POST.getlist('company_id', None)
+            work_type = request.POST.get('work_type', None)
+            if WorkType.objects.filter(company_id__id__in=company,work_type = work_type).exclude(id= self.id).exists():
+                raise ValidationError(
+                    "This work type already exists in this company"
+                )
+        return 
+    
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        self.clean(*args, **kwargs)
+        return self
+    
 
 class RotatingWorkType(models.Model):
     """
@@ -182,7 +213,7 @@ class RotatingWorkType(models.Model):
         through="RotatingWorkTypeAssign",
         verbose_name=_("Employee"),
     )
-    objects = models.Manager()
+    objects = HorillaCompanyManager("employee_id__employee_work_info__company_id")
 
     class Meta:
         """
@@ -276,7 +307,7 @@ class RotatingWorkTypeAssign(models.Model):
     )
 
     is_active = models.BooleanField(default=True)
-    objects = models.Manager()
+    objects = HorillaCompanyManager("employee_id__employee_work_info__company_id")
 
     class Meta:
         """
@@ -305,10 +336,9 @@ class EmployeeType(models.Model):
     """
 
     employee_type = models.CharField(max_length=50)
-    company_id = models.ForeignKey(
-        Company, null=True, editable=False, on_delete=models.PROTECT
-    )
-    objects = models.Manager()
+    company_id = models.ManyToManyField(Company, blank=True, verbose_name=_("Company"))
+
+    objects = HorillaCompanyManager("employee_id__employee_work_info__company_id")
 
     class Meta:
         """
@@ -328,10 +358,9 @@ class EmployeeShiftDay(models.Model):
     """
 
     day = models.CharField(max_length=20, choices=DAY)
-    company_id = models.ForeignKey(
-        Company, null=True, editable=False, on_delete=models.PROTECT
-    )
-    objects = models.Manager()
+    company_id = models.ManyToManyField(Company, blank=True, verbose_name=_("Company"))
+
+    objects = HorillaCompanyManager()
 
     class Meta:
         """
@@ -366,10 +395,9 @@ class EmployeeShift(models.Model):
     full_time = models.CharField(
         max_length=6, default="200:00", validators=[validate_time_format]
     )
-    company_id = models.ForeignKey(
-        Company, null=True, editable=False, on_delete=models.PROTECT
-    )
-    objects = models.Manager()
+    company_id = models.ManyToManyField(Company, blank=True, verbose_name=_("Company"))
+
+    objects = HorillaCompanyManager("employee_shift__company_id")
 
     class Meta:
         """
@@ -400,10 +428,9 @@ class EmployeeShiftSchedule(models.Model):
     start_time = models.TimeField(null=True)
     end_time = models.TimeField(null=True)
     is_night_shift = models.BooleanField(default=False)
-    company_id = models.ForeignKey(
-        Company, null=True, editable=False, on_delete=models.PROTECT
-    )
-    objects = models.Manager()
+    company_id = models.ManyToManyField(Company, blank=True, verbose_name=_("Company"))
+
+    objects = HorillaCompanyManager("shift_id__employee_shift__company_id")
 
     class Meta:
         """
@@ -444,7 +471,7 @@ class RotatingShift(models.Model):
         on_delete=models.PROTECT,
         verbose_name=_("Shift 2"),
     )
-    objects = models.Manager()
+    objects = HorillaCompanyManager("employee_id__employee_work_info__company_id")
 
     class Meta:
         """
@@ -518,7 +545,7 @@ class RotatingShiftAssign(models.Model):
         verbose_name=_("Rotate Every Month"),
     )
     is_active = models.BooleanField(default=True)
-    objects = models.Manager()
+    objects = HorillaCompanyManager("employee_id__employee_work_info__company_id")
 
     class Meta:
         """
@@ -581,7 +608,7 @@ class WorkTypeRequest(models.Model):
     canceled = models.BooleanField(default=False, verbose_name=_("Canceled"))
     work_type_changed = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
-    objects = models.Manager()
+    objects = HorillaCompanyManager("employee_id__employee_work_info__company_id")
 
     class Meta:
         """
@@ -690,7 +717,7 @@ class ShiftRequest(models.Model):
     canceled = models.BooleanField(default=False, verbose_name=_("Canceled"))
     shift_changed = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
-    objects = models.Manager()
+    objects = HorillaCompanyManager("employee_id__employee_work_info__company_id")
 
     class Meta:
         """

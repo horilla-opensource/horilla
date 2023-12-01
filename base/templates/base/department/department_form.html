@@ -1,0 +1,36 @@
+{% load i18n %}
+<form
+	{% if department.id %}
+    hx-post="{% url 'department-update' department.id %}"
+	{% else	%}
+	hx-post="{% url 'department-creation' %}"
+	{% endif %}
+	hx-target="#departmentForm"
+	method="post"
+>
+	{% csrf_token %}
+	{{form.non_field_errors}}
+	<div class="oh-inner-sidebar-content__body">
+		<label class="settings-label mb-1" for="id_{{form.department.name}}"> {% trans "Department" %} </label>
+		<div class="oh-input-group">
+			{{form.department.errors}} {{form.department}}
+		</div>
+	</div>
+
+	<div class="oh-inner-sidebar-content__body">
+		<label class='settings-label mb-1' for="">
+			{% trans "Company" %}
+		</label>
+		<div class="oh-input-group">
+			{{form.company_id.errors}}
+			{{form.company_id}}
+		</div>
+	</div>
+	<button
+		type="submit"
+		class="oh-btn oh-btn--secondary mt-2 mr-0 oh-btn--w-100-resp"
+	>
+		{% trans "Save Changes" %}
+	</button>
+	<div class="oh-inner-sidebar-content__footer"></div>
+</form>

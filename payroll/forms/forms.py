@@ -7,6 +7,7 @@ from django.utils.translation import gettext_lazy as trans
 from django.template.loader import render_to_string
 from payroll.models.models import WorkRecord
 from payroll.models.models import Contract
+from base.methods import reload_queryset
 
 
 class ModelForm(forms.ModelForm):
@@ -16,6 +17,7 @@ class ModelForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        reload_queryset(self.fields)
         for _, field in self.fields.items():
             widget = field.widget
 

@@ -57,6 +57,7 @@ INSTALLED_APPS = [
     'asset',
     'attendance',
     'payroll',
+    'horilla_widgets',
 
     'widget_tweaks',
     "django_apscheduler",

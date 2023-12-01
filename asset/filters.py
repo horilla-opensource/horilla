@@ -7,6 +7,7 @@ import django_filters
 from django import forms
 from django_filters import FilterSet
 from .models import Asset, AssetAssignment, AssetCategory, AssetRequest
+from base.methods import reload_queryset
 
 
 class CustomFilterSet(FilterSet):
@@ -23,42 +24,40 @@ class CustomFilterSet(FilterSet):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-
-        for field_name, field in self.filters.items():
+        reload_queryset(self.form.fields)
+        for field_name, field in self.form.fields.items():
             filter_widget = self.filters[field_name]
             widget = filter_widget.field.widget
             if isinstance(
-                    widget, (forms.NumberInput, forms.EmailInput, forms.TextInput)
+                widget, (forms.NumberInput, forms.EmailInput, forms.TextInput)
             ):
-                filter_widget.field.widget.attrs.update({"class": "oh-input w-100"})
+                field.widget.attrs.update({"class": "oh-input w-100"})
             elif isinstance(widget, (forms.Select,)):
-                filter_widget.field.widget.attrs.update(
+                field.widget.attrs.update(
                     {
                         "class": "oh-select oh-select-2",
                     }
                 )
             elif isinstance(widget, (forms.Textarea)):
-                filter_widget.field.widget.attrs.update({"class": "oh-input w-100"})
+                field.widget.attrs.update({"class": "oh-input w-100"})
             elif isinstance(
-                    widget,
-                    (
-                        forms.CheckboxInput,
-                        forms.CheckboxSelectMultiple,
-                    ),
+                widget,
+                (
+                    forms.CheckboxInput,
+                    forms.CheckboxSelectMultiple,
+                ),
             ):
                 filter_widget.field.widget.attrs.update(
                     {"class": "oh-switch__checkbox"}
                 )
             elif isinstance(widget, (forms.ModelChoiceField)):
-                filter_widget.field.widget.attrs.update(
+                field.widget.attrs.update(
                     {
                         "class": "oh-select oh-select-2 ",
                     }
                 )
             elif isinstance(widget, (forms.DateField)):
-                filter_widget.field.widget.attrs.update(
-                    {"type": "date", "class": "oh-input  w-100"}
-                )
+                field.widget.attrs.update({"type": "date", "class": "oh-input  w-100"})
             if isinstance(field, django_filters.CharFilter):
                 field.lookup_expr = "icontains"
 
@@ -217,8 +216,9 @@ class AssetRequestReGroup:
         ("asset_category_id", "Asset Category"),
         ("asset_request_date", "Request Date"),
         ("asset_request_status", "Status"),
-        ]
-    
+    ]
+
+
 class AssetAllocationReGroup:
     """
     Class to keep the field name for group by option
@@ -229,4 +229,4 @@ class AssetAllocationReGroup:
         ("assigned_to_employee_id", "Employee"),
         ("assigned_date", "Assigned Date"),
         ("return_date", "Return Date"),
-        ]
+    ]

@@ -17,6 +17,7 @@ from payroll.models import tax_models as models
 from payroll.widgets import component_widgets as widget
 from payroll.models.models import Contract
 import payroll.models.models
+from base.methods import reload_queryset
 
 
 class AllowanceForm(forms.ModelForm):
@@ -50,6 +51,7 @@ class AllowanceForm(forms.ModelForm):
                 }
             kwargs["initial"] = initial
         super().__init__(*args, **kwargs)
+        reload_queryset(self.fields)
         self.fields["style"].widget = widget.StyleWidget(form=self)
 
     def as_p(self):
@@ -92,6 +94,7 @@ class DeductionForm(forms.ModelForm):
                 }
             kwargs["initial"] = initial
         super().__init__(*args, **kwargs)
+        reload_queryset(self.fields)
         self.fields["style"].widget = widget.StyleWidget(form=self)
 
     def clean(self):
@@ -168,9 +171,7 @@ class GeneratePayslipForm(HorillaForm):
         # help_text="Enter +-something if you want to generate payslips by batches",
     )
     employee_id = HorillaMultiSelectField(
-        queryset=Employee.objects.filter(
-            contract_set__isnull=False, contract_set__contract_status="active"
-        ),
+        queryset=Employee.objects.none(),
         widget=HorillaMultiSelectWidget(
             filter_route_name="employee-widget-filter",
             filter_class=EmployeeFilter,
@@ -207,7 +208,9 @@ class GeneratePayslipForm(HorillaForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-
+        self.fields["employee_id"].queryset = Employee.objects.filter(
+            contract_set__isnull=False, contract_set__contract_status="active"
+        )
         self.fields["employee_id"].widget.attrs.update(
             {"class": "oh-select oh-select-2", "id": uuid.uuid4()}
         )

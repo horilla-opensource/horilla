@@ -1,4 +1,5 @@
 """
+forms.py
 Asset Management Forms
 
 This module contains Django ModelForms for handling various aspects of asset management,
@@ -7,11 +8,12 @@ including asset creation, allocation, return, category assignment, and batch han
 from datetime import date
 import uuid
 from django import forms
-from django.forms import ModelForm
+from base.forms import ModelForm
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 from employee.models import Employee
-from .models import Asset, AssetRequest, AssetAssignment, AssetCategory, AssetLot
+from asset.models import Asset, AssetRequest, AssetAssignment, AssetCategory, AssetLot
+from base.methods import reload_queryset
 
 
 def set_date_field_initial(instance):
@@ -84,7 +86,7 @@ class AssetForm(ModelForm):
         if instance:
             kwargs["initial"] = set_date_field_initial(instance)
         super(AssetForm, self).__init__(*args, **kwargs)
-
+        reload_queryset(self.fields)
         self.fields["asset_category_id"].widget.attrs.update({"id": str(uuid.uuid4())})
         self.fields["asset_lot_number_id"].widget.attrs.update(
             {"id": str(uuid.uuid4())}
@@ -95,13 +97,13 @@ class AssetForm(ModelForm):
         instance = self.instance
         if instance.pk:
             if asset_in_use := instance.assetassignment_set.filter(
-                    return_status__isnull=True
+                return_status__isnull=True
             ):
                 raise ValidationError('Asset in use you can"t change the status')
             if (
-                    Asset.objects.filter(asset_tracking_id=self.data["asset_tracking_id"])
-                    .exclude(id=instance.pk)
-                    .exists()
+                Asset.objects.filter(asset_tracking_id=self.data["asset_tracking_id"])
+                .exclude(id=instance.pk)
+                .exists()
             ):
                 raise ValidationError(
                     {"asset_tracking_id": "Already asset with this tracking id exists."}
@@ -191,6 +193,7 @@ class AssetRequestForm(ModelForm):
             *args,
             **kwargs,
         )
+        reload_queryset(self.fields)
         if user is not None and user.has_perm("asset.add_assetrequest"):
             self.fields["requested_employee_id"].queryset = Employee.objects.all()
             self.fields["requested_employee_id"].initial = Employee.objects.filter(
@@ -212,8 +215,10 @@ class AssetAllocationForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(AssetAllocationForm, self).__init__(*args, **kwargs)
-        self.fields['asset_id'].queryset = Asset.objects.filter(asset_status="Available")
-
+        reload_queryset(self.fields)
+        self.fields["asset_id"].queryset = Asset.objects.filter(
+            asset_status="Available"
+        )
 
     class Meta:
         """
@@ -278,6 +283,7 @@ class AssetReturnForm(ModelForm):
                 attrs={"class": "oh-select oh-select-2", "required": "true"},
             ),
         }
+
     def clean_return_date(self):
         return_date = self.cleaned_data.get("return_date")
 
@@ -291,6 +297,10 @@ class AssetBatchForm(ModelForm):
     """
     A Django ModelForm for creating or updating AssetLot instances.
     """
+
+    def __init__(self, *args, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
+        reload_queryset(self.fields)
 
     class Meta:
         """

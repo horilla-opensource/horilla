@@ -8,44 +8,11 @@ import uuid
 import django_filters
 from django import forms
 from recruitment.models import Candidate, Recruitment, Stage, RecruitmentSurvey
+from base.filters import FilterSet
 
 # from django.forms.widgets import Boo
 
 
-class FilterSet(django_filters.FilterSet):
-    """
-    Custom FilterSet class that applies specific CSS classes to filter
-    widgets.
-
-    The class applies CSS classes to different types of filter widgets,
-    such as NumberInput, EmailInput, TextInput, Select, Textarea,
-    CheckboxInput, CheckboxSelectMultiple, and ModelChoiceField. The
-    CSS classes are applied to enhance the styling and behavior of the
-    filter widgets.
-    """
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        for _, filter_widget in self.filters.items():
-            widget = filter_widget.field.widget
-            if isinstance(
-                widget, (forms.NumberInput, forms.EmailInput, forms.TextInput)
-            ):
-                widget.attrs.update({"class": "oh-input w-100"})
-            elif isinstance(widget, (forms.Select,)):
-                widget.attrs.update(
-                    {"class": "oh-select oh-select-2 select2-hidden-accessible"}
-                )
-            elif isinstance(widget, (forms.Textarea)):
-                widget.attrs.update({"class": "oh-input w-100"})
-            elif isinstance(
-                widget, (forms.CheckboxInput, forms.CheckboxSelectMultiple)
-            ):
-                widget.attrs.update({"class": "oh-switch__checkbox"})
-            elif isinstance(widget, (forms.ModelChoiceField)):
-                widget.attrs.update(
-                    {"class": "oh-select oh-select-2 select2-hidden-accessible"}
-                )
 
 
 class CandidateFilter(FilterSet):

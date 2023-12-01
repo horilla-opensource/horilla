@@ -11,7 +11,7 @@ import django_filters
 from django import forms
 from employee.models import Employee
 from horilla.filters import filter_by_name
-from attendance.filters import FilterSet
+from base.filters import FilterSet
 from payroll.models.models import Allowance, Contract, Deduction, FilingStatus
 from payroll.models.models import Payslip
 

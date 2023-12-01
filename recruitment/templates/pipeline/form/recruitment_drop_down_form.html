@@ -84,6 +84,16 @@
         </div>
         <input type="checkbox" name="is_active" id="" checked hidden />
       </div>
+      <div class="row">
+        <div class="col-12 col-sm-12 col-md-12">
+          <div class="oh-input-group">
+            <label for="startDate" class="oh-label">{% trans 'Company' %}</label>
+            {{recruitment_form.company_id}}
+            {{recruitment_form.company_id.errors}}
+          </div>
+        </div>
+        <input type="checkbox" name="is_active" id="" checked hidden />
+      </div>
       <div class="oh-input-group d-flex align-items-center mt-3"></div>
 
       <button

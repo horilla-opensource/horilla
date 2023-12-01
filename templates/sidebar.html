@@ -10,28 +10,52 @@
   class="oh-sidebar"
   style="position: -webkit-sticky; position: sticky; top: 0"
 >
-  <div class="oh-sidebar__company" style="padding: 14px">
+<div class="oh-sidebar__company" style="padding: 14px">
+    {% if request.session.selected_company_instance %}
     <span class="mr-3">
-      {% if request.user.employee_get.employee_work_info.company_id.icon == None %}
+      {% if not request.session.selected_company_instance %}
       <img
-        src="https://ui-avatars.com/api/?name=C&background=random"
-        style="width: 34px; border-radius: 3px"
+      src="https://ui-avatars.com/api/?name=C&background=random"
+      style="width: 34px; border-radius: 3px"
       />
       {% else %}
       <img
-        src="/media/{{request.user.employee_get.employee_work_info.company_id.icon}}"
-        style="width: 34px; border-radius: 3px"
+      src="{{request.session.selected_company_instance.icon}}"
+      style="width: 34px; border-radius: 3px"
       />
       {% endif %}
     </span>
     <div class="oh-sidebar__company-details">
       <span class="oh-sidebar__company-title" style="font-size: 13px"
-        >{{request.user.employee_get.employee_work_info.company_id}}.</span
+      >{{request.session.selected_company_instance.company}}.</span
       >
       <a href="#" class="oh-sidebar__company-link" style="font-size: 10px"
-        >{% trans "My Company" %}</a
+      >{% trans request.session.selected_company_instance.text %}</a
       >
     </div>
+    {% else %}
+    <span class="mr-3">
+      {% if request.user.employee_get.employee_work_info.company_id.icon == None %}
+      <img
+      src="https://ui-avatars.com/api/?name=C&background=random"
+      style="width: 34px; border-radius: 3px"
+      />
+      {% else %}
+      <img
+      src="/media/{{request.user.employee_get.employee_work_info.company_id.icon}}"
+      style="width: 34px; border-radius: 3px"
+      />
+      {% endif %}
+    </span>
+    <div class="oh-sidebar__company-details">
+      <span class="oh-sidebar__company-title" style="font-size: 13px"
+      >{{request.user.employee_get.employee_work_info.company_id}}.</span
+      >
+      <a href="#" class="oh-sidebar__company-link" style="font-size: 10px"
+      >{% trans "My Company" %}</a
+      >
+    </div>
+    {% endif %}
   </div>
   <div class="oh-sidebar__menu">
     <ul class="oh-sidebar__menu-items">

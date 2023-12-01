@@ -1,7 +1,10 @@
-import django_filters
-from django_filters import CharFilter
-from django import forms
+"""
+filters.py
+"""
 import uuid
+import django_filters
+from django import forms
+from base.methods import reload_queryset
 
 def filter_by_name(queryset, name, value):
     """
@@ -25,16 +28,17 @@ def filter_by_name(queryset, name, value):
 class FilterSet(django_filters.FilterSet):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        for field_name, field in self.filters.items():
+        reload_queryset(self.form.fields)
+        for field_name, field in self.form.fields.items():
             filter_widget = self.filters[field_name]
             widget = filter_widget.field.widget
             if isinstance(widget, (forms.NumberInput, forms.EmailInput,forms.TextInput)):
-                filter_widget.field.widget.attrs.update({'class': 'oh-input w-100'})
+                field.widget.attrs.update({'class': 'oh-input w-100'})
             elif isinstance(widget,(forms.Select,)):
-                filter_widget.field.widget.attrs.update({'class': 'oh-select oh-select-2 select2-hidden-accessible','id':uuid.uuid4()})
+                field.widget.attrs.update({'class': 'oh-select oh-select-2 select2-hidden-accessible','id':uuid.uuid4()})
             elif isinstance(widget,(forms.Textarea)):
-                filter_widget.field.widget.attrs.update({'class': 'oh-input w-100'})
+                field.widget.attrs.update({'class': 'oh-input w-100'})
             elif isinstance(widget, (forms.CheckboxInput,forms.CheckboxSelectMultiple,)):
-                filter_widget.field.widget.attrs.update({'class': 'oh-switch__checkbox'})
+                field.widget.attrs.update({'class': 'oh-switch__checkbox'})
             elif isinstance(widget,(forms.ModelChoiceField)):
-                filter_widget.field.widget.attrs.update({'class': 'oh-select oh-select-2 select2-hidden-accessible',})
+                field.widget.attrs.update({'class': 'oh-select oh-select-2 select2-hidden-accessible',})

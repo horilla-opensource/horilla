@@ -35,6 +35,7 @@ from base.models import (
     ShiftRequest,
     EmployeeShiftDay,
 )
+from base.methods import reload_queryset
 
 # your form here
 
@@ -146,12 +147,14 @@ class ModelForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        reload_queryset(self.fields)
         for field_name, field in self.fields.items():
             widget = field.widget
             if isinstance(
                 widget,
                 (forms.NumberInput, forms.EmailInput, forms.TextInput, forms.FileInput),
             ):
+                label = ''
                 if field.label is not None:
                     label = _(field.label.title())
                 field.widget.attrs.update(
@@ -570,6 +573,7 @@ class RotatingWorkTypeAssignUpdateForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        reload_queryset(self.fields)
 
         self.fields["rotate_every_weekend"].widget.attrs.update(
             {
@@ -841,6 +845,7 @@ class RotatingShiftAssignForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        reload_queryset(self.fields)
         self.fields["rotate_every_weekend"].widget.attrs.update(
             {
                 "class": "w-100 ",
@@ -985,6 +990,7 @@ class RotatingShiftAssignUpdateForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        reload_queryset(self.fields)
         self.fields["rotate_every_weekend"].widget.attrs.update(
             {
                 "class": "w-100 ",
@@ -1164,7 +1170,6 @@ class WorkTypeRequestForm(ModelForm):
         return super().save(commit)
 
 
-from django.contrib.auth.models import User
 
 
 class ChangePasswordForm(forms.Form):

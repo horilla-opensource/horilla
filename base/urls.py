@@ -68,7 +68,7 @@ urlpatterns = [
         name="remove-permission",
     ),
     path("settings/company-create/", views.company_create, name="company-create"),
-    # path('company-view', views.company_view,name='company-view'),
+    path('company-view', views.company_view,name='company-view'),
     path(
         "settings/company-update/<int:id>/",
         views.company_update,
@@ -79,9 +79,10 @@ urlpatterns = [
         "company-delete/<int:id>/",
         views.object_delete,
         name="company-delete",
-        kwargs={"model": Company, "redirect": "/settings/company-create"},
+        kwargs={"model": Company, "redirect": "/company-view"},
     ),
-    path("settings/department-creation/", views.department, name="department-creation"),
+    path("settings/department-view/", views.department_view, name="department-view"),
+    path("settings/department-creation/", views.department_create, name="department-creation"),
     path(
         "settings/department-update/<int:id>/",
         views.department_update,
@@ -92,12 +93,17 @@ urlpatterns = [
         "department-delete/<int:id>/",
         views.object_delete,
         name="department-delete",
-        kwargs={"model": Department, "redirect": "/settings/department-creation"},
+        kwargs={"model": Department, "redirect": "/settings/department-view"},
     ),
     path(
         "settings/job-position-creation/",
-        views.job_position,
+        views.job_position_creation,
         name="job-position-creation",
+    ),
+    path(
+        "settings/job-position-view/",
+        views.job_position,
+        name="job-position-view",
     ),
     path(
         "settings/job-position-update/<int:id>/",
@@ -109,9 +115,10 @@ urlpatterns = [
         "job-position-delete/<int:id>/",
         views.object_delete,
         name="job-position-delete",
-        kwargs={"model": JobPosition, "redirect": "/settings/job-position-creation"},
+        kwargs={"model": JobPosition, "redirect": "/settings/job-position-view"},
     ),
     path("settings/job-role-create/", views.job_role_create, name="job-role-create"),
+    path("settings/job-role-view/", views.job_role_view, name="job-role-view"),
     path(
         "settings/job-role-update/<int:id>/",
         views.job_role_update,
@@ -122,8 +129,9 @@ urlpatterns = [
         "job-role-delete/<int:id>/",
         views.object_delete,
         name="job-role-delete",
-        kwargs={"model": JobRole, "redirect": "/settings/job-role-create"},
+        kwargs={"model": JobRole, "redirect": "/settings/job-role-view"},
     ),
+    path("settings/work-type-view/", views.work_type_view, name="work-type-view"),
     path("settings/work-type-create/", views.work_type_create, name="work-type-create"),
     path(
         "settings/work-type-update/<int:id>/",
@@ -135,7 +143,7 @@ urlpatterns = [
         "work-type-delete/<int:id>/",
         views.object_delete,
         name="work-type-delete",
-        kwargs={"model": WorkType, "redirect": "/settings/work-type-create"},
+        kwargs={"model": WorkType, "redirect": "/settings/work-type-view"},
     ),
     path(
         "settings/rotating-work-type-create/",

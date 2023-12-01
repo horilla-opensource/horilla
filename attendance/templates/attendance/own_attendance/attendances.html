@@ -154,6 +154,11 @@
         </div>
         <div
           class="oh-sticky-table__th"
+          >
+          {% trans "Pending Hour" %}
+        </div>
+        <div
+          class="oh-sticky-table__th"
           hx-target="#attendance-container"
           hx-get="{% url 'own-attendance-filter' %}?{{pd}}&orderby=overtime_second"
         >
@@ -209,6 +214,7 @@
         <div class="oh-sticky-table__td">
           {{attendance.attendance_worked_hour}}
         </div>
+        <div class="oh-sticky-table__td">{{ attendance.hours_pending }}</div>
         <div class="oh-sticky-table__td">
           {{attendance.attendance_overtime}}
         </div>

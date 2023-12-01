@@ -29,6 +29,7 @@ from django.utils.translation import gettext_lazy as _
 from employee.models import Employee, EmployeeBankDetails
 from recruitment.models import Candidate
 from onboarding.models import OnboardingStage, OnboardingTask
+from base.methods import reload_queryset
 
 
 class ModelForm(forms.ModelForm):
@@ -38,6 +39,7 @@ class ModelForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        reload_queryset(self.fields)
         for _, field in self.fields.items():
             widget = field.widget
 
@@ -79,6 +81,7 @@ class UserCreationFormCustom(UserForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        reload_queryset(self.fields)
         for _, field in self.fields.items():
             widget = field.widget
             if isinstance(
@@ -240,21 +243,22 @@ class OnboardingViewStageForm(ModelForm):
         """
 
         model = OnboardingStage
-        fields = ["stage_title", "employee_id","is_final_stage"]
+        fields = ["stage_title", "employee_id", "is_final_stage"]
         labels = {
             "stage_title": _("Stage Title"),
-            "is_final_stage":_("Is Final Stage")
+            "is_final_stage": _("Is Final Stage"),
         }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        
+
         # Loop through form fields and generate unique IDs for their attributes
         for field_name, field in self.fields.items():
             unique_id = str(uuid.uuid4())  # You can customize the unique ID format
-            
+
             # Set the widget's attributes with the unique ID
-            field.widget.attrs.update({'id': unique_id})
+            field.widget.attrs.update({"id": unique_id})
+
 
 class EmployeeCreationForm(ModelForm):
     """

@@ -12,6 +12,7 @@ from django.db.models import Q
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 from base.models import Company, EmployeeShift, EmployeeShiftDay, WorkType
+from base.horilla_company_manager import HorillaCompanyManager
 from employee.models import Employee
 from leave.models import LeaveRequest
 from attendance.methods.differentiate import get_diff_dict
@@ -95,7 +96,9 @@ class AttendanceActivity(models.Model):
     clock_in = models.TimeField(verbose_name=_("Check In"))
     clock_out_date = models.DateField(null=True, verbose_name=_("Out Date"))
     clock_out = models.TimeField(null=True, verbose_name=_("Check Out"))
-    objects = models.Manager()
+    objects = HorillaCompanyManager(
+        related_company_field="employee_id__employee_work_info__company_id"
+    )
 
     class Meta:
         """
@@ -197,7 +200,9 @@ class Attendance(models.Model):
         max_length=18, null=True, choices=status, default="update_request"
     )
     requested_data = models.JSONField(null=True, editable=False)
-    objects = models.Manager()
+    objects = HorillaCompanyManager(
+        related_company_field="employee_id__employee_work_info__company_id"
+    )
 
     class Meta:
         """
@@ -487,7 +492,9 @@ class AttendanceOverTime(models.Model):
         null=True,
         verbose_name=_("Overtime Seconds"),
     )
-    objects = models.Manager()
+    objects = HorillaCompanyManager(
+        related_company_field="employee_id__employee_work_info__company_id"
+    )
 
     class Meta:
         """
@@ -558,7 +565,9 @@ class AttendanceLateComeEarlyOut(models.Model):
         verbose_name=_("Employee"),
     )
     type = models.CharField(max_length=20, choices=choices, verbose_name=_("Type"))
-    objects = models.Manager()
+    objects = HorillaCompanyManager(
+        related_company_field="employee_id__employee_work_info__company_id"
+    )
 
     class Meta:
         """
@@ -586,8 +595,8 @@ class AttendanceValidationCondition(models.Model):
     overtime_cutoff = models.CharField(
         blank=True, null=True, max_length=10, validators=[validate_time_format]
     )
-    company_id = models.ForeignKey(Company,null=True, editable=False, on_delete=models.PROTECT)
-    objects = models.Manager()
+    company_id = models.ManyToManyField(Company, blank=True,verbose_name=_("Company"))
+    objects = HorillaCompanyManager()
 
     def clean(self):
         """

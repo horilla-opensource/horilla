@@ -27,6 +27,7 @@ from django.contrib.auth.models import User
 from django.forms import DateInput, TextInput
 from django.utils.translation import gettext_lazy as trans
 from employee.models import Employee, EmployeeWorkInformation, EmployeeBankDetails
+from base.methods import reload_queryset
 
 
 class ModelForm(forms.ModelForm):
@@ -36,6 +37,7 @@ class ModelForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        reload_queryset(self.fields)
         for _, field in self.fields.items():
             widget = field.widget
             if isinstance(

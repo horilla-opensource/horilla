@@ -13,6 +13,7 @@ from django.http import QueryDict
 from employee.models import EmployeeWorkInformation
 from employee.models import Employee, Department, JobPosition
 from base.models import Company, EmployeeShift, WorkType, JobRole
+from base.horilla_company_manager import HorillaCompanyManager
 from attendance.models import (
     validate_time_format,
 )
@@ -83,7 +84,7 @@ class FilingStatus(models.Model):
         verbose_name=_("Description"),
     )
     company_id = models.ForeignKey(Company,null=True, editable=False, on_delete=models.PROTECT)
-    objects = models.Manager()
+    objects = HorillaCompanyManager()
 
     def __str__(self) -> str:
         return str(self.filing_status)
@@ -215,7 +216,7 @@ class Contract(models.Model):
 
     note = models.TextField(null=True, blank=True)
 
-    objects = models.Manager()
+    objects = HorillaCompanyManager("employee_id__employee_work_info__company_id")
 
     def __str__(self) -> str:
         return f"{self.contract_name} -{self.contract_start_date} - {self.contract_end_date}"
@@ -365,7 +366,7 @@ class WorkRecord(models.Model):
     is_attendance_record = models.BooleanField(default=False)
     is_leave_record = models.BooleanField(default=False)
     day_percentage = models.FloatField(default=0)
-    objects = models.Manager()
+    objects = HorillaCompanyManager("employee_id__employee_work_info__company_id")
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
@@ -805,7 +806,7 @@ class Allowance(models.Model):
         default=0.00, help_text=_("The amount of the pay-head")
     )
     company_id = models.ForeignKey(Company,null=True, editable=False, on_delete=models.PROTECT)
-    objects = models.Manager()
+    objects = HorillaCompanyManager()
 
     class Meta:
         """
@@ -1094,7 +1095,7 @@ class Deduction(models.Model):
         default=0.00, help_text=_("The amount of the pay-head")
     )
     company_id = models.ForeignKey(Company,null=True, editable=False, on_delete=models.PROTECT)
-    objects = models.Manager()
+    objects = HorillaCompanyManager()
 
     def clean(self):
         super().clean()
@@ -1192,7 +1193,7 @@ class Payslip(models.Model):
     status = models.CharField(
         max_length=20, null=True, default="draft", choices=status_choices
     )
-    objects = models.Manager()
+    objects = HorillaCompanyManager("employee_id__employee_work_info__company_id")
 
     def __str__(self) -> str:
         return f"Payslip for {self.employee_id} - Period: {self.start_date} to {self.end_date}"

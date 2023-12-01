@@ -26,6 +26,11 @@
             <label class="oh-input__label" for="objective">{% trans "Description" %}</label>
             {{asset_category_form.asset_category_description}}
         </div>
+        <div class="oh-input__group ">
+            <label class="oh-input__label" for="objective">{% trans "Company" %}</label>
+            {{asset_category_form.company_id}}
+            {{asset_category_form.errors}}
+        </div>
         <div class="oh-modal__dialog-footer">
             <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow" >
                 {% trans "Save" %}

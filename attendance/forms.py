@@ -31,6 +31,8 @@ from django.utils.translation import gettext_lazy as _
 from django.core.exceptions import ValidationError
 from django.forms import DateTimeInput
 from employee.models import Employee
+from base.methods import reload_queryset
+from base.models import Company
 from attendance.models import (
     Attendance,
     AttendanceOverTime,
@@ -48,6 +50,7 @@ class ModelForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        reload_queryset(self.fields)
         for field_name, field in self.fields.items():
             widget = field.widget
             if isinstance(
@@ -406,6 +409,10 @@ class AttendanceValidationConditionForm(forms.ModelForm):
         validation_at_work = forms.DurationField()
         approve_overtime_after = forms.DurationField()
         overtime_cutoff = forms.DurationField()
+        company_id = forms.ModelMultipleChoiceField(
+            queryset=Company.objects.all(),
+            widget=forms.SelectMultiple(attrs={"class": "oh-select oh-select-2 w-100"})
+        )
         widgets = {
             "validation_at_work": forms.TextInput(
                 attrs={"class": "oh-input w-100", "placeholder": "09:00"}
@@ -415,6 +422,9 @@ class AttendanceValidationConditionForm(forms.ModelForm):
             ),
             "overtime_cutoff": forms.TextInput(
                 attrs={"class": "oh-input w-100", "placeholder": "02:00"}
+            ),
+            "company_id": forms.SelectMultiple(
+                attrs={"class": "oh-select w-100"}
             ),
         }
 

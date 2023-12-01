@@ -152,7 +152,7 @@ def employee_view_individual(request, obj_id, **kwargs):
     employee = Employee.objects.get(id=obj_id)
     employee_leaves = employee.available_leave.all()
     user = Employee.objects.filter(employee_user_id=request.user).first()
-    if user.reporting_manager.filter(
+    if user and user.reporting_manager.filter(
         employee_id=employee
     ).exists() or request.user.has_perm("employee.change_employee"):
         return render(
@@ -468,7 +468,7 @@ def employee_view_update(request, obj_id, **kwargs):
     """
     user = Employee.objects.filter(employee_user_id=request.user).first()
     employee = Employee.objects.filter(id=obj_id).first()
-    if user.reporting_manager.filter(
+    if user and user.reporting_manager.filter(
         employee_id=employee
     ).exists() or request.user.has_perm("employee.change_employee"):
         form = EmployeeForm(instance=employee)

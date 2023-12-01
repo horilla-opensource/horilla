@@ -7,6 +7,7 @@ from django.core.exceptions import ValidationError
 from dateutil.relativedelta import relativedelta
 from django.utils.translation import gettext_lazy as _
 from base.models import Company
+from base.horilla_company_manager import HorillaCompanyManager
 from employee.models import Employee
 from .methods import calculate_requested_days
 from django.core.files.storage import default_storage
@@ -165,8 +166,9 @@ class LeaveType(models.Model):
     exclude_company_leave = models.CharField(max_length=30, choices=CHOICES)
     exclude_holiday = models.CharField(max_length=30, choices=CHOICES)
     company_id = models.ForeignKey(Company,null=True, editable=False, on_delete=models.PROTECT)
-    objects = models.Manager()
-
+    objects = HorillaCompanyManager(
+        related_company_field="company_id"
+    )
     class Meta:
         ordering = ['-id'] 
 
@@ -192,8 +194,9 @@ class Holiday(models.Model):
     end_date = models.DateField(null=True, blank=True, verbose_name=_("End Date"))
     recurring = models.BooleanField(default=False, verbose_name=_("Recurring"))
     company_id = models.ForeignKey(Company,null=True, editable=False, on_delete=models.PROTECT)
-    objects = models.Manager()
-
+    objects = HorillaCompanyManager(
+        related_company_field="company_id"
+    )
     def __str__(self):
         return self.name
 
@@ -205,7 +208,9 @@ class CompanyLeave(models.Model):
     based_on_week_day = models.CharField(max_length=100, choices=WEEK_DAYS)
     company_id = models.ForeignKey(Company,null=True, editable=False, on_delete=models.PROTECT)
     objects = models.Manager()
-
+    objects = HorillaCompanyManager(
+        related_company_field="company_id"
+    )
     class Meta:
         unique_together = ("based_on_week", "based_on_week_day")
 
@@ -242,8 +247,9 @@ class AvailableLeave(models.Model):
     expired_date = models.DateField(
         blank=True, null=True, verbose_name=_("CarryForward Expired Date")
     )
-    objects = models.Manager()
-
+    objects = HorillaCompanyManager(
+        related_company_field="employee_id__employee_work_info__company_id"
+    )
     class Meta:
         unique_together = ("leave_type_id", "employee_id")
 
@@ -410,8 +416,9 @@ class LeaveRequest(models.Model):
     approved_carryforward_days = models.FloatField(default=0)
     created_at = models.DateTimeField(auto_now="True")
     reject_reason = models.TextField(blank=True, verbose_name=_("Reject Reason"))
-    objects = models.Manager()
-
+    objects = HorillaCompanyManager(
+        related_company_field="employee_id__employee_work_info__company_id"
+    )
     def __str__(self):
         return f"{self.employee_id} | {self.leave_type_id} | {self.status}"
 
@@ -578,8 +585,9 @@ class LeaveAllocationRequest(models.Model):
     )
     created_at = models.DateTimeField(auto_now="True")
     reject_reason = models.TextField(blank=True)
-    objects = models.Manager()
-
+    objects = HorillaCompanyManager(
+        related_company_field="employee_id__employee_work_info__company_id"
+    )
     def __str__(self):
         return f"{self.employee_id}| {self.leave_type_id}| {self.id}"
 

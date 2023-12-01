@@ -9,6 +9,7 @@ import django_filters
 from django import forms
 from django_filters import DateFilter
 from pms.models import EmployeeKeyResult, EmployeeObjective, Feedback
+from base.methods import reload_queryset
 
 
 class DateRangeFilter(django_filters.Filter):
@@ -44,21 +45,22 @@ class DateRangeFilter(django_filters.Filter):
 class CustomFilterSet(django_filters.FilterSet):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        for field_name, field in self.filters.items():
+        reload_queryset(self.form.fields)
+        for field_name, field in self.form.fields.items():
             filter_widget = self.filters[field_name]
             widget = filter_widget.field.widget
             if isinstance(
                 widget, (forms.NumberInput, forms.EmailInput, forms.TextInput)
             ):
-                filter_widget.field.widget.attrs.update({"class": "oh-input w-100"})
+                field.widget.attrs.update({"class": "oh-input w-100"})
             elif isinstance(widget, (forms.Select,)):
-                filter_widget.field.widget.attrs.update(
+                field.widget.attrs.update(
                     {
                         "class": "oh-select oh-select-2 select2-hidden-accessible",
                     }
                 )
             elif isinstance(widget, (forms.Textarea)):
-                filter_widget.field.widget.attrs.update({"class": "oh-input w-100"})
+                field.widget.attrs.update({"class": "oh-input w-100"})
             elif isinstance(
                 widget,
                 (
@@ -66,11 +68,11 @@ class CustomFilterSet(django_filters.FilterSet):
                     forms.CheckboxSelectMultiple,
                 ),
             ):
-                filter_widget.field.widget.attrs.update(
+                field.widget.attrs.update(
                     {"class": "oh-switch__checkbox"}
                 )
             elif isinstance(widget, (forms.ModelChoiceField)):
-                filter_widget.field.widget.attrs.update(
+                field.widget.attrs.update(
                     {
                         "class": "oh-select oh-select-2 select2-hidden-accessible",
                     }

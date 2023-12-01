@@ -30,6 +30,13 @@
                 {{form.full_time.errors}}
                 {{form.full_time}}
             </div>
+            <div class="oh-input-group mb-2">
+                <label class='settings-label mb-1' for="">
+                   {% trans "Company" %}
+                </label>
+                {{form.company_id.errors}}
+                {{form.company_id}}
+            </div>
         </div>
         <button type='submit' class="oh-btn oh-btn--secondary mt-2 mr-0 oh-btn--w-100-resp">
             {% trans "Save Changes" %}

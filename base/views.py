@@ -516,15 +516,27 @@ def company_create(request):
     companies = Company.objects.all()
     if request.method == "POST":
         form = CompanyForm(request.POST, request.FILES)
+        
         if form.is_valid():
             form.save()
-            form = CompanyForm()
 
             messages.success(request, _("Company has been created successfully!"))
-            return redirect(company_create)
+            return HttpResponse("<script>window.location.reload()</script>")
 
     return render(
-        request, "base/company/company.html", {"form": form, "companies": companies}
+        request, "base/company/company_form.html", {"form": form, "companies": companies}
+    )
+
+@login_required
+@permission_required("base.add_company")
+def company_view(request):
+    """
+    This method used to view created companies
+    """
+
+    companies = Company.objects.all()
+    return render(
+        request, "base/company/company.html", {"companies": companies}
     )
 
 
@@ -537,7 +549,6 @@ def company_update(request, id, **kwargs):
         id : company instance id
 
     """
-    companies = Company.objects.all()
     company = Company.objects.get(id=id)
     form = CompanyForm(instance=company)
     if request.method == "POST":
@@ -545,33 +556,46 @@ def company_update(request, id, **kwargs):
         if form.is_valid():
             form.save()
             messages.success(request, _("Company updated"))
-            return redirect(company_create)
+            return HttpResponse("<script>window.location.reload()</script>")
     return render(
-        request, "base/company/company.html", {"form": form, "companies": companies}
+        request, "base/company/company_form.html", {"form": form, "company": company}
     )
 
 
 @login_required
 @permission_required("base.add_department")
-def department(request):
+def department_create(request):
     """
-    This method render renders form and template to create department
+    This method renders form and template to create department
     """
 
     form = DepartmentForm()
-    departments = Department.objects.all()
     if request.method == "POST":
         form = DepartmentForm(request.POST)
         if form.is_valid():
             form.save()
             form = DepartmentForm()
             messages.success(request, _("Department has been created successfully!"))
+            return HttpResponse("<script>window.location.reload()</script>")
+    return render(
+        request,
+        "base/department/department_form.html",
+        {"form": form,},
+    )
+
+
+@login_required
+@permission_required("base.add_department")
+def department_view(request):
+    """
+    This method view department
+    """
+    departments = Department.objects.all()
     return render(
         request,
         "base/department/department.html",
-        {"form": form, "departments": departments},
+        {"departments": departments,},
     )
-
 
 @login_required
 @permission_required("base.change_department")
@@ -582,18 +606,17 @@ def department_update(request, id, **kwargs):
         id : department instance id
     """
     department = Department.objects.get(id=id)
-    departments = Department.objects.all()
     form = DepartmentForm(instance=department)
     if request.method == "POST":
         form = DepartmentForm(request.POST, instance=department)
         if form.is_valid():
             form.save()
             messages.success(request, _("Department updated."))
-            return redirect("/settings/department-creation")
+            return HttpResponse("<script>window.location.reload()</script>")
     return render(
         request,
-        "base/department/department.html",
-        {"form": form, "departments": departments},
+        "base/department/department_form.html",
+        {"form": form, "department": department},
     )
 
 
@@ -601,7 +624,7 @@ def department_update(request, id, **kwargs):
 @permission_required("base.add_jobposition")
 def job_position(request):
     """
-    This method is used to create job position
+    This method is used to view job position
     """
 
     departments = Department.objects.all()
@@ -617,6 +640,25 @@ def job_position(request):
         {"form": form, "departments": departments},
     )
 
+@login_required
+@permission_required("base.add_jobposition")
+def job_position_creation(request):
+    """
+    This method is used to create job position
+    """
+
+    form = JobPositionForm()
+    if request.method == "POST":
+        form = JobPositionForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, _("Job Position has been created successfully!"))
+            return HttpResponse("<script>window.location.reload()</script>")
+    return render(
+        request,
+        "base/job_position/job_position_form.html",
+        {"form": form,},
+    )
 
 @login_required
 @permission_required("base.change_jobposition")
@@ -628,18 +670,17 @@ def job_position_update(request, id, **kwargs):
 
     """
     job_position = JobPosition.objects.get(id=id)
-    departments = Department.objects.all()
     form = JobPositionForm(instance=job_position)
     if request.method == "POST":
         form = JobPositionForm(request.POST, instance=job_position)
         if form.is_valid():
             form.save()
             messages.success(request, _("Job position updated."))
-            return redirect("/settings/job-position-creation")
+            return HttpResponse("<script>window.location.reload()</script>")
     return render(
         request,
-        "base/job_position/job_position.html",
-        {"form": form, "departments": departments},
+        "base/job_position/job_position_form.html",
+        {"form": form, "job_position": job_position},
     )
 
 
@@ -651,7 +692,6 @@ def job_role_create(request):
     """
 
     form = JobRoleForm()
-    jobs = JobPosition.objects.all()
     if request.method == "POST":
         form = JobRoleForm(request.POST)
         if form.is_valid():
@@ -659,8 +699,24 @@ def job_role_create(request):
             form = JobRoleForm()
 
             messages.success(request, _("Job role has been created successfully!"))
+            return HttpResponse("<script>window.location.reload()</script>")
+    
     return render(
-        request, "base/job_role/job_role.html", {"form": form, "job_positions": jobs}
+        request, "base/job_role/job_role_form.html", {"form": form,}
+    )
+
+
+@login_required
+@permission_required("base.add_jobrole")
+def job_role_view(request):
+    """
+    This method is used to view job role.
+    """
+
+    jobs = JobPosition.objects.all()
+    
+    return render(
+        request, "base/job_role/job_role.html", { "job_positions": jobs}
     )
 
 
@@ -675,7 +731,6 @@ def job_role_update(request, id, **kwargs):
     """
 
     job_role = JobRole.objects.get(id=id)
-    jobs = JobPosition.objects.all()
 
     form = JobRoleForm(instance=job_role)
     if request.method == "POST":
@@ -683,8 +738,10 @@ def job_role_update(request, id, **kwargs):
         if form.is_valid():
             form.save()
             messages.success(request, _("Job role updated."))
+            return HttpResponse("<script>window.location.reload()</script>")
+
     return render(
-        request, "base/job_role/job_role.html", {"form": form, "job_positions": jobs}
+        request, "base/job_role/job_role_form.html", {"form": form, "job_role": job_role,}
     )
 
 
@@ -704,10 +761,27 @@ def work_type_create(request):
             form = WorkTypeForm()
 
             messages.success(request, _("Work Type has been created successfully!"))
+            return HttpResponse("<script>window.location.reload()</script>")
+
+    return render(
+        request,
+        "base/work_type/work_type_form.html",
+        {"form": form, "work_types": work_types},
+    )
+
+
+@login_required
+@permission_required("base.add_worktype")
+def work_type_view(request):
+    """
+    This method is used to view work type
+    """
+
+    work_types = WorkType.objects.all()
     return render(
         request,
         "base/work_type/work_type.html",
-        {"form": form, "work_types": work_types},
+        {"work_types": work_types},
     )
 
 
@@ -722,18 +796,17 @@ def work_type_update(request, id, **kwargs):
     """
 
     work_type = WorkType.objects.get(id=id)
-    work_types = WorkType.objects.all()
     form = WorkTypeForm(instance=work_type)
     if request.method == "POST":
         form = WorkTypeForm(request.POST, instance=work_type)
         if form.is_valid():
             form.save()
             messages.success(request, _("Work type updated."))
-            return redirect(work_type_create)
+            return HttpResponse("<script>window.location.reload()</script>")
     return render(
         request,
-        "base/work_type/work_type.html",
-        {"form": form, "work_types": work_types},
+        "base/work_type/work_type_form.html",
+        {"form": form, "work_type": work_type},
     )
 
 

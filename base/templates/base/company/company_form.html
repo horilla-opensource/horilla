@@ -1,0 +1,68 @@
+{% load i18n %}
+<form
+	{% if company.id %}
+		hx-post="{% url 'company-update' company.id %}" 
+	{% else %}
+		hx-post="{% url 'company-create' %}"
+	{% endif %}
+	hx-target="#companyForm"
+	method="post"
+	hx-encoding="multipart/form-data"
+>
+	{% csrf_token %}
+	<div class="oh-inner-sidebar-content__body">
+		<div class="oh-input-group mb-2">
+			<label for="id_{{form.company.name}}" class="settings-label mb-1">{% trans "Company" %}</label>
+			{{form.company}} {{form.company.errors}}
+		</div>
+		<div class="oh-input-group mb-2">
+			<label for="id_{{form.hq.name}}" class="settings-label mb-1">{% trans "Hq" %}</label>
+			{{form.hq}}
+		</div>
+		<div class="oh-input-group mb-2">
+			<label for="id_{{form.address.name}}" class="settings-label mb-1">{% trans "Address" %}</label>
+			{{form.address}} {{form.address.errors}}
+		</div>
+		<div class="oh-input-group mb-2">
+			<label for="" class="settings-label mb-1">{% trans "Country" %}</label>
+			<select name="country" id="id_country" class="oh-select oh-select-2">
+				<option value="{{form.instance.country}}" selected>
+					{{form.instance.country}}
+				</option>
+			</select>
+			{{form.country.errors}}
+		</div>
+		<div class="oh-input-group mb-2">
+			<label for="" class="settings-label mb-1">{% trans "State" %}</label>
+			<select name="state" id="id_state" class="oh-select oh-select-2">
+				<option value="{{form.instance.state}}" selected>
+					{{form.instance.state}}
+				</option>
+			</select>
+			{{form.state.errors}}
+		</div>
+		<div class="oh-input-group mb-2">
+			<label for="id_{{form.city.name}}" class="settings-label mb-1">{% trans "City" %}</label>
+			{{form.city}} {{form.city.errors}}
+		</div>
+		<div class="oh-input-group mb-2">
+			<label for="id_{{form.zip.name}}" class="settings-label mb-1">{% trans "Zip" %}</label>
+			{{form.zip}} {{form.zip.errors}}
+		</div>
+		<div class="oh-input-group mb-2">
+			<label for="id_{{form.icon.name}}" class="settings-label mb-1">{% trans "Icon" %}</label>
+			{{form.icon}} {{form.icon.errors}}
+		</div>
+	</div>
+	<button
+		type="submit"
+		class="oh-btn oh-btn--secondary mt-2 mr-0 oh-btn--w-100-resp"
+	>
+		{% trans "Save Changes" %}
+	</button>
+	<div class="oh-inner-sidebar-content__footer"></div>
+</form>
+
+<script>
+	{% include 'country.js' %}
+</script>

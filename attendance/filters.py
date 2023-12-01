@@ -8,6 +8,8 @@ import uuid
 import django_filters
 from django.forms import DateTimeInput
 from django import forms
+from django.utils.translation import gettext_lazy as _
+from django.db.models import Subquery, OuterRef
 from horilla.filters import filter_by_name
 from employee.models import Employee
 from attendance.models import (
@@ -17,59 +19,7 @@ from attendance.models import (
     AttendanceActivity,
     strtime_seconds,
 )
-from django.utils.translation import gettext_lazy as _
-from django.db.models import Subquery, OuterRef
-
-
-class FilterSet(django_filters.FilterSet):
-    """
-    Custom FilterSet class that applies specific CSS classes to filter
-    widgets.
-
-    The class applies CSS classes to different types of filter widgets,
-    such as NumberInput, EmailInput, TextInput, Select, Textarea,
-    CheckboxInput, CheckboxSelectMultiple, and ModelChoiceField. The
-    CSS classes are applied to enhance the styling and behavior of the
-    filter widgets.
-    """
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        for field_name, _ in self.filters.items():
-            filter_widget = self.filters[field_name]
-            widget = filter_widget.field.widget
-            if isinstance(self.filters[field_name], DurationInSecondsFilter):
-                filter_widget.field.widget.attrs.update(
-                    {"class": "oh-input w-100", "placeholder": "00:00"}
-                )
-            elif isinstance(
-                widget, (forms.NumberInput, forms.EmailInput, forms.TextInput)
-            ):
-                filter_widget.field.widget.attrs.update({"class": "oh-input w-100"})
-            elif isinstance(widget, (forms.Select,)):
-                filter_widget.field.widget.attrs.update(
-                    {
-                        "class": "oh-select oh-select-2 select2-hidden-accessible",
-                    }
-                )
-            elif isinstance(widget, (forms.Textarea)):
-                filter_widget.field.widget.attrs.update({"class": "oh-input w-100"})
-            elif isinstance(
-                widget,
-                (
-                    forms.CheckboxInput,
-                    forms.CheckboxSelectMultiple,
-                ),
-            ):
-                filter_widget.field.widget.attrs.update(
-                    {"class": "oh-switch__checkbox"}
-                )
-            elif isinstance(widget, (forms.ModelChoiceField)):
-                filter_widget.field.widget.attrs.update(
-                    {
-                        "class": "oh-select oh-select-2 select2-hidden-accessible",
-                    }
-                )
+from base.filters import FilterSet
 
 
 class DurationInSecondsFilter(django_filters.CharFilter):

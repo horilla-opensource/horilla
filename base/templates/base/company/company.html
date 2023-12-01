@@ -1,70 +1,63 @@
-{% extends 'settings.html' %}
-{% load i18n %}
-{% block settings %}
+{% extends 'settings.html' %} {% load i18n %} {% block settings %}
 <div class="oh-inner-sidebar-content">
-    {% if perms.base.add_company %}
-    <form action="" method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        <div class="oh-inner-sidebar-content__header">
-            <h2 class="oh-inner-sidebar-content__title">{% trans "Company" %}</h2>
-        </div>
-        <div class="oh-inner-sidebar-content__body">
-            <div class="oh-input-group mb-2">
-                <label for="" class='settings-label mb-1'>{% trans "Company" %}</label>
-                {{form.company}}
-                {{form.company.errors}}
-            </div>
-            <div class="oh-input-group mb-2">
-                <label for="" class='settings-label mb-1'>{% trans "Hq" %}</label>
-                {{form.hq}}
-            </div>
-            <div class="oh-input-group mb-2">
-                <label for="" class='settings-label mb-1'>{% trans "Address" %}</label>
-                {{form.address}}
-                {{form.address.errors}}
-            </div>
-            <div class="oh-input-group mb-2">
-                <label for="" class='settings-label mb-1'>{% trans "Country" %}</label>
-                <select name="country" id="id_country" class="oh-select oh-select-2">
-                    <option value="{{form.instance.country}}"  selected>{{form.instance.country}}</option>
-                </select>
-                {{form.country.errors}}
-            </div>
-            <div class="oh-input-group mb-2">
-                <label for="" class='settings-label mb-1'>{% trans "State" %}</label>
-                <select name="state" id="id_state" class="oh-select oh-select-2">
-                    <option value="{{form.instance.state}}" selected>{{form.instance.state}}</option>
-                </select>
-                {{form.state.errors}}
-            </div>
-            <div class="oh-input-group mb-2">
-                <label for="" class='settings-label mb-1'>{% trans "City" %}</label>
-                {{form.city}}
-                {{form.city.errors}}
-            </div>
-            <div class="oh-input-group mb-2">
-                <label for="" class='settings-label mb-1'>{% trans "Zip" %}</label>
-                {{form.zip}}
-                {{form.zip.errors}}
-            </div>
-            <div class="oh-input-group mb-2">
-                <label for="" class='settings-label mb-1'>{% trans "Icon" %}</label>
-                {{form.icon}}
-                {{form.icon.errors}}
-            </div>
-        </div>
-        <button type='submit' class="oh-btn oh-btn--secondary mt-2 mr-0 oh-btn--w-100-resp">
-            {% trans "Save Changes" %}
-        </button>
-        <div class="oh-inner-sidebar-content__footer">
-        </div>
-        </div>
-    </form>
-    {% endif %}
+	{% if perms.base.add_company %}
+	<div
+		class="oh-inner-sidebar-content__header d-flex justify-content-between align-items-center"
+	>
+		<h2 class="oh-inner-sidebar-content__title">{% trans "Company" %}</h2>
+		<button
+			class="oh-btn oh-btn--secondary oh-btn--shadow"
+			data-toggle="oh-modal-toggle"
+			data-target="#companyModal"
+			hx-get="{% url 'company-create' %}"
+			hx-target="#companyForm"
+		>
+			<ion-icon name="add-outline" class="me-1"></ion-icon>
+			{% trans "Create" %}
+		</button>
+	</div>
 
-    {% include 'base/company/company_view.html' %}
+	{% include 'base/company/company_view.html' %} {% endif %}
 </div>
-<script>
-    {% include 'country.js' %}
-  </script>
+
+<div
+	class="oh-modal"
+	id="companyModal"
+	role="dialog"
+	aria-labelledby="companyModal"
+	aria-hidden="true"
+>
+	<div class="oh-modal__dialog">
+		<div class="oh-modal__dialog-header">
+			<h2 class="oh-modal__dialog-title" id="editModal1ModalLabel">
+				{% trans "Create Company" %}
+			</h2>
+			<button class="oh-modal__close" aria-label="Close">
+				<ion-icon name="close-outline"></ion-icon>
+			</button>
+		</div>
+		<div class="oh-modal__dialog-body" id="companyForm"></div>
+	</div>
+</div>
+
+<div
+	class="oh-modal"
+	id="companyEditModal"
+	role="dialog"
+	aria-labelledby="companyEditModal"
+	aria-hidden="true"
+>
+	<div class="oh-modal__dialog">
+		<div class="oh-modal__dialog-header">
+			<h2 class="oh-modal__dialog-title" id="editModal1ModalLabel">
+				{% trans "Update Company" %}
+			</h2>
+			<button class="oh-modal__close" aria-label="Close">
+				<ion-icon name="close-outline"></ion-icon>
+			</button>
+		</div>
+		<div class="oh-modal__dialog-body" id="companyEditForm"></div>
+	</div>
+</div>
+
 {% endblock settings %}

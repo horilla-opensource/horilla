@@ -4,6 +4,7 @@ import random
 from django.apps import apps
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import ForeignKey, ManyToManyField, OneToOneField
+from django.forms.models import ModelMultipleChoiceField, ModelChoiceField
 from django.http import HttpResponse
 from django.utils.translation import gettext as _
 import pandas as pd
@@ -410,3 +411,13 @@ def export_data(request, model, form_class, filter_class, file_name):
     writer.close()
 
     return response
+
+
+def reload_queryset(fields):
+    """
+    This method is used to reload the querysets in the form
+    """
+    for k, v in fields.items():
+        if isinstance(v, ModelChoiceField):
+            v.queryset = v.queryset.model.objects.all()
+    return

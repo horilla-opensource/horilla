@@ -35,7 +35,7 @@ from recruitment.models import (
     RecruitmentSurvey,
 )
 from recruitment import widgets
-
+from base.methods import reload_queryset
 
 class ModelForm(forms.ModelForm):
     """
@@ -44,6 +44,7 @@ class ModelForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        reload_queryset(self.fields)
         for field_name, field in self.fields.items():
             widget = field.widget
             if isinstance(
@@ -96,6 +97,7 @@ class RegistrationForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        reload_queryset(self.fields)
         for field_name, field in self.fields.items():
             widget = field.widget
             if isinstance(widget, (forms.Select,)):
@@ -129,6 +131,7 @@ class DropDownForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        reload_queryset(self.fields)
         for field_name, field in self.fields.items():
             widget = field.widget
             if isinstance(

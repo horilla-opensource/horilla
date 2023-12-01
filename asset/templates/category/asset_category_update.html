@@ -34,11 +34,18 @@
     {% csrf_token %}
     <div class="oh-input__group ">
       <label class="oh-input__label" for="objective">{% trans "Name" %}</label>
+      {{asset_category_update_form.asset_category_name.errors}}
       {{asset_category_update_form.asset_category_name}}
     </div>
     <div class="oh-input__group ">
       <label class="oh-input__label" for="objective">{% trans "Description" %}</label>
+      {{asset_category_update_form.asset_category_description.errors}}
       {{asset_category_update_form.asset_category_description}}
+    </div>
+    <div class="oh-input__group ">
+      <label class="oh-input__label" for="objective">{% trans "Company" %}</label>
+      {{asset_category_update_form.company_id.errors}}
+      {{asset_category_update_form.company_id}}
     </div>
 
     <div class="oh-modal__dialog-footer">

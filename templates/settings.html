@@ -12,6 +12,9 @@
 		color: hsl(0deg, 0%, 37%);
 		width: 100%;
 	}
+	.oh-sticky-table{
+		max-height: 100vh;
+	}
 </style>
 
 <section class="oh-wrapper oh-main__topbar">
@@ -32,8 +35,7 @@
 					data-target="#mobileMenu"
 					data-class="oh-resp-hidden--lg"
 				>
-					<ion-icon class="me-2" name="menu-outline"></ion-icon>{% trans "All
-					Settings" %}
+					<ion-icon class="me-2" name="menu-outline"></ion-icon>{% trans "All	Settings" %}
 				</button>
 				<div
 					class="oh-inner-sidebar oh-resp-hidden--lg"
@@ -44,7 +46,7 @@
 						<li class="oh-inner-sidebar__item">
 							<a
 								id="department"
-								href="{% url 'department-creation' %}"
+								href="{% url 'department-view' %}"
 								class="oh-inner-sidebar__link oh-dropdown__link"
 								>{% trans "Department" %}</a
 							>
@@ -52,7 +54,7 @@
 						<li class="oh-inner-sidebar__item">
 							<a
 								id="jobPosition"
-								href="{% url 'job-position-creation' %}"
+								href="{% url 'job-position-view' %}"
 								class="oh-inner-sidebar__link oh-dropdown__link"
 								>{% trans "Job Positions" %}</a
 							>
@@ -60,7 +62,7 @@
 						<li class="oh-inner-sidebar__item">
 							<a
 								id="jobRole"
-								href="{% url 'job-role-create' %}"
+								href="{% url 'job-role-view' %}"
 								class="oh-inner-sidebar__link oh-dropdown__link"
 								>{% trans "Job Role" %}</a
 							>
@@ -68,7 +70,7 @@
 						<li class="oh-inner-sidebar__item">
 							<a
 								id="workType"
-								href="{% url 'work-type-create' %}"
+								href="{% url 'work-type-view' %}"
 								class="oh-inner-sidebar__link oh-dropdown__link"
 								>{% trans "Work Type" %}</a
 							>
@@ -149,7 +151,7 @@
 						<li class="oh-inner-sidebar__item">
 							<a
 								id="company"
-								href="{% url 'company-create' %}"
+								href="{% url 'company-view' %}"
 								class="oh-inner-sidebar__link oh-dropdown__link"
 								>{% trans "Company" %}</a
 							>

@@ -3,11 +3,16 @@ forms.py
 
 This module is used to register the forms for pms models
 """
+from typing import Any
 import uuid
 from django import forms
 from django.core.exceptions import ValidationError
+from django.core.files.base import File
+from django.db.models.base import Model
+from django.forms.utils import ErrorList
 from django.utils.translation import gettext_lazy as _
 from employee.models import Department, JobPosition
+from base.forms import ModelForm
 from pms.models import (
     Question,
     EmployeeObjective,
@@ -19,6 +24,7 @@ from pms.models import (
     Employee,
     QuestionTemplate,
 )
+from base.methods import reload_queryset
 
 
 def validate_date(start_date, end_date):
@@ -39,7 +45,7 @@ def set_date_field_initial(instance):
     return initial
 
 
-class ObjectiveForm(forms.ModelForm):
+class ObjectiveForm(ModelForm):
     """
     A form to create or update instances of the EmployeeObjective model.
     """
@@ -143,13 +149,11 @@ class ObjectiveForm(forms.ModelForm):
         employee = kwargs.pop(
             "employee", None
         )  # access the logged-in user's information
-        super(ObjectiveForm, self).__init__(*args, **kwargs)
-
+        super().__init__(*args, **kwargs)
+        reload_queryset(self.fields)
         self.fields["period"].choices = list(self.fields["period"].choices)
-        self.fields["period"].choices.append(
-                ("create_new_period", "Create new period")
-            )
-        
+        self.fields["period"].choices.append(("create_new_period", "Create new period"))
+
         if employee and Employee.objects.filter(
             employee_work_info__reporting_manager_id=employee
         ):
@@ -210,7 +214,7 @@ class ObjectiveForm(forms.ModelForm):
         return cleaned_data
 
 
-class KeyResultForm(forms.ModelForm):
+class KeyResultForm(ModelForm):
     """
     A form used for creating and updating EmployeeKeyResult objects.
 
@@ -295,6 +299,7 @@ class KeyResultForm(forms.ModelForm):
             "employee", None
         )  # access the logged-in user's information
         super().__init__(*args, **kwargs)
+        reload_queryset(self.fields)
         employees = Employee.objects.filter(
             employee_work_info__reporting_manager_id=employee
         )
@@ -359,7 +364,7 @@ class KeyResultForm(forms.ModelForm):
         return cleaned_data
 
 
-class FeedbackForm(forms.ModelForm):
+class FeedbackForm(ModelForm):
     """
     A form used for creating and updating Feedback objects.
     """
@@ -445,12 +450,10 @@ class FeedbackForm(forms.ModelForm):
         if instance:
             kwargs["initial"] = set_date_field_initial(instance)
         super().__init__(*args, **kwargs)
-
+        reload_queryset(self.fields)
         self.fields["period"].choices = list(self.fields["period"].choices)
-        self.fields["period"].choices.append(
-                ("create_new_period", "Create new period")
-            )
-        
+        self.fields["period"].choices.append(("create_new_period", "Create new period"))
+
         if instance:
             self.fields["employee_id"].widget.attrs.update(
                 {"class": "oh-select oh-select-2"}
@@ -486,7 +489,7 @@ class FeedbackForm(forms.ModelForm):
         return cleaned_data
 
 
-class QuestionTemplateForm(forms.ModelForm):
+class QuestionTemplateForm(ModelForm):
     """
     Form for creating or updating a question template instance
     """
@@ -508,8 +511,12 @@ class QuestionTemplateForm(forms.ModelForm):
         model = QuestionTemplate
         fields = "__all__"
 
+    def __init__(self, *args, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
+        reload_queryset(self.fields)
 
-class QuestionForm(forms.ModelForm):
+
+class QuestionForm(ModelForm):
     """
     Form for creating or updating a question  instance
     """
@@ -574,6 +581,7 @@ class QuestionForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        reload_queryset(self.fields)
         self.fields["question_type"].widget.attrs.update({"id": str(uuid.uuid4())})
         if (
             self.instance.pk
@@ -594,7 +602,7 @@ class QuestionForm(forms.ModelForm):
             ].initial = self.instance.question_options.first().option_d
 
 
-class ObjectiveCommentForm(forms.ModelForm):
+class ObjectiveCommentForm(ModelForm):
     """
     A form used to add a comment to an employee's objective.
     Excludes fields for the employee and employee objective and uses a textarea widget for the comment field.
@@ -617,8 +625,12 @@ class ObjectiveCommentForm(forms.ModelForm):
             ),
         }
 
+    def __init__(self, *args, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
+        reload_queryset(self.fields)
 
-class PeriodForm(forms.ModelForm):
+
+class PeriodForm(ModelForm):
     """
     A form for creating or updating a Period object.
     """
@@ -649,7 +661,8 @@ class PeriodForm(forms.ModelForm):
         """
         if instance := kwargs.get("instance"):
             kwargs["initial"] = set_date_field_initial(instance)
-        super(PeriodForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
+        reload_queryset(self.fields)
 
     def clean(self):
         cleaned_data = super().clean()

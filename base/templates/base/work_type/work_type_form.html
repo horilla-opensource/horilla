@@ -1,0 +1,33 @@
+{% load i18n %}
+<form 
+    {% if work_type.id %}
+    hx-post="{% url 'work-type-update' work_type.id %}"
+    {% else %}
+    hx-post="{% url 'work-type-create' %}"
+    {% endif %}
+    hx-target="#workTypeForm"
+    method="post"
+>
+	{% csrf_token %}
+    {{form.non_field_errors}}
+	<div class="oh-inner-sidebar-content__body">
+		<div class="oh-input-group mb-2">
+			<label class="settings-label mb-1" for="">
+				{% trans "Work Type" %}
+			</label>
+			{{form.work_type.errors}} {{form.work_type}}
+		</div>
+	</div>
+	<div class="oh-inner-sidebar-content__body">
+		<div class="oh-input-group mb-2">
+			<label class="settings-label mb-1" for=""> {% trans "Company" %} </label>
+			{{form.company_id.errors}} {{form.company_id}}
+		</div>
+	</div>
+	<button
+		type="submit"
+		class="oh-btn oh-btn--secondary mt-2 mr-0 oh-btn--w-100-resp"
+	>
+		{% trans "Save Changes" %}
+	</button>
+</form>

@@ -8,6 +8,7 @@ from django.db import models
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 from base.models import Company
+from base.horilla_company_manager import HorillaCompanyManager
 from employee.models import Employee
 
 
@@ -19,7 +20,7 @@ class AssetCategory(models.Model):
     asset_category_name = models.CharField(max_length=255, unique=True)
     asset_category_description = models.TextField()
     objects = models.Manager()
-    company_id = models.ForeignKey(Company,null=True, editable=False, on_delete=models.PROTECT)
+    company_id = models.ManyToManyField(Company,blank=True, verbose_name=_("Company"))
 
     def __str__(self):
         return f"{self.asset_category_name}"
@@ -32,8 +33,8 @@ class AssetLot(models.Model):
 
     lot_number = models.CharField(max_length=30, null=False, blank=False, unique=True)
     lot_description = models.TextField(null=True, blank=True)
-    company_id = models.ForeignKey(Company,null=True, editable=False, on_delete=models.PROTECT)
-    objects = models.Manager()
+    company_id = models.ManyToManyField(Company,blank=True, verbose_name=_("Company"))
+    objects = HorillaCompanyManager()
 
     def __str__(self):
         return f"{self.lot_number}"
@@ -61,7 +62,7 @@ class Asset(models.Model):
     asset_lot_number_id = models.ForeignKey(
         AssetLot, on_delete=models.PROTECT, null=True, blank=True
     )
-    objects = models.Manager()
+    objects = HorillaCompanyManager("asset_category_id__company_id")
 
     def __str__(self):
         return f"{self.asset_name}-{self.asset_tracking_id}"
@@ -108,7 +109,7 @@ class AssetAssignment(models.Model):
     return_status = models.CharField(
         choices=STATUS, max_length=30, null=True, blank=True
     )
-    objects = models.Manager()
+    objects = HorillaCompanyManager("asset_id__asset_lot_number_id__company_id")
 
 
 class AssetRequest(models.Model):
@@ -134,4 +135,4 @@ class AssetRequest(models.Model):
     asset_request_status = models.CharField(
         max_length=30, choices=STATUS, default="Requested", null=True, blank=True
     )
-    objects = models.Manager()
+    objects = HorillaCompanyManager("requested_employee_id__employee_work_info__company_id")

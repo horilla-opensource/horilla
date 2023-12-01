@@ -3,29 +3,64 @@
 {% block settings %}
 <div class="oh-inner-sidebar-content">
     {% if perms.base.add_department %}
-    <form action="" method="post">
-        {% csrf_token %}
-        <div class="oh-inner-sidebar-content__header">
+        <div class="oh-inner-sidebar-content__header d-flex justify-content-between align-items-center">
             <h2 class="oh-inner-sidebar-content__title">{% trans "Department" %}</h2>
+            <button
+                class="oh-btn oh-btn--secondary oh-btn--shadow"
+                data-toggle="oh-modal-toggle"
+                data-target="#departmentModal"
+                hx-get="{% url 'department-creation' %}"
+                hx-target="#departmentForm"
+            >
+                <ion-icon name="add-outline" class="me-1"></ion-icon>
+                {% trans "Create" %}
+            </button>
         </div>
-        <div class="oh-inner-sidebar-content__body">
-            <label class='settings-label mb-1' for="">
-                {% trans "Department" %}
-            </label>
-            <div class="oh-input-group">
-                {{form.department.errors}}
-                {{form.department}}
-            </div>
-        </div>
-        <button type='submit' class="oh-btn oh-btn--secondary mt-2 mr-0 oh-btn--w-100-resp">
-            {% trans "Save Changes" %}
-        </button>
-        <div class="oh-inner-sidebar-content__footer">
-        </div>
-        </div>
-    </form>
+        {% include 'base/department/department_view.html' %}
+        
     {% endif %}
 
-    {% include 'base/department/department_view.html' %}
 </div>
+
+
+<div
+	class="oh-modal"
+	id="departmentModal"
+	role="dialog"
+	aria-labelledby="departmentModal"
+	aria-hidden="true"
+>
+	<div class="oh-modal__dialog">
+		<div class="oh-modal__dialog-header">
+			<h2 class="oh-modal__dialog-title" id="editModal1ModalLabel">
+				{% trans "Create Department" %}
+			</h2>
+			<button class="oh-modal__close" aria-label="Close">
+				<ion-icon name="close-outline"></ion-icon>
+			</button>
+		</div>
+		<div class="oh-modal__dialog-body" id="departmentForm"></div>
+	</div>
+</div>
+
+<div
+	class="oh-modal"
+	id="departmentEditModal"
+	role="dialog"
+	aria-labelledby="departmentEditModal"
+	aria-hidden="true"
+>
+	<div class="oh-modal__dialog">
+		<div class="oh-modal__dialog-header">
+			<h2 class="oh-modal__dialog-title" id="editModal1ModalLabel">
+				{% trans "Department Update" %}
+			</h2>
+			<button class="oh-modal__close" aria-label="Close">
+				<ion-icon name="close-outline"></ion-icon>
+			</button>
+		</div>
+		<div class="oh-modal__dialog-body" id="departmentEditForm"></div>
+	</div>
+</div>
+
 {% endblock settings %}

@@ -8,6 +8,7 @@ from django.utils.translation import gettext_lazy as _
 from django.template.loader import render_to_string
 from employee.filters import EmployeeFilter
 from employee.models import Employee
+from base.methods import reload_queryset
 from horilla_widgets.forms import HorillaForm
 from horilla_widgets.widgets.horilla_multi_select_field import HorillaMultiSelectField
 from horilla_widgets.widgets.select_widgets import HorillaMultiSelectWidget
@@ -33,6 +34,7 @@ CHOICES = [("yes", _("Yes")), ("no", _("No"))]
 class ModelForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        reload_queryset(self.fields)
         for field_name, field in self.fields.items():
             widget = field.widget
 
@@ -70,6 +72,7 @@ class ModelForm(forms.ModelForm):
 class ConditionForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        reload_queryset(self.fields)
         for field_name, field in self.fields.items():
             widget = field.widget
             if isinstance(widget, (forms.Select,)):
@@ -723,16 +726,6 @@ class AssignLeaveForm(HorillaForm):
         ),
         label="Employee",
     )
-    # leave_type_id = HorillaMultiSelectField(
-    #     queryset=LeaveType.objects.all(),
-    #     widget=HorillaMultiSelectWidget(
-    #         filter_route_name="leave-type-widget-filter",
-    #         filter_class=LeaveTypeFilter,
-    #         filter_instance_contex_name="form",
-    #         filter_template_path="leave/leave_type/leave_type_filter.html",
-    #     ),
-    #     label="Leave Type",
-    # )
 
     def clean(self):
         cleaned_data = super().clean()
@@ -755,7 +748,7 @@ class AssignLeaveForm(HorillaForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-
+        reload_queryset(self.fields)
         self.fields["employee_id"].widget.attrs.update(
             {"required": True, "id": uuid.uuid4()}
         ),

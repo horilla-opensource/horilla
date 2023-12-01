@@ -12,6 +12,7 @@ import uuid
 from django import forms
 from django.utils.translation import gettext_lazy as _
 from payroll.models.tax_models import TaxBracket
+from base.methods import reload_queryset
 
 
 from payroll.models.tax_models import (
@@ -25,6 +26,7 @@ class ModelForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        reload_queryset(self.fields)
         for field_name, field in self.fields.items():
             input_widget = field.widget
             if isinstance(

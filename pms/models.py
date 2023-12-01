@@ -2,6 +2,7 @@ from django.db import models
 from django.forms import ValidationError
 from django.utils.translation import gettext_lazy as _
 from base.models import Company
+from base.horilla_company_manager import HorillaCompanyManager
 
 # importing simple history
 from simple_history.models import HistoricalRecords
@@ -17,8 +18,8 @@ class Period(models.Model):
     period_name = models.CharField(max_length=150, unique=True)
     start_date = models.DateField()
     end_date = models.DateField()
-    company_id = models.ForeignKey(Company,null=True, editable=False, on_delete=models.PROTECT)
-    objects = models.Manager()
+    company_id = models.ManyToManyField(Company, blank=True, verbose_name=_("Company"))
+    objects = HorillaCompanyManager()
 
     def __str__(self):
         return self.period_name
@@ -57,7 +58,7 @@ class EmployeeObjective(models.Model):
     )
     history = HorillaAuditLog(bases=[HorillaAuditInfo])
     archive = models.BooleanField(default=False, null=True, blank=True)
-    objects = models.Manager()
+    objects = HorillaCompanyManager("employee_id__employee_work_info__company_id")
 
     def __str__(self):
         return f"{self.employee_id.employee_first_name} - {self.objective}"
@@ -83,7 +84,7 @@ class Comment(models.Model):
     )
     created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
     history = HorillaAuditLog(excluded_fields=["comment"], bases=[HorillaAuditInfo])
-    objects = models.Manager()
+    objects = HorillaCompanyManager("employee_id__employee_work_info__company_id")
 
     def __str__(self):
         return f"{self.employee_id.employee_first_name} - {self.comment} "
@@ -135,8 +136,8 @@ class EmployeeKeyResult(models.Model):
     start_date = models.DateField(null=True, blank=True)
     end_date = models.DateField(null=True, blank=True)
     history = HorillaAuditLog(bases=[HorillaAuditInfo])
+    objects = HorillaCompanyManager("employee_id__employee_work_info__company_id")
     progress_percentage = models.IntegerField(null=True, blank=True, default=0)
-    objects = models.Manager()
 
     def __str__(self):
         return f"{self.key_result} "
@@ -159,8 +160,9 @@ class QuestionTemplate(models.Model):
     question_template = models.CharField(
         max_length=100, null=False, blank=False, unique=True
     )
-    company_id = models.ForeignKey(Company,null=True, editable=False, on_delete=models.PROTECT)
-    objects = models.Manager()
+    company_id = models.ManyToManyField(Company, blank=True, verbose_name=_("Company"))
+
+    objects = HorillaCompanyManager()
 
     def __str__(self):
         return self.question_template
@@ -187,7 +189,7 @@ class Question(models.Model):
         null=True,
         blank=True,
     )
-    objects = models.Manager()
+    objects = HorillaCompanyManager("template_id__company_id")
 
     def __str__(self):
         return self.question
@@ -207,7 +209,7 @@ class QuestionOptions(models.Model):
     option_b = models.CharField(max_length=250, null=True, blank=True)
     option_c = models.CharField(max_length=250, null=True, blank=True)
     option_d = models.CharField(max_length=250, null=True, blank=True)
-    objects = models.Manager()
+    objects = HorillaCompanyManager("question_id__template_id__company_id")
 
 
 class Feedback(models.Model):
@@ -259,7 +261,7 @@ class Feedback(models.Model):
         EmployeeKeyResult,
         blank=True,
     )
-    objects = models.Manager()
+    objects = HorillaCompanyManager("employee_id__employee_work_info__company_id+")
 
     def __str__(self):
         return f"{self.employee_id.employee_first_name} - {self.review_cycle}"
@@ -286,7 +288,7 @@ class Answer(models.Model):
     feedback_id = models.ForeignKey(
         Feedback, on_delete=models.PROTECT, related_name="feedback_answer"
     )
-    objects = models.Manager()
+    objects = HorillaCompanyManager("employee_id__employee_work_info__company_id")
 
     def __str__(self):
         return f"{self.employee_id.employee_first_name} - {self.answer}"
@@ -311,4 +313,4 @@ class KeyResultFeedback(models.Model):
         blank=True,
         on_delete=models.DO_NOTHING,
     )
-    objects = models.Manager()
+    objects = HorillaCompanyManager("employee_id__employee_work_info__company_id")

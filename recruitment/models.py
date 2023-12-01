@@ -20,6 +20,7 @@ from horilla_audit.methods import get_diff
 from employee.models import Employee
 from base.models import JobPosition, Company
 from django.core.files.storage import default_storage
+from base.horilla_company_manager import HorillaCompanyManager
 
 
 # Create your models here.
@@ -105,7 +106,7 @@ class Recruitment(models.Model):
     )
     start_date = models.DateField(default=django.utils.timezone.now)
     end_date = models.DateField(blank=True, null=True)
-    objects = models.Manager()
+    objects = HorillaCompanyManager()
 
     class Meta:
         """
@@ -190,7 +191,7 @@ class Stage(models.Model):
     )
     sequence = models.IntegerField(null=True, default=0)
     is_active = models.BooleanField(default=True)
-    objects = models.Manager()
+    objects = HorillaCompanyManager(related_company_field="recruitment_id__company_id")
 
     def __str__(self):
         return f"{self.stage}"
@@ -301,7 +302,7 @@ class Candidate(models.Model):
         ],
     )
     sequence = models.IntegerField(null=True, default=0)
-    objects = models.Manager()
+    objects = HorillaCompanyManager(related_company_field="recruitment_id__company_id")
 
     def __str__(self):
         return f"{self.name}"
@@ -373,7 +374,7 @@ class StageNote(models.Model):
     description = models.TextField(verbose_name=_("Description"))
     stage_id = models.ForeignKey(Stage, on_delete=models.CASCADE)
     updated_by = models.ForeignKey(Employee, on_delete=models.CASCADE)
-    objects = models.Manager()
+    objects = HorillaCompanyManager(related_company_field="candidate_id__recruitment_id__company_id")
 
     def __str__(self) -> str:
         return f"{self.description}"
@@ -414,7 +415,7 @@ class RecruitmentSurvey(models.Model):
         null=True, default="", help_text=_("Separate choices by ',  '")
     )
     is_mandatory = models.BooleanField(default=False)
-    objects = models.Manager()
+    objects = HorillaCompanyManager(related_company_field="recruitment_ids__company_id")
 
     def __str__(self) -> str:
         return str(self.question)
@@ -448,6 +449,7 @@ class RecruitmentSurveyAnswer(models.Model):
     attachment = models.FileField(
         upload_to="recruitment_attachment", null=True, blank=True
     )
+    objects = HorillaCompanyManager(related_company_field="recruitment_id__company_id")
 
     @property
     def answer(self):
