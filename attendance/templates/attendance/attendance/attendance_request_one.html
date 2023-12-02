@@ -175,7 +175,10 @@
                 <a  
                 href = '{% url "validate-this-attendance" attendance_request.id %}'
                 hx-target='#updateAttendanceBody'
-                class="oh-btn oh-btn--success w-50">
+                class="oh-btn oh-btn--success w-50"
+                data-req="/attendance/request-attendance-view/?id={{attendance_request.id}}"
+                onclick="{% if attendance_request.is_validate_request %}  event.preventDefault(); showSweetAlert($(this).data('req')); {% endif %}"
+                >
                 <ion-icon name="checkmark-done-outline"></ion-icon>{% trans "Validate" %}
               </a>
             {% endif %}

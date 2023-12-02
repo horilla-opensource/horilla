@@ -269,6 +269,12 @@ def get_key_instances(model, data_dict):
     if "vpage" in data_dict:
         del data_dict["vpage"]
 
+    if "id" in data_dict:
+        id = data_dict["id"][0]
+        object = model.objects.get(id=id)
+        del data_dict["id"]
+        data_dict["Object"] = [object]
+
     keys_to_remove = [
         key
         for key, value in data_dict.items()

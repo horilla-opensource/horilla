@@ -332,7 +332,7 @@ class AttendanceFilters(FilterSet):
     Args:
         FilterSet (class): custom filter set class to apply styling
     """
-
+    id = django_filters.NumberFilter(field_name="id")
     search = django_filters.CharFilter(method=filter_by_name)
     employee = django_filters.CharFilter(field_name="employee_id__id")
     date_attendance = django_filters.DateFilter(field_name="attendance_date")
@@ -435,6 +435,7 @@ class AttendanceFilters(FilterSet):
 
         model = Attendance
         fields = [
+            "id",
             "employee_id",
             "employee_id__employee_work_info__department_id",
             "employee_id__employee_work_info__company_id",

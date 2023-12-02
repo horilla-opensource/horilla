@@ -416,7 +416,8 @@
                                 <a
                                   href='{% url "validate-this-attendance" attendance.id %}'
                                   hx-target="#updateAttendanceBody"
-                                  onclick="event.stopPropagation()"
+                                  data-req="/attendance/request-attendance-view/?id={{attendance.id}}"
+                                  onclick="event.stopPropagation(); {% if attendance.is_validate_request %}  event.preventDefault(); showSweetAlert($(this).data('req')); {% endif %}"
                                   class="oh-btn oh-btn--info"
                                   >
                                   {% trans "Validate" %}
@@ -797,6 +798,22 @@
 {% endif %}
 
 <script>
+  function showSweetAlert(dataReqValue) {
+    Swal.fire({
+        title: 'Pending Attendance Update Request!',
+        text: 'An attendance request exists for updating this attendance prior to validation.',
+        icon: 'warning',
+        confirmButtonText: 'View Request',
+        showCancelButton: true,
+        cancelButtonText: 'Close',
+        preConfirm: () => {
+          // Redirect to the page based on dataReqValue
+          localStorage.setItem("attendanceRequestActiveTab","#tab_1")
+          window.location.href = dataReqValue;
+
+      },
+    });
+  }
   $(document).ready(function () {
     var activeTab = localStorage.getItem("activeTabAttendance");
     if (activeTab != null) {
