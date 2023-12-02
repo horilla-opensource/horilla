@@ -825,11 +825,27 @@ def rotating_work_type_create(request):
             form = RotatingWorkTypeForm()
 
             messages.success(request, _("Rotating work type created."))
+            return HttpResponse("<script>window.location.reload()</script>")
+
             return redirect(rotating_work_type_create)
     return render(
         request,
-        "base/rotating_work_type/rotating_work_type.html",
+        "base/rotating_work_type/htmx/rotating_work_type_form.html",
         {"form": form, "rwork_type": RotatingWorkType.objects.all()},
+    )
+
+
+@login_required
+@permission_required("base.add_rotatingworktype")
+def rotating_work_type_view(request):
+    """
+    This method is used to view rotating work type   .
+    """
+
+    return render(
+        request,
+        "base/rotating_work_type/rotating_work_type.html",
+        {"rwork_type": RotatingWorkType.objects.all()},
     )
 
 
@@ -850,11 +866,12 @@ def rotating_work_type_update(request, id, **kwargs):
         if form.is_valid():
             form.save()
             messages.success(request, _("Rotating work type updated."))
-            return redirect(rotating_work_type_create)
+            return HttpResponse("<script>window.location.reload()</script>")
+
     return render(
         request,
-        "base/rotating_work_type/rotating_work_type.html",
-        {"form": form, "rwork_type": RotatingWorkType.objects.all()},
+        "base/rotating_work_type/htmx/rotating_work_type_form.html",
+        {"form": form, "r_type": rotating_work_type},
     )
 
 
@@ -1184,6 +1201,21 @@ def rotating_work_type_assign_delete(request, id):
 
 @login_required
 @permission_required("base.add_employeetype")
+def employee_type_view(request):
+    """
+    This method is used to view employee type
+    """
+
+    types = EmployeeType.objects.all()
+    return render(
+        request,
+        "base/employee_type/employee_type.html",
+        {"employee_types": types,},
+    )
+
+
+@login_required
+@permission_required("base.add_employeetype")
 def employee_type_create(request):
     """
     This method is used to create employee type
@@ -1197,9 +1229,10 @@ def employee_type_create(request):
             form.save()
             form = EmployeeTypeForm()
             messages.success(request, _("Employee type created."))
+            return HttpResponse("<script>window.location.reload();</script>")
     return render(
         request,
-        "base/employee_type/employee_type.html",
+        "base/employee_type/employee_type_form.html",
         {"form": form, "employee_types": types},
     )
 
@@ -1215,19 +1248,30 @@ def employee_type_update(request, id, **kwargs):
     """
 
     employee_type = EmployeeType.objects.get(id=id)
-    employee_types = EmployeeType.objects.all()
     form = EmployeeTypeForm(instance=employee_type)
     if request.method == "POST":
         form = EmployeeTypeForm(request.POST, instance=employee_type)
         if form.is_valid():
             form.save()
             messages.success(request, _("Employee type updated."))
-            return redirect(employee_type_create)
+            return HttpResponse("<script>window.location.reload();</script>")
     return render(
         request,
-        "base/employee_type/employee_type.html",
-        {"form": form, "employee_types": employee_types},
+        "base/employee_type/employee_type_form.html",
+        {"form": form, "employee_type": employee_type},
     )
+
+
+@login_required
+@permission_required("base.add_employeeshift")
+def employee_shift_view(request):
+    """
+    This method is used to view employee shift
+    """
+
+    shifts = EmployeeShift.objects.all()
+    
+    return render(request, "base/shift/shift.html", {"shifts": shifts})
 
 
 @login_required
@@ -1247,7 +1291,8 @@ def employee_shift_create(request):
             messages.success(
                 request, _("Employee Shift has been created successfully!")
             )
-    return render(request, "base/shift/shift.html", {"form": form, "shifts": shifts})
+            return HttpResponse("<script>window.location.reload();</script>")
+    return render(request, "base/shift/shift_form.html", {"form": form, "shifts": shifts})
 
 
 @login_required
@@ -1260,17 +1305,28 @@ def employee_shift_update(request, id, **kwargs):
 
     """
     employee_shift = EmployeeShift.objects.get(id=id)
-    employee_shifts = EmployeeShift.objects.all()
     form = EmployeeShiftForm(instance=employee_shift)
     if request.method == "POST":
         form = EmployeeShiftForm(request.POST, instance=employee_shift)
         if form.is_valid():
             form.save()
             messages.success(request, _("Shift updated"))
-            return redirect(employee_shift_create)
+            return HttpResponse("<script>window.location.reload();</script>")
     return render(
-        request, "base/shift/shift.html", {"form": form, "shifts": employee_shifts}
+        request, "base/shift/shift_form.html", {"form": form, "shift": employee_shift}
     )
+
+
+@login_required
+@permission_required("base.add_employeeshiftschedule")
+def employee_shift_schedule_view(request):
+    """
+    This method is used to view schedule for shift
+    """
+
+    shifts = EmployeeShift.objects.all()
+    
+    return render(request, "base/shift/schedule.html", {"shifts": shifts})
 
 
 @login_required
@@ -1290,7 +1346,9 @@ def employee_shift_schedule_create(request):
             messages.success(
                 request, _("Employee Shift Schedule has been created successfully!")
             )
-    return render(request, "base/shift/schedule.html", {"form": form, "shifts": shifts})
+            return HttpResponse("<script>window.location.reload();</script>")
+
+    return render(request, "base/shift/schedule_form.html", {"form": form, "shifts": shifts})
 
 
 @login_required
@@ -1304,7 +1362,6 @@ def employee_shift_schedule_update(request, id, **kwargs):
 
     employee_shift_schedule = EmployeeShiftSchedule.objects.get(id=id)
     form = EmployeeShiftScheduleUpdateForm(instance=employee_shift_schedule)
-    shifts = EmployeeShift.objects.all()
     if request.method == "POST":
         form = EmployeeShiftScheduleUpdateForm(
             request.POST, instance=employee_shift_schedule
@@ -1312,8 +1369,22 @@ def employee_shift_schedule_update(request, id, **kwargs):
         if form.is_valid():
             form.save()
             messages.success(request, _("Shift schedule created."))
-            return redirect(employee_shift_schedule_create)
-    return render(request, "base/shift/schedule.html", {"form": form, "shifts": shifts})
+            return HttpResponse("<script>window.location.reload();</script>")
+    return render(request, "base/shift/schedule_form.html", {"form": form, "shift_schedule": employee_shift_schedule})
+
+
+@login_required
+@permission_required("base.add_rotatingshift")
+def rotating_shift_view(request):
+    """
+    This method is used to view rotating shift
+    """
+
+    return render(
+        request,
+        "base/rotating_shift/rotating_shift.html",
+        {"rshifts": RotatingShift.objects.all()},
+    )
 
 
 @login_required
@@ -1330,9 +1401,11 @@ def rotating_shift_create(request):
             form.save()
             form = RotatingShiftForm()
             messages.success(request, _("Rotating shift created."))
+            return HttpResponse("<script>window.location.reload();</script>")
+
     return render(
         request,
-        "base/rotating_shift/rotating_shift.html",
+        "base/rotating_shift/htmx/rotating_shift_form.html",
         {"form": form, "rshifts": RotatingShift.objects.all()},
     )
 
@@ -1354,15 +1427,13 @@ def rotating_shift_update(request, id, **kwargs):
             form.save()
             form = RotatingShiftForm()
             messages.success(request, _("Rotating shift updated."))
-            return redirect(rotating_shift_create)
+            return HttpResponse("<script>window.location.reload();</script>")
     return render(
         request,
-        "base/rotating_shift/rotating_shift.html",
+        "base/rotating_shift/htmx/rotating_shift_form.html",
         {
             "form": form,
-            "rshifts": paginator_qry(
-                RotatingShift.objects.all(), request.GET.get("page")
-            ),
+            "rshift": rotating_shift,
         },
     )
 
@@ -2779,6 +2850,20 @@ def settings(request):
 
 @login_required
 @permission_required("attendance.add_attendancevalidationcondition")
+def validation_condition_view(request):
+    """
+    This method view attendance validation conditions.
+    """
+    condition = AttendanceValidationCondition.objects.first()
+    return render(
+        request,
+        "attendance/break_point/condition.html",
+        {"condition": condition},
+    )
+
+
+@login_required
+@permission_required("attendance.add_attendancevalidationcondition")
 def validation_condition_create(request):
     """
     This method render a form to create attendance validation conditions,
@@ -2790,11 +2875,11 @@ def validation_condition_create(request):
         if form.is_valid():
             form.save()
             messages.success(request, _("Attendance Break-point settings created."))
-    condition = AttendanceValidationCondition.objects.first()
+            return HttpResponse("<script>window.location.reload()</script>")
     return render(
         request,
-        "attendance/break_point/condition.html",
-        {"form": form, "condition": condition},
+        "attendance/break_point/condition_form.html",
+        {"form": form},
     )
 
 

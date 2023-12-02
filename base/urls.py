@@ -151,6 +151,11 @@ urlpatterns = [
         name="rotating-work-type-create",
     ),
     path(
+        "settings/rotating-work-type-view/",
+        views.rotating_work_type_view,
+        name="rotating-work-type-view",
+    ),
+    path(
         "settings/rotating-work-type-update/<int:id>/",
         views.rotating_work_type_update,
         name="rotating-work-type-update",
@@ -162,7 +167,7 @@ urlpatterns = [
         name="rotating-work-type-delete",
         kwargs={
             "model": RotatingWorkType,
-            "redirect": "/settings/rotating-work-type-create",
+            "redirect": "/settings/rotating-work-type-view",
         },
     ),
     path(
@@ -211,6 +216,11 @@ urlpatterns = [
         name="rotating-work-type-assign-delete",
     ),
     path(
+        "settings/employee-type-view/",
+        views.employee_type_view,
+        name="employee-type-view",
+    ),
+    path(
         "settings/employee-type-create/",
         views.employee_type_create,
         name="employee-type-create",
@@ -227,8 +237,13 @@ urlpatterns = [
         name="employee-type-delete",
         kwargs={
             "model": EmployeeType,
-            "redirect": "/settings/employee-type-create",
+            "redirect": "/settings/employee-type-view",
         },
+    ),
+    path(
+        "settings/employee-shift-view/",
+        views.employee_shift_view,
+        name="employee-shift-view",
     ),
     path(
         "settings/employee-shift-create/",
@@ -247,8 +262,13 @@ urlpatterns = [
         name="employee-shift-delete",
         kwargs={
             "model": EmployeeShift,
-            "redirect": "/settings/employee-shift-create",
+            "redirect": "/settings/employee-shift-view",
         },
+    ),
+    path(
+        "settings/employee-shift-schedule-view/",
+        views.employee_shift_schedule_view,
+        name="employee-shift-schedule-view",
     ),
     path(
         "settings/employee-shift-schedule-create/",
@@ -267,13 +287,18 @@ urlpatterns = [
         name="employee-shift-schedule-delete",
         kwargs={
             "model": EmployeeShiftSchedule,
-            "redirect": "/settings/employee-shift-schedule-create",
+            "redirect": "/settings/employee-shift-schedule-view",
         },
     ),
     path(
         "settings/rotating-shift-create/",
         views.rotating_shift_create,
         name="rotating-shift-create",
+    ),
+    path(
+        "settings/rotating-shift-view/",
+        views.rotating_shift_view,
+        name="rotating-shift-view",
     ),
     path(
         "settings/rotating-shift-update/<int:id>/",
@@ -287,7 +312,7 @@ urlpatterns = [
         name="rotating-shift-delete",
         kwargs={
             "model": RotatingShift,
-            "redirect": "/settings/rotating-shift-create",
+            "redirect": "/settings/rotating-shift-view",
         },
     ),
     path(
@@ -456,9 +481,14 @@ urlpatterns = [
     ),
     path("settings/currency/", views.settings, name="currency-settings"),
     path(
-        "settings/attendance-settings/",
+        "settings/attendance-settings-view/",
+        views.validation_condition_view,
+        name="attendance-settings-view",
+    ),
+    path(
+        "settings/attendance-settings-create/",
         views.validation_condition_create,
-        name="attendance-settings",
+        name="attendance-settings-create",
     ),
     path(
         "settings/attendance-settings-update/<int:obj_id>/",

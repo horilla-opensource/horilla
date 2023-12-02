@@ -1,0 +1,48 @@
+{% load i18n %}
+
+<form 
+    {% if shift.id %}
+    hx-post="{% url 'employee-shift-update' shift.id %}"
+    {% else %}
+    hx-post="{% url 'employee-shift-create' %}"
+    {% endif %}
+    hx-target="#shiftForm"
+    method="post" >
+    {% csrf_token %}
+    {{form.non_field_errors}}
+    <div class="oh-inner-sidebar-content__body">
+        <div class="oh-input-group mb-2">
+            <label class='settings-label mb-1' for="">
+                {% trans "Shift" %}
+            </label>
+            {{form.employee_shift.errors}}
+            {{form.employee_shift}}
+        </div>
+        <div class="oh-input-group mb-2">
+            <label class='settings-label mb-1' for="">
+               {% trans "Full Time Weekly" %}
+            </label>
+            {{form.weekly_full_time.errors}}
+            {{form.weekly_full_time}}
+        </div>
+        <div class="oh-input-group mb-2">
+            <label class='settings-label mb-1' for="">
+               {% trans "Full Time" %}
+            </label>
+            {{form.full_time.errors}}
+            {{form.full_time}}
+        </div>
+        <div class="oh-input-group mb-2">
+            <label class='settings-label mb-1' for="">
+               {% trans "Company" %}
+            </label>
+            {{form.company_id.errors}}
+            {{form.company_id}}
+        </div>
+    </div>
+    <button type='submit' class="oh-btn oh-btn--secondary mt-2 mr-0 oh-btn--w-100-resp">
+        {% trans "Save Changes" %}
+    </button>
+    <div class="oh-inner-sidebar-content__footer">
+    </div>
+</form>

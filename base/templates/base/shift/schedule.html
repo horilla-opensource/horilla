@@ -3,57 +3,42 @@
 {% block settings %}
 <div class="oh-inner-sidebar-content">
     {% if perms.base.add_employeeshiftschedule %}
-    <form action="" method="post">
-        {% csrf_token %}
-        <div class="oh-inner-sidebar-content__header">
-            <h2 class="oh-inner-sidebar-content__title">{% trans "Shift Schedule" %}</h2>
-        </div>
-        <div class="oh-inner-sidebar-content__body">
-            <div class="oh-input-group mb-2">
-                <label class='settings-label mb-1' for="">
-                    {% trans "Shift" %}
-                </label>
-                {{form.shift_id.errors}}
-                {{form.shift_id}}
-            </div>
-            <div class="oh-input-group mb-2">
-                <label class='settings-label mb-1' for="">
-                   {% trans "Days" %}
-                </label>
-                {{form.day.errors}}
-                {{form.day}}
-            </div>
-            <div class="oh-input-group mb-2">
-                <label class='settings-label mb-1' for="">
-                    {% trans "Minimum Hour" %}
-                </label>
-                {{form.minimum_working_hour.errors}}
-                {{form.minimum_working_hour}}
-            </div>
-            <div class="oh-input-group mb-2">
-                <label class='settings-label mb-1' for="">
-                    {% trans "Shift Start Time" %}
-                </label>
-                {{form.start_time.errors}}
-                {{form.start_time}}
-            </div>
-            <div class="oh-input-group mb-2">
-                <label class='settings-label mb-1' for="">
-                    {% trans "Shift End Time" %}
-                </label>
-                {{form.end_time.errors}}
-                {{form.end_time}}
-            </div>
-        </div>
-        <button type='submit' class="oh-btn oh-btn--secondary mt-2 mr-0 oh-btn--w-100-resp">
-            {% trans "Save Changes" %}
+    <div class="oh-inner-sidebar-content__header d-flex justify-content-between align-items-center">
+        <h2 class="oh-inner-sidebar-content__title">{% trans "Shift Schedule" %}</h2>
+        <button
+            class="oh-btn oh-btn--secondary oh-btn--shadow"
+            data-toggle="oh-modal-toggle"
+            data-target="#shiftScheduleModal"
+            hx-get="{% url 'employee-shift-schedule-create' %}"
+            hx-target="#shiftScheduleForm"
+        >
+            <ion-icon name="add-outline" class="me-1"></ion-icon>
+            {% trans "Create" %}
         </button>
-        <div class="oh-inner-sidebar-content__footer">
-        </div>
-        </div>
-    </form>
+    </div>
     {% endif %}
 
     {% include 'base/shift/schedule_view.html' %}
 </div>
+
+<div
+	class="oh-modal"
+	id="shiftScheduleModal"
+	role="dialog"
+	aria-labelledby="shiftScheduleModal"
+	aria-hidden="true"
+>
+	<div class="oh-modal__dialog">
+		<div class="oh-modal__dialog-header">
+			<h2 class="oh-modal__dialog-title" id="editModal1ModalLabel">
+				{% trans "Employee Shift Schedule" %}
+			</h2>
+			<button class="oh-modal__close" aria-label="Close">
+				<ion-icon name="close-outline"></ion-icon>
+			</button>
+		</div>
+		<div class="oh-modal__dialog-body" id="shiftScheduleForm"></div>
+	</div>
+</div>
+
 {% endblock settings %}

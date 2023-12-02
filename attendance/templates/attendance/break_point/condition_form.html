@@ -1,5 +1,10 @@
 {% load i18n %}
-<form hx-post="{% url "attendance-settings-update" condition.id %}" hx-target='#updateForm' method="post" class="settings-label mb-1">
+<form {% if condition.id %}
+	hx-post="{% url 'attendance-settings-update' condition.id %}"
+	{% else %}
+	hx-post="{% url 'attendance-settings-create' %}"
+	{% endif %}
+	hx-target='#updateForm' method="post" class="settings-label mb-1">
 	{% csrf_token %}
 	<div class="oh-inner-sidebar-content__header">
 		<h2 class="oh-inner-sidebar-content__title">

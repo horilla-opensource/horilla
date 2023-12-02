@@ -3,29 +3,44 @@
 {% block settings %}
 <div class="oh-inner-sidebar-content">
     {% if perms.add_employeetype %}
-    <form action="" method="post">
-        {% csrf_token %}
-        <div class="oh-inner-sidebar-content__header">
-            <h2 class="oh-inner-sidebar-content__title">{% trans "Employee Type" %}</h2>
-        </div>
-        <div class="oh-inner-sidebar-content__body">
-            <label class='settings-label mb-1' for="">
-                {% trans "Employee Type" %}
-            </label>
-            <div class="oh-input-group">
-                {{form.employee_type.errors}}
-                {{form.employee_type}}
-            </div>
-        </div>
-        <button type='submit' class="oh-btn oh-btn--secondary mt-2 mr-0 oh-btn--w-100-resp">
-            {% trans "Save Changes" %}
+    <div class="oh-inner-sidebar-content__header d-flex justify-content-between align-items-center">
+        <h2 class="oh-inner-sidebar-content__title">{% trans "Employee Type" %}</h2>
+        <button
+            class="oh-btn oh-btn--secondary oh-btn--shadow"
+            data-toggle="oh-modal-toggle"
+            data-target="#employeeTypeModal"
+            hx-get="{% url 'employee-type-create' %}"
+            hx-target="#employeeTypeForm"
+        >
+            <ion-icon name="add-outline" class="me-1"></ion-icon>
+            {% trans "Create" %}
         </button>
-        <div class="oh-inner-sidebar-content__footer">
-        </div>
     </div>
-    </form>
+    
+    {% include 'base/employee_type/type_view.html' %}
     {% endif %}
 
-    {% include 'base/employee_type/type_view.html' %}
 </div>
+
+
+<div
+	class="oh-modal"
+	id="employeeTypeModal"
+	role="dialog"
+	aria-labelledby="employeeTypeModal"
+	aria-hidden="true"
+>
+	<div class="oh-modal__dialog">
+		<div class="oh-modal__dialog-header">
+			<h2 class="oh-modal__dialog-title" id="editModal1ModalLabel">
+				{% trans "Employee Type" %}
+			</h2>
+			<button class="oh-modal__close" aria-label="Close">
+				<ion-icon name="close-outline"></ion-icon>
+			</button>
+		</div>
+		<div class="oh-modal__dialog-body" id="employeeTypeForm"></div>
+	</div>
+</div>
+
 {% endblock settings %}

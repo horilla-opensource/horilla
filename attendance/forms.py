@@ -41,6 +41,7 @@ from attendance.models import (
     AttendanceValidationCondition,
     strtime_seconds,
 )
+from django.utils.html import format_html
 
 
 class ModelForm(forms.ModelForm):
@@ -429,9 +430,9 @@ class AttendanceValidationConditionForm(forms.ModelForm):
         }
 
         labels = {
-            "validation_at_work": _(
-                "Do not Auto Validate Attendance if an Employee \
-                    Works More Than this Amount of Duration"
+            "validation_at_work": format_html(
+            _("<span title='Do not Auto Validate Attendance if an Employee Works More Than this Amount of Duration'>{}</span>"),
+            _("Maximum Allowed working hours")
             ),
             "minimum_overtime_to_approve": _("Minimum Hour to Approve Overtime"),
             "overtime_cutoff": _("Maximum Allowed Overtime Per Day"),

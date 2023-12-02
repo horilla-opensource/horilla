@@ -1,6 +1,23 @@
 {% extends 'settings.html' %} {% load i18n %} {% block settings %}
 
 <div class="oh-inner-sidebar-content mb-4">
+	<div class="oh-inner-sidebar-content__header d-flex justify-content-between align-items-center">
+        <h2 class="oh-inner-sidebar-content__title">{% trans "Employee Type" %}</h2>
+		{% if not condition %}
+        <button
+            class="oh-btn oh-btn--secondary oh-btn--shadow"
+            hx-target="#updateForm"
+			type="button"							
+			hx-get="{% url 'attendance-settings-create'%}"
+			class="oh-btn oh-btn--info"
+			data-toggle="oh-modal-toggle"
+			data-target="#updateModal"
+        >
+            <ion-icon name="add-outline" class="me-1"></ion-icon>
+            {% trans "Create" %}
+        </button>
+		{% endif %}
+    </div>
 	{% if condition %}
 	<div class="oh-sticky-table">
 		<div class="oh-sticky-table__table oh-table--sortable">
@@ -32,6 +49,8 @@
 							hx-target="#updateForm"
 							type="button"
 							class="oh-btn oh-btn--info"
+							data-toggle="oh-modal-toggle"
+            				data-target="#updateModal"
 						>
 							{% trans "Edit" %}</a
 						>
@@ -41,27 +60,26 @@
 			</div>
 		</div>
 	</div>
-	{% else %} 
-	<form action="" method="post" class="settings-label mb-1">
-		{% csrf_token %}
-		<div class="oh-inner-sidebar-content__header">
-			<h2 class="oh-inner-sidebar-content__title">
-				{% trans "Attendance Condition" %}
-			</h2>
-		</div>
-		<div class="oh-inner-sidebar-content__body">
-			<div class="oh-input-group">{{form}}</div>
-		</div>
-		<button
-			type="submit"
-			class="oh-btn oh-btn--secondary mt-2 mr-0 oh-btn--w-100-resp"
-		>
-			{% trans "Save Changes" %}
-		</button>
-		<div class="oh-inner-sidebar-content__footer"></div>
-	</form>
 	{% endif%}
 </div>
 
-<div class="oh-inner-sidebar-content" id="updateForm"></div>
+
+<div
+	class="oh-modal"
+	id="updateModal"
+	role="dialog"
+	aria-labelledby="updateModal"
+	aria-hidden="true"
+>
+	<div class="oh-modal__dialog">
+		<div class="oh-modal__dialog-header">
+			
+			<button class="oh-modal__close" aria-label="Close">
+				<ion-icon name="close-outline"></ion-icon>
+			</button>
+		</div>
+		<div class="oh-modal__dialog-body" id="updateForm"></div>
+	</div>
+</div>
+
 {% endblock settings %}

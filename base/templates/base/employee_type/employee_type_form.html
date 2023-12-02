@@ -1,0 +1,37 @@
+{% load i18n %}
+
+<form 
+    {% if employee_type.id %}
+    hx-post="{% url 'employee-type-update' employee_type.id %}"
+    {% else %}
+    hx-post="{% url 'employee-type-create' %}"
+    {% endif %}
+    hx-target="#employeeTypeForm"
+    method="post" 
+>
+    {% csrf_token %}
+    {{form.non_field_errors}}
+    <div class="oh-inner-sidebar-content__body">
+        <label class='settings-label mb-1' for="">
+            {% trans "Employee Type" %}
+        </label>
+        <div class="oh-input-group">
+            {{form.employee_type.errors}}
+            {{form.employee_type}}
+        </div>
+    </div>
+    <div class="oh-inner-sidebar-content__body">
+        <label class='settings-label mb-1' for="">
+            {% trans "Company" %}
+        </label>
+        <div class="oh-input-group">
+            {{form.company_id.errors}}
+            {{form.company_id}}
+        </div>
+    </div>
+    <button type='submit' class="oh-btn oh-btn--secondary mt-2 mr-0 oh-btn--w-100-resp">
+        {% trans "Save Changes" %}
+    </button>
+    <div class="oh-inner-sidebar-content__footer">
+    </div>
+</form>

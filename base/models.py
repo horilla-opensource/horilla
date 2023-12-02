@@ -350,6 +350,23 @@ class EmployeeType(models.Model):
 
     def __str__(self) -> str:
         return str(self.employee_type)
+            
+    def clean(self, *args, **kwargs):
+        super().clean(*args, **kwargs)
+        request = getattr(_thread_locals, "request", None)
+        if request and request.POST:
+            company = request.POST.getlist('company_id', None)
+            employee_type = request.POST.get('employee_type', None)
+            if EmployeeType.objects.filter(company_id__id__in=company,employee_type = employee_type).exclude(id= self.id).exists():
+                raise ValidationError(
+                    "This employee type already exists in this company"
+                )
+        return 
+    
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        self.clean(*args, **kwargs)
+        return self
 
 
 class EmployeeShiftDay(models.Model):
@@ -409,6 +426,23 @@ class EmployeeShift(models.Model):
 
     def __str__(self) -> str:
         return str(self.employee_shift)
+        
+    def clean(self, *args, **kwargs):
+        super().clean(*args, **kwargs)
+        request = getattr(_thread_locals, "request", None)
+        if request and request.POST:
+            company = request.POST.getlist('company_id', None)
+            employee_shift = request.POST.get('employee_shift', None)
+            if EmployeeShift.objects.filter(company_id__id__in=company,employee_shift = employee_shift).exclude(id= self.id).exists():
+                raise ValidationError(
+                    "This employee shift already exists in this company"
+                )
+        return 
+    
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        self.clean(*args, **kwargs)
+        return self
 
 
 class EmployeeShiftSchedule(models.Model):
