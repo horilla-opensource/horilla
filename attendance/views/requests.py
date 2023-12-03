@@ -359,20 +359,34 @@ def edit_validate_attendance(request, attendance_id):
     form = AttendanceRequestForm(initial=initial)
     form.instance.id = attendance.id
     if request.method == "POST":
-        form = AttendanceRequestForm(request.POST, instance=attendance)
+        form = AttendanceRequestForm(request.POST, instance=copy.copy(attendance))
         if form.is_valid():
             instance = form.save()
-            instance.attendance_validated = True
-            instance.is_validate_request_approved = True
-            instance.is_validate_request = False
-            instance.request_description = None
-            instance.request_type = None
-            instance.save()
-            messages.success(request, "Attendance request has been approved")
-            return HttpResponse(
-                render(
-                    request, "requests/attendance/update_form.html", {"form": form}
-                ).content.decode("utf-8")
-                + "<script>location.reload();</script>"
-            )
+            instance.employee_id = attendance.employee_id
+            instance.id = attendance.id
+            if attendance.request_type != "create_request":
+                attendance.requested_data = json.dumps(instance.serialize())
+                attendance.request_description = instance.request_description
+                # set the user level validation here
+                attendance.is_validate_request = True
+                attendance.save()
+            else:
+                instance.is_validate_request_approved = False
+                instance.is_validate_request = True
+                instance.save()
+            return HttpResponse(f"""
+                                <script>
+                                $('#editValidateAttendanceRequest').removeClass('oh-modal--show');
+                                $('[data-target="#validateAttendanceRequest"][data-attendance-id={attendance.id}]').click();
+                                $('#messages').html(
+                                `
+                                <div class="oh-alert-container">
+                                <div class="oh-alert oh-alert--animated oh-alert--success">
+                                Attendance request updated.
+                                </div>
+                                </div>
+                                `
+                                )
+                                </script>
+                                """) 
     return render(request, "requests/attendance/update_form.html", {"form": form})

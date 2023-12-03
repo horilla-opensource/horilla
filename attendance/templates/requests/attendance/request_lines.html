@@ -17,6 +17,9 @@
 {% load i18n %}
 {% load basefilters %}
 {% include 'filter_tags.html' %}
+<div id="messages">
+  
+</div>
 <div class="oh-tabs__contents" id="view-container">
   <div class="oh-tabs__content oh-tabs__content--active" id="tab_1">
     <!-- Sticky Table -->
@@ -45,6 +48,7 @@
             draggable="true" 
             data-toggle="oh-modal-toggle"
             data-target="#validateAttendanceRequest"
+            data-attendance-id="{{attendance.id}}"
             hx-get = "{% url 'validate-attendance-request' attendance.id %}?requests_ids={{requests_ids}}"
             hx-target="#validateAttendanceRequestModalBody">
             <div
