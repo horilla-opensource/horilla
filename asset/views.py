@@ -3,6 +3,7 @@ asset.py
 
 This module is used to """
 import json
+from django.db.models import Q
 from urllib.parse import parse_qs
 import pandas as pd
 from django.db.models import ProtectedError
@@ -649,23 +650,38 @@ def filter_pagination_asset_request_allocation(request):
         .exclude(return_status__isnull=False)
         .filter(asset_id__asset_name__icontains=asset_request_alloaction_search)
     )
+    
+    search_term = asset_request_alloaction_search.strip()
+
     if request.user.has_perm(("asset.view_assetrequest", "asset.view_assetassignment")):
         asset_allocations_queryset = AssetAssignment.objects.all().filter(
-            assigned_to_employee_id__employee_first_name__icontains=asset_request_alloaction_search
+            Q(assigned_to_employee_id__employee_first_name__icontains=search_term) |
+            Q(assigned_to_employee_id__employee_last_name__icontains=search_term) |
+            (Q(assigned_to_employee_id__employee_first_name__icontains=search_term.split()[0]) if search_term.split() else Q()) |
+            (Q(assigned_to_employee_id__employee_last_name__icontains=search_term.split()[-1]) if len(search_term.split()) > 1 else Q())
         )
         asset_requests_queryset = AssetRequest.objects.all().filter(
-            requested_employee_id__employee_first_name__icontains=asset_request_alloaction_search
+            Q(requested_employee_id__employee_first_name__icontains=search_term) |
+            Q(requested_employee_id__employee_last_name__icontains=search_term) |
+            (Q(requested_employee_id__employee_first_name__icontains=search_term.split()[0]) if search_term.split() else Q()) |
+            (Q(requested_employee_id__employee_last_name__icontains=search_term.split()[-1]) if len(search_term.split()) > 1 else Q())
         )
     else:
         asset_allocations_queryset = AssetAssignment.objects.filter(
             assigned_to_employee_id=employee
         ).filter(
-            assigned_to_employee_id__employee_first_name__icontains=asset_request_alloaction_search
+            Q(assigned_to_employee_id__employee_first_name__icontains=search_term) |
+            Q(assigned_to_employee_id__employee_last_name__icontains=search_term) |
+            (Q(assigned_to_employee_id__employee_first_name__icontains=search_term.split()[0]) if search_term.split() else Q()) |
+            (Q(assigned_to_employee_id__employee_last_name__icontains=search_term.split()[-1]) if len(search_term.split()) > 1 else Q())
         )
         asset_requests_queryset = AssetRequest.objects.filter(
             requested_employee_id=employee
         ).filter(
-            requested_employee_id__employee_first_name__icontains=asset_request_alloaction_search
+            Q(requested_employee_id__employee_first_name__icontains=search_term) |
+            Q(requested_employee_id__employee_last_name__icontains=search_term) |
+            (Q(requested_employee_id__employee_first_name__icontains=search_term.split()[0]) if search_term.split() else Q()) |
+            (Q(requested_employee_id__employee_last_name__icontains=search_term.split()[-1]) if len(search_term.split()) > 1 else Q())
         )
 
     previous_data = request.GET.urlencode()
@@ -944,7 +960,7 @@ def asset_export_excel(request):
             "asset_purchase_cost": "Purchase cost",
             "asset_category_id": "Category",
             "asset_status": "Status",
-            "asset_lot_number_id": "lot number",
+            "asset_lot_number_id": "Batch number",
         }
     )
 

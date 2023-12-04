@@ -113,55 +113,57 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="oh-accordion">
-                                    <div class="oh-accordion-header">
-                                        {% trans "Asset Allocation" %}
-                                    </div>
-                                    <div class="oh-accordion-body">
-                                        <div class="row">
-                                            <div class="col-sm-12 col-md-12 col-lg-6">
-                                                <div class="oh-input-group">
-                                                    <label class="oh-label"
-                                                        >{% trans "Allocated User" %}</label
-                                                    >
-                                                    {{asset_allocation_filter_form.assigned_to_employee_id}}
+                                {% if perms.asset.view_assetassignment %}
+                                    <div class="oh-accordion">
+                                        <div class="oh-accordion-header">
+                                            {% trans "Asset Allocation" %}
+                                        </div>
+                                        <div class="oh-accordion-body">
+                                            <div class="row">
+                                                <div class="col-sm-12 col-md-12 col-lg-6">
+                                                    <div class="oh-input-group">
+                                                        <label class="oh-label"
+                                                            >{% trans "Allocated User" %}</label
+                                                        >
+                                                        {{asset_allocation_filter_form.assigned_to_employee_id}}
+                                                    </div>
+                                                    <div class="oh-input-group">
+                                                        <label class="oh-label">{% trans "Asset" %}</label>
+                                                        {{asset_allocation_filter_form.asset_id}}
+                                                    </div>
                                                 </div>
-                                                <div class="oh-input-group">
-                                                    <label class="oh-label">{% trans "Asset" %}</label>
-                                                    {{asset_allocation_filter_form.asset_id}}
+                                                <div class="col-sm-12 col-md-12 col-lg-6">
+                                                    <div class="oh-input-group">
+                                                        <label class="oh-label"
+                                                            >{% trans "Asset Allocated Date" %}</label
+                                                        >
+                                                        {{ asset_allocation_filter_form.assigned_date | attr:"type:date" }}
+                                                    </div>
+                                                    <div class="oh-input-group">
+                                                        <label class="oh-label">{% trans "Status" %}</label>
+                                                        {{asset_allocation_filter_form.return_status}}
+                                                    </div>
                                                 </div>
-                                            </div>
-                                            <div class="col-sm-12 col-md-12 col-lg-6">
-                                                <div class="oh-input-group">
-                                                    <label class="oh-label"
-                                                        >{% trans "Asset Allocated Date" %}</label
-                                                    >
-                                                    {{ asset_allocation_filter_form.assigned_date | attr:"type:date" }}
+                                                <div class="col-sm-12 col-md-12 col-lg-6">
+                                                    <div class="oh-input-group">
+                                                        <label class="oh-label"
+                                                            >{% trans "Return Date" %}</label
+                                                        >
+                                                        {{ asset_allocation_filter_form.return_date |attr:"type:date" }}
+                                                    </div>
                                                 </div>
-                                                <div class="oh-input-group">
-                                                    <label class="oh-label">{% trans "Status" %}</label>
-                                                    {{asset_allocation_filter_form.return_status}}
-                                                </div>
-                                            </div>
-                                            <div class="col-sm-12 col-md-12 col-lg-6">
-                                                <div class="oh-input-group">
-                                                    <label class="oh-label"
-                                                        >{% trans "Return Date" %}</label
-                                                    >
-                                                    {{ asset_allocation_filter_form.return_date |attr:"type:date" }}
-                                                </div>
-                                            </div>
-                                            <div class="col-sm-12 col-md-12 col-lg-6">
-                                                <div class="oh-input-group">
-                                                    <label class="oh-label"
-                                                        >{% trans "Allocated By" %}</label
-                                                    >
-                                                    {{asset_allocation_filter_form.assigned_by_employee_id}}
+                                                <div class="col-sm-12 col-md-12 col-lg-6">
+                                                    <div class="oh-input-group">
+                                                        <label class="oh-label"
+                                                            >{% trans "Allocated By" %}</label
+                                                        >
+                                                        {{asset_allocation_filter_form.assigned_by_employee_id}}
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
+                                {% endif %}
                             </div>
                             <div class="oh-dropdown__filter-footer">
                                 <button
@@ -215,34 +217,36 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="oh-accordion">
-                                <div class="oh-accordion-header">{% trans "Asset Allocation" %}</div>
-                                <div class="oh-accordion-body">
-                                    <div class="row">
-                                        <div class="col-sm-12 col-md-12 col-lg-6">
-                                            <div class="oh-input-group">
-                                                <label class="oh-label">{% trans "Field" %}</label>
+                            {% if perms.asset.view_assetassignment %}
+                                <div class="oh-accordion">
+                                    <div class="oh-accordion-header">{% trans "Asset Allocation" %}</div>
+                                    <div class="oh-accordion-body">
+                                        <div class="row">
+                                            <div class="col-sm-12 col-md-12 col-lg-6">
+                                                <div class="oh-input-group">
+                                                    <label class="oh-label">{% trans "Field" %}</label>
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div class="col-sm-12 col-md-12 col-lg-6">
-                                            <div class="oh-input-group">
-                                                <select
-                                                    class="oh-select mt-1  w-100"
-                                                    name="allocation_field"
-                                                    class="select2-selection select2-selection--single"
-                                                    id="gp_allocation"
-                                                >
-                                                    {% for field in gp_Allocation_fields %}
-                                                    <option value="{{ field.0 }}">
-                                                        {% trans field.1 %}
-                                                    </option>
-                                                    {% endfor %}
-                                                </select>
+                                            <div class="col-sm-12 col-md-12 col-lg-6">
+                                                <div class="oh-input-group">
+                                                    <select
+                                                        class="oh-select mt-1  w-100"
+                                                        name="allocation_field"
+                                                        class="select2-selection select2-selection--single"
+                                                        id="gp_allocation"
+                                                    >
+                                                        {% for field in gp_Allocation_fields %}
+                                                        <option value="{{ field.0 }}">
+                                                            {% trans field.1 %}
+                                                        </option>
+                                                        {% endfor %}
+                                                    </select>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                            {% endif %}
                         </div>
                     </div>
                 </div>
