@@ -1090,7 +1090,7 @@ def rotating_work_type_assign_add(request):
                 verb_es="Se le agrega al tipo de trabajo rotativo",
                 verb_fr="Vous êtes ajouté au type de travail rotatif",
                 icon="infinite",
-                redirect="/employee/rotating-work-type-assign",
+                redirect="/employee/employee-profile/",
             )
 
             messages.success(request, _("Rotating work type assigned."))
@@ -1666,7 +1666,7 @@ def rotating_shift_assign_add(request):
                 verb_es="Estás agregado a turno rotativo",
                 verb_fr="Vous êtes ajouté au quart de travail rotatif",
                 icon="infinite",
-                redirect="/employee/rotating-shift-assign",
+                redirect="/employee/employee-profile/",
             )
 
             messages.success(request, _("Rotating shift assigned."))
