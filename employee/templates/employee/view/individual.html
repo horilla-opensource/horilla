@@ -221,6 +221,19 @@
 						>{% trans "Performance" %}</a
 						>
 					</li>
+					<li class="oh-general__tab">
+						<a
+						{% comment %} hx-get={% url 'performance-tab' employee.id %} {% endcomment %}
+						{% comment %} hx-target="#permission_tab_content" {% endcomment %}
+						data-action="general-tab"
+						data-target="#permission_tab_content"
+						hx-get="{% url 'employee-permission-assign' %}?profile_tab=true&employee_id={{employee.id}}"
+      					hx-target="#tab_1_permission"
+						class="oh-general__tab-link"
+						role="button"
+						>{% trans "Groups & Permissions" %}</a
+						>
+					</li>
 				</ul>
 
 				<div
@@ -277,11 +290,18 @@
 				id="shift_target"
 				>
 				</div>
+				<div
+				class="oh-general__tab-target oh-profile__info-tab mb-4 p-4"
+				id="permission_tab_content"
+				>
+				{% include "tabs/group_permissions.html" %}
+				</div>
 			</div>
 		</div>
 	</div>
 </div>
 <script src="{% static 'employee/search.js' %}"></script>
 <script src="{% static 'basedOn.js' %}"></script>
+
 
 {% endblock content %}
