@@ -707,7 +707,6 @@ def filter_payslip(request):
 
 
 @login_required
-@permission_required("payroll.add_payslip")
 def payslip_export(request):
     """
     This view exports payslip data based on selected fields and filters,
