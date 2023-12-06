@@ -1,5 +1,5 @@
 {% load i18n %} {% for perm in permissions %}
-<span type="button" class="accordion">
+<span type="button" class="perm-accordion w-100 p-2 oh-user_permission-list_item app-permissions" onclick="$(this).next().toggle();$(this).toggleClass('perm-accordion-active');">
   <div class="d-flex flex-row bd-highlight">
     <div class="p-2 bd-highlight">{{perm.app}}</div>
     <div class="p-2 bd-highlight">
@@ -21,22 +21,22 @@
         <div class="oh-sticky-table__tr">
           <div class="oh-sticky-table__th">{% trans "Actions" %}</div>
           <div class="oh-sticky-table__th">
-            <div class="d-flex justify-content-center">
+            <div class="d-flex justify-content-center" title="Can add">
               <ion-icon name="add-circle-outline"></ion-icon>
             </div>
           </div>
           <div class="oh-sticky-table__th">
-            <div class="d-flex justify-content-center">
+            <div class="d-flex justify-content-center" title="Can view">
               <ion-icon name="eye-outline"></ion-icon>
             </div>
           </div>
           <div class="oh-sticky-table__th">
-            <div class="d-flex justify-content-center">
+            <div class="d-flex justify-content-center" title="Can create">
               <ion-icon name="create-outline"></ion-icon>
             </div>
           </div>
           <div class="oh-sticky-table__th">
-            <div class="d-flex justify-content-center">
+            <div class="d-flex justify-content-center" title="Can delete">
               <ion-icon name="trash-outline"></ion-icon>
             </div>
           </div>

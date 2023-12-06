@@ -31,7 +31,7 @@
   </div>
   
   {% for group in groups %}
-  <div class="oh-user_permission-list_item accordion exclude-accordion-style">
+  <div class="oh-user_permission-list_item" onclick="$(this).next().toggle();$(this).toggleClass('perm-accordion-active');">
     <div class="oh-user_permission-list_profile">
         <div class="oh-navbar__user-photo oh-user_permission--profile">
             <img src="https://ui-avatars.com/api/?name={{group}}&background=random"

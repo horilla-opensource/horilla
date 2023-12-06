@@ -1,53 +1,16 @@
 {% load i18n %}
-    <label class="settings-label mb-1" for="id_{{form.department.name}}">
-      {% trans "Employees" %}
-    </label>
-    <div class="oh-input-group mb-2">
-      {{form.employee.errors}} {{form.employee}}
-    </div>
-    {{form.permission.errors}} 
-    <div id="permTable">
-      {% include "base/auth/permission_table.html" %}
-    </div>
+<label class="settings-label mb-1" for="id_{{form.department.name}}">
+  {% trans "Employees" %}
+</label>
+<div class="oh-input-group mb-2">
+  {{form.employee.errors}} {{form.employee}}
+</div>
+{{form.permission.errors}}
+<div id="permTable">{% include "base/auth/permission_table.html" %}</div>
 
-    <script>
-      var acc = document.getElementsByClassName("accordion");
-      var i;
-
-      for (i = 0; i < acc.length; i++) {
-        acc[i].addEventListener("click", function () {
-          this.classList.toggle("active");
-          var panel = this.nextElementSibling;
-          if (panel.style.display === "block") {
-            panel.style.display = "none";
-          } else {
-            panel.style.display = "block";
-          }
-        });
-      }
-    </script>
-
-    <button
-      type="submit"
-      class="oh-btn oh-btn--secondary mt-2 mr-0 oh-btn--w-100-resp"
-    >
-      {% trans "Save Changes" %}
-    </button>
-    <script>
-        $(document).ready(function () {
-            var acc = document.querySelectorAll(".perm-form.accordion");
-            var i;
-            for (i = 0; i < acc.length; i++) {
-            acc[i].addEventListener("click", function () {
-                this.classList.toggle("active");
-                var panel = this.nextElementSibling;
-                if (panel.style.display === "block") {
-                panel.style.display = "none";
-                } else {
-                panel.style.display = "block";
-                }
-            });
-            }
-        });
-    </script>
-      
+<button
+  type="submit"
+  class="oh-btn oh-btn--secondary mt-2 mr-0 oh-btn--w-100-resp"
+>
+  {% trans "Save Changes" %}
+</button>
