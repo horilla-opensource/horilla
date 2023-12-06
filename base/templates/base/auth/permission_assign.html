@@ -1,11 +1,11 @@
 {% load i18n %}
     <label class="settings-label mb-1" for="id_{{form.department.name}}">
-      {% trans "Group" %}
+      {% trans "Employees" %}
     </label>
     <div class="oh-input-group mb-2">
-      {{form.name.errors}} {{form.name}}
+      {{form.employee.errors}} {{form.employee}}
     </div>
-    {{form.permissions.errors}} 
+    {{form.permission.errors}} 
     <div id="permTable">
       {% include "base/auth/permission_table.html" %}
     </div>

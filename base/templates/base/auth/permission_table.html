@@ -1,0 +1,128 @@
+{% load i18n %} {% for perm in permissions %}
+<span type="button" class="accordion">
+  <div class="d-flex flex-row bd-highlight">
+    <div class="p-2 bd-highlight">{{perm.app}}</div>
+    <div class="p-2 bd-highlight">
+      <span class="oh-tabs__input-badge-container">
+        <span
+          class="oh-badge permission-badge oh-badge--secondary oh-badge--small oh-badge--round ms-2 mr-2"
+          title="0 permissions"
+        >
+          0
+        </span>
+      </span>
+    </div>
+  </div>
+</span>
+<div class="panel">
+  <div class="oh-sticky-table">
+    <div class="oh-sticky-table__table oh-table--sortable">
+      <div class="oh-sticky-table__thead">
+        <div class="oh-sticky-table__tr">
+          <div class="oh-sticky-table__th">{% trans "Actions" %}</div>
+          <div class="oh-sticky-table__th">
+            <div class="d-flex justify-content-center">
+              <ion-icon name="add-circle-outline"></ion-icon>
+            </div>
+          </div>
+          <div class="oh-sticky-table__th">
+            <div class="d-flex justify-content-center">
+              <ion-icon name="eye-outline"></ion-icon>
+            </div>
+          </div>
+          <div class="oh-sticky-table__th">
+            <div class="d-flex justify-content-center">
+              <ion-icon name="create-outline"></ion-icon>
+            </div>
+          </div>
+          <div class="oh-sticky-table__th">
+            <div class="d-flex justify-content-center">
+              <ion-icon name="trash-outline"></ion-icon>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="oh-sticky-table__tbody">
+        {% for model in perm.app_models %}
+        <div class="oh-sticky-table__tr" draggable="true">
+          <div class="oh-sticky-table__sd">
+            <div class="oh-profile oh-profile--md">
+              <div class="oh-profile__avatar mr-1">
+                <img
+                  src="https://ui-avatars.com/api/?name={{model.verbose_name}}&background=random"
+                  class="oh-profile__image"
+                  alt="Mary Magdalene"
+                />
+              </div>
+              <span class="oh-profile__name oh-text--dark"
+                >{{model.verbose_name}}</span
+              >
+            </div>
+          </div>
+          <div class="oh-sticky-table__td">
+            <div class="d-flex justify-content-center">
+              <div class="oh-switch">
+                <input
+                  type="checkbox"
+                  name="permissions"
+                  value="add_{{model.model_name}}"
+                  class="oh-switch__checkbox"
+                  onchange="updateBadge()"
+                />
+              </div>
+            </div>
+          </div>
+          <div class="oh-sticky-table__td">
+            <div class="d-flex justify-content-center">
+              <div class="oh-switch">
+                <input
+                  type="checkbox"
+                  name="permissions"
+                  value="view_{{model.model_name}}"
+                  class="oh-switch__checkbox"
+                  onchange="updateBadge()"
+                />
+              </div>
+            </div>
+          </div>
+          <div class="oh-sticky-table__td">
+            <div class="d-flex justify-content-center">
+              <div class="oh-switch">
+                <input
+                  type="checkbox"
+                  name="permissions"
+                  value="change_{{model.model_name}}"
+                  class="oh-switch__checkbox"
+                  onchange="updateBadge()"
+                />
+              </div>
+            </div>
+          </div>
+          <div class="oh-sticky-table__td">
+            <div class="d-flex justify-content-center">
+              <div class="oh-switch">
+                <input
+                  type="checkbox"
+                  name="permissions"
+                  value="delete_{{model.model_name}}"
+                  class="oh-switch__checkbox"
+                  onchange="updateBadge()"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endfor %}
+<script>
+  $(document).ready(function () {
+    updateBadge();
+    $("[type=checkbox]").change(function (e) {
+      e.preventDefault();
+    });
+  });
+</script>

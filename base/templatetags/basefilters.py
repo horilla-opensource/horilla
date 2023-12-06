@@ -1,3 +1,4 @@
+import json
 from django.template.defaultfilters import register
 from django import template
 from employee.models import Employee, EmployeeWorkInformation
@@ -75,3 +76,10 @@ def filter_field(value):
     splitted = value.split("__")
 
     return splitted[-1].replace("_", " ").capitalize()
+
+@register.filter(name="user_perms")
+def user_perms(perms):
+    """
+    permission names return method
+    """
+    return json.dumps(list(perms.values_list("codename",flat="True")))

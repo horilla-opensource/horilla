@@ -23,9 +23,9 @@ urlpatterns = [
     path("logout", views.logout_user, name="logout"),
     path("settings", views.common_settings, name="settings"),
     path(
-        "settings/user-group-create/", views.user_group_create, name="user-group-create"
+        "settings/user-group-create/", views.user_group_table, name="user-group-create"
     ),
-    path("user-group-view", views.user_group_view, name="user-group-view"),
+    path("user-group-view", views.user_group, name="user-group-view"),
     path(
         "settings/user-group-update/<int:id>/",
         views.user_group_update,
@@ -36,7 +36,7 @@ urlpatterns = [
         "user-group-delete/<int:id>/",
         views.object_delete,
         name="user-group-delete",
-        kwargs={"model": Group, "redirect": "/settings/user-group-create"},
+        kwargs={"model": Group, "redirect": "user-group-view"},
     ),
     path(
         "group-permission-remove/<int:pid>/<int:gid>/",
@@ -63,9 +63,19 @@ urlpatterns = [
         name="permission-search",
     ),
     path(
-        "remove-permission/<str:codename>/<int:uid>/",
-        views.remove_permission,
-        name="remove-permission",
+        "update-user-permission",
+        views.update_permission,
+        name="update-user-permission",
+    ),
+    path(
+        "update-group-permission",
+        views.update_group_permission,
+        name="update-group-permission",
+    ),
+    path(
+        "permission-table",
+        views.permission_table,
+        name="permission-table",
     ),
     path("settings/company-create/", views.company_create, name="company-create"),
     path('company-view', views.company_view,name='company-view'),
