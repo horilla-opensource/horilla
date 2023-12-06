@@ -250,7 +250,7 @@ class UserGroupForm(ModelForm):
         """
 
         model = Group
-        fields = ["name","permissions"]
+        fields = ["name", "permissions"]
 
     def save(self, commit=True):
         """
@@ -282,12 +282,17 @@ class AssignUserGroup(Form):
     employee = forms.ModelMultipleChoiceField(queryset=Employee.objects.all())
     group = forms.ModelChoiceField(queryset=Group.objects.all())
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        reload_queryset(self.fields)
+
     def save(self):
         """
         Save method to assign group to employees
         """
         employees = self.cleaned_data["employee"]
         group = self.cleaned_data["group"]
+        group.user_set.clear()
         for employee in employees:
             employee.employee_user_id.groups.add(group)
         return group
@@ -305,6 +310,9 @@ class AssignPermission(Form):
             "required": "Please choose a permission.",
         },
     )
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        reload_queryset(self.fields)
 
     def save(self):
         """
