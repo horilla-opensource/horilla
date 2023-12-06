@@ -1,0 +1,13 @@
+{% load i18n %}
+<form hx-post="{% url "user-group-assign" %}?group={{group_id}}" hx-target="#groupAssignBody" method="post">
+    {{form.employee.errors}}
+    {{form.employee}}
+    <input type="hidden" name="group" value="{{group_id}}" id="{{group_id}}">
+    <button
+    type="submit"
+    class="oh-btn oh-btn--secondary mt-2 mr-0 oh-btn--w-100-resp"
+    >
+    {% trans "Save Changes" %}
+    </button>
+
+</form>

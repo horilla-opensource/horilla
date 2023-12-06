@@ -19,11 +19,6 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import Group, User, Permission
 from attendance.forms import AttendanceValidationConditionForm
 from attendance.models import AttendanceValidationCondition
-from base.methods import closest_numbers, export_data
-from base.decorators import (
-    shift_request_change_permission,
-    work_type_request_change_permission,
-)
 from notifications.signals import notify
 from horilla.decorators import (
     delete_permission,
@@ -33,6 +28,11 @@ from horilla.decorators import (
 )
 from horilla.settings import EMAIL_HOST_USER
 from employee.models import Employee, EmployeeWorkInformation
+from base.decorators import (
+    shift_request_change_permission,
+    work_type_request_change_permission,
+)
+from base.methods import closest_numbers, export_data
 from base.forms import (
     CompanyForm,
     DepartmentForm,
@@ -140,11 +140,11 @@ def login_user(request):
         password = request.POST["password"]
         next_url = request.GET.get("next")
         query_params = request.GET.dict()
-        if 'next' in query_params:
-            del query_params['next']
+        if "next" in query_params:
+            del query_params["next"]
 
-        params = f'{urlencode(query_params)}'
-        
+        params = f"{urlencode(query_params)}"
+
         user = authenticate(request, username=username, password=password)
         if user is None:
             messages.error(request, _("Invalid username or password."))
@@ -152,9 +152,9 @@ def login_user(request):
         login(request, user)
         messages.success(request, _("Login Success"))
         if next_url:
-            url = f'{next_url}'
+            url = f"{next_url}"
             if params:
-                url += f'?{params}'
+                url += f"?{params}"
             return redirect(url)
         return redirect("/")
     return render(request, "login.html")
@@ -276,12 +276,14 @@ def logout_user(request):
 
     return response
 
+
 class Workinfo:
-    def __init__(self,employee) -> None:
+    def __init__(self, employee) -> None:
         self.employee_work_info = employee
         self.employee_id = employee
         self.id = employee.id
         pass
+
 
 @login_required
 def home(request):
@@ -309,35 +311,57 @@ def home(request):
     last_day_of_week = first_day_of_week + timedelta(days=6)
 
     employees_with_pending = []
-        
+
     # List of field names to focus on
-    fields_to_focus = ['job_position_id','department_id','work_type_id','employee_type_id','job_role_id','reporting_manager_id','company_id','location','email','mobile',
-                       'shift_id','date_joining','contract_end_date','basic_salary','salary_hour']
+    fields_to_focus = [
+        "job_position_id",
+        "department_id",
+        "work_type_id",
+        "employee_type_id",
+        "job_role_id",
+        "reporting_manager_id",
+        "company_id",
+        "location",
+        "email",
+        "mobile",
+        "shift_id",
+        "date_joining",
+        "contract_end_date",
+        "basic_salary",
+        "salary_hour",
+    ]
 
     for employee in EmployeeWorkInformation.objects.all():
-        completed_field_count = sum(1 for field_name in fields_to_focus if getattr(employee, field_name) is not None)
+        completed_field_count = sum(
+            1
+            for field_name in fields_to_focus
+            if getattr(employee, field_name) is not None
+        )
         if completed_field_count < 14:
             # Create a dictionary with employee information and pending field count
             percent = f"{((completed_field_count / 14) * 100):.1f}"
             employee_info = {
-                'employee': employee,
-                'completed_field_count': percent,
+                "employee": employee,
+                "completed_field_count": percent,
             }
-            employees_with_pending.append(employee_info)        
+            employees_with_pending.append(employee_info)
         else:
             pass
 
-    emps = Employee.objects.filter(employee_work_info__isnull = True)
+    emps = Employee.objects.filter(employee_work_info__isnull=True)
     for emp in emps:
-        employees_with_pending.insert(0,{
-            'employee': Workinfo(employee=emp),
-                'completed_field_count': '0',
-        })
+        employees_with_pending.insert(
+            0,
+            {
+                "employee": Workinfo(employee=emp),
+                "completed_field_count": "0",
+            },
+        )
 
     context = {
         "first_day_of_week": first_day_of_week.strftime("%Y-%m-%d"),
         "last_day_of_week": last_day_of_week.strftime("%Y-%m-%d"),
-        'employees_with_pending': employees_with_pending
+        "employees_with_pending": employees_with_pending,
     }
 
     return render(request, "index.html", context)
@@ -353,23 +377,117 @@ def common_settings(request):
 
 @login_required
 @permission_required("add_group")
-def user_group_create(request):
+def user_group_table(request):
     """
-    This method is used to create user permission group
+    Group assign htmx view
     """
-
+    permissions = []
+    apps = [
+        "base",
+        "recruitment",
+        "employee",
+        "leave",
+        "pms",
+        "onboarding",
+        "asset",
+        "attendance",
+        "payroll",
+    ]
     form = UserGroupForm()
-    groups = Group.objects.all()
+    for app_name in apps:
+        app_models = []
+        for model in get_models_in_app(app_name):
+            app_models.append(
+                {
+                    "verbose_name": model._meta.verbose_name.capitalize(),
+                    "model_name": model._meta.model_name,
+                }
+            )
+        permissions.append({"app": app_name.capitalize(), "app_models": app_models})
     if request.method == "POST":
         form = UserGroupForm(request.POST)
         if form.is_valid():
             form.save()
-            form = UserGroupForm()
-
             messages.success(request, _("User group created."))
-            return redirect(user_group_create)
+            return HttpResponse("<script>window.location.reload()</script>")
+    return render(
+        request,
+        "base/auth/group_assign.html",
+        {
+            "permissions": permissions,
+            "form": form,
+        },
+    )
 
-    return render(request, "base/auth/group.html", {"form": form, "groups": groups})
+
+@login_required
+@require_http_methods(["POST"])
+@permission_required("base.add_company")
+def update_group_permission(
+    request,
+):
+    """
+    This method is used to remove user permission.
+    """
+    group_id = request.POST["id"]
+    instance = Group.objects.get(id=group_id)
+    form = UserGroupForm(request.POST, instance=instance)
+    if form.is_valid():
+        form.save()
+        return JsonResponse({"message": "Updated the permissions", "type": "success"})
+    if request.POST.get("name_update"):
+        name = request.POST["name"]
+        if len(name) > 3:
+            instance.name = name
+            instance.save()
+            return JsonResponse({"message": "Name updated", "type": "success"})
+        return JsonResponse(
+            {"message": "At least 4 characters required", "type": "success"}
+        )
+
+    perms = form.cleaned_data.get("permissions")
+    if not perms:
+        instance.permissions.clear()
+        return JsonResponse({"message": "All permission cleared", "type": "info"})
+    return JsonResponse({"message": "Something went wrong", "type": "danger"})
+
+
+@login_required
+@permission_required("view_group")
+def user_group(request):
+    """
+    This method is used to create user permission group
+    """
+    permissions = []
+
+    apps = [
+        "base",
+        "recruitment",
+        "employee",
+        "leave",
+        "pms",
+        "onboarding",
+        "asset",
+        "attendance",
+        "payroll",
+    ]
+    form = UserGroupForm()
+    for app_name in apps:
+        app_models = []
+        for model in get_models_in_app(app_name):
+            app_models.append(
+                {
+                    "verbose_name": model._meta.verbose_name.capitalize(),
+                    "model_name": model._meta.model_name,
+                }
+            )
+        permissions.append({"app": app_name.capitalize(), "app_models": app_models})
+    groups = Group.objects.all()
+    return render(
+        request,
+        "base/auth/group.html",
+        {"permissions": permissions, "form": form, "groups": groups},
+    )
 
 
 @login_required
@@ -378,19 +496,29 @@ def group_assign(request):
     """
     This method is used to assign user group to the users.
     """
-    form = AssignUserGroup()
-    groups = Group.objects.all()
+    group_id = request.GET["group"]
+    form = AssignUserGroup(
+        initial={
+            "group": group_id,
+            "employee": Employee.objects.filter(
+                employee_user_id__groups__id=group_id
+            ).values_list("id", flat=True),
+        }
+    )
     if request.POST:
-        form = AssignUserGroup(request.POST)
+        group_id = request.POST["group"]
+        form = AssignUserGroup(
+            {"group": group_id, "employee": request.POST.getlist("employee")}
+        )
         if form.is_valid():
             form.save()
             messages.success(request, _("User group assigned."))
-            return redirect(group_assign)
-
+            return HttpResponse("<script>window.location.reload()</script>")
+        print(form.errors)
     return render(
         request,
-        "base/auth/group_assign.html",
-        {"form": form, "groups": paginator_qry(groups, request.GET.get("page"))},
+        "base/auth/group_user_assign.html",
+        {"form": form, "group_id": group_id},
     )
 
 
@@ -516,7 +644,7 @@ def company_create(request):
     companies = Company.objects.all()
     if request.method == "POST":
         form = CompanyForm(request.POST, request.FILES)
-        
+
         if form.is_valid():
             form.save()
 
@@ -524,8 +652,11 @@ def company_create(request):
             return HttpResponse("<script>window.location.reload()</script>")
 
     return render(
-        request, "base/company/company_form.html", {"form": form, "companies": companies}
+        request,
+        "base/company/company_form.html",
+        {"form": form, "companies": companies},
     )
+
 
 @login_required
 @permission_required("base.add_company")
@@ -535,9 +666,7 @@ def company_view(request):
     """
 
     companies = Company.objects.all()
-    return render(
-        request, "base/company/company.html", {"companies": companies}
-    )
+    return render(request, "base/company/company.html", {"companies": companies})
 
 
 @login_required
@@ -580,7 +709,9 @@ def department_create(request):
     return render(
         request,
         "base/department/department_form.html",
-        {"form": form,},
+        {
+            "form": form,
+        },
     )
 
 
@@ -594,8 +725,11 @@ def department_view(request):
     return render(
         request,
         "base/department/department.html",
-        {"departments": departments,},
+        {
+            "departments": departments,
+        },
     )
+
 
 @login_required
 @permission_required("base.change_department")
@@ -640,6 +774,7 @@ def job_position(request):
         {"form": form, "departments": departments},
     )
 
+
 @login_required
 @permission_required("base.add_jobposition")
 def job_position_creation(request):
@@ -657,8 +792,11 @@ def job_position_creation(request):
     return render(
         request,
         "base/job_position/job_position_form.html",
-        {"form": form,},
+        {
+            "form": form,
+        },
     )
+
 
 @login_required
 @permission_required("base.change_jobposition")
@@ -700,9 +838,13 @@ def job_role_create(request):
 
             messages.success(request, _("Job role has been created successfully!"))
             return HttpResponse("<script>window.location.reload()</script>")
-    
+
     return render(
-        request, "base/job_role/job_role_form.html", {"form": form,}
+        request,
+        "base/job_role/job_role_form.html",
+        {
+            "form": form,
+        },
     )
 
 
@@ -714,10 +856,8 @@ def job_role_view(request):
     """
 
     jobs = JobPosition.objects.all()
-    
-    return render(
-        request, "base/job_role/job_role.html", { "job_positions": jobs}
-    )
+
+    return render(request, "base/job_role/job_role.html", {"job_positions": jobs})
 
 
 @login_required
@@ -741,7 +881,12 @@ def job_role_update(request, id, **kwargs):
             return HttpResponse("<script>window.location.reload()</script>")
 
     return render(
-        request, "base/job_role/job_role_form.html", {"form": form, "job_role": job_role,}
+        request,
+        "base/job_role/job_role_form.html",
+        {
+            "form": form,
+            "job_role": job_role,
+        },
     )
 
 
@@ -1210,7 +1355,9 @@ def employee_type_view(request):
     return render(
         request,
         "base/employee_type/employee_type.html",
-        {"employee_types": types,},
+        {
+            "employee_types": types,
+        },
     )
 
 
@@ -1270,7 +1417,7 @@ def employee_shift_view(request):
     """
 
     shifts = EmployeeShift.objects.all()
-    
+
     return render(request, "base/shift/shift.html", {"shifts": shifts})
 
 
@@ -1292,7 +1439,9 @@ def employee_shift_create(request):
                 request, _("Employee Shift has been created successfully!")
             )
             return HttpResponse("<script>window.location.reload();</script>")
-    return render(request, "base/shift/shift_form.html", {"form": form, "shifts": shifts})
+    return render(
+        request, "base/shift/shift_form.html", {"form": form, "shifts": shifts}
+    )
 
 
 @login_required
@@ -1325,7 +1474,7 @@ def employee_shift_schedule_view(request):
     """
 
     shifts = EmployeeShift.objects.all()
-    
+
     return render(request, "base/shift/schedule.html", {"shifts": shifts})
 
 
@@ -1348,7 +1497,9 @@ def employee_shift_schedule_create(request):
             )
             return HttpResponse("<script>window.location.reload();</script>")
 
-    return render(request, "base/shift/schedule_form.html", {"form": form, "shifts": shifts})
+    return render(
+        request, "base/shift/schedule_form.html", {"form": form, "shifts": shifts}
+    )
 
 
 @login_required
@@ -1370,7 +1521,11 @@ def employee_shift_schedule_update(request, id, **kwargs):
             form.save()
             messages.success(request, _("Shift schedule created."))
             return HttpResponse("<script>window.location.reload();</script>")
-    return render(request, "base/shift/schedule_form.html", {"form": form, "shift_schedule": employee_shift_schedule})
+    return render(
+        request,
+        "base/shift/schedule_form.html",
+        {"form": form, "shift_schedule": employee_shift_schedule},
+    )
 
 
 @login_required
@@ -1768,6 +1923,21 @@ def rotating_shift_assign_delete(request, id):
     return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 
 
+from django.apps import apps
+
+
+def get_models_in_app(app_name):
+    """
+    get app models
+    """
+    try:
+        app_config = apps.get_app_config(app_name)
+        models = app_config.get_models()
+        return models
+    except LookupError:
+        return []
+
+
 @login_required
 @permission_required("add_permission")
 def employee_permission_assign(request):
@@ -1775,20 +1945,46 @@ def employee_permission_assign(request):
     This method is used to assign permissions to employee user
     """
 
-    employees = Employee.objects.all()
-    permissions = Permission.objects.all()
+    context = {}
     form = AssignPermission()
-    if request.method == "POST":
-        form = AssignPermission(request.POST)
-        if form.is_valid():
-            form.save()
-            messages.success(request, _("Employee permission assigned."))
-            return redirect(employee_permission_assign)
-
+    template = "base/auth/permission.html"
+    if request.GET.get("profile_tab"):
+        template = "base/auth/permission_accordion.html"
+        employees = Employee.objects.filter(id=request.GET["employee_id"]).distinct()
+    else:
+        employees = Employee.objects.filter(
+            employee_user_id__user_permissions__isnull=False
+        ).distinct()
+        context["show_assign"] = True
+    permissions = []
+    apps = [
+        "base",
+        "recruitment",
+        "employee",
+        "leave",
+        "pms",
+        "onboarding",
+        "asset",
+        "attendance",
+        "payroll",
+    ]
+    for app_name in apps:
+        app_models = []
+        for model in get_models_in_app(app_name):
+            app_models.append(
+                {
+                    "verbose_name": model._meta.verbose_name.capitalize(),
+                    "model_name": model._meta.model_name,
+                }
+            )
+        permissions.append({"app": app_name.capitalize(), "app_models": app_models})
+    context["form"] = form
+    context["permissions"] = permissions
+    context["employees"] = employees
     return render(
         request,
-        "base/auth/permission.html",
-        {"employees": paginator_qry(employees, request.GET.get("page")), "form": form},
+        template,
+        context,
     )
 
 
@@ -1816,22 +2012,77 @@ def employee_permission_search(request, codename=None, uid=None):
     )
 
 
+# add_recruitment
+
+
 @login_required
 @require_http_methods(["POST"])
-def remove_permission(request, codename, uid):
+@permission_required("base.add_company")
+def update_permission(
+    request,
+):
     """
     This method is used to remove user permission.
     """
-    user = User.objects.get(id=uid)
-    permission_codename = codename.split(".")[1]
-    permission = Permission.objects.filter(codename=permission_codename)
-    user.user_permissions.remove(*permission)
-    employees = Employee.objects.all()
-    page = request.GET.get("page")
+    form = AssignPermission(request.POST)
+    if form.is_valid():
+        form.save()
+        return JsonResponse({"message": "Updated the permissions", "type": "success"})
+    if (
+        form.data.get("employee")
+        and Employee.objects.filter(id=form.data["employee"]).first()
+    ):
+        Employee.objects.filter(
+            id=form.data["employee"]
+        ).first().employee_user_id.user_permissions.clear()
+        return JsonResponse({"message": "All permission cleared", "type": "info"})
+    return JsonResponse({"message": "Something went wrong", "type": "danger"})
+
+
+@login_required
+@permission_required("base.add_company")
+def permission_table(request):
+    """
+    This method is used to render the permission table
+    """
+    permissions = []
+    print("iiioanasdfffffffffffffff")
+
+    apps = [
+        "base",
+        "recruitment",
+        "employee",
+        "leave",
+        "pms",
+        "onboarding",
+        "asset",
+        "attendance",
+        "payroll",
+    ]
+    form = AssignPermission()
+    for app_name in apps:
+        app_models = []
+        for model in get_models_in_app(app_name):
+            app_models.append(
+                {
+                    "verbose_name": model._meta.verbose_name.capitalize(),
+                    "model_name": model._meta.model_name,
+                }
+            )
+        permissions.append({"app": app_name.capitalize(), "app_models": app_models})
+    if request.method == "POST":
+        form = AssignPermission(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, _("Employee permission assigned."))
+            return HttpResponse("<script>window.location.reload()</script>")
     return render(
         request,
-        "base/auth/permission_view.html",
-        {"employees": paginator_qry(employees, page), "pd": f"&page={page}"},
+        "base/auth/permission_assign.html",
+        {
+            "permissions": permissions,
+            "form": form,
+        },
     )
 
 
@@ -1840,6 +2091,7 @@ def work_type_request_view(request):
     """
     This method renders template to  view all work type requests
     """
+    previous_data = request.GET.urlencode()
     employee = Employee.objects.filter(employee_user_id=request.user).first()
     work_type_requests = filtersubordinates(
         request, WorkTypeRequest.objects.all(), "base.add_worktyperequest"
@@ -1855,7 +2107,9 @@ def work_type_request_view(request):
             ).object_list
         ]
     )
-    f = WorkTypeRequestFilter()
+    f = WorkTypeRequestFilter(request.GET, queryset=work_type_requests)
+    data_dict = parse_qs(previous_data)
+    get_key_instances(WorkTypeRequest, data_dict)
     export_filter = WorkTypeRequestFilter()
     export_fields = WorkTypeRequestColumnForm()
     form = WorkTypeRequestForm()
@@ -1869,10 +2123,11 @@ def work_type_request_view(request):
         request,
         "work_type_request/work_type_request_view.html",
         {
-            "data": paginator_qry(work_type_requests, request.GET.get("page")),
+            "data": paginator_qry(f.qs, request.GET.get("page")),
             "f": f,
             "form": form,
             "export_filter": export_filter,
+            "filter_dict": data_dict,
             "export_fields": export_fields,
             "requests_ids": requests_ids,
             "gp_fields": WorkTypeRequestReGroup.fields,
@@ -1983,7 +2238,7 @@ def work_type_request(request):
                     verb_fr=f"Vous avez une nouvelle demande de type de travail\
                             à valider pour {instance.employee_id}",
                     icon="information",
-                    redirect="/shift-requests/shift-request-view",
+                    redirect=f"/employee/work-type-request-view?employee_id={instance.employee_id.id}&requested_date={instance.requested_date}",
                 )
             except Exception as error:
                 pass
@@ -2334,7 +2589,7 @@ def shift_request(request):
                     verb_fr=f"Vous avez une nouvelle demande de quart de\
                         travail à approuver pour {instance.employee_id}",
                     icon="information",
-                    redirect="/shift-requests/shift-request-view",
+                    redirect=f"/employee/shift-request-view?employee_id={instance.employee_id.id}&requested_date={instance.requested_date}",
                 )
             except Exception as e:
                 pass
@@ -2354,6 +2609,7 @@ def shift_request_view(request):
     """
     This method renders all shift request instances to a template
     """
+    previous_data = request.GET.urlencode()
     employee = Employee.objects.filter(employee_user_id=request.user).first()
     shift_requests = filtersubordinates(
         request, ShiftRequest.objects.all(), "base.add_shiftrequest"
@@ -2367,7 +2623,9 @@ def shift_request_view(request):
             ).object_list
         ]
     )
-    f = ShiftRequestFilter()
+    f = ShiftRequestFilter(request.GET, queryset=shift_requests)
+    data_dict = parse_qs(previous_data)
+    get_key_instances(ShiftRequest, data_dict)
     form = ShiftRequestForm()
     export_fields = ShiftRequestColumnForm()
     export_filter = ShiftRequestFilter()
@@ -2381,16 +2639,16 @@ def shift_request_view(request):
         request,
         "shift_request/shift_request_view.html",
         {
-            "data": paginator_qry(shift_requests, request.GET.get("page")),
+            "data": paginator_qry(f.qs, request.GET.get("page")),
             "f": f,
             "form": form,
+            "filter_dict": data_dict,
             "export_fields": export_fields,
             "export_filter": export_filter,
             "requests_ids": requests_ids,
             "gp_fields": ShiftRequestReGroup.fields,
         },
     )
-
 
 @login_required
 def shift_request_export(request):

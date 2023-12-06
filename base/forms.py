@@ -11,7 +11,7 @@ import datetime
 from datetime import timedelta
 from django.contrib.auth import authenticate
 from django import forms
-from django.contrib.auth.models import Group, Permission
+from django.contrib.auth.models import Group, Permission, User
 from django.forms import DateInput
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext as _
@@ -154,7 +154,7 @@ class ModelForm(forms.ModelForm):
                 widget,
                 (forms.NumberInput, forms.EmailInput, forms.TextInput, forms.FileInput),
             ):
-                label = ''
+                label = ""
                 if field.label is not None:
                     label = _(field.label.title())
                 field.widget.attrs.update(
@@ -237,13 +237,41 @@ class UserGroupForm(ModelForm):
     Django user groups form
     """
 
+    permissions = forms.MultipleChoiceField(
+        choices=[(perm.codename, perm.name) for perm in Permission.objects.all()],
+        error_messages={
+            "required": "Please choose a permission.",
+        },
+    )
+
     class Meta:
         """
         Meta class for additional options
         """
 
         model = Group
-        fields = "__all__"
+        fields = ["name","permissions"]
+
+    def save(self, commit=True):
+        """
+        ModelForm save override
+        """
+        group = super().save(commit=False)
+        if self.instance:
+            group = self.instance
+        group.save()
+
+        # Convert the selected codenames back to Permission instances
+        permissions_codenames = self.cleaned_data["permissions"]
+        permissions = Permission.objects.filter(codename__in=permissions_codenames)
+
+        # Set the associated permissions
+        group.permissions.set(permissions)
+
+        if commit:
+            group.save()
+
+        return group
 
 
 class AssignUserGroup(Form):
@@ -252,7 +280,7 @@ class AssignUserGroup(Form):
     """
 
     employee = forms.ModelMultipleChoiceField(queryset=Employee.objects.all())
-    group = forms.ModelMultipleChoiceField(queryset=Group.objects.all())
+    group = forms.ModelChoiceField(queryset=Group.objects.all())
 
     def save(self):
         """
@@ -261,7 +289,7 @@ class AssignUserGroup(Form):
         employees = self.cleaned_data["employee"]
         group = self.cleaned_data["group"]
         for employee in employees:
-            employee.employee_user_id.groups.add(*group)
+            employee.employee_user_id.groups.add(group)
         return group
 
 
@@ -271,17 +299,24 @@ class AssignPermission(Form):
     """
 
     employee = forms.ModelMultipleChoiceField(queryset=Employee.objects.all())
-    permission = forms.ModelMultipleChoiceField(queryset=Permission.objects.all())
+    permissions = forms.MultipleChoiceField(
+        choices=[(perm.codename, perm.name) for perm in Permission.objects.all()],
+        error_messages={
+            "required": "Please choose a permission.",
+        },
+    )
 
     def save(self):
         """
         Save method to assign permission to employee
         """
         employees = self.cleaned_data["employee"]
-        permissions = self.cleaned_data["permission"]
-        for emp in employees:
-            user = emp.employee_user_id
-            user.user_permissions.add(*permissions)
+        permissions = self.cleaned_data["permissions"]
+        permissions = Permission.objects.filter(codename__in=permissions)
+        users = User.objects.filter(employee_get__id__in=employees)
+        for user in users:
+            user.user_permissions.set(permissions)
+
         return self
 
 
@@ -1168,8 +1203,6 @@ class WorkTypeRequestForm(ModelForm):
                         employee.employee_work_info.contract_end_date
                     )
         return super().save(commit)
-
-
 
 
 class ChangePasswordForm(forms.Form):
