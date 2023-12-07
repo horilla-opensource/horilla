@@ -48,7 +48,6 @@
   });
   function checkSelected(names, target, initial = false) {
     names = JSON.parse(`${names}`);
-    console.log(initial);
     $.each(names, function (indexInArray, valueOfElement) {
       if (!initial) {
         $(target)
