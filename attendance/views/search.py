@@ -130,7 +130,6 @@ def attendance_search(request):
 
 
 @login_required
-@manager_can_enter("attendance.view_attendanceovertime")
 def attendance_overtime_search(request):
     """
     This method is used to search attendance overtime account by employee.
@@ -145,10 +144,13 @@ def attendance_overtime_search(request):
         field_copy = field.replace(".", "__")
         accounts = accounts.order_by(field_copy)
         template = "attendance/attendance_account/group_by.html"
+    self_account = accounts.filter(employee_id__employee_user_id=request.user)
     accounts = sortby(request, accounts, "sortby")
     accounts = filtersubordinates(
         request, accounts, "attendance.view_attendanceovertime"
     )
+    accounts = accounts | self_account
+    accounts = accounts.distinct()
     data_dict = parse_qs(previous_data)
     get_key_instances(AttendanceOverTime, data_dict)
     keys_to_remove = [key for key, value in data_dict.items() if value == ["unknown"]]
