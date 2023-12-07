@@ -61,6 +61,7 @@
                   <div class="oh-sticky-table__th">{% trans "Pending Hours" %}</div>
                   <div class="oh-sticky-table__th">{% trans "Overtime" %}</div>
                   <div class="oh-sticky-table__th"></div>
+                  <div class="oh-sticky-table__th"></div>
                 </div>
               </div>
               <div class="oh-sticky-table__tbody">
@@ -115,6 +116,25 @@
                   </div>
                   <div class="oh-sticky-table__td">
                     {{attendance.attendance_overtime}}
+                  </div>
+                  <div class="oh-sticky-table__td">
+                      {% if attendance.attendance_overtime_approve %}
+                          <a
+                            href="#"
+                            class="oh-btn oh-btn--info disabled"
+                            onclick="event.stopPropagation()"
+                            >
+                            {% trans "Approve" %}
+                          </a>
+                      {% else %}
+                          <a
+                            href="{% url 'approve-overtime' attendance.id %}"
+                            onclick="event.stopPropagation()"
+                            class="oh-btn oh-btn--info"
+                            >
+                            {% trans "Approve" %}
+                          </a>
+                      {% endif %}
                   </div>
                   <div class="oh-sticky-table__td">
                     <div class="oh-btn-group">
@@ -248,6 +268,7 @@
                   <div class="oh-sticky-table__th">{% trans "Pending Hours" %}</div>
                   <div class="oh-sticky-table__th">{% trans "Overtime" %}</div>
                   <div class="oh-sticky-table__th"></div>
+                  <div class="oh-sticky-table__th"></div>
                 </div>
               </div>
               <div class="oh-sticky-table__tbody">
@@ -302,6 +323,19 @@
                   </div>
                   <div class="oh-sticky-table__td">
                     {{attendance.attendance_overtime}}
+                  </div>
+                  <div class="oh-sticky-table__td">
+                      {% if request.user|is_reportingmanager or perms.attendance.change_attendance %}
+                          <a
+                            href='{% url "validate-this-attendance" attendance.id %}'
+                            hx-target="#updateAttendanceBody"
+                            data-req="/attendance/request-attendance-view/?id={{attendance.id}}"
+                            onclick="event.stopPropagation(); {% if attendance.is_validate_request %}  event.preventDefault(); showSweetAlert($(this).data('req')); {% endif %}"
+                            class="oh-btn oh-btn--info"
+                            >
+                            {% trans "Validate" %}
+                          </a>
+                      {% endif %}
                   </div>
                   <div class="oh-sticky-table__td">
                     <div class="oh-btn-group">

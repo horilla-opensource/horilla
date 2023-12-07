@@ -380,6 +380,19 @@
                           {{attendance.attendance_overtime}}
                         </div>
                         <div class="oh-sticky-table__td">
+                            {% if request.user|is_reportingmanager or perms.attendance.change_attendance %}
+                                <a
+                                  href='{% url "validate-this-attendance" attendance.id %}'
+                                  hx-target="#updateAttendanceBody"
+                                  data-req="/attendance/request-attendance-view/?id={{attendance.id}}"
+                                  onclick="event.stopPropagation(); {% if attendance.is_validate_request %}  event.preventDefault(); showSweetAlert($(this).data('req')); {% endif %}"
+                                  class="oh-btn oh-btn--info"
+                                  >
+                                  {% trans "Validate" %}
+                                </a>
+                            {% endif %}
+                        </div>
+                        <div class="oh-sticky-table__td">
                             <div class="oh-btn-group">
                                 {% if perms.attendance.change_attendance or request.user|is_reportingmanager %}
                                     <a
@@ -410,19 +423,6 @@
                                     </form>
                                 {% endif %}
                             </div>
-                        </div>
-                        <div class="oh-sticky-table__td">
-                            {% if request.user|is_reportingmanager or perms.attendance.change_attendance %}
-                                <a
-                                  href='{% url "validate-this-attendance" attendance.id %}'
-                                  hx-target="#updateAttendanceBody"
-                                  data-req="/attendance/request-attendance-view/?id={{attendance.id}}"
-                                  onclick="event.stopPropagation(); {% if attendance.is_validate_request %}  event.preventDefault(); showSweetAlert($(this).data('req')); {% endif %}"
-                                  class="oh-btn oh-btn--info"
-                                  >
-                                  {% trans "Validate" %}
-                                </a>
-                            {% endif %}
                         </div>
                     </div>
                 </div>
