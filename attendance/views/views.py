@@ -26,19 +26,19 @@ from django.core.paginator import Paginator
 from django.db.models import ProtectedError
 from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from django.views.decorators.http import require_http_methods
-from attendance.views.handle_attendance_errors import handle_attendance_errors
-from attendance.views.process_attendance_data import process_attendance_data
-from base.methods import closest_numbers, export_data
-from base.methods import get_key_instances
 from horilla.decorators import (
     permission_required,
     login_required,
     hx_request_required,
     manager_can_enter,
 )
+from base.methods import closest_numbers, export_data
+from base.methods import get_key_instances
 from base.models import EmployeeShiftSchedule
 from base.methods import filtersubordinates, choosesubordinates
 from notifications.signals import notify
+from attendance.views.handle_attendance_errors import handle_attendance_errors
+from attendance.views.process_attendance_data import process_attendance_data
 from attendance.filters import (
     AttendanceFilters,
     AttendanceOverTimeFilter,
@@ -519,7 +519,6 @@ def attendance_overtime_create(request):
 
 
 @login_required
-@manager_can_enter("attendance.view_attendanceovertime")
 def attendance_overtime_view(request):
     """
     This method is used to view attendance account or overtime account.
@@ -530,9 +529,12 @@ def attendance_overtime_view(request):
         template = "attendance/attendance_account/attendance_overtime_view.html"
     else:
         template = "attendance/attendance_account/overtime_empty.html"
+    self_account = filter_obj.qs.filter(employee_id__employee_user_id=request.user)
     accounts = filtersubordinates(
         request, filter_obj.qs, "attendance.view_attendanceovertime"
     )
+    accounts = accounts | self_account
+    accounts = accounts.distinct()
     form = AttendanceOverTimeForm()
     form = choosesubordinates(request, form, "attendance.add_attendanceovertime")
     export_obj = AttendanceOverTimeFilter()
@@ -1216,14 +1218,22 @@ def user_request_one_view(request, id):
 @login_required
 def hour_attendance_select(request):
     page_number = request.GET.get("page")
+    context = {}
 
     if page_number == "all":
-        employees = AttendanceOverTime.objects.all()
+        if request.user.has_perm("attendance.view_attendanceovertime"):
+            employees = AttendanceOverTime.objects.all()
+        else:
+            employees = AttendanceOverTime.objects.filter(
+                employee_id__employee_user_id=request.user
+            ) | AttendanceOverTime.objects.filter(
+                employee_id__employee_work_info__reporting_manager_id__employee_user_id=request.user
+            )
 
-    employee_ids = [str(emp.id) for emp in employees]
-    total_count = employees.count()
+        employee_ids = [str(emp.id) for emp in employees]
+        total_count = employees.count()
 
-    context = {"employee_ids": employee_ids, "total_count": total_count}
+        context = {"employee_ids": employee_ids, "total_count": total_count}
 
     return JsonResponse(context, safe=False)
 
