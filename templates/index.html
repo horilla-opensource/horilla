@@ -267,54 +267,28 @@
 .exclude-accordion-style{
   cursor:pointer;
 }
-    .accordion:not(.exclude-accordion-style) {
-      background-color: rgba(240, 248, 255, 0.586);
-      color: #000000;
-      font-weight: 700;
-      cursor: pointer;
-      padding: 12px;
-      width: 100%;
-      border: none;
-      text-align: left;
-      outline: none;
-      font-size: 15px;
-      transition: 0.4s;
-    }
-    .active.exclude-accordion-style{
-      background-color: #e6f3fe;
-    }
-    .active:not(.exclude-accordion-style),
-    .accordion:hover:not(.exclude-accordion-style) {
-      background-color: rgba(215, 233, 251, 0.586);
-    }
-  
+    
     .panel {
       display: none;
       background-color: white;
       overflow: hidden;
       
     }
-    .accordion{
+    .perm-accordion{
       border: 1px solid #6c757d1c !important;
       margin: 0 0 2px 0 !important;
+      width: -100%;
+    }
+    .app-permissions{
+      background-color: rgba(242, 249, 255, 0.586);
+    }
+    .perm-accordion-active{
+      background-color: rgba(215, 233, 251, 0.621) !important;
+    }
+    .perm-accordion-active:hover{
+      background-color: rgba(215, 233, 251, 0.408) !important;
     }
   </style>
-  <script>
-    var acc = document.getElementsByClassName("accordion");
-    var i;
-  
-    for (i = 0; i < acc.length; i++) {
-      acc[i].addEventListener("click", function () {
-        this.classList.toggle("active");
-        var panel = this.nextElementSibling;
-        if (panel.style.display === "block") {
-          panel.style.display = "none";
-        } else {
-          panel.style.display = "block";
-        }
-      });
-    }
-  </script>
 </head>
 
 {% comment %} <div class="flexbox"> {% endcomment %}
@@ -604,8 +578,13 @@
   <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
   <script src="{% static '/build/js/sweetAlert.js' %}"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-
+  <script>
+    $(document).ready(function () {
+      $('body').on('click', '.select2-search__field', function(e) {
+      e.stopPropagation();
+    });
+    });
+  </script>
 
 </body>
 
