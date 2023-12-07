@@ -154,7 +154,7 @@ def employee_view_individual(request, obj_id, **kwargs):
     user = Employee.objects.filter(employee_user_id=request.user).first()
     if user and user.reporting_manager.filter(
         employee_id=employee
-    ).exists() or request.user.has_perm("employee.change_employee"):
+    ).exists() or request.user.has_perm("employee.view_employee"):
         return render(
             request,
             "employee/view/individual.html",
