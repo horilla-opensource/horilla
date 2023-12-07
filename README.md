@@ -130,7 +130,7 @@ python manage.py migrate
 ```
 4. Create an admin employee account:
 ```bash
-python manage.py createhorillauser
+python manage.py createhorillauser "FIRST_NAME" "LAST_NAME" "USERNAME" "PASSWORD" "EMAIL" "PHONE"
 ```
 >Note: createhorillauser is a similar command to createsuperuser in Django,  which creates an admin user along with a related admin employee into the database.
 
