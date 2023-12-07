@@ -8,6 +8,8 @@ Horilla can be installed on your system by following the below commands.
 
 You'll have to install python, django and the database you wish to use for the project as a prerequisites.
 
+You can also build the Docker image that handle all these steps as described [here](docker.md).
+
 ### **Python Installation**
 ___
 
