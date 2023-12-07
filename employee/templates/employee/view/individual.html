@@ -221,6 +221,7 @@
 						>{% trans "Performance" %}</a
 						>
 					</li>
+					{% if perms.auth.view_permission or perms.auth.view_group %}
 					<li class="oh-general__tab">
 						<a
 						{% comment %} hx-get={% url 'performance-tab' employee.id %} {% endcomment %}
@@ -228,12 +229,13 @@
 						data-action="general-tab"
 						data-target="#permission_tab_content"
 						hx-get="{% url 'employee-permission-assign' %}?profile_tab=true&employee_id={{employee.id}}"
-      					hx-target="#tab_1_permission"
+						hx-target="#tab_1_permission"
 						class="oh-general__tab-link"
 						role="button"
 						>{% trans "Groups & Permissions" %}</a
 						>
 					</li>
+					{% endif %}
 				</ul>
 
 				<div

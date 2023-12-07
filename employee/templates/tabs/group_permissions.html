@@ -1,5 +1,6 @@
 {% load i18n %}
 
+{% if perms.auth.view_permission or perms.auth.view_group %}
 
 <div class="oh-tabs__contents">
   <div class="oh-tabs__content oh-tabs__content--active" id="tab_1_permission">
@@ -101,3 +102,4 @@
     });
   }
 </script>
+{% endif %}
