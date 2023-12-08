@@ -161,9 +161,9 @@ def attendance_request_changes(request, attendance_id):
         form.fields["shift_id"].widget.attrs.update({"class":"w-100","style":"height:50px;border-radius:0;border:1px solid hsl(213deg,22%,84%)"})
         work_type_id = form.data["work_type_id"]
         shift_id = form.data["shift_id"]
-        if work_type_id is None or len(shift_id):
+        if work_type_id is None or not len(work_type_id):
             form.add_error("work_type_id","This field is required")
-        if shift_id is None or len(work_type_id):
+        if shift_id is None or not len(shift_id):
             form.add_error("shift_id","This field is required")
         if form.is_valid():
             # commit already set to False
