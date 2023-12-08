@@ -170,7 +170,6 @@ def attendance_overtime_search(request):
 
 
 @login_required
-@permission_required("attendance.view_attendanceactivity")
 def attendance_activity_search(request):
     """
     This method is used to search attendance activity
@@ -180,14 +179,20 @@ def attendance_activity_search(request):
     attendance_activities = AttendanceActivityFilter(
         request.GET,
     ).qs
+    self_attendance_activities = attendance_activities.filter(
+        employee_id__employee_user_id=request.user
+    )
+    attendance_activities = filtersubordinates(
+        request, attendance_activities, "attendance.view_attendanceovertime"
+    )
+    attendance_activities = attendance_activities | self_attendance_activities
+    attendance_activities = attendance_activities.distinct()
     template = "attendance/attendance_activity/activity_list.html"
     if field != "" and field is not None:
         field_copy = field.replace(".", "__")
         attendance_activities = attendance_activities.order_by(field_copy)
         template = "attendance/attendance_activity/group_by.html"
-    attendance_activities = filtersubordinates(
-        request, attendance_activities, "attendance.view_attendanceactivity"
-    )
+
 
     attendance_activities = sortby(request, attendance_activities, "orderby")
     data_dict = parse_qs(previous_data)
@@ -208,7 +213,6 @@ def attendance_activity_search(request):
 
 
 @login_required
-@manager_can_enter("attendance.view_attendancelatecomeearlyout")
 def late_come_early_out_search(request):
     """
     This method is used to search late come early out by employee.
@@ -216,18 +220,24 @@ def late_come_early_out_search(request):
     """
     field = request.GET.get("field")
     previous_data = request.GET.urlencode()
-
     reports = LateComeEarlyOutFilter(
         request.GET,
     ).qs
+    self_reports = reports.filter(
+        employee_id__employee_user_id=request.user
+    )
+    
+    reports = filtersubordinates(
+        request, reports, "attendance.view_attendancelatecomeearlyout"
+    )
+    reports = reports | self_reports
+    reports.distinct()
     template = "attendance/late_come_early_out/report_list.html"
     if field != "" and field is not None:
         template = "attendance/late_come_early_out/group_by.html"
         field_copy = field.replace(".", "__")
         reports = reports.order_by(field_copy)
-    reports = filtersubordinates(
-        request, reports, "attendance.view_attendancelatecomeearlyout"
-    )
+   
     reports = sortby(request, reports, "sortby")
     data_dict = parse_qs(previous_data)
     get_key_instances(AttendanceLateComeEarlyOut, data_dict)

@@ -646,14 +646,21 @@ def attendance_account_bulk_delete(request):
 
 
 @login_required
-@permission_required("attendance.view_attendanceactivity")
 def attendance_activity_view(request):
     """
     This method will render a template to view all attendance activities
     """
-    attendance_activities = AttendanceActivity.objects.all()
     previous_data = request.GET.urlencode()
-    filter_obj = AttendanceActivityFilter()
+    filter_obj = AttendanceActivityFilter(request.GET)
+    attendance_activities = filter_obj.qs
+    self_attendance_activities = attendance_activities.filter(
+        employee_id__employee_user_id=request.user
+    )
+    attendance_activities = filtersubordinates(
+        request, filter_obj.qs, "attendance.view_attendanceovertime"
+    )
+    attendance_activities = attendance_activities | self_attendance_activities
+    attendance_activities = attendance_activities.distinct()
     export_form = AttendanceActivityExportForm()
     if attendance_activities.exists():
         template = "attendance/attendance_activity/attendance_activity_view.html"
@@ -822,20 +829,24 @@ def on_time_view(request):
 
 
 @login_required
-@manager_can_enter("attendance.view_attendancelatecomeearlyout")
 def late_come_early_out_view(request):
     """
     This method render template to view all late come early out entries
     """
-    reports = AttendanceLateComeEarlyOut.objects.all()
-    if reports.exists():
+    filter_obj = LateComeEarlyOutFilter(request.GET)
+    if filter_obj.qs.exists():
         template = "attendance/late_come_early_out/reports.html"
     else:
         template = "attendance/late_come_early_out/reports_empty.html"
-    reports = filtersubordinates(
-        request, reports, "attendance.view_attendancelatecomeearlyout"
+    self_reports = filter_obj.qs.filter(
+        employee_id__employee_user_id=request.user
     )
-    filter_obj = LateComeEarlyOutFilter(request.GET, reports)
+    reports = filtersubordinates(
+        request, filter_obj.qs, "attendance.view_attendancelatecomeearlyout"
+    )
+
+    reports = reports | self_reports
+    reports = reports.distinct()
     previous_data = request.GET.urlencode()
     export_form = LateComeEarlyOutExportForm()
     data_dict = parse_qs(previous_data)
@@ -844,7 +855,7 @@ def late_come_early_out_view(request):
         request,
         template,
         {
-            "data": paginator_qry(filter_obj.qs, request.GET.get("page")),
+            "data": paginator_qry(reports, request.GET.get("page")),
             "f": filter_obj,
             "gp_fields": LateComeEarlyOutReGroup.fields,
             "export": LateComeEarlyOutFilter(
