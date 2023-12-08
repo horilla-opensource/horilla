@@ -437,7 +437,6 @@
                 >{% trans "Hour Account" %}</a
               >
             </li>
-             {% if perms.attendance.view_attendanceactivity %}
             <li class="oh-sidebar__submenu-item">
               <a
                 class="oh-sidebar__submenu-link"
@@ -445,7 +444,6 @@
                 >{% trans "Attendance Activity" %}</a
               >
             </li>
-            {% endif %} {% if perms.attendance.view_attendancelatecomeearlyout or request.user|is_reportingmanager %}
             <li class="oh-sidebar__submenu-item">
               <a
                 class="oh-sidebar__submenu-link"
@@ -453,7 +451,6 @@
                 >{% trans "Late Come Early Out" %}</a
               >
             </li>
-            {% endif %}
             <li class="oh-sidebar__submenu-item">
               <a
                 class="oh-sidebar__submenu-link"
