@@ -42,8 +42,8 @@
     }
   }
   function fieldLabel(value, field) {
-    if (field == "field") {
-      return $(`[value="${value}"]`).html();
+    if (field == "field") {      
+      return $(`option[value="${value}"]`).html();
     }
     return value;
   }
