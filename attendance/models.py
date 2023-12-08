@@ -4,6 +4,7 @@ models.py
 This module is used to register models for recruitment app
 
 """
+from collections.abc import Iterable
 import json
 import contextlib
 from datetime import datetime, date, timedelta
@@ -563,11 +564,17 @@ class AttendanceLateComeEarlyOut(models.Model):
         null=True,
         related_name="late_come_early_out",
         verbose_name=_("Employee"),
+        editable=False,
     )
     type = models.CharField(max_length=20, choices=choices, verbose_name=_("Type"))
     objects = HorillaCompanyManager(
         related_company_field="employee_id__employee_work_info__company_id"
     )
+
+    def save(self, *args, **kwargs) -> None:
+        super().save(*args, **kwargs)
+        self.employee_id = self.attendance_id.employee_id
+        super().save(*args, **kwargs)
 
     class Meta:
         """
@@ -595,7 +602,7 @@ class AttendanceValidationCondition(models.Model):
     overtime_cutoff = models.CharField(
         blank=True, null=True, max_length=10, validators=[validate_time_format]
     )
-    company_id = models.ManyToManyField(Company, blank=True,verbose_name=_("Company"))
+    company_id = models.ManyToManyField(Company, blank=True, verbose_name=_("Company"))
     objects = HorillaCompanyManager()
 
     def clean(self):
