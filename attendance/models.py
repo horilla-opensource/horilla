@@ -423,13 +423,13 @@ class Attendance(models.Model):
                     "attendance_clock_in_date": "Attendance check-in date never smaller than attendance date"
                 }
             )
-        if self.attendance_clock_out_date < self.attendance_clock_in_date:
+        if self.attendance_clock_out_date and self.attendance_clock_out_date < self.attendance_clock_in_date:
             raise ValidationError(
                 {
                     "attendance_clock_out_date": "Attendance check-out date never smaller than attendance check-in date"
                 }
             )
-        if self.attendance_clock_out_date >= today:
+        if self.attendance_clock_out_date and self.attendance_clock_out_date >= today:
             if out_time > now:
                 raise ValidationError(
                     {"attendance_clock_out": "Check out time not allow in the future"}

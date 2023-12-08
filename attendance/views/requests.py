@@ -88,8 +88,12 @@ def request_attendance_view(request):
         template = "requests/attendance/view-requests.html"
     else:
         template = "requests/attendance/requests_empty.html"
-    requests_ids = json.dumps([instance.id for instance in paginator_qry(requests, None).object_list])
-    attendances_ids = json.dumps([instance.id for instance in paginator_qry(attendances, None).object_list])
+    requests_ids = json.dumps(
+        [instance.id for instance in paginator_qry(requests, None).object_list]
+    )
+    attendances_ids = json.dumps(
+        [instance.id for instance in paginator_qry(attendances, None).object_list]
+    )
     return render(
         request,
         template,
@@ -153,18 +157,38 @@ def attendance_request_changes(request, attendance_id):
     """
     attendance = Attendance.objects.get(id=attendance_id)
     form = AttendanceRequestForm(instance=attendance)
-    form.fields["work_type_id"].widget.attrs.update({"class":"w-100","style":"height:50px;border-radius:0;border:1px solid hsl(213deg,22%,84%)"})
-    form.fields["shift_id"].widget.attrs.update({"class":"w-100","style":"height:50px;border-radius:0;border:1px solid hsl(213deg,22%,84%)"})
+    form.fields["work_type_id"].widget.attrs.update(
+        {
+            "class": "w-100",
+            "style": "height:50px;border-radius:0;border:1px solid hsl(213deg,22%,84%)",
+        }
+    )
+    form.fields["shift_id"].widget.attrs.update(
+        {
+            "class": "w-100",
+            "style": "height:50px;border-radius:0;border:1px solid hsl(213deg,22%,84%)",
+        }
+    )
     if request.method == "POST":
         form = AttendanceRequestForm(request.POST, instance=copy.copy(attendance))
-        form.fields["work_type_id"].widget.attrs.update({"class":"w-100","style":"height:50px;border-radius:0;border:1px solid hsl(213deg,22%,84%)"})
-        form.fields["shift_id"].widget.attrs.update({"class":"w-100","style":"height:50px;border-radius:0;border:1px solid hsl(213deg,22%,84%)"})
+        form.fields["work_type_id"].widget.attrs.update(
+            {
+                "class": "w-100",
+                "style": "height:50px;border-radius:0;border:1px solid hsl(213deg,22%,84%)",
+            }
+        )
+        form.fields["shift_id"].widget.attrs.update(
+            {
+                "class": "w-100",
+                "style": "height:50px;border-radius:0;border:1px solid hsl(213deg,22%,84%)",
+            }
+        )
         work_type_id = form.data["work_type_id"]
         shift_id = form.data["shift_id"]
         if work_type_id is None or not len(work_type_id):
-            form.add_error("work_type_id","This field is required")
+            form.add_error("work_type_id", "This field is required")
         if shift_id is None or not len(shift_id):
-            form.add_error("shift_id","This field is required")
+            form.add_error("shift_id", "This field is required")
         if form.is_valid():
             # commit already set to False
             # so the changes not affected to the db
@@ -252,7 +276,7 @@ def validate_attendance_request(request, attendance_id):
             "attendance": attendance,
             "previous": previous_instance_id,
             "next": next_instance_id,
-            "requests_ids":requests_ids_json,
+            "requests_ids": requests_ids_json,
         },
     )
 
@@ -271,8 +295,18 @@ def approve_validate_attendance_request(request, attendance_id):
     attendance.save()
     if attendance.requested_data is not None:
         requested_data = json.loads(attendance.requested_data)
+        requested_data["attendance_clock_out"] = (
+            None
+            if requested_data["attendance_clock_out"] == "None"
+            else requested_data["attendance_clock_out"]
+        )
+        requested_data["attendance_clock_out_date"] = (
+            None
+            if requested_data["attendance_clock_out_date"] == "None"
+            else requested_data["attendance_clock_out_date"]
+        )
         Attendance.objects.filter(id=attendance_id).update(**requested_data)
-        #DUE TO AFFECT THE OVERTIME CALCULATION ON SAVE METHOD, SAVE THE INSTANCE ONCE MORE
+        # DUE TO AFFECT THE OVERTIME CALCULATION ON SAVE METHOD, SAVE THE INSTANCE ONCE MORE
         attendance = Attendance.objects.get(id=attendance_id)
         attendance.save()
     messages.success(request, "Attendance request has been approved")
@@ -384,7 +418,8 @@ def edit_validate_attendance(request, attendance_id):
                 instance.is_validate_request_approved = False
                 instance.is_validate_request = True
                 instance.save()
-            return HttpResponse(f"""
+            return HttpResponse(
+                f"""
                                 <script>
                                 $('#editValidateAttendanceRequest').removeClass('oh-modal--show');
                                 $('[data-target="#validateAttendanceRequest"][data-attendance-id={attendance.id}]').click();
@@ -398,5 +433,6 @@ def edit_validate_attendance(request, attendance_id):
                                 `
                                 )
                                 </script>
-                                """) 
+                                """
+            )
     return render(request, "requests/attendance/update_form.html", {"form": form})

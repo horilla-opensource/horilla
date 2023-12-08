@@ -412,7 +412,7 @@ class AttendanceValidationConditionForm(forms.ModelForm):
         overtime_cutoff = forms.DurationField()
         company_id = forms.ModelMultipleChoiceField(
             queryset=Company.objects.all(),
-            widget=forms.SelectMultiple(attrs={"class": "oh-select oh-select-2 w-100"})
+            widget=forms.SelectMultiple(attrs={"class": "oh-select oh-select-2 w-100"}),
         )
         widgets = {
             "validation_at_work": forms.TextInput(
@@ -424,15 +424,15 @@ class AttendanceValidationConditionForm(forms.ModelForm):
             "overtime_cutoff": forms.TextInput(
                 attrs={"class": "oh-input w-100", "placeholder": "02:00"}
             ),
-            "company_id": forms.SelectMultiple(
-                attrs={"class": "oh-select w-100"}
-            ),
+            "company_id": forms.SelectMultiple(attrs={"class": "oh-select w-100"}),
         }
 
         labels = {
             "validation_at_work": format_html(
-            _("<span title='Do not Auto Validate Attendance if an Employee Works More Than this Amount of Duration'>{}</span>"),
-            _("Maximum Allowed working hours")
+                _(
+                    "<span title='Do not Auto Validate Attendance if an Employee Works More Than this Amount of Duration'>{}</span>"
+                ),
+                _("Maximum Allowed working hours"),
             ),
             "minimum_overtime_to_approve": _("Minimum Hour to Approve Overtime"),
             "overtime_cutoff": _("Maximum Allowed Overtime Per Day"),
@@ -465,6 +465,8 @@ class AttendanceRequestForm(ModelForm):
                 ] = instance.attendance_clock_out_date.strftime("%Y-%m-%d")
             kwargs["initial"] = initial
         super().__init__(*args, **kwargs)
+        self.fields["attendance_clock_out_date"].required = False
+        self.fields["attendance_clock_out"].required = False
 
     class Meta:
         """
@@ -554,8 +556,16 @@ class NewRequestForm(AttendanceRequestForm):
             data["attendance_date"] = str(attendance_date)
             data["attendance_clock_in_date"] = self.data["attendance_clock_in_date"]
             data["attendance_clock_in"] = self.data["attendance_clock_in"]
-            data["attendance_clock_out"] = self.data["attendance_clock_out"]
-            data["attendance_clock_out_date"] = self.data["attendance_clock_out_date"]
+            data["attendance_clock_out"] = (
+                None
+                if data["attendance_clock_out"] == "None"
+                else data["attendance_clock_out"]
+            )
+            data["attendance_clock_out_date"] = (
+                None
+                if data["attendance_clock_out_date"] == "None"
+                else data["attendance_clock_out_date"]
+            )
             data["work_type_id"] = self.data["work_type_id"]
             data["shift_id"] = self.data["shift_id"]
             attendance = attendances.first()
