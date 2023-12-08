@@ -323,8 +323,8 @@ class Attendance(models.Model):
             "attendance_clock_in": str(self.attendance_clock_in),
             "attendance_clock_out": str(self.attendance_clock_out),
             "attendance_clock_out_date": str(self.attendance_clock_out_date),
-            "shift_id": self.shift_id.id,
-            "work_type_id": self.work_type_id.id,
+            "shift_id": self.shift_id.id if self.shift_id else "",
+            "work_type_id": self.work_type_id.id if self.work_type_id else "",
             "attendance_worked_hour": self.attendance_worked_hour,
             "minimum_hour": self.minimum_hour,
             # Add other fields you want to store
