@@ -1,7 +1,7 @@
 from urllib.parse import urlparse
 from django.shortcuts import redirect
 from horilla.urls import urlpatterns
-from django.urls import Resolver404, path, resolve
+from django.urls import Resolver404, path, resolve, reverse
 
 
 def _split_path(self, path=None):
@@ -65,21 +65,23 @@ sidebar_urls = [
     "asset-category-view",
     "asset-request-allocation-view",
     "settings",
-    "department-creation",
-    "job-position-creation",
-    "job-role-create",
-    "work-type-create",
-    "rotating-work-type-create",
-    "employee-type-create",
-    "employee-shift-create",
-    "employee-shift-schedule-create",
-    "rotating-shift-create",
     "attendance-settings",
     "employee-permission-assign",
-    "user-group-create",
     "user-group-assign",
-    "company-create",
     "currency",
+    "department-view",
+    "job-position-view",
+    "job-role-view",
+    "work-type-view",
+    "rotating-work-type-view",
+    "employee-type-view",
+    "employee-shift-view",
+    "employee-shift-schedule-view",
+    "rotating-shift-view",
+    "attendance-settings-view",
+    "user-group-view",
+    "company-view",
+    "document-request-view",
 ]
 remove_urls = [
     "objective-detailed-view",
@@ -166,6 +168,6 @@ urlpatterns.append(
     path("onboarding/", lambda request: redirect("view-onboarding-dashboard"))
 )
 urlpatterns.append(path("employee/", lambda request: redirect("employee-view")))
-urlpatterns.append(path("leave/", lambda request: redirect("leave-employee-dashboard")))
+urlpatterns.append(path("leave/", lambda request: redirect(reverse("leave-employee-dashboard") + "?dashboard=true")))
 urlpatterns.append(path("payroll/", lambda request: redirect("view-payroll-dashboard")))
 urlpatterns.append(path("pms/", lambda request: redirect("dashboard-view")))
