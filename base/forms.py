@@ -279,7 +279,7 @@ class AssignUserGroup(Form):
     Form to assign groups
     """
 
-    employee = forms.ModelMultipleChoiceField(queryset=Employee.objects.all())
+    employee = forms.ModelMultipleChoiceField(queryset=Employee.objects.all(),required=False)
     group = forms.ModelChoiceField(queryset=Group.objects.all())
 
     def __init__(self, *args, **kwargs):
