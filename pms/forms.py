@@ -12,7 +12,7 @@ from django.db.models.base import Model
 from django.forms.utils import ErrorList
 from django.utils.translation import gettext_lazy as _
 from employee.models import Department, JobPosition
-from base.forms import ModelForm
+from django.forms import ModelForm
 from pms.models import (
     Question,
     EmployeeObjective,
@@ -514,6 +514,9 @@ class QuestionTemplateForm(ModelForm):
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         reload_queryset(self.fields)
+        self.fields["company_id"].widget.attrs.update({
+            "class": "oh-select oh-select-2 w-100",
+        })
 
 
 class QuestionForm(ModelForm):
@@ -663,6 +666,9 @@ class PeriodForm(ModelForm):
             kwargs["initial"] = set_date_field_initial(instance)
         super().__init__(*args, **kwargs)
         reload_queryset(self.fields)
+        self.fields["company_id"].widget.attrs.update({
+            "class": "oh-select oh-select-2 w-100",
+        })
 
     def clean(self):
         cleaned_data = super().clean()
