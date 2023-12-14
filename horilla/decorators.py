@@ -1,9 +1,15 @@
+import logging
 from urllib.parse import urlencode
-from django.http import HttpResponse,HttpResponseRedirect
+from django.http import HttpResponse,HttpResponseRedirect, Http404
+from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import redirect
 from django.urls import reverse
 from employee.models import Employee, EmployeeWorkInformation
 from django.contrib import messages
+from django.shortcuts import render
+
+logger = logging.getLogger(__name__)
+
 
 decorator_with_arguments = lambda decorator: lambda *args, **kwargs: lambda func: decorator(func, *args, **kwargs)
 @decorator_with_arguments
@@ -67,7 +73,12 @@ def login_required(view_func):
             if params:
                 url += f'&{params}'
             return redirect(url)
-        return view_func(request, *args, **kwargs)
+        try:
+            func = view_func(request, *args, **kwargs)
+        except Exception as e:
+            logger.exception(e)
+            return render(request,"404.html")
+        return func
     return wrapped_view
 
 def hx_request_required(view_func):
