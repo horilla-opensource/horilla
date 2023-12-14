@@ -236,13 +236,15 @@ class UserGroupForm(ModelForm):
     """
     Django user groups form
     """
-
-    permissions = forms.MultipleChoiceField(
-        choices=[(perm.codename, perm.name) for perm in Permission.objects.all()],
-        error_messages={
-            "required": "Please choose a permission.",
-        },
-    )
+    try:
+        permissions = forms.MultipleChoiceField(
+            choices=[(perm.codename, perm.name) for perm in Permission.objects.all()],
+            error_messages={
+                "required": "Please choose a permission.",
+            },
+        )
+    except:
+        pass
 
     class Meta:
         """
@@ -279,7 +281,7 @@ class AssignUserGroup(Form):
     Form to assign groups
     """
 
-    employee = forms.ModelMultipleChoiceField(queryset=Employee.objects.all())
+    employee = forms.ModelMultipleChoiceField(queryset=Employee.objects.all(),required=False)
     group = forms.ModelChoiceField(queryset=Group.objects.all())
 
     def __init__(self, *args, **kwargs):
@@ -304,12 +306,15 @@ class AssignPermission(Form):
     """
 
     employee = forms.ModelMultipleChoiceField(queryset=Employee.objects.all())
-    permissions = forms.MultipleChoiceField(
-        choices=[(perm.codename, perm.name) for perm in Permission.objects.all()],
-        error_messages={
-            "required": "Please choose a permission.",
-        },
-    )
+    try:
+        permissions = forms.MultipleChoiceField(
+            choices=[(perm.codename, perm.name) for perm in Permission.objects.all()],
+            error_messages={
+                "required": "Please choose a permission.",
+            },
+        )
+    except:
+        pass
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         reload_queryset(self.fields)

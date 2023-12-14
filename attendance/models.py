@@ -4,6 +4,7 @@ models.py
 This module is used to register models for recruitment app
 
 """
+from collections.abc import Iterable
 import json
 import contextlib
 from datetime import datetime, date, timedelta
@@ -322,8 +323,8 @@ class Attendance(models.Model):
             "attendance_clock_in": str(self.attendance_clock_in),
             "attendance_clock_out": str(self.attendance_clock_out),
             "attendance_clock_out_date": str(self.attendance_clock_out_date),
-            "shift_id": self.shift_id.id,
-            "work_type_id": self.work_type_id.id,
+            "shift_id": self.shift_id.id if self.shift_id else "",
+            "work_type_id": self.work_type_id.id if self.work_type_id else "",
             "attendance_worked_hour": self.attendance_worked_hour,
             "minimum_hour": self.minimum_hour,
             # Add other fields you want to store
@@ -422,13 +423,13 @@ class Attendance(models.Model):
                     "attendance_clock_in_date": "Attendance check-in date never smaller than attendance date"
                 }
             )
-        if self.attendance_clock_out_date < self.attendance_clock_in_date:
+        if self.attendance_clock_out_date and self.attendance_clock_out_date < self.attendance_clock_in_date:
             raise ValidationError(
                 {
                     "attendance_clock_out_date": "Attendance check-out date never smaller than attendance check-in date"
                 }
             )
-        if self.attendance_clock_out_date >= today:
+        if self.attendance_clock_out_date and self.attendance_clock_out_date >= today:
             if out_time > now:
                 raise ValidationError(
                     {"attendance_clock_out": "Check out time not allow in the future"}
@@ -563,11 +564,17 @@ class AttendanceLateComeEarlyOut(models.Model):
         null=True,
         related_name="late_come_early_out",
         verbose_name=_("Employee"),
+        editable=False,
     )
     type = models.CharField(max_length=20, choices=choices, verbose_name=_("Type"))
     objects = HorillaCompanyManager(
         related_company_field="employee_id__employee_work_info__company_id"
     )
+
+    def save(self, *args, **kwargs) -> None:
+        super().save(*args, **kwargs)
+        self.employee_id = self.attendance_id.employee_id
+        super().save(*args, **kwargs)
 
     class Meta:
         """
@@ -595,7 +602,7 @@ class AttendanceValidationCondition(models.Model):
     overtime_cutoff = models.CharField(
         blank=True, null=True, max_length=10, validators=[validate_time_format]
     )
-    company_id = models.ManyToManyField(Company, blank=True,verbose_name=_("Company"))
+    company_id = models.ManyToManyField(Company, blank=True, verbose_name=_("Company"))
     objects = HorillaCompanyManager()
 
     def clean(self):

@@ -84,9 +84,9 @@ def get_diff_dict(first_dict, other_dict, model=None):
                         "%I:%M %p"
                     )
             elif isinstance(field, models.ForeignKey):
-                if value is not None:
+                if value is not None and len(str(value)):
                     value = field.related_model.objects.get(id=value)
-                if other_value is not None:
+                if other_value is not None and len(str(other_value)):
                     other_value = field.related_model.objects.get(id=other_value)
             difference[verb_key] = (value, other_value)
     return difference

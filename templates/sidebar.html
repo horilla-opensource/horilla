@@ -257,6 +257,7 @@
           style="display: none"
         >
           <ul class="oh-sidebar__submenu-items">
+            {% if request.session.selected_company == "all" or request.user.employee_get.employee_work_info.company_id.id == request.session.selected_company|default:"-1"|add:"0" %}
             <li class="oh-sidebar__submenu-item">
               <a
                 class="oh-sidebar__submenu-link"
@@ -264,6 +265,7 @@
                 >{% trans "Profile" %}</a
               >
             </li>
+            {% endif %}
             {% if perms.employee.view_employee or request.user|is_reportingmanager%}
             <li class="oh-sidebar__submenu-item">
               <a class="oh-sidebar__submenu-link" href="/employee/employee-view"
@@ -437,7 +439,6 @@
                 >{% trans "Hour Account" %}</a
               >
             </li>
-             {% if perms.attendance.view_attendanceactivity %}
             <li class="oh-sidebar__submenu-item">
               <a
                 class="oh-sidebar__submenu-link"
@@ -445,7 +446,6 @@
                 >{% trans "Attendance Activity" %}</a
               >
             </li>
-            {% endif %} {% if perms.attendance.view_attendancelatecomeearlyout or request.user|is_reportingmanager %}
             <li class="oh-sidebar__submenu-item">
               <a
                 class="oh-sidebar__submenu-link"
@@ -453,7 +453,6 @@
                 >{% trans "Late Come Early Out" %}</a
               >
             </li>
-            {% endif %}
             <li class="oh-sidebar__submenu-item">
               <a
                 class="oh-sidebar__submenu-link"

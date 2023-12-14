@@ -152,9 +152,11 @@ def employee_view_individual(request, obj_id, **kwargs):
     employee = Employee.objects.get(id=obj_id)
     employee_leaves = employee.available_leave.all()
     user = Employee.objects.filter(employee_user_id=request.user).first()
-    if user and user.reporting_manager.filter(
-        employee_id=employee
-    ).exists() or request.user.has_perm("employee.view_employee"):
+    if (
+        user
+        and user.reporting_manager.filter(employee_id=employee).exists()
+        or request.user.has_perm("employee.view_employee")
+    ):
         return render(
             request,
             "employee/view/individual.html",
@@ -416,9 +418,7 @@ def employee_view(request):
     view_type = request.GET.get("view")
     previous_data = request.GET.urlencode()
     page_number = request.GET.get("page")
-    filter_obj = EmployeeFilter(
-        request.GET, queryset=Employee.objects.all()
-    )
+    filter_obj = EmployeeFilter(request.GET, queryset=Employee.objects.all())
     export_form = EmployeeExportExcelForm()
     employees = filtersubordinatesemployeemodel(
         request, filter_obj.qs, "employee.view_employee"
@@ -468,9 +468,11 @@ def employee_view_update(request, obj_id, **kwargs):
     """
     user = Employee.objects.filter(employee_user_id=request.user).first()
     employee = Employee.objects.filter(id=obj_id).first()
-    if user and user.reporting_manager.filter(
-        employee_id=employee
-    ).exists() or request.user.has_perm("employee.change_employee"):
+    if (
+        user
+        and user.reporting_manager.filter(employee_id=employee).exists()
+        or request.user.has_perm("employee.change_employee")
+    ):
         form = EmployeeForm(instance=employee)
         work_form = EmployeeWorkInformationForm(
             instance=EmployeeWorkInformation.objects.filter(
@@ -779,7 +781,7 @@ def employee_filter_view(request):
     field = request.GET.get("field")
     employees = EmployeeFilter(request.GET).qs
     if request.GET.get("is_active") != "False":
-        employees=employees.filter(is_active=True)
+        employees = employees.filter(is_active=True)
     employees = filtersubordinatesemployeemodel(
         request, employees, "employee.view_employee"
     )
@@ -1460,7 +1462,8 @@ def work_info_import(request):
         return HttpResponse("Imported successfully")
     return response
 
-
+@login_required
+@manager_can_enter("employee.view_employee")
 def work_info_export(request):
     """
     This method is used to export employee data to xlsx
@@ -1469,6 +1472,7 @@ def work_info_export(request):
     selected_columns = []
     form = EmployeeExportExcelForm()
     employees = EmployeeFilter(request.GET).qs
+    employees = filtersubordinatesemployeemodel(request,employees,"employee.view_employee")
     selected_fields = request.GET.getlist("selected_fields")
     if not selected_fields:
         selected_fields = form.fields["selected_fields"].initial
@@ -1647,7 +1651,7 @@ def dashboard_employee_department(request):
         count.append(
             len(
                 Employee.objects.filter(
-                    employee_work_info__department_id__department=dept,is_active=True
+                    employee_work_info__department_id__department=dept, is_active=True
                 )
             )
         )
@@ -1721,7 +1725,6 @@ def employee_select(request):
     This method is used to return all the id of the employees to select the employee row
     """
     page_number = request.GET.get("page")
-
     employees = Employee.objects.all()
     if page_number == "all":
         employees = Employee.objects.filter(is_active=True)
@@ -1735,6 +1738,7 @@ def employee_select(request):
 
 
 @login_required
+@manager_can_enter("employee.view_employee")
 def employee_select_filter(request):
     """
     This method is used to return all the ids of the filtered employees
@@ -1747,8 +1751,9 @@ def employee_select_filter(request):
         employee_filter = EmployeeFilter(filters, queryset=Employee.objects.all())
 
         # Get the filtered queryset
-        filtered_employees = employee_filter.qs
-
+        filtered_employees = filtersubordinatesemployeemodel(
+            request=request, queryset=employee_filter.qs, perm="employee.view_employee"
+        )
         employee_ids = [str(emp.id) for emp in filtered_employees]
         total_count = filtered_employees.count()
 

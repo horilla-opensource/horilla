@@ -113,15 +113,17 @@
         </div>
       </div>
     </div>
+    {% if perms.add_recruitmentsurvey %}
     <button
       class="oh-btn oh-btn--secondary ml-2"
       data-toggle="oh-modal-toggle"
       data-target="#addSurvey"
       hx-get="{% url 'recruitment-survey-question-template-create' %}"
       hx-target="#addSurveyModalBody"
-    >
+      >
       <ion-icon name="add-sharp" class="mr-1"></ion-icon>{% trans "Add" %}
     </button>
+    {% endif %}
   </div>
 </section>
 
