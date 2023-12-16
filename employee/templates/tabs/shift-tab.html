@@ -38,7 +38,7 @@
           />
           {% trans "Rotating work type" %}
         </div>
-        {% if not request.GET.profile %}
+        {% if not request.GET.profile and perms.base.add_rotatingworktypeassign %}
         	<button
         	  class="oh-btn oh-btn--secondary-outline oh-stop-prop oh-accordion-meta__btn p-2"
         	  title="Add"
@@ -90,7 +90,7 @@
           />
           {% trans "Rotating Shift" %}
         </div>
-        {% if not request.GET.profile %}
+        {% if not request.GET.profile and perms.add_rotatingworktypeassign %}
         	<button
         	  class="oh-btn oh-btn--secondary-outline oh-stop-prop oh-accordion-meta__btn p-2"
         	  title="Add"
@@ -321,8 +321,8 @@
         	          {% trans "Next Switch" %}
         	        </div>
         	        <div class="oh-sticky-table__th">{% trans "Next Shift" %}</div>
-        	        {% if not request.GET.profile %}
-        	        	<div class="oh-sticky-table__th"></div>
+					{% if not request.GET.profile and perms.base.change_rotatingworktypeassign or perms.base.delete_rotatingshiftassign or request.user|check_manager:rshift  %}
+					<div class="oh-sticky-table__th"></div>
         	        {% endif %}
         	      </div>
         	    </div>
@@ -376,10 +376,10 @@
         	    			  {{rshift.next_change_date}}
         	    			</div>
         	    			<div class="oh-sticky-table__td">{{rshift.next_shift}}</div>
-        	    			{% if not request.GET.profile %}
+        	    			{% if not request.GET.profile and perms.base.change_rotatingworktypeassign or perms.base.delete_rotatingshiftassign or request.user|check_manager:rshift  %}
         	    				<div class="oh-sticky-table__td">
         	    				  <div class="oh-btn-group">
-        	    				    {% if perms.base.change_rotatingshiftassign or request.user|is_reportingmanager %}
+        	    				    {% if perms.base.change_rotatingshiftassign or perms.base.change_rotatingworktypeassign or request.user|check_manager:rshift  %}
         	    				    	<a
         	    				    	  hx-get="{% url 'rotating-shift-assign-update' rshift.id %}"
         	    				    	  hx-target="#rotatingShiftAssignUpdateModalBody"
@@ -465,8 +465,8 @@
         	        <div class="oh-sticky-table__th">
         	          {% trans "Next Work Type" %}
         	        </div>
-        	        {% if not request.GET.profile %}
-        	        	<div class="oh-sticky-table__th"></div>
+					{% if not request.GET.profile and perms.base.change_rotatingworktypeassign or perms.base.delete_rotatingworktypeassign or request.user|check_manager:rwork_type  %}
+					<div class="oh-sticky-table__th"></div>
         	        {% endif %}
         	      </div>
         	    </div>
@@ -524,10 +524,10 @@
         	    			<div class="oh-sticky-table__td">
         	    			  {{rwork_type.next_work_type}}
         	    			</div>
-        	    			{% if not request.GET.profile %}
+        	    			{% if not request.GET.profile and perms.base.change_rotatingworktypeassign or perms.base.delete_rotatingworktypeassign or request.user|check_manager:rwork_type  %}
         	    				<div class="oh-sticky-table__td">
         	    					<div class="oh-btn-group">
-        	    						{% if perms.base.change_rotatingworktypeassign or request.user|is_reportingmanager %}
+        	    						{% if perms.base.change_rotatingworktypeassign or request.user|check_manager:rwork_type %}
         	    							<a
         	    							  hx-get="{% url 'rotating-work-type-assign-update' rwork_type.id %}"
         	    							  hx-target="#rotatingWorkTypeAssignModalBody"
@@ -697,7 +697,7 @@
     		    	      </div>
     		    	    </div>
     		    	    	{% if not request.GET.profile %} 
-								{% if perms.base.change_shiftrequest or request.user|is_reportingmanager %}
+								{% if perms.base.change_shiftrequest or request.user|check_manager:shift_request %}
     		    	    			<div
     		    	    			  class="oh-sticky-table__td"
     		    	    			  onclick="event.stopPropagation();"

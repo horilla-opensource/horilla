@@ -266,13 +266,11 @@
               >
             </li>
             {% endif %}
-            {% if perms.employee.view_employee or request.user|is_reportingmanager%}
             <li class="oh-sidebar__submenu-item">
               <a class="oh-sidebar__submenu-link" href="/employee/employee-view"
                 >{% trans "Employee" %}</a
               >
             </li>
-            {% endif %}
             <li class="oh-sidebar__submenu-item">
               <a
                 class="oh-sidebar__submenu-link"

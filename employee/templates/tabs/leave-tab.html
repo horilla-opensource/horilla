@@ -1,4 +1,5 @@
 {% load i18n %}
+{% load basefilters %}
 <style>
   .oh-sticky-table-container {
     max-width: 2000px;
@@ -67,6 +68,8 @@
     <div class="kanban-card-container">
       <!-- Container for Kanban cards -->
       {% for user_leave in user_leaves %}
+      {% if perms.leave.view_leavetype or perms.leave.view_leaverequest or request.user|check_manager:employee_leave or request.user == user_leave.employee_id.employee_user_id %}
+
       <div
         class="oh-kanban-card"
         data-toggle="oh-modal-toggle"
@@ -109,6 +112,7 @@
           >
         </div>
       </div>
+      {% endif %}
       {% endfor %}
     </div>
   </div>
@@ -120,6 +124,7 @@
     <div class="kanban-card-container">
       <!-- Container for Kanban cards -->
       {% for employee_leave in employee_leaves %}
+      {% if perms.leave.view_leavetype or perms.leave.view_leaverequest or request.user|check_manager:employee_leave or request.user == employee_leave.employee_id.employee_user_id %}
       <div
         class="oh-kanban-card"
         data-toggle="oh-modal-toggle"
@@ -162,6 +167,7 @@
           >
         </div>
       </div>
+      {% endif %}
       {% endfor %}
     </div>
   </div>
@@ -266,7 +272,7 @@
   </div>
 {% endif %}
 </div>
-
+{% if perms.leave.add_leaverequest or request.user == employee.employee_user_id or request.user|check_manager:employee %}
 <div
   class="oh-modal"
   id="editDialog"
@@ -286,7 +292,7 @@
     <div class="oh-modal__dialog-body" id="requestForm"></div>
   </div>
 </div>
-
+{% endif %}
 <div class="oh-modal" id="tableTimeOff" role="dialog" aria-labelledby="tableTimeOffModal" aria-hidden="true">
   <div class="oh-modal__dialog oh-modal__dialog--timeoff oh-timeoff-modal">
       <div class="oh-modal__dialog-header">
