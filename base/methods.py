@@ -427,3 +427,21 @@ def reload_queryset(fields):
         if isinstance(v, ModelChoiceField):
             v.queryset = v.queryset.model.objects.all()
     return
+
+
+def check_manager(employee, instance):
+    try:
+        if isinstance(instance, Employee):
+            return instance.employee_work_info.reporting_manager_id == employee
+        return employee == instance.employee_id.employee_work_info.reporting_manager_id
+    except:
+        return False
+
+
+def check_owner(employee, instance):
+    try:
+        if isinstance(instance, Employee):
+            return employee == instance
+        return employee == instance.employee_id
+    except:
+        return False
