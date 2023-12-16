@@ -55,6 +55,19 @@ def is_reportingmanager(user):
     ).exists()
 
 
+@register.filter(name="check_manager")
+def check_manager(user, instance):
+    try:
+        if isinstance(instance,Employee):
+            return instance.employee_work_info.reporting_manager_id == user.employee_get
+        return (
+            user.employee_get
+            == instance.employee_id.employee_work_info.reporting_manager_id
+        )
+    except:
+        return False
+
+
 @register.filter(name="filtersubordinates")
 def filtersubordinates(user):
     """
@@ -77,9 +90,10 @@ def filter_field(value):
 
     return splitted[-1].replace("_", " ").capitalize()
 
+
 @register.filter(name="user_perms")
 def user_perms(perms):
     """
     permission names return method
     """
-    return json.dumps(list(perms.values_list("codename",flat="True")))
+    return json.dumps(list(perms.values_list("codename", flat="True")))
