@@ -33,6 +33,7 @@ from django.utils.translation import gettext_lazy as _
 from attendance.models import Attendance, AttendanceOverTime
 from notifications.signals import notify
 from horilla.decorators import (
+    owner_can_enter,
     permission_required,
     login_required,
     hx_request_required,
@@ -56,6 +57,8 @@ from base.methods import (
     filtersubordinatesemployeemodel,
     get_key_instances,
     sortby,
+    check_manager,
+    check_owner,
 )
 from employee.filters import EmployeeFilter, EmployeeReGroup
 from employee.forms import (
@@ -144,29 +147,20 @@ def self_info_update(request):
 
 
 @login_required
-@manager_can_enter("employee.view_employee")
 def employee_view_individual(request, obj_id, **kwargs):
     """
     This method is used to view profile of an employee.
     """
     employee = Employee.objects.get(id=obj_id)
     employee_leaves = employee.available_leave.all()
-    user = Employee.objects.filter(employee_user_id=request.user).first()
-    if (
-        user
-        and user.reporting_manager.filter(employee_id=employee).exists()
-        or request.user.has_perm("employee.view_employee")
-    ):
-        return render(
-            request,
-            "employee/view/individual.html",
-            {
-                "employee": employee,
-                "employee_leaves": employee_leaves,
-            },
-        )
-    return HttpResponseRedirect(
-        request.META.get("HTTP_REFERER", "/employee/employee-view")
+
+    return render(
+        request,
+        "employee/view/individual.html",
+        {
+            "employee": employee,
+            "employee_leaves": employee_leaves,
+        },
     )
 
 
@@ -191,6 +185,7 @@ def contract_tab(request, obj_id, **kwargs):
 
 
 @login_required
+@owner_can_enter("asset.view_asset", Employee)
 def asset_tab(request, emp_id):
     """
     This function is used to view asset tab of an employee in employee individual view.
@@ -253,6 +248,7 @@ def asset_request_tab(request, emp_id):
 
 
 @login_required
+@owner_can_enter("pms.view_feedback",Employee)
 def performance_tab(request, emp_id):
     """
     This function is used to view performance tab of an employee in employee individual & profile view.
@@ -325,6 +321,7 @@ def attendance_tab(request, emp_id):
 
 
 @login_required
+@owner_can_enter("perms.employee.view_employee", Employee)
 def shift_tab(request, emp_id):
     """
     This function is used to view shift tab of an employee in employee individual & profile view.
@@ -410,7 +407,6 @@ def paginator_qry(qryset, page_number):
 
 
 @login_required
-@manager_can_enter("employee.view_employee")
 def employee_view(request):
     """
     This method is used to render template for view all employee
@@ -420,9 +416,6 @@ def employee_view(request):
     page_number = request.GET.get("page")
     filter_obj = EmployeeFilter(request.GET, queryset=Employee.objects.all())
     export_form = EmployeeExportExcelForm()
-    employees = filtersubordinatesemployeemodel(
-        request, filter_obj.qs, "employee.view_employee"
-    )
     data_dict = parse_qs(previous_data)
     get_key_instances(Employee, data_dict)
     emp = Employee.objects.all()
@@ -430,10 +423,10 @@ def employee_view(request):
         request,
         "employee_personal_info/employee_view.html",
         {
-            "data": paginator_qry(employees, page_number),
+            "data": paginator_qry(filter_obj.qs, page_number),
             "pd": previous_data,
             "f": filter_obj,
-            "export_filter": EmployeeFilter(queryset=employees),
+            "export_filter": EmployeeFilter(queryset=filter_obj.qs),
             "export_form": export_form,
             "view_type": view_type,
             "filter_dict": data_dict,
@@ -772,7 +765,6 @@ def employee_update_bank_details(request, obj_id=None):
 
 
 @login_required
-@manager_can_enter("employee.view_employee")
 def employee_filter_view(request):
     """
     This method is used to filter employee.
@@ -782,9 +774,6 @@ def employee_filter_view(request):
     employees = EmployeeFilter(request.GET).qs
     if request.GET.get("is_active") != "False":
         employees = employees.filter(is_active=True)
-    employees = filtersubordinatesemployeemodel(
-        request, employees, "employee.view_employee"
-    )
     page_number = request.GET.get("page")
     view = request.GET.get("view")
     data_dict = parse_qs(previous_data)
@@ -1462,6 +1451,7 @@ def work_info_import(request):
         return HttpResponse("Imported successfully")
     return response
 
+
 @login_required
 @manager_can_enter("employee.view_employee")
 def work_info_export(request):
@@ -1472,7 +1462,9 @@ def work_info_export(request):
     selected_columns = []
     form = EmployeeExportExcelForm()
     employees = EmployeeFilter(request.GET).qs
-    employees = filtersubordinatesemployeemodel(request,employees,"employee.view_employee")
+    employees = filtersubordinatesemployeemodel(
+        request, employees, "employee.view_employee"
+    )
     selected_fields = request.GET.getlist("selected_fields")
     if not selected_fields:
         selected_fields = form.fields["selected_fields"].initial
