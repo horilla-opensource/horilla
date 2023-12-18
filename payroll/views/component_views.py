@@ -803,4 +803,4 @@ def send_slip(request):
     mail_thread = MailSendThread(request, result_dict=result_dict, ids=pasylip_ids)
     mail_thread.start()
     messages.info(request, "Mail processing")
-    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+    return redirect(view_payslip)
