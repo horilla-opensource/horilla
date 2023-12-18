@@ -83,7 +83,9 @@ class FilingStatus(models.Model):
         blank=True,
         verbose_name=_("Description"),
     )
-    company_id = models.ForeignKey(Company,null=True, editable=False, on_delete=models.PROTECT)
+    company_id = models.ForeignKey(
+        Company, null=True, editable=False, on_delete=models.PROTECT
+    )
     objects = HorillaCompanyManager()
 
     def __str__(self) -> str:
@@ -151,7 +153,7 @@ class Contract(models.Model):
         related_name="contracts",
         null=True,
         blank=True,
-        verbose_name=_("Filing Status")
+        verbose_name=_("Filing Status"),
     )
     contract_status = models.CharField(
         choices=CONTRACT_STATUS_CHOICES,
@@ -469,7 +471,7 @@ class OverrideLeaveRequest(LeaveRequest):
         """
         if (
             instance.start_date == instance.end_date
-            and  instance.end_date_breakdown != instance.start_date_breakdown
+            and instance.end_date_breakdown != instance.start_date_breakdown
         ):
             instance.end_date_breakdown = instance.start_date_breakdown
             super(LeaveRequest, instance).save()
@@ -805,7 +807,9 @@ class Allowance(models.Model):
     if_amount = models.FloatField(
         default=0.00, help_text=_("The amount of the pay-head")
     )
-    company_id = models.ForeignKey(Company,null=True, editable=False, on_delete=models.PROTECT)
+    company_id = models.ForeignKey(
+        Company, null=True, editable=False, on_delete=models.PROTECT
+    )
     objects = HorillaCompanyManager()
 
     class Meta:
@@ -1094,7 +1098,9 @@ class Deduction(models.Model):
     if_amount = models.FloatField(
         default=0.00, help_text=_("The amount of the pay-head")
     )
-    company_id = models.ForeignKey(Company,null=True, editable=False, on_delete=models.PROTECT)
+    company_id = models.ForeignKey(
+        Company, null=True, editable=False, on_delete=models.PROTECT
+    )
     objects = HorillaCompanyManager()
 
     def clean(self):
@@ -1193,6 +1199,7 @@ class Payslip(models.Model):
     status = models.CharField(
         max_length=20, null=True, default="draft", choices=status_choices
     )
+    sent_to_employee = models.BooleanField(null=True, default=False)
     objects = HorillaCompanyManager("employee_id__employee_work_info__company_id")
 
     def __str__(self) -> str:
@@ -1229,6 +1236,35 @@ class Payslip(models.Model):
             raise ValidationError(_("The data must be in dictionary or querydict type"))
 
         super().save(*args, **kwargs)
+
+    def get_name(self):
+        """
+        Method is used to get the full name of the owner
+        """
+        return self.employee_id.get_full_name()
+
+    def get_company(self):
+        """
+        Method is used to get the full name of the owner
+        """
+        return getattr(
+            getattr(
+                getattr(getattr(self, "employee_id", None), "employee_work_info", None),
+                "company_id",
+                None,
+            ),
+            "company",
+            None,
+        )
+
+    def get_payslip_title(self):
+        if self.group_name:
+            return self.group_name
+        return (
+            f"Payslip {self.start_date} to {self.end_date}"
+            if self.start_date != self.end_date
+            else f"Payslip for {self.start_date}"
+        )
 
     class Meta:
         """

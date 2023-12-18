@@ -3,11 +3,14 @@ methods.py
 
 Payroll related module to write custom calculation methods
 """
-import calendar
+import calendar, io
 from datetime import timedelta, datetime, date
 from django.db.models import F, Q
 from django.core.paginator import Paginator
 from dateutil.relativedelta import relativedelta
+from django.http import HttpResponse
+from django.template.loader import render_to_string
+from xhtml2pdf import pisa
 from leave.models import Holiday, CompanyLeave
 from attendance.models import Attendance
 from payroll.models.models import Contract, Payslip
@@ -597,3 +600,18 @@ def save_payslip(**kwargs):
     instance.pay_head_data = kwargs["pay_data"]
     instance.save()
     return instance
+
+
+def generate_pdf(template_path, context):
+    html = render_to_string(template_path, context)
+
+    result = io.BytesIO()
+    pdf = pisa.pisaDocument(io.BytesIO(html.encode("utf-8")), result)
+
+    if not pdf.err:
+        response = HttpResponse(result.getvalue(), content_type="application/pdf")
+        response[
+            "Content-Disposition"
+        ] = f'''attachment;filename="{context["employee"]}'s payslip for {context["range"]}.pdf"'''
+        return response
+    return None

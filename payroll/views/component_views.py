@@ -3,18 +3,20 @@ component_views.py
 
 This module is used to write methods to the component_urls patterns respectively
 """
+from collections import defaultdict
 import json
 import operator
 from datetime import date, datetime
 from urllib.parse import parse_qs
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.utils.translation import gettext_lazy as _
+from django.http import HttpResponse
 import pandas as pd
-from employee.models import Employee
 from horilla.decorators import login_required, permission_required
+from horilla.settings import EMAIL_HOST_USER
 from base.methods import get_key_instances
 from base.methods import closest_numbers
 import payroll.models.models
@@ -41,6 +43,7 @@ from payroll.methods.methods import (
     save_payslip,
 )
 from payroll.methods.deductions import update_compensation_deduction
+from payroll.threadings.mail import MailSendThread
 
 operator_mapping = {
     "equal": operator.eq,
@@ -671,15 +674,10 @@ def filter_payslip(request):
         payslips = PayslipFilter(request.GET).qs
     else:
         emp_request = request.GET.copy()
-        employee = Employee.objects.filter(employee_user_id = request.user.id).first()
+        employee = Employee.objects.filter(employee_user_id=request.user.id).first()
         employee_id = employee.id
         emp_request["employee_id"] = str(employee_id)
-        print(emp_request)
         payslips = PayslipFilter(emp_request).qs
-        # payslips = PayslipFilter(request.GET).qs
-        # payslips = payroll.models.models.Payslip.objects.filter(
-        #     employee_id__employee_user_id=request.user
-        # )
     template = "payroll/payslip/payslip_table.html"
     field = request.GET.get("view")
     if field == "card":
@@ -777,3 +775,32 @@ def hx_create_allowance(request):
     """
     form = forms.AllowanceForm()
     return render(request, "payroll/htmx/form.html", {"form": form})
+
+
+
+
+
+@login_required
+@permission_required("payroll.add_payslip")
+def send_slip(request):
+    """
+    Send paylip method
+    """
+    if not len(EMAIL_HOST_USER):
+        messages.error(request, "Email server is not configured")
+        return redirect(view_payslip)
+    pasylip_ids = request.GET.getlist("id")
+    payslips = Payslip.objects.filter(id__in=pasylip_ids)
+    result_dict = defaultdict(
+        lambda: {"employee_id": None, "instances": [], "count": 0}
+    )
+
+    for pasylip in payslips:
+        employee_id = pasylip.employee_id
+        result_dict[employee_id]["employee_id"] = employee_id
+        result_dict[employee_id]["instances"].append(pasylip)
+        result_dict[employee_id]["count"] += 1
+    mail_thread = MailSendThread(request, result_dict=result_dict, ids=pasylip_ids)
+    mail_thread.start()
+    messages.info(request, "Mail processing")
+    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))

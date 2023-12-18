@@ -16,3 +16,11 @@ def default_currency(request):
         settings.save()
     symbol = models.PayrollSettings.objects.first().currency_symbol
     return {"currency": request.session.get("currency", symbol)}
+
+
+def host(request):
+    """
+    This method will return the host
+    """
+    protocol = "https" if request.is_secure() else "http"
+    return {"host": request.get_host(), "protocol": protocol}
