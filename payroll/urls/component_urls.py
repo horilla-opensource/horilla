@@ -70,4 +70,6 @@ urlpatterns = [
         component_views.hx_create_allowance,
         name="hx-create-allowance",
     ),
+    path("send-slip",component_views.send_slip,name="send-slip")
+    
 ]

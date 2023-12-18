@@ -838,9 +838,7 @@ def late_come_early_out_view(request):
         template = "attendance/late_come_early_out/reports.html"
     else:
         template = "attendance/late_come_early_out/reports_empty.html"
-    self_reports = filter_obj.qs.filter(
-        employee_id__employee_user_id=request.user
-    )
+    self_reports = filter_obj.qs.filter(employee_id__employee_user_id=request.user)
     reports = filtersubordinates(
         request, filter_obj.qs, "attendance.view_attendancelatecomeearlyout"
     )
@@ -1017,6 +1015,7 @@ def validate_bulk_attendance(request):
 
 
 @login_required
+@manager_can_enter("attendance.change_attendance")
 def validate_this_attendance(request, obj_id):
     """
     This method is used to validate attendance
@@ -1024,26 +1023,21 @@ def validate_this_attendance(request, obj_id):
         id  : attendance id
     """
     attendance = Attendance.objects.get(id=obj_id)
-    if is_reportingmanger(request, attendance) or request.user.has_perm(
-        "attendance.change_attendance"
-    ):
-        attendance = Attendance.objects.get(id=obj_id)
-        attendance.attendance_validated = True
-        attendance.save()
-        messages.success(request, _("Attendance validated."))
-        notify.send(
-            request.user.employee_get,
-            recipient=attendance.employee_id.employee_user_id,
-            verb=f"Your attendance for the date {attendance.attendance_date} is validated",
-            verb_ar=f"تم تحقيق حضورك في تاريخ {attendance.attendance_date}",
-            verb_de=f"Deine Anwesenheit für das Datum {attendance.attendance_date} ist bestätigt.",
-            verb_es=f"Se valida tu asistencia para la fecha {attendance.attendance_date}.",
-            verb_fr=f"Votre présence pour la date {attendance.attendance_date} est validée.",
-            redirect="/attendance/view-my-attendance",
-            icon="checkmark",
-        )
-        return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
-    return HttpResponse("You Dont Have Permission")
+    attendance.attendance_validated = True
+    attendance.save()
+    messages.success(request, _("Attendance validated."))
+    notify.send(
+        request.user.employee_get,
+        recipient=attendance.employee_id.employee_user_id,
+        verb=f"Your attendance for the date {attendance.attendance_date} is validated",
+        verb_ar=f"تم تحقيق حضورك في تاريخ {attendance.attendance_date}",
+        verb_de=f"Deine Anwesenheit für das Datum {attendance.attendance_date} ist bestätigt.",
+        verb_es=f"Se valida tu asistencia para la fecha {attendance.attendance_date}.",
+        verb_fr=f"Votre présence pour la date {attendance.attendance_date} est validée.",
+        redirect="/attendance/view-my-attendance",
+        icon="checkmark",
+    )
+    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 
 
 @login_required

@@ -277,6 +277,7 @@ class PayslipFilter(FilterSet):
             "deduction__gte",
             "net_pay__lte",
             "net_pay__gte",
+            "sent_to_employee"
         ]
 
     def __init__(self, data=None, queryset=None, *, request=None, prefix=None):

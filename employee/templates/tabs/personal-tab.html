@@ -133,6 +133,8 @@
 							{% trans "Work Information" %}
 						</div>
 					</li>
+					
+					{% if perms.employee.view_employee or perms.payroll.view_contract or request.user == employee.employee_user_id %}
 					<li class="oh-tabs__tab" data-target="#tab_2">
 						<div>
 							<img
@@ -143,6 +145,7 @@
 							{% trans "Contract details" %}
 						</div>
 					</li>
+					{% endif %}
 				</ul>
 				<div class="oh-tabs__contents" id="view-container">
 					<div class="oh-tabs__content oh-tabs__content--active" id="tab_1">
@@ -241,7 +244,13 @@
 												<span>{% trans "Salary" %}</span>
 											</span>
 											<span class="oh-profile__info-value"
-												>{{employee.employee_work_info.basic_salary}}</span
+												>
+												{% if perms.employee.view_employee or request.user == employee.employee_user_id %}
+													{{employee.employee_work_info.basic_salary}}
+													{% else %}
+													**********
+												{% endif %}
+												</span
 											>
 										</li>
 										<li class="oh-profile__card-info-item">
@@ -268,8 +277,10 @@
 							</div>
 						</div>
 					</div>
+					{% if perms.employee.view_employee or perms.payroll.view_contract or request.user == employee.employee_user_id %}
 					<div class="oh-tabs__content" id="tab_2">
 						{% include "tabs/contract-tab.html" %}
+						{% endif %}
 						{% if perms.leave.view_contract %}
 						<div
 							class="oh-modal"
@@ -284,11 +295,13 @@
 								id="OneContractTarget"
 							></div>
 						</div>
-						{% endif %}
 					</div>
+					{% endif %}
 				</div>
 			</div>
 		</div>
+		
+		{% if perms.employee.view_employee or perms.employee.view_employeebankdetails %}
 		<div class="oh-card oh-card--margin">
 			<div class="oh-card__header">
 				<span class="oh-card__title oh-card__title--sm fw-bold me-2"
@@ -371,6 +384,8 @@
 				</div>
 			</div>
 		</div>
+		{% endif %}
+
 	</div>
 </div>
 

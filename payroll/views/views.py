@@ -17,6 +17,7 @@ from horilla.decorators import login_required, permission_required
 from base.methods import export_data, generate_colors, get_key_instances
 from employee.models import Employee, EmployeeWorkInformation
 from base.methods import closest_numbers
+from payroll.methods.methods import generate_pdf
 from payroll.models.models import Payslip, WorkRecord, Contract
 from payroll.forms.forms import ContractForm, WorkRecordForm
 from payroll.models.tax_models import PayrollSettings
@@ -25,9 +26,6 @@ from payroll.methods.methods import save_payslip
 from django.utils.translation import gettext_lazy as _
 from payroll.filters import ContractFilter, ContractReGroup, PayslipFilter
 from payroll.methods.methods import paginator_qry
-import io
-from xhtml2pdf import pisa
-from django.template.loader import render_to_string
 
 # Create your views here.
 
@@ -1004,27 +1002,12 @@ def contract_bulk_delete(request):
     return JsonResponse({"message": "Success"})
 
 
-def generate_pdf(template_path, context):
-    html = render_to_string(template_path, context)
-
-    result = io.BytesIO()
-    pdf = pisa.pisaDocument(io.BytesIO(html.encode("utf-8")), result)
-
-    if not pdf.err:
-        response = HttpResponse(result.getvalue(), content_type="application/pdf")
-        response[
-            "Content-Disposition"
-        ] = f'''attachment;filename="{context["employee"]}'s payslip for {context["range"]}.pdf"'''
-        return response
-    return None
-
-
 def payslip_pdf(request, id):
-    payslip = Payslip.objects.filter(id=id).first()
-    if payslip is not None and (
+    if (
         request.user.has_perm("payroll.view_payslip")
         or payslip.employee_id.employee_user_id == request.user
     ):
+        payslip = Payslip.objects.get(id=id)
         data = payslip.pay_head_data
         data["employee"] = payslip.employee_id
         data["payslip"] = payslip
@@ -1038,6 +1021,7 @@ def payslip_pdf(request, id):
 
 
 @login_required
+@permission_required("payroll.view_contract")
 def contract_select(request):
     page_number = request.GET.get("page")
 

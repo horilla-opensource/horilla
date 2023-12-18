@@ -32,7 +32,7 @@
 
 <div class="oh-layout--grid-3">
   {% for emp in data %}
-  <div  class="oh-kanban-card" style="color: inherit;text-decoration: none;">
+  <div  class="oh-kanban-card" style="color: inherit;text-decoration: none;{% if emp.employee_work_info.reporting_manager_id == request.user.employee_get %} background: #fffff0;{% endif %}">
     <a href="{% url 'employee-view-individual' emp.id %}" style="color: inherit;text-decoration: none; display: flex;">
     <div class="oh-kanban-card__avatar">
         <div class="oh-kanban-card__profile-container {% if emp.employee_profile %} profile-picture {% endif %}">
@@ -50,6 +50,7 @@
       <span class="oh-kanban-card__subtitle">{{emp.employee_work_info.job_position_id}}</span>
     </div>
   </a>
+  {% if perms.employee.change_employee or perms.employee.delete_employee or request.user|check_manager:emp %}
     <div class="oh-kanban-card__dots">
       <div class="oh-dropdown" x-data="{show: false}">
         <button class="oh-btn oh-btn--transparent text-muted p-3" @click="show = !show" title='{% trans "Actions" %}'>
@@ -57,7 +58,7 @@
         </button>
         <div class="oh-dropdown__menu oh-dropdown__menu--dark-border oh-dropdown__menu--right" x-show="show" @click.outside="show = false" style="display: none;">
           <ul class="oh-dropdown__items">
-            {% if perms.employee.change_employee or request.user|is_reportingmanager %}
+            {% if perms.employee.change_employee or request.user|check_manager:emp %}
             <li class="oh-dropdown__item">
               <a href="{% url 'employee-view-update' emp.id %}" class="oh-dropdown__link">{% trans "Edit" %}</a>
 
@@ -90,6 +91,7 @@
         </div>
       </div>
     </div>
+  {% endif %}
   </div>
   {% endfor %}
 </div>

@@ -4,7 +4,7 @@ from threading import Thread
 from django.conf import settings
 from django.utils.translation import gettext as _
 from django.template.loader import get_template
-
+from employee.models import EmployeeWorkInformation
 
 
 class MailSendThread(Thread):
@@ -26,13 +26,13 @@ class MailSendThread(Thread):
                 
             elif self.type == "approve":
                 subject = _(f"**Leave Request Approved**")
-                send_to = self.leave_request.employee_id.email
+                send_to = list(EmployeeWorkInformation.objects.filter(employee_id = self.leave_request.employee_id).values_list("email",flat=True))
                 url = f"{protocol}://{self.request.get_host()}/leave/user-request-view?id={self.leave_request.id}"
                 body = _(f"Your leave request has been Approved by {self.request.user.employee_get.get_full_name()}. Click here to go to the leave request view: {url}")
                 
             elif self.type == "reject":
                 subject = _("**Leave Request Rejected**")
-                send_to = self.leave_request.employee_id.email
+                send_to = list(EmployeeWorkInformation.objects.filter(employee_id = self.leave_request.employee_id).values_list("email",flat=True))
                 url = f"{protocol}://{self.request.get_host()}/leave/user-request-view?id={self.leave_request.id}"
                 body = _(f"Your leave request has been Rejected by {self.request.user.employee_get.get_full_name()}. Click here to go to the leave request view: {url}")
 

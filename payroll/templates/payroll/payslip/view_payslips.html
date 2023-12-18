@@ -1,5 +1,13 @@
 {% extends 'index.html' %} {% block content %}{% load i18n %} {% load static %}
-
+<style>
+  .sent-to-employee{
+    background-color: yellowgreen;
+    color: white;
+  }
+</style>
+<div id="messages">
+  
+</div>
 <div
   class="oh-modal"
   id="individualPayslipModal"
@@ -217,6 +225,16 @@
 								>
 							</li>
 							{% endif %} 
+              {% if perms.payroll.add_payslip %}
+							<li class="oh-dropdown__item">
+								<a
+								class="oh-dropdown__link"
+								data-toggle="oh-modal-toggle"
+                id="payslipBulkSend"
+								>{% trans "Send via mail" %}</a
+								>
+							</li>
+							{% endif %}
 							{% if perms.payroll.change_payslip %}
 							<li class="oh-dropdown__item" onclick="event.stopPropagation()">
 								<a class="oh-dropdown__link">{% trans "Bulk Status Update" %}</a>
@@ -471,6 +489,28 @@
           },
         });
       }
+      $("#payslipBulkSend").click(function (e) { 
+        e.preventDefault();
+        var idsJson = $("#selectedPayslip").attr("data-ids");
+        var ids = JSON.parse(idsJson);
+        $.ajax({
+          type: "get",
+          url: "{% url 'send-slip' %}",
+          data:{id:ids},
+          traditional:true,
+          success: function (response) {
+            $("#messages").html($(`
+            <div class="oh-alert-container">
+              <div class="oh-alert oh-alert--animated oh-alert--info">
+                Mail processing
+              </div> 
+            </div>
+            `))
+            $("#unselectAllPayslip").click()
+            $(".payslip-checkbox:checked").prop("checked",false).change()
+          }
+        });
+      });
     </script>
   </div>
 </div>
