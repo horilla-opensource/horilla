@@ -10,8 +10,11 @@ actions to handle the request, process data, and generate a response.
 This module is part of the recruitment project and is intended to
 provide the main entry points for interacting with the application's functionality.
 """
+
 from urllib.parse import parse_qs
 import json, contextlib, random, secrets
+from django.core.mail import EmailMessage
+from django.template.loader import render_to_string
 from django.core.mail import send_mail
 from django.contrib.auth.models import User
 from django.utils.translation import gettext as __
@@ -543,6 +546,8 @@ def email_send(request):
     """
     if request.method != "POST":
         return JsonResponse("", safe=False)
+    host = request.get_host()
+    protocol = "https" if request.is_secure() else "http"
     candidates = request.POST.get("candidates")
     json_list = json.loads(candidates)
     if len(json_list) <= 0:
@@ -561,13 +566,26 @@ def email_send(request):
                 new_portal.save()
             else:
                 OnboardingPortal(candidate_id=candidate, token=token).save()
-            send_mail(
-                "Onboarding Portal",
-                f"{request.get_host()}/onboarding/user-creation/{token}",
-                "from@example.com",
-                [candidate.email],
-                fail_silently=False,
+            html_message = render_to_string(
+                "onboarding/mail_templates/default.html",
+                {
+                    "portal": f"{protocol}://{host}/onboarding/user-creation/{token}",
+                    "instance": candidate,
+                    "host": host,
+                    "protocol": protocol,
+                },
             )
+            email = EmailMessage(
+                f"Hello {candidate.name}, Congratulations on your selection!",
+                html_message,
+                settings.EMAIL_HOST_USER,
+                [candidate.email],
+            )
+            email.content_subtype = "html"
+            try:
+                email.send()
+            except:
+                messages.error(request,f"Mail not send to {candidate.name}")
             candidate.start_onboard = True
             candidate.save()
     return JsonResponse({"message": _("Email send successfully"), "tags": "success"})

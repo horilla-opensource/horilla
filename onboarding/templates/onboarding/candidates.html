@@ -86,6 +86,12 @@
               ><ion-icon name="create-outline"></ion-icon
             ></a>
             <a
+              class="oh-btn oh-btn--light-bkg w-100"
+              title="{% trans 'Send Portal' %}"
+              href="{% url 'rec-candidate-update' candidate.id %}?onboarding=True"
+              ><ion-icon name="mail-outline"></ion-icon
+            ></a>
+            <a
               class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
               id="delete-link"
               href="{% url 'candidate-delete' candidate.id %}"
