@@ -46,6 +46,7 @@ class Company(models.Model):
         null=True,
     )
     objects = models.Manager()
+    date_format = models.CharField(max_length=10, blank=True, null=True)
 
     class Meta:
         """

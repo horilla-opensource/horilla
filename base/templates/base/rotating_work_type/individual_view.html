@@ -53,27 +53,27 @@
             <span class="oh-timeoff-modal__stat-title">{% trans "Rotate" %}</span>
             <span class="oh-timeoff-modal__stat-count">
                 {% if instance.based_on == 'after' %}
-                Rotate after {{instance.rotate_after_day}} days
+                {% trans "Rotate after" %} {{instance.rotate_after_day}} {% trans "days" %}
                 {% elif instance.based_on == "weekly" %}
-                Weekly every {{instance.rotate_every_weekend}}
+                {% trans "Weekly every" %} {{instance.rotate_every_weekend}}
                 {% elif instance.based_on == "monthly" %}
                 {% if instance.rotate_every == "1" %}
-                Rotate every {{instance.rotate_every}}st day of month 
+                {% trans "Rotate every" %} {{instance.rotate_every}}{% trans "st day of month" %} 
                 {% elif instance.rotate_every == "2" %}
-                Rotate every {{instance.rotate_every}}nd day of month 
+                {% trans "Rotate every" %} {{instance.rotate_every}}{% trans "nd day of month" %} 
                 {% elif instance.rotate_every == "3" %}
-                Rotate every {{instance.rotate_every}}rd day of month 
+                {% trans "Rotate every" %} {{instance.rotate_every}}{% trans "rd day of month" %} 
                 {% elif instance.rotate_every == "last" %}
-                Rotate every last day of month 
+                {% trans "Rotate every last day of month" %} 
                 {% else %}
-                Rotate every {{instance.rotate_every}}th day of month 
+                {% trans "Rotate every" %} {{instance.rotate_every}}{% trans "th day of month" %} 
                 {% endif %}
                 {% endif %}
             </span>
         </div>
         <div class="oh-timeoff-modal__stat">
             <span class="oh-timeoff-modal__stat-title">{% trans "Start Date" %}</span>
-            <span class="oh-timeoff-modal__stat-count">{{instance.start_date}}</span>
+            <span class="oh-timeoff-modal__stat-count dateformat_changer">{{instance.start_date}}</span>
         </div>
     </div>
     <div class="oh-timeoff-modal__stats-container mt-3 mb-3">
@@ -92,7 +92,7 @@
     <div class="oh-timeoff-modal__stats-container mt-3 mb-3" >
         <div class="oh-timeoff-modal__stat" >
             <span class="oh-timeoff-modal__stat-title">{% trans "Next Change Date" %}</span>
-            <span class="oh-timeoff-modal__stat-count">
+            <span class="oh-timeoff-modal__stat-count dateformat_changer">
                 {{instance.next_change_date}}
             </span>
         </div>

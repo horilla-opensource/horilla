@@ -25,7 +25,7 @@ urlpatterns = [
     path(
         "settings/user-group-create/", views.user_group_table, name="user-group-create"
     ),
-    path("user-group-view", views.user_group, name="user-group-view"),
+    path("settings/user-group-view/", views.user_group, name="user-group-view"),
     path(
         "settings/user-group-update/<int:id>/",
         views.user_group_update,
@@ -78,7 +78,7 @@ urlpatterns = [
         name="permission-table",
     ),
     path("settings/company-create/", views.company_create, name="company-create"),
-    path('company-view', views.company_view,name='company-view'),
+    path('settings/company-view/', views.company_view,name='company-view'),
     path(
         "settings/company-update/<int:id>/",
         views.company_update,
@@ -490,6 +490,9 @@ urlpatterns = [
         name="delete-notifications",
     ),
     path("settings/currency/", views.settings, name="currency-settings"),
+    path("settings/date/", views.date_settings, name="date-settings"),
+    path('settings/save-date/', views.save_date_format, name='save_date_format'),
+    path('settings/get-date-format/', views.get_date_format, name='get-date-format'),
     path(
         "settings/attendance-settings-view/",
         views.validation_condition_view,

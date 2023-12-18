@@ -416,7 +416,7 @@
             {% if request.user.employee_get %}
               {% if request.session.selected_company == "all" or request.user.employee_get.employee_work_info.company_id.id == request.session.selected_company|default:"-1"|add:"0" %}
               
-              {% comment %}  "CHEKING WETHER ITS IS THE CURRENT EMPLOYEES COMPANY OR ALL COMPANY, THEN ONLY SHOWS THE CHECK-IN CHECK-OUT BUTTON" {% endcomment %}
+              <!-- "CHEKING WETHER ITS IS THE CURRENT EMPLOYEES COMPANY OR ALL COMPANY, THEN ONLY SHOWS THE CHECK-IN, CHECK-OUT BUTTON" -->
                 {% if request.user|is_clocked_in  %}
                 <button class="oh-btn oh-btn--warning-outline mr-2" hx-get="{% url 'clock-out' %}"  hx-target='#attendance-activity-container' hx-swap='innerHTML'><ion-icon class="oh-navbar__clock-icon mr-2 text-warning" name="exit-outline"></ion-icon>
                   <span class="hr-Check-In-out-text">{% trans "Check-Out" %}</span>                
@@ -575,6 +575,10 @@
   <script src="{% static '/index/saveFilters.js' %}"></script>
   <script src="{% static 'build/js/htmxSelect2.js' %}" ></script>
   <script src="{% static 'build/js/summernote-lite.min.js' %}" ></script>
+  <script src="{% static '/base/date_formatting.js' %}"></script>
+  <script src="{% static '/base/date_settings.js' %}"></script>
+  <!-- This CDN is for date format change -->
+  <script src="{% static '/build/js/moment.js' %}"></script>
   <script src="{% static 'attendance/actions.js' %}"></script>
   <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
   <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>

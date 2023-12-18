@@ -20,6 +20,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import Group, User, Permission
 from attendance.forms import AttendanceValidationConditionForm
 from attendance.models import AttendanceValidationCondition
+from django.views.decorators.csrf import csrf_exempt
 from notifications.signals import notify
 from horilla.decorators import (
     delete_permission,
@@ -2137,6 +2138,7 @@ def work_type_request_view(request):
 
 
 @login_required
+@manager_can_enter("base.view_worktyperequest")
 def work_type_request_export(request):
     return export_data(
         request,
@@ -2652,6 +2654,7 @@ def shift_request_view(request):
     )
 
 @login_required
+@manager_can_enter("base.view_shiftrequest")
 def shift_request_export(request):
     return export_data(
         request,
@@ -3105,6 +3108,71 @@ def settings(request):
             form.save()
             messages.success(request, _("Payroll settings updated."))
     return render(request, "payroll/settings/payroll_settings.html", {"form": form})
+
+
+@login_required
+@permission_required("base.change_company")
+def date_settings(request):
+    """
+    This method is used to render Date format selector in settings
+    """
+    return render(request, "base/company/date.html")
+
+
+@permission_required("base.change_company")
+@csrf_exempt  # Use this decorator if CSRF protection is enabled
+def save_date_format(request):
+    if request.method == 'POST':
+
+        # Taking the selected Date Format
+        selected_format = request.POST.get('selected_format')
+        user= request.user
+        employee = user.employee_get
+
+        # Taking the company_name of the user
+        info = EmployeeWorkInformation.objects.filter(employee_id=employee)
+        # Employee workinformation will not exists if he/she chnged the company, So can't save the date format.
+        if info.exists():
+            for data in info:
+                employee_company = data.company_id
+
+            company_name = Company.objects.filter(company=employee_company)
+            emp_company = company_name.first()
+
+            # Save the selected format to the backend
+            emp_company.date_format = selected_format
+            emp_company.save()
+            messages.success(request, _('Date format saved successfully.'))
+        else:
+            messages.warning(request, _('Date format cannot saved. You are not in the company.'))
+
+        # Return a JSON response indicating success
+        return JsonResponse({'success': True})
+
+    # Return a JSON response for unsupported methods
+    return JsonResponse({'success': False, 'error': 'Unsupported method'}, status=405)
+
+
+@login_required
+def get_date_format(request):
+
+    user= request.user
+    employee = user.employee_get
+
+    # Taking the company_name of the user
+    info = EmployeeWorkInformation.objects.filter(employee_id=employee)
+    if info.exists():
+        for data in info:
+            employee_company = data.company_id
+        company_name = Company.objects.filter(company=employee_company)
+        emp_company = company_name.first()
+
+        # Access the date_format attribute directly
+        date_format = emp_company.date_format
+    else:
+        date_format = 'MMM. D, YYYY'
+    # Return the date format as JSON response
+    return JsonResponse({'selected_format': date_format})
 
 
 @login_required

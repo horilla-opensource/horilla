@@ -1,0 +1,72 @@
+{% extends 'settings.html' %}
+{% load i18n %}
+{% load static %}
+{% block settings %}
+
+<div class="oh-inner-sidebar-content__header mt-3">
+    <h2 class="oh-inner-sidebar-content__title">{% trans "Date Format" %}</h2>
+</div>
+
+<label for="" class="settings-label mb-1">{% trans "Select Date Format:" %}</label>
+<select id="dateFormat" class="oh-select oh-select-2">
+    <option>--------------</option>
+    <option value="DD-MM-YYYY">{% trans "Day, Month, Year (e.g., 30-12-2023)" %}</option>
+    <option value="DD.MM.YYYY">{% trans "Day, Month, Year (e.g., 30.12.2023)" %}</option>
+    <option value="DD/MM/YYYY">{% trans "Day, Month, Year (e.g., 30/12/2023)" %}</option>
+    <option value="MM/DD/YYYY">{% trans "Month, Day, Year (e.g., 12/30/2023)" %}</option>
+    <option value="YYYY-MM-DD">{% trans "Year, Month, Day (e.g., 2023-12-30)" %}</option>
+    <option value="YYYY/MM/DD">{% trans "Year, Month, Day (e.g., 2023/12/30)" %}</option>
+    <option value="MMMM D, YYYY">{% trans "Full Month Name, Day, Year (e.g., January 1, 2023)" %}</option>
+    <option value="DD MMMM, YYYY">{% trans "Day, Full Month Name, Year (e.g., 1 January, 2023)" %}</option>
+    <option value="MMM. D, YYYY">{% trans "Abbreviated Month Name, Day, Year (e.g., Jan. 1, 2023)" %}</option>
+    <option value="D MMM. YYYY">{% trans "Day, Abbreviated Month Name, Year (e.g., 1 Jan. 2023)" %}</option>
+    <option value="dddd, MMMM D, YYYY">{% trans "Full Day Name, Full Month Name, Day, Year (e.g., Monday, January 1, 2023)" %}</option>
+</select>
+
+
+<button onclick="saveDateFormat()"
+class="oh-btn oh-btn--secondary mt-2 mr-0 oh-btn--w-100-resp"
+>{% trans "Save" %}</button>
+
+
+<div style=" font-size: 20px; color: hsl(8,77%,56%); margin-top:70px">
+    <b>{% trans "Current Date Format"%} &nbsp :</b> &nbsp
+    <span id="dateDisplay" style="font-size: 18px; color: black;" class='mt-3'></span>
+</div>
+
+
+
+<script src="{% static '/build/js/moment.js' %}"></script>
+<script src="{% static 'base/date_formatting.js' %}"></script>
+<script src="{% static 'base/date_settings.js' %}"></script>
+
+<script>
+
+    const formatMapping = {
+        'DD-MM-YYYY': '{% trans "Day, Month, Year (e.g., 30-12-2023)" %}',
+        'DD.MM.YYYY': '{% trans "Day, Month, Year (e.g., 30.12.2023)" %}',
+        'DD/MM/YYYY': '{% trans "Day, Month, Year (e.g., 30/12/2023)" %}',
+        'MM/DD/YYYY': '{% trans "Month, Day, Year (e.g., 12/30/2023)" %}',
+        'YYYY-MM-DD': '{% trans "Year, Month, Day (e.g., 2023-12-30)" %}',
+        'YYYY/MM/DD': '{% trans "Year, Month, Day (e.g., 2023/12/30)" %}',
+        'MMMM D, YYYY': '{% trans "Full Month Name, Day, Year (e.g., January 1, 2023)" %}',
+        'DD MMMM, YYYY': '{% trans "Day, Full Month Name, Year (e.g., 1 January, 2023)" %}',
+        'MMM. D, YYYY': '{% trans "Abbreviated Month Name, Day, Year (e.g., Jan. 1, 2023)" %}',
+        'D MMM. YYYY': '{% trans "Day, Abbreviated Month Name, Year (e.g., 1 Jan. 2023)" %}',
+        'dddd, MMMM D, YYYY': '{% trans "Full Day Name, Full Month Name, Day, Year (e.g., Monday, January 1, 2023)" %}',
+    };
+
+    // Get the current date
+    var currentDate = new Date();
+
+    // Format the current date according to the storedDateFormat
+    var formattedDate = moment(currentDate).format(storedDateFormat);
+
+    var selectedFormatDescription = formatMapping[storedDateFormat];
+
+    document.getElementById('dateDisplay').textContent = `${selectedFormatDescription}`;
+
+
+</script>
+{% endblock %}
+
