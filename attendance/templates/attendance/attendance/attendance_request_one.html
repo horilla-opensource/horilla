@@ -34,7 +34,7 @@
     <div class="oh-timeoff-modal__stats-container mt-3 mb-3">
         <div class="oh-timeoff-modal__stat">
             <span class="oh-timeoff-modal__stat-title">{% trans "Date" %}</span>
-            <span class="oh-timeoff-modal__stat-count">{{attendance_request.attendance_date}}</span>
+            <span class="oh-timeoff-modal__stat-count dateformat_changer">{{attendance_request.attendance_date}}</span>
         </div>
         <div class="oh-timeoff-modal__stat" style="margin-left: 20px;">
             <span class="oh-timeoff-modal__stat-title">{% trans "Day" %}</span>
@@ -49,7 +49,7 @@
         </div>
         <div class="oh-timeoff-modal__stat" style="margin-left: 20px;">
             <span class="oh-timeoff-modal__stat-title">{% trans "Check_In Date" %}</span>
-            <span class="oh-timeoff-modal__stat-count">{{attendance_request.attendance_clock_in_date}}</span>
+            <span class="oh-timeoff-modal__stat-count dateformat_changer">{{attendance_request.attendance_clock_in_date}}</span>
     </div>
     </div>
 
@@ -60,7 +60,7 @@
         </div>
         <div class="oh-timeoff-modal__stat" style="margin-left: 20px;">
             <span class="oh-timeoff-modal__stat-title">{% trans "Check_Out Date" %}</span>
-            <span class="oh-timeoff-modal__stat-count">{{attendance_request.attendance_clock_out_date}}</span>
+            <span class="oh-timeoff-modal__stat-count dateformat_changer">{{attendance_request.attendance_clock_out_date}}</span>
         </div>
     </div>
 

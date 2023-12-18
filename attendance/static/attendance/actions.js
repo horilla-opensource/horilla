@@ -1245,3 +1245,24 @@ $("#lateComeBulkDelete").click(function (e) {
 });
 
 // ------------------------------------------------------------------------------------------------------------------------------
+
+// ******************************************************************
+// *     THIS IS FOR SWITCHING THE DATE FORMAT IN THE ALL VIEWS     *
+// ******************************************************************
+
+// Iterate through all elements with the 'dateformat_changer' class and format their content
+
+$('.dateformat_changer').each(function(index, element) {
+  var currentDate = $(element).text();
+  // Checking currentDate value is a date or None value.
+  if (/[\.,\-\/ ]/.test(currentDate)) {
+    var formattedDate = dateFormatter.getFormattedDate(currentDate);
+  } else {
+    var formattedDate = 'None';
+  }
+  $(element).text(formattedDate);
+});
+
+// Display the formatted date wherever needed
+var currentDate = $('.dateformat_changer').first().text();
+var formattedDate = dateFormatter.getFormattedDate(currentDate);

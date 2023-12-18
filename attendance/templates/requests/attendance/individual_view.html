@@ -75,9 +75,14 @@
   {% for key, diff in data.items %}
   <tr>
     <td class="pt-2 pb-2">{{key}}</td>
-    <td class="p-2 ml-2">{% if diff.0 %}{{diff.0}}{% endif %}</td>
-    <td class="p-2 ml-2">{{diff.1}}</td>
-  </tr>
+      {% if key == 'Check-Out Date' or key == 'Attendance date' or key == 'Check-In Date'%}
+        <td class="p-2 ml-2 dateformat_changer">{% if diff.0 %}{{diff.0}}{% endif %}</td>
+        <td class="p-2 ml-2 dateformat_changer">{{diff.1}}</td>
+      {% else %}
+        <td class="p-2 ml-2">{% if diff.0 %}{{diff.0}}{% endif %}</td>
+        <td class="p-2 ml-2">{{diff.1}}</td>
+      {% endif %}
+    </tr>
   {% endfor %}
   <tr>
     <th>{% trans "Description" %}</th>

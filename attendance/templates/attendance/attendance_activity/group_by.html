@@ -62,11 +62,11 @@
                           >
                         </div>
                     </div>
-                    <div class="oh-sticky-table__td">{{activity.attendance_date}}</div>
-                    <div class="oh-sticky-table__td">{{activity.clock_in_date}}</div>
+                    <div class="oh-sticky-table__td dateformat_changer">{{activity.attendance_date}}</div>
+                    <div class="oh-sticky-table__td dateformat_changer">{{activity.clock_in_date}}</div>
                     <div class="oh-sticky-table__td">{{activity.clock_in}}</div>
                     <div class="oh-sticky-table__td">{{activity.clock_out}}</div>
-                    <div class="oh-sticky-table__td">{{activity.clock_out_date}}</div>
+                    <div class="oh-sticky-table__td dateformat_changer">{{activity.clock_out_date}}</div>
                     <div class="oh-sticky-table__td">
                       
                       {% if perms.attendance.delete_attendanceactivity %}
