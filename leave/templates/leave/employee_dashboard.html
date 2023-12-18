@@ -122,7 +122,7 @@
                         <div class="oh-dasboard__event-details">
                             <span class="oh-dashboard__event-title">{% trans "Next Holiday" %}</span>
                             <span class="oh-dashboard__event-main">{{next_holiday.name}}</span>
-                            <span class="oh-dashboard__event-date">{{next_holiday.start_date}}</span>
+                            <span class="oh-dashboard__event-date dateformat_changer">{{next_holiday.start_date}}</span>
                         </div>
                     </div>
                 </div>
@@ -139,7 +139,7 @@
                                 <li class="oh-card-dashboard__user-item oh-dashboard__event">
                                     <div class="">
                                     <span class="oh-profile__name oh-text--white">{{holiday.name}}</span> <br/>
-                                    <span class="oh-dashboard__event-date oh-text--white">{{holiday.start_date}}</span>
+                                    <span class="oh-dashboard__event-date oh-text--white dateformat_changer">{{holiday.start_date}}</span>
                                     </div>
                                 </li>
                             {% endfor %}

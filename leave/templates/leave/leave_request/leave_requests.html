@@ -106,8 +106,8 @@
                         </div>
                     </div>
                     <div class="oh-sticky-table__td {% if leave_request.status == 'cancelled' %} diff-cell{% endif %}">{{leave_request.leave_type_id}}</div>
-                    <div class="oh-sticky-table__td {% if leave_request.status == 'cancelled' %} diff-cell{% endif %}">{{leave_request.start_date}}</div>
-                    <div class="oh-sticky-table__td {% if leave_request.status == 'cancelled' %} diff-cell{% endif %}">{{leave_request.end_date}}</div>
+                    <div class="oh-sticky-table__td {% if leave_request.status == 'cancelled' %} diff-cell{% endif %} dateformat_changer">{{leave_request.start_date}}</div>
+                    <div class="oh-sticky-table__td {% if leave_request.status == 'cancelled' %} diff-cell{% endif %} dateformat_changer">{{leave_request.end_date}}</div>
                     <div class="oh-sticky-table__td {% if leave_request.status == 'cancelled' %} diff-cell{% endif %}">{{leave_request.requested_days}}</div>
                     <div class="oh-sticky-table__td {% if leave_request.status == 'cancelled' %} diff-cell{% endif %}">{{leave_request.get_status_display}}</div>
                     {% if  not dashboard %}
