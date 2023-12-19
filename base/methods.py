@@ -1,4 +1,5 @@
 from datetime import date
+import io
 import json
 import random
 from django.apps import apps
@@ -6,8 +7,10 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import ForeignKey, ManyToManyField, OneToOneField
 from django.forms.models import ModelMultipleChoiceField, ModelChoiceField
 from django.http import HttpResponse
+from django.template.loader import render_to_string
 from django.utils.translation import gettext as _
 import pandas as pd
+from xhtml2pdf import pisa
 from employee.models import Employee
 from horilla.decorators import login_required
 
@@ -445,3 +448,18 @@ def check_owner(employee, instance):
         return employee == instance.employee_id
     except:
         return False
+
+
+def generate_pdf(template_path, context):
+    html = render_to_string(template_path, context)
+
+    result = io.BytesIO()
+    pdf = pisa.pisaDocument(io.BytesIO(html.encode("utf-8")), result)
+
+    if not pdf.err:
+        response = HttpResponse(result.getvalue(), content_type="application/pdf")
+        response[
+            "Content-Disposition"
+        ] = f'''attachment;filename="{context["employee"]}'s payslip for {context["range"]}.pdf"'''
+        return response
+    return None

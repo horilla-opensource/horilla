@@ -17,7 +17,7 @@ from horilla.decorators import login_required, permission_required
 from base.methods import export_data, generate_colors, get_key_instances
 from employee.models import Employee, EmployeeWorkInformation
 from base.methods import closest_numbers
-from payroll.methods.methods import generate_pdf
+from base.methods import generate_pdf
 from payroll.models.models import Payslip, WorkRecord, Contract
 from payroll.forms.forms import ContractForm, WorkRecordForm
 from payroll.models.tax_models import PayrollSettings
