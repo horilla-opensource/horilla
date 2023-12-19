@@ -130,10 +130,10 @@
                           </span>
                         </div>
                       </div>
-                      <div class="oh-sticky-table__td">{{asset_request.asset_category_id}}</div>
-                      <div class="oh-sticky-table__td">{{ asset_request.asset_request_date }}</div>
+                      <div class="oh-sticky-table__td" data-toggle="oh-modal-toggle" data-target="#requestStatus{{asset_request.id}}">{{asset_request.asset_category_id}}</div>
+                      <div class="oh-sticky-table__td dateformat_changer" data-toggle="oh-modal-toggle" data-target="#requestStatus{{asset_request.id}}">{{ asset_request.asset_request_date }}</div>
                       <div class="oh-sticky-table__td">
-                        <div class="d-flex align-items-center">
+                        <div class="d-flex align-items-center" data-toggle="oh-modal-toggle" data-target="#requestStatus{{asset_request.id}}">
                           <span
                             class="oh-dot oh-dot--small  me-1 oh-dot--color
                             {% if asset_request.asset_request_status == 'Approved' %}
@@ -203,7 +203,7 @@
                               <div class="oh-timeoff-modal__stats-container">
                                 <div class="oh-timeoff-modal__stat">
                                   <span class="oh-timeoff-modal__stat-title">{% trans "Requested Date" %}</span>
-                                  <span class="oh-timeoff-modal__stat-count">{{asset_request.asset_request_date}}</span>
+                                  <span class="oh-timeoff-modal__stat-count dateformat_changer">{{asset_request.asset_request_date}}</span>
                                 </div>
                                 <div class="oh-timeoff-modal__stat">
                                   <span class="oh-timeoff-modal__stat-title">{% trans "Category" %}</span>
@@ -224,14 +224,13 @@
                         <div class="oh-modal__dialog-footer  ">
                           {% if perms.asset.add_assetassignment %} 
                             {% if asset_request.asset_request_status == 'Requested' %}
-                                <a class="oh-btn oh-btn--success " role="button" data-toggle="oh-modal-toggle"
-                                  data-target="#asset-request-allocation-modal" hx-get="{%url 'asset-request-approve' req_id=asset_request.id %}" hx-target="#asset-request-allocation-modal-target"  title="{% trans 'Approve' %}">
-                                  <ion-icon name="checkmark-outline"></ion-icon>
+                                <a class="oh-btn oh-btn--success w-100" role="button" data-toggle="oh-modal-toggle"
+                                  data-target="#asset-request-allocation-modal" hx-get="{%url 'asset-request-approve' req_id=asset_request.id %}" hx-target="#asset-request-allocation-modal-target">
+                                  <ion-icon name="checkmark-outline"></ion-icon>{% trans 'Approve' %}
                                 </a>
-                                <form action="{% url 'asset-request-reject' req_id=asset_request.id %}" method="post" class="">
+                                <form action="{% url 'asset-request-reject' req_id=asset_request.id %}" method="post" class="w-100">
                                   {% csrf_token %}
-                                  <button class="oh-btn oh-btn--danger " title="{% trans 'Reject' %}"><ion-icon
-                                    name="close-outline"></ion-icon></button>
+                                  <button class="oh-btn oh-btn--danger w-100"><ion-icon name="close-outline"></ion-icon> {% trans 'Reject' %}</button>
                                 </form>
                             {% endif %}
                           {% endif %}
@@ -277,7 +276,7 @@
                 </div>
               </div>
               <div class="oh-sticky-table__td">{{asset_request.asset_category_id}}</div>
-              <div class="oh-sticky-table__td">{{ asset_request.asset_request_date }}</div>
+              <div class="oh-sticky-table__td dateformat_changer">{{ asset_request.asset_request_date }}</div>
               <div class="oh-sticky-table__td">
                 <div class="d-flex align-items-center">
                   <span
@@ -349,7 +348,7 @@
                       <div class="oh-timeoff-modal__stats-container">
                         <div class="oh-timeoff-modal__stat">
                           <span class="oh-timeoff-modal__stat-title">{% trans "Requested Date" %}</span>
-                          <span class="oh-timeoff-modal__stat-count">{{asset_request.asset_request_date}}</span>
+                          <span class="oh-timeoff-modal__stat-count dateformat_changer">{{asset_request.asset_request_date}}</span>
                         </div>
                         <div class="oh-timeoff-modal__stat">
                           <span class="oh-timeoff-modal__stat-title">{% trans "Category" %}</span>
@@ -475,14 +474,14 @@
                         </div>
                       </div>
                       <div class="oh-sticky-table__td" data-toggle="oh-modal-toggle" data-target="#returnStatus{{asset_allocation.id}}">{{asset_allocation.asset_id}}</div>
-                      <div class="oh-sticky-table__td" data-toggle="oh-modal-toggle" data-target="#returnStatus{{asset_allocation.id}}">{{asset_allocation.assigned_date}}</div>
+                      <div class="oh-sticky-table__td dateformat_changer" data-toggle="oh-modal-toggle" data-target="#returnStatus{{asset_allocation.id}}">{{asset_allocation.assigned_date}}</div>
                       {% if asset_allocation.return_date %}
-                        <div class="oh-sticky-table__td" data-toggle="oh-modal-toggle" data-target="#returnStatus{{asset_allocation.id}}">{{asset_allocation.return_date}}</div>
+                        <div class="oh-sticky-table__td dateformat_changer" data-toggle="oh-modal-toggle" data-target="#returnStatus{{asset_allocation.id}}">{{asset_allocation.return_date}}</div>
                       {% else %}
                         <div class="oh-sticky-table__td" data-toggle="oh-modal-toggle" data-target="#returnStatus{{asset_allocation.id}}">
                           <span class="oh-dot oh-dot--small  me-1 oh-dot--color oh-dot--warning"></span>
                           <span class="link-warning">
-                          In use
+                          {% trans "In use" %}
                           </span></div>
                       {% endif %}
                       {% if not asset_allocation.return_status %}
@@ -539,11 +538,11 @@
                               <div class="oh-timeoff-modal__stats-container mt-3">
                                 <div class="oh-timeoff-modal__stat">
                                   <span class="oh-timeoff-modal__stat-title">{% trans "Allocated Date" %} </span>
-                                  <span class="oh-timeoff-modal__stat-count">{{asset_allocation.assigned_date}}</span>
+                                  <span class="oh-timeoff-modal__stat-count dateformat_changer">{{asset_allocation.assigned_date}}</span>
                                 </div>
                                 <div class="oh-timeoff-modal__stat">
                                   <span class="oh-timeoff-modal__stat-title">{% trans "Returned Date" %} </span>
-                                  <span class="oh-timeoff-modal__stat-count">{{asset_allocation.return_date}}</span>
+                                  <span class="oh-timeoff-modal__stat-count dateformat_changer">{{asset_allocation.return_date}}</span>
                                 </div> 
                               </div>
                               <div class="oh-timeoff-modal__stats-container mt-3">
@@ -628,9 +627,9 @@
                 </div>
               </div>
               <div class="oh-sticky-table__td" data-toggle="oh-modal-toggle" data-target="#returnStatus{{asset_allocation.id}}">{{asset_allocation.asset_id}}</div>
-              <div class="oh-sticky-table__td" data-toggle="oh-modal-toggle" data-target="#returnStatus{{asset_allocation.id}}">{{asset_allocation.assigned_date}}</div>
+              <div class="oh-sticky-table__td dateformat_changer" data-toggle="oh-modal-toggle" data-target="#returnStatus{{asset_allocation.id}}">{{asset_allocation.assigned_date}}</div>
               {% if asset_allocation.return_date %}
-                <div class="oh-sticky-table__td" data-toggle="oh-modal-toggle" data-target="#returnStatus{{asset_allocation.id}}">{{asset_allocation.return_date}}</div>
+                <div class="oh-sticky-table__td dateformat_changer" data-toggle="oh-modal-toggle" data-target="#returnStatus{{asset_allocation.id}}">{{asset_allocation.return_date}}</div>
               {% else %}
                 <div class="oh-sticky-table__td" data-toggle="oh-modal-toggle" data-target="#returnStatus{{asset_allocation.id}}">
                   <span class="oh-dot oh-dot--small  me-1 oh-dot--color oh-dot--warning"></span>
@@ -692,11 +691,11 @@
                       <div class="oh-timeoff-modal__stats-container mt-3">
                         <div class="oh-timeoff-modal__stat">
                           <span class="oh-timeoff-modal__stat-title">{% trans "Allocated Date" %} </span>
-                          <span class="oh-timeoff-modal__stat-count">{{asset_allocation.assigned_date}}</span>
+                          <span class="oh-timeoff-modal__stat-count dateformat_changer">{{asset_allocation.assigned_date}}</span>
                         </div>
                         <div class="oh-timeoff-modal__stat">
                           <span class="oh-timeoff-modal__stat-title">{% trans "Returned Date" %} </span>
-                          <span class="oh-timeoff-modal__stat-count">{{asset_allocation.return_date}}</span>
+                          <span class="oh-timeoff-modal__stat-count dateformat_changer">{{asset_allocation.return_date}}</span>
                         </div> 
                       </div>
                       <div class="oh-timeoff-modal__stats-container mt-3">
