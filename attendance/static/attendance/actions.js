@@ -1255,9 +1255,10 @@ $("#lateComeBulkDelete").click(function (e) {
 $('.dateformat_changer').each(function(index, element) {
   var currentDate = $(element).text();
   // Checking currentDate value is a date or None value.
-  if (/[\.,\-\/ ]/.test(currentDate)) {
+  if (/[\.,\-\/]/.test(currentDate)) {
     var formattedDate = dateFormatter.getFormattedDate(currentDate);
-  } else {
+  }
+  else {
     var formattedDate = 'None';
   }
   $(element).text(formattedDate);
