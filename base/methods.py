@@ -460,6 +460,6 @@ def generate_pdf(template_path, context):
         response = HttpResponse(result.getvalue(), content_type="application/pdf")
         response[
             "Content-Disposition"
-        ] = f'''attachment;filename="{context["employee"]}'s payslip for {context["range"]}.pdf"'''
+        ] = f'''attachment;filename="{context.get("employee")}'s payslip for {context.get("range")}.pdf"'''
         return response
     return None
