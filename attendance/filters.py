@@ -462,6 +462,8 @@ class AttendanceFilters(FilterSet):
             "overtime_second__gte",
             "overtime_second",
             "department",
+            "month",
+            "year",
         ]
 
         widgets = {

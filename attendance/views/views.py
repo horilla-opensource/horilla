@@ -263,11 +263,15 @@ def attendance_view(request):
         overtime_second__gte=minot,
         attendance_validated=True,
     )
-    filter_obj = AttendanceFilters(queryset=Attendance.objects.all())
-    attendances = filtersubordinates(request, attendances, "attendance.view_attendance")
+    filter_obj = AttendanceFilters(request.GET, queryset=attendances)
+    attendances = filtersubordinates(
+        request, filter_obj.qs, "attendance.view_attendance"
+    )
+    validate_attendances = AttendanceFilters(request.GET, queryset=validate_attendances).qs
     validate_attendances = filtersubordinates(
         request, validate_attendances, "attendance.view_attendance"
     )
+    ot_attendances = AttendanceFilters(request.GET, queryset=ot_attendances).qs
     ot_attendances = filtersubordinates(
         request, ot_attendances, "attendance.view_attendance"
     )

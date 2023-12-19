@@ -71,6 +71,22 @@ def attendance_date_validate(date):
         raise ValidationError(_("You cannot choose a future date."))
 
 
+month_mapping = {
+    "january": 1,
+    "february": 2,
+    "march": 3,
+    "april": 4,
+    "may": 5,
+    "june": 6,
+    "july": 7,
+    "august": 8,
+    "september": 9,
+    "october": 10,
+    "november": 11,
+    "december": 12,
+}
+
+
 class AttendanceActivity(models.Model):
     """
     AttendanceActivity model
@@ -423,7 +439,10 @@ class Attendance(models.Model):
                     "attendance_clock_in_date": "Attendance check-in date never smaller than attendance date"
                 }
             )
-        if self.attendance_clock_out_date and self.attendance_clock_out_date < self.attendance_clock_in_date:
+        if (
+            self.attendance_clock_out_date
+            and self.attendance_clock_out_date < self.attendance_clock_in_date
+        ):
             raise ValidationError(
                 {
                     "attendance_clock_out_date": "Attendance check-out date never smaller than attendance check-in date"
@@ -518,6 +537,45 @@ class AttendanceOverTime(models.Model):
         else:
             end_date = date(year, month + 1, 1) - timedelta(days=1)
         return start_date, end_date
+
+    def not_validated_hrs(self):
+        """
+        This method will return not validated hours in a month
+        """
+        hrs_to_vlaidate = sum(
+            list(
+                Attendance.objects.filter(
+                    attendance_date__month=month_mapping[self.month],
+                    attendance_date__year=self.year,
+                    employee_id=self.employee_id,
+                    attendance_validated=False,
+                ).values_list("at_work_second", flat=True)
+            )
+        )
+        return format_time(hrs_to_vlaidate)
+
+    def not_approved_ot_hrs(self):
+        """
+        This method will return the overtime hours to be approved
+        """
+        hrs_to_approve = sum(
+            list(
+                Attendance.objects.filter(
+                    attendance_date__month=month_mapping[self.month],
+                    attendance_date__year=self.year,
+                    employee_id=self.employee_id,
+                    attendance_validated=True,
+                    attendance_overtime_approve=False,
+                ).values_list("overtime_second", flat=True)
+            )
+        )
+        return format_time(hrs_to_approve)
+
+    def get_month_index(self):
+        """
+        This method will return the index of the month
+        """
+        return month_mapping[self.month]
 
     def save(self, *args, **kwargs):
         self.hour_account_second = strtime_seconds(self.worked_hours)
