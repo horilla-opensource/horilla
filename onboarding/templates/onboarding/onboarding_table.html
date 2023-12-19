@@ -194,7 +194,11 @@
                                     <div class="oh-sticky-table__td" >{{candidate.candidate_id.joining_date}}</div>
                                     <div class="oh-sticky-table__td">
                                     <div class="oh-checkpoint-badge oh-checkpoint-badge--secondary" >
+                                        {% if candidate.candidate_id.onboarding_portal.count %}
                                         {{candidate.candidate_id.onboarding_portal.count}} / 4
+                                        {% else %}
+                                        0 / 4
+                                        {% endif %}
                                     </div>
                                     </div>
                                     <div class="oh-sticky-table__td" onclick="event.stopPropagation()">

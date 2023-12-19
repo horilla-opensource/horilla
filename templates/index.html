@@ -589,9 +589,11 @@
       $('body').on('click', '.select2-search__field', function(e) {
       e.stopPropagation();
     });
+    if (!$(".oh-tabs__tab--active").length) {
+      $(".oh-tabs__tab").click()
+    }
     });
   </script>
-
 </body>
 
 </html>

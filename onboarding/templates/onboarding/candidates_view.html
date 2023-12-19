@@ -87,7 +87,24 @@
     </div>
   </div>
 </section>
-
+<div class="d-flex flex-row-reverse oh-wrapper">
+  <span class="m-3" onclick="$('[name=joining_set]').val('true'); $('[name=joining_set]').first().change(); $('.filterButton').click()" style="cursor: pointer">
+    <span class="oh-dot oh-dot--small me-1" style="background-color:yellow"></span>
+    Joining Set
+  </span>
+  <span class="m-3" onclick="$('[name=joining_set]').val('false'); $('[name=joining_set]').first().change(); $('.filterButton').click()" style="cursor: pointer">
+    <span class="oh-dot oh-dot--small me-1" style="background-color:burlywood"></span>
+    Joining Not-Set
+  </span>
+  <span class="m-3" onclick="$('[name=portal_sent]').val('false'); $('[name=portal_sent]').first().change(); $('.filterButton').click()" style="cursor: pointer">
+    <span class="oh-dot oh-dot--small me-1" style="background-color:rgba(128, 128, 128, 0.482)"></span>
+    Portal Not-Sent
+  </span>
+  <span class="m-3" onclick="$('[name=portal_sent]').val('true'); $('[name=portal_sent]').first().change(); $('.filterButton').click()" style="cursor: pointer">
+    <span class="oh-dot oh-dot--small me-1" style="background-color:yellowgreen"></span>
+    Portal Sent
+  </span>
+</div>
 <div class="oh-wrapper" id="candidates">
   {% if candidates %}
   {% include 'onboarding/candidates.html' %}
@@ -106,39 +123,43 @@
     var array = [];
     $(".checkboxAll:checked").each(function () {
       array.push($(this).attr("id"));
+    });
+    if (array.length) {
       $("#message").empty();
       $("#message").append(`
             <div class="oh-alert oh-alert--animated oh-alert--success">
                 Processing
             </div>`);
-    });
-
-    $.ajax({
-      type: "post",
-      url: "{% url 'email-send' %}",
-      data: {
-        candidates: JSON.stringify(array),
-        csrfmiddlewaretoken: $("input[name=csrfmiddlewaretoken]").val(),
-      },
-      dataType: "json",
-      success: function (response) {
-        $("#message").empty();
-        $("#message").append(`
-                <div class="oh-alert oh-alert--animated oh-alert--${response.tags}">
-                    ${response.message}
-                </div>`);
-        if (response.tags == "success") {
-          setTimeout(function () {
-            // Code to be executed after the delay
-            location.reload();
-          }, 2000);
-        }
-      },
-    });
+      $.ajax({
+        url: "{% url 'email-send' %}",
+        data: {
+          ids: array,
+        },
+        traditional: true,
+        success: function (response) {
+          $("#message").empty();
+          $("#message").append(`
+                  <div class="oh-alert oh-alert--animated oh-alert--success">
+                      Candidate portal link sent.
+                  </div>`);
+          if (response.tags == "success") {
+            setTimeout(function () {
+              // Code to be executed after the delay
+              location.reload();
+            }, 2000);
+          }
+        },
+      });
+    } else {
+      $("#message").append(`
+            <div class="oh-alert oh-alert--animated oh-alert--info">
+                Please select candidates
+            </div>`);
+    }
   });
 
-  $("#selectAll").on("click", function () {
-    if (this.checked) {
+  function checkRow(element){
+    if (element.checked) {
       $(".checkboxAll").each(function () {
         $(".checkboxAll").prop("checked", true);
       });
@@ -147,6 +168,9 @@
         $(".checkboxAll").prop("checked", false);
       });
     }
+  }
+  $("#selectAll").on("click", function () {
+    checkRow(this)
   });
 
   $("#delete-link").on("click", function (event) {

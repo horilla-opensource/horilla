@@ -12,6 +12,7 @@
                 class="oh-input oh-input__checkbox mt-1 mr-2 all-employee"
                 id="selectAll"
                 title="{% trans "Select All" %}"
+                onchange="checkRow(this)"
               />
             </div>
             {% trans "Candidate" %}
@@ -85,12 +86,24 @@
               href="{% url 'rec-candidate-update' candidate.id %}?onboarding=True"
               ><ion-icon name="create-outline"></ion-icon
             ></a>
+            {% if candidate.onboarding_portal %}
             <a
-              class="oh-btn oh-btn--light-bkg w-100"
-              title="{% trans 'Send Portal' %}"
-              href="{% url 'rec-candidate-update' candidate.id %}?onboarding=True"
-              ><ion-icon name="mail-outline"></ion-icon
+            class="oh-btn w-100"
+            style="background-color: yellowgreen;color: white;"
+            title="{% trans 'Send Portal' %}"
+            onclick="return confirm('Do you want to send self profile portal to the candidate?')"
+            href="{% url 'email-send' %}?ids={{candidate.id}}"
+            ><ion-icon name="mail-outline"></ion-icon
             ></a>
+            {% else %}
+            <a
+            class="oh-btn oh-btn--light-bkg w-100"
+            title="{% trans 'Send Portal  / Start onboarding' %}"
+            onclick="return confirm('Do you want to send self profile portal to the candidate?')"
+            href="{% url 'email-send' %}?ids={{candidate.id}}"
+            ><ion-icon name="mail-outline"></ion-icon
+            ></a>
+            {% endif %}
             <a
               class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
               id="delete-link"

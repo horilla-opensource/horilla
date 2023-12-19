@@ -13,8 +13,6 @@ from base.filters import FilterSet
 # from django.forms.widgets import Boo
 
 
-
-
 class CandidateFilter(FilterSet):
     """
     Filter set class for Candidate model
@@ -44,6 +42,17 @@ class CandidateFilter(FilterSet):
     )
     recruitment = django_filters.CharFilter(
         field_name="recruitment_id__title", lookup_expr="icontains"
+    )
+
+    portal_sent = django_filters.BooleanFilter(
+        field_name="onboarding_portal",
+        method="filter_mail_sent",
+        widget=django_filters.widgets.BooleanWidget(),
+    )
+    joining_set = django_filters.BooleanFilter(
+        field_name="joining_date",
+        method="filter_joining_set",
+        widget=django_filters.widgets.BooleanWidget(),
     )
 
     class Meta:
@@ -77,6 +86,8 @@ class CandidateFilter(FilterSet):
             "stage_id__stage_managers",
             "stage_id__stage_type",
             "joining_date",
+            "portal_sent",
+            "joining_set",
         ]
 
     def __init__(self, *args, **kwargs):
@@ -84,6 +95,12 @@ class CandidateFilter(FilterSet):
         self.form.fields["is_active"].initial = True
         for field in self.form.fields.keys():
             self.form.fields[field].widget.attrs["id"] = f"{uuid.uuid4()}"
+
+    def filter_mail_sent(self, queryset, name, value):
+        return queryset.filter(onboarding_portal__isnull=(not value))
+
+    def filter_joining_set(self, queryset, name, value):
+        return queryset.filter(joining_date__isnull=(not value))
 
 
 BOOLEAN_CHOICES = (
@@ -250,13 +267,15 @@ class SurveyFilter(FilterSet):
             "sequence",
         ]
 
+
 class CandidateReGroup:
     """
     Class to keep the field name for group by option
     """
+
     fields = [
-        ("","select"),
-        ("recruitment_id","Recruitment"),
-        ("job_position_id","Job Position"),
+        ("", "select"),
+        ("recruitment_id", "Recruitment"),
+        ("job_position_id", "Job Position"),
         ("hired", "Status"),
     ]

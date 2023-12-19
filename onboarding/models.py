@@ -5,11 +5,15 @@ This module is used to register models for onboarding app
 
 """
 from datetime import datetime
+from typing import Any
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 from django.utils.translation import gettext_lazy as _
 from recruitment.models import Recruitment, Candidate
 from employee.models import Employee
 from base.horilla_company_manager import HorillaCompanyManager
+from django.contrib.auth.models import User
 
 
 class OnboardingStage(models.Model):
@@ -35,6 +39,19 @@ class OnboardingStage(models.Model):
         ordering = ["sequence"]
 
 
+@receiver(post_save, sender=Recruitment)
+def create_initial_stage(sender, instance, created, **kwargs):
+    """
+    This is post save method, used to create initial stage for the recruitment
+    """
+    if created:
+        initial_stage = OnboardingStage()
+        initial_stage.sequence = 0
+        initial_stage.stage_title = "Initial"
+        initial_stage.save()
+        initial_stage.recruitment_id.set([instance])
+
+
 class OnboardingTask(models.Model):
     """
     OnboardingTask models
@@ -44,7 +61,6 @@ class OnboardingTask(models.Model):
     recruitment_id = models.ManyToManyField(Recruitment, related_name="onboarding_task")
     employee_id = models.ManyToManyField(Employee)
     objects = HorillaCompanyManager("recruitment_id__company_id")
-
 
     def __str__(self):
         return f"{self.task_title}"
@@ -64,7 +80,6 @@ class CandidateStage(models.Model):
     onboarding_end_date = models.DateField(blank=True, null=True)
     sequence = models.IntegerField(null=True, default=0)
     objects = HorillaCompanyManager("candidate_id__recruitment_id__company_id")
-
 
     def __str__(self):
         return f"{self.candidate_id}  |  {self.onboarding_stage_id}"
@@ -103,7 +118,6 @@ class CandidateTask(models.Model):
     onboarding_task_id = models.ForeignKey(OnboardingTask, on_delete=models.PROTECT)
     objects = HorillaCompanyManager("candidate_id__recruitment_id__company_id")
 
-
     def __str__(self):
         return f"{self.candidate_id} | {self.onboarding_task_id} | {self.status}"
 
@@ -128,7 +142,6 @@ class OnboardingPortal(models.Model):
     used = models.BooleanField(default=False)
     count = models.IntegerField(default=0)
     objects = HorillaCompanyManager("candidate_id__recruitment_id__company_id")
-
 
     def __str__(self):
         return f"{self.candidate_id} | {self.token}"
