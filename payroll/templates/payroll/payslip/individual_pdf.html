@@ -8,6 +8,9 @@
 
 		<meta name="msapplication-TileColor" content="#da532c" />
 		<meta name="theme-color" content="#ffffff" />
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+		<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
 	</head>
 	<body>
 		<style>
@@ -57,7 +60,11 @@
 					>
 						{% trans "Payslip" %}
 					</h1>
-					<h2 class="oh-payslip__title oh-payslip__title--h2">{{range}}</h2>
+					<h2 class="oh-payslip__title oh-payslip__title--h2">
+						<span class="oh-payslip__title oh-payslip__title--h2 dateformat_changer">{{formatted_start_date}}</span> &nbsp 
+						<span class="oh-payslip__title oh-payslip__title--h2">{% trans "to" %}</span> &nbsp 
+						<span class="oh-payslip__title oh-payslip__title--h2 dateformat_changer">{{formatted_end_date}}</span>
+					</h2>
 				</div>
 			</div>
 			<div class="oh-payslip__body">
@@ -263,3 +270,23 @@
 		</div>
 	</body>
 </html>
+<script>
+	document.addEventListener("DOMContentLoaded", function () {
+		console.log('-----------------------------------------------')
+	  // Your date in string format
+	  var dateStr = "2023-12-14";
+  
+	  // Your desired date format
+	  var dateFormat = "dddd, MMMM D, YYYY";
+  
+	  // Parse the date using Moment.js
+	  var dateObj = moment(dateStr);
+  
+	  // Format the date
+	  var formattedDate = dateObj.format(dateFormat);
+  
+	  // Log the result
+	  console.log(formattedDate);
+	});
+</script>
+  

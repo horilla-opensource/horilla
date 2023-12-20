@@ -15,6 +15,7 @@ from django.contrib import messages
 from django.utils.translation import gettext_lazy as _
 from django.http import HttpResponse
 import pandas as pd
+from employee.models import Employee
 from horilla.decorators import login_required, permission_required
 from horilla.settings import EMAIL_HOST_USER
 from base.methods import get_key_instances

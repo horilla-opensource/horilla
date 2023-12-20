@@ -34,7 +34,7 @@
       <div class="oh-timeoff-modal__stat" style="margin-left: 20px;">
           <span class="oh-timeoff-modal__stat-title">{% trans "One Time Allowance" %}</span>
           {% if allowance.one_time_date %}
-            <span class="oh-timeoff-modal__stat-count">{% trans "On" %} {{allowance.one_time_date}}</span>
+            <span class="oh-timeoff-modal__stat-count">{% trans "On" %}</span> <span class="oh-timeoff-modal__stat-count dateformat_changer"> {{allowance.one_time_date}}</span>
           {% else %}
             <span class="oh-timeoff-modal__stat-count">{% trans "No" %}</span>
           {% endif %}
