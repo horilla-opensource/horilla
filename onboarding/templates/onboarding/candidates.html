@@ -4,20 +4,18 @@
   <div class="oh-sticky-table__table">
     <div class="oh-sticky-table__thead">
       <div class="oh-sticky-table__tr">
-        <div class="oh-sticky-table__th">
-          <div class="d-flex">
-            <div class="">
+        <div class="oh-sticky-table__th" style="width:10px;">
+          <div class="centered-div">
               <input
                 type="checkbox"
-                class="oh-input oh-input__checkbox mt-1 mr-2 all-employee"
+                class="oh-input oh-input__checkbox all-employee"
                 id="selectAll"
                 title="{% trans "Select All" %}"
                 onchange="checkRow(this)"
               />
             </div>
-            {% trans "Candidate" %}
           </div>
-        </div>
+        <div class="oh-sticky-table__th">{% trans "Candidate" %}</div>
         <div class="oh-sticky-table__th">{% trans "Email" %}</div>
         <div class="oh-sticky-table__th">{% trans "Date of joining" %}</div>
         <div class="oh-sticky-table__th">{% trans "Job position" %}</div>
@@ -29,88 +27,50 @@
     <div class="oh-sticky-table__tbody">
       <div class="oh-sticky-table__tr">
         <div class="oh-sticky-table__sd">
-          <div class="d-flex">
-            <div class="">
+            <div class="centered-div">
               <input
                 type="checkbox"
-                class="oh-input employee-checkbox oh-input__checkbox mt-2 mr-2 checkboxAll"
+                class="oh-input employee-checkbox oh-input__checkbox checkboxAll"
                 id="{{candidate.id}}"
+                onchange="$(this).closest('.oh-sticky-table__tr').toggleClass('highlight-selected', $(this).is(':checked'))"
               />
             </div>
-            <div class="oh-profile oh-profile--md">
+        </div>
+        <div class="oh-sticky-table__td">
+          <div class="oh-profile oh-profile--md">
               <div class="oh-profile__avatar mr-1">
-                <img
-                  src="{{candidate.get_avatar}}"
-                  class="oh-profile__image"
-                  alt="{{candidate.name}}"
-                />
+                <img src="{{candidate.get_avatar}}"
+                    class="oh-profile__image" alt="" />
               </div>
-              <span class="oh-profile__name oh-text--dark"
-                >{{candidate.name}}</span
-              >
-            </div>
+              <span class="oh-profile__name oh-text--dark">{{candidate.name}}</span>
           </div>
         </div>
-        <a
-          style="color: inherit; text-decoration: none"
-          class="oh-sticky-table__td"
-          >{{candidate.email}}</a
-        >
-        <a
-          style="color: inherit; text-decoration: none"
-          class="oh-sticky-table__td"
-        >
-          <input
-          type="date" class="oh-input joining-date"
-          value={{candidate.joining_date|date:"Y-m-d"}} name="joining_date"
-          data-candidate-id="{{candidate.id}}">
+        <a style="color: inherit; text-decoration: none" class="oh-sticky-table__td">{{candidate.email}}</a>
+        <a style="color: inherit; text-decoration: none" class="oh-sticky-table__td">
+          <input type="date" class="oh-input joining-date" value={{candidate.joining_date|date:"Y-m-d"}}
+            name="joining_date" data-candidate-id="{{candidate.id}}">
         </a>
-        <a
-          style="color: inherit; text-decoration: none"
-          class="oh-sticky-table__td"
-          >{{candidate.job_position_id}}</a
-        >
-        <a
-          style="color: inherit; text-decoration: none"
-          class="oh-sticky-table__td"
-          >{{candidate.recruitment_id}}</a
-        >
-        <div
-          style="color: inherit; text-decoration: none"
-          class="oh-sticky-table__td"
-        >
+        <a style="color: inherit; text-decoration: none" class="oh-sticky-table__td">{{candidate.job_position_id}}</a>
+        <a style="color: inherit; text-decoration: none" class="oh-sticky-table__td">{{candidate.recruitment_id}}</a>
+        <div style="color: inherit; text-decoration: none" class="oh-sticky-table__td">
           <div class="oh-btn-group">
-            <a
-              class="oh-btn oh-btn--light-bkg w-100"
-              title="{% trans 'Edit' %}"
-              href="{% url 'rec-candidate-update' candidate.id %}?onboarding=True"
-              ><ion-icon name="create-outline"></ion-icon
-            ></a>
+            <a class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Edit' %}"
+              href="{% url 'rec-candidate-update' candidate.id %}?onboarding=True"><ion-icon
+                name="create-outline"></ion-icon></a>
             {% if candidate.onboarding_portal %}
-            <a
-            class="oh-btn w-100"
-            style="background-color: yellowgreen;color: white;"
-            title="{% trans 'Send Portal' %}"
-            onclick="return confirm('Do you want to send self profile portal to the candidate?')"
-            href="{% url 'email-send' %}?ids={{candidate.id}}"
-            ><ion-icon name="mail-outline"></ion-icon
-            ></a>
+            <a href="#" class="oh-btn w-100" style="background-color: yellowgreen;color: white;"
+              title="{% trans 'Send Portal' %}" onclick="$('select[name=ids]').val('{{candidate.id}}');"
+              data-target="#addAttachments" data-toggle="oh-modal-toggle"
+              href="{% url 'email-send' %}?ids={{candidate.id}}"><ion-icon name="link-outline"></ion-icon></a>
             {% else %}
-            <a
-            class="oh-btn oh-btn--light-bkg w-100"
-            title="{% trans 'Send Portal  / Start onboarding' %}"
-            onclick="return confirm('Do you want to send self profile portal to the candidate?')"
-            href="{% url 'email-send' %}?ids={{candidate.id}}"
-            ><ion-icon name="mail-outline"></ion-icon
-            ></a>
+            <a href="#" class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Send Portal  / Start onboarding' %}"
+              onclick="$('select[name=ids]').val('{{candidate.id}}');" data-target="#addAttachments"
+              data-toggle="oh-modal-toggle" href="{% url 'email-send' %}?ids={{candidate.id}}"><ion-icon
+                name="link-outline"></ion-icon></a>
             {% endif %}
-            <a
-              class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
-              id="delete-link"
-              href="{% url 'candidate-delete' candidate.id %}"
-              title="{% trans 'Delete' %}"
-              ><ion-icon name="trash-outline"></ion-icon
-            ></a>
+            <a class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100" id="delete-link"
+              href="{% url 'candidate-delete' candidate.id %}" title="{% trans 'Delete' %}"><ion-icon
+                name="trash-outline"></ion-icon></a>
           </div>
         </div>
       </div>
@@ -126,53 +86,30 @@
   <nav class="oh-pagination__nav">
     <div class="oh-pagination__input-container me-3">
       <span class="oh-pagination__label me-1">{% trans "Page" %}</span>
-      <input
-        type="number"
-        name="page"
-        class="oh-pagination__input"
-        value="{{candidates.number}}"
-        hx-get="{% url 'candidate-filter' %}?{{pd}}"
-        hx-target="#candidates"
-        min="1"
-      />
-      <span class="oh-pagination__label"
-        >{% trans "of" %} {{candidates.paginator.num_pages}}</span
-      >
+      <input type="number" name="page" class="oh-pagination__input" value="{{candidates.number}}"
+        hx-get="{% url 'candidate-filter' %}?{{pd}}" hx-target="#candidates" min="1" />
+      <span class="oh-pagination__label">{% trans "of" %} {{candidates.paginator.num_pages}}</span>
     </div>
     <ul class="oh-pagination__items">
       {% if candidates.has_previous %}
       <li class="oh-pagination__item oh-pagination__item--wide">
-        <a
-          hx-target="#candidates"
-          hx-get="{% url 'candidate-filter' %}?{{pd}}&page=1"
-          class="oh-pagination__link"
-          >{% trans "First" %}</a
-        >
+        <a hx-target="#candidates" hx-get="{% url 'candidate-filter' %}?{{pd}}&page=1" class="oh-pagination__link">{%
+          trans "First" %}</a>
       </li>
       <li class="oh-pagination__item oh-pagination__item--wide">
-        <a
-          hx-target="#candidates"
+        <a hx-target="#candidates"
           hx-get="{% url 'candidate-filter' %}?{{pd}}&page={{ candidates.previous_page_number }}"
-          class="oh-pagination__link"
-          >{% trans "Previous" %}</a
-        >
+          class="oh-pagination__link">{% trans "Previous" %}</a>
       </li>
       {% endif %} {% if candidates.has_next %}
       <li class="oh-pagination__item oh-pagination__item--wide">
-        <a
-          hx-target="#candidates"
-          hx-get="{% url 'candidate-filter' %}?{{pd}}&page={{ candidates.next_page_number }}"
-          class="oh-pagination__link"
-          >{% trans "Next" %}</a
-        >
+        <a hx-target="#candidates" hx-get="{% url 'candidate-filter' %}?{{pd}}&page={{ candidates.next_page_number }}"
+          class="oh-pagination__link">{% trans "Next" %}</a>
       </li>
       <li class="oh-pagination__item oh-pagination__item--wide">
-        <a
-          hx-target="#candidates"
+        <a hx-target="#candidates"
           hx-get="{% url 'candidate-filter' %}?{{pd}}&page={{ candidates.paginator.num_pages }}"
-          class="oh-pagination__link"
-          >{% trans "Last" %}</a
-        >
+          class="oh-pagination__link">{% trans "Last" %}</a>
       </li>
       {% endif %}
     </ul>
@@ -196,7 +133,6 @@
           date: value,
         },
         success: function (response) {
-          console.log(response);
           $("#ohMessages").append(`
             <div class="oh-alert-container">
                   <div class="oh-alert oh-alert--animated oh-alert--${response.type}">
@@ -204,6 +140,21 @@
             </div>`);
         },
       });
+    });
+    $(".checkboxAll").change(function (e) {
+      e.preventDefault();
+      ids = $("[name=ids]").val()
+      id = $(this).attr("id");
+      checked = $(this).is(":checked")
+      const index = ids.indexOf(id);
+      if (index !== -1) {
+        ids.splice(index, 1);
+      }
+      if (checked) {
+        ids.push(id)
+      }
+      $("[name=ids]").val(ids);
+
     });
   });
 </script>

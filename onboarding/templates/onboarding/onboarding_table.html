@@ -75,18 +75,18 @@
                 <div class="oh-sticky-table__table">
                     <div class="oh-sticky-table__thead">
                         <div class="oh-sticky-table__tr">
-                            <div class="oh-sticky-table__th">
-                                <div>
+                            <div class="oh-sticky-table__th" style="width:10px;">
+                                <div class="centered-div">
                                     <input
                                       type="checkbox"
-                                      class="oh-input payslip-checkbox oh-input__checkbox mt-2 mr-2 select-all"
+                                      class="oh-input payslip-checkbox oh-input__checkbox select-all"
                                       data-stage="#onboarding_stage{{stage.id}}"
                                       onclick="event.stopPropagation()"
                                       onchange="select_all(this)"
                                         />
-                                    <span>{% trans "Candidate" %}</span>
-                                </div>
+                                    </div>
                             </div>
+                            <div class="oh-sticky-table__th">{% trans "Candidate" %}</div>
                             <div class="oh-sticky-table__th">{% trans "Email" %}</div>
                             <div class="oh-sticky-table__th">{% trans "Job Position" %}</div>
                             <div class="oh-sticky-table__th">{% trans "Mobile" %}</div>
@@ -169,18 +169,21 @@
                                     data-toggle="oh-modal-toggle" data-target="#tableTimeOff"
                                     hx-get="{% url 'candidate-single-view' candidate.candidate_id.id %}" hx-target="#singleView"
                                     >
-                                    <div class="oh-sticky-table__sd">
+                                    <div class="oh-sticky-table__sd" onclick="event.stopPropagation()">
                                         <div class="oh-profile oh-profile--md">
-                                            <div>
+                                            <div class="centered-div">
                                                 <input
                                                   type="checkbox"
                                                   id="{{candidate.candidate_id.id}}"
                                                   value="{{candidate.candidate_id.id}}"
-                                                  class="oh-input payslip-checkbox oh-input__checkbox mt-2 mr-2 checkbox-row"
-                                                  onclick="event.stopPropagation()"
+                                                  class="oh-input payslip-checkbox oh-input__checkbox checkbox-row"
                                                   onchange="$(this).closest('.oh-sticky-table__tr').toggleClass('highlight-selected', $(this).is(':checked'))"
                                                 />
                                               </div>
+                                        </div>
+                                    </div>
+                                    <div class="oh-sticky-table__td">
+                                        <div class="oh-profile oh-profile--md">
                                             <div class="oh-profile__avatar mr-1">
                                                     <img src="{{candidate.candidate_id.get_avatar}}"
                                                         class="oh-profile__image" alt="" />
@@ -189,9 +192,9 @@
                                         </div>
                                     </div>
                                     <div class="oh-sticky-table__td">{{candidate.candidate_id.email}}</div>
-                                    <div class="oh-sticky-table__td" >{{candidate.candidate_id.job_position_id}}</div>
+                                    <div class="oh-sticky-table__td">{{candidate.candidate_id.job_position_id}}</div>
                                     <div class="oh-sticky-table__td">{{candidate.candidate_id.mobile}}</div>
-                                    <div class="oh-sticky-table__td" >{{candidate.candidate_id.joining_date}}</div>
+                                    <div class="oh-sticky-table__td dateformat_changer">{{candidate.candidate_id.joining_date}}</div>
                                     <div class="oh-sticky-table__td">
                                     <div class="oh-checkpoint-badge oh-checkpoint-badge--secondary" >
                                         {% if candidate.candidate_id.onboarding_portal.count %}
@@ -226,7 +229,7 @@
                                         {% endif %}
                                     </div>
                                     <div class="oh-sticky-table__td" onclick="event.stopPropagation()">
-                                        <button class="oh-checkpoint-badge text-success" data-toggle="oh-modal-toggle" data-target="#sendMailModal" hx-get="{% url 'onboarding-send-mail' candidate.candidate_id.id %}" hx-target="#sendMailModalBody">
+                                        <button class="oh-checkpoint-badge text-success" data-toggle="oh-modal-toggle" data-target="#sendMailModal" hx-get="{% url 'send-mail' candidate.candidate_id.id %}" hx-target="#sendMailModalBody">
                                             Send mail
                                         </button>
                                     </div>
