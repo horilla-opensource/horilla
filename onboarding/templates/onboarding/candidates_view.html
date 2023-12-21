@@ -19,38 +19,17 @@
     <h1 class="oh-main__titlebar-title fw-bold mb-0">
       {% trans "Hired Candidates" %}
     </h1>
-    <a
-      class="oh-main__titlebar-search-toggle"
-      role="button"
-      aria-label="Toggle Search"
-      @click="searchShow = !searchShow"
-    >
-      <ion-icon
-        name="search-outline"
-        class="oh-main__titlebar-serach-icon"
-      ></ion-icon>
+    <a class="oh-main__titlebar-search-toggle" role="button" aria-label="Toggle Search"
+      @click="searchShow = !searchShow">
+      <ion-icon name="search-outline" class="oh-main__titlebar-serach-icon"></ion-icon>
     </a>
   </div>
   <div class="oh-main__titlebar oh-main__titlebar--right">
     {% if candidates %}
-    <div
-      class="oh-input-group oh-input__search-group"
-      :class="searchShow ? 'oh-input__search-group--show' : ''"
-    >
-      <ion-icon
-        name="search-outline"
-        class="oh-input-group__icon oh-input-group__icon--left"
-      ></ion-icon>
-      <input
-        type="text"
-        class="oh-input oh-input__icon"
-        aria-label="Search Input"
-        placeholder="{% trans 'Search' %}"
-        name="name"
-        hx-get="{% url 'candidate-filter' %}"
-        hx-trigger="keyup"
-        hx-target="#candidates"
-      />
+    <div class="oh-input-group oh-input__search-group" :class="searchShow ? 'oh-input__search-group--show' : ''">
+      <ion-icon name="search-outline" class="oh-input-group__icon oh-input-group__icon--left"></ion-icon>
+      <input type="text" class="oh-input oh-input__icon" aria-label="Search Input" placeholder="{% trans 'Search' %}"
+        name="name" hx-get="{% url 'candidate-filter' %}" hx-trigger="keyup" hx-target="#candidates" />
     </div>
     <div class="oh-main__titlebar-button-container">
       <div class="oh-dropdown" x-data="{open: false}">
@@ -61,25 +40,15 @@
       </div>
 
       <div class="oh-btn-group ml-2">
-        <button
-          class="oh-btn oh-btn--primary oh-btn--shadow"
-          id="trigger-onboarding"
-        >
-          {% trans "Trigger Onboarding" %}
+        <button class="oh-btn oh-btn--info oh-btn--shadow" data-target="#addAttachments" data-toggle="oh-modal-toggle">
+          {% trans "Send Portal" %}
         </button>
-        <input
-          type="hidden"
-          name="csrfmiddlewaretoken"
-          value="{{ csrf_token }}"
-        />
+        <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}" />
       </div>
       {% endif %}
       <div class="oh-btn-group ml-2">
-        <a
-          href="{% url 'candidate-create' %}?onboarding=True"
-          class="oh-btn oh-btn--secondary oh-btn--shadow"
-          method="get"
-        >
+        <a href="{% url 'candidate-create' %}?onboarding=True" class="oh-btn oh-btn--secondary oh-btn--shadow"
+          method="get">
           <ion-icon name="add-outline" class="me-1"></ion-icon>
           {% trans "Create" %}
         </a>
@@ -88,77 +57,105 @@
   </div>
 </section>
 <div class="d-flex flex-row-reverse oh-wrapper">
-  <span class="m-3" onclick="$('[name=joining_set]').val('true'); $('[name=joining_set]').first().change(); $('.filterButton').click()" style="cursor: pointer">
+  <span class="m-3"
+    onclick="$('[name=joining_set]').val('true'); $('[name=joining_set]').first().change(); $('.filterButton').click()"
+    style="cursor: pointer">
     <span class="oh-dot oh-dot--small me-1" style="background-color:yellow"></span>
     Joining Set
   </span>
-  <span class="m-3" onclick="$('[name=joining_set]').val('false'); $('[name=joining_set]').first().change(); $('.filterButton').click()" style="cursor: pointer">
+  <span class="m-3"
+    onclick="$('[name=joining_set]').val('false'); $('[name=joining_set]').first().change(); $('.filterButton').click()"
+    style="cursor: pointer">
     <span class="oh-dot oh-dot--small me-1" style="background-color:burlywood"></span>
     Joining Not-Set
   </span>
-  <span class="m-3" onclick="$('[name=portal_sent]').val('false'); $('[name=portal_sent]').first().change(); $('.filterButton').click()" style="cursor: pointer">
+  <span class="m-3"
+    onclick="$('[name=portal_sent]').val('false'); $('[name=portal_sent]').first().change(); $('.filterButton').click()"
+    style="cursor: pointer">
     <span class="oh-dot oh-dot--small me-1" style="background-color:rgba(128, 128, 128, 0.482)"></span>
     Portal Not-Sent
   </span>
-  <span class="m-3" onclick="$('[name=portal_sent]').val('true'); $('[name=portal_sent]').first().change(); $('.filterButton').click()" style="cursor: pointer">
+  <span class="m-3"
+    onclick="$('[name=portal_sent]').val('true'); $('[name=portal_sent]').first().change(); $('.filterButton').click()"
+    style="cursor: pointer">
     <span class="oh-dot oh-dot--small me-1" style="background-color:yellowgreen"></span>
     Portal Sent
   </span>
+</div>
+<div id="messages" class="oh-alert-container">
+  
 </div>
 <div class="oh-wrapper" id="candidates">
   {% if candidates %}
   {% include 'onboarding/candidates.html' %}
   {% else %}
-      <div style="height: 70vh; display:flex;align-items: center;justify-content: center;" class="">
-          <div style="" class="">
-              <img style="width: 190px;height: 190px; margin:0 auto;" src="{% static 'images/ui/candidate.png' %}" class="oh-404__image d-block mb-4" alt="Page not found. 404."/>
-              <h5 class="oh-404__subtitle">{% trans "At present, There are no Candidates onboarding." %}</h5>
-          </div>
-      </div>
+  <div style="height: 70vh; display:flex;align-items: center;justify-content: center;" class="">
+    <div style="" class="">
+      <img style="width: 190px;height: 190px; margin:0 auto;" src="{% static 'images/ui/candidate.png' %}"
+        class="oh-404__image d-block mb-4" alt="Page not found. 404." />
+      <h5 class="oh-404__subtitle">{% trans "At present, There are no Candidates onboarding." %}</h5>
+    </div>
+  </div>
   {% endif %}
 </div>
+<div class="oh-modal" id="addAttachments" role="dialog" aria-labelledby="addAttachments" aria-hidden="true">
+  <div class="oh-modal__dialog">
+    <div class="oh-modal__dialog-header">
+      <span class="oh-modal__dialog-title" id="addEmployeeModalLabel">Attachments <span
+          style="color: #80808080;font-size: 14px;">(Optional)</span></span>
+      <button class="oh-modal__close" aria-label="Close">
+        <ion-icon name="close-outline"></ion-icon>
+      </button>
+    </div>
+    <form hx-post="{% url 'email-send' %}" hx-target="#addAttachmentsBody" hx-encoding="multipart/form-data">
+      <div class="oh-modal__dialog-body" id="addAttachmentsBody">
+        <section>
+          <div id="keyResultsContainer">
+            <div class="my-3" id="keyResultCard">
+              <div class="oh-card oh-card--no-shadow oh-card__body">
 
+                <div class="oh-input__group">
+                  <select name="ids" id="hired_candidates" multiple class="w-100" hidden>
+                    {% for candidate in hired_candidates %}
+                    <option value="{{candidate.id}}">{{candidate.name}}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+                <div class="oh-input__group">
+                  <label class="oh-input__label mt-0" for="keyTitle">Template as Attachments</label>
+                  <select name="template_attachment_ids" id="template_attachment_ids" multiple
+                    class="oh-select oh-select-2 w-100">
+                    {% for template in mail_templates %}
+                    <option value="{{template.id}}">{{template.title}}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+                <div class="oh-input__group">
+                  <label class="oh-input__label" for="keyDesc">Other Attachments</label>
+                  <input type="file" multiple name="other_attachments" id="other_attachments">
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+      <div class="oh-modal__dialog-footer">
+        <button type="submit" onclick="$('.oh-modal#addAttachments').removeClass('oh-modal--show');$(`#messages`).html(
+          $(`
+          <div class='oh-alert oh-alert--animated oh-alert--info'>
+            Processing...
+          </div>
+          `)
+        )"
+          class="oh-btn oh-btn--secondary oh-btn--shadow" id="trigger-onboarding">
+          Send Portal Link
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
 <script>
-  $("#trigger-onboarding").on("click", function () {
-    var array = [];
-    $(".checkboxAll:checked").each(function () {
-      array.push($(this).attr("id"));
-    });
-    if (array.length) {
-      $("#message").empty();
-      $("#message").append(`
-            <div class="oh-alert oh-alert--animated oh-alert--success">
-                Processing
-            </div>`);
-      $.ajax({
-        url: "{% url 'email-send' %}",
-        data: {
-          ids: array,
-        },
-        traditional: true,
-        success: function (response) {
-          $("#message").empty();
-          $("#message").append(`
-                  <div class="oh-alert oh-alert--animated oh-alert--success">
-                      Candidate portal link sent.
-                  </div>`);
-          if (response.tags == "success") {
-            setTimeout(function () {
-              // Code to be executed after the delay
-              location.reload();
-            }, 2000);
-          }
-        },
-      });
-    } else {
-      $("#message").append(`
-            <div class="oh-alert oh-alert--animated oh-alert--info">
-                Please select candidates
-            </div>`);
-    }
-  });
-
-  function checkRow(element){
+  function checkRow(element) {
     if (element.checked) {
       $(".checkboxAll").each(function () {
         $(".checkboxAll").prop("checked", true);
@@ -169,8 +166,14 @@
       });
     }
   }
-  $("#selectAll").on("click", function () {
+  $("#selectAll").click("click", function () {
     checkRow(this)
+    var checkedIds = []
+    $.each($(".checkboxAll:checked"), function (indexInArray, valueOfElement) {
+      checkedIds.push($(valueOfElement).attr("id"))
+    });
+    $("#hired_candidates[name=ids]").val(checkedIds);
+    $("select[name=ids]").change()
   });
 
   $("#delete-link").on("click", function (event) {

@@ -13,6 +13,7 @@ provide the main entry points for interacting with the application's functionali
 
 from urllib.parse import parse_qs
 import json, contextlib, random, secrets
+from django import template
 from django.core.mail import EmailMessage
 from django.template.loader import render_to_string
 from django.core.mail import send_mail
@@ -30,8 +31,8 @@ from notifications.signals import notify
 from horilla import settings
 from horilla.decorators import login_required, hx_request_required
 from horilla.decorators import permission_required
-from base.methods import get_key_instances
-from recruitment.models import Candidate, Recruitment
+from base.methods import generate_pdf, get_key_instances
+from recruitment.models import Candidate, Recruitment, RecruitmentMailTemplate
 from recruitment.filters import CandidateFilter
 from employee.models import Employee, EmployeeWorkInformation, EmployeeBankDetails
 from django.db.models import ProtectedError
@@ -481,6 +482,7 @@ def candidates_view(request):
     previous_data = request.GET.urlencode()
     page_number = request.GET.get("page")
     page_obj = paginator_qry(queryset, page_number)
+    mail_templates = RecruitmentMailTemplate.objects.all()
     return render(
         request,
         "onboarding/candidates_view.html",
@@ -488,6 +490,8 @@ def candidates_view(request):
             "candidates": page_obj,
             "form": candidate_filter_obj.form,
             "pd": previous_data,
+            "mail_templates": mail_templates,
+            "hired_candidates": queryset,
         },
     )
 
@@ -556,9 +560,44 @@ def email_send(request):
     """
     host = request.get_host()
     protocol = "https" if request.is_secure() else "http"
-    candidates = request.GET.getlist("ids")
+    candidates = request.POST.getlist("ids")
+    other_attachments = request.FILES.getlist("other_attachments")
+    template_attachment_ids = request.POST.getlist("template_attachment_ids")
+    print(candidates)
+    if not candidates:
+        messages.info(request, "Please choose chandidates")
+        return HttpResponse("<script>window.location.reload()</script>")
+
+    bodys = list(
+        RecruitmentMailTemplate.objects.filter(
+            id__in=template_attachment_ids
+        ).values_list("body", flat=True)
+    )
+
+    if not candidates:
+        messages.info(request, "Please choose candidates")
+
+    attachments_other = []
+    for file in other_attachments:
+        attachments_other.append((file.name, file.read(), file.content_type))
+        file.close()
     for cand_id in candidates:
+        attachments = list(set(attachments_other) | set([]))
         candidate = Candidate.objects.get(id=cand_id)
+        for html in bodys:
+            # due to not having solid template we first need to pass the context
+            template_bdy = template.Template(html)
+            context = template.Context(
+                {"instance": candidate, "self": request.user.employee_get}
+            )
+            render_bdy = template_bdy.render(context)
+            attachments.append(
+                (
+                    "Document",
+                    generate_pdf(render_bdy, {}, path=False, title="Document").content,
+                    "application/pdf",
+                )
+            )
         token = secrets.token_hex(15)
         existing_portal = OnboardingPortal.objects.filter(candidate_id=candidate)
         if existing_portal.exists():
@@ -584,16 +623,16 @@ def email_send(request):
             [candidate.email],
         )
         email.content_subtype = "html"
+        email.attachments = attachments
         try:
             email.send()
             # to check ajax or not
-            if not request.headers.get("x-requested-with") == "XMLHttpRequest":
-                messages.success(request, "Portal link sent to the candidate")
+            messages.success(request, "Portal link sent to the candidate")
         except:
             messages.error(request, f"Mail not send to {candidate.name}")
         candidate.start_onboard = True
         candidate.save()
-    return redirect(candidates_view)
+    return HttpResponse("<script>window.location.reload()</script>")
 
 
 @login_required

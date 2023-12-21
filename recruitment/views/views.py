@@ -11,7 +11,8 @@ This module is part of the recruitment project and is intended to
 provide the main entry points for interacting with the application's functionality.
 """
 
-from datetime import date, datetime
+from django import template
+from django.core.mail import EmailMessage
 import os
 import json
 import contextlib
@@ -21,18 +22,22 @@ from django.db.models import Q
 from django.http import JsonResponse, HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.core import serializers
-import pandas as pd
 from base.models import JobPosition
 from django.contrib import messages
 from django.views.decorators.http import require_http_methods
-from django.core.mail import send_mail
 from django.utils.translation import gettext_lazy as _
 from notifications.signals import notify
 from horilla import settings
 from horilla.decorators import permission_required, login_required, hx_request_required
-from base.methods import export_data, get_key_instances
+from base.methods import export_data, generate_pdf, get_key_instances
 from recruitment.views.paginator_qry import paginator_qry
-from recruitment.models import Recruitment, Candidate, Stage, StageNote
+from recruitment.models import (
+    RecruitmentMailTemplate,
+    Recruitment,
+    Candidate,
+    Stage,
+    StageNote,
+)
 from recruitment.filters import (
     CandidateFilter,
     CandidateReGroup,
@@ -998,8 +1003,11 @@ def form_send_mail(request, cand_id):
     This method is used to render the bootstrap modal content body form
     """
     candidate_obj = Candidate.objects.get(id=cand_id)
+    templates = RecruitmentMailTemplate.objects.all()
     return render(
-        request, "pipeline/pipeline_components/send_mail.html", {"cand": candidate_obj}
+        request,
+        "pipeline/pipeline_components/send_mail.html",
+        {"cand": candidate_obj, "templates": templates},
     )
 
 
@@ -1009,29 +1017,57 @@ def send_acknowledgement(request):
     """
     This method is used to send acknowledgement mail to the candidate
     """
-    with contextlib.suppress(Exception):
-        send_to = request.POST.get("to")
-        subject = request.POST.get("subject")
-        bdy = request.POST.get("body")
-        res = send_mail(
-            subject, bdy, settings.EMAIL_HOST_USER, [send_to], fail_silently=False
-        )
-        if res == 1:
-            return HttpResponse(
-                """
-            <div class="oh-alert-container">
-                <div class="oh-alert oh-alert--animated oh-alert--success"> Mail sent.</div>
-            </div>
-            """
-            )
-    return HttpResponse(
-        """
-        <div class="oh-alert-container">
-            <div class="oh-alert oh-alert--animated oh-alert--danger">Sorry,\
-                Something went wrong.</div>
-        </div>
-        """
+    candidate_id = request.POST["id"]
+    subject = request.POST.get("subject")
+    bdy = request.POST.get("body")
+    other_attachments = request.FILES.getlist("other_attachments")
+    attachments = [
+        (file.name, file.read(), file.content_type) for file in other_attachments
+    ]
+    host = settings.EMAIL_HOST_USER
+    candidate_obj = Candidate.objects.get(id=candidate_id)
+    template_attachment_ids = request.POST.getlist("template_attachments")
+    bodys = list(
+        RecruitmentMailTemplate.objects.filter(
+            id__in=template_attachment_ids
+        ).values_list("body", flat=True)
     )
+    for html in bodys:
+        # due to not having solid template we first need to pass the context
+        template_bdy = template.Template(html)
+        context = template.Context(
+            {"instance": candidate_obj, "self": request.user.employee_get}
+        )
+        render_bdy = template_bdy.render(context)
+        attachments.append(
+            (
+                "Document",
+                generate_pdf(render_bdy, {}, path=False, title="Document").content,
+                "application/pdf",
+            )
+        )
+
+    template_bdy = template.Template(bdy)
+    context = template.Context(
+        {"instance": candidate_obj, "self": request.user.employee_get}
+    )
+    render_bdy = template_bdy.render(context)
+
+    email = EmailMessage(
+        subject,
+        render_bdy,
+        host,
+        [candidate_obj.email],
+    )
+    email.content_subtype = "html"
+
+    email.attachments = attachments
+    try:
+        email.send()
+        messages.success(request, "Mail sent to candidate")
+    except Exception as e:
+        messages.error(request, "Something went wrong")
+    return HttpResponse("<script>window.location.reload()</script>")
 
 
 @login_required
