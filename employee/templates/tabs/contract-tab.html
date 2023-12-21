@@ -28,8 +28,8 @@
 
                 <div class="oh-sticky-table__tr" draggable="true" data-toggle="oh-modal-toggle" data-target = "#ContractModal" hx-get="{% url 'single-contract-view' contract.id %}" hx-target = "#OneContractTarget">
                     <div class="oh-sticky-table__sd  {% if contract.contract_status == "active" %} row-status--yellow {% elif contract.contract_status == 'draft' %} row-status--purple {% elif contract.contract_status == 'expired' %} row-status--red {% elif contract.contract_status == 'terminated' %} row-status--black {% endif %}">{{ contract.contract_name }}</div>
-                    <div class="oh-sticky-table__td">{{ contract.contract_start_date}}</div>
-                    <div class="oh-sticky-table__td">
+                    <div class="oh-sticky-table__td dateformat_changer">{{ contract.contract_start_date}}</div>
+                    <div class="oh-sticky-table__td dateformat_changer">
                         {% if contract.contract_end_date %}{{ contract.contract_end_date}}{% endif %}
                     </div>
                     <div class="oh-sticky-table__td">

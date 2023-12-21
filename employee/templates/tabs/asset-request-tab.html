@@ -32,7 +32,7 @@
             </div>
           </div>
           <div class="oh-sticky-table__td">{{asset_request.asset_category_id}}</div>
-          <div class="oh-sticky-table__td">{{ asset_request.asset_request_date }}</div>
+          <div class="oh-sticky-table__td dateformat_changer">{{ asset_request.asset_request_date }}</div>
           <div class="oh-sticky-table__td">
             <div class="d-flex align-items-center">
               <span
@@ -104,7 +104,7 @@
                   <div class="oh-timeoff-modal__stats-container">
                     <div class="oh-timeoff-modal__stat">
                       <span class="oh-timeoff-modal__stat-title">{% trans "Requested Date" %}</span>
-                      <span class="oh-timeoff-modal__stat-count">{{asset_request.asset_request_date}}</span>
+                      <span class="oh-timeoff-modal__stat-count dateformat_changer">{{asset_request.asset_request_date}}</span>
                     </div>
                     <div class="oh-timeoff-modal__stat">
                       <span class="oh-timeoff-modal__stat-title">{% trans "Category" %}</span>

@@ -15,7 +15,7 @@
 							<ion-icon name="calendar-outline"></ion-icon>
 							<span>{% trans "Date of Birth" %}</span>
 						</span>
-						<span class="oh-profile__info-value">{{employee.dob}}</span>
+						<span class="oh-profile__info-value dateformat_changer">{{employee.dob}}</span>
 					</li>
 					<li class="oh-profile__card-info-item">
 						<span class="oh-profile__info-label mb-1">
@@ -211,7 +211,7 @@
 												<ion-icon name="calendar-outline"></ion-icon>
 												<span>{% trans "End Date" %}</span>
 											</span>
-											<span class="oh-profile__info-value"
+											<span class="oh-profile__info-value dateformat_changer"
 												>{{employee.employee_work_info.contract_end_date}}</span
 											>
 										</li>
@@ -266,9 +266,9 @@
 										<li class="oh-profile__card-info-item">
 											<span class="oh-profile__info-label mb-1">
 												<ion-icon name="calendar-outline"></ion-icon>
-												<span>{% trans "Start Date" %}</span>
+												<span>{% trans "Joining Date" %}</span>
 											</span>
-											<span class="oh-profile__info-value"
+											<span class="oh-profile__info-value dateformat_changer"
 												>{{employee.employee_work_info.date_joining}}</span
 											>
 										</li>
