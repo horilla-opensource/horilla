@@ -113,6 +113,48 @@ class Employee(models.Model):
             else self.employee_first_name
         )
 
+    def get_company(self):
+        """
+        This method is used to return the company of the employee
+        """
+        return getattr(getattr(self, "employee_work_info", None), "company_id", None)
+
+    def get_job_position(self):
+        """
+        This method is used to return the job position of the employee
+        """
+        return getattr(
+            getattr(self, "employee_work_info", None), "job_position_id", None
+        )
+
+    def get_shift(self):
+        """
+        This method is used to return the shift of the employee
+        """
+        return getattr(getattr(self, "employee_work_info", None), "shift_id", None)
+
+    def get_work_type(self):
+        """
+        This method is used to return the work type of the employee
+        """
+        return getattr(getattr(self, "employee_work_info", None), "work_type_id", None)
+
+    def get_employee_type(self):
+        """
+        This method is used to return the employee type of the employee
+        """
+        return getattr(
+            getattr(self, "employee_work_info", None), "employee_type_id", None
+        )
+
+    def get_reporting_manager(self):
+        """
+        This method is used to return the employee type of the employee
+        """
+        return getattr(
+            getattr(self, "employee_work_info", None), "reporting_manager_id", None
+        )
+
     def get_avatar(self):
         """
         Method will retun the api to the avatar or path to the profile image
