@@ -10,6 +10,7 @@ from recruitment.models import (
     Candidate,
     RecruitmentSurvey,
     RecruitmentSurveyAnswer,
+    RecruitmentMailTemplate
 )
 
 
@@ -21,3 +22,4 @@ admin.site.register(Recruitment)
 admin.site.register(Candidate)
 admin.site.register(RecruitmentSurveyAnswer)
 admin.site.register(RecruitmentSurvey)
+admin.site.register(RecruitmentMailTemplate)

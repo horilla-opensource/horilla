@@ -450,8 +450,11 @@ def check_owner(employee, instance):
         return False
 
 
-def generate_pdf(template_path, context):
-    html = render_to_string(template_path, context)
+def generate_pdf(template_path, context, path=True,title=None):
+    html = template_path
+    title = f"""{context.get("employee")}'s payslip for {context.get("range")}.pdf""" if not title else title
+    if path:
+        html = render_to_string(template_path, context)
 
     result = io.BytesIO()
     pdf = pisa.pisaDocument(io.BytesIO(html.encode("utf-8")), result)
@@ -460,6 +463,6 @@ def generate_pdf(template_path, context):
         response = HttpResponse(result.getvalue(), content_type="application/pdf")
         response[
             "Content-Disposition"
-        ] = f'''attachment;filename="{context.get("employee")}'s payslip for {context.get("range")}.pdf"'''
+        ] = f'''attachment;filename="{title}"'''
         return response
     return None

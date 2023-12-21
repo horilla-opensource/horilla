@@ -33,9 +33,11 @@ from recruitment.models import (
     StageNote,
     JobPosition,
     RecruitmentSurvey,
+    RecruitmentMailTemplate,
 )
 from recruitment import widgets
 from base.methods import reload_queryset
+
 
 class ModelForm(forms.ModelForm):
     """
@@ -575,3 +577,18 @@ class CandidateExportForm(forms.Form):
             "joining_date",
         ],
     )
+
+
+class OfferLetterForm(ModelForm):
+    """
+    OfferLetterForm
+    """
+
+    class Meta:
+        model = RecruitmentMailTemplate
+        fields = "__all__"
+        widgets = {
+            "body": forms.Textarea(
+                attrs={"data-summernote": "", "style": "display:none;"}
+            ),
+        }

@@ -1,39 +1,120 @@
-  {% load i18n %}
-  <div id="ack-message-{{cand.id}}" >
-  </div>
-  <form hx-post='{% url "send-acknowledgement" %} ' class="oh-general__tab-target oh-profile-section" id = 'ack-form-{{cand.id}}' hx-target="#ack-message-{{cand.id}}" hx-replace-all>
+{% load i18n %}
+<div id="ack-message-{{cand.id}}">
+</div>
+<form hx-post='{% url "send-acknowledgement" %} ' class="oh-general__tab-target oh-profile-section"
+  id='ack-form-{{cand.id}}' hx-target="#ack-message-{{cand.id}}" hx-encoding="multipart/form-data">
+  <input type="hidden" value="{{cand.id}}" name="id">
   <div class="modal-body">
-    <div class="form-group">
-      <label for="to-email"><h6>{% trans "To" %}</h6></label>
-      <input type="email" value="{{cand.email}}"name='to' required class="oh-input w-100" id="to-email" placeholder="Enter email">
+    <div class="oh-timeoff-modal__profile-content">
+      <div class="oh-profile mb-2">
+        <div class="oh-profile__avatar">
+          <img src="https://ui-avatars.com/api/?name={{cand.name}}&amp;background=random"
+            class="oh-profile__image me-2">
+        </div>
+        <div class="oh-timeoff-modal__profile-info">
+          <span class="oh-timeoff-modal__user fw-bold">{{cand.name}}</span>
+          <span class="oh-timeoff-modal__user m-0" style="font-size: 18px; color: #4d4a4a">
+            {{cand.job_position_id.job_position}} /
+            {{cand.recruitment_id}}</span>
+        </div>
+      </div>
     </div>
-    <div class="form-group">
-      <label for="subject"><h6>{% trans "Subject" %}</h6></label>
-      <input type="text" value="Congratulations..."name='subject' class="oh-input w-100" id="subject" placeholder="Subject">
+    <div class="form-group mt-2">
+      <label for="subject">
+        <h6>{% trans "Subject" %}</h6>
+      </label>
+      <input required type="text" placeholder="Congrats..." name='subject' class="oh-input w-100" id="subject"
+        placeholder="Subject">
     </div>
-    <div class="form-group">
-      <label for="body"><h6>{% trans "Message Body" %}</h6></label>
-      <textarea name="body" required class="oh-input w-100"   id="body" cols="30" rows="2">
-      </textarea>          
-    </div>        
+    <div class="form-group mt-2">
+      <label for="template">
+        <h6>{% trans "Template" %}</h6>
+      </label>
+      <select name="template" class="w-100 oh-select" id="template">
+        <option value="">----</option>
+        {% for template in templates %}
+        <option value="{{template.id}}">{{template.title}}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="form-group mt-2">
+      <label for="body">
+        <h6>{% trans "Message Body" %}</h6>
+      </label>
+      <textarea hidden data-summernote name="body" required class="oh-input w-100" id="body" cols="30"
+        rows="2"></textarea>
+    </div>
+    <div class="form-group mt-2">
+      <label for="template_attachments">
+        <h6>{% trans "Template as Attachment" %}</h6>
+      </label>
+      <select name="template_attachments" class="w-100 oh-select" id="template_attachments" multiple>
+        {% for template in templates %}
+        <option value="{{template.id}}">{{template.title}}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="form-group mt-2">
+      <label for="other_attachments">
+        <h6>{% trans "Other Attachments" %}</h6>
+      </label>
+      <input type="file" name="other_attachments" id="other_attachments" multiple style="display: block;">
+    </div>
     <div class="modal-footer d-flex flex-row-reverse mt-3">
-      <input type="submit"   class="oh-btn oh-btn--secondary submit-send" data-message-id="ack-message-{{cand.id}}" name="submit" id="submit" onclick="sendMail()" value="{% trans 'Send Mail' %}">
+      <input type="submit" class="oh-btn oh-btn--secondary submit-send" data-message-id="ack-message-{{cand.id}}"
+        name="submit" id="submit" onclick="sendMail()" value="{% trans 'Send Mail' %}">
     </div>
-  </form>
+</form>
 
-  
+
 
 
 <script>
-    button = document.querySelector('.submit-send')
-    button.onclick = function(event) {
+  button = document.querySelector('.submit-send')
+  button.onclick = function (event) {
     var element = event.target;
-    messageId = $(element).attr('data-message-id');
-      $(`#${messageId}`).append(`
-      <div class="alert alert-primary m-2" role="alert">
-        Processing...
+    var valid = true
+    if (!$("#subject").val().length) {
+      valid=false
+      $(`#messages`).html($(`
+      <div class="oh-alert oh-alert--animated oh-alert--danger" role="alert">
+        The message subject is required
         </div>
-        `);
-  };    
+        `));
+    }
+    else if (!$("#body").val().length) {
+      valid=false
+      $(`#messages`).html($(`
+      <div class="oh-alert oh-alert--animated oh-alert--danger" role="alert">
+        The message body is required
+        </div>
+        `));
+    }
+    if (valid) {
+      
+      $(`#messages`).html($(`
+        <div class="oh-alert oh-alert--animated oh-alert--info" role="alert">
+          Processing...
+          </div>
+          `));
+    }
+  };
+  $(document).ready(function () {
+    $("#template").change(function (e) {
+      var id = $(this).val();
+      if (id.length) {
+        $.ajax({
+          type: "get",
+          url: `/recruitment/get-template/${id}/`,
+          data: { "candidate_id": "{{cand.id}}" },
+          dataType: "Json",
+          success: function (response) {
+            console.log(response.body);
+            $('#ack-form-{{cand.id}} [name="body"]').html(response.body).change()
+            $('#ack-form-{{cand.id}} [class="note-editable"]').html(response.body)
+          }
+        });
+      }
+    });
+  });
 </script>
-  

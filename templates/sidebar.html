@@ -137,7 +137,18 @@
                 >{% trans "Recruitment Survey" %}</a
               >
             </li>
-            {% endif %} {% if perms.recruitment.view_candidate %}
+            {% endif %} 
+            {% if perms.recruitment.view_offerlettertemplate %}
+            <li class="oh-sidebar__submenu-item">
+              <a
+                class="oh-sidebar__submenu-link"
+                href="{% url 'view-mail-templates' %}"
+                class="oh-sidebar__submenu-link"
+                >{% trans "Mail Templates" %}</a
+              >
+            </li>
+            {% endif %}
+            {% if perms.recruitment.view_candidate %}
             <li class="oh-sidebar__submenu-item">
               <a
                 class="oh-sidebar__submenu-link"
