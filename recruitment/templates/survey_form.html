@@ -1,4 +1,5 @@
 {% load i18n %}{% load widget_tweaks %} {% load attendancefilters %}
+{% load static %}
 <style>
   .question-container {
     padding: 0px;
@@ -72,13 +73,26 @@
                 {% else %}
                   <span class="oh-label oh-label--question">{{ question.question }}</span>
                 {% endif %}
-                <input
+                <div class="oh-container oh-container--outline my-2">
+                  {% comment %} <input class="oh-input oh-input--small oh-input--block px-0" min="0" value="$3.00" > {% endcomment %}
+                  <input
                   type="number"
-                  class="oh-input w-100"
+                  class="oh-input oh-input oh-input--small oh-input--block px-0"
+                  style="width: 70px; text-align: center;"
+                  min="0"
+                  value="0"
+                  max="100"
                   name="percentage_{{question.question}}"
                   id="id_{{question.id}}"
                   {% if question.is_mandatory %}required{% endif %}
                 />
+                  <input
+                  type="text"
+                  class="oh-input w-25 oh-input oh-input--small oh-input--block px-0"
+                  value="%"
+                  readonly
+                />
+                </div>
               </div>
             {% elif question.type == "file" %}
               <div class="d-block">
@@ -124,21 +138,23 @@
                 {% else %}
                   <span class="oh-label oh-label--question">{{ question.question }}</span>
                 {% endif %}
-                <div class="oh-switch mb-3 p-0">
-                  <input
-                    type="hidden"
-                    name="{{ question.question }}"
-                    value="off"
-                    {% if question.is_mandatory %}required{% endif %}
-                  /> 
-                  <input
-                    type="{{question.type}}"
-                    class="oh-switch__checkbox oh-switch__checkbox"
-                    name="{{question.question}}"
-                    id="id_{{question.id}}"
-                    {% if question.is_mandatory %}required{% endif %}
-                  />
+                <div class="oh-input-picker-group">
+                  <div class="oh-input-picker oh-input-picker--sm oh-input-picker--selected" style="width: 80px;">
+                    <span>
+                      <ion-icon name="checkmark-circle-outline"></ion-icon>
+                      Yes
+                    </span>
+                    <input type="radio" name="{{ question.question }}" value="Yes" selected>
+                  </div>
+                  <div class="oh-input-picker oh-input-picker--sm" style="width: 80px;">
+                    <span>
+                    <ion-icon name="close-circle-outline"></ion-icon>
+                    No
+                    </span>
+                    <input type="radio" name="{{ question.question }}" value="No">
+                  </div>
                 </div>
+
               </div>
             {% else %}
               <div class="d-block">
