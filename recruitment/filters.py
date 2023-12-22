@@ -35,6 +35,10 @@ class CandidateFilter(FilterSet):
         lookup_expr="gte",
         widget=forms.DateInput(attrs={"type": "date"}),
     )
+    schedule_date = django_filters.DateFilter(
+        field_name="schedule_date",
+        widget=forms.DateInput(attrs={"type": "date"}),
+    )
     scheduled_till = django_filters.DateFilter(
         field_name="joining_date",
         lookup_expr="lte",
