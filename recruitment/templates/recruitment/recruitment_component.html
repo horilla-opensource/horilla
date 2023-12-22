@@ -1,17 +1,7 @@
 {% load basefilters %}
 {% load static %}
 {% load i18n %}
-{% if messages %}
-<div class="oh-wrapper">
-    {% for message in messages %}
-    <div class="oh-alert-container">
-        <div class="oh-alert oh-alert--animated {{message.tags}}">
-        {{ message }}
-        </div>
-    </div>
-    {% endfor %}
-</div>
-{% endif %}
+
 <style>
   .count-span{
     width: 100%;
