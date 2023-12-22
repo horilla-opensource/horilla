@@ -23,17 +23,7 @@
 
 {% include 'pipeline/pipeline_tabs.html' %}
 <div id="ohMessages"></div>
-{% if messages %}
-<div class="oh-wrapper">
-    {% for message in messages %}
-    <div class="oh-alert-container">
-        <div class="oh-alert oh-alert--animated {{message.tags}}">
-        {{ message }}
-        </div>
-    </div>
-    {% endfor %}
-</div>
-{% endif %}
+
 <div id="update-message"></div>
 {% for rec in recruitment %}
 {% if request.user|stage_manages:rec or perms.recruitment.view_stage %}
