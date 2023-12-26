@@ -2,6 +2,7 @@
 asset.py
 
 This module is used to """
+from datetime import date, datetime
 import json
 from django.db.models import Q
 from urllib.parse import parse_qs
@@ -13,6 +14,8 @@ from django.contrib import messages
 from django.core.paginator import Paginator
 from django.utils.translation import gettext_lazy as _
 from base.methods import closest_numbers, get_key_instances
+from base.models import Company
+from employee.models import EmployeeWorkInformation
 from notifications.signals import notify
 from horilla.decorators import login_required, hx_request_required
 from horilla.decorators import permission_required
@@ -938,6 +941,48 @@ def asset_export_excel(request):
         for field in fields_to_check:
             # Get the value of the field for the current asset
             value = getattr(asset, field)
+
+                       
+            if type(value) == date:
+                user= request.user
+                emp = user.employee_get
+
+                # Taking the company_name of the user
+                info = EmployeeWorkInformation.objects.filter(employee_id=emp)
+                if info.exists():
+                    for i in info:
+                        employee_company = i.company_id
+                    company_name = Company.objects.filter(company=employee_company)
+                    emp_company = company_name.first()
+
+                    # Access the date_format attribute directly
+                    date_format = emp_company.date_format
+                else:
+                    date_format = 'MMM. D, YYYY'
+                # Define date formats
+                date_formats = {
+                    'DD-MM-YYYY': '%d-%m-%Y',
+                    'DD.MM.YYYY': '%d.%m.%Y',
+                    'DD/MM/YYYY': '%d/%m/%Y',
+                    'MM/DD/YYYY': '%m/%d/%Y',
+                    'YYYY-MM-DD': '%Y-%m-%d',
+                    'YYYY/MM/DD': '%Y/%m/%d',
+                    'MMMM D, YYYY': '%B %d, %Y',
+                    'DD MMMM, YYYY': '%d %B, %Y',
+                    'MMM. D, YYYY': '%b. %d, %Y',
+                    'D MMM. YYYY': '%d %b. %Y',
+                    'dddd, MMMM D, YYYY': '%A, %B %d, %Y',
+                }
+
+                # Convert the string to a datetime.date object
+                start_date = datetime.strptime(str(value), '%Y-%m-%d').date()
+
+                # Print the formatted date for each format
+                for format_name, format_string in date_formats.items():
+                    if format_name == date_format:
+                        value = start_date.strftime(format_string)
+
+
 
             # Append the value if it exists, or append None if it's None
             data[field].append(value if value is not None else None)
