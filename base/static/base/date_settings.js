@@ -18,5 +18,10 @@ function saveDateFormatToBackend(selectedFormat) {
       success: function(response) {
         window.location.reload();
       },
+      error: function (xhr, textStatus, errorThrown) {
+        // Handle the error here
+        console.error('Error:', errorThrown);
+        window.location.reload();
+      },
   });
 }

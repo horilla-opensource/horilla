@@ -34,12 +34,12 @@
     </button>
     <div class="oh-timeoff-modal__stats-container mb-3">
       <div class="oh-timeoff-modal__stat">
-          <span class="oh-timeoff-modal__stat-title">{% trans "Work type" %}</span>
-          <span class="oh-timeoff-modal__stat-count">{{shift_request.work_type_id}}</span>
+          <span class="oh-timeoff-modal__stat-title">{% trans "Requested shift" %}</span>
+          <span class="oh-timeoff-modal__stat-count">{{shift_request.shift_id}}</span>
       </div>
       <div class="oh-timeoff-modal__stat" style="margin-left: 20px;">
-          <span class="oh-timeoff-modal__stat-title">{% trans "Previous work type" %}</span>
-          <span class="oh-timeoff-modal__stat-count">{{shift_request.previous_work_type_id}}</span>
+          <span class="oh-timeoff-modal__stat-title">{% trans "Previous shift" %}</span>
+          <span class="oh-timeoff-modal__stat-count">{{shift_request.previous_shift_id}}</span>
       </div>
     </div>
     <div class="oh-timeoff-modal__stats-container mb-3">

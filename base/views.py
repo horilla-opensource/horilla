@@ -3126,31 +3126,35 @@ def save_date_format(request):
 
         # Taking the selected Date Format
         selected_format = request.POST.get('selected_format')
-        user= request.user
-        employee = user.employee_get
 
-        # Taking the company_name of the user
-        info = EmployeeWorkInformation.objects.filter(employee_id=employee)
-        # Employee workinformation will not exists if he/she chnged the company, So can't save the date format.
-        if info.exists():
-            for data in info:
-                employee_company = data.company_id
-
-            company_name = Company.objects.filter(company=employee_company)
-            emp_company = company_name.first()
-
-            # Save the selected format to the backend
-            emp_company.date_format = selected_format
-            emp_company.save()
-            messages.success(request, _('Date format saved successfully.'))
+        if not len(selected_format):
+            messages.error(request, _('Please select a date format.'))
         else:
-            messages.warning(request, _('Date format cannot saved. You are not in the company.'))
+            user= request.user
+            employee = user.employee_get
 
-        # Return a JSON response indicating success
-        return JsonResponse({'success': True})
+            # Taking the company_name of the user
+            info = EmployeeWorkInformation.objects.filter(employee_id=employee)
+            # Employee workinformation will not exists if he/she chnged the company, So can't save the date format.
+            if info.exists():
+                for data in info:
+                    employee_company = data.company_id
+
+                company_name = Company.objects.filter(company=employee_company)
+                emp_company = company_name.first()
+
+                # Save the selected format to the backend
+                emp_company.date_format = selected_format
+                emp_company.save()
+                messages.success(request, _('Date format saved successfully.'))
+            else:
+                messages.warning(request, _('Date format cannot saved. You are not in the company.'))
+
+            # Return a JSON response indicating success
+            return JsonResponse({'success': True})
 
     # Return a JSON response for unsupported methods
-    return JsonResponse({'success': False, 'error': 'Unsupported method'}, status=405)
+    return JsonResponse({'error': False, 'error': 'Unsupported method'}, status=405)
 
 
 @login_required

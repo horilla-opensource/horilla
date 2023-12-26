@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, datetime
 import io
 import json
 import random
@@ -11,7 +11,8 @@ from django.template.loader import render_to_string
 from django.utils.translation import gettext as _
 import pandas as pd
 from xhtml2pdf import pisa
-from employee.models import Employee
+from base.models import Company
+from employee.models import Employee, EmployeeWorkInformation
 from horilla.decorators import login_required
 
 
@@ -403,6 +404,45 @@ def export_data(request, model, form_class, filter_class, file_name):
                     value = " "
                 if field_name == "month":
                     value = _(value.title())
+                if type(value) == date:
+                    user= request.user
+                    employee = user.employee_get
+
+                    # Taking the company_name of the user
+                    info = EmployeeWorkInformation.objects.filter(employee_id=employee)
+                    if info.exists():
+                        for data in info:
+                            employee_company = data.company_id
+                        company_name = Company.objects.filter(company=employee_company)
+                        emp_company = company_name.first()
+
+                        # Access the date_format attribute directly
+                        date_format = emp_company.date_format
+                    else:
+                        date_format = 'MMM. D, YYYY'
+                    # Define date formats
+                    date_formats = {
+                        'DD-MM-YYYY': '%d-%m-%Y',
+                        'DD.MM.YYYY': '%d.%m.%Y',
+                        'DD/MM/YYYY': '%d/%m/%Y',
+                        'MM/DD/YYYY': '%m/%d/%Y',
+                        'YYYY-MM-DD': '%Y-%m-%d',
+                        'YYYY/MM/DD': '%Y/%m/%d',
+                        'MMMM D, YYYY': '%B %d, %Y',
+                        'DD MMMM, YYYY': '%d %B, %Y',
+                        'MMM. D, YYYY': '%b. %d, %Y',
+                        'D MMM. YYYY': '%d %b. %Y',
+                        'dddd, MMMM D, YYYY': '%A, %B %d, %Y',
+                    }
+
+                    # Convert the string to a datetime.date object
+                    start_date = datetime.strptime(str(value), '%Y-%m-%d').date()
+
+                    # Print the formatted date for each format
+                    for format_name, format_string in date_formats.items():
+                        if format_name == date_format:
+                            value = start_date.strftime(format_string)
+
                 data_export[verbose_name].append(value)
 
     data_frame = pd.DataFrame(data=data_export)
