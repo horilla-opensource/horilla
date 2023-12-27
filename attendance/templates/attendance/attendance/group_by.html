@@ -1,5 +1,25 @@
 {% load attendancefilters %} {% load basefilters %} {% load static %}
 {% load i18n %} {% include 'filter_tags.html' %} 
+<style>
+  .oh-sticky-table__right {
+    position: sticky;
+    right: 0;
+    background-color: #fff;
+  }
+  .disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  .oh-modal_close--custom {
+    border: none;
+    background: none;
+    font-size: 1.5rem;
+    opacity: 0.7;
+    position: absolute;
+    top: 25px;
+    right: 15px;
+  }
+</style>
 <div
   class="oh-modal"
   id="updateAttendanceModal"
@@ -15,8 +35,6 @@
       <button
         class="oh-modal__close"
         aria-label="Close"
-        hx-get="{% url 'attendance-search' %}?{{pd}}&opage={{overtime_attendances.number}}&vpage={{validate_attendances.number}}&page={{attendances.number}}"
-        hx-target="#tab_contents"
       >
         <ion-icon name="close-outline"></ion-icon>
       </button>
@@ -26,11 +44,10 @@
 </div>
 <div class="oh-tabs__content"  id="tab_3">
   <div class="oh-card">
-    {% dynamic_regroup overtime_attendances by field as attendances_grouper %}
-    {% for attendance_list in attendances_grouper %}
+    {% for attendance_list in overtime_attendances %}
     <div class="oh-accordion-meta">
       <div class="oh-accordion-meta__item">
-        <div class="oh-accordion-meta__header" onclick='$(this).toggleClass("oh-accordion-meta__header--show");'>
+        <div class="oh-accordion-meta__header" id="otAttendanceGpAccordion{{forloop.counter}}" onclick='$(this).toggleClass("oh-accordion-meta__header--show");localStorage.setItem("otAttendanceGpAccordion","otAttendanceGpAccordion{{forloop.counter}}")'>
           <span class="oh-accordion-meta__title pt-3 pb-3">
             <div class="oh-tabs__input-badge-container">
               <span
@@ -60,7 +77,7 @@
                   <div class="oh-sticky-table__th">{% trans "At Work" %}</div>
                   <div class="oh-sticky-table__th">{% trans "Pending Hours" %}</div>
                   <div class="oh-sticky-table__th">{% trans "Overtime" %}</div>
-                  <div class="oh-sticky-table__th"></div>
+                  <div class="oh-sticky-table__th oh-sticky-table__right"></div>
                   <div class="oh-sticky-table__th"></div>
                 </div>
               </div>
@@ -89,13 +106,13 @@
                   <div class="oh-sticky-table__td">
                     {{attendance.attendance_day|title}}
                   </div>
-                  <div class="oh-sticky-table__td">
+                  <div class="oh-sticky-table__td timeformat_changer">
                     {{attendance.attendance_clock_in}}
                   </div>
                   <div class="oh-sticky-table__td dateformat_changer">
                     {{attendance.attendance_clock_in_date}}
                   </div>
-                  <div class="oh-sticky-table__td">
+                  <div class="oh-sticky-table__td timeformat_changer">
                     {{attendance.attendance_clock_out}}
                   </div>
                   <div class="oh-sticky-table__td dateformat_changer">
@@ -117,18 +134,18 @@
                   <div class="oh-sticky-table__td">
                     {{attendance.attendance_overtime}}
                   </div>
-                  <div class="oh-sticky-table__td">
+                  <div class="oh-sticky-table__td oh-sticky-table__right">
                       {% if attendance.attendance_overtime_approve %}
-                          <a
-                            href="#"
-                            class="oh-btn oh-btn--info disabled"
-                            onclick="event.stopPropagation()"
-                            >
-                            {% trans "Approve" %}
-                          </a>
+                        <a
+                          href="#"
+                          class="oh-btn oh-btn--info disabled"
+                          onclick="event.stopPropagation()"
+                          >
+                          {% trans "Approved" %}
+                        </a>
                       {% else %}
                           <a
-                            href="{% url 'approve-overtime' attendance.id %}"
+                            href="{% url 'approve-overtime' attendance.id %}?opage={{overtime_attendances.number}}&{{attendance_list.dynamic_name}}={{ attendance_list.list.number }}"
                             onclick="event.stopPropagation()"
                             class="oh-btn oh-btn--info"
                             >
@@ -140,7 +157,7 @@
                     <div class="oh-btn-group">
                       {% if perms.attendance.change_attendance or request.user|is_reportingmanager %}
                       <a
-                        hx-get="{% url 'attendance-update' attendance.id %}"
+                        hx-get="{% url 'attendance-update' attendance.id %}?opage={{overtime_attendances.number}}&{{attendance_list.dynamic_name}}={{ attendance_list.list.number }}"
                         hx-target="#updateAttendanceModalBody"
                         hx-swap="innerHTML"
                         data-toggle="oh-modal-toggle"
@@ -164,6 +181,65 @@
                 {% endfor %}
               </div>
             </div>
+          </div>
+          <div class="oh-pagination">
+            <span class="oh-pagination__page">
+              {% trans "Page" %} {{ attendance_list.list.number }} {% trans "of" %} {{ attendance_list.list.paginator.num_pages }}.
+            </span>
+            <nav class="oh-pagination__nav">
+              <div class="oh-pagination__input-container me-3">
+                <span class="oh-pagination__label me-1">{% trans "Page" %}</span>
+                <input
+                  type="number"
+                  name="{{attendance_list.dynamic_name}}"
+                  class="oh-pagination__input"
+                  value="{{attendance_list.list.number}}"
+                  hx-get="{% url 'attendance-search' %}?{{pd}}"
+                  hx-target="#tab_contents"
+                  min="1"
+                />
+                <span class="oh-pagination__label"
+                  >{% trans "of" %} {{attendance_list.list.paginator.num_pages}}</span
+                >
+              </div>
+              <ul class="oh-pagination__items">
+                {% if attendance_list.list.has_previous %}
+                <li class="oh-pagination__item oh-pagination__item--wide">
+                  <a
+                    hx-target="#tab_contents"
+                    hx-get="{% url 'attendance-search' %}?{{pd}}&{{attendance_list.dynamic_name}}=1"
+                    class="oh-pagination__link"
+                    >{% trans "First" %}</a
+                  >
+                </li>
+                <li class="oh-pagination__item oh-pagination__item--wide">
+                  <a
+                    hx-target="#tab_contents"
+                    hx-get="{% url 'attendance-search' %}?{{pd}}&{{attendance_list.dynamic_name}}={{ attendance_list.list.previous_page_number }}"
+                    class="oh-pagination__link"
+                    >{% trans "Previous" %}</a
+                  >
+                </li>
+                {% endif %} {% if attendance_list.list.has_next %}
+                <li class="oh-pagination__item oh-pagination__item--wide">
+                  <a
+                    hx-target="#tab_contents"
+                    hx-get="{% url 'attendance-search' %}?{{pd}}&{{attendance_list.dynamic_name}}={{ attendance_list.list.next_page_number }}"
+                    class="oh-pagination__link"
+                    >{% trans "Next" %}</a
+                  >
+                </li>
+                <li class="oh-pagination__item oh-pagination__item--wide">
+                  <a
+                    hx-target="#tab_contents"
+                    hx-get="{% url 'attendance-search' %}?{{pd}}&{{attendance_list.dynamic_name}}={{ attendance_list.list.paginator.num_pages }}"
+                    class="oh-pagination__link"
+                    >{% trans "Last" %}</a
+                  >
+                </li>
+                {% endif %}
+              </ul>
+            </nav>
           </div>
         </div>
       </div>
@@ -233,11 +309,10 @@
 
 <div class="oh-tabs__content"  id="tab_1">
   <div class="oh-card">
-    {% dynamic_regroup validate_attendances by field as attendances_grouper %}
-    {% for attendance_list in attendances_grouper %}
+    {% for attendance_list in validate_attendances %}
     <div class="oh-accordion-meta">
       <div class="oh-accordion-meta__item">
-        <div class="oh-accordion-meta__header" onclick='$(this).toggleClass("oh-accordion-meta__header--show");'>
+        <div class="oh-accordion-meta__header" id="validateAttendanceGpAccordion{{forloop.counter}}" onclick='$(this).toggleClass("oh-accordion-meta__header--show");localStorage.setItem("validateAttendanceGpAccordion","validateAttendanceGpAccordion{{forloop.counter}}")'>
           <span class="oh-accordion-meta__title  pt-3 pb-3">
             <div class="oh-tabs__input-badge-container">
               <span
@@ -267,7 +342,7 @@
                   <div class="oh-sticky-table__th">{% trans "At Work" %}</div>
                   <div class="oh-sticky-table__th">{% trans "Pending Hours" %}</div>
                   <div class="oh-sticky-table__th">{% trans "Overtime" %}</div>
-                  <div class="oh-sticky-table__th"></div>
+                  <div class="oh-sticky-table__th oh-sticky-table__right"></div>
                   <div class="oh-sticky-table__th"></div>
                 </div>
               </div>
@@ -296,13 +371,13 @@
                   <div class="oh-sticky-table__td">
                     {{attendance.attendance_day|title}}
                   </div>
-                  <div class="oh-sticky-table__td">
+                  <div class="oh-sticky-table__td timeformat_changer">
                     {{attendance.attendance_clock_in}}
                   </div>
                   <div class="oh-sticky-table__td dateformat_changer">
                     {{attendance.attendance_clock_in_date}}
                   </div>
-                  <div class="oh-sticky-table__td">
+                  <div class="oh-sticky-table__td timeformat_changer">
                     {{attendance.attendance_clock_out}}
                   </div>
                   <div class="oh-sticky-table__td dateformat_changer">
@@ -324,10 +399,10 @@
                   <div class="oh-sticky-table__td">
                     {{attendance.attendance_overtime}}
                   </div>
-                  <div class="oh-sticky-table__td">
+                  <div class="oh-sticky-table__td oh-sticky-table__right">
                       {% if request.user|is_reportingmanager or perms.attendance.change_attendance %}
                           <a
-                            href='{% url "validate-this-attendance" attendance.id %}'
+                            href='{% url "validate-this-attendance" attendance.id %}?vpage={{validate_attendances.number}}&{{attendance_list.dynamic_name}}={{ attendance_list.list.number }}'
                             hx-target="#updateAttendanceBody"
                             data-req="/attendance/request-attendance-view/?id={{attendance.id}}"
                             onclick="event.stopPropagation(); {% if attendance.is_validate_request %}  event.preventDefault(); showSweetAlert($(this).data('req')); {% endif %}"
@@ -341,7 +416,7 @@
                     <div class="oh-btn-group">
                       {% if perms.attendance.change_attendance or request.user|is_reportingmanager %}
                       <a
-                        hx-get="{% url 'attendance-update' attendance.id %}"
+                        hx-get="{% url 'attendance-update' attendance.id %}?vpage={{validate_attendances.number}}&{{attendance_list.dynamic_name}}={{ attendance_list.list.number }}"
                         hx-target="#updateAttendanceModalBody"
                         hx-swap="innerHTML"
                         data-toggle="oh-modal-toggle"
@@ -365,6 +440,65 @@
                 {% endfor %}
               </div>
             </div>
+          </div>
+          <div class="oh-pagination">
+            <span class="oh-pagination__page">
+              {% trans "Page" %} {{ attendance_list.list.number }} {% trans "of" %} {{ attendance_list.list.paginator.num_pages }}.
+            </span>
+            <nav class="oh-pagination__nav">
+              <div class="oh-pagination__input-container me-3">
+                <span class="oh-pagination__label me-1">{% trans "Page" %}</span>
+                <input
+                  type="number"
+                  name="{{attendance_list.dynamic_name}}"
+                  class="oh-pagination__input"
+                  value="{{attendance_list.list.number}}"
+                  hx-get="{% url 'attendance-search' %}?{{pd}}"
+                  hx-target="#tab_contents"
+                  min="1"
+                />
+                <span class="oh-pagination__label"
+                  >{% trans "of" %} {{attendance_list.list.paginator.num_pages}}</span
+                >
+              </div>
+              <ul class="oh-pagination__items">
+                {% if attendance_list.list.has_previous %}
+                <li class="oh-pagination__item oh-pagination__item--wide">
+                  <a
+                    hx-target="#tab_contents"
+                    hx-get="{% url 'attendance-search' %}?{{pd}}&{{attendance_list.dynamic_name}}=1"
+                    class="oh-pagination__link"
+                    >{% trans "First" %}</a
+                  >
+                </li>
+                <li class="oh-pagination__item oh-pagination__item--wide">
+                  <a
+                    hx-target="#tab_contents"
+                    hx-get="{% url 'attendance-search' %}?{{pd}}&{{attendance_list.dynamic_name}}={{ attendance_list.list.previous_page_number }}"
+                    class="oh-pagination__link"
+                    >{% trans "Previous" %}</a
+                  >
+                </li>
+                {% endif %} {% if attendance_list.list.has_next %}
+                <li class="oh-pagination__item oh-pagination__item--wide">
+                  <a
+                    hx-target="#tab_contents"
+                    hx-get="{% url 'attendance-search' %}?{{pd}}&{{attendance_list.dynamic_name}}={{ attendance_list.list.next_page_number }}"
+                    class="oh-pagination__link"
+                    >{% trans "Next" %}</a
+                  >
+                </li>
+                <li class="oh-pagination__item oh-pagination__item--wide">
+                  <a
+                    hx-target="#tab_contents"
+                    hx-get="{% url 'attendance-search' %}?{{pd}}&{{attendance_list.dynamic_name}}={{ attendance_list.list.paginator.num_pages }}"
+                    class="oh-pagination__link"
+                    >{% trans "Last" %}</a
+                  >
+                </li>
+                {% endif %}
+              </ul>
+            </nav>
           </div>
         </div>
       </div>
@@ -433,11 +567,10 @@
 </div>
 <div class="oh-tabs__content"  id="tab_2">
   <div class="oh-card">
-    {% dynamic_regroup attendances by field as attendances_grouper %}
-    {% for attendance_list in attendances_grouper %}
+    {% for attendance_list in attendances %}
     <div class="oh-accordion-meta">
       <div class="oh-accordion-meta__item">
-        <div class="oh-accordion-meta__header" onclick='$(this).toggleClass("oh-accordion-meta__header--show");'>
+        <div class="oh-accordion-meta__header" id="validatedAttendanceGpAccordion{{forloop.counter}}" onclick='$(this).toggleClass("oh-accordion-meta__header--show");localStorage.setItem("validatedAttendanceGpAccordion","validatedAttendanceGpAccordion{{forloop.counter}}")'>
           <span class="oh-accordion-meta__title pt-3 pb-3">
             <div class="oh-tabs__input-badge-container">
               <span
@@ -467,7 +600,7 @@
                   <div class="oh-sticky-table__th">{% trans "At Work" %}</div>
                   <div class="oh-sticky-table__th">{% trans "Pending Hours" %}</div>
                   <div class="oh-sticky-table__th">{% trans "Overtime" %}</div>
-                  <div class="oh-sticky-table__th"></div>
+                  <div class="oh-sticky-table__th oh-sticky-table__right"></div>
                 </div>
               </div>
               <div class="oh-sticky-table__tbody">
@@ -495,13 +628,13 @@
                   <div class="oh-sticky-table__td">
                     {{attendance.attendance_day|title}}
                   </div>
-                  <div class="oh-sticky-table__td">
+                  <div class="oh-sticky-table__td timeformat_changer">
                     {{attendance.attendance_clock_in}}
                   </div>
                   <div class="oh-sticky-table__td dateformat_changer">
                     {{attendance.attendance_clock_in_date}}
                   </div>
-                  <div class="oh-sticky-table__td">
+                  <div class="oh-sticky-table__td timeformat_changer">
                     {{attendance.attendance_clock_out}}
                   </div>
                   <div class="oh-sticky-table__td dateformat_changer">
@@ -523,7 +656,7 @@
                   <div class="oh-sticky-table__td">
                     {{attendance.attendance_overtime}}
                   </div>
-                  <div class="oh-sticky-table__td">
+                  <div class="oh-sticky-table__td oh-sticky-table__right">
                     <div class="oh-btn-group">
                       {% if perms.attendance.change_attendance or request.user|is_reportingmanager %}
                       <a
@@ -551,6 +684,65 @@
                 {% endfor %}
               </div>
             </div>
+          </div>
+          <div class="oh-pagination">
+            <span class="oh-pagination__page">
+              {% trans "Page" %} {{ attendance_list.list.number }} {% trans "of" %} {{ attendance_list.list.paginator.num_pages }}.
+            </span>
+            <nav class="oh-pagination__nav">
+              <div class="oh-pagination__input-container me-3">
+                <span class="oh-pagination__label me-1">{% trans "Page" %}</span>
+                <input
+                  type="number"
+                  name="{{attendance_list.dynamic_name}}"
+                  class="oh-pagination__input"
+                  value="{{attendance_list.list.number}}"
+                  hx-get="{% url 'attendance-search' %}?{{pd}}"
+                  hx-target="#tab_contents"
+                  min="1"
+                />
+                <span class="oh-pagination__label"
+                  >{% trans "of" %} {{attendance_list.list.paginator.num_pages}}</span
+                >
+              </div>
+              <ul class="oh-pagination__items">
+                {% if attendance_list.list.has_previous %}
+                <li class="oh-pagination__item oh-pagination__item--wide">
+                  <a
+                    hx-target="#tab_contents"
+                    hx-get="{% url 'attendance-search' %}?{{pd}}&{{attendance_list.dynamic_name}}=1"
+                    class="oh-pagination__link"
+                    >{% trans "First" %}</a
+                  >
+                </li>
+                <li class="oh-pagination__item oh-pagination__item--wide">
+                  <a
+                    hx-target="#tab_contents"
+                    hx-get="{% url 'attendance-search' %}?{{pd}}&{{attendance_list.dynamic_name}}={{ attendance_list.list.previous_page_number }}"
+                    class="oh-pagination__link"
+                    >{% trans "Previous" %}</a
+                  >
+                </li>
+                {% endif %} {% if attendance_list.list.has_next %}
+                <li class="oh-pagination__item oh-pagination__item--wide">
+                  <a
+                    hx-target="#tab_contents"
+                    hx-get="{% url 'attendance-search' %}?{{pd}}&{{attendance_list.dynamic_name}}={{ attendance_list.list.next_page_number }}"
+                    class="oh-pagination__link"
+                    >{% trans "Next" %}</a
+                  >
+                </li>
+                <li class="oh-pagination__item oh-pagination__item--wide">
+                  <a
+                    hx-target="#tab_contents"
+                    hx-get="{% url 'attendance-search' %}?{{pd}}&{{attendance_list.dynamic_name}}={{ attendance_list.list.paginator.num_pages }}"
+                    class="oh-pagination__link"
+                    >{% trans "Last" %}</a
+                  >
+                </li>
+                {% endif %}
+              </ul>
+            </nav>
           </div>
         </div>
       </div>
@@ -669,5 +861,19 @@
       var activeTab = $(this).attr("data-target");
       localStorage.setItem("activeTabAttendance", activeTab);
     });
+  });
+  $(document).ready(function () {
+    validateActiveAccordion = localStorage.getItem("validateAttendanceGpAccordion")
+    if (validateActiveAccordion) {
+      $("#"+validateActiveAccordion).click()
+    }
+    validatedActiveAccordion = localStorage.getItem("validatedAttendanceGpAccordion")
+    if (validatedActiveAccordion) {
+      $("#"+validatedActiveAccordion).click()
+    }
+    otAttendanceActiveAccordion = localStorage.getItem("otAttendanceGpAccordion")
+    if (otAttendanceActiveAccordion) {
+      $("#"+otAttendanceActiveAccordion).click()
+    }
   });
 </script>

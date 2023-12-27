@@ -7,6 +7,7 @@ import json
 from datetime import datetime
 from urllib.parse import parse_qs
 from django.shortcuts import render
+from attendance.methods.group_by import group_by_queryset
 from base.methods import filtersubordinates, sortby, get_key_instances
 from horilla.decorators import (
     hx_request_required,
@@ -36,7 +37,7 @@ from django.utils.translation import gettext_lazy as _
 @manager_can_enter("attendance.view_attendance")
 def attendance_search(request):
     """
-    This method is used to search attendance by employee
+    This method is used to search attendances
     """
     month_name = ""
     params = [
@@ -58,7 +59,6 @@ def attendance_search(request):
     validate_attendances = Attendance.objects.filter(attendance_validated=False)
     attendances = Attendance.objects.filter(attendance_validated=True)
     ot_attendances = Attendance.objects.filter(
-        attendance_overtime_approve=False,
         overtime_second__gte=minot,
         attendance_validated=True,
     )
@@ -67,25 +67,20 @@ def attendance_search(request):
     attendances = AttendanceFilters(request.GET, attendances).qs
     ot_attendances = AttendanceFilters(request.GET, ot_attendances).qs
 
-    template = "attendance/attendance/tab_content.html"
-    if field != "" and field is not None:
-        field_copy = field.replace(".", "__")
-        attendances = attendances.order_by(field_copy)
-        validate_attendances = validate_attendances.order_by(field_copy)
-        ot_attendances = ot_attendances.order_by(field_copy)
-        template = "attendance/attendance/group_by.html"
-
-    attendances = filtersubordinates(request, attendances, "attendance.view_attendance")
-    validate_attendances = filtersubordinates(
-        request, validate_attendances, "attendance.view_attendance"
-    )
-    ot_attendances = filtersubordinates(
-        request, ot_attendances, "attendance.view_attendance"
-    )
-
-    attendances = sortby(request, attendances, "sortby")
-    validate_attendances = sortby(request, validate_attendances, "sortby")
-    ot_attendances = sortby(request, ot_attendances, "sortby")
+    if not request.user.has_perm("attendance.view_attendance"):
+        attendances = filtersubordinates(
+            request, attendances, "attendance.view_attendance"
+        )
+        validate_attendances = filtersubordinates(
+            request, validate_attendances, "attendance.view_attendance"
+        )
+        ot_attendances = filtersubordinates(
+            request, ot_attendances, "attendance.view_attendance"
+        )
+    if request.GET.get("sortby"):
+        attendances = sortby(request, attendances, "sortby")
+        validate_attendances = sortby(request, validate_attendances, "sortby")
+        ot_attendances = sortby(request, ot_attendances, "sortby")
     data_dict = parse_qs(previous_data)
     get_key_instances(Attendance, data_dict)
     keys_to_remove = [
@@ -104,20 +99,42 @@ def attendance_search(request):
             )
             month_name = _(date_object.strftime("%B"))
             template = "attendance/attendance/validate_attendance_empty.html"
-    validate_attendances_ids = json.dumps([instance.id for instance in paginator_qry(validate_attendances, request.GET.get("vpage")).object_list])
-    ot_attendances_ids = json.dumps([instance.id for instance in paginator_qry(ot_attendances, request.GET.get("opage")).object_list])
-    attendances_ids = json.dumps([instance.id for instance in paginator_qry(attendances, request.GET.get("page")).object_list])   
+
+    template = "attendance/attendance/tab_content.html"
+    validate_attendances_ids, ot_attendances_ids, attendances_ids = [], [], []
+    if field != "" and field is not None:
+        attendances = group_by_queryset(
+            attendances, field, request.GET.get("page"), "page"
+        )
+        validate_attendances = group_by_queryset(
+            validate_attendances, field, request.GET.get("vpage"), "vpage"
+        )
+        ot_attendances = group_by_queryset(
+            ot_attendances, field, request.GET.get("opage"), "opage"
+        )
+        template = "attendance/attendance/group_by.html"
+    else:
+        validate_attendances = paginator_qry(
+            validate_attendances, request.GET.get("vpage")
+        )
+        ot_attendances = paginator_qry(ot_attendances, request.GET.get("opage"))
+        attendances = paginator_qry(attendances, request.GET.get("page"))
+        validate_attendances_ids = json.dumps(
+            [instance.id for instance in validate_attendances.object_list]
+        )
+        ot_attendances_ids = json.dumps(
+            [instance.id for instance in ot_attendances.object_list]
+        )
+        attendances_ids = json.dumps(
+            [instance.id for instance in attendances.object_list]
+        )
     return render(
         request,
         template,
         {
-            "validate_attendances": paginator_qry(
-                validate_attendances, request.GET.get("vpage")
-            ),
-            "attendances": paginator_qry(attendances, request.GET.get("page")),
-            "overtime_attendances": paginator_qry(
-                ot_attendances, request.GET.get("opage")
-            ),
+            "validate_attendances": validate_attendances,
+            "attendances": attendances,
+            "overtime_attendances": ot_attendances,
             "validate_attendances_ids": validate_attendances_ids,
             "ot_attendances_ids": ot_attendances_ids,
             "attendances_ids": attendances_ids,
@@ -193,7 +210,6 @@ def attendance_activity_search(request):
         attendance_activities = attendance_activities.order_by(field_copy)
         template = "attendance/attendance_activity/group_by.html"
 
-
     attendance_activities = sortby(request, attendance_activities, "orderby")
     data_dict = parse_qs(previous_data)
     get_key_instances(AttendanceActivity, data_dict)
@@ -223,10 +239,8 @@ def late_come_early_out_search(request):
     reports = LateComeEarlyOutFilter(
         request.GET,
     ).qs
-    self_reports = reports.filter(
-        employee_id__employee_user_id=request.user
-    )
-    
+    self_reports = reports.filter(employee_id__employee_user_id=request.user)
+
     reports = filtersubordinates(
         request, reports, "attendance.view_attendancelatecomeearlyout"
     )
@@ -237,7 +251,7 @@ def late_come_early_out_search(request):
         template = "attendance/late_come_early_out/group_by.html"
         field_copy = field.replace(".", "__")
         reports = reports.order_by(field_copy)
-   
+
     reports = sortby(request, reports, "sortby")
     data_dict = parse_qs(previous_data)
     get_key_instances(AttendanceLateComeEarlyOut, data_dict)
@@ -271,7 +285,14 @@ def filter_own_attendance(request):
     keys_to_remove = [key for key, value in data_dict.items() if value == ["unknown"]]
     for key in keys_to_remove:
         data_dict.pop(key)
-    attendances_ids = json.dumps([instance.id for instance in paginator_qry(attendances, request.GET.get("page")).object_list])
+    attendances_ids = json.dumps(
+        [
+            instance.id
+            for instance in paginator_qry(
+                attendances, request.GET.get("page")
+            ).object_list
+        ]
+    )
     return render(
         request,
         "attendance/own_attendance/attendances.html",
@@ -341,8 +362,22 @@ def search_attendance_requests(request):
         attendances = attendances.order_by(field_copy)
         template = "requests/attendance/group_by.html"
 
-    requests_ids = json.dumps([instance.id for instance in paginator_qry(requests, request.GET.get("rpage")).object_list])
-    attendances_ids = json.dumps([instance.id for instance in paginator_qry(attendances, request.GET.get("page")).object_list])
+    requests_ids = json.dumps(
+        [
+            instance.id
+            for instance in paginator_qry(
+                requests, request.GET.get("rpage")
+            ).object_list
+        ]
+    )
+    attendances_ids = json.dumps(
+        [
+            instance.id
+            for instance in paginator_qry(
+                attendances, request.GET.get("page")
+            ).object_list
+        ]
+    )
     return render(
         request,
         template,
