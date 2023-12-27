@@ -1,6 +1,6 @@
 {% load i18n %}
 <form
-  hx-post="{% url 'attendance-update' form.instance.id %}"
+  hx-post="{% url 'attendance-update' form.instance.id %}?{{urlencode}}"
   hx-swap="#updateAttendanceModalBody"
   method="post"
   id="updateForm"

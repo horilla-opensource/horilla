@@ -583,7 +583,7 @@ $("#attendance-info-import").click(function (e) {
       if (result.isConfirmed) {
         $.ajax({
           type: "GET",
-          url: "attendance-excel",
+          url: "/attendance/attendance-excel",
           dataType: "binary",
           xhrFields: {
             responseType: "blob",
@@ -1267,3 +1267,26 @@ $('.dateformat_changer').each(function(index, element) {
 // Display the formatted date wherever needed
 var currentDate = $('.dateformat_changer').first().text();
 var formattedDate = dateFormatter.getFormattedDate(currentDate);
+
+
+// ******************************************************************
+// *     THIS IS FOR SWITCHING THE TIME FORMAT IN THE ALL VIEWS     *
+// ******************************************************************
+
+// Iterate through all elements with the 'timeformat_changer' class and format their content
+$('.timeformat_changer').each(function(index, element) {
+  var currentTime = $(element).text();
+
+  // Checking currentTime value is a valid time.
+  if (/[\.:]/.test(currentTime)) {
+      var formattedTime = timeFormatter.getFormattedTime(currentTime);
+  } else {
+      var formattedTime = 'None';
+  }
+  $(element).text(formattedTime);
+
+});
+
+// Display the formatted time wherever needed
+var currentTime = $('.timeformat_changer').first().text();
+var formattedTime = timeFormatter.getFormattedTime(currentTime);

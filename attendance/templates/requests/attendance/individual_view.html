@@ -92,6 +92,23 @@
           <td class="p-2 ml-2 dateformat_changer">{% if diff.0 %}{{diff.0}},{% endif %}</td>
           <td class="p-2 ml-2 dateformat_changer">{{diff.1}},</td>
         {% endif %}
+      {% elif key == 'Check-Out' or key == 'Check-In'%}
+        {% if diff.0 == 'None' %}
+          <td class="p-2 ml-2 timeformat_changer">{% if diff.0 %}{{diff.0}}{% endif %}</td>
+          <td class="p-2 ml-2 timeformat_changer">{{diff.1}},</td>
+        {% endif %}
+        {% if diff.1 == 'None' %}
+          <td class="p-2 ml-2 timeformat_changer">{% if diff.0 %}{{diff.0}},{% endif %}</td>
+          <td class="p-2 ml-2 timeformat_changer">{{diff.1}}</td>
+        {% endif %}
+        {% if diff.0 == 'None' and  diff.1 == 'None'%}
+          <td class="p-2 ml-2 timeformat_changer">{% if diff.0 %}{{diff.0}}{% endif %}</td>
+          <td class="p-2 ml-2 timeformat_changer">{{diff.1}}</td>
+        {% endif %}
+        {% if diff.0 != 'None' and  diff.1 != 'None'%}
+          <td class="p-2 ml-2 timeformat_changer">{% if diff.0 %}{{diff.0}},{% endif %}</td>
+          <td class="p-2 ml-2 timeformat_changer">{{diff.1}},</td>
+        {% endif %}
       {% else %}
         <td class="p-2 ml-2">{% if diff.0 %}{{diff.0}}{% endif %}</td>
         <td class="p-2 ml-2">{{diff.1}}</td>

@@ -75,13 +75,13 @@
             <div class="oh-sticky-table__td {% if 'attendance_day' in attendance.requested_fields or attendance.request_type == 'create_request' %} diff-cell{% endif %}" >
               {{attendance.attendance_day|capfirst}}
             </div>
-            <div class="oh-sticky-table__td {% if 'attendance_clock_in' in attendance.requested_fields or attendance.request_type == 'create_request' %} diff-cell{% endif %}" >
+            <div class="oh-sticky-table__td {% if 'attendance_clock_in' in attendance.requested_fields or attendance.request_type == 'create_request' %} diff-cell{% endif %} timeformat_changer" >
               {{attendance.attendance_clock_in}}
             </div>
             <div class="oh-sticky-table__td {% if 'attendance_clock_in_date' in attendance.requested_fields or attendance.request_type == 'create_request' %} diff-cell{% endif %} dateformat_changer" >
               {{attendance.attendance_clock_in_date}}
             </div>
-            <div class="oh-sticky-table__td {% if 'attendance_clock_out' in attendance.requested_fields or attendance.request_type == 'create_request' %} diff-cell{% endif %}" >
+            <div class="oh-sticky-table__td {% if 'attendance_clock_out' in attendance.requested_fields or attendance.request_type == 'create_request' %} diff-cell{% endif %} timeformat_changer" >
               {{attendance.attendance_clock_out}}
             </div>
             <div class="oh-sticky-table__td {% if 'attendance_clock_out_date' in attendance.requested_fields or attendance.request_type == 'create_request' %} diff-cell{% endif %} dateformat_changer" >
@@ -220,13 +220,13 @@
             <div class="oh-sticky-table__td">
               {{attendance.attendance_day|capfirst}}
             </div>
-            <div class="oh-sticky-table__td">
+            <div class="oh-sticky-table__td timeformat_changer">
               {{attendance.attendance_clock_in}}
             </div>
             <div class="oh-sticky-table__td dateformat_changer">
               {{attendance.attendance_clock_in_date}}
             </div>
-            <div class="oh-sticky-table__td">
+            <div class="oh-sticky-table__td timeformat_changer">
               {{attendance.attendance_clock_out}}
             </div>
             <div class="oh-sticky-table__td dateformat_changer">

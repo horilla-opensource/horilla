@@ -57,7 +57,7 @@ def process_attendance_data(attendance_dicts):
             except Exception as exception:
                 attendance_data[
                     "Error14"
-                ] = "The date format for attendance date is not valid"
+                ] = "The attendance date format is invalid. Please use the format YYYY-MM-DD"
                 save = False
 
             try:
@@ -65,7 +65,7 @@ def process_attendance_data(attendance_dicts):
             except Exception as exception:
                 attendance_data[
                     "Error15"
-                ] = "The date format for Check-in date is not valid"
+                ] = "The Check-in date format is invalid. Please use the format YYYY-MM-DD"
                 save = False
 
             try:
@@ -75,7 +75,7 @@ def process_attendance_data(attendance_dicts):
             except Exception as exception:
                 attendance_data[
                     "Error16"
-                ] = "The date format for Check-out date is not valid"
+                ] = "The Check-out date format is invalid. Please use the format YYYY-MM-DD"
                 save = False
 
             try:
