@@ -26,22 +26,44 @@
 
 <button onclick="saveDateFormat()"
 class="oh-btn oh-btn--secondary mt-2 mr-0 oh-btn--w-100-resp"
->{% trans "Save" %}</button>
+>{% trans "Save Date Format" %}</button>
 
-
-<div style=" font-size: 20px; color: hsl(8,77%,56%); margin-top:70px">
+<div style=" font-size: 20px; color: hsl(8,77%,56%); margin-top:20px">
     <b>{% trans "Current Date Format"%} &nbsp :</b> &nbsp
     <span id="dateDisplay" style="font-size: 18px; color: black;" class='mt-3'></span>
 </div>
 
+<!-- Time format selection-->
 
+<div class="oh-inner-sidebar-content__header" style="margin-top:80px">
+    <h2 class="oh-inner-sidebar-content__title">{% trans "Time Format" %}</h2>
+</div>
+
+<label for="timeFormat" class="settings-label mb-1">{% trans "Select Time Format:" %}</label>
+<select id="timeFormat" class="oh-select oh-select-2">
+    <option value="">--------------</option>
+    <option value="hh:mm A">{% trans "12 Hr. (e.g., 06:00 AM or 06:00 PM)" %}</option>
+    <option value="HH:mm">{% trans "24 Hr. (e.g., 06:00 or 18:00)" %}</option>
+</select>
+
+<button onclick="saveTimeFormat()"
+    class="oh-btn oh-btn--secondary mt-2 mr-0 oh-btn--w-100-resp"
+>{% trans "Save Time Format" %}</button>
+
+<div style="font-size: 20px; color: hsl(8, 77%, 56%); margin-top: 20px">
+    <b>{% trans "Current Time Format" %} &nbsp :</b> &nbsp
+    <span id="timeDisplay" style="font-size: 18px; color: black;" class='mt-3'></span>
+</div>
 
 <script src="{% static '/build/js/moment.js' %}"></script>
 <script src="{% static 'base/date_formatting.js' %}"></script>
 <script src="{% static 'base/date_settings.js' %}"></script>
+<script src="{% static 'base/time_formatting.js' %}"></script>
+<script src="{% static 'base/time_settings.js' %}"></script>
 
 <script>
 
+    // To display the selected date format
     const formatMapping = {
         'DD-MM-YYYY': '{% trans "Day, Month, Year (e.g., 30-12-2023)" %}',
         'DD.MM.YYYY': '{% trans "Day, Month, Year (e.g., 30.12.2023)" %}',
@@ -66,6 +88,20 @@ class="oh-btn oh-btn--secondary mt-2 mr-0 oh-btn--w-100-resp"
 
     document.getElementById('dateDisplay').textContent = `${selectedFormatDescription}`;
 
+    // To display the selected time format
+    const timeFormatMapping = {
+        'hh:mm A': '{% trans "12 Hr. (e.g., 06:00 AM or 06:00 PM)" %}',
+        'HH:mm': '{% trans "24 Hr. (e.g., 06:00 or 18:00)" %}',
+    };
+
+    // Get the current date and time
+    var currentDateTime = new Date();
+
+    // Format the current time according to the storedTimeFormat
+    var formattedTime = moment(currentDateTime).format(storedTimeFormat);
+    var selectedTimeFormatDescription = timeFormatMapping[storedTimeFormat];
+
+    document.getElementById('timeDisplay').textContent = `${selectedTimeFormatDescription}`;
 
 </script>
 {% endblock %}

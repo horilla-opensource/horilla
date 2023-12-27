@@ -1,4 +1,4 @@
-from datetime import date, datetime
+from datetime import date, datetime, time
 import io
 import json
 import random
@@ -404,6 +404,40 @@ def export_data(request, model, form_class, filter_class, file_name):
                     value = " "
                 if field_name == "month":
                     value = _(value.title())
+
+                # Check if the type of 'value' is time
+                if isinstance(value, time):
+
+                    user = request.user
+                    employee = user.employee_get
+
+                    # Taking the company_name of the user
+                    info = EmployeeWorkInformation.objects.filter(employee_id=employee)
+                    if info.exists():
+                        for data in info:
+                            employee_company = data.company_id
+                        company_name = Company.objects.filter(id=employee_company.id)
+                        emp_company = company_name.first()
+
+                        # Access the date_format attribute directly
+                        time_format = emp_company.time_format
+                    else:
+                        time_format = 'hh:mm A'
+
+                    time_formats = {
+                        'hh:mm A': '%I:%M %p',  # 12-hour format
+                        'HH:mm': '%H:%M',       # 24-hour format
+                    }
+
+                    # Convert the string to a datetime.time object
+                    check_in_time = datetime.strptime(str(value), '%H:%M:%S').time()
+
+                    # Print the formatted time for each format
+                    for format_name, format_string in time_formats.items():
+                        if format_name == time_format:
+                            value = check_in_time.strftime(format_string)
+
+                # Check if the type of 'value' is date
                 if type(value) == date:
                     user= request.user
                     employee = user.employee_get

@@ -3128,7 +3128,7 @@ def save_date_format(request):
         selected_format = request.POST.get('selected_format')
 
         if not len(selected_format):
-            messages.error(request, _('Please select a date format.'))
+            messages.error(request, _('Please select a valid date format.'))
         else:
             user= request.user
             employee = user.employee_get
@@ -3177,6 +3177,66 @@ def get_date_format(request):
         date_format = 'MMM. D, YYYY'
     # Return the date format as JSON response
     return JsonResponse({'selected_format': date_format})
+
+
+@permission_required("base.change_company")
+@csrf_exempt  # Use this decorator if CSRF protection is enabled
+def save_time_format(request):
+    if request.method == 'POST':
+
+        # Taking the selected Time Format
+        selected_format = request.POST.get('selected_format')
+
+        if not len(selected_format):
+            messages.error(request, _('Please select a valid time format.'))
+        else:
+            user= request.user
+            employee = user.employee_get
+
+            # Taking the company_name of the user
+            info = EmployeeWorkInformation.objects.filter(employee_id=employee)
+            # Employee workinformation will not exists if he/she chnged the company, So can't save the time format.
+            if info.exists():
+                for data in info:
+                    employee_company = data.company_id
+
+                company_name = Company.objects.filter(company=employee_company)
+                emp_company = company_name.first()
+
+                # Save the selected format to the backend
+                emp_company.time_format = selected_format
+                emp_company.save()
+                messages.success(request, _('Time format saved successfully.'))
+            else:
+                messages.warning(request, _('Time format cannot saved. You are not in the company.'))
+
+            # Return a JSON response indicating success
+            return JsonResponse({'success': True})
+
+    # Return a JSON response for unsupported methods
+    return JsonResponse({'error': False, 'error': 'Unsupported method'}, status=405)
+
+
+@login_required
+def get_time_format(request):
+
+    user= request.user
+    employee = user.employee_get
+
+    # Taking the company_name of the user
+    info = EmployeeWorkInformation.objects.filter(employee_id=employee)
+    if info.exists():
+        for data in info:
+            employee_company = data.company_id
+        company_name = Company.objects.filter(company=employee_company)
+        emp_company = company_name.first()
+
+        # Access the date_format attribute directly
+        time_format = emp_company.time_format
+    else:
+        time_format = 'hh:mm A'
+    # Return the date format as JSON response
+    return JsonResponse({'selected_format': time_format})
 
 
 @login_required

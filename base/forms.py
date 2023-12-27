@@ -345,7 +345,7 @@ class CompanyForm(ModelForm):
 
         model = Company
         fields = "__all__"
-        excluded_fields=["date_format"]
+        excluded_fields=["date_format", "time_format"]
 
 
     def validate_image(self, file):

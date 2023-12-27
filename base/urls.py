@@ -493,6 +493,8 @@ urlpatterns = [
     path("settings/date/", views.date_settings, name="date-settings"),
     path('settings/save-date/', views.save_date_format, name='save_date_format'),
     path('settings/get-date-format/', views.get_date_format, name='get-date-format'),
+    path('settings/save-time/', views.save_time_format, name='save_time_format'),
+    path('settings/get-time-format/', views.get_time_format, name='get-time-format'),
     path(
         "settings/attendance-settings-view/",
         views.validation_condition_view,
