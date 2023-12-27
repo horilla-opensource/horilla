@@ -519,12 +519,12 @@ class AttendanceReGroup:
         ("shift_id", "Shift"),
         ("work_type_id", "Work Type"),
         ("minimum_hour", "Minimum Hour"),
-        ("employee_id.country", "Country"),
-        ("employee_id.employee_work_info.reporting_manager_id", "Reporting Manager"),
-        ("employee_id.employee_work_info.department_id", "Department"),
-        ("employee_id.employee_work_info.job_position_id", "Job Position"),
-        ("employee_id.employee_work_info.employee_type_id", "Employment Type"),
-        ("employee_id.employee_work_info.company_id", "Company"),
+        ("employee_id__country", "Country"),
+        ("employee_id__employee_work_info__reporting_manager_id", "Reporting Manager"),
+        ("employee_id__employee_work_info__department_id", "Department"),
+        ("employee_id__employee_work_info__job_position_id", "Job Position"),
+        ("employee_id__employee_work_info__employee_type_id", "Employment Type"),
+        ("employee_id__employee_work_info__company_id", "Company"),
     ]
 
 

@@ -164,11 +164,18 @@ def attendance_create(request):
     return render(request, "attendance/attendance/form.html", {"form": form})
 
 
+def get_record_per_page():
+    """
+    This method will return the record per page count
+    """
+    return 50
+
+
 def paginator_qry(qryset, page_number):
     """
     This method is used to paginate queryset
     """
-    paginator = Paginator(qryset, 50)
+    paginator = Paginator(qryset, get_record_per_page())
     qryset = paginator.get_page(page_number)
     return qryset
 
@@ -267,7 +274,9 @@ def attendance_view(request):
     attendances = filtersubordinates(
         request, filter_obj.qs, "attendance.view_attendance"
     )
-    validate_attendances = AttendanceFilters(request.GET, queryset=validate_attendances).qs
+    validate_attendances = AttendanceFilters(
+        request.GET, queryset=validate_attendances
+    ).qs
     validate_attendances = filtersubordinates(
         request, validate_attendances, "attendance.view_attendance"
     )
@@ -347,17 +356,23 @@ def attendance_update(request, obj_id):
         if form.is_valid():
             form.save()
             messages.success(request, _("Attendance Updated."))
-            response = render(
-                request, "attendance/attendance/update_form.html", {"form": form}
-            )
+            urlencode = request.GET.urlencode()
+            modified_url = f"/attendance/attendance-view/?{urlencode}"
             return HttpResponse(
-                response.content.decode("utf-8") + "<script>location.reload();</script>"
+                f"""
+                    <script>
+                        var anchor = document.createElement('a');
+                        anchor.href = '{modified_url}';
+                        anchor.click();
+                    </script>
+                """
             )
     return render(
         request,
         "attendance/attendance/update_form.html",
         {
             "form": form,
+            "urlencode": request.GET.urlencode(),
         },
     )
 
@@ -1029,7 +1044,15 @@ def validate_this_attendance(request, obj_id):
     attendance = Attendance.objects.get(id=obj_id)
     attendance.attendance_validated = True
     attendance.save()
-    messages.success(request, _("Attendance validated."))
+    urlencode = request.GET.urlencode()
+    modified_url = f"/attendance/attendance-view/?{urlencode}"
+    messages.success(
+        request,
+        (
+            f"{attendance.employee_id} {attendance.attendance_date.strftime('%d %b %Y') }"
+            + _("Attendance validated.")
+        ),
+    )
     notify.send(
         request.user.employee_get,
         recipient=attendance.employee_id.employee_user_id,
@@ -1041,7 +1064,7 @@ def validate_this_attendance(request, obj_id):
         redirect="/attendance/view-my-attendance",
         icon="checkmark",
     )
-    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+    return HttpResponseRedirect(modified_url)
 
 
 @login_required
@@ -1092,6 +1115,12 @@ def approve_overtime(request, obj_id):
     attendance = Attendance.objects.get(id=obj_id)
     attendance.attendance_overtime_approve = True
     attendance.save()
+    urlencode = request.GET.urlencode()
+    modified_url = f"/attendance/attendance-view/?{urlencode}"
+    messages.success(
+        request,
+        f"{attendance.employee_id}'s {attendance.attendance_date.strftime('%d %b %Y')} overtime approved",
+    )
     with contextlib.suppress(Exception):
         notify.send(
             request.user.employee_get,
@@ -1109,7 +1138,7 @@ def approve_overtime(request, obj_id):
             redirect="/attendance/attendance-overtime-view",
             icon="checkmark",
         )
-    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+    return HttpResponseRedirect(modified_url)
 
 
 @login_required
