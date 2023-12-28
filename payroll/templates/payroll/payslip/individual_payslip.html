@@ -37,7 +37,9 @@
       <h1 class="oh-payslip__title oh-payslip__title--h1">
         {% trans "Payslip" %}
       </h1>
-      <h2 class="oh-payslip__title oh-payslip__title--h2">{{range}}</h2>
+      <span class="oh-payslip__title oh-payslip__title--h2 dateformat_changer">{{start_date}}</span> &nbsp 
+      <span class="oh-payslip__title oh-payslip__title--h2">{% trans "to" %}</span> &nbsp 
+      <span class="oh-payslip__title oh-payslip__title--h2 dateformat_changer">{{end_date}}</span>
     </div>
     <div class="oh-payslip__header-left">
       <img

@@ -29,7 +29,7 @@
                 <tr>
                     <td>{{candidate.candidate_id.name}}</td>
                     <td>{{candidate.candidate_id.email}}</td>
-                    <td>{{candidate.candidate_id.schedule_date.date}}</td>
+                    <td class="dateformat_changer">{{candidate.candidate_id.schedule_date.date}}</td>
                     <td>{{candidate.candidate_id.onboarding_portal.count}}/4</td>
                     <td><select name="onboarding_stage_id" class="form-select stage" hx-post=""
                             hx-target="#table{{recruitment.id}}" hx-swap="innerHTML" hx-trigger="change"

@@ -83,7 +83,7 @@
 						</div>
 					</div>
 					
-					<div class="oh-sticky-table__td {% if 'attendance_date' in attendance.requested_fields or attendance.request_type == 'create_request' %} diff-cell{% endif %}" >
+					<div class="oh-sticky-table__td {% if 'attendance_date' in attendance.requested_fields or attendance.request_type == 'create_request' %} diff-cell{% endif %} dateformat_changer" >
 						{{attendance.attendance_date}}
 					</div>
 					<div class="oh-sticky-table__td {% if 'attendance_day' in attendance.requested_fields or attendance.request_type == 'create_request' %} diff-cell{% endif %}" >
@@ -92,13 +92,13 @@
 					<div class="oh-sticky-table__td {% if 'attendance_clock_in' in attendance.requested_fields or attendance.request_type == 'create_request' %} diff-cell{% endif %}" >
 						{{attendance.attendance_clock_in}}
 					</div>
-					<div class="oh-sticky-table__td {% if 'attendance_clock_in_date' in attendance.requested_fields or attendance.request_type == 'create_request' %} diff-cell{% endif %}" >
+					<div class="oh-sticky-table__td {% if 'attendance_clock_in_date' in attendance.requested_fields or attendance.request_type == 'create_request' %} diff-cell{% endif %} dateformat_changer" >
 						{{attendance.attendance_clock_in_date}}
 					</div>
 					<div class="oh-sticky-table__td {% if 'attendance_clock_out' in attendance.requested_fields or attendance.request_type == 'create_request' %} diff-cell{% endif %}" >
 						{{attendance.attendance_clock_out}}
 					</div>
-					<div class="oh-sticky-table__td {% if 'attendance_clock_out_date' in attendance.requested_fields or attendance.request_type == 'create_request' %} diff-cell{% endif %}" >
+					<div class="oh-sticky-table__td {% if 'attendance_clock_out_date' in attendance.requested_fields or attendance.request_type == 'create_request' %} diff-cell{% endif %} dateformat_changer" >
 						{{attendance.attendance_clock_out_date}}
 					</div>
 					<div class="oh-sticky-table__td {% if 'shift_id' in attendance.requested_fields or attendance.request_type == 'create_request' %} diff-cell{% endif %}" >{{attendance.shift_id}}</div>
@@ -226,9 +226,6 @@
 						<div class="oh-sticky-table__tr">
 						  <div class="oh-sticky-table__th"  >
 							<div class="d-flex">
-							  <div class="">
-								<input type="checkbox" title='{% trans "Select All" %}' class="oh-input oh-input__checkbox mt-1 mr-2 validate" />
-							  </div>
 							  <div hx-get="{% url 'attendance-search' %}?{{pd}}&sortby=employee_id__employee_first_name" hx-target="#tab_contents">
 								{% trans "Employee" %}
 							  </div>
@@ -256,10 +253,7 @@
 						draggable="false">
 						  <div class="oh-sticky-table__sd">
 							<div class="d-flex">
-			  
-							  <div class="">
-								<input type="checkbox" id="{{attendance.id}}" class="oh-input attendance-checkbox oh-input__checkbox mt-2 mr-2 validate-row" />
-							  </div>
+								
 							  <div class="oh-profile oh-profile--md">
 								<div class="oh-profile__avatar mr-1">
 								  <img
@@ -275,7 +269,7 @@
 							</div>
 			  
 						  </div>
-						  <div class="oh-sticky-table__td">
+						  <div class="oh-sticky-table__td dateformat_changer">
 							{{attendance.attendance_date}}
 						  </div>
 						  <div class="oh-sticky-table__td">
@@ -284,13 +278,13 @@
 						  <div class="oh-sticky-table__td">
 							{{attendance.attendance_clock_in}}
 						  </div>
-						  <div class="oh-sticky-table__td">
+						  <div class="oh-sticky-table__td dateformat_changer">
 							{{attendance.attendance_clock_in_date}}
 						  </div>
 						  <div class="oh-sticky-table__td">
 							{{attendance.attendance_clock_out}}
 						  </div>
-						  <div class="oh-sticky-table__td">
+						  <div class="oh-sticky-table__td dateformat_changer">
 							{{attendance.attendance_clock_out_date}}
 						  </div>
 						  <div class="oh-sticky-table__td">{{attendance.shift_id}}</div>

@@ -302,6 +302,16 @@ class Candidate(models.Model):
         ],
     )
     sequence = models.IntegerField(null=True, default=0)
+    offerletter_status = models.CharField(
+        max_length=20,
+        choices=[
+            ("not_sent", "Not sent"),
+            ("waiting", "Waiting Confirmation"),
+            ("accepted", "Accepted / Confirmed"),
+            ("rejected", "Rejected / Canceled"),
+        ],
+        default="not_sent",
+    )
     objects = HorillaCompanyManager(related_company_field="recruitment_id__company_id")
 
     def __str__(self):
@@ -327,6 +337,28 @@ class Candidate(models.Model):
                 url = self.profile.url
 
         return url
+
+    def get_company(self):
+        """
+        This method is used to return the company
+        """
+        return getattr(
+            getattr(getattr(self, "recruitment_id", None), "company_id", None),
+            "company",
+            None,
+        )
+
+    def get_job_position(self):
+        """
+        This method is used to return the job position of the candidate
+        """
+        return self.job_position_id.job_position
+
+    def get_email(self):
+        """
+        Return email
+        """
+        return self.email
 
     def tracking(self):
         """
@@ -374,7 +406,9 @@ class StageNote(models.Model):
     description = models.TextField(verbose_name=_("Description"))
     stage_id = models.ForeignKey(Stage, on_delete=models.CASCADE)
     updated_by = models.ForeignKey(Employee, on_delete=models.CASCADE)
-    objects = HorillaCompanyManager(related_company_field="candidate_id__recruitment_id__company_id")
+    objects = HorillaCompanyManager(
+        related_company_field="candidate_id__recruitment_id__company_id"
+    )
 
     def __str__(self) -> str:
         return f"{self.description}"
@@ -464,3 +498,14 @@ class RecruitmentSurveyAnswer(models.Model):
 
     def __str__(self) -> str:
         return f"{self.candidate_id.name}-{self.recruitment_id}"
+
+
+class RecruitmentMailTemplate(models.Model):
+    title = models.CharField(max_length=25, unique=True)
+    body = models.TextField()
+    company_id = models.ForeignKey(
+        Company, null=True, blank=True, on_delete=models.CASCADE,verbose_name="Company"
+    )
+
+    def __str__(self) -> str:
+        return self.title

@@ -1,4 +1,5 @@
-from datetime import date
+from datetime import date, datetime, time
+import io
 import json
 import random
 from django.apps import apps
@@ -6,9 +7,12 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import ForeignKey, ManyToManyField, OneToOneField
 from django.forms.models import ModelMultipleChoiceField, ModelChoiceField
 from django.http import HttpResponse
+from django.template.loader import render_to_string
 from django.utils.translation import gettext as _
 import pandas as pd
-from employee.models import Employee
+from xhtml2pdf import pisa
+from base.models import Company
+from employee.models import Employee, EmployeeWorkInformation
 from horilla.decorators import login_required
 
 
@@ -400,6 +404,79 @@ def export_data(request, model, form_class, filter_class, file_name):
                     value = " "
                 if field_name == "month":
                     value = _(value.title())
+
+                # Check if the type of 'value' is time
+                if isinstance(value, time):
+
+                    user = request.user
+                    employee = user.employee_get
+
+                    # Taking the company_name of the user
+                    info = EmployeeWorkInformation.objects.filter(employee_id=employee)
+                    if info.exists():
+                        for data in info:
+                            employee_company = data.company_id
+                        company_name = Company.objects.filter(id=employee_company.id)
+                        emp_company = company_name.first()
+
+                        # Access the date_format attribute directly
+                        time_format = emp_company.time_format
+                    else:
+                        time_format = 'hh:mm A'
+
+                    time_formats = {
+                        'hh:mm A': '%I:%M %p',  # 12-hour format
+                        'HH:mm': '%H:%M',       # 24-hour format
+                    }
+
+                    # Convert the string to a datetime.time object
+                    check_in_time = datetime.strptime(str(value), '%H:%M:%S').time()
+
+                    # Print the formatted time for each format
+                    for format_name, format_string in time_formats.items():
+                        if format_name == time_format:
+                            value = check_in_time.strftime(format_string)
+
+                # Check if the type of 'value' is date
+                if type(value) == date:
+                    user= request.user
+                    employee = user.employee_get
+
+                    # Taking the company_name of the user
+                    info = EmployeeWorkInformation.objects.filter(employee_id=employee)
+                    if info.exists():
+                        for data in info:
+                            employee_company = data.company_id
+                        company_name = Company.objects.filter(company=employee_company)
+                        emp_company = company_name.first()
+
+                        # Access the date_format attribute directly
+                        date_format = emp_company.date_format
+                    else:
+                        date_format = 'MMM. D, YYYY'
+                    # Define date formats
+                    date_formats = {
+                        'DD-MM-YYYY': '%d-%m-%Y',
+                        'DD.MM.YYYY': '%d.%m.%Y',
+                        'DD/MM/YYYY': '%d/%m/%Y',
+                        'MM/DD/YYYY': '%m/%d/%Y',
+                        'YYYY-MM-DD': '%Y-%m-%d',
+                        'YYYY/MM/DD': '%Y/%m/%d',
+                        'MMMM D, YYYY': '%B %d, %Y',
+                        'DD MMMM, YYYY': '%d %B, %Y',
+                        'MMM. D, YYYY': '%b. %d, %Y',
+                        'D MMM. YYYY': '%d %b. %Y',
+                        'dddd, MMMM D, YYYY': '%A, %B %d, %Y',
+                    }
+
+                    # Convert the string to a datetime.date object
+                    start_date = datetime.strptime(str(value), '%Y-%m-%d').date()
+
+                    # Print the formatted date for each format
+                    for format_name, format_string in date_formats.items():
+                        if format_name == date_format:
+                            value = start_date.strftime(format_string)
+
                 data_export[verbose_name].append(value)
 
     data_frame = pd.DataFrame(data=data_export)
@@ -445,3 +522,21 @@ def check_owner(employee, instance):
         return employee == instance.employee_id
     except:
         return False
+
+
+def generate_pdf(template_path, context, path=True,title=None):
+    html = template_path
+    title = f"""{context.get("employee")}'s payslip for {context.get("range")}.pdf""" if not title else title
+    if path:
+        html = render_to_string(template_path, context)
+
+    result = io.BytesIO()
+    pdf = pisa.pisaDocument(io.BytesIO(html.encode("utf-8")), result)
+
+    if not pdf.err:
+        response = HttpResponse(result.getvalue(), content_type="application/pdf")
+        response[
+            "Content-Disposition"
+        ] = f'''attachment;filename="{title}"'''
+        return response
+    return None

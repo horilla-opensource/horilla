@@ -42,7 +42,8 @@
             </div>
           </div>
           <div class="oh-sticky-table__th">{% trans "Employee" %}</div>
-          <div class="oh-sticky-table__th">{% trans "Period" %}</div>
+          <div class="oh-sticky-table__th">{% trans "Start Date" %}</div>
+          <div class="oh-sticky-table__th">{% trans "End Date" %}</div>
           <div class="oh-sticky-table__th">{% trans "Status" %}</div>
           <div class="oh-sticky-table__th">{% trans "Batch" %}</div>
           <div class="oh-sticky-table__th">{% trans "Gross Pay" %}</div>
@@ -77,8 +78,11 @@
             <span class="oh-profile__name oh-text--dark">{{payslip.employee_id}}</span>
           </div>
         </div>
-        <div class="oh-sticky-table__td">
-          {{payslip.start_date}} - {{payslip.end_date}}
+        <div class="oh-sticky-table__td dateformat_changer">
+          {{payslip.start_date}}
+        </div>
+        <div class="oh-sticky-table__td dateformat_changer">
+          {{payslip.end_date}}
         </div>
         <div class="oh-sticky-table__td">
           <select name="pay_status" data-instance-id="{{payslip.id}}">

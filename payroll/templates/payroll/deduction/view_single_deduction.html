@@ -41,7 +41,7 @@
       <div class="oh-timeoff-modal__stat" style="margin-left: 20px;">
           <span class="oh-timeoff-modal__stat-title">{% trans "One Time deduction" %}</span>
           {% if deduction.one_time_date %}
-            <span class="oh-timeoff-modal__stat-count">{% trans "On" %} {{deduction.one_time_date}}</span>
+            <span class="oh-timeoff-modal__stat-count">{% trans "On" %}</span> <span class="oh-timeoff-modal__stat-count dateformat_changer"> {{deduction.one_time_date}}</span>
           {% else %}
             <span class="oh-timeoff-modal__stat-count">{% trans "No" %}</span>
           {% endif %}

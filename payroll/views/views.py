@@ -13,11 +13,12 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse, JsonResponse, HttpResponseRedirect
 from django.contrib import messages
 from django.db.models import Q, ProtectedError
+from base.models import Company
 from horilla.decorators import login_required, permission_required
 from base.methods import export_data, generate_colors, get_key_instances
 from employee.models import Employee, EmployeeWorkInformation
 from base.methods import closest_numbers
-from payroll.methods.methods import generate_pdf
+from base.methods import generate_pdf
 from payroll.models.models import Payslip, WorkRecord, Contract
 from payroll.forms.forms import ContractForm, WorkRecordForm
 from payroll.models.tax_models import PayrollSettings
@@ -692,15 +693,58 @@ def payslip_export(request):
 
     if status:
         employee_payslip_list = employee_payslip_list.filter(status=status)
-
+    user= request.user
+    emp = user.employee_get
     for payslip in employee_payslip_list:
+         # Taking the company_name of the user
+        info = EmployeeWorkInformation.objects.filter(employee_id=emp)
+        if info.exists():
+            for data in info:
+                employee_company = data.company_id
+            company_name = Company.objects.filter(company=employee_company)
+            emp_company = company_name.first()
+
+            # Access the date_format attribute directly
+            date_format = emp_company.date_format
+        else:
+            date_format = 'MMM. D, YYYY'
+        # Define date formats
+        date_formats = {
+            'DD-MM-YYYY': '%d-%m-%Y',
+            'DD.MM.YYYY': '%d.%m.%Y',
+            'DD/MM/YYYY': '%d/%m/%Y',
+            'MM/DD/YYYY': '%m/%d/%Y',
+            'YYYY-MM-DD': '%Y-%m-%d',
+            'YYYY/MM/DD': '%Y/%m/%d',
+            'MMMM D, YYYY': '%B %d, %Y',
+            'DD MMMM, YYYY': '%d %B, %Y',
+            'MMM. D, YYYY': '%b. %d, %Y',
+            'D MMM. YYYY': '%d %b. %Y',
+            'dddd, MMMM D, YYYY': '%A, %B %d, %Y',
+        }
+        start_date_str = str(payslip.start_date)
+        end_date_str = str(payslip.end_date)
+
+        # Convert the string to a datetime.date object
+        start_date = datetime.strptime(start_date_str, '%Y-%m-%d').date()
+        end_date = datetime.strptime(end_date_str, '%Y-%m-%d').date()
+
+        # Print the formatted date for each format
+        for format_name, format_string in date_formats.items():
+            if format_name == date_format:
+                formatted_start_date = start_date.strftime(format_string)
+
+        for format_name, format_string in date_formats.items():
+            if format_name == date_format:
+                formatted_end_date = end_date.strftime(format_string)
+
         table1_data.append(
             {
                 "employee": payslip.employee_id.employee_first_name
                 + " "
                 + payslip.employee_id.employee_last_name,
-                "start_date": payslip.start_date.strftime("%d/%m/%Y"),
-                "end_date": payslip.end_date.strftime("%d/%m/%Y"),
+                "start_date": formatted_start_date,
+                "end_date": formatted_end_date,
                 "basic_pay": round(payslip.basic_pay, 2),
                 "deduction": round(payslip.deduction, 2),
                 "allowance": round(payslip.gross_pay - payslip.basic_pay, 2),
@@ -1007,8 +1051,57 @@ def payslip_pdf(request, id):
         request.user.has_perm("payroll.view_payslip")
         or payslip.employee_id.employee_user_id == request.user
     ):
+        user= request.user
+        employee = user.employee_get
+
+        # Taking the company_name of the user
+        info = EmployeeWorkInformation.objects.filter(employee_id=employee)
+        if info.exists():
+            for data in info:
+                employee_company = data.company_id
+            company_name = Company.objects.filter(company=employee_company)
+            emp_company = company_name.first()
+
+            # Access the date_format attribute directly
+            date_format = emp_company.date_format
+        else:
+            date_format = 'MMM. D, YYYY'
+
         payslip = Payslip.objects.get(id=id)
         data = payslip.pay_head_data
+        start_date_str = data["start_date"]
+        end_date_str = data["end_date"]
+
+        # Define date formats
+        date_formats = {
+            'DD-MM-YYYY': '%d-%m-%Y',
+            'DD.MM.YYYY': '%d.%m.%Y',
+            'DD/MM/YYYY': '%d/%m/%Y',
+            'MM/DD/YYYY': '%m/%d/%Y',
+            'YYYY-MM-DD': '%Y-%m-%d',
+            'YYYY/MM/DD': '%Y/%m/%d',
+            'MMMM D, YYYY': '%B %d, %Y',
+            'DD MMMM, YYYY': '%d %B, %Y',
+            'MMM. D, YYYY': '%b. %d, %Y',
+            'D MMM. YYYY': '%d %b. %Y',
+            'dddd, MMMM D, YYYY': '%A, %B %d, %Y',
+        }
+
+        # Convert the string to a datetime.date object
+        start_date = datetime.strptime(start_date_str, '%Y-%m-%d').date()
+        end_date = datetime.strptime(end_date_str, '%Y-%m-%d').date()
+
+        # Print the formatted date for each format
+        for format_name, format_string in date_formats.items():
+            if format_name == date_format:
+                formatted_start_date = start_date.strftime(format_string)
+
+        for format_name, format_string in date_formats.items():
+            if format_name == date_format:
+                formatted_end_date = end_date.strftime(format_string)
+
+        data['formatted_start_date'] = formatted_start_date
+        data['formatted_end_date'] = formatted_end_date
         data["employee"] = payslip.employee_id
         data["payslip"] = payslip
         data["json_data"] = data.copy()

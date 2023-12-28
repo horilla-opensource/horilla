@@ -34,7 +34,7 @@
     </button>
     <div class="oh-timeoff-modal__stats-container mb-3">
       <div class="oh-timeoff-modal__stat">
-          <span class="oh-timeoff-modal__stat-title">{% trans "Work type" %}</span>
+          <span class="oh-timeoff-modal__stat-title">{% trans "Requested work type" %}</span>
           <span class="oh-timeoff-modal__stat-count">{{work_type_request.work_type_id}}</span>
       </div>
       <div class="oh-timeoff-modal__stat" style="margin-left: 20px;">
@@ -45,11 +45,11 @@
     <div class="oh-timeoff-modal__stats-container mb-3">
       <div class="oh-timeoff-modal__stat">
           <span class="oh-timeoff-modal__stat-title">{% trans "Requested date" %}</span>
-          <span class="oh-timeoff-modal__stat-count">{{work_type_request.requested_date}}</span>
+          <span class="oh-timeoff-modal__stat-count dateformat_changer">{{work_type_request.requested_date}}</span>
       </div>
       <div class="oh-timeoff-modal__stat" style="margin-left: 20px;">
           <span class="oh-timeoff-modal__stat-title">{% trans "Requested till" %}</span>
-          <span class="oh-timeoff-modal__stat-count">{{work_type_request.requested_till}}</span>
+          <span class="oh-timeoff-modal__stat-count dateformat_changer">{{work_type_request.requested_till}}</span>
       </div>
     </div>
     <div class="oh-timeoff-modal__stats-container mb-3">
@@ -58,7 +58,7 @@
           <span class="oh-timeoff-modal__stat-count">{{work_type_request.description}}</span>
       </div>
       <div class="oh-timeoff-modal__stat" style="margin-left: 20px;">
-          <span class="oh-timeoff-modal__stat-title">{% trans "Is permenent shift" %}</span>
+          <span class="oh-timeoff-modal__stat-title">{% trans "Is permenent work type" %}</span>
           <span class="oh-timeoff-modal__stat-count">
             {% if work_type_request.is_permanent_work_type == True %} {% trans "Yes" %} 
             {% else %} {% trans "No" %} 

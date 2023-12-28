@@ -33,9 +33,11 @@ from recruitment.models import (
     StageNote,
     JobPosition,
     RecruitmentSurvey,
+    RecruitmentMailTemplate,
 )
 from recruitment import widgets
 from base.methods import reload_queryset
+
 
 class ModelForm(forms.ModelForm):
     """
@@ -258,6 +260,7 @@ class CandidateCreationForm(ModelForm):
             "joining_date",
             "sequence",
             "stage_id",
+            "offerletter_status"
         )
         widgets = {
             "scheduled_date": forms.DateInput(attrs={"type": "date"}),
@@ -331,6 +334,7 @@ class ApplicationForm(RegistrationForm):
             "canceled",
             "joining_date",
             "sequence",
+            "offerletter_status"
         )
         widgets = {
             "recruitment_id": forms.TextInput(
@@ -575,3 +579,18 @@ class CandidateExportForm(forms.Form):
             "joining_date",
         ],
     )
+
+
+class OfferLetterForm(ModelForm):
+    """
+    OfferLetterForm
+    """
+
+    class Meta:
+        model = RecruitmentMailTemplate
+        fields = "__all__"
+        widgets = {
+            "body": forms.Textarea(
+                attrs={"data-summernote": "", "style": "display:none;"}
+            ),
+        }

@@ -186,6 +186,13 @@
     </a>
   </div>
   <div class="oh-main__titlebar oh-main__titlebar--right">
+    <form
+      hx-get='{% url "attendance-search" %}'
+      id="filterForm"
+      hx-swap="innerHTML"
+      hx-target="#tab_contents"
+      class="d-flex"
+    >
     <div
       class="oh-input-group oh-input__search-group"
       :class="searchShow ? 'oh-input__search-group--show' : ''"
@@ -201,20 +208,14 @@
         id="attendance-search"
         name="search"
         placeholder="{% trans 'Search' %}"
-        hx-get="{% url 'attendance-search' %}"
-        hx-trigger="keyup changed delay:500ms, search"
-        hx-target="#tab_contents"
-        hx-swap="innerHTML"
+        {% comment %} hx-get="{% url 'attendance-search' %}"
+        hx-trigger="keyup changed delay:500ms, search" {% endcomment %}
+        onkeyup="$('.filterButton')[0].click()"
+        {% comment %} hx-target="#tab_contents"
+        hx-swap="innerHTML" {% endcomment %}
       />
     </div>
     <div class="oh-main__titlebar-button-container">
-      <form
-      hx-get='{% url "attendance-search" %}'
-      id="filterForm"
-      hx-swap="innerHTML"
-      hx-target="#tab_contents"
-      class="d-flex"
-    >
       <div class="oh-dropdown" x-data="{open: false}">
         <button class="oh-btn ml-2" @click="open = !open" onclick="event.preventDefault()">
           <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}
@@ -266,6 +267,23 @@
           </div>
         </div>
       </div>
+      <script>
+        var dynamicValues ="{{request.GET|safe}}";
+        // start converting querystring to objects format and converting to object
+        var jsonContent = dynamicValues.match(/\{(.+?)\}/)[0];
+        var validJson = jsonContent.replace(/'/g, '"');
+        var dynamicValues = JSON.parse(validJson);
+        // creating hidden fields inside the form
+        for (var key in dynamicValues) {
+            if (dynamicValues.hasOwnProperty(key)) {
+              var input = document.createElement("input");
+              input.type = "hidden";
+              input.name = key;
+              input.value = dynamicValues[key];
+              document.getElementById("filterForm").appendChild(input);
+            }
+        }
+    </script>
     </form>
       <div class="oh-dropdown ml-2" x-data="{open: false}">
         <button

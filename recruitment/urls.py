@@ -11,6 +11,13 @@ import recruitment.views.actions
 import recruitment.views.dashboard
 import recruitment.views.search
 import recruitment.views.surveys
+from recruitment.views.mail_templates import (
+    view_letter,
+    view_mail_templates,
+    create_letter,
+    delete_mail_templates,
+    get_template
+)
 
 urlpatterns = [
     path("recruitment-create", views.recruitment, name="recruitment-create"),
@@ -132,13 +139,13 @@ urlpatterns = [
         "candidate-view/<int:cand_id>/",
         views.candidate_view_individual,
         name="candidate-view-individual",
-        kwargs={'model':Candidate}
+        kwargs={"model": Candidate},
     ),
     path(
         "candidate-update/<int:cand_id>/",
         views.candidate_update,
         name="rec-candidate-update",
-        kwargs={'model':Candidate}
+        kwargs={"model": Candidate},
     ),
     path(
         "delete-profile-image/<int:obj_id>/",
@@ -251,7 +258,15 @@ urlpatterns = [
         recruitment.views.surveys.single_survey,
         name="single-survey-view",
     ),
-    path('candidate-select/', views.candidate_select, name='candidate-select'),
-    path('candidate-select-filter/', views.candidate_select_filter, name='candidate-select-filter'),
-
+    path("candidate-select/", views.candidate_select, name="candidate-select"),
+    path(
+        "candidate-select-filter/",
+        views.candidate_select_filter,
+        name="candidate-select-filter",
+    ),
+    path("view-mail-templates/", view_mail_templates, name="view-mail-templates"),
+    path("view-mail-template/<int:obj_id>/", view_letter, name="view-mail-template"),
+    path("create-mail-template/", create_letter, name="create-mail-template"),
+    path("delete-mail-template/", delete_mail_templates, name="delete-mail-template"),
+    path("get-template/<int:obj_id>/", get_template, name="get-template"),
 ]

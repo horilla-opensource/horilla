@@ -61,8 +61,8 @@
 								</div>
 								<div class="oh-sticky-table__td">{{ contract.contract_name }}</div>
 								<div class="oh-sticky-table__td">{{ contract.employee_id }}</div>
-								<div class="oh-sticky-table__td">{{ contract.contract_start_date}}</div>
-								<div class="oh-sticky-table__td">
+								<div class="oh-sticky-table__td dateformat_changer">{{ contract.contract_start_date}}</div>
+								<div class="oh-sticky-table__td dateformat_changer">
 									{% if contract.contract_end_date %}{{ contract.contract_end_date}}{% endif %}
 								</div>
 								<div class="oh-sticky-table__td">

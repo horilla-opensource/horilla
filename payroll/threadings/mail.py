@@ -15,13 +15,6 @@ from payroll.models.models import Payslip
 logger = logging.getLogger(__name__)
 
 
-class FakeRequest:
-    class User:
-        def has_perm(self, _perm):
-            return True
-
-    def __init__(self) -> None:
-        self.user = self.User()
 
 
 class MailSendThread(Thread):
@@ -50,7 +43,7 @@ class MailSendThread(Thread):
             )
             attachments = []
             for instance in record["instances"]:
-                response = payslip_pdf(FakeRequest(), instance.id)
+                response = payslip_pdf(self.request, instance.id)
                 attachments.append(
                     (
                         f"{instance.get_payslip_title()}.pdf",

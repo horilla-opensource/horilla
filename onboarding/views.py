@@ -10,8 +10,12 @@ actions to handle the request, process data, and generate a response.
 This module is part of the recruitment project and is intended to
 provide the main entry points for interacting with the application's functionality.
 """
+
 from urllib.parse import parse_qs
 import json, contextlib, random, secrets
+from django import template
+from django.core.mail import EmailMessage
+from django.template.loader import render_to_string
 from django.core.mail import send_mail
 from django.contrib.auth.models import User
 from django.utils.translation import gettext as __
@@ -27,8 +31,8 @@ from notifications.signals import notify
 from horilla import settings
 from horilla.decorators import login_required, hx_request_required
 from horilla.decorators import permission_required
-from base.methods import get_key_instances
-from recruitment.models import Candidate, Recruitment
+from base.methods import generate_pdf, get_key_instances
+from recruitment.models import Candidate, Recruitment, RecruitmentMailTemplate
 from recruitment.filters import CandidateFilter
 from employee.models import Employee, EmployeeWorkInformation, EmployeeBankDetails
 from django.db.models import ProtectedError
@@ -470,11 +474,15 @@ def candidates_view(request):
     Returns:
     GET : return candidate view  template
     """
-    queryset = Candidate.objects.filter(hired=True, start_onboard=False)
+    queryset = Candidate.objects.filter(
+        hired=True,
+        recruitment_id__closed=False,
+    )
     candidate_filter_obj = CandidateFilter()
     previous_data = request.GET.urlencode()
     page_number = request.GET.get("page")
     page_obj = paginator_qry(queryset, page_number)
+    mail_templates = RecruitmentMailTemplate.objects.all()
     return render(
         request,
         "onboarding/candidates_view.html",
@@ -482,6 +490,8 @@ def candidates_view(request):
             "candidates": page_obj,
             "form": candidate_filter_obj.form,
             "pd": previous_data,
+            "mail_templates": mail_templates,
+            "hired_candidates": queryset,
         },
     )
 
@@ -490,7 +500,10 @@ def candidates_view(request):
 @permission_required(perm="recruitment.view_candidate")
 def hired_candidate_view(request):
     previous_data = request.GET.urlencode()
-    candidates = Candidate.objects.filter(hired=True)
+    candidates = Candidate.objects.filter(
+        hired=True,
+        recruitment_id__closed=False,
+    )
     if request.GET.get("is_active") is None:
         candidates = candidates.filter(is_active=True)
     candidates = CandidateFilter(request.GET, queryset=candidates).qs
@@ -516,7 +529,10 @@ def candidate_filter(request):
     Returns:
     GET : return candidate view template
     """
-    queryset = Candidate.objects.filter(hired=True, start_onboard=False)
+    queryset = Candidate.objects.filter(
+        hired=True,
+        recruitment_id__closed=False,
+    )
     candidate_filter_obj = CandidateFilter(request.GET, queryset).qs
     previous_data = request.GET.urlencode()
     page_number = request.GET.get("page")
@@ -531,6 +547,7 @@ def candidate_filter(request):
 
 
 @login_required
+@all_manager_can_enter("recruitment.view_recruitment")
 def email_send(request):
     """
     function used to send onboarding portal for hired candidates .
@@ -541,36 +558,81 @@ def email_send(request):
     Returns:
     GET : return json response
     """
-    if request.method != "POST":
-        return JsonResponse("", safe=False)
-    candidates = request.POST.get("candidates")
-    json_list = json.loads(candidates)
-    if len(json_list) <= 0:
-        return JsonResponse(
-            {"message": _("No candidate has chosen."), "tags": "danger"}
-        )
-    for cand_id in json_list:
+    host = request.get_host()
+    protocol = "https" if request.is_secure() else "http"
+    candidates = request.POST.getlist("ids")
+    other_attachments = request.FILES.getlist("other_attachments")
+    template_attachment_ids = request.POST.getlist("template_attachment_ids")
+    print(candidates)
+    if not candidates:
+        messages.info(request, "Please choose chandidates")
+        return HttpResponse("<script>window.location.reload()</script>")
+
+    bodys = list(
+        RecruitmentMailTemplate.objects.filter(
+            id__in=template_attachment_ids
+        ).values_list("body", flat=True)
+    )
+
+    if not candidates:
+        messages.info(request, "Please choose candidates")
+
+    attachments_other = []
+    for file in other_attachments:
+        attachments_other.append((file.name, file.read(), file.content_type))
+        file.close()
+    for cand_id in candidates:
+        attachments = list(set(attachments_other) | set([]))
         candidate = Candidate.objects.get(id=cand_id)
-        if candidate.start_onboard is False:
-            token = secrets.token_hex(15)
-            existing_portal = OnboardingPortal.objects.filter(candidate_id=candidate)
-            if existing_portal.exists():
-                new_portal = existing_portal.first()
-                new_portal.token = token
-                new_portal.used = False
-                new_portal.save()
-            else:
-                OnboardingPortal(candidate_id=candidate, token=token).save()
-            send_mail(
-                "Onboarding Portal",
-                f"{request.get_host()}/onboarding/user-creation/{token}",
-                "from@example.com",
-                [candidate.email],
-                fail_silently=False,
+        for html in bodys:
+            # due to not having solid template we first need to pass the context
+            template_bdy = template.Template(html)
+            context = template.Context(
+                {"instance": candidate, "self": request.user.employee_get}
             )
-            candidate.start_onboard = True
-            candidate.save()
-    return JsonResponse({"message": _("Email send successfully"), "tags": "success"})
+            render_bdy = template_bdy.render(context)
+            attachments.append(
+                (
+                    "Document",
+                    generate_pdf(render_bdy, {}, path=False, title="Document").content,
+                    "application/pdf",
+                )
+            )
+        token = secrets.token_hex(15)
+        existing_portal = OnboardingPortal.objects.filter(candidate_id=candidate)
+        if existing_portal.exists():
+            new_portal = existing_portal.first()
+            new_portal.token = token
+            new_portal.used = False
+            new_portal.save()
+        else:
+            OnboardingPortal(candidate_id=candidate, token=token).save()
+        html_message = render_to_string(
+            "onboarding/mail_templates/default.html",
+            {
+                "portal": f"{protocol}://{host}/onboarding/user-creation/{token}",
+                "instance": candidate,
+                "host": host,
+                "protocol": protocol,
+            },
+        )
+        email = EmailMessage(
+            f"Hello {candidate.name}, Congratulations on your selection!",
+            html_message,
+            settings.EMAIL_HOST_USER,
+            [candidate.email],
+        )
+        email.content_subtype = "html"
+        email.attachments = attachments
+        try:
+            email.send()
+            # to check ajax or not
+            messages.success(request, "Portal link sent to the candidate")
+        except:
+            messages.error(request, f"Mail not send to {candidate.name}")
+        candidate.start_onboard = True
+        candidate.save()
+    return HttpResponse("<script>window.location.reload()</script>")
 
 
 @login_required
@@ -711,7 +773,7 @@ def user_creation(request, token):
             or onboarding_portal.used is True
             and request.user.is_anonymous
         ):
-            return HttpResponse("Denied")
+            return render(request, "404.html")
         try:
             if request.method == "POST":
                 form = UserCreationForm(request.POST, instance=user)
@@ -832,12 +894,16 @@ def employee_creation(request, token):
             employee_personal_info.employee_profile = candidate.profile
             employee_personal_info.save()
             job_position = onboarding_portal.candidate_id.job_position_id
-            work_info = EmployeeWorkInformation.objects.get_or_create(
+            existing_work_info = EmployeeWorkInformation.objects.filter(
                 employee_id=employee_personal_info,
-                job_position_id=job_position,
+            ).first()
+            work_info = (
+                existing_work_info if existing_work_info else EmployeeWorkInformation()
             )
-            work_info[0].date_joining = candidate.joining_date
-            work_info[0].save()
+            work_info.employee_id = employee_personal_info
+            work_info.job_position_id = job_position
+            work_info.date_joining = candidate.joining_date
+            work_info.save()
             onboarding_portal.count = 3
             onboarding_portal.save()
             messages.success(

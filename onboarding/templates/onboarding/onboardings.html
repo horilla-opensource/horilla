@@ -30,7 +30,7 @@
         </td>
         <td>{{candidate_stage.candidate_id.email}}</td>
         <td>{{candidate_stage.candidate_id.mobile}}</td>
-        <td>{{candidate_stage.candidate_id.scheduled_date}}</td>
+        <td class="dateformat_changer">{{candidate_stage.candidate_id.scheduled_date}}</td>
         <td>
           <select class="form-select stage" aria-label="Default select example" name="stage_id">
             {% for onboarding_stage in onboarding_stages %}

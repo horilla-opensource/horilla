@@ -30,7 +30,7 @@
   <div class="oh-btn-group d-flex flex-row-reverse">
     {% if request.user|is_reportingmanager or request.user.has_perm.attendance.change_attendance %}
     <a
-      href="{% url 'approve-validate-attendance-request' next %}"
+      href="{% url 'approve-validate-attendance-request' attendance.id %}"
       class="oh-btn oh-btn--success"
       style="width: 20%"
     >
@@ -75,9 +75,45 @@
   {% for key, diff in data.items %}
   <tr>
     <td class="pt-2 pb-2">{{key}}</td>
-    <td class="p-2 ml-2">{% if diff.0 %}{{diff.0}}{% endif %}</td>
-    <td class="p-2 ml-2">{{diff.1}}</td>
-  </tr>
+      {% if key == 'Check-Out Date' or key == 'Attendance date' or key == 'Check-In Date'%}
+        {% if diff.0 == 'None' %}
+          <td class="p-2 ml-2 dateformat_changer">{% if diff.0 %}{{diff.0}}{% endif %}</td>
+          <td class="p-2 ml-2 dateformat_changer">{{diff.1}},</td>
+        {% endif %}
+        {% if diff.1 == 'None' %}
+          <td class="p-2 ml-2 dateformat_changer">{% if diff.0 %}{{diff.0}},{% endif %}</td>
+          <td class="p-2 ml-2 dateformat_changer">{{diff.1}}</td>
+        {% endif %}
+        {% if diff.0 == 'None' and  diff.1 == 'None'%}
+          <td class="p-2 ml-2 dateformat_changer">{% if diff.0 %}{{diff.0}}{% endif %}</td>
+          <td class="p-2 ml-2 dateformat_changer">{{diff.1}}</td>
+        {% endif %}
+        {% if diff.0 != 'None' and  diff.1 != 'None'%}
+          <td class="p-2 ml-2 dateformat_changer">{% if diff.0 %}{{diff.0}},{% endif %}</td>
+          <td class="p-2 ml-2 dateformat_changer">{{diff.1}},</td>
+        {% endif %}
+      {% elif key == 'Check-Out' or key == 'Check-In'%}
+        {% if diff.0 == 'None' %}
+          <td class="p-2 ml-2 timeformat_changer">{% if diff.0 %}{{diff.0}}{% endif %}</td>
+          <td class="p-2 ml-2 timeformat_changer">{{diff.1}},</td>
+        {% endif %}
+        {% if diff.1 == 'None' %}
+          <td class="p-2 ml-2 timeformat_changer">{% if diff.0 %}{{diff.0}},{% endif %}</td>
+          <td class="p-2 ml-2 timeformat_changer">{{diff.1}}</td>
+        {% endif %}
+        {% if diff.0 == 'None' and  diff.1 == 'None'%}
+          <td class="p-2 ml-2 timeformat_changer">{% if diff.0 %}{{diff.0}}{% endif %}</td>
+          <td class="p-2 ml-2 timeformat_changer">{{diff.1}}</td>
+        {% endif %}
+        {% if diff.0 != 'None' and  diff.1 != 'None'%}
+          <td class="p-2 ml-2 timeformat_changer">{% if diff.0 %}{{diff.0}},{% endif %}</td>
+          <td class="p-2 ml-2 timeformat_changer">{{diff.1}},</td>
+        {% endif %}
+      {% else %}
+        <td class="p-2 ml-2">{% if diff.0 %}{{diff.0}}{% endif %}</td>
+        <td class="p-2 ml-2">{{diff.1}}</td>
+      {% endif %}
+    </tr>
   {% endfor %}
   <tr>
     <th>{% trans "Description" %}</th>

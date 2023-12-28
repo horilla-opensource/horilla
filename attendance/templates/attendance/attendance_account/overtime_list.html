@@ -17,8 +17,10 @@
 			  	  	<div class="oh-sticky-table__th" hx-get="{% url 'attendance-ot-search' %}?{{pd}}&sortby=month" hx-target="#ot-table">{% trans "Month" %}</div>
 			  	  	<div class="oh-sticky-table__th" hx-get="{% url 'attendance-ot-search' %}?{{pd}}&sortby=year" hx-target="#ot-table">{% trans "Year" %}</div>
 			  	  	<div class="oh-sticky-table__th" hx-get="{% url 'attendance-ot-search' %}?{{pd}}&sortby=hour_account_second" hx-target="#ot-table">{% trans "Worked Hours" %}</div>
+			  	  	<div class="oh-sticky-table__th">{% trans "Hours to Validate" %}</div>
 			  	  	<div class="oh-sticky-table__th">{% trans "Pending Hours" %}</div>
 			  	  	<div class="oh-sticky-table__th" hx-get="{% url 'attendance-ot-search' %}?{{pd}}&sortby=overtime_second" hx-target="#ot-table">{% trans "Overtime Hours" %}</div>
+			  	  	<div class="oh-sticky-table__th">{% trans "Not Approved OT Hours" %}</div>
 			  	  	<div class="oh-sticky-table__th"></div>
 			  	</div>
 			</div>
@@ -53,8 +55,14 @@
 							</div>
 					  		<div class="oh-sticky-table__td">{{ot.year}}</div>
 					  		<div class="oh-sticky-table__td">{{ot.worked_hours}}</div>
+					  		<div class="oh-sticky-table__td"  onclick="event.stopPropagation();localStorage.setItem('activeTabAttendance', '#tab_1');window.location.href=`{% url "attendance-view" %}?employee_id={{ot.employee_id.id}}&month={{ot.get_month_index}}&year={{ot.year}}`">
+								{{ot.not_validated_hrs}}
+							</div>
 					  		<div class="oh-sticky-table__td">{{ot.pending_hours}}</div>
 					  		<div class="oh-sticky-table__td">{{ot.overtime}}</div>
+					  		<div class="oh-sticky-table__td" onclick="event.stopPropagation();localStorage.setItem('activeTabAttendance', '#tab_3');window.location.href=`{% url "attendance-view" %}?employee_id={{ot.employee_id.id}}&month={{ot.get_month_index}}&year={{ot.year}}`" >
+								{{ot.not_approved_ot_hrs}}
+							</div>
 					  		<div class="oh-sticky-table__td" onclick="event.stopPropagation()">
 					  		  	<div class="oh-btn-group">
 					  		  		{% if perms.recruitment.change_attendanceovertime or request.user|is_reportingmanager %}

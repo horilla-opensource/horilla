@@ -1486,6 +1486,46 @@ def work_info_export(request):
                 if value is None:
                     break
             data = str(value) if value is not None else ""
+                        
+            if type(value) == date:
+                user= request.user
+                emp = user.employee_get
+
+                # Taking the company_name of the user
+                info = EmployeeWorkInformation.objects.filter(employee_id=emp)
+                if info.exists():
+                    for i in info:
+                        employee_company = i.company_id
+                    company_name = Company.objects.filter(company=employee_company)
+                    emp_company = company_name.first()
+
+                    # Access the date_format attribute directly
+                    date_format = emp_company.date_format
+                else:
+                    date_format = 'MMM. D, YYYY'
+                # Define date formats
+                date_formats = {
+                    'DD-MM-YYYY': '%d-%m-%Y',
+                    'DD.MM.YYYY': '%d.%m.%Y',
+                    'DD/MM/YYYY': '%d/%m/%Y',
+                    'MM/DD/YYYY': '%m/%d/%Y',
+                    'YYYY-MM-DD': '%Y-%m-%d',
+                    'YYYY/MM/DD': '%Y/%m/%d',
+                    'MMMM D, YYYY': '%B %d, %Y',
+                    'DD MMMM, YYYY': '%d %B, %Y',
+                    'MMM. D, YYYY': '%b. %d, %Y',
+                    'D MMM. YYYY': '%d %b. %Y',
+                    'dddd, MMMM D, YYYY': '%A, %B %d, %Y',
+                }
+
+                # Convert the string to a datetime.date object
+                start_date = datetime.strptime(str(value), '%Y-%m-%d').date()
+
+                # Print the formatted date for each format
+                for format_name, format_string in date_formats.items():
+                    if format_name == date_format:
+                        data = start_date.strftime(format_string)
+                        
             if data == "True":
                 data = _("Yes")
             elif data == "False":
