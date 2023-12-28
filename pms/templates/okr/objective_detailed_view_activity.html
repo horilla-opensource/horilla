@@ -22,7 +22,10 @@
             </div>
             <small class="oh-activity-list__description">
                 <span><strong>{{comment.employee_id}}</strong> {% trans "added a comment" %}</span>
-                <span class="oh-activity-list__comment-timestamp">{{comment.created_at}}</span>
+                <div class="oh-activity-list__comment-timestamp mt-1">
+                    <span class="dateformat_changer">{{ comment.created_at|date:"M. d, Y" }}</span>&nbsp,&nbsp
+                    <span class="timeformat_changer">{{ comment.created_at|date:"g:i a" }}</span>
+                </div>
             </small>
         </div>
         <div class="oh-activity-list__comment-container">
@@ -50,7 +53,8 @@
                 </li>
                 <li>
                     <small>
-                        {{history_object.changed_date}}
+                        <span class="dateformat_changer">{{ history_object.changed_date|date:"M. d, Y" }}</span>&nbsp,&nbsp
+                        <span class="timeformat_changer">{{ history_object.changed_date|date:"g:i a" }}</span>
                     </small>
                 </li>
             {% endif %}
