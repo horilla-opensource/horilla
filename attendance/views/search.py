@@ -13,7 +13,6 @@ from horilla.decorators import (
     hx_request_required,
     login_required,
     manager_can_enter,
-    permission_required,
 )
 from attendance.filters import (
     AttendanceActivityFilter,
@@ -157,10 +156,6 @@ def attendance_overtime_search(request):
     accounts = AttendanceOverTimeFilter(request.GET).qs
     form = AttendanceOverTimeForm()
     template = "attendance/attendance_account/overtime_list.html"
-    if field != "" and field is not None:
-        field_copy = field.replace(".", "__")
-        accounts = accounts.order_by(field_copy)
-        template = "attendance/attendance_account/group_by.html"
     self_account = accounts.filter(employee_id__employee_user_id=request.user)
     accounts = sortby(request, accounts, "sortby")
     accounts = filtersubordinates(
@@ -173,11 +168,20 @@ def attendance_overtime_search(request):
     keys_to_remove = [key for key, value in data_dict.items() if value == ["unknown"]]
     for key in keys_to_remove:
         data_dict.pop(key)
+    if field != "" and field is not None:
+        accounts = group_by_queryset(
+            accounts, field, request.GET.get("page"), "page"
+        )
+        template = "attendance/attendance_account/group_by.html"
+    else:
+        accounts = paginator_qry(
+            accounts,request.GET.get("page")
+        )
     return render(
         request,
         template,
         {
-            "accounts": paginator_qry(accounts, request.GET.get("page")),
+            "accounts": accounts,
             "form": form,
             "pd": previous_data,
             "field": field,
@@ -205,12 +209,14 @@ def attendance_activity_search(request):
     attendance_activities = attendance_activities | self_attendance_activities
     attendance_activities = attendance_activities.distinct()
     template = "attendance/attendance_activity/activity_list.html"
-    if field != "" and field is not None:
-        field_copy = field.replace(".", "__")
-        attendance_activities = attendance_activities.order_by(field_copy)
-        template = "attendance/attendance_activity/group_by.html"
-
     attendance_activities = sortby(request, attendance_activities, "orderby")
+    if field != "" and field is not None:
+        attendance_activities = group_by_queryset(
+            attendance_activities, field, request.GET.get("page"), "page"
+        )
+        template = "attendance/attendance_activity/group_by.html"
+    else:
+        attendance_activities = paginator_qry(attendance_activities, request.GET.get("page"))
     data_dict = parse_qs(previous_data)
     get_key_instances(AttendanceActivity, data_dict)
     keys_to_remove = [key for key, value in data_dict.items() if value == ["unknown"]]
@@ -220,7 +226,7 @@ def attendance_activity_search(request):
         request,
         template,
         {
-            "data": paginator_qry(attendance_activities, request.GET.get("page")),
+            "data": attendance_activities,
             "pd": previous_data,
             "field": field,
             "filter_dict": data_dict,
@@ -249,9 +255,11 @@ def late_come_early_out_search(request):
     template = "attendance/late_come_early_out/report_list.html"
     if field != "" and field is not None:
         template = "attendance/late_come_early_out/group_by.html"
-        field_copy = field.replace(".", "__")
-        reports = reports.order_by(field_copy)
-
+        reports = group_by_queryset(
+            reports, field, request.GET.get("page"), "page"
+        )
+    else:
+        reports = paginator_qry(reports, request.GET.get("page"))
     reports = sortby(request, reports, "sortby")
     data_dict = parse_qs(previous_data)
     get_key_instances(AttendanceLateComeEarlyOut, data_dict)
@@ -263,7 +271,7 @@ def late_come_early_out_search(request):
         request,
         template,
         {
-            "data": paginator_qry(reports, request.GET.get("page")),
+            "data": reports,
             "pd": previous_data,
             "field": field,
             "filter_dict": data_dict,
@@ -356,12 +364,6 @@ def search_attendance_requests(request):
         data_dict.pop(key)
 
     template = "requests/attendance/request_lines.html"
-    if field != "" and field is not None:
-        field_copy = field.replace(".", "__")
-        requests = requests.order_by(field_copy)
-        attendances = attendances.order_by(field_copy)
-        template = "requests/attendance/group_by.html"
-
     requests_ids = json.dumps(
         [
             instance.id
@@ -378,12 +380,21 @@ def search_attendance_requests(request):
             ).object_list
         ]
     )
+    if field != "" and field is not None:
+        requests = group_by_queryset(requests, field, request.GET.get("rpage"), "rpage")
+        attendances = group_by_queryset(
+            attendances, field, request.GET.get("page"), "page"
+        )
+        template = "requests/attendance/group_by.html"
+    else:
+        requests = paginator_qry(requests,request.GET.get("rpage"))
+        attendances = paginator_qry(requests,request.GET.get("page"))
     return render(
         request,
         template,
         {
-            "requests": paginator_qry(requests, request.GET.get("rpage")),
-            "attendances": paginator_qry(attendances, request.GET.get("page")),
+            "requests": requests,
+            "attendances": attendances,
             "requests_ids": requests_ids,
             "attendances_ids": attendances_ids,
             "pd": previous_data,
