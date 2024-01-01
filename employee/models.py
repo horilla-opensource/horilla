@@ -4,13 +4,18 @@ models.py
 This module is used to register models for employee app
 
 """
+import datetime as dtime
 from datetime import date, datetime
 from django.conf import settings
 from django.db import models
 from django.contrib.auth.models import User, Permission
 from django.utils.translation import gettext_lazy as trans
 from django.utils.translation import gettext as _
+from django.core.exceptions import ValidationError
+from django.core.files.storage import default_storage
 from simple_history.models import HistoricalRecords
+from horilla_audit.models import HorillaAuditLog, HorillaAuditInfo
+from horilla_audit.methods import get_diff
 from base.models import (
     Company,
     JobPosition,
@@ -21,9 +26,9 @@ from base.models import (
     EmployeeShift,
 )
 from base.horilla_company_manager import HorillaCompanyManager
+from employee.methods.duration_methods import strtime_seconds, format_time
 from horilla_audit.models import HorillaAuditLog, HorillaAuditInfo
 from horilla_audit.methods import get_diff
-from django.core.files.storage import default_storage
 
 # create your model
 
@@ -127,6 +132,12 @@ class Employee(models.Model):
             getattr(self, "employee_work_info", None), "job_position_id", None
         )
 
+    def get_department(self):
+        """
+        This method is used to return the department of the employee
+        """
+        return getattr(getattr(self, "employee_work_info", None), "department_id", None)
+
     def get_shift(self):
         """
         This method is used to return the shift of the employee
@@ -168,6 +179,77 @@ class Employee(models.Model):
             if default_storage.exists(full_filename):
                 url = self.employee_profile.url
         return url
+
+    def get_leave_status(self):
+        """
+        This method is used to get the leave status of the employee
+        """
+        today = date.today()
+        leaves_requests = self.leaverequest_set.filter(
+            start_date__lte=today, end_date__gte=today
+        )
+        status = "Expected working"
+        if leaves_requests.exists():
+            if leaves_requests.filter(status="approved").exists():
+                status = "On Leave"
+            elif leaves_requests.filter(status="requested"):
+                status = "Waiting Approval"
+            else:
+                status = "Canceled / Rejected"
+        elif self.employee_attendances.filter(
+            attendance_date=today,
+        ).exists():
+            status = "Working"
+        return status
+
+    def get_forecasted_at_work(self):
+        """
+        This method is used to the employees current day shift status
+        """
+        today = datetime.today()
+        now = datetime.now()
+        forecasted_check_out = today.replace(
+            hour=now.hour, minute=now.minute, second=now.second
+        )
+        attendance = self.employee_attendances.filter(attendance_date=today).first()
+        at_work = 0
+        forecasted_pending_hours = 0
+        if attendance:
+            # geting the last attendance activity with clock out
+            last_activity = attendance.get_last_clock_out()
+            if not last_activity:
+                check_in = attendance.attendance_clock_in
+                check_in_date = attendance.attendance_clock_in_date
+                combined_check_in = datetime.combine(check_in_date, check_in)
+                at_work = (forecasted_check_out - combined_check_in).total_seconds()
+            else:
+                at_work = attendance.at_work_second
+                clock_out = last_activity.clock_out
+                clock_out_date = last_activity.clock_out_date
+                combined_last_out = datetime.combine(clock_out_date, clock_out)
+                if not attendance.attendance_clock_out:
+                    at_work = (
+                        forecasted_check_out - combined_last_out
+                    ).total_seconds() + at_work
+                    pass
+            min_hour = strtime_seconds(attendance.minimum_hour)
+            pending = (min_hour + 60) - at_work
+            forecasted_pending_hours = max(pending, 0)
+            # The duration is forecasted
+        return {
+            "forecasted_at_work": format_time(at_work),
+            "forecasted_pending_hours": format_time(forecasted_pending_hours),
+            "forecasted_at_work_seconds": at_work,
+            "forecasted_pending_hours_seconds": forecasted_pending_hours,
+        }
+
+    def get_today_attendance(self):
+        """
+        This method will returns employees todays attendance
+        """
+        return self.employee_attendances.filter(
+            attendance_date=datetime.today()
+        ).first()
 
     def __str__(self) -> str:
         last_name = (
@@ -244,7 +326,11 @@ class EmployeeWorkInformation(models.Model):
         verbose_name=_("Employee"),
     )
     job_position_id = models.ForeignKey(
-        JobPosition, on_delete=models.PROTECT, null=True, verbose_name=_("Job Position")
+        JobPosition,
+        on_delete=models.PROTECT,
+        null=True,
+        blank=True,
+        verbose_name=_("Job Position"),
     )
     department_id = models.ForeignKey(
         Department,
@@ -366,7 +452,10 @@ class EmployeeBankDetails(models.Model):
     )
     bank_name = models.CharField(max_length=50)
     account_number = models.CharField(
-        max_length=50, null=False, blank=False, unique=True
+        max_length=50,
+        null=False,
+        blank=False,
+        default="",
     )
     branch = models.CharField(max_length=50)
     address = models.TextField(max_length=300)
@@ -384,3 +473,17 @@ class EmployeeBankDetails(models.Model):
 
     def __str__(self) -> str:
         return f"{self.employee_id}-{self.bank_name}"
+
+    def clean(self):
+        if self.account_number is not None:
+            bank_details = EmployeeBankDetails.objects.filter(
+                account_number=self.account_number
+            )
+            if bank_details:
+                raise ValidationError(
+                    {
+                        "account_number": _(
+                            "Bank details for an employee with this account number already exist"
+                        )
+                    }
+                )
