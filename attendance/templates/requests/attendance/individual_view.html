@@ -27,7 +27,7 @@
   </button>
 </div>
 <div class="oh-modal__button-container text-center">
-  <div class="oh-btn-group d-flex flex-row-reverse">
+  <div class="d-flex flex-row-reverse">
     {% if request.user|is_reportingmanager or request.user.has_perm.attendance.change_attendance %}
     <a
       href="{% url 'approve-validate-attendance-request' attendance.id %}"

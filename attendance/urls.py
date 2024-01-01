@@ -242,6 +242,11 @@ urlpatterns = [
         name="update-shift-details",
     ),
     path(
+        "update-date-details",
+        views.form_date_checking,
+        name="update-date-details",
+    ),
+    path(
         "user-request-one-view/<int:id>",
         views.user_request_one_view,
         name="user-request-one-view",

@@ -36,6 +36,7 @@ from base.methods import closest_numbers, export_data
 from base.methods import get_key_instances
 from base.models import EmployeeShiftSchedule
 from base.methods import filtersubordinates, choosesubordinates
+from leave.models import WEEK_DAYS, CompanyLeave, Holiday
 from notifications.signals import notify
 from attendance.views.handle_attendance_errors import handle_attendance_errors
 from attendance.views.process_attendance_data import process_attendance_data
@@ -139,6 +140,63 @@ def attendance_validate(attendance):
         condition_for_at_work = strtime_seconds(conditions[0].validation_at_work)
     at_work = strtime_seconds(attendance.attendance_worked_hour)
     return condition_for_at_work >= at_work
+
+
+def attendance_day_checking(attendance_date, minimum_hour):
+    
+    # Convert the string to a datetime object
+    attendance_datetime = datetime.strptime(attendance_date, "%Y-%m-%d")
+
+    # Extract name of the day
+    attendance_day = attendance_datetime.strftime("%A")
+
+    # Taking all holidays into a list
+    leaves = []
+    holidays = Holiday.objects.all()
+    for holi in holidays:
+        start_date = holi.start_date
+        end_date = holi.end_date
+
+        # Convert start_date and end_date to datetime objects
+        start_date = datetime.strptime(str(start_date), '%Y-%m-%d')
+        end_date = datetime.strptime(str(end_date), '%Y-%m-%d')
+
+        # Add dates in between start date and end date including both
+        current_date = start_date
+        while current_date <= end_date:
+            leaves.append(current_date.strftime('%Y-%m-%d'))
+            current_date += timedelta(days=1)
+        
+    # Checking attendance date is in holiday list, if found making the minimum hour to 00:00
+    for leave in leaves:
+        if str(leave) == str(attendance_date):
+            minimum_hour = '00:00'
+            break
+    
+    # Making a dictonary contains week day value and leave day pairs
+    company_leaves = {}
+    company_leave = CompanyLeave.objects.all()
+    for com_leave in company_leave:
+        a = dict(WEEK_DAYS).get(com_leave.based_on_week_day)
+        b = com_leave.based_on_week
+        company_leaves[b] = a
+
+    # Checking the attendance date is in which week
+    week_in_month = str(((attendance_datetime.day - 1) // 7 + 1)-1)
+
+    # Checking the attendance date is in the company leave or not
+    for pairs in company_leaves.items():
+        # For all weeks based_on_week is None
+        if str(pairs[0]) == 'None':
+            if str(pairs[1]) == str(attendance_day):
+                minimum_hour = '00:00'
+                break
+        # Checking with based_on_week and attendance_date week
+        if str(pairs[0]) == week_in_month:
+            if str(pairs[1]) == str(attendance_day):
+                minimum_hour = '00:00'
+                break
+    return minimum_hour
 
 
 @login_required
@@ -1202,6 +1260,9 @@ def form_shift_dynamic_data(request):
     if attendance_date == date(day=today.day, month=today.month, year=today.year):
         shift_end_time = datetime.now().strftime("%H:%M")
         worked_hour = "00:00"
+
+    minimum_hour = attendance_day_checking(str(attendance_date), minimum_hour)
+
     return JsonResponse(
         {
             "shift_start_time": shift_start_time,
@@ -1210,6 +1271,36 @@ def form_shift_dynamic_data(request):
             "minimum_hour": minimum_hour,
             "worked_hour": worked_hour,
             "checkout_date": attendance_clock_out_date.strftime("%Y-%m-%d"),
+        }
+    )
+
+
+@login_required
+def form_date_checking(request):
+
+    attendance_date_str = request.POST["attendance_date"]
+
+    # Converting to date type.
+    attendance_date = datetime.strptime(attendance_date_str, "%Y-%m-%d").date()
+
+    if request.POST["shift_id"]:
+        shift_id = request.POST["shift_id"]
+        day = attendance_date.strftime("%A").lower()
+        schedule_today = EmployeeShiftSchedule.objects.filter(
+        shift_id__id=shift_id, day__day=day).first()
+
+        # Checking the Shift is present in the selected attendance day.
+        if schedule_today is not None:
+            minimum_hour = schedule_today.minimum_working_hour
+        else:
+            minimum_hour ='00:00'
+
+    attendance_date = str(attendance_date)
+    minimum_hour = attendance_day_checking(attendance_date, minimum_hour)
+
+    return JsonResponse(
+        {
+            "minimum_hour": minimum_hour,
         }
     )
 

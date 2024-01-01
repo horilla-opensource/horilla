@@ -161,6 +161,19 @@ class AttendanceUpdateForm(ModelForm):
                 ] = instance.attendance_clock_out_date.strftime("%Y-%m-%d")
             kwargs["initial"] = initial
         super().__init__(*args, **kwargs)
+        self.fields["employee_id"].widget.attrs.update({"id": str(uuid.uuid4())})
+        self.fields["shift_id"].widget.attrs.update(
+            {
+                "id": str(uuid.uuid4()),
+                "onchange": "shiftChange($(this))",
+            }
+        )
+        self.fields["attendance_date"].widget.attrs.update(
+            {
+                "onchange": "dateChange($(this))",
+            }
+        )
+        self.fields["work_type_id"].widget.attrs.update({"id": str(uuid.uuid4())})
 
         self.fields["attendance_overtime_approve"].label = _("Approve overtime?")
         self.fields["attendance_validated"].label = _("Validate Attendance?")
@@ -249,6 +262,11 @@ class AttendanceForm(ModelForm):
             {
                 "id": str(uuid.uuid4()),
                 "onchange": "shiftChange($(this))",
+            }
+        )
+        self.fields["attendance_date"].widget.attrs.update(
+            {
+                "onchange": "dateChange($(this))",
             }
         )
         self.fields["work_type_id"].widget.attrs.update({"id": str(uuid.uuid4())})
@@ -467,6 +485,18 @@ class AttendanceRequestForm(ModelForm):
         super().__init__(*args, **kwargs)
         self.fields["attendance_clock_out_date"].required = False
         self.fields["attendance_clock_out"].required = False
+        self.fields["shift_id"].widget.attrs.update(
+            {
+                "id": str(uuid.uuid4()),
+                "onchange": "shiftChange($(this))",
+            }
+        )
+        self.fields["attendance_date"].widget.attrs.update(
+            {
+                "onchange": "dateChange($(this))",
+            }
+        )
+        self.fields["work_type_id"].widget.attrs.update({"id": str(uuid.uuid4())})
 
     class Meta:
         """
