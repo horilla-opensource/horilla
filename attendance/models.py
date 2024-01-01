@@ -253,6 +253,17 @@ class Attendance(models.Model):
             keys = diffs.keys()
         return keys
 
+    def get_last_clock_out(self):
+        """
+        This method is used to get the last attendance activity if exists
+        """
+        activities = AttendanceActivity.objects.filter(
+            employee_id=self.employee_id,
+            attendance_date=self.attendance_date,
+            clock_out__isnull=False,
+        ).order_by("id")
+        return activities.last()
+
     # return f"Attendance ID: {self.id}"  # Adjust the representation as needed
     def hours_pending(self):
         """
