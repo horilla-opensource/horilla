@@ -25,6 +25,7 @@ from django import forms
 from django.db.models import Q
 from django.contrib.auth.models import User
 from django.forms import DateInput, TextInput
+from django.utils.translation import gettext as _
 from django.utils.translation import gettext_lazy as trans
 from employee.models import Employee, EmployeeWorkInformation, EmployeeBankDetails
 from base.methods import reload_queryset
@@ -335,9 +336,18 @@ excel_columns = [
     ("employee_bank_details__account_number", trans("Account Number")),
     ("employee_bank_details__any_other_code1", trans("Bank Code #1")),
     ("employee_bank_details__any_other_code2", trans("Bank Code #2")),
-    ("employee_bank_details__country", trans("Country")),
-    ("employee_bank_details__state", trans("State")),
-    ("employee_bank_details__city", trans("City")),
+    ("employee_bank_details__country", trans("Bank Country")),
+    ("employee_bank_details__state", trans("Bank State")),
+    ("employee_bank_details__city", trans("Bank City")),
+]
+fields_to_remove = [
+    "badge_id",
+    "employee_first_name",
+    "employee_last_name",
+    "is_active",
+    "email",
+    "phone",
+    "employee_bank_details__account_number",
 ]
 
 
@@ -362,3 +372,23 @@ class EmployeeExportExcelForm(forms.Form):
             "employee_work_info__company_id",
         ],
     )
+
+
+class BulkUpdateFieldForm(forms.Form):
+    update_fields = forms.MultipleChoiceField(
+        choices=excel_columns, label=_("Select Fields to Update")
+    )
+    bulk_employee_ids = forms.CharField(widget=forms.HiddenInput())
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        updated_choices = [
+            (value, label)
+            for value, label in self.fields["update_fields"].choices
+            if value not in fields_to_remove
+        ]
+        self.fields["update_fields"].choices = updated_choices
+        for visible in self.visible_fields():
+            visible.field.widget.attrs[
+                "class"
+            ] = "oh-select oh-select-2 select2-hidden-accessible oh-input w-100"

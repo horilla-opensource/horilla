@@ -5,8 +5,13 @@ This page is used to register filter for employee models
 
 """
 import uuid
+from django import forms
 import django_filters
 from django.contrib.auth.models import Permission, Group
+from django import forms
+from django_filters.filters import ModelChoiceFilter
+from django.utils.translation import gettext as _
+from base.models import WorkType
 from horilla.filters import FilterSet
 from employee.models import Employee
 
@@ -39,7 +44,19 @@ class EmployeeFilter(FilterSet):
     is_active = django_filters.ChoiceFilter(
         field_name="is_active",
         label="Is Active",
-        choices=[(True, "Yes"), (False, "No"),],
+        choices=[
+            (True, "Yes"),
+            (False, "No"),
+        ],
+    )
+
+    not_in_yet = django_filters.DateFilter(
+        method="not_in_yet_func",
+        widget=forms.DateInput(attrs={"type": "date"}),
+    )
+    not_out_yet = django_filters.DateFilter(
+        method="not_out_yet_func",
+        widget=forms.DateInput(attrs={"type": "date"}),
     )
 
     class Meta:
@@ -68,6 +85,46 @@ class EmployeeFilter(FilterSet):
             "employee_work_info__shift_id",
         ]
 
+    def not_in_yet_func(self, queryset, _, value):
+        """
+        The method to filter out the not check-in yet employees
+        """
+
+        # Getting the queryset for those employees dont have any attendance for the date
+        # in value.
+        queryset = queryset.exclude(
+            employee_attendances__attendance_date=value,
+        )
+        return queryset
+
+    def not_out_yet_func(self, queryset, _, value):
+        """
+        The method to filter out the not check-in yet employees
+        """
+
+        # Getting the queryset for those employees dont have any attendance for the date
+        # in value.
+        queryset = queryset.filter(
+            employee_attendances__attendance_date=value,
+            employee_attendances__attendance_clock_out__isnull=True,
+        )
+        return queryset
+    def filter_queryset(self, queryset):
+        """
+        Override the default filtering behavior to handle None option.
+        """
+        data = self.form.cleaned_data
+        not_set_dict = {key: value for key, value in data.items() if value == "not_set"}
+        if not_set_dict:
+            filtered_data = queryset
+            for key, value in not_set_dict.items():
+                not_set = f"{key}__isnull"
+                filtered_data = filtered_data.filter(**{not_set: True})
+            return filtered_data
+        return super().filter_queryset(queryset)
+
+        # Continue with the default behavior for other filters
+
     def filter_by_name(self, queryset, _, value):
         """
         Filter queryset by first name or last name.
@@ -93,6 +150,28 @@ class EmployeeFilter(FilterSet):
         self.form.fields["is_active"].initial = True
         for field in self.form.fields.keys():
             self.form.fields[field].widget.attrs["id"] = f"{uuid.uuid4()}"
+        self.model_choice_filters = [
+            filter
+            for filter in self.filters.values()
+            if isinstance(filter, django_filters.ModelChoiceFilter)
+        ]
+        for model_choice_filter in self.model_choice_filters:
+            queryset = model_choice_filter.queryset
+            choices = [
+                ("", "---------"),
+                ("not_set", _("Not Set")),
+            ]
+            choices.extend([(obj.id, str(obj)) for obj in queryset])
+            self.form.fields[model_choice_filter.field_name] = forms.ChoiceField(
+                choices=choices,
+                required=False,
+                widget=forms.Select(
+                    attrs={
+                        "class": "oh-select oh-select-2 select2-hidden-accessible",
+                        "id": uuid.uuid4(),
+                    }
+                ),
+            )
 
 
 class EmployeeReGroup:
