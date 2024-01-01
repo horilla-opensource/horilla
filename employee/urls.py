@@ -4,7 +4,7 @@ urls.py
 This module is used to map url path with view methods.
 """
 from django.urls import path
-from employee import views
+from employee import not_in_out_dashboard, views
 from employee.models import Employee
 
 urlpatterns = [
@@ -93,6 +93,16 @@ urlpatterns = [
         "employee-delete/<int:obj_id>/", views.employee_delete, name="employee-delete"
     ),
     path(
+        "employee-bulk-update",
+        views.view_employee_bulk_update,
+        name="employee-bulk-update",
+    ),
+    path(
+        "save-employee-bulk-update",
+        views.save_employee_bulk_update,
+        name="save-employee-bulk-update",
+    ),
+    path(
         "employee-bulk-delete", views.employee_bulk_delete, name="employee-bulk-delete"
     ),
     path(
@@ -177,11 +187,21 @@ urlpatterns = [
     path("performance-tab/<int:emp_id>", views.performance_tab, name="performance-tab"),
     path("attendance-tab/<int:emp_id>", views.attendance_tab, name="attendance-tab"),
     path("shift-tab/<int:emp_id>", views.shift_tab, name="shift-tab"),
-    path("contract-tab/<int:obj_id>", views.contract_tab, name="contract-tab",kwargs={'model':Employee}),
+    path(
+        "contract-tab/<int:obj_id>",
+        views.contract_tab,
+        name="contract-tab",
+        kwargs={"model": Employee},
+    ),
     path("employee-select/", views.employee_select, name="employee-select"),
     path(
         "employee-select-filter/",
         views.employee_select_filter,
         name="employee-select-filter",
     ),
+    path("not-in-yet/", not_in_out_dashboard.not_in_yet, name="not-in-yet"),
+    path("not-out-yet/", not_in_out_dashboard.not_out_yet, name="not-out-yet"),
+    path("send-mail/<int:emp_id>/", not_in_out_dashboard.send_mail, name="send-mail-employee"),
+    path("send-mail", not_in_out_dashboard.send_mail_to_employee, name="send-mail-to-employee"),
+    path("get-template/<int:emp_id>/", not_in_out_dashboard.get_template, name="get-template-employee"),
 ]
