@@ -172,14 +172,19 @@ def clock_in(request):
         )
         return HttpResponse(
             """
-              <button class="oh-btn oh-btn--warning-outline "
-              hx-get="/attendance/clock-out"
-                  hx-target='#attendance-activity-container'
-                  hx-swap='innerHTML'><ion-icon class="oh-navbar__clock-icon mr-2
-                  text-warning"
-                    name="exit-outline"></ion-icon>
-               <span class="hr-check-in-out-text">{check_out}</span>
+              <button class="oh-btn oh-btn--warning-outline check-in mr-2" onmouseenter="$(this).find('span').show();$(this).find('.time-runner').hide();" onmouseleave="$(this).find('span').hide();$(this).find('.time-runner').show();"
+                hx-get="/attendance/clock-out"
+                    hx-target='#attendance-activity-container'
+                    hx-swap='innerHTML'><ion-icon class="oh-navbar__clock-icon mr-2
+                    text-warning"
+                        name="exit-outline"></ion-icon>
+               <span style="display:none" class="hr-check-in-out-text">{check_out}</span>
+                <div class="time-runner"></div>  
               </button>
+              <script>
+                $(".time-runner").removeClass("stop-runner");
+                run = 1;
+              </script>
             """.format(
                 check_out=_("Check-Out")
             )
@@ -308,7 +313,7 @@ def clock_out(request):
     clock_out_attendance_and_activity(employee=employee, date_today=date_today, now=now)
     return HttpResponse(
         """
-              <button class="oh-btn oh-btn--success-outline " 
+              <button class="oh-btn oh-btn--success-outline mr-2 " 
               hx-get="/attendance/clock-in" 
               hx-target='#attendance-activity-container' 
               hx-swap='innerHTML'>
@@ -316,6 +321,10 @@ def clock_out(request):
               name="enter-outline"></ion-icon>
                <span class="hr-check-in-out-text">{check_in}</span>
               </button>
+              <script>
+                $(".time-runner").not(".stop-runner").addClass("stop-runner");
+                run = 0;
+              </script>
             """.format(
             check_in=_("Check-In")
         )
