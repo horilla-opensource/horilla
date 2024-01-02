@@ -22,6 +22,7 @@ from django.db.models import Q
 from django.http import JsonResponse, HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.core import serializers
+from django.core.paginator import Paginator
 from base.models import JobPosition
 from django.contrib import messages
 from django.views.decorators.http import require_http_methods
@@ -232,17 +233,32 @@ def recruitment_pipeline(request):
     """
     view = request.GET.get("view")
     job_position = JobPosition.objects.all()
-    rec = Recruitment.objects.all()
-    if rec.exists():
-        template = "pipeline/pipeline.html"
+    if request.GET.get("closed") == "closed":
+        rec = Recruitment.objects.filter(closed=True)
+        if rec.exists() and view == "card":
+            template = "pipeline/pipeline_card.html"
+        elif rec.exists():
+            template = "pipeline/pipeline.html"
+        else:
+            template = "pipeline/pipeline_empty.html"
     else:
-        template = "pipeline/pipeline_empty.html"
-    if view == "card":
-        template = "pipeline/pipeline_card.html"
+        rec = Recruitment.objects.filter(closed=False)
+        if rec.exists():
+            template = "pipeline/pipeline.html"
+        else:
+            template = "pipeline/pipeline_empty.html"
+        if view == "card":
+            template = "pipeline/pipeline_card.html"
     recruitment_form = RecruitmentDropDownForm()
     stage_form = StageDropDownForm()
     candidate_form = CandidateDropDownForm()
     recruitment_obj = Recruitment.objects.filter(is_active=True, closed=False)
+    status = "closed"
+    if request.GET.get("closed") == status:
+        recruitment_obj = Recruitment.objects.filter(closed=True)
+        status = "closed"
+    else:
+        status = ""
     if request.method == "POST":
         if request.POST.get(
             "recruitment_managers"
@@ -335,15 +351,26 @@ def recruitment_pipeline(request):
 
                     return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
                 messages.info(request, _("You dont have access"))
+    previous_data = request.GET.urlencode()
+    filter_obj = RecruitmentFilter(
+        request.GET, queryset=recruitment_obj
+    )
+    paginator = Paginator(filter_obj.qs, 4)
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+
     return render(
         request,
         template,
         {
-            "recruitment": recruitment_obj,
+            "recruitment": page_obj,
             "recruitment_form": recruitment_form,
             "stage_form": stage_form,
             "candidate_form": candidate_form,
             "job_positions": job_position,
+            "status": status,
+            'view': view,
+            "pd": previous_data,
         },
     )
 
@@ -444,6 +471,34 @@ def recruitment_update_pipeline(request, rec_id):
                 response.content.decode("utf-8") + "<script>location.reload();</script>"
             )
     return render(request, "pipeline/form/recruitment_update.html", {"form": form})
+
+
+@login_required
+@recruitment_manager_can_enter(perm="recruitment.change_recruitment")
+def recruitment_close_pipeline(request, rec_id):
+    """
+    This method is used to close recruitment from pipeline view
+    """
+    recruitment_obj = Recruitment.objects.get(id=rec_id)
+    recruitment_obj.closed = True
+    recruitment_obj.save()
+
+    messages.success(request, 'Recruitment closed successfully')
+    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+
+
+@login_required
+@recruitment_manager_can_enter(perm="recruitment.change_recruitment")
+def recruitment_reopen_pipeline(request, rec_id):
+    """
+    This method is used to re-open recruitment from pipeline view
+    """
+    recruitment_obj = Recruitment.objects.get(id=rec_id)
+    recruitment_obj.closed = False
+    recruitment_obj.save()
+
+    messages.success(request, 'Recruitment re-opend successfully')
+    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 
 
 @login_required

@@ -91,14 +91,19 @@ x-data="{searchShow: false}"
 		aria-label="Search Input"
 		/>
   	</div>
+
+  <div class="oh-switch ms-3" style="width: 30px;">
+      <input type="checkbox" name="is_closed" data-widget="style-widget" class="style-widget oh-switch__checkbox" {% if request.GET.closed %} checked title="{% trans 'Switch to Ongoing Recruitments' %}" {% else %} title="{% trans 'Switch to Closed Recruitments' %}" {% endif %} id="is_closed" > 
+  </div>
+
 	<ul class="oh-view-types ml-2" style="margin-bottom: 0;">
 		<li class="oh-view-type candidate-view-type" data-view='list'>
-		<a href="{% url 'pipeline' %}"  hx-target='#section' class="oh-btn oh-btn--view {% if request.GET.view != 'card' %} oh-btn--view-active {% endif %}"
+		<a href="{% url 'pipeline' %}?closed={{status}}"  hx-target='#section' class="oh-btn oh-btn--view {% if request.GET.view != 'card' %} oh-btn--view-active {% endif %}"
 			title={% trans 'List' %}><ion-icon name="list-outline"></ion-icon
 		></a>
 		</li>
 		<li class="oh-view-type candidate-view-type" data-view='card'>
-		<a href="{% url 'pipeline' %}?view=card" hx-target='#section' class="oh-btn oh-btn--view {% if request.GET.view == 'card' %} oh-btn--view-active {% endif %}"
+		<a href="{% url 'pipeline' %}?view=card&closed={{status}}" hx-target='#section' class="oh-btn oh-btn--view {% if request.GET.view == 'card' %} oh-btn--view-active {% endif %}"
     title={% trans 'Card' %}><ion-icon name="grid-outline"></ion-icon
 		></a>
 		</li>
@@ -153,6 +158,13 @@ $(document).ready(function(){
 	  });
 	  $("#job_pos_id").select2();
 	  $("#portal_stage").select2();
+  $("#is_closed").on("change", function() {
+      if ($(this).is(":checked")) {
+          window.location.href = "{% url 'pipeline' %}?view={{view}}&closed=closed";
+      } else {
+          window.location.href = "{% url 'pipeline' %}?view={{view}}";
+      }
+  });
 })
 	
 </script>
