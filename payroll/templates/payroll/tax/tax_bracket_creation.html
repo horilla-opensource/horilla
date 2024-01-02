@@ -1,11 +1,8 @@
-{% load i18n %}
-{% if messages %}
+{% load i18n %} {% if messages %}
 <div class="oh-alert-container">
-    {% for message in messages %}
-    <div class="oh-alert oh-alert--animated {{message.tags}}">
-          {{ message }}
-    </div> 
-    {% endfor %}
+  {% for message in messages %}
+  <div class="oh-alert oh-alert--animated {{message.tags}}">{{ message }}</div>
+  {% endfor %}
 </div>
 {% endif %}
 <div class="oh-modal__dialog-header">
@@ -18,8 +15,10 @@
     data-dismiss="oh-modal"
     aria-label="Close"
     data-toggle="oh-modal-toggle"
-    hx-target="#FilingStatusFormTarget"
-    onclick="location.reload()"
+    data-target="#filingStatus{{filing_status_id}}"
+    hx-get="{%url 'tax-bracket-list' filing_status_id=filing_status_id %}"
+    hx-target="#taxbracketList{{filing_status_id}}"
+    onclick="$(`[data-target='#filingStatus{{filing_status_id}}']`).addClass('oh-accordion-meta__header--show');$('#filingStatus{{filing_status_id}}').removeClass('d-none')"
   >
     <ion-icon name="close-outline"></ion-icon>
   </button>
@@ -35,17 +34,23 @@
     </div>
   </form>
 </div>
-{% comment %} <script>
+{% comment %}
+<script>
   // Function to display the pop-up message
   function showPopupMessage(message) {
     alert(message);
   }
 
   // Event listener for form submission
-  document.getElementById("TaxBracketFormTarget").addEventListener("submit", function(event) {
-    var maxIncomeInput = document.getElementById("id_max_income");
-    if (maxIncomeInput.value === "") {
-      showPopupMessage("The value for maximum income will be set to infinity.");
-    }
-  });
-</script> {% endcomment %}
+  document
+    .getElementById("TaxBracketFormTarget")
+    .addEventListener("submit", function (event) {
+      var maxIncomeInput = document.getElementById("id_max_income");
+      if (maxIncomeInput.value === "") {
+        showPopupMessage(
+          "The value for maximum income will be set to infinity."
+        );
+      }
+    });
+</script>
+{% endcomment %}
