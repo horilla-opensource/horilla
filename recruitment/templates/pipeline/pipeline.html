@@ -114,7 +114,6 @@
 
 </style>
 
-<div class="oh-wrapper">
   <div id="ohMessages"></div>
   {% include 'pipeline/nav.html' %}
 
@@ -128,9 +127,9 @@
       <div class="oh-tabs__content oh-tabs__content" id="tab_rec_{{rec.id}}">
 
         {% if request.user|recruitment_manages:rec or perms.recruitment.add_stage %}
-        <div class="d-flex">
-          {% include 'pipeline/form/stage_drop_down_form.html' %}
-        </div>
+        <button class="oh-btn oh-btn--secondary " data-target="#addStageModal" data-toggle="oh-modal-toggle" hx-get="{% url "rec-stage-create" %}?recruitment_id={{rec.id}}" hx-target="#addStageModalBody">
+          <ion-icon class="me-1" name="add-outline"></ion-icon>{% trans "Stage" %}
+        </button>
         {% endif %}
 
         {% for stage in rec.stage_set.all|dictsort:"sequence" %}
@@ -401,7 +400,7 @@
       {% endfor %}
     </div>
   </div>
-  
+<div class="oh-wrapper mb-5">
   <!-- Paginator Section -->
   <div class="oh-pagination">
   <span

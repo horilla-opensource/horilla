@@ -138,13 +138,62 @@ x-data="{searchShow: false}"
 	<div class="oh-main__titlebar-button-container">
 
 		{% if perms.recruitment.add_recruitment %}
-		{% include 'pipeline/form/recruitment_drop_down_form.html' %}
+		<button class="oh-btn oh-btn--secondary" data-toggle="oh-modal-toggle" data-target="#addRecruitmentModal" hx-target="#addRecruitmentModalBody" hx-get="{% url "recruitment-create" %}">
+      <ion-icon class="me-1" name="add-outline"></ion-icon>
+      {% trans 'Recruitment' %}
+    </button>
 		{% endif %}
 		
 		
 	</div>
 </div>
 </section>
+
+<div
+  class="oh-modal"
+  id="addRecruitmentModal"
+  role="dialog"
+  aria-labelledby="addRecruitmentModal"
+  aria-hidden="true"
+>
+  <div class="oh-modal__dialog">
+    <div class="oh-modal__dialog-header">
+      <h5 class="oh-modal__dialog-title" id="addRecruitmentModalLabel"
+        >{% trans "Add Recruitment" %}</span
+      >
+      <button class="oh-modal__close" aria-label="Close" >
+        <ion-icon name="close-outline"></ion-icon>
+      </button>
+    </div>
+    
+    <div class="oh-modal__dialog-body" id="addRecruitmentModalBody">
+
+    </div>
+  </div>
+</div>
+
+<div
+  class="oh-modal"
+  id="addStageModal"
+  role="dialog"
+  aria-labelledby="addStageModal"
+  aria-hidden="true"
+>
+  <div class="oh-modal__dialog">
+    <div class="oh-modal__dialog-header">
+      <h5 class="oh-modal__dialog-title" id="addStageModalLabel"
+        >{% trans "Add Stage" %}</span
+      >
+      <button class="oh-modal__close" aria-label="Close" >
+        <ion-icon name="close-outline"></ion-icon>
+      </button>
+    </div>
+    
+    <div class="oh-modal__dialog-body" id="addStageModalBody">
+
+    </div>
+  </div>
+</div>
 
 <script>
 $(document).ready(function(){

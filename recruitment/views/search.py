@@ -9,6 +9,7 @@ import json
 from urllib.parse import parse_qs
 from django.shortcuts import render
 from django.core.paginator import Paginator
+from django.contrib.auth.models import User
 from horilla.decorators import login_required, permission_required
 from base.methods import sortby, get_key_instances
 from recruitment.filters import (
@@ -95,6 +96,11 @@ def candidate_search(request):
         template = "candidate/group_by.html"
 
     candidates = paginator_qry(candidates, request.GET.get("page"))
+
+    mails= list(Candidate.objects.values_list("email",flat=True))
+    # Query the User model to check if any email is present
+    existing_emails = list(User.objects.filter(username__in=mails).values_list('email', flat=True))
+
     return render(
         request,
         template,
@@ -103,6 +109,7 @@ def candidate_search(request):
             "pd": previous_data,
             "filter_dict": data_dict,
             "field":field,
+            "emp_list" : existing_emails,
         },
     )
 

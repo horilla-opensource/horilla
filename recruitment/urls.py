@@ -158,6 +158,12 @@ urlpatterns = [
         kwargs={"model": Candidate},
     ),
     path(
+        "candidate-conversion/<int:cand_id>/",
+        views.candidate_conversion,
+        name="candidate-conversion",
+        kwargs={"model": Candidate},
+    ),
+    path(
         "delete-profile-image/<int:obj_id>/",
         views.delete_profile_image,
         name="delete-profile-image",

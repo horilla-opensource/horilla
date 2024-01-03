@@ -21,11 +21,17 @@ class YourForm(forms.Form):
         pass
 """
 
+from ast import Dict
+from typing import Any
 import uuid
 from django import forms
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 from django.template.loader import render_to_string
+from employee.filters import EmployeeFilter
+from employee.models import Employee
+from horilla_widgets.widgets.horilla_multi_select_field import HorillaMultiSelectField
+from horilla_widgets.widgets.select_widgets import HorillaMultiSelectWidget
 from recruitment.models import (
     Stage,
     Recruitment,
@@ -209,6 +215,29 @@ class RecruitmentCreationForm(ModelForm):
         table_html = render_to_string("attendance_form.html", context)
         return table_html
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        reload_queryset(self.fields)
+        if not self.instance.pk:
+            self.fields["recruitment_managers"] = HorillaMultiSelectField(
+                queryset=Employee.objects.all(),
+                widget=HorillaMultiSelectWidget(
+                    filter_route_name="employee-widget-filter",
+                    filter_class=EmployeeFilter,
+                    filter_instance_contex_name="f",
+                    filter_template_path="employee_filters.html",
+                    required=True,
+                ),
+                label="Employee",
+            )
+
+    def clean(self):
+        if isinstance(self.fields["recruitment_managers"], HorillaMultiSelectField):
+            ids = self.data.getlist("recruitment_managers")
+            if ids:
+                self.errors.pop("recruitment_managers", None)
+        super().clean()
+
 
 class StageCreationForm(ModelForm):
     """
@@ -226,6 +255,29 @@ class StageCreationForm(ModelForm):
         labels = {
             "stage": _("Stage"),
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        reload_queryset(self.fields)
+        if not self.instance.pk:
+            self.fields["stage_managers"] = HorillaMultiSelectField(
+                queryset=Employee.objects.all(),
+                widget=HorillaMultiSelectWidget(
+                    filter_route_name="employee-widget-filter",
+                    filter_class=EmployeeFilter,
+                    filter_instance_contex_name="f",
+                    filter_template_path="employee_filters.html",
+                    required=True,
+                ),
+                label="Employee",
+            )
+
+    def clean(self):
+        if isinstance(self.fields["stage_managers"], HorillaMultiSelectField):
+            ids = self.data.getlist("stage_managers")
+            if ids:
+                self.errors.pop("stage_managers", None)
+        super().clean()
 
 
 class CandidateCreationForm(ModelForm):
@@ -260,7 +312,7 @@ class CandidateCreationForm(ModelForm):
             "joining_date",
             "sequence",
             "stage_id",
-            "offerletter_status"
+            "offerletter_status",
         )
         widgets = {
             "scheduled_date": forms.DateInput(attrs={"type": "date"}),
@@ -334,7 +386,7 @@ class ApplicationForm(RegistrationForm):
             "canceled",
             "joining_date",
             "sequence",
-            "offerletter_status"
+            "offerletter_status",
         )
         widgets = {
             "recruitment_id": forms.TextInput(

@@ -25,8 +25,10 @@ from django.core import serializers
 from django.core.paginator import Paginator
 from base.models import JobPosition
 from django.contrib import messages
+from django.contrib.auth.models import User
 from django.views.decorators.http import require_http_methods
 from django.utils.translation import gettext_lazy as _
+from employee.models import Employee, EmployeeWorkInformation
 from notifications.signals import notify
 from horilla import settings
 from horilla.decorators import permission_required, login_required, hx_request_required
@@ -52,7 +54,6 @@ from recruitment.forms import (
     RecruitmentCreationForm,
     CandidateCreationForm,
     StageCreationForm,
-    RecruitmentDropDownForm,
     StageDropDownForm,
     CandidateDropDownForm,
     StageNoteForm,
@@ -126,7 +127,9 @@ def recruitment(request):
     if request.method == "POST":
         form = RecruitmentCreationForm(request.POST)
         if form.is_valid():
-            recruitment_obj = form.save()
+            recruitment_obj = form.save(commit=False)
+            recruitment_obj.save()
+            recruitment_obj.recruitment_managers.set(Employee.objects.filter(id__in=form.data.getlist("recruitment_managers")))
             messages.success(request, _("Recruitment added."))
             with contextlib.suppress(Exception):
                 managers = recruitment_obj.recruitment_managers.select_related(
@@ -144,12 +147,7 @@ def recruitment(request):
                     icon="people-circle",
                     redirect="/recruitment/pipeline",
                 )
-            response = render(
-                request, "recruitment/recruitment_form.html", {"form": form}
-            )
-            return HttpResponse(
-                response.content.decode("utf-8") + "<script>location.reload();</script>"
-            )
+            return HttpResponse("<script>location.reload();</script>")
     return render(request, "recruitment/recruitment_form.html", {"form": form})
 
 
@@ -249,7 +247,7 @@ def recruitment_pipeline(request):
             template = "pipeline/pipeline_empty.html"
         if view == "card":
             template = "pipeline/pipeline_card.html"
-    recruitment_form = RecruitmentDropDownForm()
+    recruitment_form = RecruitmentCreationForm()
     stage_form = StageDropDownForm()
     candidate_form = CandidateDropDownForm()
     recruitment_obj = Recruitment.objects.filter(is_active=True, closed=False)
@@ -260,37 +258,7 @@ def recruitment_pipeline(request):
     else:
         status = ""
     if request.method == "POST":
-        if request.POST.get(
-            "recruitment_managers"
-        ) is not None and request.user.has_perm("add_recruitment"):
-            recruitment_form = RecruitmentDropDownForm(request.POST)
-            if recruitment_form.is_valid():
-                recruitment_obj = recruitment_form.save()
-                recruitment_form = RecruitmentDropDownForm()
-                messages.success(request, _("Recruitment added."))
-                with contextlib.suppress(Exception):
-                    managers = recruitment_obj.recruitment_managers.select_related(
-                        "employee_user_id"
-                    )
-                    users = [employee.employee_user_id for employee in managers]
-                    notify.send(
-                        request.user.employee_get,
-                        recipient=users,
-                        verb=f"You are chosen as recruitment manager for\
-                                the recruitment {recruitment_obj}",
-                        verb_ar=f"تم اختيارك كمدير توظيف للتوظيف {recruitment_obj}",
-                        verb_de=f"Sie wurden als Personalvermittler für die Rekrutierung\
-                                {recruitment_obj} ausgewählt",
-                        verb_es=f"Has sido elegido/a como gerente de contratación para\
-                                la contratación {recruitment_obj}",
-                        verb_fr=f"Vous êtes choisi(e) comme responsable du recrutement pour\
-                                le recrutement {recruitment_obj}",
-                        icon="people-circle",
-                        redirect="/recruitment/pipeline",
-                    )
-
-                return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
-        elif request.FILES.get("resume") is not None:
+        if request.FILES.get("resume") is not None:
             if request.user.has_perm("add_candidate") or is_stagemanager(
                 request,
             ):
@@ -364,7 +332,7 @@ def recruitment_pipeline(request):
         template,
         {
             "recruitment": page_obj,
-            "recruitment_form": recruitment_form,
+            "form": recruitment_form,
             "stage_form": stage_form,
             "candidate_form": candidate_form,
             "job_positions": job_position,
@@ -720,11 +688,13 @@ def stage(request):
     """
     This method is used to create stages, also several permission assigned to the stage managers
     """
-    form = StageCreationForm()
+    form = StageCreationForm(initial={"recruitment_id":request.GET.get("recruitment_id")})
     if request.method == "POST":
         form = StageCreationForm(request.POST)
         if form.is_valid():
             stage_obj = form.save()
+            stage_obj.stage_managers.set(Employee.objects.filter(id__in=form.data.getlist("stage_managers")))
+            stage_obj.save()
             recruitment_obj = stage_obj.recruitment_id
             rec_stages = (
                 Stage.objects.filter(recruitment_id=recruitment_obj, is_active=True)
@@ -757,10 +727,7 @@ def stage(request):
                     redirect="/recruitment/pipeline",
                 )
 
-            response = render(request, "stage/stage_form.html", {"form": form})
-            return HttpResponse(
-                response.content.decode("utf-8") + "<script>location.reload();</script>"
-            )
+            return HttpResponse("<script>location.reload();</script>")
     return render(request, "stage/stage_form.html", {"form": form})
 
 
@@ -888,6 +855,11 @@ def candidate_view(request):
     previous_data = request.GET.urlencode()
     candidates = Candidate.objects.filter(is_active=True)
     candidate_all = Candidate.objects.all()
+    
+    mails= list(Candidate.objects.values_list("email",flat=True))
+    # Query the User model to check if any email is present
+    existing_emails = list(User.objects.filter(username__in=mails).values_list('email', flat=True))
+
     filter_obj = CandidateFilter(request.GET, queryset=candidates)
     export_fields = CandidateExportForm()
     export_obj = CandidateFilter(request.GET, queryset=candidates)
@@ -909,6 +881,7 @@ def candidate_view(request):
             "view_type": view_type,
             "filter_dict": data_dict,
             "gp_fields": CandidateReGroup.fields,
+            "emp_list" : existing_emails,
         },
     )
 
@@ -973,7 +946,13 @@ def candidate_view_individual(request, cand_id, **kwargs):
     This method is used to view profile of candidate.
     """
     candidate_obj = Candidate.objects.get(id=cand_id)
-    return render(request, "candidate/individual.html", {"candidate": candidate_obj})
+        
+    mails= list(Candidate.objects.values_list("email",flat=True))
+    # Query the User model to check if any email is present
+    existing_emails = list(User.objects.filter(username__in=mails).values_list('email', flat=True))
+
+    return render(request, "candidate/individual.html", 
+                  {"candidate": candidate_obj, "emp_list" : existing_emails })
 
 
 @login_required
@@ -1014,6 +993,31 @@ def candidate_update(request, cand_id, **kwargs):
             messages.success(request, _("Candidate Updated Successfully."))
             return redirect(path)
     return render(request, "candidate/candidate_create_form.html", {"form": form})
+
+
+@login_required
+@manager_can_enter(perm="recruitment.change_candidate")
+def candidate_conversion(request, cand_id, **kwargs):
+
+    candidate_obj = Candidate.objects.filter(id = cand_id)
+    for detail in candidate_obj:
+        can_name = detail.name
+        can_mob = detail.mobile
+        can_job = detail.job_position_id
+        can_dep = can_job.department_id
+        can_mail = detail.email
+        can_gender = detail.gender
+        can_company = detail.recruitment_id.company_id
+
+    user_exists = User.objects.filter(email=can_mail).exists()
+    if user_exists:
+        messages.error(request, _("Employee instance already exist"))
+    else:
+        new_employee = Employee.objects.create(employee_first_name=can_name, email=can_mail, phone=can_mob, gender=can_gender, )
+        new_employee.save()
+        EmployeeWorkInformation.objects.create(employee_id=new_employee,job_position_id = can_job,department_id=can_dep,company_id=can_company)
+        messages.success(request, _("Employee instance created successfully"))
+    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 
 
 @login_required
