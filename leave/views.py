@@ -435,7 +435,7 @@ def leave_request_filter(request):
             "field": field,
             "dashboard": request.GET.get("dashboard"),
             "requests_ids": requests_ids,
-            "current_date":date.today(),           
+            "current_date": date.today(),
         },
     )
 
@@ -571,7 +571,7 @@ def leave_request_approve(request, id, emp_id=None):
                     icon="people-circle",
                     redirect="/leave/user-request-view",
                 )
-            
+
             mail_thread = MailSendThread(request, leave_request, type="approve")
             mail_thread.start()
         else:
@@ -640,7 +640,7 @@ def leave_request_cancel(request, id, emp_id=None):
                     icon="people-circle",
                     redirect="/leave/user-request-view",
                 )
-            
+
             mail_thread = MailSendThread(request, leave_request, type="reject")
             mail_thread.start()
             if emp_id is not None:
@@ -683,7 +683,7 @@ def user_leave_cancel(request, id):
                     messages.success(
                         request, _("Leave request cancelled successfully..")
                     )
-                    
+
                     mail_thread = MailSendThread(request, leave_request, type="cancel")
                     mail_thread.start()
                     return HttpResponse("<script>location.reload();</script>")
@@ -818,7 +818,7 @@ def leave_assign_view(request):
             "export_column": export_column,
             "pd": previous_data,
             "gp_fields": LeaveAssignReGroup.fields,
-            "assign_form":assign_form,
+            "assign_form": assign_form,
         },
     )
 
@@ -860,7 +860,7 @@ def leave_assign_filter(request):
             "pd": previous_data,
             "filter_dict": data_dict,
             "field": field,
-            "assign_form":assign_form,
+            "assign_form": assign_form,
         },
     )
 
@@ -924,7 +924,9 @@ def leave_assign(request):
             response.content.decode("utf-8") + "<script>location.reload();</script>"
         )
 
-    return render(request, "leave/leave_assign/leave_assign_form.html", {"assign_form": form})
+    return render(
+        request, "leave/leave_assign/leave_assign_form.html", {"assign_form": form}
+    )
 
 
 @login_required
@@ -1555,7 +1557,9 @@ def user_leave_request(request, id):
     """
     employee = request.user.employee_get
     leave_type = LeaveType.objects.get(id=id)
-    form = UserLeaveRequestForm(initial={'employee_id':employee,'leave_type_id':leave_type})
+    form = UserLeaveRequestForm(
+        initial={"employee_id": employee, "leave_type_id": leave_type}
+    )
     if request.method == "POST":
         form = UserLeaveRequestForm(request.POST, request.FILES)
         start_date = datetime.strptime(request.POST.get("start_date"), "%Y-%m-%d")
@@ -1888,8 +1892,8 @@ def user_request_view(request):
         queryset = user.leaverequest_set.all()
         previous_data = request.GET.urlencode()
         page_number = request.GET.get("page")
-        user_request_filter = LeaveRequestFilter(request.GET,queryset=queryset)
-        page_obj = paginator_qry(user_request_filter.qs, page_number)        
+        user_request_filter = LeaveRequestFilter(request.GET, queryset=queryset)
+        page_obj = paginator_qry(user_request_filter.qs, page_number)
         request_ids = json.dumps(
             list(page_obj.object_list.values_list("id", flat=True))
         )
@@ -1975,21 +1979,20 @@ def user_request_one(request, id):
     """
     leave_request = LeaveRequest.objects.get(id=id)
     try:
-        if request.user.employee_get == leave_request.employee_id:
-            requests_ids_json = request.GET.get("instances_ids")
-            if requests_ids_json:
-                requests_ids = json.loads(requests_ids_json)
-                previous_id, next_id = closest_numbers(requests_ids, id)
-            return render(
-                request,
-                "leave/user_leave/user_request_one.html",
-                {
-                    "leave_request": leave_request,
-                    "instances_ids": requests_ids_json,
-                    "previous": previous_id,
-                    "next": next_id,
-                },
-            )
+        requests_ids_json = request.GET.get("instances_ids")
+        if requests_ids_json:
+            requests_ids = json.loads(requests_ids_json)
+            previous_id, next_id = closest_numbers(requests_ids, id)
+        return render(
+            request,
+            "leave/user_leave/user_request_one.html",
+            {
+                "leave_request": leave_request,
+                "instances_ids": requests_ids_json,
+                "previous": previous_id,
+                "next": next_id,
+            },
+        )
     except Exception as e:
         messages.error(request, _("User has no leave request.."))
         return redirect("/")
@@ -2457,7 +2460,7 @@ def leave_request_create(request):
                             icon="people-circle",
                             redirect="/leave/request-view",
                         )
-                    
+
                     mail_thread = MailSendThread(request, leave_request, type="request")
                     mail_thread.start()
                     response = render(

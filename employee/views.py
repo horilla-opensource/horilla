@@ -35,6 +35,7 @@ from django.forms import CharField, ChoiceField, DateInput, Select
 from asset.models import AssetAssignment, AssetRequest
 from django.utils.translation import gettext_lazy as _
 from attendance.models import Attendance, AttendanceOverTime
+from leave.models import LeaveRequest
 from notifications.signals import notify
 from horilla.decorators import (
     owner_can_enter,
@@ -138,6 +139,8 @@ def employee_profile(request):
     user = request.user
     employee = request.user.employee_get
     user_leaves = employee.available_leave.all()
+    instances = LeaveRequest.objects.filter(employee_id = employee)
+    leave_request_ids = json.dumps([instance.id for instance in instances])
     employee = Employee.objects.filter(employee_user_id=user).first()
     assets = AssetAssignment.objects.filter(assigned_to_employee_id=employee)
     feedback_own = Feedback.objects.filter(employee_id=employee, archive=False)
@@ -149,6 +152,7 @@ def employee_profile(request):
             "employee": employee,
             "user_leaves": user_leaves,
             "assets": assets,
+            "leave_request_ids": leave_request_ids,
             "self_feedback": feedback_own,
             "current_date": today,
         },
@@ -199,6 +203,8 @@ def employee_view_individual(request, obj_id, **kwargs):
     This method is used to view profile of an employee.
     """
     employee = Employee.objects.get(id=obj_id)
+    instances = LeaveRequest.objects.filter(employee_id = employee)
+    leave_request_ids = json.dumps([instance.id for instance in instances])
     employee_leaves = employee.available_leave.all()
 
     return render(
@@ -207,6 +213,7 @@ def employee_view_individual(request, obj_id, **kwargs):
         {
             "employee": employee,
             "employee_leaves": employee_leaves,
+            "leave_request_ids": leave_request_ids,
         },
     )
 
