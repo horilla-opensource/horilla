@@ -14,6 +14,7 @@ provide the main entry points for interacting with the application's functionali
 import os
 import ast
 import json
+import operator
 import calendar
 import pandas as pd
 from urllib.parse import parse_qs
@@ -76,9 +77,50 @@ from employee.forms import (
     excel_columns,
 )
 from employee.models import Employee, EmployeeWorkInformation, EmployeeBankDetails
-from payroll.models.models import Contract
+from payroll.methods.payslip_calc import dynamic_attr
+from payroll.models.models import Allowance, Contract, Deduction
 from pms.models import Feedback
 from recruitment.models import Candidate
+
+
+operator_mapping = {
+    "equal": operator.eq,
+    "notequal": operator.ne,
+    "lt": operator.lt,
+    "gt": operator.gt,
+    "le": operator.le,
+    "ge": operator.ge,
+    "icontains": operator.contains,
+}
+filter_mapping = {
+    "work_type_id": {
+        "filter": lambda employee, allowance: {
+            "employee_id": employee,
+            "work_type_id__id": allowance.work_type_id.id,
+            "attendance_validated": True,
+        }
+    },
+    "shift_id": {
+        "filter": lambda employee, allowance,: {
+            "employee_id": employee,
+            "shift_id__id": allowance.shift_id.id,
+            "attendance_validated": True,
+        }
+    },
+    "overtime": {
+        "filter": lambda employee, allowance: {
+            "employee_id": employee,
+            "attendance_overtime_approve": True,
+            "attendance_validated": True,
+        }
+    },
+    "attendance": {
+        "filter": lambda employee, allowance: {
+            "employee_id": employee,
+            "attendance_validated": True,
+        }
+    },
+}
 
 
 # Create your views here.
@@ -323,6 +365,79 @@ def attendance_tab(request, emp_id):
         "validate_attendances": validate_attendances,
     }
     return render(request, "tabs/attendance-tab.html", context=context)
+
+
+def allowances_deductions_tab(request, emp_id):
+    employee = Employee.objects.get(id=emp_id)
+    active_contracts = employee.contract_set.filter(contract_status="active").first()
+    basic_pay = active_contracts.wage if active_contracts else None
+    employee_allowances = []
+    employee_deductions = []
+    if basic_pay:
+        # Find the applicable allowances for the employee
+        specific_allowances = Allowance.objects.filter(specific_employees=employee)
+        conditional_allowances = Allowance.objects.filter(
+            is_condition_based=True
+        ).exclude(exclude_employees=employee)
+        active_employees = Allowance.objects.filter(
+            include_active_employees=True
+        ).exclude(exclude_employees=employee)
+        allowances = specific_allowances | conditional_allowances | active_employees
+
+        for allowance in allowances:
+            if allowance.is_condition_based:
+                condition_field = allowance.field
+                condition_operator = allowance.condition
+                condition_value = allowance.value.lower().replace(" ", "_")
+                employee_value = dynamic_attr(employee, condition_field)
+                operator_func = operator_mapping.get(condition_operator)
+                if employee_value is not None:
+                    condition_value = type(employee_value)(condition_value)
+                    if operator_func(employee_value, condition_value):
+                        employee_allowances.append(allowance)
+            else:
+                employee_allowances.append(allowance)
+            for allowance in employee_allowances:
+                operator_func = operator_mapping.get(allowance.if_condition)
+                condition_value = basic_pay if allowance.if_choice == "basic_pay" else 0
+                if not operator_func(condition_value, allowance.if_amount):
+                    employee_allowances.remove(allowance)
+
+        # Find the applicable deductions for the employee
+        specific_deductions = Deduction.objects.filter(
+            specific_employees=employee, is_pretax=True, is_tax=False
+        )
+        conditional_deduction = Deduction.objects.filter(
+            is_condition_based=True, is_pretax=True, is_tax=False
+        ).exclude(exclude_employees=employee)
+        active_employee_deduction = Deduction.objects.filter(
+            include_active_employees=True, is_pretax=True, is_tax=False
+        ).exclude(exclude_employees=employee)
+        deductions = (
+            specific_deductions | conditional_deduction | active_employee_deduction
+        )
+        employee_deductions = list(deductions)
+        for deduction in deductions:
+            if deduction.is_condition_based:
+                condition_field = deduction.field
+                condition_operator = deduction.condition
+                condition_value = deduction.value.lower().replace(" ", "_")
+                employee_value = dynamic_attr(employee, condition_field)
+                operator_func = operator_mapping.get(condition_operator)
+
+                if (
+                    employee_value is not None
+                    and not operator_func(
+                        employee_value, type(employee_value)(condition_value)
+                    )
+                ) or employee_value is None:
+                    employee_deductions.remove(deduction)
+    context = {
+        "basic_pay": basic_pay,
+        "allowances": employee_allowances if employee_allowances else None,
+        "deductions": employee_deductions if employee_deductions else None,
+    }
+    return render(request, "tabs/allowance_deduction-tab.html", context=context)
 
 
 @login_required

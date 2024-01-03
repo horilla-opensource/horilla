@@ -169,6 +169,17 @@
 						>{% trans "Payroll" %}</a
 						>
 					</li>
+					<li class="oh-general__tab">
+						<a
+						hx-get="{% url 'allowances-deductions-tab' employee.id %}"
+						hx-target="#allowance_deduction"
+						data-action="general-tab"
+						data-target="#allowance_deduction"
+						class="oh-general__tab-link"
+						role="button"
+						>{% trans "Allowance & Deduction" %}</a
+						>
+					</li>
 					{% comment %} <li class="oh-general__tab">
 						<a
 						href="#"
@@ -225,6 +236,11 @@
 				id="payroll"
 				>
 				{% include 'tabs/payroll-tab.html' %}
+				</div>
+				<div
+				  class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
+				  id="allowance_deduction"
+				>
 				</div>
 				<div
 				class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"

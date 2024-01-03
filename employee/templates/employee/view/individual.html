@@ -202,6 +202,19 @@
 						>
 					</li>
 					{% endif %}
+					{% if perms.payroll.view_payslip or request.user == employee.employee_user_id %}
+					<li class="oh-general__tab">
+						<a
+						hx-get="{% url 'allowances-deductions-tab' employee.id %}"
+						hx-target="#allowance_deduction"
+						data-action="general-tab"
+						data-target="#allowance_deduction"
+						class="oh-general__tab-link"
+						role="button"
+						>{% trans "Allowance & Deduction" %}</a
+						>
+					</li>
+					{% endif %}
 					{% comment %} <li class="oh-general__tab">
 						<a
 						href="#"
@@ -268,7 +281,6 @@
 				class="oh-general__tab-target oh-profile__info-tab mb-4"
 				id="personal_target"
 				>
-				
 				</div>
 
 				
@@ -280,6 +292,13 @@
 				{% include "tabs/payroll-tab.html" %}
 				{% endif %}
 				</div>
+
+				<div
+				  class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
+				  id="allowance_deduction"
+				>
+				</div>
+
 				<div
 				class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
 				id="team"
