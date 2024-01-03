@@ -276,6 +276,7 @@ def get_key_instances(model, data_dict):
     if "id" in data_dict:
         id = data_dict["id"][0]
         object = model.objects.get(id=id)
+        object = str(object)
         del data_dict["id"]
         data_dict["Object"] = [object]
 
@@ -407,7 +408,6 @@ def export_data(request, model, form_class, filter_class, file_name):
 
                 # Check if the type of 'value' is time
                 if isinstance(value, time):
-
                     user = request.user
                     employee = user.employee_get
 
@@ -422,15 +422,15 @@ def export_data(request, model, form_class, filter_class, file_name):
                         # Access the date_format attribute directly
                         time_format = emp_company.time_format
                     else:
-                        time_format = 'hh:mm A'
+                        time_format = "hh:mm A"
 
                     time_formats = {
-                        'hh:mm A': '%I:%M %p',  # 12-hour format
-                        'HH:mm': '%H:%M',       # 24-hour format
+                        "hh:mm A": "%I:%M %p",  # 12-hour format
+                        "HH:mm": "%H:%M",  # 24-hour format
                     }
 
                     # Convert the string to a datetime.time object
-                    check_in_time = datetime.strptime(str(value), '%H:%M:%S').time()
+                    check_in_time = datetime.strptime(str(value), "%H:%M:%S").time()
 
                     # Print the formatted time for each format
                     for format_name, format_string in time_formats.items():
@@ -439,7 +439,7 @@ def export_data(request, model, form_class, filter_class, file_name):
 
                 # Check if the type of 'value' is date
                 if type(value) == date:
-                    user= request.user
+                    user = request.user
                     employee = user.employee_get
 
                     # Taking the company_name of the user
@@ -453,24 +453,24 @@ def export_data(request, model, form_class, filter_class, file_name):
                         # Access the date_format attribute directly
                         date_format = emp_company.date_format
                     else:
-                        date_format = 'MMM. D, YYYY'
+                        date_format = "MMM. D, YYYY"
                     # Define date formats
                     date_formats = {
-                        'DD-MM-YYYY': '%d-%m-%Y',
-                        'DD.MM.YYYY': '%d.%m.%Y',
-                        'DD/MM/YYYY': '%d/%m/%Y',
-                        'MM/DD/YYYY': '%m/%d/%Y',
-                        'YYYY-MM-DD': '%Y-%m-%d',
-                        'YYYY/MM/DD': '%Y/%m/%d',
-                        'MMMM D, YYYY': '%B %d, %Y',
-                        'DD MMMM, YYYY': '%d %B, %Y',
-                        'MMM. D, YYYY': '%b. %d, %Y',
-                        'D MMM. YYYY': '%d %b. %Y',
-                        'dddd, MMMM D, YYYY': '%A, %B %d, %Y',
+                        "DD-MM-YYYY": "%d-%m-%Y",
+                        "DD.MM.YYYY": "%d.%m.%Y",
+                        "DD/MM/YYYY": "%d/%m/%Y",
+                        "MM/DD/YYYY": "%m/%d/%Y",
+                        "YYYY-MM-DD": "%Y-%m-%d",
+                        "YYYY/MM/DD": "%Y/%m/%d",
+                        "MMMM D, YYYY": "%B %d, %Y",
+                        "DD MMMM, YYYY": "%d %B, %Y",
+                        "MMM. D, YYYY": "%b. %d, %Y",
+                        "D MMM. YYYY": "%d %b. %Y",
+                        "dddd, MMMM D, YYYY": "%A, %B %d, %Y",
                     }
 
                     # Convert the string to a datetime.date object
-                    start_date = datetime.strptime(str(value), '%Y-%m-%d').date()
+                    start_date = datetime.strptime(str(value), "%Y-%m-%d").date()
 
                     # Print the formatted date for each format
                     for format_name, format_string in date_formats.items():
@@ -524,9 +524,13 @@ def check_owner(employee, instance):
         return False
 
 
-def generate_pdf(template_path, context, path=True,title=None):
+def generate_pdf(template_path, context, path=True, title=None):
     html = template_path
-    title = f"""{context.get("employee")}'s payslip for {context.get("range")}.pdf""" if not title else title
+    title = (
+        f"""{context.get("employee")}'s payslip for {context.get("range")}.pdf"""
+        if not title
+        else title
+    )
     if path:
         html = render_to_string(template_path, context)
 
@@ -535,8 +539,6 @@ def generate_pdf(template_path, context, path=True,title=None):
 
     if not pdf.err:
         response = HttpResponse(result.getvalue(), content_type="application/pdf")
-        response[
-            "Content-Disposition"
-        ] = f'''attachment;filename="{title}"'''
+        response["Content-Disposition"] = f'''attachment;filename="{title}"'''
         return response
     return None
