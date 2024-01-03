@@ -301,21 +301,21 @@ class Attendance(models.Model):
             end_date = holi.end_date
 
             # Convert start_date and end_date to datetime objects
-            start_date = datetime.strptime(str(start_date), '%Y-%m-%d')
-            end_date = datetime.strptime(str(end_date), '%Y-%m-%d')
+            start_date = datetime.strptime(str(start_date), "%Y-%m-%d")
+            end_date = datetime.strptime(str(end_date), "%Y-%m-%d")
 
             # Add dates in between start date and end date including both
             current_date = start_date
             while current_date <= end_date:
-                leaves.append(current_date.strftime('%Y-%m-%d'))
+                leaves.append(current_date.strftime("%Y-%m-%d"))
                 current_date += timedelta(days=1)
-            
+
         # Checking attendance date is in holiday list, if found making the minimum hour to 00:00
         for leave in leaves:
             if str(leave) == str(self.attendance_date):
-                self.minimum_hour = '00:00'
+                self.minimum_hour = "00:00"
                 break
-        
+
         # Making a dictonary contains week day value and leave day pairs
         company_leaves = {}
         company_leave = CompanyLeave.objects.all()
@@ -325,19 +325,19 @@ class Attendance(models.Model):
             company_leaves[b] = a
 
         # Checking the attendance date is in which week
-        week_in_month = str(((self.attendance_date.day - 1) // 7 + 1)-1)
+        week_in_month = str(((self.attendance_date.day - 1) // 7 + 1) - 1)
 
         # Checking the attendance date is in the company leave or not
         for pairs in company_leaves.items():
             # For all weeks based_on_week is None
-            if str(pairs[0]) == 'None':
+            if str(pairs[0]) == "None":
                 if str(pairs[1]) == str(self.attendance_day):
-                    self.minimum_hour = '00:00'
+                    self.minimum_hour = "00:00"
                     break
             # Checking with based_on_week and attendance_date week
             if str(pairs[0]) == week_in_month:
                 if str(pairs[1]) == str(self.attendance_day):
-                    self.minimum_hour = '00:00'
+                    self.minimum_hour = "00:00"
                     break
 
         condition = AttendanceValidationCondition.objects.first()
