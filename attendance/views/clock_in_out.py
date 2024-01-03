@@ -172,7 +172,9 @@ def clock_in(request):
         )
         return HttpResponse(
             """
-              <button class="oh-btn oh-btn--warning-outline check-in mr-2" onmouseenter="$(this).find('span').show();$(this).find('.time-runner').hide();" onmouseleave="$(this).find('span').hide();$(this).find('.time-runner').show();"
+              <button class="oh-btn oh-btn--warning-outline check-in mr-2"
+              onmouseenter="$(this).find('span').show();$(this).find('.time-runner').hide();"
+              onmouseleave="$(this).find('span').hide();$(this).find('.time-runner').show();"
                 hx-get="/attendance/clock-out"
                     hx-target='#attendance-activity-container'
                     hx-swap='innerHTML'><ion-icon class="oh-navbar__clock-icon mr-2
@@ -190,7 +192,9 @@ def clock_in(request):
             )
         )
     return HttpResponse(
-        _("You Don't have work information filled or your employee detail neither entered ")
+        _(
+            "You Don't have work information filled or your employee detail neither entered "
+        )
     )
 
 
@@ -313,19 +317,27 @@ def clock_out(request):
     clock_out_attendance_and_activity(employee=employee, date_today=date_today, now=now)
     return HttpResponse(
         """
-              <button class="oh-btn oh-btn--success-outline mr-2 " 
+              <button class="oh-btn oh-btn--success-outline mr-2" 
+              onmouseenter="$(this).find('span').show();$(this).find('.at-work-seconds').hide();"
+              onmouseleave="$(this).find('span').hide();$(this).find('.at-work-seconds').show();" 
               hx-get="/attendance/clock-in" 
               hx-target='#attendance-activity-container' 
               hx-swap='innerHTML'>
               <ion-icon class="oh-navbar__clock-icon mr-2 text-success" 
               name="enter-outline"></ion-icon>
                <span class="hr-check-in-out-text">{check_in}</span>
+               <div class="at-work-seconds"></div>
               </button>
               <script>
-                $(".time-runner").not(".stop-runner").addClass("stop-runner");
+                $(document).ready(function () {{
+                    $('.at-work-seconds').html(secondsToDuration({at_work_seconds_forecasted}))
+                }});
                 run = 0;
               </script>
             """.format(
-            check_in=_("Check-In")
+            check_in=_("Check-In"),
+            at_work_seconds_forecasted=employee.get_forecasted_at_work()[
+                "forecasted_at_work_seconds"
+            ],
         )
     )
