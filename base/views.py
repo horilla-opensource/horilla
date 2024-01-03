@@ -1949,7 +1949,6 @@ def employee_permission_assign(request):
     """
 
     context = {}
-    form = AssignPermission()
     template = "base/auth/permission.html"
     if request.GET.get("profile_tab"):
         template = "base/auth/permission_accordion.html"
@@ -1982,7 +1981,6 @@ def employee_permission_assign(request):
                 }
             )
         permissions.append({"app": app_name.capitalize(), "app_models": app_models})
-    context["form"] = form
     context["permissions"] = permissions
     context["employees"] = employees
     return render(

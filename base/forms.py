@@ -5,7 +5,6 @@ This module is used to register forms for base module
 """
 import calendar
 import os
-from typing import Any, Dict
 import uuid
 import datetime
 from datetime import timedelta
@@ -17,6 +16,7 @@ from django.core.exceptions import ValidationError
 from django.utils.translation import gettext as _
 from django.utils.translation import gettext_lazy as _trans
 from django.template.loader import render_to_string
+from employee.filters import EmployeeFilter
 from employee.models import Employee
 from base.models import (
     Company,
@@ -36,6 +36,8 @@ from base.models import (
     EmployeeShiftDay,
 )
 from base.methods import reload_queryset
+from horilla_widgets.widgets.horilla_multi_select_field import HorillaMultiSelectField
+from horilla_widgets.widgets.select_widgets import HorillaMultiSelectWidget
 
 # your form here
 
@@ -236,6 +238,7 @@ class UserGroupForm(ModelForm):
     """
     Django user groups form
     """
+
     try:
         permissions = forms.MultipleChoiceField(
             choices=[(perm.codename, perm.name) for perm in Permission.objects.all()],
@@ -281,7 +284,9 @@ class AssignUserGroup(Form):
     Form to assign groups
     """
 
-    employee = forms.ModelMultipleChoiceField(queryset=Employee.objects.all(),required=False)
+    employee = forms.ModelMultipleChoiceField(
+        queryset=Employee.objects.all(), required=False
+    )
     group = forms.ModelChoiceField(queryset=Group.objects.all())
 
     def __init__(self, *args, **kwargs):
@@ -305,7 +310,17 @@ class AssignPermission(Form):
     Forms to assign user permision
     """
 
-    employee = forms.ModelMultipleChoiceField(queryset=Employee.objects.all())
+    employee = HorillaMultiSelectField(
+        queryset=Employee.objects.all(),
+        widget=HorillaMultiSelectWidget(
+            filter_route_name="employee-widget-filter",
+            filter_class=EmployeeFilter,
+            filter_instance_contex_name="f",
+            filter_template_path="employee_filters.html",
+            required=True,
+        ),
+        label="Employee",
+    )
     try:
         permissions = forms.MultipleChoiceField(
             choices=[(perm.codename, perm.name) for perm in Permission.objects.all()],
@@ -315,15 +330,23 @@ class AssignPermission(Form):
         )
     except:
         pass
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         reload_queryset(self.fields)
+
+    def clean(self):
+        emps = self.data.getlist("employee")
+        if emps:
+            self.errors.pop("employee", None)
+        super().clean()
+        return
 
     def save(self):
         """
         Save method to assign permission to employee
         """
-        employees = self.cleaned_data["employee"]
+        employees = self.data["employee"]
         permissions = self.cleaned_data["permissions"]
         permissions = Permission.objects.filter(codename__in=permissions)
         users = User.objects.filter(employee_get__id__in=employees)
@@ -345,8 +368,7 @@ class CompanyForm(ModelForm):
 
         model = Company
         fields = "__all__"
-        excluded_fields=["date_format", "time_format"]
-
+        excluded_fields = ["date_format", "time_format"]
 
     def validate_image(self, file):
         max_size = 5 * 1024 * 1024
@@ -731,7 +753,7 @@ class EmployeeShiftForm(ModelForm):
         fields = "__all__"
         exclude = ("days",)
 
-    def clean(self) -> Dict[str, Any]:
+    def clean(self):
         full_time = self.data["full_time"]
         validate_time_format(full_time)
         full_time = self.data["weekly_full_time"]
