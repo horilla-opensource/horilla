@@ -190,9 +190,13 @@ def clock_in(request):
               <script>
                 $(".time-runner").removeClass("stop-runner");
                 run = 1;
+                at_work_seconds = {at_work_seconds_forecasted};
               </script>
             """.format(
-                check_out=_("Check-Out")
+                check_out=_("Check-Out"),
+                at_work_seconds_forecasted=employee.get_forecasted_at_work()[
+                    "forecasted_at_work_seconds"
+                ],
             )
         )
     return HttpResponse(
@@ -341,6 +345,7 @@ def clock_out(request):
                     $('.at-work-seconds').html(secondsToDuration({at_work_seconds_forecasted}))
                 }});
                 run = 0;
+                at_work_seconds = {at_work_seconds_forecasted};
               </script>
             """.format(
             check_in=_("Check-In"),
