@@ -223,13 +223,17 @@ class Employee(models.Model):
                 combined_check_in = datetime.combine(check_in_date, check_in)
                 at_work = (forecasted_check_out - combined_check_in).total_seconds()
             else:
-                at_work = attendance.at_work_second
-                clock_out = last_activity.clock_out
-                clock_out_date = last_activity.clock_out_date
-                combined_last_out = datetime.combine(clock_out_date, clock_out)
+                last_activity = attendance.get_last_clock_out(null_activity=True)
+                print(last_activity)
+                print('------------------------')
+                print('------------------------')
                 if not attendance.attendance_clock_out:
+                    at_work = attendance.at_work_second
+                    clock_in = last_activity.clock_in
+                    clock_in_date = last_activity.clock_in_date
+                    combined_last_in = datetime.combine(clock_in_date, clock_in)
                     at_work = (
-                        forecasted_check_out - combined_last_out
+                        forecasted_check_out - combined_last_in
                     ).total_seconds() + at_work
                     pass
             min_hour = strtime_seconds(attendance.minimum_hour)

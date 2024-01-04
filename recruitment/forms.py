@@ -220,7 +220,7 @@ class RecruitmentCreationForm(ModelForm):
         reload_queryset(self.fields)
         if not self.instance.pk:
             self.fields["recruitment_managers"] = HorillaMultiSelectField(
-                queryset=Employee.objects.all(),
+                queryset=Employee.objects.filter(is_active = True),
                 widget=HorillaMultiSelectWidget(
                     filter_route_name="employee-widget-filter",
                     filter_class=EmployeeFilter,
@@ -261,7 +261,7 @@ class StageCreationForm(ModelForm):
         reload_queryset(self.fields)
         if not self.instance.pk:
             self.fields["stage_managers"] = HorillaMultiSelectField(
-                queryset=Employee.objects.all(),
+                queryset=Employee.objects.filter(is_active = True),
                 widget=HorillaMultiSelectWidget(
                     filter_route_name="employee-widget-filter",
                     filter_class=EmployeeFilter,

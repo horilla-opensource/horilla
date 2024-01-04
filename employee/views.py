@@ -139,7 +139,7 @@ def employee_profile(request):
     user = request.user
     employee = request.user.employee_get
     user_leaves = employee.available_leave.all()
-    instances = LeaveRequest.objects.filter(employee_id = employee)
+    instances = LeaveRequest.objects.filter(employee_id=employee)
     leave_request_ids = json.dumps([instance.id for instance in instances])
     employee = Employee.objects.filter(employee_user_id=user).first()
     assets = AssetAssignment.objects.filter(assigned_to_employee_id=employee)
@@ -203,7 +203,7 @@ def employee_view_individual(request, obj_id, **kwargs):
     This method is used to view profile of an employee.
     """
     employee = Employee.objects.get(id=obj_id)
-    instances = LeaveRequest.objects.filter(employee_id = employee)
+    instances = LeaveRequest.objects.filter(employee_id=employee)
     leave_request_ids = json.dumps([instance.id for instance in instances])
     employee_leaves = employee.available_leave.all()
 
@@ -541,7 +541,13 @@ def employee_view(request):
     view_type = request.GET.get("view")
     previous_data = request.GET.urlencode()
     page_number = request.GET.get("page")
-    filter_obj = EmployeeFilter(request.GET, queryset=Employee.objects.all())
+    queryset = (
+        Employee.objects.filter(is_active=True)
+        if isinstance(request.GET, QueryDict) and not request.GET
+        else Employee.objects.all()
+    )
+    
+    filter_obj = EmployeeFilter(request.GET, queryset=queryset)
     export_form = EmployeeExportExcelForm()
     update_fields = BulkUpdateFieldForm()
     data_dict = parse_qs(previous_data)

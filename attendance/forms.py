@@ -567,7 +567,7 @@ class NewRequestForm(AttendanceRequestForm):
         old_dict = self.fields
         new_dict = {
             "employee_id": forms.ModelChoiceField(
-                queryset=Employee.objects.all(),
+                queryset=Employee.objects.filter(is_active=True),
                 label=_("Employee"),
                 widget=forms.Select(attrs={"class": "oh-select oh-select-2 w-100"}),
             ),

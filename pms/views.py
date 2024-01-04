@@ -111,20 +111,21 @@ def objective_creation(request):
                 for employee in employee_work_informations:
                     form_objectives = ObjectiveForm(request.POST)
                     form = form_objectives.save(commit=False)
-                    form.employee_id = employee.employee_id
-                    form.save()
-                    notify.send(
-                        request.user.employee_get,
-                        recipient=form.employee_id.employee_user_id,
-                        verb="You got an OKR!.",
-                        verb_ar="لقد حققت هدفًا ونتيجة رئيسية!",
-                        verb_de="Du hast ein Ziel-Key-Ergebnis erreicht!",
-                        verb_es="¡Has logrado un Resultado Clave de Objetivo!",
-                        verb_fr="Vous avez atteint un Résultat Clé d'Objectif !",
-                        redirect=f"/pms/objective-detailed-view/{form.id}",
-                        icon="list-circle",
-                    )
-                    objective_ids.append(form.id)
+                    if Employee.objects.get(id=employee.employee_id_id).is_active:
+                        form.employee_id = employee.employee_id
+                        form.save()
+                        notify.send(
+                            request.user.employee_get,
+                            recipient=form.employee_id.employee_user_id,
+                            verb="You got an OKR!.",
+                            verb_ar="لقد حققت هدفًا ونتيجة رئيسية!",
+                            verb_de="Du hast ein Ziel-Key-Ergebnis erreicht!",
+                            verb_es="¡Has logrado un Resultado Clave de Objetivo!",
+                            verb_fr="Vous avez atteint un Résultat Clé d'Objectif !",
+                            redirect=f"/pms/objective-detailed-view/{form.id}",
+                            icon="list-circle",
+                        )
+                        objective_ids.append(form.id)
                 obj_id = str(objective_ids)
                 messages.success(request, _("Objectives created"))
                 return redirect(key_result_creation, obj_id, obj_type)
@@ -316,7 +317,7 @@ def objective_list_search(request):
     search_val = request.GET.get("search")
     if search_val is None:
         search_val = ""
-    
+
     user = request.user
     employee = Employee.objects.filter(employee_user_id=user).first()
     is_manager = Employee.objects.filter(
@@ -391,7 +392,7 @@ def objective_history(emp_obj_id):
                     "delta": delta,
                     "changed_user": employee,
                     "changed_date": history_change_date,
-                    "k_r":key_result,
+                    "k_r": key_result,
                 }
             )
 
@@ -424,7 +425,9 @@ def objective_detailed_view(request, emp_obj_id, **kwargs):
     # progress of objective calculation
     total_kr = key_results_all.count()
     try:
-        progress = int(sum(kr.progress_percentage for kr in key_results_all) / (total_kr))
+        progress = int(
+            sum(kr.progress_percentage for kr in key_results_all) / (total_kr)
+        )
     except (ZeroDivisionError, TypeError):
         progress = 0
 
