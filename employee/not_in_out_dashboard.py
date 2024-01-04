@@ -24,8 +24,10 @@ def not_in_yet(request):
     This context processor wil return the employees, if they not marked the attendance
     for the day
     """
-    emps = EmployeeFilter({"not_in_yet": date.today()}).qs.exclude(
-        employee_work_info__isnull=True
+    emps = (
+        EmployeeFilter({"not_in_yet": date.today()})
+        .qs.exclude(employee_work_info__isnull=True)
+        .filter(is_active=True)
     )
     return render(request, "dashboard/not_in_yet.html", {"employees": emps})
 
@@ -37,8 +39,10 @@ def not_out_yet(request):
     This context processor wil return the employees, if they not marked the attendance
     for the day
     """
-    emps = EmployeeFilter({"not_out_yet": date.today()}).qs.exclude(
-        employee_work_info__isnull=True
+    emps = (
+        EmployeeFilter({"not_out_yet": date.today()})
+        .qs.exclude(employee_work_info__isnull=True)
+        .filter(is_active=True)
     )
     return render(request, "dashboard/not_out_yet.html", {"employees": emps})
 

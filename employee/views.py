@@ -440,7 +440,7 @@ def allowances_deductions_tab(request, emp_id):
                 ) or employee_value is None:
                     employee_deductions.remove(deduction)
     context = {
-        "basic_pay": basic_pay,
+        "active_contracts": active_contracts,
         "allowances": employee_allowances if employee_allowances else None,
         "deductions": employee_deductions if employee_deductions else None,
     }
@@ -546,7 +546,7 @@ def employee_view(request):
         if isinstance(request.GET, QueryDict) and not request.GET
         else Employee.objects.all()
     )
-    
+
     filter_obj = EmployeeFilter(request.GET, queryset=queryset)
     export_form = EmployeeExportExcelForm()
     update_fields = BulkUpdateFieldForm()
@@ -1871,6 +1871,7 @@ def birthday():
     today = datetime.now().date()
     last_day_of_month = calendar.monthrange(today.year, today.month)[1]
     employees = Employee.objects.filter(
+        is_active=True,
         dob__day__gte=today.day,
         dob__month=today.month,
         dob__day__lte=last_day_of_month,

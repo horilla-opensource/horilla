@@ -296,4 +296,9 @@ urlpatterns = [
     #     views.leave_type_widget_filter,
     #     name="leave-type-widget-filter",
     # ),
+    path(
+        "employee-leave-details",
+        views.employee_leave_details,
+        name="employee-leave-details",
+    ),
 ]

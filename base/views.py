@@ -335,7 +335,7 @@ def home(request):
         "salary_hour",
     ]
 
-    for employee in EmployeeWorkInformation.objects.all():
+    for employee in EmployeeWorkInformation.objects.filter(employee_id__is_active=True):
         completed_field_count = sum(
             1
             for field_name in fields_to_focus
@@ -647,13 +647,15 @@ def mail_server_conf(request):
         request, "base/mail_server/mail_server.html", {"mail_servers": mail_servers}
     )
 
+
 @login_required
 @permission_required("base.delete_dynamicemailconfiguration")
 def mail_server_delete(request):
     ids = request.GET.getlist("ids")
-    DynamicEmailConfiguration.objects.filter(id__in =ids).delete()
-    messages.success(request,"Mail server configuration deleted")
+    DynamicEmailConfiguration.objects.filter(id__in=ids).delete()
+    messages.success(request, "Mail server configuration deleted")
     return redirect(mail_server_conf)
+
 
 @login_required
 @permission_required("base.add_dynamicemailconfiguration")
@@ -668,7 +670,9 @@ def mail_server_create_or_update(request):
         if form.is_valid():
             form.save()
             return HttpResponse("<script>window.location.reload()</script>")
-    return render(request,"base/mail_server/form.html", {"form": form,"instance":instance})
+    return render(
+        request, "base/mail_server/form.html", {"form": form, "instance": instance}
+    )
 
 
 @login_required
@@ -2627,9 +2631,13 @@ def shift_request(request):
             except Exception as e:
                 pass
             messages.success(request, _("Request Added"))
-            return HttpResponse(
-                response.content.decode("utf-8") + "<script>location.reload();</script>"
-            )
+            form = ShiftRequestForm()
+            if len(f.queryset) == 1:
+                # Refresh the whole page to display the navbar otherwise refresh the requets container
+                return HttpResponse(
+                    response.content.decode("utf-8")
+                    + "<script>location.reload();</script>"
+                )
     return render(
         request,
         "shift_request/htmx/shift_request_create_form.html",

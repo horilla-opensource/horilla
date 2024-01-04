@@ -275,6 +275,21 @@ class LeaveRequestCreationForm(ModelForm):
 
         return cleaned_data
 
+    def __init__(self, *args, **kwargs):
+
+        super().__init__(*args, **kwargs)
+        self.fields["leave_type_id"].widget.attrs.update(
+            {
+                "onchange": "empleavetypeChange($(this))",
+            }
+        )
+        self.fields["employee_id"].widget.attrs.update(
+            {
+                "onchange": "employeeChange($(this))",
+            }
+        )
+
+
     def as_p(self, *args, **kwargs):
         """
         Render the form fields as HTML table rows with Bootstrap styling.
@@ -343,6 +358,20 @@ class LeaveRequestUpdationForm(ModelForm):
             raise forms.ValidationError(_("Employee doesn't have enough leave days.."))
 
         return cleaned_data
+    
+    def __init__(self, *args, **kwargs):
+
+        super().__init__(*args, **kwargs)
+        self.fields["leave_type_id"].widget.attrs.update(
+            {
+                "onchange": "empleavetypeChange($(this))",
+            }
+        )
+        self.fields["employee_id"].widget.attrs.update(
+            {
+                "onchange": "employeeChange($(this))",
+            }
+        )
 
     def as_p(self, *args, **kwargs):
         """
@@ -582,6 +611,15 @@ class UserLeaveRequestCreationForm(ModelForm):
         context = {"form": self}
         table_html = render_to_string("attendance_form.html", context)
         return table_html
+    
+    def __init__(self, *args, **kwargs):
+
+        super().__init__(*args, **kwargs)
+        self.fields["leave_type_id"].widget.attrs.update(
+            {
+                "onchange": "typeChange($(this))",
+            }
+        )
     
     def clean(self):
         cleaned_data = super().clean()

@@ -278,78 +278,83 @@
 				</ul>
 
 				<div
-				class="oh-general__tab-target oh-profile__info-tab mb-4"
-				id="personal_target"
-				>
+					class="oh-general__tab-target oh-profile__info-tab mb-4"
+					id="personal_target"
+				 >
+				</div>
+
+				<div
+					class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
+					id="shift_target"
+				 >
+				</div>
+
+				<div
+					class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
+					id="attendance_target"
+				 >
 				</div>
 
 				
-				<div
-				class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
-				id="payroll"
-				>
-				{% if perms.view_payslip %}
-				{% include "tabs/payroll-tab.html" %}
-				{% endif %}
-				</div>
 
 				<div
 				  class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
 				  id="allowance_deduction"
-				>
+				 >
 				</div>
 
 				<div
-				class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
-				id="team"
-				>
-				<!-- #3 -->
+					class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
+					id="performance_target"
+				 >
 				</div>
 
 				<div
-				class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
-				id="history"
-				>
-				{% if perms.employee.view_employee or request.user|check_manager:employee or request.user == employee.employee_user_id or perms.employee.view_historicalemployeeworkinformation %}
-				{% include "tabs/history.html" %}
-				{% endif %}
+					class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
+					id="asset_target"
+				 >
+				</div>
+			
+				<div
+					class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
+					id="team"
+				 >
+				</div>
+				<div
+					class="oh-general__tab-target oh-profile__info-tab mb-4 p-4"
+					id="permission_tab_content"
+			     >
+					{% if perms.auth.view_permission or perms.auth.view_group or request.user|is_reportingmanager or request.user == employee.employee_user_id %}
+						{% include "tabs/group_permissions.html" %}
+					{% endif %}
+				</div>
+
+				<div
+					class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
+					id="history"
+				 >
+					{% if perms.employee.view_employee or request.user|check_manager:employee or request.user == employee.employee_user_id or perms.employee.view_historicalemployeeworkinformation %}
+						{% include "tabs/history.html" %}
+					{% endif %}
 
 				</div>
+
 				<div
-				class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
-				id="leave"
-				>
-				{% if perms.employee.view_employee or perms.leave.view_leaverequest or perms.leave.view_leavetype or request.user|check_manager:employee or request.user == employee.employee_user_id %}
-				{% include "tabs/leave-tab.html" %}
-				{% endif %}
+					class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
+					id="payroll"
+				 >
+					{% if perms.view_payslip %}
+						{% include "tabs/payroll-tab.html" %}
+					{% endif %}
 				</div>
+
 				<div
-				class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
-				id="performance_target"
-				>
-				</div>
-				<div
-				class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
-				id="asset_target"
-				>
-				</div>
-				<div
-				class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
-				id="attendance_target"
-				>
-				</div>
-				<div
-				class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
-				id="shift_target"
-				>
-				</div>
-				<div
-				class="oh-general__tab-target oh-profile__info-tab mb-4 p-4"
-				id="permission_tab_content"
-				>
-				{% if perms.auth.view_permission or perms.auth.view_group or request.user|is_reportingmanager or request.user == employee.employee_user_id %}
-				{% include "tabs/group_permissions.html" %}
-				{% endif %}
+					class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
+					id="leave"
+				 >
+					{% if perms.employee.view_employee or perms.leave.view_leaverequest or perms.leave.view_leavetype or request.user|check_manager:employee or request.user == employee.employee_user_id %}
+						{% include "tabs/leave-tab.html" %}
+					{% endif %}
 				</div>
 			</div>
 		</div>

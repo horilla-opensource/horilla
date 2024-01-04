@@ -11,6 +11,7 @@ from django.contrib.auth.models import Permission, Group
 from django import forms
 from django_filters.filters import ModelChoiceFilter
 from django.utils.translation import gettext as _
+from base.methods import reload_queryset
 from base.models import WorkType
 from horilla.filters import FilterSet
 from employee.models import Employee
@@ -109,6 +110,7 @@ class EmployeeFilter(FilterSet):
             employee_attendances__attendance_clock_out__isnull=True,
         )
         return queryset
+
     def filter_queryset(self, queryset):
         """
         Override the default filtering behavior to handle None option.
@@ -156,7 +158,11 @@ class EmployeeFilter(FilterSet):
             if isinstance(filter, django_filters.ModelChoiceFilter)
         ]
         for model_choice_filter in self.model_choice_filters:
-            queryset = model_choice_filter.queryset
+            queryset = (
+                model_choice_filter.queryset.filter(is_active=True)
+                if model_choice_filter.queryset.model == Employee
+                else model_choice_filter.queryset
+            )
             choices = [
                 ("", "---------"),
                 ("not_set", _("Not Set")),

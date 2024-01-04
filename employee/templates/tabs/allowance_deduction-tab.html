@@ -5,7 +5,7 @@
 <div class="oh-wrapper mt-4">
     <div class="oh-tabs">
 		<ul class="oh-tabs__tablist">
-			<li class="oh-tabs__tab oh-tabs__tab--active" data-target="#attendance_tab_1">
+			<li class="oh-tabs__tab oh-tabs__tab--active" data-target="#allowance_tab">
 				<div>
 					<img
 						src="{% static 'images/ui/allowance_icon.png' %}"
@@ -16,7 +16,7 @@
 				</div>
 			
 			</li>
-			<li class="oh-tabs__tab" data-target="#attendance_tab_2">
+			<li class="oh-tabs__tab" data-target="#deduction_tab">
 				<div>
 					<img
 						src="{% static 'images/ui/deduction_icon.png' %}"
@@ -29,7 +29,7 @@
 			</li>
 		</ul> 
 		<div class="oh-tabs__contents" id="view-container">
-			<div class="oh-tabs__content oh-tabs__content--active" id="attendance_tab_1">
+			<div class="oh-tabs__content oh-tabs__content--active" id="allowance_tab">
 			<!-- Sticky Table -->
 			{% if allowances %}
                 <div class="oh-sticky-table">
@@ -120,7 +120,7 @@
                 </div>
 			{% else %}
 			    <div class="d-flex justify-content-center align-items-center" style="height:40vh">
-                    {% if basic_pay %}
+                    {% if active_contracts %}
                         <h5 class="oh-404__subtitle">{% trans "This employee is not eligible for any allowances." %}</h5>
                     {% else %}
                         <h5 class="oh-404__subtitle">{% trans "This employee doesn't have an active contract. Please check the employee's contract" %}</h5>
@@ -128,7 +128,7 @@
 			    </div>
 			{% endif %}
 			</div>
-			<div class="oh-tabs__content" id="attendance_tab_2">
+			<div class="oh-tabs__content" id="deduction_tab">
 				{% if deductions %}
 				    <div class="oh-sticky-table">
                         <div class="oh-sticky-table__table oh-table--sortable">
@@ -225,7 +225,7 @@
                     </div>
 				{% else %}
 				    <div class="d-flex justify-content-center align-items-center" style="height:40vh">
-                        {% if basic_pay %}
+                        {% if active_contracts %}
 				          <h5 class="oh-404__subtitle">{% trans "This employee is not eligible for any deductions." %}</h5>
                           {% else %}
                             <h5 class="oh-404__subtitle">{% trans "This employee doesn't have an active contract. Please check the employee's contract" %}</h5>

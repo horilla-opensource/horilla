@@ -2012,7 +2012,7 @@ def employee_leave(request):
     today = date.today()
     employees = []
     leave_requests = LeaveRequest.objects.filter(
-        Q(start_date__lte=today) & Q(end_date__gte=today) & Q(status="approved")
+        Q(start_date__lte=today) & Q(end_date__gte=today) & Q(status="approved") & Q(employee_id__is_active = True)
     )
     for leave_request in leave_requests:
         if leave_request.employee_id.__str__() not in employees:
@@ -2073,7 +2073,10 @@ def dashboard(request):
     ).order_by("start_date")[1:]
 
     leave_today = LeaveRequest.objects.filter(
-        status="approved", start_date__lte=today, end_date__gte=today
+        employee_id__is_active=True,
+        status="approved",
+        start_date__lte=today,
+        end_date__gte=today,
     )
 
     context = {
@@ -3116,3 +3119,24 @@ def user_request_select_filter(request):
 #         context = {"employee_ids": employee_ids, "total_count": total_count}
 
 #         return JsonResponse(context)
+
+
+@login_required
+def employee_leave_details(request):
+    balance_count = ''
+    if request.POST['employee_id']:
+        employee = request.POST['employee_id']
+    else:
+        employee = ''
+    if request.POST['leave_type'] and request.POST['employee_id']:
+        leave_type_id = request.POST['leave_type']
+        leave_type = LeaveType.objects.filter(id = leave_type_id ).first()
+        balance = AvailableLeave.objects.filter(Q (leave_type_id = leave_type.id) & Q (employee_id = employee))
+        for i in balance:
+            balance_count = i.available_days
+    return JsonResponse(
+    {
+        "leave_count": balance_count,
+        'employee': employee
+    })
+
