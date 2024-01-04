@@ -1,5 +1,4 @@
-{% load i18n %}
-{% load basefilters %}
+{% load i18n %} {% load basefilters %}
 <style>
   .oh-sticky-table-container {
     max-width: 2000px;
@@ -25,7 +24,7 @@
   .kanban-card-container {
     display: flex;
     gap: 10px;
-    width:100%;
+    width: 100%;
     overflow-x: scroll;
   }
   .oh-kanban-card {
@@ -38,6 +37,13 @@
 </style>
 {% if employee.leaverequest_set.all %}
 <div class="d-flex flex-row-reverse">
+  <span class="m-3">
+    <span
+      class="oh-dot oh-dot--small me-1"
+      style="background-color: red"
+    ></span>
+    {% trans "Rejected" %}
+  </span>
   <span class="m-3">
     <span
       class="oh-dot oh-dot--small me-1"
@@ -60,218 +66,255 @@
     {% trans "Approved" %}
   </span>
 </div>
-{% endif %}
+{% endif %} 
 {% if user_leaves %}
 <!-- Profile leave type card -->
 <div class="oh-sticky-table-container">
   <div class="oh-sticky-table">
     <div class="kanban-card-container">
       <!-- Container for Kanban cards -->
-      {% for user_leave in user_leaves %}
-      {% if perms.leave.view_leavetype or perms.leave.view_leaverequest or request.user|check_manager:employee_leave or request.user == user_leave.employee_id.employee_user_id %}
-
-      <div
-        class="oh-kanban-card"
-        data-toggle="oh-modal-toggle"
-        data-target="#editDialog"
-        hx-get="{% url 'user-request' user_leave.leave_type_id.id %}"
-        hx-target="#requestForm"
-      >
-        <div class="oh-kanban-card__avatar">
-          <div class="oh-kanban-card__profile-container">
-            {% if user_leave.leave_type_id.icon %}
-            <img
-              src="{{user_leave.leave_type_id.icon.url }}"
-              class="oh-kanban-card__profile-image"
-              alt="Leave Icon"
-            />
-            {% else %}
-            <img
-              src="https://ui-avatars.com/api/?name={{user_leave.leave_type_id}}&background=random"
-              class="oh-kanban-card__profile-image"
-              alt="Leave Icon"
-            />
-            {% endif %}
+      {% for user_leave in user_leaves %} 
+        {% if perms.leave.view_leavetype or perms.leave.view_leaverequest or request.user|check_manager:employee_leave or request.user == user_leave.employee_id.employee_user_id %}
+          <div
+            class="oh-kanban-card"
+            data-toggle="oh-modal-toggle"
+            data-target="#editDialog"
+            hx-get="{% url 'user-request' user_leave.leave_type_id.id %}?instances_ids={{user_request_ids}}"
+            hx-target="#requestForm"
+           >
+            <div class="oh-kanban-card__avatar">
+              <div class="oh-kanban-card__profile-container">
+                {% if user_leave.leave_type_id.icon %}
+                <img
+                  src="{{user_leave.leave_type_id.icon.url }}"
+                  class="oh-kanban-card__profile-image"
+                  alt="Leave Icon"
+                />
+                {% else %}
+                <img
+                  src="https://ui-avatars.com/api/?name={{user_leave.leave_type_id}}&background=random"
+                  class="oh-kanban-card__profile-image"
+                  alt="Leave Icon"
+                />
+                {% endif %}
+              </div>
+            </div>
+            <div class="oh-kanban-card__details">
+              <span class="oh-kanban-card__title"
+                >{{user_leave.leave_type_id}}</span
+              >
+              <span class="oh-kanban-card__subtitle"
+                >{% trans "Available Leave Days" %} :
+                {{user_leave.available_days}}</span
+              ><br />
+              <span class="oh-kanban-card__subtitle"
+                >{% trans "Carryforward Leave Days" %} :
+                {{user_leave.carryforward_days}}</span
+              ><br />
+              <span class="oh-kanban-card__subtitle"
+                >{% trans "Total Leave Days" %} :
+                {{user_leave.total_leave_days}}</span
+              >
+            </div>
           </div>
-        </div>
-        <div class="oh-kanban-card__details">
-          <span class="oh-kanban-card__title"
-            >{{user_leave.leave_type_id}}</span
-          >
-          <span class="oh-kanban-card__subtitle"
-            >{% trans "Available Leave Days" %} :
-            {{user_leave.available_days}}</span
-          ><br />
-          <span class="oh-kanban-card__subtitle"
-            >{% trans "Carryforward Leave Days" %} :
-            {{user_leave.carryforward_days}}</span
-          ><br />
-          <span class="oh-kanban-card__subtitle"
-            >{% trans "Total Leave Days" %} :
-            {{user_leave.total_leave_days}}</span
-          >
-        </div>
-      </div>
-      {% endif %}
+        {% endif %} 
       {% endfor %}
     </div>
   </div>
 </div>
 {% elif employee_leaves %}
-  <!-- Employe leave type card -->
+<!-- Employe leave type card -->
 <div class="oh-sticky-table-container">
   <div class="oh-sticky-table">
     <div class="kanban-card-container">
       <!-- Container for Kanban cards -->
-      {% for employee_leave in employee_leaves %}
-      {% if perms.leave.view_leavetype or perms.leave.view_leaverequest or request.user|check_manager:employee_leave or request.user == employee_leave.employee_id.employee_user_id %}
-      <div
-        class="oh-kanban-card"
-        data-toggle="oh-modal-toggle"
-        data-target="#editDialog"
-        hx-get="{% url 'leave-request-creation' employee_leave.leave_type_id.id employee_leave.employee_id.id%}"
-        hx-target="#requestForm"
-      >
-        <div class="oh-kanban-card__avatar">
-          <div class="oh-kanban-card__profile-container">
-            {% if employee_leave.leave_type_id.icon %}
-            <img
-              src="{{employee_leave.leave_type_id.icon.url }}"
-              class="oh-kanban-card__profile-image"
-              alt="Leave Icon"
-            />
-            {% else %}
-            <img
-              src="https://ui-avatars.com/api/?name={{employee_leave.leave_type_id}}&background=random"
-              class="oh-kanban-card__profile-image"
-              alt="Leave Icon"
-            />
-            {% endif %}
+      {% for employee_leave in employee_leaves %} 
+        {% if perms.leave.view_leavetype or perms.leave.view_leaverequest or request.user|check_manager:employee_leave or request.user == employee_leave.employee_id.employee_user_id %}
+          <div
+            class="oh-kanban-card"
+            data-toggle="oh-modal-toggle"
+            data-target="#editDialog"
+            hx-get="{% url 'leave-request-creation' employee_leave.leave_type_id.id employee_leave.employee_id.id%}"
+            hx-target="#requestForm"
+           >
+            <div class="oh-kanban-card__avatar">
+              <div class="oh-kanban-card__profile-container">
+                {% if employee_leave.leave_type_id.icon %}
+                <img
+                  src="{{employee_leave.leave_type_id.icon.url }}"
+                  class="oh-kanban-card__profile-image"
+                  alt="Leave Icon"
+                />
+                {% else %}
+                <img
+                  src="https://ui-avatars.com/api/?name={{employee_leave.leave_type_id}}&background=random"
+                  class="oh-kanban-card__profile-image"
+                  alt="Leave Icon"
+                />
+                {% endif %}
+              </div>
+            </div>
+            <div class="oh-kanban-card__details">
+              <span class="oh-kanban-card__title"
+                >{{employee_leave.leave_type_id}}</span
+              >
+              <span class="oh-kanban-card__subtitle"
+                >{% trans "Available Leave Days" %} :
+                {{employee_leave.available_days}}</span
+              ><br />
+              <span class="oh-kanban-card__subtitle"
+                >{% trans "Carryforward Leave Days" %} :
+                {{employee_leave.carryforward_days}}</span
+              ><br />
+              <span class="oh-kanban-card__subtitle"
+                >{% trans "Total Leave Days" %} :
+                {{employee_leave.total_leave_days}}</span
+              >
+            </div>
           </div>
-        </div>
-        <div class="oh-kanban-card__details">
-          <span class="oh-kanban-card__title"
-            >{{employee_leave.leave_type_id}}</span
-          >
-          <span class="oh-kanban-card__subtitle"
-            >{% trans "Available Leave Days" %} :
-            {{employee_leave.available_days}}</span
-          ><br />
-          <span class="oh-kanban-card__subtitle"
-            >{% trans "Carryforward Leave Days" %} :
-            {{employee_leave.carryforward_days}}</span
-          ><br />
-          <span class="oh-kanban-card__subtitle"
-            >{% trans "Total Leave Days" %} :
-            {{employee_leave.total_leave_days}}</span
-          >
-        </div>
-      </div>
-      {% endif %}
+        {% endif %} 
       {% endfor %}
     </div>
   </div>
 </div>
 {% else %}
-<div class="d-flex justify-content-center align-items-center" style="height:40vh">
-  <h5 class="oh-404__subtitle">{% trans "No Leave Types have been assigned." %}</h5>
-</div>
-
-{% endif %}
-{% if employee_leaves or user_leaves %}
-  <div class="oh-sticky-table-request">
-    {% if employee.leaverequest_set.all %}
-    <div class="oh-sticky-table">
-      <div class="oh-sticky-table__table oh-table--sortable">
-        <div class="oh-sticky-table__thead">
-          <div class="oh-sticky-table__tr">
-            <div class="oh-sticky-table__th">{% trans "Leave Type" %}</div>
-            <div class="oh-sticky-table__th">{% trans "Start Date" %}</div>
-            <div class="oh-sticky-table__th">{% trans "End Date" %}</div>
-            <div class="oh-sticky-table__th">{% trans "Requested days" %}</div>
-            <div class="oh-sticky-table__th">{% trans "Status" %}</div>
-            {% if perms.leave.change_leaverequest %}
-            <div class="oh-sticky-table__th"></div>
-            {% endif %}
-          </div>
-        </div>
-        <div class="oh-sticky-table__tbody">
-          {% for leave_request in employee.leaverequest_set.all %}
-          <div class="oh-sticky-table__tr" data-toggle="oh-modal-toggle" data-target="#tableTimeOff"
-          hx-get="{% url 'user-request-one' leave_request.id %}" hx-target="#userRequestView">
-            <div class="oh-sticky-table__sd {% if leave_request.status == "requested" %}row-status--orange {% elif leave_request.status == "cancelled" %} row-status--gray {% elif leave_request.status == "approved" %} row-status--yellow{% endif %}"
-              data-toggle="oh-modal-toggle" data-target="#tableTimeOff" hx-get="{% url 'user-request-one' leave_request.id %}" hx-target="#userRequestView">
-            <div class="oh-profile oh-profile--md">
-              <div class="oh-profile__avatar mr-1">
-                {% if leave_request.leave_type_id.icon %}
-                <img
-                  src="{{leave_request.leave_type_id.icon.url}}"
-                  class="oh-profile__image"
-                  alt="Leave Type Icon"
-                />
-                {% else%}
-                <img
-                  src="https://ui-avatars.com/api/?name={{leave_request.leave_type_id}}&background=random"
-                  class="oh-profile__image"
-                  alt="Leave type icon"
-                />
-                {% endif %}
-              </div>
-              <span class="oh-profile__name oh-text--dark"
-                >{{leave_request.leave_type_id}}</span
-              >
-            </div>
-          </div>
-          <div class="oh-sticky-table__td dateformat_changer">{{leave_request.start_date}}</div>
-          <div class="oh-sticky-table__td dateformat_changer">{{leave_request.end_date}}</div>
-          <div class="oh-sticky-table__td">{{leave_request.requested_days}}</div>
-          <div class="oh-sticky-table__td">
-            {{leave_request.get_status_display}}
-          </div>
-            {% if perms.leave.change_leaverequest %}
-            <div class="oh-sticky-table__td" onclick="event.stopPropagation()">
-              <div class="oh-btn-group">
-                {% if leave_request.status != 'approved' %}
-                <a type="submit" href="{% url 'request-approve' leave_request.id leave_request.employee_id.id %}" title="{% trans 'Approve' %}"
-                    class="oh-btn oh-btn--success w-100">
-                    <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
-                </a>
-                {% else %}
-                <a type="submit" href="{% url 'request-approve' leave_request.id leave_request.employee_id.id %}" title="{% trans 'Approve' %}"
-                    class="oh-btn oh-btn--success oh-btn--disabled
-                    w-100">
-                    <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
-                </a>
-                {% endif %}
-                {% if leave_request.status != 'cancelled' %}
-                <a type="submit" href="{% url 'request-cancel' leave_request.id leave_request.employee_id.id %}" title="{% trans 'Cancel' %}"
-                    class="oh-btn oh-btn--danger w-100">
-                    <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
-
-                </a>
-                {% else %}
-                <a type="submit" href="{% url 'request-cancel' leave_request.id leave_request.employee_id.id %}" title="{% trans 'Cancel' %}"
-                    class="oh-btn oh-btn--danger oh-btn--disabled
-                    w-100" >
-                    <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
-
-                </a>
-                {% endif %}
-              </div>
-            </div>
-            {% endif %}
-        </div>
-        {% endfor %}
-      </div>
-    </div>
-    {% else %}
-    <div class="d-flex justify-content-center align-items-center" style="height:40vh">
-      <h5 class="oh-404__subtitle">{% trans "No Leave requests have been generated." %}</h5>
-    </div>
-    {% endif %}
+  <div
+    class="d-flex justify-content-center align-items-center"
+    style="height: 40vh"
+   >
+    <h5 class="oh-404__subtitle">
+      {% trans "No Leave Types have been assigned." %}
+    </h5>
   </div>
-{% endif %}
+{% endif %} 
+{% if employee_leaves or user_leaves %}
+<div class="oh-sticky-table-request">
+  {% if employee.leaverequest_set.all %}
+  <div class="oh-sticky-table">
+    <div class="oh-sticky-table__table oh-table--sortable">
+      <div class="oh-sticky-table__thead">
+        <div class="oh-sticky-table__tr">
+          <div class="oh-sticky-table__th">{% trans "Leave Type" %}</div>
+          <div class="oh-sticky-table__th">{% trans "Start Date" %}</div>
+          <div class="oh-sticky-table__th">{% trans "End Date" %}</div>
+          <div class="oh-sticky-table__th">{% trans "Requested days" %}</div>
+          <div class="oh-sticky-table__th">{% trans "Status" %}</div>
+          {% if perms.leave.change_leaverequest %}
+          <div class="oh-sticky-table__th"></div>
+          {% endif %}
+        </div>
+      </div>
+      <div class="oh-sticky-table__tbody">
+        {% for leave_request in employee.leaverequest_set.all %}
+        <div
+          class="oh-sticky-table__tr"
+          data-toggle="oh-modal-toggle"
+          data-target="#tableTimeOff"
+          hx-get="{% url 'user-request-one' leave_request.id %}?instances_ids={{leave_request_ids}}"
+          hx-target="#userRequestView"
+        >
+          <div class="oh-sticky-table__sd 
+            {% if leave_request.status == "requested" %}row-status--orange 
+            {% elif leave_request.status == "cancelled" %} row-status--gray 
+            {% elif leave_request.status == "rejected" %} row-status--red
+            {% elif leave_request.status == "approved" %} row-status--yellow{% endif %}"
+            data-toggle="oh-modal-toggle" 
+            data-target="#tableTimeOff" hx-get="{% url 'user-request-one' leave_request.id %}"
+            hx-target="#userRequestView"
+           >
+          <div class="oh-profile oh-profile--md">
+            <div class="oh-profile__avatar mr-1">
+              {% if leave_request.leave_type_id.icon %}
+              <img
+                src="{{leave_request.leave_type_id.icon.url}}"
+                class="oh-profile__image"
+                alt="Leave Type Icon"
+              />
+              {% else%}
+              <img
+                src="https://ui-avatars.com/api/?name={{leave_request.leave_type_id}}&background=random"
+                class="oh-profile__image"
+                alt="Leave type icon"
+              />
+              {% endif %}
+            </div>
+            <span class="oh-profile__name oh-text--dark"
+              >{{leave_request.leave_type_id}}</span
+            >
+          </div>
+        </div>
+        <div class="oh-sticky-table__td dateformat_changer">
+          {{leave_request.start_date}}
+        </div>
+        <div class="oh-sticky-table__td dateformat_changer">
+          {{leave_request.end_date}}
+        </div>
+        <div class="oh-sticky-table__td">{{leave_request.requested_days}}</div>
+        <div class="oh-sticky-table__td">
+          {{leave_request.get_status_display}}
+        </div>
+        {% if perms.leave.change_leaverequest %}
+        <div class="oh-sticky-table__td" onclick="event.stopPropagation()">
+          <div class="oh-btn-group">
+            {% if leave_request.status != 'approved' %}
+            <a
+              type="submit"
+              href="{% url 'request-approve' leave_request.id leave_request.employee_id.id %}"
+              title="{% trans 'Approve' %}"
+              class="oh-btn oh-btn--success w-100"
+            >
+              <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
+            </a>
+            {% else %}
+            <a
+              type="submit"
+              href="{% url 'request-approve' leave_request.id leave_request.employee_id.id %}"
+              title="{% trans 'Approve' %}"
+              class="oh-btn oh-btn--success oh-btn--disabled w-100"
+            >
+              <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
+            </a>
+            {% endif %} 
+            {% if leave_request.status != "rejected" %}
+            <a
+              type="submit" data-toggle="oh-modal-toggle"
+              data-target="#rejectModal" hx-get="{% url 'request-cancel' leave_request.id %}" 
+              hx-target="#rejectForm" title="{% trans 'Reject' %}"
+              class="oh-btn oh-btn--danger w-100"
+            >
+              <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
+            </a>
+            {% else %}
+            <a
+              type="submit"
+              data-target="#rejectModal"
+              hx-get="{% url 'request-cancel' leave_request.id leave_request.employee_id.id %}"
+              hx-target="#rejectForm"
+              title="{% trans 'Cancel' %}"
+              class="oh-btn oh-btn--danger oh-btn--disabled w-100"
+            >
+              <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
+            </a>
+            {% endif %}
+          </div>
+        </div>
+        {% endif %}
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% else %}
+  <div
+    class="d-flex justify-content-center align-items-center"
+    style="height: 40vh"
+  >
+    <h5 class="oh-404__subtitle">
+      {% trans "No Leave requests have been generated." %}
+    </h5>
+  </div>
+  {% endif %}
 </div>
+{% endif %} 
 {% if perms.leave.add_leaverequest or request.user == employee.employee_user_id or request.user|check_manager:employee %}
 <div
   class="oh-modal"
@@ -280,7 +323,7 @@
   aria-labelledby="editDialogModal"
   aria-hidden="true"
 >
-  <div class="oh-modal__dialog ">
+  <div class="oh-modal__dialog">
     <div class="oh-modal__dialog-header">
       <span class="oh-modal__dialog-title" id="editDialogDialog"
         >{% trans "Leave Request" %}</span
@@ -293,18 +336,41 @@
   </div>
 </div>
 {% endif %}
-<div class="oh-modal" id="tableTimeOff" role="dialog" aria-labelledby="tableTimeOffModal" aria-hidden="true">
-  <div class="oh-modal__dialog oh-modal__dialog--timeoff oh-timeoff-modal">
-      <div class="oh-modal__dialog-header">
+<div
+  class="oh-modal"
+  id="tableTimeOff"
+  role="dialog"
+  aria-labelledby="tableTimeOffModal"
+  aria-hidden="true"
+>
+  <div
+    class="oh-modal__dialog oh-modal__dialog--timeoff oh-modal__dialog-relative oh-timeoff-modal"
+  >
+    <div class="oh-modal__dialog-header">
+      <button class="oh-modal__close" aria-label="Close">
+        <ion-icon name="close-outline"></ion-icon>
+      </button>
+    </div>
 
-          <button class="oh-modal__close" aria-label="Close">
-              <ion-icon name="close-outline"></ion-icon>
-          </button>
-      </div>
-
-      <div id="userRequestView">
-
-      </div>
-      
+    <div id="userRequestView"></div>
   </div>
+</div>
+<div
+	class="oh-modal"
+	id="rejectModal"
+	role="dialog"
+	aria-labelledby="rejectDialogModal"
+	aria-hidden="true"
+>
+	<div class="oh-modal__dialog">
+		<div class="oh-modal__dialog-header">
+			<h2 class="oh-modal__dialog-title" id="rejectTitle">
+				{% trans "Reject Leave Allocation Request" %}
+			</h2>
+			<button class="oh-modal_close--custom" aria-label="Close" onclick="$('#rejectModal').removeClass('oh-modal--show');">
+				<ion-icon name="close-outline"></ion-icon>
+			</button>
+		</div>
+		<div class="oh-modal__dialog-body" id="rejectForm"></div>
+	</div>
 </div>

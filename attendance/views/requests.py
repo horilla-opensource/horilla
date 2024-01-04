@@ -9,6 +9,7 @@ from urllib.parse import parse_qs
 from django.shortcuts import render
 from django.contrib import messages
 from django.http import HttpResponse, HttpResponseRedirect
+from django.utils.translation import gettext_lazy as _
 from notifications.signals import notify
 from horilla.decorators import login_required, manager_can_enter
 from base.methods import (
@@ -18,7 +19,7 @@ from base.methods import (
     get_key_instances,
 )
 from employee.models import Employee
-from attendance.models import Attendance
+from attendance.models import Attendance, AttendanceActivity
 from attendance.forms import AttendanceRequestForm, NewRequestForm
 from attendance.methods.differentiate import get_diff_dict
 from attendance.views.views import paginator_qry
@@ -129,7 +130,7 @@ def request_new(request):
         if form.is_valid():
             if form.new_instance is not None:
                 form.new_instance.save()
-                messages.success(request, "New attendance request created")
+                messages.success(request, _("New attendance request created"))
                 return HttpResponse(
                     render(
                         request,
@@ -138,7 +139,7 @@ def request_new(request):
                     ).content.decode("utf-8")
                     + "<script>location.reload();</script>"
                 )
-            messages.success(request, "Update request updated")
+            messages.success(request, _("Update request updated"))
             return HttpResponse(
                 render(
                     request,
@@ -205,7 +206,7 @@ def attendance_request_changes(request, attendance_id):
                 instance.is_validate_request_approved = False
                 instance.is_validate_request = True
                 instance.save()
-            messages.success(request, "Attendance update request created.")
+            messages.success(request, _("Attendance update request created."))
             employee = attendance.employee_id
             if attendance.employee_id.employee_work_info.reporting_manager_id:
                 reporting_manager = (
@@ -289,6 +290,9 @@ def approve_validate_attendance_request(request, attendance_id):
     This method is used to validate the attendance requests
     """
     attendance = Attendance.objects.get(id=attendance_id)
+    prev_attendance_date = attendance.attendance_date
+    prev_attendance_clock_in_date = attendance.attendance_clock_in_date
+    prev_attendance_clock_in = attendance.attendance_clock_in
     attendance.attendance_validated = True
     attendance.is_validate_request_approved = True
     attendance.is_validate_request = False
@@ -310,7 +314,33 @@ def approve_validate_attendance_request(request, attendance_id):
         # DUE TO AFFECT THE OVERTIME CALCULATION ON SAVE METHOD, SAVE THE INSTANCE ONCE MORE
         attendance = Attendance.objects.get(id=attendance_id)
         attendance.save()
-    messages.success(request, "Attendance request has been approved")
+    if (
+        attendance.attendance_clock_out is None
+        or attendance.attendance_clock_out_date is None
+    ):
+        attendance.attendance_validated = True
+        activity = AttendanceActivity.objects.filter(
+            employee_id=attendance.employee_id,
+            attendance_date=prev_attendance_date,
+            clock_in_date=prev_attendance_clock_in_date,
+            clock_in=prev_attendance_clock_in,
+        )
+        if activity:
+            activity.update(
+                employee_id=attendance.employee_id,
+                attendance_date=attendance.attendance_date,
+                clock_in_date=attendance.attendance_clock_in_date,
+                clock_in=attendance.attendance_clock_in,
+            )
+
+        else:
+            AttendanceActivity.objects.create(
+                employee_id=attendance.employee_id,
+                attendance_date=attendance.attendance_date,
+                clock_in_date=attendance.attendance_clock_in_date,
+                clock_in=attendance.attendance_clock_in,
+            )
+    messages.success(request, _("Attendance request has been approved"))
     employee = attendance.employee_id
     notify.send(
         request.user,
@@ -372,9 +402,9 @@ def cancel_attendance_request(request, attendance_id):
         attendance.save()
         if attendance.request_type == "create_request":
             attendance.delete()
-            messages.success(request, "The requested attendance is removed.")
+            messages.success(request, _("The requested attendance is removed."))
         else:
-            messages.success(request, "Attendance request has been cancelled")
+            messages.success(request, _("Attendance request has been cancelled"))
         employee = attendance.employee_id
         notify.send(
             request.user,

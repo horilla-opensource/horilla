@@ -141,6 +141,28 @@
           </div>
           {% endif %}
           <div class="oh-dashboard__movable-cards row mt-4" id="tileContainer">
+            {% if perms.candidate.view_employee or request.user|is_reportingmanager %}
+            <div
+              class="col-12 col-sm-12 col-md-12 col-lg-6 oh-card-dashboard--moveable"
+              id="notInYetdd"
+              hx-get="{% url "not-in-yet" %}"
+              hx-trigger="load"
+            >
+              {% include "dashboard/not_in_yet.html" %}
+            </div>
+      
+            {% endif %}
+            {% if perms.candidate.view_employee or request.user|is_reportingmanager %}
+            <div
+              class="col-12 col-sm-12 col-md-12 col-lg-6 oh-card-dashboard--moveable"
+              id="notoutYetdd"
+              hx-get="{% url "not-out-yet" %}"
+              hx-trigger="load"
+            >
+              {% include "dashboard/not_out_yet.html" %}
+            </div>
+      
+            {% endif %}
             {% if perms.leave.veiw_leaverequest %}
             <div
               class="col-12 col-sm-12 col-md-12 col-lg-4 oh-card-dashboard--moveable"
@@ -508,6 +530,16 @@
       </div>
     </div>
   </div>
+  <div class="oh-modal" id="sendMailModal" role="dialog" aria-labelledby="sendMailModal" aria-hidden="true">
+    <div class="oh-modal__dialog">
+      <div class="oh-modal__dialog-header">
+        <span class="oh-modal__dialog-title" id="sendMailModalLabel"><h5>{% trans 'Send Mail' %}</h5></span>
+        <button class="oh-modal__close" aria-label="Close"><ion-icon name="close-outline"></ion-icon></button>
+      </div>
+      <div class="oh-modal__dialog-body" id="mail-content"></div>
+    </div>
+  </div>
+
 </main>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>

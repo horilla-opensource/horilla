@@ -84,13 +84,19 @@ $(".all-employee").change(function (e) {
     .closest(".oh-sticky-table__thead")
     .siblings(".oh-sticky-table__tbody");
   if (is_checked) {
-    $(closest).children().find(".all-employee-row").prop("checked", true)
-    .closest(".oh-sticky-table__tr")
-    .addClass("highlight-selected");
+    $(closest)
+      .children()
+      .find(".all-employee-row")
+      .prop("checked", true)
+      .closest(".oh-sticky-table__tr")
+      .addClass("highlight-selected");
   } else {
-    $(closest).children().find(".all-employee-row").prop("checked", false)
-    .closest(".oh-sticky-table__tr")
-    .removeClass("highlight-selected");;
+    $(closest)
+      .children()
+      .find(".all-employee-row")
+      .prop("checked", false)
+      .closest(".oh-sticky-table__tr")
+      .removeClass("highlight-selected");
   }
   addingIds();
 });
@@ -320,6 +326,27 @@ $("#exportInstances").click(function (e) {
         });
       }
     });
+  });
+});
+
+$("#employeeBulkUpdateId").click(function (e) {
+  var languageCode = null;
+  getCurrentLanguageCode(function (code) {
+    languageCode = code;
+    var textMessage = noRowMessages[languageCode];
+    ids = [];
+    ids.push($("#selectedInstances").attr("data-ids"));
+    ids = JSON.parse($("#selectedInstances").attr("data-ids"));
+    if (ids.length === 0) {
+      $("#bulkUpdateModal").removeClass("oh-modal--show");
+      Swal.fire({
+        text: textMessage,
+        icon: "warning",
+        confirmButtonText: "Close",
+      });
+    } else {
+      $("#id_bulk_employee_ids").val(JSON.stringify(ids));
+    }
   });
 });
 

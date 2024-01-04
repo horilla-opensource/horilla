@@ -30,7 +30,10 @@ from django.template.loader import render_to_string
 from django.utils.translation import gettext_lazy as _
 from django.core.exceptions import ValidationError
 from django.forms import DateTimeInput
+from horilla_widgets.widgets.horilla_multi_select_field import HorillaMultiSelectField
+from horilla_widgets.widgets.select_widgets import HorillaMultiSelectWidget
 from employee.models import Employee
+from employee.filters import EmployeeFilter
 from base.methods import reload_queryset
 from base.models import Company
 from attendance.models import (
@@ -161,10 +164,23 @@ class AttendanceUpdateForm(ModelForm):
                 ] = instance.attendance_clock_out_date.strftime("%Y-%m-%d")
             kwargs["initial"] = initial
         super().__init__(*args, **kwargs)
+        self.fields["employee_id"].widget.attrs.update({"id": str(uuid.uuid4())})
+        self.fields["shift_id"].widget.attrs.update(
+            {
+                "id": str(uuid.uuid4()),
+                "onchange": "shiftChange($(this))",
+            }
+        )
+        self.fields["attendance_date"].widget.attrs.update(
+            {
+                "onchange": "dateChange($(this))",
+            }
+        )
+        self.fields["work_type_id"].widget.attrs.update({"id": str(uuid.uuid4())})
 
         self.fields["attendance_overtime_approve"].label = _("Approve overtime?")
         self.fields["attendance_validated"].label = _("Validate Attendance?")
-        if (
+        if instance is not None and (
             strtime_seconds(instance.attendance_overtime) < condition
             or not instance.attendance_validated
         ):
@@ -184,8 +200,14 @@ class AttendanceForm(ModelForm):
     Model form for Attendance model
     """
 
-    employee_id = forms.ModelMultipleChoiceField(
+    employee_id = HorillaMultiSelectField(
         queryset=Employee.objects.filter(employee_work_info__isnull=False),
+        widget=HorillaMultiSelectWidget(
+            filter_route_name="employee-widget-filter",
+            filter_class=EmployeeFilter,
+            filter_instance_contex_name="f",
+            filter_template_path="employee_filters.html",
+        ),
         label=_("Employees"),
     )
 
@@ -244,11 +266,17 @@ class AttendanceForm(ModelForm):
                 ] = instance.attendance_clock_out_date.strftime("%Y-%m-%d")
         kwargs["initial"] = initial
         super().__init__(*args, **kwargs)
+        reload_queryset(self.fields)
         self.fields["employee_id"].widget.attrs.update({"id": str(uuid.uuid4())})
         self.fields["shift_id"].widget.attrs.update(
             {
                 "id": str(uuid.uuid4()),
                 "onchange": "shiftChange($(this))",
+            }
+        )
+        self.fields["attendance_date"].widget.attrs.update(
+            {
+                "onchange": "dateChange($(this))",
             }
         )
         self.fields["work_type_id"].widget.attrs.update({"id": str(uuid.uuid4())})
@@ -275,9 +303,24 @@ class AttendanceForm(ModelForm):
 
     def clean(self) -> Dict[str, Any]:
         super().clean()
-        minimum_hour = strtime_seconds(self.cleaned_data["minimum_hour"])
-        at_work = strtime_seconds(self.cleaned_data["attendance_worked_hour"])
-        return
+        self.instance.employee_id = Employee.objects.filter(
+            id=self.data.get("employee_id")
+        ).first()
+
+        self.errors.pop("employee_id", None)
+        if self.instance.employee_id is None:
+            raise ValidationError({"employee_id": "This field is required"})
+        super().clean()
+        employee_ids = self.data.getlist("employee_id")
+        existing_attendance = Attendance.objects.filter(
+            attendance_date=self.data["attendance_date"]
+        ).filter(employee_id__id__in=employee_ids)
+        if existing_attendance.exists():
+            raise ValidationError(
+                {
+                    "employee_id": f"""Already attendance exists for {list(existing_attendance.values_list("employee_id__employee_first_name",flat=True))} employees"""
+                }
+            )
 
     def clean_employee_id(self):
         """
@@ -467,6 +510,18 @@ class AttendanceRequestForm(ModelForm):
         super().__init__(*args, **kwargs)
         self.fields["attendance_clock_out_date"].required = False
         self.fields["attendance_clock_out"].required = False
+        self.fields["shift_id"].widget.attrs.update(
+            {
+                "id": str(uuid.uuid4()),
+                "onchange": "shiftChange($(this))",
+            }
+        )
+        self.fields["attendance_date"].widget.attrs.update(
+            {
+                "onchange": "dateChange($(this))",
+            }
+        )
+        self.fields["work_type_id"].widget.attrs.update({"id": str(uuid.uuid4())})
 
     class Meta:
         """
@@ -512,7 +567,7 @@ class NewRequestForm(AttendanceRequestForm):
         old_dict = self.fields
         new_dict = {
             "employee_id": forms.ModelChoiceField(
-                queryset=Employee.objects.all(),
+                queryset=Employee.objects.filter(is_active=True),
                 label=_("Employee"),
                 widget=forms.Select(attrs={"class": "oh-select oh-select-2 w-100"}),
             ),

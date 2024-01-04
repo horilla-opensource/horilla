@@ -23,7 +23,21 @@
 <div class="oh-wrapper" id="section">
   <div class="oh-card mt-4 mb-5">
     <div class="d-flex flex-row-reverse">
-      <a href="{% url 'rec-candidate-update' candidate.id %}" class="">
+      {% if perms.recruitment.change_candidate %}
+        <div class='d-flex float-end ms-4'>
+          {% if candidate.email in emp_list %}
+          {% else %}
+            <form action="{% url 'candidate-conversion' candidate.id %}" style="color: inherit;text-decoration: none;""
+              onsubmit="return confirm('{% trans "Are you sure you want to convert this candidate into an employee?" %}')"
+              >
+              {% csrf_token %}
+              <button type='submit' class="oh-btn oh-btn--success"style="border-radius:18px; "> {% trans "Convert To Employee" %}</button>
+            </form>
+          {% endif %}
+        </div>
+      {% endif %}
+
+      <a href="{% url 'rec-candidate-update' candidate.id %}" class="mt-2">
         <img src="/static/images/ui/edit_btn.png" style="width: 25px; height: auto;" title="{% trans 'Edit' %}">      </a>
     </div>
     <div class="row">

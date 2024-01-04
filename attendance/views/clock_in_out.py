@@ -71,6 +71,7 @@ def clock_in_attendance_and_activity(
     minimum_hour,
     start_time,
     end_time,
+    in_datetime,
 ):
     """
     This method is used to create attendance activity or attendance when an employee clocks-in
@@ -92,7 +93,8 @@ def clock_in_attendance_and_activity(
         attendance_date=attendance_date,
         clock_in_date=date_today,
         shift_day=day,
-        clock_in=now,
+        clock_in=in_datetime,
+        in_datetime=in_datetime,
     ).save()
 
     # create attendance if not exist
@@ -130,6 +132,7 @@ def clock_in(request):
     This method is used to mark the attendance once per a day and multiple attendance activities.
     """
     employee, work_info = employee_exists(request)
+    datetime_now = datetime.now()
     if employee and work_info is not None:
         shift = work_info.shift_id
         date_today = date.today()
@@ -169,27 +172,41 @@ def clock_in(request):
             minimum_hour=minimum_hour,
             start_time=start_time_sec,
             end_time=end_time_sec,
+            in_datetime=datetime_now,
         )
         return HttpResponse(
             """
-              <button class="oh-btn oh-btn--warning-outline "
-              hx-get="/attendance/clock-out"
-                  hx-target='#attendance-activity-container'
-                  hx-swap='innerHTML'><ion-icon class="oh-navbar__clock-icon mr-2
-                  text-warning"
-                    name="exit-outline"></ion-icon>
-               <span class="hr-check-in-out-text">{check_out}</span>
+              <button class="oh-btn oh-btn--warning-outline check-in mr-2"
+              onmouseenter="$(this).find('span').show();$(this).find('.time-runner').hide();"
+              onmouseleave="$(this).find('span').hide();$(this).find('.time-runner').show();"
+                hx-get="/attendance/clock-out"
+                    hx-target='#attendance-activity-container'
+                    hx-swap='innerHTML'><ion-icon class="oh-navbar__clock-icon mr-2
+                    text-warning"
+                        name="exit-outline"></ion-icon>
+               <span style="display:none" class="hr-check-in-out-text">{check_out}</span>
+                <div class="time-runner"></div>  
               </button>
+              <script>
+                $(".time-runner").removeClass("stop-runner");
+                run = 1;
+                at_work_seconds = {at_work_seconds_forecasted};
+              </script>
             """.format(
-                check_out=_("Check-Out")
+                check_out=_("Check-Out"),
+                at_work_seconds_forecasted=employee.get_forecasted_at_work()[
+                    "forecasted_at_work_seconds"
+                ],
             )
         )
     return HttpResponse(
-        _("You Don't have work information filled or your employee detail neither entered ")
+        _(
+            "You Don't have work information filled or your employee detail neither entered "
+        )
     )
 
 
-def clock_out_attendance_and_activity(employee, date_today, now):
+def clock_out_attendance_and_activity(employee, date_today, now, out_datetime=None):
     """
     Clock out the attendance and activity
     args:
@@ -203,8 +220,9 @@ def clock_out_attendance_and_activity(employee, date_today, now):
     ).order_by("attendance_date", "id")
     if attendance_activities.exists():
         attendance_activity = attendance_activities.last()
-        attendance_activity.clock_out = now
+        attendance_activity.clock_out = out_datetime
         attendance_activity.clock_out_date = date_today
+        attendance_activity.out_datetime = out_datetime
         attendance_activity.save()
     attendance_activities = attendance_activities.filter(~Q(clock_out=None)).filter(
         attendance_date=attendance_activity.attendance_date
@@ -283,6 +301,7 @@ def clock_out(request):
     """
     This method is used to set the out date and time for attendance and attendance activity
     """
+    datetime_now = datetime.now()
     employee, work_info = employee_exists(request)
     shift = work_info.shift_id
     date_today = date.today()
@@ -305,18 +324,33 @@ def clock_out(request):
             attendance=attendance, start_time=start_time_sec, end_time=end_time_sec
         )
 
-    clock_out_attendance_and_activity(employee=employee, date_today=date_today, now=now)
+    clock_out_attendance_and_activity(
+        employee=employee, date_today=date_today, now=now, out_datetime=datetime_now
+    )
     return HttpResponse(
         """
-              <button class="oh-btn oh-btn--success-outline " 
+              <button class="oh-btn oh-btn--success-outline mr-2" 
+              onmouseenter="$(this).find('span').show();$(this).find('.at-work-seconds').hide();"
+              onmouseleave="$(this).find('span').hide();$(this).find('.at-work-seconds').show();" 
               hx-get="/attendance/clock-in" 
               hx-target='#attendance-activity-container' 
               hx-swap='innerHTML'>
               <ion-icon class="oh-navbar__clock-icon mr-2 text-success" 
               name="enter-outline"></ion-icon>
                <span class="hr-check-in-out-text">{check_in}</span>
+               <div class="at-work-seconds"></div>
               </button>
+              <script>
+                $(document).ready(function () {{
+                    $('.at-work-seconds').html(secondsToDuration({at_work_seconds_forecasted}))
+                }});
+                run = 0;
+                at_work_seconds = {at_work_seconds_forecasted};
+              </script>
             """.format(
-            check_in=_("Check-In")
+            check_in=_("Check-In"),
+            at_work_seconds_forecasted=employee.get_forecasted_at_work()[
+                "forecasted_at_work_seconds"
+            ],
         )
     )

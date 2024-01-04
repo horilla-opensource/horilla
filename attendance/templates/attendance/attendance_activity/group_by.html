@@ -2,8 +2,7 @@
 {% load attendancefilters %}
 {% include 'filter_tags.html' %}
 <div class="oh-card">
-{% dynamic_regroup data by field as attendances_grouper %}
-{% for attendance_list in attendances_grouper %}
+{% for attendance_list in data %}
 <div class="oh-accordion-meta">
   <div class="oh-accordion-meta__item">
     <div class="oh-accordion-meta__header">
@@ -83,6 +82,65 @@
           </div>
       </div>
       </div>
+      <div class="oh-pagination">
+        <span class="oh-pagination__page">
+          {% trans "Page" %} {{ attendance_list.list.number }} {% trans "of" %} {{ attendance_list.list.paginator.num_pages }}.
+        </span>
+        <nav class="oh-pagination__nav">
+          <div class="oh-pagination__input-container me-3">
+          <span class="oh-pagination__label me-1">{% trans "Page" %}</span>
+          <input
+            type="number"
+            name="{{attendance_list.dynamic_name}}"
+            class="oh-pagination__input"
+            value="{{attendance_list.list.number}}"
+            hx-get="{% url 'attendance-activity-search' %}?{{pd}}"
+            hx-target="#activity-table"
+            min="1"
+          />
+          <span class="oh-pagination__label"
+            >{% trans "of" %} {{attendance_list.list.paginator.num_pages}}</span
+          >
+          </div>
+          <ul class="oh-pagination__items">
+          {% if attendance_list.list.has_previous %}
+          <li class="oh-pagination__item oh-pagination__item--wide">
+            <a
+            hx-target="#activity-table"
+            hx-get="{% url 'attendance-activity-search' %}?{{pd}}&{{attendance_list.dynamic_name}}=1"
+            class="oh-pagination__link"
+            >{% trans "First" %}</a
+            >
+          </li>
+          <li class="oh-pagination__item oh-pagination__item--wide">
+            <a
+            hx-target="#activity-table"
+            hx-get="{% url 'attendance-activity-search' %}?{{pd}}&{{attendance_list.dynamic_name}}={{ attendance_list.list.previous_page_number }}"
+            class="oh-pagination__link"
+            >{% trans "Previous" %}</a
+            >
+          </li>
+          {% endif %} {% if attendance_list.list.has_next %}
+          <li class="oh-pagination__item oh-pagination__item--wide">
+            <a
+            hx-target="#activity-table"
+            hx-get="{% url 'attendance-activity-search' %}?{{pd}}&{{attendance_list.dynamic_name}}={{ attendance_list.list.next_page_number }}"
+            class="oh-pagination__link"
+            >{% trans "Next" %}</a
+            >
+          </li>
+          <li class="oh-pagination__item oh-pagination__item--wide">
+            <a
+            hx-target="#activity-table"
+            hx-get="{% url 'attendance-activity-search' %}?{{pd}}&{{attendance_list.dynamic_name}}={{ attendance_list.list.paginator.num_pages }}"
+            class="oh-pagination__link"
+            >{% trans "Last" %}</a
+            >
+          </li>
+          {% endif %}
+          </ul>
+        </nav>
+        </div>
     </div>
   </div>
 </div>

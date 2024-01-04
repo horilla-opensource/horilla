@@ -7,15 +7,17 @@ This module is used to register models for recruitment app
 from collections.abc import Iterable
 import json
 import contextlib
+import datetime as dt
 from datetime import datetime, date, timedelta
 from django.db import models
 from django.db.models import Q
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
+import pandas as pd
 from base.models import Company, EmployeeShift, EmployeeShiftDay, WorkType
 from base.horilla_company_manager import HorillaCompanyManager
 from employee.models import Employee
-from leave.models import LeaveRequest
+from leave.models import WEEK_DAYS, WEEKS, CompanyLeave, Holiday, LeaveRequest
 from attendance.methods.differentiate import get_diff_dict
 
 # Create your models here.
@@ -109,9 +111,11 @@ class AttendanceActivity(models.Model):
         on_delete=models.DO_NOTHING,
         verbose_name=_("Shift Day"),
     )
+    in_datetime = models.DateTimeField(null=True)
     clock_in_date = models.DateField(null=True, verbose_name=_("In Date"))
     clock_in = models.TimeField(verbose_name=_("Check In"))
     clock_out_date = models.DateField(null=True, verbose_name=_("Out Date"))
+    out_datetime = models.DateTimeField(null=True)
     clock_out = models.TimeField(null=True, verbose_name=_("Check Out"))
     objects = HorillaCompanyManager(
         related_company_field="employee_id__employee_work_info__company_id"
@@ -252,7 +256,40 @@ class Attendance(models.Model):
             keys = diffs.keys()
         return keys
 
-    # return f"Attendance ID: {self.id}"  # Adjust the representation as needed
+    def get_last_clock_out(self,null_activity=False):
+        """
+        This method is used to get the last attendance activity if exists
+        """
+        activities = AttendanceActivity.objects.filter(
+            employee_id=self.employee_id,
+            attendance_date=self.attendance_date,
+            clock_out__isnull=null_activity,
+        ).order_by("id")
+        return activities.last()
+
+    def get_at_work_from_activities(self):
+        """
+        This method is used to retun the at work calculated from the activities
+        """
+        activities = AttendanceActivity.objects.filter(
+            attendance_date=self.attendance_date, employee_id=self.employee_id
+        ).order_by("clock_in")
+        at_work_seconds = 0
+        now = datetime.now()
+        for activity in activities:
+            out_time = activity.clock_out
+            if out_time is None:
+                combined_out = datetime.combine(
+                    now, dt.time(hour=now.hour, minute=now.minute, second=now.second)
+                )
+            else:
+                combined_out = datetime.combine(activity.clock_out_date, out_time)
+            in_time = activity.clock_in
+            combined_in = datetime.combine(activity.clock_in_date, in_time)
+            diffs = combined_out - combined_in
+            at_work_seconds = at_work_seconds + diffs.total_seconds()
+        return at_work_seconds
+
     def hours_pending(self):
         """
         This method will returns difference between minimum_hour and attendance_worked_hour
@@ -280,6 +317,53 @@ class Attendance(models.Model):
             day=self.attendance_date.strftime("%A").lower()
         )
         prev_attendance_approved = False
+
+        # Taking all holidays into a list
+        leaves = []
+        holidays = Holiday.objects.all()
+        for holi in holidays:
+            start_date = holi.start_date
+            end_date = holi.end_date
+
+            # Convert start_date and end_date to datetime objects
+            start_date = datetime.strptime(str(start_date), "%Y-%m-%d")
+            end_date = datetime.strptime(str(end_date), "%Y-%m-%d")
+
+            # Add dates in between start date and end date including both
+            current_date = start_date
+            while current_date <= end_date:
+                leaves.append(current_date.strftime("%Y-%m-%d"))
+                current_date += timedelta(days=1)
+
+        # Checking attendance date is in holiday list, if found making the minimum hour to 00:00
+        for leave in leaves:
+            if str(leave) == str(self.attendance_date):
+                self.minimum_hour = "00:00"
+                break
+
+        # Making a dictonary contains week day value and leave day pairs
+        company_leaves = {}
+        company_leave = CompanyLeave.objects.all()
+        for com_leave in company_leave:
+            a = dict(WEEK_DAYS).get(com_leave.based_on_week_day)
+            b = com_leave.based_on_week
+            company_leaves[b] = a
+
+        # Checking the attendance date is in which week
+        week_in_month = str(((self.attendance_date.day - 1) // 7 + 1) - 1)
+
+        # Checking the attendance date is in the company leave or not
+        for pairs in company_leaves.items():
+            # For all weeks based_on_week is None
+            if str(pairs[0]) == "None":
+                if str(pairs[1]) == str(self.attendance_day):
+                    self.minimum_hour = "00:00"
+                    break
+            # Checking with based_on_week and attendance_date week
+            if str(pairs[0]) == week_in_month:
+                if str(pairs[1]) == str(self.attendance_day):
+                    self.minimum_hour = "00:00"
+                    break
 
         condition = AttendanceValidationCondition.objects.first()
         if self.is_validate_request:

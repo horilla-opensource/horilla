@@ -11,6 +11,8 @@
     class="oh-btn oh-btn--secondary oh-btn--shadow"
     data-toggle="oh-modal-toggle"
     data-target="#Permissions"
+    hx-get="{% url "permission-table" %}"
+    hx-target="#permissionForm"
   >
     <ion-icon
       name="add-outline"
@@ -74,7 +76,6 @@
         class="perm-form"
         id="permissionForm"
       >
-        {% include "base/auth/permission_assign.html" %}
       </form>
     </div>
   </div>

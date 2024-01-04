@@ -88,6 +88,7 @@
             <span class="oh-timeoff-modal__stat-count">If {{deduction.get_if_choice_display}} {{deduction.get_if_condition_display}} {{deduction.if_amount}}</span>
         </div>
     </div>
+    {% if perms.payroll.change_deduction or perms.payroll.delete_deduction %}
     <div class="oh-modal__button-container text-center">
        <div class="oh-btn-group">
 
@@ -108,7 +109,8 @@
             ></ion-icon>{% trans "Delete" %}
           </a>
         </div>
-      </div>
+    </div>
+    {% endif %}
 </div>
 
 

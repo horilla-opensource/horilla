@@ -1,0 +1,37 @@
+{% extends "index.html" %} {% load static %} {% load i18n %} {% block content %}
+{% include 'employee_nav.html' %}
+<div class="oh-wrapper d-flex justify-content-center mt-4 mb-4">
+  <form
+    action="{% url 'save-employee-bulk-update' %}"
+    class="oh-onboarding-card"
+    method="post"
+  >
+    {% csrf_token %}
+    <input type="hidden" name="update_fields" value="{{ update_fields }}" />
+    <input
+      type="hidden"
+      name="bulk_employee_ids"
+      value="{{ bulk_employee_ids }}"
+    />
+    <div class="oh-profile-section">
+      <div class="oh-payslip__header">
+        <div class="oh-payslip__header-left">
+          <div class="oh-payroll__component-title">
+            {% trans "Employees Bulk Update" %}
+          </div>
+        </div>
+      </div>
+      {{form.as_p}} {{form1.as_p}} {{form2.as_p}}
+      <div class="oh-dropdown__filter-footer" style="margin-bottom: 10px">
+        <button class="oh-btn oh-btn--secondary oh-btn--small w-100">
+          {% trans "Update" %}
+        </button>
+      </div>
+    </div>
+  </form>
+</div>
+<script src="{% static 'employee/actions.js' %}"></script>
+<script>
+  {% include "country.js" %}
+</script>
+{% endblock %}

@@ -141,6 +141,7 @@ class PayslipForm(ModelForm):
         self.fields["employee_id"].choices = [
             (contract.employee_id.id, contract.employee_id)
             for contract in active_contracts
+            if contract.employee_id.is_active
         ]
 
     class Meta:
@@ -209,7 +210,9 @@ class GeneratePayslipForm(HorillaForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["employee_id"].queryset = Employee.objects.filter(
-            contract_set__isnull=False, contract_set__contract_status="active"
+            is_active=True,
+            contract_set__isnull=False,
+            contract_set__contract_status="active",
         )
         self.fields["employee_id"].widget.attrs.update(
             {"class": "oh-select oh-select-2", "id": uuid.uuid4()}

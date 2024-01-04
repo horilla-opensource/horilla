@@ -104,7 +104,7 @@
   role="dialog"
   aria-labelledby="employeeExport"
   aria-hidden="true"
->
+  >
   <div class="oh-modal__dialog" style="max-width: 750px">
     <div class="oh-modal__dialog-header">
       <h2 class="oh-modal__dialog-title" id="employeeExportLavel">
@@ -124,6 +124,42 @@
           <div class="oh-dropdown__filter-footer">
             <button class="oh-btn oh-btn--secondary oh-btn--small w-100">
               {% trans "Export" %}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<div
+  class="oh-modal"
+  id="bulkUpdateModal"
+  role="dialog"
+  aria-labelledby="bulkUpdateModal"
+  aria-hidden="true"
+>
+  <div class="oh-modal__dialog" style="max-width: 750px">
+    <div class="oh-modal__dialog-header">
+      <h2 class="oh-modal__dialog-title" id="bulkUpdateModalLavel">
+        {% trans "Bulk Update Employees" %}
+      </h2>
+      <button class="oh-modal__close" aria-label="Close">
+        <ion-icon name="close-outline"></ion-icon>
+      </button>
+      <div class="oh-modal__dialog-body p-0 pt-2" id="bulkUpdateModalBody">
+        <form
+          action="{%url 'employee-bulk-update' %}"
+          method="post"
+          onsubmit="event.stopPropagation();$(this).parents().find('.oh-modal--show').last().toggleClass('oh-modal--show');"
+          id="bulkUpdateModalForm"
+        >
+          {% csrf_token %} 
+          {{update_fields_form.update_fields.label}}
+          {{update_fields_form.update_fields}}
+          {{update_fields_form.bulk_employee_ids}}
+          <div class="oh-dropdown__filter-footer">
+            <button class="oh-btn oh-btn--secondary oh-btn--small w-100">
+              {% trans "Update" %}
             </button>
           </div>
         </form>
@@ -326,6 +362,17 @@
                 <li class="oh-dropdown__item">
                   <a href="#" class="oh-dropdown__link" id="unArchiveEmployees">
                     {% trans "Un-Archive" %}
+                  </a>
+                </li>
+                <li class="oh-dropdown__item">
+                  <a
+                    href="#"
+                    class="oh-dropdown__link"
+                    id="employeeBulkUpdateId"
+                    data-toggle="oh-modal-toggle"
+                    data-target="#bulkUpdateModal"
+                  >
+                    {% trans "Bulk Update" %}
                   </a>
                 </li>
                 {% if perms.delete_employee %}

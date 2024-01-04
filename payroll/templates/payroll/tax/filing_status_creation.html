@@ -1,4 +1,19 @@
-{% load i18n %}
+{% load i18n %} {% if messages %}
+<div class="oh-wrapper">
+  {% for message in messages %}
+  <div class="oh-alert-container">
+    <div class="oh-alert oh-alert--animated {{message.tags}}">
+      {{ message }}
+    </div>
+  </div>
+  {% endfor %}
+  <script>
+    setTimeout(function () {
+      $(".oh-modal__close").click();
+    }, 1000);
+  </script>
+</div>
+{% endif %}
 <div class="oh-modal__dialog-header">
   <span class="oh-modal__dialog-title" id="addEmployeeObjectiveModalLabel">
     <h5>{% trans "Filing Status" %}</h5>
@@ -9,11 +24,11 @@
     data-dismiss="oh-modal"
     aria-label="Close"
     data-toggle="oh-modal-toggle"
-    hx-target="#FilingStatusFormTarget"
-    onclick="location.reload()"
+    hx-get="{% url 'filing-status-search' %}"
+    hx-target="#FilingStatusList"
   >
     <ion-icon name="close-outline"></ion-icon>
-  </button> 
+  </button>
   <form
     hx-post="{%url 'create-filing-status' %}"
     hx-target="#FilingStatusFormTarget"

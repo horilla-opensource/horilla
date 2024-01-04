@@ -4,7 +4,10 @@
 {% for history in employee.employee_work_info.tracking %}
   <div class="oh-history__container">
     <div class="oh-history_date oh-card__title oh-card__title--sm fw-bold me-2">
-      <span class="oh-history_date-content">{{history.pair.1.history_date|date:"M. d, Y, l g:i A"}}</span>
+      <span class="oh-history_date-content">
+        <span class="dateformat_changer">{{ history.pair.1.history_date|date:"M. d, Y" }}</span>&nbsp,&nbsp
+        <span class="timeformat_changer">{{ history.pair.1.history_date|date:"g:i A" }}</span>
+      </span>
     </div>
     <div class="d-flex">
       <div class="oh-history_user-img">

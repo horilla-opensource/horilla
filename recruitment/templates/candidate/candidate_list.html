@@ -40,6 +40,7 @@
         <div class="oh-sticky-table__th">{% trans "Recruitment" %}</div>
         <div class="oh-sticky-table__th">{% trans "Job Position" %}</div>
         <div class="oh-sticky-table__th">{% trans "Resume" %}</div>
+        <div class="oh-sticky-table__th">{% trans "Convert" %}</div>
         {% comment %} <div class="oh-sticky-table__th"></div> {% endcomment %}
         <div class="oh-sticky-table__th"></div>
       </div>
@@ -62,22 +63,23 @@
         </div>
         <div class="oh-sticky-table__td candidate {% if cand.hired %}hired-cand{% endif %}">
           <div class="d-flex">
-            <div class="oh-profile oh-profile--md">
+            <a href="{% url 'candidate-view-individual' cand.id %}" style="color: inherit;text-decoration: none;" 
+            class="oh-profile oh-profile--md">
               <div class="oh-profile__avatar mr-1">
                 <img src="{{cand.get_avatar}}"
                 class="oh-profile__image"
                 alt="Username" />
               </div>
               <span class="oh-profile__name oh-text--dark">{{cand}}</span>
-            </div>
+            </a>
           </div>
         </div>
 
-        <a href="#" style="color: inherit;text-decoration: none;" class="oh-sticky-table__td ">{{cand.email}}</a>
-        <a href="#" style="color: inherit;text-decoration: none;" class="oh-sticky-table__td">{{cand.mobile}}</a>
-        <a href="#" style="color: inherit;text-decoration: none;"
+        <a href="{% url 'candidate-view-individual' cand.id %}" style="color: inherit;text-decoration: none;" class="oh-sticky-table__td ">{{cand.email}}</a>
+        <a href="{% url 'candidate-view-individual' cand.id %}" style="color: inherit;text-decoration: none;" class="oh-sticky-table__td">{{cand.mobile}}</a>
+        <a href="{% url 'candidate-view-individual' cand.id %}" style="color: inherit;text-decoration: none;"
           class="oh-sticky-table__td">{{cand.recruitment_id}}</a>
-        <a href="#" style="color: inherit;text-decoration: none;"
+        <a href="{% url 'candidate-view-individual' cand.id %}" style="color: inherit;text-decoration: none;"
           class="oh-sticky-table__td">{{cand.job_position_id}}</a>
         <a style="color: inherit;text-decoration: none;" class="oh-sticky-table__td" href="/media/{{cand.resume}}"
           target="_blank" rel="noopener noreferrer"><span class="oh-btn oh-btn--info"> {% trans "Resume" %}</span></a>
@@ -87,6 +89,25 @@
             class="oh-btn oh-btn--info">history</button>
           {% endif %}
         </a> {% endcomment %}
+        {% if perms.recruitment.change_candidate %}
+          {% if cand.email in emp_list %}
+            <form action=" " style="color: inherit;text-decoration: none;" class="oh-sticky-table__td"
+            onsubmit="return confirm('{% trans "Are you sure you want to convert this candidate into an employee?" %}')"
+            >
+            {% csrf_token %}
+              <button type='submit' class="oh-btn oh-btn--success w-100" disabled> {% trans "To Employee" %}</button>
+              </form>
+          {% else %}
+            <form action="{% url 'candidate-conversion' cand.id %}" style="color: inherit;text-decoration: none;" class="oh-sticky-table__td"
+            onsubmit="return confirm('{% trans "Are you sure you want to convert this candidate into an employee?" %}')"
+            >
+            {% csrf_token %}
+              <button type='submit' class="oh-btn oh-btn--success w-100"> {% trans "To Employee" %}</button>
+              </form>
+          {% endif %}
+        {% endif %}
+        
+
         <div href="#" style="color: inherit;text-decoration: none;" class="oh-sticky-table__td">
           <div class="oh-btn-group">
             {% if perms.recruitment.change_candidate %}
@@ -95,7 +116,7 @@
             {% endif %}
             {% if perms.recruitment.delete_candidate %}
             {% if cand.is_active %}
-            <form action="{% url 'rec-candidate-archive' cand.id  %}"title="Archive" onsubmit="return confirm('{% trans "Do you want to archive this candidate" %}')" method='post'
+            <form action="{% url 'rec-candidate-archive' cand.id  %}" title="Archive" onsubmit="return confirm('{% trans "Do you want to archive this candidate?" %}')" method='post'
               class="w-50">
             {% csrf_token %}
             <button type='submit' class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
@@ -103,7 +124,7 @@
             </form>
             {% else %}
             
-            <form action="{% url 'rec-candidate-archive' cand.id  %}"  title="Un Archive" onsubmit="return confirm('{% trans "Do you want to un-archive this candidate" %}')" method='post'
+            <form action="{% url 'rec-candidate-archive' cand.id  %}"  title="Un Archive" onsubmit="return confirm('{% trans "Do you want to un-archive this candidate?" %}')" method='post'
               class="w-50">
               {% csrf_token %}
               <button type='submit' class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
@@ -112,7 +133,7 @@
             {% endif %}
             {% endif %}
             {% if perms.recruitment.delete_candidate %}
-            <form action="{% url 'rec-candidate-delete' cand.id  %}" onsubmit="return confirm('{% trans "Do you want to delete this candidate" %}')" method='post'
+            <form action="{% url 'rec-candidate-delete' cand.id  %}" onsubmit="return confirm('{% trans "Do you want to delete this candidate?" %}')" method='post'
               onsubmit="Are you sure want to delete this candidate?" class="w-50">
               {% csrf_token %}
               <button type='submit' class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"

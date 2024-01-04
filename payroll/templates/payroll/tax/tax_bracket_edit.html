@@ -1,4 +1,19 @@
-{% load i18n %}
+{% load i18n %} {% if messages %}
+<div class="oh-wrapper">
+  {% for message in messages %}
+  <div class="oh-alert-container">
+    <div class="oh-alert oh-alert--animated {{message.tags}}">
+      {{ message }}
+    </div>
+  </div>
+  {% endfor %}
+  <script>
+    setTimeout(function () {
+      $(".oh-modal__close").click();
+    }, 1000);
+  </script>
+</div>
+{% endif %}
 <div class="oh-modal__dialog-header">
   <span class="oh-modal__dialog-title" id="addEmployeeObjectiveModalLabel">
     <h5>{% trans "Tax Bracket" %}</h5>
@@ -9,8 +24,10 @@
     data-dismiss="oh-modal"
     aria-label="Close"
     data-toggle="oh-modal-toggle"
-    hx-target="#TaxBracketFormTarget"
-    onclick="$('#TaxBracketModal').removeClass('oh-modal--show');"
+    data-target="#filingStatus{{filing_status_id}}"
+    hx-get="{%url 'tax-bracket-list' filing_status_id=filing_status_id %}"
+    hx-target="#taxbracketList{{filing_status_id}}"
+    onclick="$(`[data-target='#filingStatus{{filing_status_id}}']`).addClass('oh-accordion-meta__header--show');$('#filingStatus{{filing_status_id}}').removeClass('d-none')"
   >
     <ion-icon name="close-outline"></ion-icon>
   </button>

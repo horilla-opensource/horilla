@@ -39,10 +39,7 @@ def filing_status_view(request):
 
     """
     status = FilingStatus.objects.all()
-    if status.exists():
-        template = "payroll/tax/filing_status_view.html"
-    else:
-        template = "payroll/tax/filing_status_empty.html"
+    template = "payroll/tax/filing_status_view.html"
     context = {"status": status}
     return render(request, template, context)
 
@@ -62,8 +59,8 @@ def create_filing_status(request):
         filing_status_form = FilingStatusForm(request.POST)
         if filing_status_form.is_valid():
             filing_status_form.save()
-            messages.success(request, _("Filing status created successfully"))
-            return HttpResponse("<script>window.location.reload()</script>")
+            messages.success(request, _("Filing status created successfully "))
+            filing_status_form = FilingStatusForm()
     return render(
         request,
         "payroll/tax/filing_status_creation.html",
@@ -98,10 +95,6 @@ def update_filing_status(request, filing_status_id):
         if filing_status_form.is_valid():
             filing_status_form.save()
             messages.success(request, _("Filing status updated successfully."))
-            return HttpResponse(
-                response.content.decode("utf-8") + "<script>location.reload();</script>"
-            )
-
     return render(
         request,
         "payroll/tax/filing_status_edit.html",
@@ -121,7 +114,6 @@ def filing_status_delete(request, filing_status_id):
     database and redirects to the filing status view.
 
     """
-
     try:
         filing_status = FilingStatus.objects.get(id=filing_status_id)
         filing_status.delete()
@@ -135,7 +127,7 @@ def filing_status_delete(request, filing_status_id):
 @login_required
 @permission_required("payroll.view_filingstatus")
 def filing_status_search(request):
-    search = request.GET.get("search")
+    search = request.GET.get("search") if request.GET.get("search") else ""
     status = FilingStatus.objects.filter(filing_status__icontains=search)
     previous_data = request.GET.urlencode()
     data_dict = parse_qs(previous_data)
@@ -187,6 +179,7 @@ def create_tax_bracket(request, filing_status_id):
     tax_bracket_form = TaxBracketForm(initial={"filing_status_id": filing_status_id})
     context = {
         "form": tax_bracket_form,
+        "filing_status_id": filing_status_id,
     }
     if request.method == "POST":
         tax_bracket_form = TaxBracketForm(
@@ -218,6 +211,7 @@ def update_tax_bracket(request, tax_bracket_id):
     :param tax_bracket_id: The ID of the tax bracket to update.
     """
     tax_bracket = TaxBracket.objects.get(id=tax_bracket_id)
+    filing_status_id = tax_bracket.filing_status_id.id
     tax_bracket_form = TaxBracketForm(instance=tax_bracket)
 
     if request.method == "POST":
@@ -231,10 +225,10 @@ def update_tax_bracket(request, tax_bracket_id):
             messages.success(
                 request, _("The tax bracket has been updated successfully.")
             )
-            return HttpResponse("<script>window.location.reload()</script>")
 
     context = {
         "form": tax_bracket_form,
+        "filing_status_id": filing_status_id,
     }
     return render(request, "payroll/tax/tax_bracket_edit.html", context)
 

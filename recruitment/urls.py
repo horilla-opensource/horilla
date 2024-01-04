@@ -47,6 +47,16 @@ urlpatterns = [
         recruitment.views.actions.recruitment_delete,
         name="recruitment-delete",
     ),
+    path(
+        "recruitment-close-pipeline/<int:rec_id>/",
+        views.recruitment_close_pipeline,
+        name="recruitment-close-pipeline",
+    ),
+    path(
+        "recruitment-reopen-pipeline/<int:rec_id>/",
+        views.recruitment_reopen_pipeline,
+        name="recruitment-reopen-pipeline",
+    ),
     path("pipeline/", views.recruitment_pipeline, name="pipeline"),
     path("pipeline-card", views.recruitment_pipeline_card, name="pipeline-card"),
     path(
@@ -145,6 +155,12 @@ urlpatterns = [
         "candidate-update/<int:cand_id>/",
         views.candidate_update,
         name="rec-candidate-update",
+        kwargs={"model": Candidate},
+    ),
+    path(
+        "candidate-conversion/<int:cand_id>/",
+        views.candidate_conversion,
+        name="candidate-conversion",
         kwargs={"model": Candidate},
     ),
     path(

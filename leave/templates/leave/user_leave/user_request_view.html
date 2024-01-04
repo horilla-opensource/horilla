@@ -373,6 +373,66 @@
 		$(".filterButton")[0].click();
 	});
 	  });
+
+	function typeChange(selectElement) {
+		var selectedLeavetype =selectElement.val()
+		let parentForm = selectElement.parents().closest("form")
+		var employeeId = parentForm.find('[name = employee_id]').val()
+		$.ajax({
+			type: "post",
+			url: "{% url 'employee-leave-details' %}",
+			data: {
+			csrfmiddlewaretoken: getCookie("csrftoken"),
+			"leave_type":selectedLeavetype,
+			"employee_id":employeeId,
+			},
+			success: function (response) {
+				
+				// Assuming parentForm is a reference to the form containing the element to update
+				var messageDiv = parentForm.find(".leave-message");
+
+				// Check if the messageDiv already exists, if not create it
+				if (!messageDiv.length) {
+					messageDiv = $("<div class='leave-message'></div>");
+					parentForm.prepend(messageDiv);
+				}
+				// Checking leave type is selected in the form or not
+				if (response.leave_count === ''){
+					messageDiv.hide()
+				}	
+				else if (response.leave_count === 0.0){
+					messageDiv.show()
+					messageDiv.text("Available Leaves :  " + response.leave_count);
+					messageDiv.css({
+						'background-color': 'rgb(229 79 56 / 17%)',
+						'border': '2px solid hsl(8,77%,56%)',
+						'border-radius': '18px',
+						'padding': '10px',
+						'font-weight': 'bold',
+						'margin-bottom': '15px',
+						'width': '35%'
+					});
+				}
+				else{
+					messageDiv.show()
+					// Set the message content and apply styling
+					messageDiv.text("Available Leaves :  " + response.leave_count);
+					messageDiv.css({
+						'background-color': '#dff0d8',
+						'border': '2px solid #3c763d',
+						'border-radius': '18px',
+						'padding': '10px',
+						'font-weight': 'bold',
+						'margin-bottom': '15px',
+						'width': '35%'
+					});
+				}
+	
+			}
+		});
+	}
+
+
 </script>
 
 <script src="{% static '/base/filter.js' %}"></script>

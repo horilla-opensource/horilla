@@ -239,7 +239,6 @@ def view_allowance(request):
 
 
 @login_required
-@permission_required("payroll.view_allowance")
 def view_single_allowance(request, allowance_id):
     """
     This method is used render template to view the selected allowance instances
@@ -371,7 +370,6 @@ def view_deduction(request):
 
 
 @login_required
-@permission_required("payroll.view_allowance")
 def view_single_deduction(request, deduction_id):
     """
     This method is used render template to view all the deduction instances
@@ -750,9 +748,9 @@ def payslip_export(request):
             data = str(value) if value is not None else ""
             if column_name == "Status":
                 data = choices_mapping.get(value, "")
-            
+
             if type(value) == date:
-                user= request.user
+                user = request.user
                 employee = user.employee_get
 
                 # Taking the company_name of the user
@@ -766,24 +764,24 @@ def payslip_export(request):
                     # Access the date_format attribute directly
                     date_format = emp_company.date_format
                 else:
-                    date_format = 'MMM. D, YYYY'
+                    date_format = "MMM. D, YYYY"
                 # Define date formats
                 date_formats = {
-                    'DD-MM-YYYY': '%d-%m-%Y',
-                    'DD.MM.YYYY': '%d.%m.%Y',
-                    'DD/MM/YYYY': '%d/%m/%Y',
-                    'MM/DD/YYYY': '%m/%d/%Y',
-                    'YYYY-MM-DD': '%Y-%m-%d',
-                    'YYYY/MM/DD': '%Y/%m/%d',
-                    'MMMM D, YYYY': '%B %d, %Y',
-                    'DD MMMM, YYYY': '%d %B, %Y',
-                    'MMM. D, YYYY': '%b. %d, %Y',
-                    'D MMM. YYYY': '%d %b. %Y',
-                    'dddd, MMMM D, YYYY': '%A, %B %d, %Y',
+                    "DD-MM-YYYY": "%d-%m-%Y",
+                    "DD.MM.YYYY": "%d.%m.%Y",
+                    "DD/MM/YYYY": "%d/%m/%Y",
+                    "MM/DD/YYYY": "%m/%d/%Y",
+                    "YYYY-MM-DD": "%Y-%m-%d",
+                    "YYYY/MM/DD": "%Y/%m/%d",
+                    "MMMM D, YYYY": "%B %d, %Y",
+                    "DD MMMM, YYYY": "%d %B, %Y",
+                    "MMM. D, YYYY": "%b. %d, %Y",
+                    "D MMM. YYYY": "%d %b. %Y",
+                    "dddd, MMMM D, YYYY": "%A, %B %d, %Y",
                 }
 
                 # Convert the string to a datetime.date object
-                start_date = datetime.strptime(str(value), '%Y-%m-%d').date()
+                start_date = datetime.strptime(str(value), "%Y-%m-%d").date()
 
                 # Print the formatted date for each format
                 for format_name, format_string in date_formats.items():
@@ -816,9 +814,6 @@ def hx_create_allowance(request):
     """
     form = forms.AllowanceForm()
     return render(request, "payroll/htmx/form.html", {"form": form})
-
-
-
 
 
 @login_required

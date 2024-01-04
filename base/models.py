@@ -3,12 +3,13 @@ models.py
 
 This module is used to register django models
 """
+from collections.abc import Iterable
+from typing import Any
 import django
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 from django.db import models
 from base.horilla_company_manager import HorillaCompanyManager
-
 
 # Create your models here.
 
@@ -49,7 +50,6 @@ class Company(models.Model):
     date_format = models.CharField(max_length=30, blank=True, null=True)
     time_format = models.CharField(max_length=20, blank=True, null=True)
 
-
     class Meta:
         """
         Meta class to add additional options
@@ -62,11 +62,13 @@ class Company(models.Model):
 
     def __str__(self) -> str:
         return str(self.company)
-    
+
 
 from base.thread_local_middleware import _thread_locals
 
 from django import forms
+
+
 class Department(models.Model):
     """
     Department model
@@ -80,19 +82,23 @@ class Department(models.Model):
     class Meta:
         verbose_name = _("Department")
         verbose_name_plural = _("Departments")
-        
+
     def clean(self, *args, **kwargs):
         super().clean(*args, **kwargs)
         request = getattr(_thread_locals, "request", None)
         if request and request.POST:
-            company = request.POST.getlist('company_id', None)
-            department = request.POST.get('department', None)
-            if Department.objects.filter(company_id__id__in=company,department = department).exclude(id= self.id).exists():
-                raise ValidationError(
-                    "This department already exists in this company"
+            company = request.POST.getlist("company_id", None)
+            department = request.POST.get("department", None)
+            if (
+                Department.objects.filter(
+                    company_id__id__in=company, department=department
                 )
-        return 
-    
+                .exclude(id=self.id)
+                .exists()
+            ):
+                raise ValidationError("This department already exists in this company")
+        return
+
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
         self.clean(*args, **kwargs)
@@ -174,24 +180,26 @@ class WorkType(models.Model):
 
     def __str__(self) -> str:
         return str(self.work_type)
-        
+
     def clean(self, *args, **kwargs):
         super().clean(*args, **kwargs)
         request = getattr(_thread_locals, "request", None)
         if request and request.POST:
-            company = request.POST.getlist('company_id', None)
-            work_type = request.POST.get('work_type', None)
-            if WorkType.objects.filter(company_id__id__in=company,work_type = work_type).exclude(id= self.id).exists():
-                raise ValidationError(
-                    "This work type already exists in this company"
-                )
-        return 
-    
+            company = request.POST.getlist("company_id", None)
+            work_type = request.POST.get("work_type", None)
+            if (
+                WorkType.objects.filter(company_id__id__in=company, work_type=work_type)
+                .exclude(id=self.id)
+                .exists()
+            ):
+                raise ValidationError("This work type already exists in this company")
+        return
+
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
         self.clean(*args, **kwargs)
         return self
-    
+
 
 class RotatingWorkType(models.Model):
     """
@@ -353,19 +361,25 @@ class EmployeeType(models.Model):
 
     def __str__(self) -> str:
         return str(self.employee_type)
-            
+
     def clean(self, *args, **kwargs):
         super().clean(*args, **kwargs)
         request = getattr(_thread_locals, "request", None)
         if request and request.POST:
-            company = request.POST.getlist('company_id', None)
-            employee_type = request.POST.get('employee_type', None)
-            if EmployeeType.objects.filter(company_id__id__in=company,employee_type = employee_type).exclude(id= self.id).exists():
+            company = request.POST.getlist("company_id", None)
+            employee_type = request.POST.get("employee_type", None)
+            if (
+                EmployeeType.objects.filter(
+                    company_id__id__in=company, employee_type=employee_type
+                )
+                .exclude(id=self.id)
+                .exists()
+            ):
                 raise ValidationError(
                     "This employee type already exists in this company"
                 )
-        return 
-    
+        return
+
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
         self.clean(*args, **kwargs)
@@ -429,19 +443,25 @@ class EmployeeShift(models.Model):
 
     def __str__(self) -> str:
         return str(self.employee_shift)
-        
+
     def clean(self, *args, **kwargs):
         super().clean(*args, **kwargs)
         request = getattr(_thread_locals, "request", None)
         if request and request.POST:
-            company = request.POST.getlist('company_id', None)
-            employee_shift = request.POST.get('employee_shift', None)
-            if EmployeeShift.objects.filter(company_id__id__in=company,employee_shift = employee_shift).exclude(id= self.id).exists():
+            company = request.POST.getlist("company_id", None)
+            employee_shift = request.POST.get("employee_shift", None)
+            if (
+                EmployeeShift.objects.filter(
+                    company_id__id__in=company, employee_shift=employee_shift
+                )
+                .exclude(id=self.id)
+                .exists()
+            ):
                 raise ValidationError(
                     "This employee shift already exists in this company"
                 )
-        return 
-    
+        return
+
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
         self.clean(*args, **kwargs)
@@ -827,3 +847,76 @@ class ShiftRequest(models.Model):
 
     def __str__(self):
         return f"{self.employee_id}"
+
+
+class DynamicEmailConfiguration(models.Model):
+    """
+    SingletoneModel to keep the mail server configurations
+    """
+
+    host = models.CharField(
+        blank=True, null=True, max_length=256, verbose_name=_("Email Host")
+    )
+
+    port = models.SmallIntegerField(blank=True, null=True, verbose_name=_("Email Port"))
+
+    from_email = models.CharField(
+        blank=True, null=True, max_length=256, verbose_name=_("Default From Email")
+    )
+
+    username = models.CharField(
+        blank=True,
+        null=True,
+        max_length=256,
+        verbose_name=_("Email Host Username"),
+    )
+
+    password = models.CharField(
+        blank=True,
+        null=True,
+        max_length=256,
+        verbose_name=_("Email Authentication Password"),
+    )
+
+    use_tls = models.BooleanField(default=True, verbose_name=_("Use TLS"))
+
+    use_ssl = models.BooleanField(default=False, verbose_name=_("Use SSL"))
+
+    fail_silently = models.BooleanField(default=False, verbose_name=_("Fail Silently"))
+
+    timeout = models.SmallIntegerField(
+        blank=True, null=True, verbose_name=_("Email Send Timeout (seconds)")
+    )
+    company_id = models.OneToOneField(
+        Company, on_delete=models.CASCADE, null=True, blank=True
+    )
+
+    def clean(self):
+        if self.use_ssl and self.use_tls:
+            raise ValidationError(
+                _(
+                    '"Use TLS" and "Use SSL" are mutually exclusive, '
+                    "so only set one of those settings to True."
+                )
+            )
+        if not self.company_id:
+            servers_same_company = DynamicEmailConfiguration.objects.filter(
+                company_id__isnull=True
+            ).exclude(id=self.id)
+            if servers_same_company.exists():
+                raise ValidationError({"company_id": _("This field is required")})
+
+    def __str__(self):
+        return self.username
+
+    def save(self, *args, **kwargs) -> None:
+        super().save(*args, **kwargs)
+        servers_same_company = DynamicEmailConfiguration.objects.filter(
+            company_id=self.company_id
+        ).exclude(id=self.id)
+        if servers_same_company.exists():
+            self.delete()
+        return
+
+    class Meta:
+        verbose_name = _("Email Configuration")

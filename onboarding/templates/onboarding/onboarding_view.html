@@ -58,27 +58,19 @@
             <input type="text" id="search" name='search' class="oh-input oh-input__icon" aria-label="Search Input" placeholder="{% trans 'Search' %}" />
         </div>
         {% endif %}
-        {% comment %} <button class="oh-btn oh-btn--small oh-btn--secondary oh-tabs__action-new-table ms-4">
-            <a href="{% url 'onboarding-view' %}?closed={{status}}" class="text-light text-decoration-none" >
-                {% if status == "closed" %}
-                {% trans "Closed Recruitments" %}
-                {% else %}
-                {% trans "Ongoing Recruitments" %}
-                {% endif %}
-            </a>
-        </button> {% endcomment %}
 
         <div class="oh-switch ms-3" style="width: 30px;">
-            <input type="checkbox" name="is_closed" data-widget="style-widget" class="style-widget oh-switch__checkbox" {% if request.GET.closed %} checked title="{% trans 'Ongoing Recruitments' %}" {% else %} title="{% trans 'Closed Recruitments' %}" {% endif %} id="is_closed" > 
+            <input type="checkbox" name="is_closed" data-widget="style-widget" class="style-widget oh-switch__checkbox" {% if request.GET.closed %} checked title="{% trans 'Switch to Ongoing Recruitments' %}" {% else %} title="{% trans 'Switch to Closed Recruitments' %}" {% endif %} id="is_closed" > 
         </div>
+
         {% if recruitments %}
         <ul class="oh-view-types ml-2" style="margin-bottom: 0;">
             <li class="oh-view-type candidate-view-type" data-view="list" title="{% trans "List" %}">
-                <a href="{% url 'onboarding-view' %}" hx-target="#section" class="oh-btn oh-btn--view oh-btn--view-active"><ion-icon
+                <a href="{% url 'onboarding-view' %}?closed={{status}}" hx-target="#section" class="oh-btn oh-btn--view oh-btn--view-active"><ion-icon
                         name="list-outline" role="img" class="md hydrated" aria-label="list outline"></ion-icon></a>
             </li>
             <li class="oh-view-type candidate-view-type" data-view="card" title="{% trans "Card" %}">
-                <a href="{% url 'kanban-view' %}" hx-target="#section" class="oh-btn oh-btn--view"><ion-icon
+                <a href="{% url 'kanban-view' %}?closed={{status}}" hx-target="#section" class="oh-btn oh-btn--view"><ion-icon
                         name="grid-outline" role="img" class="md hydrated" aria-label="grid outline"></ion-icon></a>
             </li>
         </ul>
@@ -209,6 +201,55 @@
         </div>
         {% endif %}
         {% endif %}
+
+    <!-- Paginator Section -->
+    <div class="oh-pagination">
+    <span
+      class="oh-pagination__page"
+      data-toggle="modal"
+      data-target="#addEmployeeModal"
+      >
+      {% trans "Page" %} {{ recruitments.number }} {% trans "of" %} {{ recruitments.paginator.num_pages }}.
+      </span
+      >
+      
+    <nav class="oh-pagination__nav">
+      <div class="oh-pagination__input-container me-3">
+          <span class="oh-pagination__label me-1">{% trans "Page" %}</span>
+          
+          <input
+          type="number"
+          name="page"
+          class="oh-pagination__input"
+          value="{{recruitments.number}}"
+          {% comment %} hx-get="{% url 'recruitment-search' %}?{{pd}}" hx-target="#tab_rec_{{rec.id}}" {% endcomment %}
+          min="1"
+          />
+          <span class="oh-pagination__label">{% trans "of" %} {{recruitments.paginator.num_pages}}</span>
+        </div>
+        
+        <ul class="oh-pagination__items">
+          {% if recruitments.has_previous %}
+          <li class="oh-pagination__item oh-pagination__item--wide">
+            <a href="{% url 'onboarding-view' %}?{{pd}}&page=1" class="oh-pagination__link">{% trans "First" %}</a>
+          </li>
+          <li class="oh-pagination__item oh-pagination__item--wide">
+              <a href="{% url 'onboarding-view' %}?{{pd}}&page={{ recruitments.previous_page_number }}" class="oh-pagination__link">{% trans "Previous" %}</a>
+            </li>
+          {% endif %}
+          {% if recruitments.has_next %}
+          <li class="oh-pagination__item oh-pagination__item--wide">
+              <a href="{% url 'onboarding-view' %}?{{pd}}&page={{ recruitments.next_page_number }}" class="oh-pagination__link">{% trans "Next" %}</a>
+          </li>
+          <li class="oh-pagination__item oh-pagination__item--wide">
+              <a href="{% url 'onboarding-view' %}?{{pd}}&page={{ recruitments.paginator.num_pages }}" class="oh-pagination__link">{% trans "Last" %}</a>
+            </li>
+          {% endif %}
+          
+        </ul>
+      </nav>
+    </div>
+    
 </div>
 </div>
 <!-- stage-form -->
@@ -357,7 +398,7 @@
         });
         $("#is_closed").on("change", function() {
             if ($(this).is(":checked")) {
-                window.location.href = "{% url 'onboarding-view' %}?closed={{status}}";
+                window.location.href = "{% url 'onboarding-view' %}?closed=closed";
             } else {
                 window.location.href = "{% url 'onboarding-view' %}";
             }

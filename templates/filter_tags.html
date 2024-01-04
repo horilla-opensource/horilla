@@ -60,7 +60,7 @@
     <span class="oh-titlebar__tag filter-field" >
       {% trans translation_field %} : 
 	  {% for value in values %}
-		${fieldLabel("{{value}}", "{{field}}")}
+		${fieldLabel("{% trans value %}", "{{field}}")}
 	  {% endfor %}
       <button class="oh-titlebar__tag-close" onclick="clearFilterFromTag($(this))" data-x-field="{{field}}">
         <ion-icon

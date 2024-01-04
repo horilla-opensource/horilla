@@ -20,17 +20,6 @@
     });
   });
 </script>
-      {% if messages %}
-      <div class="oh-wrapper">
-          {% for message in messages %}
-          <div class="oh-alert-container">
-              <div class="oh-alert oh-alert--animated {{message.tags}}">
-              {{ message }}
-              </div>
-          </div>
-          {% endfor %}
-      </div>
-      {% endif %}  
       {% include 'filter_tags.html' %}
         <div class="row">
             <div class="col-12 col-sm-12 col-md-12 col-lg-12">

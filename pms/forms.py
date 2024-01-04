@@ -99,7 +99,7 @@ class ObjectiveForm(ModelForm):
         required=False,
     )
     employee_id = forms.ModelChoiceField(
-        queryset=Employee.objects.all(),
+        queryset=Employee.objects.filter(is_active=True),
         widget=forms.Select(
             attrs={
                 "class": "oh-select oh-select-2 ",
@@ -155,12 +155,12 @@ class ObjectiveForm(ModelForm):
         self.fields["period"].choices.append(("create_new_period", "Create new period"))
 
         if employee and Employee.objects.filter(
-            employee_work_info__reporting_manager_id=employee
+            is_active=True, employee_work_info__reporting_manager_id=employee
         ):
             # manager level access
             department = employee.employee_work_info.department_id
             employees = Employee.objects.filter(
-                employee_work_info__department_id=department
+                is_active=True, employee_work_info__department_id=department
             )
             self.fields["employee_id"].queryset = employees
             self.fields["department"].queryset = Department.objects.filter(
@@ -301,7 +301,7 @@ class KeyResultForm(ModelForm):
         super().__init__(*args, **kwargs)
         reload_queryset(self.fields)
         employees = Employee.objects.filter(
-            employee_work_info__reporting_manager_id=employee
+            is_active=True, employee_work_info__reporting_manager_id=employee
         )
         if employee and employees:
             # manager level access
@@ -360,7 +360,9 @@ class KeyResultForm(ModelForm):
         if target_value <= 0:
             raise ValidationError("Target value should be greater than zero")
         if current_value > target_value:
-            raise forms.ValidationError("Current value cannot be greater than target value")
+            raise forms.ValidationError(
+                "Current value cannot be greater than target value"
+            )
         return cleaned_data
 
 
@@ -459,12 +461,12 @@ class FeedbackForm(ModelForm):
                 {"class": "oh-select oh-select-2"}
             )
         employees = Employee.objects.filter(
-            employee_work_info__reporting_manager_id=employee
+            is_active=True, employee_work_info__reporting_manager_id=employee
         )
         if employee and employees:
             department = employee.employee_work_info.department_id
             employees = Employee.objects.filter(
-                employee_work_info__department_id=department
+                is_active=True, employee_work_info__department_id=department
             )
             # manager level access
             self.fields["employee_id"].queryset = employees
@@ -514,9 +516,11 @@ class QuestionTemplateForm(ModelForm):
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         reload_queryset(self.fields)
-        self.fields["company_id"].widget.attrs.update({
-            "class": "oh-select oh-select-2 w-100",
-        })
+        self.fields["company_id"].widget.attrs.update(
+            {
+                "class": "oh-select oh-select-2 w-100",
+            }
+        )
 
 
 class QuestionForm(ModelForm):
@@ -666,9 +670,11 @@ class PeriodForm(ModelForm):
             kwargs["initial"] = set_date_field_initial(instance)
         super().__init__(*args, **kwargs)
         reload_queryset(self.fields)
-        self.fields["company_id"].widget.attrs.update({
-            "class": "oh-select oh-select-2 w-100",
-        })
+        self.fields["company_id"].widget.attrs.update(
+            {
+                "class": "oh-select oh-select-2 w-100",
+            }
+        )
 
     def clean(self):
         cleaned_data = super().clean()

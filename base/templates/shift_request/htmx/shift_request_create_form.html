@@ -1,29 +1,59 @@
-{% load i18n %}
-{% load static %}
-<form
-  hx-post="{% url 'shift-request' %}"
-  hx-target="#shiftRequestTargetModal"
-  id="addForm"
->
-  {{form.as_p}}
-</form>
+{% load i18n %} {% load static %} {% if messages %}
+<div class="oh-wrapper">
+  {% for message in messages %}
+  <div class="oh-alert-container">
+    <div class="oh-alert oh-alert--animated {{message.tags}}">
+      {{ message }}
+    </div>
+  </div>
+  {% endfor %}
+  <script>
+    setTimeout(function () {
+      $(".oh-modal__close").click();
+    }, 1000);
+  </script>
+</div>
+{% endif %}
+<div class="oh-modal__dialog-header">
+  <button
+    type="button"
+    class="oh-modal__close"
+    data-dismiss="oh-modal"
+    aria-label="Close"
+    hx-get="{% url 'shift-request-search' %}"
+    hx-target="#view-container"
+  >
+    <ion-icon name="close-outline"></ion-icon>
+  </button>
+  <span class="oh-modal__dialog-title ml-5" id="shiftRequestModalLabel">
+    <h5>{% trans "Shift Request" %}</h5>
+  </span>
+</div>
+<div class="oh-modal__dialog-body">
+  <form
+    hx-post="{% url 'shift-request' %}"
+    hx-target="#shiftRequestTargetModal"
+    id="addForm"
+  >
+    {{form.as_p}}
+  </form>
+</div>
 
 <script>
-function toggleFunctionShiftRequestForm(){
-  if ($('#id_is_permanent_shift').is(":checked")){
-    $("[for=id_requested_date],[for=id_requested_till]").hide();
-    $("#id_requested_date,#id_requested_till").hide();
-  } else {
-    $("[for=id_requested_date],[for=id_requested_till]").show();
-    $("#id_requested_date,#id_requested_till").show();
+  function toggleFunctionShiftRequestForm() {
+    if ($("#id_is_permanent_shift").is(":checked")) {
+      $("[for=id_requested_date],[for=id_requested_till]").hide();
+      $("#id_requested_date,#id_requested_till").hide();
+    } else {
+      $("[for=id_requested_date],[for=id_requested_till]").show();
+      $("#id_requested_date,#id_requested_till").show();
+    }
   }
-}
-
-  $(document).ready(function(){
-    $("[type=checkbox]").change(function (e) {
-    e.preventDefault();
-    toggleFunctionShiftRequestForm();
-    });
-  })
   toggleFunctionShiftRequestForm();
+  $(document).ready(function () {
+    $("[type=checkbox]").change(function (e) {
+      e.preventDefault();
+      toggleFunctionShiftRequestForm();
+    });
+  });
 </script>

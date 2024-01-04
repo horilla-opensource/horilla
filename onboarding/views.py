@@ -33,7 +33,7 @@ from horilla.decorators import login_required, hx_request_required
 from horilla.decorators import permission_required
 from base.methods import generate_pdf, get_key_instances
 from recruitment.models import Candidate, Recruitment, RecruitmentMailTemplate
-from recruitment.filters import CandidateFilter
+from recruitment.filters import CandidateFilter, RecruitmentFilter
 from employee.models import Employee, EmployeeWorkInformation, EmployeeBankDetails
 from django.db.models import ProtectedError
 from onboarding.forms import (
@@ -563,7 +563,6 @@ def email_send(request):
     candidates = request.POST.getlist("ids")
     other_attachments = request.FILES.getlist("other_attachments")
     template_attachment_ids = request.POST.getlist("template_attachment_ids")
-    print(candidates)
     if not candidates:
         messages.info(request, "Please choose chandidates")
         return HttpResponse("<script>window.location.reload()</script>")
@@ -679,19 +678,30 @@ def onboarding_view(request):
     status = "closed"
     if request.GET.get("closed") == "closed":
         recruitments = Recruitment.objects.filter(closed=True)
+        status = "closed"
+    else:
         status = ""
 
     onboarding_stages = OnboardingStage.objects.all()
     choices = CandidateTask.choice
+    previous_data = request.GET.urlencode()
+    filter_obj = RecruitmentFilter(
+        request.GET, queryset=recruitments
+    )
+    paginator = Paginator(filter_obj.qs, 4)
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+
     return render(
         request,
         "onboarding/onboarding_view.html",
         {
-            "recruitments": recruitments,
+            "recruitments": page_obj,
             "onboarding_stages": onboarding_stages,
             "choices": choices,
             "job_positions": job_positions,
             "status": status,
+            "pd": previous_data,
         },
     )
 
@@ -731,21 +741,33 @@ def kanban_view(request):
     status = "closed"
     if request.GET.get("closed") == "closed":
         recruitments = Recruitment.objects.filter(closed=True)
+        status = "closed"
+    else:
         status = ""
     onboarding_stages = OnboardingStage.objects.all()
     choices = CandidateTask.choice
     stage_form = OnboardingViewStageForm()
+
+    previous_data = request.GET.urlencode()
+    filter_obj = RecruitmentFilter(
+        request.GET, queryset=recruitments
+    )
+    paginator = Paginator(filter_obj.qs, 4)
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+
     return render(
         request,
         "onboarding/kanban/kanban.html",
         {
-            "recruitments": recruitments,
+            "recruitments": page_obj,
             "onboarding_stages": onboarding_stages,
             "choices": choices,
             "job_positions": job_positions,
             "stage_form": stage_form,
             "status": status,
             "choices": choices,
+            "pd":previous_data,
         },
     )
 

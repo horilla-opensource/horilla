@@ -86,6 +86,7 @@
             <span class="oh-timeoff-modal__stat-count">If {{allowance.get_if_choice_display}} {{allowance.get_if_condition_display}} {{allowance.if_amount}}</span>
         </div>
     </div>
+    {% if perms.payroll.change_allowance or perms.payroll.delete_allowance %}
     <div class="oh-modal__button-container text-center">
        <div class="oh-btn-group">
          <a href="{% url 'update-allowance' allowance.id %}" class="oh-btn oh-btn--info" style="width: 50%;">
@@ -106,6 +107,7 @@
            </a>
         </div>
     </div>
+    {% endif %}
 </div>
 
 

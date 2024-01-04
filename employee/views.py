@@ -12,12 +12,15 @@ provide the main entry points for interacting with the application's functionali
 """
 
 import os
+import ast
 import json
+import operator
 import calendar
-from datetime import datetime, timedelta, date
-from collections import defaultdict
-from urllib.parse import parse_qs
 import pandas as pd
+from urllib.parse import parse_qs
+from collections import defaultdict
+from datetime import datetime, timedelta, date
+from django.db import models
 from django.db.models import Q
 from django.db.models import F, ProtectedError
 from django.conf import settings
@@ -28,9 +31,11 @@ from django.utils.translation import gettext as __
 from django.contrib.auth.models import User
 from django.views.decorators.http import require_http_methods
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse, QueryDict
+from django.forms import CharField, ChoiceField, DateInput, Select
 from asset.models import AssetAssignment, AssetRequest
 from django.utils.translation import gettext_lazy as _
 from attendance.models import Attendance, AttendanceOverTime
+from leave.models import LeaveRequest
 from notifications.signals import notify
 from horilla.decorators import (
     owner_can_enter,
@@ -52,6 +57,7 @@ from base.models import (
     Company,
     WorkTypeRequest,
 )
+from base.forms import ModelForm
 from base.methods import (
     filtersubordinates,
     filtersubordinatesemployeemodel,
@@ -62,6 +68,7 @@ from base.methods import (
 )
 from employee.filters import EmployeeFilter, EmployeeReGroup
 from employee.forms import (
+    BulkUpdateFieldForm,
     EmployeeExportExcelForm,
     EmployeeForm,
     EmployeeBankDetailsForm,
@@ -71,9 +78,50 @@ from employee.forms import (
     excel_columns,
 )
 from employee.models import Employee, EmployeeWorkInformation, EmployeeBankDetails
-from payroll.models.models import Contract
+from payroll.methods.payslip_calc import dynamic_attr
+from payroll.models.models import Allowance, Contract, Deduction
 from pms.models import Feedback
 from recruitment.models import Candidate
+
+
+operator_mapping = {
+    "equal": operator.eq,
+    "notequal": operator.ne,
+    "lt": operator.lt,
+    "gt": operator.gt,
+    "le": operator.le,
+    "ge": operator.ge,
+    "icontains": operator.contains,
+}
+filter_mapping = {
+    "work_type_id": {
+        "filter": lambda employee, allowance: {
+            "employee_id": employee,
+            "work_type_id__id": allowance.work_type_id.id,
+            "attendance_validated": True,
+        }
+    },
+    "shift_id": {
+        "filter": lambda employee, allowance,: {
+            "employee_id": employee,
+            "shift_id__id": allowance.shift_id.id,
+            "attendance_validated": True,
+        }
+    },
+    "overtime": {
+        "filter": lambda employee, allowance: {
+            "employee_id": employee,
+            "attendance_overtime_approve": True,
+            "attendance_validated": True,
+        }
+    },
+    "attendance": {
+        "filter": lambda employee, allowance: {
+            "employee_id": employee,
+            "attendance_validated": True,
+        }
+    },
+}
 
 
 # Create your views here.
@@ -91,6 +139,8 @@ def employee_profile(request):
     user = request.user
     employee = request.user.employee_get
     user_leaves = employee.available_leave.all()
+    instances = LeaveRequest.objects.filter(employee_id=employee)
+    leave_request_ids = json.dumps([instance.id for instance in instances])
     employee = Employee.objects.filter(employee_user_id=user).first()
     assets = AssetAssignment.objects.filter(assigned_to_employee_id=employee)
     feedback_own = Feedback.objects.filter(employee_id=employee, archive=False)
@@ -102,6 +152,7 @@ def employee_profile(request):
             "employee": employee,
             "user_leaves": user_leaves,
             "assets": assets,
+            "leave_request_ids": leave_request_ids,
             "self_feedback": feedback_own,
             "current_date": today,
         },
@@ -152,6 +203,8 @@ def employee_view_individual(request, obj_id, **kwargs):
     This method is used to view profile of an employee.
     """
     employee = Employee.objects.get(id=obj_id)
+    instances = LeaveRequest.objects.filter(employee_id=employee)
+    leave_request_ids = json.dumps([instance.id for instance in instances])
     employee_leaves = employee.available_leave.all()
 
     return render(
@@ -160,6 +213,7 @@ def employee_view_individual(request, obj_id, **kwargs):
         {
             "employee": employee,
             "employee_leaves": employee_leaves,
+            "leave_request_ids": leave_request_ids,
         },
     )
 
@@ -248,7 +302,7 @@ def asset_request_tab(request, emp_id):
 
 
 @login_required
-@owner_can_enter("pms.view_feedback",Employee)
+@owner_can_enter("pms.view_feedback", Employee)
 def performance_tab(request, emp_id):
     """
     This function is used to view performance tab of an employee in employee individual & profile view.
@@ -318,6 +372,79 @@ def attendance_tab(request, emp_id):
         "validate_attendances": validate_attendances,
     }
     return render(request, "tabs/attendance-tab.html", context=context)
+
+
+def allowances_deductions_tab(request, emp_id):
+    employee = Employee.objects.get(id=emp_id)
+    active_contracts = employee.contract_set.filter(contract_status="active").first()
+    basic_pay = active_contracts.wage if active_contracts else None
+    employee_allowances = []
+    employee_deductions = []
+    if basic_pay:
+        # Find the applicable allowances for the employee
+        specific_allowances = Allowance.objects.filter(specific_employees=employee)
+        conditional_allowances = Allowance.objects.filter(
+            is_condition_based=True
+        ).exclude(exclude_employees=employee)
+        active_employees = Allowance.objects.filter(
+            include_active_employees=True
+        ).exclude(exclude_employees=employee)
+        allowances = specific_allowances | conditional_allowances | active_employees
+
+        for allowance in allowances:
+            if allowance.is_condition_based:
+                condition_field = allowance.field
+                condition_operator = allowance.condition
+                condition_value = allowance.value.lower().replace(" ", "_")
+                employee_value = dynamic_attr(employee, condition_field)
+                operator_func = operator_mapping.get(condition_operator)
+                if employee_value is not None:
+                    condition_value = type(employee_value)(condition_value)
+                    if operator_func(employee_value, condition_value):
+                        employee_allowances.append(allowance)
+            else:
+                employee_allowances.append(allowance)
+            for allowance in employee_allowances:
+                operator_func = operator_mapping.get(allowance.if_condition)
+                condition_value = basic_pay if allowance.if_choice == "basic_pay" else 0
+                if not operator_func(condition_value, allowance.if_amount):
+                    employee_allowances.remove(allowance)
+
+        # Find the applicable deductions for the employee
+        specific_deductions = Deduction.objects.filter(
+            specific_employees=employee, is_pretax=True, is_tax=False
+        )
+        conditional_deduction = Deduction.objects.filter(
+            is_condition_based=True, is_pretax=True, is_tax=False
+        ).exclude(exclude_employees=employee)
+        active_employee_deduction = Deduction.objects.filter(
+            include_active_employees=True, is_pretax=True, is_tax=False
+        ).exclude(exclude_employees=employee)
+        deductions = (
+            specific_deductions | conditional_deduction | active_employee_deduction
+        )
+        employee_deductions = list(deductions)
+        for deduction in deductions:
+            if deduction.is_condition_based:
+                condition_field = deduction.field
+                condition_operator = deduction.condition
+                condition_value = deduction.value.lower().replace(" ", "_")
+                employee_value = dynamic_attr(employee, condition_field)
+                operator_func = operator_mapping.get(condition_operator)
+
+                if (
+                    employee_value is not None
+                    and not operator_func(
+                        employee_value, type(employee_value)(condition_value)
+                    )
+                ) or employee_value is None:
+                    employee_deductions.remove(deduction)
+    context = {
+        "active_contracts": active_contracts,
+        "allowances": employee_allowances if employee_allowances else None,
+        "deductions": employee_deductions if employee_deductions else None,
+    }
+    return render(request, "tabs/allowance_deduction-tab.html", context=context)
 
 
 @login_required
@@ -414,8 +541,15 @@ def employee_view(request):
     view_type = request.GET.get("view")
     previous_data = request.GET.urlencode()
     page_number = request.GET.get("page")
-    filter_obj = EmployeeFilter(request.GET, queryset=Employee.objects.all())
+    queryset = (
+        Employee.objects.filter(is_active=True)
+        if isinstance(request.GET, QueryDict) and not request.GET
+        else Employee.objects.all()
+    )
+
+    filter_obj = EmployeeFilter(request.GET, queryset=queryset)
     export_form = EmployeeExportExcelForm()
+    update_fields = BulkUpdateFieldForm()
     data_dict = parse_qs(previous_data)
     get_key_instances(Employee, data_dict)
     emp = Employee.objects.all()
@@ -428,12 +562,202 @@ def employee_view(request):
             "f": filter_obj,
             "export_filter": EmployeeFilter(queryset=filter_obj.qs),
             "export_form": export_form,
+            "update_fields_form": update_fields,
             "view_type": view_type,
             "filter_dict": data_dict,
             "emp": emp,
             "gp_fields": EmployeeReGroup.fields,
         },
     )
+
+
+@login_required
+@permission_required("employee.change_employee")
+def view_employee_bulk_update(request):
+    if request.method == "POST":
+        update_fields = request.POST.getlist("update_fields")
+        update_fields_str = json.dumps(update_fields)
+        bulk_employee_ids = request.POST.get("bulk_employee_ids")
+        bulk_employee_ids_str = (
+            json.dumps(bulk_employee_ids) if bulk_employee_ids else ""
+        )
+
+        class EmployeeBulkUpdateForm(ModelForm):
+            class Meta:
+                model = Employee
+                fields = []
+                widgets = {}
+                labels = {}
+                for field in update_fields:
+                    try:
+                        field_obj = Employee._meta.get_field(field)
+                        if field_obj.name in ("country", "state"):
+                            if not "country" in update_fields:
+                                fields.append("country")
+                                widgets["country"] = Select(attrs={"required": True})
+                            fields.append(field)
+                            widgets[field] = Select(attrs={"required": True})
+                        else:
+                            fields.append(field)
+
+                        if isinstance(field_obj, models.DateField):
+                            widgets[field] = DateInput(
+                                attrs={
+                                    "type": "date",
+                                    "required": True,
+                                    "data-pp": False,
+                                }
+                            )
+                    except:
+                        continue
+
+            def __init__(self, *args, **kwargs):
+                super(EmployeeBulkUpdateForm, self).__init__(*args, **kwargs)
+                for field_name, field in self.fields.items():
+                    field.required = True
+
+        class WorkInfoBulkUpdateForm(ModelForm):
+            class Meta:
+                model = EmployeeWorkInformation
+                fields = []
+                widgets = {}
+                labels = {}
+                for field in update_fields:
+                    try:
+                        parts = str(field).split("__")
+                        if parts[-1]:
+                            if parts[0] == "employee_work_info":
+                                field_obj = EmployeeWorkInformation._meta.get_field(
+                                    parts[-1]
+                                )
+                                fields.append(parts[-1])
+                                if isinstance(field_obj, models.DateField):
+                                    widgets[parts[-1]] = DateInput(
+                                        attrs={"type": "date"}
+                                    )
+                                if parts[-1] in ("email", "mobile"):
+                                    labels[parts[-1]] = (
+                                        _("Work Email")
+                                        if field_obj.name == "email"
+                                        else _("Work Phone")
+                                    )
+                    except:
+                        continue
+
+            def __init__(self, *args, **kwargs):
+                super(WorkInfoBulkUpdateForm, self).__init__(*args, **kwargs)
+                for field_name, field in self.fields.items():
+                    field.required = True
+
+        class BankInfoBulkUpdateForm(ModelForm):
+            class Meta:
+                model = EmployeeBankDetails
+                fields = []
+                widgets = {}
+                labels = {}
+                for field in update_fields:
+                    try:
+                        parts = str(field).split("__")
+                        if parts[-1]:
+                            if parts[0] == "employee_bank_details":
+                                field_obj = EmployeeBankDetails._meta.get_field(
+                                    parts[-1]
+                                )
+                                fields.append(parts[-1])
+                                if isinstance(field_obj, models.DateField):
+                                    widgets[parts[-1]] = DateInput(
+                                        attrs={"type": "date"}
+                                    )
+
+                                if field_obj.name in ("country", "state"):
+                                    if not "country" in update_fields:
+                                        fields.append("country")
+                                        widgets["country"] = Select(
+                                            attrs={"required": True}
+                                        )
+                                    fields.append(parts[-1])
+                                    widgets[parts[-1]] = Select(
+                                        attrs={"required": True}
+                                    )
+                                    labels[parts[-1]] = (
+                                        _("Bank Country")
+                                        if field_obj.name == "country"
+                                        else _("Bank State")
+                                    )
+
+                    except:
+                        continue
+
+            def __init__(self, *args, **kwargs):
+                super(BankInfoBulkUpdateForm, self).__init__(*args, **kwargs)
+                for field_name, field in self.fields.items():
+                    field.required = True
+
+        form = EmployeeBulkUpdateForm()
+        form1 = WorkInfoBulkUpdateForm()
+        form2 = BankInfoBulkUpdateForm()
+        context = {
+            "form": form,
+            "form1": form1,
+            "form2": form2,
+            "update_fields": update_fields_str,
+            "bulk_employee_ids": bulk_employee_ids_str,
+        }
+        return render(
+            request,
+            "employee_personal_info/bulk_update.html",
+            context=context,
+        )
+
+
+@login_required
+@permission_required("employee.change_employee")
+def save_employee_bulk_update(request):
+    if request.method == "POST":
+        bulk_employee_ids_str = request.POST.get("bulk_employee_ids", "")
+        bulk_employee_ids = (
+            json.loads(bulk_employee_ids_str) if bulk_employee_ids_str else []
+        )
+        employee_list = ast.literal_eval(bulk_employee_ids)
+        update_fields_str = request.POST.get("update_fields", "")
+        update_fields = json.loads(update_fields_str) if update_fields_str else []
+        dict_value = request.__dict__["_post"]
+        for field in update_fields:
+            parts = str(field).split("__")
+            if parts[-1]:
+                if parts[0] == "employee_work_info":
+                    for id in employee_list:
+                        employee_instance = Employee.objects.get(id=int(id))
+                        (
+                            employee_bank,
+                            created,
+                        ) = EmployeeWorkInformation.objects.get_or_create(
+                            employee_id=employee_instance
+                        )
+                    employee_queryset = EmployeeWorkInformation.objects.filter(
+                        employee_id__in=employee_list
+                    )
+                    value = dict_value.get(parts[-1])
+                    employee_queryset.update(**{parts[-1]: value})
+                elif parts[0] == "employee_bank_details":
+                    for id in employee_list:
+                        employee_instance = Employee.objects.get(id=int(id))
+                        (
+                            employee_bank,
+                            created,
+                        ) = EmployeeBankDetails.objects.get_or_create(
+                            employee_id=employee_instance
+                        )
+                    employee_queryset = EmployeeBankDetails.objects.filter(
+                        employee_id__in=employee_list
+                    )
+                    value = dict_value.get(parts[-1])
+                    employee_queryset.update(**{parts[-1]: value})
+                else:
+                    employee_queryset = Employee.objects.filter(id__in=employee_list)
+                    value = dict_value.get(field)
+                    employee_queryset.update(**{field: value})
+    return redirect("/employee/employee-view/?view=list")
 
 
 @login_required
@@ -1486,9 +1810,9 @@ def work_info_export(request):
                 if value is None:
                     break
             data = str(value) if value is not None else ""
-                        
+
             if type(value) == date:
-                user= request.user
+                user = request.user
                 emp = user.employee_get
 
                 # Taking the company_name of the user
@@ -1502,30 +1826,30 @@ def work_info_export(request):
                     # Access the date_format attribute directly
                     date_format = emp_company.date_format
                 else:
-                    date_format = 'MMM. D, YYYY'
+                    date_format = "MMM. D, YYYY"
                 # Define date formats
                 date_formats = {
-                    'DD-MM-YYYY': '%d-%m-%Y',
-                    'DD.MM.YYYY': '%d.%m.%Y',
-                    'DD/MM/YYYY': '%d/%m/%Y',
-                    'MM/DD/YYYY': '%m/%d/%Y',
-                    'YYYY-MM-DD': '%Y-%m-%d',
-                    'YYYY/MM/DD': '%Y/%m/%d',
-                    'MMMM D, YYYY': '%B %d, %Y',
-                    'DD MMMM, YYYY': '%d %B, %Y',
-                    'MMM. D, YYYY': '%b. %d, %Y',
-                    'D MMM. YYYY': '%d %b. %Y',
-                    'dddd, MMMM D, YYYY': '%A, %B %d, %Y',
+                    "DD-MM-YYYY": "%d-%m-%Y",
+                    "DD.MM.YYYY": "%d.%m.%Y",
+                    "DD/MM/YYYY": "%d/%m/%Y",
+                    "MM/DD/YYYY": "%m/%d/%Y",
+                    "YYYY-MM-DD": "%Y-%m-%d",
+                    "YYYY/MM/DD": "%Y/%m/%d",
+                    "MMMM D, YYYY": "%B %d, %Y",
+                    "DD MMMM, YYYY": "%d %B, %Y",
+                    "MMM. D, YYYY": "%b. %d, %Y",
+                    "D MMM. YYYY": "%d %b. %Y",
+                    "dddd, MMMM D, YYYY": "%A, %B %d, %Y",
                 }
 
                 # Convert the string to a datetime.date object
-                start_date = datetime.strptime(str(value), '%Y-%m-%d').date()
+                start_date = datetime.strptime(str(value), "%Y-%m-%d").date()
 
                 # Print the formatted date for each format
                 for format_name, format_string in date_formats.items():
                     if format_name == date_format:
                         data = start_date.strftime(format_string)
-                        
+
             if data == "True":
                 data = _("Yes")
             elif data == "False":
@@ -1547,6 +1871,7 @@ def birthday():
     today = datetime.now().date()
     last_day_of_month = calendar.monthrange(today.year, today.month)[1]
     employees = Employee.objects.filter(
+        is_active=True,
         dob__day__gte=today.day,
         dob__month=today.month,
         dob__day__lte=last_day_of_month,
