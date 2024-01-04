@@ -502,7 +502,10 @@ def reload_queryset(fields):
     """
     for k, v in fields.items():
         if isinstance(v, ModelChoiceField):
-            v.queryset = v.queryset.model.objects.all()
+            if v.queryset.model == Employee:
+                v.queryset = v.queryset.model.objects.filter(is_active=True)
+            else:
+                v.queryset = v.queryset.model.objects.all()
     return
 
 

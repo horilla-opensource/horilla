@@ -38,6 +38,7 @@ from base.methods import closest_numbers, export_data
 from base.forms import (
     CompanyForm,
     DepartmentForm,
+    DynamicMailConfForm,
     JobPositionForm,
     JobRoleForm,
     EmployeeShiftForm,
@@ -66,6 +67,7 @@ from base.forms import (
 )
 from base.models import (
     Company,
+    DynamicEmailConfiguration,
     JobPosition,
     JobRole,
     Department,
@@ -635,6 +637,38 @@ def object_delete(request, id, **kwargs):
             _("This {} is already in use for {}.").format(instance, model_names_str),
         ),
     return redirect(redirect_path)
+
+
+@login_required
+@permission_required("base.add_dynamicemailconfiguration")
+def mail_server_conf(request):
+    mail_servers = DynamicEmailConfiguration.objects.all()
+    return render(
+        request, "base/mail_server/mail_server.html", {"mail_servers": mail_servers}
+    )
+
+@login_required
+@permission_required("base.delete_dynamicemailconfiguration")
+def mail_server_delete(request):
+    ids = request.GET.getlist("ids")
+    DynamicEmailConfiguration.objects.filter(id__in =ids).delete()
+    messages.success(request,"Mail server configuration deleted")
+    return redirect(mail_server_conf)
+
+@login_required
+@permission_required("base.add_dynamicemailconfiguration")
+def mail_server_create_or_update(request):
+    instance_id = request.GET.get("instance_id")
+    instance = None
+    if instance_id:
+        instance = DynamicEmailConfiguration.objects.filter(id=instance_id).first()
+    form = DynamicMailConfForm(instance=instance)
+    if request.method == "POST":
+        form = DynamicMailConfForm(request.POST, instance=instance)
+        if form.is_valid():
+            form.save()
+            return HttpResponse("<script>window.location.reload()</script>")
+    return render(request,"base/mail_server/form.html", {"form": form,"instance":instance})
 
 
 @login_required
@@ -1927,8 +1961,6 @@ def rotating_shift_assign_delete(request, id):
     return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 
 
-
-
 def get_models_in_app(app_name):
     """
     get app models
@@ -2651,6 +2683,7 @@ def shift_request_view(request):
         },
     )
 
+
 @login_required
 @manager_can_enter("base.view_shiftrequest")
 def shift_request_export(request):
@@ -3120,15 +3153,14 @@ def date_settings(request):
 @permission_required("base.change_company")
 @csrf_exempt  # Use this decorator if CSRF protection is enabled
 def save_date_format(request):
-    if request.method == 'POST':
-
+    if request.method == "POST":
         # Taking the selected Date Format
-        selected_format = request.POST.get('selected_format')
+        selected_format = request.POST.get("selected_format")
 
         if not len(selected_format):
-            messages.error(request, _('Please select a valid date format.'))
+            messages.error(request, _("Please select a valid date format."))
         else:
-            user= request.user
+            user = request.user
             employee = user.employee_get
 
             # Taking the company_name of the user
@@ -3144,21 +3176,22 @@ def save_date_format(request):
                 # Save the selected format to the backend
                 emp_company.date_format = selected_format
                 emp_company.save()
-                messages.success(request, _('Date format saved successfully.'))
+                messages.success(request, _("Date format saved successfully."))
             else:
-                messages.warning(request, _('Date format cannot saved. You are not in the company.'))
+                messages.warning(
+                    request, _("Date format cannot saved. You are not in the company.")
+                )
 
             # Return a JSON response indicating success
-            return JsonResponse({'success': True})
+            return JsonResponse({"success": True})
 
     # Return a JSON response for unsupported methods
-    return JsonResponse({'error': False, 'error': 'Unsupported method'}, status=405)
+    return JsonResponse({"error": False, "error": "Unsupported method"}, status=405)
 
 
 @login_required
 def get_date_format(request):
-
-    user= request.user
+    user = request.user
     employee = user.employee_get
 
     # Taking the company_name of the user
@@ -3172,23 +3205,22 @@ def get_date_format(request):
         # Access the date_format attribute directly
         date_format = emp_company.date_format
     else:
-        date_format = 'MMM. D, YYYY'
+        date_format = "MMM. D, YYYY"
     # Return the date format as JSON response
-    return JsonResponse({'selected_format': date_format})
+    return JsonResponse({"selected_format": date_format})
 
 
 @permission_required("base.change_company")
 @csrf_exempt  # Use this decorator if CSRF protection is enabled
 def save_time_format(request):
-    if request.method == 'POST':
-
+    if request.method == "POST":
         # Taking the selected Time Format
-        selected_format = request.POST.get('selected_format')
+        selected_format = request.POST.get("selected_format")
 
         if not len(selected_format):
-            messages.error(request, _('Please select a valid time format.'))
+            messages.error(request, _("Please select a valid time format."))
         else:
-            user= request.user
+            user = request.user
             employee = user.employee_get
 
             # Taking the company_name of the user
@@ -3204,21 +3236,22 @@ def save_time_format(request):
                 # Save the selected format to the backend
                 emp_company.time_format = selected_format
                 emp_company.save()
-                messages.success(request, _('Time format saved successfully.'))
+                messages.success(request, _("Time format saved successfully."))
             else:
-                messages.warning(request, _('Time format cannot saved. You are not in the company.'))
+                messages.warning(
+                    request, _("Time format cannot saved. You are not in the company.")
+                )
 
             # Return a JSON response indicating success
-            return JsonResponse({'success': True})
+            return JsonResponse({"success": True})
 
     # Return a JSON response for unsupported methods
-    return JsonResponse({'error': False, 'error': 'Unsupported method'}, status=405)
+    return JsonResponse({"error": False, "error": "Unsupported method"}, status=405)
 
 
 @login_required
 def get_time_format(request):
-
-    user= request.user
+    user = request.user
     employee = user.employee_get
 
     # Taking the company_name of the user
@@ -3232,9 +3265,9 @@ def get_time_format(request):
         # Access the date_format attribute directly
         time_format = emp_company.time_format
     else:
-        time_format = 'hh:mm A'
+        time_format = "hh:mm A"
     # Return the date format as JSON response
-    return JsonResponse({'selected_format': time_format})
+    return JsonResponse({"selected_format": time_format})
 
 
 @login_required

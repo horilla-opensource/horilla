@@ -21,6 +21,7 @@ from employee.models import Employee
 from base.models import (
     Company,
     Department,
+    DynamicEmailConfiguration,
     JobPosition,
     JobRole,
     WorkType,
@@ -1472,3 +1473,21 @@ class RotatingWorkTypeAssignExportForm(forms.Form):
             "based_on",
         ],
     )
+
+
+
+class DynamicMailConfForm(ModelForm):
+    """
+    DynamicEmailConfiguration
+    """
+    class Meta:
+        model = DynamicEmailConfiguration
+        fields = "__all__"
+    
+    def as_p(self):
+        """
+        Render the form fields as HTML table rows with Bootstrap styling.
+        """
+        context = {"form": self}
+        table_html = render_to_string("attendance_form.html", context)
+        return table_html

@@ -9,6 +9,7 @@ from simple_history.admin import SimpleHistoryAdmin
 from base.models import (
     Company,
     Department,
+    DynamicEmailConfiguration,
     JobPosition,
     JobRole,
     EmployeeShiftSchedule,
@@ -41,3 +42,4 @@ admin.site.register(RotatingShift)
 admin.site.register(RotatingShiftAssign)
 admin.site.register(ShiftRequest)
 admin.site.register(WorkTypeRequest)
+admin.site.register(DynamicEmailConfiguration)
