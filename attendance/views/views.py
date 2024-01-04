@@ -874,14 +874,16 @@ def activity_datetime(attendance_activity):
     in_day = attendance_activity.clock_in_date.day
     in_hour = attendance_activity.clock_in.hour
     in_minute = attendance_activity.clock_in.minute
+    in_seconds = attendance_activity.clock_in.second
     # out
     out_year = attendance_activity.clock_out_date.year
     out_month = attendance_activity.clock_out_date.month
     out_day = attendance_activity.clock_out_date.day
     out_hour = attendance_activity.clock_out.hour
     out_minute = attendance_activity.clock_out.minute
-    return datetime(in_year, in_month, in_day, in_hour, in_minute), datetime(
-        out_year, out_month, out_day, out_hour, out_minute
+    out_seconds = attendance_activity.clock_out.second
+    return datetime(in_year, in_month, in_day, in_hour, in_minute,in_seconds), datetime(
+        out_year, out_month, out_day, out_hour, out_minute,out_seconds
     )
 
 

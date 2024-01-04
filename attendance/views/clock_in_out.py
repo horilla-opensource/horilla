@@ -71,6 +71,7 @@ def clock_in_attendance_and_activity(
     minimum_hour,
     start_time,
     end_time,
+    in_datetime,
 ):
     """
     This method is used to create attendance activity or attendance when an employee clocks-in
@@ -92,7 +93,8 @@ def clock_in_attendance_and_activity(
         attendance_date=attendance_date,
         clock_in_date=date_today,
         shift_day=day,
-        clock_in=now,
+        clock_in=in_datetime,
+        in_datetime=in_datetime,
     ).save()
 
     # create attendance if not exist
@@ -130,6 +132,7 @@ def clock_in(request):
     This method is used to mark the attendance once per a day and multiple attendance activities.
     """
     employee, work_info = employee_exists(request)
+    datetime_now = datetime.now()
     if employee and work_info is not None:
         shift = work_info.shift_id
         date_today = date.today()
@@ -169,6 +172,7 @@ def clock_in(request):
             minimum_hour=minimum_hour,
             start_time=start_time_sec,
             end_time=end_time_sec,
+            in_datetime=datetime_now,
         )
         return HttpResponse(
             """
@@ -198,7 +202,7 @@ def clock_in(request):
     )
 
 
-def clock_out_attendance_and_activity(employee, date_today, now):
+def clock_out_attendance_and_activity(employee, date_today, now, out_datetime=None):
     """
     Clock out the attendance and activity
     args:
@@ -212,8 +216,9 @@ def clock_out_attendance_and_activity(employee, date_today, now):
     ).order_by("attendance_date", "id")
     if attendance_activities.exists():
         attendance_activity = attendance_activities.last()
-        attendance_activity.clock_out = now
+        attendance_activity.clock_out = out_datetime
         attendance_activity.clock_out_date = date_today
+        attendance_activity.out_datetime = out_datetime
         attendance_activity.save()
     attendance_activities = attendance_activities.filter(~Q(clock_out=None)).filter(
         attendance_date=attendance_activity.attendance_date
@@ -292,6 +297,7 @@ def clock_out(request):
     """
     This method is used to set the out date and time for attendance and attendance activity
     """
+    datetime_now = datetime.now()
     employee, work_info = employee_exists(request)
     shift = work_info.shift_id
     date_today = date.today()
@@ -314,7 +320,9 @@ def clock_out(request):
             attendance=attendance, start_time=start_time_sec, end_time=end_time_sec
         )
 
-    clock_out_attendance_and_activity(employee=employee, date_today=date_today, now=now)
+    clock_out_attendance_and_activity(
+        employee=employee, date_today=date_today, now=now, out_datetime=datetime_now
+    )
     return HttpResponse(
         """
               <button class="oh-btn oh-btn--success-outline mr-2" 

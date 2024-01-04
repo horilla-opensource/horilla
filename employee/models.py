@@ -215,31 +215,8 @@ class Employee(models.Model):
         at_work = 0
         forecasted_pending_hours = 0
         if attendance:
-            # geting the last attendance activity with clock out
-            last_activity = attendance.get_last_clock_out()
-            if not last_activity:
-                check_in = attendance.attendance_clock_in
-                check_in_date = attendance.attendance_clock_in_date
-                combined_check_in = datetime.combine(check_in_date, check_in)
-                at_work = (forecasted_check_out - combined_check_in).total_seconds()
-            else:
-                last_activity = attendance.get_last_clock_out(null_activity=True)
-                print(last_activity)
-                print('------------------------')
-                print('------------------------')
-                if not attendance.attendance_clock_out:
-                    at_work = attendance.at_work_second
-                    clock_in = last_activity.clock_in
-                    clock_in_date = last_activity.clock_in_date
-                    combined_last_in = datetime.combine(clock_in_date, clock_in)
-                    at_work = (
-                        forecasted_check_out - combined_last_in
-                    ).total_seconds() + at_work
-                    pass
-            min_hour = strtime_seconds(attendance.minimum_hour)
-            pending = (min_hour + 60) - at_work
-            forecasted_pending_hours = max(pending, 0)
-            # The duration is forecasted
+            at_work = attendance.get_at_work_from_activities()
+        
         return {
             "forecasted_at_work": format_time(at_work),
             "forecasted_pending_hours": format_time(forecasted_pending_hours),

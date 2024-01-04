@@ -7,6 +7,7 @@ This module is used to register models for recruitment app
 from collections.abc import Iterable
 import json
 import contextlib
+import datetime as dt
 from datetime import datetime, date, timedelta
 from django.db import models
 from django.db.models import Q
@@ -110,9 +111,11 @@ class AttendanceActivity(models.Model):
         on_delete=models.DO_NOTHING,
         verbose_name=_("Shift Day"),
     )
+    in_datetime = models.DateTimeField(null=True)
     clock_in_date = models.DateField(null=True, verbose_name=_("In Date"))
     clock_in = models.TimeField(verbose_name=_("Check In"))
     clock_out_date = models.DateField(null=True, verbose_name=_("Out Date"))
+    out_datetime = models.DateTimeField(null=True)
     clock_out = models.TimeField(null=True, verbose_name=_("Check Out"))
     objects = HorillaCompanyManager(
         related_company_field="employee_id__employee_work_info__company_id"
@@ -264,7 +267,29 @@ class Attendance(models.Model):
         ).order_by("id")
         return activities.last()
 
-    # return f"Attendance ID: {self.id}"  # Adjust the representation as needed
+    def get_at_work_from_activities(self):
+        """
+        This method is used to retun the at work calculated from the activities
+        """
+        activities = AttendanceActivity.objects.filter(
+            attendance_date=self.attendance_date, employee_id=self.employee_id
+        ).order_by("clock_in")
+        at_work_seconds = 0
+        now = datetime.now()
+        for activity in activities:
+            out_time = activity.clock_out
+            if out_time is None:
+                combined_out = datetime.combine(
+                    now, dt.time(hour=now.hour, minute=now.minute, second=now.second)
+                )
+            else:
+                combined_out = datetime.combine(activity.clock_out_date, out_time)
+            in_time = activity.clock_in
+            combined_in = datetime.combine(activity.clock_in_date, in_time)
+            diffs = combined_out - combined_in
+            at_work_seconds = at_work_seconds + diffs.total_seconds()
+        return at_work_seconds
+
     def hours_pending(self):
         """
         This method will returns difference between minimum_hour and attendance_worked_hour
