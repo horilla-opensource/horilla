@@ -222,6 +222,7 @@ class Candidate(models.Model):
     """
 
     choices = [("male", _("Male")), ("female", _("Female")), ("other", _("Other"))]
+    source_choices = [("application", _("Application Form")), ("software", _("Inside software")), ("other", _("Other"))]
     name = models.CharField(max_length=100, null=True, verbose_name=_("Name"))
     profile = models.ImageField(upload_to="recruitment/profile", null=True)
     portfolio = models.URLField(max_length=200, blank=True)
@@ -287,6 +288,9 @@ class Candidate(models.Model):
     )
     gender = models.CharField(
         max_length=15, choices=choices, null=True, verbose_name=_("Gender")
+    )
+    source = models.CharField(
+        max_length=20, choices=source_choices, null=True, blank=True, verbose_name=_("Source")
     )
     start_onboard = models.BooleanField(default=False, verbose_name=_("Start Onboard"))
     hired = models.BooleanField(default=False, verbose_name=_("Hired"))

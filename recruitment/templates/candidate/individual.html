@@ -251,8 +251,21 @@
                             <span>{% trans "Department" %}</span>
                           </span>
                           <span class="oh-profile__info-value"
-                            >{{candidate.recruitment_id.job_position_id.department_id}}</span
+                            >{{candidate.job_position_id.department_id}}</span
                           >
+                        </li>
+                        <li class="oh-profile__card-info-item">
+                          <span class="oh-profile__info-label mb-1">
+                            <ion-icon
+                              name="file-tray-stacked-outline"
+                            ></ion-icon>
+                            <span>{% trans "Source" %}</span>
+                          </span>
+                          {% if candidate.get_source_display != None %}
+                            <span class="oh-profile__info-value"
+                              >{{candidate.get_source_display}}</span
+                            >
+                          {% endif %}
                         </li>
                       </ul>
                     </div>
@@ -276,7 +289,7 @@
                             <span>{% trans "Job Position" %}</span>
                           </span>
                           <span class="oh-profile__info-value"
-                            >{{candidate.recruitment_id.job_position_id}}</span
+                            >{{candidate.job_position_id}}</span
                           >
                         </li>
                       </ul>

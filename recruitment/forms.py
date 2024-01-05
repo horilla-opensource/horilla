@@ -387,6 +387,7 @@ class ApplicationForm(RegistrationForm):
             "joining_date",
             "sequence",
             "offerletter_status",
+            "source",
         )
         widgets = {
             "recruitment_id": forms.TextInput(
