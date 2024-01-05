@@ -27,7 +27,7 @@ from django.contrib.auth.models import User
 from django.forms import DateInput, TextInput
 from django.utils.translation import gettext as _
 from django.utils.translation import gettext_lazy as trans
-from employee.models import Employee, EmployeeWorkInformation, EmployeeBankDetails
+from employee.models import Employee, EmployeeWorkInformation, EmployeeBankDetails, EmployeeNote
 from base.methods import reload_queryset
 
 
@@ -392,3 +392,25 @@ class BulkUpdateFieldForm(forms.Form):
             visible.field.widget.attrs[
                 "class"
             ] = "oh-select oh-select-2 select2-hidden-accessible oh-input w-100"
+
+
+class EmployeeNoteForm(ModelForm):
+    """
+    Form for EmployeeNote model
+    """
+
+    class Meta:
+        """
+        Meta class to add the additional info
+        """
+
+        model = EmployeeNote
+        exclude = (
+            "updated_by",
+        )
+        fields = "__all__"
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        field = self.fields["employee_id"]
+        field.widget = field.hidden_widget()

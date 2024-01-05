@@ -275,6 +275,19 @@
 						>
 					</li>
 					{% endif %}
+					{% if perms.employee.view_employeenote or request.user|check_manager:employee %}
+					<li class="oh-general__tab">
+						<a
+						hx-get={% url 'note-tab' employee.id %}
+						hx-target="#note_target"
+						data-action="general-tab"
+						data-target="#note_target"
+						class="oh-general__tab-link"
+						role="button"
+						>{% trans "Note" %}</a
+						>
+					</li>
+					{% endif %}
 				</ul>
 
 				<div
@@ -290,12 +303,21 @@
 				</div>
 
 				<div
-					class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
+				class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
+				id="note_target"
+				>
+				{% include "tabs/note_tab.html" %}
+				</div>
+
+				<div
+				  class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
+				  id="allowance_deduction"
+				>
+				</div>
+				<div class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
 					id="attendance_target"
 				 >
 				</div>
-
-				
 
 				<div
 				  class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"

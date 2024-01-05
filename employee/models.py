@@ -468,3 +468,22 @@ class EmployeeBankDetails(models.Model):
                         )
                     }
                 )
+
+
+class EmployeeNote(models.Model):
+    """
+    EmployeeNote model
+    """
+
+    employee_id = models.ForeignKey(Employee, on_delete=models.CASCADE, related_name="employee_name",)
+    title = models.CharField(max_length=50, null=True, verbose_name=_("Title"))
+    description = models.TextField(verbose_name=_("Description"))
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name=_("Created At"), null=True,)
+    updated_by = models.ForeignKey(Employee, on_delete=models.CASCADE)
+    objects = HorillaCompanyManager(
+        related_company_field="employee_id__employee_work_info__company_id"
+    )
+
+    def __str__(self) -> str:
+        return f"{self.description}"
+

@@ -231,7 +231,17 @@
 				</div>
 
 				<div
-					class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
+				class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
+				id="payroll"
+				>
+				{% include 'tabs/payroll-tab.html' %}
+				</div>
+				<div
+				  class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
+				  id="allowance_deduction"
+				>
+				</div>
+				<div class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
 					id="shift_target"
 				 >
 				</div>
@@ -284,7 +294,18 @@
 				 >
 					{% include 'tabs/leave-tab.html' %}
 				</div>
-				
+				<div
+				class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
+				id="attendance_target"
+				>
+				{% include 'tabs/note_tab.html' %}
+				</div>
+				<div
+					class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
+					id="leave"
+				 >
+					{% include 'tabs/leave-tab.html' %}
+				</div>
 				
 			</div>
 		</div>

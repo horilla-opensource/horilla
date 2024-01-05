@@ -72,12 +72,13 @@ from employee.forms import (
     EmployeeExportExcelForm,
     EmployeeForm,
     EmployeeBankDetailsForm,
+    EmployeeNoteForm,
     EmployeeWorkInformationForm,
     EmployeeWorkInformationUpdateForm,
     EmployeeBankDetailsUpdateForm,
     excel_columns,
 )
-from employee.models import Employee, EmployeeWorkInformation, EmployeeBankDetails
+from employee.models import Employee, EmployeeNote, EmployeeWorkInformation, EmployeeBankDetails
 from payroll.methods.payslip_calc import dynamic_attr
 from payroll.models.models import Allowance, Contract, Deduction
 from pms.models import Feedback
@@ -2117,3 +2118,105 @@ def employee_select_filter(request):
         context = {"employee_ids": employee_ids, "total_count": total_count}
 
         return JsonResponse(context)
+
+@login_required
+def note_tab(request, emp_id):
+    """
+    This function is used to view performance tab of an employee in employee individual & profile view.
+
+    Parameters:
+    request (HttpRequest): The HTTP request object.
+    emp_id (int): The id of the employee.
+
+    Returns: return note-tab template
+
+    """
+    # employee = Employee.objects.get(id=emp_id)
+    employee_obj = Employee.objects.get(id=emp_id)
+    notes = EmployeeNote.objects.filter(employee_id = emp_id)
+
+    return render(
+        request,
+        "tabs/note_tab.html",
+        {"employee": employee_obj, "notes": notes},
+    )
+
+
+@login_required
+@hx_request_required
+@manager_can_enter(perm="recruitment.add_stagenote")
+def add_note(request, emp_id=None):
+    """
+    This method renders template component to add candidate remark
+    """
+    form = EmployeeNoteForm(initial={"employee_id": emp_id})
+    if request.method == "POST":
+        form = EmployeeNoteForm(
+            request.POST,
+        )
+        if form.is_valid():
+            note = form.save(commit=False)
+            note.updated_by = request.user.employee_get
+            note.save()
+            messages.success(request, _("Note added successfully.."))
+            response = render(
+                request, "tabs/add_note.html", {"form": form}
+            )
+            return HttpResponse(
+                response.content.decode("utf-8") + "<script>location.reload();</script>"
+            )
+    return render(
+        request,
+        "tabs/add_note.html",
+        {
+            "note_form": form,
+        },
+    )
+
+
+@login_required
+@permission_required(perm="recruitment.change_stagenote")
+def employee_note_update(request, note_id):
+    """
+    This method is used to update the note
+    Args:
+        id : stage note instance id
+    """
+
+    note = EmployeeNote.objects.get(id=note_id)
+
+    form = EmployeeNoteForm(instance=note)
+    if request.POST:
+        form = EmployeeNoteForm(request.POST, instance=note)
+        if form.is_valid():
+            form.save()
+            messages.success(request, _("Note updated successfully..."))
+            response = render(
+                request,
+                "tabs/update_note.html",
+                {"form": form},
+            )
+            return HttpResponse(
+                response.content.decode("utf-8") + "<script>location.reload();</script>"
+            )
+    return render(
+        request,
+        "tabs/update_note.html",
+        {
+            "form": form,
+        },
+    )
+
+@login_required
+def employee_note_delete(request, note_id):
+    """
+    This method is used to delete the note
+    Args:
+        id : stage note instance id
+    """
+
+    note = EmployeeNote.objects.get(id=note_id)
+    note.delete()
+    messages.success(request, _("Note deleted successfully..."))
+    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+
