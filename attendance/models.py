@@ -721,7 +721,7 @@ class AttendanceLateComeEarlyOut(models.Model):
     objects = HorillaCompanyManager(
         related_company_field="employee_id__employee_work_info__company_id"
     )
-    created_at = models.DateTimeField(auto_now_add=True,null=True)
+    created_at = models.DateTimeField(auto_now_add=True, null=True)
 
     def get_penalties_count(self):
         """
@@ -802,9 +802,10 @@ class PenaltyAccount(models.Model):
         null=True,
     )
     late_early_id = models.ForeignKey(
-        AttendanceLateComeEarlyOut,
-        on_delete=models.CASCADE,
-        null=True,
+        AttendanceLateComeEarlyOut, on_delete=models.CASCADE, null=True, editable=False
+    )
+    leave_request_id = models.ForeignKey(
+        LeaveRequest, null=True, on_delete=models.CASCADE, editable=False
     )
     leave_type_id = models.ForeignKey(
         LeaveType,
@@ -816,7 +817,7 @@ class PenaltyAccount(models.Model):
     minus_leaves = models.FloatField(default=0.0, null=True)
     deduct_from_carry_forward = models.BooleanField(default=False)
     penalty_amount = models.FloatField(default=0.0, null=True)
-    created_at = models.DateTimeField(auto_now_add=True,null=True)
+    created_at = models.DateTimeField(auto_now_add=True, null=True)
 
     def clean(self) -> None:
         super().clean()
@@ -835,15 +836,24 @@ def create_initial_stage(sender, instance, created, **kwargs):
     """
     This is post save method, used to create initial stage for the recruitment
     """
-
+    # only work when creating
     if created:
         penalty_amount = instance.penalty_amount
         if penalty_amount:
             from payroll.models.models import Deduction
 
             penalty = Deduction()
-            penalty.title = f"{instance.late_early_id.get_type_display()} penalty"
-            penalty.one_time_date = instance.late_early_id.attendance_id.attendance_date
+            if instance.late_early_id:
+                penalty.title = f"{instance.late_early_id.get_type_display()} penalty"
+                penalty.one_time_date = (
+                    instance.late_early_id.attendance_id.attendance_date
+                )
+            elif instance.leave_request_id:
+                penalty.title = f"Leave penalty {instance.leave_request_id.end_date}"
+                penalty.one_time_date = instance.leave_request_id.end_date
+            else:
+                penalty.title = f"Penalty on {datetime.today()}"
+                penalty.one_time_date = datetime.today()
             penalty.include_active_employees = False
             penalty.is_fixed = True
             penalty.amount = instance.penalty_amount
@@ -857,9 +867,13 @@ def create_initial_stage(sender, instance, created, **kwargs):
             ).first()
             unit = round(instance.minus_leaves * 2) / 2
             if not instance.deduct_from_carry_forward:
-                available.available_days = max(0, (available.total_leave_days - unit))
+                available.available_days = max(0, (available.available_days - unit))
             else:
+                print("=================")
+                print(available.carryforward_days)
+                print(available.carryforward_days-unit)
                 available.carryforward_days = max(
                     0, (available.carryforward_days - unit)
                 )
+                
             available.save()

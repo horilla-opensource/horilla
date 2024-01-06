@@ -1,5 +1,6 @@
 {% load i18n %}
 {% load static %}
+{% load basefilters %}
 {% include 'filter_tags.html' %}
 {% if not request.GET.dashboard %}
 <div class="d-flex flex-row-reverse">
@@ -73,6 +74,7 @@
                     <div class="oh-sticky-table__th" hx-get="{% url 'request-filter' %}?{{pd}}&sortby=requested_days" hx-target="#leaveRequest">{% trans "Requested Days" %}</div>
                     <div class="oh-sticky-table__th" hx-get="{% url 'request-filter' %}?{{pd}}&sortby=status" hx-target="#leaveRequest">{% trans "Status" %}</div>
                     {% if  not dashboard %}
+                        <div class="oh-sticky-table__th" >{% trans "Penalties" %}</div>
                         <div class="oh-sticky-table__th">{% trans "Options" %}</div>
                         <div class="oh-sticky-table__th">{% trans "Actions" %}</div>
                     {% endif %}
@@ -111,6 +113,11 @@
                     <div class="oh-sticky-table__td {% if leave_request.status == 'cancelled' %} diff-cell{% endif %}">{{leave_request.requested_days}}</div>
                     <div class="oh-sticky-table__td {% if leave_request.status == 'cancelled' %} diff-cell{% endif %}">{{leave_request.get_status_display}}</div>
                     {% if  not dashboard %}
+                    <div class="oh-sticky-table__td">
+                        {% if leave_request.get_penalties_count %}
+                            <div data-target="#penaltyViewModal" data-toggle="oh-modal-toggle" hx-get="{% url "view-penalties" %}?leave_request_id={{leave_request.id}}" hx-target="#penaltyViewModalBody" align="center" style="background-color: rgba(229, 79, 56, 0.036); border: 2px solid rgb(229, 79, 56); border-radius: 18px; padding: 10px; font-weight: bold; width: 85%;">Penalties :{{leave_request.get_penalties_count}}</div>
+                        {% endif %}
+                    </div>
                     <div class="oh-sticky-table__td" onclick="event.stopPropagation()">
                         <div class="oh-btn-group" >
                             {% if leave_request.status == 'requested' %}
@@ -144,6 +151,18 @@
                     </div>
                     <div class="oh-sticky-table__td" onclick="event.stopPropagation()">
                         <div class="oh-btn-group">
+                            {% if request.user|is_reportingmanager or perms.attendance.chanage_penaltyaccount %}
+                            <button 
+                                data-toggle="oh-modal-toggle"
+                                data-target="#penaltyModal"
+                                hx-target="#penaltyModalBody"
+                                hx-get="{% url "leave-cut-penalty" leave_request.id %}"
+                                type='submit' 
+                                class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100" 
+                                title="{% trans 'Penalty' %}">
+                                <ion-icon name="information-circle-outline"></ion-icon>            
+                            </button>
+                            {% endif %}
                             <button  class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Edit' %}" data-toggle="oh-modal-toggle"
                                 data-target="#editModal2" hx-get="{% url 'request-update' leave_request.id %}"
                                 hx-target="#updateForm"><ion-icon name="create-outline"></ion-icon></button>
@@ -219,6 +238,24 @@
     </nav>
 </div>
 {% endif %}
+<div class="oh-modal" id="penaltyModal" role="dialog" aria-hidden="true">
+    <div class="oh-modal__dialog" style="max-width: 550px">
+      <div class="oh-modal__dialog-header">
+        <button type="button" class="oh-modal__close" aria-label="Close"><ion-icon name="close-outline"></ion-icon></button>
+      </div>
+
+      <div class="oh-modal__dialog-body" id="penaltyModalBody"></div>
+    </div>
+  </div>
+  <div class="oh-modal" id="penaltyViewModal" role="dialog" aria-hidden="true">
+    <div class="oh-modal__dialog" style="max-width: 1050px">
+      <div class="oh-modal__dialog-header">
+        <button type="button" class="oh-modal__close" aria-label="Close"><ion-icon name="close-outline"></ion-icon></button>
+      </div>
+
+      <div class="oh-modal__dialog-body" id="penaltyViewModalBody"></div>
+    </div>
+  </div>
 <script>
     $(".all-leave-requests").change(function (e) {
       var is_checked = $(this).is(":checked");

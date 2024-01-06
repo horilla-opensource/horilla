@@ -28,7 +28,9 @@ def cut_available_leave(request, instance_id):
         if form.is_valid():
             penalty_instance = form.instance
             penalty = PenaltyAccount()
+            # late come early out id
             penalty.late_early_id = instance
+            penalty.deduct_from_carry_forward = penalty_instance.deduct_from_carry_forward
             penalty.employee_id = instance.employee_id
             penalty.leave_type_id = penalty_instance.leave_type_id
             penalty.minus_leaves = penalty_instance.minus_leaves
@@ -50,7 +52,4 @@ def view_penalties(request):
     This method is used to filter or view the penalties
     """
     records = PenaltyFilter(request.GET).qs
-    print("-------------")
-    print(records)
-    print("-------------")
     return render(request, "attendance/penalty/penalty_view.html", {"records": records})

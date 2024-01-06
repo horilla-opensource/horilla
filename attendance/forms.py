@@ -692,7 +692,6 @@ class PenaltyAccountForm(ModelForm):
     class Meta:
         model = PenaltyAccount
         fields = "__all__"
-        exclude = ["late_early_id"]
 
 
 class LateComeEarlyOutExportForm(forms.Form):

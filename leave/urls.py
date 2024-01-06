@@ -290,7 +290,6 @@ urlpatterns = [
         views.user_request_select_filter,
         name="user-request-select-filter",
     ),
-    
     # path(
     #     "leave-type-widget-filter",
     #     views.leave_type_widget_filter,
@@ -301,4 +300,8 @@ urlpatterns = [
         views.employee_leave_details,
         name="employee-leave-details",
     ),
+    path(
+        "cut-penalty/<int:instance_id>/", views.cut_available_leave, name="leave-cut-penalty"
+    ),
+    path("view-penalty/<int:instance_id>/", views.view_penalties, name="leave-view-penalty"),
 ]

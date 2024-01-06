@@ -165,12 +165,13 @@ class LeaveType(models.Model):
     )
     exclude_company_leave = models.CharField(max_length=30, choices=CHOICES)
     exclude_holiday = models.CharField(max_length=30, choices=CHOICES)
-    company_id = models.ForeignKey(Company,null=True, editable=False, on_delete=models.PROTECT)
-    objects = HorillaCompanyManager(
-        related_company_field="company_id"
+    company_id = models.ForeignKey(
+        Company, null=True, editable=False, on_delete=models.PROTECT
     )
+    objects = HorillaCompanyManager(related_company_field="company_id")
+
     class Meta:
-        ordering = ['-id'] 
+        ordering = ["-id"]
 
     def get_avatar(self):
         """
@@ -193,10 +194,11 @@ class Holiday(models.Model):
     start_date = models.DateField(verbose_name=_("Start Date"))
     end_date = models.DateField(null=True, blank=True, verbose_name=_("End Date"))
     recurring = models.BooleanField(default=False, verbose_name=_("Recurring"))
-    company_id = models.ForeignKey(Company,null=True, editable=False, on_delete=models.PROTECT)
-    objects = HorillaCompanyManager(
-        related_company_field="company_id"
+    company_id = models.ForeignKey(
+        Company, null=True, editable=False, on_delete=models.PROTECT
     )
+    objects = HorillaCompanyManager(related_company_field="company_id")
+
     def __str__(self):
         return self.name
 
@@ -206,11 +208,12 @@ class CompanyLeave(models.Model):
         max_length=100, choices=WEEKS, blank=True, null=True
     )
     based_on_week_day = models.CharField(max_length=100, choices=WEEK_DAYS)
-    company_id = models.ForeignKey(Company,null=True, editable=False, on_delete=models.PROTECT)
-    objects = models.Manager()
-    objects = HorillaCompanyManager(
-        related_company_field="company_id"
+    company_id = models.ForeignKey(
+        Company, null=True, editable=False, on_delete=models.PROTECT
     )
+    objects = models.Manager()
+    objects = HorillaCompanyManager(related_company_field="company_id")
+
     class Meta:
         unique_together = ("based_on_week", "based_on_week_day")
 
@@ -250,6 +253,7 @@ class AvailableLeave(models.Model):
     objects = HorillaCompanyManager(
         related_company_field="employee_id__employee_work_info__company_id"
     )
+
     class Meta:
         unique_together = ("leave_type_id", "employee_id")
 
@@ -419,8 +423,15 @@ class LeaveRequest(models.Model):
     objects = HorillaCompanyManager(
         related_company_field="employee_id__employee_work_info__company_id"
     )
+
     def __str__(self):
         return f"{self.employee_id} | {self.leave_type_id} | {self.status}"
+
+    def get_penalties_count(self):
+        """
+        This method is used to return the total penalties in the late early instance
+        """
+        return self.penaltyaccount_set.count()
 
     def requested_dates(self):
         """
@@ -588,6 +599,7 @@ class LeaveAllocationRequest(models.Model):
     objects = HorillaCompanyManager(
         related_company_field="employee_id__employee_work_info__company_id"
     )
+
     def __str__(self):
         return f"{self.employee_id}| {self.leave_type_id}| {self.id}"
 
