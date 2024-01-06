@@ -810,6 +810,7 @@ class Allowance(models.Model):
     company_id = models.ForeignKey(
         Company, null=True, editable=False, on_delete=models.PROTECT
     )
+    only_show_under_employee = models.BooleanField(default=False,editable=False)
     objects = HorillaCompanyManager()
 
     class Meta:
@@ -1101,6 +1102,7 @@ class Deduction(models.Model):
     company_id = models.ForeignKey(
         Company, null=True, editable=False, on_delete=models.PROTECT
     )
+    only_show_under_employee = models.BooleanField(default=False,editable=False)
     objects = HorillaCompanyManager()
 
     def clean(self):

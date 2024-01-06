@@ -223,7 +223,7 @@ def view_allowance(request):
     """
     This method is used render template to view all the allowance instances
     """
-    allowances = payroll.models.models.Allowance.objects.all()
+    allowances = payroll.models.models.Allowance.objects.exclude(only_show_under_employee=True)
     allowance_filter = AllowanceFilter(request.GET)
     allowances = paginator_qry(allowances, request.GET.get("page"))
     allowance_ids = json.dumps([instance.id for instance in allowances.object_list])
@@ -268,7 +268,7 @@ def filter_allowance(request):
     Filter and retrieve a list of allowances based on the provided query parameters.
     """
     query_string = request.GET.urlencode()
-    allowances = AllowanceFilter(request.GET).qs
+    allowances = AllowanceFilter(request.GET).qs.exclude(only_show_under_employee=True)
     list_view = "payroll/allowance/list_allowance.html"
     card_view = "payroll/allowance/card_allowance.html"
     template = card_view
@@ -354,7 +354,7 @@ def view_deduction(request):
     This method is used render template to view all the deduction instances
     """
 
-    deductions = payroll.models.models.Deduction.objects.all()
+    deductions = payroll.models.models.Deduction.objects.exclude(only_show_under_employee=True)
     deduction_filter = DeductionFilter(request.GET)
     deductions = paginator_qry(deductions, request.GET.get("page"))
     deduction_ids = json.dumps([instance.id for instance in deductions.object_list])
@@ -398,7 +398,7 @@ def filter_deduction(request):
     This method is used search the deduction
     """
     query_string = request.GET.urlencode()
-    deductions = DeductionFilter(request.GET).qs
+    deductions = DeductionFilter(request.GET).qs.exclude(only_show_under_employee=True)
     list_view = "payroll/deduction/list_deduction.html"
     card_view = "payroll/deduction/card_deduction.html"
     template = card_view
