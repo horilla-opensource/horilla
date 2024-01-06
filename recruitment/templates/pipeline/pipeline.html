@@ -286,6 +286,7 @@
                     data-sequence = "{{cand.sequence}}"
                     data-candidate="{{cand.name}}"
                     data-job-position ="{{cand.job_position_id}}"
+                    
                   >
                     <div class="oh-sticky-table__sd">
                       <div class="centered-div">
@@ -321,7 +322,7 @@
                     <div class="oh-sticky-table__td oh-table-config__td">
                       {{cand.mobile}}
                     </div>
-                    {% if request.user|stage_manages:rec or perms.recruitment.change_candidate %}
+                    {% if request.user|stage_manages:rec or perms.recruitment.add_candidaterating %}
                     <div class="oh-sticky-table__td oh-table-config__td" onclick="event.stopPropagation()">
                       {% with request.user.employee_get.candidate_rating.all as candidate_ratings  %}
                         {% if candidate_ratings|has_candidate_rating:cand %} 
@@ -345,7 +346,7 @@
                             <div class="oh-rate" onclick="$(this).parents().closest('form').find('button').click()">
                               {% for i in "54321" %}
                               <input type="radio" id="star{{i}}{{cand.id}}" name="rating" class="rating-radio" value="{{i}}" />
-                              <label for="star{{i}}{{cand.id}}" title="5 Stars">5 {% trans "Stars" %}</label>
+                              <label for="star{{i}}{{cand.id}}" title="{{i}} Stars">5 {% trans "Stars" %}</label>
                               {% endfor %}
                             </div>
                             <button type="submit" hidden="true"></button>

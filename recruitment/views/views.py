@@ -161,7 +161,7 @@ def recruitment_view(request):
     if not request.GET:
         request.GET.copy().update({"is_active": "on"})
     form = RecruitmentCreationForm()
-    queryset = Recruitment.objects.all()
+    queryset = Recruitment.objects.filter(is_active = True)
     if queryset.exists():
         template = "recruitment/recruitment_view.html"
     else:

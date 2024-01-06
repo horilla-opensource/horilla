@@ -3,6 +3,11 @@
 {% load static %}
 {% load i18n %}
 
+<style>
+  .oh-rate:not(:checked)>label:hover, .oh-rate:not(:checked)>label:hover~label{
+    color: #ccc
+  }
+</style>
 <div class="oh-wrapper">
   {% include 'candidate/candidate_nav.html' %}
   <div class="oh-checkpoint-badge mb-2" id="selectedInstances" data-ids="[]" data-clicked="" style="display:none;" >

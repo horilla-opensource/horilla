@@ -160,7 +160,7 @@
               >{% trans "History" %}</a
             >
           </li>
-          {% if request.user|stage_manages:rec or perms.recruitment.change_candidate %}
+          {% if request.user|stage_manages:candidate.recruitment_id or perms.recruitment.view_candidate %}
           <li class="oh-general__tab">
             <a
               href="#"

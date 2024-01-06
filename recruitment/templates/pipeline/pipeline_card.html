@@ -16,6 +16,9 @@
     padding: 10px !important;
     height: 50px !important; /* Adjust the height value as needed */
 }
+.oh-rate {
+  height:auto;
+}
 </style>
 {% include 'pipeline/nav.html'%} 
 <div class="oh-wrapper oh-tabs">
@@ -25,7 +28,7 @@
 
 <div id="update-message"></div>
 {% for rec in recruitment %}
-{% if request.user|stage_manages:rec or perms.recruitment.view_stage %}
+{% if request.user|stage_manages:rec or perms.recruitment.view_recruitment %}
 <div class="oh-tabs__content " id="tab_rec_{{rec.id}}">
   <div class="ui-sortable">
     <div class="oh-kanban ui-sortable drop-target">
@@ -159,22 +162,57 @@
           style="cursor: pointer;overflow: visible;"
           data-candidate = "{{cand.name}}"
           data-job-position ="{{cand.job_position_id}}"
-
+          onclick="window.location.href = `{% url 'candidate-view-individual' cand.id %}`"
         >
-          <div class="oh-kanban__card-head">
-            <div class="oh-profile oh-profile--md">
-              <div class="oh-profile__avatar mr-1">
+          <div class="oh-kanban__card-head align-items-baseline pb-0">
+            <div class="oh-profile oh-profile--md align-items-baseline">
+              <div class="oh-profile__avatar mr-2">
                 <img
                   src="{{cand.get_avatar}}"
-                  class="oh-profile__image"
-                  alt="Sinan"
+                  class="oh-profile__image d-block mt-3"
+                  alt=""
                 />
               </div>
+              <div>
               <span
                 class="oh-profile__name oh-text--dark"
                 data-type="label"
                 >{{cand}}</span
               >
+              {% if request.user|stage_manages:rec or perms.recruitment.add_candidaterating %}
+                {% with request.user.employee_get.candidate_rating.all as candidate_ratings  %}
+                  {% if candidate_ratings|has_candidate_rating:cand %} 
+                  <form hx-swap="none" hx-post='{% url "update-candidate-rating" cand.id %}' method="post">
+                    {% csrf_token %}
+                    <div class="d-block mb-0">                           
+                      <div class="oh-rate" onclick="event.stopPropagation();$(this).parents().closest('form').find('button').click()">
+                        {% for i in "54321" %}
+                        <input type="radio" id="star{{i}}{{cand.id}}" name="rating" class="rating-radio" value="{{i}}" {% if candidate_ratings|rating:cand == i %} checked {% endif %} />
+                        <label for="star{{i}}{{cand.id}}" title="{{i}} Stars">5 {% trans "Stars" %}</label>
+                        {% endfor %}
+                      </div>
+                      <button type="submit"  hidden="true" onclick="event.stopPropagation()"></button>
+                      <span id="rating-radio-error"></span>
+                    </div>
+                  </form>
+                  {% else %}
+                  <form hx-swap="none" hx-post='{% url "create-candidate-rating" cand.id %}' method="post">
+                    {% csrf_token %}
+                    <div class="d-block mb-0">                           
+                      <div class="oh-rate" onclick="event.stopPropagation();$(this).parents().closest('form').find('button').click()">
+                        {% for i in "54321" %}
+                        <input type="radio" id="star{{i}}{{cand.id}}" name="rating" class="rating-radio" value="{{i}}" />
+                        <label for="star{{i}}{{cand.id}}" title="{{i}} Stars">5 {% trans "Stars" %}</label>
+                        {% endfor %}
+                      </div>
+                      <button type="submit" hidden="true" onclick="event.stopPropagation()"></button>
+                      <span id="rating-radio-error"></span>
+                    </div>
+                  </form>
+                  {% endif %}
+                {% endwith %}
+              {% endif %}
+              </div>
             </div>
             <div class="oh-kanban__card-actions oh-kanban__dropdown">
               <button

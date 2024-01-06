@@ -9,6 +9,8 @@ from django.template.defaultfilters import register
 from django import template
 from django.contrib.auth.models import User
 
+from recruitment.models import CandidateRating
+
 # from django.forms.boundfield
 
 register = template.Library()
@@ -107,3 +109,15 @@ def has_candidate_rating(candidate_ratings, cand):
 def rating(candidate_ratings,cand):
     rating = candidate_ratings.filter(candidate_id=cand.id).first().rating
     return str(rating)
+
+@register.filter(name='avg_rating')
+def avg_rating(candidate_ratings,cand):
+    ratings = CandidateRating.objects.filter(candidate_id=cand.id)
+    rating_list = []
+    avg_rate = 0
+    for rating in ratings:
+        rating_list.append(rating.rating)
+    if len(rating_list) != 0:
+        avg_rate = round(sum(rating_list) / len(rating_list))    
+
+    return str(avg_rate)

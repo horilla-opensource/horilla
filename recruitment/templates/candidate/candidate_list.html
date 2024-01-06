@@ -1,5 +1,5 @@
 {% load basefilters %}
-{% load i18n %}{% load static %}
+{% load i18n %}{% load static %} {% load recruitmentfilters %}
 {% if messages %}
 <div class="oh-wrapper">
   {% for message in messages %}
@@ -37,6 +37,7 @@
         <div class="oh-sticky-table__th" hx-target='#section' hx-get="{% url 'search-candidate' %}?{{pd}}&orderby=name&view=list">{% trans "Candidates" %}</div>
         <div class="oh-sticky-table__th">{% trans "Email" %}</div>
         <div class="oh-sticky-table__th">{% trans "Phone" %}</div>
+        <div class="oh-sticky-table__th">{% trans "Rating" %}</div>
         <div class="oh-sticky-table__th">{% trans "Recruitment" %}</div>
         <div class="oh-sticky-table__th">{% trans "Job Position" %}</div>
         <div class="oh-sticky-table__th">{% trans "Resume" %}</div>
@@ -77,6 +78,21 @@
 
         <a href="{% url 'candidate-view-individual' cand.id %}" style="color: inherit;text-decoration: none;" class="oh-sticky-table__td ">{{cand.email}}</a>
         <a href="{% url 'candidate-view-individual' cand.id %}" style="color: inherit;text-decoration: none;" class="oh-sticky-table__td">{{cand.mobile}}</a>
+        <a href="{% url 'candidate-view-individual' cand.id %}" style="color: inherit;text-decoration: none;" class="oh-sticky-table__td">
+          {% with request.user.employee_get.candidate_rating.all as candidate_ratings  %}
+            <form >
+              <div class="d-block mb-0">                           
+                <div class="oh-rate" onmouseenter="event.stopPropagation()">
+                  {% for i in "54321" %}
+                  <input type="radio" id="star{{i}}{{cand.id}}" name="rating" class="rating-radio" value="{{i}}" disabled {% if cand.candidate_rating.all|avg_rating:cand == i %} checked {% endif %} />
+                  <label for="star{{i}}{{cand.id}}" >5 {% trans "Stars" %}</label>
+                  {% endfor %}
+                </div>
+                <span id="rating-radio-error"></span>
+              </div>
+            </form>
+          {% endwith %}
+        </a>
         <a href="{% url 'candidate-view-individual' cand.id %}" style="color: inherit;text-decoration: none;"
           class="oh-sticky-table__td">{{cand.recruitment_id}}</a>
         <a href="{% url 'candidate-view-individual' cand.id %}" style="color: inherit;text-decoration: none;"
