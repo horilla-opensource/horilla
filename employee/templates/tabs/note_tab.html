@@ -1,4 +1,4 @@
-{% load static %}{% load i18n %}
+{% load static %}{% load i18n %} {% load basefilters %}
 {% if notes != '' %}
 <span id="addnote" style="cursor: pointer;">
     <button
@@ -26,7 +26,7 @@
           hx-target="#modalContent"
           >{{forloop.counter}}. {{note.title}}</span
         >
-        {% if perms.employee.delete_employeenote %}
+        {% if perms.employee.delete_employeenote or request.user|is_reportingmanager %}
         <a
           title="{% trans 'Delete' %}"
           href="{% url 'employee-note-delete' note.id %}"

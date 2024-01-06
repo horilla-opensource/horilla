@@ -2120,6 +2120,7 @@ def employee_select_filter(request):
         return JsonResponse(context)
 
 @login_required
+@manager_can_enter(perm="employee.view_employeenote")
 def note_tab(request, emp_id):
     """
     This function is used to view performance tab of an employee in employee individual & profile view.
@@ -2144,7 +2145,7 @@ def note_tab(request, emp_id):
 
 @login_required
 @hx_request_required
-@manager_can_enter(perm="recruitment.add_stagenote")
+@manager_can_enter(perm="employee.add_employeenote")
 def add_note(request, emp_id=None):
     """
     This method renders template component to add candidate remark
@@ -2175,7 +2176,7 @@ def add_note(request, emp_id=None):
 
 
 @login_required
-@permission_required(perm="recruitment.change_stagenote")
+@manager_can_enter(perm="employee.change_employeenote")
 def employee_note_update(request, note_id):
     """
     This method is used to update the note
@@ -2208,6 +2209,7 @@ def employee_note_update(request, note_id):
     )
 
 @login_required
+@manager_can_enter(perm="employee.delete_employeenote")
 def employee_note_delete(request, note_id):
     """
     This method is used to delete the note
