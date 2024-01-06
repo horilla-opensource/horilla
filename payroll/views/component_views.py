@@ -223,7 +223,9 @@ def view_allowance(request):
     """
     This method is used render template to view all the allowance instances
     """
-    allowances = payroll.models.models.Allowance.objects.exclude(only_show_under_employee=True)
+    allowances = payroll.models.models.Allowance.objects.exclude(
+        only_show_under_employee=True
+    )
     allowance_filter = AllowanceFilter(request.GET)
     allowances = paginator_qry(allowances, request.GET.get("page"))
     allowance_ids = json.dumps([instance.id for instance in allowances.object_list])
@@ -354,7 +356,9 @@ def view_deduction(request):
     This method is used render template to view all the deduction instances
     """
 
-    deductions = payroll.models.models.Deduction.objects.exclude(only_show_under_employee=True)
+    deductions = payroll.models.models.Deduction.objects.exclude(
+        only_show_under_employee=True
+    )
     deduction_filter = DeductionFilter(request.GET)
     deductions = paginator_qry(deductions, request.GET.get("page"))
     deduction_ids = json.dumps([instance.id for instance in deductions.object_list])
@@ -840,3 +844,20 @@ def send_slip(request):
     mail_thread.start()
     messages.info(request, "Mail processing")
     return redirect(view_payslip)
+
+
+@login_required
+@permission_required("payroll.add_allowance")
+def add_bonus(request):
+    print("========================================")
+    print(request.GET)
+    print("========================================")
+    employee_id = request.GET["employee_id"]
+    form = forms.BonusForm(initial={"employee_id": employee_id})
+    if request.method == "POST":
+        form = forms.BonusForm(request.POST, initial={"employee_id": employee_id})
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Bonus Added")
+            return HttpResponse("<script>window.location.reload()</script>")
+    return render(request, "payroll/bonus/form.html", {"form": form,"employee_id":employee_id})

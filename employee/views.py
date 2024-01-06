@@ -444,6 +444,7 @@ def allowances_deductions_tab(request, emp_id):
         "active_contracts": active_contracts,
         "allowances": employee_allowances if employee_allowances else None,
         "deductions": employee_deductions if employee_deductions else None,
+        "employee":employee,
     }
     return render(request, "tabs/allowance_deduction-tab.html", context=context)
 

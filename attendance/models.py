@@ -859,7 +859,9 @@ def create_initial_stage(sender, instance, created, **kwargs):
             penalty.amount = instance.penalty_amount
             penalty.only_show_under_employee = True
             penalty.save()
+            penalty.include_active_employees = False
             penalty.specific_employees.add(instance.employee_id)
+            penalty.save()
 
         if instance.leave_type_id and instance.minus_leaves:
             available = instance.employee_id.available_leave.filter(
@@ -869,9 +871,6 @@ def create_initial_stage(sender, instance, created, **kwargs):
             if not instance.deduct_from_carry_forward:
                 available.available_days = max(0, (available.available_days - unit))
             else:
-                print("=================")
-                print(available.carryforward_days)
-                print(available.carryforward_days-unit)
                 available.carryforward_days = max(
                     0, (available.carryforward_days - unit)
                 )

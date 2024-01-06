@@ -10,12 +10,12 @@ from django.template.loader import render_to_string
 from horilla_widgets.forms import HorillaForm
 from horilla_widgets.widgets.horilla_multi_select_field import HorillaMultiSelectField
 from horilla_widgets.widgets.select_widgets import HorillaMultiSelectWidget
-from base.forms import ModelForm
+from base.forms import Form, ModelForm
 from employee.models import Employee
 from employee.filters import EmployeeFilter
 from payroll.models import tax_models as models
 from payroll.widgets import component_widgets as widget
-from payroll.models.models import Contract
+from payroll.models.models import Allowance, Contract
 import payroll.models.models
 from base.methods import reload_queryset
 
@@ -309,3 +309,40 @@ class ContractExportFieldForm(forms.Form):
             "contract_status",
         ],
     )
+
+
+class BonusForm(Form):
+    """
+    Bonus Creating Form
+    """
+    title = forms.CharField(max_length=100)
+    date = forms.DateField(widget=forms.DateInput())
+    employee_id = forms.IntegerField(label="Employee",widget=forms.HiddenInput())
+    amount = forms.DecimalField(label="Amount")
+
+    def save(self, commit=True):
+        title = self.cleaned_data["title"]
+        date = self.cleaned_data["date"]
+        employee_id = self.cleaned_data["employee_id"]
+        amount = self.cleaned_data["amount"]
+
+        bonus = Allowance()
+        bonus.title = title
+        bonus.one_time_date = date
+        bonus.only_show_under_employee = True
+        bonus.amount = amount
+        bonus.is_fixed = True
+        bonus.save()
+        bonus.include_active_employees = False
+        bonus.specific_employees.set([employee_id])
+        bonus.save()
+
+        return bonus
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field_name, field in self.fields.items():
+            field.widget.attrs.update({"class": "oh-input w-100"})
+        self.fields["date"].widget = forms.DateInput(
+            attrs={"type": "date", "class": "oh-input w-100"}
+        )
