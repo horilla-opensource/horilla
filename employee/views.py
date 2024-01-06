@@ -1096,7 +1096,8 @@ def employee_filter_view(request):
     """
     previous_data = request.GET.urlencode()
     field = request.GET.get("field")
-    employees = EmployeeFilter(request.GET).qs
+    queryset = Employee.objects.filter()
+    employees = EmployeeFilter(request.GET,queryset=queryset).qs
     if request.GET.get("is_active") != "False":
         employees = employees.filter(is_active=True)
     page_number = request.GET.get("page")
@@ -1325,11 +1326,20 @@ def employee_archive(request, obj_id):
     employee = Employee.objects.get(id=obj_id)
     employee.is_active = not employee.is_active
     employee.employee_user_id.is_active = not employee.is_active
-    employee.save()
+    save = True
     message = "Employee un-archived"
     if not employee.is_active:
-        message = _("Employee archived")
-    messages.success(request, message)
+        result = employee.get_archive_condition()
+        if result:
+            save = False
+        else:
+            message = _("Employee archived")
+    if save:
+        employee.save()
+        messages.success(request, message)
+    else:
+        related_models = ", ".join(model for model in result.get("related_models"))
+        messages.warning(request, _(f"Can't archive.Employee assigned as {related_models}"))
     return HttpResponseRedirect(request.META.get("HTTP_REFERER"))
 
 
