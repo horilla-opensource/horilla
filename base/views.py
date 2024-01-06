@@ -3208,11 +3208,15 @@ def get_date_format(request):
         for data in info:
             employee_company = data.company_id
         company_name = Company.objects.filter(company=employee_company)
-        emp_company = company_name.first()
-
-        # Access the date_format attribute directly
-        date_format = emp_company.date_format
+        if company_name:
+            emp_company = company_name.first()
+            # Access the date_format attribute directly
+            date_format = emp_company.date_format
+        else:
+            # Giving default format
+            date_format = "MMM. D, YYYY"
     else:
+        # Giving default format
         date_format = "MMM. D, YYYY"
     # Return the date format as JSON response
     return JsonResponse({"selected_format": date_format})
@@ -3268,11 +3272,16 @@ def get_time_format(request):
         for data in info:
             employee_company = data.company_id
         company_name = Company.objects.filter(company=employee_company)
-        emp_company = company_name.first()
+        if company_name:
+            emp_company = company_name.first()
 
-        # Access the date_format attribute directly
-        time_format = emp_company.time_format
+            # Access the date_format attribute directly
+            time_format = emp_company.time_format
+        else:
+            # Giving default format
+            time_format = "hh:mm A"
     else:
+        # Giving default format
         time_format = "hh:mm A"
     # Return the date format as JSON response
     return JsonResponse({"selected_format": time_format})
