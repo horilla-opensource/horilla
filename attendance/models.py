@@ -12,12 +12,21 @@ from datetime import datetime, date, timedelta
 from django.db import models
 from django.db.models import Q
 from django.core.exceptions import ValidationError
+from django.dispatch import receiver
 from django.utils.translation import gettext_lazy as _
+from django.db.models.signals import post_save
 import pandas as pd
 from base.models import Company, EmployeeShift, EmployeeShiftDay, WorkType
 from base.horilla_company_manager import HorillaCompanyManager
 from employee.models import Employee
-from leave.models import WEEK_DAYS, WEEKS, CompanyLeave, Holiday, LeaveRequest
+from leave.models import (
+    WEEK_DAYS,
+    WEEKS,
+    CompanyLeave,
+    Holiday,
+    LeaveRequest,
+    LeaveType,
+)
 from attendance.methods.differentiate import get_diff_dict
 
 # Create your models here.
@@ -256,7 +265,7 @@ class Attendance(models.Model):
             keys = diffs.keys()
         return keys
 
-    def get_last_clock_out(self,null_activity=False):
+    def get_last_clock_out(self, null_activity=False):
         """
         This method is used to get the last attendance activity if exists
         """
@@ -712,6 +721,13 @@ class AttendanceLateComeEarlyOut(models.Model):
     objects = HorillaCompanyManager(
         related_company_field="employee_id__employee_work_info__company_id"
     )
+    created_at = models.DateTimeField(auto_now_add=True,null=True)
+
+    def get_penalties_count(self):
+        """
+        This method is used to return the total penalties in the late early instance
+        """
+        return self.penaltyaccount_set.count()
 
     def save(self, *args, **kwargs) -> None:
         super().save(*args, **kwargs)
@@ -754,3 +770,96 @@ class AttendanceValidationCondition(models.Model):
         super().clean()
         if not self.id and AttendanceValidationCondition.objects.exists():
             raise ValidationError(_("You cannot add more conditions."))
+
+
+months = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+]
+
+
+class PenaltyAccount(models.Model):
+    """
+    LateComeEarlyOutPenaltyAccount
+    """
+
+    employee_id = models.ForeignKey(
+        Employee,
+        on_delete=models.PROTECT,
+        related_name="penalty_set",
+        editable=False,
+        verbose_name="Employee",
+        null=True,
+    )
+    late_early_id = models.ForeignKey(
+        AttendanceLateComeEarlyOut,
+        on_delete=models.CASCADE,
+        null=True,
+    )
+    leave_type_id = models.ForeignKey(
+        LeaveType,
+        on_delete=models.DO_NOTHING,
+        blank=True,
+        null=True,
+        verbose_name="Leave type",
+    )
+    minus_leaves = models.FloatField(default=0.0, null=True)
+    deduct_from_carry_forward = models.BooleanField(default=False)
+    penalty_amount = models.FloatField(default=0.0, null=True)
+    created_at = models.DateTimeField(auto_now_add=True,null=True)
+
+    def clean(self) -> None:
+        super().clean()
+        if (
+            self.minus_leaves or self.deduct_from_carry_forward
+        ) and not self.leave_type_id:
+            raise ValidationError({"leave_type_id": "Leave type is required"})
+        return
+
+    class Meta:
+        ordering = ["-created_at"]
+
+
+@receiver(post_save, sender=PenaltyAccount)
+def create_initial_stage(sender, instance, created, **kwargs):
+    """
+    This is post save method, used to create initial stage for the recruitment
+    """
+
+    if created:
+        penalty_amount = instance.penalty_amount
+        if penalty_amount:
+            from payroll.models.models import Deduction
+
+            penalty = Deduction()
+            penalty.title = f"{instance.late_early_id.get_type_display()} penalty"
+            penalty.one_time_date = instance.late_early_id.attendance_id.attendance_date
+            penalty.include_active_employees = False
+            penalty.is_fixed = True
+            penalty.amount = instance.penalty_amount
+            penalty.only_show_under_employee = True
+            penalty.save()
+            penalty.specific_employees.add(instance.employee_id)
+
+        if instance.leave_type_id and instance.minus_leaves:
+            available = instance.employee_id.available_leave.filter(
+                leave_type_id=instance.leave_type_id
+            ).first()
+            unit = round(instance.minus_leaves * 2) / 2
+            if not instance.deduct_from_carry_forward:
+                available.available_days = max(0, (available.total_leave_days - unit))
+            else:
+                available.carryforward_days = max(
+                    0, (available.carryforward_days - unit)
+                )
+            available.save()

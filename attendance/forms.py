@@ -42,6 +42,7 @@ from attendance.models import (
     AttendanceActivity,
     AttendanceLateComeEarlyOut,
     AttendanceValidationCondition,
+    PenaltyAccount,
     strtime_seconds,
 )
 from django.utils.html import format_html
@@ -681,6 +682,17 @@ class AttendanceExportForm(forms.Form):
             "attendance_validated",
         ],
     )
+
+
+class PenaltyAccountForm(ModelForm):
+    """
+    PenaltyAccountForm
+    """
+
+    class Meta:
+        model = PenaltyAccount
+        fields = "__all__"
+        exclude = ["late_early_id"]
 
 
 class LateComeEarlyOutExportForm(forms.Form):

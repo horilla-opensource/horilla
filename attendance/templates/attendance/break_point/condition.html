@@ -1,85 +1,45 @@
 {% extends 'settings.html' %} {% load i18n %} {% block settings %}
-
-<div class="oh-inner-sidebar-content mb-4">
-	<div class="oh-inner-sidebar-content__header d-flex justify-content-between align-items-center">
-        <h2 class="oh-inner-sidebar-content__title">{% trans "Employee Type" %}</h2>
-		{% if not condition %}
-        <button
-            class="oh-btn oh-btn--secondary oh-btn--shadow"
-            hx-target="#updateForm"
-			type="button"							
-			hx-get="{% url 'attendance-settings-create'%}"
-			class="oh-btn oh-btn--info"
-			data-toggle="oh-modal-toggle"
-			data-target="#updateModal"
-        >
-            <ion-icon name="add-outline" class="me-1"></ion-icon>
-            {% trans "Create" %}
+  <div class="oh-inner-sidebar-content">
+    <div class="oh-inner-sidebar-content__header d-flex justify-content-between align-items-center">
+      <h2 class="oh-inner-sidebar-content__title">{% trans 'Condition' %}</h2>
+      {% if not condition %}
+        <button class="oh-btn oh-btn--secondary oh-btn--shadow" hx-target="#updateForm" type="button" hx-get="{% url 'attendance-settings-create' %}" class="oh-btn oh-btn--info" data-toggle="oh-modal-toggle" data-target="#updateModal">
+          <ion-icon name="add-outline" class="me-1"></ion-icon>
+          {% trans 'Create' %}
         </button>
-		{% endif %}
+      {% endif %}
     </div>
-	{% if condition %}
-	<div class="oh-sticky-table">
-		<div class="oh-sticky-table__table oh-table--sortable">
-			<div class="oh-sticky-table__thead">
-				<div class="oh-sticky-table__tr">
-					<div class="oh-sticky-table__th">
-						{% trans "Auto Validate Till" %}
-					</div>
-					<div class="oh-sticky-table__th">
-						{% trans "Min Hour To Approve OT" %}
-					</div>
-					<div class="oh-sticky-table__th">{% trans "OT Cut-Off/Day" %}</div>
-					<div class="oh-sticky-table__th"></div>
-				</div>
-			</div>
-			<div class="oh-sticky-table__tbody">
-				{% if condition != None %}
-				<div class="oh-sticky-table__tr" draggable="true">
-					<div class="oh-sticky-table__td">
-						{{condition.validation_at_work}}
-					</div>
-					<div class="oh-sticky-table__td">
-						{{condition.minimum_overtime_to_approve}}
-					</div>
-					<div class="oh-sticky-table__td">{{condition.overtime_cutoff}}</div>
-					<div class="oh-sticky-table__td">
-						<a
-							hx-get="{% url 'attendance-settings-update' condition.id %}"
-							hx-target="#updateForm"
-							type="button"
-							class="oh-btn oh-btn--info"
-							data-toggle="oh-modal-toggle"
-            				data-target="#updateModal"
-						>
-							{% trans "Edit" %}</a
-						>
-					</div>
-				</div>
-				{% endif %}
-			</div>
-		</div>
-	</div>
-	{% endif%}
-</div>
-
-
-<div
-	class="oh-modal"
-	id="updateModal"
-	role="dialog"
-	aria-labelledby="updateModal"
-	aria-hidden="true"
->
-	<div class="oh-modal__dialog">
-		<div class="oh-modal__dialog-header">
-			
-			<button class="oh-modal__close" aria-label="Close">
-				<ion-icon name="close-outline"></ion-icon>
-			</button>
-		</div>
-		<div class="oh-modal__dialog-body" id="updateForm"></div>
-	</div>
-</div>
-
-{% endblock settings %}
+    {% if condition %}
+      <div class="oh-sticky-table">
+        <div class="oh-sticky-table__table oh-table--sortable">
+          <div class="oh-sticky-table__thead">
+            <div class="oh-sticky-table__tr">
+              <div class="oh-sticky-table__th">
+                {% trans 'Auto Validate Till' %}
+              </div>
+              <div class="oh-sticky-table__th">
+                {% trans 'Min Hour To Approve OT' %}
+              </div>
+              <div class="oh-sticky-table__th">
+                {% trans 'OT Cut-Off/Day' %}
+              </div>
+              <div class="oh-sticky-table__th"></div>
+            </div>
+          </div>
+          <div class="oh-sticky-table__tbody">
+            {% if condition != None %}
+              <div class="oh-sticky-table__tr" draggable="true">
+                <div class="oh-sticky-table__td">{{ condition.validation_at_work }}</div>
+                <div class="oh-sticky-table__td">{{ condition.minimum_overtime_to_approve }}</div>
+                <div class="oh-sticky-table__td">{{ condition.overtime_cutoff }}</div>
+                <div class="oh-sticky-table__td">
+                  <a hx-get="{% url 'attendance-settings-update' condition.id %}" hx-target="#updateForm" type="button" class="oh-btn oh-btn--info" data-toggle="oh-modal-toggle" data-target="#updateModal">{% trans 'Edit' %}</a>
+                </div>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    {% endif %}
+  </div>
+{% endblock %}

@@ -2,25 +2,42 @@
 {% load static %}
 {% load i18n %}
 {% block content %}
-
-{% include 'attendance/late_come_early_out/nav.html' %}
-<div class="oh-checkpoint-badge mb-2" id="selectedLatecome" data-ids="[]" data-clicked="" style="display:none;" >
-    {% trans "Selected Attendance" %}
-</div>
-<div class="oh-wrapper">
+  {% include 'attendance/late_come_early_out/nav.html' %}
+  <div class="oh-checkpoint-badge mb-2" id="selectedLatecome" data-ids="[]" data-clicked="" style="display:none;">
+    {% trans 'Selected Attendance' %}
+  </div>
+  <div class="oh-wrapper">
     <div class="oh-checkpoint-badge text-success mb-2" id="selectAllLatecome" style="cursor: pointer;">
-        {% trans "Select All Attendance" %}
+      {% trans 'Select All Attendance' %}
     </div>
     <div class="oh-checkpoint-badge text-secondary mb-2" id="unselectAllLatecome" style="cursor: pointer;">
-      {% trans "Unselect All Attendance" %}
+      {% trans 'Unselect All Attendance' %}
     </div>
     <div class="oh-checkpoint-badge text-info mb-2" id="exportLatecome" style="cursor: pointer;">
-      {% trans "Export Attendance" %}
+      {% trans 'Export Attendance' %}
     </div>
-    <div class="oh-checkpoint-badge text-danger mb-2" id="selectedShowLatecome" >
+    <div class="oh-checkpoint-badge text-danger mb-2" id="selectedShowLatecome"></div>
+    <div id="report-container">
+      {% include 'attendance/late_come_early_out/report_list.html' %}
     </div>
-    <div id='report-container'>
-        {% include 'attendance/late_come_early_out/report_list.html' %}
+  </div>
+
+  <div class="oh-modal" id="penaltyModal" role="dialog" aria-hidden="true">
+    <div class="oh-modal__dialog" style="max-width: 550px">
+      <div class="oh-modal__dialog-header">
+        <button type="button" class="oh-modal__close" aria-label="Close"><ion-icon name="close-outline"></ion-icon></button>
+      </div>
+
+      <div class="oh-modal__dialog-body" id="penaltyModalBody"></div>
     </div>
-</div>
+  </div>
+  <div class="oh-modal" id="penaltyViewModal" role="dialog" aria-hidden="true">
+    <div class="oh-modal__dialog" style="max-width: 1050px">
+      <div class="oh-modal__dialog-header">
+        <button type="button" class="oh-modal__close" aria-label="Close"><ion-icon name="close-outline"></ion-icon></button>
+      </div>
+
+      <div class="oh-modal__dialog-body" id="penaltyViewModalBody"></div>
+    </div>
+  </div>
 {% endblock %}

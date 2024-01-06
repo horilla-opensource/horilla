@@ -180,24 +180,16 @@
 						>{% trans "Allowance & Deduction" %}</a
 						>
 					</li>
-					{% comment %} <li class="oh-general__tab">
-						<a
-						href="#"
-						class="oh-general__tab-link"
-						data-action="general-tab"
-						data-target="#team"
-						>{% trans "Team" %}</a
-						>
-					</li>
 					<li class="oh-general__tab">
 						<a
-						href="#"
-						class="oh-general__tab-link"
 						data-action="general-tab"
-						data-target="#timesheet"
-						>{% trans "Timesheet" %}</a
+						data-target="#penaltyTarget"
+						id="penalty"
+						class="oh-general__tab-link"
+						role="button"
+						>{% trans "Penalty Account" %}</a
 						>
-					</li> {% endcomment %}
+					</li>
 					<li class="oh-general__tab">
 						<a
 						hx-get={% url 'profile-asset-tab' employee.id %}
@@ -229,12 +221,17 @@
 					id="personal_target"
 				 >
 				</div>
-
 				<div
-				class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
-				id="payroll"
+				class="oh-general__tab-target oh-profile__info-tab mb-4"
+				id="penaltyTarget"
 				>
-				{% include 'tabs/payroll-tab.html' %}
+				{% include 'tabs/penalty_account.html' %}
+				</div>
+				<div
+					class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
+					id="payroll"
+				>
+					{% include 'tabs/payroll-tab.html' %}
 				</div>
 				<div
 				  class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"

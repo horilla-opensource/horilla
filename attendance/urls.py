@@ -8,6 +8,7 @@ from django.urls import path
 import attendance.views.clock_in_out
 
 import attendance.views.dashboard
+import attendance.views.penalty
 import attendance.views.search
 import attendance.views.requests
 from .views import views
@@ -286,5 +287,11 @@ urlpatterns = [
         views.latecome_attendance_select_filter,
         name="latecome-attendance-select-filter",
     ),
-    path("pending-hours/",attendance.views.dashboard.pending_hours,name="pending-hours")
+    path(
+        "pending-hours/", attendance.views.dashboard.pending_hours, name="pending-hours"
+    ),
+    path(
+        "cut-penalty/<int:instance_id>/", attendance.views.penalty.cut_available_leave, name="cut-penalty"
+    ),
+    path("view-penalties",attendance.views.penalty.view_penalties,name="view-penalties")
 ]

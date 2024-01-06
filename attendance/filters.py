@@ -17,6 +17,7 @@ from attendance.models import (
     AttendanceOverTime,
     AttendanceLateComeEarlyOut,
     AttendanceActivity,
+    PenaltyAccount,
     strtime_seconds,
 )
 from base.filters import FilterSet
@@ -242,6 +243,16 @@ class LateComeEarlyOutFilter(FilterSet):
             self.form.fields[field].widget.attrs["id"] = f"{uuid.uuid4()}"
 
 
+class PenaltyFilter(FilterSet):
+    """
+    PenaltyFilter
+    """
+
+    class Meta:
+        model = PenaltyAccount
+        fields = "__all__"
+
+
 class AttendanceActivityFilter(FilterSet):
     """
     Filter set class for AttendanceActivity model
@@ -332,6 +343,7 @@ class AttendanceFilters(FilterSet):
     Args:
         FilterSet (class): custom filter set class to apply styling
     """
+
     id = django_filters.NumberFilter(field_name="id")
     search = django_filters.CharFilter(method=filter_by_name)
     employee = django_filters.CharFilter(field_name="employee_id__id")

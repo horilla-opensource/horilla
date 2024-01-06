@@ -10,6 +10,7 @@ from .models import (
     AttendanceOverTime,
     AttendanceLateComeEarlyOut,
     AttendanceValidationCondition,
+    PenaltyAccount,
 )
 
 # Register your models here.
@@ -18,3 +19,4 @@ admin.site.register(AttendanceActivity)
 admin.site.register(AttendanceOverTime)
 admin.site.register(AttendanceLateComeEarlyOut)
 admin.site.register(AttendanceValidationCondition)
+admin.site.register(PenaltyAccount)
