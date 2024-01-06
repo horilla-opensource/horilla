@@ -1897,6 +1897,9 @@ def user_request_view(request):
         request_ids = json.dumps(
             list(page_obj.object_list.values_list("id", flat=True))
         )
+        
+        user_leave = AvailableLeave.objects.filter(employee_id = user.id)
+
         current_date = date.today()
         return render(
             request,
@@ -1908,6 +1911,8 @@ def user_request_view(request):
                 "current_date": current_date,
                 "gp_fields": MyLeaveRequestReGroup.fields,
                 "request_ids": request_ids,
+                "user_leaves":user_leave,
+
             },
         )
     except Exception as e:
@@ -1951,6 +1956,9 @@ def user_request_filter(request):
             status_list = data_dict["status"]
             if len(status_list) > 1:
                 data_dict["status"] = [status_list[-1]]
+        
+        user_leave = AvailableLeave.objects.filter(employee_id = user.id)
+
         context = {
             "leave_requests": page_obj,
             "pd": previous_data,
@@ -1958,6 +1966,8 @@ def user_request_filter(request):
             "field": field,
             "current_date": date.today(),
             "request_ids": request_ids,
+            "user_leaves":user_leave,
+
         }
         return render(request, template, context=context)
     except Exception as e:
@@ -2012,7 +2022,10 @@ def employee_leave(request):
     today = date.today()
     employees = []
     leave_requests = LeaveRequest.objects.filter(
-        Q(start_date__lte=today) & Q(end_date__gte=today) & Q(status="approved") & Q(employee_id__is_active = True)
+        Q(start_date__lte=today)
+        & Q(end_date__gte=today)
+        & Q(status="approved")
+        & Q(employee_id__is_active=True)
     )
     for leave_request in leave_requests:
         if leave_request.employee_id.__str__() not in employees:
@@ -2201,7 +2214,9 @@ def employee_leave_chart(request):
     Returns:
     GET : return Json response of labels, dataset, message.
     """
-    leave_requests = LeaveRequest.objects.filter(status="approved")
+    leave_requests = LeaveRequest.objects.filter(
+        employee_id__is_active=True, status="approved"
+    )
     leave_types = LeaveType.objects.all()
     day = date.today()
     if request.GET.get("date"):
@@ -3123,20 +3138,17 @@ def user_request_select_filter(request):
 
 @login_required
 def employee_leave_details(request):
-    balance_count = ''
-    if request.POST['employee_id']:
-        employee = request.POST['employee_id']
+    balance_count = ""
+    if request.POST["employee_id"]:
+        employee = request.POST["employee_id"]
     else:
-        employee = ''
-    if request.POST['leave_type'] and request.POST['employee_id']:
-        leave_type_id = request.POST['leave_type']
-        leave_type = LeaveType.objects.filter(id = leave_type_id ).first()
-        balance = AvailableLeave.objects.filter(Q (leave_type_id = leave_type.id) & Q (employee_id = employee))
+        employee = ""
+    if request.POST["leave_type"] and request.POST["employee_id"]:
+        leave_type_id = request.POST["leave_type"]
+        leave_type = LeaveType.objects.filter(id=leave_type_id).first()
+        balance = AvailableLeave.objects.filter(
+            Q(leave_type_id=leave_type.id) & Q(employee_id=employee)
+        )
         for i in balance:
             balance_count = i.available_days
-    return JsonResponse(
-    {
-        "leave_count": balance_count,
-        'employee': employee
-    })
-
+    return JsonResponse({"leave_count": balance_count, "employee": employee})
