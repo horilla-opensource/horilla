@@ -6,6 +6,7 @@ This module is used to register models for employee app
 """
 import datetime as dtime
 from datetime import date, datetime
+import json
 from django.conf import settings
 from django.db import models
 from django.contrib.auth.models import User, Permission
@@ -216,7 +217,7 @@ class Employee(models.Model):
         forecasted_pending_hours = 0
         if attendance:
             at_work = attendance.get_at_work_from_activities()
-        
+
         return {
             "forecasted_at_work": format_time(at_work),
             "forecasted_pending_hours": format_time(forecasted_pending_hours),
@@ -231,6 +232,41 @@ class Employee(models.Model):
         return self.employee_attendances.filter(
             attendance_date=datetime.today()
         ).first()
+
+    def get_archive_condition(self):
+        from onboarding.models import OnboardingStage, OnboardingTask
+        from recruitment.models import Stage, Recruitment
+    
+        reporting_manager_query = EmployeeWorkInformation.objects.filter(reporting_manager_id=self.pk)
+        recruitment_stage_query = Stage.objects.filter(stage_managers=self.pk)
+        onboarding_stage_query = OnboardingStage.objects.filter(employee_id=self.pk)
+        onboarding_task_query = OnboardingTask.objects.filter(employee_id=self.pk)
+        recruitment_manager_query = Recruitment.objects.filter(recruitment_managers=self.pk)
+    
+        if not (
+            reporting_manager_query.exists()
+            or recruitment_stage_query.exists()
+            or onboarding_stage_query.exists()
+            or onboarding_task_query.exists()
+            or recruitment_manager_query.exists()
+        ):
+            return False
+        else:
+            related_models = []
+            if reporting_manager_query.exists():
+                related_models.append("Reporting manager")
+            if recruitment_stage_query.exists():
+                related_models.append("Recruitment stage manager")
+            if onboarding_stage_query.exists():
+                related_models.append("Onboarding stage manager")
+            if onboarding_task_query.exists():
+                related_models.append("Onboarding task manager")
+            if recruitment_manager_query.exists():
+                related_models.append("Recruitment manager")
+    
+            related_models_dict = {"related_models": related_models}
+            return related_models_dict
+
 
     def __str__(self) -> str:
         last_name = (
@@ -475,10 +511,18 @@ class EmployeeNote(models.Model):
     EmployeeNote model
     """
 
-    employee_id = models.ForeignKey(Employee, on_delete=models.CASCADE, related_name="employee_name",)
+    employee_id = models.ForeignKey(
+        Employee,
+        on_delete=models.CASCADE,
+        related_name="employee_name",
+    )
     title = models.CharField(max_length=50, null=True, verbose_name=_("Title"))
     description = models.TextField(verbose_name=_("Description"))
-    created_at = models.DateTimeField(auto_now_add=True, verbose_name=_("Created At"), null=True,)
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name=_("Created At"),
+        null=True,
+    )
     updated_by = models.ForeignKey(Employee, on_delete=models.CASCADE)
     objects = HorillaCompanyManager(
         related_company_field="employee_id__employee_work_info__company_id"
@@ -486,4 +530,3 @@ class EmployeeNote(models.Model):
 
     def __str__(self) -> str:
         return f"{self.description}"
-

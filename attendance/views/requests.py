@@ -83,6 +83,9 @@ def request_attendance_view(request):
     attendances = attendances | Attendance.objects.filter(
         employee_id__employee_user_id=request.user
     )
+    attendances = attendances.filter(
+        employee_id__is_active=True,
+    )
     filter_obj = AttendanceFilters()
     check_attendance = Attendance.objects.all()
     if check_attendance.exists():
@@ -94,6 +97,9 @@ def request_attendance_view(request):
     )
     attendances_ids = json.dumps(
         [instance.id for instance in paginator_qry(attendances, None).object_list]
+    )
+    requests = requests.filter(
+        employee_id__is_active=True,
     )
     return render(
         request,

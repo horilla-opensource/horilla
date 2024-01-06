@@ -1081,15 +1081,22 @@ def feedback_list_view(request):
     user = request.user
     employee = Employee.objects.filter(employee_user_id=user).first()
     feedback_requested_ids = Feedback.objects.filter(
-        Q(manager_id=employee) | Q(colleague_id=employee) | Q(subordinate_id=employee)
+        Q(manager_id=employee)
+        | Q(colleague_id=employee)
+        | Q(subordinate_id=employee)
+        | Q(employee_id__is_active=True)
     ).values_list("id", flat=True)
-    feedback_own = Feedback.objects.filter(employee_id=employee).filter(archive=False)
-    feedback_requested = Feedback.objects.filter(pk__in=feedback_requested_ids).filter(
-        archive=False
+    feedback_own = Feedback.objects.filter(employee_id=employee).filter(
+        archive=False, employee_id__is_active=True
     )
-    feedback_all = Feedback.objects.all().filter(archive=False)
+    feedback_requested = Feedback.objects.filter(pk__in=feedback_requested_ids).filter(
+        archive=False, employee_id__is_active=True
+    )
+    feedback_all = Feedback.objects.all().filter(
+        archive=False, employee_id__is_active=True
+    )
     employees = Employee.objects.filter(
-        employee_work_info__reporting_manager_id=employee
+        employee_work_info__reporting_manager_id=employee, is_active=True
     )  # checking the user is reporting manager or not
     feedback_available = Feedback.objects.all()
     if request.user.has_perm("pms.view_feedback"):

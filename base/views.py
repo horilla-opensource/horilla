@@ -1077,6 +1077,7 @@ def rotating_work_type_assign(request):
     rwork_type_assign = filtersubordinates(
         request, rwork_type_assign, "base.view_rotatingworktypeassign"
     )
+    rwork_type_assign = rwork_type_assign.filter(employee_id__is_active=True)
     assign_ids = json.dumps(
         [
             instance.id
@@ -1653,6 +1654,7 @@ def rotating_shift_assign(request):
     rshift_assign = filtersubordinates(
         request, rshift_assign, "base.view_rotatingshiftassign"
     )
+    rshift_assign = rshift_assign.filter(employee_id__is_active=True)
     assign_ids = json.dumps(
         [
             instance.id
@@ -2135,6 +2137,7 @@ def work_type_request_view(request):
     work_type_requests = work_type_requests | WorkTypeRequest.objects.filter(
         employee_id=employee
     )
+    work_type_requests = work_type_requests.filter(employee_id__is_active=True)
     requests_ids = json.dumps(
         [
             instance.id
@@ -2656,6 +2659,7 @@ def shift_request_view(request):
         request, ShiftRequest.objects.all(), "base.add_shiftrequest"
     )
     shift_requests = shift_requests | ShiftRequest.objects.filter(employee_id=employee)
+    shift_requests = shift_requests.filter(employee_id__is_active=True)
     requests_ids = json.dumps(
         [
             instance.id
@@ -3208,15 +3212,11 @@ def get_date_format(request):
         for data in info:
             employee_company = data.company_id
         company_name = Company.objects.filter(company=employee_company)
-        if company_name:
-            emp_company = company_name.first()
-            # Access the date_format attribute directly
-            date_format = emp_company.date_format
-        else:
-            # Giving default format
-            date_format = "MMM. D, YYYY"
+        emp_company = company_name.first()
+
+        # Access the date_format attribute directly
+        date_format = emp_company.date_format
     else:
-        # Giving default format
         date_format = "MMM. D, YYYY"
     # Return the date format as JSON response
     return JsonResponse({"selected_format": date_format})
@@ -3272,16 +3272,11 @@ def get_time_format(request):
         for data in info:
             employee_company = data.company_id
         company_name = Company.objects.filter(company=employee_company)
-        if company_name:
-            emp_company = company_name.first()
+        emp_company = company_name.first()
 
-            # Access the date_format attribute directly
-            time_format = emp_company.time_format
-        else:
-            # Giving default format
-            time_format = "hh:mm A"
+        # Access the date_format attribute directly
+        time_format = emp_company.time_format
     else:
-        # Giving default format
         time_format = "hh:mm A"
     # Return the date format as JSON response
     return JsonResponse({"selected_format": time_format})
