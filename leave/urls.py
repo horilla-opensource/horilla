@@ -116,7 +116,7 @@ urlpatterns = [
     path(
         "company-leave-filter", views.company_leave_filter, name="company-leave-filter"
     ),
-    path("user-leave", views.user_leave_view, name="user-leave"),
+    # path("user-leave", views.user_leave_view, name="user-leave"),
     path("user-leave-filter", views.user_leave_filter, name="user-leave-filter"),
     path("user-request-view", views.user_request_view, name="user-request-view"),
     path(
