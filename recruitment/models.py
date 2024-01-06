@@ -21,6 +21,7 @@ from employee.models import Employee
 from base.models import JobPosition, Company
 from django.core.files.storage import default_storage
 from base.horilla_company_manager import HorillaCompanyManager
+from django.core.validators import MinValueValidator, MaxValueValidator
 
 
 # Create your models here.
@@ -513,3 +514,15 @@ class RecruitmentMailTemplate(models.Model):
 
     def __str__(self) -> str:
         return self.title
+
+
+class CandidateRating(models.Model):
+    employee_id = models.ForeignKey(Employee,on_delete=models.PROTECT, related_name="candidate_rating")
+    candidate_id = models.ForeignKey(Candidate,on_delete=models.PROTECT, related_name="candidate_rating")
+    rating = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(5)])
+    
+    class Meta:
+        unique_together = ['employee_id', 'candidate_id']
+
+    def __str__(self) -> str:
+        return f"{self.employee_id} - {self.candidate_id} rating {self.rating}"

@@ -98,4 +98,12 @@ def generate_id(element, label=""):
     return element
 
 
-# @register.filter
+@register.filter(name='has_candidate_rating')
+def has_candidate_rating(candidate_ratings, cand):
+    candidate_rating = candidate_ratings.filter(candidate_id=cand.id).first()
+    return candidate_rating
+
+@register.filter(name='rating')
+def rating(candidate_ratings,cand):
+    rating = candidate_ratings.filter(candidate_id=cand.id).first().rating
+    return str(rating)

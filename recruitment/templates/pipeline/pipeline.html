@@ -252,6 +252,11 @@
                     <div class="oh-sticky-table__th oh-table-config__th">
                       <span> {% trans "Contact" %} </span>
                     </div>
+                    {% if request.user|stage_manages:rec or perms.recruitment.change_candidate %}
+                    <div class="oh-sticky-table__th oh-table-config__th">
+                      <span> {% trans "Rating" %} </span>
+                    </div>
+                    {% endif %}
                     <div class="oh-sticky-table__th oh-table-config__th">{% trans "Stage" %}</div>
                     <div class="oh-sticky-table__th oh-table-config__th" style="width: 200px;" >
                       <select name="bulk_stage" class="oh-select w-100" data-stage-id="{{stage.id}}">
@@ -316,6 +321,41 @@
                     <div class="oh-sticky-table__td oh-table-config__td">
                       {{cand.mobile}}
                     </div>
+                    {% if request.user|stage_manages:rec or perms.recruitment.change_candidate %}
+                    <div class="oh-sticky-table__td oh-table-config__td" onclick="event.stopPropagation()">
+                      {% with request.user.employee_get.candidate_rating.all as candidate_ratings  %}
+                        {% if candidate_ratings|has_candidate_rating:cand %} 
+                        <form hx-swap="none" hx-post='{% url "update-candidate-rating" cand.id %}' method="post">
+                          {% csrf_token %}
+                          <div class="d-block mb-0">                           
+                            <div class="oh-rate" onclick="$(this).parents().closest('form').find('button').click()">
+                              {% for i in "54321" %}
+                              <input type="radio" id="star{{i}}{{cand.id}}" name="rating" class="rating-radio" value="{{i}}" {% if candidate_ratings|rating:cand == i %} checked {% endif %} />
+                              <label for="star{{i}}{{cand.id}}" title="{{i}} Stars">5 {% trans "Stars" %}</label>
+                              {% endfor %}
+                            </div>
+                            <button type="submit"  hidden="true"></button>
+                            <span id="rating-radio-error"></span>
+                          </div>
+                        </form>
+                        {% else %}
+                        <form hx-swap="none" hx-post='{% url "create-candidate-rating" cand.id %}' method="post">
+                          {% csrf_token %}
+                          <div class="d-block mb-0">                           
+                            <div class="oh-rate" onclick="$(this).parents().closest('form').find('button').click()">
+                              {% for i in "54321" %}
+                              <input type="radio" id="star{{i}}{{cand.id}}" name="rating" class="rating-radio" value="{{i}}" />
+                              <label for="star{{i}}{{cand.id}}" title="5 Stars">5 {% trans "Stars" %}</label>
+                              {% endfor %}
+                            </div>
+                            <button type="submit" hidden="true"></button>
+                            <span id="rating-radio-error"></span>
+                          </div>
+                        </form>
+                        {% endif %}
+                      {% endwith %}
+                    </div>
+                    {% endif %}
                     <div class="oh-sticky-table__td oh-table-config__td">
                       <select
                         name=""

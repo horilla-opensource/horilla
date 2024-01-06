@@ -35,6 +35,7 @@ from horilla.decorators import permission_required, login_required, hx_request_r
 from base.methods import export_data, generate_pdf, get_key_instances
 from recruitment.views.paginator_qry import paginator_qry
 from recruitment.models import (
+    CandidateRating,
     RecruitmentMailTemplate,
     Recruitment,
     Candidate,
@@ -950,9 +951,17 @@ def candidate_view_individual(request, cand_id, **kwargs):
     mails= list(Candidate.objects.values_list("email",flat=True))
     # Query the User model to check if any email is present
     existing_emails = list(User.objects.filter(username__in=mails).values_list('email', flat=True))
+    ratings = candidate_obj.candidate_rating.all()
+    rating_list = []
+    avg_rate = 0
+    for rating in ratings:
+        rating_list.append(rating.rating)
+    if len(rating_list) != 0:
+        avg_rate = round(sum(rating_list) / len(rating_list))
+    
 
     return render(request, "candidate/individual.html", 
-                  {"candidate": candidate_obj, "emp_list" : existing_emails })
+        {"candidate": candidate_obj, "emp_list" : existing_emails,"average_rate": avg_rate,})
 
 
 @login_required
@@ -1193,3 +1202,25 @@ def candidate_select_filter(request):
         context = {"employee_ids": employee_ids, "total_count": total_count}
 
         return JsonResponse(context)
+    
+
+@login_required
+def create_candidate_rating(request,cand_id):
+    cand_id = cand_id
+    candidate = Candidate.objects.get(id=cand_id)
+    employee_id = request.user.employee_get
+    rating = request.POST.get("rating")
+    CandidateRating.objects.create(candidate_id=candidate, rating=rating, employee_id=employee_id)
+    return redirect(recruitment_pipeline)
+
+
+@login_required
+def update_candidate_rating(request,cand_id):
+    cand_id = cand_id
+    candidate = Candidate.objects.get(id=cand_id)
+    employee_id = request.user.employee_get
+    rating = request.POST.get("rating")
+    rate = CandidateRating.objects.get(candidate_id=candidate, employee_id=employee_id)
+    rate.rating = int(rating)
+    rate.save()
+    return redirect(recruitment_pipeline)

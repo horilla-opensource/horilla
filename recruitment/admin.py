@@ -5,6 +5,7 @@ This page is used to register the model with admins site.
 """
 from django.contrib import admin
 from recruitment.models import (
+    CandidateRating,
     Stage,
     Recruitment,
     Candidate,
@@ -23,3 +24,4 @@ admin.site.register(Candidate)
 admin.site.register(RecruitmentSurveyAnswer)
 admin.site.register(RecruitmentSurvey)
 admin.site.register(RecruitmentMailTemplate)
+admin.site.register(CandidateRating)

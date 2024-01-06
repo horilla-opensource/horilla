@@ -285,4 +285,6 @@ urlpatterns = [
     path("create-mail-template/", create_letter, name="create-mail-template"),
     path("delete-mail-template/", delete_mail_templates, name="delete-mail-template"),
     path("get-template/<int:obj_id>/", get_template, name="get-template"),
+    path("create-candidate-rating/<int:cand_id>/", views.create_candidate_rating, name="create-candidate-rating"),
+    path("update-candidate-rating/<int:cand_id>/", views.update_candidate_rating, name="update-candidate-rating"),
 ]

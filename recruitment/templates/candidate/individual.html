@@ -1,4 +1,4 @@
-{% extends 'index.html' %} {% load i18n %} {% load yes_no %} {% load static %} {% block content %}
+{% extends 'index.html' %} {% load i18n %} {% load yes_no %} {% load static %} {% block content %} {% load recruitmentfilters %}
 
 <style>
   .enlarge-image-container {
@@ -16,6 +16,15 @@
     height: auto;
     border-radius: 5%;
   }
+  .oh-rate:not(:checked)>label {
+    font-size:40px;
+  }
+  .star {
+    font-size:20px !important;
+  }
+  .ul {
+    margin:0;
+  }
 </style>
 
 <div id="enlargeImageContainer" class="enlarge-image-container"></div>
@@ -27,7 +36,7 @@
         <div class='d-flex float-end ms-4'>
           {% if candidate.email in emp_list %}
           {% else %}
-            <form action="{% url 'candidate-conversion' candidate.id %}" style="color: inherit;text-decoration: none;""
+            <form action="{% url 'candidate-conversion' candidate.id %}" style="color: inherit;text-decoration: none;"
               onsubmit="return confirm('{% trans "Are you sure you want to convert this candidate into an employee?" %}')"
               >
               {% csrf_token %}
@@ -68,7 +77,7 @@
         </div>
       </div>
       <div
-        class="col-12 col-sm-12 col-md-12 col-lg-8 d-flex align-items-center"
+        class="col-12 col-sm-12 col-md-12 col-lg-8 d-flex align-items-center justify-content-between"
       >
         <ul class="oh-profile__info-list">
           <li class="oh-profile__info-list-item">
@@ -87,6 +96,18 @@
             <span class="oh-profile__info-value">{{candidate.mobile}}</span>
           </li>
         </ul>
+        <div class="oh-rate">
+          <input type="radio" id="star5" value="5" disabled {% if average_rate == 5 %} checked {% endif %} />
+          <label for="star5" title="5 Stars" class="rating-star">5 {% trans "Stars" %}</label>
+          <input type="radio" id="star4" value="4" disabled  {% if average_rate == 4 %} checked {% endif %} />
+          <label for="star4" title="4 Stars" class="rating-star">4 {% trans "Stars" %}</label>
+          <input type="radio" id="star3" value="3" disabled  {% if average_rate == 3 %} checked {% endif %} />
+          <label for="star3" title="3 Stars" class="rating-star">3 {% trans "Stars" %}</label>
+          <input type="radio" id="star2" value="2" disabled  {% if average_rate == 2 %} checked {% endif %}  />
+          <label for="star2" title="2 Stars" class="rating-star">2 {% trans "Stars" %}</label>
+          <input type="radio" id="star1" value="1" disabled  {% if average_rate == 1 %} checked {% endif %} />
+          <label for="star1" title="1 Star" class="rating-star">1 {% trans "Star" %}</label>
+        </div>
       </div>
     </div>
     <div class="row">
@@ -139,6 +160,17 @@
               >{% trans "History" %}</a
             >
           </li>
+          {% if request.user|stage_manages:rec or perms.recruitment.change_candidate %}
+          <li class="oh-general__tab">
+            <a
+              href="#"
+              class="oh-general__tab-link"
+              data-action="general-tab"
+              data-target="#rating"
+              >{% trans "Rating" %}</a
+            >
+          </li>
+          {% endif %}
           {% if candidate.hired %}
           <li class="oh-general__tab">
             <a
@@ -430,6 +462,12 @@
           id="history"
         >
         {% include "candidate/history.html" %}
+        </div>
+        <div
+          class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
+          id="rating"
+        >
+        {% include "candidate/rating_tab.html" %}
         </div>
         <div
           class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
