@@ -615,7 +615,7 @@ def create_note(request, cand_id=None):
 
 
 @login_required
-@permission_required(perm="recruitment.change_stagenote")
+@manager_can_enter(perm="recruitment.change_stagenote")
 def note_update(request, note_id):
     """
     This method is used to update the stage not
@@ -638,7 +638,7 @@ def note_update(request, note_id):
 
 
 @login_required
-@permission_required(perm="recruitment.change_stagenote")
+@manager_can_enter(perm="recruitment.change_stagenote")
 def note_update_individual(request, note_id):
     """
     This method is used to update the stage not
@@ -684,7 +684,7 @@ def candidate_schedule_date_update(request):
 
 
 @login_required
-@permission_required(perm="recruitment.add_stage")
+@manager_can_enter(perm="recruitment.add_stage")
 def stage(request):
     """
     This method is used to create stages, also several permission assigned to the stage managers
@@ -757,7 +757,7 @@ def stage_view(request):
 
 
 @login_required
-@permission_required(perm="recruitment.change_stage")
+@manager_can_enter(perm="recruitment.change_stage")
 @hx_request_required
 def stage_update(request, stage_id):
     """

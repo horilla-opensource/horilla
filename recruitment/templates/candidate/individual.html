@@ -365,7 +365,6 @@
                     hx-target="#modalContent"
                     >{{forloop.counter}}. {{note.title}}</span
                   >
-                  {% if perms.recruitment.delete_stagenote %}
                   <span
                     title="{% trans 'Delete' %}"
                     hx-get="{% url 'note-delete-individual' note.id %}"
@@ -376,7 +375,6 @@
                   >
                     <ion-icon name="close-outline" style="font-size: 24px"></ion-icon
                   ></span>
-                  {% endif %}
                 </div>
                 <span
                   data-toggle="oh-modal-toggle"
