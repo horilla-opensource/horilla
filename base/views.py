@@ -64,6 +64,7 @@ from base.forms import (
     AssignPermission,
     ResetPasswordForm,
     ChangePasswordForm,
+    TagsForm
 )
 from base.models import (
     Company,
@@ -81,6 +82,7 @@ from base.models import (
     RotatingShift,
     ShiftRequest,
     WorkTypeRequest,
+    Tags,
 )
 from base.filters import (
     RotatingShiftRequestReGroup,
@@ -100,7 +102,12 @@ from base.methods import (
 )
 from payroll.forms.component_forms import PayrollSettingsForm
 from payroll.models.tax_models import PayrollSettings
-
+from helpdesk.models import(
+    TicketType
+)
+from helpdesk.forms import(
+    TicketTypeForm
+)
 
 def custom404(request):
     """
@@ -3494,3 +3501,127 @@ def rotating_work_type_select_filter(request):
         context = {"employee_ids": employee_ids, "total_count": total_count}
 
         return JsonResponse(context)
+
+@login_required
+def ticket_type_view(request):
+    """
+    This method is used to show Ticket type
+    """
+    ticket_types = TicketType.objects.all()
+    return render(
+        request,
+        "base/ticket_type/ticket_type.html",
+        {"ticket_types":ticket_types}
+    )
+
+@login_required
+def ticket_type_create(request):
+    """
+    This method renders form and template to create Ticket type
+    """
+    form = TicketTypeForm()
+    if request.method == "POST":
+        form = TicketTypeForm(request.POST)
+        if form.is_valid():
+            form.save()
+            form = TicketTypeForm()
+            messages.success(request, _("Ticket type has been created successfully!"))
+            return HttpResponse("<script>window.location.reload()</script>")
+    return render(
+        request,
+        "base/ticket_type/ticket_type_form.html",
+        {
+            "form": form,
+        },
+    )
+
+@login_required
+def ticket_type_update(request,t_type_id):
+    """
+    This method renders form and template to create Ticket type
+    """
+    ticket_type = TicketType.objects.get(id=t_type_id)
+    form = TicketTypeForm(instance=ticket_type)
+    if request.method == "POST":
+        form = TicketTypeForm(request.POST,instance=ticket_type)
+        if form.is_valid():
+            form.save()
+            form = TicketTypeForm()
+            messages.success(request, _("Ticket type has been updated successfully!"))
+            return HttpResponse("<script>window.location.reload()</script>")
+    return render(
+        request,
+        "base/ticket_type/ticket_type_form.html",
+        {
+            "form": form,
+            "t_type_id":t_type_id
+        },
+    )
+
+@login_required
+def ticket_type_delete(request,t_type_id):
+    TicketType.objects.get(id=t_type_id).delete()
+    messages.success(request, _("Ticket type has been deleted successfully!"))
+    return HttpResponse("<script>window.location.reload()</script>")
+
+@login_required
+def tag_view(request):
+    """
+    This method is used to show Ticket type
+    """
+    tags = Tags.objects.all()
+    return render(
+        request,
+        "base/tags/tags.html",
+        {"tags":tags}
+    )
+
+@login_required
+def tag_create(request):
+    """
+    This method renders form and template to create Ticket type
+    """
+    form = TagsForm()
+    if request.method == "POST":
+        form = TagsForm(request.POST)
+        if form.is_valid():
+            form.save()
+            form = TagsForm()
+            messages.success(request, _("Tag has been created successfully!"))
+            return HttpResponse("<script>window.location.reload()</script>")
+    return render(
+        request,
+        "base/tags/tags_form.html",
+        {
+            "form": form,
+        },
+    )
+
+@login_required
+def tag_update(request,tag_id):
+    """
+    This method renders form and template to create Ticket type
+    """
+    tag = Tags.objects.get(id=tag_id)
+    form = TagsForm(instance=tag)
+    if request.method == "POST":
+        form = TagsForm(request.POST,instance=tag)
+        if form.is_valid():
+            form.save()
+            form = TagsForm()
+            messages.success(request, _("Tag has been updated successfully!"))
+            return HttpResponse("<script>window.location.reload()</script>")
+    return render(
+        request,
+        "base/tags/tags_form.html",
+        {
+            "form": form,
+            "tag_id":tag_id
+        },
+    )
+
+@login_required
+def tag_delete(request,tag_id):
+    Tags.objects.get(id=tag_id).delete()
+    messages.success(request, _("Tag has been deleted successfully!"))
+    return redirect(tag_view)

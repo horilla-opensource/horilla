@@ -11,7 +11,7 @@ from datetime import timedelta
 from django.contrib.auth import authenticate
 from django import forms
 from django.contrib.auth.models import Group, Permission, User
-from django.forms import DateInput
+from django.forms import DateInput,TextInput
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext as _
 from django.utils.translation import gettext_lazy as _trans
@@ -35,6 +35,7 @@ from base.models import (
     WorkTypeRequest,
     ShiftRequest,
     EmployeeShiftDay,
+    Tags,
 )
 from base.methods import reload_queryset
 from horilla_widgets.widgets.horilla_multi_select_field import HorillaMultiSelectField
@@ -1473,6 +1474,46 @@ class RotatingWorkTypeAssignExportForm(forms.Form):
             "based_on",
         ],
     )
+
+class TagsForm(ModelForm):
+    """
+    Tags form
+    """
+
+    class Meta:
+        """
+        Meta class for additional options
+        """
+
+        model = Tags
+        fields = "__all__"
+        widgets = {
+            
+            'color':TextInput(attrs={'type':'color','style':'height:50px'})
+        }
+        exclude = (
+            'objects',
+        )
+
+class TagsForm(ModelForm):
+    """
+    Tags form
+    """
+
+    class Meta:
+        """
+        Meta class for additional options
+        """
+
+        model = Tags
+        fields = "__all__"
+        widgets = {
+            
+            'color':TextInput(attrs={'type':'color','style':'height:50px'})
+        }
+        exclude = (
+            'objects',
+        )
 
 
 

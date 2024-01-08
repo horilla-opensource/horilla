@@ -1,0 +1,710 @@
+{% load i18n %} {% load i18n %} {% load static %} {% include 'filter_tags.html' %} {% load mathfilters %}
+<div class="oh-tabs__contents" id="view-container">
+	<div class="oh-tabs__content" id="tab_1">
+		{% if my_tickets %}
+			<div class="oh-sticky-table">
+				<div class="oh-sticky-table__table">
+					<div class="oh-sticky-table__thead">
+						<div class="oh-sticky-table__tr">
+							<div class="oh-sticky-table__th" style="width: 10px">
+								<div class="centered-div">
+									<input
+									type="checkbox"
+									title='{% trans "Select All" %}'
+									class="oh-input oh-input__checkbox myTicketsAll"
+									id=""
+									/>
+								</div>
+							</div>
+							<div class="oh-sticky-table__th">{% trans "Ticket Id" %}</div>
+							<div class="oh-sticky-table__th">{% trans "Title" %}</div>
+							<div class="oh-sticky-table__th">{% trans "Owner" %}</div>
+							<div class="oh-sticky-table__th">{% trans "Type" %}</div>
+							<div class="oh-sticky-table__th">{% trans "Raised on" %}</div>
+							<div class="oh-sticky-table__th">{% trans "Assigned to" %}</div>
+							<div class="oh-sticky-table__th">{% trans "Status" %}</div>
+							<div class="oh-sticky-table__th">{% trans "Tags" %}</div>
+							<div class="oh-sticky-table__th">{% trans "Actions" %}</div>
+						</div>
+					</div>
+					<div class="oh-sticky-table__tbody">
+						{% for ticket in my_tickets %}
+							<div class="oh-sticky-table__tr" >	
+								<div class="oh-sticky-table__sd {% if ticket.status == 'new' %}row-status--blue 
+															{% elif ticket.status == 'in_progress' %}row-status--orange
+															{% elif ticket.status == 'resolved' %}row-status--yellowgreen 
+															{% elif ticket.status == 'on_hold' %}row-status--red  
+															{% elif ticket.status == 'canceled' %}row-status--grey{% endif %}"
+								>
+									<div class="centered-div">
+										<input
+										type="checkbox"
+										id="{{ticket.id}}"
+										onchange="highlightRow($(this))"
+										class="oh-input holiday-checkbox oh-input__checkbox my-tickets-row"
+										/>
+									</div>
+								</div>
+								<div class="oh-sticky-table__td">
+									<span class='d-flex justify-content-between align-items-center'
+									>
+										{{ticket.ticket_type.prefix}}{{ ticket.id|stringformat:"03d" }} 
+										<span title = 'due  {% if ticket.deadline == today %} today {% else %}in {{ticket.deadline|sub:today}}{% endif %}'>
+											<ion-icon 
+												class="text-{% if ticket.deadline < today %}danger {% elif ticket.deadline == today %}warning {% else %}success{% endif %}" 
+												name="time-sharp"
+											>
+											</ion-icon>
+										</span>
+									</span>
+								</div>
+								<div class="oh-sticky-table__td">{{ticket.title}}</div>
+								<div class="oh-sticky-table__td">{{ticket.employee_id}}</div>
+								<div class="oh-sticky-table__td">{{ticket.ticket_type}}</div>
+								<div class="oh-sticky-table__td">{{ticket.get_raised_on}}</div>
+								<div class="oh-sticky-table__td">{{ticket.assigned_to.all|join:" , "}}</div>
+								<div class="oh-sticky-table__td">{{ticket.get_status_display}}</div>
+								<div class="oh-sticky-table__td">{{ticket.tags.all|join:" , "}}</div>
+								<div class="oh-sticky-table__td" onclick="event.stopPropagation()">
+									<div class="oh-btn-group">
+										<a 
+											href="{% url 'ticket-detail' ticket.id %}" 
+											type="button" title="{% trans 'View' %}" 
+											class="oh-btn oh-btn--light-bkg p-3 w-50"
+										> 
+											<ion-icon name="eye-outline"></ion-icon>
+										</a>
+										<button
+											class="oh-btn oh-btn--light-bkg p-3 w-50"
+											title="{% trans 'Edit' %}"
+											data-toggle="oh-modal-toggle"
+											data-target="#editModal"
+											hx-get="{% url 'ticket-update' ticket.id %}" 
+											hx-target="#editTarget"
+										>
+											<ion-icon name="create-outline"></ion-icon>
+										</button>
+										<form 
+											action="{% url 'ticket-delete' ticket.id %}"
+											class="w-50"
+											onsubmit="return confirm('{% trans 'Are you sure you want to delete	this Ticket?' %}');" 
+											method='post' onclick="event.stopPropagation()" >
+											{% csrf_token %}
+											<button
+												type="submit"
+												class="oh-btn oh-btn--light-bkg p-3 w-100"
+												title="{% trans 'Delete' %}"
+											>
+												<ion-icon
+													class="me-1 md hydrated"
+													name="trash-outline"
+													role="img"
+													aria-label="trash outline"
+												></ion-icon>
+											</button>
+										</form>
+									</div>
+								</div>
+							</div>
+						{% endfor %}
+					</div>
+				</div>
+			</div>
+			
+			<div class="oh-pagination">
+				<span class="oh-pagination__page">
+				{% trans "Page" %} {{ my_tickets.number }} {% trans "of" %} {{ my_tickets.paginator.num_pages }}.
+				</span>
+				<nav class="oh-pagination__nav">
+				<div class="oh-pagination__input-container me-3">
+					<span class="oh-pagination__label me-1">{% trans "Page" %}</span>
+					<input
+					type="number"
+					name="my_page"
+					class="oh-pagination__input"
+					value="{{my_tickets.number}}"
+					hx-get="{% url 'ticket-filter' %}?{{pd}}"
+					hx-target="#view-container"
+					min="1"
+					/>
+					<span class="oh-pagination__label"
+					>{% trans "of" %} {{my_tickets.paginator.num_pages}}</span
+					>
+				</div>
+				<ul class="oh-pagination__items">
+					{% if my_tickets.has_previous %}
+					<li class="oh-pagination__item oh-pagination__item--wide">
+					<a
+						hx-target="#view-container"
+						hx-get="{% url 'ticket-filter' %}?{{pd}}&my_page=1"
+						class="oh-pagination__link"
+						>{% trans "First" %}</a
+					>
+					</li>
+					<li class="oh-pagination__item oh-pagination__item--wide">
+					<a
+						hx-target="#view-container"
+						hx-get="{% url 'ticket-filter' %}?{{pd}}&my_page={{ my_tickets.previous_page_number }}"
+						class="oh-pagination__link"
+						>{% trans "Previous" %}</a
+					>
+					</li>
+					{% endif %} {% if my_tickets.has_next %}
+					<li class="oh-pagination__item oh-pagination__item--wide">
+					<a
+						hx-target="#view-container"
+						hx-get="{% url 'ticket-filter' %}?{{pd}}&my_page={{ my_tickets.next_page_number }}"
+						class="oh-pagination__link"
+						>{% trans "Next" %}</a
+					>
+					</li>
+					<li class="oh-pagination__item oh-pagination__item--wide">
+					<a
+						hx-target="#view-container"
+						hx-get="{% url 'ticket-filter' %}?{{pd}}&my_page={{ my_tickets.paginator.num_pages }}"
+						class="oh-pagination__link"
+						>{% trans "Last" %}</a
+					>
+					</li>
+					{% endif %}
+				</ul>
+				</nav>
+			</div>
+		{% else %}
+			<!-- start of empty page-->  
+            <div
+                style="
+                    height: 70vh;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                "
+                class=""
+            >
+                <div style="" class="oh-404">
+                    <img
+                        style="display: block; width: 150px; height: 150px; margin: 10px auto top:70% !importent"
+                        src="{% static 'images/ui/ticket.png' %}"
+                        class="mb-4"
+                        alt=""
+                    />
+                    <h3 style="font-size: 20px" class="oh-404__subtitle">
+                        {% trans "There are no tickets at the moment." %}
+                    </h3>
+                </div>	
+            </div>
+            <!-- end of empty page--> 
+		{% endif %}
+	</div>
+	<div class="oh-tabs__content" id="tab_2">
+		{% if allocated_tickets %}
+			<div class="oh-sticky-table">
+				<div class="oh-sticky-table__table">
+					<div class="oh-sticky-table__thead">
+						<div class="oh-sticky-table__tr">
+							<div class="oh-sticky-table__th" style="width: 10px">
+								<div class="centered-div">
+									<input
+									type="checkbox"
+									title='{% trans "Select All" %}'
+									class="oh-input oh-input__checkbox allocatedTicketsAll"
+									/>
+								</div>
+							</div>
+							<div class="oh-sticky-table__th">{% trans "Ticket Id" %}</div>
+							<div class="oh-sticky-table__th">{% trans "Title" %}</div>
+							<div class="oh-sticky-table__th">{% trans "Owner" %}</div>
+							<div class="oh-sticky-table__th">{% trans "Type" %}</div>
+							<div class="oh-sticky-table__th">{% trans "Raised on" %}</div>
+							<div class="oh-sticky-table__th">{% trans "Assigned to" %}</div>
+							<div class="oh-sticky-table__th">{% trans "Status" %}</div>
+							<div class="oh-sticky-table__th">{% trans "Tags" %}</div>
+							<div class="oh-sticky-table__th">{% trans "Actions" %}</div>
+							<div class="oh-sticky-table__th"></div>
+						</div>
+					</div>
+					<div class="oh-sticky-table__tbody">
+						{% for ticket in allocated_tickets %}
+							<div class="oh-sticky-table__tr" >	
+								<div class="oh-sticky-table__sd {% if ticket.status == 'new' %}row-status--blue 
+															{% elif ticket.status == 'in_progress' %}row-status--orange
+															{% elif ticket.status == 'resolved' %}row-status--yellowgreen 
+															{% elif ticket.status == 'on_hold' %}row-status--red  
+															{% elif ticket.status == 'canceled' %}row-status--grey{% endif %}"
+								>
+									<div class="centered-div">
+										<input
+										type="checkbox"
+										id="{{ticket.id}}"
+										onchange="highlightRow($(this))"
+										class="oh-input holiday-checkbox oh-input__checkbox allocted-tickets-row"
+										/>
+									</div>
+								</div>
+								<div class="oh-sticky-table__td">
+									<span class='d-flex justify-content-between align-items-center'
+									>
+										{{ticket.ticket_type.prefix}}{{ ticket.id|stringformat:"03d" }} 
+										<span title = 'due  {% if ticket.deadline == today %} today {% else %}in {{ticket.deadline|sub:today}}{% endif %}'>
+											<ion-icon 
+												class="text-{% if ticket.deadline < today %}danger {% elif ticket.deadline == today %}warning {% else %}success{% endif %}" 
+												name="time-sharp"
+											>
+											</ion-icon>
+										</span>
+									</span>
+								</div>
+								<div class="oh-sticky-table__td">{{ticket.title}}</div>
+								<div class="oh-sticky-table__td">{{ticket.employee_id}}</div>
+								<div class="oh-sticky-table__td">{{ticket.ticket_type}}</div>
+								<div class="oh-sticky-table__td">{{ticket.get_raised_on}}</div>
+								<div class="oh-sticky-table__td">{{ticket.assigned_to.all|join:" , "}}</div>
+								<div class="oh-sticky-table__td">{{ticket.get_status_display}}</div>
+								<div class="oh-sticky-table__td">{{ticket.tags.all|join:" , "}}</div>
+								<div class="oh-sticky-table__td" onclick="event.stopPropagation()">
+									<div class="oh-btn-group" style="border:none">
+										<a 
+											href="{% url 'ticket-detail' ticket.id %}" 
+											type="button" title="{% trans 'View' %}" 
+											class="oh-btn oh-btn--light-bkg p-3"
+										> 
+											<ion-icon name="eye-outline"></ion-icon>
+										</a>
+										{% if ticket.employee_id == request.user.employee_get or perms.helpdesk.changeticket %}
+										<button
+											class="oh-btn oh-btn--light-bkg p-3"
+											title="{% trans 'Edit' %}"
+											data-toggle="oh-modal-toggle"
+											data-target="#editModal"
+											hx-get="{% url 'ticket-update' ticket.id %}" 
+											hx-target="#editTarget"
+										>
+											<ion-icon name="create-outline"></ion-icon>
+										</button>
+										{% endif %}
+										{% if ticket.employee_id == request.user.employee_get or perms.helpdesk.deleteticket %}
+										<form 
+											action="{% url 'ticket-delete' ticket.id %}"
+											onsubmit="return confirm('{% trans 'Are you sure you want to delete	this Ticket?' %}');" 
+											method='post' onclick="event.stopPropagation()" >
+											{% csrf_token %}
+											<button
+												type="submit"
+												class="oh-btn oh-btn--light-bkg p-3"
+												title="{% trans 'Delete' %}"
+											>
+												<ion-icon
+													class="me-1 md hydrated"
+													name="trash-outline"
+													role="img"
+													aria-label="trash outline"
+												></ion-icon>
+											</button>
+										</form>
+										{% endif %}
+									</div>
+								</div>
+								<div class="oh-sticky-table__td">
+									{% if ticket.assigned_to.all %}
+									<a
+										type="submit"
+										class="oh-btn oh-btn--info w-100 oh-btn--disabled"
+										title="{% trans 'claim' %}"
+										>
+										{% trans "Claim" %}
+									</a>
+									{% else %}
+									<a
+										type="submit"
+										href = "{% url 'claim-ticket' ticket.id %}"
+										class="oh-btn oh-btn--info w-100"
+										title="{% trans 'claim' %}"
+										>
+										{% trans "Claim" %}
+									</a>
+									{% endif %}
+								</div>
+							</div>
+						{% endfor %}
+					</div>
+				</div>
+			</div>
+			<div class="oh-pagination">
+				<span class="oh-pagination__page">
+				{% trans "Page" %} {{ allocated_tickets.number }} {% trans "of" %} {{ allocated_tickets.paginator.num_pages }}.
+				</span>
+				<nav class="oh-pagination__nav">
+				<div class="oh-pagination__input-container me-3">
+					<span class="oh-pagination__label me-1">{% trans "Page" %}</span>
+					<input
+					type="number"
+					name="allocated_page"
+					class="oh-pagination__input"
+					value="{{allocated_tickets.number}}"
+					hx-get="{% url 'ticket-filter' %}?{{pd}}"
+					hx-target="#view-container"
+					min="1"
+					/>
+					<span class="oh-pagination__label"
+					>{% trans "of" %} {{allocated_tickets.paginator.num_pages}}</span
+					>
+				</div>
+				<ul class="oh-pagination__items">
+					{% if allocated_tickets.has_previous %}
+					<li class="oh-pagination__item oh-pagination__item--wide">
+					<a
+						hx-target="#view-container"
+						hx-get="{% url 'ticket-filter' %}?{{pd}}&allocated_page=1"
+						class="oh-pagination__link"
+						>{% trans "First" %}</a
+					>
+					</li>
+					<li class="oh-pagination__item oh-pagination__item--wide">
+					<a
+						hx-target="#view-container"
+						hx-get="{% url 'ticket-filter' %}?{{pd}}&allocated_page={{ allocated_tickets.previous_page_number }}"
+						class="oh-pagination__link"
+						>{% trans "Previous" %}</a
+					>
+					</li>
+					{% endif %} {% if allocated_tickets.has_next %}
+					<li class="oh-pagination__item oh-pagination__item--wide">
+					<a
+						hx-target="#view-container"
+						hx-get="{% url 'ticket-filter' %}?{{pd}}&allocated_page={{ allocated_tickets.next_page_number }}"
+						class="oh-pagination__link"
+						>{% trans "Next" %}</a
+					>
+					</li>
+					<li class="oh-pagination__item oh-pagination__item--wide">
+					<a
+						hx-target="#view-container"
+						hx-get="{% url 'ticket-filter' %}?{{pd}}&allocated_page={{ allocated_tickets.paginator.num_pages }}"
+						class="oh-pagination__link"
+						>{% trans "Last" %}</a
+					>
+					</li>
+					{% endif %}
+				</ul>
+				</nav>
+			</div>
+		{% else %}
+			<!-- start of empty page-->  
+            <div
+                style="
+                    height: 70vh;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                "
+                class=""
+            >
+                <div style="" class="oh-404">
+                    <img
+                        style="display: block; width: 150px; height: 150px; margin: 10px auto"
+                        src="{% static 'images/ui/ticket.png' %}"
+                        class="mb-4"
+                        alt=""
+                    />
+                    <h3 style="font-size: 20px" class="oh-404__subtitle">
+                        {% trans "There are no tickets at the moment." %}
+                    </h3>
+                </div>
+            </div>
+            <!-- end of empty page--> 
+		{% endif %}		
+	</div>
+	<div class="oh-tabs__content" id="tab_3">
+		{% if all_tickets %}
+			<div class="oh-sticky-table">
+				<div class="oh-sticky-table__table">
+					<div class="oh-sticky-table__thead">
+						<div class="oh-sticky-table__tr">
+							<div class="oh-sticky-table__th" style="width: 10px">
+								<div class="centered-div">
+									<input
+									type="checkbox"
+									title='{% trans "Select All" %}'
+									class="oh-input oh-input__checkbox allTicketsAll"
+									/>
+								</div>
+							</div>
+							<div class="oh-sticky-table__th">{% trans "Ticket Id" %}</div>
+							<div class="oh-sticky-table__th">{% trans "Title" %}</div>
+							<div class="oh-sticky-table__th">{% trans "Owner" %}</div>
+							<div class="oh-sticky-table__th">{% trans "Type" %}</div>
+							<div class="oh-sticky-table__th">{% trans "Raised on" %}</div>
+							<div class="oh-sticky-table__th">{% trans "Assigned to" %}</div>
+							<div class="oh-sticky-table__th">{% trans "Status" %}</div>
+							<div class="oh-sticky-table__th">{% trans "Tags" %}</div>
+							<div class="oh-sticky-table__th">{% trans "Actions" %}</div>
+						</div>
+					</div>
+					<div class="oh-sticky-table__tbody">
+						{% for ticket in all_tickets %}
+							<div class="oh-sticky-table__tr" >	
+								<div class="oh-sticky-table__sd {% if ticket.status == 'new' %}row-status--blue 
+															{% elif ticket.status == 'in_progress' %}row-status--orange
+															{% elif ticket.status == 'resolved' %}row-status--yellowgreen 
+															{% elif ticket.status == 'on_hold' %}row-status--red  
+															{% elif ticket.status == 'canceled' %}row-status--grey{% endif %}"
+								>
+									<div class="centered-div">
+										<input
+										type="checkbox"
+										id="{{ticket.id}}"
+										onchange="highlightRow($(this))"
+										class="oh-input holiday-checkbox oh-input__checkbox all-tickets-row"
+										/>
+									</div>
+								</div>
+								<div class="oh-sticky-table__td">
+									<span class='d-flex justify-content-between align-items-center'
+									>
+										{{ticket.ticket_type.prefix}}{{ ticket.id|stringformat:"03d" }} 
+										<span title = 'due  {% if ticket.deadline == today %} today {% else %}in {{ticket.deadline|sub:today}}{% endif %}'>
+											<ion-icon 
+												class="text-{% if ticket.deadline < today %}danger {% elif ticket.deadline == today %}warning {% else %}success{% endif %}" 
+												name="time-sharp"
+											>
+											</ion-icon>
+										</span>
+									</span>
+								</div>
+								<div class="oh-sticky-table__td">{{ticket.title}}</div>
+								<div class="oh-sticky-table__td">{{ticket.employee_id}}</div>
+								<div class="oh-sticky-table__td">{{ticket.ticket_type}}</div>
+								<div class="oh-sticky-table__td">{{ticket.get_raised_on}}</div>
+								<div class="oh-sticky-table__td">{{ticket.assigned_to.all|join:" , "}}</div>
+								<div class="oh-sticky-table__td">{{ticket.get_status_display}}</div>
+								<div class="oh-sticky-table__td">{{ticket.tags.all|join:" , "}}</div>
+								<div class="oh-sticky-table__td" onclick="event.stopPropagation()">
+									<div class="oh-btn-group">
+										<a 
+											href="{% url 'ticket-detail' ticket.id %}" 
+											type="button" title="{% trans 'View' %}" 
+											class="oh-btn oh-btn--light-bkg p-3 w-50"
+										> 
+											<ion-icon name="eye-outline"></ion-icon>
+										</a>
+										<button
+											class="oh-btn oh-btn--light-bkg p-3 w-50"
+											title="{% trans 'Edit' %}"
+											data-toggle="oh-modal-toggle"
+											data-target="#editModal"
+											hx-get="{% url 'ticket-update' ticket.id %}" 
+											hx-target="#editTarget"
+										>
+											<ion-icon name="create-outline"></ion-icon>
+										</button>
+										<form 
+											action="{% url 'ticket-delete' ticket.id %}"
+											class="w-50"
+											onsubmit="return confirm('{% trans 'Are you sure you want to delete	this Ticket?' %}');" 
+											method='post' onclick="event.stopPropagation()" >
+											{% csrf_token %}
+											<button
+												type="submit"
+												class="oh-btn oh-btn--light-bkg p-3 w-100"
+												title="{% trans 'Delete' %}"
+											>
+												<ion-icon
+													class="me-1 md hydrated"
+													name="trash-outline"
+													role="img"
+													aria-label="trash outline"
+												></ion-icon>
+											</button>
+										</form>
+									</div>
+								</div>
+							</div>
+						{% endfor %}
+					</div>
+				</div>
+			</div>
+			<div class="oh-pagination">
+				<span class="oh-pagination__page">
+				{% trans "Page" %} {{ all_tickets.number }} {% trans "of" %} {{ all_tickets.paginator.num_pages }}.
+				</span>
+				<nav class="oh-pagination__nav">
+				<div class="oh-pagination__input-container me-3">
+					<span class="oh-pagination__label me-1">{% trans "Page" %}</span>
+					<input
+					type="number"
+					name="all_page"
+					class="oh-pagination__input"
+					value="{{all_tickets.number}}"
+					hx-get="{% url 'ticket-filter' %}?{{pd}}"
+					hx-target="#view-container"
+					min="1"
+					/>
+					<span class="oh-pagination__label"
+					>{% trans "of" %} {{all_tickets.paginator.num_pages}}</span
+					>
+				</div>
+				<ul class="oh-pagination__items">
+					{% if all_tickets.has_previous %}
+					<li class="oh-pagination__item oh-pagination__item--wide">
+					<a
+						hx-target="#view-container"
+						hx-get="{% url 'ticket-filter' %}?{{pd}}&all_page=1"
+						class="oh-pagination__link"
+						>{% trans "First" %}</a
+					>
+					</li>
+					<li class="oh-pagination__item oh-pagination__item--wide">
+					<a
+						hx-target="#view-container"
+						hx-get="{% url 'ticket-filter' %}?{{pd}}&all_page={{ all_tickets.previous_page_number }}"
+						class="oh-pagination__link"
+						>{% trans "Previous" %}</a
+					>
+					</li>
+					{% endif %} {% if all_tickets.has_next %}
+					<li class="oh-pagination__item oh-pagination__item--wide">
+					<a
+						hx-target="#view-container"
+						hx-get="{% url 'ticket-filter' %}?{{pd}}&all_page={{ all_tickets.next_page_number }}"
+						class="oh-pagination__link"
+						>{% trans "Next" %}</a
+					>
+					</li>
+					<li class="oh-pagination__item oh-pagination__item--wide">
+					<a
+						hx-target="#view-container"
+						hx-get="{% url 'ticket-filter' %}?{{pd}}&all_page={{ all_tickets.paginator.num_pages }}"
+						class="oh-pagination__link"
+						>{% trans "Last" %}</a
+					>
+					</li>
+					{% endif %}
+				</ul>
+				</nav>
+			</div>
+		{% else %}
+			<!-- start of empty page-->  
+            <div
+                style="
+                    height: 70vh;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                "
+                class=""
+            >
+                <div style="" class="oh-404">
+                    <img
+                        style="display: block; width: 150px; height: 150px; margin: 10px auto"
+                        src="{% static 'images/ui/ticket.png' %}"
+                        class="mb-4"
+                        alt=""
+                    />
+                    <h3 style="font-size: 20px" class="oh-404__subtitle">
+                        {% trans "There are no tickets at the moment." %}
+                    </h3>
+                </div>
+            </div>
+            <!-- end of empty page--> 
+		{% endif %}		
+	</div>
+</div>
+
+<script>
+	// TO recogonise recently used tab
+    var activeTab = localStorage.getItem("activeTabTicket");
+    if (activeTab != null) {
+        var tab = $(`[data-target="${activeTab}"]`);
+        var tabContent = $(activeTab);
+        $(tab).attr("class", "oh-tabs__tab oh-tabs__tab--active");
+        $(tabContent).attr(
+            "class",
+            "oh-tabs__content oh-tabs__content--active"
+        );
+    } else {
+        $('[data-target="#tab_1"]').attr(
+            "class",
+            "oh-tabs__tab oh-tabs__tab--active"
+        );
+        $("#tab_1").attr("class", "oh-tabs__content oh-tabs__content--active");
+    }
+    $(".oh-tabs__tab").click(function (e) {
+        var activeTab = $(this).attr("data-target");
+        localStorage.setItem("activeTabTicket", activeTab);
+    });
+
+	// TO toggle class for select all button in All tickets tab
+	$(".allTicketsAll").change(function (e) {
+		var is_checked = $(this).is(":checked");
+		if (is_checked) {
+		  $(".all-tickets-row").prop("checked", true)
+		  .closest(".oh-sticky-table__tr")
+		  .addClass("highlight-selected");
+		} else {
+		  $(".all-tickets-row").prop("checked", false)
+		  .closest(".oh-sticky-table__tr")
+		  .removeClass("highlight-selected");
+		}
+	});
+
+	// TO toggle class for select all button in Allocated tickets tab
+	$(".allocatedTicketsAll").change(function (e) {
+		var is_checked = $(this).is(":checked");
+		if (is_checked) {
+		  $(".allocted-tickets-row").prop("checked", true)
+		  .closest(".oh-sticky-table__tr")
+		  .addClass("highlight-selected");
+		} else {
+		  $(".allocted-tickets-row").prop("checked", false)
+		  .closest(".oh-sticky-table__tr")
+		  .removeClass("highlight-selected");
+		}
+	});
+
+	// TO toggle class for select all button in My tickets tab
+	$(".myTicketsAll").change(function (e) {
+		var is_checked = $(this).is(":checked");
+		if (is_checked) {
+		  $(".my-tickets-row").prop("checked", true)
+		  .closest(".oh-sticky-table__tr")
+		  .addClass("highlight-selected");
+		} else {
+		  $(".my-tickets-row").prop("checked", false)
+		  .closest(".oh-sticky-table__tr")
+		  .removeClass("highlight-selected");
+		}
+	});
+	$(document).ready(function () {
+		tickTicketsCheckboxes();
+		$(".my-tickets-row").change(function () {
+			addingTicketsIds();
+		});
+		$(".myTicketsAll").change(function () {
+			addingTicketsIds();
+		});
+
+		$(".allocted-tickets-row").change(function () {
+			addingTicketsIds();
+		});
+		$(".allocatedTicketsAll").change(function () {
+			addingTicketsIds();
+		});
+		$(".all-tickets-row").change(function () {
+		  	addingTicketsIds();
+		});
+		$(".allTicketsAll").change(function () {
+		  	addingTicketsIds();
+		});
+
+		$("#selectAllTickets").click(function () {
+		  selectAllTickets();
+		});
+		$("#unselectAllTickets").click(function () {
+		  unselectAllTickets();
+		});
+		{% comment %} $("#exportObjectives").click(function (e) {
+		  exportObjectives();
+		}); {% endcomment %}
+	  });
+</script>
+<script src="{% static 'tickets/action.js' %}"></script>

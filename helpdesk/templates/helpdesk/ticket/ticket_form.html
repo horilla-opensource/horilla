@@ -1,0 +1,79 @@
+{% load i18n %}
+{% if form.errors %}
+<!-- form errors  -->
+    <div class="oh-wrapper">
+        <div class="oh-alert-container">
+            {% for error in form.non_field_errors %}
+            <div class="oh-alert oh-alert--animated oh-alert--danger">
+                {{ error }}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endif %}
+<div hidden id=cur_raised_on value= "{{form.instance.raised_on}}">{{form.instance.raised_on}}</div>
+<form  hx-post="{% if ticket_id %}{% url 'ticket-update' ticket_id %}{% else %}{% url 'ticket-create' %}{% endif %}"  
+    hx-encoding="multipart/form-data">
+    {% csrf_token %}
+    {{form.as_p}}
+</form>
+
+<script>
+    $(document).ready( function(){
+        var assigning_type = $('#id_assigning_type').val();
+        
+    
+        if (assigning_type) {  
+            $.ajax({
+                type: "GET",
+                url: "/helpdesk/get-raised-on",
+                data: {
+                    'assigning_type': assigning_type,
+                },
+                success: function (response) {
+                    var raised_on = response.raised_on;
+                    var cur_raised_on = $('#cur_raised_on').attr('value');
+                    // Clear the existing options
+                    $('#id_raised_on').empty();
+                    var options = $('<option value="" >').text('---------');
+                    $('#id_raised_on').append(options);
+    
+                    $.each(raised_on, function (id, obj) {
+                        // looping all raised_on
+                        var options = $('<option value="' + obj.id + '" ' + (obj.id == cur_raised_on ? 'selected="selected"' : '') + '>').text(obj.name);
+                        $('#id_raised_on').append(options);
+                    });
+                },
+            });
+        } else {
+            var options = $('<option value="" selected="selected">').text('---------');
+            $('#id_raised_on').append(options);
+        }
+
+        $('#id_assigning_type').change(function(){
+
+            var assigning_type = $('#id_assigning_type').val()
+            $.ajax({
+                type: "GET",
+                url: "/helpdesk/get-raised-on",
+                data:{
+                    'assigning_type':assigning_type,
+                },
+                success: function (response) {
+                    var raised_on = response.raised_on
+                    // Clear the existing options
+                    $('#id_raised_on').empty();
+                    var options = $(`<option value=" " selected="selected">`).text(`---------`);
+
+                    $('#id_raised_on').append(options)
+                    $.each(raised_on, function (id,obj) {
+                        // looping all raised_on
+                        var options = $(`<option value=" ${obj.id}">`).text(obj.name);
+                        $('#id_raised_on').append(options)
+                      });
+                    
+                },
+            });
+        })
+    })
+</script>

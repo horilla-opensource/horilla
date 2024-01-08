@@ -1,0 +1,151 @@
+{% load i18n %}
+<section class="oh-wrapper oh-main__topbar" x-data="{searchShow: false}">
+	<div class="oh-main__titlebar oh-main__titlebar--left">
+		<h1 class="oh-main__titlebar-title fw-bold">
+			{% trans "Tickets" %}
+		</h1>
+		<a
+			class="oh-main__titlebar-search-toggle"
+			role="button"
+			aria-label="Toggle Search"
+			@click="searchShow = !searchShow"
+		>
+			<ion-icon
+				name="search-outline"
+				class="oh-main__titlebar-serach-icon"
+			></ion-icon>
+		</a>
+	</div>
+	<div class="oh-main__titlebar oh-main__titlebar--right">
+		{% if my_tickets or allocated_tickets or all_tickets %}
+            {% include "helpdesk/ticket/ticket_filter.html" %}
+		{% endif %}
+
+		<!-- start of action button  -->
+		{% if request.GET.view != 'card' %}
+			<div class="oh-dropdown ml-2" x-data="{open: false}">
+				<button
+				class="oh-btn oh-btn--dropdown"
+				@click="open = !open"
+				@click.outside="open = false"
+				>
+				{% trans "Actions" %}
+				</button>
+				<div
+				class="oh-dropdown__menu oh-dropdown__menu--right"
+				x-show="open"
+				style="display: none"
+				>
+				<ul class="oh-dropdown__items">
+					{% comment %} <li class="oh-dropdown__item">
+					<a
+						href="#"
+						class="oh-dropdown__link"
+						data-toggle="oh-modal-toggle"
+						data-target="#ticketsExport"
+						>{% trans "Export" %}</a
+					>
+					</li> {% endcomment %}
+					<li class="oh-dropdown__item">
+						<a
+						href="#"
+						class="oh-dropdown__link"
+						data-toggle="oh-modal-toggle"
+						data-target="#ticketsBulkArchive"
+						onclick = "ticketBulkArchive(event)"
+						>{% trans "Archive" %}</a
+						>
+					</li>
+					<li class="oh-dropdown__item">
+						<a
+						href="#"
+						class="oh-dropdown__link"
+						data-toggle="oh-modal-toggle"
+						data-target="#ticketsBulkUnarchive"
+						onclick = "ticketBulkUnArchive(event)"
+						>{% trans "Un Archive" %}</a
+						>
+					</li>
+					<li class="oh-dropdown__item">
+					<a
+						href="#"
+						id="ticketsBulkDelete"
+						class="oh-dropdown__link oh-dropdown__link--danger"
+						onclick = "ticketsBulkDelete(event)"
+						>{% trans "Delete" %}</a
+					>
+					</li>
+				</ul>
+				</div>
+			</div>
+		{% endif %}
+		<!-- end of action button  -->
+
+		<!-- start of create button  -->
+		<div class="oh-btn-group ml-2">
+			<div class="oh-dropdown" x-data="{open: false}">
+				<button
+					class="oh-btn oh-btn--secondary oh-btn--shadow"
+					data-toggle="oh-modal-toggle"
+					data-target="#createModal1"
+					hx-get="{% url 'ticket-create' %}"
+					hx-target="#createTarget"
+				>
+					<ion-icon
+						name="add-outline"
+						class="me-1 md hydrated"
+						role="img"
+						aria-label="add outline"
+					></ion-icon>
+					{% trans "Create" %}
+				</button>
+			</div>
+		</div>
+		<!-- end of create button    -->
+	</div>
+</section>
+
+
+<!-- modals  -->
+<div
+	class="oh-modal"
+	id="createModal1"
+	role="dialog"
+	aria-labelledby="createDialogModal"
+	aria-hidden="true"
+>
+	<div class="oh-modal__dialog">
+		<div class="oh-modal__dialog-header">
+			<h2 class="oh-modal__dialog-title" id="createTitle">
+				{% trans "Create Ticket" %}
+			</h2>
+			<button class="oh-modal__close" aria-label="Close">
+				<ion-icon name="close-outline"></ion-icon>
+			</button>
+		</div>
+		<div class="oh-modal__dialog-body" id="createTarget"></div>
+	</div>
+</div>
+
+<div
+	class="oh-modal"
+	id="editModal"
+	role="dialog"
+	aria-labelledby="editDialogModal"
+	aria-hidden="true"
+>
+	<div class="oh-modal__dialog">
+		<div class="oh-modal__dialog-header">
+			<h2 class="oh-modal__dialog-title" id="editTitle">
+				{% trans "Update Ticket" %}
+			</h2>
+			<button class="oh-modal__close" aria-label="Close">
+				<ion-icon name="close-outline"></ion-icon>
+			</button>
+		</div>
+		<div class="oh-modal__dialog-body" id="editTarget"></div>
+	</div>
+</div>
+<!-- end of modals  -->
+
+{% comment %} <script src="{% static 'tickets/action.js' %}"></script> {% endcomment %}

@@ -559,4 +559,29 @@ urlpatterns = [
         views.rotating_work_type_select_filter,
         name="r-work-type-select-filter",
     ),
+    path(
+        "ticket-type-view",views.ticket_type_view,name="ticket-type-view"
+    ),
+    path(
+        "ticket-type-create",views.ticket_type_create,name="ticket-type-create"
+    ),
+    path(
+        "ticket-type-update/<int:t_type_id>",views.ticket_type_update,name="ticket-type-update"
+    ),
+    path(
+        "ticket-type-delete/<int:t_type_id>",views.ticket_type_delete,name="ticket-type-delete"
+    ),
+    path(
+        "tag-view",views.tag_view,name="tag-view"
+    ),
+    path(
+        "tag-create",views.tag_create,name="tag-create"
+    ),
+    path(
+        "tag-update/<int:tag_id>",views.tag_update,name="tag-update"
+    ),
+    path(
+        "tag-delete/<int:tag_id>",views.tag_delete,name="tag-delete"
+    ),
+      
 ]

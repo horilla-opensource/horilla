@@ -126,6 +126,22 @@
 						</li>
 						<li class="oh-inner-sidebar__item">
 							<a
+								id="ticket_type"
+								href="{% url 'ticket-type-view' %}"
+								class="oh-inner-sidebar__link oh-dropdown__link"
+								>{% trans "Ticket Type" %}</a
+							>
+						</li>
+						<li class="oh-inner-sidebar__item">
+							<a
+								id="ticket_type"
+								href="{% url 'tag-view' %}"
+								class="oh-inner-sidebar__link oh-dropdown__link"
+								>{% trans "Tags" %}</a
+							>
+						</li>
+						<li class="oh-inner-sidebar__item">
+							<a
 								id="employeePermission"
 								href="{% url 'employee-permission-assign' %}"
 								class="oh-inner-sidebar__link oh-dropdown__link"

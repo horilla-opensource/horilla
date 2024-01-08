@@ -693,6 +693,53 @@
           </ul>
         </div>
       </li>
+      <li
+        class="oh-sidebar__menu-item"
+        x-data="{ isOpen: getOpenState('helpDeskNav') }"
+      >
+        <a
+          class="oh-sidebar__menu-link"
+          data-id="helpDeskNav"
+          x-on:click.prevent="isOpen = !isOpen; saveOpenState('helpDeskNav', isOpen)"
+          x-bind:class="isOpen ? 'oh-sidebar__menu-link--active' : ''"
+          style="cursor: pointer"
+        >
+          <div class="oh-sidebar__menu-icon">
+            <img
+              src="{% static 'images/ui/headset-solid.svg' %}"
+              alt="Dashboard"
+              width="24"
+              height="24"
+            />
+          </div>
+          <span>{% trans "Help Desk" %}</span>
+        </a>
+        <div
+          class="oh-sidebar__submenu"
+          id="helpDeskNav"
+          style="display: none"
+          x-show="isOpen"
+          x-transition
+          style="display: none"
+        >
+          <ul class="oh-sidebar__submenu-items">
+            <li class="oh-sidebar__submenu-item">
+              <a
+                href="{% url 'faq-category-view' %}"
+                class="oh-sidebar__submenu-link"
+                >{% trans "FAQs" %}</a
+              >
+            </li>
+            <li class="oh-sidebar__submenu-item">
+              <a
+                href="{% url 'ticket-view' %}"
+                class="oh-sidebar__submenu-link"
+                >{% trans "Tickets" %}</a
+              >
+            </li>
+          </ul>
+        </div>
+      </li>
     </ul>
   </div>
 </div>

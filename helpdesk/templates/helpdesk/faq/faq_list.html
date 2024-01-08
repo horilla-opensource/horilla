@@ -1,0 +1,72 @@
+{% load i18n %}
+{% include 'filter_tags.html' %}
+<div class="oh-card">
+	<div class="oh-faq">
+		<ul class="oh-faq__items">
+			{% for faq in faqs %}
+			<li class="oh-faq__item">
+				<div class="oh-faq__item-header">
+					<div class="oh-faq__item-header__left">
+						<span class="oh-faq__item-title"> {{faq.question}} </span>
+						<ul class="oh-faq__tags">
+							{% for tag in faq.tags.all %}
+							<li class="oh-faq__tag text-light" style="background:{{tag.color}};">{{tag|capfirst}}</li>
+							{% endfor %}
+						</ul>
+					</div>
+					{% if perms.helpdesk.change_faq %}
+					<div class="oh-faq__item-header__right">
+						<button
+							class="oh-btn oh-btn--sq oh-btn--transparent"
+							title="{% trans 'Edit' %}"
+							data-toggle="oh-modal-toggle"
+							data-target="#faqCreate"
+							hx-get="{% url 'faq-update' faq.id %}"
+							hx-target="#faqCreate"
+							onclick='event.stopPropagation()'
+						>
+							<ion-icon name="create-outline"></ion-icon>
+						</button>
+						<form
+							action="{% url 'faq-delete' faq.id %}"
+							class="w-50"
+							onsubmit="return confirm('{% trans "Are you sure you want to delete	this FAQ?" %}');" 
+							method="post"
+							onclick="event.stopPropagation()"
+						>
+							{% csrf_token %}
+							<button
+								type="submit"
+								class="oh-btn oh-btn--sq oh-btn--danger-text oh-btn--transparent"
+								title="{% trans 'Delete' %}"
+							>
+								<ion-icon
+									class="me-1 md hydrated"
+									name="trash-outline"
+									role="img"
+									aria-label="trash outline"
+								></ion-icon>
+							</button>
+						</form>
+					</div>
+					{% endif %}
+				</div>
+				<div class="oh-faq__item-body">{{faq.answer}}</div>
+			</li>
+			{% endfor %}
+		</ul>
+	</div>
+</div>
+
+	<script>
+		$(document).ready(function(){
+			$(".oh-faq__item-header").on("click", function(){
+				if ($(this).parent(".oh-faq__item--show").length !=0){
+					$(".oh-faq__item--show").removeClass("oh-faq__item--show");		
+				} else {
+					$(".oh-faq__item--show").removeClass("oh-faq__item--show");	
+					$(this).parent('.oh-faq__item').addClass("oh-faq__item--show");
+				}
+			})
+		});
+	</script>

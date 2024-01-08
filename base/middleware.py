@@ -63,6 +63,7 @@ class CompanyMiddleware:
                 "asset",
                 "pms",
                 "base",
+                "helpdesk",
             ]
             app_models = [
                 model

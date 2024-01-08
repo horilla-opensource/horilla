@@ -22,6 +22,7 @@ import notifications.urls
 
 
 urlpatterns = [
+    path('admin/',admin.site.urls),
     path('',include('base.urls')),
     path('recruitment/',include('recruitment.urls')),
     path('employee/',include('employee.urls')),
@@ -31,6 +32,7 @@ urlpatterns = [
     path('asset/',include('asset.urls')),
     path('attendance/',include('attendance.urls')), 
     path('payroll/',include('payroll.urls.urls')), 
+    path('helpdesk/',include('helpdesk.urls')), 
     re_path('^inbox/notifications/', include(notifications.urls, namespace='notifications')),
     path('i18n/', include('django.conf.urls.i18n')),
 

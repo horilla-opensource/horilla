@@ -849,6 +849,17 @@ class ShiftRequest(models.Model):
         return f"{self.employee_id}"
 
 
+class Tags(models.Model):
+    title = models.CharField(max_length=30)
+    color = models.CharField(max_length=30)
+    is_active = models.BooleanField(default=True)
+    company_id = models.ForeignKey(Company,null=True, editable=False, on_delete=models.PROTECT)
+    objects = HorillaCompanyManager(
+        related_company_field="company_id"
+    )
+
+    def __str__(self):
+        return self.title
 class DynamicEmailConfiguration(models.Model):
     """
     SingletoneModel to keep the mail server configurations

@@ -1,0 +1,57 @@
+{% load i18n %}
+  <div
+    class="oh-dropdown__menu oh-dropdown__menu--top-align oh-dropdown__filter p-4"
+    style="right: 57px;bottom:100px"
+    x-data="{open: true}"
+    x-show="open"
+    @click.outside="open = false"
+  >
+    <form action="{% url 'ticket-change-raised-on' ticket_id %}" method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      <div class="oh-input-group">
+        <label for="id_name" class="oh-label">{% trans 'Responsibility' %}</label>
+        <label class="oh-input__label" for="id_assigning_type">{% trans "Assigning type" %}</label>
+        {{form.assigning_type}}
+        <label class="oh-input__label" for="id_raised_on">{% trans "Raised on" %}</label>
+        {{form.raised_on}}
+      </div>
+      <button
+        type="submit"
+        class="oh-btn oh-d-hide oh-btn--small oh-btn--secondary oh-btn--add-advanced-tab w-100 mt-3 mb-2"
+      >
+        <ion-icon class="me-1" name="add-circle-outline"></ion-icon>
+        {% trans 'Save Changes' %}
+      </button>
+    </form>
+  </div>
+
+<script>
+  $(document).ready( function(){
+    $('#id_assigning_type').change(function(){
+      var assigning_type = $('#id_assigning_type').val()
+      console.log(assigning_type)
+      $.ajax({
+        type: "GET",
+        url: "/helpdesk/get-raised-on",
+        data:{
+          'assigning_type':assigning_type,
+        },
+        success: function (response) {
+          console.log(response.raised_on)
+          var raised_on = response.raised_on
+          // Clear the existing options
+          $('#id_raised_on').empty();
+          var options = $(`<option value=" " selected="selected">`).text(`---------`);
+
+          $('#id_raised_on').append(options)
+          $.each(raised_on, function (id,obj) {
+            // looping all raised_on
+            console.log(obj.id,obj.name)
+            var options = $(`<option value=" ${obj.id}">`).text(obj.name);
+            $('#id_raised_on').append(options)
+          });    
+        },
+      });
+    })
+  })
+</script>

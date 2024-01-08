@@ -75,6 +75,10 @@ def get_diff(instance):
             new = change.new
             field = instance._meta.get_field(change.field)
             is_fk = False
+            if isinstance(field, models.fields.CharField) and field.choices:
+                choices = dict(field.choices)
+                old = choices[old]
+                new = choices[new]
             if isinstance(field, models.ForeignKey):
                 is_fk = True
                 # old = getattr(pair[0], change.field)
