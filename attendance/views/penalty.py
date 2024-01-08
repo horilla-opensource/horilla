@@ -46,7 +46,6 @@ def cut_available_leave(request, instance_id):
 
 
 @login_required
-@manager_can_enter("attendance.view_penalty")
 def view_penalties(request):
     """
     This method is used to filter or view the penalties

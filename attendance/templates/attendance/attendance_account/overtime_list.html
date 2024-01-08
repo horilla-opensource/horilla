@@ -65,10 +65,10 @@
 							</div>
 					  		<div class="oh-sticky-table__td" onclick="event.stopPropagation()">
 					  		  	<div class="oh-btn-group">
-					  		  		{% if perms.recruitment.change_attendanceovertime or request.user|is_reportingmanager %}
+					  		  		{% if perms.attendance.change_attendanceovertime or request.user|is_reportingmanager %}
 					  		  			<a hx-get="{% url 'attendance-overtime-update' ot.id %}" hx-target='#updateAttendanceOTModalBody' data-toggle='oh-modal-toggle' data-target='#updateOtModal'  class="oh-btn oh-btn--light-bkg w-50" title="{% trans 'Edit' %}"><ion-icon name="create-outline"></ion-icon></a>
 					  		  		{% endif %}
-					  		  		{% if perms.recruitment.delete_attendance %}
+					  		  		{% if perms.attendance.delete_attendanceovertime or request.user|is_reportingmanager %}
 					  		  			<form action="{% url 'attendance-overtime-delete' ot.id  %}" 
 											onsubmit="return confirm('{% trans "Are you sure want to delete this attendance?" %}')" 
 											hx-target="#ot-table" method='post' class='w-50'>

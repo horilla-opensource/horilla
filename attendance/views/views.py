@@ -1400,7 +1400,14 @@ def activity_attendance_select(request):
     page_number = request.GET.get("page")
 
     if page_number == "all":
-        employees = AttendanceActivity.objects.all()
+        if request.user.has_perm("attendance.view_attendanceovertime"):
+            employees = AttendanceActivity.objects.all()
+        else:
+            employees = AttendanceActivity.objects.filter(
+                employee_id__employee_user_id=request.user
+            ) | AttendanceActivity.objects.filter(
+                employee_id__employee_work_info__reporting_manager_id__employee_user_id=request.user
+            )
 
     employee_ids = [str(emp.id) for emp in employees]
     total_count = employees.count()
@@ -1437,7 +1444,14 @@ def latecome_attendance_select(request):
     page_number = request.GET.get("page")
 
     if page_number == "all":
-        employees = AttendanceLateComeEarlyOut.objects.all()
+        if request.user.has_perm("attendance.view_attendancelatecomeearlyout"):
+            employees = AttendanceLateComeEarlyOut.objects.all()
+        else:
+            employees = AttendanceLateComeEarlyOut.objects.filter(
+                employee_id__employee_user_id=request.user
+            ) | AttendanceLateComeEarlyOut.objects.filter(
+                employee_id__employee_work_info__reporting_manager_id__employee_user_id=request.user
+            )
 
     employee_ids = [str(emp.id) for emp in employees]
     total_count = employees.count()
