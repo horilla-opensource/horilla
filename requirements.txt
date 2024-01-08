@@ -12,6 +12,7 @@ Django==4.2.7
 django-apscheduler==0.6.2
 django-cors-headers==4.3.1
 django-filter==23.4
+django-haystack==3.2.1
 django-jsonfield==1.4.1
 django-mathfilters==1.0.0
 django-model-utils==4.3.1
@@ -57,5 +58,6 @@ uritools==4.0.2
 urllib3==2.1.0
 utils==1.0.1
 webencodings==0.5.1
+Whoosh==2.7.4
 xhtml2pdf==0.2.13
 XlsxWriter==3.1.9
