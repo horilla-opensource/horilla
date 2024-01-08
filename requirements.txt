@@ -59,4 +59,3 @@ utils==1.0.1
 webencodings==0.5.1
 xhtml2pdf==0.2.13
 XlsxWriter==3.1.9
-
