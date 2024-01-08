@@ -346,7 +346,6 @@
           style="display: none"
         >
           <ul class="oh-sidebar__submenu-items">
-            {% if perms.payroll.view_payroll %}
             <li class="oh-sidebar__submenu-item">
               <a
                 href="{%url 'view-payroll-dashboard' %}"
@@ -354,7 +353,7 @@
                 >{% trans "Dashboard" %}</a
               >
             </li>
-            {% endif %} {% if perms.payroll.view_allowance %}
+            {% if perms.payroll.view_contract %}
             <li class="oh-sidebar__submenu-item">
               <a
                 href="{%url 'view-contract' %}"
@@ -384,7 +383,7 @@
                 >{% trans "Payslip" %}</a
               >
             </li>
-            {% if perms.payroll.view_deduction %}
+            {% if perms.payroll.view_filingstatus %}
             <li class="oh-sidebar__submenu-item">
               <a
                 href="{%url 'filing-status-view' %}"
