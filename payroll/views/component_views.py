@@ -570,7 +570,7 @@ def create_payslip(request):
 
 
 @login_required
-@permission_required("payroll.add_attendance")
+@permission_required("payroll.add_payslip")
 def validate_start_date(request):
     """
     This method to validate the contract start date and the pay period start date

@@ -446,7 +446,6 @@ def contract_info_initial(request):
 
 
 @login_required
-@permission_required("payroll.view_dashboard")
 def view_payroll_dashboard(request):
     """
     Dashboard rendering views
@@ -1119,7 +1118,7 @@ def contract_select(request):
     page_number = request.GET.get("page")
 
     if page_number == "all":
-        employees = Contract.objects.filter(is_active=True)
+        employees = Contract.objects.all()
 
     contract_ids = [str(emp.id) for emp in employees]
     total_count = employees.count()
@@ -1154,7 +1153,14 @@ def payslip_select(request):
     page_number = request.GET.get("page")
 
     if page_number == "all":
-        employees = Payslip.objects.all()
+        if request.user.has_perm("payroll.view_payslip"):
+            employees = Payslip.objects.all()
+        else:
+            employees = Payslip.objects.filter(
+                employee_id__employee_user_id=request.user
+            ) | Payslip.objects.filter(
+                employee_id__employee_work_info__reporting_manager_id__employee_user_id=request.user
+            )
 
     payslip_ids = [str(emp.id) for emp in employees]
     total_count = employees.count()

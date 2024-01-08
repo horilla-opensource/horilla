@@ -23,7 +23,6 @@ from payroll.models.tax_models import (
 from payroll.forms.tax_forms import (
     FilingStatusForm,
     TaxBracketForm,
-    FederalTaxForm,
 )
 from payroll.models.models import FilingStatus
 
@@ -249,41 +248,3 @@ def delete_tax_bracket(request, tax_bracket_id):
     messages.info(request, _("Tax bracket successfully deleted."))
     return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 
-
-@login_required
-@permission_required("payroll.")
-def create_federal_tax(request):
-    """
-    Create a federal tax record based on user input.
-
-    If the request method is POST and the form data is valid, calculate the federal tax
-    based on the taxable amount and filing status. Save the federal tax record and redirect
-    to the create-federal-tax page.
-
-    """
-    federal_tax_form = FederalTaxForm()
-    context = {"form": federal_tax_form}
-    if request.method == "POST":
-        federal_tax_form = FederalTaxForm(request.POST)
-        if federal_tax_form.is_valid():
-            taxable_amount = federal_tax_form.cleaned_data["taxable_gross"]
-            filing_status = federal_tax_form.cleaned_data["filing_status_id"]
-            tax_brackets = TaxBracket.objects.filter(
-                filing_status_id=filing_status
-            ).order_by("min_income")
-            federal_tax = 0
-            remaining_income = taxable_amount
-            if tax_brackets.first().min_income <= taxable_amount:
-                for tax_bracket in tax_brackets:
-                    min_income = tax_bracket.min_income
-                    max_income = tax_bracket.max_income
-                    tax_rate = tax_bracket.tax_rate
-                    if remaining_income <= 0:
-                        break
-                    taxable_amount = min(remaining_income, max_income - min_income)
-                    tax_amount = taxable_amount * tax_rate / 100
-                    federal_tax += tax_amount
-                    remaining_income -= taxable_amount
-            federal_tax_form.save()
-            return redirect("create-federal-tax")
-    return render(request, "payroll/tax/federal_tax.html", context)

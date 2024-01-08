@@ -2,7 +2,6 @@
 {% load i18n %}
 {% include 'filter_tags.html' %}
 {% if not request.GET.dashboard %}
-  {% if perms.payroll.delete_payslip %}
     <div
       class="oh-checkpoint-badge text-success mb-2"
       id="selectAllPayslip"
@@ -17,7 +16,6 @@
     >
       {% trans "Unselect All Payslips" %}
     </div>
-  {% endif %}
     <div
       class="oh-checkpoint-badge text-info mb-2"
       id="exportPayslips"

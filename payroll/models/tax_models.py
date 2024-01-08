@@ -109,12 +109,12 @@ class TaxBracket(models.Model):
                 )
 
 
-class FederalTax(models.Model):
-    """
-    FederalTax models
-    """
+# class FederalTax(models.Model):
+#     """
+#     FederalTax models
+#     """
 
-    filing_status_id = models.ForeignKey(
-        FilingStatus, models.CASCADE, verbose_name=_("Filing Status")
-    )
-    taxable_gross = models.IntegerField(null=False, blank=False)
+#     filing_status_id = models.ForeignKey(
+#         FilingStatus, models.CASCADE, verbose_name=_("Filing Status")
+#     )
+#     taxable_gross = models.IntegerField(null=False, blank=False)

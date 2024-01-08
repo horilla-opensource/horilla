@@ -49,5 +49,4 @@ urlpatterns = [
         tax_views.delete_tax_bracket,
         name="tax-bracket-delete",
     ),
-    path("create-federal-tax", tax_views.create_federal_tax, name="create-federal-tax"),
 ]

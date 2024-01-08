@@ -39,22 +39,24 @@
           />
         </div>
       {% endif %}
-      <div class="oh-main__titlebar-button-container">
-        <div class="oh-btn-group ml-2">
-          <div>
-            <a
-              class="oh-btn oh-btn--secondary oh-btn--shadow"
-              data-toggle="oh-modal-toggle"
-              data-target="#FilingStatusModal"
-              hx-get="{% url 'create-filing-status' %}"
-              hx-target="#FilingStatusFormTarget"
-             >
-              <ion-icon class="me-2" name="add-outline"></ion-icon>
-              {% trans "Create" %}
-            </a>
+      {% if perms.payroll.add_filingstatus %}
+        <div class="oh-main__titlebar-button-container">
+          <div class="oh-btn-group ml-2">
+            <div>
+              <a
+                class="oh-btn oh-btn--secondary oh-btn--shadow"
+                data-toggle="oh-modal-toggle"
+                data-target="#FilingStatusModal"
+                hx-get="{% url 'create-filing-status' %}"
+                hx-target="#FilingStatusFormTarget"
+              >
+                <ion-icon class="me-2" name="add-outline"></ion-icon>
+                {% trans "Create" %}
+              </a>
+            </div>
           </div>
         </div>
-      </div>
+      {% endif %}
     </div>
   </section>
   <div id="FilingStatusList" class="oh-wrapper">
