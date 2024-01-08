@@ -29,7 +29,7 @@ from django.views.decorators.http import require_http_methods
 from base.models import JobPosition
 from notifications.signals import notify
 from horilla import settings
-from horilla.decorators import login_required, hx_request_required
+from horilla.decorators import login_required, hx_request_required, manager_can_enter
 from horilla.decorators import permission_required
 from base.methods import generate_pdf, get_key_instances
 from recruitment.models import Candidate, Recruitment, RecruitmentMailTemplate
@@ -408,7 +408,7 @@ def candidate_delete(request, obj_id):
 
 
 @login_required
-@permission_required("recruitment.view_candidate")
+@manager_can_enter("onboarding.view_candidatestage")
 def candidates_single_view(request, id, **kwargs):
     """
     Candidate individual view for the onboarding candidates
