@@ -6,13 +6,14 @@
     <h2 class="oh-inner-sidebar-content__title">{% trans "Currency" %}</h2>
   </div>
    {{form}}
-
-  <button
-    type="submit"
-    class="oh-btn oh-btn--secondary mt-2 mr-0 oh-btn--w-100-resp"
-  >
-    {% trans "Save Changes" %}
-  </button>
+  {% if perms.payroll.change_payrollsettings %}
+    <button
+      type="submit"
+      class="oh-btn oh-btn--secondary mt-2 mr-0 oh-btn--w-100-resp"
+    >
+      {% trans "Save Changes" %}
+    </button>
+  {% endif %}
   <div class="oh-inner-sidebar-content__footer"></div>
 </form>
 {% endblock settings %}

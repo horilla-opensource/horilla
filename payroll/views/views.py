@@ -291,7 +291,7 @@ def work_record_employee_view(request):
 
 
 @login_required
-@permission_required("payroll.view_settings")
+@permission_required("payroll.view_payrollsettings")
 def settings(request):
     """
     This method is used to render settings template
