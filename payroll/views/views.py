@@ -1158,8 +1158,6 @@ def payslip_select(request):
         else:
             employees = Payslip.objects.filter(
                 employee_id__employee_user_id=request.user
-            ) | Payslip.objects.filter(
-                employee_id__employee_work_info__reporting_manager_id__employee_user_id=request.user
             )
 
     payslip_ids = [str(emp.id) for emp in employees]
