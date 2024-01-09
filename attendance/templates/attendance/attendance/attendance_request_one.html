@@ -113,96 +113,8 @@
 
     {% elif request.GET.ot %}
     <div class="oh-modal__button-container text-center">
-        <div class="oh-btn-group">
-            {% if perms.attendance_request.change_attendance %}
-            <a 
-                class="oh-btn oh-btn--info"
-                hx-get="{% url 'attendance-update' attendance_request.id %}"
-                hx-target='#updateAttendanceModalBody' hx-swap='innerHTML' 
-                data-toggle='oh-modal-toggle' 
-                data-target='#updateAttendanceModal'
-                style="width: 50%;"
-                >
-                <ion-icon name="create-outline" role="img" 
-                class="md hydrated" aria-label="create outline">
-                </ion-icon>{% trans "Edit" %}
-            </a>
-            {% endif %}
-            {% if attendance_request.attendance_overtime_approve %}
-                <a href="#" class="oh-btn oh-btn--success disabled w-50">
-                    <ion-icon name="ban-outline"></ion-icon>{% trans "Approve" %}
-                </a>
-                {% else %}
-                <a href="{% url 'approve-overtime' attendance_request.id %}" class="oh-btn oh-btn--success w-50">
-                    <ion-icon name="checkmark-done-outline"></ion-icon>{% trans "Approve" %}
-              </a>
-            {% endif %}
-            {% if perms.attendance_request.delete_attendance %}
-            <form action="{% url 'attendance-delete' attendance_request.id  %}" 
-                onsubmit="return confirm('{% trans "Are you sure want to delete this attendance?" %}')" 
-                hx-target="#tab_contents" method='post'
-                style="width: 50%;">
-                {% csrf_token %}
-                <button type='submit' class="oh-btn oh-btn--danger w-100"><ion-icon
-                    name="trash-outline"
-                    role="img"
-                    class="md hydrated"
-                    aria-label="create outline"
-                    ></ion-icon>{% trans "Delete" %}</button>
-            </form>
-            {% endif %}
-        </div>
-    </div>
-
-    {% elif request.GET.validate %}
-    <div class="oh-modal__button-container text-center">
-        <div class="oh-btn-group">
-            {% if perms.attendance_request.change_attendance %}
-            <a 
-                class="oh-btn oh-btn--info"
-                hx-get="{% url 'attendance-update' attendance_request.id %}"
-                hx-target='#updateAttendanceModalBody' hx-swap='innerHTML' 
-                data-toggle='oh-modal-toggle' 
-                data-target='#updateAttendanceModal'
-                style="width: 50%;"
-                >
-                <ion-icon name="create-outline" role="img" 
-                class="md hydrated" aria-label="create outline">
-                </ion-icon>{% trans "Edit" %}
-            </a>
-            {% endif %}
-            {% if perms.attendance_request.change_attendance %}
-                <a  
-                href = '{% url "validate-this-attendance" attendance_request.id %}'
-                hx-target='#updateAttendanceBody'
-                class="oh-btn oh-btn--success w-50"
-                data-req="/attendance/request-attendance-view/?id={{attendance_request.id}}"
-                onclick="{% if attendance_request.is_validate_request %}  event.preventDefault(); showSweetAlert($(this).data('req')); {% endif %}"
-                >
-                <ion-icon name="checkmark-done-outline"></ion-icon>{% trans "Validate" %}
-              </a>
-            {% endif %}
-            {% if perms.attendance_request.delete_attendance %}
-            <form action="{% url 'attendance-delete' attendance_request.id  %}" 
-                onsubmit="return confirm('{% trans "Are you sure want to delete this attendance?" %}')" 
-                hx-target="#tab_contents" method='post'
-                style="width: 50%;">
-                {% csrf_token %}
-                <button type='submit' class="oh-btn oh-btn--danger w-100"><ion-icon
-                    name="trash-outline"
-                    role="img"
-                    class="md hydrated"
-                    aria-label="create outline"
-                    ></ion-icon>{% trans "Delete" %}</button>
-            </form>
-            {% endif %}
-        </div>
-    </div>
-
-    {% else %}
-        <div class="oh-modal__button-container text-center">
+        {% if perms.attendance.change_attendance and perms.attendance.delete_attendance or request.user|is_reportingmanager%}
             <div class="oh-btn-group">
-                {% if perms.attendance_request.change_attendance %}
                 <a 
                     class="oh-btn oh-btn--info"
                     hx-get="{% url 'attendance-update' attendance_request.id %}"
@@ -215,8 +127,15 @@
                     class="md hydrated" aria-label="create outline">
                     </ion-icon>{% trans "Edit" %}
                 </a>
+                {% if attendance_request.attendance_overtime_approve %}
+                <a href="#" class="oh-btn oh-btn--success disabled w-50">
+                    <ion-icon name="ban-outline"></ion-icon>{% trans "Approve" %}
+                    </a>
+                    {% else %}
+                    <a href="{% url 'approve-overtime' attendance_request.id %}" class="oh-btn oh-btn--success w-50">
+                        <ion-icon name="checkmark-done-outline"></ion-icon>{% trans "Approve" %}
+                </a>
                 {% endif %}
-                {% if perms.attendance_request.delete_attendance %}
                 <form action="{% url 'attendance-delete' attendance_request.id  %}" 
                     onsubmit="return confirm('{% trans "Are you sure want to delete this attendance?" %}')" 
                     hx-target="#tab_contents" method='post'
@@ -229,8 +148,81 @@
                         aria-label="create outline"
                         ></ion-icon>{% trans "Delete" %}</button>
                 </form>
-                {% endif %}
             </div>
+        {% endif %}
+    </div>
+
+    {% elif request.GET.validate %}
+    <div class="oh-modal__button-container text-center">
+        {% if perms.attendance.change_attendance and perms.attendance.delete_attendance or request.user|is_reportingmanager %}
+        <div class="oh-btn-group">
+            <a 
+                class="oh-btn oh-btn--info"
+                hx-get="{% url 'attendance-update' attendance_request.id %}"
+                hx-target='#updateAttendanceModalBody' hx-swap='innerHTML' 
+                data-toggle='oh-modal-toggle' 
+                data-target='#updateAttendanceModal'
+                style="width: 50%;"
+                >
+                <ion-icon name="create-outline" role="img" 
+                class="md hydrated" aria-label="create outline">
+                </ion-icon>{% trans "Edit" %}
+            </a>
+            <a  
+            href = '{% url "validate-this-attendance" attendance_request.id %}'
+            hx-target='#updateAttendanceBody'
+            class="oh-btn oh-btn--success w-50"
+            data-req="/attendance/request-attendance-view/?id={{attendance_request.id}}"
+            onclick="{% if attendance_request.is_validate_request %}  event.preventDefault(); showSweetAlert($(this).data('req')); {% endif %}"
+            >
+            <ion-icon name="checkmark-done-outline"></ion-icon>{% trans "Validate" %}
+            </a>
+            <form action="{% url 'attendance-delete' attendance_request.id  %}" 
+                onsubmit="return confirm('{% trans "Are you sure want to delete this attendance?" %}')" 
+                hx-target="#tab_contents" method='post'
+                style="width: 50%;">
+                {% csrf_token %}
+                <button type='submit' class="oh-btn oh-btn--danger w-100"><ion-icon
+                    name="trash-outline"
+                    role="img"
+                    class="md hydrated"
+                    aria-label="create outline"
+                    ></ion-icon>{% trans "Delete" %}</button>
+            </form>
+        </div>
+        {% endif %}
+    </div>
+
+    {% else %}
+        <div class="oh-modal__button-container text-center">
+            {% if perms.attendance.change_attendance and perms.attendance.delete_attendance or request.user|is_reportingmanager%}
+            <div class="oh-btn-group">
+                <a 
+                    class="oh-btn oh-btn--info"
+                    hx-get="{% url 'attendance-update' attendance_request.id %}"
+                    hx-target='#updateAttendanceModalBody' hx-swap='innerHTML' 
+                    data-toggle='oh-modal-toggle' 
+                    data-target='#updateAttendanceModal'
+                    style="width: 50%;"
+                    >
+                    <ion-icon name="create-outline" role="img" 
+                    class="md hydrated" aria-label="create outline">
+                    </ion-icon>{% trans "Edit" %}
+                </a>
+                <form action="{% url 'attendance-delete' attendance_request.id  %}" 
+                    onsubmit="return confirm('{% trans "Are you sure want to delete this attendance?" %}')" 
+                    hx-target="#tab_contents" method='post'
+                    style="width: 50%;">
+                    {% csrf_token %}
+                    <button type='submit' class="oh-btn oh-btn--danger w-100"><ion-icon
+                        name="trash-outline"
+                        role="img"
+                        class="md hydrated"
+                        aria-label="create outline"
+                        ></ion-icon>{% trans "Delete" %}</button>
+                </form>
+            </div>
+            {% endif %}
         </div>
     {% endif %}
 </div>
