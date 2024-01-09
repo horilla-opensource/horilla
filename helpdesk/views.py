@@ -414,8 +414,9 @@ def ticket_create(request):
             assignees = [employee.employee_user_id for employee in employees]
             assignees.append(ticket.employee_id.employee_user_id)  
             if hasattr(ticket.get_raised_on_object(), 'dept_manager'):
-                manager = ticket.get_raised_on_object().dept_manager.all().first().manager
-                assignees.append(manager.employee_user_id)      
+                if ticket.get_raised_on_object().dept_manager.all():
+                    manager = ticket.get_raised_on_object().dept_manager.all().first().manager
+                    assignees.append(manager.employee_user_id)      
             notify.send(
                 request.user.employee_get,
                 recipient=assignees,
@@ -526,8 +527,9 @@ def change_ticket_status(request,ticket_id):
             assignees = [employee.employee_user_id for employee in employees]
             assignees.append(ticket.employee_id.employee_user_id)
             if hasattr(ticket.get_raised_on_object(), 'dept_manager'):
-                manager = ticket.get_raised_on_object().dept_manager.all().first().manager
-                assignees.append(manager.employee_user_id)
+                if ticket.get_raised_on_object().dept_manager.all():
+                    manager = ticket.get_raised_on_object().dept_manager.all().first().manager
+                    assignees.append(manager.employee_user_id)
             notify.send(
                 request.user.employee_get,
                 recipient=assignees,
@@ -574,8 +576,9 @@ def ticket_delete(request, ticket_id):
         assignees = [employee.employee_user_id for employee in employees]
         assignees.append(ticket.employee_id.employee_user_id)
         if hasattr(ticket.get_raised_on_object(), 'dept_manager'):
-            manager = ticket.get_raised_on_object().dept_manager.all().first().manager
-            assignees.append(manager.employee_user_id)   
+            if ticket.get_raised_on_object().dept_manager.all():
+                manager = ticket.get_raised_on_object().dept_manager.all().first().manager
+                assignees.append(manager.employee_user_id)   
         notify.send(
             request.user.employee_get,
             recipient=assignees,
@@ -997,8 +1000,9 @@ def tickets_bulk_delete(request):
             assignees = [employee.employee_user_id for employee in employees]
             assignees.append(ticket.employee_id.employee_user_id)
             if hasattr(ticket.get_raised_on_object(), 'dept_manager'):
-                manager = ticket.get_raised_on_object().dept_manager.all().first().manager
-                assignees.append(manager.employee_user_id)   
+                if ticket.get_raised_on_object().dept_manager.all():
+                    manager = ticket.get_raised_on_object().dept_manager.all().first().manager
+                    assignees.append(manager.employee_user_id)   
             notify.send(
                 request.user.employee_get,
                 recipient=assignees,
