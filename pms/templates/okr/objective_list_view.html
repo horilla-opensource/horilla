@@ -272,19 +272,19 @@
 					</div>
 
 					<!-- checking  user permission for objective creation -->
-					{% if perms.pms.view_questiontemplate or request.user|filtersubordinates %}
-					<div class="oh-btn-group ml-2">
-						<div>
-							<a
-								href="{%url 'objective-creation' %}"
-								class="oh-btn oh-btn--secondary oh-btn--shadow"
-								style="text-decoration: none"
-							>
-								<ion-icon class="me-2" name="add-outline"></ion-icon>
-								{% trans "Create" %}
-							</a>
+					{% if perms.pms.add_employeeobjective or request.user|filtersubordinates %}
+						<div class="oh-btn-group ml-2">
+							<div>
+								<a
+									href="{%url 'objective-creation' %}"
+									class="oh-btn oh-btn--secondary oh-btn--shadow"
+									style="text-decoration: none"
+								>
+									<ion-icon class="me-2" name="add-outline"></ion-icon>
+									{% trans "Create" %}
+								</a>
+							</div>
 						</div>
-					</div>
 					{% endif %}
 				</div>
 			</div>

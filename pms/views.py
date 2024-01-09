@@ -2073,10 +2073,19 @@ def objective_select(request):
     page_number = request.GET.get("page")
     table = request.GET.get("tableName")
     user = request.user.employee_get
-    employees = EmployeeObjective.objects.all()
+    employees = EmployeeObjective.objects.filter(
+                employee_id=user, archive=False
+            )
     if page_number == "all":
         if table == "all":
-            employees = EmployeeObjective.objects.filter(archive=False)
+            if request.user.has_perm("pms.view_employeeobjective"):
+                employees = EmployeeObjective.objects.filter(archive=False)
+            else:
+                employees = EmployeeObjective.objects.filter(
+                    employee_id__employee_user_id=request.user
+                ) | EmployeeObjective.objects.filter(
+                    employee_id__employee_work_info__reporting_manager_id__employee_user_id=request.user
+                )
         else:
             employees = EmployeeObjective.objects.filter(
                 employee_id=user, archive=False
@@ -2104,9 +2113,16 @@ def objective_select_filter(request):
     employee_filter = ObjectiveFilter(filters, queryset=EmployeeObjective.objects.all())
     if page_number == "all":
         if table == "all":
-            employee_filter = ObjectiveFilter(
-                filters, queryset=EmployeeObjective.objects.all()
-            )
+            if request.user.has_perm("pms.view_employeeobjective"):
+                employee_filter = ObjectiveFilter(
+                        filters, queryset=EmployeeObjective.objects.all()
+                    )
+            else:
+                employee_filter = ObjectiveFilter(
+                    filters, queryset=EmployeeObjective.objects.filter(
+                        employee_id__employee_work_info__reporting_manager_id__employee_user_id=request.user
+                    )
+                )
         else:
             employee_filter = ObjectiveFilter(
                 filters, queryset=EmployeeObjective.objects.filter(employee_id=user)

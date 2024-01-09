@@ -26,17 +26,19 @@
       <h1 class="oh-main__titlebar-title fw-bold"> {% trans "Period" %}
       </h1>
     </div>
-    <div class="oh-main__titlebar oh-main__titlebar--right">
-      <div class="oh-main__titlebar-button-container">
-        <div class="oh-btn-group ml-2">
-            <a class="oh-btn oh-btn--secondary" role="button" data-toggle="oh-modal-toggle"
-            data-target="#PeriodModal" hx-get="{%url 'period-create' %}"  hx-target="#periodModalTarget">
-              <ion-icon class="me-2" name="add-outline"></ion-icon>
-              {% trans "Create" %}
-            </a>
+    {% if perms.pms.add_period or request.user|filtersubordinates %}
+      <div class="oh-main__titlebar oh-main__titlebar--right">
+        <div class="oh-main__titlebar-button-container">
+          <div class="oh-btn-group ml-2">
+              <a class="oh-btn oh-btn--secondary" role="button" data-toggle="oh-modal-toggle"
+              data-target="#PeriodModal" hx-get="{%url 'period-create' %}"  hx-target="#periodModalTarget">
+                <ion-icon class="me-2" name="add-outline"></ion-icon>
+                {% trans "Create" %}
+              </a>
+          </div>
         </div>
       </div>
-    </div>
+    {% endif %}
   </section>
 
   <!-- period modal -->

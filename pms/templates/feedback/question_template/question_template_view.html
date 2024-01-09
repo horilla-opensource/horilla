@@ -1,6 +1,6 @@
 {% extends 'index.html' %} {% block content %}
 {% load i18n %}
-{% load widget_tweaks %}
+{% load widget_tweaks %} {% load basefilters %}
 
 {% if messages %}
 <ul class="messages">
@@ -30,13 +30,15 @@
     <div class="oh-main__titlebar oh-main__titlebar--right">
       <div class="oh-main__titlebar-button-container">
         <div class="oh-btn-group ml-2">
-          <div>
-            <button class="oh-btn oh-btn--secondary" role="button" data-toggle="oh-modal-toggle"
-              data-target="#questionTemplateModal">
-              <ion-icon class="me-2" name="add-outline"></ion-icon>
-              {% trans "Create" %}
-            </button>
-          </div>
+          {% if perms.pms.add_questiontemplate or request.user|filtersubordinates %}
+            <div>
+              <button class="oh-btn oh-btn--secondary" role="button" data-toggle="oh-modal-toggle"
+                data-target="#questionTemplateModal">
+                <ion-icon class="me-2" name="add-outline"></ion-icon>
+                {% trans "Create" %}
+              </button>
+            </div>
+          {% endif %}
         </div>
 
       </div>
@@ -49,7 +51,9 @@
           <div class="oh-sticky-table__tr">
             <div class="oh-sticky-table__th">{% trans "Title" %}</div>
             <div class="oh-sticky-table__th">{% trans "Total Question" %}</div>
-            <div class="oh-sticky-table__th"></div>
+            {% if perms.pms.change_questiontemplate or perms.pms.delete_questiontemplate or request.user|filtersubordinates %}
+              <div class="oh-sticky-table__th"></div>
+            {% endif %}
           </div>
         </div>
         <div class="oh-sticky-table__tbody">
@@ -68,16 +72,23 @@
             <a style="color: inherit;text-decoration: none;"
               href="{% url 'question-template-detailed-view' template_id=question_template.id %}"
               class="oh-sticky-table__td">{{question_template.question.count}}</a>
-            <div class="oh-sticky-table__td">
-              <div class="oh-btn-group ">
-                <a class="oh-btn oh-btn--light-bkg w-100 " data-toggle="oh-modal-toggle" data-target="#questionTemplateUpdateModal"
-                  hx-get="{% url 'question-template-update'  template_id=question_template.id %}" title="{% trans 'Update' %}" hx-target="#questionTemplateUpdateModalTarget" > <ion-icon
-                  name="create-outline" role="img" class="md hydrated" aria-label="create outline"></ion-icon></a>
-                <a class="oh-btn oh-btn--danger-outline  w-100" title="{% trans 'Delete' %}" onclick="return confirm('{% trans "Do you want to delete this question template?" %}')" href="{% url 'question-template-delete' template_id=question_template.id %}">
-                  <ion-icon name="trash-outline" role="img" class="md hydrated" aria-label="trash outline"></ion-icon>
-                </a>
+
+            {% if perms.pms.change_questiontemplate or perms.pms.delete_questiontemplate or request.user|filtersubordinates %}
+              <div class="oh-sticky-table__td">
+                <div class="oh-btn-group ">
+                  {% if perms.pms.change_questiontemplate or request.user|filtersubordinates %}
+                    <a class="oh-btn oh-btn--light-bkg w-100 " data-toggle="oh-modal-toggle" data-target="#questionTemplateUpdateModal"
+                      hx-get="{% url 'question-template-update'  template_id=question_template.id %}" title="{% trans 'Update' %}" hx-target="#questionTemplateUpdateModalTarget" > <ion-icon
+                      name="create-outline" role="img" class="md hydrated" aria-label="create outline"></ion-icon></a>
+                  {% endif %}
+                  {% if perms.pms.delete_questiontemplate or request.user|filtersubordinates %}
+                    <a class="oh-btn oh-btn--danger-outline  w-100" title="{% trans 'Delete' %}" onclick="return confirm('{% trans "Do you want to delete this question template?" %}')" href="{% url 'question-template-delete' template_id=question_template.id %}">
+                      <ion-icon name="trash-outline" role="img" class="md hydrated" aria-label="trash outline"></ion-icon>
+                    </a>
+                  {% endif %}
+                </div>
               </div>
-            </div>
+            {% endif %}
           </div>
           {% endfor%}
         </div>
