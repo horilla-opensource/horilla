@@ -465,7 +465,7 @@ def update_group_permission(
 
 
 @login_required
-@permission_required("view_group")
+@permission_required("auth.view_group")
 def user_group(request):
     """
     This method is used to create user permission group
@@ -504,7 +504,7 @@ def user_group(request):
 
 
 @login_required
-@permission_required("add_group")
+@permission_required("auth.add_group")
 def group_assign(request):
     """
     This method is used to assign user group to the users.
@@ -536,7 +536,7 @@ def group_assign(request):
 
 
 @login_required
-@permission_required("view_group")
+@permission_required("auth.view_group")
 def group_assign_view(request):
     """
     This method is used to search the user groups
@@ -554,7 +554,7 @@ def group_assign_view(request):
 
 
 @login_required
-@permission_required("base.view_group")
+@permission_required("auth.view_group")
 def user_group_view(request):
     """
     This method is used to render template for view all groups
@@ -647,7 +647,7 @@ def object_delete(request, id, **kwargs):
 
 
 @login_required
-@permission_required("base.add_dynamicemailconfiguration")
+@permission_required("base.view_dynamicemailconfiguration")
 def mail_server_conf(request):
     mail_servers = DynamicEmailConfiguration.objects.all()
     return render(
@@ -708,7 +708,7 @@ def company_create(request):
 
 
 @login_required
-@permission_required("base.add_company")
+@permission_required("base.view_company")
 def company_view(request):
     """
     This method used to view created companies
@@ -765,7 +765,6 @@ def department_create(request):
 
 
 @login_required
-@permission_required("base.add_department")
 def department_view(request):
     """
     This method view department
@@ -804,7 +803,7 @@ def department_update(request, id, **kwargs):
 
 
 @login_required
-@permission_required("base.add_jobposition")
+@permission_required("base.view_jobposition")
 def job_position(request):
     """
     This method is used to view job position
@@ -898,7 +897,7 @@ def job_role_create(request):
 
 
 @login_required
-@permission_required("base.add_jobrole")
+@permission_required("base.view_jobrole")
 def job_role_view(request):
     """
     This method is used to view job role.
@@ -965,7 +964,7 @@ def work_type_create(request):
 
 
 @login_required
-@permission_required("base.add_worktype")
+@permission_required("base.view_worktype")
 def work_type_view(request):
     """
     This method is used to view work type
@@ -1030,7 +1029,7 @@ def rotating_work_type_create(request):
 
 
 @login_required
-@permission_required("base.add_rotatingworktype")
+@permission_required("base.view_rotatingworktype")
 def rotating_work_type_view(request):
     """
     This method is used to view rotating work type   .
@@ -1395,7 +1394,7 @@ def rotating_work_type_assign_delete(request, id):
 
 
 @login_required
-@permission_required("base.add_employeetype")
+@permission_required("base.view_employeetype")
 def employee_type_view(request):
     """
     This method is used to view employee type
@@ -1460,7 +1459,7 @@ def employee_type_update(request, id, **kwargs):
 
 
 @login_required
-@permission_required("base.add_employeeshift")
+@permission_required("base.view_employeeshift")
 def employee_shift_view(request):
     """
     This method is used to view employee shift
@@ -1517,7 +1516,7 @@ def employee_shift_update(request, id, **kwargs):
 
 
 @login_required
-@permission_required("base.add_employeeshiftschedule")
+@permission_required("base.view_employeeshiftschedule")
 def employee_shift_schedule_view(request):
     """
     This method is used to view schedule for shift
@@ -1579,7 +1578,7 @@ def employee_shift_schedule_update(request, id, **kwargs):
 
 
 @login_required
-@permission_required("base.add_rotatingshift")
+@permission_required("base.view_rotatingshift")
 def rotating_shift_view(request):
     """
     This method is used to view rotating shift
@@ -2087,7 +2086,7 @@ def update_permission(
 
 
 @login_required
-@permission_required("base.add_company")
+@permission_required("auth.add_permission")
 def permission_table(request):
     """
     This method is used to render the permission table
@@ -3145,7 +3144,7 @@ def all_notifications(request):
 
 
 @login_required
-@permission_required("payroll.view_settings")
+@permission_required("payroll.view_payrollsettings")
 def settings(request):
     """
     This method is used to render settings template
@@ -3161,7 +3160,7 @@ def settings(request):
 
 
 @login_required
-@permission_required("base.change_company")
+@permission_required("base.view_company")
 def date_settings(request):
     """
     This method is used to render Date format selector in settings
@@ -3294,7 +3293,7 @@ def get_time_format(request):
 
 
 @login_required
-@permission_required("attendance.add_attendancevalidationcondition")
+@permission_required("attendance.view_attendancevalidationcondition")
 def validation_condition_view(request):
     """
     This method view attendance validation conditions.

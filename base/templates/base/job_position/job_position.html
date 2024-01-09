@@ -1,8 +1,9 @@
 {% extends 'settings.html' %} {% load i18n %} {% block settings %}
 <div class="oh-inner-sidebar-content">
-	{% if perms.base.add_jobposition %}
+	{% if perms.base.view_jobposition %}
 	<div class="oh-inner-sidebar-content__header d-flex justify-content-between align-items-center">
 		<h2 class="oh-inner-sidebar-content__title">{% trans "Job Position" %}</h2>
+		{% if perms.base.add_jobposition %}
 		<button
 			class="oh-btn oh-btn--secondary oh-btn--shadow"
 			data-toggle="oh-modal-toggle"
@@ -13,6 +14,7 @@
 			<ion-icon name="add-outline" class="me-1"></ion-icon>
 			{% trans "Create" %}
 		</button>
+		{% endif %}
 	</div>
 	{% include 'base/job_position/job_position_view.html' %} {% endif %}
 </div>
