@@ -130,20 +130,21 @@
 </div>
 
 <div class="oh-modal__button-container text-center">
-    <div class="oh-btn-group">
-        <a href="{% url 'type-update' leave_type.id %}"  class="oh-btn oh-btn--info w-50">
-            <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
-            {% trans "Edit" %}
-        </a>      
-        <a data-toggle="oh-modal-toggle" data-target="#editModal"
-        hx-get="{% url 'assign-one' leave_type.id %}" hx-target="#leaveForm" class="oh-btn oh-btn--success w-50">
-            <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
-            {% trans "Assign" %}
-        </a>
-        <a href="{% url 'type-delete' leave_type.id %}" class="oh-btn oh-btn--danger w-50">
-            <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
-            {% trans "Delete" %}
-        </a>
-        
-    </div>
+    {% if perms.leave.change_leavetype and perms.leave.add_availableleave and  perms.leave.delete_leavetype %}
+        <div class="oh-btn-group">
+            <a href="{% url 'type-update' leave_type.id %}"  class="oh-btn oh-btn--info w-50">
+                <ion-icon class="me-1" name="create-outline"></ion-icon>
+                {% trans "Edit" %}
+            </a>
+            <a data-toggle="oh-modal-toggle" data-target="#editModal"
+            hx-get="{% url 'assign-one' leave_type.id %}" hx-target="#leaveForm" class="oh-btn oh-btn--success w-50">
+                <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
+                {% trans "Assign" %}
+            </a>
+            <a href="{% url 'type-delete' leave_type.id %}" class="oh-btn oh-btn--danger w-50">
+                <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
+                {% trans "Delete" %}
+            </a>
+        </div>
+    {% endif %} 
 </div>

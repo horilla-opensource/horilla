@@ -57,17 +57,19 @@
                 </form>
             </div>
             {% endif %}
-            <div class="oh-btn-group ml-2">
-                <div class="oh-dropdown" x-data="{open: false}">
-                    <button class="oh-btn oh-btn--secondary oh-btn--shadow" data-toggle="oh-modal-toggle"
-                        data-target="#editModal1" hx-get="{% url 'company-leave-creation' %}"
-                        hx-target="#companyLeaveForm">
-                        <ion-icon name="add-outline" class="me-1"></ion-icon>
-                        {% trans "Create" %}
-                    </button>
-
+            {% if perms.leave.add_companyleave %}
+                <div class="oh-btn-group ml-2">
+                    <div class="oh-dropdown" x-data="{open: false}">
+                        <button class="oh-btn oh-btn--secondary oh-btn--shadow" data-toggle="oh-modal-toggle"
+                            data-target="#editModal1" hx-get="{% url 'company-leave-creation' %}"
+                            hx-target="#companyLeaveForm">
+                            <ion-icon name="add-outline" class="me-1"></ion-icon>
+                            {% trans "Create" %}
+                        </button>
+                    </div>
                 </div>
-            </div>
+            {% endif %}
+
         </div>
     </div>
 </section>

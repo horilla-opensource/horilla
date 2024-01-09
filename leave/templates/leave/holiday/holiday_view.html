@@ -105,14 +105,16 @@
                 >{% trans "Export" %}</a
               >
             </li>
-            <li class="oh-dropdown__item">
-              <a
-                href="#"
-                id="bulkHolidaysDelete"
-                class="oh-dropdown__link oh-dropdown__link--danger"
-                >{% trans "Delete" %}</a
-              >
-            </li>
+              {% if perms.leave.delete_holiday %}
+                <li class="oh-dropdown__item">
+                  <a
+                    href="#"
+                    id="bulkHolidaysDelete"
+                    class="oh-dropdown__link oh-dropdown__link--danger"
+                    >{% trans "Delete" %}</a
+                  >
+                </li>
+              {% endif %}
             {% endif %}
           </ul>
         </div>
@@ -120,20 +122,22 @@
       <!-- end of actions -->
 
       <!-- start of create -->
-      <div class="oh-btn-group ml-2">
-        <div class="oh-dropdown" x-data="{open: false}">
-          <button
-            class="oh-btn oh-btn--secondary oh-btn--shadow"
-            data-toggle="oh-modal-toggle"
-            data-target="#editModal1"
-            hx-get="{% url 'holiday-creation' %}"
-            hx-target="#holidayForm"
-          >
-            <ion-icon name="add-outline" class="me-1"></ion-icon>
-            {% trans "Create" %}
-          </button>
+      {% if perms.leave.add_holiday %}
+        <div class="oh-btn-group ml-2">
+          <div class="oh-dropdown" x-data="{open: false}">
+            <button
+              class="oh-btn oh-btn--secondary oh-btn--shadow"
+              data-toggle="oh-modal-toggle"
+              data-target="#editModal1"
+              hx-get="{% url 'holiday-creation' %}"
+              hx-target="#holidayForm"
+            >
+              <ion-icon name="add-outline" class="me-1"></ion-icon>
+              {% trans "Create" %}
+            </button>
+          </div>
         </div>
-      </div>
+      {% endif %}
       <!-- end of create -->
     </div>
     <!-- end of nav bar buttons -->

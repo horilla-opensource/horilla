@@ -137,7 +137,7 @@ def leave_type_view(request):
 
 
 @login_required
-@manager_can_enter("leave.view_leaverequest")
+@manager_can_enter("leave.view_leavetype")
 def leave_type_individual_view(request, id):
     """
     function used to view one leave type.
@@ -195,7 +195,7 @@ def leave_type_filter(request):
 
 
 @login_required
-@permission_required("leave.update_leavetype")
+@permission_required("leave.change_leavetype")
 def leave_type_update(request, id, **kwargs):
     """
     function used to update leave type.
@@ -236,7 +236,7 @@ def leave_type_delete(request, id):
     """
     try:
         LeaveType.objects.get(id=id).delete()
-        messages.error(request, _("Leave type deleted successfully.."))
+        messages.success(request, _("Leave type deleted successfully.."))
     except LeaveType.DoesNotExist:
         messages.error(request, _("Leave type not found."))
     except ProtectedError as e:
@@ -445,7 +445,7 @@ def leave_request_filter(request):
 
 @login_required
 @hx_request_required
-@manager_can_enter("leave.update_leaverequest")
+@manager_can_enter("leave.change_leaverequest")
 def leave_request_update(request, id):
     """
     function used to update leave request.
@@ -520,7 +520,7 @@ def leave_request_delete(request, id):
 
 
 @login_required
-@manager_can_enter("leave.update_leaverequest")
+@manager_can_enter("leave.change_leaverequest")
 def leave_request_approve(request, id, emp_id=None):
     """
     function used to approve a leave request.
@@ -591,7 +591,7 @@ def leave_request_approve(request, id, emp_id=None):
 
 
 @login_required
-@manager_can_enter("leave.update_leaverequest")
+@manager_can_enter("leave.change_leaverequest")
 def leave_request_cancel(request, id, emp_id=None):
     """
     function used to Reject leave request.
@@ -934,7 +934,7 @@ def leave_assign(request):
 
 @login_required
 @hx_request_required
-@manager_can_enter("leave.update_availableleave")
+@manager_can_enter("leave.change_availableleave")
 def available_leave_update(request, id):
     """
     function used to update available leave of an assigned leave type of an employee.
@@ -1307,7 +1307,7 @@ def holiday_filter(request):
 
 @login_required
 @hx_request_required
-@permission_required("leave.update_holiday")
+@permission_required("leave.change_holiday")
 def holiday_update(request, id):
     """
     function used to update holiday.
@@ -1485,7 +1485,7 @@ def company_leave_filter(request):
 
 @login_required
 @hx_request_required
-@permission_required("leave.update_companyleave")
+@permission_required("leave.change_companyleave")
 def company_leave_update(request, id):
     """
     function used to update company leave.
@@ -2922,7 +2922,12 @@ def assigned_leave_select(request):
     page_number = request.GET.get("page")
 
     if page_number == "all":
-        employees = AvailableLeave.objects.all()
+        if request.user.has_perm("leave.view_availableleave"):
+            employees = AvailableLeave.objects.all()
+        else:
+            employees = AvailableLeave.objects.filter(
+                employee_id__employee_work_info__reporting_manager_id__employee_user_id=request.user
+            )
 
     employee_ids = [str(emp.id) for emp in employees]
     total_count = employees.count()
@@ -3017,7 +3022,12 @@ def leave_request_select(request):
     page_number = request.GET.get("page")
 
     if page_number == "all":
-        employees = LeaveRequest.objects.all()
+        if request.user.has_perm("leave.view_leaverequest"):
+            employees = LeaveRequest.objects.all()
+        else:
+            employees = LeaveRequest.objects.filter(
+                employee_id__employee_work_info__reporting_manager_id__employee_user_id=request.user
+            )
 
     employee_ids = [str(emp.id) for emp in employees]
     total_count = employees.count()

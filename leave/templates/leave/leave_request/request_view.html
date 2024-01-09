@@ -1,4 +1,4 @@
-{% extends 'index.html' %} {% block content %} {% load static %} {% load i18n %}
+{% extends 'index.html' %} {% block content %} {% load static %} {% load i18n %} {% load basefilters %}
 <style>
   .diff-cell {
     background: rgba(255, 166, 0, 0.158);
@@ -225,33 +225,37 @@
                 >{% trans "Export" %}</a
               >
             </li>
-            <li class="oh-dropdown__item">
-              <a
+            {% if perms.leave.delete_leaverequest or request.user|is_reportingmanager %}
+              <li class="oh-dropdown__item">
+                <a
                 href="#"
                 id="leaverequestbulkDelete"
                 class="oh-dropdown__link oh-dropdown__link--danger"
                 >{% trans "Delete" %}</a
-              >
-            </li>
+                >
+              </li>
+            {% endif %}
           </ul>
         </div>
       </div>
       {% endif %}
+      {% if perms.leave.add_leaverequest %}
       <div class="oh-btn-group ml-2">
         <div class="oh-dropdown" x-data="{open: false}">
           <button
-            class="oh-btn oh-btn--secondary oh-btn--shadow"
-            data-toggle="oh-modal-toggle"
-            data-target="#editModal1"
-            hx-get="{% url 'request-creation' %}"
-            hx-target="#requestForm"
+          class="oh-btn oh-btn--secondary oh-btn--shadow"
+          data-toggle="oh-modal-toggle"
+          data-target="#editModal1"
+          hx-get="{% url 'request-creation' %}"
+          hx-target="#requestForm"
           >
-            <ion-icon name="add-outline" class="me-1"></ion-icon>
-            {% trans "Create" %}
-          </button>
-        </div>
+          <ion-icon name="add-outline" class="me-1"></ion-icon>
+          {% trans "Create" %}
+        </button>
       </div>
+      {% endif %}
     </div>
+  </div>
   </div>
 </section>
 

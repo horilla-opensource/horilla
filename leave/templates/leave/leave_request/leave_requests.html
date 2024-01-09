@@ -1,6 +1,7 @@
 {% load i18n %}
 {% load static %}
 {% load basefilters %}
+{% load attendancefilters %}
 {% include 'filter_tags.html' %}
 {% if not request.GET.dashboard %}
 <div class="d-flex flex-row-reverse">
@@ -76,7 +77,9 @@
                     {% if  not dashboard %}
                         <div class="oh-sticky-table__th" >{% trans "Penalties" %}</div>
                         <div class="oh-sticky-table__th">{% trans "Options" %}</div>
-                        <div class="oh-sticky-table__th">{% trans "Actions" %}</div>
+                        {% if request.user|is_reportingmanager or perms.leave.chanage_leaverequest or perms.leave.delete_leaverequest %}
+                          <div class="oh-sticky-table__th">{% trans "Actions" %}</div>
+                        {% endif %}
                     {% endif %}
                 </div>
             </div>
@@ -163,14 +166,18 @@
                                 <ion-icon name="information-circle-outline"></ion-icon>            
                             </button>
                             {% endif %}
-                            <button  class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Edit' %}" data-toggle="oh-modal-toggle"
-                                data-target="#editModal2" hx-get="{% url 'request-update' leave_request.id %}"
-                                hx-target="#updateForm"><ion-icon name="create-outline"></ion-icon></button>
-
-                            <a class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100" id="delete-link"
-                                href="{% url 'request-delete' leave_request.id %}" onclick="return confirm('{% trans "Are you sure you want to delete ?" %}');" title="{% trans 'Delete' %}"><ion-icon
-                                    name="trash-outline"></ion-icon></a>
-
+                            {% if request.user|is_reportingmanager or perms.leave.chanage_leaverequest or perms.leave.delete_leaverequest %}
+                              {% if request.user|is_reportingmanager or perms.leave.chanage_leaverequest %}
+                                <button  class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Edit' %}" data-toggle="oh-modal-toggle"
+                                    data-target="#editModal2" hx-get="{% url 'request-update' leave_request.id %}"
+                                    hx-target="#updateForm"><ion-icon name="create-outline"></ion-icon></button>
+                              {% endif %}
+                              {% if request.user|is_reportingmanager or perms.leave.delete_leaverequest %}
+                              <a class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100" id="delete-link"
+                                  href="{% url 'request-delete' leave_request.id %}" onclick="return confirm('{% trans "Are you sure you want to delete ?" %}');" title="{% trans 'Delete' %}"><ion-icon
+                                      name="trash-outline"></ion-icon></a>
+                              {% endif %}
+                            {% endif %}
                         </div>
                     </div>
                     {% endif %}
