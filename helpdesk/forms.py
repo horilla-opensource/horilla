@@ -23,7 +23,7 @@ class YourForm(forms.Form):
 from base.forms import ModelForm
 from base.models import Department, JobPosition
 from employee.models import Employee
-from helpdesk.models import Attachment, TicketType, FAQ,Ticket, FAQCategory, Comment
+from helpdesk.models import Attachment, DepartmentManager, TicketType, FAQ,Ticket, FAQCategory, Comment
 from django import forms
 from django.template.loader import render_to_string
 
@@ -163,3 +163,9 @@ class AttachmentForm(forms.ModelForm):
     class Meta:
         model = Attachment
         fields = ['file','comment','ticket']
+
+
+class DepartmentManagerCreateForm(ModelForm):
+    class Meta:
+        model = DepartmentManager
+        fields = ["department", "manager"]

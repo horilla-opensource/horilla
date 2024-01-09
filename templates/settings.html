@@ -142,6 +142,14 @@
 						</li>
 						<li class="oh-inner-sidebar__item">
 							<a
+								id="ticket_type"
+								href="{% url 'department-manager-view' %}"
+								class="oh-inner-sidebar__link oh-dropdown__link"
+								>{% trans "Department Managers" %}</a
+							>
+						</li>
+						<li class="oh-inner-sidebar__item">
+							<a
 								id="employeePermission"
 								href="{% url 'employee-permission-assign' %}"
 								class="oh-inner-sidebar__link oh-dropdown__link"

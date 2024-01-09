@@ -9,7 +9,7 @@ from base.methods import filtersubordinates, get_key_instances
 from base.models import Department, JobPosition, Tags
 from employee.models import Employee
 from helpdesk.filter import FAQCategoryFilter, FAQFilter,TicketFilter, TicketReGroup
-from helpdesk.forms import AttachmentForm, CommentForm, FAQCategoryForm, FAQForm,TicketForm, TicketRaisedOnForm, TicketTagForm ,TicketAssigneesForm
+from helpdesk.forms import AttachmentForm, CommentForm, DepartmentManagerCreateForm, FAQCategoryForm, FAQForm,TicketForm, TicketRaisedOnForm, TicketTagForm ,TicketAssigneesForm
 from django.utils.translation import gettext as _
 from django.contrib import messages
 from django.db.models import ProtectedError
@@ -20,7 +20,7 @@ from helpdesk.threading import AddAssigneeThread, RemoveAssigneeThread, TicketSe
 from notifications.signals import notify
 
 from horilla.decorators import login_required, manager_can_enter, owner_can_enter, permission_required
-from helpdesk.models import FAQ, TICKET_STATUS, Attachment, Comment, FAQCategory,Ticket,TicketType
+from helpdesk.models import FAQ, TICKET_STATUS, Attachment, Comment, DepartmentManager, FAQCategory,Ticket,TicketType
 
 # Create your views here.
 
@@ -153,7 +153,7 @@ def faq_category_search(request):
 
 
 @login_required
-def faq_view(request,cat_id):
+def faq_view(request,cat_id,**kwargs):
     """
     This function is responsible for rendering the FAQ view.
 
@@ -681,7 +681,7 @@ def ticket_filter(request):
     return render(request, template, context)
 
 @login_required
-def ticket_detail(request,ticket_id):
+def ticket_detail(request,ticket_id,**kwargs):
     today = datetime.now().date()
     ticket = Ticket.objects.get(id=ticket_id)
     c_form = CommentForm()
@@ -1017,3 +1017,69 @@ def tickets_bulk_delete(request):
         except ProtectedError:
             messages.error(request, _("You cannot delete this Ticket."))
     return  HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+
+@login_required
+def add_department_manager(request):
+    form = DepartmentManagerCreateForm()
+    if request.method == "POST":
+        form = DepartmentManagerCreateForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+        
+            return HttpResponse("<script>window.location.reload()</script>")
+    context = {
+        'form': form,
+    }
+    return render(request, "helpdesk/faq/department_managers_form.html", context)
+
+
+@login_required
+def create_department_manager(request):
+    form = DepartmentManagerCreateForm()
+    if request.method == "POST":
+        form = DepartmentManagerCreateForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            messages.success(request, _('The department manager created successfully.'))
+        
+            return HttpResponse("<script>window.location.reload()</script>")
+    context = {
+        'form': form,
+    }
+    return render(request, "department_managers/department_managers_form.html", context)
+
+
+@login_required
+def update_department_manager(request,dep_id):
+    department_manager = DepartmentManager.objects.get(id=dep_id)
+    form = DepartmentManagerCreateForm(instance=department_manager)
+    if request.method == "POST":
+        form = DepartmentManagerCreateForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            messages.success(request, _('The department manager updated successfully.'))
+            return HttpResponse("<script>window.location.reload()</script>")
+    context = {
+        'form': form,
+        'dep_id':dep_id,
+    }
+    return render(request, "department_managers/department_managers_form.html", context)
+
+@login_required
+def view_department_managers(request):
+    department_managers = DepartmentManager.objects.all()
+
+    context = {
+        'department_managers': department_managers,
+    }
+    return render(request, "department_managers/department_managers.html", context)
+
+
+@login_required
+def delete_department_manager(request,dep_id):
+    department_manager = DepartmentManager.objects.get(id=dep_id)
+    department_manager.delete()
+    messages.error(request,_("The department manager has been deleted successfully"))
+    
+    return  HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+   

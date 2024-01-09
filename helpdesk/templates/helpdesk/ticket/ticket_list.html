@@ -305,7 +305,7 @@
 									</div>
 								</div>
 								<div class="oh-sticky-table__td">
-									{% if ticket.assigned_to.all %}
+									{% if ticket.assigned_to.all request.user.employee_get == ticket.employee_id %}
 									<a
 										type="submit"
 										class="oh-btn oh-btn--info w-100 oh-btn--disabled"

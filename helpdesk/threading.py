@@ -30,7 +30,10 @@ class TicketSendThread(Thread):
         self.protocol = "https" if request.is_secure() else "http"
         raised_on = ticket.get_raised_on_object()
         if isinstance(raised_on,Department):
-            self.department_manager = raised_on.dept_manager.all().first().manager
+            if raised_on.dept_manager.all():
+                self.department_manager = raised_on.dept_manager.all().first().manager
+            else:
+                self.department_manager = None
 
     def send_email(self, subject, content, recipients, ticket_id="#"):
         host = self.host
