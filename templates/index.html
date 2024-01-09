@@ -444,7 +444,7 @@
               {% endif %}
             {% endif %}
             </div>
-            {% if request.user|any_permission:'base' or perms.attendance.add_attendancevalidationcondition %}
+            {% if request.user|any_permission:'base' or perms.attendance.view_attendancevalidationcondition %}
               <div class="oh-navbar__action-icons" title="Settings">
                 <a href="/settings/department-view" class="oh-navbar__action-icons-link">
                   <ion-icon name="settings-outline"  class="oh-navbar__icon"></ion-icon>
