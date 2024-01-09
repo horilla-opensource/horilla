@@ -84,7 +84,7 @@ class Employee(models.Model):
     city = models.CharField(max_length=30, null=True, blank=True)
     zip = models.CharField(max_length=20, null=True, blank=True)
     dob = models.DateField(null=True, blank=True)
-    gender = models.CharField(max_length=10, choices=choice_gender, default="male")
+    gender = models.CharField(max_length=10,null=True, choices=choice_gender, default="male")
     qualification = models.CharField(max_length=50, blank=True, null=True)
     experience = models.IntegerField(null=True, blank=True)
     marital_status = models.CharField(

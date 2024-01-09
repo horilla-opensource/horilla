@@ -166,6 +166,15 @@
                 >{% trans "Recruitment" %}</a
               >
             </li>
+            {% endif %} {% if perms.recruitment.view_skillzone %}
+              <li class="oh-sidebar__submenu-item">
+                <a
+                  class="oh-sidebar__submenu-link"
+                  href="{% url 'skill-zone-view' %}"
+                  class="oh-sidebar__submenu-link"
+                  >{% trans "Skill Zone" %}</a
+                >
+              </li>
             {% endif %} {% if perms.recruitment.view_stage %}
             <li class="oh-sidebar__submenu-item">
               <a
@@ -673,6 +682,16 @@
           style="display: none"
         >
           <ul class="oh-sidebar__submenu-items">
+            
+            {% if perms.asset.view_assetcategory %}
+            <li class="oh-sidebar__submenu-item">
+              <a
+                href="{%url 'asset-dashboard' %}"
+                class="oh-sidebar__submenu-link"
+                >{% trans "Dashboard" %}</a
+              >
+            </li>
+            {%endif%}
             {% if perms.asset.view_assetcategory %}
             <li class="oh-sidebar__submenu-item">
               <a

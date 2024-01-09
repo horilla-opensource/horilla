@@ -33,6 +33,8 @@ from employee.models import Employee
 from horilla_widgets.widgets.horilla_multi_select_field import HorillaMultiSelectField
 from horilla_widgets.widgets.select_widgets import HorillaMultiSelectWidget
 from recruitment.models import (
+    SkillZone,
+    SkillZoneCandidate,
     Stage,
     Recruitment,
     Candidate,
@@ -43,6 +45,9 @@ from recruitment.models import (
 )
 from recruitment import widgets
 from base.methods import reload_queryset
+from django.core.exceptions import NON_FIELD_ERRORS
+
+
 
 
 class ModelForm(forms.ModelForm):
@@ -647,3 +652,53 @@ class OfferLetterForm(ModelForm):
                 attrs={"data-summernote": "", "style": "display:none;"}
             ),
         }
+           
+        
+class SkillZoneCreateForm(ModelForm):
+    class Meta:
+        """
+        Class Meta for additional options
+        """
+        model = SkillZone
+        fields = "__all__"        
+        exclude = [
+            "created_on",
+            "objects",
+            "company_id",
+        ]
+
+    
+class SkillZoneCandidateForm(ModelForm):
+    class Meta:
+        """
+        Class Meta for additional options
+        """
+        model = SkillZoneCandidate
+        fields = "__all__"
+        exclude = [
+            "added_on",
+        ]
+        widgets = {
+            "skill_zone_id": forms.HiddenInput(),
+        }
+        
+
+class ToSkillZoneForm(ModelForm):
+    class Meta:
+        """
+        Class Meta for additional options
+        """
+        model = SkillZoneCandidate
+        fields = "__all__"
+        exclude = [
+            "added_on",
+        ]
+        widgets = {
+            "candidate_id": forms.HiddenInput(),
+        }
+        error_messages = {
+            NON_FIELD_ERRORS: {
+                'unique_together': "This candidate alreay exist in this skill zone",
+            }
+        }
+

@@ -512,8 +512,75 @@ class RecruitmentMailTemplate(models.Model):
         Company, null=True, blank=True, on_delete=models.CASCADE,verbose_name="Company"
     )
 
+
+class SkillZone(models.Model):
+    """"
+    Model for talent pool
+    """
+    title = models.CharField(max_length=50, verbose_name="Skill Zone")
+    description = models.TextField(verbose_name=_("Description"))
+    created_on = models.DateField(
+        default=django.utils.timezone.now
+    )
+    is_active = models.BooleanField(default=True, verbose_name=_("Is Active"))
+    objects = HorillaCompanyManager(related_company_field="recruitment_id__company_id")
+
+
+        
+    def get_active(self):
+        return SkillZoneCandidate.objects.filter(is_active=True,skill_zone_id=self)
+    
     def __str__(self) -> str:
         return self.title
+
+class SkillZoneCandidate(models.Model):
+    """
+    Model for saving candidate data's for future recruitment
+    """
+    skill_zone_id = models.ForeignKey(
+        SkillZone,
+        verbose_name=_("Skill Zone"),
+        related_name="skillzonecandidate_set", 
+        on_delete=models.PROTECT
+    )
+    candidate_id = models.ForeignKey(
+        Candidate,
+        on_delete= models.PROTECT,
+        null=True,
+        related_name="skillzonecandidate_set",
+        verbose_name=_("Candidate")
+    )
+    # job_position_id=models.ForeignKey(
+    #     JobPosition,
+    #     on_delete=models.PROTECT,
+    #     null=True,
+    #     related_name="talent_pool",
+    #     verbose_name=_("Job Position")
+    # )
+
+    reason = models.CharField(
+        max_length=200,
+        verbose_name=_("Reason")
+    )
+    is_active = models.BooleanField(default=True, verbose_name=_("Is Active"))
+    added_on = models.DateField(
+        default=django.utils.timezone.now
+    )
+    objects = HorillaCompanyManager(related_company_field="skill_zone__company_id")
+
+    class Meta:
+        """
+        Meta class to add the additional info
+        """
+
+        unique_together = (
+            "skill_zone_id",
+            "candidate_id",
+        )
+
+    def __str__(self) -> str:
+        return f" {self.candidate_id} | {self.skill_zone_id}"
+
 
 
 class CandidateRating(models.Model):

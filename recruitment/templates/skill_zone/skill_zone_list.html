@@ -1,0 +1,304 @@
+{% load i18n %}
+<div class="oh-card">
+    {% include 'filter_tags.html' %}
+
+    {% for skill_zone in skill_zones %}
+        <div class="oh-accordion-meta">
+            <div class="oh-accordion-meta__item">
+                <div class="oh-accordion-meta__header" onclick='$(this).toggleClass("oh-accordion-meta__header--show");'>
+                    <span class="oh-accordion-meta__title pt-3 pb-3">
+                        <div class="oh-tabs__input-badge-container">
+                            <span
+                                class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round mr-1"
+                            >
+                                {{skill_zone.get_active|length}}
+                            </span>
+                                {{skill_zone.title}}
+                        </div>
+                    </span>
+                    <div class="oh-btn-group">
+                        <a
+                          onclick="event.stopPropagation();"
+                          hx-get="{% url 'skill-zone-update' skill_zone.id %}"
+                          hx-target="#editTarget"
+                          data-toggle="oh-modal-toggle"
+                          data-target="#editModal"
+                          class="oh-btn oh-btn--light-bkg w-100"
+                          title="{% trans 'Edit' %}"
+                          ><ion-icon name="create-outline"></ion-icon
+                        ></a>
+                        {% if skill_zone.is_active %}
+                        <form 
+                            action="{% url 'skill-zone-archive' skill_zone.id %}"  
+                            onsubmit="return confirm('{% trans "Do you want to archive this skill zone ?" %}')" method="post" > 
+                          {% csrf_token %}
+                          <button
+                            onclick="event.stopPropagation();"
+                            
+                            type="submit"
+                            class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+                            title="{% trans 'Archive' %}"
+                          >
+                            <ion-icon name="archive"></ion-icon>
+                          </button>
+                        </form>
+                        {% else %}
+                        <form 
+                        action="{% url 'skill-zone-archive' skill_zone.id %}"  
+                        onsubmit="return confirm('{% trans "Do you want to un archive this skill zone?" %}')" method="post" > 
+                            {% csrf_token %}
+                            <button
+                                onclick="event.stopPropagation();"
+                                type="submit"
+                                class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+                                title="{% trans 'Un-Archive' %}"
+                            >
+                              <ion-icon name="archive"></ion-icon>
+                            </button>
+                          </form>
+                        {% endif %} 
+                        <form 
+                        action="{% url 'skill-zone-delete' skill_zone.id %}?view=list"  
+                        onsubmit="return confirm('{% trans "Are you sure want to delete this skill zone?" %}')" method="post" > {% csrf_token %}
+                          <button
+                            onclick="event.stopPropagation();"
+
+                            type="submit"
+                            class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+                            title="{% trans 'Remove' %}"
+                          >
+                            <ion-icon name="trash-outline"></ion-icon>
+                          </button>
+                        </form>
+                      </div>
+                </div>
+                <div class="oh-accordion-meta__body d-none">
+                    <div class="oh-sticky-table oh-sticky-table--no-overflow mb-5">
+                        
+                        <div class="oh-btn-group ml-2" style="margin-left:90%">
+                            <a
+                              class="oh-btn oh-btn--secondary oh-btn--shadow"
+                              data-toggle="oh-modal-toggle"
+                              data-target="#editCandModal"
+                              hx-get="{% url 'skill-zone-cand-create' skill_zone.id %}"
+                              hx-target="#editCandTarget"
+                            >
+                              <ion-icon name="add-outline" class="me-1"></ion-icon>
+                              {% trans "Add" %}
+                            </a>
+                        </div>
+                        <!-- start of sticky table -->
+                        <div class="oh-sticky-table">
+                            <div class="oh-sticky-table__table ">
+                                <div class="oh-sticky-table__thead">
+                                    <div class="oh-sticky-table__tr">
+                                        <div class="oh-sticky-table__th">{% trans "Candidate" %}</div>
+                                        <div class="oh-sticky-table__th">{% trans "Reasom" %}</div>
+                                        <div class="oh-sticky-table__th">{% trans "Added on" %}</div>
+                                        <div class="oh-sticky-table__th">{% trans "Resume" %}</div>
+                                        <div class="oh-sticky-table__th">{% trans "Actions" %}</div>
+                                    </div>
+                                </div>
+                                {% for sz_candidate in skill_zone.skillzonecandidate_set.all %}
+                                    {% if sz_candidate.is_active  %}
+                                        <div class="oh-sticky-table__tbody" 
+                                            onclick="window.location.href = `{% url 'candidate-view-individual' sz_candidate.candidate_id.id %}` "
+                                        >
+                                            <div class="oh-sticky-table__tr" draggable="true">
+                                                <div class="oh-sticky-table__sd" >
+                                                    <div class="oh-profile oh-profile--md">
+                                                        <div class="oh-profile__avatar mr-1">
+                                                            {% if sz_candidate.candidate_id.profile %}
+                                                                <img src="{{sz_candidate.candidate_id.get_avatar}}" class="oh-profile__image"
+                                                                alt="" /> 
+                                                            {% else %}
+                                                            <img src="https://ui-avatars.com/api/?name={{sz_candidate.candidate_id}}&background=random"
+                                                                class="oh-profile__image" alt="" />
+                                                            {% endif %}
+                                                        </div>
+                                                        <span class="oh-profile__name oh-text--dark">{{sz_candidate.candidate_id}}</span>
+                                                    </div>
+                                                </div>
+                                                <div class="oh-sticky-table__td ">{{sz_candidate.reason}}</div>
+                                                <div class="oh-sticky-table__td ">{{sz_candidate.added_on}}</div>
+                                                <div class="oh-sticky-table__td ">
+                                                    <a
+                                                        style="text-decoration: none"
+                                                        class="oh-btn oh-btn--light"
+                                                        href="/media/{{sz_candidate.candidate_id.resume}}"
+                                                        target="_blank"
+                                                        title="{% trans 'Resume' %}"
+                                                        rel="noopener noreferrer"
+                                                        style="flex: 1 0 auto; width:20px;height: 40.68px; padding: 0;"
+                                                        ><ion-icon name="document-outline"></ion-icon
+                                                    ></a>
+                                                </div>
+                                                <div class="oh-sticky-table__td " onclick="event.stopPropagation()">
+                                                    <div class="oh-btn-group">                                                  
+                                                        <button  
+                                                            class="oh-btn oh-btn--light-bkg w-50" 
+                                                            title="{% trans 'Edit' %}" 
+                                                            data-toggle="oh-modal-toggle"
+                                                            data-target="#editCandModal" 
+                                                            hx-get="{% url 'skill-zone-cand-edit' sz_candidate.id %}"
+                                                            hx-target="#editCandTarget">
+                                                            <ion-icon name="create-outline"></ion-icon>
+                                                        </button>
+                                                        {% if sz_candidate.is_active %}
+                                                            <form action="{% url 'skill-zone-cand-archive' sz_candidate.id  %}"  title="Archive" onsubmit="return confirm('{% trans "Do you want to archive this candidate" %}')" method='post'
+                                                                class="w-50">
+                                                                {% csrf_token %}
+                                                                <button type='submit' class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+                                                                    ><ion-icon name="archive"></ion-icon></button>
+                                                            </form>
+                                                        {% else %}
+                                                            <form action="{% url 'skill-zone-cand-archive' sz_candidate.id  %}"  title="Un Archive" onsubmit="return confirm('{% trans "Do you want to un-archive this candidate" %}')" method='post'
+                                                                class="w-50">
+                                                                {% csrf_token %}
+                                                                <button type='submit' class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+                                                                    ><ion-icon name="archive"></ion-icon></button>
+                                                            </form>
+                                                        {% endif %}
+                                                        
+                                                        <form action="{% url 'rec-candidate-delete' sz_candidate.candidate_id.id  %}" onsubmit="return confirm('{% trans "Do you want to delete this candidate" %}')" method='post'
+                                                            onsubmit="Are you sure want to delete this candidate?" class="w-50">
+                                                            {% csrf_token %}
+                                                            <button type='submit' class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+                                                                title="Remove"><ion-icon name="trash-outline"></ion-icon></button>
+                                                        </form>
+                            
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    
+                                    {% endif %}
+                                    
+                                {% endfor %}
+                                
+                            </div>
+                        </div>
+                        <!-- end of sticky table -->
+                        <!-- start of pagination  -->
+                        {% comment %} <div class="oh-pagination">
+                            <span class="oh-pagination__page">
+                                {% trans "Page" %} {{ my_leave_allocation_requests.number }} {% trans "of" %} {{ my_leave_allocation_requests.paginator.num_pages }}.
+                            </span>
+                            <nav class="oh-pagination__nav">
+                                <div class="oh-pagination__input-container me-3">
+                                    <span class="oh-pagination__label me-1">{% trans "Page" %}</span>
+                                    <input type="number" name="m_page" class="oh-pagination__input" value="{{my_leave_allocation_requests.number}}"
+                                        hx-get="{% url 'leave-allocation-request-filter' %}?{{pd}}" hx-target="#view-container" min="1" />
+                                    <span class="oh-pagination__label">{% trans "of" %} {{my_leave_allocation_requests.paginator.num_pages}}</span>
+                                </div>
+                                <ul class="oh-pagination__items">
+                                    {% if my_leave_allocation_requests.has_previous %}
+                                    <li class="oh-pagination__item oh-pagination__item--wide">
+                                        <a hx-target='#view-container' hx-get="{% url 'leave-allocation-request-filter' %}?{{pd}}&m_page=1"
+                                            class="oh-pagination__link">{% trans "First" %}</a>
+                                    </li>
+                                    <li class="oh-pagination__item oh-pagination__item--wide">
+                                        <a hx-target='#view-container'
+                                            hx-get="{% url 'leave-allocation-request-filter' %}?{{pd}}&m_page={{ my_leave_allocation_requests.previous_page_number }}"
+                                            class="oh-pagination__link">{% trans "Previous" %}</a>
+                                    </li>
+                                    {% endif %}
+                                    {% if my_leave_allocation_requests.has_next %}
+                                    <li class="oh-pagination__item oh-pagination__item--wide">
+                                        <a hx-target='#view-container'
+                                            hx-get="{% url 'leave-allocation-request-filter' %}?{{pd}}&m_page={{ my_leave_allocation_requests.next_page_number }}"
+                                            class="oh-pagination__link">{% trans "Next" %}</a>
+                                    </li>
+                                    <li class="oh-pagination__item oh-pagination__item--wide">
+                                        <a hx-target='#view-container'
+                                            hx-get="{% url 'leave-allocation-request-filter' %}?{{pd}}&m_page={{ my_leave_allocation_requests.paginator.num_pages }}"
+                                            class="oh-pagination__link">{% trans "Last" %}</a>
+                                    </li>
+                                    {% endif %}
+
+                                </ul>
+                            </nav>
+                        </div> {% endcomment %}
+                        <!-- end of pagination  -->
+                    </div>
+                </div>
+            </div> 
+        </div>
+    {% endfor %}
+</div> 
+
+<div class="oh-pagination">
+    <span
+      class="oh-pagination__page"
+      >
+      {% trans "Page" %} {{ skill_zones.number }} {% trans "of" %} {{ skill_zones.paginator.num_pages }}.
+      </span>
+    <nav class="oh-pagination__nav">
+      <div class="oh-pagination__input-container me-3">
+        <span class="oh-pagination__label me-1">{% trans "Page" %}</span>
+        <input
+          type="number"
+          name="page"
+          class="oh-pagination__input"
+          value="{{skill_zones.number}}"
+          hx-get="{% url 'skill-zone-filter' %}?{{pd}}&view=list"
+          hx-target="#skill_zone_container"
+          min="1"
+        />
+        <span class="oh-pagination__label">{% trans "of" %} {{skill_zones.paginator.num_pages}}</span>
+      </div>
+      <ul class="oh-pagination__items">
+        {% if skill_zones.has_previous %}
+        <li class="oh-pagination__item oh-pagination__item--wide">
+          <a hx-target='#skill_zone_container' hx-get="{% url 'skill-zone-filter' %}?{{pd}}&view=list&page=1" class="oh-pagination__link">{% trans "First" %}</a>
+        </li>
+        <li class="oh-pagination__item oh-pagination__item--wide">
+          <a hx-target='#skill_zone_container' hx-get="{% url 'skill-zone-filter' %}?{{pd}}&view=list&page={{ skill_zones.previous_page_number }}" class="oh-pagination__link">{% trans "Previous" %}</a>
+        </li>
+        {% endif %}
+        {% if skill_zones.has_next %}
+        <li class="oh-pagination__item oh-pagination__item--wide">
+          <a hx-target='#skill_zone_container' hx-get="{% url 'skill-zone-filter' %}?{{pd}}&view=list&page={{ skill_zones.next_page_number }}" class="oh-pagination__link">{% trans "Next" %}</a>
+        </li>
+        <li class="oh-pagination__item oh-pagination__item--wide">
+          <a hx-target='#skill_zone_container' hx-get="{% url 'skill-zone-filter' %}?{{pd}}&view=list&page={{ skill_zones.paginator.num_pages }}" class="oh-pagination__link">{% trans "Last" %}</a>
+        </li>
+        {% endif %}
+  
+      </ul>
+    </nav>
+</div> 
+
+
+<div
+class="oh-modal"
+id="editModal"
+role="dialog"
+aria-labelledby="editDialogModal"
+aria-hidden="true"
+>
+<div class="oh-modal__dialog">
+    <div class="oh-modal__dialog-header">
+        <h2 class="oh-modal__dialog-title" id="editTitle">
+            {% trans "Update Skill Zone" %}
+        </h2>
+        <button class="oh-modal__close" aria-label="Close">
+            <ion-icon name="close-outline"></ion-icon>
+        </button>
+    </div>
+    <div class="oh-modal__dialog-body" id="editTarget"></div>
+</div>
+</div>
+
+<div
+    class="oh-modal"
+    id="editCandModal"
+    role="dialog"
+    aria-labelledby="editDialogModal"
+    aria-hidden="true"
+>
+    <div class="oh-modal__dialog">
+        <div class="oh-modal__dialog-header" id="editCandTarget">
+            
+    </div>
+</div>
