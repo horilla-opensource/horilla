@@ -25,6 +25,7 @@
         </div>
         <div class="oh-main__titlebar oh-main__titlebar--right">
             <div class="oh-main__titlebar-button-container">
+                {% if perms.asset.add_assetlot %}
                 <div class="oh-btn-group ml-2">
                     <div>
                         <a  class="oh-btn oh-btn--secondary oh-btn--shadow" 
@@ -35,6 +36,7 @@
                             <ion-icon class="me-2" name="add-outline"></ion-icon>{% trans "Create" %}</a>
                     </div>
                 </div>
+                {% endif %}
             </div>
         </div>
     </section>

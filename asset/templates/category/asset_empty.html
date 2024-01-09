@@ -71,16 +71,18 @@
                 </div>
                 <!-- import asset end  -->
                 <div class="oh-btn-group ml-2">
-                    <div>
-                        <a  href="#" class="oh-btn oh-btn--secondary oh-btn--shadow" 
-                            data-toggle="oh-modal-toggle"
-                            data-target="#AssetCategoryModal" 
-                            hx-get="{%url 'asset-category-creation' %}"
-                            hx-target="#AssetModal"> 
-                            <ion-icon class="me-2" name="add-outline"></ion-icon>
-                            {% trans "Create" %}
-                        </a>
-                    </div>
+                    {% if perms.asset.add_assetcategory %}
+                        <div>
+                            <a  href="#" class="oh-btn oh-btn--secondary oh-btn--shadow" 
+                                data-toggle="oh-modal-toggle"
+                                data-target="#AssetCategoryModal" 
+                                hx-get="{%url 'asset-category-creation' %}"
+                                hx-target="#AssetModal"> 
+                                <ion-icon class="me-2" name="add-outline"></ion-icon>
+                                {% trans "Create" %}
+                            </a>
+                        </div>
+                    {% endif %}
                 </div>
             </div>
         </div>

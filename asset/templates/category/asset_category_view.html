@@ -69,9 +69,11 @@
                 <!-- end of search -->
             </div>
             <div class="oh-main__titlebar-button-container">
-                <a href="{% url 'asset-batch-view'%}">
-                    <button class="oh-btn ml-2"> <ion-icon name="list-outline" class="me-1"></ion-icon>{% trans "Batch No" %}</button>
-                </a>
+                {% if perms.asset.view_assetlot %}
+                    <a href="{% url 'asset-batch-view'%}">
+                        <button class="oh-btn ml-2"> <ion-icon name="list-outline" class="me-1"></ion-icon>{% trans "Batch No" %}</button>
+                    </a>
+                {% endif %}
                 <!-- import asset start  -->
                 <div class="oh-dropdown" >
                     
@@ -245,16 +247,18 @@
                 </div>
                 <!-- asset filter end -->
                 <div class="oh-btn-group ml-2">
-                    <div>
-                        <a  href="#" class="oh-btn oh-btn--secondary oh-btn--shadow" 
+                    {% if perms.asset.add_assetcategory %}
+                        <div>
+                            <a  href="#" class="oh-btn oh-btn--secondary oh-btn--shadow" 
                             data-toggle="oh-modal-toggle"
                             data-target="#AssetCategoryModal" 
                             hx-get="{%url 'asset-category-creation' %}"
                             hx-target="#AssetModal"> 
                             <ion-icon class="me-2" name="add-outline"></ion-icon>
                             {% trans "Create" %}
-                        </a>
-                    </div>
+                            </a>
+                        </div>
+                {% endif %}
                 </div>
             </div>
         </div>
