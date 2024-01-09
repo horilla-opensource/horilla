@@ -1,0 +1,68 @@
+{% load i18n %}
+
+<form
+    id="add-form"
+    hx-post="{% url "add-asset-report" %}"
+    hx-swap='none'
+    hx-swap="innerHTML"
+    method="post"
+    hx-encoding="multipart/form-data"
+>
+    {% comment %} <div class="row">
+        <div class="col-12 col-sm-12 col-md-4 col-lg-6">
+        <div class="oh-input__group">
+            <label class="oh-input__label" for="keyType">{% trans "Title" %}</label>
+            {{form.title}}
+            {{form.title.errors}}
+
+        </div>
+        </div>
+        <div class="col-12 col-sm-12 col-md-4 col-lg-6">
+        <div class="oh-input__group">
+            <label class="oh-input__label" for="startDate">{% trans "Files" %}</label>
+            {{form.files }}
+            {{form.files.errors }}
+        </div>
+        </div>
+
+    </div>
+    <div class="oh-modal__dialog-footer">
+        <input
+            type="submit"
+            value='{% trans "Save" %}'
+            class="oh-btn oh-btn--secondary oh-btn--shadow pl-5 pr-5"
+        />
+    </div> {% endcomment %}
+    {% csrf_token %}
+    <div class="row">
+        <div class="col-12 col-sm-12 col-md-4 col-lg-6">
+            <div class="oh-input__group">
+                <label class="oh-input__label" for="keyType">{% trans "Title" %}</label>
+                {{asset_report_form.title}}
+                {{asset_report_form.title.errors}}
+
+            </div>
+        </div>
+        <div class="col-12 col-sm-12 col-md-4 col-lg-6">
+            <div class="oh-input__group">
+                <label class="oh-input__label" for="id_asset_id">{% trans "Asset" %}</label>
+                {{asset_report_form.asset_id }}
+                {{asset_report_form.asset_id.errors }}
+            </div>
+        </div>
+
+    </div>
+    {% comment %} {{ asset_report_form.as_p }} {% endcomment %}
+    <div class="oh-input__group ">
+        <label class="oh-input__label" for="objective">{% trans "file" %}</label>
+        <input name= "file" multiple="True" type="file" id="fileUpload" />    
+    </div>
+    <div class="oh-modal__dialog-footer">
+        <input
+            type="submit"
+            value='{% trans "Save" %}'
+            class="oh-btn oh-btn--secondary oh-btn--shadow pl-5 pr-5"
+            onclick="console.log('submitted');$('.oh-modal_close--custom').click()"
+        />
+    </div>
+</form>

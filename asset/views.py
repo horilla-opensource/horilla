@@ -19,14 +19,16 @@ from employee.models import EmployeeWorkInformation
 from notifications.signals import notify
 from horilla.decorators import login_required, hx_request_required
 from horilla.decorators import permission_required
-from asset.models import Asset, AssetRequest, AssetAssignment, AssetCategory, AssetLot
+from asset.models import Asset, AssetDocuments, AssetRequest, AssetAssignment, AssetCategory, AssetLot
 from asset.forms import (
     AssetBatchForm,
     AssetForm,
+    AssetReportForm,
     AssetRequestForm,
     AssetAllocationForm,
     AssetCategoryForm,
     AssetReturnForm,
+    DocumentForm,
 )
 from asset.filters import (
     AssetAllocationFilter,
@@ -83,6 +85,31 @@ def asset_creation(request, id):
         else:
             context["asset_creation_form"] = form
     return render(request, "asset/asset_creation.html", context)
+
+@login_required
+def add_asset_report(request,asset_id=None):
+    """
+    Function for adding asset report to the asset
+    """
+    asset_report_form = AssetReportForm()
+    if asset_id:
+        asset = Asset.objects.get(id=asset_id)
+        asset_report_form = AssetReportForm(initial={'asset_id':asset})
+        if request.user.employee_get != AssetAssignment.objects.get(asset_id=asset_id).assigned_to_employee_id or request.user.has_perm("asset.change_asset"):
+            return redirect(asset_request_alloaction_view)
+    
+    if request.method == 'POST':
+        asset_report_form = AssetReportForm(request.POST, request.FILES)
+        if asset_report_form.is_valid() :
+            asset_report = asset_report_form.save()
+
+            if asset_report_form.is_valid() and request.FILES:
+                for file in request.FILES.getlist('file'):
+                    AssetDocuments.objects.create(asset_report=asset_report, file=file)
+
+                return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+
+    return render(request, 'asset/asset_report_form.html', {'asset_report_form': asset_report_form,})
 
 
 @login_required

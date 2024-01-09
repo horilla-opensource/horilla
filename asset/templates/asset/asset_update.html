@@ -70,7 +70,7 @@
             <div class=" " id="assetUpdateFormContainer">
               <div class="oh-input__group ">
                 <label class="oh-input__label" for="objective">{% trans "Asset Name" %}</label>
-                {{asset_form.asset_name}}
+                {{asset_form.asset_name}} 
                 {{asset_form.asset_name.errors}}
               </div>
               <div class="oh-input__group ">
@@ -131,7 +131,17 @@
         </div>
       </section>
     </div>
-    <div class="oh-modal__dialog-footer">
+    <div class="oh-modal__dialog-footer justify-content-between mt-3">
+      <button 
+        class=" oh-btn oh-btn--secondary oh-btn--shadow mt-3"
+        onclick="event.preventDefault();event.stopPropagation()"
+        hx-get="{% url "add-asset-report" asset_form.instance.id %}"
+        hx-target="#addAssetReportForm"
+        data-toggle="oh-modal-toggle"
+        data-target="#addAssetReport"
+       >
+        {% trans "Add Report" %}
+      </button>
       <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow">
         {% trans "Save" %}
       </button>

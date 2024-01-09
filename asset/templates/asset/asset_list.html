@@ -59,6 +59,16 @@
             id="oh-btn-asset-update-modal"> 
             <ion-icon name="create-outline" role="img" class="md hydrated" aria-label="create outline"></ion-icon>
           </a>
+          <a 
+            class="oh-btn oh-btn--light-bkg w-100" 
+            data-toggle="oh-modal-toggle" 
+            data-target="#AssetCategoryModal"
+            hx-get="{% url 'asset-update'  asset_id=asset.id %}?asset_under=asset_filter&{{pg}}" 
+            title="{% trans 'Update' %}"
+            hx-target="#AssetModal" 
+            id="oh-btn-asset-update-modal"> 
+          <ion-icon name="document-attach-outline"></ion-icon>
+          </a>
           <form action="{% url 'asset-delete' asset.id %}?asset_list=asset_filter&{{pg}}" 
             onsubmit="return confirm('{% trans "Do you want to delete this asset?" %}')" 
             method="post" style="display: contents"> {% csrf_token %} 
@@ -77,6 +87,16 @@
           onclick="event.stopPropagation()"
           id="oh-btn-asset-update-modal"> 
           <ion-icon name="create-outline" role="img" class="md hydrated" aria-label="create outline"></ion-icon>
+        </a>
+        <a 
+          class="oh-btn oh-btn--light-bkg w-100" 
+          onclick="event.preventDefault();event.stopPropagation()"
+          hx-get="{% url "add-asset-report" asset.id %}"
+          hx-target="#addAssetReportForm"
+          data-toggle="oh-modal-toggle"
+          data-target="#addAssetReport"
+          id="oh-btn-asset-update-modal"> 
+          <ion-icon name="document-attach-outline"></ion-icon>
         </a>
         <form action="{% url 'asset-delete' asset_id=asset.id %}?{{pg}}" 
             onclick="event.stopPropagation()"

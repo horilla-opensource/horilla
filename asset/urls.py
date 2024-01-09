@@ -106,4 +106,6 @@ urlpatterns = [
         name="asset-batch-number-delete",
     ),
     path("asset-count-update", views.asset_count_update, name="asset-count-update"),
+    path("add-asset-report/", views.add_asset_report, name="add-asset-report"),
+    path("add-asset-report/<int:asset_id>", views.add_asset_report, name="add-asset-report"),
 ]

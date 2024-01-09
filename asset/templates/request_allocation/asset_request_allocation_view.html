@@ -1,5 +1,16 @@
 {% extends 'index.html' %} {% block content %} {% load static i18n %} {% load i18n %} {% load mathfilters %} {% load widget_tweaks %} {% comment %} {% include
 'filter_tags.html' %} {% endcomment %}
+<style>    
+    .oh-modal_close--custom {
+        border: none;
+        background: none;
+        font-size: 1.5rem;
+        opacity: 0.7;
+        position: absolute;
+        top: 25px;
+        right: 15px;
+      }
+</style>
 <main :class="sidebarOpen ? 'oh-main__sidebar-visible' : ''">
 	<section class="oh-wrapper oh-main__topbar" x-data="{searchShow: false}">
 		<div class="oh-main__titlebar oh-main__titlebar--left">
@@ -330,6 +341,36 @@
 		></div>
 	</div>
 </div>
+
+
+<div
+  class="oh-modal"
+  id="addAssetReport"
+  role="dialog"
+  aria-labelledby="addAssetReport"
+  aria-hidden="true"
+  >
+    <div class="oh-modal__dialog">
+        <div class="oh-modal__dialog-header">
+            <h2 class="oh-modal__dialog-title" id="addAssetReportLabel">
+              {% trans "Add Asset Report" %}
+            </h2>
+            <button
+              type="button"
+              class="oh-modal_close--custom"
+              onclick="$('#addAssetReport').removeClass('oh-modal--show');"
+                >
+                <ion-icon
+                  name="close-outline"
+                  role="img"
+                  aria-label="close outline"
+                ></ion-icon>
+            </button>
+        </div>
+        <div class="oh-modal__dialog-body" id="addAssetReportForm"></div>
+    </div>
+</div>
+
 <!-- end  of  asset request modal start -->
 <script>
 $(document).ready(function () {

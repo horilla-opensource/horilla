@@ -16,7 +16,17 @@
         text-decoration: none;
         cursor: pointer;
     }
-</style>
+    
+    .oh-modal_close--custom {
+      border: none;
+      background: none;
+      font-size: 1.5rem;
+      opacity: 0.7;
+      position: absolute;
+      top: 25px;
+      right: 15px;
+    }
+  </style>
 
 <!-- start of messages -->
 {% if messages %}
@@ -257,9 +267,39 @@
 </div>
 </main>
 
+
+
 <div class="oh-modal" id="AssetCategoryModal" role="dialog" aria-labelledby="AssetCategoryModal" aria-hidden="true">
     <div class="oh-modal__dialog" id="AssetModal">
            
+    </div>
+</div>
+
+<div
+  class="oh-modal"
+  id="addAssetReport"
+  role="dialog"
+  aria-labelledby="addAssetReport"
+  aria-hidden="true"
+  >
+    <div class="oh-modal__dialog">
+        <div class="oh-modal__dialog-header">
+            <h2 class="oh-modal__dialog-title" id="addAssetReportLabel">
+              {% trans "Add Asset Report" %}
+            </h2>
+            <button
+              type="button"
+              class="oh-modal_close--custom"
+              onclick="$('#addAssetReport').removeClass('oh-modal--show');"
+                >
+                <ion-icon
+                  name="close-outline"
+                  role="img"
+                  aria-label="close outline"
+                ></ion-icon>
+            </button>
+        </div>
+        <div class="oh-modal__dialog-body" id="addAssetReportForm"></div>
     </div>
 </div>
 
