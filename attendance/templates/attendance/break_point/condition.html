@@ -2,7 +2,7 @@
   <div class="oh-inner-sidebar-content">
     <div class="oh-inner-sidebar-content__header d-flex justify-content-between align-items-center">
       <h2 class="oh-inner-sidebar-content__title">{% trans 'Condition' %}</h2>
-      {% if not condition %}
+      {% if not condition and perms.attendance.add_attendancevalidationcondition%}
         <button class="oh-btn oh-btn--secondary oh-btn--shadow" hx-target="#updateForm" type="button" hx-get="{% url 'attendance-settings-create' %}" class="oh-btn oh-btn--info" data-toggle="oh-modal-toggle" data-target="#updateModal">
           <ion-icon name="add-outline" class="me-1"></ion-icon>
           {% trans 'Create' %}
@@ -23,7 +23,9 @@
               <div class="oh-sticky-table__th">
                 {% trans 'OT Cut-Off/Day' %}
               </div>
-              <div class="oh-sticky-table__th"></div>
+              {% if perms.attendance.change_attendancevalidationcondition %}
+                <div class="oh-sticky-table__th"></div>
+              {% endif %}
             </div>
           </div>
           <div class="oh-sticky-table__tbody">
@@ -32,9 +34,11 @@
                 <div class="oh-sticky-table__td">{{ condition.validation_at_work }}</div>
                 <div class="oh-sticky-table__td">{{ condition.minimum_overtime_to_approve }}</div>
                 <div class="oh-sticky-table__td">{{ condition.overtime_cutoff }}</div>
-                <div class="oh-sticky-table__td">
-                  <a hx-get="{% url 'attendance-settings-update' condition.id %}" hx-target="#updateForm" type="button" class="oh-btn oh-btn--info" data-toggle="oh-modal-toggle" data-target="#updateModal">{% trans 'Edit' %}</a>
-                </div>
+                {% if perms.attendance.change_attendancevalidationcondition %}
+                  <div class="oh-sticky-table__td">
+                    <a hx-get="{% url 'attendance-settings-update' condition.id %}" hx-target="#updateForm" type="button" class="oh-btn oh-btn--info" data-toggle="oh-modal-toggle" data-target="#updateModal">{% trans 'Edit' %}</a>
+                  </div>
+                {% endif %}
               </div>
             {% endif %}
           </div>
