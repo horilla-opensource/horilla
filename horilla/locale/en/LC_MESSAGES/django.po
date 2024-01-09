@@ -3,13 +3,13 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-#: .\leave\views.py:2304
+#: .\leave\views.py:2288
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-01-08 15:03+0530\n"
+"POT-Creation-Date: 2024-01-09 09:40+0530\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,31 +19,31 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: .\asset\forms.py:53
+#: .\asset\forms.py:54
 msgid "A powerful laptop for business use."
 msgstr ""
 
-#: .\asset\forms.py:133
+#: .\asset\forms.py:166
 msgid "Computers."
 msgstr ""
 
-#: .\asset\forms.py:138
+#: .\asset\forms.py:171
 msgid "A category for all types of laptops."
 msgstr ""
 
-#: .\asset\forms.py:181
+#: .\asset\forms.py:214
 msgid "Requesting a laptop for software development purposes."
 msgstr ""
 
-#: .\asset\forms.py:278
+#: .\asset\forms.py:311
 msgid "on returns the laptop. However, it has suffered minor damage."
 msgstr ""
 
-#: .\asset\forms.py:291
+#: .\asset\forms.py:324
 msgid "Return date cannot be in the future."
 msgstr ""
 
-#: .\asset\forms.py:326
+#: .\asset\forms.py:359
 msgid ""
 "A batch of 50 laptops, consisting of Lenovo ThinkPad "
 "T480s                              and Dell XPS 13."
@@ -124,29 +124,29 @@ msgstr ""
 msgid "An asset with this tracking ID already exists."
 msgstr ""
 
-#: .\asset\models.py:93
+#: .\asset\models.py:109
 msgid "Minor damage"
 msgstr ""
 
-#: .\asset\models.py:94
+#: .\asset\models.py:110
 msgid "Major damage"
 msgstr ""
 
-#: .\asset\models.py:95
+#: .\asset\models.py:111
 msgid "Healthy"
 msgstr ""
 
-#: .\asset\models.py:121
+#: .\asset\models.py:137
 #: .\attendance\templates\attendance\own_attendance\attendances.html:45
 #: .\base\methods.py:357 .\employee\templates\tabs\leave-tab.html:59
 #: .\leave\models.py:95 .\leave\models.py:103
 #: .\leave\templates\leave\leave_allocation_request\leave_allocation_request_view.html:250
-#: .\leave\templates\leave\leave_request\leave_requests.html:21
+#: .\leave\templates\leave\leave_request\leave_requests.html:22
 #: .\leave\templates\leave\user_leave\user_requests.html:20
 msgid "Requested"
 msgstr ""
 
-#: .\asset\models.py:122
+#: .\asset\models.py:138
 #: .\attendance\templates\attendance\attendance\group_by.html:144
 #: .\base\methods.py:358 .\base\models.py:664 .\base\models.py:773
 #: .\base\templates\shift_request\shift_request_export.html:87
@@ -157,17 +157,17 @@ msgstr ""
 #: .\leave\models.py:104
 #: .\leave\templates\leave\leave_allocation_request\leave_allocation_request_single_view.html:135
 #: .\leave\templates\leave\leave_allocation_request\leave_allocation_request_view.html:261
-#: .\leave\templates\leave\leave_request\leave_requests.html:25
+#: .\leave\templates\leave\leave_request\leave_requests.html:26
 #: .\leave\templates\leave\user_leave\user_requests.html:24
 msgid "Approved"
 msgstr ""
 
-#: .\asset\models.py:123 .\base\methods.py:360
+#: .\asset\models.py:139 .\base\methods.py:360
 #: .\employee\templates\tabs\leave-tab.html:45 .\leave\models.py:98
 #: .\leave\models.py:105
 #: .\leave\templates\leave\leave_allocation_request\leave_allocation_request_single_view.html:155
 #: .\leave\templates\leave\leave_allocation_request\leave_allocation_request_view.html:239
-#: .\leave\templates\leave\leave_request\leave_requests.html:9
+#: .\leave\templates\leave\leave_request\leave_requests.html:10
 #: .\leave\templates\leave\user_leave\user_requests.html:8
 msgid "Rejected"
 msgstr ""
@@ -179,9 +179,9 @@ msgstr ""
 #: .\asset\templates\asset\asset_creation.html:41
 #: .\asset\templates\asset\asset_information.html:6
 #: .\asset\templates\asset\asset_update.html:72
-#: .\asset\templates\category\asset_category_view.html:108
-#: .\asset\templates\category\asset_category_view.html:189
-#: .\asset\templates\request_allocation\asset_request_allocation_view.html:68
+#: .\asset\templates\category\asset_category_view.html:118
+#: .\asset\templates\category\asset_category_view.html:199
+#: .\asset\templates\request_allocation\asset_request_allocation_view.html:79
 msgid "Asset Name"
 msgstr ""
 
@@ -192,7 +192,7 @@ msgstr ""
 #: .\asset\templates\batch\asset_batch_number_update.html:35
 #: .\asset\templates\category\asset_category_creation.html:26
 #: .\asset\templates\category\asset_category_update.html:41
-#: .\asset\templates\category\asset_category_view.html:171
+#: .\asset\templates\category\asset_category_view.html:181
 #: .\asset\templates\request_allocation\asset_request_creation.html:28
 #: .\attendance\templates\requests\attendance\individual_view.html:119
 #: .\base\models.py:663 .\base\models.py:769
@@ -229,15 +229,15 @@ msgstr ""
 #: .\asset\templates\asset\asset_information.html:22
 #: .\asset\templates\asset\asset_list.html:23
 #: .\asset\templates\asset\asset_update.html:84
-#: .\asset\templates\category\asset_category_view.html:118
-#: .\asset\templates\category\asset_category_view.html:193
+#: .\asset\templates\category\asset_category_view.html:128
+#: .\asset\templates\category\asset_category_view.html:203
 msgid "Tracking Id"
 msgstr ""
 
 #: .\asset\templates\asset\asset_creation.html:61
 #: .\asset\templates\asset\asset_information.html:28
 #: .\asset\templates\asset\asset_update.html:100
-#: .\asset\templates\category\asset_category_view.html:200
+#: .\asset\templates\category\asset_category_view.html:210
 msgid "Purchase Date"
 msgstr ""
 
@@ -251,13 +251,13 @@ msgstr ""
 #: .\asset\templates\asset\asset_information.html:42
 #: .\asset\templates\asset\asset_list.html:22
 #: .\asset\templates\asset\asset_update.html:116
-#: .\asset\templates\category\asset_category_view.html:112
-#: .\asset\templates\category\asset_category_view.html:222
+#: .\asset\templates\category\asset_category_view.html:122
+#: .\asset\templates\category\asset_category_view.html:232
 #: .\asset\templates\request_allocation\asset_request_allocation_list.html:51
 #: .\asset\templates\request_allocation\asset_request_allocation_list.html:175
-#: .\asset\templates\request_allocation\asset_request_allocation_view.html:75
-#: .\asset\templates\request_allocation\asset_request_allocation_view.html:110
-#: .\asset\templates\request_allocation\asset_request_allocation_view.html:144
+#: .\asset\templates\request_allocation\asset_request_allocation_view.html:86
+#: .\asset\templates\request_allocation\asset_request_allocation_view.html:121
+#: .\asset\templates\request_allocation\asset_request_allocation_view.html:155
 #: .\asset\templates\request_allocation\group_by.html:11
 #: .\asset\templates\request_allocation\group_by.html:114
 #: .\asset\templates\request_allocation\group_by.html:259
@@ -282,7 +282,7 @@ msgstr ""
 #: .\leave\templates\leave\leave_allocation_request\leave_allocation_request_list.html:155
 #: .\leave\templates\leave\leave_allocation_request\leave_allocation_request_view.html:138
 #: .\leave\templates\leave\leave_request\group_by.html:66
-#: .\leave\templates\leave\leave_request\leave_requests.html:75
+#: .\leave\templates\leave\leave_request\leave_requests.html:76
 #: .\leave\templates\leave\leave_request\leave_requests_export_filter.html:61
 #: .\leave\templates\leave\leave_request\request_view.html:121
 #: .\leave\templates\leave\user_leave\group_by.html:66
@@ -299,7 +299,7 @@ msgstr ""
 #: .\payroll\templates\payroll\payslip\generate_payslip_list.html:59
 #: .\payroll\templates\payroll\payslip\group_payslips.html:50
 #: .\payroll\templates\payroll\payslip\payslip_export_filter.html:54
-#: .\payroll\templates\payroll\payslip\payslip_table.html:47
+#: .\payroll\templates\payroll\payslip\payslip_table.html:45
 #: .\pms\templates\feedback\feedback_detailed_view.html:83
 #: .\pms\templates\feedback\feedback_detailed_view.html:139
 #: .\pms\templates\feedback\feedback_detailed_view.html:210
@@ -323,14 +323,15 @@ msgstr ""
 #: .\asset\templates\asset\asset_information.html:49
 #: .\asset\templates\asset\asset_list.html:24
 #: .\asset\templates\asset\asset_update.html:123
-#: .\asset\templates\category\asset_category_view.html:63
+#: .\asset\templates\category\asset_category_view.html:73
 #: .\asset\templates\category\asset_empty.html:44
 msgid "Batch No"
 msgstr ""
 
 #: .\asset\templates\asset\asset_creation.html:93
-#: .\asset\templates\asset\asset_return_form.html:22
-#: .\asset\templates\asset\asset_update.html:136
+#: .\asset\templates\asset\asset_report_form.html:65
+#: .\asset\templates\asset\asset_return_form.html:32
+#: .\asset\templates\asset\asset_update.html:146
 #: .\asset\templates\batch\asset_batch_number_creation.html:27
 #: .\asset\templates\batch\asset_batch_number_update.html:41
 #: .\asset\templates\category\asset_category_creation.html:36
@@ -396,8 +397,8 @@ msgstr ""
 
 #: .\asset\templates\asset\asset_information.html:55
 #: .\asset\templates\asset\asset_update.html:91
-#: .\asset\templates\category\asset_category_view.html:128
-#: .\asset\templates\category\asset_category_view.html:216
+#: .\asset\templates\category\asset_category_view.html:138
+#: .\asset\templates\category\asset_category_view.html:226
 #: .\asset\templates\request_allocation\group_by.html:209
 #: .\asset\templates\request_allocation\group_by.html:354
 #: .\asset\templates\request_allocation\individual_request.html:65
@@ -405,18 +406,37 @@ msgstr ""
 msgid "Category"
 msgstr ""
 
+#: .\asset\templates\asset\asset_information.html:64
+msgid "Reports"
+msgstr ""
+
+#: .\asset\templates\asset\asset_information.html:66
+#: .\helpdesk\templates\helpdesk\ticket\forms\change.html:84
+#: .\helpdesk\templates\helpdesk\ticket\forms\change_assinees.html:12
+#: .\helpdesk\templates\helpdesk\ticket\ticket_card.html:197
+#: .\helpdesk\templates\helpdesk\ticket\ticket_card.html:199
+#: .\helpdesk\templates\helpdesk\ticket\ticket_card.html:450
+#: .\helpdesk\templates\helpdesk\ticket\ticket_card.html:452
+#: .\helpdesk\templates\helpdesk\ticket\ticket_card.html:687
+#: .\helpdesk\templates\helpdesk\ticket\ticket_card.html:689
+#, fuzzy
+#| msgid "assign-view"
+msgid "Assignees"
+msgstr "Assigned Leaves"
+
 #: .\asset\templates\asset\asset_list.html:21
+#: .\asset\templates\asset\asset_report_form.html:49
 #: .\asset\templates\category\asset_category.html:34
-#: .\asset\templates\category\asset_category_view.html:103
-#: .\asset\templates\category\asset_category_view.html:183
+#: .\asset\templates\category\asset_category_view.html:113
+#: .\asset\templates\category\asset_category_view.html:193
 #: .\asset\templates\request_allocation\asset_allocation_creation.html:12
 #: .\asset\templates\request_allocation\asset_approve.html:12
 #: .\asset\templates\request_allocation\asset_request_allocation_list.html:50
 #: .\asset\templates\request_allocation\asset_request_allocation_list.html:332
-#: .\asset\templates\request_allocation\asset_request_allocation_view.html:7
-#: .\asset\templates\request_allocation\asset_request_allocation_view.html:62
-#: .\asset\templates\request_allocation\asset_request_allocation_view.html:132
-#: .\asset\templates\request_allocation\asset_request_allocation_view.html:261
+#: .\asset\templates\request_allocation\asset_request_allocation_view.html:18
+#: .\asset\templates\request_allocation\asset_request_allocation_view.html:73
+#: .\asset\templates\request_allocation\asset_request_allocation_view.html:143
+#: .\asset\templates\request_allocation\asset_request_allocation_view.html:272
 #: .\asset\templates\request_allocation\group_by.html:10
 #: .\asset\templates\request_allocation\group_by.html:458
 #: .\asset\templates\request_allocation\group_by.html:550
@@ -429,7 +449,8 @@ msgid "Asset"
 msgstr ""
 
 #: .\asset\templates\asset\asset_list.html:57
-#: .\asset\templates\asset\asset_list.html:75
+#: .\asset\templates\asset\asset_list.html:67
+#: .\asset\templates\asset\asset_list.html:85
 #: .\asset\templates\batch\asset_batch_number_list.html:23
 #: .\asset\templates\category\asset_category.html:59
 #: .\base\templates\base\rotating_shift\htmx\group_by.html:135
@@ -451,26 +472,26 @@ msgstr ""
 #: .\payroll\templates\payroll\contract\contract_list.html:67
 #: .\payroll\templates\payroll\contract\group_by.html:82
 #: .\payroll\templates\payroll\deduction\list_deduction.html:78
-#: .\payroll\templates\payroll\tax\filing_status_list.html:66
-#: .\payroll\templates\payroll\tax\tax_bracket_view.html:33
+#: .\payroll\templates\payroll\tax\filing_status_list.html:72
+#: .\payroll\templates\payroll\tax\tax_bracket_view.html:40
 #: .\pms\templates\feedback\question_template\question_template_view.html:74
 #: .\pms\templates\period\period_view.html:63
 msgid "Update"
 msgstr ""
 
-#: .\asset\templates\asset\asset_list.html:63
-#: .\asset\templates\asset\asset_list.html:83
+#: .\asset\templates\asset\asset_list.html:73
+#: .\asset\templates\asset\asset_list.html:103
 msgid "Do you want to delete this asset?"
 msgstr ""
 
-#: .\asset\templates\asset\asset_list.html:65
-#: .\asset\templates\asset\asset_list.html:85
+#: .\asset\templates\asset\asset_list.html:75
+#: .\asset\templates\asset\asset_list.html:105
 #: .\asset\templates\batch\asset_batch_number_list.html:33
 #: .\asset\templates\category\asset_category.html:62
 #: .\attendance\templates\attendance\attendance\attendance_nav.html:346
-#: .\attendance\templates\attendance\attendance\attendance_request_one.html:151
-#: .\attendance\templates\attendance\attendance\attendance_request_one.html:196
-#: .\attendance\templates\attendance\attendance\attendance_request_one.html:230
+#: .\attendance\templates\attendance\attendance\attendance_request_one.html:149
+#: .\attendance\templates\attendance\attendance\attendance_request_one.html:190
+#: .\attendance\templates\attendance\attendance\attendance_request_one.html:222
 #: .\attendance\templates\attendance\attendance_account\nav.html:199
 #: .\attendance\templates\attendance\attendance_activity\nav.html:171
 #: .\attendance\templates\attendance\late_come_early_out\nav.html:159
@@ -496,23 +517,23 @@ msgstr ""
 #: .\helpdesk\templates\helpdesk\ticket\ticket_list.html:294
 #: .\helpdesk\templates\helpdesk\ticket\ticket_list.html:509
 #: .\helpdesk\templates\helpdesk\ticket\ticket_nav.html:76
-#: .\leave\templates\leave\company_leave\company_leave.html:42
-#: .\leave\templates\leave\holiday\holiday.html:85
-#: .\leave\templates\leave\holiday\holiday_view.html:113
+#: .\leave\templates\leave\company_leave\company_leave.html:48
+#: .\leave\templates\leave\holiday\holiday.html:92
+#: .\leave\templates\leave\holiday\holiday_view.html:115
 #: .\leave\templates\leave\leave_allocation_request\leave_allocation_request_group_by.html:93
 #: .\leave\templates\leave\leave_allocation_request\leave_allocation_request_group_by.html:255
 #: .\leave\templates\leave\leave_allocation_request\leave_allocation_request_list.html:74
 #: .\leave\templates\leave\leave_allocation_request\leave_allocation_request_list.html:213
 #: .\leave\templates\leave\leave_allocation_request\leave_allocation_request_single_view.html:109
 #: .\leave\templates\leave\leave_allocation_request\leave_allocation_request_single_view.html:116
-#: .\leave\templates\leave\leave_assign\assign_view.html:239
-#: .\leave\templates\leave\leave_assign\assigned_leave.html:52
-#: .\leave\templates\leave\leave_assign\group_by.html:65
-#: .\leave\templates\leave\leave_request\group_by.html:140
-#: .\leave\templates\leave\leave_request\leave_requests.html:171
-#: .\leave\templates\leave\leave_request\request_view.html:234
-#: .\leave\templates\leave\leave_type\leave_type_individual_view.html:145
-#: .\leave\templates\leave\leave_type\leave_types.html:48
+#: .\leave\templates\leave\leave_assign\assign_view.html:240
+#: .\leave\templates\leave\leave_assign\assigned_leave.html:58
+#: .\leave\templates\leave\leave_assign\group_by.html:71
+#: .\leave\templates\leave\leave_request\group_by.html:141
+#: .\leave\templates\leave\leave_request\leave_requests.html:177
+#: .\leave\templates\leave\leave_request\request_view.html:235
+#: .\leave\templates\leave\leave_type\leave_type_individual_view.html:146
+#: .\leave\templates\leave\leave_type\leave_types.html:54
 #: .\leave\templates\leave\user_leave\group_by.html:122
 #: .\leave\templates\leave\user_leave\user_request_view.html:206
 #: .\leave\templates\leave\user_leave\user_requests.html:132
@@ -532,8 +553,8 @@ msgstr ""
 #: .\payroll\templates\payroll\deduction\list_deduction.html:92
 #: .\payroll\templates\payroll\deduction\view_single_deduction.html:109
 #: .\payroll\templates\payroll\payslip\view_payslips.html:267
-#: .\payroll\templates\payroll\tax\filing_status_list.html:77
-#: .\payroll\templates\payroll\tax\tax_bracket_view.html:52
+#: .\payroll\templates\payroll\tax\filing_status_list.html:85
+#: .\payroll\templates\payroll\tax\tax_bracket_view.html:61
 #: .\pms\templates\feedback\feedback_detailed_view.html:49
 #: .\pms\templates\feedback\feedback_list.html:136
 #: .\pms\templates\feedback\feedback_list.html:275
@@ -562,7 +583,7 @@ msgstr ""
 msgid "Delete"
 msgstr ""
 
-#: .\asset\templates\asset\asset_list.html:102
+#: .\asset\templates\asset\asset_list.html:122
 #: .\asset\templates\batch\asset_batch_number_list.html:49
 #: .\asset\templates\category\asset_category.html:81
 #: .\asset\templates\request_allocation\asset_request_allocation_list.html:109
@@ -661,10 +682,10 @@ msgstr ""
 #: .\helpdesk\templates\helpdesk\ticket\ticket_list.html:338
 #: .\helpdesk\templates\helpdesk\ticket\ticket_list.html:528
 #: .\helpdesk\templates\helpdesk\ticket\ticket_list.html:532
-#: .\leave\templates\leave\company_leave\company_leave.html:54
-#: .\leave\templates\leave\company_leave\company_leave.html:58
-#: .\leave\templates\leave\holiday\holiday.html:98
-#: .\leave\templates\leave\holiday\holiday.html:102
+#: .\leave\templates\leave\company_leave\company_leave.html:62
+#: .\leave\templates\leave\company_leave\company_leave.html:66
+#: .\leave\templates\leave\holiday\holiday.html:107
+#: .\leave\templates\leave\holiday\holiday.html:111
 #: .\leave\templates\leave\leave_allocation_request\leave_allocation_request_group_by.html:113
 #: .\leave\templates\leave\leave_allocation_request\leave_allocation_request_group_by.html:117
 #: .\leave\templates\leave\leave_allocation_request\leave_allocation_request_group_by.html:309
@@ -673,16 +694,16 @@ msgstr ""
 #: .\leave\templates\leave\leave_allocation_request\leave_allocation_request_list.html:97
 #: .\leave\templates\leave\leave_allocation_request\leave_allocation_request_list.html:267
 #: .\leave\templates\leave\leave_allocation_request\leave_allocation_request_list.html:271
-#: .\leave\templates\leave\leave_assign\assigned_leave.html:66
-#: .\leave\templates\leave\leave_assign\assigned_leave.html:70
-#: .\leave\templates\leave\leave_assign\group_by.html:82
-#: .\leave\templates\leave\leave_assign\group_by.html:86
-#: .\leave\templates\leave\leave_request\group_by.html:159
-#: .\leave\templates\leave\leave_request\group_by.html:163
-#: .\leave\templates\leave\leave_request\leave_requests.html:203
-#: .\leave\templates\leave\leave_request\leave_requests.html:207
-#: .\leave\templates\leave\leave_type\leave_types.html:59
-#: .\leave\templates\leave\leave_type\leave_types.html:63
+#: .\leave\templates\leave\leave_assign\assigned_leave.html:74
+#: .\leave\templates\leave\leave_assign\assigned_leave.html:78
+#: .\leave\templates\leave\leave_assign\group_by.html:91
+#: .\leave\templates\leave\leave_assign\group_by.html:95
+#: .\leave\templates\leave\leave_request\group_by.html:160
+#: .\leave\templates\leave\leave_request\group_by.html:164
+#: .\leave\templates\leave\leave_request\leave_requests.html:210
+#: .\leave\templates\leave\leave_request\leave_requests.html:214
+#: .\leave\templates\leave\leave_type\leave_types.html:67
+#: .\leave\templates\leave\leave_type\leave_types.html:71
 #: .\leave\templates\leave\user_leave\group_by.html:152
 #: .\leave\templates\leave\user_leave\group_by.html:156
 #: .\leave\templates\leave\user_leave\user_requests.html:158
@@ -707,8 +728,8 @@ msgstr ""
 #: .\payroll\templates\payroll\deduction\list_deduction.html:117
 #: .\payroll\templates\payroll\payslip\group_payslips.html:142
 #: .\payroll\templates\payroll\payslip\group_payslips.html:147
-#: .\payroll\templates\payroll\payslip\payslip_table.html:132
-#: .\payroll\templates\payroll\payslip\payslip_table.html:137
+#: .\payroll\templates\payroll\payslip\payslip_table.html:130
+#: .\payroll\templates\payroll\payslip\payslip_table.html:135
 #: .\pms\templates\feedback\feedback_list.html:157
 #: .\pms\templates\feedback\feedback_list.html:296
 #: .\pms\templates\feedback\feedback_list.html:438
@@ -734,7 +755,7 @@ msgstr ""
 msgid "Page"
 msgstr ""
 
-#: .\asset\templates\asset\asset_list.html:105
+#: .\asset\templates\asset\asset_list.html:125
 #: .\asset\templates\batch\asset_batch_number_list.html:52
 #: .\asset\templates\category\asset_category.html:84
 #: .\asset\templates\request_allocation\asset_request_allocation_list.html:120
@@ -833,10 +854,10 @@ msgstr ""
 #: .\helpdesk\templates\helpdesk\ticket\ticket_list.html:349
 #: .\helpdesk\templates\helpdesk\ticket\ticket_list.html:528
 #: .\helpdesk\templates\helpdesk\ticket\ticket_list.html:543
-#: .\leave\templates\leave\company_leave\company_leave.html:54
-#: .\leave\templates\leave\company_leave\company_leave.html:61
-#: .\leave\templates\leave\holiday\holiday.html:98
-#: .\leave\templates\leave\holiday\holiday.html:113
+#: .\leave\templates\leave\company_leave\company_leave.html:62
+#: .\leave\templates\leave\company_leave\company_leave.html:69
+#: .\leave\templates\leave\holiday\holiday.html:107
+#: .\leave\templates\leave\holiday\holiday.html:122
 #: .\leave\templates\leave\leave_allocation_request\leave_allocation_request_group_by.html:113
 #: .\leave\templates\leave\leave_allocation_request\leave_allocation_request_group_by.html:120
 #: .\leave\templates\leave\leave_allocation_request\leave_allocation_request_group_by.html:309
@@ -845,16 +866,16 @@ msgstr ""
 #: .\leave\templates\leave\leave_allocation_request\leave_allocation_request_list.html:100
 #: .\leave\templates\leave\leave_allocation_request\leave_allocation_request_list.html:267
 #: .\leave\templates\leave\leave_allocation_request\leave_allocation_request_list.html:275
-#: .\leave\templates\leave\leave_assign\assigned_leave.html:66
-#: .\leave\templates\leave\leave_assign\assigned_leave.html:73
-#: .\leave\templates\leave\leave_assign\group_by.html:82
-#: .\leave\templates\leave\leave_assign\group_by.html:89
-#: .\leave\templates\leave\leave_request\group_by.html:159
-#: .\leave\templates\leave\leave_request\group_by.html:166
-#: .\leave\templates\leave\leave_request\leave_requests.html:203
+#: .\leave\templates\leave\leave_assign\assigned_leave.html:74
+#: .\leave\templates\leave\leave_assign\assigned_leave.html:81
+#: .\leave\templates\leave\leave_assign\group_by.html:91
+#: .\leave\templates\leave\leave_assign\group_by.html:98
+#: .\leave\templates\leave\leave_request\group_by.html:160
+#: .\leave\templates\leave\leave_request\group_by.html:167
 #: .\leave\templates\leave\leave_request\leave_requests.html:210
-#: .\leave\templates\leave\leave_type\leave_types.html:59
-#: .\leave\templates\leave\leave_type\leave_types.html:66
+#: .\leave\templates\leave\leave_request\leave_requests.html:217
+#: .\leave\templates\leave\leave_type\leave_types.html:67
+#: .\leave\templates\leave\leave_type\leave_types.html:74
 #: .\leave\templates\leave\user_leave\group_by.html:152
 #: .\leave\templates\leave\user_leave\group_by.html:159
 #: .\leave\templates\leave\user_leave\user_requests.html:158
@@ -882,8 +903,8 @@ msgstr ""
 #: .\payroll\templates\payroll\deduction\view_single_deduction.html:72
 #: .\payroll\templates\payroll\payslip\group_payslips.html:142
 #: .\payroll\templates\payroll\payslip\group_payslips.html:157
-#: .\payroll\templates\payroll\payslip\payslip_table.html:132
-#: .\payroll\templates\payroll\payslip\payslip_table.html:147
+#: .\payroll\templates\payroll\payslip\payslip_table.html:130
+#: .\payroll\templates\payroll\payslip\payslip_table.html:145
 #: .\pms\templates\feedback\feedback_list.html:161
 #: .\pms\templates\feedback\feedback_list.html:300
 #: .\pms\templates\feedback\feedback_list.html:442
@@ -909,7 +930,7 @@ msgstr ""
 msgid "of"
 msgstr ""
 
-#: .\asset\templates\asset\asset_list.html:111
+#: .\asset\templates\asset\asset_list.html:131
 #: .\asset\templates\batch\asset_batch_number_list.html:58
 #: .\asset\templates\category\asset_category.html:90
 #: .\asset\templates\request_allocation\asset_request_allocation_list.html:130
@@ -963,17 +984,17 @@ msgstr ""
 #: .\helpdesk\templates\helpdesk\ticket\ticket_list.html:141
 #: .\helpdesk\templates\helpdesk\ticket\ticket_list.html:359
 #: .\helpdesk\templates\helpdesk\ticket\ticket_list.html:553
-#: .\leave\templates\leave\company_leave\company_leave.html:67
-#: .\leave\templates\leave\holiday\holiday.html:123
+#: .\leave\templates\leave\company_leave\company_leave.html:75
+#: .\leave\templates\leave\holiday\holiday.html:132
 #: .\leave\templates\leave\leave_allocation_request\leave_allocation_request_group_by.html:126
 #: .\leave\templates\leave\leave_allocation_request\leave_allocation_request_group_by.html:323
 #: .\leave\templates\leave\leave_allocation_request\leave_allocation_request_list.html:106
 #: .\leave\templates\leave\leave_allocation_request\leave_allocation_request_list.html:281
-#: .\leave\templates\leave\leave_assign\assigned_leave.html:79
-#: .\leave\templates\leave\leave_assign\group_by.html:95
-#: .\leave\templates\leave\leave_request\group_by.html:172
-#: .\leave\templates\leave\leave_request\leave_requests.html:216
-#: .\leave\templates\leave\leave_type\leave_types.html:72
+#: .\leave\templates\leave\leave_assign\assigned_leave.html:87
+#: .\leave\templates\leave\leave_assign\group_by.html:104
+#: .\leave\templates\leave\leave_request\group_by.html:173
+#: .\leave\templates\leave\leave_request\leave_requests.html:223
+#: .\leave\templates\leave\leave_type\leave_types.html:80
 #: .\leave\templates\leave\user_leave\group_by.html:165
 #: .\leave\templates\leave\user_leave\user_requests.html:171
 #: .\onboarding\templates\onboarding\kanban\kanban.html:281
@@ -985,7 +1006,7 @@ msgstr ""
 #: .\payroll\templates\payroll\deduction\card_deduction.html:78
 #: .\payroll\templates\payroll\deduction\list_deduction.html:132
 #: .\payroll\templates\payroll\payslip\group_payslips.html:162
-#: .\payroll\templates\payroll\payslip\payslip_table.html:152
+#: .\payroll\templates\payroll\payslip\payslip_table.html:150
 #: .\pms\templates\feedback\feedback_list.html:169
 #: .\pms\templates\feedback\feedback_list.html:308
 #: .\pms\templates\feedback\feedback_list.html:450
@@ -1003,7 +1024,7 @@ msgstr ""
 msgid "First"
 msgstr ""
 
-#: .\asset\templates\asset\asset_list.html:115
+#: .\asset\templates\asset\asset_list.html:135
 #: .\asset\templates\batch\asset_batch_number_list.html:62
 #: .\asset\templates\category\asset_category.html:94
 #: .\asset\templates\request_allocation\asset_request_allocation_list.html:138
@@ -1057,18 +1078,18 @@ msgstr ""
 #: .\helpdesk\templates\helpdesk\ticket\ticket_list.html:149
 #: .\helpdesk\templates\helpdesk\ticket\ticket_list.html:367
 #: .\helpdesk\templates\helpdesk\ticket\ticket_list.html:561
-#: .\leave\templates\leave\company_leave\company_leave.html:72
+#: .\leave\templates\leave\company_leave\company_leave.html:80
 #: .\leave\templates\leave\dashboard.html:78
-#: .\leave\templates\leave\holiday\holiday.html:131
+#: .\leave\templates\leave\holiday\holiday.html:140
 #: .\leave\templates\leave\leave_allocation_request\leave_allocation_request_group_by.html:131
 #: .\leave\templates\leave\leave_allocation_request\leave_allocation_request_group_by.html:328
 #: .\leave\templates\leave\leave_allocation_request\leave_allocation_request_list.html:111
 #: .\leave\templates\leave\leave_allocation_request\leave_allocation_request_list.html:286
-#: .\leave\templates\leave\leave_assign\assigned_leave.html:84
-#: .\leave\templates\leave\leave_assign\group_by.html:101
-#: .\leave\templates\leave\leave_request\group_by.html:177
-#: .\leave\templates\leave\leave_request\leave_requests.html:221
-#: .\leave\templates\leave\leave_type\leave_types.html:77
+#: .\leave\templates\leave\leave_assign\assigned_leave.html:92
+#: .\leave\templates\leave\leave_assign\group_by.html:110
+#: .\leave\templates\leave\leave_request\group_by.html:178
+#: .\leave\templates\leave\leave_request\leave_requests.html:228
+#: .\leave\templates\leave\leave_type\leave_types.html:85
 #: .\leave\templates\leave\user_leave\group_by.html:171
 #: .\leave\templates\leave\user_leave\user_requests.html:176
 #: .\onboarding\templates\onboarding\candidates.html:102
@@ -1081,7 +1102,7 @@ msgstr ""
 #: .\payroll\templates\payroll\deduction\card_deduction.html:81
 #: .\payroll\templates\payroll\deduction\list_deduction.html:135
 #: .\payroll\templates\payroll\payslip\group_payslips.html:165
-#: .\payroll\templates\payroll\payslip\payslip_table.html:155
+#: .\payroll\templates\payroll\payslip\payslip_table.html:153
 #: .\pms\templates\feedback\feedback_list.html:174
 #: .\pms\templates\feedback\feedback_list.html:313
 #: .\pms\templates\feedback\feedback_list.html:455
@@ -1099,7 +1120,7 @@ msgstr ""
 msgid "Previous"
 msgstr ""
 
-#: .\asset\templates\asset\asset_list.html:121
+#: .\asset\templates\asset\asset_list.html:141
 #: .\asset\templates\batch\asset_batch_number_list.html:68
 #: .\asset\templates\category\asset_category.html:100
 #: .\asset\templates\request_allocation\asset_request_allocation_list.html:148
@@ -1153,17 +1174,17 @@ msgstr ""
 #: .\helpdesk\templates\helpdesk\ticket\ticket_list.html:158
 #: .\helpdesk\templates\helpdesk\ticket\ticket_list.html:376
 #: .\helpdesk\templates\helpdesk\ticket\ticket_list.html:570
-#: .\leave\templates\leave\company_leave\company_leave.html:79
-#: .\leave\templates\leave\holiday\holiday.html:141
+#: .\leave\templates\leave\company_leave\company_leave.html:87
+#: .\leave\templates\leave\holiday\holiday.html:150
 #: .\leave\templates\leave\leave_allocation_request\leave_allocation_request_group_by.html:138
 #: .\leave\templates\leave\leave_allocation_request\leave_allocation_request_group_by.html:335
 #: .\leave\templates\leave\leave_allocation_request\leave_allocation_request_list.html:118
 #: .\leave\templates\leave\leave_allocation_request\leave_allocation_request_list.html:293
-#: .\leave\templates\leave\leave_assign\assigned_leave.html:91
-#: .\leave\templates\leave\leave_assign\group_by.html:109
-#: .\leave\templates\leave\leave_request\group_by.html:184
-#: .\leave\templates\leave\leave_request\leave_requests.html:228
-#: .\leave\templates\leave\leave_type\leave_types.html:84
+#: .\leave\templates\leave\leave_assign\assigned_leave.html:99
+#: .\leave\templates\leave\leave_assign\group_by.html:118
+#: .\leave\templates\leave\leave_request\group_by.html:185
+#: .\leave\templates\leave\leave_request\leave_requests.html:235
+#: .\leave\templates\leave\leave_type\leave_types.html:92
 #: .\leave\templates\leave\user_leave\group_by.html:179
 #: .\leave\templates\leave\user_leave\user_requests.html:183
 #: .\onboarding\templates\onboarding\candidates.html:107
@@ -1176,7 +1197,7 @@ msgstr ""
 #: .\payroll\templates\payroll\deduction\card_deduction.html:86
 #: .\payroll\templates\payroll\deduction\list_deduction.html:140
 #: .\payroll\templates\payroll\payslip\group_payslips.html:170
-#: .\payroll\templates\payroll\payslip\payslip_table.html:160
+#: .\payroll\templates\payroll\payslip\payslip_table.html:158
 #: .\pms\templates\feedback\feedback_list.html:180
 #: .\pms\templates\feedback\feedback_list.html:319
 #: .\pms\templates\feedback\feedback_list.html:461
@@ -1194,7 +1215,7 @@ msgstr ""
 msgid "Next"
 msgstr ""
 
-#: .\asset\templates\asset\asset_list.html:125
+#: .\asset\templates\asset\asset_list.html:145
 #: .\asset\templates\batch\asset_batch_number_list.html:72
 #: .\asset\templates\category\asset_category.html:104
 #: .\asset\templates\request_allocation\asset_request_allocation_list.html:156
@@ -1248,17 +1269,17 @@ msgstr ""
 #: .\helpdesk\templates\helpdesk\ticket\ticket_list.html:166
 #: .\helpdesk\templates\helpdesk\ticket\ticket_list.html:384
 #: .\helpdesk\templates\helpdesk\ticket\ticket_list.html:578
-#: .\leave\templates\leave\company_leave\company_leave.html:84
-#: .\leave\templates\leave\holiday\holiday.html:149
+#: .\leave\templates\leave\company_leave\company_leave.html:92
+#: .\leave\templates\leave\holiday\holiday.html:158
 #: .\leave\templates\leave\leave_allocation_request\leave_allocation_request_group_by.html:143
 #: .\leave\templates\leave\leave_allocation_request\leave_allocation_request_group_by.html:340
 #: .\leave\templates\leave\leave_allocation_request\leave_allocation_request_list.html:123
 #: .\leave\templates\leave\leave_allocation_request\leave_allocation_request_list.html:298
-#: .\leave\templates\leave\leave_assign\assigned_leave.html:96
-#: .\leave\templates\leave\leave_assign\group_by.html:115
-#: .\leave\templates\leave\leave_request\group_by.html:189
-#: .\leave\templates\leave\leave_request\leave_requests.html:233
-#: .\leave\templates\leave\leave_type\leave_types.html:89
+#: .\leave\templates\leave\leave_assign\assigned_leave.html:104
+#: .\leave\templates\leave\leave_assign\group_by.html:124
+#: .\leave\templates\leave\leave_request\group_by.html:190
+#: .\leave\templates\leave\leave_request\leave_requests.html:240
+#: .\leave\templates\leave\leave_type\leave_types.html:97
 #: .\leave\templates\leave\user_leave\group_by.html:185
 #: .\leave\templates\leave\user_leave\user_requests.html:188
 #: .\onboarding\templates\onboarding\candidates.html:112
@@ -1271,7 +1292,7 @@ msgstr ""
 #: .\payroll\templates\payroll\deduction\card_deduction.html:89
 #: .\payroll\templates\payroll\deduction\list_deduction.html:143
 #: .\payroll\templates\payroll\payslip\group_payslips.html:173
-#: .\payroll\templates\payroll\payslip\payslip_table.html:163
+#: .\payroll\templates\payroll\payslip\payslip_table.html:161
 #: .\pms\templates\feedback\feedback_list.html:184
 #: .\pms\templates\feedback\feedback_list.html:323
 #: .\pms\templates\feedback\feedback_list.html:465
@@ -1289,6 +1310,52 @@ msgstr ""
 msgid "Last"
 msgstr ""
 
+#: .\asset\templates\asset\asset_report_form.html:41
+#: .\base\templates\base\rotating_shift\htmx\group_by.html:64
+#: .\base\templates\base\rotating_shift\individual_view.html:43
+#: .\base\templates\base\rotating_shift\rotating_shift_assign_view.html:48
+#: .\base\templates\base\rotating_shift\rotating_shift_view.html:6
+#: .\base\templates\base\rotating_work_type\htmx\group_by.html:63
+#: .\base\templates\base\rotating_work_type\individual_view.html:41
+#: .\base\templates\base\rotating_work_type\rotating_work_type_assign_view.html:46
+#: .\base\templates\base\rotating_work_type\rotating_work_type_view.html:6
+#: .\base\templates\base\tags\tags_view.html:6 .\employee\models.py:519
+#: .\employee\templates\tabs\performance-tab.html:8
+#: .\employee\templates\tabs\shift-tab.html:303
+#: .\employee\templates\tabs\shift-tab.html:445
+#: .\helpdesk\templates\helpdesk\ticket\ticket_group.html:43
+#: .\helpdesk\templates\helpdesk\ticket\ticket_group.html:264
+#: .\helpdesk\templates\helpdesk\ticket\ticket_group.html:484
+#: .\helpdesk\templates\helpdesk\ticket\ticket_list.html:20
+#: .\helpdesk\templates\helpdesk\ticket\ticket_list.html:215
+#: .\helpdesk\templates\helpdesk\ticket\ticket_list.html:433
+#: .\pms\templates\feedback\feedback_creation.html:33
+#: .\pms\templates\feedback\feedback_list.html:80
+#: .\pms\templates\feedback\feedback_list.html:217
+#: .\pms\templates\feedback\feedback_list.html:358
+#: .\pms\templates\feedback\question_template\question_template_empty.html:59
+#: .\pms\templates\feedback\question_template\question_template_update.html:6
+#: .\pms\templates\feedback\question_template\question_template_view.html:50
+#: .\pms\templates\feedback\question_template\question_template_view.html:101
+#: .\pms\templates\okr\create_period.html:23
+#: .\pms\templates\okr\key_result\key_result_creation.html:53
+#: .\pms\templates\okr\key_result\key_result_creation_htmx.html:32
+#: .\pms\templates\okr\key_result\key_result_update.html:28
+#: .\pms\templates\okr\objective_creation.html:33
+#: .\pms\templates\period\period_create.html:22
+#: .\pms\templates\period\period_update.html:22
+#: .\pms\templates\period\period_view.html:45 .\recruitment\models.py:410
+#: .\recruitment\templates\pipeline\form\recruitment_update.html:21
+#: .\recruitment\templates\recruitment\recruitment_form.html:7
+#: .\recruitment\templates\recruitment\recruitment_update_form.html:14
+#: .\recruitment\templates\stage\stage_component.html:32
+msgid "Title"
+msgstr ""
+
+#: .\asset\templates\asset\asset_report_form.html:59
+msgid "file"
+msgstr ""
+
 #: .\asset\templates\asset\asset_return_form.html:2
 msgid "Asset Return Form"
 msgstr ""
@@ -1299,7 +1366,7 @@ msgstr ""
 
 #: .\asset\templates\asset\asset_return_form.html:11
 #: .\asset\templates\request_allocation\asset_request_allocation_list.html:334
-#: .\asset\templates\request_allocation\asset_request_allocation_view.html:151
+#: .\asset\templates\request_allocation\asset_request_allocation_view.html:162
 #: .\asset\templates\request_allocation\group_by.html:460
 #: .\asset\templates\request_allocation\group_by.html:613
 msgid "Return Date"
@@ -1308,6 +1375,13 @@ msgstr ""
 #: .\asset\templates\asset\asset_return_form.html:16
 msgid "Return Condition"
 msgstr ""
+
+#: .\asset\templates\asset\asset_return_form.html:29
+#: .\asset\templates\asset\asset_update.html:143
+#, fuzzy
+#| msgid "employee"
+msgid "Add Report"
+msgstr "Employee"
 
 #: .\asset\templates\asset\asset_update.html:58
 msgid "Asset Update"
@@ -1319,14 +1393,14 @@ msgstr ""
 
 #: .\asset\templates\batch\asset_batch_empty.html:24
 #: .\asset\templates\batch\asset_batch_number_view.html:24
-#: .\asset\templates\category\asset_category_view.html:210
+#: .\asset\templates\category\asset_category_view.html:220
 msgid "Asset Batch Number"
 msgstr ""
 
 #: .\asset\templates\batch\asset_batch_empty.html:35
 #: .\asset\templates\batch\asset_batch_number_view.html:46
 #: .\asset\templates\category\asset_category.html:53
-#: .\asset\templates\category\asset_category_view.html:245
+#: .\asset\templates\category\asset_category_view.html:255
 #: .\asset\templates\category\asset_empty.html:81
 #: .\attendance\templates\attendance\attendance\attendance_empty.html:134
 #: .\attendance\templates\attendance\attendance\attendance_nav.html:361
@@ -1352,10 +1426,10 @@ msgstr ""
 #: .\helpdesk\templates\helpdesk\faq\faq_category_nav.html:71
 #: .\helpdesk\templates\helpdesk\faq\faq_nav.html:97
 #: .\helpdesk\templates\helpdesk\ticket\ticket_nav.html:101
-#: .\leave\templates\leave\company_leave\company_leave_view.html:66
-#: .\leave\templates\leave\holiday\holiday_view.html:133
+#: .\leave\templates\leave\company_leave\company_leave_view.html:67
+#: .\leave\templates\leave\holiday\holiday_view.html:137
 #: .\leave\templates\leave\leave_allocation_request\leave_allocation_request_view.html:217
-#: .\leave\templates\leave\leave_request\request_view.html:251
+#: .\leave\templates\leave\leave_request\request_view.html:254
 #: .\leave\templates\leave\leave_type\leave_type_creation.html:185
 #: .\leave\templates\leave\leave_type\leave_type_empty_view.html:32
 #: .\leave\templates\leave\leave_type\leave_type_view.html:84
@@ -1373,8 +1447,8 @@ msgstr ""
 #: .\payroll\templates\payroll\payslip\payslips_empty.html:107
 #: .\payroll\templates\payroll\payslip\view_payslips.html:289
 #: .\payroll\templates\payroll\tax\filing_status_empty.html:20
-#: .\payroll\templates\payroll\tax\filing_status_list.html:54
-#: .\payroll\templates\payroll\tax\filing_status_view.html:53
+#: .\payroll\templates\payroll\tax\filing_status_list.html:58
+#: .\payroll\templates\payroll\tax\filing_status_view.html:54
 #: .\pms\templates\feedback\feedback_empty.html:31
 #: .\pms\templates\feedback\feedback_list_view.html:186
 #: .\pms\templates\feedback\question_template\question_template_empty.html:34
@@ -1400,7 +1474,7 @@ msgstr ""
 #: .\asset\templates\batch\asset_batch_number_creation.html:16
 #: .\asset\templates\batch\asset_batch_number_list.html:6
 #: .\asset\templates\batch\asset_batch_number_update.html:31
-#: .\asset\templates\category\asset_category_view.html:135
+#: .\asset\templates\category\asset_category_view.html:145
 msgid "Batch Number"
 msgstr ""
 
@@ -1417,8 +1491,8 @@ msgid "Batch Number Update"
 msgstr ""
 
 #: .\asset\templates\batch\asset_batch_number_view.html:36
-#: .\asset\templates\category\asset_category_view.html:50
-#: .\asset\templates\request_allocation\asset_request_allocation_view.html:39
+#: .\asset\templates\category\asset_category_view.html:60
+#: .\asset\templates\request_allocation\asset_request_allocation_view.html:50
 #: .\attendance\templates\attendance\attendance\attendance_nav.html:210
 #: .\attendance\templates\attendance\attendance_account\nav.html:99
 #: .\attendance\templates\attendance\attendance_activity\nav.html:72
@@ -1432,7 +1506,7 @@ msgstr ""
 #: .\helpdesk\templates\helpdesk\faq\faq_nav.html:28
 #: .\helpdesk\templates\helpdesk\ticket\ticket_filter.html:23
 #: .\leave\templates\leave\company_leave\company_leave_view.html:19
-#: .\leave\templates\leave\holiday\holiday_view.html:50
+#: .\leave\templates\leave\holiday\holiday_view.html:51
 #: .\leave\templates\leave\leave_allocation_request\leave_allocation_request_view.html:71
 #: .\leave\templates\leave\leave_assign\assign_view.html:141
 #: .\leave\templates\leave\leave_request\request_view.html:60
@@ -1488,20 +1562,20 @@ msgstr ""
 #: .\helpdesk\templates\helpdesk\ticket\ticket_list.html:222
 #: .\helpdesk\templates\helpdesk\ticket\ticket_list.html:440
 #: .\helpdesk\templates\helpdesk\ticket\ticket_nav.html:32
-#: .\leave\templates\leave\company_leave\company_leave.html:9
-#: .\leave\templates\leave\holiday\holiday.html:44
-#: .\leave\templates\leave\holiday\holiday_view.html:79
+#: .\leave\templates\leave\company_leave\company_leave.html:10
+#: .\leave\templates\leave\holiday\holiday.html:45
+#: .\leave\templates\leave\holiday\holiday_view.html:80
 #: .\leave\templates\leave\leave_allocation_request\leave_allocation_request_group_by.html:38
 #: .\leave\templates\leave\leave_allocation_request\leave_allocation_request_group_by.html:199
 #: .\leave\templates\leave\leave_allocation_request\leave_allocation_request_list.html:19
 #: .\leave\templates\leave\leave_allocation_request\leave_allocation_request_list.html:157
 #: .\leave\templates\leave\leave_assign\assign_view.html:205
-#: .\leave\templates\leave\leave_assign\assigned_leave.html:20
-#: .\leave\templates\leave\leave_assign\group_by.html:35
+#: .\leave\templates\leave\leave_assign\assigned_leave.html:21
+#: .\leave\templates\leave\leave_assign\group_by.html:36
 #: .\leave\templates\leave\leave_request\group_by.html:69
-#: .\leave\templates\leave\leave_request\leave_requests.html:79
+#: .\leave\templates\leave\leave_request\leave_requests.html:81
 #: .\leave\templates\leave\leave_request\request_view.html:212
-#: .\leave\templates\leave\leave_type\leave_types.html:35
+#: .\leave\templates\leave\leave_type\leave_types.html:36
 #: .\leave\templates\leave\user_leave\group_by.html:68
 #: .\leave\templates\leave\user_leave\user_request_view.html:193
 #: .\leave\templates\leave\user_leave\user_requests.html:74
@@ -1518,7 +1592,7 @@ msgstr ""
 #: .\payroll\templates\payroll\payslip\group_payslips.html:54
 #: .\payroll\templates\payroll\payslip\payslips_empty.html:75
 #: .\payroll\templates\payroll\payslip\view_payslips.html:210
-#: .\payroll\templates\payroll\tax\filing_status_list.html:34
+#: .\payroll\templates\payroll\tax\filing_status_list.html:37
 #: .\pms\templates\feedback\feedback_list_view.html:143
 #: .\pms\templates\okr\objective_list_view.html:236
 #: .\recruitment\templates\candidate\candidate_card.html:55
@@ -1559,11 +1633,11 @@ msgstr ""
 msgid "Asset Category Update"
 msgstr ""
 
-#: .\asset\templates\category\asset_category_view.html:38
-#: .\asset\templates\category\asset_category_view.html:159
+#: .\asset\templates\category\asset_category_view.html:48
+#: .\asset\templates\category\asset_category_view.html:169
 #: .\asset\templates\category\asset_empty.html:38
 #: .\asset\templates\request_allocation\asset_request_allocation_list.html:173
-#: .\asset\templates\request_allocation\asset_request_allocation_view.html:97
+#: .\asset\templates\request_allocation\asset_request_allocation_view.html:108
 #: .\asset\templates\request_allocation\asset_request_creation.html:23
 #: .\asset\templates\request_allocation\group_by.html:112
 #: .\asset\templates\request_allocation\group_by.html:257
@@ -1571,61 +1645,61 @@ msgstr ""
 msgid "Asset Category"
 msgstr ""
 
-#: .\asset\templates\category\asset_category_view.html:55
+#: .\asset\templates\category\asset_category_view.html:65
 msgid "Search in :Asset"
 msgstr ""
 
-#: .\asset\templates\category\asset_category_view.html:56
+#: .\asset\templates\category\asset_category_view.html:66
 msgid "Search in :Asset Category"
 msgstr ""
 
-#: .\asset\templates\category\asset_category_view.html:69
+#: .\asset\templates\category\asset_category_view.html:79
 #: .\asset\templates\category\asset_empty.html:50
 msgid "Do you want to download template ?"
 msgstr ""
 
-#: .\asset\templates\category\asset_category_view.html:69
+#: .\asset\templates\category\asset_category_view.html:79
 #: .\asset\templates\category\asset_empty.html:50
 #: .\attendance\templates\attendance\attendance\attendance_empty.html:119
 #: .\attendance\templates\attendance\attendance\attendance_nav.html:312
 #: .\employee\templates\employee_nav.html:342
-#: .\leave\templates\leave\holiday\holiday_view.html:94
+#: .\leave\templates\leave\holiday\holiday_view.html:95
 #: .\leave\templates\leave\leave_assign\assign_view.html:220
 msgid "Import"
 msgstr ""
 
-#: .\asset\templates\category\asset_category_view.html:81
+#: .\asset\templates\category\asset_category_view.html:91
 #: .\asset\templates\category\asset_empty.html:62
 #: .\attendance\templates\attendance\attendance\attendance_empty.html:67
 #: .\attendance\templates\attendance\attendance\attendance_nav.html:112
 #: .\employee\templates\employee_nav.html:80
-#: .\leave\templates\leave\holiday\holiday_view.html:266
+#: .\leave\templates\leave\holiday\holiday_view.html:275
 #: .\leave\templates\leave\leave_assign\assign_view.html:45
 msgid "Upload a File"
 msgstr ""
 
-#: .\asset\templates\category\asset_category_view.html:82
+#: .\asset\templates\category\asset_category_view.html:92
 #: .\asset\templates\category\asset_empty.html:63
 #: .\attendance\templates\attendance\attendance\attendance_empty.html:70
 #: .\attendance\templates\attendance\attendance\attendance_nav.html:115
 #: .\employee\templates\employee_nav.html:83
-#: .\leave\templates\leave\holiday\holiday_view.html:269
+#: .\leave\templates\leave\holiday\holiday_view.html:278
 #: .\leave\templates\leave\leave_assign\assign_view.html:48
 msgid "Drag and drop files here"
 msgstr ""
 
-#: .\asset\templates\category\asset_category_view.html:87
+#: .\asset\templates\category\asset_category_view.html:97
 #: .\asset\templates\category\asset_empty.html:68
 #: .\attendance\templates\attendance\attendance\attendance_empty.html:79
 #: .\attendance\templates\attendance\attendance\attendance_nav.html:124
 #: .\employee\templates\employee_nav.html:93
-#: .\leave\templates\leave\holiday\holiday_view.html:278
+#: .\leave\templates\leave\holiday\holiday_view.html:287
 #: .\leave\templates\leave\leave_assign\assign_view.html:57
 msgid "Upload"
 msgstr ""
 
-#: .\asset\templates\category\asset_category_view.html:95
-#: .\asset\templates\category\asset_category_view.html:144
+#: .\asset\templates\category\asset_category_view.html:105
+#: .\asset\templates\category\asset_category_view.html:154
 #: .\attendance\templates\attendance\attendance\attendance_nav.html:159
 #: .\attendance\templates\attendance\attendance\attendance_nav.html:322
 #: .\attendance\templates\attendance\attendance_account\nav.html:54
@@ -1644,12 +1718,12 @@ msgstr ""
 #: .\base\templates\work_type_request\work_type_request_nav.html:339
 #: .\employee\templates\employee_nav.html:126
 #: .\employee\templates\employee_nav.html:354
-#: .\leave\templates\leave\holiday\holiday_view.html:105
-#: .\leave\templates\leave\holiday\holiday_view.html:317
+#: .\leave\templates\leave\holiday\holiday_view.html:106
+#: .\leave\templates\leave\holiday\holiday_view.html:326
 #: .\leave\templates\leave\leave_assign\assign_view.html:94
 #: .\leave\templates\leave\leave_assign\assign_view.html:231
 #: .\leave\templates\leave\leave_request\request_view.html:226
-#: .\leave\templates\leave\leave_request\request_view.html:411
+#: .\leave\templates\leave\leave_request\request_view.html:415
 #: .\payroll\templates\payroll\contract\contract_view.html:30
 #: .\payroll\templates\payroll\contract\contract_view.html:169
 #: .\payroll\templates\payroll\dashboard.html:92
@@ -1661,15 +1735,15 @@ msgstr ""
 msgid "Export"
 msgstr ""
 
-#: .\asset\templates\category\asset_category_view.html:122
+#: .\asset\templates\category\asset_category_view.html:132
 msgid "Purchased Date"
 msgstr ""
 
-#: .\asset\templates\category\asset_category_view.html:153
-#: .\asset\templates\category\asset_category_view.html:177
-#: .\asset\templates\category\asset_category_view.html:228
-#: .\asset\templates\request_allocation\asset_request_allocation_view.html:51
-#: .\asset\templates\request_allocation\asset_request_allocation_view.html:173
+#: .\asset\templates\category\asset_category_view.html:163
+#: .\asset\templates\category\asset_category_view.html:187
+#: .\asset\templates\category\asset_category_view.html:238
+#: .\asset\templates\request_allocation\asset_request_allocation_view.html:62
+#: .\asset\templates\request_allocation\asset_request_allocation_view.html:184
 #: .\attendance\templates\attendance\attendance\attendance_filters.html:158
 #: .\attendance\templates\attendance\attendance\attendance_nav.html:223
 #: .\attendance\templates\attendance\attendance_account\attendance_account_filter.html:123
@@ -1699,7 +1773,7 @@ msgstr ""
 #: .\leave\templates\leave\company_leave\company_leave_view.html:25
 #: .\leave\templates\leave\company_leave\company_leave_view.html:54
 #: .\leave\templates\leave\holiday\holiday_filter.html:41
-#: .\leave\templates\leave\holiday\holiday_view.html:64
+#: .\leave\templates\leave\holiday\holiday_view.html:65
 #: .\leave\templates\leave\leave_allocation_request\leave_allocation_request_view.html:82
 #: .\leave\templates\leave\leave_allocation_request\leave_allocation_request_view.html:151
 #: .\leave\templates\leave\leave_assign\assign_view.html:149
@@ -1744,12 +1818,17 @@ msgstr ""
 msgid "Filter"
 msgstr ""
 
-#: .\asset\templates\category\asset_category_view.html:165
+#: .\asset\templates\category\asset_category_view.html:175
 msgid "Category Name"
 msgstr ""
 
-#: .\asset\templates\category\asset_category_view.html:204
+#: .\asset\templates\category\asset_category_view.html:214
 msgid "Purchase Cost"
+msgstr ""
+
+#: .\asset\templates\category\asset_category_view.html:288
+#: .\asset\templates\request_allocation\asset_request_allocation_view.html:357
+msgid "Add Asset Report"
 msgstr ""
 
 #: .\asset\templates\category\asset_empty.html:119
@@ -1757,9 +1836,9 @@ msgid "There is no Asset category and no Assets has been created."
 msgstr ""
 
 #: .\asset\templates\request_allocation\asset_allocation_creation.html:2
-#: .\asset\templates\request_allocation\asset_request_allocation_view.html:120
-#: .\asset\templates\request_allocation\asset_request_allocation_view.html:223
-#: .\asset\templates\request_allocation\asset_request_allocation_view.html:284
+#: .\asset\templates\request_allocation\asset_request_allocation_view.html:131
+#: .\asset\templates\request_allocation\asset_request_allocation_view.html:234
+#: .\asset\templates\request_allocation\asset_request_allocation_view.html:295
 msgid "Asset Allocation"
 msgstr ""
 
@@ -1812,8 +1891,8 @@ msgstr ""
 #: .\asset\templates\request_allocation\group_by.html:311
 #: .\asset\templates\request_allocation\group_by.html:373
 #: .\asset\templates\request_allocation\individual_request.html:95
-#: .\attendance\templates\attendance\attendance\attendance_request_one.html:133
-#: .\attendance\templates\attendance\attendance\attendance_request_one.html:137
+#: .\attendance\templates\attendance\attendance\attendance_request_one.html:132
+#: .\attendance\templates\attendance\attendance\attendance_request_one.html:136
 #: .\attendance\templates\attendance\attendance\group_by.html:152
 #: .\attendance\templates\attendance\attendance\tab_content.html:633
 #: .\attendance\templates\attendance\attendance\tab_content.html:641
@@ -1843,8 +1922,8 @@ msgstr ""
 #: .\leave\templates\leave\leave_allocation_request\leave_allocation_request_single_view.html:138
 #: .\leave\templates\leave\leave_request\group_by.html:106
 #: .\leave\templates\leave\leave_request\group_by.html:111
-#: .\leave\templates\leave\leave_request\leave_requests.html:124
-#: .\leave\templates\leave\leave_request\leave_requests.html:129
+#: .\leave\templates\leave\leave_request\leave_requests.html:127
+#: .\leave\templates\leave\leave_request\leave_requests.html:132
 #: .\leave\templates\leave\leave_request\one_request_view.html:99
 #: .\leave\templates\leave\leave_request\one_request_view.html:104
 msgid "Approve"
@@ -1868,15 +1947,15 @@ msgstr ""
 #: .\leave\templates\leave\leave_allocation_request\leave_allocation_request_single_view.html:158
 #: .\leave\templates\leave\leave_request\group_by.html:119
 #: .\leave\templates\leave\leave_request\group_by.html:125
-#: .\leave\templates\leave\leave_request\leave_requests.html:137
-#: .\leave\templates\leave\leave_request\leave_requests.html:143
+#: .\leave\templates\leave\leave_request\leave_requests.html:140
+#: .\leave\templates\leave\leave_request\leave_requests.html:146
 #: .\leave\templates\leave\leave_request\one_request_view.html:112
 #: .\leave\templates\leave\leave_request\one_request_view.html:118
 msgid "Reject"
 msgstr ""
 
 #: .\asset\templates\request_allocation\asset_request_allocation_list.html:331
-#: .\asset\templates\request_allocation\asset_request_allocation_view.html:127
+#: .\asset\templates\request_allocation\asset_request_allocation_view.html:138
 #: .\asset\templates\request_allocation\group_by.html:457
 #: .\asset\templates\request_allocation\group_by.html:533
 #: .\asset\templates\request_allocation\group_by.html:610
@@ -1910,30 +1989,30 @@ msgstr ""
 msgid "Asset Return"
 msgstr ""
 
-#: .\asset\templates\request_allocation\asset_request_allocation_view.html:84
-#: .\asset\templates\request_allocation\asset_request_allocation_view.html:194
-#: .\asset\templates\request_allocation\asset_request_allocation_view.html:263
+#: .\asset\templates\request_allocation\asset_request_allocation_view.html:95
+#: .\asset\templates\request_allocation\asset_request_allocation_view.html:205
+#: .\asset\templates\request_allocation\asset_request_allocation_view.html:274
 #: .\asset\templates\request_allocation\asset_request_creation.html:2
 msgid "Asset Request"
 msgstr ""
 
-#: .\asset\templates\request_allocation\asset_request_allocation_view.html:91
+#: .\asset\templates\request_allocation\asset_request_allocation_view.html:102
 msgid "Requested Employee"
 msgstr ""
 
-#: .\asset\templates\request_allocation\asset_request_allocation_view.html:105
+#: .\asset\templates\request_allocation\asset_request_allocation_view.html:116
 msgid "Asset Request Date"
 msgstr ""
 
-#: .\asset\templates\request_allocation\asset_request_allocation_view.html:139
+#: .\asset\templates\request_allocation\asset_request_allocation_view.html:150
 msgid "Asset Allocated Date"
 msgstr ""
 
-#: .\asset\templates\request_allocation\asset_request_allocation_view.html:159
+#: .\asset\templates\request_allocation\asset_request_allocation_view.html:170
 msgid "Allocated By"
 msgstr ""
 
-#: .\asset\templates\request_allocation\asset_request_allocation_view.html:185
+#: .\asset\templates\request_allocation\asset_request_allocation_view.html:196
 #: .\attendance\templates\attendance\attendance\attendance_nav.html:237
 #: .\attendance\templates\attendance\attendance\attendance_nav.html:247
 #: .\attendance\templates\attendance\attendance_account\nav.html:130
@@ -1973,8 +2052,8 @@ msgstr ""
 msgid "Group By"
 msgstr ""
 
-#: .\asset\templates\request_allocation\asset_request_allocation_view.html:199
-#: .\asset\templates\request_allocation\asset_request_allocation_view.html:228
+#: .\asset\templates\request_allocation\asset_request_allocation_view.html:210
+#: .\asset\templates\request_allocation\asset_request_allocation_view.html:239
 #: .\attendance\templates\attendance\attendance\attendance_nav.html:251
 #: .\attendance\templates\attendance\attendance_account\nav.html:144
 #: .\attendance\templates\attendance\attendance_activity\nav.html:117
@@ -1997,11 +2076,11 @@ msgstr ""
 msgid "Field"
 msgstr ""
 
-#: .\asset\templates\request_allocation\asset_request_allocation_view.html:272
+#: .\asset\templates\request_allocation\asset_request_allocation_view.html:283
 msgid "Create request"
 msgstr ""
 
-#: .\asset\templates\request_allocation\asset_request_allocation_view.html:293
+#: .\asset\templates\request_allocation\asset_request_allocation_view.html:304
 msgid "Create allocation"
 msgstr ""
 
@@ -2054,124 +2133,124 @@ msgstr ""
 msgid "Return Description"
 msgstr ""
 
-#: .\asset\views.py:45
+#: .\asset\views.py:47
 msgid "Asset deleted successfully"
 msgstr ""
 
-#: .\asset\views.py:47
+#: .\asset\views.py:49
 msgid "You cannot delete this asset."
 msgstr ""
 
-#: .\asset\views.py:81
+#: .\asset\views.py:83
 msgid "Asset created successfully"
 msgstr ""
 
-#: .\asset\views.py:129
+#: .\asset\views.py:156
 msgid "Asset Updated"
 msgstr ""
 
-#: .\asset\views.py:171 .\asset\views.py:342
+#: .\asset\views.py:198 .\asset\views.py:369
 msgid "Asset not found"
 msgstr ""
 
-#: .\asset\views.py:193 .\asset\views.py:209
+#: .\asset\views.py:220 .\asset\views.py:236
 msgid "Asset is in use"
 msgstr ""
 
-#: .\asset\views.py:198 .\asset\views.py:214
+#: .\asset\views.py:225 .\asset\views.py:241
 msgid "Asset is used in allocation!."
 msgstr ""
 
-#: .\asset\views.py:292
+#: .\asset\views.py:319
 msgid "Asset category created successfully"
 msgstr ""
 
-#: .\asset\views.py:320
+#: .\asset\views.py:347
 msgid "Asset category updated successfully"
 msgstr ""
 
-#: .\asset\views.py:351
+#: .\asset\views.py:378
 #, python-format
 msgid "There are assets in use in the %(asset_category)s category."
 msgstr ""
 
-#: .\asset\views.py:357
+#: .\asset\views.py:384
 msgid "Asset Category Deleted"
 msgstr ""
 
-#: .\asset\views.py:359
+#: .\asset\views.py:386
 msgid "You cannot delete this asset category."
 msgstr ""
 
-#: .\asset\views.py:465
+#: .\asset\views.py:492
 msgid "Asset request created!"
 msgstr ""
 
-#: .\asset\views.py:505
+#: .\asset\views.py:532
 msgid "Asset request approved successfully!."
 msgstr ""
 
-#: .\asset\views.py:548
+#: .\asset\views.py:575
 msgid "Asset request rejected"
 msgstr ""
 
-#: .\asset\views.py:582
+#: .\asset\views.py:609
 msgid "Asset allocated successfully!."
 msgstr ""
 
-#: .\asset\views.py:622
+#: .\asset\views.py:649
 msgid "Asset Return Successful !."
 msgstr ""
 
-#: .\asset\views.py:635
+#: .\asset\views.py:662
 msgid "Asset Return Successful!."
 msgstr ""
 
-#: .\asset\views.py:870
+#: .\asset\views.py:897
 msgid "Successfully imported Assets"
 msgstr ""
 
-#: .\asset\views.py:872
+#: .\asset\views.py:899
 msgid "File Error"
 msgstr ""
 
-#: .\asset\views.py:912
+#: .\asset\views.py:939
 msgid "There are no assets to export."
 msgstr ""
 
-#: .\asset\views.py:1030
+#: .\asset\views.py:1057
 msgid "Batch number created successfully."
 msgstr ""
 
-#: .\asset\views.py:1095
+#: .\asset\views.py:1122
 msgid "This batch number is already in-use"
 msgstr ""
 
-#: .\asset\views.py:1100
+#: .\asset\views.py:1127
 msgid "Batch updated successfully."
 msgstr ""
 
-#: .\asset\views.py:1122
+#: .\asset\views.py:1149
 msgid "Batch number not found"
 msgstr ""
 
-#: .\asset\views.py:1126
+#: .\asset\views.py:1153
 msgid "Batch number in-use"
 msgstr ""
 
-#: .\asset\views.py:1130
+#: .\asset\views.py:1157
 msgid "Batch number deleted"
 msgstr ""
 
-#: .\asset\views.py:1132
+#: .\asset\views.py:1159
 msgid "You cannot delete this Batch number."
 msgstr ""
 
-#: .\asset\views.py:1195
+#: .\asset\views.py:1222
 msgid "Asset category deleted."
 msgstr ""
 
-#: .\asset\views.py:1197
+#: .\asset\views.py:1224
 msgid "Assets are located within this category."
 msgstr ""
 
@@ -2236,7 +2315,7 @@ msgid "December"
 msgstr ""
 
 #: .\attendance\forms.py:73 .\base\forms.py:171 .\base\forms.py:215
-#: .\payroll\forms\tax_forms.py:43 .\recruitment\forms.py:71
+#: .\payroll\forms\tax_forms.py:39 .\recruitment\forms.py:71
 #: .\recruitment\forms.py:115
 #, python-brace-format
 msgid "---Choose {label}---"
@@ -2355,7 +2434,7 @@ msgstr ""
 #: .\leave\templates\leave\leave_assign\assigned_leave.html:14
 #: .\leave\templates\leave\leave_assign\group_by.html:29
 #: .\leave\templates\leave\leave_request\group_by.html:61
-#: .\leave\templates\leave\leave_request\leave_requests.html:70
+#: .\leave\templates\leave\leave_request\leave_requests.html:71
 #: .\payroll\forms\component_forms.py:250 .\payroll\models\models.py:130
 #: .\payroll\models\models.py:338 .\payroll\models\models.py:1191
 #: .\payroll\templates\payroll\contract\contract_list.html:20
@@ -2367,7 +2446,7 @@ msgstr ""
 #: .\payroll\templates\payroll\payslip\generate_payslip_list.html:55
 #: .\payroll\templates\payroll\payslip\group_payslips.html:47
 #: .\payroll\templates\payroll\payslip\payslip_export_filter.html:32
-#: .\payroll\templates\payroll\payslip\payslip_table.html:44
+#: .\payroll\templates\payroll\payslip\payslip_table.html:42
 #: .\pms\templates\feedback\feedback_creation.html:41
 #: .\pms\templates\feedback\feedback_detailed_view.html:82
 #: .\pms\templates\feedback\feedback_list.html:79
@@ -2821,7 +2900,7 @@ msgstr ""
 #: .\attendance\templates\requests\attendance\filter.html:51
 #: .\employee\templates\employee\profile\profile_view.html:151
 #: .\employee\templates\employee\view\individual.html:181
-#: .\payroll\models\models.py:622 .\templates\sidebar.html:433
+#: .\payroll\models\models.py:622 .\templates\sidebar.html:432
 msgid "Attendance"
 msgstr ""
 
@@ -2860,7 +2939,7 @@ msgstr ""
 #: .\attendance\templates\attendance\attendance\attendance_empty.html:57
 #: .\attendance\templates\attendance\attendance\attendance_nav.html:102
 #: .\employee\templates\employee_nav.html:64
-#: .\leave\templates\leave\holiday\holiday_view.html:256
+#: .\leave\templates\leave\holiday\holiday_view.html:265
 #: .\leave\templates\leave\leave_assign\assign_view.html:35
 msgid "Uploading..."
 msgstr ""
@@ -2868,7 +2947,7 @@ msgstr ""
 #: .\attendance\templates\attendance\attendance\attendance_empty.html:91
 #: .\attendance\templates\attendance\attendance\attendance_nav.html:173
 #: .\attendance\templates\requests\attendance\view-requests.html:40
-#: .\templates\sidebar.html:418
+#: .\templates\sidebar.html:417
 msgid "Attendances"
 msgstr ""
 
@@ -3268,7 +3347,7 @@ msgid "Export Attendances"
 msgstr ""
 
 #: .\attendance\templates\attendance\attendance\attendance_nav.html:329
-#: .\attendance\templates\attendance\attendance\attendance_request_one.html:182
+#: .\attendance\templates\attendance\attendance\attendance_request_one.html:178
 #: .\attendance\templates\attendance\attendance\group_by.html:411
 #: .\attendance\templates\attendance\attendance\tab_content.html:391
 #: .\employee\templates\tabs\attendance-tab.html:322
@@ -3317,7 +3396,7 @@ msgstr ""
 #: .\leave\templates\leave\leave_assign\assigned_leaves_export_filter.html:10
 #: .\leave\templates\leave\leave_assign\group_by.html:27
 #: .\leave\templates\leave\leave_request\group_by.html:56
-#: .\leave\templates\leave\leave_request\leave_requests.html:64
+#: .\leave\templates\leave\leave_request\leave_requests.html:65
 #: .\leave\templates\leave\leave_request\leave_requests_export_filter.html:15
 #: .\leave\templates\leave\user_leave\group_by.html:57
 #: .\leave\templates\leave\user_leave\user_requests.html:63
@@ -3326,7 +3405,7 @@ msgstr ""
 #: .\payroll\templates\payroll\contract\contract_list.html:15
 #: .\payroll\templates\payroll\contract\group_by.html:31
 #: .\payroll\templates\payroll\payslip\payslip_export_filter.html:10
-#: .\payroll\templates\payroll\payslip\payslip_table.html:40
+#: .\payroll\templates\payroll\payslip\payslip_table.html:38
 #: .\pms\templates\feedback\feedback_list.html:76
 #: .\pms\templates\feedback\feedback_list.html:213
 #: .\pms\templates\feedback\feedback_list.html:354
@@ -3403,8 +3482,8 @@ msgstr ""
 #: .\attendance\templates\attendance\attendance\attendance_on_time.html:98
 #: .\attendance\templates\attendance\attendance\attendance_request_one.html:111
 #: .\attendance\templates\attendance\attendance\attendance_request_one.html:128
-#: .\attendance\templates\attendance\attendance\attendance_request_one.html:171
-#: .\attendance\templates\attendance\attendance\attendance_request_one.html:216
+#: .\attendance\templates\attendance\attendance\attendance_request_one.html:169
+#: .\attendance\templates\attendance\attendance\attendance_request_one.html:210
 #: .\attendance\templates\attendance\attendance\group_by.html:166
 #: .\attendance\templates\attendance\attendance\group_by.html:425
 #: .\attendance\templates\attendance\attendance\group_by.html:669
@@ -3458,20 +3537,20 @@ msgstr ""
 #: .\helpdesk\templates\helpdesk\ticket\ticket_list.html:79
 #: .\helpdesk\templates\helpdesk\ticket\ticket_list.html:276
 #: .\helpdesk\templates\helpdesk\ticket\ticket_list.html:492
-#: .\leave\templates\leave\company_leave\company_leave.html:36
-#: .\leave\templates\leave\holiday\holiday.html:74
+#: .\leave\templates\leave\company_leave\company_leave.html:40
+#: .\leave\templates\leave\holiday\holiday.html:79
 #: .\leave\templates\leave\leave_allocation_request\leave_allocation_request_group_by.html:76
 #: .\leave\templates\leave\leave_allocation_request\leave_allocation_request_group_by.html:238
 #: .\leave\templates\leave\leave_allocation_request\leave_allocation_request_list.html:57
 #: .\leave\templates\leave\leave_allocation_request\leave_allocation_request_list.html:196
 #: .\leave\templates\leave\leave_allocation_request\leave_allocation_request_single_view.html:90
 #: .\leave\templates\leave\leave_allocation_request\leave_allocation_request_single_view.html:97
-#: .\leave\templates\leave\leave_assign\assigned_leave.html:48
-#: .\leave\templates\leave\leave_assign\group_by.html:61
+#: .\leave\templates\leave\leave_assign\assigned_leave.html:52
+#: .\leave\templates\leave\leave_assign\group_by.html:65
 #: .\leave\templates\leave\leave_request\group_by.html:135
-#: .\leave\templates\leave\leave_request\leave_requests.html:166
-#: .\leave\templates\leave\leave_type\leave_type_individual_view.html:136
-#: .\leave\templates\leave\leave_type\leave_types.html:45
+#: .\leave\templates\leave\leave_request\leave_requests.html:171
+#: .\leave\templates\leave\leave_type\leave_type_individual_view.html:137
+#: .\leave\templates\leave\leave_type\leave_types.html:49
 #: .\leave\templates\leave\user_leave\group_by.html:116
 #: .\leave\templates\leave\user_leave\user_requests.html:126
 #: .\onboarding\templates\onboarding\candidates.html:57
@@ -3501,9 +3580,9 @@ msgid "Edit"
 msgstr ""
 
 #: .\attendance\templates\attendance\attendance\attendance_on_time.html:101
-#: .\attendance\templates\attendance\attendance\attendance_request_one.html:142
-#: .\attendance\templates\attendance\attendance\attendance_request_one.html:187
-#: .\attendance\templates\attendance\attendance\attendance_request_one.html:221
+#: .\attendance\templates\attendance\attendance\attendance_request_one.html:140
+#: .\attendance\templates\attendance\attendance\attendance_request_one.html:181
+#: .\attendance\templates\attendance\attendance\attendance_request_one.html:213
 #: .\attendance\templates\attendance\attendance\tab_content.html:169
 #: .\attendance\templates\attendance\attendance\tab_content.html:413
 #: .\attendance\templates\attendance\attendance\tab_content.html:663
@@ -3571,7 +3650,7 @@ msgstr ""
 #: .\employee\templates\tabs\shift-tab.html:551
 #: .\employee\templates\tabs\shift-tab.html:689
 #: .\payroll\templates\payroll\payslip\group_payslips.html:121
-#: .\payroll\templates\payroll\payslip\payslip_table.html:117
+#: .\payroll\templates\payroll\payslip\payslip_table.html:115
 #: .\recruitment\templates\recruitment\recruitment_component.html:90
 #: .\recruitment\templates\stage\stage_component.html:66
 msgid "Remove"
@@ -3718,7 +3797,7 @@ msgstr ""
 #: .\attendance\templates\attendance\attendance_account\overtime_empty.html:32
 #: .\employee\templates\tabs\attendance-tab.html:37
 #: .\employee\templates\tabs\attendance-tab.html:167
-#: .\templates\sidebar.html:448
+#: .\templates\sidebar.html:447
 msgid "Hour Account"
 msgstr ""
 
@@ -3734,7 +3813,7 @@ msgstr ""
 #: .\attendance\templates\attendance\attendance_activity\activity_filters.html:47
 #: .\attendance\templates\attendance\attendance_activity\export_filter.html:70
 #: .\attendance\templates\attendance\attendance_activity\nav.html:42
-#: .\templates\sidebar.html:455
+#: .\templates\sidebar.html:454
 msgid "Attendance Activity"
 msgstr ""
 
@@ -3830,7 +3909,7 @@ msgid "Export Late Come Early Out"
 msgstr ""
 
 #: .\attendance\templates\attendance\late_come_early_out\report_list.html:78
-#: .\leave\templates\leave\leave_request\leave_requests.html:162
+#: .\leave\templates\leave\leave_request\leave_requests.html:165
 msgid "Penalty"
 msgstr ""
 
@@ -4279,7 +4358,7 @@ msgstr ""
 
 #: .\base\methods.py:359 .\employee\templates\tabs\leave-tab.html:52
 #: .\leave\models.py:97
-#: .\leave\templates\leave\leave_request\leave_requests.html:17
+#: .\leave\templates\leave\leave_request\leave_requests.html:18
 #: .\leave\templates\leave\user_leave\user_requests.html:16
 msgid "Cancelled"
 msgstr ""
@@ -4292,7 +4371,7 @@ msgstr ""
 #: .\base\templates\shift_request\htmx\shift_request_detail.html:63
 #: .\base\templates\work_type_request\htmx\work_type_request_single_view.html:63
 #: .\employee\views.py:1866 .\leave\forms.py:31
-#: .\leave\templates\leave\holiday\holiday.html:65
+#: .\leave\templates\leave\holiday\holiday.html:67
 msgid "Yes"
 msgstr ""
 
@@ -4300,7 +4379,7 @@ msgstr ""
 #: .\base\templates\shift_request\htmx\shift_request_detail.html:64
 #: .\base\templates\work_type_request\htmx\work_type_request_single_view.html:64
 #: .\employee\views.py:1868 .\leave\forms.py:31
-#: .\leave\templates\leave\holiday\holiday.html:67
+#: .\leave\templates\leave\holiday\holiday.html:69
 #: .\payroll\templates\payroll\allowance\view_single_allowance.html:39
 #: .\payroll\templates\payroll\allowance\view_single_allowance.html:49
 #: .\payroll\templates\payroll\allowance\view_single_allowance.html:81
@@ -4437,10 +4516,10 @@ msgstr ""
 #: .\employee\templates\tabs\shift-tab.html:311
 #: .\employee\templates\tabs\shift-tab.html:453 .\leave\models.py:194
 #: .\leave\models.py:378 .\leave\templates\leave\holiday\holiday.html:41
-#: .\leave\templates\leave\holiday\holiday_form.html:22
-#: .\leave\templates\leave\holiday\holiday_update_form.html:23
+#: .\leave\templates\leave\holiday\holiday_form.html:38
+#: .\leave\templates\leave\holiday\holiday_update_form.html:39
 #: .\leave\templates\leave\leave_request\group_by.html:63
-#: .\leave\templates\leave\leave_request\leave_requests.html:72
+#: .\leave\templates\leave\leave_request\leave_requests.html:73
 #: .\leave\templates\leave\leave_request\leave_requests_export_filter.html:48
 #: .\leave\templates\leave\leave_request\one_request_view.html:35
 #: .\leave\templates\leave\leave_request\request_view.html:109
@@ -4457,7 +4536,7 @@ msgstr ""
 #: .\payroll\templates\payroll\payslip\filter_payslips.html:23
 #: .\payroll\templates\payroll\payslip\group_payslips.html:48
 #: .\payroll\templates\payroll\payslip\payslip_export_filter.html:40
-#: .\payroll\templates\payroll\payslip\payslip_table.html:45
+#: .\payroll\templates\payroll\payslip\payslip_table.html:43
 #: .\pms\templates\feedback\feedback_creation.html:96
 #: .\pms\templates\feedback\feedback_list_view.html:75
 #: .\pms\templates\feedback\feedback_update.html:66
@@ -4912,8 +4991,8 @@ msgstr ""
 #: .\base\templates\base\auth\permission_accordion.html:23
 #: .\base\templates\base\rotating_shift\rotating_shift_assign_nav.html:171
 #: .\base\templates\base\rotating_work_type\rotating_work_type_assign_nav.html:172
-#: .\leave\templates\leave\leave_assign\assign_view.html:258
-#: .\leave\templates\leave\leave_type\leave_type_individual_view.html:141
+#: .\leave\templates\leave\leave_assign\assign_view.html:260
+#: .\leave\templates\leave\leave_type\leave_type_individual_view.html:142
 msgid "Assign"
 msgstr ""
 
@@ -5249,47 +5328,6 @@ msgstr ""
 #: .\base\templates\shift_request\htmx\group_by.html:24
 #: .\base\templates\shift_request\htmx\requests.html:27
 msgid "Export Shifts"
-msgstr ""
-
-#: .\base\templates\base\rotating_shift\htmx\group_by.html:64
-#: .\base\templates\base\rotating_shift\individual_view.html:43
-#: .\base\templates\base\rotating_shift\rotating_shift_assign_view.html:48
-#: .\base\templates\base\rotating_shift\rotating_shift_view.html:6
-#: .\base\templates\base\rotating_work_type\htmx\group_by.html:63
-#: .\base\templates\base\rotating_work_type\individual_view.html:41
-#: .\base\templates\base\rotating_work_type\rotating_work_type_assign_view.html:46
-#: .\base\templates\base\rotating_work_type\rotating_work_type_view.html:6
-#: .\base\templates\base\tags\tags_view.html:6 .\employee\models.py:519
-#: .\employee\templates\tabs\performance-tab.html:8
-#: .\employee\templates\tabs\shift-tab.html:303
-#: .\employee\templates\tabs\shift-tab.html:445
-#: .\helpdesk\templates\helpdesk\ticket\ticket_group.html:43
-#: .\helpdesk\templates\helpdesk\ticket\ticket_group.html:264
-#: .\helpdesk\templates\helpdesk\ticket\ticket_group.html:484
-#: .\helpdesk\templates\helpdesk\ticket\ticket_list.html:20
-#: .\helpdesk\templates\helpdesk\ticket\ticket_list.html:215
-#: .\helpdesk\templates\helpdesk\ticket\ticket_list.html:433
-#: .\pms\templates\feedback\feedback_creation.html:33
-#: .\pms\templates\feedback\feedback_list.html:80
-#: .\pms\templates\feedback\feedback_list.html:217
-#: .\pms\templates\feedback\feedback_list.html:358
-#: .\pms\templates\feedback\question_template\question_template_empty.html:59
-#: .\pms\templates\feedback\question_template\question_template_update.html:6
-#: .\pms\templates\feedback\question_template\question_template_view.html:50
-#: .\pms\templates\feedback\question_template\question_template_view.html:101
-#: .\pms\templates\okr\create_period.html:23
-#: .\pms\templates\okr\key_result\key_result_creation.html:53
-#: .\pms\templates\okr\key_result\key_result_creation_htmx.html:32
-#: .\pms\templates\okr\key_result\key_result_update.html:28
-#: .\pms\templates\okr\objective_creation.html:33
-#: .\pms\templates\period\period_create.html:22
-#: .\pms\templates\period\period_update.html:22
-#: .\pms\templates\period\period_view.html:45 .\recruitment\models.py:410
-#: .\recruitment\templates\pipeline\form\recruitment_update.html:21
-#: .\recruitment\templates\recruitment\recruitment_form.html:7
-#: .\recruitment\templates\recruitment\recruitment_update_form.html:14
-#: .\recruitment\templates\stage\stage_component.html:32
-msgid "Title"
 msgstr ""
 
 #: .\base\templates\base\rotating_shift\htmx\group_by.html:66
@@ -6934,6 +6972,18 @@ msgstr "Tickets"
 msgid "ticket-detail"
 msgstr "Ticket Details"
 
+#: .\base\translator.py:282
+msgid "ticket-type-view"
+msgstr "Ticket Type"
+
+#: .\base\translator.py:283
+msgid "tag-view"
+msgstr "Tags"
+
+#: .\base\translator.py:284
+msgid "mail-server-conf"
+msgstr "Mail Server"
+
 #: .\base\views.py:161
 msgid "Invalid username or password."
 msgstr ""
@@ -7618,7 +7668,7 @@ msgstr ""
 
 #: .\employee\templates\employee\profile\profile_view.html:160
 #: .\employee\templates\employee\view\individual.html:192
-#: .\templates\sidebar.html:494
+#: .\templates\sidebar.html:493
 msgid "Leave"
 msgstr ""
 
@@ -7639,13 +7689,13 @@ msgstr ""
 
 #: .\employee\templates\employee\profile\profile_view.html:202
 #: .\employee\templates\employee\view\individual.html:251
-#: .\templates\sidebar.html:667
+#: .\templates\sidebar.html:666
 msgid "Assets"
 msgstr ""
 
 #: .\employee\templates\employee\profile\profile_view.html:214
 #: .\employee\templates\employee\view\individual.html:264
-#: .\templates\sidebar.html:597
+#: .\templates\sidebar.html:596
 msgid "Performance"
 msgstr ""
 
@@ -7938,7 +7988,7 @@ msgstr ""
 #: .\payroll\templates\payroll\deduction\filter_deduction.html:13
 #: .\payroll\templates\payroll\deduction\list_deduction.html:13
 #: .\payroll\templates\payroll\payslip\group_payslips.html:52
-#: .\payroll\templates\payroll\payslip\payslip_table.html:50
+#: .\payroll\templates\payroll\payslip\payslip_table.html:48
 msgid "Deduction"
 msgstr ""
 
@@ -7988,7 +8038,7 @@ msgstr ""
 #: .\payroll\templates\payroll\contract\contract_list.html:19
 #: .\payroll\templates\payroll\contract\filter_contract.html:6
 #: .\payroll\templates\payroll\contract\group_by.html:35
-#: .\templates\sidebar.html:362
+#: .\templates\sidebar.html:361
 msgid "Contract"
 msgstr ""
 
@@ -7997,10 +8047,10 @@ msgstr ""
 #: .\employee\templates\tabs\payroll-tab.html:34
 #: .\employee\templates\tabs\personal-tab.html:212 .\leave\models.py:195
 #: .\leave\models.py:385 .\leave\templates\leave\holiday\holiday.html:42
-#: .\leave\templates\leave\holiday\holiday_form.html:27
-#: .\leave\templates\leave\holiday\holiday_update_form.html:28
+#: .\leave\templates\leave\holiday\holiday_form.html:43
+#: .\leave\templates\leave\holiday\holiday_update_form.html:44
 #: .\leave\templates\leave\leave_request\group_by.html:64
-#: .\leave\templates\leave\leave_request\leave_requests.html:73
+#: .\leave\templates\leave\leave_request\leave_requests.html:74
 #: .\leave\templates\leave\leave_request\leave_requests_export_filter.html:55
 #: .\leave\templates\leave\leave_request\one_request_view.html:39
 #: .\leave\templates\leave\leave_request\request_view.html:115
@@ -8018,7 +8068,7 @@ msgstr ""
 #: .\payroll\templates\payroll\payslip\filter_payslips.html:29
 #: .\payroll\templates\payroll\payslip\group_payslips.html:49
 #: .\payroll\templates\payroll\payslip\payslip_export_filter.html:46
-#: .\payroll\templates\payroll\payslip\payslip_table.html:46
+#: .\payroll\templates\payroll\payslip\payslip_table.html:44
 #: .\pms\templates\feedback\feedback_creation.html:105
 #: .\pms\templates\feedback\feedback_list_view.html:85
 #: .\pms\templates\feedback\feedback_update.html:75
@@ -8053,7 +8103,7 @@ msgid "Wage Type"
 msgstr ""
 
 #: .\employee\templates\tabs\contract-tab.html:19
-#: .\payroll\models\models.py:156 .\payroll\models\tax_models.py:118
+#: .\payroll\models\models.py:156
 #: .\payroll\templates\payroll\contract\contract_export_filter.html:52
 #: .\payroll\templates\payroll\contract\contract_list.html:25
 #: .\payroll\templates\payroll\contract\contract_single_view.html:100
@@ -8115,7 +8165,7 @@ msgstr ""
 #: .\leave\templates\leave\leave_assign\assigned_leaves_filter.html:21
 #: .\leave\templates\leave\leave_assign\group_by.html:30
 #: .\leave\templates\leave\leave_request\group_by.html:62
-#: .\leave\templates\leave\leave_request\leave_requests.html:71
+#: .\leave\templates\leave\leave_request\leave_requests.html:72
 #: .\leave\templates\leave\leave_request\leave_requests_export_filter.html:42
 #: .\leave\templates\leave\leave_request\one_request_view.html:50
 #: .\leave\templates\leave\leave_request\request_view.html:103
@@ -8223,7 +8273,7 @@ msgstr ""
 #: .\payroll\models\models.py:1020
 #: .\payroll\templates\payroll\payslip\generate_payslip_list.html:61
 #: .\payroll\templates\payroll\payslip\group_payslips.html:51
-#: .\payroll\templates\payroll\payslip\payslip_table.html:49
+#: .\payroll\templates\payroll\payslip\payslip_table.html:47
 msgid "Gross Pay"
 msgstr ""
 
@@ -8232,14 +8282,14 @@ msgstr ""
 #: .\payroll\models\models.py:1021
 #: .\payroll\templates\payroll\payslip\generate_payslip_list.html:63
 #: .\payroll\templates\payroll\payslip\group_payslips.html:53
-#: .\payroll\templates\payroll\payslip\payslip_table.html:51
+#: .\payroll\templates\payroll\payslip\payslip_table.html:49
 msgid "Net Pay"
 msgstr ""
 
 #: .\employee\templates\tabs\payroll-tab.html:82
 #: .\payroll\templates\payroll\payslip\group_payslips.html:113
 #: .\payroll\templates\payroll\payslip\individual_payslip.html:28
-#: .\payroll\templates\payroll\payslip\payslip_table.html:109
+#: .\payroll\templates\payroll\payslip\payslip_table.html:107
 msgid "Download"
 msgstr ""
 
@@ -8564,26 +8614,13 @@ msgid "There are no FAQs at the moment."
 msgstr ""
 
 #: .\helpdesk\templates\helpdesk\faq\faq_nav.html:4
-#: .\templates\sidebar.html:730
+#: .\templates\sidebar.html:729
 msgid "FAQs"
 msgstr ""
 
 #: .\helpdesk\templates\helpdesk\faq\faq_nav.html:53
 msgid "filter"
 msgstr ""
-
-#: .\helpdesk\templates\helpdesk\ticket\forms\change.html:84
-#: .\helpdesk\templates\helpdesk\ticket\forms\change_assinees.html:12
-#: .\helpdesk\templates\helpdesk\ticket\ticket_card.html:197
-#: .\helpdesk\templates\helpdesk\ticket\ticket_card.html:199
-#: .\helpdesk\templates\helpdesk\ticket\ticket_card.html:450
-#: .\helpdesk\templates\helpdesk\ticket\ticket_card.html:452
-#: .\helpdesk\templates\helpdesk\ticket\ticket_card.html:687
-#: .\helpdesk\templates\helpdesk\ticket\ticket_card.html:689
-#, fuzzy
-#| msgid "assign-view"
-msgid "Assignees"
-msgstr "Assigned Leaves"
 
 #: .\helpdesk\templates\helpdesk\ticket\forms\change_raised_on.html:12
 #: .\helpdesk\templates\helpdesk\ticket\ticket_detail.html:311
@@ -8657,7 +8694,7 @@ msgstr ""
 #: .\helpdesk\templates\helpdesk\ticket\ticket_list.html:268
 #: .\helpdesk\templates\helpdesk\ticket\ticket_list.html:485
 #: .\payroll\templates\payroll\payslip\group_payslips.html:112
-#: .\payroll\templates\payroll\payslip\payslip_table.html:108
+#: .\payroll\templates\payroll\payslip\payslip_table.html:106
 msgid "View"
 msgstr ""
 
@@ -8755,7 +8792,7 @@ msgstr "Recruitment"
 
 #: .\helpdesk\templates\helpdesk\ticket\ticket_filter.html:62
 #: .\helpdesk\templates\helpdesk\ticket\ticket_nav.html:5
-#: .\templates\sidebar.html:737
+#: .\templates\sidebar.html:736
 msgid "Tickets"
 msgstr ""
 
@@ -8926,7 +8963,7 @@ msgstr ""
 msgid "You dont have permission."
 msgstr ""
 
-#: .\leave\forms.py:242 .\leave\views.py:1591 .\leave\views.py:2437
+#: .\leave\forms.py:242 .\leave\views.py:1575 .\leave\views.py:2421
 msgid "An attachment is required for this leave request"
 msgstr ""
 
@@ -9013,8 +9050,8 @@ msgstr ""
 #: .\leave\models.py:196 .\leave\templates\leave\holiday\holiday.html:43
 #: .\leave\templates\leave\holiday\holiday_export_filter.html:36
 #: .\leave\templates\leave\holiday\holiday_filter.html:28
-#: .\leave\templates\leave\holiday\holiday_form.html:32
-#: .\leave\templates\leave\holiday\holiday_update_form.html:33
+#: .\leave\templates\leave\holiday\holiday_form.html:48
+#: .\leave\templates\leave\holiday\holiday_update_form.html:49
 msgid "Recurring"
 msgstr ""
 
@@ -9059,7 +9096,7 @@ msgstr ""
 #: .\leave\templates\leave\leave_allocation_request\leave_allocation_request_list.html:153
 #: .\leave\templates\leave\leave_allocation_request\leave_allocation_request_single_view.html:41
 #: .\leave\templates\leave\leave_request\group_by.html:65
-#: .\leave\templates\leave\leave_request\leave_requests.html:74
+#: .\leave\templates\leave\leave_request\leave_requests.html:75
 #: .\leave\templates\leave\user_leave\group_by.html:65
 #: .\leave\templates\leave\user_leave\user_requests.html:71
 msgid "Requested Days"
@@ -9102,20 +9139,20 @@ msgstr ""
 msgid "Based On Week Day"
 msgstr ""
 
-#: .\leave\templates\leave\company_leave\company_leave.html:23
+#: .\leave\templates\leave\company_leave\company_leave.html:25
 msgid "All"
 msgstr ""
 
-#: .\leave\templates\leave\company_leave\company_leave.html:41
+#: .\leave\templates\leave\company_leave\company_leave.html:47
 #: .\leave\templates\leave\leave_allocation_request\leave_allocation_request_group_by.html:92
 #: .\leave\templates\leave\leave_allocation_request\leave_allocation_request_group_by.html:254
 #: .\leave\templates\leave\leave_allocation_request\leave_allocation_request_list.html:73
 #: .\leave\templates\leave\leave_allocation_request\leave_allocation_request_list.html:212
 #: .\leave\templates\leave\leave_allocation_request\leave_allocation_request_single_view.html:108
-#: .\leave\templates\leave\leave_assign\assigned_leave.html:51
-#: .\leave\templates\leave\leave_assign\group_by.html:64
-#: .\leave\templates\leave\leave_request\group_by.html:140
-#: .\leave\templates\leave\leave_request\leave_requests.html:171
+#: .\leave\templates\leave\leave_assign\assigned_leave.html:57
+#: .\leave\templates\leave\leave_assign\group_by.html:70
+#: .\leave\templates\leave\leave_request\group_by.html:141
+#: .\leave\templates\leave\leave_request\leave_requests.html:177
 #: .\leave\templates\leave\user_leave\group_by.html:123
 #: .\leave\templates\leave\user_leave\user_requests.html:133
 msgid "Are you sure you want to delete ?"
@@ -9123,8 +9160,8 @@ msgstr ""
 
 #: .\leave\templates\leave\company_leave\company_leave_creation_form.html:23
 #: .\leave\templates\leave\company_leave\company_leave_update_form.html:23
-#: .\leave\templates\leave\holiday\holiday_form.html:38
-#: .\leave\templates\leave\holiday\holiday_update_form.html:39
+#: .\leave\templates\leave\holiday\holiday_form.html:54
+#: .\leave\templates\leave\holiday\holiday_update_form.html:55
 #: .\leave\templates\leave\leave_assign\available_update_form.html:23
 #: .\leave\templates\leave\leave_assign\leave_assign_form.html:16
 #: .\leave\templates\leave\leave_assign\leave_assign_one_form.html:19
@@ -9135,7 +9172,7 @@ msgid "Apply"
 msgstr ""
 
 #: .\leave\templates\leave\company_leave\company_leave_view.html:8
-#: .\templates\sidebar.html:571
+#: .\templates\sidebar.html:570
 msgid "Company Leaves"
 msgstr ""
 
@@ -9151,23 +9188,23 @@ msgstr ""
 msgid "Based On Weekday"
 msgstr ""
 
-#: .\leave\templates\leave\company_leave\company_leave_view.html:82
+#: .\leave\templates\leave\company_leave\company_leave_view.html:84
 msgid "There are no company leaves at the moment."
 msgstr ""
 
-#: .\leave\templates\leave\company_leave\company_leave_view.html:92
+#: .\leave\templates\leave\company_leave\company_leave_view.html:94
 msgid "Create Company Leaves"
 msgstr ""
 
-#: .\leave\templates\leave\company_leave\company_leave_view.html:106
+#: .\leave\templates\leave\company_leave\company_leave_view.html:108
 msgid "Update Company Leaves"
 msgstr ""
 
-#: .\leave\templates\leave\company_leave\company_leave_view.html:141
-#: .\leave\templates\leave\holiday\holiday.html:84
-#: .\leave\templates\leave\holiday\holiday_view.html:353
-#: .\leave\templates\leave\leave_assign\assign_view.html:394
-#: .\leave\templates\leave\leave_request\request_view.html:451
+#: .\leave\templates\leave\company_leave\company_leave_view.html:143
+#: .\leave\templates\leave\holiday\holiday.html:91
+#: .\leave\templates\leave\holiday\holiday_view.html:362
+#: .\leave\templates\leave\leave_assign\assign_view.html:396
+#: .\leave\templates\leave\leave_request\request_view.html:455
 #: .\leave\templates\leave\leave_type\leave_type_view.html:152
 #: .\leave\templates\leave\user_leave\user_request_view.html:411
 #: .\onboarding\templates\onboarding\candidates_view.html:183
@@ -9276,17 +9313,17 @@ msgid "Unselect All Holidays"
 msgstr ""
 
 #: .\leave\templates\leave\holiday\holiday.html:23
-#: .\leave\templates\leave\holiday\holiday_view.html:298
+#: .\leave\templates\leave\holiday\holiday_view.html:307
 msgid "Export Holidays"
 msgstr ""
 
 #: .\leave\templates\leave\holiday\holiday.html:40
-#: .\leave\templates\leave\holiday\holiday_form.html:17
-#: .\leave\templates\leave\holiday\holiday_update_form.html:18
+#: .\leave\templates\leave\holiday\holiday_form.html:33
+#: .\leave\templates\leave\holiday\holiday_update_form.html:34
 msgid "Holiday Name"
 msgstr ""
 
-#: .\leave\templates\leave\holiday\holiday.html:175
+#: .\leave\templates\leave\holiday\holiday.html:184
 msgid "There are no holidays at the moments."
 msgstr ""
 
@@ -9311,28 +9348,28 @@ msgstr ""
 msgid "To Date"
 msgstr ""
 
-#: .\leave\templates\leave\holiday\holiday_view.html:20
-#: .\templates\sidebar.html:563
+#: .\leave\templates\leave\holiday\holiday_view.html:21
+#: .\templates\sidebar.html:562
 msgid "Holidays"
 msgstr ""
 
-#: .\leave\templates\leave\holiday\holiday_view.html:145
+#: .\leave\templates\leave\holiday\holiday_view.html:150
 msgid "Selected Holidays"
 msgstr ""
 
-#: .\leave\templates\leave\holiday\holiday_view.html:171
+#: .\leave\templates\leave\holiday\holiday_view.html:176
 msgid "There are no holidays at the moment."
 msgstr ""
 
-#: .\leave\templates\leave\holiday\holiday_view.html:191
+#: .\leave\templates\leave\holiday\holiday_view.html:196
 msgid "Create Holiday"
 msgstr ""
 
-#: .\leave\templates\leave\holiday\holiday_view.html:214
+#: .\leave\templates\leave\holiday\holiday_view.html:221
 msgid "Update Holiday"
 msgstr ""
 
-#: .\leave\templates\leave\holiday\holiday_view.html:236
+#: .\leave\templates\leave\holiday\holiday_view.html:245
 msgid "Import Holidays"
 msgstr ""
 
@@ -9340,7 +9377,7 @@ msgstr ""
 #: .\leave\templates\leave\leave_allocation_request\leave_allocation_request_group_by.html:357
 #: .\leave\templates\leave\leave_allocation_request\leave_allocation_request_list.html:136
 #: .\leave\templates\leave\leave_allocation_request\leave_allocation_request_list.html:310
-#: .\leave\templates\leave\leave_request\leave_requests.html:194
+#: .\leave\templates\leave\leave_request\leave_requests.html:201
 #: .\leave\templates\leave\user_leave\user_requests.html:200
 msgid "You have No leave requests for this filter."
 msgstr ""
@@ -9348,7 +9385,7 @@ msgstr ""
 #: .\leave\templates\leave\leave_allocation_request\leave_allocation_request_group_by.html:200
 #: .\leave\templates\leave\leave_allocation_request\leave_allocation_request_list.html:158
 #: .\leave\templates\leave\leave_request\group_by.html:68
-#: .\leave\templates\leave\leave_request\leave_requests.html:78
+#: .\leave\templates\leave\leave_request\leave_requests.html:79
 #: .\leave\templates\leave\user_leave\group_by.html:67
 #: .\leave\templates\leave\user_leave\user_requests.html:73
 #: .\onboarding\templates\onboarding\onboarding_table.html:96
@@ -9377,7 +9414,7 @@ msgid "View attachment"
 msgstr ""
 
 #: .\leave\templates\leave\leave_allocation_request\leave_allocation_request_view.html:36
-#: .\templates\sidebar.html:533
+#: .\templates\sidebar.html:532
 msgid "Leave Allocation Requests"
 msgstr ""
 
@@ -9422,31 +9459,31 @@ msgstr ""
 msgid "All Assigned Leaves"
 msgstr ""
 
-#: .\leave\templates\leave\leave_assign\assign_view.html:274
+#: .\leave\templates\leave\leave_assign\assign_view.html:276
 msgid "Selected Leaves"
 msgstr ""
 
-#: .\leave\templates\leave\leave_assign\assign_view.html:281
+#: .\leave\templates\leave\leave_assign\assign_view.html:283
 msgid "Select All Leaves"
 msgstr ""
 
-#: .\leave\templates\leave\leave_assign\assign_view.html:288
+#: .\leave\templates\leave\leave_assign\assign_view.html:290
 msgid "Unselect All Leaves"
 msgstr ""
 
-#: .\leave\templates\leave\leave_assign\assign_view.html:295
+#: .\leave\templates\leave\leave_assign\assign_view.html:297
 msgid "Export Leaves"
 msgstr ""
 
-#: .\leave\templates\leave\leave_assign\assign_view.html:325
+#: .\leave\templates\leave\leave_assign\assign_view.html:327
 msgid "There are no leave assigned at the moment."
 msgstr ""
 
-#: .\leave\templates\leave\leave_assign\assign_view.html:342
+#: .\leave\templates\leave\leave_assign\assign_view.html:344
 msgid "Update Available Leave"
 msgstr ""
 
-#: .\leave\templates\leave\leave_assign\assign_view.html:363
+#: .\leave\templates\leave\leave_assign\assign_view.html:365
 msgid "Assign Leaves"
 msgstr ""
 
@@ -9486,33 +9523,33 @@ msgid "Total Leave Days Less Than or Equal"
 msgstr ""
 
 #: .\leave\templates\leave\leave_request\group_by.html:9
-#: .\leave\templates\leave\leave_request\leave_requests.html:34
+#: .\leave\templates\leave\leave_request\leave_requests.html:35
 #: .\leave\templates\leave\user_leave\group_by.html:10
 #: .\leave\templates\leave\user_leave\user_requests.html:33
 msgid "Select All Requests"
 msgstr ""
 
 #: .\leave\templates\leave\leave_request\group_by.html:16
-#: .\leave\templates\leave\leave_request\leave_requests.html:41
+#: .\leave\templates\leave\leave_request\leave_requests.html:42
 #: .\leave\templates\leave\user_leave\group_by.html:17
 #: .\leave\templates\leave\user_leave\user_requests.html:40
 msgid "Unselect All Requests"
 msgstr ""
 
-#: .\leave\templates\leave\leave_request\leave_requests.html:13
+#: .\leave\templates\leave\leave_request\leave_requests.html:14
 #: .\leave\templates\leave\user_leave\user_requests.html:12
 msgid "Cancelled & rejected"
 msgstr ""
 
-#: .\leave\templates\leave\leave_request\leave_requests.html:48
+#: .\leave\templates\leave\leave_request\leave_requests.html:49
 msgid "Export Requests"
 msgstr ""
 
-#: .\leave\templates\leave\leave_request\leave_requests.html:77
+#: .\leave\templates\leave\leave_request\leave_requests.html:78
 msgid "Penalties"
 msgstr ""
 
-#: .\leave\templates\leave\leave_request\leave_requests.html:187
+#: .\leave\templates\leave\leave_request\leave_requests.html:194
 msgid "You have No leave requests for this month."
 msgstr ""
 
@@ -9526,34 +9563,34 @@ msgid "Reason for Cancellation"
 msgstr ""
 
 #: .\leave\templates\leave\leave_request\request_view.html:32
-#: .\templates\sidebar.html:554
+#: .\templates\sidebar.html:553
 msgid "Leave Requests"
 msgstr ""
 
-#: .\leave\templates\leave\leave_request\request_view.html:266
+#: .\leave\templates\leave\leave_request\request_view.html:270
 #: .\leave\templates\leave\user_leave\user_request_view.html:242
 msgid "Selected Requests"
 msgstr ""
 
-#: .\leave\templates\leave\leave_request\request_view.html:290
+#: .\leave\templates\leave\leave_request\request_view.html:294
 #: .\leave\templates\leave\user_leave\user_request_view.html:268
 msgid "There are no leave requests at the moment."
 msgstr ""
 
-#: .\leave\templates\leave\leave_request\request_view.html:310
+#: .\leave\templates\leave\leave_request\request_view.html:314
 #: .\leave\templates\leave\user_leave\user_request_view.html:345
 msgid "Leave Request Create"
 msgstr ""
 
-#: .\leave\templates\leave\leave_request\request_view.html:331
+#: .\leave\templates\leave\leave_request\request_view.html:335
 msgid "Leave Request Update"
 msgstr ""
 
-#: .\leave\templates\leave\leave_request\request_view.html:369
+#: .\leave\templates\leave\leave_request\request_view.html:373
 msgid "Reason for rejection"
 msgstr ""
 
-#: .\leave\templates\leave\leave_request\request_view.html:393
+#: .\leave\templates\leave\leave_request\request_view.html:397
 msgid "Export Leave Requests"
 msgstr ""
 
@@ -9652,7 +9689,7 @@ msgstr ""
 
 #: .\leave\templates\leave\leave_type\leave_type_empty_view.html:20
 #: .\leave\templates\leave\leave_type\leave_type_view.html:17
-#: .\templates\sidebar.html:539
+#: .\templates\sidebar.html:538
 msgid "Leave Types"
 msgstr ""
 
@@ -9726,7 +9763,7 @@ msgid "Carryforward Expire Period"
 msgstr ""
 
 #: .\leave\templates\leave\leave_type\leave_type_view.html:105
-#: .\leave\templates\leave\leave_type\leave_types.html:42
+#: .\leave\templates\leave\leave_type\leave_types.html:44
 msgid "Assign Leave"
 msgstr ""
 
@@ -9747,7 +9784,7 @@ msgid "User Leave"
 msgstr ""
 
 #: .\leave\templates\leave\user_leave\user_request_view.html:11
-#: .\templates\sidebar.html:526
+#: .\templates\sidebar.html:525
 msgid "My Leave Requests"
 msgstr ""
 
@@ -9775,7 +9812,7 @@ msgstr ""
 msgid "This leave types are already in use for {}"
 msgstr ""
 
-#: .\leave\views.py:312 .\leave\views.py:1660 .\leave\views.py:2471
+#: .\leave\views.py:312 .\leave\views.py:1644 .\leave\views.py:2455
 msgid "Leave request created successfully.."
 msgstr ""
 
@@ -9783,16 +9820,16 @@ msgstr ""
 msgid "Leave request is updated successfully.."
 msgstr ""
 
-#: .\leave\views.py:514 .\leave\views.py:1807
+#: .\leave\views.py:514 .\leave\views.py:1791
 msgid "Leave request deleted successfully.."
 msgstr ""
 
-#: .\leave\views.py:516 .\leave\views.py:3011 .\leave\views.py:3076
+#: .\leave\views.py:516 .\leave\views.py:3000 .\leave\views.py:3070
 msgid "Leave request not found."
 msgstr ""
 
-#: .\leave\views.py:518 .\leave\views.py:1003 .\leave\views.py:1363
-#: .\leave\views.py:1543 .\leave\views.py:1811 .\leave\views.py:2914
+#: .\leave\views.py:518 .\leave\views.py:1003 .\leave\views.py:1347
+#: .\leave\views.py:1527 .\leave\views.py:1795 .\leave\views.py:2898
 #: .\pms\views.py:1323 .\pms\views.py:1564 .\pms\views.py:1693
 #: .\pms\views.py:1786
 msgid "Related entries exists"
@@ -9866,136 +9903,136 @@ msgstr ""
 msgid "New holiday created successfully.."
 msgstr ""
 
-#: .\leave\views.py:1200
+#: .\leave\views.py:1193
 msgid "Invalid start date format {}"
 msgstr ""
 
-#: .\leave\views.py:1207
+#: .\leave\views.py:1200
 msgid "Invalid end date format {}"
 msgstr ""
 
-#: .\leave\views.py:1214
+#: .\leave\views.py:1207
 msgid "Recurring must be {} or {}"
 msgstr ""
 
-#: .\leave\views.py:1329
+#: .\leave\views.py:1322
 msgid "Holiday updated successfully.."
 msgstr ""
 
-#: .\leave\views.py:1359
+#: .\leave\views.py:1343
 msgid "Holiday deleted successfully.."
 msgstr ""
 
-#: .\leave\views.py:1361 .\leave\views.py:1381
+#: .\leave\views.py:1345 .\leave\views.py:1365
 msgid "Holiday not found."
 msgstr ""
 
-#: .\leave\views.py:1383
+#: .\leave\views.py:1367
 msgid "{} Holidays have been successfully deleted."
 msgstr ""
 
-#: .\leave\views.py:1407
+#: .\leave\views.py:1391
 msgid "New company leave created successfully.."
 msgstr ""
 
-#: .\leave\views.py:1507
+#: .\leave\views.py:1491
 msgid "Company leave updated successfully.."
 msgstr ""
 
-#: .\leave\views.py:1539
+#: .\leave\views.py:1523
 msgid "Company leave deleted successfully.."
 msgstr ""
 
-#: .\leave\views.py:1541
+#: .\leave\views.py:1525
 msgid "Company leave not found."
 msgstr ""
 
-#: .\leave\views.py:1621
+#: .\leave\views.py:1605
 msgid "There is already a leave request for this date range.."
 msgstr ""
 
-#: .\leave\views.py:1684 .\leave\views.py:1780
+#: .\leave\views.py:1668 .\leave\views.py:1764
 msgid "You dont have enough leave days to make the request.."
 msgstr ""
 
-#: .\leave\views.py:1766
+#: .\leave\views.py:1750
 msgid "Leave request updated successfully.."
 msgstr ""
 
-#: .\leave\views.py:1788 .\leave\views.py:1809 .\leave\views.py:2010
+#: .\leave\views.py:1772 .\leave\views.py:1793 .\leave\views.py:1994
 msgid "User has no leave request.."
 msgstr ""
 
-#: .\leave\views.py:1847 .\leave\views.py:1878 .\leave\views.py:1922
-#: .\leave\views.py:1977
+#: .\leave\views.py:1831 .\leave\views.py:1862 .\leave\views.py:1906
+#: .\leave\views.py:1961
 msgid "User is not an employee.."
 msgstr ""
 
-#: .\leave\views.py:2197
+#: .\leave\views.py:2181
 msgid "Total leaves available"
 msgstr ""
 
-#: .\leave\views.py:2204
+#: .\leave\views.py:2188
 msgid "Oops!! No leaves available for you this month..."
 msgstr ""
 
-#: .\leave\views.py:2269
+#: .\leave\views.py:2253
 msgid "No leave request this month"
 msgstr ""
 
-#: .\leave\views.py:2384
+#: .\leave\views.py:2368
 msgid "Leave Trends"
 msgstr ""
 
-#: .\leave\views.py:2496
+#: .\leave\views.py:2480
 msgid "You don't have permission"
 msgstr ""
 
-#: .\leave\views.py:2617
+#: .\leave\views.py:2601
 msgid "New Leave allocation request is created"
 msgstr ""
 
-#: .\leave\views.py:2744
+#: .\leave\views.py:2728
 msgid "Leave allocation request is updated successfully."
 msgstr ""
 
-#: .\leave\views.py:2809
+#: .\leave\views.py:2793
 msgid "Leave allocation request approved successfully"
 msgstr ""
 
-#: .\leave\views.py:2823
+#: .\leave\views.py:2807
 msgid "The leave allocation request can't be approved"
 msgstr ""
 
-#: .\leave\views.py:2866
+#: .\leave\views.py:2850
 msgid "Leave allocation request rejected successfully"
 msgstr ""
 
-#: .\leave\views.py:2887
+#: .\leave\views.py:2871
 msgid "The leave allocation request can't be rejected"
 msgstr ""
 
-#: .\leave\views.py:2909
+#: .\leave\views.py:2893
 msgid "Leave allocation request deleted successfully.."
 msgstr ""
 
-#: .\leave\views.py:2912
+#: .\leave\views.py:2896
 msgid "Leave allocation request not found."
 msgstr ""
 
-#: .\leave\views.py:2916
+#: .\leave\views.py:2900
 msgid "Approved request cant't delete."
 msgstr ""
 
-#: .\leave\views.py:3008
+#: .\leave\views.py:2997
 msgid "{}'s leave request deleted."
 msgstr ""
 
-#: .\leave\views.py:3068
+#: .\leave\views.py:3062
 msgid "Leave request deleted."
 msgstr ""
 
-#: .\leave\views.py:3073
+#: .\leave\views.py:3067
 msgid "You cannot delete leave request with status {}."
 msgstr ""
 
@@ -10591,7 +10628,7 @@ msgstr ""
 #: .\payroll\templates\payroll\payslip\filter_payslips.html:43
 #: .\payroll\templates\payroll\payslip\generate_payslip_list.html:60
 #: .\payroll\templates\payroll\payslip\payslip_export_filter.html:60
-#: .\payroll\templates\payroll\payslip\payslip_table.html:48
+#: .\payroll\templates\payroll\payslip\payslip_table.html:46
 msgid "Batch"
 msgstr ""
 
@@ -11288,7 +11325,7 @@ msgstr ""
 #: .\payroll\templates\payroll\payslip\payslip_export_filter.html:27
 #: .\payroll\templates\payroll\payslip\payslips_empty.html:63
 #: .\payroll\templates\payroll\payslip\view_payslips.html:115
-#: .\templates\sidebar.html:384
+#: .\templates\sidebar.html:383
 msgid "Payslip"
 msgstr ""
 
@@ -11347,13 +11384,13 @@ msgstr ""
 
 #: .\payroll\templates\payroll\payslip\group_payslips.html:115
 #: .\payroll\templates\payroll\payslip\individual_payslip.html:30
-#: .\payroll\templates\payroll\payslip\payslip_table.html:111
+#: .\payroll\templates\payroll\payslip\payslip_table.html:109
 #: .\payroll\templates\payroll\payslip\view_payslips.html:234
 msgid "Send via mail"
 msgstr ""
 
 #: .\payroll\templates\payroll\payslip\group_payslips.html:119
-#: .\payroll\templates\payroll\payslip\payslip_table.html:115
+#: .\payroll\templates\payroll\payslip\payslip_table.html:113
 msgid "Are you sure you want to delete this payslip?"
 msgstr ""
 
@@ -11394,7 +11431,7 @@ msgstr ""
 
 #: .\payroll\templates\payroll\payslip\individual_payslip.html:193
 #: .\payroll\templates\payroll\payslip\individual_pdf.html:216
-#: .\templates\sidebar.html:392
+#: .\templates\sidebar.html:391
 msgid "Federal Tax"
 msgstr ""
 
@@ -11447,15 +11484,15 @@ msgstr ""
 msgid "Total Net Payable "
 msgstr ""
 
-#: .\payroll\templates\payroll\payslip\payslip_table.html:11
+#: .\payroll\templates\payroll\payslip\payslip_table.html:10
 msgid "Select All Payslips"
 msgstr ""
 
-#: .\payroll\templates\payroll\payslip\payslip_table.html:18
+#: .\payroll\templates\payroll\payslip\payslip_table.html:17
 msgid "Unselect All Payslips"
 msgstr ""
 
-#: .\payroll\templates\payroll\payslip\payslip_table.html:26
+#: .\payroll\templates\payroll\payslip\payslip_table.html:24
 #: .\payroll\templates\payroll\payslip\view_payslips.html:85
 msgid "Export Payslips"
 msgstr ""
@@ -11496,11 +11533,11 @@ msgid "Bulk Status Update"
 msgstr ""
 
 #: .\payroll\templates\payroll\tax\filing_status_empty.html:41
-#: .\payroll\templates\payroll\tax\filing_status_view.html:73
+#: .\payroll\templates\payroll\tax\filing_status_view.html:75
 msgid "No tax filing status has been recorded."
 msgstr ""
 
-#: .\payroll\templates\payroll\tax\filing_status_list.html:72
+#: .\payroll\templates\payroll\tax\filing_status_list.html:80
 msgid "Are you sure to delete this status ?"
 msgstr ""
 
@@ -11509,7 +11546,7 @@ msgstr ""
 msgid "Tax Bracket"
 msgstr ""
 
-#: .\payroll\templates\payroll\tax\tax_bracket_view.html:48
+#: .\payroll\templates\payroll\tax\tax_bracket_view.html:57
 msgid "Are you sure to delete this Tax bracket ?"
 msgstr ""
 
@@ -11581,35 +11618,35 @@ msgstr ""
 msgid "Payslip Saved"
 msgstr ""
 
-#: .\payroll\views\tax_views.py:62
+#: .\payroll\views\tax_views.py:61
 msgid "Filing status created successfully "
 msgstr ""
 
-#: .\payroll\views\tax_views.py:97
+#: .\payroll\views\tax_views.py:96
 msgid "Filing status updated successfully."
 msgstr ""
 
-#: .\payroll\views\tax_views.py:120
+#: .\payroll\views\tax_views.py:119
 msgid "Filing status successfully deleted."
 msgstr ""
 
-#: .\payroll\views\tax_views.py:122
+#: .\payroll\views\tax_views.py:121
 msgid "This filing status assigned to employees"
 msgstr ""
 
-#: .\payroll\views\tax_views.py:191 .\payroll\views\tax_views.py:222
+#: .\payroll\views\tax_views.py:190 .\payroll\views\tax_views.py:221
 msgid "The maximum income will be infinite"
 msgstr ""
 
-#: .\payroll\views\tax_views.py:194
+#: .\payroll\views\tax_views.py:193
 msgid "The tax bracket was created successfully."
 msgstr ""
 
-#: .\payroll\views\tax_views.py:226
+#: .\payroll\views\tax_views.py:225
 msgid "The tax bracket has been updated successfully."
 msgstr ""
 
-#: .\payroll\views\tax_views.py:249
+#: .\payroll\views\tax_views.py:248
 msgid "Tax bracket successfully deleted."
 msgstr ""
 
@@ -11629,7 +11666,7 @@ msgstr ""
 msgid "Contract deleted"
 msgstr ""
 
-#: .\payroll\views\views.py:113 .\payroll\views\views.py:1040
+#: .\payroll\views\views.py:113 .\payroll\views\views.py:1039
 msgid "Contract not found."
 msgstr ""
 
@@ -11641,34 +11678,34 @@ msgstr ""
 msgid "Payslip deleted"
 msgstr ""
 
-#: .\payroll\views\views.py:410 .\payroll\views\views.py:987
+#: .\payroll\views\views.py:410 .\payroll\views\views.py:986
 msgid "Payslip not found."
 msgstr ""
 
-#: .\payroll\views\views.py:541 .\payroll\views\views.py:630
+#: .\payroll\views\views.py:540 .\payroll\views\views.py:629
 msgid "No payslips generated for this month."
 msgstr ""
 
-#: .\payroll\views\views.py:656
+#: .\payroll\views\views.py:655
 msgid "No contracts ending this month"
 msgstr ""
 
-#: .\payroll\views\views.py:982
+#: .\payroll\views\views.py:981
 #, python-brace-format
 msgid "{employee} {period} payslip deleted."
 msgstr ""
 
-#: .\payroll\views\views.py:991
+#: .\payroll\views\views.py:990
 #, python-brace-format
 msgid "You cannot delete {payslip}"
 msgstr ""
 
-#: .\payroll\views\views.py:1037
+#: .\payroll\views\views.py:1036
 #, python-brace-format
 msgid "{name} deleted."
 msgstr ""
 
-#: .\payroll\views\views.py:1044
+#: .\payroll\views\views.py:1043
 #, python-brace-format
 msgid "You cannot delete {contract}"
 msgstr ""
@@ -11951,7 +11988,7 @@ msgstr ""
 #: .\pms\templates\okr\key_result\key_result_creation.html:93
 #: .\pms\templates\okr\objective_creation.html:47
 #: .\pms\templates\period\period_empty.html:26
-#: .\pms\templates\period\period_view.html:23 .\templates\sidebar.html:633
+#: .\pms\templates\period\period_view.html:23 .\templates\sidebar.html:632
 msgid "Period"
 msgstr ""
 
@@ -11963,7 +12000,7 @@ msgstr ""
 #: .\pms\templates\feedback\question_template\question_template_view.html:23
 #: .\pms\templates\feedback\question_template\question_template_view.html:92
 #: .\pms\templates\feedback\question_template\question_template_view.html:124
-#: .\templates\sidebar.html:641
+#: .\templates\sidebar.html:640
 msgid "Question Template"
 msgstr ""
 
@@ -12227,7 +12264,7 @@ msgstr ""
 
 #: .\pms\templates\okr\objective_creation.html:29
 #: .\pms\templates\okr\objective_detailed_view.html:11
-#: .\pms\templates\okr\objective_empty.html:14 .\templates\sidebar.html:618
+#: .\pms\templates\okr\objective_empty.html:14 .\templates\sidebar.html:617
 msgid "Objectives"
 msgstr ""
 
@@ -13456,9 +13493,9 @@ msgid "My Company"
 msgstr ""
 
 #: .\templates\sidebar.html:82 .\templates\sidebar.html:119
-#: .\templates\sidebar.html:218 .\templates\sidebar.html:354
-#: .\templates\sidebar.html:509 .\templates\sidebar.html:517
-#: .\templates\sidebar.html:611
+#: .\templates\sidebar.html:218 .\templates\sidebar.html:353
+#: .\templates\sidebar.html:508 .\templates\sidebar.html:516
+#: .\templates\sidebar.html:610
 msgid "Dashboard"
 msgstr ""
 
@@ -13478,43 +13515,43 @@ msgstr ""
 msgid "Candidate View"
 msgstr ""
 
-#: .\templates\sidebar.html:370
+#: .\templates\sidebar.html:369
 msgid "Allowance view"
 msgstr ""
 
-#: .\templates\sidebar.html:378
+#: .\templates\sidebar.html:377
 msgid "Deduction view"
 msgstr ""
 
-#: .\templates\sidebar.html:441
+#: .\templates\sidebar.html:440
 msgid "Attendance Requests"
 msgstr ""
 
-#: .\templates\sidebar.html:462
+#: .\templates\sidebar.html:461
 msgid "Late Come Early Out"
 msgstr ""
 
-#: .\templates\sidebar.html:469
+#: .\templates\sidebar.html:468
 msgid "My Attendance"
 msgstr ""
 
-#: .\templates\sidebar.html:545
+#: .\templates\sidebar.html:544
 msgid "Assigned Leaves"
 msgstr ""
 
-#: .\templates\sidebar.html:625
+#: .\templates\sidebar.html:624
 msgid "360 Feedback"
 msgstr ""
 
-#: .\templates\sidebar.html:682
+#: .\templates\sidebar.html:681
 msgid "Asset view"
 msgstr ""
 
-#: .\templates\sidebar.html:690
+#: .\templates\sidebar.html:689
 msgid "Request and Allocation"
 msgstr ""
 
-#: .\templates\sidebar.html:715
+#: .\templates\sidebar.html:714
 msgid "Help Desk"
 msgstr ""
 

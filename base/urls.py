@@ -560,7 +560,7 @@ urlpatterns = [
         name="r-work-type-select-filter",
     ),
     path(
-        "ticket-type-view",views.ticket_type_view,name="ticket-type-view"
+        "settings/ticket-type-view/",views.ticket_type_view,name="ticket-type-view"
     ),
     path(
         "ticket-type-create",views.ticket_type_create,name="ticket-type-create"
@@ -572,7 +572,7 @@ urlpatterns = [
         "ticket-type-delete/<int:t_type_id>",views.ticket_type_delete,name="ticket-type-delete"
     ),
     path(
-        "tag-view",views.tag_view,name="tag-view"
+        "settings/tag-view/",views.tag_view,name="tag-view"
     ),
     path(
         "tag-create",views.tag_create,name="tag-create"
