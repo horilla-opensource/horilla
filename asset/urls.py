@@ -108,4 +108,8 @@ urlpatterns = [
     path("asset-count-update", views.asset_count_update, name="asset-count-update"),
     path("add-asset-report/", views.add_asset_report, name="add-asset-report"),
     path("add-asset-report/<int:asset_id>", views.add_asset_report, name="add-asset-report"),
+    path("dashboard/", views.asset_dashboard, name="asset-dashboard"),
+    path("asset-available-chart/", views.asset_available_chart, name="asset-available-chart"),
+    path("asset-category-chart/", views.asset_category_chart, name="asset-category-chart"),
+
 ]

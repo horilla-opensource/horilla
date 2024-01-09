@@ -9,7 +9,7 @@ from urllib.parse import parse_qs
 import pandas as pd
 from django.db.models import ProtectedError
 from django.shortcuts import render, redirect
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.contrib import messages
 from django.core.paginator import Paginator
 from django.utils.translation import gettext_lazy as _
@@ -95,8 +95,11 @@ def add_asset_report(request,asset_id=None):
     if asset_id:
         asset = Asset.objects.get(id=asset_id)
         asset_report_form = AssetReportForm(initial={'asset_id':asset})
-        if request.user.employee_get != AssetAssignment.objects.get(asset_id=asset_id).assigned_to_employee_id or request.user.has_perm("asset.change_asset"):
-            return redirect(asset_request_alloaction_view)
+        if not request.GET.get("asset_list"):
+            if request.user.employee_get == AssetAssignment.objects.get(asset_id=asset_id, return_date__isnull=True).assigned_to_employee_id or  request.user.has_perm("asset.change_asset"):
+                pass
+            else:
+                return redirect(asset_request_alloaction_view)
     
     if request.method == 'POST':
         asset_report_form = AssetReportForm(request.POST, request.FILES)
@@ -1069,7 +1072,7 @@ def asset_batch_number_creation(request):
 
 
 @login_required
-@permission_required(perm="asset.add_assetlot")
+@permission_required(perm="asset.view_assetlot")
 def asset_batch_view(request):
     """
     View function to display details of all batch numbers.
@@ -1162,7 +1165,6 @@ def asset_batch_number_delete(request, batch_id):
 
 @login_required
 @hx_request_required
-@permission_required(perm="asset.delete_assetlot")
 def asset_batch_number_search(request):
     """
     View function to return search  data of asset batch number.
@@ -1223,3 +1225,76 @@ def delete_asset_category(request, cat_id):
     except:
         messages.error(request, _("Assets are located within this category."))
     return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+
+@login_required
+@permission_required(perm="asset.view_assetcategory")
+def asset_dashboard(request):
+    """
+    This method is used to render the dashboard of the asset module.
+    """
+    assets = Asset.objects.all()
+    asset_in_use = Asset.objects.filter(asset_status="In use")
+    asset_requests = AssetRequest.objects.filter(asset_request_status="Requested")
+    asset_allocations = AssetAssignment.objects.filter(asset_id__asset_status="In use")
+    context = {
+        "assets": assets,
+        "asset_requests": asset_requests,
+        "asset_in_use": asset_in_use,
+        "asset_allocations": asset_allocations,
+    }
+    return render(request,"asset/dashboard.html", context)
+
+
+@login_required
+@permission_required(perm="asset.view_assetcategory")
+def asset_available_chart(request):
+    """
+    This function returns the response for the available asset chart in the asset dashboard.
+    """
+    asset_available = Asset.objects.filter(asset_status="Available")
+    asset_unavailable = Asset.objects.filter(asset_status="Not-Available")
+    asset_in_use = Asset.objects.filter(asset_status="In use")
+
+    labels = ["In use", "Available", "Not-Available"]
+    dataset = [
+        {
+            "label": _("asset"),
+            "data": [len(asset_in_use),len(asset_available),len(asset_unavailable)],
+        },
+    ]
+    
+    response = {
+        "labels": labels,
+        "dataset": dataset,
+        "message": _("Oops!! No Asset found..."),
+    }
+    return JsonResponse(response)
+
+
+@login_required
+@permission_required(perm="asset.view_assetcategory")
+def asset_category_chart(request):
+    """
+    This function returns the response for the asset category chart in the asset dashboard.
+    """
+    asset_categories =AssetCategory.objects.all()
+    data = []
+    for asset_category in asset_categories:
+        category_count=0
+        category_count = len(asset_category.asset_set.filter(asset_status="In use"))
+        data.append(category_count)
+
+    labels = [category.asset_category_name for category in asset_categories]
+    dataset = [
+        {
+            "label": _("assets in use"),
+            "data": data,
+        },
+    ]
+    
+    response = {
+        "labels": labels,
+        "dataset": dataset,
+        "message": _("Oops!! No Asset found..."),
+    }
+    return JsonResponse(response)

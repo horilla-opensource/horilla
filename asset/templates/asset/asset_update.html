@@ -135,7 +135,7 @@
       <button 
         class=" oh-btn oh-btn--secondary oh-btn--shadow mt-3"
         onclick="event.preventDefault();event.stopPropagation()"
-        hx-get="{% url "add-asset-report" asset_form.instance.id %}"
+        hx-get="{% url "add-asset-report" asset_form.instance.id %}?asset_list=true"
         hx-target="#addAssetReportForm"
         data-toggle="oh-modal-toggle"
         data-target="#addAssetReport"
