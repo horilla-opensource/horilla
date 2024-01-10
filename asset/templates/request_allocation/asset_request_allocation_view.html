@@ -371,6 +371,31 @@
     </div>
 </div>
 
+<div
+  class="oh-modal"
+  id="assetFineModal"
+  role="dialog"
+  aria-labelledby="assetFineModal"
+  aria-hidden="true"
+  >
+    <div class="oh-modal__dialog">
+        <div class="oh-modal__dialog-header">
+            <button
+              type="button"
+              class="oh-modal_close--custom"
+              onclick="$('#assetFineModal').removeClass('oh-modal--show');"
+                >
+                <ion-icon
+                  name="close-outline"
+                  role="img"
+                  aria-label="close outline"
+                ></ion-icon>
+            </button>
+        </div>
+        <div class="oh-modal__dialog-body" id="assetFineModalBody"></div>
+    </div>
+</div>
+
 <!-- end  of  asset request modal start -->
 <script>
 $(document).ready(function () {

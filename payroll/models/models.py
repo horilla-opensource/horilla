@@ -13,6 +13,7 @@ from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 from django.db.models.signals import pre_save, pre_delete
 from django.http import QueryDict
+from asset.models import Asset
 from employee.models import EmployeeWorkInformation
 from employee.models import Employee, Department, JobPosition
 from base.models import Company, EmployeeShift, WorkType, JobRole
@@ -25,7 +26,6 @@ from attendance.models import (
     strtime_seconds,
 )
 from leave.models import LeaveRequest
-
 
 
 # Create your models here.
@@ -814,7 +814,7 @@ class Allowance(models.Model):
         Company, null=True, editable=False, on_delete=models.PROTECT
     )
     only_show_under_employee = models.BooleanField(default=False, editable=False)
-    is_loan = models.BooleanField(default=False,editable=False)
+    is_loan = models.BooleanField(default=False, editable=False)
     objects = HorillaCompanyManager()
 
     class Meta:
@@ -1109,12 +1109,12 @@ class Deduction(models.Model):
     only_show_under_employee = models.BooleanField(default=False, editable=False)
     objects = HorillaCompanyManager()
 
-    is_installment = models.BooleanField(default=False,editable=False)
+    is_installment = models.BooleanField(default=False, editable=False)
 
     def installment_payslip(self):
         payslip = Payslip.objects.filter(installment_ids=self).first()
         return payslip
-    
+
     def clean(self):
         super().clean()
 
@@ -1213,7 +1213,8 @@ class Payslip(models.Model):
     )
     sent_to_employee = models.BooleanField(null=True, default=False)
     objects = HorillaCompanyManager("employee_id__employee_work_info__company_id")
-    installment_ids = models.ManyToManyField(Deduction,editable=False)
+    installment_ids = models.ManyToManyField(Deduction, editable=False)
+
     def __str__(self) -> str:
         return f"Payslip for {self.employee_id} - Period: {self.start_date} to {self.end_date}"
 
@@ -1293,6 +1294,12 @@ class LoanAccount(models.Model):
     This modal is used to store the loan Account details
     """
 
+    loan_type = [
+        ("loan", "Loan"),
+        ("advanced_salary", "Advanced Salary"),
+        ("fine", "Penalty / Fine"),
+    ]
+    type = models.CharField(default="loan", choices=loan_type, max_length=15)
     title = models.CharField(max_length=20)
     employee_id = models.ForeignKey(
         Employee, on_delete=models.PROTECT, verbose_name=_("Employee")
@@ -1312,6 +1319,9 @@ class LoanAccount(models.Model):
     )
     apply_on = models.CharField(default="end_of_month", max_length=10, editable=False)
     settled = models.BooleanField(default=False)
+    asset_id = models.ForeignKey(
+        Asset, on_delete=models.PROTECT, null=True, editable=False
+    )
 
     def get_installments(self):
         loan_amount = self.loan_amount
@@ -1331,16 +1341,20 @@ class LoanAccount(models.Model):
     def delete(self, *args, **kwargs):
         self.deduction_ids.all().delete()
         self.allowance_id.delete()
-        if not Payslip.objects.filter(installment_ids__in=list(self.deduction_ids.values_list("id",flat=True))).exists():
+        if not Payslip.objects.filter(
+            installment_ids__in=list(self.deduction_ids.values_list("id", flat=True))
+        ).exists():
             super().delete(*args, **kwargs)
         return
-    
+
     def installment_ratio(self):
         total_installments = self.installments
-        installment_paid = Payslip.objects.filter(installment_ids__in = self.deduction_ids.all() ).count()
+        installment_paid = Payslip.objects.filter(
+            installment_ids__in=self.deduction_ids.all()
+        ).count()
         if not installment_paid:
             return 0
-        return (installment_paid/total_installments)*100
+        return (installment_paid / total_installments) * 100
 
 
 @receiver(post_save, sender=LoanAccount)
@@ -1349,7 +1363,7 @@ def create_installments(sender, instance, created, **kwargs):
     This is post save method, used to create initial stage for the recruitment
     """
     installments = []
-    if created:
+    if created and instance.asset_id is None:
         loan = Allowance()
         loan.amount = instance.loan_amount
         loan.title = instance.title
@@ -1373,7 +1387,10 @@ def create_installments(sender, instance, created, **kwargs):
             Deduction.objects.filter(id__in=deductions).delete()
 
             # Installment deductions
-            for installment_date, installment_amount in instance.get_installments().items():
+            for (
+                installment_date,
+                installment_amount,
+            ) in instance.get_installments().items():
                 installment = Deduction()
                 installment.title = instance.title
                 installment.include_active_employees = False

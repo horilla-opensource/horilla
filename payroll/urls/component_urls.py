@@ -70,12 +70,20 @@ urlpatterns = [
         component_views.hx_create_allowance,
         name="hx-create-allowance",
     ),
-    path("send-slip",component_views.send_slip,name="send-slip"),
-    path("add-bonus/",component_views.add_bonus,name="add-bonus"),
-    path("view-loan/",component_views.view_loans,name="view-loan"),
-    path("create-loan/",component_views.create_loan,name="create-loan"),
-    path("view-installments/",component_views.view_installments,name="view-installments"),
-    path("delete-loan/",component_views.delete_loan,name="delete-loan"),
-    path("search-loan/",component_views.search_loan,name="search-loan"),
-    
+    path("send-slip", component_views.send_slip, name="send-slip"),
+    path("add-bonus/", component_views.add_bonus, name="add-bonus"),
+    path("view-loan/", component_views.view_loans, name="view-loan"),
+    path("create-loan/", component_views.create_loan, name="create-loan"),
+    path(
+        "view-installments/",
+        component_views.view_installments,
+        name="view-installments",
+    ),
+    path("delete-loan/", component_views.delete_loan, name="delete-loan"),
+    path("search-loan/", component_views.search_loan, name="search-loan"),
+    path(
+        "asset-fine/",
+        component_views.asset_fine,
+        name="asset-fine",
+    ),
 ]

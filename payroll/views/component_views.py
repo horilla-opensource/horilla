@@ -15,6 +15,7 @@ from django.contrib import messages
 from django.utils.translation import gettext_lazy as _
 from django.http import HttpResponse
 import pandas as pd
+from asset.models import Asset
 from base.models import Company
 from employee.models import Employee, EmployeeWorkInformation
 from horilla.decorators import login_required, permission_required
@@ -885,7 +886,10 @@ def view_loans(request):
     return render(
         request,
         "payroll/loan/view_loan.html",
-        {"records": paginator_qry(records, request.GET.get("page")), "f": filter_instance},
+        {
+            "records": paginator_qry(records, request.GET.get("page")),
+            "f": filter_instance,
+        },
     )
 
 
@@ -932,7 +936,7 @@ def delete_loan(request):
     Delete loan
     """
     ids = request.GET.getlist("ids")
-    loans = LoanAccount.objects.filter(id__in=ids)
+    loans = LoanAccount.objects.filter(id__in=ids,settled=False)
     # This 👇 would'nt trigger the delete method in the model
     # loans.delete()
     for loan in loans:
@@ -952,5 +956,37 @@ def search_loan(request):
     return render(
         request,
         "payroll/loan/records.html",
-        {"records": paginator_qry(records, request.GET.get("page")), "filter_dict": data_dict,"pd":request.GET.urlencode()},
+        {
+            "records": paginator_qry(records, request.GET.get("page")),
+            "filter_dict": data_dict,
+            "pd": request.GET.urlencode(),
+        },
+    )
+
+
+@login_required
+@permission_required("payroll.add_loanaccount")
+def asset_fine(request):
+    """
+    Add asset fine method
+    """
+    asset_id = request.GET["asset_id"]
+    employee_id = request.GET["employee_id"]
+    asset = Asset.objects.get(id=asset_id)
+    employee = Employee.objects.get(id=employee_id)
+    form = forms.AssetFineForm()
+    if request.method == "POST":
+        form = forms.AssetFineForm(request.POST)
+        if form.is_valid():
+            instance = form.save(commit=False)
+            instance.employee_id = employee
+            instance.type = "fine"
+            instance.provided_date = date.today()
+            instance.asset_id = asset
+            instance.save()
+            messages.success(request,"Asset fine added")
+    return render(
+        request,
+        "payroll/asset_fine/form.html",
+        {"form": form, "asset_id": asset_id, "employee_id": employee_id},
     )

@@ -627,6 +627,9 @@ def asset_allocate_return(request, asset_id):
     """
 
     asset_return_form = AssetReturnForm()
+    asset_allocation = AssetAssignment.objects.filter(
+                    asset_id=asset_id, return_status__isnull=True
+                ).first()
     if request.method == "POST":
         asset_return_form = AssetReturnForm(request.POST)
 
@@ -667,6 +670,7 @@ def asset_allocate_return(request, asset_id):
                 response.content.decode("utf-8") + "<script>location.reload();</script>"
             )
     context = {"asset_return_form":asset_return_form,"asset_id":asset_id}
+    context["asset_alocation"] = asset_allocation
     return render(request, "asset/asset_return_form.html",context )
 
 

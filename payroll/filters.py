@@ -311,6 +311,7 @@ class LoanAccountFilter(FilterSet):
             "search_employee",
             "provided_date",
             "settled",
+            "type",
             "employee_id",
             "employee_id__employee_work_info__department_id",
             "employee_id__employee_work_info__job_position_id",

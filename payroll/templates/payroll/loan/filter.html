@@ -24,6 +24,10 @@
                   {{f.form.provided_date}}
                 </div>
                 <div class="oh-input-group">
+                  <label class="oh-label">{% trans "Type" %}</label>
+                  {{f.form.type}}
+                </div>
+                <div class="oh-input-group">
                   <label class="oh-label">{% trans "Reporting manager" %}</label>
                   {{f.form.employee_id__employee_work_info__reporting_manager_id}}
                 </div>
@@ -34,12 +38,12 @@
                   {{f.form.employee_id__employee_work_info__department_id}}
                 </div>
                 <div class="oh-input-group">
-                  <label class="oh-label">{% trans "Job position" %}</label>
-                  {{f.form.employee_id__employee_work_info__job_position_id}}
+                  <label class="oh-label">{% trans "Is settled" %}</label>
+                  {{f.form.settled}}
                 </div>
                 <div class="oh-input-group">
-                  <label class="oh-label">{% trans "Settled" %}</label>
-                  {{f.form.settled}}
+                  <label class="oh-label">{% trans "Job position" %}</label>
+                  {{f.form.employee_id__employee_work_info__job_position_id}}
                 </div>
               </div>
             </div>

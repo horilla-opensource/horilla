@@ -374,6 +374,7 @@ class LoanAccountForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.initial["installment_start_date"] = str(datetime.date.today())
         if self.instance.pk:
             self.verbose_name = self.instance.title
             fields_to_exclude = ["employee_id", "installment_start_date"]
@@ -383,3 +384,18 @@ class LoanAccountForm(ModelForm):
             for field in fields_to_exclude:
                 if field in self.fields:
                     del self.fields[field]
+
+
+class AssetFineForm(LoanAccountForm):
+    verbose_name = "Asset Fine"
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['loan_amount'].label = 'Fine Amount'
+        fields_to_exclude = ["employee_id", "provided_date","type"]
+        for field in fields_to_exclude:
+                if field in self.fields:
+                    del self.fields[field]
+        
+
+    pass
+    
