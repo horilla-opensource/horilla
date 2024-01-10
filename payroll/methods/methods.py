@@ -596,6 +596,5 @@ def save_payslip(**kwargs):
     instance.net_pay = round(kwargs["net_pay"], 2)
     instance.pay_head_data = kwargs["pay_data"]
     instance.save()
+    instance.installment_ids.set(kwargs["installments"])
     return instance
-
-

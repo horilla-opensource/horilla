@@ -1,0 +1,63 @@
+{% load i18n %}
+<div class="oh-wrapper oh-faq-cards">
+  {% include 'filter_tags.html' %}
+  {% for record in records %}
+    <div class="oh-faq-card">
+      <div class="text-danger d-flex flex-row-reverse">
+        <a href="{% url 'delete-loan' %}?ids={{ record.id }}" onclick="return confirm('Do you want to delete this record?')"><ion-icon class="text-danger" name="trash-outline"></ion-icon></a>
+        <a class="mr-2" hx-get="{% url 'create-loan' %}?instance_id={{ record.id }}" hx-target="#loanModalBody" data-toggle="oh-modal-toggle" data-target="#loanModal"><ion-icon class="text-dark" name="create-outline"></ion-icon></a>
+      </div>
+      <div class="oh-timeoff-modal__profile-content">
+        <div class="oh-profile mb-2">
+          <div class="oh-profile__avatar">
+            <img src="{{ record.employee_id.get_avatar }}" class="oh-profile__image me-2" alt="Mary Magdalene" />
+          </div>
+          <div class="oh-timeoff-modal__profile-info">
+            <span class="oh-timeoff-modal__user m-0 fw-bold">{{ record.employee_id }}</span>
+            <span class="oh-timeoff-modal__user m-0" style="font-size: 12px; color: #4d4a4a">{{ record.employee_id.get_department }} /{{ record.employee_id.get_job_position }}</span>
+            <span class="oh-timeoff-modal__user m-0" style="font-size: 12px; color: #4d4a4a">{{ record.provided_date }}</span>
+          </div>
+        </div>
+      </div>
+      <h3 class="oh-faq-card__title">{{ record.title }}</h3>
+      <div class="oh-recuritment__progress-bar">
+        <div class="oh-progress-bar__state" role="progressbar" aria-valuemax="100" style="width:{{ record.installment_ratio }}%"></div>
+      </div>
+      <p class="oh-faq-card__desc">{{ record.description }}.</p>
+      <a hx-get="{% url 'view-installments' %}?loan_id={{ record.id }}" hx-target="#viewInstallmentModalBody" data-target="#viewInstallmentModal" data-toggle="oh-modal-toggle" class="oh-btn oh-btn--secondary oh-btn--block">{% trans 'Installmetns' %}</a>
+    </div>
+  {% endfor %}
+</div>
+<div class="oh-wrapper w-100">
+  <div class="oh-pagination">
+    <span class="oh-pagination__page" data-toggle="modal" data-target="#addEmployeeModal">{% trans 'Page' %} {{ records.number }} {% trans 'of' %} {{ records.paginator.num_pages }}.</span>
+
+    <nav class="oh-pagination__nav">
+      <div class="oh-pagination__input-container me-3">
+        <span class="oh-pagination__label me-1">{% trans 'Page' %}</span>
+
+        <input type="number" name="page" class="oh-pagination__input" value="{{ records.number }}" hx-get="{% url 'search-loan' %}?{{ pd }}" hx-target="#loanContainer" min="1" />
+        <span class="oh-pagination__label">{% trans 'of' %} {{ records.paginator.num_pages }}</span>
+      </div>
+
+      <ul class="oh-pagination__items">
+        {% if records.has_previous %}
+          <li class="oh-pagination__item oh-pagination__item--wide">
+            <a hx-target="#loanContainer" hx-get="{% url 'search-loan' %}?{{ pd }}&page=1" class="oh-pagination__link">{% trans 'First' %}</a>
+          </li>
+          <li class="oh-pagination__item oh-pagination__item--wide">
+            <a hx-target="#loanContainer" hx-get="{% url 'search-loan' %}?{{ pd }}&page={{ records.previous_page_number }}" class="oh-pagination__link">{% trans 'Previous' %}</a>
+          </li>
+        {% endif %}
+        {% if records.has_next %}
+          <li class="oh-pagination__item oh-pagination__item--wide">
+            <a hx-target="#loanContainer" hx-get="{% url 'search-loan' %}?{{ pd }}&page={{ records.next_page_number }}" class="oh-pagination__link">{% trans 'Next' %}</a>
+          </li>
+          <li class="oh-pagination__item oh-pagination__item--wide">
+            <a hx-target="#loanContainer" hx-get="{% url 'search-loan' %}?{{ pd }}&page={{ records.paginator.num_pages }}" class="oh-pagination__link">{% trans 'Last' %}</a>
+          </li>
+        {% endif %}
+      </ul>
+    </nav>
+  </div>
+</div>

@@ -15,7 +15,7 @@ from employee.models import Employee
 from employee.filters import EmployeeFilter
 from payroll.models import tax_models as models
 from payroll.widgets import component_widgets as widget
-from payroll.models.models import Allowance, Contract
+from payroll.models.models import Allowance, Contract, LoanAccount, Payslip
 import payroll.models.models
 from base.methods import reload_queryset
 
@@ -315,9 +315,10 @@ class BonusForm(Form):
     """
     Bonus Creating Form
     """
+
     title = forms.CharField(max_length=100)
     date = forms.DateField(widget=forms.DateInput())
-    employee_id = forms.IntegerField(label="Employee",widget=forms.HiddenInput())
+    employee_id = forms.IntegerField(label="Employee", widget=forms.HiddenInput())
     amount = forms.DecimalField(label="Amount")
 
     def save(self, commit=True):
@@ -346,3 +347,39 @@ class BonusForm(Form):
         self.fields["date"].widget = forms.DateInput(
             attrs={"type": "date", "class": "oh-input w-100"}
         )
+
+
+class LoanAccountForm(ModelForm):
+    """
+    LoanAccountForm
+    """
+
+    verbose_name = "Loan / Advanced Sarlary"
+
+    class Meta:
+        model = LoanAccount
+        fields = "__all__"
+        widgets = {
+            "provided_date": forms.DateTimeInput(attrs={"type": "date"}),
+            "installment_start_date": forms.DateTimeInput(attrs={"type": "date"}),
+        }
+
+    def as_p(self):
+        """
+        Render the form fields as HTML table rows with Bootstrap styling.
+        """
+        context = {"form": self}
+        table_html = render_to_string("common_form.html", context)
+        return table_html
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.instance.pk:
+            self.verbose_name = self.instance.title
+            fields_to_exclude = ["employee_id", "installment_start_date"]
+            if  Payslip.objects.filter(installment_ids__in=list(self.instance.deduction_ids.values_list("id",flat=True))).exists():
+                fields_to_exclude = fields_to_exclude + ["loan_amount", "installments"]
+            self.initial["provided_date"] = str(self.instance.provided_date)
+            for field in fields_to_exclude:
+                if field in self.fields:
+                    del self.fields[field]

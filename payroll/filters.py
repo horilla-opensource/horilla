@@ -12,7 +12,13 @@ from django import forms
 from employee.models import Employee
 from horilla.filters import filter_by_name
 from base.filters import FilterSet
-from payroll.models.models import Allowance, Contract, Deduction, FilingStatus
+from payroll.models.models import (
+    Allowance,
+    Contract,
+    Deduction,
+    FilingStatus,
+    LoanAccount,
+)
 from payroll.models.models import Payslip
 
 
@@ -277,7 +283,7 @@ class PayslipFilter(FilterSet):
             "deduction__gte",
             "net_pay__lte",
             "net_pay__gte",
-            "sent_to_employee"
+            "sent_to_employee",
         ]
 
     def __init__(self, data=None, queryset=None, *, request=None, prefix=None):
@@ -285,19 +291,47 @@ class PayslipFilter(FilterSet):
         for field in self.form.fields.keys():
             self.form.fields[field].widget.attrs["id"] = f"{uuid.uuid4()}"
 
+
+class LoanAccountFilter(FilterSet):
+    """
+    LoanAccountFilter
+    """
+
+    search = django_filters.CharFilter(field_name="title", lookup_expr="icontains")
+    search_employee = django_filters.CharFilter(method=filter_by_name)
+    provided_date = django_filters.DateFilter(
+        widget=forms.DateInput(attrs={"type": "date"}),
+        field_name="provided_date",
+    )
+
+    class Meta:
+        model = LoanAccount
+        fields = [
+            "search",
+            "search_employee",
+            "provided_date",
+            "settled",
+            "employee_id",
+            "employee_id__employee_work_info__department_id",
+            "employee_id__employee_work_info__job_position_id",
+            "employee_id__employee_work_info__reporting_manager_id",
+        ]
+
+
 class ContractReGroup:
     """
     Class to keep the field name for group by option
     """
+
     fields = [
-        ("","select"),
-        ("employee_id","Employee"),
-        ("employee_id.employee_work_info.job_position_id","Job Position"),
-        ("employee_id.employee_work_info.department_id","Department"),
-        ("contract_status","Status"),
-        ("employee_id.employee_work_info.shift_id","Shift"),
-        ("employee_id.employee_work_info.work_type_id","Work Type"),
-        ("employee_id.employee_work_info.job_role_id","Job Role"),
-        ("employee_id.employee_work_info.reporting_manager_id","Reporting Manager"),
-        ("employee_id.employee_work_info.company_id","Company"),
+        ("", "select"),
+        ("employee_id", "Employee"),
+        ("employee_id.employee_work_info.job_position_id", "Job Position"),
+        ("employee_id.employee_work_info.department_id", "Department"),
+        ("contract_status", "Status"),
+        ("employee_id.employee_work_info.shift_id", "Shift"),
+        ("employee_id.employee_work_info.work_type_id", "Work Type"),
+        ("employee_id.employee_work_info.job_role_id", "Job Role"),
+        ("employee_id.employee_work_info.reporting_manager_id", "Reporting Manager"),
+        ("employee_id.employee_work_info.company_id", "Company"),
     ]

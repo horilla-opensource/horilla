@@ -1,0 +1,26 @@
+{% extends 'index.html' %}
+{% block content %}
+  {% load i18n %}
+  {% include 'payroll/loan/nav.html' %}
+  <div id="loanContainer">
+    {% include 'payroll/loan/records.html' %}
+  </div>
+  <div class="oh-modal" id="loanModal" role="dialog" aria-hidden="true">
+    <div class="oh-modal__dialog" style="max-width: 550px">
+      <div class="oh-modal__dialog-header">
+        <button type="button" class="oh-modal__close" aria-label="Close"><ion-icon name="close-outline"></ion-icon></button>
+      </div>
+
+      <div class="oh-modal__dialog-body" id="loanModalBody"></div>
+    </div>
+  </div>
+  <div class="oh-modal" id="viewInstallmentModal" role="dialog" aria-hidden="true">
+    <div class="oh-modal__dialog" style="max-width: 550px">
+      <div class="oh-modal__dialog-header">
+        <button type="button" class="oh-modal__close" aria-label="Close"><ion-icon name="close-outline"></ion-icon></button>
+      </div>
+
+      <div class="oh-modal__dialog-body" id="viewInstallmentModalBody"></div>
+    </div>
+  </div>
+{% endblock %}

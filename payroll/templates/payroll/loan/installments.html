@@ -1,0 +1,45 @@
+{% load i18n %}
+<div class="oh-timeoff-modal__profile-content">
+  <div class="oh-profile mb-2">
+    <div class="oh-profile__avatar">
+      <img src="{{ loan.employee_id.get_avatar }}" class="oh-profile__image me-2" />
+    </div>
+    <div class="oh-timeoff-modal__profile-info">
+      <span class="oh-timeoff-modal__user m-0 fw-bold">{{ loan.employee_id }}</span>
+      <span class="oh-timeoff-modal__user m-0" style="font-size: 12px; color: #4d4a4a">{{ loan.employee_id.get_department }} /{{ loan.employee_id.get_job_position }}</span>
+      <span class="oh-timeoff-modal__user m-0" style="font-size: 12px; color: #4d4a4a">{{ record.provided_date }}</span>
+    </div>
+  </div>
+</div>
+<h3 class="oh-faq-card__title">
+  {{loan.title}}
+</h3>
+<div class="oh-sticky-table__table mt-3">
+    <div class="oh-sticky-table__thead">
+      <div class="oh-sticky-table__tr">
+        <div class="oh-sticky-table__th" align="center" style="width: 50px;">{% trans "S/n" %}</div>
+        <div class="oh-sticky-table__th" align="center" style="width: 80px;">{% trans "One Time Date" %}</div>
+        <div class="oh-sticky-table__th" align="center" style="width: 80px;">{% trans "Amount" %}</div>
+        <div class="oh-sticky-table__th" align="center" style="width: 60px;">{% trans "Status" %}</div>
+      </div>
+    </div>
+    <div class="oh-sticky-table__tbody">
+      {% for deduction in installments %}
+        <div class="oh-sticky-table__tr">
+          <div class="oh-sticky-table__td" align="center">{{ forloop.counter }}</div>
+          <div class="oh-sticky-table__td dateformat_changer" align="center">{{ deduction.one_time_date }}</div>
+          <div class="oh-sticky-table__td" align="center">{{ deduction.amount|floatformat:2 }}</div>
+          <div class="oh-sticky-table__td" align="center">
+            {% if deduction.installment_payslip %}
+            <span title="Installment paid, Click to view">
+              <a href="{% url "view-created-payslip" deduction.installment_payslip.id %}">
+                ✅
+              </a>
+            </span>
+            {% endif %}
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+  

@@ -22,7 +22,7 @@ from horilla.settings import EMAIL_HOST_USER
 from base.methods import get_key_instances
 from base.methods import closest_numbers
 import payroll.models.models
-from payroll.models.models import Allowance, Deduction, Payslip
+from payroll.models.models import Allowance, Deduction, LoanAccount, Payslip
 from payroll.methods.payslip_calc import (
     calculate_allowance,
     calculate_gross_pay,
@@ -33,7 +33,12 @@ from payroll.methods.payslip_calc import (
     calculate_pre_tax_deduction,
     calculate_tax_deduction,
 )
-from payroll.filters import AllowanceFilter, DeductionFilter, PayslipFilter
+from payroll.filters import (
+    AllowanceFilter,
+    DeductionFilter,
+    LoanAccountFilter,
+    PayslipFilter,
+)
 from payroll.forms import component_forms as forms
 from payroll.methods.payslip_calc import (
     calculate_net_pay_deduction,
@@ -118,6 +123,10 @@ def payroll_calculation(employee, start_date, end_date):
     pretax_deductions = calculate_pre_tax_deduction(**kwargs)
     post_tax_deductions = calculate_post_tax_deduction(**kwargs)
 
+    installments = (
+        pretax_deductions["installments"] | post_tax_deductions["installments"]
+    )
+
     taxable_gross_pay = calculate_taxable_gross_pay(**kwargs)
     tax_deductions = calculate_tax_deduction(**kwargs)
     federal_tax = calculate_taxable_amount(**kwargs)
@@ -197,6 +206,7 @@ def payroll_calculation(employee, start_date, end_date):
     json_data = json.dumps(data_to_json)
 
     payslip_data["json_data"] = json_data
+    payslip_data["installments"] = installments
     return payslip_data
 
 
@@ -497,6 +507,7 @@ def generate_payslip(request):
                 data["deduction"] = payslip["total_deductions"]
                 data["net_pay"] = payslip["net_pay"]
                 data["pay_data"] = json.loads(payslip["json_data"])
+                data["installments"] = payslip["installments"]
                 instance = save_payslip(**data)
                 instances.append(instance)
             messages.success(request, f"{employees.count()} payslip saved as draft")
@@ -558,6 +569,7 @@ def create_payslip(request):
                 data["deduction"] = payslip_data["total_deductions"]
                 data["net_pay"] = payslip_data["net_pay"]
                 data["pay_data"] = json.loads(payslip_data["json_data"])
+                data["installments"] = payslip_data["installments"]
                 payslip_data["instance"] = save_payslip(**data)
                 form = forms.PayslipForm()
                 messages.success(request, _("Payslip Saved"))
@@ -849,9 +861,6 @@ def send_slip(request):
 @login_required
 @permission_required("payroll.add_allowance")
 def add_bonus(request):
-    print("========================================")
-    print(request.GET)
-    print("========================================")
     employee_id = request.GET["employee_id"]
     form = forms.BonusForm(initial={"employee_id": employee_id})
     if request.method == "POST":
@@ -860,4 +869,88 @@ def add_bonus(request):
             form.save()
             messages.success(request, "Bonus Added")
             return HttpResponse("<script>window.location.reload()</script>")
-    return render(request, "payroll/bonus/form.html", {"form": form,"employee_id":employee_id})
+    return render(
+        request, "payroll/bonus/form.html", {"form": form, "employee_id": employee_id}
+    )
+
+
+@login_required
+@permission_required("payroll.view_loanaccount")
+def view_loans(request):
+    """
+    This method is used to render template to disply all the loan records
+    """
+    records = LoanAccount.objects.all()
+    filter_instance = LoanAccountFilter()
+    return render(
+        request,
+        "payroll/loan/view_loan.html",
+        {"records": paginator_qry(records, request.GET.get("page")), "f": filter_instance},
+    )
+
+
+@login_required
+@permission_required("payroll.add_loanaccount")
+def create_loan(request):
+    """
+    This method is used to create and update the loan instance
+    """
+    instance_id = eval(str(request.GET.get("instance_id")))
+    instance = LoanAccount.objects.filter(id=instance_id).first()
+    form = forms.LoanAccountForm(instance=instance)
+    if request.method == "POST":
+        form = forms.LoanAccountForm(request.POST, instance=instance)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Loan created/updated")
+            return HttpResponse("<script>window.location.reload()</script>")
+    return render(
+        request, "payroll/loan/form.html", {"form": form, "instance_id": instance_id}
+    )
+
+
+@login_required
+@permission_required("payroll.view_loanaccount")
+def view_installments(request):
+    """
+    View install ments
+    """
+    loan_id = request.GET["loan_id"]
+    loan = LoanAccount.objects.get(id=loan_id)
+    installments = loan.deduction_ids.all()
+    return render(
+        request,
+        "payroll/loan/installments.html",
+        {"installments": installments, "loan": loan},
+    )
+
+
+@login_required
+@permission_required("payroll.delete_loanaccount")
+def delete_loan(request):
+    """
+    Delete loan
+    """
+    ids = request.GET.getlist("ids")
+    loans = LoanAccount.objects.filter(id__in=ids)
+    # This 👇 would'nt trigger the delete method in the model
+    # loans.delete()
+    for loan in loans:
+        loan.delete()
+    messages.success(request, "Loan account deleted")
+    return redirect(view_loans)
+
+
+@login_required
+@permission_required("payroll.view_loanaccount")
+def search_loan(request):
+    """
+    Search loan method
+    """
+    records = LoanAccountFilter(request.GET).qs
+    data_dict = parse_qs(request.GET.urlencode())
+    return render(
+        request,
+        "payroll/loan/records.html",
+        {"records": paginator_qry(records, request.GET.get("page")), "filter_dict": data_dict,"pd":request.GET.urlencode()},
+    )
