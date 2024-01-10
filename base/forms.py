@@ -17,7 +17,7 @@ from django.utils.translation import gettext as _
 from django.utils.translation import gettext_lazy as _trans
 from django.template.loader import render_to_string
 from employee.filters import EmployeeFilter
-from employee.models import Employee
+from employee.models import Employee, EmployeeTag
 from base.models import (
     Company,
     Department,
@@ -38,6 +38,7 @@ from base.models import (
     Tags,
 )
 from base.methods import reload_queryset
+from horilla_audit.models import AuditTag
 from horilla_widgets.widgets.horilla_multi_select_field import HorillaMultiSelectField
 from horilla_widgets.widgets.select_widgets import HorillaMultiSelectWidget
 
@@ -1495,9 +1496,10 @@ class TagsForm(ModelForm):
             'objects',
         )
 
-class TagsForm(ModelForm):
+
+class EmployeeTagForm(ModelForm):
     """
-    Tags form
+    Employee Tags form
     """
 
     class Meta:
@@ -1505,15 +1507,26 @@ class TagsForm(ModelForm):
         Meta class for additional options
         """
 
-        model = Tags
+        model = EmployeeTag
         fields = "__all__"
         widgets = {
             
             'color':TextInput(attrs={'type':'color','style':'height:50px'})
         }
-        exclude = (
-            'objects',
-        )
+
+
+class AuditTagForm(ModelForm):
+    """
+    Audit Tags form
+    """
+
+    class Meta:
+        """
+        Meta class for additional options
+        """
+
+        model = AuditTag
+        fields = "__all__"
 
 
 

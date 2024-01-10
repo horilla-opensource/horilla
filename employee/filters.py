@@ -84,6 +84,7 @@ class EmployeeFilter(FilterSet):
             "employee_work_info__reporting_manager_id",
             "employee_work_info__company_id",
             "employee_work_info__shift_id",
+            "employee_work_info__tags"
         ]
 
     def not_in_yet_func(self, queryset, _, value):

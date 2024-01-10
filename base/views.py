@@ -21,6 +21,7 @@ from django.contrib.auth.models import Group, User, Permission
 from attendance.forms import AttendanceValidationConditionForm
 from attendance.models import AttendanceValidationCondition
 from django.views.decorators.csrf import csrf_exempt
+from horilla_audit.models import AuditTag
 from notifications.signals import notify
 from horilla.decorators import (
     delete_permission,
@@ -29,16 +30,18 @@ from horilla.decorators import (
     manager_can_enter,
 )
 from horilla.settings import EMAIL_HOST_USER
-from employee.models import Employee, EmployeeWorkInformation
+from employee.models import Employee, EmployeeTag, EmployeeWorkInformation
 from base.decorators import (
     shift_request_change_permission,
     work_type_request_change_permission,
 )
 from base.methods import closest_numbers, export_data
 from base.forms import (
+    AuditTagForm,
     CompanyForm,
     DepartmentForm,
     DynamicMailConfForm,
+    EmployeeTagForm,
     JobPositionForm,
     JobRoleForm,
     EmployeeShiftForm,
@@ -3594,10 +3597,12 @@ def tag_view(request):
     This method is used to show Ticket type
     """
     tags = Tags.objects.all()
+    employeetags = EmployeeTag.objects.all()
+    audittags = AuditTag.objects.all()
     return render(
         request,
         "base/tags/tags.html",
-        {"tags":tags}
+        {"tags":tags, 'employeetags': employeetags, 'audittags': audittags }
     )
 
 @login_required
@@ -3647,5 +3652,107 @@ def tag_update(request,tag_id):
 @login_required
 def tag_delete(request,tag_id):
     Tags.objects.get(id=tag_id).delete()
+    messages.success(request, _("Tag has been deleted successfully!"))
+    return redirect(tag_view)
+
+
+@login_required
+def employee_tag_create(request):
+    """
+    This method renders form and template to create Ticket type
+    """
+    form = EmployeeTagForm()
+    if request.method == "POST":
+        form = EmployeeTagForm(request.POST)
+        if form.is_valid():
+            form.save()
+            form = EmployeeTagForm()
+            messages.success(request, _("Tag has been created successfully!"))
+            return HttpResponse("<script>window.location.reload()</script>")
+    return render(
+        request,
+        "base/employee_tag/employee_tag_form.html",
+        {
+            "form": form,
+        },
+    )
+
+@login_required
+def employee_tag_update(request,tag_id):
+    """
+    This method renders form and template to create Ticket type
+    """
+    tag = EmployeeTag.objects.get(id=tag_id)
+    form = EmployeeTagForm(instance=tag)
+    if request.method == "POST":
+        form = EmployeeTagForm(request.POST,instance=tag)
+        if form.is_valid():
+            form.save()
+            form = EmployeeTagForm()
+            messages.success(request, _("Tag has been updated successfully!"))
+            return HttpResponse("<script>window.location.reload()</script>")
+    return render(
+        request,
+        "base/employee_tag/employee_tag_form.html",
+        {
+            "form": form,
+            "tag_id":tag_id
+        },
+    )
+
+@login_required
+def employee_tag_delete(request,tag_id):
+    EmployeeTag.objects.get(id=tag_id).delete()
+    messages.success(request, _("Tag has been deleted successfully!"))
+    return redirect(tag_view)
+
+
+@login_required
+def audit_tag_create(request):
+    """
+    This method renders form and template to create Ticket type
+    """
+    form = AuditTagForm()
+    if request.method == "POST":
+        form = AuditTagForm(request.POST)
+        if form.is_valid():
+            form.save()
+            form = AuditTagForm()
+            messages.success(request, _("Tag has been created successfully!"))
+            return HttpResponse("<script>window.location.reload()</script>")
+    return render(
+        request,
+        "base/audit_tag/audit_tag_form.html",
+        {
+            "form": form,
+        },
+    )
+
+@login_required
+def audit_tag_update(request,tag_id):
+    """
+    This method renders form and template to create Ticket type
+    """
+    tag = AuditTag.objects.get(id=tag_id)
+    form = AuditTagForm(instance=tag)
+    if request.method == "POST":
+        form = AuditTagForm(request.POST,instance=tag)
+        if form.is_valid():
+            form.save()
+            form = AuditTagForm()
+            messages.success(request, _("Tag has been updated successfully!"))
+            return HttpResponse("<script>window.location.reload()</script>")
+    return render(
+        request,
+        "base/audit_tag/audit_tag_form.html",
+        {
+            "form": form,
+            "tag_id":tag_id
+        },
+    )
+
+@login_required
+def audit_tag_delete(request,tag_id):
+    AuditTag.objects.get(id=tag_id).delete()
     messages.success(request, _("Tag has been deleted successfully!"))
     return redirect(tag_view)

@@ -5,13 +5,13 @@
 			<div class="oh-sticky-table__tr">
 				<div class="oh-sticky-table__th">{% trans "Title" %}</div>
                 <div class="oh-sticky-table__th">{% trans "Color" %}</div>
-				{% if perms.base.delete_tags or perms.base.delete_tags %} 
+				{% if perms.employee.delete_employeetag or perms.employee.delete_employeetag %} 
 					<div class="oh-sticky-table__th">{% trans "Actions" %}</div>
 				{% endif %}
 			</div>
 		</div>
 		<div class="oh-sticky-table__tbody">
-			{% for tag in tags %}
+			{% for tag in employeetags %}
 			<div class="oh-sticky-table__tr" draggable="true">
 				<div class="oh-sticky-table__td">{{tag}}</div>
                 <div class="oh-sticky-table__td">
@@ -23,15 +23,15 @@
                         display: inline-block;"
                     ></span>
                 </div>
-				{% if perms.base.delete_tags or perms.base.delete_tags %} 
+				{% if perms.employee.delete_employeetag or perms.employee.delete_employeetag %} 
 					<div class="oh-sticky-table__td">
 						<div class="oh-btn-group">
-							{% if perms.base.change_tags %}
+							{% if perms.employee.change_employeetag %}
 							<a
-								hx-get="{% url 'tag-update' tag.id %}" 
-								hx-target="#tagEditForm"
+								hx-get="{% url 'employee-tag-update' tag.id %}" 
+								hx-target="#emptagEditForm"
 								data-toggle="oh-modal-toggle"
-								data-target="#tagEditModal"
+								data-target="#emptagEditModal"
 								type="button"
 								class="oh-btn oh-btn--light-bkg w-50"
 								title="{% trans 'Edit' %}"
@@ -39,11 +39,11 @@
 								<ion-icon name="create-outline"></ion-icon
 							></a>
 							{% endif %} 
-							{% if perms.base.delete_tags %} 
+							{% if perms.employee.delete_employeetag %} 
 							<form 
-								action="{% url 'tag-delete' tag.id %}"  
+								action="{% url 'employee-tag-delete' tag.id %}"  
 								class="w-50" 
-								onsubmit="return confirm('{% trans "Are you sure you want to delete this tag ?" %}');" 
+								onsubmit="return confirm('{% trans "Are you sure you want to delete this employee tag ?" %}');" 
 								method='post'> 
 								{% csrf_token %}
 								<button

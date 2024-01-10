@@ -820,6 +820,7 @@ def employee_view_update(request, obj_id, **kwargs):
                     instance = work_form.save(commit=False)
                     instance.employee_id = employee
                     instance.save()
+                    instance.tags.set(request.POST.getlist("tags"))
                     notify.send(
                         request.user.employee_get,
                         recipient=instance.employee_id.employee_user_id,

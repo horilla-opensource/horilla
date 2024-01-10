@@ -1,10 +1,83 @@
 {% extends 'settings.html' %}
 {% load i18n %}
 {% block settings %}
+
+<!-- ******************* EMPLOYEE TAGS ******************* -->
+
+<div class="oh-inner-sidebar-content">
+    {% if perms.employee.view_employeetag %}
+        <div class="oh-inner-sidebar-content__header d-flex justify-content-between align-items-center">
+            <h2 class="oh-inner-sidebar-content__title">{% trans "Employee Tags" %}</h2>
+			{% if perms.employee.add_employeetag %}
+				<button
+					class="oh-btn oh-btn--secondary oh-btn--shadow"
+					data-toggle="oh-modal-toggle"
+					data-target="#emptagModal"
+					hx-get="{% url 'employee-tag-create' %}" 
+					hx-target="#emptagForm"
+				>
+					<ion-icon name="add-outline" class="me-1"></ion-icon>
+					{% trans "Create" %}
+				</button>
+			{% endif %}
+        </div>
+        {% include 'base/employee_tag/employee_tag_view.html' %}     
+    {% endif %}
+
+</div>
+
+
+<!-- start of create modal -->
+<div
+	class="oh-modal"
+	id="emptagModal"
+	role="dialog"
+	aria-labelledby="emptagModal"
+	aria-hidden="true"
+>
+	<div class="oh-modal__dialog">
+		<div class="oh-modal__dialog-header">
+			<h2 class="oh-modal__dialog-title" id="createModalTitle">
+				{% trans "Create Employee Tag" %}
+			</h2>
+			<button class="oh-modal__close" aria-label="Close">
+				<ion-icon name="close-outline"></ion-icon>
+			</button>
+		</div>
+		<div class="oh-modal__dialog-body" id="emptagForm"></div>
+	</div>
+</div>
+<!-- end of create modal -->
+<!-- start of edit modal -->
+<div
+	class="oh-modal"
+	id="emptagEditModal"
+	role="dialog"
+	aria-labelledby="emptagEditModal"
+	aria-hidden="true"
+>
+	<div class="oh-modal__dialog">
+		<div class="oh-modal__dialog-header">
+			<h2 class="oh-modal__dialog-title" id="editModaltitle">
+				{% trans "Employee Tag Update" %}
+			</h2>
+			<button class="oh-modal__close" aria-label="Close">
+				<ion-icon name="close-outline"></ion-icon>
+			</button>
+		</div>
+		<div class="oh-modal__dialog-body" id="emptagEditForm"></div>
+	</div>
+</div>
+<!-- end of edit modal -->
+
+
+
+<!-- ******************* HELPDESK TAGS ******************* -->
+
 <div class="oh-inner-sidebar-content">
     {% if perms.base.view_tags %}
         <div class="oh-inner-sidebar-content__header d-flex justify-content-between align-items-center">
-            <h2 class="oh-inner-sidebar-content__title">{% trans "Tags" %}</h2>
+            <h2 class="oh-inner-sidebar-content__title">{% trans "Helpdesk Tags" %}</h2>
 			{% if perms.base.add_tags %}
 				<button
 					class="oh-btn oh-btn--secondary oh-btn--shadow"
@@ -23,7 +96,6 @@
 
 </div>
 
-<!-- start of modals -->
 
 <!-- start of create modal -->
 <div
@@ -36,7 +108,7 @@
 	<div class="oh-modal__dialog">
 		<div class="oh-modal__dialog-header">
 			<h2 class="oh-modal__dialog-title" id="createModalTitle">
-				{% trans "Create Tag" %}
+				{% trans "Create Helpdesk Tag" %}
 			</h2>
 			<button class="oh-modal__close" aria-label="Close">
 				<ion-icon name="close-outline"></ion-icon>
@@ -57,7 +129,7 @@
 	<div class="oh-modal__dialog">
 		<div class="oh-modal__dialog-header">
 			<h2 class="oh-modal__dialog-title" id="editModaltitle">
-				{% trans "Tag Update" %}
+				{% trans "Helpdesk Tag Update" %}
 			</h2>
 			<button class="oh-modal__close" aria-label="Close">
 				<ion-icon name="close-outline"></ion-icon>
@@ -67,5 +139,74 @@
 	</div>
 </div>
 <!-- end of edit modal -->
-<!-- end of modals -->
+
+
+<!-- ******************* AUDIT TAGS ******************* -->
+
+<div class="oh-inner-sidebar-content">
+    {% if perms.horilla_audit.view_audittag %}
+        <div class="oh-inner-sidebar-content__header d-flex justify-content-between align-items-center">
+            <h2 class="oh-inner-sidebar-content__title">{% trans "Audit Tags" %}</h2>
+			{% if perms.horilla_audit.add_audittag %}
+				<button
+					class="oh-btn oh-btn--secondary oh-btn--shadow"
+					data-toggle="oh-modal-toggle"
+					data-target="#audittagModal"
+					hx-get="{% url 'audit-tag-create' %}" 
+					hx-target="#audittagForm"
+				>
+					<ion-icon name="add-outline" class="me-1"></ion-icon>
+					{% trans "Create" %}
+				</button>
+			{% endif %}
+        </div>
+        {% include 'base/audit_tag/audit_tag_view.html' %}     
+    {% endif %}
+
+</div>
+
+
+<!-- start of create modal -->
+<div
+	class="oh-modal"
+	id="audittagModal"
+	role="dialog"
+	aria-labelledby="audittagModal"
+	aria-hidden="true"
+>
+	<div class="oh-modal__dialog">
+		<div class="oh-modal__dialog-header">
+			<h2 class="oh-modal__dialog-title" id="createModalTitle">
+				{% trans "Create Audit Tag" %}
+			</h2>
+			<button class="oh-modal__close" aria-label="Close">
+				<ion-icon name="close-outline"></ion-icon>
+			</button>
+		</div>
+		<div class="oh-modal__dialog-body" id="audittagForm"></div>
+	</div>
+</div>
+<!-- end of create modal -->
+<!-- start of edit modal -->
+<div
+	class="oh-modal"
+	id="audittagEditModal"
+	role="dialog"
+	aria-labelledby="audittagEditModal"
+	aria-hidden="true"
+>
+	<div class="oh-modal__dialog">
+		<div class="oh-modal__dialog-header">
+			<h2 class="oh-modal__dialog-title" id="editModaltitle">
+				{% trans "Audit Tag Update" %}
+			</h2>
+			<button class="oh-modal__close" aria-label="Close">
+				<ion-icon name="close-outline"></ion-icon>
+			</button>
+		</div>
+		<div class="oh-modal__dialog-body" id="audittagEditForm"></div>
+	</div>
+</div>
+<!-- end of edit modal -->
+
 {% endblock settings %}

@@ -328,7 +328,16 @@ class Employee(models.Model):
             return self.save()
         return self
 
+class EmployeeTag(models.Model):
+    """
+    EmployeeTag Model
+    """
+    title = models.CharField(max_length=50, null=True, verbose_name=_('Title'))
+    color = models.CharField(max_length=30, null=True)
 
+    def __str__(self) -> str:
+        return f"{self.title}"
+    
 class EmployeeWorkInformation(models.Model):
     """
     EmployeeWorkInformation model
@@ -392,6 +401,7 @@ class EmployeeWorkInformation(models.Model):
         null=True,
         verbose_name=_("Company"),
     )
+    tags = models.ManyToManyField(EmployeeTag, blank=True, verbose_name=_("tags"))
     location = models.CharField(max_length=50, blank=True)
     email = models.EmailField(max_length=254, blank=True, null=True)
     mobile = models.CharField(max_length=254, blank=True, null=True)

@@ -583,5 +583,23 @@ urlpatterns = [
     path(
         "tag-delete/<int:tag_id>",views.tag_delete,name="tag-delete"
     ),
+    path(
+        "employee-tag-create",views.employee_tag_create,name="employee-tag-create"
+    ),
+    path(
+        "employee-tag-update/<int:tag_id>",views.employee_tag_update,name="employee-tag-update"
+    ),
+    path(
+        "employee-tag-delete/<int:tag_id>",views.employee_tag_delete,name="employee-tag-delete"
+    ),
+    path(
+        "audit-tag-create",views.audit_tag_create,name="audit-tag-create"
+    ),
+    path(
+        "audit-tag-update/<int:tag_id>",views.audit_tag_update,name="audit-tag-update"
+    ),
+    path(
+        "audit-tag-delete/<int:tag_id>",views.audit_tag_delete,name="audit-tag-delete"
+    ),
       
 ]

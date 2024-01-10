@@ -570,7 +570,7 @@
               >
             </li>
             {% endif %} 
-            {% if perms.leave.view_holiday %}
+
             <li class="oh-sidebar__submenu-item">
               <a
                 href="{% url 'holiday-view' %}"
@@ -578,7 +578,7 @@
                 >{% trans "Holidays" %}</a
               >
             </li>
-            {% endif %} {% if perms.leave.view_companyleave%}
+
             <li class="oh-sidebar__submenu-item">
               <a
                 href="{% url 'company-leave-view' %}"
@@ -586,7 +586,7 @@
                 >{% trans "Company Leaves" %}</a
               >
             </li>
-            {% endif %}
+
           </ul>
         </div>
       </li>

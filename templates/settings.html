@@ -160,7 +160,7 @@
 							>
 						</li>
 						{% endif %}
-						{% if perms.base.view_tags %}
+						{% if perms.base.view_tags or perms.employee.view_emplyeetag or perms.horilla_audit.view_audittag %}
 
 						<li class="oh-inner-sidebar__item">
 							<a
