@@ -392,6 +392,13 @@
                 >{% trans "Payslip" %}</a
               >
             </li>
+            {% if perms.payroll.view_loanaccount %}
+            <li class="oh-sidebar__submenu-item">
+              <a href="{%url 'view-loan' %}" class="oh-sidebar__submenu-link"
+                >{% trans "Loan / Advance Salary" %}</a
+              >
+            </li>
+            {% endif %}
             {% if perms.payroll.view_filingstatus %}
             <li class="oh-sidebar__submenu-item">
               <a
