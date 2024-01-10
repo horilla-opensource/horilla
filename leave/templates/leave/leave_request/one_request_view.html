@@ -17,7 +17,8 @@
 </div>
 {% endif %}
 <div class="oh-modal__dialog-body oh-timeoff-modal__body  pb-2">
-    <div class="oh-timeoff-modal__profile-content">
+    <a class="oh-timeoff-modal__profile-content" style="text-decoration:none;" 
+        href ="{% url 'employee-view-individual' leave_request.employee_id.id %}">
         <div class="oh-profile">
             <div class="oh-profile__avatar mr-1">
                 <img src="{{leave_request.employee_id.get_avatar}}" class="oh-profile__image"
@@ -26,9 +27,9 @@
         </div>
         <div class="oh-timeoff-modal__profile-info">
             <span class="oh-timeoff-modal__user fw-bold">{{leave_request.employee_id}}</span>
-            <span class="oh-timeoff-modal__position">{{leave_request.employee_id.recruitment_id.job_position_id}}</span>
+            <span class="oh-timeoff-modal__position">{{leave_request.employee_id.employee_work_info.job_position_id}}</span>
         </div>
-    </div>
+    </a>
 
     <div class="oh-timeoff-modal__stats-container">
         <div class="oh-timeoff-modal__stat">
