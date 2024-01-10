@@ -1,12 +1,24 @@
 {% load i18n %}
+<div class="d-flex flex-row-reverse oh-wrapper">
+  <span class="mb-3" onclick="$('[name=type]').val('fine').change();  $('.filterButton').click()" style="cursor: pointer; margin-right: 15px;">
+    <span class="oh-dot oh-dot--small me-1" style="background-color:red"></span>
+    Fine
+  </span>
+  <span class="mb-3" onclick="$('[name=type]').val('loan').change(); $('.filterButton').click()" style="cursor: pointer; margin-right: 15px;">
+    <span class="oh-dot oh-dot--small me-1" style="background-color:rgba(128, 128, 128, 0.482)"></span>
+    Loan
+  </span>
+  <span class="mb-3" onclick="$('[name=type]').val('advanced_salary').change();$('.filterButton').click()" style="cursor: pointer; margin-right: 15px;">
+    <span class="oh-dot oh-dot--small me-1" style="background-color:yellowgreen"></span>
+    Advanced Salary
+  </span>
+</div>
 <div class="oh-wrapper oh-faq-cards">
   {% include 'filter_tags.html' %}
   {% for record in records %}
     <div class="oh-faq-card">
       <div class="d-flex justify-content-between">
-        <div class="loan-type">
-          {{record.get_type_display}}
-        </div>
+        <div class="loan-type">{{ record.get_type_display }}</div>
         <div>
           <a class="mr-2" hx-get="{% url 'create-loan' %}?instance_id={{ record.id }}" hx-target="#loanModalBody" data-toggle="oh-modal-toggle" data-target="#loanModal"><ion-icon class="text-dark" name="create-outline"></ion-icon></a>
           <a href="{% url 'delete-loan' %}?ids={{ record.id }}" onclick="return confirm('Do you want to delete this record?')"><ion-icon class="text-danger" name="trash-outline"></ion-icon></a>
