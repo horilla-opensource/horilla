@@ -40,7 +40,8 @@
     {% endif %}
   </div>
 </div>
-<div class="oh-timeoff-modal__profile-content pt-4">
+<a class="oh-timeoff-modal__profile-content pt-4" style="text-decoration:none;" 
+  href ="{% url 'employee-view-individual' attendance.employee_id.id %}">
   <div class="oh-profile mb-2">
     <div class="oh-profile__avatar">
       <img
@@ -62,7 +63,7 @@
       >
     </div>
   </div>
-</div>
+</a>
 
 <table class="table w-100 mt-3 mb-5">
   <tr>

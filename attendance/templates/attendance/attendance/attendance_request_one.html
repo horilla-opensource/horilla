@@ -1,17 +1,18 @@
-{% load i18n %}
+{% load i18n %} {% load basefilters %}
 <div class="oh-modal__dialog oh-modal__dialog--navigation m-0 p-0">
-    <button hx-get="{% url "user-request-one-view" previous_instance %}?instances_ids={{instance_ids_json}}&validate={{request.GET.validate}}&ot={{request.GET.ot}}&all_attendance={{request.GET.all_attendance}}" hx-target="#detailAttendanceModalBody" class="oh-modal__diaglog-nav oh-modal__nav-prev">
+    <button hx-get="{% url "user-request-one-view" previous_instance %}?instances_ids={{instance_ids_json}}&validate={{request.GET.validate}}&ot={{request.GET.ot}}&all_attendance={{request.GET.all_attendance}}&my_attendance={{request.GET.my_attendance}}" hx-target="#detailAttendanceModalBody" class="oh-modal__diaglog-nav oh-modal__nav-prev">
         <ion-icon name="chevron-back-outline" class="md hydrated" role="img"
         aria-label="chevron back outline"></ion-icon>
     </button>
 
-    <button hx-get="{% url "user-request-one-view" next_instance %}?instances_ids={{instance_ids_json}}&validate={{request.GET.validate}}&ot={{request.GET.ot}}&all_attendance={{request.GET.all_attendance}}" hx-target="#detailAttendanceModalBody" class="oh-modal__diaglog-nav oh-modal__nav-next">
+    <button hx-get="{% url "user-request-one-view" next_instance %}?instances_ids={{instance_ids_json}}&validate={{request.GET.validate}}&ot={{request.GET.ot}}&all_attendance={{request.GET.all_attendance}}&my_attendance={{request.GET.my_attendance}}" hx-target="#detailAttendanceModalBody" class="oh-modal__diaglog-nav oh-modal__nav-next">
         <ion-icon name="chevron-forward-outline" class="md hydrated" role="img"
         aria-label="chevron forward outline"></ion-icon>
     </button>
 </div>
 <div class="oh-modal__dialog-header">
-    <div class="oh-timeoff-modal__profile-content">
+    <a class="oh-timeoff-modal__profile-content" style="text-decoration:none;" 
+        href ="{% url 'employee-view-individual' attendance_request.employee_id.id %}">
         <div class="oh-profile mb-2">
             <div class="oh-profile__avatar">
                 <img src="{{attendance_request.employee_id.get_avatar}}"
@@ -29,7 +30,7 @@
                 
             </div>
         </div>
-    </div>
+    </a>
 
     <div class="oh-timeoff-modal__stats-container mt-3 mb-3">
         <div class="oh-timeoff-modal__stat">
