@@ -19,19 +19,32 @@
     </button>
 </div>
 {% endif %}
+<a class="oh-timeoff-modal__profile-content" style="text-decoration:none;" 
+href ="{% url 'employee-view-individual' work_type_request.employee_id.id %}">
+<div class="oh-profile mb-2">
+    <div class="oh-profile__avatar">
+            <img
+            src="{{work_type_request.employee_id.get_avatar}}"
+            class="oh-profile__image me-2"
+            alt="Mary Magdalene"
+            />
+        </div>
+            <div class="oh-timeoff-modal__profile-info">
+                <span class="oh-timeoff-modal__user fw-bold"
+                >{{work_type_request.employee_id}}</span
+            >
+            <span
+            class="oh-timeoff-modal__user m-0"
+            style="font-size: 18px; color: #4d4a4a"
+            >
+            {{work_type_request.employee_id.employee_work_info.department_id}} /
+            {{work_type_request.employee_id.employee_work_info.job_position_id}}</span
+            >
+        </div>
+        </div>
+    </a>
+    
 <div class="oh-modal__dialog-header">
-    <span class="oh-modal__dialog-title" id="worktypeRequestDetailTitle">
-        <h5 style="margin-bottom: 20px;">{{work_type_request.employee_id}}</h5>
-    </span>
-    <button
-        type="button"
-        class="oh-modal__close"
-        data-dismiss="oh-modal"
-        aria-label="Close"
-        data-toggle="oh-modal-toggle"
-    >
-        <ion-icon name="close-outline"></ion-icon>
-    </button>
     <div class="oh-timeoff-modal__stats-container mb-3">
       <div class="oh-timeoff-modal__stat">
           <span class="oh-timeoff-modal__stat-title">{% trans "Requested work type" %}</span>

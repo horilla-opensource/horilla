@@ -3,22 +3,20 @@
 {% load static %}
 {% load i18n %}
 {% include 'filter_tags.html' %}
-{% if perms.base.view_worktyperequest %}
-  <div
-  class="oh-checkpoint-badge text-success mb-2"
-  id="selectAllWorktypes"
-  style="cursor: pointer"
-  >
-    {% trans "Select All Worktypes" %}
-  </div>
-  <div
-  class="oh-checkpoint-badge text-secondary mb-2"
-  id="unselectAllWorktypes"
-  style="cursor: pointer"
-  >
-    {% trans "Unselect All Worktypes" %}
-  </div>
-{% endif %}
+<div
+class="oh-checkpoint-badge text-success mb-2"
+id="selectAllWorktypes"
+style="cursor: pointer"
+>
+  {% trans "Select All Worktypes" %}
+</div>
+<div
+class="oh-checkpoint-badge text-secondary mb-2"
+id="unselectAllWorktypes"
+style="cursor: pointer"
+>
+  {% trans "Unselect All Worktypes" %}
+</div>
 <div
 class="oh-checkpoint-badge text-info mb-2"
 id="exportWorktypes"

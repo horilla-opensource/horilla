@@ -3355,7 +3355,15 @@ def shift_select(request):
     page_number = request.GET.get("page")
 
     if page_number == "all":
-        employees = ShiftRequest.objects.all()
+        if request.user.has_perm("base.view_shiftrequest"):
+            employees = ShiftRequest.objects.all()
+        else:
+            employees = ShiftRequest.objects.filter(
+                employee_id__employee_user_id=request.user
+            ) | ShiftRequest.objects.filter(
+                employee_id__employee_work_info__reporting_manager_id__employee_user_id=request.user
+            )
+        # employees = ShiftRequest.objects.all()
 
     employee_ids = [str(emp.id) for emp in employees]
     total_count = employees.count()
@@ -3392,7 +3400,14 @@ def work_type_select(request):
     page_number = request.GET.get("page")
 
     if page_number == "all":
-        employees = WorkTypeRequest.objects.all()
+        if request.user.has_perm("base.view_worktyperequest"):
+            employees = WorkTypeRequest.objects.all()
+        else:
+            employees = WorkTypeRequest.objects.filter(
+                employee_id__employee_user_id=request.user
+            ) | WorkTypeRequest.objects.filter(
+                employee_id__employee_work_info__reporting_manager_id__employee_user_id=request.user
+            )
 
     employee_ids = [str(emp.id) for emp in employees]
     total_count = employees.count()
@@ -3429,7 +3444,12 @@ def rotating_shift_select(request):
     page_number = request.GET.get("page")
 
     if page_number == "all":
-        employees = RotatingShiftAssign.objects.filter(is_active=True)
+        if request.user.has_perm("base.view_rotatingshiftassign"):
+            employees = RotatingShiftAssign.objects.filter(is_active=True)
+        else:
+            employees =  RotatingShiftAssign.objects.filter(
+                employee_id__employee_work_info__reporting_manager_id__employee_user_id=request.user
+            )
     else:
         employees = RotatingShiftAssign.objects.all()
 
@@ -3468,7 +3488,12 @@ def rotating_work_type_select(request):
     page_number = request.GET.get("page")
 
     if page_number == "all":
-        employees = RotatingWorkTypeAssign.objects.filter(is_active=True)
+        if request.user.has_perm("base.view_rotatingworktypeassign"):
+            employees = RotatingWorkTypeAssign.objects.filter(is_active=True)
+        else:
+            employees =  RotatingWorkTypeAssign.objects.filter(
+                employee_id__employee_work_info__reporting_manager_id__employee_user_id=request.user
+            )
     else:
         employees = RotatingWorkTypeAssign.objects.all()
 
