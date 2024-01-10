@@ -1363,7 +1363,7 @@ def create_installments(sender, instance, created, **kwargs):
     This is post save method, used to create initial stage for the recruitment
     """
     installments = []
-    if created and instance.asset_id is None:
+    if created and instance.asset_id is None and instance.type != "fine":
         loan = Allowance()
         loan.amount = instance.loan_amount
         loan.title = instance.title
