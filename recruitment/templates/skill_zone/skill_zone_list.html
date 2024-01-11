@@ -160,7 +160,7 @@
                                                             </form>
                                                         {% endif %}
                                                         
-                                                        <form action="{% url 'rec-candidate-delete' sz_candidate.candidate_id.id  %}" onsubmit="return confirm('{% trans "Do you want to delete this candidate" %}')" method='post'
+                                                        <form action="{% url 'skill-zone-cand-delete' sz_candidate.id  %}" onsubmit="return confirm('{% trans "Do you want to remove this candidate" %}')" method='post'
                                                             onsubmit="Are you sure want to delete this candidate?" class="w-50">
                                                             {% csrf_token %}
                                                             <button type='submit' class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
@@ -278,14 +278,7 @@ aria-labelledby="editDialogModal"
 aria-hidden="true"
 >
 <div class="oh-modal__dialog">
-    <div class="oh-modal__dialog-header">
-        <h2 class="oh-modal__dialog-title" id="editTitle">
-            {% trans "Update Skill Zone" %}
-        </h2>
-        <button class="oh-modal__close" aria-label="Close">
-            <ion-icon name="close-outline"></ion-icon>
-        </button>
-    </div>
+
     <div class="oh-modal__dialog-body" id="editTarget"></div>
 </div>
 </div>
@@ -298,7 +291,6 @@ aria-hidden="true"
     aria-hidden="true"
 >
     <div class="oh-modal__dialog">
-        <div class="oh-modal__dialog-header" id="editCandTarget">
-            
+        <div class="oh-modal__dialog-header" id="editCandTarget"></div>  
     </div>
 </div>

@@ -107,14 +107,12 @@
         {% if perms.recruitment.change_candidate %}
           <div class="oh-btn-group">
             {% if cand.email in emp_list %}
-              <form action=" " style="color: inherit;text-decoration: none;" class="oh-sticky-table__td"
-              onsubmit="return confirm('{% trans "Are you sure you want to convert this candidate into an employee?" %}')"
+              <div action="#" style="color: inherit;text-decoration: none;" class="oh-sticky-table__td"
               >
-              {% csrf_token %}
-              <button type='submit' class="oh-btn w-100"  title='{% trans "To employee " %}'>
-                <img style="height:28px;width:200%" src="{% static 'images/ui/employee.png' %}" alt="Icon">
+              <button type='submit' class="oh-btn w-100"  title='{% trans "To employee " %}' style="opacity: 30%;">
+                <img style="height:28px;width:200%;" src="{% static 'images/ui/employee.png' %}" alt="Icon">
               </button>                
-            </form>
+            </div>
             {% else %}
               <form action="{% url 'candidate-conversion' cand.id %}" style="color: inherit;text-decoration: none;" class="oh-sticky-table__td"
               onsubmit="return confirm('{% trans "Are you sure you want to convert this candidate into an employee?" %}')"
