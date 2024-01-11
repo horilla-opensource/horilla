@@ -84,6 +84,8 @@ def payroll_calculation(employee, start_date, end_date):
     contract_wage = basic_pay_details["contract_wage"]
     basic_pay = basic_pay_details["basic_pay"]
     loss_of_pay = basic_pay_details["loss_of_pay"]
+    paid_days = basic_pay_details["paid_days"]
+    unpaid_days = basic_pay_details["unpaid_days"]
 
     working_days_details = basic_pay_details["month_data"]
 
@@ -186,6 +188,8 @@ def payroll_calculation(employee, start_date, end_date):
         "gross_pay": gross_pay,
         "contract_wage": contract_wage,
         "basic_pay": basic_pay,
+        "paid_days":paid_days,
+        "unpaid_days":unpaid_days,
         "taxable_gross_pay": taxable_gross_pay,
         "basic_pay_deductions": basic_pay_deductions,
         "gross_pay_deductions": gross_pay_deductions,

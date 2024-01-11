@@ -4,6 +4,11 @@
     background-color: yellowgreen;
     color: white;
   }
+  .payslip__netpay__summary{
+    border-radius: 15px; 
+    padding: 5px 10px;
+  }
+
 </style>
 <div class="oh-payslip">
   {% if perms.payroll.change_payslip %}
@@ -89,19 +94,30 @@
         </ul>
       </div>
 
-      <div class="oh-payslip__netpay">
-        <span class="oh-payslip__netpay-title"
-          >{% trans "Employee Net Pay" %}</span
-        >
-        <span class="oh-payslip__netpay-amount"
-          >{{currency}}{{net_pay|floatformat:2}}</span
-        >
-      </div>
+      <div class="oh-payslip__netpay" style="text-align:left; border-radius: 15px; border: 1px solid hsl(213,22%,84%);">
+        <div style="border-radius: 15px; background-color: #d2f8d7; padding: 10px; border-left: 3px solid #00cc66;">
+            <span class="oh-payslip__netpay-amount">{{ currency }}{{ net_pay|floatformat:2 }}</span>
+            <span class="oh-payslip__netpay-title">{% trans "Employee Net Pay" %}</span>
+        </div>
+        <div class="payslip__netpay__summary">
+            <span class="oh-payslip__netpay-title">{% trans "Actual Basic Pay" %} <small style="margin-left:36px; font-weight:bold;">: {{currency}} {{instance.contract_wage}}</small></span>
+            <span class="oh-payslip__netpay-title">{% trans "Paid Days" %} <small style="margin-left:86px;font-weight:bold;">: {{paid_days}}</small> </span>
+            <span class="oh-payslip__netpay-title">{% trans "LOP Days" %} <small style="margin-left:93px ;font-weight:bold;">: {{unpaid_days}}</small> </span>
+            <span class="oh-payslip__netpay-title">
+                {% trans "Updated Basic Pay" %}
+                <small style="margin-left:20px;font-weight:bold;">: {{currency}} {{basic_pay|floatformat:2}}
+                  
+                  <br><i style="font-style: italic; margin-left: 10px; font-weight: normal;"><ion-icon name="information-circle-outline" style="color:blue;"></ion-icon>{% trans "The payslip is calculated based on the updated basic pay" %}</i>
+                    
+                </small>
+            </span>
+        </div>
+      </div>    
     </div>
     <!-- End of Payslip Table -->
 
     <!-- Payslip Table -->
-    <div class="oh-payslip__table-container">
+    <div class="oh-payslip__table-container" style="margin-top:0.5rem">
       <table class="oh-payslip__table">
         <thead class="oh-payslip__table-thead">
           <tr class="oh-payslip__table-row">
@@ -118,7 +134,7 @@
               {% trans "Basic Pay" %}
             </td>
             <td class="oh-payslip__table-td" colspan="2">
-              {{currency}}{{basic_pay|floatformat:2}}
+              {{currency}}{{instance.contract_wage|floatformat:2}}
             </td>
           </tr>
           {% for allowance in allowances %}
@@ -218,7 +234,7 @@
               class="oh-payslip__table-tf"
               title="Some deductions are not calculated to total deductions because they are deduducted before the calculation starts they deducted from basic pay, gross pay and some deduct after calculating the net pay"
             >
-              Total Deductions
+              {% trans "Total Deductions" %}
             </th>
             <th class="oh-payslip__table-tf">
               {{currency}}{{total_deductions|floatformat:2}}

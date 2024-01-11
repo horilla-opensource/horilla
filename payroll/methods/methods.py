@@ -513,6 +513,7 @@ def monthly_computation(employee, wage, start_date, end_date):
         is_active=True, contract_status="active"
     ).first()
     unpaid_leaves = abs(leave_data["unpaid_leaves"] - unpaid_half_leaves)
+    paid_days = month_data[0]["working_days_on_period"] - unpaid_leaves
     daily_computed_salary = get_daily_salary(wage=wage, wage_date=start_date)[
         "day_wage"
     ]
@@ -528,6 +529,8 @@ def monthly_computation(employee, wage, start_date, end_date):
         "basic_pay": basic_pay,
         "loss_of_pay": loss_of_pay,
         "month_data": month_data,
+        "unpaid_days":unpaid_leaves,
+        "paid_days":paid_days,
     }
 
 

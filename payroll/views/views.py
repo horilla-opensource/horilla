@@ -692,10 +692,10 @@ def payslip_export(request):
 
     if status:
         employee_payslip_list = employee_payslip_list.filter(status=status)
-    user= request.user
+    user = request.user
     emp = user.employee_get
     for payslip in employee_payslip_list:
-         # Taking the company_name of the user
+        # Taking the company_name of the user
         info = EmployeeWorkInformation.objects.filter(employee_id=emp)
         if info.exists():
             for data in info:
@@ -706,27 +706,27 @@ def payslip_export(request):
             # Access the date_format attribute directly
             date_format = emp_company.date_format
         else:
-            date_format = 'MMM. D, YYYY'
+            date_format = "MMM. D, YYYY"
         # Define date formats
         date_formats = {
-            'DD-MM-YYYY': '%d-%m-%Y',
-            'DD.MM.YYYY': '%d.%m.%Y',
-            'DD/MM/YYYY': '%d/%m/%Y',
-            'MM/DD/YYYY': '%m/%d/%Y',
-            'YYYY-MM-DD': '%Y-%m-%d',
-            'YYYY/MM/DD': '%Y/%m/%d',
-            'MMMM D, YYYY': '%B %d, %Y',
-            'DD MMMM, YYYY': '%d %B, %Y',
-            'MMM. D, YYYY': '%b. %d, %Y',
-            'D MMM. YYYY': '%d %b. %Y',
-            'dddd, MMMM D, YYYY': '%A, %B %d, %Y',
+            "DD-MM-YYYY": "%d-%m-%Y",
+            "DD.MM.YYYY": "%d.%m.%Y",
+            "DD/MM/YYYY": "%d/%m/%Y",
+            "MM/DD/YYYY": "%m/%d/%Y",
+            "YYYY-MM-DD": "%Y-%m-%d",
+            "YYYY/MM/DD": "%Y/%m/%d",
+            "MMMM D, YYYY": "%B %d, %Y",
+            "DD MMMM, YYYY": "%d %B, %Y",
+            "MMM. D, YYYY": "%b. %d, %Y",
+            "D MMM. YYYY": "%d %b. %Y",
+            "dddd, MMMM D, YYYY": "%A, %B %d, %Y",
         }
         start_date_str = str(payslip.start_date)
         end_date_str = str(payslip.end_date)
 
         # Convert the string to a datetime.date object
-        start_date = datetime.strptime(start_date_str, '%Y-%m-%d').date()
-        end_date = datetime.strptime(end_date_str, '%Y-%m-%d').date()
+        start_date = datetime.strptime(start_date_str, "%Y-%m-%d").date()
+        end_date = datetime.strptime(end_date_str, "%Y-%m-%d").date()
 
         # Print the formatted date for each format
         for format_name, format_string in date_formats.items():
@@ -1050,7 +1050,7 @@ def payslip_pdf(request, id):
         request.user.has_perm("payroll.view_payslip")
         or payslip.employee_id.employee_user_id == request.user
     ):
-        user= request.user
+        user = request.user
         employee = user.employee_get
 
         # Taking the company_name of the user
@@ -1064,7 +1064,7 @@ def payslip_pdf(request, id):
             # Access the date_format attribute directly
             date_format = emp_company.date_format
         else:
-            date_format = 'MMM. D, YYYY'
+            date_format = "MMM. D, YYYY"
 
         payslip = Payslip.objects.get(id=id)
         data = payslip.pay_head_data
@@ -1073,22 +1073,22 @@ def payslip_pdf(request, id):
 
         # Define date formats
         date_formats = {
-            'DD-MM-YYYY': '%d-%m-%Y',
-            'DD.MM.YYYY': '%d.%m.%Y',
-            'DD/MM/YYYY': '%d/%m/%Y',
-            'MM/DD/YYYY': '%m/%d/%Y',
-            'YYYY-MM-DD': '%Y-%m-%d',
-            'YYYY/MM/DD': '%Y/%m/%d',
-            'MMMM D, YYYY': '%B %d, %Y',
-            'DD MMMM, YYYY': '%d %B, %Y',
-            'MMM. D, YYYY': '%b. %d, %Y',
-            'D MMM. YYYY': '%d %b. %Y',
-            'dddd, MMMM D, YYYY': '%A, %B %d, %Y',
+            "DD-MM-YYYY": "%d-%m-%Y",
+            "DD.MM.YYYY": "%d.%m.%Y",
+            "DD/MM/YYYY": "%d/%m/%Y",
+            "MM/DD/YYYY": "%m/%d/%Y",
+            "YYYY-MM-DD": "%Y-%m-%d",
+            "YYYY/MM/DD": "%Y/%m/%d",
+            "MMMM D, YYYY": "%B %d, %Y",
+            "DD MMMM, YYYY": "%d %B, %Y",
+            "MMM. D, YYYY": "%b. %d, %Y",
+            "D MMM. YYYY": "%d %b. %Y",
+            "dddd, MMMM D, YYYY": "%A, %B %d, %Y",
         }
 
         # Convert the string to a datetime.date object
-        start_date = datetime.strptime(start_date_str, '%Y-%m-%d').date()
-        end_date = datetime.strptime(end_date_str, '%Y-%m-%d').date()
+        start_date = datetime.strptime(start_date_str, "%Y-%m-%d").date()
+        end_date = datetime.strptime(end_date_str, "%Y-%m-%d").date()
 
         # Print the formatted date for each format
         for format_name, format_string in date_formats.items():
@@ -1099,8 +1099,8 @@ def payslip_pdf(request, id):
             if format_name == date_format:
                 formatted_end_date = end_date.strftime(format_string)
 
-        data['formatted_start_date'] = formatted_start_date
-        data['formatted_end_date'] = formatted_end_date
+        data["formatted_start_date"] = formatted_start_date
+        data["formatted_end_date"] = formatted_end_date
         data["employee"] = payslip.employee_id
         data["payslip"] = payslip
         data["json_data"] = data.copy()
