@@ -541,7 +541,8 @@ class SkillZoneCandidate(models.Model):
         SkillZone,
         verbose_name=_("Skill Zone"),
         related_name="skillzonecandidate_set", 
-        on_delete=models.PROTECT
+        on_delete=models.PROTECT,
+        null=True
     )
     candidate_id = models.ForeignKey(
         Candidate,
@@ -564,7 +565,8 @@ class SkillZoneCandidate(models.Model):
     )
     is_active = models.BooleanField(default=True, verbose_name=_("Is Active"))
     added_on = models.DateField(
-        default=django.utils.timezone.now
+        default=django.utils.timezone.now,
+        editable=False,
     )
     objects = HorillaCompanyManager(related_company_field="skill_zone__company_id")
 

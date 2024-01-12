@@ -654,7 +654,7 @@ class OfferLetterForm(ModelForm):
         }
            
         
-class SkillZoneCreateForm(ModelForm):
+class SkillZoneCreateForm(forms.ModelForm):
     class Meta:
         """
         Class Meta for additional options
@@ -684,6 +684,11 @@ class SkillZoneCandidateForm(ModelForm):
         
 
 class ToSkillZoneForm(ModelForm):
+
+    skill_zone_ids = forms.ModelMultipleChoiceField(
+        queryset=SkillZone.objects.all(), 
+        label=_("Skill Zones")
+    )
     class Meta:
         """
         Class Meta for additional options
@@ -691,10 +696,11 @@ class ToSkillZoneForm(ModelForm):
         model = SkillZoneCandidate
         fields = "__all__"
         exclude = [
-            "added_on",
+            "skill_zone_id",
         ]
         widgets = {
             "candidate_id": forms.HiddenInput(),
+            # 'skill_zone_id':forms.MultiValueField()
         }
         error_messages = {
             NON_FIELD_ERRORS: {
@@ -702,3 +708,21 @@ class ToSkillZoneForm(ModelForm):
             }
         }
 
+    def clean(self):
+        cleaned_data = super().clean()
+        candidate = cleaned_data.get('candidate_id')
+        skill_zones = cleaned_data.get('skill_zone_ids')
+        skill_zone_list=[]
+        for skill_zone in skill_zones:
+            print(skill_zone,candidate)
+            # Check for the unique together constraint manually
+            if SkillZoneCandidate.objects.filter(candidate_id=candidate, skill_zone_id=skill_zone).exists():
+                # Raise a ValidationError with a custom error message
+                skill_zone_list.append(skill_zone)
+        if len(skill_zone_list) > 0 :
+            skill_zones_str = ', '.join(str(skill_zone) for skill_zone in skill_zone_list)       
+            raise ValidationError(f"{candidate} already exists in {skill_zones_str}.")
+
+            # cleaned_data['skill_zone_id'] =skill_zone
+        return cleaned_data
+    

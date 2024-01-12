@@ -288,9 +288,8 @@ urlpatterns = [
     path('skill-zone-cand-edit/<int:sz_cand_id>/',views.skill_zone_cand_edit,name="skill-zone-cand-edit"),
     path('skill-zone-cand-filter',views.skill_zone_cand_filter,name="skill-zone-cand-filter"),
     path('skill-zone-cand-archive/<int:sz_cand_id>/',views.skill_zone_cand_archive,name="skill-zone-cand-archive"),
-    path('skill-zone-cand-delete/<int:sz_cand_id>/',views.skill_zone_cand_delete,name="skill-zone-cand-delete"),
     path('to-skill-zone/<int:cand_id>',views.to_skill_zone,name='to-skill-zone'),
-
+    path('skill-zone-cand-delete/<int:sz_cand_id>',views.skill_zone_cand_delete,name='skill-zone-cand-delete'),
     path("view-mail-templates/", view_mail_templates, name="view-mail-templates"),
     path("view-mail-template/<int:obj_id>/", view_letter, name="view-mail-template"),
     path("create-mail-template/", create_letter, name="create-mail-template"),

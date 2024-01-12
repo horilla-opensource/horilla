@@ -1551,23 +1551,23 @@ def skill_zone_cand_delete(request,sz_cand_id):
 login_required
 manager_can_enter(perm="recruitment.change_candidate")
 def to_skill_zone(request,cand_id):
-    try:
-        candidate=Candidate.objects.get(id=cand_id)
-        template = "skill_zone_cand/skill_zone_cand_form.html"
-        form = ToSkillZoneForm(initial={'candidate_id':candidate})
-        if request.method=='POST':
-            form=ToSkillZoneForm(request.POST)
-            if form.is_valid():
-                form.save()
-                messages.success(request, _("Candidate added successfully.."))
-                return HttpResponse("<script>window.location.reload()</script>")
-
-        return render(request,template,{'form':form,'cand_id':cand_id})
+    candidate=Candidate.objects.get(id=cand_id)
+    template = "skill_zone_cand/to_skill_zone_form.html"
+    form = ToSkillZoneForm(initial={'candidate_id':candidate})
+    if request.method=='POST':
+        form = ToSkillZoneForm(request.POST)
+        if form.is_valid():
+            skill_cand = form.save(commit=False)
+            skill_zone_ids = form.data.getlist("skill_zone_ids")
+            for zone in skill_zone_ids:
+                zone_instance =SkillZone.objects.get(id=zone)
+                if not zone_instance.skillzonecandidate_set.filter(candidate_id=candidate).exists():
+                    skill_cand.skill_zone_id = zone_instance
+                    skill_cand.save()
+                    messages.success(request, _("Candidate added successfully.."))
+                    return HttpResponse("<script>window.location.reload()</script>")
+    return render(request,template,{'form':form,'cand_id':cand_id})
         
-
-    except Candidate.DoesNotExist:
-        messages.error(request, _("Candidate not found."))
-        return HttpResponse("<script>window.location.reload()</script>")
     
 @login_required
 def update_candidate_rating(request,cand_id):

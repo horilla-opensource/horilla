@@ -93,7 +93,7 @@
                                 <div class="oh-sticky-table__thead">
                                     <div class="oh-sticky-table__tr">
                                         <div class="oh-sticky-table__th">{% trans "Candidate" %}</div>
-                                        <div class="oh-sticky-table__th">{% trans "Reasom" %}</div>
+                                        <div class="oh-sticky-table__th">{% trans "Reason" %}</div>
                                         <div class="oh-sticky-table__th">{% trans "Added on" %}</div>
                                         <div class="oh-sticky-table__th">{% trans "Resume" %}</div>
                                         <div class="oh-sticky-table__th">{% trans "Actions" %}</div>
@@ -145,14 +145,14 @@
                                                             <ion-icon name="create-outline"></ion-icon>
                                                         </button>
                                                         {% if sz_candidate.is_active %}
-                                                            <form action="{% url 'skill-zone-cand-archive' sz_candidate.id  %}"  title="Archive" onsubmit="return confirm('{% trans "Do you want to archive this candidate" %}')" method='post'
+                                                            <form action="{% url 'skill-zone-cand-archive' sz_candidate.id  %}"  title="Archive" onsubmit="return confirm('{% trans "Do you want to archive this candidate from this skill zone" %}')" method='post'
                                                                 class="w-50">
                                                                 {% csrf_token %}
                                                                 <button type='submit' class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
                                                                     ><ion-icon name="archive"></ion-icon></button>
                                                             </form>
                                                         {% else %}
-                                                            <form action="{% url 'skill-zone-cand-archive' sz_candidate.id  %}"  title="Un Archive" onsubmit="return confirm('{% trans "Do you want to un-archive this candidate" %}')" method='post'
+                                                            <form action="{% url 'skill-zone-cand-archive' sz_candidate.id  %}"  title="Un Archive" onsubmit="return confirm('{% trans "Do you want to un-archive this candidate from this skill zone" %}')" method='post'
                                                                 class="w-50">
                                                                 {% csrf_token %}
                                                                 <button type='submit' class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
