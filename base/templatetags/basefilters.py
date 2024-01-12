@@ -1,6 +1,7 @@
 import json
 from django.template.defaultfilters import register
 from django import template
+from base.models import MultipleApprovalManagers
 from employee.models import Employee, EmployeeWorkInformation
 from django.core.paginator import Page, Paginator
 
@@ -55,10 +56,19 @@ def is_reportingmanager(user):
     ).exists()
 
 
+@register.filter(name="is_leave_approval_manager")
+def is_leave_approval_manager(user):
+    """
+    This method will return true if the user is comes in MultipleApprovalCondition model as approving manager
+    """
+    employee = Employee.objects.filter(employee_user_id=user).first()
+    return MultipleApprovalManagers.objects.filter(employee_id=employee.id).exists()
+
+
 @register.filter(name="check_manager")
 def check_manager(user, instance):
     try:
-        if isinstance(instance,Employee):
+        if isinstance(instance, Employee):
             return instance.employee_work_info.reporting_manager_id == user.employee_get
         return (
             user.employee_get

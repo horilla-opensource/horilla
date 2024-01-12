@@ -601,5 +601,26 @@ urlpatterns = [
     path(
         "audit-tag-delete/<int:tag_id>",views.audit_tag_delete,name="audit-tag-delete"
     ),
+    path(
+        "multiple-approval-condition",
+        views.multiple_approval_condition,
+        name="multiple-approval-condition",
+    ),
+    path(
+        "multiple-level-approval-create",
+        views.multiple_level_approval_create,
+        name="multiple-level-approval-create",
+    ),
+    path(
+        "multiple-level-approval-edit/<int:condition_id>",
+        views.multiple_level_approval_edit,
+        name="multiple-level-approval-edit",
+    ),
+    path(
+        "multiple-level-approval-delete/<int:condition_id>",
+        views.multiple_level_approval_delete,
+        name="multiple-level-approval-delete",
+    ),
+    
       
 ]

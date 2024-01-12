@@ -6,6 +6,7 @@ This module is used to register django models
 from collections.abc import Iterable
 from typing import Any
 import django
+from base.thread_local_middleware import _thread_locals
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 from django.db import models
@@ -62,11 +63,6 @@ class Company(models.Model):
 
     def __str__(self) -> str:
         return str(self.company)
-
-
-from base.thread_local_middleware import _thread_locals
-
-from django import forms
 
 
 class Department(models.Model):
@@ -853,13 +849,15 @@ class Tags(models.Model):
     title = models.CharField(max_length=30)
     color = models.CharField(max_length=30)
     is_active = models.BooleanField(default=True)
-    company_id = models.ForeignKey(Company,null=True, editable=False, on_delete=models.PROTECT)
-    objects = HorillaCompanyManager(
-        related_company_field="company_id"
+    company_id = models.ForeignKey(
+        Company, null=True, editable=False, on_delete=models.PROTECT
     )
+    objects = HorillaCompanyManager(related_company_field="company_id")
 
     def __str__(self):
         return self.title
+
+
 class DynamicEmailConfiguration(models.Model):
     """
     SingletoneModel to keep the mail server configurations
@@ -931,3 +929,152 @@ class DynamicEmailConfiguration(models.Model):
 
     class Meta:
         verbose_name = _("Email Configuration")
+
+
+FIELD_CHOICE = [
+    ("", "---------"),
+    ("requested_days", _("Leave Requested Days")),
+]
+CONDITION_CHOICE = [
+    ("equal", _("Equal (==)")),
+    ("notequal", _("Not Equal (!=)")),
+    ("range", _("Range")),
+    ("lt", _("Less Than (<)")),
+    ("gt", _("Greater Than (>)")),
+    ("le", _("Less Than or Equal To (<=)")),
+    ("ge", _("Greater Than or Equal To (>=)")),
+    ("icontains", _("Contains")),
+]
+
+
+class MultipleApprovalCondition(models.Model):
+    department = models.ForeignKey(Department, on_delete=models.CASCADE)
+    condition_field = models.CharField(
+        max_length=255,
+        choices=FIELD_CHOICE,
+    )
+    condition_operator = models.CharField(
+        max_length=255, choices=CONDITION_CHOICE, null=True, blank=True
+    )
+    condition_value = models.CharField(
+        max_length=100,
+        null=True,
+        blank=True,
+        verbose_name=_("Condition Value"),
+    )
+    condition_start_value = models.CharField(
+        max_length=100,
+        null=True,
+        blank=True,
+        verbose_name=_("Starting Value"),
+    )
+    condition_end_value = models.CharField(
+        max_length=100,
+        null=True,
+        blank=True,
+        verbose_name=_("Ending Value"),
+    )
+
+    def __str__(self) -> str:
+        return f"{self.department} {self.condition_field} {self.condition_operator}"
+
+    def clean(self, *args, **kwargs):
+        if self.condition_value:
+            instance = MultipleApprovalCondition.objects.filter(
+                department=self.department,
+                condition_field=self.condition_field,
+                condition_operator=self.condition_operator,
+                condition_value=self.condition_value,
+            )
+            if instance:
+                raise ValidationError(
+                    _("A condition with the provided fields already exists")
+                )
+        if self.condition_field == "requested_days":
+            if self.condition_operator != "range":
+                if not self.condition_value:
+                    raise ValidationError(
+                        {
+                            "condition_operator": _(
+                                "Please enter a numeric value for condition value"
+                            )
+                        }
+                    )
+                try:
+                    float_value = float(self.condition_value)
+                except ValueError as e:
+                    raise ValidationError(
+                        {
+                            "condition_operator": _(
+                                "Please enter a valid numeric value for the condition value when the condition field is Leave Requested Days."
+                            )
+                        }
+                    )
+            else:
+                if not self.condition_start_value or not self.condition_end_value:
+                    raise ValidationError(
+                        {
+                            "condition_operator": _(
+                                "Please specify condition value range"
+                            )
+                        }
+                    )
+                try:
+                    start_value = float(self.condition_start_value)
+                except ValueError as e:
+                    raise ValidationError(
+                        {
+                            "condition_operator": _(
+                                "Please enter a valid numeric value for the starting value when the condition field is Leave Requested Days."
+                            )
+                        }
+                    )
+                try:
+                    end_value = float(self.condition_end_value)
+                except ValueError as e:
+                    raise ValidationError(
+                        {
+                            "condition_operator": _(
+                                "Please enter a valid numeric value for the ending value when the condition field is Leave Requested Days."
+                            )
+                        }
+                    )
+
+                if start_value == end_value:
+                    raise ValidationError(
+                        {
+                            "condition_operator": _(
+                                "End value must be different from the start value in a range."
+                            )
+                        }
+                    )
+                if end_value <= start_value:
+                    raise ValidationError(
+                        {
+                            "condition_operator": _(
+                                "End value must be greater than the start value in a range."
+                            )
+                        }
+                    )
+        super().clean(*args, **kwargs)
+
+    def approval_managers(self, *args, **kwargs):
+        managers = []
+        from employee.models import Employee
+        queryset = MultipleApprovalManagers.objects.filter(condition_id=self.pk).order_by('sequence')
+        for query in queryset:
+            employee = Employee.objects.get(id = query.employee_id)
+            managers.append(employee)
+        
+        return managers
+            
+        
+
+
+class MultipleApprovalManagers(models.Model):
+    
+    condition_id = models.ForeignKey(
+        MultipleApprovalCondition, on_delete=models.CASCADE
+    )
+    sequence = models.IntegerField(null=False, blank=False)
+    employee_id = models.IntegerField(null=False, blank=False)

@@ -24,6 +24,7 @@ from base.models import (
     DynamicEmailConfiguration,
     JobPosition,
     JobRole,
+    MultipleApprovalCondition,
     WorkType,
     EmployeeType,
     EmployeeShift,
@@ -1545,3 +1546,34 @@ class DynamicMailConfForm(ModelForm):
         context = {"form": self}
         table_html = render_to_string("attendance_form.html", context)
         return table_html
+    
+class MultipleApproveConditionForm(ModelForm):
+    CONDITION_CHOICE = [
+        ("equal", _("Equal (==)")),
+        ("notequal", _("Not Equal (!=)")),
+        ("range", _("Range")),
+        ("lt", _("Less Than (<)")),
+        ("gt", _("Greater Than (>)")),
+        ("le", _("Less Than or Equal To (<=)")),
+        ("ge", _("Greater Than or Equal To (>=)")),
+        ("icontains", _("Contains")),
+    ]
+    multi_approval_manager = forms.ModelChoiceField(
+        queryset=Employee.objects.all(),
+        widget=forms.Select(attrs={"class": "oh-select oh-select-2 mb-2"}),
+        label=_("Approval Manager"),
+        required=True,
+    )
+    condition_operator = forms.ChoiceField(
+        choices=CONDITION_CHOICE,
+        widget=forms.Select(
+            attrs={
+                "class": "oh-select oh-select-2 mb-2",
+                "onChange": "toggleFields($('#id_condition_operator'))",
+            },
+        ),
+    )
+
+    class Meta:
+        model = MultipleApprovalCondition 
+        fields = "__all__"

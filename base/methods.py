@@ -5,7 +5,7 @@ import random
 from django.apps import apps
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import ForeignKey, ManyToManyField, OneToOneField
-from django.forms.models import ModelMultipleChoiceField, ModelChoiceField
+from django.forms.models import ModelChoiceField
 from django.http import HttpResponse
 from django.template.loader import render_to_string
 from django.utils.translation import gettext as _
@@ -14,6 +14,7 @@ from xhtml2pdf import pisa
 from base.models import Company
 from employee.models import Employee, EmployeeWorkInformation
 from horilla.decorators import login_required
+from leave.models import LeaveRequest, LeaveRequestConditionApproval
 
 
 def filtersubordinates(request, queryset, perm=None):
@@ -545,3 +546,19 @@ def generate_pdf(template_path, context, path=True, title=None):
         response["Content-Disposition"] = f'''attachment;filename="{title}"'''
         return response
     return None
+
+def filter_conditional_leave_request(request):
+    approval_manager = Employee.objects.filter(employee_user_id=request.user).first()
+    leave_request_ids = [] 
+    multiple_approval_requests = LeaveRequestConditionApproval.objects.filter(manager_id=approval_manager)
+    for instance in multiple_approval_requests:
+        if instance.sequence > 1:
+            pre_sequence = instance.sequence - 1
+            leave_request_id = instance.leave_request_id
+            instance = LeaveRequestConditionApproval.objects.filter(leave_request_id = leave_request_id,sequence = pre_sequence).first()
+            if instance.is_approved:
+                leave_request_ids.append(instance.leave_request_id.id) 
+        else:
+            leave_request_ids.append(instance.leave_request_id.id) 
+    return LeaveRequest.objects.filter(pk__in=leave_request_ids)
+

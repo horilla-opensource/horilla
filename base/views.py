@@ -67,7 +67,8 @@ from base.forms import (
     AssignPermission,
     ResetPasswordForm,
     ChangePasswordForm,
-    TagsForm
+    TagsForm,
+    MultipleApproveConditionForm,
 )
 from base.models import (
     Company,
@@ -75,6 +76,8 @@ from base.models import (
     JobPosition,
     JobRole,
     Department,
+    MultipleApprovalCondition,
+    MultipleApprovalManagers,
     WorkType,
     EmployeeShift,
     EmployeeShiftDay,
@@ -3756,3 +3759,72 @@ def audit_tag_delete(request,tag_id):
     AuditTag.objects.get(id=tag_id).delete()
     messages.success(request, _("Tag has been deleted successfully!"))
     return redirect(tag_view)
+
+
+
+
+@login_required
+def multiple_approval_condition(request):
+    form = MultipleApproveConditionForm()
+    conditions = MultipleApprovalCondition.objects.all().order_by('department')[::-1]
+    return render(
+        request,
+        "leave/leave_request/penalty/condition.html",
+        {"form": form, "conditions": conditions},
+    )
+
+
+@login_required
+def multiple_level_approval_create(request):
+    form = MultipleApproveConditionForm()
+    if request.method == "POST":
+        form = MultipleApproveConditionForm(request.POST)
+        dept_id = request.POST.get("department")
+        condition_field = request.POST.get("condition_field")
+        condition_operator = request.POST.get("condition_operator")
+        condition_value = request.POST.get("condition_value")
+        condition_start_value = request.POST.get("condition_start_value")
+        condition_end_value = request.POST.get("condition_end_value")
+        department = Department.objects.get(id=dept_id)
+        instance = MultipleApprovalCondition()
+        if form.is_valid():
+            if condition_operator != "range":
+                instance.department = department
+                instance.condition_field = condition_field
+                instance.condition_operator = condition_operator
+                instance.condition_value = condition_value
+            else:
+                instance.department = department
+                instance.condition_field = condition_field
+                instance.condition_operator = condition_operator
+                instance.condition_start_value = condition_start_value
+                instance.condition_end_value = condition_end_value
+            instance.save()
+            sequence = 0
+            for key, value in request.POST.items():
+                if key.startswith("multi_approval_manager"):
+                    sequence += 1
+                    employee_id = int(value)
+                    MultipleApprovalManagers.objects.create(
+                        condition_id=instance,
+                        sequence=sequence,
+                        employee_id=employee_id,
+                    )
+            form = MultipleApproveConditionForm()
+    conditions = MultipleApprovalCondition.objects.all().order_by('department')[::-1]
+    return render(
+        request,
+        "leave/leave_request/penalty/create.html",
+        {"form": form, "conditions": conditions},
+    )
+
+
+def multiple_level_approval_edit(request, condition_id):
+    return redirect(multiple_level_approval_create)
+
+
+@login_required
+def multiple_level_approval_delete(request, condition_id):
+    condition = MultipleApprovalCondition.objects.get(id=condition_id)
+    condition.delete()
+    return redirect(multiple_approval_condition)
