@@ -2,8 +2,10 @@
 models.py
 Used to register models
 """
+from collections.abc import Iterable
 from datetime import date, datetime, timedelta
 import threading
+from typing import Any
 from django import forms
 from django.db import models
 from django.dispatch import receiver
@@ -14,6 +16,7 @@ from django.utils.translation import gettext_lazy as _
 from django.db.models.signals import pre_save, pre_delete
 from django.http import QueryDict
 from asset.models import Asset
+from base import thread_local_middleware
 from employee.models import EmployeeWorkInformation
 from employee.models import Employee, Department, JobPosition
 from base.models import Company, EmployeeShift, WorkType, JobRole
@@ -25,7 +28,7 @@ from attendance.models import (
     Attendance,
     strtime_seconds,
 )
-from leave.models import LeaveRequest
+from leave.models import LeaveRequest, LeaveType
 
 
 # Create your models here.
@@ -1360,7 +1363,7 @@ class LoanAccount(models.Model):
 @receiver(post_save, sender=LoanAccount)
 def create_installments(sender, instance, created, **kwargs):
     """
-    This is post save method, used to create initial stage for the recruitment
+    Post save metod for loan account
     """
     installments = []
     if created and instance.asset_id is None and instance.type != "fine":
@@ -1405,3 +1408,152 @@ def create_installments(sender, instance, created, **kwargs):
                 installment.save()
                 installments.append(installment)
             instance.deduction_ids.set(installments)
+
+
+class ReimbursementMultipleAttachment(models.Model):
+    """
+    ReimbursementMultipleAttachement Model
+    """
+
+    attachment = models.FileField(upload_to="payroll/reimbursements")
+
+
+class Reimbursement(models.Model):
+    """
+    Reimbursement Model
+    """
+
+    reimbursement_types = [
+        ("reimbursement", "Reimbursement"),
+        ("leave_encashment", "Leave Encashment"),
+    ]
+    status_types = [
+        ("requested", "Requested"),
+        ("approved", "Approved"),
+        ("canceled", "Canceled"),
+    ]
+    title = models.CharField(max_length=50)
+    type = models.CharField(
+        choices=reimbursement_types, max_length=16, default="reimbursement"
+    )
+    employee_id = models.ForeignKey(
+        Employee, on_delete=models.PROTECT, verbose_name="Employee"
+    )
+    allowance_on = models.DateField()
+    attachment = models.FileField(upload_to="payroll/reimbursements", null=True)
+    other_attachments = models.ManyToManyField(
+        ReimbursementMultipleAttachment, blank=True, editable=False
+    )
+    leave_type_id = models.ForeignKey(
+        LeaveType, on_delete=models.PROTECT, null=True, verbose_name="Leave type"
+    )
+    ad_to_encash = models.FloatField(
+        default=0, help_text="Available Days to encash", verbose_name="Available days"
+    )
+    cfd_to_encash = models.FloatField(
+        default=0,
+        help_text="Carry Forward Days to encash",
+        verbose_name="Carry forward days",
+    )
+    amount = models.FloatField(default=0)
+    status = models.CharField(
+        max_length=10, choices=status_types, default="requested", editable=False
+    )
+    approved_by = models.ForeignKey(
+        Employee,
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name="approved_by",
+        editable=False,
+    )
+    description = models.TextField(null=True)
+    allowance_id = models.ForeignKey(
+        Allowance, on_delete=models.SET_NULL, null=True, editable=False
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_active=models.BooleanField(default=True,editable=False)
+
+    def save(self, *args, **kwargs) -> None:
+        request = getattr(thread_local_middleware._thread_locals, "request", None)
+
+        # Setting the created use if the used dont have the permission
+        has_perm = request.user.has_perm("payroll.add_reimbursement")
+        if not has_perm:
+            self.employee_id = request.user.employee_get
+        if self.type == "reimbursement" and self.attachment is None:
+            raise ValidationError({"attachment": "This field is required"})
+        elif self.type == "leave_encashment" and self.leave_type_id is None:
+            raise ValidationError({"leave_type_id": "This field is required"})
+        self.cfd_to_encash = max((round(self.cfd_to_encash * 2) / 2), 0)
+        self.ad_to_encash = max((round(self.ad_to_encash * 2) / 2), 0)
+        assigned_leave = self.leave_type_id.employee_available_leave.filter(
+            employee_id=self.employee_id
+        ).first()
+        if self.status != "approved" or self.allowance_id is None:
+            super().save(*args, **kwargs)
+            if self.status == "approved" and self.allowance_id is None:
+                if self.type == "reimbursement":
+                    proceed = True
+                else:
+                    proceed = False
+                    if assigned_leave:
+                        available_days = assigned_leave.available_days
+                        carryforward_days = assigned_leave.carryforward_days
+                        if (
+                            available_days >= self.ad_to_encash
+                            and carryforward_days >= self.cfd_to_encash
+                        ):
+                            proceed = True
+                            assigned_leave.available_days = (
+                                available_days - self.ad_to_encash
+                            )
+                            assigned_leave.carryforward_days = (
+                                carryforward_days - self.cfd_to_encash
+                            )
+                            assigned_leave.save()
+                        else:
+                            request = getattr(
+                                thread_local_middleware._thread_locals, "request", None
+                            )
+                            if request:
+                                messages.info(
+                                    request,
+                                    "The employee don't have that much leaves to encash in CFD / Available days",
+                                )
+
+                    # if self.ad
+
+                if proceed:
+                    reimbursement = Allowance()
+                    reimbursement.one_time_date = self.allowance_on
+                    reimbursement.title = self.title
+                    reimbursement.only_show_under_employee = True
+                    reimbursement.include_active_employees = False
+                    reimbursement.amount = self.amount
+                    reimbursement.save()
+                    reimbursement.include_active_employees = False
+                    reimbursement.specific_employees.add(self.employee_id)
+                    reimbursement.save()
+                    self.allowance_id = reimbursement
+                    if request:
+                        self.approved_by = request.user.employee_get
+                else:
+                    self.status = "requested"
+                super().save(*args, **kwargs)
+            elif self.status == "canceled" and self.allowance_id is not None:
+                cfd_days = self.cfd_to_encash
+                available_days = self.ad_to_encash
+                if assigned_leave:
+                    assigned_leave.available_days = (
+                        assigned_leave.available_days + available_days
+                    )
+                    assigned_leave.carryforward_days = (
+                        assigned_leave.carryforward_days + cfd_days
+                    )
+                    assigned_leave.save()
+                self.allowance_id.delete()
+
+    def delete(self, *args, **kwargs):
+        if self.allowance_id:
+            self.allowance_id.delete()
+        return super().delete(*args, **kwargs)

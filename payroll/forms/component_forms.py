@@ -2,20 +2,30 @@
 These forms provide a convenient way to handle data input, validation, and customization
 of form fields and widgets for the corresponding models in the payroll management system.
 """
+from typing import Any
 import uuid
 import datetime
 from django import forms
 from django.utils.translation import gettext_lazy as _
 from django.template.loader import render_to_string
+from base import thread_local_middleware
 from horilla_widgets.forms import HorillaForm
 from horilla_widgets.widgets.horilla_multi_select_field import HorillaMultiSelectField
 from horilla_widgets.widgets.select_widgets import HorillaMultiSelectWidget
 from base.forms import Form, ModelForm
 from employee.models import Employee
 from employee.filters import EmployeeFilter
+from leave.models import AvailableLeave, LeaveType
 from payroll.models import tax_models as models
 from payroll.widgets import component_widgets as widget
-from payroll.models.models import Allowance, Contract, LoanAccount, Payslip
+from payroll.models.models import (
+    Allowance,
+    Contract,
+    LoanAccount,
+    Payslip,
+    Reimbursement,
+    ReimbursementMultipleAttachment,
+)
 import payroll.models.models
 from base.methods import reload_queryset
 
@@ -378,7 +388,11 @@ class LoanAccountForm(ModelForm):
         if self.instance.pk:
             self.verbose_name = self.instance.title
             fields_to_exclude = ["employee_id", "installment_start_date"]
-            if  Payslip.objects.filter(installment_ids__in=list(self.instance.deduction_ids.values_list("id",flat=True))).exists():
+            if Payslip.objects.filter(
+                installment_ids__in=list(
+                    self.instance.deduction_ids.values_list("id", flat=True)
+                )
+            ).exists():
                 fields_to_exclude = fields_to_exclude + ["loan_amount", "installments"]
             self.initial["provided_date"] = str(self.instance.provided_date)
             for field in fields_to_exclude:
@@ -388,14 +402,133 @@ class LoanAccountForm(ModelForm):
 
 class AssetFineForm(LoanAccountForm):
     verbose_name = "Asset Fine"
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['loan_amount'].label = 'Fine Amount'
-        fields_to_exclude = ["employee_id", "provided_date","type"]
+        self.fields["loan_amount"].label = "Fine Amount"
+        fields_to_exclude = ["employee_id", "provided_date", "type"]
         for field in fields_to_exclude:
-                if field in self.fields:
-                    del self.fields[field]
-        
+            if field in self.fields:
+                del self.fields[field]
 
-    pass
-    
+
+
+class MultipleFileInput(forms.ClearableFileInput):
+    allow_multiple_selected = True
+
+
+class MultipleFileField(forms.FileField):
+    def __init__(self, *args, **kwargs):
+        kwargs.setdefault("widget", MultipleFileInput())
+        super().__init__(*args, **kwargs)
+
+    def clean(self, data, initial=None):
+        single_file_clean = super().clean
+        if isinstance(data, (list, tuple)):
+            result = [single_file_clean(d, initial) for d in data]
+        else:
+            result = [single_file_clean(data, initial)]
+        return result[0]
+
+
+class ReimbursementForm(ModelForm):
+    """
+    ReimbursementForm
+    """
+
+    verbose_name = "Reimbursement / Encashment"
+
+    class Meta:
+        model = Reimbursement
+        fields = "__all__"
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        exclude_fields = []
+        if not self.instance.pk:
+            self.initial["allowance_on"] = str(datetime.date.today())
+
+        request = getattr(thread_local_middleware._thread_locals, "request", None)
+        if request:
+            employee = (
+                request.user.employee_get
+                if self.instance.pk is None
+                else self.instance.employee_id
+            )
+        self.initial["employee_id"] = employee.id
+        assigned_leaves = LeaveType.objects.filter(
+            employee_available_leave__employee_id=employee,
+            employee_available_leave__total_leave_days__gte=1,
+        )
+        self.assigned_leaves = AvailableLeave.objects.filter(
+            leave_type_id__in=assigned_leaves, employee_id=employee
+        )
+        self.fields["leave_type_id"].queryset = assigned_leaves
+        self.fields["leave_type_id"].empty_label = None
+        self.fields["employee_id"].empty_label = None
+
+        type_attr = self.fields["type"].widget.attrs
+        type_attr["onchange"] = "toggleReimbursmentType($(this))"
+        self.fields["type"].widget.attrs.update(type_attr)
+
+        employee_attr = self.fields["employee_id"].widget.attrs
+        employee_attr["onchange"] = "getAssignedLeave($(this).val())"
+        self.fields["employee_id"].widget.attrs.update(employee_attr)
+
+        self.fields["allowance_on"].widget = forms.DateInput(
+            attrs={"type": "date", "class": "oh-input w-100"}
+        )
+        self.fields["attachment"] = MultipleFileField(label="Attachements")
+
+        # deleting fields based on type
+        type = None
+        if self.data and not self.instance.pk:
+            type = self.data["type"]
+        elif self.instance is not None:
+            type = self.instance.type
+
+        if not request.user.has_perm("payroll.add_reimbursement"):
+            exclude_fields.append("employee_id")
+
+        if type == "reimbursement" and self.instance.pk:
+            exclude_fields = exclude_fields + [
+                "leave_type_id",
+                "cfd_to_encash",
+                "ad_to_encash",
+            ]
+        elif self.instance.pk or self.data.get("type") == "leave_encashment":
+            exclude_fields = exclude_fields + [
+                "attachment",
+                "amount",
+            ]
+        if self.instance.pk:
+            exclude_fields = exclude_fields + ["type", "employee_id"]
+
+        for field in exclude_fields:
+            if field in self.fields:
+                del self.fields[field]
+
+    def as_p(self):
+        """
+        Render the form fields as HTML table rows with Bootstrap styling.
+        """
+        context = {"form": self}
+        table_html = render_to_string("common_form.html", context)
+        return table_html
+
+    def save(self, commit: bool = ...) -> Any:
+        attachemnt = []
+        multiple_attachment_ids = []
+        attachemnts = None
+        if self.files.getlist("attachment"):
+            attachemnts = self.files.getlist("attachment")
+            self.instance.attachemnt = attachemnts[0]
+            multiple_attachment_ids = []
+            for attachemnt in attachemnts:
+                file_instance = ReimbursementMultipleAttachment()
+                file_instance.attachment = attachemnt
+                file_instance.save()
+                multiple_attachment_ids.append(file_instance.pk)
+        instance = super().save(commit)
+        instance.other_attachments.add(*multiple_attachment_ids)
+        return instance, attachemnts

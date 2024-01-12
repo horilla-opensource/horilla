@@ -86,4 +86,40 @@ urlpatterns = [
         component_views.asset_fine,
         name="asset-fine",
     ),
+    path(
+        "view-reimbursement",
+        component_views.view_reimbursement,
+        name="view-reimbursement",
+    ),
+    path(
+        "create-reimbursement",
+        component_views.create_reimbursement,
+        name="create-reimbursement",
+    ),
+    path(
+        "search-reimbursement",
+        component_views.search_reimbursement,
+        name="search-reimbursement",
+    ),
+    path(
+        "get-assigned-leaves/",
+        component_views.get_assigned_leaves,
+        name="get-assigned-leaves",
+    ),
+    path(
+        "approve-reimbursements",
+        component_views.approve_reimbursements,
+        name="approve-reimbursements",
+    ),
+    path(
+        "delete-reimbursements",
+        component_views.delete_reimbursements,
+        name="delete-reimbursement",
+    ),
+    path(
+        "reimbursement-attachements/<int:instance_id>/",
+        component_views.reimbursement_attachments,
+        name="reimbursement-attachments",
+    ),
+    path("delete-attachments/<int:_reimbursement_id>/",component_views.delete_attachments,name="delete-attachments")
 ]

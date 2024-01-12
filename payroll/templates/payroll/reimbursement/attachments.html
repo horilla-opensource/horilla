@@ -1,0 +1,16 @@
+{% load i18n %}
+<h3 class="oh-faq-card__title">{% trans 'Attachments' %}</h3>
+<span class="oh-card__footer--border-top pt-1 mb-3" style="display: block;"></span>
+{% for attachment in reimbursement.other_attachments.all %}
+<div id="attachmentContainer{{forloop.counter}}">
+    <div class="oh-btn-group" style="width: 10%;">
+        <button onclick="window.open('{{ protocol }}://{{ host }}{{ attachment.attachment.url }}', '_blank')" class="oh-btn oh-btn--light text-dark"><ion-icon name="eye-outline"></ion-icon></button>
+        <a href="{% url "delete-attachments" reimbursement.id  %}?ids={{attachment.id}}"  onclick="return confirm('Do you want to delete this attachment?')" class="oh-btn oh-btn--light"><ion-icon name="trash"></ion-icon></a>
+    </div>
+    <iframe style="width: 100%;height: 200px;" height="100" src="{{ protocol }}://{{ host }}{{ attachment.attachment.url }}" frameborder="0">adsf</iframe>
+    
+</div>
+{% endfor %}
+<div class="d-flex flex-row-reverse">
+  <button onclick="$('.oh-modal--show').toggleClass('oh-modal--show');" class="oh-btn oh-btn--secondary mt-2 mr-0 pl-4 pr-5 oh-btn--w-100-resp">{% trans 'Close' %}</button>
+</div>

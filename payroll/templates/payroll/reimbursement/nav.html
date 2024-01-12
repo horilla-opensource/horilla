@@ -1,0 +1,32 @@
+{% load i18n %}
+<section class="oh-wrapper oh-main__topbar" style="padding-bottom: 1rem;">
+  <div class="oh-main__titlebar oh-main__titlebar--left oh-d-flex-column--resp oh-mb-3--small">
+    <h1 class="oh-main__titlebar-title fw-bold">{% trans 'Reimbursements' %}</h1>
+  </div>
+
+  <form hx-get="{% url 'search-reimbursement' %}" hx-target="#reimbursementContainer">
+    <div class="oh-main__titlebar oh-main__titlebar--right oh-d-flex-column--resp oh-mb-3--small">
+      <div class="oh-input-group oh-input__search-group mr-4">
+        <ion-icon name="search-outline" class="oh-input-group__icon oh-input-group__icon--left md hydrated" role="img" aria-label="search outline"></ion-icon>
+        <input type="text" id="pipelineSearch" placeholder="Search" style="margin-right:10px" onkeyup="$('.filterButton').click()" name="search" class="oh-input oh-input__icon mr-3" aria-label="Search Input" />
+      </div>
+      <ul class="oh-view-types ml-2" style="margin-bottom: 0;">
+        <li class="oh-view-type" data-view="list" onclick="event.stopPropagation()">
+          <a class="oh-btn oh-btn--view" title="List"><ion-icon name="list-outline" role="img" class="md hydrated" aria-label="list outline"></ion-icon></a>
+        </li>
+        <li class="oh-view-type" data-view="card">
+          <a class="oh-btn oh-btn--view oh-btn--view-active" title="Card"><ion-icon name="grid-outline" role="img" class="md hydrated" aria-label="grid outline"></ion-icon></a>
+        </li>
+      </ul>
+      {% include 'payroll/reimbursement/filter.html' %}
+      <div class="oh-main__titlebar-button-container">
+        <div class="oh-main__titlebar-button-container">
+          <a hx-get="{% url 'create-reimbursement' %}" hx-target="#reimbursementModalBody" data-toggle="oh-modal-toggle" data-target="#reimbursementModal" class="oh-btn oh-btn--secondary">
+            <ion-icon name="add-outline"></ion-icon>
+            {% trans 'Create' %}
+          </a>
+        </div>
+      </div>
+    </div>
+  </form>
+</section>

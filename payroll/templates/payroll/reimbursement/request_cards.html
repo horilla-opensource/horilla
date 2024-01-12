@@ -1,0 +1,174 @@
+{% load i18n %}
+{% include "filter_tags.html" %}
+<div class="d-flex flex-row-reverse oh-wrapper">
+  <span class="mb-3" onclick="$('[name=status]').val('canceled').change();  $('.filterButton').click()" style="cursor: pointer; margin-right: 15px;">
+    <span class="oh-dot oh-dot--small me-1" style="background-color:red"></span>
+    {% trans "Canceled" %}
+  </span>
+  <span class="mb-3" onclick="$('[name=status]').val('requested').change(); $('.filterButton').click()" style="cursor: pointer; margin-right: 15px;">
+    <span class="oh-dot oh-dot--small me-1" style="background-color:rgba(128, 128, 128, 0.482)"></span>
+    {% trans "Requested" %}
+  </span>
+  <span class="mb-3" onclick="$('[name=status]').val('approved').change();$('.filterButton').click()" style="cursor: pointer; margin-right: 15px;">
+    <span class="oh-dot oh-dot--small me-1" style="background-color:yellowgreen"></span>
+    {% trans "Approved" %}
+  </span>
+  <span class="mb-3" onclick="$('[name=type]').val('leave_encashment').change();$('.filterButton').click()" style="cursor: pointer; margin-right: 15px;">
+    <span class="oh-dot oh-dot--small me-1" style="background-color:#cd8232"></span>
+    {% trans "Encashment" %}
+  </span>
+  <span class="mb-3" onclick="$('[name=type]').val('reimbursement').change();$('.filterButton').click()" style="cursor: pointer; margin-right: 15px;">
+    <span class="oh-dot oh-dot--small me-1" style="background-color:#32a1cd"></span>
+    {% trans "Reimbursement" %}
+  </span>
+</div>
+<div class="oh-wrapper oh-faq-cards" >
+{% for req in requests %}
+<div class="oh-faq-card" id="requestCard{{ req.id }}">
+  <div class="d-flex justify-content-between">
+    <div style="margin-bottom: 10px;">
+      <div class="loan-type" style="display: inline;">{{ req.get_type_display }}</div>
+      <div class="loan-type" style="display: inline; {% if req.status == "approved" %}background:#9acd3245; {% elif req.status == "canceled" %} background:#ff45002e;{% endif %}">{{ req.get_status_display }}</div>
+    </div>
+    <div>
+      {% if req.status != "approved" %}
+      <a hx-get="{% url 'create-reimbursement' %}?instance_id={{ req.id }}" hx-target="#reimbursementModalBody"
+      class="mr-2" data-toggle="oh-modal-toggle" data-target="#reimbursementModal"><ion-icon
+      class="text-dark md hydrated" name="create-outline" role="img" aria-label="create outline"></ion-icon></a>
+      {% endif %}
+      {% if perms.payroll.delete_reimbursement %}
+      <a href="{% url "delete-reimbursement" %}?ids={{req.id}}" onclick="return confirm('Do you want to delete this record?')"><ion-icon class="text-danger md hydrated"
+        name="trash-outline" role="img" aria-label="trash outline"></ion-icon></a>
+      {% endif %}
+    </div>
+  </div>
+  <div class="oh-timeoff-modal__profile-content">
+    <div class="oh-profile mb-2">
+      <div class="oh-profile__avatar">
+        <img src="{{ req.employee_id.get_avatar }}" class="oh-profile__image me-2" />
+      </div>
+      <div class="oh-timeoff-modal__profile-info">
+        <span class="oh-timeoff-modal__user m-0 fw-bold">{{ req.employee_id }}</span>
+        <span class="oh-timeoff-modal__user m-0" style="font-size: 12px; color: #4d4a4a">
+          {{req.employee_id.get_department }} / {{ req.employee_id.get_job_position }}</span>
+      </div>
+    </div>
+  </div>
+  <h3 class="oh-faq-card__title">{{ req.title }}</h3>
+  <p class="oh-faq-card__desc">{{ req.description }}.</p>
+  <span class="oh-card__footer--border-top pt-1" style="display: block;">
+    <i style="color: hsl(0,0%,45%);">{% trans 'Allowance on' %}</i> {{ req.allowance_on }}.
+    {% if req.type == 'reimbursement' %}
+    <i><a data-target="#reimbursementAttachementModal" data-toggle="oh-modal-toggle" hx-target="#reimbursementAttachementModalBody" hx-get="{% url "reimbursement-attachments" req.id %}" class="text-danger"
+        title="Attachments" rel="noopener noreferrer">{% trans 'View Attachments' %}</a></i>
+    {% endif %}
+  </span>
+  {% if perms.payroll.change_reimbursement %}
+  <form action="{% url 'approve-reimbursements' %}">
+    <input type="hidden" name="ids" value="{{ req.id }}" />
+    <input type="hidden" name="status" />
+    {% if req.type == 'reimbursement' %}
+    <p class="oh-faq-card__desc" style="height: 150px;">
+      <iframe id="iframe_pdf" src="{{ req.attachment.url }}" style="width: 100%" frameborder="0"></iframe>
+    </p>
+    {% else %}
+    <p class="oh-faq-card__desc" style="max-height: 180px;">
+      <i>
+        {% trans 'Requsted for total' %} <span class="text-danger"> {{ req.ad_to_encash|add:req.cfd_to_encash }} </span>
+        {% trans 'days' %}
+        {% trans 'days to encash.' %}
+      </i>
+      <input style="display: block;padding: 10px;margin-top: 10px;" type="number" required default="0" min="0" placeholder="Amount"
+        name="amount" class="mt-2"{% if req.status == "approved" %}disabled{% endif %} {% if req.amount %} value="{{req.amount}}"{% endif %} />
+    </p>
+    {% endif %}
+    <div class="oh-btn-group">
+      <button type="button"
+        onclick="$('#requestCard{{ req.id }} [name=amount]').attr('required',false);reimbursementConfirm('Do You really want to cancel the request?','#requestCard{{ req.id }}');$('#requestCard{{ req.id }} [name=status]').val('canceled')"
+        class="oh-btn oh-btn--primary oh-btn--block w-100">
+        <ion-icon name="close" class="mr-1"></ion-icon>
+        {% trans 'Cancel' %}
+      </button>
+      {% if req.status != "approved" %}
+      <button type="button"
+        onclick="reimbursementConfirm('Do You really want to approve the request?','#requestCard{{ req.id }}',true);$('#requestCard{{ req.id }} [name=status]').val('approved')"
+        class="oh-btn oh-btn--secondary oh-btn--block w-100">
+        <ion-icon name="checkmark" class="mr-1"></ion-icon>
+        {% trans 'Approve' %}
+      </button>
+      {% else %}
+      <button type="button"  class="oh-btn oh-btn--secondary oh-btn--disabled oh-btn--block w-100">
+        <ion-icon name="checkmark" class="mr-1"></ion-icon>
+        {% trans 'Approved' %}
+      </button>
+      {% endif %}
+    </div>
+    <input type="submit" hidden id="requestCard{{ req.id }}Button">
+  </form>
+  {% endif %}
+
+</div>
+{% endfor %}
+</div>
+
+<div class="oh-wrapper w-100">
+  <div class="oh-pagination">
+    <span class="oh-pagination__page" data-toggle="modal" data-target="#addEmployeeModal">{% trans 'Page' %} {{ requests.number }} {% trans 'of' %} {{ requests.paginator.num_pages }}.</span>
+
+    <nav class="oh-pagination__nav">
+      <div class="oh-pagination__input-container me-3">
+        <span class="oh-pagination__label me-1">{% trans 'Page' %}</span>
+
+        <input type="number" name="page" class="oh-pagination__input" value="{{ requests.number }}" hx-get="{% url 'search-reimbursement' %}?{{ pd }}" hx-target="#reimbursementContainer" min="1" />
+        <span class="oh-pagination__label">{% trans 'of' %} {{ requests.paginator.num_pages }}</span>
+      </div>
+
+      <ul class="oh-pagination__items">
+        {% if requests.has_previous %}
+          <li class="oh-pagination__item oh-pagination__item--wide">
+            <a hx-target="#reimbursementContainer" hx-get="{% url 'search-reimbursement' %}?{{ pd }}&page=1" class="oh-pagination__link">{% trans 'First' %}</a>
+          </li>
+          <li class="oh-pagination__item oh-pagination__item--wide">
+            <a hx-target="#reimbursementContainer" hx-get="{% url 'search-reimbursement' %}?{{ pd }}&page={{ requests.previous_page_number }}" class="oh-pagination__link">{% trans 'Previous' %}</a>
+          </li>
+        {% endif %}
+        {% if requests.has_next %}
+          <li class="oh-pagination__item oh-pagination__item--wide">
+            <a hx-target="#reimbursementContainer" hx-get="{% url 'search-reimbursement' %}?{{ pd }}&page={{ requests.next_page_number }}" class="oh-pagination__link">{% trans 'Next' %}</a>
+          </li>
+          <li class="oh-pagination__item oh-pagination__item--wide">
+            <a hx-target="#reimbursementContainer" hx-get="{% url 'search-reimbursement' %}?{{ pd }}&page={{ requests.paginator.num_pages }}" class="oh-pagination__link">{% trans 'Last' %}</a>
+          </li>
+        {% endif %}
+      </ul>
+    </nav>
+  </div>
+</div>
+
+<script>
+  function reimbursementConfirm(params, target, approve = false) {
+    Swal.fire({
+      text: params,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#008000',
+      cancelButtonColor: '#d33',
+      confirmButtonText: "Confirm",
+      cancelButtonText: "Close"
+    }).then((result) => {
+      if (result.isConfirmed) {
+        if (approve) {
+          $(`${target} [name=amount]`).attr("required", true)
+        }
+        $(target + "Button").click()
+        if (event.target.tagName.toLowerCase() === 'form') {
+          event.target.submit()
+        } else if (event.target.tagName.toLowerCase() === 'a') {
+          window.location.href = event.target.href
+        }
+      } else {
+      }
+    })
+
+  }
+</script>
