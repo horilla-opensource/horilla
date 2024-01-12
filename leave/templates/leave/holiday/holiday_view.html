@@ -1,6 +1,6 @@
 {% extends 'index.html' %} {% block content %} {% load static %} {% load i18n %}
 <!-- start of message  -->
-{% if messages %}
+{% comment %} {% if messages %}
 <div class="oh-wrapper">
   {% for message in messages %}
   <div class="oh-alert-container">
@@ -10,7 +10,7 @@
   </div>
   {% endfor %}
 </div>
-{% endif %}
+{% endif %} {% endcomment %}
 <!-- end of messages -->
 
 <!-- start of nav bar -->
@@ -194,7 +194,9 @@
       <span class="oh-modal__dialog-title" id="editDialogDialog"
         >{% trans "Create Holiday" %}</span
       >
-      <button class="oh-modal__close" aria-label="Close">
+      <button class="oh-modal__close" aria-label="Close" 
+              hx-get="{% url 'holiday-filter' %}" hx-target="#holidays"
+          >
         <ion-icon name="close-outline"></ion-icon>
       </button>
     </div>
@@ -217,7 +219,9 @@
       <span class="oh-modal__dialog-title" id="editDialogDialog"
         >{% trans "Update Holiday" %}</span
       >
-      <button class="oh-modal__close" aria-label="Close">
+      <button class="oh-modal__close" aria-label="Close"
+              hx-get="{% url 'holiday-filter' %}" hx-target="#holidays" 
+          >
         <ion-icon name="close-outline"></ion-icon>
       </button>
     </div>

@@ -62,6 +62,25 @@
             <span class="oh-timeoff-modal__stat-count">{{leave_request.created_by}}</span>
         </div>
     </div>
+    {% if leave_request.multiple_approvals %}
+    <div class="oh-timeoff-modal__stats w-100 mt-3">
+        <div class="oh-timeoff-modal__stat">
+            <span class="oh-timeoff-modal__stat-title">{% trans "Multiple Approvals" %}</span>
+            {% for approval in  leave_request.multiple_approvals.approvals %}
+                <div class="oh-timeoff-modal__stat-description">{{forloop.counter}}.{{approval.manager_id}} : 
+                    {% if approval.is_approved %}{% trans "Approved" %}
+                    {% else %}
+                        {% if approval.is_rejected %}
+                            {% trans "Rejected" %}
+                        {% else %}
+                            {% trans "Not Marked" %}
+                        {% endif %}
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
 
     <div class="oh-timeoff-modal__stats w-100 mt-3">
         <div class="oh-timeoff-modal__stat">
@@ -96,7 +115,7 @@
 </div>
 
 <div class="oh-modal__dialog-footer oh-timeoff-modal__footer">
-    {% if leave_request.status == 'requested' %}
+    {% if leave_request.status == 'requested'  %}
         <a type="submit" href="{% url 'request-approve' leave_request.id %}" title="{% trans 'Approve' %}"
             class="oh-btn oh-btn--success w-100">
             <ion-icon class="me-1" name="checkmark-outline"></ion-icon>

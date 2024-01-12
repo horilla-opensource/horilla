@@ -1,11 +1,13 @@
 import calendar
 from collections.abc import Iterable
 from datetime import datetime, timedelta
+import operator
 from django.db import models
 from django.utils import timezone
 from django.core.exceptions import ValidationError
 from dateutil.relativedelta import relativedelta
 from django.utils.translation import gettext_lazy as _
+from base import thread_local_middleware
 from base.models import Company, MultipleApprovalCondition
 from base.horilla_company_manager import HorillaCompanyManager
 from employee.models import Employee
@@ -14,6 +16,15 @@ from django.core.files.storage import default_storage
 from django.conf import settings
 
 
+operator_mapping = {
+    "equal": operator.eq,
+    "notequal": operator.ne,
+    "lt": operator.lt,
+    "gt": operator.gt,
+    "le": operator.le,
+    "ge": operator.ge,
+    "icontains": operator.contains,
+}
 # Create your models here.
 BREAKDOWN = [
     ("full_day", _("Full Day")),
@@ -522,15 +533,23 @@ class LeaveRequest(models.Model):
         department_id = self.employee_id.employee_work_info.department_id
         requested_days = self.requested_days
         applicable_condition = False
-        conditions = MultipleApprovalCondition.objects.filter(department=department_id)
-        for condition in conditions:
-            operator = condition.condition_operator
-            if operator == "range":
-                start_value = float(condition.condition_start_value)
-                end_value = float(condition.condition_end_value)
-                if start_value <= requested_days <= end_value:
-                    applicable_condition = condition
-                    break
+        conditions = MultipleApprovalCondition.objects.filter(department=department_id).order_by('condition_value')
+        if conditions:
+            for condition in conditions:
+                operator = condition.condition_operator
+                if operator == "range":
+                    start_value = float(condition.condition_start_value)
+                    end_value = float(condition.condition_end_value)
+                    if start_value <= requested_days <= end_value:
+                        applicable_condition = condition
+                        break
+                else:
+                    operator_func = operator_mapping.get(condition.condition_operator)
+                    condition_value = type(requested_days)(condition.condition_value)
+                    if operator_func(requested_days, condition_value):
+                        applicable_condition = condition
+                        break
+                
         if applicable_condition and self.status=="requested":
             LeaveRequestConditionApproval.objects.filter(leave_request_id=self).delete()
             sequence = 0
@@ -593,7 +612,7 @@ class LeaveRequest(models.Model):
         self.status = "approved"
         available_leave.save()
 
-    def conditional_approvals(self, *args, **kwargs):
+    def multiple_approvals(self, *args, **kwargs):
         approvals = LeaveRequestConditionApproval.objects.filter(leave_request_id=self)
         requested_query = approvals.filter(is_approved=False).order_by("sequence")
         approved_query = approvals.filter(is_approved=True).order_by("sequence")
@@ -605,10 +624,21 @@ class LeaveRequest(models.Model):
                 "managers": managers,
                 "approved": approved_query,
                 "requested": requested_query,
+                "approvals":approvals,
             }
         else:
             result = False
         return result
+    
+    def is_approved(self):
+        request = getattr(thread_local_middleware._thread_locals,"request",None)
+        if request:
+            employee =  Employee.objects.filter(employee_user_id = request.user).first()
+            condition_approval = LeaveRequestConditionApproval.objects.filter(leave_request_id=self,manager_id = employee.id).first()
+            if condition_approval:
+                return not condition_approval.is_approved
+            else:
+                return  True
 
 
 class LeaveAllocationRequest(models.Model):

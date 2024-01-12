@@ -87,6 +87,7 @@ sidebar_urls = [
     "tag-view",
     "ticket-type-view",
     "mail-server-conf",
+    "multiple-approval-condition",
 ]
 remove_urls = [
     "objective-detailed-view",

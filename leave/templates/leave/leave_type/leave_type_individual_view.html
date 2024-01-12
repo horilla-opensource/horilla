@@ -1,4 +1,4 @@
-{% load i18n %}
+{% load i18n %} {% load yes_no %}
 {% if request.GET.instances_ids %}
 <div class="oh-modal__dialog oh-modal__dialog--navigation m-0 p-0">
     <button 
@@ -32,7 +32,7 @@
     <div class="oh-timeoff-modal__stats-container">
         <div class="oh-timeoff-modal__stat">
             <span class="oh-timeoff-modal__stat-title">{% trans "Period In" %}</span>
-            <span class="oh-timeoff-modal__stat-count">{{leave_type.period_in}}</span>
+            <span class="oh-timeoff-modal__stat-count">{{leave_type.get_period_in_display}}</span>
         </div>        
         <div class="oh-timeoff-modal__stat">
             <span class="oh-timeoff-modal__stat-title">{% trans "count" %}</span>
@@ -44,12 +44,12 @@
         </div>
         <div class="oh-timeoff-modal__stat">
             <span class="oh-timeoff-modal__stat-title">{% trans "Reset" %}</span>
-            <span class="oh-timeoff-modal__stat-count">{{leave_type.reset}}</span>
+            <span class="oh-timeoff-modal__stat-count">{{leave_type.reset|yes_no}}</span>
         </div>
         {% if leave_type.reset_based %}
         <div class="oh-timeoff-modal__stat">
             <span class="oh-timeoff-modal__stat-title">{% trans "Reset Based" %}</span>
-            <span class="oh-timeoff-modal__stat-count">{{leave_type.reset_based}}</span>
+            <span class="oh-timeoff-modal__stat-count">{{leave_type.get_reset_based_display}}</span>
         </div>
         {% endif %}
         {% if leave_type.reset_month %}
@@ -67,13 +67,13 @@
         {% if leave_type.reset_weekend %}
         <div class="oh-timeoff-modal__stat">
             <span class="oh-timeoff-modal__stat-title">{% trans "Reset weekend" %}</span>
-            <span class="oh-timeoff-modal__stat-count">{{leave_type.reset_weekend}}</span>
+            <span class="oh-timeoff-modal__stat-count">{{leave_type.get_reset_weekend_display}}</span>
         </div>
         {% endif %}
         <div class="oh-timeoff-modal__stats ">
             <div class="oh-timeoff-modal__stat">
                 <span class="oh-timeoff-modal__stat-title">{% trans "Carryforward Type" %}</span>
-                <div class="oh-timeoff-modal__stat-count">{{leave_type.carryforward_type}}</div>
+                <div class="oh-timeoff-modal__stat-count">{{leave_type.get_carryforward_type_display}}</div>
             </div>
         </div>
         {% if leave_type.carryforward_max %}
@@ -97,32 +97,32 @@
         <div class="oh-timeoff-modal__stats ">
             <div class="oh-timeoff-modal__stat">
                 <span class="oh-timeoff-modal__stat-title">{% trans "Payment Type" %}</span>
-                <div class="oh-timeoff-modal__stat-count">{{leave_type.payment}}</div>
+                <div class="oh-timeoff-modal__stat-count">{{leave_type.get_payment_display}}</div>
             </div>
         </div>
         <div class="oh-timeoff-modal__stats ">
             <div class="oh-timeoff-modal__stat">
                 <span class="oh-timeoff-modal__stat-title">{% trans "Require Approval" %}</span>
-                <div class="oh-timeoff-modal__stat-count">{{leave_type.require_approval}}</div>
+                <div class="oh-timeoff-modal__stat-count">{{leave_type.require_approval|yes_no}}</div>
             </div>
         </div>
         <div class="oh-timeoff-modal__stats">
             <div class="oh-timeoff-modal__stat">
                 <span class="oh-timeoff-modal__stat-title">{% trans "Require Attachment" %}</span>
-                <div class="oh-timeoff-modal__stat-description">{{leave_type.require_attachment }}</div>
+                <div class="oh-timeoff-modal__stat-description">{{leave_type.require_attachment|yes_no }}</div>
             </div>
         </div>
         
         <div class="oh-timeoff-modal__stats ">
             <div class="oh-timeoff-modal__stat">
                 <span class="oh-timeoff-modal__stat-title">{% trans "Exclude company Leaves" %}</span>
-                <div class="oh-timeoff-modal__stat-count">{{leave_type.exclude_company_leave}}</div>
+                <div class="oh-timeoff-modal__stat-count">{{leave_type.exclude_company_leave|yes_no}}</div>
             </div>
         </div>
         <div class="oh-timeoff-modal__stats ">
             <div class="oh-timeoff-modal__stat">
                 <span class="oh-timeoff-modal__stat-title">{% trans "Exclude Holidays" %}</span>
-                <div class="oh-timeoff-modal__stat-count">{{leave_type.exclude_holiday}}</div>
+                <div class="oh-timeoff-modal__stat-count">{{leave_type.exclude_holiday|yes_no}}</div>
             </div>
         </div>
         

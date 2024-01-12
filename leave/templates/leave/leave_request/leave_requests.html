@@ -77,7 +77,7 @@
                     {% if  not dashboard %}
                         <div class="oh-sticky-table__th" >{% trans "Penalties" %}</div>
                         <div class="oh-sticky-table__th">{% trans "Options" %}</div>
-                        {% if request.user|is_reportingmanager or perms.leave.chanage_leaverequest or perms.leave.delete_leaverequest %}
+                        {% if request.user|is_reportingmanager or perms.leave.chanage_leaverequest or perms.leave.delete_leaverequest or request.user|is_leave_approval_manager %}
                           <div class="oh-sticky-table__th">{% trans "Actions" %}</div>
                         {% endif %}
                     {% endif %}
@@ -114,7 +114,15 @@
                     <div class="oh-sticky-table__td {% if leave_request.status == 'cancelled' %} diff-cell{% endif %} dateformat_changer">{{leave_request.start_date}}</div>
                     <div class="oh-sticky-table__td {% if leave_request.status == 'cancelled' %} diff-cell{% endif %} dateformat_changer">{{leave_request.end_date}}</div>
                     <div class="oh-sticky-table__td {% if leave_request.status == 'cancelled' %} diff-cell{% endif %}">{{leave_request.requested_days}}</div>
-                    <div class="oh-sticky-table__td {% if leave_request.status == 'cancelled' %} diff-cell{% endif %}">{{leave_request.get_status_display}}</div>
+                    <div class="oh-sticky-table__td {% if leave_request.status == 'cancelled' %} diff-cell{% endif %}">
+                      {% if leave_request.multiple_approvals and leave_request.status == "requested" %}
+                        <div class="oh-checkpoint-badge oh-checkpoint-badge--secondary" title="{% for manager in leave_request.multiple_approvals.managers %}{{ manager }}{% if not forloop.last %} , {% endif %}{% endfor %}">
+                          {{leave_request.multiple_approvals.approved|length}} / {{leave_request.multiple_approvals.managers|length}} {% trans "Approved" %}
+                        </div>
+                      {% else %}
+                        {{leave_request.get_status_display}}
+                      {% endif %}
+                    </div>
                     {% if  not dashboard %}
                     <div class="oh-sticky-table__td">
                         {% if leave_request.get_penalties_count %}
@@ -123,7 +131,8 @@
                     </div>
                     <div class="oh-sticky-table__td" onclick="event.stopPropagation()">
                         <div class="oh-btn-group" >
-                            {% if leave_request.status == 'requested' %}
+                          
+                            {% if leave_request.is_approved and leave_request.status == 'requested' %}
                             <a type="submit" href="{% url 'request-approve' leave_request.id %}" title="{% trans 'Approve' %}"
                                 class="oh-btn oh-btn--success w-100">
                                 <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
@@ -154,7 +163,7 @@
                     </div>
                     <div class="oh-sticky-table__td" onclick="event.stopPropagation()">
                         <div class="oh-btn-group">
-                            {% if request.user|is_reportingmanager or perms.attendance.chanage_penaltyaccount %}
+                            {% if request.user|is_reportingmanager or perms.attendance.chanage_penaltyaccount or request.user|is_leave_approval_manager %}
                             <button 
                                 data-toggle="oh-modal-toggle"
                                 data-target="#penaltyModal"
@@ -166,13 +175,13 @@
                                 <ion-icon name="information-circle-outline"></ion-icon>            
                             </button>
                             {% endif %}
-                            {% if request.user|is_reportingmanager or perms.leave.chanage_leaverequest or perms.leave.delete_leaverequest %}
-                              {% if request.user|is_reportingmanager or perms.leave.chanage_leaverequest %}
+                            {% if request.user|is_reportingmanager or perms.leave.chanage_leaverequest or perms.leave.delete_leaverequest or request.user|is_leave_approval_manager%}
+                              {% if request.user|is_reportingmanager or perms.leave.chanage_leaverequest or request.user|is_leave_approval_manager %}
                                 <button  class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Edit' %}" data-toggle="oh-modal-toggle"
                                     data-target="#editModal2" hx-get="{% url 'request-update' leave_request.id %}"
                                     hx-target="#updateForm"><ion-icon name="create-outline"></ion-icon></button>
                               {% endif %}
-                              {% if request.user|is_reportingmanager or perms.leave.delete_leaverequest %}
+                              {% if request.user|is_reportingmanager or perms.leave.delete_leaverequest or request.user|is_leave_approval_manager %}
                               <a class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100" id="delete-link"
                                   href="{% url 'request-delete' leave_request.id %}" onclick="return confirm('{% trans "Are you sure you want to delete ?" %}');" title="{% trans 'Delete' %}"><ion-icon
                                       name="trash-outline"></ion-icon></a>

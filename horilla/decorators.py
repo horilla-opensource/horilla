@@ -4,11 +4,13 @@ from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import redirect
 from django.urls import reverse
+from base.models import MultipleApprovalManagers
 from employee.models import Employee, EmployeeWorkInformation
 from django.contrib import messages
 from django.shortcuts import render
 from horilla.settings import TEMPLATES, BASE_DIR
 from horilla import settings
+from leave.models import LeaveRequestConditionApproval
 
 
 logger = logging.getLogger(__name__)
@@ -81,8 +83,19 @@ def manager_can_enter(function, perm):
     """
 
     def _function(request, *args, **kwargs):
+        leave_perm = [
+            "leave.view_leaverequest",
+            "leave.change_leaverequest",
+            "leave.delete_leaverequest",
+        ]
         user = request.user
         employee = Employee.objects.filter(employee_user_id=user).first()
+        if perm in leave_perm:
+            is_approval_manager = MultipleApprovalManagers.objects.filter(
+                employee_id=employee.id
+            ).exists()
+            if is_approval_manager:
+                return function(request, *args, **kwargs)
         is_manager = EmployeeWorkInformation.objects.filter(
             reporting_manager_id=employee
         ).exists()
@@ -116,7 +129,7 @@ def login_required(view_func):
         except Exception as e:
             logger.exception(e)
             if not settings.DEBUG:
-                return render(request,"went_wrong.html")
+                return render(request, "went_wrong.html")
             return view_func(request, *args, **kwargs)
         return func
 

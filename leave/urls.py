@@ -31,7 +31,7 @@ urlpatterns = [
         views.leave_requests_export,
         name="leave-requests-info-export",
     ),
-    path("request-view", views.leave_request_view, name="request-view"),
+    path("request-view/", views.leave_request_view, name="request-view"),
     path(
         "request-approve/<int:id>", views.leave_request_approve, name="request-approve"
     ),
