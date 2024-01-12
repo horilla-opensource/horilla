@@ -18,6 +18,7 @@ from payroll.models.models import (
     Deduction,
     FilingStatus,
     LoanAccount,
+    Reimbursement,
 )
 from payroll.models.models import Payslip
 
@@ -313,6 +314,26 @@ class LoanAccountFilter(FilterSet):
             "settled",
             "type",
             "employee_id",
+            "employee_id__employee_work_info__department_id",
+            "employee_id__employee_work_info__job_position_id",
+            "employee_id__employee_work_info__reporting_manager_id",
+        ]
+
+
+class ReimbursementFilter(FilterSet):
+    """
+    ReimbursementFilter
+    """
+
+    search = django_filters.CharFilter(field_name="title", lookup_expr="icontains")
+
+    class Meta:
+        model = Reimbursement
+        fields = [
+            "status",
+            "type",
+            "employee_id",
+            "approved_by",
             "employee_id__employee_work_info__department_id",
             "employee_id__employee_work_info__job_position_id",
             "employee_id__employee_work_info__reporting_manager_id",

@@ -2,15 +2,15 @@
 <div class="d-flex flex-row-reverse oh-wrapper">
   <span class="mb-3" onclick="$('[name=type]').val('fine').change();  $('.filterButton').click()" style="cursor: pointer; margin-right: 15px;">
     <span class="oh-dot oh-dot--small me-1" style="background-color:red"></span>
-    Fine
+    {% trans "Fine" %}
   </span>
   <span class="mb-3" onclick="$('[name=type]').val('loan').change(); $('.filterButton').click()" style="cursor: pointer; margin-right: 15px;">
     <span class="oh-dot oh-dot--small me-1" style="background-color:rgba(128, 128, 128, 0.482)"></span>
-    Loan
+    {% trans "Loan" %}
   </span>
   <span class="mb-3" onclick="$('[name=type]').val('advanced_salary').change();$('.filterButton').click()" style="cursor: pointer; margin-right: 15px;">
     <span class="oh-dot oh-dot--small me-1" style="background-color:yellowgreen"></span>
-    Advanced Salary
+    {% trans "Advanced Salary" %}
   </span>
 </div>
 <div class="oh-wrapper oh-faq-cards">
