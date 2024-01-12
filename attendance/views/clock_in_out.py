@@ -9,7 +9,8 @@ from django.http import HttpResponse
 from django.utils.translation import gettext_lazy as _
 from base.models import EmployeeShiftDay
 from horilla.decorators import login_required
-from attendance.models import Attendance, AttendanceActivity, AttendanceLateComeEarlyOut
+from base.thread_local_middleware import _thread_locals
+from attendance.models import Attendance, AttendanceActivity, AttendanceLateComeEarlyOut, GraceTime
 from attendance.views.views import (
     activity_datetime,
     attendance_validate,
@@ -35,8 +36,7 @@ def late_come_create(attendance):
     late_come_obj.save()
     return late_come_obj
 
-
-def late_come(attendance, start_time, end_time):
+def late_come(attendance, start_time, end_time,shift):
     """
     this method is used to mark the late check-in  attendance after the shift starts
     args:
@@ -45,9 +45,24 @@ def late_come(attendance, start_time, end_time):
         end_time : attendance day shift end time
 
     """
+    request = getattr(_thread_locals,"request",None)
 
     now_sec = strtime_seconds(datetime.now().strftime("%H:%M"))
     mid_day_sec = strtime_seconds("12:00")
+
+    # Checking gracetime allowance before creating late come 
+    if shift.grace_time_id :
+        # checking grace time in shift, it has the higher priority
+        if shift.grace_time_id.is_active == True:
+            # Setting allowance for the check in time
+            now_sec -= shift.grace_time_id.allowed_time_in_secs
+    # checking default grace time 
+    elif GraceTime.objects.filter(is_default=True,is_active=True).exists() :
+        grace_time = GraceTime.objects.filter(is_default=True,is_active=True,).first()
+        # Setting allowance for the check in time
+        now_sec -= grace_time.allowed_time_in_secs
+    else:
+        pass
     if start_time > end_time and start_time != end_time:
         # night shift
         if now_sec < mid_day_sec:
@@ -59,7 +74,6 @@ def late_come(attendance, start_time, end_time):
     elif start_time < now_sec:
         late_come_create(attendance)
     return True
-
 
 def clock_in_attendance_and_activity(
     employee,
@@ -113,7 +127,7 @@ def clock_in_attendance_and_activity(
         attendance.minimum_hour = minimum_hour
         attendance.save()
         # check here late come or not
-        late_come(attendance=attendance, start_time=start_time, end_time=end_time)
+        late_come(attendance=attendance, start_time=start_time, end_time=end_time,shift=shift)
     else:
         attendance = attendance[0]
         attendance.attendance_clock_out = None

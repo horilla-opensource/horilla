@@ -62,12 +62,31 @@ def validate_time_format(value):
         raise ValidationError(_("Invalid format, it should be HH:MM format"))
     try:
         hour, minute = value.split(":")
+        if len(hour) > 3 or len (minute)>2:
+            raise ValidationError(_("Invalid time"))
         hour = int(hour)
         minute = int(minute)
-        if len(str(hour)) > 3 or minute not in range(60):
-            raise ValidationError(_("Invalid time"))
+        if len(str(hour)) > 3 or len(str(minute)) > 2 or minute not in range(60) :
+            raise ValidationError(_("Invalid time, excepted MM:SS"))
     except ValueError as error:
         raise ValidationError(_("Invalid format")) from error
+    
+def validate_time_in_minutes(value):
+    """
+    this method is used to validate the format of duration like fields.
+    """
+    if len(value) > 5:
+        raise ValidationError(_("Invalid format, it should be MM:SS format"))
+    try:
+        minutes, sec = value.split(":")
+        if len(minutes) > 2 or len (sec)>2:
+            raise ValidationError(_("Invalid time, excepted MM:SS"))
+        minutes = int(minutes)
+        sec = int(sec)
+        if minutes not in range(60) or sec not in range(60):
+            raise ValidationError(_("Invalid time, excepted MM:SS"))
+    except ValueError as e:
+        raise ValidationError(_("Invalid format,  excepted MM:SS")) from e
 
 
 def attendance_date_validate(date):
@@ -876,3 +895,46 @@ def create_initial_stage(sender, instance, created, **kwargs):
                 )
                 
             available.save()
+
+class GraceTime(models.Model):
+    """
+    Model for saving Grace time 
+    """
+    allowed_time = models.CharField(
+        default="00:00",
+        validators=[validate_time_in_minutes],
+        max_length=10,
+        verbose_name=_("Allowed time"),
+    )
+    allowed_time_in_secs = models.IntegerField()
+    is_default =  models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True)
+    company_id = models.ManyToManyField(Company, blank=True, verbose_name=_("Company"))
+    objects = HorillaCompanyManager()
+
+    def __str__(self) -> str:
+        return str(f"{self.allowed_time} - Minutes")
+    
+    def clean(self):
+        """
+        This method is used to perform some custom validations
+        """
+        super().clean()
+        if self.is_default:
+            if GraceTime.objects.filter(is_default=True).exclude(id=self.id).exists():
+                raise ValidationError(_("There is already a default grace time that exists."))
+        
+        allowed_time = self.allowed_time
+        if GraceTime.objects.filter(allowed_time=allowed_time).exclude(is_default=True).exists():
+            raise ValidationError(_("There is already a grace time with this allowed time that exists."))
+            
+    def save(self, *args, **kwargs):
+        allowed_time = self.allowed_time
+        minute, secs = allowed_time.split(":")
+        minute_int= int(minute)
+        secs_int= int(secs)   
+        minute_str = f'{minute_int:02d}' 
+        secs_str = f'{secs_int:02d}' 
+        self.allowed_time = f'{minute_str}:{secs_str}'
+        self.allowed_time_in_secs = minute_int *60 + secs_int
+        super().save(*args, **kwargs)

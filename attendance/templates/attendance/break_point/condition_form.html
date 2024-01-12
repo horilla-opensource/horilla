@@ -1,24 +1,42 @@
 {% load i18n %}
-<form {% if condition.id %}
-	hx-post="{% url 'attendance-settings-update' condition.id %}"
-	{% else %}
-	hx-post="{% url 'attendance-settings-create' %}"
-	{% endif %}
-	hx-target='#updateForm' method="post" class="settings-label mb-1">
-	{% csrf_token %}
-	<div class="oh-inner-sidebar-content__header">
-		<h2 class="oh-inner-sidebar-content__title">
-			{% trans "Attendance Condition" %}
-		</h2>
-	</div>
-	<div class="oh-inner-sidebar-content__body">
-		<div class="oh-input-group">{{form}}</div>
-	</div>
-	<button
-		type="submit"
-		class="oh-btn oh-btn--secondary mt-2 mr-0 oh-btn--w-100-resp"
-	>
-		{% trans "Save Changes" %}
+
+<div class="oh-modal__dialog-header">
+	<h2 class="oh-modal__dialog-title" id="editModaltitle">
+		{% if condition.id %}
+			{% trans "Update Attendance condition " %}
+		{% else %}
+			{% trans "Create Attendance condition " %}
+		{% endif %}
+	</h2>
+	<button class="oh-modal__close" aria-label="Close">
+		<ion-icon name="close-outline"></ion-icon>
 	</button>
-	<div class="oh-inner-sidebar-content__footer"></div>
-</form>
+</div>
+<div class="oh-modal__dialog-body" id="createForm">
+	<form {% if condition.id %}
+		hx-post="{% url 'attendance-settings-update' condition.id %}"
+		{% else %}
+		hx-post="{% url 'attendance-settings-create' %}"
+		{% endif %}
+		hx-target='#conditionModalTarget' method="post" class="settings-label mb-1">
+		{% csrf_token %}
+		<div class="oh-inner-sidebar-content__header">
+			<h2 class="oh-inner-sidebar-content__title">
+				{% trans "Attendance Condition" %}
+			</h2>
+		</div>
+		<div class="oh-inner-sidebar-content__body">
+			<div class="oh-input-group">{{form}}</div>
+		</div>
+		<button
+			type="submit"
+			class="oh-btn oh-btn--secondary mt-2 mr-0 oh-btn--w-100-resp"
+		>
+			{% trans "Save Changes" %}
+		</button>
+		<div class="oh-inner-sidebar-content__footer"></div>
+	</form>
+</div>
+
+
+
