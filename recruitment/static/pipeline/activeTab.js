@@ -15,3 +15,24 @@ $(document).ready(function () {
       localStorage.setItem('activeTabRecruitment',activeTab)
     });
   });
+
+  $(document).ready(function () {
+    $('.oh-tabs__tab').click(function (e) {
+        // Remove fw-bold class from all tabs
+        $('.oh-tabs__tab').removeClass('fw-bold');
+
+        // Add fw-bold class to the clicked tab
+        $(this).addClass('fw-bold');
+
+        // Your existing code for storing the active tab
+        var activeTab = $(this).attr('data-target');
+        localStorage.setItem('activeTabOnboarding', activeTab);
+    });
+
+    // Your existing code for setting the active tab on page load
+    var activeTab = localStorage.getItem('activeTabOnboarding');
+    if (activeTab != null) {
+        var tab = $(`[data-target="${activeTab}"]`);
+        $(tab).addClass('fw-bold');
+    }
+});
