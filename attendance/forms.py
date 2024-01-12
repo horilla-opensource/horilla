@@ -42,6 +42,7 @@ from attendance.models import (
     AttendanceActivity,
     AttendanceLateComeEarlyOut,
     AttendanceValidationCondition,
+    GraceTime,
     PenaltyAccount,
     strtime_seconds,
 )
@@ -764,3 +765,17 @@ class AttendanceOverTimeExportForm(forms.Form):
             "overtime",
         ],
     )
+
+class GraceTimeForm(ModelForm):
+    """
+    Form for create or update Grace time
+    """
+
+    class Meta:
+        model = GraceTime
+        fields = "__all__"
+        exclude = [
+            'is_default',
+            'objects',
+            'allowed_time_in_secs'
+        ]

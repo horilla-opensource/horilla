@@ -3,6 +3,7 @@ views.py
 
 This module is used to map url pattens with django views or methods
 """
+from django import forms
 from django.apps import apps
 from datetime import timedelta, datetime
 from urllib.parse import parse_qs, urlencode
@@ -50,6 +51,7 @@ from base.forms import (
     RotatingShiftAssignExportForm,
     RotatingWorkTypeAssignExportForm,
     ShiftRequestColumnForm,
+    ShiftrequestcommentForm,
     WorkTypeForm,
     UserGroupForm,
     RotatingShiftForm,
@@ -69,6 +71,7 @@ from base.forms import (
     ChangePasswordForm,
     TagsForm,
     MultipleApproveConditionForm,
+    WorktyperequestcommentForm,
 )
 from base.models import (
     Company,
@@ -78,6 +81,7 @@ from base.models import (
     Department,
     MultipleApprovalCondition,
     MultipleApprovalManagers,
+    ShiftrequestComment,
     WorkType,
     EmployeeShift,
     EmployeeShiftDay,
@@ -89,6 +93,7 @@ from base.models import (
     ShiftRequest,
     WorkTypeRequest,
     Tags,
+    WorktyperequestComment,
 )
 from base.filters import (
     RotatingShiftRequestReGroup,
@@ -108,12 +113,9 @@ from base.methods import (
 )
 from payroll.forms.component_forms import PayrollSettingsForm
 from payroll.models.tax_models import PayrollSettings
-from helpdesk.models import(
-    TicketType
-)
-from helpdesk.forms import(
-    TicketTypeForm
-)
+from helpdesk.models import TicketType
+from helpdesk.forms import TicketTypeForm
+
 
 def custom404(request):
     """
@@ -533,7 +535,6 @@ def group_assign(request):
             form.save()
             messages.success(request, _("User group assigned."))
             return HttpResponse("<script>window.location.reload()</script>")
-        print(form.errors)
     return render(
         request,
         "base/auth/group_user_assign.html",
@@ -2538,7 +2539,10 @@ def work_type_request_single_view(request, work_type_request_id):
     This method is used to view details of an work type request
     """
     work_type_request = WorkTypeRequest.objects.get(id=work_type_request_id)
-    context = {"work_type_request": work_type_request}
+    context = {
+        "work_type_request": work_type_request,
+        "dashboard":request.GET.get("dashboard"),
+    }
     requests_ids_json = request.GET.get("instances_ids")
     if requests_ids_json:
         requests_ids = json.loads(requests_ids_json)
@@ -2775,6 +2779,7 @@ def shift_request_details(request, id):
     requests_ids_json = request.GET.get("instances_ids")
     context = {
         "shift_request": shift_request,
+        "dashboard":request.GET.get("dashboard"),
     }
     if requests_ids_json:
         requests_ids = json.loads(requests_ids_json)
@@ -3453,7 +3458,7 @@ def rotating_shift_select(request):
         if request.user.has_perm("base.view_rotatingshiftassign"):
             employees = RotatingShiftAssign.objects.filter(is_active=True)
         else:
-            employees =  RotatingShiftAssign.objects.filter(
+            employees = RotatingShiftAssign.objects.filter(
                 employee_id__employee_work_info__reporting_manager_id__employee_user_id=request.user
             )
     else:
@@ -3497,7 +3502,7 @@ def rotating_work_type_select(request):
         if request.user.has_perm("base.view_rotatingworktypeassign"):
             employees = RotatingWorkTypeAssign.objects.filter(is_active=True)
         else:
-            employees =  RotatingWorkTypeAssign.objects.filter(
+            employees = RotatingWorkTypeAssign.objects.filter(
                 employee_id__employee_work_info__reporting_manager_id__employee_user_id=request.user
             )
     else:
@@ -3532,6 +3537,7 @@ def rotating_work_type_select_filter(request):
 
         return JsonResponse(context)
 
+
 @login_required
 def ticket_type_view(request):
     """
@@ -3539,10 +3545,9 @@ def ticket_type_view(request):
     """
     ticket_types = TicketType.objects.all()
     return render(
-        request,
-        "base/ticket_type/ticket_type.html",
-        {"ticket_types":ticket_types}
+        request, "base/ticket_type/ticket_type.html", {"ticket_types": ticket_types}
     )
+
 
 @login_required
 def ticket_type_create(request):
@@ -3565,15 +3570,16 @@ def ticket_type_create(request):
         },
     )
 
+
 @login_required
-def ticket_type_update(request,t_type_id):
+def ticket_type_update(request, t_type_id):
     """
     This method renders form and template to create Ticket type
     """
     ticket_type = TicketType.objects.get(id=t_type_id)
     form = TicketTypeForm(instance=ticket_type)
     if request.method == "POST":
-        form = TicketTypeForm(request.POST,instance=ticket_type)
+        form = TicketTypeForm(request.POST, instance=ticket_type)
         if form.is_valid():
             form.save()
             form = TicketTypeForm()
@@ -3582,17 +3588,16 @@ def ticket_type_update(request,t_type_id):
     return render(
         request,
         "base/ticket_type/ticket_type_form.html",
-        {
-            "form": form,
-            "t_type_id":t_type_id
-        },
+        {"form": form, "t_type_id": t_type_id},
     )
 
+
 @login_required
-def ticket_type_delete(request,t_type_id):
+def ticket_type_delete(request, t_type_id):
     TicketType.objects.get(id=t_type_id).delete()
     messages.success(request, _("Ticket type has been deleted successfully!"))
     return HttpResponse("<script>window.location.reload()</script>")
+
 
 @login_required
 def tag_view(request):
@@ -3605,8 +3610,9 @@ def tag_view(request):
     return render(
         request,
         "base/tags/tags.html",
-        {"tags":tags, 'employeetags': employeetags, 'audittags': audittags }
+        {"tags": tags, "employeetags": employeetags, "audittags": audittags},
     )
+
 
 @login_required
 def tag_create(request):
@@ -3629,15 +3635,16 @@ def tag_create(request):
         },
     )
 
+
 @login_required
-def tag_update(request,tag_id):
+def tag_update(request, tag_id):
     """
     This method renders form and template to create Ticket type
     """
     tag = Tags.objects.get(id=tag_id)
     form = TagsForm(instance=tag)
     if request.method == "POST":
-        form = TagsForm(request.POST,instance=tag)
+        form = TagsForm(request.POST, instance=tag)
         if form.is_valid():
             form.save()
             form = TagsForm()
@@ -3646,14 +3653,12 @@ def tag_update(request,tag_id):
     return render(
         request,
         "base/tags/tags_form.html",
-        {
-            "form": form,
-            "tag_id":tag_id
-        },
+        {"form": form, "tag_id": tag_id},
     )
 
+
 @login_required
-def tag_delete(request,tag_id):
+def tag_delete(request, tag_id):
     Tags.objects.get(id=tag_id).delete()
     messages.success(request, _("Tag has been deleted successfully!"))
     return redirect(tag_view)
@@ -3680,15 +3685,16 @@ def employee_tag_create(request):
         },
     )
 
+
 @login_required
-def employee_tag_update(request,tag_id):
+def employee_tag_update(request, tag_id):
     """
     This method renders form and template to create Ticket type
     """
     tag = EmployeeTag.objects.get(id=tag_id)
     form = EmployeeTagForm(instance=tag)
     if request.method == "POST":
-        form = EmployeeTagForm(request.POST,instance=tag)
+        form = EmployeeTagForm(request.POST, instance=tag)
         if form.is_valid():
             form.save()
             form = EmployeeTagForm()
@@ -3697,14 +3703,12 @@ def employee_tag_update(request,tag_id):
     return render(
         request,
         "base/employee_tag/employee_tag_form.html",
-        {
-            "form": form,
-            "tag_id":tag_id
-        },
+        {"form": form, "tag_id": tag_id},
     )
 
+
 @login_required
-def employee_tag_delete(request,tag_id):
+def employee_tag_delete(request, tag_id):
     EmployeeTag.objects.get(id=tag_id).delete()
     messages.success(request, _("Tag has been deleted successfully!"))
     return redirect(tag_view)
@@ -3731,15 +3735,16 @@ def audit_tag_create(request):
         },
     )
 
+
 @login_required
-def audit_tag_update(request,tag_id):
+def audit_tag_update(request, tag_id):
     """
     This method renders form and template to create Ticket type
     """
     tag = AuditTag.objects.get(id=tag_id)
     form = AuditTagForm(instance=tag)
     if request.method == "POST":
-        form = AuditTagForm(request.POST,instance=tag)
+        form = AuditTagForm(request.POST, instance=tag)
         if form.is_valid():
             form.save()
             form = AuditTagForm()
@@ -3748,35 +3753,33 @@ def audit_tag_update(request,tag_id):
     return render(
         request,
         "base/audit_tag/audit_tag_form.html",
-        {
-            "form": form,
-            "tag_id":tag_id
-        },
+        {"form": form, "tag_id": tag_id},
     )
 
+
 @login_required
-def audit_tag_delete(request,tag_id):
+def audit_tag_delete(request, tag_id):
     AuditTag.objects.get(id=tag_id).delete()
     messages.success(request, _("Tag has been deleted successfully!"))
     return redirect(tag_view)
 
 
-
-
 @login_required
 def multiple_approval_condition(request):
     form = MultipleApproveConditionForm()
-    conditions = MultipleApprovalCondition.objects.all().order_by('department')[::-1]
+    conditions = MultipleApprovalCondition.objects.all().order_by("department")[::-1]
+    create = True
     return render(
         request,
         "leave/leave_request/penalty/condition.html",
-        {"form": form, "conditions": conditions},
+        {"form": form, "conditions": conditions, "create": create},
     )
 
 
 @login_required
 def multiple_level_approval_create(request):
     form = MultipleApproveConditionForm()
+    create = True
     if request.method == "POST":
         form = MultipleApproveConditionForm(request.POST)
         dept_id = request.POST.get("department")
@@ -3803,24 +3806,103 @@ def multiple_level_approval_create(request):
             sequence = 0
             for key, value in request.POST.items():
                 if key.startswith("multi_approval_manager"):
-                    sequence += 1
-                    employee_id = int(value)
-                    MultipleApprovalManagers.objects.create(
-                        condition_id=instance,
-                        sequence=sequence,
-                        employee_id=employee_id,
-                    )
+                    if value:
+                        sequence += 1
+                        employee_id = int(value)
+                        MultipleApprovalManagers.objects.create(
+                            condition_id=instance,
+                            sequence=sequence,
+                            employee_id=employee_id,
+                        )
             form = MultipleApproveConditionForm()
-    conditions = MultipleApprovalCondition.objects.all().order_by('department')[::-1]
+    conditions = MultipleApprovalCondition.objects.all().order_by("department")[::-1]
     return render(
         request,
         "leave/leave_request/penalty/create.html",
-        {"form": form, "conditions": conditions},
+        {"form": form, "conditions": conditions, "create": create},
     )
 
 
+def edit_approval_managers(form, managers):
+    for i, manager in enumerate(managers):
+        if i == 0:
+            form.initial["multi_approval_manager"] = manager.employee_id
+        else:
+            field_name = f"multi_approval_manager_{i}"
+            form.fields[field_name] = forms.ModelChoiceField(
+                queryset=Employee.objects.all(),
+                label=_("Approval Manager {}").format(i),
+                widget=forms.Select(attrs={"class": "oh-select oh-select-2 mb-3"}),
+                required=False,
+            )
+            form.initial[field_name] = manager.employee_id
+    return form
+
+
+def clear_form_fields_and_remove_extra_fields(form, managers):
+    for i, _ in enumerate(managers, start=1):
+        field_name = f"multi_approval_manager_{i}"
+        if field_name in form.cleaned_data:
+            del form.cleaned_data[field_name]
+            form.fields.pop(field_name, None)
+
+from django.db.models import F
+
 def multiple_level_approval_edit(request, condition_id):
-    return redirect(multiple_level_approval_create)
+    create = False
+    condition = MultipleApprovalCondition.objects.get(id=condition_id)
+    managers = MultipleApprovalManagers.objects.filter(condition_id=condition).order_by(
+        "sequence"
+    )
+    form = MultipleApproveConditionForm(instance=condition)
+    edit_approval_managers(form, managers)
+    if request.method == "POST":
+        form = MultipleApproveConditionForm(request.POST, instance=condition)
+        if form.is_valid():
+            form.save()
+            sequence = 0
+            for key, value in request.POST.items():
+                if key.startswith("multi_approval_manager"):
+                    sequence += 1
+                    if value:
+                        employee_id = int(value)
+                        instance = MultipleApprovalManagers.objects.filter(
+                            condition_id=condition,
+                            sequence=sequence,
+                        )
+                        if instance:
+                            instance.update(employee_id=employee_id)
+                        else:
+                            MultipleApprovalManagers.objects.create(
+                                condition_id=condition,
+                                sequence=sequence,
+                                employee_id=employee_id,
+                            )
+                    else:
+                        MultipleApprovalManagers.objects.filter(
+                            condition_id=condition, sequence=sequence
+                        ).delete()
+                        managers_sequence = MultipleApprovalManagers.objects.filter(
+                            condition_id=condition, sequence__gt=sequence
+                        ).order_by("sequence")
+
+                        for upt_manager in managers_sequence:
+                            upt_manager.sequence = F("sequence") - 1
+                            upt_manager.save()
+                        sequence -= 1
+            return HttpResponse("<script>window.location.reload()</script>")
+
+    conditions = MultipleApprovalCondition.objects.all().order_by("department")[::-1]
+    return render(
+        request,
+        "leave/leave_request/penalty/create.html",
+        {
+            "form": form,
+            "conditions": conditions,
+            "create": create,
+            "condition": condition,
+        },
+    )
 
 
 @login_required
@@ -3828,3 +3910,114 @@ def multiple_level_approval_delete(request, condition_id):
     condition = MultipleApprovalCondition.objects.get(id=condition_id)
     condition.delete()
     return redirect(multiple_approval_condition)
+
+
+@login_required
+def create_shiftrequest_comment(request, shift_id):
+    """
+    This method renders form and template to create shift request comments
+    """
+    shift = ShiftRequest.objects.filter(id=shift_id).first()
+    emp = request.user.employee_get
+    form = ShiftrequestcommentForm(initial={'employee_id':emp.id, 'request_id':shift_id})
+
+    if request.method == "POST":
+        form = ShiftrequestcommentForm(request.POST )
+        if form.is_valid():
+            form.instance.employee_id = emp
+            form.instance.request_id = shift
+            form.save()
+            form = ShiftrequestcommentForm(initial={'employee_id':emp.id, 'request_id':shift_id})
+            messages.success(request, _("Comment added successfully!"))
+            return HttpResponse("<script>window.location.reload()</script>")
+    return render(
+        request,
+        "shift_request/htmx/shift_request_comment_form.html",
+        {
+            "form": form, "request_id":shift_id
+        },
+    )
+
+
+@login_required
+def view_shiftrequest_comment(request, shift_id):
+    """
+    This method is used to show shift request comments
+    """
+    comments = ShiftrequestComment.objects.filter(request_id=shift_id).order_by('-created_at')
+    no_comments = False
+    if not comments.exists():
+        no_comments = True
+
+    return render(
+        request,
+        "shift_request/htmx/comment_view.html",
+        {"comments": comments, 'no_comments': no_comments }
+    )
+
+
+@login_required
+def delete_shiftrequest_comment(request, comment_id):
+    """
+    This method is used to delete shift request comments
+    """
+    ShiftrequestComment.objects.get(id=comment_id).delete()
+
+    messages.success(request, _("Comment deleted successfully!"))
+    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+
+
+@login_required
+def create_worktyperequest_comment(request, worktype_id):
+    """
+    This method renders form and template to create Work type request comments
+    """
+    shift = WorkTypeRequest.objects.filter(id=worktype_id).first()
+    emp = request.user.employee_get
+    form = WorktyperequestcommentForm(initial={'employee_id':emp.id, 'request_id':worktype_id})
+
+    if request.method == "POST":
+        form = WorktyperequestcommentForm(request.POST )
+        if form.is_valid():
+            form.instance.employee_id = emp
+            form.instance.request_id = shift
+            form.save()
+            form = WorktyperequestcommentForm(initial={'employee_id':emp.id, 'request_id':worktype_id})
+            messages.success(request, _("Comment added successfully!"))
+            return HttpResponse("<script>window.location.reload()</script>")
+    return render(
+        request,
+        "work_type_request/htmx/worktype_request_comment_form.html",
+        {
+            "form": form, "request_id":worktype_id
+        },
+    )
+
+
+@login_required
+def view_worktyperequest_comment(request, worktype_id):
+    """
+    This method is used to show Work type request comments
+    """
+    comments = WorktyperequestComment.objects.filter(request_id=worktype_id).order_by('-created_at')
+    no_comments = False
+    if not comments.exists():
+        no_comments = True
+
+    return render(
+        request,
+        "work_type_request/htmx/comment_view.html",
+        {"comments": comments, 'no_comments': no_comments }
+    )
+
+
+@login_required
+def delete_worktyperequest_comment(request, comment_id):
+    """
+    This method is used to delete Work type request comments
+    """
+    WorktyperequestComment.objects.get(id=comment_id).delete()
+
+    messages.success(request, _("Comment deleted successfully!"))
+    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+

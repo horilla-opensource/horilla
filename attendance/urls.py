@@ -181,7 +181,9 @@ urlpatterns = [
         views.approve_bulk_overtime,
         name="approve-bulk-overtime",
     ),
-    path("dashboard", attendance.views.dashboard.dashboard, name="dashboard"),
+    path("dashboard", attendance.views.dashboard.dashboard, name="attendance-dashboard"),
+    path("department-overtime-chart", attendance.views.dashboard.department_overtime_chart, name="department-overtime-chart"),
+    path("attendance-validate-table/", attendance.views.dashboard.validated_attendances_table, name="attendance-validate-table"),
     path(
         "dashboard-attendance/",
         attendance.views.dashboard.dashboard_attendance,
@@ -293,5 +295,13 @@ urlpatterns = [
     path(
         "cut-penalty/<int:instance_id>/", attendance.views.penalty.cut_available_leave, name="cut-penalty"
     ),
-    path("view-penalties",attendance.views.penalty.view_penalties,name="view-penalties")
+    path("view-penalties",attendance.views.penalty.view_penalties,name="view-penalties"),
+
+    path('create-garce-time',views.create_grace_time,name="create-grace-time"),
+    path('update-garce-time/<int:grace_id>/',views.update_grace_time,name="update-grace-time"),
+    path('delete-garce-time/<int:grace_id>/',views.delete_grace_time,name="delete-grace-time"),
+    path('update-isactive-gracetime',views.update_isactive_gracetime,name='update-isactive-gracetime'),
+
+    
+
 ]

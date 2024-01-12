@@ -54,6 +54,7 @@ from attendance.forms import (
     AttendanceValidationConditionForm,
     AttendanceUpdateForm,
     AttendanceExportForm,
+    GraceTimeForm,
     LateComeEarlyOutExportForm,
 )
 
@@ -63,6 +64,7 @@ from attendance.models import (
     AttendanceOverTime,
     AttendanceLateComeEarlyOut,
     AttendanceValidationCondition,
+    GraceTime,
 )
 from attendance.filters import (
     AttendanceReGroup,
@@ -1128,7 +1130,7 @@ def validate_this_attendance(request, obj_id):
         redirect="/attendance/view-my-attendance",
         icon="checkmark",
     )
-    return HttpResponseRedirect(modified_url)
+    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 
 
 @login_required
@@ -1202,7 +1204,7 @@ def approve_overtime(request, obj_id):
             redirect="/attendance/attendance-overtime-view",
             icon="checkmark",
         )
-    return HttpResponseRedirect(modified_url)
+    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 
 
 @login_required
@@ -1481,3 +1483,114 @@ def latecome_attendance_select_filter(request):
         context = {"employee_ids": employee_ids, "total_count": total_count}
 
         return JsonResponse(context)
+
+
+@login_required
+@permission_required("attendance.add_gracetime")
+def create_grace_time(request):
+    """
+    function used to create grace time .
+
+    Parameters:
+    request (HttpRequest): The HTTP request object.
+
+    Returns:
+    GET : return grace time form template
+    """
+    form= GraceTimeForm()
+    is_default = eval(request.GET.get('default'))
+    if request.method == 'POST':
+        form = GraceTimeForm(request.POST)
+        if form.is_valid():
+            instance = form.save(commit=False)
+            instance.is_default = is_default
+            instance.save()
+            messages.success(request, _("Grace time created successfully."))
+            return HttpResponse("<script>window.location.reload()</script>")
+    return render(request,'attendance/grace_time/grace_time_form.html',{'form':form,'is_default':is_default})
+
+@login_required
+@permission_required("attendance.change_gracetime")
+def update_grace_time(request,grace_id):
+    """
+    function used to create grace time .
+
+    Parameters:
+    request (HttpRequest): The HTTP request object.
+    grace_id: id of grace time object
+    Returns:
+    GET : return grace time form template
+    """
+    grace_time=GraceTime.objects.get(id=grace_id)
+    form= GraceTimeForm(instance=grace_time)
+    is_default = eval(request.GET.get('default'))
+    if request.method == 'POST':
+        form = GraceTimeForm(request.POST,instance=grace_time)
+        if form.is_valid():
+            instance = form.save(commit=False)
+            instance.is_default = is_default
+            instance.save()
+            messages.success(request, _("Grace time updated successfully."))
+            return HttpResponse("<script>window.location.reload()</script>")
+    context = {
+        'form':form,
+        'grace_id':grace_id,
+        'is_default':is_default,
+    }
+    return render(request,'attendance/grace_time/grace_time_form.html',context=context)
+
+@login_required
+@permission_required("attendance.delete_gracetime")
+def delete_grace_time(request,grace_id):
+    """
+    function used to delete grace time .
+
+    Parameters:
+    request (HttpRequest): The HTTP request object.
+    grace_id: id of grace time object
+    Returns:
+    GET : return grace time form template
+    """
+    try:
+        GraceTime.objects.get(id=grace_id).delete()
+        messages.success(request, _("Grace time deleted successfully."))
+    except GraceTime.DoesNotExist:
+        messages.error(request, _("Grace Time Does not exists.."))
+    except ProtectedError:
+        messages.error(request, _("Related datas exists."))
+    if request.GET.get('view')=='shift':
+        return redirect("/settings/employee-shift-view")
+    else:
+        return redirect("/settings/attendance-settings-view")
+
+
+@login_required
+@permission_required("attendance.update_gracetime")
+def update_isactive_gracetime(request):
+    """
+    ajax function to update is active field in grace time.
+    Args:
+    - isChecked: Boolean value representing the state of grace time,
+    - graceId: Id of grace time object
+    """
+    isChecked = request.POST.get('isChecked')
+    graceId = request.POST.get('graceId')
+    grace_time = GraceTime.objects.get(id=graceId)
+    if isChecked == 'true':
+        grace_time.is_active = True
+
+        response = {
+                "type" :"success",
+                "message": _('Default grace time activated successfully.'),
+            }
+    else:
+        grace_time.is_active = False
+        response = {
+                "type" :"success",
+                "message": _('Default grace time deactivated successfully.'),
+            }
+    grace_time.save()
+    return JsonResponse(response)
+
+    
+
