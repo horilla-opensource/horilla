@@ -1,6 +1,9 @@
 {% extends 'index.html' %}
 {% block content %}
 {% load static i18n %}
+{% load recruitmentfilters %}
+{% load onboardingfilters %}
+
 
 <style>
     .select2-container{
@@ -113,13 +116,15 @@
     <div class="oh-tabs">
         <ul class="oh-tabs__tablist">
             {% for rec in recruitments %}
-            <li class="oh-tabs__tab " data-target="#tab_{{rec.id}}" data-recruitment-id="{{rec.id}}">
-                {{rec.title}}
-                <span
-                    class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round ms-2 mr-2" title="{{rec.onboardingstage_set.all|length}} {% trans 'Stage' %}" onclick="event.stopPropagation()">
-                    {{rec.onboardingstage_set.all|length}}
-                </span>
-            </li>
+                {% if request.user|task_manages:rec or perms.onboarding.view_candidatestage %}
+                    <li class="oh-tabs__tab" data-target="#tab_{{rec.id}}" data-recruitment-id="{{rec.id}}" {% if request.user|recruitment_manages:rec %} style="background-color: hsl(109.8deg 100% 50% / 20%);" {% endif %}>
+                        {{rec.title}}
+                        <span
+                            class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round ms-2 mr-2" title="{{rec.onboardingstage_set.all|length}} {% trans 'Stage' %}" onclick="event.stopPropagation()">
+                            {{rec.onboardingstage_set.all|length}}
+                        </span>
+                    </li>
+                {% endif %}
             {% endfor %}
             
         </ul>
@@ -129,7 +134,7 @@
                 <div class="oh-kanban">
                     {% for stage in rec.onboardingstage_set.all %}
                     <div class="oh-kanban__section stage" id="b3a7bac2-2a16-40fe-9b7e-78a1101ee9d3" data-recruitment-id="{{rec.id}}" data-stage-id="{{stage.id}}" data-sequence="{{forloop.counter}}">
-                        <div class="oh-kanban__section-head oh-kanban__section-head--white">
+                        <div class="oh-kanban__section-head oh-kanban__section-head--white" {% if request.user.employee_get in stage.employee_id.all %} style="background-color: hsl(109.8deg 100% 50% / 20%) !important;" {% endif %}>
                             <div class="d-flex ">
                                 <span class="oh-kanban__section-title" data-type="label">
                                     <input
@@ -140,7 +145,7 @@
                                     hx-target="#stage-messages"
                                     style="width: 160px;"
                                     readonly=""
-                                  />  
+                                />  
                                 </span>
                                 <span class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round ms-2 mr-2 stage_count" title="{{stage.candidate.count}} {% trans 'Candidate' %}">{{stage.candidate.count}}</span>
                             </div>
@@ -231,7 +236,7 @@
                         </div>
                     </div>
                     {% endfor %}
-
+                    {% if request.user|task_manages:rec or perms.onboarding.add_candidatestage %}
                     <div class="oh-kanban__add-container">
                         <button class="oh-btn oh-btn--x-small oh-kanban__add-section" onclick="event.stopPropagation()"  data-action="toggle"
                             data-target="#addStageModal" hx-get="{% url 'stage-creation' rec.id %}" hx-target="#stageForm" data-toggle="oh-modal-toggle" data-class="d-none">
@@ -239,6 +244,7 @@
                             {% trans "Add Stage" %}
                         </button>                        
                     </div>
+                    {% endif %}
                 </div>
             </div>
             {% endfor %}

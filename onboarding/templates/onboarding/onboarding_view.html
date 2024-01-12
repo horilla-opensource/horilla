@@ -148,7 +148,7 @@
         <ul class="oh-tabs__tablist">
                 {% for recruitment in recruitments %}
                     {% if request.user|task_manages:recruitment or perms.onboarding.view_candidatestage %}
-                    <li class="oh-tabs__tab" data-target="#tab_{{recruitment.id}}">
+                    <li class="oh-tabs__tab" {% if request.user|recruitment_manages:recruitment %} style="background-color: hsl(109.8deg 100% 50% / 20%);" {% endif %} data-target="#tab_{{recruitment.id}}">
                         {{recruitment}}
                         <span
                             class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round ms-2 mr-2" title="{{recruitment.onboardingstage_set.all|length}} {% trans 'Stage' %}" style="padding-right: 0;" onclick="event.stopPropagation()">{{recruitment.onboardingstage_set.all|length}}</span>
@@ -160,11 +160,11 @@
             {% for recruitment in recruitments %}
             {% if request.user|task_manages:recruitment or perms.onboarding.view_candidatestage %}
 
-            <div class="oh-tabs__content " id="tab_{{recruitment.id}}">
+            <div class="oh-tabs__content" id="tab_{{recruitment.id}}">
 
                 <!-- End of Sticky Table -->
                 <div class="oh-card">
-                    {% if request.user|recruitment_manages:recruitment or perms.onboarding.add_onboardingstage %}
+                    {% if request.user|task_manages:recruitment or perms.onboarding.add_onboardingstage %}
                     <div class="oh-tabs__action-bar">
                         <button class="oh-btn oh-btn--small oh-btn--secondary oh-tabs__action-new-table"
                             data-toggle="oh-modal-toggle" data-target="#editModal1"
