@@ -15,11 +15,14 @@ from attendance.filters import (
     LateComeEarlyOutFilter,
     AttendanceOverTimeFilter,
 )
-from attendance.models import Attendance, AttendanceLateComeEarlyOut, AttendanceOverTime
+from attendance.models import Attendance, AttendanceLateComeEarlyOut, AttendanceOverTime, AttendanceValidationCondition
+from attendance.views.views import strtime_seconds
 from base.methods import filtersubordinates
 from base.models import Department, EmployeeShiftSchedule
 from employee.models import Employee
+from employee.not_in_out_dashboard import paginator_qry
 from horilla.decorators import login_required
+from leave.models import LeaveRequest
 
 
 def find_on_time(request, today, week_day, department=None):
@@ -29,22 +32,12 @@ def find_on_time(request, today, week_day, department=None):
 
     on_time = 0
     attendances = Attendance.objects.filter(attendance_date=today)
-    attendances = filtersubordinates(request, attendances, "attendance.view_attendance")
     if department is not None:
         attendances = attendances.filter(
             employee_id__employee_work_info__department_id=department
         )
-    excepted_attendances = 0
-    for attendance in attendances:
-        shift = attendance.shift_id
-        schedules_today = shift.employeeshiftschedule_set.filter(day__day=week_day)
-        if schedules_today.first() is not None:
-            excepted_attendances = excepted_attendances + 1
-            late_come_obj = attendance.late_come_early_out.filter(
-                type="late_come"
-            ).first()
-            if late_come_obj is None:
-                on_time = on_time + 1
+    late_come = AttendanceLateComeEarlyOut.objects.filter(attendance_id__attendance_date=today,type="late_come")
+    on_time = len(attendances) - len(late_come)
     return on_time
 
 
@@ -52,13 +45,9 @@ def find_expected_attendances(week_day):
     """
     This method is used to find count of expected attendances for the week day
     """
-    schedules_today = EmployeeShiftSchedule.objects.filter(day__day=week_day)
-    expected_attendances = 0
-    for schedule in schedules_today:
-        shift = schedule.shift_id
-        expected_attendances = expected_attendances + len(
-            shift.employeeworkinformation_set.all()
-        )
+    employees = Employee.objects.filter(is_active=True)
+    on_leave = LeaveRequest.objects.filter(status = "Approved")
+    expected_attendances = len(employees) - len(on_leave)
     return expected_attendances
 
 
@@ -67,6 +56,8 @@ def dashboard(request):
     """
     This method is used to render individual dashboard for attendance module
     """
+    page_number = request.GET.get("page")
+    previous_data = request.GET.urlencode()
     employees = Employee.objects.filter(
         is_active=True,
     ).filter(~Q(employee_work_info__shift_id=None))
@@ -76,7 +67,8 @@ def dashboard(request):
     week_day = today.strftime("%A").lower()
 
     on_time = find_on_time(request, today=today, week_day=week_day)
-    late_come_obj = find_late_come(start_date=today)
+    late_come = find_late_come(start_date=today)
+    late_come_obj = len(late_come)
 
     marked_attendances = late_come_obj + on_time
 
@@ -85,13 +77,28 @@ def dashboard(request):
     late_come_ratio = 0
     marked_attendances_ratio = 0
     if expected_attendances != 0:
-        on_time_ratio = f"{(on_time / expected_attendances) * 100:.1f}"
-        late_come_ratio = f"{(late_come_obj / expected_attendances) * 100:.1f}"
+        on_time_ratio = f"{(on_time / expected_attendances) * 100:.2f}"
+        late_come_ratio = f"{(late_come_obj / expected_attendances) * 100:.2f}"
         marked_attendances_ratio = (
-            f"{(marked_attendances / expected_attendances) * 100:.1f}"
+            f"{(marked_attendances / expected_attendances) * 100:.2f}"
         )
     early_outs = AttendanceLateComeEarlyOut.objects.filter(
         type="early_out", attendance_id__attendance_date=today
+    )
+
+    condition = AttendanceValidationCondition.objects.first()
+    min_ot = strtime_seconds("00:00")
+    if condition is not None and condition.minimum_overtime_to_approve is not None:
+        min_ot = strtime_seconds(condition.minimum_overtime_to_approve)
+    ot_attendances = Attendance.objects.filter(
+        overtime_second__gte=min_ot,
+        attendance_validated=True,
+        employee_id__is_active=True,
+        attendance_overtime_approve =False,
+    )
+
+    validate_attendances = Attendance.objects.filter(
+        attendance_validated=False, employee_id__is_active=True
     )
 
     return render(
@@ -107,7 +114,28 @@ def dashboard(request):
             "marked_attendances": marked_attendances,
             "marked_attendances_ratio": marked_attendances_ratio,
             "on_break": early_outs,
+            "overtime_attendances": ot_attendances,
+            "validate_attendances": paginator_qry(validate_attendances, page_number),
+            "pd": previous_data,
         },
+    )
+
+@login_required
+def validated_attendances_table(request):    
+    page_number = request.GET.get("page")
+    previous_data = request.GET.urlencode()
+    validate_attendances = Attendance.objects.filter(
+        attendance_validated=False, employee_id__is_active=True
+    )
+    context = {
+        "validate_attendances": paginator_qry(validate_attendances, page_number),
+        "pd": previous_data,
+    }
+
+    return render(
+        request,
+        "attendance/dashboard/to_validate_table.html",
+        context
     )
 
 
@@ -134,6 +162,14 @@ def find_late_come(start_date, department=None, end_date=None):
             {
                 "type": "late_come",
                 "employee_id__employee_work_info__department_id": department,
+                "attendance_date__gte": start_date,
+                "attendance_date__lte": end_date,
+            }
+        ).qs
+    else:
+        late_come_obj = LateComeEarlyOutFilter(
+            {
+                "type": "late_come",
                 "attendance_date__gte": start_date,
                 "attendance_date__lte": end_date,
             }
@@ -322,3 +358,79 @@ def pending_hours(request):
     }
 
     return JsonResponse({"data": data})
+
+
+@login_required
+def department_overtime_chart(request):
+    start_date = request.GET.get("date") if request.GET.get("date") else date.today() 
+    chart_type = request.GET.get("type") if request.GET.get("type") else "day"
+    end_date = request.GET.get("end_date") if request.GET.get("end_date") else start_date
+
+    if chart_type == "day":
+        start_date = start_date
+        end_date = start_date
+    if chart_type == "weekly":
+        start_date, end_date = get_week_start_end_dates(start_date)
+    if chart_type == "monthly":
+        start_date, end_date = get_month_start_end_dates(start_date)
+    if chart_type == "date_range":
+        start_date = start_date
+        end_date = end_date
+
+    attendance = total_attendance(
+        start_date=start_date, department=None, end_date=end_date
+    )
+
+
+    condition = AttendanceValidationCondition.objects.first()
+    min_ot = strtime_seconds("00:00")
+    if condition is not None and condition.minimum_overtime_to_approve is not None:
+        min_ot = strtime_seconds(condition.minimum_overtime_to_approve)
+    attendances = attendance.filter(
+        overtime_second__gte=min_ot,
+        attendance_validated=True,
+        employee_id__is_active=True,
+        attendance_overtime_approve =True,
+    )
+    departments = []
+    department_total= []
+    
+    for attendance in attendances:
+        departments.append(
+            attendance.employee_id.employee_work_info.department_id.department
+        )
+    departments = list(set(departments))
+
+    for depart in departments:
+        department_total.append({"department": depart, "ot_hours": 0})
+
+
+    for attendance in attendances:
+        if attendance.employee_id.employee_work_info.department_id:
+            department = attendance.employee_id.employee_work_info.department_id.department
+            ot = attendance.approved_overtime_second
+            ot_hrs = ot / 3600
+            for depart in department_total:
+                if depart["department"] == department:
+                    depart["ot_hours"] += ot_hrs
+    
+    dataset = [
+        {
+            "label": "",
+            "data": [],
+        }
+    ]
+
+    for depart_total, depart in zip(department_total, departments):
+        if depart == depart_total["department"]:
+            dataset[0]["data"].append(depart_total["ot_hours"])
+
+    response = {
+        "dataset": dataset,
+        "labels": departments,
+        "department_total": department_total,
+        "message": _("No validated Overtimes were found"),
+        "emptyImageSrc":"/static/images/ui/overtime-icon.png",
+    }
+
+    return JsonResponse(response)

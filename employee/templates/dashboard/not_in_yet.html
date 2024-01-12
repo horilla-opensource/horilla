@@ -1,10 +1,24 @@
 {% load i18n %}
 <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent">
   <div class="oh-card-dashboard__header oh-card-dashboard__header--divider mb-0">
-    <span class="oh-card-dashboard__title">{% trans 'Not In Yet' %}</span>
+    {% if employees.has_previous %}
+
+    <span class="oh-card-dashboard__title" id="employee-previous" style="cursor: pointer;" hx-target="#notInYetId"
+    hx-get="{% url 'not-in-yet' %}?{{pd}}&page={{ employees.previous_page_number }}">
+      <ion-icon name="caret-back-outline" role="img" class="md hydrated" aria-label="caret back outline"></ion-icon>
+    </span>
+    {% endif %}
+    <span class="oh-card-dashboard__title">{% trans 'Not In Yet' %} </span>
+    {% if employees.has_next %}
+    
+    <span class="oh-card-dashboard__title float-end" id="employee-previous" style="cursor: pointer;" hx-target="#notInYetId"
+    hx-get="{% url 'not-in-yet' %}?{{pd}}&page={{ employees.next_page_number }}">
+      <ion-icon name="caret-forward-outline" role="img" class="md hydrated" aria-label="caret back outline"></ion-icon>
+    </span>
+    {% endif %}
   </div>
   <div class="oh-card-dashboard__body">
-    <div class="oh-sticky-table" style="max-height:320px;">
+    <div class="oh-sticky-table" style="height:320px;">
       <div class="oh-sticky-table__table oh-table--sortable">
         <div class="oh-sticky-table__tbody">
           {% for emp in employees %}

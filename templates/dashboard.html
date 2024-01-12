@@ -51,7 +51,7 @@
       >
     </div>
     <!-- end of back button -->
-    <div class="oh-dashboard row" id="dashboard">
+    <div class="oh-dashboard row" id="dashboard" style="padding-bottom: 3.5rem;">
       <div class="oh-dashboard__left col-12 col-sm-12 col-md-12 col-lg-9">
         <div class="oh-dashboard__cards row">
           {% if perms.employee.view_employee %}
@@ -144,7 +144,7 @@
             {% if perms.candidate.view_employee or request.user|is_reportingmanager %}
             <div
               class="col-12 col-sm-12 col-md-12 col-lg-6 oh-card-dashboard--moveable"
-              id="notInYetdd"
+              id="notInYetId"
               hx-get="{% url "not-in-yet" %}"
               hx-trigger="load"
             >
@@ -326,7 +326,7 @@
                       style="width: 100px; color: #5e5c5c"
                     />
                   </div>
-                  <div class="oh-card-dashboard__body">
+                  <div class="oh-card-dashboard__body" style="height:300px">
                     <canvas
                       id="pendingHoursCanvas"
                       style="cursor: pointer"
@@ -456,6 +456,57 @@
               </div>
             </div>
             {% endif %}
+            
+            {% if perms.base.change_shiftrequest or request.user|is_reportingmanager %}
+            <div
+              class="col-12 col-sm-12 col-md-12 col-lg-6 oh-card-dashboard--moveable" id="shiftRequestApprove"
+            >
+              <div
+                class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent" style="height:425px"
+              >
+                <div
+                  class="oh-card-dashboard__header oh-card-dashboard__header--divider"
+                >
+                  <span class="oh-card-dashboard__title"
+                    >{% trans "Shift Request Approve" %}</span
+                  >
+                </div>
+                <div class="oh-card-dashboard__body"
+                  id="shiftRequestApproveBody"
+                  hx-get="{% url "dashboard-shift-request" %}"
+                  hx-trigger="load"                  
+                  style="height:80%"
+                >
+                  {% include "request_and_approve/shift_request.html" %}
+                </div>
+              </div>              
+            </div>      
+            {% endif %}
+            {% if perms.base.change_shiftrequest or request.user|is_reportingmanager %}
+            <div
+              class="col-12 col-sm-12 col-md-12 col-lg-6 oh-card-dashboard--moveable" id="WorkTypeRequestApprove"
+            >
+              <div
+                class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent" style="height:425px"
+              >
+                <div
+                  class="oh-card-dashboard__header oh-card-dashboard__header--divider"
+                >
+                  <span class="oh-card-dashboard__title"
+                    >{% trans "Work Type Request Approve" %}</span
+                  >
+                </div>
+                <div class="oh-card-dashboard__body"
+                  id="WorkTypeRequestApproveBody"
+                  hx-get="{% url "dashboard-work-type-request" %}"
+                  hx-trigger="load"
+                  style="height:80%"
+                >
+                  {% include "request_and_approve/work_type_request.html" %}
+                </div>
+              </div>              
+            </div>      
+            {% endif %}
           </div>
         </div>
       </div>
@@ -539,6 +590,32 @@
       <div class="oh-modal__dialog-body" id="mail-content"></div>
     </div>
   </div>
+  
+<div
+class="oh-modal"
+id="shiftRequestDetailModal"
+role="dialog"
+aria-labelledby="shiftRequestDetailModal"
+aria-hidden="true"
+>
+<div class="oh-modal__dialog oh-modal__dialog--timeoff oh-timeoff-modal">
+  <div class="oh-modal__dialog-header">
+    <h2
+      class="oh-modal__dialog-title"
+      id=""
+    >
+      {% trans "Details" %}
+    </h2>
+    <button class="oh-modal__close" aria-label="Close">
+      <ion-icon name="close-outline"></ion-icon>
+    </button>
+  </div>
+  <div
+    class="oh-modal__dialog-body oh-modal__dialog-relative"
+    id="shiftRequestDetailTarget"
+  ></div>
+</div>
+</div>
 
 </main>
 
