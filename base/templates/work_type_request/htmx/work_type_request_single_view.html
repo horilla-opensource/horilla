@@ -3,16 +3,16 @@
 {% if request.GET.instances_ids %}
 <div class="oh-modal__dialog oh-modal__dialog--navigation m-0 p-0">
     <button 
-        hx-get="{% url 'work-type-request-single-view' previous %}?instances_ids={{requests_ids}}" 
-        hx-target="#workTypeRequestSingleViewTarget"  
+        hx-get="{% url 'work-type-request-single-view' previous %}?instances_ids={{requests_ids}}&dashboard={{dashboard}}" 
+        hx-target="{% if dashboard == 'true' %}#shiftRequestDetailTarget{% else %}#workTypeRequestSingleViewTarget{% endif %}"  
         class="oh-modal__diaglog-nav oh-modal__nav-prev">
         <ion-icon name="chevron-back-outline" class="md hydrated" role="img"
         aria-label="chevron back outline"></ion-icon>
     </button>
 
     <button  
-        hx-get="{% url 'work-type-request-single-view' next %}?instances_ids={{requests_ids}}" 
-        hx-target="#workTypeRequestSingleViewTarget"  
+        hx-get="{% url 'work-type-request-single-view' next %}?instances_ids={{requests_ids}}&dashboard={{dashboard}}" 
+        hx-target="{% if dashboard == 'true' %}#shiftRequestDetailTarget{% else %}#workTypeRequestSingleViewTarget{% endif %}"  
         class="oh-modal__diaglog-nav oh-modal__nav-next">
         <ion-icon name="chevron-forward-outline" class="md hydrated" role="img"
         aria-label="chevron forward outline"></ion-icon>
@@ -23,11 +23,11 @@
 href ="{% url 'employee-view-individual' work_type_request.employee_id.id %}">
 <div class="oh-profile mb-2">
     <div class="oh-profile__avatar">
-            <img
-            src="{{work_type_request.employee_id.get_avatar}}"
-            class="oh-profile__image me-2"
-            alt="Mary Magdalene"
-            />
+        <img
+        src="{{work_type_request.employee_id.get_avatar}}"
+        class="oh-profile__image me-2"
+        alt="Mary Magdalene"
+        />
         </div>
             <div class="oh-timeoff-modal__profile-info">
                 <span class="oh-timeoff-modal__user fw-bold"
@@ -44,7 +44,7 @@ href ="{% url 'employee-view-individual' work_type_request.employee_id.id %}">
         </div>
     </a>
     
-<div class="oh-modal__dialog-header">
+<div class="oh-modal__dialog-header ps-0 pe-0">
     <div class="oh-timeoff-modal__stats-container mb-3">
       <div class="oh-timeoff-modal__stat">
           <span class="oh-timeoff-modal__stat-title">{% trans "Requested work type" %}</span>
@@ -81,6 +81,21 @@ href ="{% url 'employee-view-individual' work_type_request.employee_id.id %}">
     </div>
     <div class="oh-modal__button-container text-center">
        <div class="oh-btn-group">
+        {% if dashboard == 'true' %}
+            <a
+                href="/work-type-request-approve/{{work_type_request.id}}/"
+                onclick="return confirm('{% trans "Do you want to approve this request?" %}')"
+                class="oh-btn oh-btn--info w-50"
+                title='{% trans "Approve" %}'
+                >{% trans "Approve" %}</a>
+
+            <a
+                href="/work-type-request-cancel/{{work_type_request.id}}/"
+                onclick="return confirm('{% trans "Do you want to cancel this request?" %}')"
+                class="oh-btn oh-btn--danger w-50"
+                title='{% trans "Cancel" %}'
+                >{% trans "Cancel" %}</a>
+        {% else %}
             {% if work_type_request.approved == False and not work_type_request.canceled  %}
                 <a hx-get="{% url 'work-type-request-update' work_type_request.id %}" hx-target='#workTypeRequestUpdateModalBody' data-toggle="oh-modal-toggle" data-target='#workTypeRequestUpdateModal' class="oh-btn oh-btn--info w-50" title="{% trans 'Edit' %}"><ion-icon name="create-outline"></ion-icon></a>
             {% else %}
@@ -99,6 +114,7 @@ href ="{% url 'employee-view-individual' work_type_request.employee_id.id %}">
             {% else %}
                 <button class="oh-btn oh-btn--secondary w-50" disabled><ion-icon name="trash-outline"></ion-icon></button></td>
             {% endif %}
+        {% endif %}
        </div>
     </div>
 </div>
