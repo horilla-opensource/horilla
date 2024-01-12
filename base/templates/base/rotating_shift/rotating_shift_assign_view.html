@@ -2,22 +2,20 @@
 {% load i18n %}
 {% load basefilters %}
 <div class="oh-wrapper">
-  {% if perms.base.view_shiftrequest %}
-    <div
+  <div
     class="oh-checkpoint-badge text-success mb-2"
     id="selectAllRShifts"
     style="cursor: pointer"
-    >
-      {% trans "Select All Shifts" %}
-    </div>
-    <div
-      class="oh-checkpoint-badge text-secondary mb-2"
-      id="unselectAllRShifts"
-      style="cursor: pointer"
-    >
-      {% trans "Unselect All Shifts" %}
-    </div>
-  {% endif %}
+  >
+    {% trans "Select All Shifts" %}
+  </div>
+  <div
+    class="oh-checkpoint-badge text-secondary mb-2"
+    id="unselectAllRShifts"
+    style="cursor: pointer"
+  >
+    {% trans "Unselect All Shifts" %}
+  </div>
   <div
     class="oh-checkpoint-badge text-info mb-2"
     id="exportRShifts"

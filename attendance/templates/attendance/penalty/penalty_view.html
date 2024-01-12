@@ -1,0 +1,30 @@
+<div class="oh-sticky-table__table mt-3">
+  <div class="oh-sticky-table__thead">
+    <div class="oh-sticky-table__tr">
+      <div class="oh-sticky-table__th">Leave Type</div>
+      <div class="oh-sticky-table__th">Minus Days</div>
+      <div class="oh-sticky-table__th">
+        Deducted From <span title="Carry Forward Days">CFD</span>
+      </div>
+      <div class="oh-sticky-table__th">Penalty amount</div>
+      <div class="oh-sticky-table__th">Created Date</div>
+    </div>
+  </div>
+  <div class="oh-sticky-table__tbody">
+    {% for acc in records %}
+      <div class="oh-sticky-table__tr">
+        <div class="oh-sticky-table__td">{{ acc.leave_type_id }}</div>
+        <div class="oh-sticky-table__td">{{ acc.minus_leaves }}</div>
+        <div class="oh-sticky-table__td">
+          {% if acc.deduct_from_carry_forward %}
+            Yes
+          {% else %}
+            No
+          {% endif %}
+        </div>
+        <div class="oh-sticky-table__td">{{ acc.penalty_amount }}</div>
+        <div class="oh-sticky-table__td">{{ acc.created_at }}</div>
+      </div>
+    {% endfor %}
+  </div>
+</div>

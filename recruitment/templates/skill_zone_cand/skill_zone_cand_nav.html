@@ -1,0 +1,201 @@
+{% load i18n %}{% load static %}
+<div
+  class="oh-modal"
+  id="candidateExport"
+  role="dialog"
+  aria-labelledby="candidateExport"
+  aria-hidden="true"
+ >
+  <div class="oh-modal__dialog">
+    <div class="oh-modal__dialog-header">
+      <h2 class="oh-modal__dialog-title" id="candidateExportLavel">
+        {% trans "Export Candidates" %}
+      </h2>
+      <button class="oh-modal__close" aria-label="Close">
+        <ion-icon name="close-outline"></ion-icon>
+      </button>
+      <div
+        class="oh-modal__dialog-body p-0 pt-2"
+        id="candidateExportModalBody"
+      >
+        <form
+          action="{%url 'candidate-info-export' %}"
+          method="get"
+          onsubmit="event.stopPropagation();$(this).parents().find('.oh-modal--show').last().toggleClass('oh-modal--show');"
+          id="candidateExportForm"
+        >
+          {% csrf_token %} {% include 'candidate/export_filter.html'%}
+          <div class="oh-dropdown__filter-footer">
+            <button class="oh-btn oh-btn--secondary oh-btn--small w-100">
+              {% trans "Export" %}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<section
+class="oh-wrapper oh-main__topbar"
+x-data="{searchShow: false}"
+>
+<div class="oh-main__titlebar oh-main__titlebar--left">
+  <div hx-get="{% url 'candidate-view-card' %}" class="oh-main__titlebar-title fw-bold mb-0 text-dark" hx-target="#section" style="cursor:pointer;">{% trans "Candidates" %}</div>
+  <a
+    class="oh-main__titlebar-search-toggle "
+    role="button"
+    aria-label="Toggle Search"
+    @click="searchShow = !searchShow"
+  >
+    <ion-icon
+      name="search-outline"
+      class="oh-main__titlebar-serach-icon"
+    ></ion-icon>
+  </a>
+</div>
+
+<div class="oh-main__titlebar oh-main__titlebar--right">
+  {% if sz_candidates %}
+  <form hx-get='{% url "skill-zone-cand-filter" %}' id="filterForm" hx-target='#cand_container' class="d-flex">
+  <div
+    class="oh-input-group oh-input__search-group"
+    :class="searchShow ? 'oh-input__search-group--show' : ''"
+  >
+    <ion-icon
+      name="search-outline"
+      class="oh-input-group__icon oh-input-group__icon--left"
+    ></ion-icon>
+    <input
+      type="text"
+      placeholder="{% trans 'Search' %}" 
+      id="candidate-search"
+      name='search'
+      onkeyup = "$('.filterButton').click()"
+      hx-target="#section"
+      class="oh-input oh-input__icon"
+      hx-vals = '{"view":"{{request.GET.view}}"}'
+      aria-label="Search Input"
+    />
+  </div>
+  <ul class="oh-view-types ml-2" style="margin-bottom: 0;" id="view-type">
+    <li class="oh-view-type candidate-view-type " data-view='list' >
+      <a
+        onclick="$(this).parents().closest('ul').find('[name=view]').val('list');$('.filterButton').click();$(this).toggleClass('oh-btn--view-active');$('#card').removeClass('oh-btn--view-active')"
+        id = 'list' 
+        hx-get="{% url 'search-candidate' %}?view=list"  
+        hx-target='#section' 
+        class="oh-btn oh-btn--view {% if request.GET.view == 'list' %} oh-btn--view-active {% endif %}"
+        title = {% trans "List" %}
+        ><ion-icon name="list-outline"></ion-icon
+      ></a>
+    </li>
+    <li class="oh-view-type candidate-view-type" data-view='card'>
+      <a 
+        onclick="$(this).parents().closest('ul').find('[name=view]').val('card');$('.filterButton').click();$(this).toggleClass('oh-btn--view-active');$('#list').removeClass('oh-btn--view-active')"
+        id="card"
+        hx-get="{% url 'search-candidate' %}?view=card" 
+        hx-target='#section' 
+        class="oh-btn oh-btn--view {% if request.GET.view != 'list' %} oh-btn--view-active {% endif %}"
+        title = {% trans "Card" %}
+        ><ion-icon name="grid-outline"></ion-icon
+      ></a>
+    </li>
+    <input type="hidden" name="view" value="{{request.GET.view}}">
+  </ul>
+
+  <div class="oh-main__titlebar-button-container">
+    
+
+    <div class="oh-dropdown" x-data="{open: false}">
+      <button class="oh-btn ml-2" @click="open = !open" onclick="event.preventDefault()">
+        <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}<div id="filterCount"></div>
+      </button>
+      <div
+        class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4"
+        x-show="open"
+        @click.outside="open = false"
+      style="display: none;"
+      >
+      {% include 'candidate/filters.html' %}
+      </div>
+    </div>
+    
+    </form>
+    {% comment %} <div class="oh-btn-group ml-2">
+      <div class="oh-dropdown" x-data="{open: false}">
+        <button
+          class="oh-btn oh-btn--dropdown oh-btn oh-btn--shadow"
+          @click="open = !open"
+          @click.outside="open = false"
+        >
+          {% trans "Actions" %}
+        </button>
+        <div class="oh-dropdown__menu oh-dropdown__menu--right" x-show="open" 
+        style="display: none;"
+      >
+          <ul class="oh-dropdown__items">
+            <li class="oh-dropdown__item">
+              {% if perms.delete_candidates %}
+              <a
+                href="#"
+                class="oh-dropdown__link"
+                id="candidate-info-export"
+                data-toggle="oh-modal-toggle"
+                data-target="#candidateExport"
+                >{% trans "Export" %}</a
+              >
+              {% endif %}
+            </li>
+            {% if perms.delete_candidates %}
+            <li class="oh-dropdown__item">
+              <a href="#" class="oh-dropdown__link " id="archiveCandidates"
+
+                >{% trans "Archive" %}</a
+              >
+            </li>
+            {% endif %} 
+
+            {% if perms.delete_candidates %}
+            <li class="oh-dropdown__item">
+              <a href="#" class="oh-dropdown__link "
+
+               id="unArchiveCandidates"
+                >{% trans "Un-Archive" %}</a
+              >
+            </li>
+            {% endif %} 
+
+            {% if perms.delete_candidates %}
+            <li class="oh-dropdown__item">
+              <a
+                href="#"
+                class="oh-dropdown__link oh-dropdown__link--danger"
+                id="deleteCandidates"
+                >{% trans "Delete" %}</a
+              >
+            </li>
+            {% endif %}
+
+          </ul>
+        </div>
+      </div>
+    </div> {% endcomment %}
+{% endif %}
+    <div class="oh-btn-group ml-2">
+      <div class="oh-dropdown" >
+        {% if perms.recruitment.add_candidate %}
+        <a hx-get="{% url 'skill-zone-cand-create' sz_id %}"
+          class='oh-btn oh-btn--secondary'
+          data-toggle="oh-modal-toggle"
+          data-target="#editCandModal"
+          hx-target="#editCandTarget"
+        >
+          <ion-icon name="add-sharp" class="mr-1"></ion-icon>{% trans "Create" %}
+        </a>
+      {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+</section>

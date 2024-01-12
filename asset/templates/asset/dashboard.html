@@ -1,0 +1,146 @@
+{% extends 'index.html' %} 
+{% block content %}
+{% load static i18n %}
+{% load i18n %}
+<style>
+    .oh-sticky-table{
+        max-height:100% !important;
+    }
+</style>
+
+<!-- End of Navigation -->
+<main :class="sidebarOpen ? 'oh-main__sidebar-visible' : ''">
+    <div class="oh-wrapper">
+        <div class="d-none mt-5" id="back_button" style="width:10%">
+            <a href=""
+              class="oh-btn oh-btn--secondary oh-btn--shadow ms-3">
+              <ion-icon
+                class="me-2 md hydrated"
+                name="arrow-back-outline"
+                role="img"
+                aria-label="arrow-back-outline">
+                </ion-icon>
+              {% trans "Back" %}
+            </a>
+        </div>
+        <div class="oh-dashboard row" id="dashboard">
+            <div class="oh-dashboard__left col-12 col-sm-12 col-md-12 col-lg-12">
+                <div class="oh-dashboard__cards row">
+                    <div class="col-12 col-sm-12 col-md-6 col-lg-4 filter">
+                        <div class="oh-card-dashboard oh-card-dashboard oh-card-dashboard--success" >
+                            <a href="#" class="text-decoration-none recruitment">
+                                <div class="oh-card-dashboard__header">
+                                    <span class="oh-card-dashboard__title">{% trans "Assets" %}</span>
+                                </div>
+                                <div class="oh-card-dashboard__body">
+                                    <span class="oh-card-dashboard__count">{{assets|length}}</span>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-12 col-md-6 col-lg-4 filter">
+                        <div class="oh-card-dashboard oh-card-dashboard--warning"
+                            hx-get=""
+                            hx-target="#dashboard"
+                            id="candidate_view"
+                            >
+                            <div class="oh-card-dashboard__header">
+                                <span class="oh-card-dashboard__title">{% trans "Asset request" %}</span>
+                            </div>
+                            <div class="oh-card-dashboard__body">
+                                <span class="oh-card-dashboard__count">{{asset_requests|length}}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-12 col-md-6 col-lg-4 filter">
+                        <div class="oh-card-dashboard oh-card-dashboard--success"
+                            hx-get=""
+                            hx-target="#dashboard"
+                            id="hired_candidate"
+                            >
+                            <div style="text-decoration: none;" class="oh-card-dashboard__header">
+                                <span class="oh-card-dashboard__title">{% trans "Assets in use" %}</span>
+                            </div>
+                            <div class="oh-card-dashboard__body">
+                                <a style="text-decoration: none;" class="oh-card-dashboard__counts">
+                                    <span class="oh-card-dashboard__count"> {{asset_in_use|length}} </span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>                
+            </div>
+            <div class="oh-dashboard__movable-cards row mt-4 mb-4">
+    
+                <div class="col-12 col-sm-12 col-md-12 col-lg-3 mt-2">
+                    <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent">
+                        <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
+                            <span class="oh-card-dashboard__title" >{% trans "Asset Chart" %}</span>
+                        </div>
+                        <div class="oh-card-dashboard__body" id="assetAvailableChartContainer">
+                            <canvas id="assetAvailableChart" ></canvas>
+                        </div>
+                    </div>
+                </div> 
+
+                <div class="col-12 col-sm-12 col-md-12 col-lg-9">
+                    <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent">
+                        <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
+                            <span class="oh-card-dashboard__title">{% trans "Asset requests to approve" %}</span>
+                        </div>
+                        <div class="oh-card-dashboard__body" id="leaveRequest" style="height:330px;overflow-y:auto">
+                            {% include "asset/dashboard_asset_requests.html" %}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-12 col-sm-12 col-md-12 col-lg-6 mt-3">
+                    <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent">
+                        <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
+                            <span class="oh-card-dashboard__title" >{% trans "Asset Chart" %}</span>
+                        </div>
+                        <div class="oh-card-dashboard__body" id="assetCategoryChartContainer">
+                            <canvas id="assetCategoryChart" ></canvas>
+                        </div>
+                    </div>
+                </div> 
+                
+                <div class="col-12 col-sm-12 col-md-12 col-lg-6 mt-3">
+                    <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent">
+                        <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
+                            <span class="oh-card-dashboard__title">{% trans "Allocated Assets" %}</span>
+                        </div>
+                        <div class="oh-card-dashboard__body" id="leaveRequest" style="height:350px;overflow-y:auto">
+                            {% include "asset/dashboard_allocated_assets.html" %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<div
+	class="oh-modal"
+	id="asset-request-allocation-modal"
+	role="dialog"
+	aria-labelledby="AssetRequestModal"
+	aria-hidden="true"
+>
+	<div class="oh-modal__dialog" style="max-width: 550px">
+		<div class="oh-modal__dialog-header">
+			<button type="button" class="oh-modal__close" aria-label="Close">
+				<ion-icon name="close-outline"></ion-icon>
+			</button>
+		</div>
+
+		<!-- htmx form -->
+		<div
+			class="oh-modal__dialog-body"
+			id="asset-request-allocation-modal-target"
+		></div>
+	</div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="{% static 'src/asset/dashboard.js' %}"></script>
+{% endblock content %}

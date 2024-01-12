@@ -18,6 +18,7 @@
         {% for rec in question.recruitment_ids.all %} {{rec}},&nbsp; {% endfor %}
       </span>
     </div>
+    {% if perms.recruitment.delete_recruitmentsurvey or perms.recruitment.change_recruitmentsurvey %}
     <div class="oh-kanban-card__dots">
       <div class="oh-dropdown" x-data="{show: false}">
         <button
@@ -34,6 +35,7 @@
           @click.outside="show = false"
         >
           <ul class="oh-dropdown__items">
+            {% if perms.recruitment.change_recruitmentsurvey %}
             <li class="oh-dropdown__item">
               <a
                 hx-get="{% url 'recruitment-survey-question-template-edit' question.id %}"
@@ -44,6 +46,8 @@
                 >{% trans "Edit" %}</a
               >
             </li>
+            {% endif %}
+            {% if perms.recruitment.delete_recruitmentsurvey %}
             <li class="oh-dropdown__item">
               <a
                 href="{% url 'recruitment-survey-question-template-delete' question.id %}"
@@ -52,15 +56,16 @@
                 >{% trans "Delete" %}</a
               >
             </li>
+            {% endif %}
           </ul>
         </div>
       </div>
     </div>
+    {% endif %}
   </div>
 
   {% endfor %}
 </div>
-
 <div
   class="oh-modal"
   id="detailSurvey"

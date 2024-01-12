@@ -1,0 +1,34 @@
+{% load i18n %}
+<div class="oh-modal__dialog">
+	<div class="oh-modal__dialog-header">
+		<h2 class="oh-modal__dialog-title" id="faqCreateModalLabel">
+			{% if faq %} 
+				{% trans "FAQ Update" %} 
+				{% else %} 
+				{% trans "FAQ Create" %}
+			{% endif %}
+		</h2>
+		<button class="oh-modal__close" aria-label="Close">
+			<ion-icon name="close-outline"></ion-icon>
+		</button>
+	</div>
+	<div class="oh-modal__dialog-body" id="faqCreateForm">
+		<form
+			id="add-form"
+			hx-post="{% if faq %}{% url 'faq-update' faq.id %}{% else %}{% url 'faq-create' cat_id %}{% endif %} "
+			hx-target="#faqCreate"
+			hx-swap="innerHTML"
+			method="post"
+			hx-encoding="multipart/form-data"
+		>
+			{{form.as_p}}
+			<div class="oh-modal__dialog-footer">
+				<input
+					type="submit"
+					value='{% trans "Save" %}'
+					class="oh-btn oh-btn--secondary oh-btn--shadow pl-5 pr-5"
+				/>
+			</div>
+		</form>
+	</div>
+</div>

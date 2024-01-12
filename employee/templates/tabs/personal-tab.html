@@ -272,6 +272,23 @@
 												>{{employee.employee_work_info.date_joining}}</span
 											>
 										</li>
+
+										<li class="oh-profile__card-info-item">
+											<span class="oh-profile__info-label mb-1">
+												<ion-icon name="business-outline"></ion-icon>
+												<span>{% trans "Tags" %}</span>
+											</span>
+											<div style= "display: flex; flex-wrap: wrap;">
+												{% for i in employee.employee_work_info.tags.all %}
+													{% with tag_width=i.title|length %}
+														<span class="oh-profile__info-value mt-1 mb-1 mr-1" style="background-color: {{ i.color }};
+															font-size: .8rem; padding: 4px 10px; border-radius: 18px; font-weight: 600; width: {{ tag_width }}em;"
+														>{{ i.title }}</span>
+													{% endwith %}
+												{% endfor %}
+											</div>
+										</li>
+										
 									</ul>
 								</div>
 							</div>

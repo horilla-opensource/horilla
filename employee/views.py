@@ -72,12 +72,13 @@ from employee.forms import (
     EmployeeExportExcelForm,
     EmployeeForm,
     EmployeeBankDetailsForm,
+    EmployeeNoteForm,
     EmployeeWorkInformationForm,
     EmployeeWorkInformationUpdateForm,
     EmployeeBankDetailsUpdateForm,
     excel_columns,
 )
-from employee.models import Employee, EmployeeWorkInformation, EmployeeBankDetails
+from employee.models import Employee, EmployeeNote, EmployeeWorkInformation, EmployeeBankDetails
 from payroll.methods.payslip_calc import dynamic_attr
 from payroll.models.models import Allowance, Contract, Deduction
 from pms.models import Feedback
@@ -443,6 +444,7 @@ def allowances_deductions_tab(request, emp_id):
         "active_contracts": active_contracts,
         "allowances": employee_allowances if employee_allowances else None,
         "deductions": employee_deductions if employee_deductions else None,
+        "employee":employee,
     }
     return render(request, "tabs/allowance_deduction-tab.html", context=context)
 
@@ -818,6 +820,7 @@ def employee_view_update(request, obj_id, **kwargs):
                     instance = work_form.save(commit=False)
                     instance.employee_id = employee
                     instance.save()
+                    instance.tags.set(request.POST.getlist("tags"))
                     notify.send(
                         request.user.employee_get,
                         recipient=instance.employee_id.employee_user_id,
@@ -1095,7 +1098,8 @@ def employee_filter_view(request):
     """
     previous_data = request.GET.urlencode()
     field = request.GET.get("field")
-    employees = EmployeeFilter(request.GET).qs
+    queryset = Employee.objects.filter()
+    employees = EmployeeFilter(request.GET,queryset=queryset).qs
     if request.GET.get("is_active") != "False":
         employees = employees.filter(is_active=True)
     page_number = request.GET.get("page")
@@ -1324,11 +1328,20 @@ def employee_archive(request, obj_id):
     employee = Employee.objects.get(id=obj_id)
     employee.is_active = not employee.is_active
     employee.employee_user_id.is_active = not employee.is_active
-    employee.save()
+    save = True
     message = "Employee un-archived"
     if not employee.is_active:
-        message = _("Employee archived")
-    messages.success(request, message)
+        result = employee.get_archive_condition()
+        if result:
+            save = False
+        else:
+            message = _("Employee archived")
+    if save:
+        employee.save()
+        messages.success(request, message)
+    else:
+        related_models = ", ".join(model for model in result.get("related_models"))
+        messages.warning(request, _(f"Can't archive.Employee assigned as {related_models}"))
     return HttpResponseRedirect(request.META.get("HTTP_REFERER"))
 
 
@@ -2117,3 +2130,107 @@ def employee_select_filter(request):
         context = {"employee_ids": employee_ids, "total_count": total_count}
 
         return JsonResponse(context)
+
+@login_required
+@manager_can_enter(perm="employee.view_employeenote")
+def note_tab(request, emp_id):
+    """
+    This function is used to view performance tab of an employee in employee individual & profile view.
+
+    Parameters:
+    request (HttpRequest): The HTTP request object.
+    emp_id (int): The id of the employee.
+
+    Returns: return note-tab template
+
+    """
+    # employee = Employee.objects.get(id=emp_id)
+    employee_obj = Employee.objects.get(id=emp_id)
+    notes = EmployeeNote.objects.filter(employee_id = emp_id)
+
+    return render(
+        request,
+        "tabs/note_tab.html",
+        {"employee": employee_obj, "notes": notes},
+    )
+
+
+@login_required
+@hx_request_required
+@manager_can_enter(perm="employee.add_employeenote")
+def add_note(request, emp_id=None):
+    """
+    This method renders template component to add candidate remark
+    """
+    form = EmployeeNoteForm(initial={"employee_id": emp_id})
+    if request.method == "POST":
+        form = EmployeeNoteForm(
+            request.POST,
+        )
+        if form.is_valid():
+            note = form.save(commit=False)
+            note.updated_by = request.user.employee_get
+            note.save()
+            messages.success(request, _("Note added successfully.."))
+            response = render(
+                request, "tabs/add_note.html", {"form": form}
+            )
+            return HttpResponse(
+                response.content.decode("utf-8") + "<script>location.reload();</script>"
+            )
+    return render(
+        request,
+        "tabs/add_note.html",
+        {
+            "note_form": form,
+        },
+    )
+
+
+@login_required
+@manager_can_enter(perm="employee.change_employeenote")
+def employee_note_update(request, note_id):
+    """
+    This method is used to update the note
+    Args:
+        id : stage note instance id
+    """
+
+    note = EmployeeNote.objects.get(id=note_id)
+
+    form = EmployeeNoteForm(instance=note)
+    if request.POST:
+        form = EmployeeNoteForm(request.POST, instance=note)
+        if form.is_valid():
+            form.save()
+            messages.success(request, _("Note updated successfully..."))
+            response = render(
+                request,
+                "tabs/update_note.html",
+                {"form": form},
+            )
+            return HttpResponse(
+                response.content.decode("utf-8") + "<script>location.reload();</script>"
+            )
+    return render(
+        request,
+        "tabs/update_note.html",
+        {
+            "form": form,
+        },
+    )
+
+@login_required
+@manager_can_enter(perm="employee.delete_employeenote")
+def employee_note_delete(request, note_id):
+    """
+    This method is used to delete the note
+    Args:
+        id : stage note instance id
+    """
+
+    note = EmployeeNote.objects.get(id=note_id)
+    note.delete()
+    messages.success(request, _("Note deleted successfully..."))
+    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+

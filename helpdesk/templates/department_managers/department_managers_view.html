@@ -1,0 +1,59 @@
+{% load i18n %}
+<div class="oh-sticky-table">
+	<div class="oh-sticky-table__table oh-table--sortable">
+		<div class="oh-sticky-table__thead">
+			<div class="oh-sticky-table__tr">
+				<div class="oh-sticky-table__th">{% trans "department" %}</div>
+                <div class="oh-sticky-table__th">{% trans "manager" %}</div>
+				{% if perms.helpdesk.change_departmentmanager or perms.helpdesk.delete_departmentmanager %}
+					<div class="oh-sticky-table__th">{% trans "Actions" %}</div>
+				{% endif %}
+			</div>
+		</div>
+		<div class="oh-sticky-table__tbody">
+			{% for manager in department_managers %}
+			<div class="oh-sticky-table__tr" draggable="true">
+				<div class="oh-sticky-table__td">{{manager.department}}</div>
+                <div class="oh-sticky-table__td">
+                    {{manager.manager}}
+                </div>
+				{% if perms.helpdesk.change_departmentmanager or perms.helpdesk.delete_departmentmanager %}
+					<div class="oh-sticky-table__td">
+						<div class="oh-btn-group">
+							{% if perms.helpdesk.change_departmentmanager %}
+							<a
+								hx-get="{% url 'department-manager-update' manager.id %}" 
+								hx-target="#deparmentManagersModal"
+								data-toggle="oh-modal-toggle"
+								data-target="#deparmentManagersModal"
+								type="button"
+								class="oh-btn oh-btn--light-bkg w-50"
+								title="{% trans 'Edit' %}"
+							>
+								<ion-icon name="create-outline"></ion-icon
+							></a>
+							{% endif %} 
+							{% if perms.helpdesk.delete_departmentmanager %} 
+							<form 
+								action="{% url 'department-manager-delete' manager.id %}"  
+								class="w-50" 
+								onsubmit="return confirm('{% trans "Are you sure you want to remove this department manager?" %}');" 
+								method='post'> 
+								{% csrf_token %}
+								<button
+									type="submit"
+									class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+									title="{% trans 'Remove' %}"
+								>
+									<ion-icon name="trash-outline"></ion-icon>
+								</button>
+							</form>
+							{% endif %}
+						</div>
+					</div>
+				{% endif %}
+			</div>
+			{% endfor %}
+		</div>
+	</div>
+</div>

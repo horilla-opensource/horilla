@@ -163,46 +163,48 @@ aria-hidden="true"
         </div>
       </div>
       </form>
-      <div class="oh-dropdown ml-2" x-data="{open: false}">
-        <button
-          class="oh-btn oh-btn--dropdown"
-          @click="open = !open"
-          @click.outside="open = false"
-        >
-          {% trans "Actions" %}
-        </button>
-        <div
-            class="oh-dropdown__menu oh-dropdown__menu--right"
-            x-show="open"
-            style="display: none"
+      {% if perms.attendance.add_attendanceovertime or request.user|is_reportingmanager or perms.attendance.delete_attendanceovertime %}
+        <div class="oh-dropdown ml-2" x-data="{open: false}">
+          <button
+            class="oh-btn oh-btn--dropdown"
+            @click="open = !open"
+            @click.outside="open = false"
           >
-            <ul class="oh-dropdown__items">
-              {% if perms.attendance.add_attendanceovertime or request.user|is_reportingmanager %}
-                <li class="oh-dropdown__item">
-                  <a
-                    href="#"
-                    class="oh-dropdown__link"
-                    id="hour-account-export"
-                    data-toggle="oh-modal-toggle"
-                    data-target="#hourAccountExport"
-                    >{% trans "Export" %}</a
-                  >
-                </li>
-              {% endif %} 
-              {% if perms.attendance.delete_attendanceovertime %}
-                <li class="oh-dropdown__item">
-                  <a
-                    href="#"
-                    id="hourAccountbulkDelete"
-                    class="oh-dropdown__link oh-dropdown__link--danger"
-                    >{% trans "Delete" %}</a
-                  >
-                </li>
-              {% endif %}
-            </ul>
+            {% trans "Actions" %}
+          </button>
+          <div
+              class="oh-dropdown__menu oh-dropdown__menu--right"
+              x-show="open"
+              style="display: none"
+            >
+              <ul class="oh-dropdown__items">
+                {% if perms.attendance.add_attendanceovertime or request.user|is_reportingmanager %}
+                  <li class="oh-dropdown__item">
+                    <a
+                      href="#"
+                      class="oh-dropdown__link"
+                      id="hour-account-export"
+                      data-toggle="oh-modal-toggle"
+                      data-target="#hourAccountExport"
+                      >{% trans "Export" %}</a
+                    >
+                  </li>
+                {% endif %} 
+                {% if perms.attendance.delete_attendanceovertime %}
+                  <li class="oh-dropdown__item">
+                    <a
+                      href="#"
+                      id="hourAccountbulkDelete"
+                      class="oh-dropdown__link oh-dropdown__link--danger"
+                      >{% trans "Delete" %}</a
+                    >
+                  </li>
+                {% endif %}
+              </ul>
+            </div>
           </div>
         </div>
-      </div>
+      {% endif %}
       {% if perms.attendance.add_attendanceovertime or request.user|is_reportingmanager %}
         <div class="oh-btn-group ml-2">
           <div class="oh-dropdown" >

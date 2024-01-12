@@ -33,6 +33,8 @@ from employee.models import Employee
 from horilla_widgets.widgets.horilla_multi_select_field import HorillaMultiSelectField
 from horilla_widgets.widgets.select_widgets import HorillaMultiSelectWidget
 from recruitment.models import (
+    SkillZone,
+    SkillZoneCandidate,
     Stage,
     Recruitment,
     Candidate,
@@ -43,6 +45,9 @@ from recruitment.models import (
 )
 from recruitment import widgets
 from base.methods import reload_queryset
+from django.core.exceptions import NON_FIELD_ERRORS
+
+
 
 
 class ModelForm(forms.ModelForm):
@@ -387,6 +392,7 @@ class ApplicationForm(RegistrationForm):
             "joining_date",
             "sequence",
             "offerletter_status",
+            "source",
         )
         widgets = {
             "recruitment_id": forms.TextInput(
@@ -646,3 +652,77 @@ class OfferLetterForm(ModelForm):
                 attrs={"data-summernote": "", "style": "display:none;"}
             ),
         }
+           
+        
+class SkillZoneCreateForm(forms.ModelForm):
+    class Meta:
+        """
+        Class Meta for additional options
+        """
+        model = SkillZone
+        fields = "__all__"        
+        exclude = [
+            "created_on",
+            "objects",
+            "company_id",
+        ]
+
+    
+class SkillZoneCandidateForm(ModelForm):
+    class Meta:
+        """
+        Class Meta for additional options
+        """
+        model = SkillZoneCandidate
+        fields = "__all__"
+        exclude = [
+            "added_on",
+        ]
+        widgets = {
+            "skill_zone_id": forms.HiddenInput(),
+        }
+        
+
+class ToSkillZoneForm(ModelForm):
+
+    skill_zone_ids = forms.ModelMultipleChoiceField(
+        queryset=SkillZone.objects.all(), 
+        label=_("Skill Zones")
+    )
+    class Meta:
+        """
+        Class Meta for additional options
+        """
+        model = SkillZoneCandidate
+        fields = "__all__"
+        exclude = [
+            "skill_zone_id",
+        ]
+        widgets = {
+            "candidate_id": forms.HiddenInput(),
+            # 'skill_zone_id':forms.MultiValueField()
+        }
+        error_messages = {
+            NON_FIELD_ERRORS: {
+                'unique_together': "This candidate alreay exist in this skill zone",
+            }
+        }
+
+    def clean(self):
+        cleaned_data = super().clean()
+        candidate = cleaned_data.get('candidate_id')
+        skill_zones = cleaned_data.get('skill_zone_ids')
+        skill_zone_list=[]
+        for skill_zone in skill_zones:
+            print(skill_zone,candidate)
+            # Check for the unique together constraint manually
+            if SkillZoneCandidate.objects.filter(candidate_id=candidate, skill_zone_id=skill_zone).exists():
+                # Raise a ValidationError with a custom error message
+                skill_zone_list.append(skill_zone)
+        if len(skill_zone_list) > 0 :
+            skill_zones_str = ', '.join(str(skill_zone) for skill_zone in skill_zone_list)       
+            raise ValidationError(f"{candidate} already exists in {skill_zones_str}.")
+
+            # cleaned_data['skill_zone_id'] =skill_zone
+        return cleaned_data
+    

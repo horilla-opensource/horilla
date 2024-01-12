@@ -15,14 +15,23 @@ from django.contrib import messages
 from django.utils.translation import gettext_lazy as _
 from django.http import HttpResponse
 import pandas as pd
+from asset.models import Asset
 from base.models import Company
 from employee.models import Employee, EmployeeWorkInformation
-from horilla.decorators import login_required, permission_required
+from horilla.decorators import login_required, owner_can_enter, permission_required
 from horilla.settings import EMAIL_HOST_USER
-from base.methods import get_key_instances
+from base.methods import filter_own_recodes, get_key_instances
 from base.methods import closest_numbers
+from leave.models import AvailableLeave
 import payroll.models.models
-from payroll.models.models import Allowance, Deduction, Payslip
+from payroll.models.models import (
+    Allowance,
+    Deduction,
+    LoanAccount,
+    Payslip,
+    Reimbursement,
+    ReimbursementMultipleAttachment,
+)
 from payroll.methods.payslip_calc import (
     calculate_allowance,
     calculate_gross_pay,
@@ -33,7 +42,13 @@ from payroll.methods.payslip_calc import (
     calculate_pre_tax_deduction,
     calculate_tax_deduction,
 )
-from payroll.filters import AllowanceFilter, DeductionFilter, PayslipFilter
+from payroll.filters import (
+    AllowanceFilter,
+    DeductionFilter,
+    LoanAccountFilter,
+    PayslipFilter,
+    ReimbursementFilter,
+)
 from payroll.forms import component_forms as forms
 from payroll.methods.payslip_calc import (
     calculate_net_pay_deduction,
@@ -78,6 +93,8 @@ def payroll_calculation(employee, start_date, end_date):
     contract_wage = basic_pay_details["contract_wage"]
     basic_pay = basic_pay_details["basic_pay"]
     loss_of_pay = basic_pay_details["loss_of_pay"]
+    paid_days = basic_pay_details["paid_days"]
+    unpaid_days = basic_pay_details["unpaid_days"]
 
     working_days_details = basic_pay_details["month_data"]
 
@@ -117,6 +134,10 @@ def payroll_calculation(employee, start_date, end_date):
 
     pretax_deductions = calculate_pre_tax_deduction(**kwargs)
     post_tax_deductions = calculate_post_tax_deduction(**kwargs)
+
+    installments = (
+        pretax_deductions["installments"] | post_tax_deductions["installments"]
+    )
 
     taxable_gross_pay = calculate_taxable_gross_pay(**kwargs)
     tax_deductions = calculate_tax_deduction(**kwargs)
@@ -176,6 +197,8 @@ def payroll_calculation(employee, start_date, end_date):
         "gross_pay": gross_pay,
         "contract_wage": contract_wage,
         "basic_pay": basic_pay,
+        "paid_days": paid_days,
+        "unpaid_days": unpaid_days,
         "taxable_gross_pay": taxable_gross_pay,
         "basic_pay_deductions": basic_pay_deductions,
         "gross_pay_deductions": gross_pay_deductions,
@@ -197,6 +220,7 @@ def payroll_calculation(employee, start_date, end_date):
     json_data = json.dumps(data_to_json)
 
     payslip_data["json_data"] = json_data
+    payslip_data["installments"] = installments
     return payslip_data
 
 
@@ -223,7 +247,9 @@ def view_allowance(request):
     """
     This method is used render template to view all the allowance instances
     """
-    allowances = payroll.models.models.Allowance.objects.all()
+    allowances = payroll.models.models.Allowance.objects.exclude(
+        only_show_under_employee=True
+    )
     allowance_filter = AllowanceFilter(request.GET)
     allowances = paginator_qry(allowances, request.GET.get("page"))
     allowance_ids = json.dumps([instance.id for instance in allowances.object_list])
@@ -268,7 +294,7 @@ def filter_allowance(request):
     Filter and retrieve a list of allowances based on the provided query parameters.
     """
     query_string = request.GET.urlencode()
-    allowances = AllowanceFilter(request.GET).qs
+    allowances = AllowanceFilter(request.GET).qs.exclude(only_show_under_employee=True)
     list_view = "payroll/allowance/list_allowance.html"
     card_view = "payroll/allowance/card_allowance.html"
     template = card_view
@@ -354,7 +380,9 @@ def view_deduction(request):
     This method is used render template to view all the deduction instances
     """
 
-    deductions = payroll.models.models.Deduction.objects.all()
+    deductions = payroll.models.models.Deduction.objects.exclude(
+        only_show_under_employee=True
+    )
     deduction_filter = DeductionFilter(request.GET)
     deductions = paginator_qry(deductions, request.GET.get("page"))
     deduction_ids = json.dumps([instance.id for instance in deductions.object_list])
@@ -398,7 +426,7 @@ def filter_deduction(request):
     This method is used search the deduction
     """
     query_string = request.GET.urlencode()
-    deductions = DeductionFilter(request.GET).qs
+    deductions = DeductionFilter(request.GET).qs.exclude(only_show_under_employee=True)
     list_view = "payroll/deduction/list_deduction.html"
     card_view = "payroll/deduction/card_deduction.html"
     template = card_view
@@ -493,6 +521,7 @@ def generate_payslip(request):
                 data["deduction"] = payslip["total_deductions"]
                 data["net_pay"] = payslip["net_pay"]
                 data["pay_data"] = json.loads(payslip["json_data"])
+                data["installments"] = payslip["installments"]
                 instance = save_payslip(**data)
                 instances.append(instance)
             messages.success(request, f"{employees.count()} payslip saved as draft")
@@ -554,6 +583,7 @@ def create_payslip(request):
                 data["deduction"] = payslip_data["total_deductions"]
                 data["net_pay"] = payslip_data["net_pay"]
                 data["pay_data"] = json.loads(payslip_data["json_data"])
+                data["installments"] = payslip_data["installments"]
                 payslip_data["instance"] = save_payslip(**data)
                 form = forms.PayslipForm()
                 messages.success(request, _("Payslip Saved"))
@@ -566,7 +596,7 @@ def create_payslip(request):
 
 
 @login_required
-@permission_required("payroll.add_attendance")
+@permission_required("payroll.add_payslip")
 def validate_start_date(request):
     """
     This method to validate the contract start date and the pay period start date
@@ -840,3 +870,277 @@ def send_slip(request):
     mail_thread.start()
     messages.info(request, "Mail processing")
     return redirect(view_payslip)
+
+
+@login_required
+@permission_required("payroll.add_allowance")
+def add_bonus(request):
+    employee_id = request.GET["employee_id"]
+    form = forms.BonusForm(initial={"employee_id": employee_id})
+    if request.method == "POST":
+        form = forms.BonusForm(request.POST, initial={"employee_id": employee_id})
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Bonus Added")
+            return HttpResponse("<script>window.location.reload()</script>")
+    return render(
+        request, "payroll/bonus/form.html", {"form": form, "employee_id": employee_id}
+    )
+
+
+@login_required
+@permission_required("payroll.view_loanaccount")
+def view_loans(request):
+    """
+    This method is used to render template to disply all the loan records
+    """
+    records = LoanAccount.objects.all()
+    filter_instance = LoanAccountFilter()
+    return render(
+        request,
+        "payroll/loan/view_loan.html",
+        {
+            "records": paginator_qry(records, request.GET.get("page")),
+            "f": filter_instance,
+        },
+    )
+
+
+@login_required
+@permission_required("payroll.add_loanaccount")
+def create_loan(request):
+    """
+    This method is used to create and update the loan instance
+    """
+    instance_id = eval(str(request.GET.get("instance_id")))
+    instance = LoanAccount.objects.filter(id=instance_id).first()
+    form = forms.LoanAccountForm(instance=instance)
+    if request.method == "POST":
+        form = forms.LoanAccountForm(request.POST, instance=instance)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Loan created/updated")
+            return HttpResponse("<script>window.location.reload()</script>")
+    return render(
+        request, "payroll/loan/form.html", {"form": form, "instance_id": instance_id}
+    )
+
+
+@login_required
+@permission_required("payroll.view_loanaccount")
+def view_installments(request):
+    """
+    View install ments
+    """
+    loan_id = request.GET["loan_id"]
+    loan = LoanAccount.objects.get(id=loan_id)
+    installments = loan.deduction_ids.all()
+    return render(
+        request,
+        "payroll/loan/installments.html",
+        {"installments": installments, "loan": loan},
+    )
+
+
+@login_required
+@permission_required("payroll.delete_loanaccount")
+def delete_loan(request):
+    """
+    Delete loan
+    """
+    ids = request.GET.getlist("ids")
+    loans = LoanAccount.objects.filter(id__in=ids, settled=False)
+    # This 👇 would'nt trigger the delete method in the model
+    # loans.delete()
+    for loan in loans:
+        loan.delete()
+    messages.success(request, "Loan account deleted")
+    return redirect(view_loans)
+
+
+@login_required
+@permission_required("payroll.view_loanaccount")
+def search_loan(request):
+    """
+    Search loan method
+    """
+    records = LoanAccountFilter(request.GET).qs
+    data_dict = parse_qs(request.GET.urlencode())
+    return render(
+        request,
+        "payroll/loan/records.html",
+        {
+            "records": paginator_qry(records, request.GET.get("page")),
+            "filter_dict": data_dict,
+            "pd": request.GET.urlencode(),
+        },
+    )
+
+
+@login_required
+@permission_required("payroll.add_loanaccount")
+def asset_fine(request):
+    """
+    Add asset fine method
+    """
+    asset_id = request.GET["asset_id"]
+    employee_id = request.GET["employee_id"]
+    asset = Asset.objects.get(id=asset_id)
+    employee = Employee.objects.get(id=employee_id)
+    form = forms.AssetFineForm()
+    if request.method == "POST":
+        form = forms.AssetFineForm(request.POST)
+        if form.is_valid():
+            instance = form.save(commit=False)
+            instance.employee_id = employee
+            instance.type = "fine"
+            instance.provided_date = date.today()
+            instance.asset_id = asset
+            instance.save()
+            messages.success(request, "Asset fine added")
+    return render(
+        request,
+        "payroll/asset_fine/form.html",
+        {"form": form, "asset_id": asset_id, "employee_id": employee_id},
+    )
+
+
+@login_required
+def view_reimbursement(request):
+    """
+    This method is used to render template to view reimbursements
+    """
+    filter_object = ReimbursementFilter({"status": "requested"})
+    requests = filter_own_recodes(
+        request, filter_object.qs, "payroll.view_reimbursement"
+    )
+    data_dict = {"status": ["requested"]}
+
+    return render(
+        request,
+        "payroll/reimbursement/view_reimbursement.html",
+        {
+            "requests": paginator_qry(requests, request.GET.get("page")),
+            "f": filter_object,
+            "pd":request.GET.urlencode(),
+            "filter_dict": data_dict,
+        },
+    )
+
+
+@login_required
+def create_reimbursement(request):
+    """
+    This method is used to create reimbursement
+    """
+    instance_id = eval(str(request.GET.get("instance_id")))
+    instance = None
+    if instance_id:
+        instance = Reimbursement.objects.filter(id=instance_id).first()
+    form = forms.ReimbursementForm(instance=instance)
+    if request.method == "POST":
+        form = forms.ReimbursementForm(request.POST, request.FILES, instance=instance)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Reimbursent saved successfully")
+            return HttpResponse("<script>window.location.reload()</script>")
+    return render(request, "payroll/reimbursement/form.html", {"form": form})
+
+
+@login_required
+def search_reimbursement(request):
+    """
+    This method is used to search/filter reimbursement
+    """
+    requests = ReimbursementFilter(request.GET).qs
+    requests = filter_own_recodes(request, requests, "payroll.view_reimbursement")
+    data_dict = parse_qs(request.GET.urlencode())
+    return render(
+        request,
+        "payroll/reimbursement/request_cards.html",
+        {
+            "requests": paginator_qry(requests, request.GET.get("page")),
+            "filter_dict": data_dict,
+            "pd": request.GET.urlencode(),
+        },
+    )
+
+
+@login_required
+def get_assigned_leaves(request):
+    """
+    This method is used to return assigned leaves of the employee
+    in Json
+    """
+    assigned_leaves = (
+        AvailableLeave.objects.filter(
+            employee_id__id=request.GET["employeeId"], total_leave_days__gte=1
+        )
+        .values("leave_type_id__name", "available_days", "carryforward_days")
+        .distinct()
+    )
+    return JsonResponse(list(assigned_leaves), safe=False)
+
+
+@login_required
+@permission_required("payroll.change_reimbursement")
+def approve_reimbursements(request):
+    """
+    This method is used to approve or reject the reimbursement request
+    """
+    ids = request.GET.getlist("ids")
+    status = request.GET["status"]
+    amount = eval(request.GET.get("amount")) if request.GET.get("amount") else 0
+    amount = max(0, amount)
+    reimbursements = Reimbursement.objects.filter(id__in=ids)
+    if status and len(status):
+        for reimbursement in reimbursements:
+            if reimbursement.type == "leave_encashment":
+                reimbursement.amount = amount
+            reimbursement.status = status
+            reimbursement.save()
+        messages.success(
+            request, f"Request {reimbursement.get_status_display()} succesfully"
+        )
+    return redirect(view_reimbursement)
+
+
+@login_required
+@permission_required("payroll.delete_reimbursement")
+def delete_reimbursements(request):
+    """
+    This method is used to delete the reimbursements
+    """
+    ids = request.GET.getlist("ids")
+    reimbursements = Reimbursement.objects.filter(id__in=ids)
+    for reimbursement in reimbursements:
+        reimbursement.delete()
+    messages.success(request, "Reimbursements deleted")
+
+    return redirect(view_reimbursement)
+
+
+@login_required
+@owner_can_enter("payroll.view_reimbursement", Reimbursement, True)
+def reimbursement_attachments(request, instance_id):
+    """
+    This method is used to render all the attachements under the reimbursement object
+    """
+    reimbursement = Reimbursement.objects.get(id=instance_id)
+    return render(
+        request,
+        "payroll/reimbursement/attachments.html",
+        {"reimbursement": reimbursement},
+    )
+
+
+@login_required
+@owner_can_enter("payroll.delete_reimbursement", Reimbursement, True)
+def delete_attachments(request, _reimbursement_id):
+    """
+    This mehtod is used to delete the attachements
+    """
+    ids = request.GET.getlist("ids")
+    ReimbursementMultipleAttachment.objects.filter(id__in=ids).delete()
+    messages.success(request, "Attachment deleted")
+    return redirect(view_reimbursement)

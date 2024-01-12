@@ -1,0 +1,21 @@
+{% load i18n %}
+<div class="oh-modal__dialog-header">
+    <span class="oh-modal__dialog-title" id="updateNoteModalLabel"
+      ><h5>{% trans "Update Note" %}</h5></span
+    >
+    <button class="oh-modal__close" aria-label="Close" >
+      <ion-icon name="close-outline" hx-target='#activitySidebar' hx-get="{% url 'note-tab' form.instance.employee_id.id %}"></ion-icon>
+    </button>
+  </div>
+  <div class="oh-modal__dialog-body" id='update-remark-content'>
+    <form class='oh-general__tab-target oh-profile-section' hx-post="{% url 'employee-note-update' form.instance.id %}" hx-target='#modalContent'>
+        {{form.as_p}}
+        <div class="d-flex flex-row-reverse">
+            <button class="oh-btn oh-btn--secondary pl-4 pr-4" onclick="$(this).parents().find('.oh-modal--show').removeClass('oh-modal--show')">
+                {% trans "Save" %}
+            </button>
+        </div>
+    </form>
+
+  </div>
+</div>

@@ -1,0 +1,59 @@
+{% load i18n %}
+<div class="oh-sticky-table">
+	<div class="oh-sticky-table__table oh-table--sortable">
+		<div class="oh-sticky-table__thead">
+			<div class="oh-sticky-table__tr">
+				<div class="oh-sticky-table__th">{% trans "Ticket Type" %}</div>
+				<div class="oh-sticky-table__th">{% trans "Type" %}</div>
+				<div class="oh-sticky-table__th">{% trans "Prefix" %}</div>
+				{% if perms.helpdesk.delete_tickettype or perms.helpdesk.delete_tickettype %} 
+					<div class="oh-sticky-table__th">{% trans "Actions" %}</div>
+				{% endif %}
+			</div>
+		</div>
+		<div class="oh-sticky-table__tbody">
+			{% for t_type in ticket_types %}
+			<div class="oh-sticky-table__tr" draggable="true">
+				<div class="oh-sticky-table__td">{{t_type}}</div>
+				<div class="oh-sticky-table__td">{{t_type.get_type_display}}</div>
+				<div class="oh-sticky-table__td">{{t_type.prefix}}</div>
+				{% if perms.helpdesk.delete_tickettype or perms.helpdesk.delete_tickettype %} 
+					<div class="oh-sticky-table__td">
+						<div class="oh-btn-group">
+							{% if perms.helpdesk.change_tickettype %}
+							<a
+								hx-get="{% url 'ticket-type-update' t_type.id %}" 
+								hx-target="#ticketEditForm"
+								data-toggle="oh-modal-toggle"
+								data-target="#ticketEditModal"
+								type="button"
+								class="oh-btn oh-btn--light-bkg w-50"
+								title="{% trans 'Edit' %}"
+							>
+								<ion-icon name="create-outline"></ion-icon
+							></a>
+							{% endif %} 
+							{% if perms.helpdesk.delete_tickettype %} 
+							<form 
+								action="{% url 'ticket-type-delete' t_type.id %}"  
+								class="w-50" 
+								onsubmit="return confirm('{% trans "Are you sure you want to delete this ticket type?" %}');" 
+								method='post'> 
+								{% csrf_token %}
+								<button
+									type="submit"
+									class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+									title="{% trans 'Remove' %}"
+								>
+									<ion-icon name="trash-outline"></ion-icon>
+								</button>
+							</form>
+							{% endif %}
+						</div>
+					</div>
+				{% endif %}
+			</div>
+			{% endfor %}
+		</div>
+	</div>
+</div>

@@ -112,9 +112,13 @@
           </div>
         </div>
         <div class="row">
-          <div class="col-12 col-sm-12 col-md-12 col-lg-12">
+          <div class="col-12 col-sm-12 col-md-12 col-lg-6">
             <label class="oh-label" for="address">{% trans "Address" %}</label>
             {{form.address}} {{form.address.errors}}
+          </div>
+          <div class="col-12 col-sm-12 col-md-12 col-lg-6">
+            <label class="oh-label" for="address">{% trans "Source" %}</label>
+            {{form.source}} {{form.source.errors}}
           </div>
         </div>
         <div class="row">

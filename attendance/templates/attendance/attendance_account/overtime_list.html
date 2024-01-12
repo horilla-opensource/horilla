@@ -27,7 +27,7 @@
 			<div class="oh-sticky-table__tbody">
 				{% for ot in accounts %}
 					{% with dates=ot.month_days %}
-					  	<div class="oh-sticky-table__tr" hx-get="{% url 'attendance-search' %}?employee_id={{ot.employee_id.id}}&attendance_validated=true&attendance_date__gte={{ dates.0|date:"Y-m-d" }}&attendance_date__lte={{ dates.1|date:"Y-m-d" }}" hx-target="#ot-table" draggable="true" onclick="hiding()">
+					  	<div class="oh-sticky-table__tr" {% if perms.attendance.view_attendance %} hx-get="{% url 'attendance-search' %}?employee_id={{ot.employee_id.id}}&attendance_validated=true&attendance_date__gte={{ dates.0|date:"Y-m-d" }}&attendance_date__lte={{ dates.1|date:"Y-m-d" }}" hx-target="#ot-table" onclick="hiding()"{% endif %}  draggable="true" >
 							<div class="oh-sticky-table__sd" onclick="event.stopPropagation();">
 								<div class="centered-div">
 								  <input
@@ -65,10 +65,10 @@
 							</div>
 					  		<div class="oh-sticky-table__td" onclick="event.stopPropagation()">
 					  		  	<div class="oh-btn-group">
-					  		  		{% if perms.recruitment.change_attendanceovertime or request.user|is_reportingmanager %}
+					  		  		{% if perms.attendance.change_attendanceovertime or request.user|is_reportingmanager %}
 					  		  			<a hx-get="{% url 'attendance-overtime-update' ot.id %}" hx-target='#updateAttendanceOTModalBody' data-toggle='oh-modal-toggle' data-target='#updateOtModal'  class="oh-btn oh-btn--light-bkg w-50" title="{% trans 'Edit' %}"><ion-icon name="create-outline"></ion-icon></a>
 					  		  		{% endif %}
-					  		  		{% if perms.recruitment.delete_attendance %}
+					  		  		{% if perms.attendance.delete_attendanceovertime or request.user|is_reportingmanager %}
 					  		  			<form action="{% url 'attendance-overtime-delete' ot.id  %}" 
 											onsubmit="return confirm('{% trans "Are you sure want to delete this attendance?" %}')" 
 											hx-target="#ot-table" method='post' class='w-50'>

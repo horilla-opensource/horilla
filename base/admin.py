@@ -16,6 +16,9 @@ from base.models import (
     EmployeeShift,
     EmployeeShiftDay,
     EmployeeType,
+    MultipleApprovalManagers,
+    ShiftrequestComment,
+    Tags,
     WorkType,
     RotatingWorkType,
     RotatingWorkTypeAssign,
@@ -23,6 +26,7 @@ from base.models import (
     RotatingShiftAssign,
     ShiftRequest,
     WorkTypeRequest,
+    WorktyperequestComment,
 )
 
 # Register your models here.
@@ -42,4 +46,8 @@ admin.site.register(RotatingShift)
 admin.site.register(RotatingShiftAssign)
 admin.site.register(ShiftRequest)
 admin.site.register(WorkTypeRequest)
+admin.site.register(Tags)
 admin.site.register(DynamicEmailConfiguration)
+admin.site.register(MultipleApprovalManagers)
+admin.site.register(ShiftrequestComment)
+admin.site.register(WorktyperequestComment)

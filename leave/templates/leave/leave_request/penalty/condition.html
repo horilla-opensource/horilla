@@ -1,0 +1,23 @@
+{% extends "index.html" %}{% block content %}{% load static %}{% load i18n %}
+<section class="oh-wrapper oh-main__topbar" x-data="{searchShow: false}">
+  <div class="oh-main__titlebar oh-main__titlebar--left">
+    <h1 class="oh-main__titlebar-title fw-bold">
+      {% trans "Multiple Approval Condition" %}
+    </h1>
+    <a
+      class="oh-main__titlebar-search-toggle"
+      role="button"
+      aria-label="Toggle Search"
+      @click="searchShow = !searchShow"
+    >
+      <ion-icon
+        name="search-outline"
+        class="oh-main__titlebar-serach-icon"
+      ></ion-icon>
+    </a>
+  </div>
+</section>
+<div class="oh-wrapper" id="multipleApproveCondition">
+  {% include "leave/leave_request/penalty/create.html" %}
+</div>
+{% endblock content %}

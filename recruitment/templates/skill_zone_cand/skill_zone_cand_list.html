@@ -1,0 +1,79 @@
+{% load i18n %}
+<div class="oh-card">
+    {% include 'filter_tags.html' %}
+
+    <!-- start of sticky table -->
+    <div class="oh-sticky-table">
+        <div class="oh-sticky-table__table ">
+            <div class="oh-sticky-table__thead">
+                <div class="oh-sticky-table__tr">
+                    <div class="oh-sticky-table__th">{% trans "Candidate" %}</div>
+                    <div class="oh-sticky-table__th">{% trans "Reasom" %}</div>
+                    <div class="oh-sticky-table__th">{% trans "Added on" %}</div>
+                    <div class="oh-sticky-table__th">{% trans "Resume" %}</div>
+                    <div class="oh-sticky-table__th">{% trans "Actions" %}</div>
+                </div>
+            </div>
+            {% for sz_candidate in sz_candidates %}
+                <a href="{% url 'candidate-view-individual' sz_candidate.candidate_id.id %}" style="color: inherit;text-decoration: none; display: flex;">
+                    <div class="oh-sticky-table__tbody">
+                        <div class="oh-sticky-table__tr" draggable="true">
+
+                            <div class="oh-sticky-table__sd" >
+                                <div class="oh-profile oh-profile--md">
+                                    <div class="oh-profile__avatar mr-1">
+                                        {% if sz_candidate.candidate_id.profile %}
+                                            <img src="{{sz_candidate.candidate_id.get_avatar}}" class="oh-profile__image"
+                                            alt="" /> 
+                                        {% else %}
+                                        <img src="https://ui-avatars.com/api/?name={{sz_candidate.candidate_id}}&background=random"
+                                            class="oh-profile__image" alt="" />
+                                        {% endif %}
+                                    </div>
+                                    <span class="oh-profile__name oh-text--dark">{{sz_candidate.candidate_id}}</span>
+                                </div>
+                            </div>
+                            <div class="oh-sticky-table__td ">{{sz_candidate.reason}}</div>
+                            <div class="oh-sticky-table__td ">{{sz_candidate.added_on}}</div>
+                            <div class="oh-sticky-table__td ">
+                                <a
+                                    style="text-decoration: none"
+                                    class="oh-btn oh-btn--light"
+                                    href="/media/{{sz_candidate.candidate_id.resume}}"
+                                    target="_blank"
+                                    title="{% trans 'Resume' %}"
+                                    rel="noopener noreferrer"
+                                    style="flex: 1 0 auto; width:20px;height: 40.68px; padding: 0;"
+                                    ><ion-icon name="document-outline"></ion-icon
+                                ></a>
+                            </div>
+                            <div class="oh-sticky-table__td " onclick="event.stopPropagation()">
+                                <div class="oh-btn-group">                                                  
+                                    <button  
+                                        class="oh-btn oh-btn--light-bkg w-50" 
+                                        title="{% trans 'Edit' %}" 
+                                        data-toggle="oh-modal-toggle"
+                                        data-target="#editModal" 
+                                        hx-get="{% url 'skill-zone-cand-edit' sz_candidate.id %}"
+                                        hx-target="#editTarget">
+                                        <ion-icon name="create-outline"></ion-icon>
+                                    </button>
+                                    
+                                    <a class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-50" id="delete-link"
+                                        href="{% url 'rec-candidate-delete' sz_candidate.id %}"  
+                                        onclick="return confirm('{% trans "Are you sure you want to delete ?" %}');" 
+                                        title="{% trans 'Delete' %}">
+                                    
+                                        <ion-icon name="trash-outline"></ion-icon>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            {% endfor %}
+            
+        </div>
+    </div>
+    <!-- end of sticky table -->
+</div>

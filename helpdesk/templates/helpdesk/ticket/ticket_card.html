@@ -1,0 +1,755 @@
+{% load static %} {% load i18n %} {% load mathfilters %}
+{% include 'filter_tags.html' %}
+<div class="oh-kanban" style="overflow: hidden">
+    <div class="oh-tabs__content" id="tab_1">
+        {% if my_tickets %}
+            <div class="ui-sortable">
+                <div class="oh-kanban ui-sortable drop-target">
+                    {% for status, label in ticket_status %}
+                    <div
+                        class="oh-kanban__section"
+                        id="kanban{{status}}"
+                        data-status-id="{{status}}"
+                    >
+                        <div class="oh-kanban__section-head mt-2">
+                            <div class="d-flex">
+                                <span
+                                    class="oh-badge oh-badge--small oh-badge--round ms-2 mr-2"
+                                ></span>
+                                <span
+                                    class="oh-kanban__section-title"
+                                    data-type="label"
+                                    ><span
+                                        class="oh-tabs__movable-title"
+                                        name="status"
+                                        style="width: 160px"
+                                        >{{label}}</span
+                                    >
+                                </span>
+                            </div>
+
+                            <div
+                                class="oh-kanban__head-actions oh-kanban__dropdown"
+                            >
+                                <div
+                                    class="oh-kanban__head-actions oh-kanban__dropdown"
+                                >
+                                    <div
+                                        class="oh-dropdown me-4"
+                                    >
+                                        <a
+                                            class=""
+                                            data-toggle="oh-modal-toggle"
+                                            data-target="#createModal1"
+                                            hx-get="{% url 'ticket-create' %}?status={{status}}"
+                                            hx-target="#createTarget"
+                                            title="Add Tickets"
+                                        >
+                                            <ion-icon
+                                                name="add-sharp"
+                                                role="img"
+                                                class="md hydrated mt-1"
+                                                aria-label="add sharp"
+                                            ></ion-icon>
+                                        </a>
+                                        
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div
+                            class="oh-kanban__section-body ui-sortable candidate-container"
+                            data-ticket-id="{{status}}"
+                        >
+                            {% for ticket in my_tickets %} {% if ticket.status == status %}
+
+                            <div
+                                class="oh-kanban__card candidate change-ticket 
+                                        {% if ticket.status == 'new' %}row-status--blue 
+                                        {% elif ticket.status == 'in_progress' %}row-status--orange
+                                        {% elif ticket.status == 'resolved' %}row-status--yellowgreen 
+                                        {% elif ticket.status == 'on_hold' %}row-status--red  
+                                        {% elif ticket.status == 'canceled' %}row-status--grey{% endif %}"
+                                data-ticket-id="{{ticket.id}}"
+                                id="canididate-{{ticket.id}}"
+                                style="cursor: pointer; overflow: visible"
+                                data-candidate="{{ticket.name}}"
+                                data-job-position="{{ticket.job_position_id}}"
+                                onclick="window.location.href = `{% url 'ticket-detail' ticket.id %}`"
+                            >
+                            
+                                <div class="oh-kanban__card-head">
+                                    <div class="border-bottom pb-3">
+                                        <span
+                                            class="oh-profile__name oh-text--dark"
+                                            data-type="label"
+                                            style="font-weight: 600"
+                                            title="{{ticket}}"
+                                            >{{ticket|truncatechars:25}}</span
+                                        ><span
+                                        class="oh-kanban__card-footer-text oh-text--light ps-3"
+                                        >{{ticket.created_date}}</span
+                                    >
+                                    </div>
+                                    <div
+                                        class="oh-kanban__card-actions oh-kanban__dropdown"
+                                    >
+                                        <button class="oh-btn oh-btn--small
+                                            oh-btn--transparent oh-kanban__btn
+                                            oh-kanban__dropdown-toggle" 
+                                            title={% trans "Actions" %} 
+                                            onclick="event.stopPropagation()">
+                                            <ion-icon
+                                                name="ellipsis-vertical-sharp"
+                                                role="img"
+                                                class="md hydrated"
+                                                aria-label="ellipsis vertical sharp"
+                                            >
+                                            </ion-icon>
+                                        </button>
+                                        <div
+                                            class="oh-dropdown oh-kanban__dropdown-menu d-none"
+                                        >
+                                            <div
+                                                class="oh-dropdown__menu oh-dropdown__menu--right"
+                                            >
+                                                <ul class="oh-dropdown__items">
+                                                    <li
+                                                        class="oh-dropdown__item"
+                                                    >
+                                                        <a
+                                                            style="
+                                                                color: inherit;
+                                                                text-decoration: none;
+                                                            "
+                                                            class="oh-dropdown__link oh-dropdown__link--secondary"
+                                                            data-toggle="oh-modal-toggle"
+                                                            data-target="#editModal"
+                                                            hx-get="{% url 'ticket-update' ticket.id %}" 
+                                                            hx-target="#editTarget"
+                                                            onclick="event.stopPropagation()"
+                                                            >{% trans "Edit" %}</a
+                                                        >
+                                                    </li>
+                                                    <li
+                                                        class="oh-dropdown__item"
+                                                    >
+                                                        <a
+                                                            href="{% url 'ticket-archive' ticket.id %}"
+                                                            onclick="event.stopPropagation();return confirm('{% trans "Are you sure you want to archive this stage?" %}');"
+                                                            class="oh-dropdown__link"
+                                                            >{% trans "Archive" %}</a
+                                                        >
+                                                    </li>
+                                                    <li
+                                                        class="oh-dropdown__item"
+                                                    >
+                                                        <form
+                                                            action="{% url 'ticket-delete' ticket.id %}"
+                                                            onsubmit="return confirm('{% trans "Are you sure you want to delete	this Ticket?" %}');"
+                                                            method="post"
+                                                        >
+                                                            {% csrf_token %}
+                                                            <button
+                                                                class="oh-dropdown__link oh-dropdown__link--danger"
+                                                                onclick="event.stopPropagation()"
+                                                            >
+                                                                {% trans "Delete" %}
+                                                            </button>
+                                                        </form>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="oh-kanban__card-footer">
+                                    <div class="d-flex justify-content-between">
+                                        <div>
+                                            <span
+                                                class="oh-kanban__card-footer-text oh-text" style="font-weight:600;"
+                                                >{% trans "owner" %}</span
+                                            ><br />
+
+                                            <span
+                                                class="oh-kanban__card-footer-text oh-text--light"
+                                                >{{ticket.employee_id}} </span
+                                            >
+                                        </div>
+                                        <div title="{{ticket.priority}} priority">
+                                            {% if ticket.priority == 'high' %}
+                                            <ion-icon name="star-sharp"></ion-icon> <ion-icon name="star-sharp"></ion-icon> <ion-icon name="star-sharp"></ion-icon>
+                                            {% elif ticket.priority == 'medium' %}
+                                            <ion-icon name="star-sharp"></ion-icon> <ion-icon name="star-sharp"></ion-icon> 
+                                            {% elif ticket.priority == 'low' %}
+                                            <ion-icon name="star-sharp"></ion-icon> 
+                                            {% endif %}                                            
+                                            <div>
+                                                <span class='float-end' title = 'due {% if ticket.deadline == today %}today {% else %}in {{ticket.deadline|sub:today}}{% endif %}'><ion-icon class="text-{% if ticket.deadline < today %}danger {% elif ticket.deadline == today %}warning {% else %}success{% endif %}" name="time-sharp"></ion-icon></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="oh-kanban__card-footer" style="position:relative;padding-top:0">
+                                    <span
+                                        class="oh-kanban__card-footer-text oh-text" style="font-weight:600;"
+                                        >{% trans "Assignees" %}</span
+                                    >
+                                    <button onclick="event.stopPropagation();$(this).siblings('.oh-kanban__card-content').toggleClass('oh-kanban__card-content--hide')" class="oh-kanban__card-body-collapse oh-kanban__card-collapse--down" aria-label="Toggle Options" title="{% trans 'Assignees' %}"></button>
+                                    <div class="oh-kanban__card-content oh-kanban__card-content--hide">
+                                        <span class="oh-kanban__card-footer-text oh-text--light">
+                                            {{ticket.assigned_to.all|join:", "}} 
+                                        </span>
+                                    </div>                                    
+                                </div>
+                            </div>
+                            {% endif %} {% endfor %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% else %}
+            <!-- start of empty page-->  
+            <div
+                style="
+                    height: 70vh;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                "
+                class=""
+            >
+                <div style="" class="oh-404">
+                    <img
+                        style="display: block; width: 150px; height: 150px; margin: 10px auto top:70% !importent"
+                        src="{% static 'images/ui/ticket.png' %}"
+                        class="mb-4"
+                        alt=""
+                    />
+                    <h3 style="font-size: 20px" class="oh-404__subtitle">
+                        {% trans "There are no tickets at the moment." %}
+                    </h3>
+                </div>	
+            </div>
+            <!-- end of empty page--> 
+        {% endif %}
+        
+    </div>
+    <div class="oh-tabs__content" id="tab_2">
+        {% if allocated_tickets %}
+            <div class="ui-sortable">
+                <div class="oh-kanban ui-sortable drop-target">
+                    {% for status, label in ticket_status %}
+
+                    <div
+                        class="oh-kanban__section"
+                        id="kanban{{status}}"
+                        data-status-id="{{status}}"
+                    >
+                        <div class="oh-kanban__section-head mt-2">
+                            <div class="d-flex">
+                                <span
+                                    class="oh-badge oh-badge--small oh-badge--round ms-2 mr-2"
+                                ></span>
+                                <span
+                                    class="oh-kanban__section-title"
+                                    data-type="label"
+                                    ><span
+                                        class="oh-tabs__movable-title"
+                                        name="status"
+                                        style="width: 160px"
+                                        >{{label}}</span
+                                    >
+                                </span>
+                            </div>
+
+                            <div
+                                class="oh-kanban__head-actions oh-kanban__dropdown"
+                            >
+                                <div
+                                    class="oh-kanban__head-actions oh-kanban__dropdown"
+                                >
+                                    <div
+                                        class="oh-dropdown me-4"
+                                    >
+                                        <a
+                                            class=""
+                                            data-toggle="oh-modal-toggle"
+                                            data-target="#createModal1"
+                                            hx-get="{% url 'ticket-create' %}?status={{status}}"
+                                            hx-target="#createTarget"
+                                            title="Add Tickets"
+                                        >
+                                            <ion-icon
+                                                name="add-sharp"
+                                                role="img"
+                                                class="md hydrated mt-1"
+                                                aria-label="add sharp"
+                                            ></ion-icon>
+                                        </a>
+                                        
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div
+                            class="oh-kanban__section-body ui-sortable candidate-container"
+                            data-ticket-id="{{status}}"
+                        >
+                            {% for ticket in allocated_tickets %} {% if ticket.status == status %}
+
+                            <div
+                                class="oh-kanban__card candidate change-ticket 
+                                        {% if ticket.status == 'new' %}row-status--blue 
+                                        {% elif ticket.status == 'in_progress' %}row-status--orange
+                                        {% elif ticket.status == 'resolved' %}row-status--yellowgreen 
+                                        {% elif ticket.status == 'on_hold' %}row-status--red  
+                                        {% elif ticket.status == 'canceled' %}row-status--grey{% endif %}"
+                                data-ticket-id="{{ticket.id}}"
+                                id="canididate-{{ticket.id}}"
+                                style="cursor: pointer; overflow: visible"
+                                data-candidate="{{ticket.name}}"
+                                data-job-position="{{ticket.job_position_id}}"
+                                onclick="window.location.href = `{% url 'ticket-detail' ticket.id %}`"
+                            >
+                            
+                                <div class="oh-kanban__card-head">
+                                    <div class="border-bottom pb-3">
+                                        <span
+                                            class="oh-profile__name oh-text--dark"
+                                            data-type="label"
+                                            style="font-weight: 600"
+                                            title="{{ticket}}"
+                                            >{{ticket|truncatechars:25}}</span
+                                        ><span
+                                        class="oh-kanban__card-footer-text oh-text--light ps-3"
+                                        >{{ticket.created_date}}</span
+                                    >
+                                    </div>
+                                    <div
+                                        class="oh-kanban__card-actions oh-kanban__dropdown"
+                                    >
+                                        <button class="oh-btn oh-btn--small
+                                            oh-btn--transparent oh-kanban__btn
+                                            oh-kanban__dropdown-toggle" 
+                                            title={% trans "Actions" %} 
+                                            onclick="event.stopPropagation()">
+                                            <ion-icon
+                                                name="ellipsis-vertical-sharp"
+                                                role="img"
+                                                class="md hydrated"
+                                                aria-label="ellipsis vertical sharp"
+                                            >
+                                            </ion-icon>
+                                        </button>
+                                        <div
+                                            class="oh-dropdown oh-kanban__dropdown-menu d-none"
+                                        >
+                                            <div
+                                                class="oh-dropdown__menu oh-dropdown__menu--right"
+                                            >
+                                                <ul class="oh-dropdown__items">
+                                                    {% if ticket.employee_id == request.user.employee_get or perms.helpdesk.changeticket %}
+                                                    <li
+                                                        class="oh-dropdown__item"
+                                                    >
+                                                        <a
+                                                            style="
+                                                                color: inherit;
+                                                                text-decoration: none;
+                                                            "
+                                                            class="oh-dropdown__link oh-dropdown__link--secondary"
+                                                            data-toggle="oh-modal-toggle"
+                                                            data-target="#editModal"
+                                                            hx-get="{% url 'ticket-update' ticket.id %}" 
+                                                            hx-target="#editTarget"
+                                                            onclick="event.stopPropagation()"
+                                                            >{% trans "Edit" %}</a
+                                                        >
+                                                    </li>
+                                                    {% endif %}
+                                                    <li
+                                                        class="oh-dropdown__item"
+                                                    >
+                                                        <a
+                                                            href="{% url 'ticket-archive' ticket.id %}"
+                                                            onclick="event.stopPropagation();return confirm('{% trans "Are you sure you want to archive this stage?" %}');"
+                                                            class="oh-dropdown__link"
+                                                            >{% trans "Archive" %}</a
+                                                        >
+                                                    </li>                                                
+                                                    {% if not ticket.assigned_to.all %}
+                                                    <li
+                                                        class="oh-dropdown__item"
+                                                    >
+                                                        <a
+                                                            href = "{% url 'claim-ticket' ticket.id %}"
+                                                            onclick="event.stopPropagation()"
+                                                            class="oh-dropdown__link"
+                                                            >{% trans "claim" %}</a
+                                                        >
+                                                    </li>                                                
+                                                    {% endif %}
+                                                    {% if ticket.employee_id == request.user.employee_get or perms.helpdesk.deleteticket %}
+                                                    <li
+                                                        class="oh-dropdown__item"
+                                                    >
+                                                        <form
+                                                            action="{% url 'ticket-delete' ticket.id %}"
+                                                            onsubmit="return confirm('{% trans "Are you sure you want to delete	this Ticket?" %}');"
+                                                            method="post"
+                                                        >
+                                                            {% csrf_token %}
+                                                            <button
+                                                                class="oh-dropdown__link oh-dropdown__link--danger"
+                                                                onclick="event.stopPropagation()"
+                                                            >
+                                                                {% trans "Delete" %}
+                                                            </button>
+                                                        </form>
+                                                    </li>
+                                                    {% endif %}
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="oh-kanban__card-footer">
+                                    <div class="d-flex justify-content-between">
+                                        <div>
+                                            <span
+                                                class="oh-kanban__card-footer-text oh-text" style="font-weight:600;"
+                                                >{% trans "owner" %}</span
+                                            ><br />
+
+                                            <span
+                                                class="oh-kanban__card-footer-text oh-text--light"
+                                                >{{ticket.employee_id}} </span
+                                            >
+                                        </div>
+                                        <div>
+                                            {% if ticket.priority == 'high' %}
+                                            <ion-icon name="star-sharp"></ion-icon> <ion-icon name="star-sharp"></ion-icon> <ion-icon name="star-sharp"></ion-icon>
+                                            {% elif ticket.priority == 'medium' %}
+                                            <ion-icon name="star-sharp"></ion-icon> <ion-icon name="star-sharp"></ion-icon> 
+                                            {% elif ticket.priority == 'low' %}
+                                            <ion-icon name="star-sharp"></ion-icon> 
+                                            {% endif %}
+                                            <div>
+                                                <span class='float-end' title = 'due {% if ticket.deadline == today %}today {% else %}in {{ticket.deadline|sub:today}}{% endif %}'><ion-icon class="text-{% if ticket.deadline < today %}danger {% elif ticket.deadline == today %}warning {% else %}success{% endif %}" name="time-sharp"></ion-icon></span>
+                                            </div>                                        
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="oh-kanban__card-footer" style="position:relative;padding-top:0">
+                                    <span
+                                        class="oh-kanban__card-footer-text oh-text" style="font-weight:600;"
+                                        >{% trans "Assignees" %}</span
+                                    >
+                                    <button onclick="event.stopPropagation();$(this).siblings('.oh-kanban__card-content').toggleClass('oh-kanban__card-content--hide')" class="oh-kanban__card-body-collapse oh-kanban__card-collapse--down" aria-label="Toggle Options" title="{% trans 'Assignees' %}"></button>
+                                    <div class="oh-kanban__card-content oh-kanban__card-content--hide">
+                                        <span class="oh-kanban__card-footer-text oh-text--light">
+                                            {{ticket.assigned_to.all|join:", "}} 
+                                        </span>
+                                    </div>
+                                        
+                                </div>
+                            </div>
+                            {% endif %} {% endfor %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% else %}
+            <!-- start of empty page-->  
+            <div
+                style="
+                    height: 70vh;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                "
+                class=""
+            >
+                <div style="" class="oh-404">
+                    <img
+                        style="display: block; width: 150px; height: 150px; margin: 10px auto top:70% !importent"
+                        src="{% static 'images/ui/ticket.png' %}"
+                        class="mb-4"
+                        alt=""
+                    />
+                    <h3 style="font-size: 20px" class="oh-404__subtitle">
+                        {% trans "There are no tickets at the moment." %}
+                    </h3>
+                </div>	
+            </div>
+            <!-- end of empty page--> 
+        {% endif %}
+    </div>
+    <div class="oh-tabs__content" id="tab_3">
+        {% if all_tickets %}
+            <div class="ui-sortable">
+                <div class="oh-kanban ui-sortable drop-target">
+                    {% for status, label in ticket_status %}
+
+                    <div
+                        class="oh-kanban__section"
+                        id="kanban{{status}}"
+                        data-status-id="{{status}}"
+                    >
+                        <div class="oh-kanban__section-head mt-2">
+                            <div class="d-flex">
+                                <span
+                                    class="oh-badge oh-badge--small oh-badge--round ms-2 mr-2"
+                                ></span>
+                                <span
+                                    class="oh-kanban__section-title"
+                                    data-type="label"
+                                    ><span
+                                        class="oh-tabs__movable-title"
+                                        name="status"
+                                        style="width: 160px"
+                                        >{{label}}</span
+                                    >
+                                </span>
+                            </div>
+
+                            <div
+                                class="oh-kanban__head-actions oh-kanban__dropdown"
+                            >
+                                <div
+                                    class="oh-kanban__head-actions oh-kanban__dropdown"
+                                >
+                                    <div
+                                        class="oh-dropdown me-4"
+                                    >
+                                        <a
+                                            class=""
+                                            data-toggle="oh-modal-toggle"
+                                            data-target="#createModal1"
+                                            hx-get="{% url 'ticket-create' %}?status={{status}}"
+                                            hx-target="#createTarget"
+                                            title="Add Tickets"
+                                        >
+                                            <ion-icon
+                                                name="add-sharp"
+                                                role="img"
+                                                class="md hydrated mt-1"
+                                                aria-label="add sharp"
+                                            ></ion-icon>
+                                        </a>
+                                        
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div
+                            class="oh-kanban__section-body ui-sortable candidate-container"
+                            data-ticket-id="{{status}}"
+                        >
+                            {% for ticket in all_tickets %} {% if ticket.status == status %}
+
+                            <div
+                                class="oh-kanban__card candidate change-ticket 
+                                        {% if ticket.status == 'new' %}row-status--blue 
+                                        {% elif ticket.status == 'in_progress' %}row-status--orange
+                                        {% elif ticket.status == 'resolved' %}row-status--yellowgreen 
+                                        {% elif ticket.status == 'on_hold' %}row-status--red  
+                                        {% elif ticket.status == 'canceled' %}row-status--grey{% endif %}"
+                                data-ticket-id="{{ticket.id}}"
+                                id="canididate-{{ticket.id}}"
+                                style="cursor: pointer; overflow: visible"
+                                data-candidate="{{ticket.name}}"
+                                data-job-position="{{ticket.job_position_id}}"
+                                onclick="window.location.href = `{% url 'ticket-detail' ticket.id %}`"
+                            >
+                            
+                                <div class="oh-kanban__card-head">
+                                    <div class="border-bottom pb-3">
+                                        <span
+                                            class="oh-profile__name oh-text--dark"
+                                            data-type="label"
+                                            style="font-weight: 600"
+                                            title="{{ticket}}"
+                                            >{{ticket|truncatechars:25}}</span
+                                        ><span
+                                        class="oh-kanban__card-footer-text oh-text--light ps-3"
+                                        >{{ticket.created_date}}</span
+                                    >
+                                    </div>
+                                    <div
+                                        class="oh-kanban__card-actions oh-kanban__dropdown"
+                                    >
+                                        <button class="oh-btn oh-btn--small
+                                            oh-btn--transparent oh-kanban__btn
+                                            oh-kanban__dropdown-toggle" 
+                                            title={% trans "Actions" %} 
+                                            onclick="event.stopPropagation()">
+                                            <ion-icon
+                                                name="ellipsis-vertical-sharp"
+                                                role="img"
+                                                class="md hydrated"
+                                                aria-label="ellipsis vertical sharp"
+                                            >
+                                            </ion-icon>
+                                        </button>
+                                        <div
+                                            class="oh-dropdown oh-kanban__dropdown-menu d-none"
+                                        >
+                                            <div
+                                                class="oh-dropdown__menu oh-dropdown__menu--right"
+                                            >
+                                                <ul class="oh-dropdown__items">
+                                                    <li
+                                                        class="oh-dropdown__item"
+                                                    >
+                                                        <a
+                                                            style="
+                                                                color: inherit;
+                                                                text-decoration: none;
+                                                            "
+                                                            class="oh-dropdown__link oh-dropdown__link--secondary"
+                                                            data-toggle="oh-modal-toggle"
+                                                            data-target="#editModal"
+                                                            hx-get="{% url 'ticket-update' ticket.id %}" 
+                                                            hx-target="#editTarget"
+                                                            onclick="event.stopPropagation()"
+                                                            >{% trans "Edit" %}</a
+                                                        >
+                                                    </li>
+                                                    <li
+                                                        class="oh-dropdown__item"
+                                                    >
+                                                        <a
+                                                            href="{% url 'ticket-archive' ticket.id %}"
+                                                            onclick="event.stopPropagation();return confirm('{% trans "Are you sure you want to archive this stage?" %}');"
+                                                            class="oh-dropdown__link"
+                                                            >{% trans "Archive" %}</a
+                                                        >
+                                                    </li>
+                                                    <li
+                                                        class="oh-dropdown__item"
+                                                    >
+                                                        <form
+                                                            action="{% url 'ticket-delete' ticket.id %}"
+                                                            onsubmit="return confirm('{% trans "Are you sure you want to delete	this Ticket?" %}');"
+                                                            method="post"
+                                                        >
+                                                            {% csrf_token %}
+                                                            <button
+                                                                class="oh-dropdown__link oh-dropdown__link--danger"
+                                                                onclick="event.stopPropagation()"
+                                                            >
+                                                                {% trans "Delete" %}
+                                                            </button>
+                                                        </form>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="oh-kanban__card-footer">
+                                    <div class="d-flex justify-content-between">
+                                        <div>
+                                            <span
+                                                class="oh-kanban__card-footer-text oh-text" style="font-weight:600;"
+                                                >{% trans "owner" %}</span
+                                            ><br />
+
+                                            <span
+                                                class="oh-kanban__card-footer-text oh-text--light"
+                                                >{{ticket.employee_id}} </span
+                                            >
+                                        </div>
+                                        <div>
+                                            {% if ticket.priority == 'high' %}
+                                            <ion-icon name="star-sharp"></ion-icon> <ion-icon name="star-sharp"></ion-icon> <ion-icon name="star-sharp"></ion-icon>
+                                            {% elif ticket.priority == 'medium' %}
+                                            <ion-icon name="star-sharp"></ion-icon> <ion-icon name="star-sharp"></ion-icon> 
+                                            {% elif ticket.priority == 'low' %}
+                                            <ion-icon name="star-sharp"></ion-icon> 
+                                            {% endif %}
+                                            <div>
+                                                <span class='float-end' title = 'due {% if ticket.deadline == today %}today {% else %}in {{ticket.deadline|sub:today}}{% endif %}'><ion-icon class="text-{% if ticket.deadline < today %}danger {% elif ticket.deadline == today %}warning {% else %}success{% endif %}" name="time-sharp"></ion-icon></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="oh-kanban__card-footer" style="position:relative;padding-top:0">
+                                    <span
+                                        class="oh-kanban__card-footer-text oh-text" style="font-weight:600;"
+                                        >{% trans "Assignees" %}</span
+                                    >
+                                    <button onclick="event.stopPropagation();$(this).siblings('.oh-kanban__card-content').toggleClass('oh-kanban__card-content--hide')" class="oh-kanban__card-body-collapse oh-kanban__card-collapse--down" aria-label="Toggle Options" title="{% trans 'Assignees' %}"></button>
+                                    <div class="oh-kanban__card-content oh-kanban__card-content--hide">
+                                        <span class="oh-kanban__card-footer-text oh-text--light">
+                                            {{ticket.assigned_to.all|join:", "}} 
+                                        </span>
+                                    </div>
+                                        
+                                </div>
+                            </div>
+                            {% endif %} {% endfor %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% else %}
+            <!-- start of empty page-->  
+            <div
+                style="
+                    height: 70vh;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                "
+                class=""
+            >
+                <div style="" class="oh-404">
+                    <img
+                        style="display: block; width: 150px; height: 150px; margin: 10px auto top:70% !importent"
+                        src="{% static 'images/ui/ticket.png' %}"
+                        class="mb-4"
+                        alt=""
+                    />
+                    <h3 style="font-size: 20px" class="oh-404__subtitle">
+                        {% trans "There are no tickets at the moment." %}
+                    </h3>
+                </div>	
+            </div>
+            <!-- end of empty page--> 
+        {% endif %}
+    </div>
+</div>
+
+<script src = "{% static 'tickets/tickets.js' %}"></script>
+<script>
+    var activeTab = localStorage.getItem("activeTabTicket");
+    if (activeTab != null) {
+        var tab = $(`[data-target="${activeTab}"]`);
+        var tabContent = $(activeTab);
+        $(tab).attr("class", "oh-tabs__tab oh-tabs__tab--active");
+        $(tabContent).attr(
+            "class",
+            "oh-tabs__content oh-tabs__content--active"
+        );
+    } else {
+        $('[data-target="#tab_1"]').attr(
+            "class",
+            "oh-tabs__tab oh-tabs__tab--active"
+        );
+        $("#tab_1").attr("class", "oh-tabs__content oh-tabs__content--active");
+    }
+    $(".oh-tabs__tab").click(function (e) {
+        var activeTab = $(this).attr("data-target");
+        localStorage.setItem("activeTabTicket", activeTab);
+    });
+
+</script>

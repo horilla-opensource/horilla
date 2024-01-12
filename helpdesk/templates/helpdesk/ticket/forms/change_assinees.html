@@ -1,0 +1,24 @@
+{% load i18n %}
+  <div
+    class="oh-dropdown__menu oh-dropdown__menu--top-align oh-dropdown__filter p-4"
+    style="right: 57px;bottom:100px"
+    x-data="{open: true}"
+    x-show="open"
+    @click.outside="open = false"
+  >
+    <form action="{% url 'ticket-change-assignees' ticket_id %}" method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      <div class="oh-input-group">
+        <label for="id_name" class="oh-label">{% trans 'Assignees' %}</label>
+        {{form.assigned_to}}
+      </div>
+      <button
+        type="submit"
+        class="oh-btn oh-d-hide oh-btn--small oh-btn--secondary oh-btn--add-advanced-tab w-100 mt-3 mb-2"
+      >
+        <ion-icon class="me-1" name="add-circle-outline"></ion-icon>
+        {% trans 'Save Changes' %}
+      </button>
+    </form>
+  </div>
+

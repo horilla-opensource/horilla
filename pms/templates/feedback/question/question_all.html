@@ -1,5 +1,6 @@
 {% load widget_tweaks %}
 {% load static i18n %}
+{% load basefilters %}
 {% load i18n %}
 <div class="row">
       <div class="col-12 col-sm-12 col-md-12 col-lg-12">
@@ -84,18 +85,22 @@
                                                       </div>
                                                 </div>
                                           </div>
-                                          <a href="#"
+                                          {% if perms.pms.change_question or request.user|filtersubordinates %}
+                                                <a href="#"
                                                 class="oh-btn oh-btn--light oh-btn--section-edit position-absolute"
                                                 role="button" style="top: 25px; right: 15px;"
                                                 data-target=".oh-section-edit">
                                                 <ion-icon name="create-outline" class="me-2"></ion-icon>
                                                 {% trans "Edit" %}
-                                          </a>
+                                                </a>
+                                          {% endif %}
                                           <div class="oh-list__actions d-none">
                                                 <!-- delete object form  -->
                                                 {% csrf_token %}
-                                                <a type="submit" href="{% url 'question-delete' id=form.instance.id %}"
-                                                      class="oh-btn oh-btn--danger-link oh-section-edit--delete deleteRow" onclick="return confirm('{% trans "Do you want to delete the question?" %}')">{% trans "Delete" %}</a>
+                                                {% if perms.pms.delete_question or request.user|filtersubordinates %}
+                                                      <a type="submit" href="{% url 'question-delete' id=form.instance.id %}"
+                                                            class="oh-btn oh-btn--danger-link oh-section-edit--delete deleteRow" onclick="return confirm('{% trans "Do you want to delete the question?" %}')">{% trans "Delete" %}</a>
+                                                {% endif %}
                                                 <a href="#"
                                                       class="oh-btn oh-btn--light me-2 oh-section-edit--cancel">{% trans "Cancel" %}</a>
 

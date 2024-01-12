@@ -2,14 +2,21 @@
 models.py
 Used to register models
 """
+from collections.abc import Iterable
 from datetime import date, datetime, timedelta
+import threading
+from typing import Any
 from django import forms
 from django.db import models
 from django.dispatch import receiver
+from django.contrib import messages
+from django.db.models.signals import post_save
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 from django.db.models.signals import pre_save, pre_delete
 from django.http import QueryDict
+from asset.models import Asset
+from base import thread_local_middleware
 from employee.models import EmployeeWorkInformation
 from employee.models import Employee, Department, JobPosition
 from base.models import Company, EmployeeShift, WorkType, JobRole
@@ -21,8 +28,7 @@ from attendance.models import (
     Attendance,
     strtime_seconds,
 )
-
-from leave.models import LeaveRequest
+from leave.models import LeaveRequest, LeaveType
 
 
 # Create your models here.
@@ -810,6 +816,8 @@ class Allowance(models.Model):
     company_id = models.ForeignKey(
         Company, null=True, editable=False, on_delete=models.PROTECT
     )
+    only_show_under_employee = models.BooleanField(default=False, editable=False)
+    is_loan = models.BooleanField(default=False, editable=False)
     objects = HorillaCompanyManager()
 
     class Meta:
@@ -1101,7 +1109,14 @@ class Deduction(models.Model):
     company_id = models.ForeignKey(
         Company, null=True, editable=False, on_delete=models.PROTECT
     )
+    only_show_under_employee = models.BooleanField(default=False, editable=False)
     objects = HorillaCompanyManager()
+
+    is_installment = models.BooleanField(default=False, editable=False)
+
+    def installment_payslip(self):
+        payslip = Payslip.objects.filter(installment_ids=self).first()
+        return payslip
 
     def clean(self):
         super().clean()
@@ -1201,6 +1216,7 @@ class Payslip(models.Model):
     )
     sent_to_employee = models.BooleanField(null=True, default=False)
     objects = HorillaCompanyManager("employee_id__employee_work_info__company_id")
+    installment_ids = models.ManyToManyField(Deduction, editable=False)
 
     def __str__(self) -> str:
         return f"Payslip for {self.employee_id} - Period: {self.start_date} to {self.end_date}"
@@ -1274,3 +1290,270 @@ class Payslip(models.Model):
         ordering = [
             "-end_date",
         ]
+
+
+class LoanAccount(models.Model):
+    """
+    This modal is used to store the loan Account details
+    """
+
+    loan_type = [
+        ("loan", "Loan"),
+        ("advanced_salary", "Advanced Salary"),
+        ("fine", "Penalty / Fine"),
+    ]
+    type = models.CharField(default="loan", choices=loan_type, max_length=15)
+    title = models.CharField(max_length=20)
+    employee_id = models.ForeignKey(
+        Employee, on_delete=models.PROTECT, verbose_name=_("Employee")
+    )
+    loan_amount = models.FloatField(default=0)
+    provided_date = models.DateField()
+    allowance_id = models.ForeignKey(
+        Allowance, on_delete=models.SET_NULL, editable=False, null=True
+    )
+    description = models.TextField(null=True)
+    deduction_ids = models.ManyToManyField(Deduction, editable=False)
+    is_fixed = models.BooleanField(default=True, editable=False)
+    rate = models.FloatField(default=0, editable=False)
+    installments = models.IntegerField(verbose_name=_("Total installments"))
+    installment_start_date = models.DateField(
+        help_text="From the start date deduction will apply"
+    )
+    apply_on = models.CharField(default="end_of_month", max_length=10, editable=False)
+    settled = models.BooleanField(default=False)
+    asset_id = models.ForeignKey(
+        Asset, on_delete=models.PROTECT, null=True, editable=False
+    )
+
+    def get_installments(self):
+        loan_amount = self.loan_amount
+        total_installments = self.installments
+        installment_amount = loan_amount / total_installments
+        installment_start_date = self.installment_start_date
+
+        installment_schedule = {}
+
+        installment_date = installment_start_date
+        for i in range(total_installments):
+            installment_schedule[str(installment_date)] = installment_amount
+            installment_date = installment_date + timedelta(days=30 * (i + 1))
+
+        return installment_schedule
+
+    def delete(self, *args, **kwargs):
+        self.deduction_ids.all().delete()
+        self.allowance_id.delete()
+        if not Payslip.objects.filter(
+            installment_ids__in=list(self.deduction_ids.values_list("id", flat=True))
+        ).exists():
+            super().delete(*args, **kwargs)
+        return
+
+    def installment_ratio(self):
+        total_installments = self.installments
+        installment_paid = Payslip.objects.filter(
+            installment_ids__in=self.deduction_ids.all()
+        ).count()
+        if not installment_paid:
+            return 0
+        return (installment_paid / total_installments) * 100
+
+
+@receiver(post_save, sender=LoanAccount)
+def create_installments(sender, instance, created, **kwargs):
+    """
+    Post save metod for loan account
+    """
+    installments = []
+    if created and instance.asset_id is None and instance.type != "fine":
+        loan = Allowance()
+        loan.amount = instance.loan_amount
+        loan.title = instance.title
+        loan.include_active_employees = False
+        loan.amount = instance.loan_amount
+        loan.only_show_under_employee = True
+        loan.is_fixed = True
+        loan.one_time_date = instance.provided_date
+        loan.is_loan = True
+        loan.save()
+        loan.include_active_employees = False
+        loan.specific_employees.add(instance.employee_id)
+        loan.save()
+        instance.allowance_id = loan
+        # Here create the instance...
+        super(LoanAccount, instance).save()
+    else:
+        deductions = instance.deduction_ids.values_list("id", flat=True)
+        # Re create deduction only when existing installment not exists in payslip
+        if not Payslip.objects.filter(installment_ids__in=deductions).exists():
+            Deduction.objects.filter(id__in=deductions).delete()
+
+            # Installment deductions
+            for (
+                installment_date,
+                installment_amount,
+            ) in instance.get_installments().items():
+                installment = Deduction()
+                installment.title = instance.title
+                installment.include_active_employees = False
+                installment.amount = installment_amount
+                installment.is_fixed = True
+                installment.one_time_date = installment_date
+                installment.only_show_under_employee = True
+                installment.is_installment = True
+                installment.save()
+                installment.include_active_employees = False
+                installment.specific_employees.add(instance.employee_id)
+                installment.save()
+                installments.append(installment)
+            instance.deduction_ids.set(installments)
+
+
+class ReimbursementMultipleAttachment(models.Model):
+    """
+    ReimbursementMultipleAttachement Model
+    """
+
+    attachment = models.FileField(upload_to="payroll/reimbursements")
+
+
+class Reimbursement(models.Model):
+    """
+    Reimbursement Model
+    """
+
+    reimbursement_types = [
+        ("reimbursement", "Reimbursement"),
+        ("leave_encashment", "Leave Encashment"),
+    ]
+    status_types = [
+        ("requested", "Requested"),
+        ("approved", "Approved"),
+        ("canceled", "Canceled"),
+    ]
+    title = models.CharField(max_length=50)
+    type = models.CharField(
+        choices=reimbursement_types, max_length=16, default="reimbursement"
+    )
+    employee_id = models.ForeignKey(
+        Employee, on_delete=models.PROTECT, verbose_name="Employee"
+    )
+    allowance_on = models.DateField()
+    attachment = models.FileField(upload_to="payroll/reimbursements", null=True)
+    other_attachments = models.ManyToManyField(
+        ReimbursementMultipleAttachment, blank=True, editable=False
+    )
+    leave_type_id = models.ForeignKey(
+        LeaveType, on_delete=models.PROTECT, null=True, verbose_name="Leave type"
+    )
+    ad_to_encash = models.FloatField(
+        default=0, help_text="Available Days to encash", verbose_name="Available days"
+    )
+    cfd_to_encash = models.FloatField(
+        default=0,
+        help_text="Carry Forward Days to encash",
+        verbose_name="Carry forward days",
+    )
+    amount = models.FloatField(default=0)
+    status = models.CharField(
+        max_length=10, choices=status_types, default="requested", editable=False
+    )
+    approved_by = models.ForeignKey(
+        Employee,
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name="approved_by",
+        editable=False,
+    )
+    description = models.TextField(null=True)
+    allowance_id = models.ForeignKey(
+        Allowance, on_delete=models.SET_NULL, null=True, editable=False
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_active=models.BooleanField(default=True,editable=False)
+
+    def save(self, *args, **kwargs) -> None:
+        request = getattr(thread_local_middleware._thread_locals, "request", None)
+
+        # Setting the created use if the used dont have the permission
+        has_perm = request.user.has_perm("payroll.add_reimbursement")
+        if not has_perm:
+            self.employee_id = request.user.employee_get
+        if self.type == "reimbursement" and self.attachment is None:
+            raise ValidationError({"attachment": "This field is required"})
+        elif self.type == "leave_encashment" and self.leave_type_id is None:
+            raise ValidationError({"leave_type_id": "This field is required"})
+        self.cfd_to_encash = max((round(self.cfd_to_encash * 2) / 2), 0)
+        self.ad_to_encash = max((round(self.ad_to_encash * 2) / 2), 0)
+        assigned_leave = self.leave_type_id.employee_available_leave.filter(
+            employee_id=self.employee_id
+        ).first()
+        if self.status != "approved" or self.allowance_id is None:
+            super().save(*args, **kwargs)
+            if self.status == "approved" and self.allowance_id is None:
+                if self.type == "reimbursement":
+                    proceed = True
+                else:
+                    proceed = False
+                    if assigned_leave:
+                        available_days = assigned_leave.available_days
+                        carryforward_days = assigned_leave.carryforward_days
+                        if (
+                            available_days >= self.ad_to_encash
+                            and carryforward_days >= self.cfd_to_encash
+                        ):
+                            proceed = True
+                            assigned_leave.available_days = (
+                                available_days - self.ad_to_encash
+                            )
+                            assigned_leave.carryforward_days = (
+                                carryforward_days - self.cfd_to_encash
+                            )
+                            assigned_leave.save()
+                        else:
+                            request = getattr(
+                                thread_local_middleware._thread_locals, "request", None
+                            )
+                            if request:
+                                messages.info(
+                                    request,
+                                    "The employee don't have that much leaves to encash in CFD / Available days",
+                                )
+
+                    # if self.ad
+
+                if proceed:
+                    reimbursement = Allowance()
+                    reimbursement.one_time_date = self.allowance_on
+                    reimbursement.title = self.title
+                    reimbursement.only_show_under_employee = True
+                    reimbursement.include_active_employees = False
+                    reimbursement.amount = self.amount
+                    reimbursement.save()
+                    reimbursement.include_active_employees = False
+                    reimbursement.specific_employees.add(self.employee_id)
+                    reimbursement.save()
+                    self.allowance_id = reimbursement
+                    if request:
+                        self.approved_by = request.user.employee_get
+                else:
+                    self.status = "requested"
+                super().save(*args, **kwargs)
+            elif self.status == "canceled" and self.allowance_id is not None:
+                cfd_days = self.cfd_to_encash
+                available_days = self.ad_to_encash
+                if assigned_leave:
+                    assigned_leave.available_days = (
+                        assigned_leave.available_days + available_days
+                    )
+                    assigned_leave.carryforward_days = (
+                        assigned_leave.carryforward_days + cfd_days
+                    )
+                    assigned_leave.save()
+                self.allowance_id.delete()
+
+    def delete(self, *args, **kwargs):
+        if self.allowance_id:
+            self.allowance_id.delete()
+        return super().delete(*args, **kwargs)

@@ -12,12 +12,21 @@ from datetime import datetime, date, timedelta
 from django.db import models
 from django.db.models import Q
 from django.core.exceptions import ValidationError
+from django.dispatch import receiver
 from django.utils.translation import gettext_lazy as _
+from django.db.models.signals import post_save
 import pandas as pd
 from base.models import Company, EmployeeShift, EmployeeShiftDay, WorkType
 from base.horilla_company_manager import HorillaCompanyManager
 from employee.models import Employee
-from leave.models import WEEK_DAYS, WEEKS, CompanyLeave, Holiday, LeaveRequest
+from leave.models import (
+    WEEK_DAYS,
+    WEEKS,
+    CompanyLeave,
+    Holiday,
+    LeaveRequest,
+    LeaveType,
+)
 from attendance.methods.differentiate import get_diff_dict
 
 # Create your models here.
@@ -53,12 +62,31 @@ def validate_time_format(value):
         raise ValidationError(_("Invalid format, it should be HH:MM format"))
     try:
         hour, minute = value.split(":")
+        if len(hour) > 3 or len (minute)>2:
+            raise ValidationError(_("Invalid time"))
         hour = int(hour)
         minute = int(minute)
-        if len(str(hour)) > 3 or minute not in range(60):
-            raise ValidationError(_("Invalid time"))
+        if len(str(hour)) > 3 or len(str(minute)) > 2 or minute not in range(60) :
+            raise ValidationError(_("Invalid time, excepted MM:SS"))
     except ValueError as error:
         raise ValidationError(_("Invalid format")) from error
+    
+def validate_time_in_minutes(value):
+    """
+    this method is used to validate the format of duration like fields.
+    """
+    if len(value) > 5:
+        raise ValidationError(_("Invalid format, it should be MM:SS format"))
+    try:
+        minutes, sec = value.split(":")
+        if len(minutes) > 2 or len (sec)>2:
+            raise ValidationError(_("Invalid time, excepted MM:SS"))
+        minutes = int(minutes)
+        sec = int(sec)
+        if minutes not in range(60) or sec not in range(60):
+            raise ValidationError(_("Invalid time, excepted MM:SS"))
+    except ValueError as e:
+        raise ValidationError(_("Invalid format,  excepted MM:SS")) from e
 
 
 def attendance_date_validate(date):
@@ -256,7 +284,7 @@ class Attendance(models.Model):
             keys = diffs.keys()
         return keys
 
-    def get_last_clock_out(self,null_activity=False):
+    def get_last_clock_out(self, null_activity=False):
         """
         This method is used to get the last attendance activity if exists
         """
@@ -712,6 +740,13 @@ class AttendanceLateComeEarlyOut(models.Model):
     objects = HorillaCompanyManager(
         related_company_field="employee_id__employee_work_info__company_id"
     )
+    created_at = models.DateTimeField(auto_now_add=True, null=True)
+
+    def get_penalties_count(self):
+        """
+        This method is used to return the total penalties in the late early instance
+        """
+        return self.penaltyaccount_set.count()
 
     def save(self, *args, **kwargs) -> None:
         super().save(*args, **kwargs)
@@ -754,3 +789,152 @@ class AttendanceValidationCondition(models.Model):
         super().clean()
         if not self.id and AttendanceValidationCondition.objects.exists():
             raise ValidationError(_("You cannot add more conditions."))
+
+
+months = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+]
+
+
+class PenaltyAccount(models.Model):
+    """
+    LateComeEarlyOutPenaltyAccount
+    """
+
+    employee_id = models.ForeignKey(
+        Employee,
+        on_delete=models.PROTECT,
+        related_name="penalty_set",
+        editable=False,
+        verbose_name="Employee",
+        null=True,
+    )
+    late_early_id = models.ForeignKey(
+        AttendanceLateComeEarlyOut, on_delete=models.CASCADE, null=True, editable=False
+    )
+    leave_request_id = models.ForeignKey(
+        LeaveRequest, null=True, on_delete=models.CASCADE, editable=False
+    )
+    leave_type_id = models.ForeignKey(
+        LeaveType,
+        on_delete=models.DO_NOTHING,
+        blank=True,
+        null=True,
+        verbose_name="Leave type",
+    )
+    minus_leaves = models.FloatField(default=0.0, null=True)
+    deduct_from_carry_forward = models.BooleanField(default=False)
+    penalty_amount = models.FloatField(default=0.0, null=True)
+    created_at = models.DateTimeField(auto_now_add=True, null=True)
+
+    def clean(self) -> None:
+        super().clean()
+        if (
+            self.minus_leaves or self.deduct_from_carry_forward
+        ) and not self.leave_type_id:
+            raise ValidationError({"leave_type_id": "Leave type is required"})
+        return
+
+    class Meta:
+        ordering = ["-created_at"]
+
+
+@receiver(post_save, sender=PenaltyAccount)
+def create_initial_stage(sender, instance, created, **kwargs):
+    """
+    This is post save method, used to create initial stage for the recruitment
+    """
+    # only work when creating
+    if created:
+        penalty_amount = instance.penalty_amount
+        if penalty_amount:
+            from payroll.models.models import Deduction
+
+            penalty = Deduction()
+            if instance.late_early_id:
+                penalty.title = f"{instance.late_early_id.get_type_display()} penalty"
+                penalty.one_time_date = (
+                    instance.late_early_id.attendance_id.attendance_date
+                )
+            elif instance.leave_request_id:
+                penalty.title = f"Leave penalty {instance.leave_request_id.end_date}"
+                penalty.one_time_date = instance.leave_request_id.end_date
+            else:
+                penalty.title = f"Penalty on {datetime.today()}"
+                penalty.one_time_date = datetime.today()
+            penalty.include_active_employees = False
+            penalty.is_fixed = True
+            penalty.amount = instance.penalty_amount
+            penalty.only_show_under_employee = True
+            penalty.save()
+            penalty.include_active_employees = False
+            penalty.specific_employees.add(instance.employee_id)
+            penalty.save()
+
+        if instance.leave_type_id and instance.minus_leaves:
+            available = instance.employee_id.available_leave.filter(
+                leave_type_id=instance.leave_type_id
+            ).first()
+            unit = round(instance.minus_leaves * 2) / 2
+            if not instance.deduct_from_carry_forward:
+                available.available_days = max(0, (available.available_days - unit))
+            else:
+                available.carryforward_days = max(
+                    0, (available.carryforward_days - unit)
+                )
+                
+            available.save()
+
+class GraceTime(models.Model):
+    """
+    Model for saving Grace time 
+    """
+    allowed_time = models.CharField(
+        default="00:00",
+        validators=[validate_time_in_minutes],
+        max_length=10,
+        verbose_name=_("Allowed time"),
+    )
+    allowed_time_in_secs = models.IntegerField()
+    is_default =  models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True)
+    company_id = models.ManyToManyField(Company, blank=True, verbose_name=_("Company"))
+    objects = HorillaCompanyManager()
+
+    def __str__(self) -> str:
+        return str(f"{self.allowed_time} - Minutes")
+    
+    def clean(self):
+        """
+        This method is used to perform some custom validations
+        """
+        super().clean()
+        if self.is_default:
+            if GraceTime.objects.filter(is_default=True).exclude(id=self.id).exists():
+                raise ValidationError(_("There is already a default grace time that exists."))
+        
+        allowed_time = self.allowed_time
+        if GraceTime.objects.filter(allowed_time=allowed_time).exclude(is_default=True).exists():
+            raise ValidationError(_("There is already a grace time with this allowed time that exists."))
+            
+    def save(self, *args, **kwargs):
+        allowed_time = self.allowed_time
+        minute, secs = allowed_time.split(":")
+        minute_int= int(minute)
+        secs_int= int(secs)   
+        minute_str = f'{minute_int:02d}' 
+        secs_str = f'{secs_int:02d}' 
+        self.allowed_time = f'{minute_str}:{secs_str}'
+        self.allowed_time_in_secs = minute_int *60 + secs_int
+        super().save(*args, **kwargs)

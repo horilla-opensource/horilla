@@ -1,0 +1,191 @@
+"""
+threading.py
+
+This module is used handle mail sent in thread
+"""
+import logging
+from threading import Thread
+from django.core.mail import EmailMessage
+from django.template.loader import render_to_string
+from employee.models import EmployeeWorkInformation
+from horilla.settings import EMAIL_HOST_USER
+from helpdesk.models import Ticket
+from django.contrib import messages
+from base.models import Department
+
+
+logger = logging.getLogger(__name__)
+
+class TicketSendThread(Thread):
+    """
+    MailSend
+    """
+    def __init__(self, request, ticket, type):
+        Thread.__init__(self)
+        self.ticket = ticket
+        self.type = type
+        self.request = request
+        self.assignees = ticket.assigned_to.all()
+        self.host = request.get_host()
+        self.protocol = "https" if request.is_secure() else "http"
+        raised_on = ticket.get_raised_on_object()
+        if isinstance(raised_on,Department):
+            if raised_on.dept_manager.all():
+                self.department_manager = raised_on.dept_manager.all().first().manager
+            else:
+                self.department_manager = None
+
+    def send_email(self, subject, content, recipients, ticket_id="#"):
+        host = self.host
+        protocol = self.protocol
+        link = "#"
+        if ticket_id!= "#":
+            link = f"{protocol}://{host}/helpdesk/ticket-detail/{ticket_id}/"
+        for recipient in recipients:
+            html_message = render_to_string(
+                "helpdesk/mail_templates/ticket_mail.html",
+                {
+                    "link": link,
+                    "instance": recipient,
+                    "host": host,
+                    "protocol": protocol,
+                    "subject": subject,
+                    "content": content,
+                },
+            )
+
+            email = EmailMessage(subject, html_message, EMAIL_HOST_USER, [recipient.email])
+            email.content_subtype = "html"
+            try:
+                email.send()
+            except:
+                messages.error(self.request, f"Mail not sent to {recipient.get_full_name()}")
+
+    def run(self) -> None:
+        super().run()
+
+        if self.type == "create":
+            owner = self.ticket.employee_id
+            manager = self.department_manager
+
+            content_manager = f"This is to inform you that a ticket has been raised on your department. Take the necessary actions to address the issue or request outlined in the ticket. Should you have any additional information or updates, please feel free to communicate directly with the {owner}."
+            subject_manager = "Ticket created raised on your department"
+            
+            self.send_email(subject_manager, content_manager, [manager], self.ticket.id)
+
+            content_owner = "This is to inform you that the ticket you created has been successfully logged into our system. The assigned team/individual will now take the necessary actions to address the issue or request outlined in the ticket. Should you have any additional information or updates, please feel free to communicate directly with the Support/Helpdesk team."
+            subject_owner = "Ticket created successfully"
+
+            self.send_email(subject_owner, content_owner, [owner], self.ticket.id)
+
+        elif self.type == "status_change":
+            assignees = self.assignees
+            owner = self.ticket.employee_id
+            manager = self.department_manager
+
+            tracking = self.ticket.tracking()
+            updated_by = tracking[0]["updated_by"]
+            new_status = tracking[0]["changes"][0]["new"]
+            old_status = tracking[0]["changes"][0]["old"]
+
+            subject = "The Status of the Ticket has been updated"
+            content = f"This is to inform you that the status of the following ticket has been updated by {updated_by} from {old_status} to {new_status}. If you have any questions or require further information, feel free to reach out to the Support/Helpdesk team."
+
+            self.send_email(subject, content, set(assignees) | {owner} | {manager}, self.ticket.id)
+
+        elif self.type == "delete":
+            assignees = self.assignees
+            owner = self.ticket.employee_id
+            manager = self.department_manager
+
+            subject = "The Ticket has been deleted"
+            content = f'This is to inform you that the Ticket "{self.ticket.title}" has been deleted. If you have any questions or require further information, feel free to reach out to the Support/Helpdesk team.'
+
+            self.send_email(subject, content, set(assignees) | {owner} | {manager})
+            
+        return
+
+class AddAssigneeThread(Thread):
+    """
+    MailSend
+    """
+    def __init__(self, request, ticket, recipient):
+        Thread.__init__(self)
+        self.ticket = ticket
+        self.recipients = recipient
+        self.request = request
+        self.host = request.get_host()
+        self.protocol = "https" if request.is_secure() else "http"
+
+    def run(self) -> None:
+        super().run()
+
+        content = "Please review the ticket details and take appropriate action accordingly. If you have any questions or require further information, feel free to reach out to the owner or the Support/Helpdesk team."
+        subject = "You have been assigned to a Ticket"
+
+        host = self.host
+        protocol = self.protocol
+        link = f"{protocol}://{host}/helpdesk/ticket-detail/{self.ticket.id}/"
+        for recipient in self.recipients:
+            html_message = render_to_string(
+                "helpdesk/mail_templates/ticket_mail.html",
+                {
+                    "link": link,
+                    "instance": recipient,
+                    "host": host,
+                    "protocol": protocol,
+                    "subject": subject,
+                    "content": content,
+                },
+            )
+
+            email = EmailMessage(subject, html_message, EMAIL_HOST_USER, [recipient.email])
+            email.content_subtype = "html"
+            try:
+                email.send()
+            except:
+                messages.error(self.request, f"Mail not sent to {recipient.get_full_name()}")
+
+
+
+class RemoveAssigneeThread(Thread):
+    """
+    MailSend
+    """
+    def __init__(self, request, ticket, recipient):
+        Thread.__init__(self)
+        self.ticket = ticket
+        self.recipients = recipient
+        self.request = request
+        self.host = request.get_host()
+        self.protocol = "https" if request.is_secure() else "http"
+
+    def run(self) -> None:
+        super().run()
+
+        content = "Please review the ticket details and take appropriate action accordingly. If you have any questions or require further information, feel free to reach out to the owner or the Support/Helpdesk team."
+        subject = "You have been removed from a Ticket"
+
+        host = self.host
+        protocol = self.protocol
+        link = f"{protocol}://{host}/helpdesk/ticket-detail/{self.ticket.id}/"
+        for recipient in self.recipients:
+            html_message = render_to_string(
+                "helpdesk/mail_templates/ticket_mail.html",
+                {
+                    "link": link,
+                    "instance": recipient,
+                    "host": host,
+                    "protocol": protocol,
+                    "subject": subject,
+                    "content": content,
+                },
+            )
+
+            email = EmailMessage(subject, html_message, EMAIL_HOST_USER, [recipient.email])
+            email.content_subtype = "html"
+            try:
+                email.send()
+            except:
+                messages.error(self.request, f"Mail not sent to {recipient.get_full_name()}")
+

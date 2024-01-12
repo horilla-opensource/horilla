@@ -66,6 +66,10 @@
                     {{work_form.salary_hour.errors}}
                     {{work_form.salary_hour}}        
                 </div>
+                <div class="col-md-6 mb-4">
+                    {{work_form.tags.errors}}
+                    {{work_form.tags}}        
+                </div>
             </div>
             {% if perms.employee.change_employeeworkinformation %}
             {% if form.instance.employee_work_info %}

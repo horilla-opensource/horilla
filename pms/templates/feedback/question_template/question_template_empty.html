@@ -28,11 +28,13 @@
       <div class="oh-main__titlebar-button-container">
         <div class="oh-btn-group ml-2">
           <div>
+          {% if perms.pms.add_questiontemplate or request.user|filtersubordinates %}
             <button class="oh-btn oh-btn--secondary" role="button" data-toggle="oh-modal-toggle"
               data-target="#questionTemplateModal">
               <ion-icon class="me-2" name="add-outline"></ion-icon>
               {% trans "Create" %}
             </button>
+          {% endif %}
           </div>
         </div>
 

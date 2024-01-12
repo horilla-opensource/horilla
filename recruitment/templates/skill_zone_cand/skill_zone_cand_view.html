@@ -1,0 +1,26 @@
+{% extends 'index.html' %} 
+{% block content %}
+{% load i18n %}{% load static %}{% load basefilters %}
+
+<div class="oh-wrapper">
+    {% include 'skill_zone_cand/skill_zone_cand_nav.html' %}
+    {% if sz_candidates %}
+        <div id="cand_container">
+            {% if request.GET.view == 'list' %}
+                {% include "skill_zone_cand/skill_zone_cand_list.html" %}
+            {% else %}
+                {% include "skill_zone_cand/skill_zone_cand_card.html" %}
+            {% endif %}
+        </div>
+    {% else %}
+        <div>
+            <div style="height: 310px; display:flex;align-items: center;justify-content: center;" >
+                <div style="" class="">
+                    <img style="display: block;width: 70px;margin: 10px auto ;" src="{% static 'images/ui/cv.png' %}" class="" alt=""/>
+                    <h3 style="font-size:16px" class="oh-404__subtitle">{% trans "You have no Candidate." %}</h3>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

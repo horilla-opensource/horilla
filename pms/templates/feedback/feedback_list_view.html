@@ -178,7 +178,7 @@
           </div>
 
         <!-- checking  user permission for objective creation -->
-      {% if perms.pms.view_questiontemplate or request.user|filtersubordinates %}
+      {% if perms.pms.add_feedback or request.user|filtersubordinates %}
         <div class="oh-btn-group ml-2">
           <div class="oh-dropdown" x-data="{open: false}">
               <a  href="{% url 'feedback-creation' %}" class="oh-btn oh-btn--secondary" role="button">

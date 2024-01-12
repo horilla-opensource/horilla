@@ -180,24 +180,16 @@
 						>{% trans "Allowance & Deduction" %}</a
 						>
 					</li>
-					{% comment %} <li class="oh-general__tab">
-						<a
-						href="#"
-						class="oh-general__tab-link"
-						data-action="general-tab"
-						data-target="#team"
-						>{% trans "Team" %}</a
-						>
-					</li>
 					<li class="oh-general__tab">
 						<a
-						href="#"
-						class="oh-general__tab-link"
 						data-action="general-tab"
-						data-target="#timesheet"
-						>{% trans "Timesheet" %}</a
+						data-target="#penaltyTarget"
+						id="penalty"
+						class="oh-general__tab-link"
+						role="button"
+						>{% trans "Penalty Account" %}</a
 						>
-					</li> {% endcomment %}
+					</li>
 					<li class="oh-general__tab">
 						<a
 						hx-get={% url 'profile-asset-tab' employee.id %}
@@ -229,9 +221,24 @@
 					id="personal_target"
 				 >
 				</div>
-
+				<div
+				class="oh-general__tab-target oh-profile__info-tab mb-4"
+				id="penaltyTarget"
+				>
+				{% include 'tabs/penalty_account.html' %}
+				</div>
 				<div
 					class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
+					id="payroll"
+				>
+					{% include 'tabs/payroll-tab.html' %}
+				</div>
+				<div
+				  class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
+				  id="allowance_deduction"
+				>
+				</div>
+				<div class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
 					id="shift_target"
 				 >
 				</div>
@@ -247,12 +254,6 @@
 				  class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
 				  id="allowance_deduction"
 				>
-				</div>
-				<div
-					class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
-					id="payroll"
-				 >
-					{% include 'tabs/payroll-tab.html' %}
 				</div>
 				
 				
@@ -284,8 +285,12 @@
 				 >
 					{% include 'tabs/leave-tab.html' %}
 				</div>
-				
-				
+				<div
+				class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
+				id="attendance_target"
+				>
+				{% include 'tabs/note_tab.html' %}
+				</div>
 			</div>
 		</div>
 	</div>

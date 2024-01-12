@@ -60,7 +60,7 @@
     <span class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round ms-2 mr-2" id="" data-category-id="1" title="{{own_objectives|length}} objective" onclick="event.stopPropagation()">{{own_objectives|length}}</span>
   </li>
   <!-- normal user can't view all objective  -->
-  {% if perms.pms.view_employeeeobjective or request.user|filtersubordinates %}
+  {% if perms.pms.view_employeeobjective or request.user|filtersubordinates %}
   <li class="oh-tabs__tab" data-target="#tab_2">
     {% trans "All Objective" %}
     <span class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round ms-2 mr-2" id="" data-category-id="1" title="{{all_objectives|length}} objective" onclick="event.stopPropagation()">{{all_objectives|length}}</span>

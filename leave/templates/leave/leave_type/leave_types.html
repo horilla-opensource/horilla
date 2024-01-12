@@ -29,28 +29,36 @@
         <div class="oh-kanban-card__details">
           <span class="oh-kanban-card__title">{{leave_type.name}}</span>
         </div>
-        <div class="oh-kanban-card__dots" onclick="event.stopPropagation()">
-          <div class="oh-dropdown" x-data="{show: false}">
-            <button class="oh-btn oh-btn--transparent text-muted p-3" @click="show = !show">
-              <span title='{% trans "Actions" %}'> <ion-icon name="ellipsis-vertical-sharp"></ion-icon></span>
-            </button>
-            <div class="oh-dropdown__menu oh-dropdown__menu--dark-border oh-dropdown__menu--right" x-show="show" style="display: none;"
-              @click.outside="show = false">
-              <ul class="oh-dropdown__items">
-                <li class="oh-dropdown__item">
-                  <a href="#" class="oh-dropdown__link" data-toggle="oh-modal-toggle" data-target="#editModal"
-                    hx-get="{% url 'assign-one' leave_type.id %}" hx-target="#leaveForm">{% trans "Assign Leave" %}</a>
-                </li>
-                <li class="oh-dropdown__item">
-                  <a href="{% url 'type-update' leave_type.id %}" class="oh-dropdown__link">{% trans "Edit" %}</a>
-                </li>
-                <li class="oh-dropdown__item">
-                  <a href="{% url 'type-delete' leave_type.id %}" id="delete-link"  class="oh-dropdown__link">{% trans "Delete" %}</a>
-                </li>
-              </ul>
+        {% if perms.leave.change_leavetype or perms.leave.delete_leavetype %}
+          <div class="oh-kanban-card__dots" onclick="event.stopPropagation()">
+            <div class="oh-dropdown" x-data="{show: false}">
+              <button class="oh-btn oh-btn--transparent text-muted p-3" @click="show = !show">
+                <span title='{% trans "Actions" %}'> <ion-icon name="ellipsis-vertical-sharp"></ion-icon></span>
+              </button>
+              <div class="oh-dropdown__menu oh-dropdown__menu--dark-border oh-dropdown__menu--right" x-show="show" style="display: none;"
+                @click.outside="show = false">
+                <ul class="oh-dropdown__items">
+                  {% if perms.leave.add_availableleave %}
+                    <li class="oh-dropdown__item">
+                      <a href="#" class="oh-dropdown__link" data-toggle="oh-modal-toggle" data-target="#editModal"
+                        hx-get="{% url 'assign-one' leave_type.id %}" hx-target="#leaveForm">{% trans "Assign Leave" %}</a>
+                    </li>
+                  {% endif %}
+                  {% if perms.leave.change_leavetype %}
+                  <li class="oh-dropdown__item">
+                    <a href="{% url 'type-update' leave_type.id %}" class="oh-dropdown__link">{% trans "Edit" %}</a>
+                  </li>
+                  {% endif %}
+                  {% if perms.leave.delete_leavetype %}
+                  <li class="oh-dropdown__item">
+                    <a href="{% url 'type-delete' leave_type.id %}" id="delete-link"  class="oh-dropdown__link">{% trans "Delete" %}</a>
+                  </li>
+                  {% endif %}
+                </ul>
+              </div>
             </div>
           </div>
-        </div>
+        {% endif %}
       </div>
 {% endfor %}
 </div>

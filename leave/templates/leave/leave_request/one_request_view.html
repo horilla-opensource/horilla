@@ -17,7 +17,8 @@
 </div>
 {% endif %}
 <div class="oh-modal__dialog-body oh-timeoff-modal__body  pb-2">
-    <div class="oh-timeoff-modal__profile-content">
+    <a class="oh-timeoff-modal__profile-content" style="text-decoration:none;" 
+        href ="{% url 'employee-view-individual' leave_request.employee_id.id %}">
         <div class="oh-profile">
             <div class="oh-profile__avatar mr-1">
                 <img src="{{leave_request.employee_id.get_avatar}}" class="oh-profile__image"
@@ -26,9 +27,9 @@
         </div>
         <div class="oh-timeoff-modal__profile-info">
             <span class="oh-timeoff-modal__user fw-bold">{{leave_request.employee_id}}</span>
-            <span class="oh-timeoff-modal__position">{{leave_request.employee_id.recruitment_id.job_position_id}}</span>
+            <span class="oh-timeoff-modal__position">{{leave_request.employee_id.employee_work_info.job_position_id}}</span>
         </div>
-    </div>
+    </a>
 
     <div class="oh-timeoff-modal__stats-container">
         <div class="oh-timeoff-modal__stat">
@@ -61,6 +62,25 @@
             <span class="oh-timeoff-modal__stat-count">{{leave_request.created_by}}</span>
         </div>
     </div>
+    {% if leave_request.multiple_approvals %}
+    <div class="oh-timeoff-modal__stats w-100 mt-3">
+        <div class="oh-timeoff-modal__stat">
+            <span class="oh-timeoff-modal__stat-title">{% trans "Multiple Approvals" %}</span>
+            {% for approval in  leave_request.multiple_approvals.approvals %}
+                <div class="oh-timeoff-modal__stat-description">{{forloop.counter}}.{{approval.manager_id}} : 
+                    {% if approval.is_approved %}{% trans "Approved" %}
+                    {% else %}
+                        {% if approval.is_rejected %}
+                            {% trans "Rejected" %}
+                        {% else %}
+                            {% trans "Not Marked" %}
+                        {% endif %}
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
 
     <div class="oh-timeoff-modal__stats w-100 mt-3">
         <div class="oh-timeoff-modal__stat">
@@ -95,7 +115,7 @@
 </div>
 
 <div class="oh-modal__dialog-footer oh-timeoff-modal__footer">
-    {% if leave_request.status == 'requested' %}
+    {% if leave_request.status == 'requested'  %}
         <a type="submit" href="{% url 'request-approve' leave_request.id %}" title="{% trans 'Approve' %}"
             class="oh-btn oh-btn--success w-100">
             <ion-icon class="me-1" name="checkmark-outline"></ion-icon>

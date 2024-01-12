@@ -1,4 +1,4 @@
-{% extends 'index.html' %} {% block content %} {% load static %} {% load i18n %}
+{% extends 'index.html' %} {% block content %} {% load static %} {% load i18n %} {% load basefilters %}
 <div
 	class="oh-modal"
 	id="assignLeaveTypeImport"
@@ -221,24 +221,26 @@
 								>
 							</li>
 							{% if available_leaves %}
-							<li class="oh-dropdown__item">
-								<a
-									href="#"
-									class="oh-dropdown__link"
-									id="assign-leave-type-export"
-									data-toggle="oh-modal-toggle"
-									data-target="#assignedLeavesExport"
-									>{% trans "Export" %}</a
-								>
-							</li>
-							<li class="oh-dropdown__item">
-								<a
-									href="#"
-									id="bulkAssignedLeavesDelete"
-									class="oh-dropdown__link oh-dropdown__link--danger"
-									>{% trans "Delete" %}</a
-								>
-							</li>
+								<li class="oh-dropdown__item">
+									<a
+										href="#"
+										class="oh-dropdown__link"
+										id="assign-leave-type-export"
+										data-toggle="oh-modal-toggle"
+										data-target="#assignedLeavesExport"
+										>{% trans "Export" %}</a
+									>
+								</li>
+								{% if perms.leave.delete_availableleave or request.user|is_reportingmanager %}
+									<li class="oh-dropdown__item">
+										<a
+											href="#"
+											id="bulkAssignedLeavesDelete"
+											class="oh-dropdown__link oh-dropdown__link--danger"
+											>{% trans "Delete" %}</a
+										>
+									</li>
+								{% endif %}
 							{% endif %}
 						</ul>
 					</div>

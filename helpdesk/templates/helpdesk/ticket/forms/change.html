@@ -1,0 +1,94 @@
+{% load i18n %}
+<div class="oh-dropdown" x-data="{open: false}">
+  <button
+    class="oh-link oh-link--secondary oh-text--xs"
+    @click="open = !open"
+    {% comment %} title="Add Candidates" {% endcomment %}
+  >
+    change
+  </button>
+  <div
+    class="oh-dropdown__menu oh-dropdown__menu--top-align oh-dropdown__filter p-4"
+    style="right: 57px"
+    x-show="open"
+    @click.outside="open = false"
+  >
+    {% comment %} <form action="" method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      <div class="oh-input-group">
+        <label for="id_name" class="oh-label">{% trans 'Name' %}</label>
+        {{candidate_form.name}}
+      </div>
+      <div class="oh-input-group">
+        <label for="id_email" class="oh-label">{% trans 'Email' %}</label>
+        {{candidate_form.email}}
+      </div>
+      {% if rec.is_event_based %}
+      <div class="oh-input-group">
+        <label for="job-position" class="oh-label"
+          >{% trans 'Job Position' %}</label
+        >
+        <select
+          name="job_position_id"
+          style="
+            width: 100%;
+            display: flex;
+            padding: 2px;
+            border: 1px solid hsl(213deg, 22%, 84%);
+            border-radius: 0rem;
+            color: hsl(0deg, 0%, 11%);
+          "
+          id="id_job_position_id"
+        >
+          {% for jp in rec.open_positions.all %}
+          <option value="{{jp.id}}">{{jp}}</option>
+          {% endfor %}
+        </select>
+      </div>
+      {% endif %}
+      <div class="oh-input-group">
+        <label for="job-position" class="oh-label">{% trans 'Phone' %}</label>
+        {{candidate_form.mobile}}
+      </div>
+      <div class="row">
+        <div class="col-12 col-sm-12 col-md-6 col-lg-6">
+          <label for="job-position" class="oh-label"
+            >{% trans 'Profile' %}</label
+          >
+          {{candidate_form.profile}}
+        </div>
+        <div class="col-12 col-sm-12 col-md-6 col-lg-6">
+          <label for="job-position" class="oh-label"
+            >{% trans 'Resume' %}</label
+          >
+          {{candidate_form.resume}}
+        </div>
+      </div>
+
+      <div class="oh-input-group"></div>
+      <input type="hidden" name="recruitment_id" id="" value="{{rec.id}}" />
+      <input type="hidden" name="stage_id" id="" value="{{stage.id}}" />
+      <button
+        type="submit"
+        class="oh-btn oh-d-hide oh-btn--small oh-btn--secondary oh-btn--add-advanced-tab w-100 mt-3 mb-2"
+      >
+        <ion-icon class="me-1" name="add-circle-outline"></ion-icon>
+        {% trans 'Add Candidate' %}
+      </button>
+    </form> {% endcomment %}
+    <form action="{% url 'ticket-change-assignees' ticket.id %}" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="oh-input-group">
+          <label for="id_name" class="oh-label">{% trans 'Assignees' %}</label>
+          {{form.assigned_to}}
+        </div>
+        <button
+          type="submit"
+          class="oh-btn oh-d-hide oh-btn--small oh-btn--secondary oh-btn--add-advanced-tab w-100 mt-3 mb-2"
+        >
+          <ion-icon class="me-1" name="add-circle-outline"></ion-icon>
+          {% trans 'Save Changes' %}
+        </button>
+      </form>
+  </div>
+</div>

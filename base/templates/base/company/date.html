@@ -6,27 +6,30 @@
 <div class="oh-inner-sidebar-content__header mt-3">
     <h2 class="oh-inner-sidebar-content__title">{% trans "Date Format" %}</h2>
 </div>
+{% if perms.base.change_company %}
 
-<label for="" class="settings-label mb-1">{% trans "Select Date Format:" %}</label>
-<select id="dateFormat" class="oh-select oh-select-2">
-    <option value="">--------------</option>
-    <option value="DD-MM-YYYY">{% trans "Day, Month, Year (e.g., 30-12-2023)" %}</option>
-    <option value="DD.MM.YYYY">{% trans "Day, Month, Year (e.g., 30.12.2023)" %}</option>
-    <option value="DD/MM/YYYY">{% trans "Day, Month, Year (e.g., 30/12/2023)" %}</option>
-    <option value="MM/DD/YYYY">{% trans "Month, Day, Year (e.g., 12/30/2023)" %}</option>
-    <option value="YYYY-MM-DD">{% trans "Year, Month, Day (e.g., 2023-12-30)" %}</option>
-    <option value="YYYY/MM/DD">{% trans "Year, Month, Day (e.g., 2023/12/30)" %}</option>
-    <option value="MMMM D, YYYY">{% trans "Full Month Name, Day, Year (e.g., January 1, 2023)" %}</option>
-    <option value="DD MMMM, YYYY">{% trans "Day, Full Month Name, Year (e.g., 1 January, 2023)" %}</option>
-    <option value="MMM. D, YYYY">{% trans "Abbreviated Month Name, Day, Year (e.g., Jan. 1, 2023)" %}</option>
-    <option value="D MMM. YYYY">{% trans "Day, Abbreviated Month Name, Year (e.g., 1 Jan. 2023)" %}</option>
-    <option value="dddd, MMMM D, YYYY">{% trans "Full Day Name, Full Month Name, Day, Year (e.g., Monday, January 1, 2023)" %}</option>
-</select>
+    <label for="" class="settings-label mb-1">{% trans "Select Date Format:" %}</label>
+    <select id="dateFormat" class="oh-select oh-select-2">
+        <option value="">--------------</option>
+        <option value="DD-MM-YYYY">{% trans "Day, Month, Year (e.g., 30-12-2023)" %}</option>
+        <option value="DD.MM.YYYY">{% trans "Day, Month, Year (e.g., 30.12.2023)" %}</option>
+        <option value="DD/MM/YYYY">{% trans "Day, Month, Year (e.g., 30/12/2023)" %}</option>
+        <option value="MM/DD/YYYY">{% trans "Month, Day, Year (e.g., 12/30/2023)" %}</option>
+        <option value="YYYY-MM-DD">{% trans "Year, Month, Day (e.g., 2023-12-30)" %}</option>
+        <option value="YYYY/MM/DD">{% trans "Year, Month, Day (e.g., 2023/12/30)" %}</option>
+        <option value="MMMM D, YYYY">{% trans "Full Month Name, Day, Year (e.g., January 1, 2023)" %}</option>
+        <option value="DD MMMM, YYYY">{% trans "Day, Full Month Name, Year (e.g., 1 January, 2023)" %}</option>
+        <option value="MMM. D, YYYY">{% trans "Abbreviated Month Name, Day, Year (e.g., Jan. 1, 2023)" %}</option>
+        <option value="D MMM. YYYY">{% trans "Day, Abbreviated Month Name, Year (e.g., 1 Jan. 2023)" %}</option>
+        <option value="dddd, MMMM D, YYYY">{% trans "Full Day Name, Full Month Name, Day, Year (e.g., Monday, January 1, 2023)" %}</option>
+    </select>
 
 
-<button onclick="saveDateFormat()"
-class="oh-btn oh-btn--secondary mt-2 mr-0 oh-btn--w-100-resp"
->{% trans "Save Date Format" %}</button>
+    <button onclick="saveDateFormat()"
+    class="oh-btn oh-btn--secondary mt-2 mr-0 oh-btn--w-100-resp"
+    >{% trans "Save Date Format" %}</button>
+
+{% endif %}
 
 <div style=" font-size: 20px; color: hsl(8,77%,56%); margin-top:20px">
     <b>{% trans "Current Date Format"%} &nbsp :</b> &nbsp
@@ -39,6 +42,8 @@ class="oh-btn oh-btn--secondary mt-2 mr-0 oh-btn--w-100-resp"
     <h2 class="oh-inner-sidebar-content__title">{% trans "Time Format" %}</h2>
 </div>
 
+{% if perms.base.change_company %}
+
 <label for="timeFormat" class="settings-label mb-1">{% trans "Select Time Format:" %}</label>
 <select id="timeFormat" class="oh-select oh-select-2">
     <option value="">--------------</option>
@@ -49,6 +54,8 @@ class="oh-btn oh-btn--secondary mt-2 mr-0 oh-btn--w-100-resp"
 <button onclick="saveTimeFormat()"
     class="oh-btn oh-btn--secondary mt-2 mr-0 oh-btn--w-100-resp"
 >{% trans "Save Time Format" %}</button>
+
+{% endif %}
 
 <div style="font-size: 20px; color: hsl(8, 77%, 56%); margin-top: 20px">
     <b>{% trans "Current Time Format" %} &nbsp :</b> &nbsp

@@ -1,0 +1,13 @@
+{% load i18n %}
+<form class='oh-general__tab-target oh-profile-section'>
+  {{note_form.as_p}}
+  <div class="d-flex flex-row-reverse">
+    <button 
+    class="oh-btn oh-btn--secondary pr-4 pl-4"
+    hx-post="{% url 'add-employee-note-post' %}"
+    hx-target='#remark-content'
+    >
+    {% trans "Add" %}
+  </button>
+  </div>
+</form>

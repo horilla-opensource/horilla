@@ -42,6 +42,8 @@ from attendance.models import (
     AttendanceActivity,
     AttendanceLateComeEarlyOut,
     AttendanceValidationCondition,
+    GraceTime,
+    PenaltyAccount,
     strtime_seconds,
 )
 from django.utils.html import format_html
@@ -683,6 +685,16 @@ class AttendanceExportForm(forms.Form):
     )
 
 
+class PenaltyAccountForm(ModelForm):
+    """
+    PenaltyAccountForm
+    """
+
+    class Meta:
+        model = PenaltyAccount
+        fields = "__all__"
+
+
 class LateComeEarlyOutExportForm(forms.Form):
     model_fields = AttendanceLateComeEarlyOut._meta.get_fields()
     field_choices_1 = [
@@ -753,3 +765,17 @@ class AttendanceOverTimeExportForm(forms.Form):
             "overtime",
         ],
     )
+
+class GraceTimeForm(ModelForm):
+    """
+    Form for create or update Grace time
+    """
+
+    class Meta:
+        model = GraceTime
+        fields = "__all__"
+        exclude = [
+            'is_default',
+            'objects',
+            'allowed_time_in_secs'
+        ]

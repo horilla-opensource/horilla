@@ -1,0 +1,26 @@
+{% load i18n %}
+<section class="oh-wrapper oh-main__topbar" style="padding-bottom: 1rem;">
+  <div class="oh-main__titlebar oh-main__titlebar--left oh-d-flex-column--resp oh-mb-3--small">
+    <h1 class="oh-main__titlebar-title fw-bold">{% trans 'Loan / Advanced Salary' %}</h1>
+  </div>
+
+  <form hx-get="{% url 'search-loan' %}" hx-target="#loanContainer">
+    <div class="oh-main__titlebar oh-main__titlebar--right oh-d-flex-column--resp oh-mb-3--small">
+      <div class="oh-input-group oh-input__search-group mr-4">
+        <ion-icon name="search-outline" class="oh-input-group__icon oh-input-group__icon--left md hydrated" role="img" aria-label="search outline"></ion-icon>
+        <input type="text" id="pipelineSearch" placeholder="Search" style="margin-right:10px" onkeyup="$('.filterButton').click()" name="search" class="oh-input oh-input__icon mr-3" aria-label="Search Input" />
+      </div>
+      {% include 'payroll/loan/filter.html' %}
+      {% if perms.payroll.add_loanaccount %}
+        <div class="oh-main__titlebar-button-container">
+          <div class="oh-main__titlebar-button-container">
+            <a hx-get="{% url 'create-loan' %}" hx-target="#loanModalBody" data-toggle="oh-modal-toggle" data-target="#loanModal" class="oh-btn oh-btn--secondary">
+              <ion-icon name="add-outline"></ion-icon>
+              {% trans 'Create' %}
+            </a>
+          </div>
+        </div>
+      {% endif %}
+    </div>
+  </form>
+</section>

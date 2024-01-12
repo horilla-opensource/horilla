@@ -11,19 +11,21 @@ from datetime import timedelta
 from django.contrib.auth import authenticate
 from django import forms
 from django.contrib.auth.models import Group, Permission, User
-from django.forms import DateInput
+from django.forms import DateInput,TextInput
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext as _
 from django.utils.translation import gettext_lazy as _trans
 from django.template.loader import render_to_string
 from employee.filters import EmployeeFilter
-from employee.models import Employee
+from employee.models import Employee, EmployeeTag
 from base.models import (
     Company,
     Department,
     DynamicEmailConfiguration,
     JobPosition,
     JobRole,
+    MultipleApprovalCondition,
+    ShiftrequestComment,
     WorkType,
     EmployeeType,
     EmployeeShift,
@@ -35,8 +37,11 @@ from base.models import (
     WorkTypeRequest,
     ShiftRequest,
     EmployeeShiftDay,
+    Tags,
+    WorktyperequestComment,
 )
 from base.methods import reload_queryset
+from horilla_audit.models import AuditTag
 from horilla_widgets.widgets.horilla_multi_select_field import HorillaMultiSelectField
 from horilla_widgets.widgets.select_widgets import HorillaMultiSelectWidget
 
@@ -1474,6 +1479,85 @@ class RotatingWorkTypeAssignExportForm(forms.Form):
         ],
     )
 
+class TagsForm(ModelForm):
+    """
+    Tags form
+    """
+
+    class Meta:
+        """
+        Meta class for additional options
+        """
+
+        model = Tags
+        fields = "__all__"
+        widgets = {
+            
+            'color':TextInput(attrs={'type':'color','style':'height:50px'})
+        }
+        exclude = (
+            'objects',
+        )
+
+
+class EmployeeTagForm(ModelForm):
+    """
+    Employee Tags form
+    """
+
+    class Meta:
+        """
+        Meta class for additional options
+        """
+
+        model = EmployeeTag
+        fields = "__all__"
+        widgets = {
+            
+            'color':TextInput(attrs={'type':'color','style':'height:50px'})
+        }
+
+
+class AuditTagForm(ModelForm):
+    """
+    Audit Tags form
+    """
+
+    class Meta:
+        """
+        Meta class for additional options
+        """
+
+        model = AuditTag
+        fields = "__all__"
+
+
+class ShiftrequestcommentForm(ModelForm):
+    """
+    Audit Tags form
+    """
+
+    class Meta:
+        """
+        Meta class for additional options
+        """
+
+        model = ShiftrequestComment
+        fields = ('comment',)
+
+
+class WorktyperequestcommentForm(ModelForm):
+    """
+    Audit Tags form
+    """
+
+    class Meta:
+        """
+        Meta class for additional options
+        """
+
+        model = WorktyperequestComment
+        fields = ('comment',)
 
 
 class DynamicMailConfForm(ModelForm):
@@ -1491,3 +1575,34 @@ class DynamicMailConfForm(ModelForm):
         context = {"form": self}
         table_html = render_to_string("attendance_form.html", context)
         return table_html
+    
+class MultipleApproveConditionForm(ModelForm):
+    CONDITION_CHOICE = [
+        ("equal", _("Equal (==)")),
+        ("notequal", _("Not Equal (!=)")),
+        ("range", _("Range")),
+        ("lt", _("Less Than (<)")),
+        ("gt", _("Greater Than (>)")),
+        ("le", _("Less Than or Equal To (<=)")),
+        ("ge", _("Greater Than or Equal To (>=)")),
+        ("icontains", _("Contains")),
+    ]
+    multi_approval_manager = forms.ModelChoiceField(
+        queryset=Employee.objects.all(),
+        widget=forms.Select(attrs={"class": "oh-select oh-select-2 mb-2"}),
+        label=_("Approval Manager"),
+        required=True,
+    )
+    condition_operator = forms.ChoiceField(
+        choices=CONDITION_CHOICE,
+        widget=forms.Select(
+            attrs={
+                "class": "oh-select oh-select-2 mb-2",
+                "onChange": "toggleFields($('#id_condition_operator'))",
+            },
+        ),
+    )
+
+    class Meta:
+        model = MultipleApprovalCondition 
+        fields = "__all__"

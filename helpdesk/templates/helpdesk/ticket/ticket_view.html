@@ -1,0 +1,237 @@
+{% extends 'index.html' %} {% block content %} {% load static %} {% load i18n %}
+{% load basefilters %}
+<style>
+	.row-status--grey {
+	  border-left: 4px solid grey;
+	  border-radius: 5px;
+	}
+	.row-status--red {
+	  border-left: 4px solid red;
+	  border-radius: 5px;
+	}
+	.row-status--yellowgreen {
+	  border-left: 4px solid yellowgreen;
+	  border-radius: 5px;
+	}
+	.row-status--blue {
+	  border-left: 4px solid dodgerblue;
+	  border-radius: 5px;
+	}
+	.row-status--orange {
+		border-left: 4px solid orange;
+		border-radius: 5px;
+	  }
+</style>
+<!-- start of nav bar -->
+{% include "helpdesk/ticket/ticket_nav.html" %}
+<!-- end of nav bar -->
+
+<!-- start of div for messages -->
+<div id="ohMessages"></div>
+<!-- end of div for messages -->
+
+<!-- start of div for showing selected tickets  -->
+<div class="oh-checkpoint-badge mb-2" id="selectedTickets" data-ids="[]" data-clicked="" style="display:none;" >
+	{% trans "Selected Tickets" %}
+</div>
+<!-- end of div for showing selected tickets -->
+
+<!-- start of request view  -->
+<div class="oh-wrapper" id="ticketContainer">
+	{% if my_tickets or allocated_tickets or all_tickets %}
+		<!-- start of Quick filters  -->
+		<div class="d-flex flex-row-reverse">
+			<span
+				class="m-3 review_ongoing"
+				onclick="$('[name=status]').val('canceled');$('[name=status]').first().change();$('.filterButton').click()"
+				style="cursor: pointer"
+			>
+				<span
+					class="oh-dot oh-dot--small me-1"
+					style="background-color: grey"
+				></span>
+				{% trans "Canceled" %}
+			</span>
+			<span
+				class="m-3 confirmed"
+				onclick="$('[name=status]').val('resolved');$('[name=status]').first().change();$('.filterButton').click()"
+				style="cursor: pointer"
+			>
+				<span
+					class="oh-dot oh-dot--small me-1"
+					style="background-color: yellowgreen"
+				></span>
+				{% trans "Resolved" %}
+			</span>
+			<span
+				class="m-3 paid"
+				onclick="$('[name=status]').val('on_hold');$('[name=status]').first().change();$('.filterButton').click()"
+				style="cursor: pointer"
+			>
+				<span
+					class="oh-dot oh-dot--small me-1"
+					style="background-color: red"
+				></span>
+				{% trans "On Hold" %}
+			</span>
+			<span
+				class="m-3 paid"
+				onclick="$('[name=status]').val('in_progress');$('[name=status]').first().change();$('.filterButton').click()"
+				style="cursor: pointer"
+			>
+				<span
+					class="oh-dot oh-dot--small me-1"
+					style="background-color: orange"
+				></span>
+				{% trans "In Progress" %}
+			</span>
+			<span
+				class="m-3 confirmed"
+				onclick="$('[name=status]').val('new');$('[name=status]').first().change();$('.filterButton').click()"
+				style="cursor: pointer"
+			>
+				<span
+					class="oh-dot oh-dot--small me-1"
+					style="background-color: dodgerblue"
+				></span>
+				{% trans "New" %}
+			</span>
+		</div>
+		<!-- end of quick filters  -->
+		{% if request.GET.view != 'card' %}
+			<!-- start of selection buttons -->
+			<div
+				class="oh-checkpoint-badge text-success mb-2"
+				id="selectAllTickets"
+				style="cursor: pointer"
+			>
+				{% trans "Select All Tickets" %}
+			</div>
+			<div
+				class="oh-checkpoint-badge text-secondary mb-2"
+				id="unselectAllTickets"
+				style="cursor: pointer"
+			>
+				{% trans "Unselect All Tickets" %}
+			</div>
+			{% comment %} <div
+			class="oh-checkpoint-badge text-info mb-2"
+			id="exportTickets"
+			style="cursor: pointer; display: none"
+			>
+			{% trans "Export Tickets" %}
+			</div> {% endcomment %}
+			<div class="oh-checkpoint-badge text-danger mb-2" id="selectedShowTickets" style="display: none"></div>
+			<!-- end of selection buttons -->
+		{% endif %}
+		<!-- start of contents -->
+		<div class="oh-tabs">
+			<ul class="oh-tabs__tablist">
+				<li class="oh-tabs__tab" data-target="#tab_1">
+					{% trans "My Tickets" %}
+				</li>
+				<li class="oh-tabs__tab" data-target="#tab_2">
+					{% trans "Allocated Tickets" %}
+				</li>
+				{% if request.user|is_reportingmanager %}
+					<li class="oh-tabs__tab" data-target="#tab_3">
+						{% trans "All Tickets" %}
+					</li>
+				{% endif %}
+			</ul>
+			<div id="ticket_list">
+				{% if request.GET.view == 'card' %}
+				{% include "helpdesk/ticket/ticket_card.html" %}
+				{% else %}
+				{% include "helpdesk/ticket/ticket_list.html" %}
+				{% endif %}
+			</div>
+		</div>
+		<!-- end of contents -->
+	{% else %}
+		<div
+			style="
+				height: 70vh;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+			"
+			class=""
+		>
+			<div style="" class="oh-404">
+				<img
+					style="display: block; width: 150px; height: 150px; margin: 10px auto"
+					src="{% static 'images/ui/ticket.png' %}"
+					class="mb-4"
+					alt=""
+				/>
+				<h3 style="font-size: 20px" class="oh-404__subtitle">
+					{% trans "There are no tickets at the moment." %}
+				</h3>
+			</div>
+		</div>
+	{% endif %}
+</div>
+<!-- end of request view  -->
+
+
+<script>
+	$(document).ready(function () {
+		
+	  	$(".ticket-view-type").click(function (e) { 
+			e.preventDefault();
+			var view = $(this).attr("data-view")
+			$("#ticket-search").attr("hx-vals", `{"view":"${view}"}`);
+			$("#filterView").val(view);
+			var currentURL = window.location.href;     
+			if (/\?view=[^&]+/.test(currentURL)) {          
+			newURL = currentURL.replace(/\?view=[^&]+/, "?view="+view);      
+			}        
+			else {          
+			var separator = currentURL.includes('?') ? '&' : '?';  
+			newURL = currentURL + separator + "view="+view;        
+			}       
+			history.pushState({}, "", newURL);
+			window.location.reload();
+			$(".oh-btn--view-active").removeClass("oh-btn--view-active")
+			$(this).children("a").addClass("oh-btn--view-active")
+	  	});
+		$("#ticket-search").focusout(function (e) {
+			$("#filterSearch").val($(this).val());
+			const formData = $("#filterForm").serializeArray();
+			const jsonObject = {};
+			
+			$.each(formData, function() {
+				jsonObject[this.name] = this.value;
+			});
+			delete jsonObject.view
+			var hxVals = JSON.stringify(jsonObject)
+			$(".ticket-view-type a").attr("hx-vals", hxVals);      
+		});
+	
+		$("#ticket-search").keyup(function (e) { 
+			const formData = $("#filterForm").serializeArray();
+			const jsonObject = {};
+			
+			$.each(formData, function() {
+				jsonObject[this.name] = this.value;
+			});
+			delete jsonObject.search
+			var hxVals = JSON.stringify(jsonObject)
+			$(this).attr("hx-vals", hxVals);   
+		});
+		$(".filterButton").click(function (e) { 
+			const formData = $("#filterForm").serializeArray();
+			const jsonObject = {};
+			
+			$.each(formData, function() {
+				jsonObject[this.name] = this.value;
+			});
+			delete jsonObject.view
+			var hxVals = JSON.stringify(jsonObject)
+			$(".ticket-view-type").attr("hx-vals", hxVals);   
+		});
+	});
+  </script>
+
+{% endblock %}

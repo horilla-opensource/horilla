@@ -8,7 +8,7 @@ import operator
 import contextlib
 from attendance.models import Attendance
 from payroll.models import models
-from payroll.models.models import Contract, Allowance
+from payroll.models.models import Contract, Allowance, LoanAccount
 from payroll.methods.limits import compute_limit
 
 operator_mapping = {
@@ -366,6 +366,9 @@ def calculate_pre_tax_deduction(*_args, **kwargs):
         .exclude(one_time_date__gt=end_date)
         .exclude(update_compensation__isnull=False)
     )
+    # Installment deductions
+    installments = deductions.filter(is_installment=True)
+
     pre_tax_deductions = []
     pre_tax_deductions_amt = []
     serialized_deductions = []
@@ -414,7 +417,7 @@ def calculate_pre_tax_deduction(*_args, **kwargs):
             "amount": amount,
         }
         serialized_deductions.append(serialized_deduction)
-    return {"pretax_deductions": serialized_deductions}
+    return {"pretax_deductions": serialized_deductions, "installments": installments}
 
 
 def calculate_post_tax_deduction(*_args, **kwargs):
@@ -453,6 +456,9 @@ def calculate_post_tax_deduction(*_args, **kwargs):
         .exclude(one_time_date__gt=end_date)
         .exclude(update_compensation__isnull=False)
     )
+    # Installment deductions
+    installments = deductions.filter(is_installment=True)
+
     post_tax_deductions = []
     post_tax_deductions_amt = []
     serialized_deductions = []
@@ -512,6 +518,7 @@ def calculate_post_tax_deduction(*_args, **kwargs):
     return {
         "post_tax_deductions": serialized_deductions,
         "net_pay_deduction": serialized_net_pay_deductions,
+        "installments":installments,
     }
 
 

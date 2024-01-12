@@ -9,5 +9,7 @@ from horilla import settings
 INSTALLED_APPS.append("horilla_audit")
 INSTALLED_APPS.append("horilla_widgets")
 INSTALLED_APPS.append("horilla_crumbs")
+INSTALLED_APPS.append("haystack")
+INSTALLED_APPS.append("helpdesk")
 
 setattr(settings,"EMAIL_BACKEND",'base.backends.ConfiguredEmailBackend')

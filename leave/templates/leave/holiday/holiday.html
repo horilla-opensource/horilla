@@ -41,7 +41,9 @@
                     <div class="oh-sticky-table__th">{% trans "Start Date" %}</div>
                     <div class="oh-sticky-table__th">{% trans "End Date" %}</div>
                     <div class="oh-sticky-table__th">{% trans "Recurring" %}</div>
-                    <div class="oh-sticky-table__th">{% trans "Actions" %}</div>
+                    {% if perms.leave.change_holiday or  perms.leave.delete_holiday %}
+                      <div class="oh-sticky-table__th">{% trans "Actions" %}</div>
+                    {% endif %}
                 </div>
             </div>
             <div class="oh-sticky-table__tbody">
@@ -67,26 +69,33 @@
                                 {% trans "No"%} 
                             {% endif %}
                         </div>
-                        <div class="oh-sticky-table__td">
-                            <div class="oh-btn-group">
-                                <button
-                                class="oh-btn oh-btn--light-bkg w-100"
-                                title="{% trans 'Edit' %}"
-                                data-toggle="oh-modal-toggle"
-                                data-target="#editModal2"
-                                hx-get="{% url 'holiday-update' holiday.id %}"
-                                hx-target="#updateForm"
-                                >
-                                <ion-icon name="create-outline"></ion-icon>
-                                </button>
-                                <a class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
-                                id="delete-link" href="{% url 'holiday-delete' holiday.id %}"
-                                onclick="return confirm('{% trans "Are you sure you want to delete?"%}');" 
-                                title="{% trans 'Delete' %}" >
-                                <ion-icon name="trash-outline"></ion-icon>
-                                </a>
-                            </div>
-                        </div>
+                        {% if perms.leave.change_holiday or  perms.leave.delete_holiday %}
+                          <div class="oh-sticky-table__td">
+                            
+                              <div class="oh-btn-group">
+                                {% if perms.leave.change_holiday %}
+                                  <button
+                                  class="oh-btn oh-btn--light-bkg w-100"
+                                  title="{% trans 'Edit' %}"
+                                  data-toggle="oh-modal-toggle"
+                                  data-target="#editModal2"
+                                  hx-get="{% url 'holiday-update' holiday.id %}"
+                                  hx-target="#updateForm"
+                                  >
+                                  <ion-icon name="create-outline"></ion-icon>
+                                  </button>
+                                {% endif %}
+                                {% if perms.leave.delete_holiday %}
+                                  <a class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+                                  id="delete-link" href="{% url 'holiday-delete' holiday.id %}"
+                                  onclick="return confirm('{% trans "Are you sure you want to delete?"%}');" 
+                                  title="{% trans 'Delete' %}" >
+                                  <ion-icon name="trash-outline"></ion-icon>
+                                  </a>
+                                {% endif %}
+                              </div>
+                          </div>
+                        {% endif %}
                     </div>
                 {% endfor %}
             </div>

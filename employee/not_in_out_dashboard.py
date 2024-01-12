@@ -15,6 +15,17 @@ from horilla.decorators import manager_can_enter, login_required
 from horilla import settings
 from employee.filters import EmployeeFilter
 from recruitment.models import RecruitmentMailTemplate
+from django.core.paginator import Paginator
+
+
+
+def paginator_qry(qryset, page_number):
+    """
+    This method is used to paginate query set
+    """
+    paginator = Paginator(qryset, 20)
+    qryset = paginator.get_page(page_number)
+    return qryset
 
 
 @login_required
@@ -24,12 +35,15 @@ def not_in_yet(request):
     This context processor wil return the employees, if they not marked the attendance
     for the day
     """
+    page_number = request.GET.get("page")
+    previous_data = request.GET.urlencode()
     emps = (
         EmployeeFilter({"not_in_yet": date.today()})
         .qs.exclude(employee_work_info__isnull=True)
         .filter(is_active=True)
     )
-    return render(request, "dashboard/not_in_yet.html", {"employees": emps})
+    
+    return render(request, "dashboard/not_in_yet.html", {"employees": paginator_qry(emps, page_number),"pd": previous_data,})
 
 
 @login_required

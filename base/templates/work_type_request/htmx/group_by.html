@@ -65,7 +65,8 @@ style="cursor: pointer; display: none"
 									<div class="oh-sticky-table__th" hx-get="{% url 'work-type-request-search' %}?{{pd}}&orderby=requested_date" hx-target="#view-container">{% trans "Requested Date" %}</div>
 									<div class="oh-sticky-table__th" hx-get="{% url 'work-type-request-search' %}?{{pd}}&orderby=requested_till" hx-target="#view-container">{% trans "Requested Till" %}</div>
 									<div class="oh-sticky-table__th">{% trans "Description" %}</div>
-									<div class="oh-sticky-table__th"></div>
+									<div class="oh-sticky-table__th">{% trans "Comment" %}</div>
+									<div class="oh-sticky-table__th">{% trans "Actions" %}</div>						  
 									{% if perms.base.change_worktyperequest or request.user|is_reportingmanager %}
 									<div class="oh-sticky-table__th"></div>
 									<div class="oh-sticky-table__th"></div>
@@ -104,6 +105,29 @@ style="cursor: pointer; display: none"
 									<div class="oh-sticky-table__td dateformat_changer">{{work_type_request.requested_date}}</div>
 									<div class="oh-sticky-table__td dateformat_changer">{{work_type_request.requested_till}}</div>
 									<div class="oh-sticky-table__td">{{work_type_request.description}}</div>
+
+									
+          
+									<div class="oh-sticky-table__td" onclick="event.stopPropagation();">
+            
+										<div class="oh-btn-group" >
+										  <button type="button" hx-get="{% url 'worktype-request-add-comment' work_type_request.id %}" title="Add Comment" 
+											hx-target="#WorktypeRequestCommentForm" hx-swap="innerHTML" class="oh-btn oh-btn--light" data-toggle="oh-modal-toggle" data-target="#WorktypecommentModal"
+											style="flex: 1 0 auto; width:20px;height: 40.68px; padding: 0;">
+											<ion-icon name="newspaper-outline" role="img" class="md hydrated" aria-label="newspaper outline"></ion-icon>
+										  </button>
+							
+										  <button type="button" hx-get="{% url 'worktype-request-view-comment' work_type_request.id %}" hx-target="#workTypeRequestSingleViewTarget" 
+											data-toggle='oh-modal-toggle' data-target = '#workTypeRequestSingleViewModal' title="View Comment"  class="oh-btn oh-btn--light" 
+											style="flex: 1 0 auto; width:20px;height: 40.68px; padding: 0;">
+											<ion-icon name="eye-outline" role="img" class="md hydrated" aria-label="eye outline"></ion-icon>
+										  </button>
+									   </div>
+									  
+									</div>
+							
+
+									  
 									<div class="oh-sticky-table__td" onclick="event.stopPropagation();">
 										<div class="oh-btn-group">
 										{% if work_type_request.approved == False and not work_type_request.canceled  %}
@@ -186,6 +210,31 @@ style="cursor: pointer; display: none"
 		</nav>
 	</div>
 </div>
+
+
+<!-- start of comment modal -->
+<div
+	class="oh-modal"
+	id="WorktypecommentModal"
+	role="dialog"
+	aria-labelledby="emptagModal"
+	aria-hidden="true"
+>
+	<div class="oh-modal__dialog">
+		<div class="oh-modal__dialog-header">
+			<h2 class="oh-modal__dialog-title" id="createModalTitle">
+				{% trans "Add Comment" %}
+			</h2>
+			<button class="oh-modal__close" aria-label="Close">
+				<ion-icon name="close-outline"></ion-icon>
+			</button>
+		</div>
+		<div class="oh-modal__dialog-body" id="WorktypeRequestCommentForm"></div>
+	</div>
+</div>
+<!-- end of comment modal -->
+
+
 <script>
 	function addingWorktypeIds() {
 	  var ids = JSON.parse($("#selectedWorktypes").attr("data-ids") || "[]");

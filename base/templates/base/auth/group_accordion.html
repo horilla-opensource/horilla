@@ -19,14 +19,16 @@
       <h2 class="oh-inner-sidebar-content__title">
         {% trans "Group Permissions" %}
       </h2>
-      <button
-        class="oh-btn oh-btn--secondary oh-btn--shadow"
-        data-toggle="oh-modal-toggle"
-        data-target="#Permissions"
-      >
-        <ion-icon name="add-outline"></ion-icon>
-        Create
-      </button>
+      {% if perms.auth.add_group %}
+        <button
+          class="oh-btn oh-btn--secondary oh-btn--shadow"
+          data-toggle="oh-modal-toggle"
+          data-target="#Permissions"
+        >
+          <ion-icon name="add-outline"></ion-icon>
+          {% trans "Create" %}
+        </button>
+        {% endif %}
     </div>
   </div>
   
@@ -48,17 +50,23 @@
           <span class="oh-user_permission_list-text oh-text--light">{% trans "Total" %} {{group.user_set.all|length}} {% trans "users in this group" %}</span>
         </div>
     </div>
-    <div class="btn-group">
-      <button class=" oh-btn oh-btn--light" hx-get="{% url "user-group-assign" %}" hx-vals='{"group":"{{group.id}}"}' hx-target="#groupAssignBody" data-toggle="oh-modal-toggle" data-target="#groupAssign" onclick="event.stopPropagation()">
-        <ion-icon name="person-add-outline" class="text-dark"></ion-icon>    
-      </button>
-      <form action="{% url "user-group-delete" group.id %}" onsubmit="return confirm('Do you want to delete this group permission?')" method="post" style="display: inline;">
-        {% csrf_token %}
-        <button type="submit" class="oh-btn oh-btn--light" onclick="event.stopPropagation();"  >
-          <ion-icon name="trash-outline" class="text-danger"></ion-icon>
-        </button>
-      </form>
-    </div>
+    {% if perms.auth.change_group or perms.auth.delete_group %}
+      <div class="btn-group">
+        {% if perms.auth.change_group %}
+          <button class=" oh-btn oh-btn--light" hx-get="{% url "user-group-assign" %}" hx-vals='{"group":"{{group.id}}"}' hx-target="#groupAssignBody" data-toggle="oh-modal-toggle" data-target="#groupAssign" onclick="event.stopPropagation()">
+            <ion-icon name="person-add-outline" class="text-dark"></ion-icon>    
+          </button>
+        {% endif %}
+        {% if perms.auth.delete_group %}
+        <form action="{% url "user-group-delete" group.id %}" onsubmit="return confirm('Do you want to delete this group permission?')" method="post" style="display: inline;">
+          {% csrf_token %}
+          <button type="submit" class="oh-btn oh-btn--light" onclick="event.stopPropagation();"  >
+            <ion-icon name="trash-outline" class="text-danger"></ion-icon>
+          </button>
+        </form>
+        {% endif %}
+      </div>
+    {% endif %}
   </div>
   <div class="panel view-employees" id="panel{{group.id}}" data-group-id="{{group.id}}" data-group-name="{{group.name}}">
     <div class="oh-general__tab-target oh-profile-section">

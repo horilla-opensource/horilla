@@ -9,13 +9,14 @@ import json
 from django.contrib import messages
 from django.db.models import ProtectedError
 from django.contrib.auth.models import Permission
-from django.http import HttpResponseRedirect, JsonResponse
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.utils.translation import gettext_lazy as _
 from django.utils.translation import gettext as __
 from django.views.decorators.http import require_http_methods
 from django.shortcuts import render, redirect
 from employee.models import Employee
 from horilla.decorators import login_required, permission_required
+from recruitment.decorators import manager_can_enter, recruitment_manager_can_enter
 from notifications.signals import notify
 from recruitment.models import Candidate, Recruitment, Stage, StageNote
 from recruitment.views.paginator_qry import paginator_qry
@@ -101,7 +102,7 @@ def recruitment_delete_pipeline(request, rec_id):
 
 
 @login_required
-@permission_required(perm="recruitment.delete_stagenote")
+@manager_can_enter(perm="recruitment.delete_stagenote")
 def note_delete(request, note_id):
     """
     This method is used to delete the stage note
@@ -120,7 +121,7 @@ def note_delete(request, note_id):
 
 
 @login_required
-@permission_required(perm="recruitment.delete_stagenote")
+@manager_can_enter(perm="recruitment.delete_stagenote")
 def note_delete_individual(request, note_id):
     """
     This method is used to delete the stage note
@@ -128,11 +129,14 @@ def note_delete_individual(request, note_id):
     note = StageNote.objects.get(id=note_id)
     cand_id = note.candidate_id.id
     note.delete()
-    return redirect("view-note", cand_id=cand_id)
+    messages.success(request, _("Note deleted."))
+    # return redirect("view-note", cand_id=cand_id)
+    return HttpResponse("<script>window.location.reload()</script>")
+
 
 
 @login_required
-@permission_required(perm="recruitment.delete_stage")
+@manager_can_enter(perm="recruitment.delete_stage")
 @require_http_methods(["POST", "DELETE"])
 def stage_delete(request, stage_id):
     """
@@ -276,7 +280,7 @@ def candidate_bulk_archive(request):
 
 
 @login_required
-@permission_required(perm="recruitment.change_stage")
+@manager_can_enter(perm="recruitment.change_stage")
 def remove_stage_manager(request, mid, sid):
     """
     This method is used to remove selected stage manager and also removing the  given
@@ -310,7 +314,7 @@ def remove_stage_manager(request, mid, sid):
 
 
 @login_required
-@permission_required(perm="recruitment.change_recruitment")
+@manager_can_enter(perm="recruitment.change_recruitment")
 @require_http_methods(["POST"])
 def remove_recruitment_manager(request, mid, rid):
     """

@@ -14,6 +14,10 @@ class HorillaCompanyManager(models.Manager):
     def __init__(self, related_company_field=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.related_company_field = related_company_field
+        self.check_fields = [
+            "employee_id",
+            "requested_employee_id",
+        ]
 
     def get_queryset(self):
         """
@@ -36,6 +40,34 @@ class HorillaCompanyManager(models.Manager):
             has_duplicates = queryset.count() != queryset.distinct().count()
             if has_duplicates:
                 queryset = queryset.distinct()
+        except:
+            pass
+        return queryset
+
+    def all(self):
+        """
+        Override the all() method
+        """
+        queryset = []
+        try:
+            queryset = self.get_queryset()
+            if queryset.exists():
+                try:
+                    model_name = queryset.model._meta.model_name
+                    if model_name == "employee":
+                        queryset = queryset.filter(is_active=True)
+                    else:
+                        for field in queryset.model._meta.fields:
+                            if isinstance(field, models.ForeignKey):
+                                if field.name in self.check_fields:
+                                    related_model_is_active_filter = {
+                                        f"{field.name}__is_active": True
+                                    }
+                                    queryset = queryset.filter(
+                                        **related_model_is_active_filter
+                                    )
+                except:
+                    pass
         except:
             pass
         return queryset

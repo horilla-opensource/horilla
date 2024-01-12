@@ -54,6 +54,7 @@ from attendance.forms import (
     AttendanceValidationConditionForm,
     AttendanceUpdateForm,
     AttendanceExportForm,
+    GraceTimeForm,
     LateComeEarlyOutExportForm,
 )
 
@@ -63,6 +64,7 @@ from attendance.models import (
     AttendanceOverTime,
     AttendanceLateComeEarlyOut,
     AttendanceValidationCondition,
+    GraceTime,
 )
 from attendance.filters import (
     AttendanceReGroup,
@@ -143,7 +145,6 @@ def attendance_validate(attendance):
 
 
 def attendance_day_checking(attendance_date, minimum_hour):
-    
     # Convert the string to a datetime object
     attendance_datetime = datetime.strptime(attendance_date, "%Y-%m-%d")
 
@@ -158,21 +159,21 @@ def attendance_day_checking(attendance_date, minimum_hour):
         end_date = holi.end_date
 
         # Convert start_date and end_date to datetime objects
-        start_date = datetime.strptime(str(start_date), '%Y-%m-%d')
-        end_date = datetime.strptime(str(end_date), '%Y-%m-%d')
+        start_date = datetime.strptime(str(start_date), "%Y-%m-%d")
+        end_date = datetime.strptime(str(end_date), "%Y-%m-%d")
 
         # Add dates in between start date and end date including both
         current_date = start_date
         while current_date <= end_date:
-            leaves.append(current_date.strftime('%Y-%m-%d'))
+            leaves.append(current_date.strftime("%Y-%m-%d"))
             current_date += timedelta(days=1)
-        
+
     # Checking attendance date is in holiday list, if found making the minimum hour to 00:00
     for leave in leaves:
         if str(leave) == str(attendance_date):
-            minimum_hour = '00:00'
+            minimum_hour = "00:00"
             break
-    
+
     # Making a dictonary contains week day value and leave day pairs
     company_leaves = {}
     company_leave = CompanyLeave.objects.all()
@@ -182,19 +183,19 @@ def attendance_day_checking(attendance_date, minimum_hour):
         company_leaves[b] = a
 
     # Checking the attendance date is in which week
-    week_in_month = str(((attendance_datetime.day - 1) // 7 + 1)-1)
+    week_in_month = str(((attendance_datetime.day - 1) // 7 + 1) - 1)
 
     # Checking the attendance date is in the company leave or not
     for pairs in company_leaves.items():
         # For all weeks based_on_week is None
-        if str(pairs[0]) == 'None':
+        if str(pairs[0]) == "None":
             if str(pairs[1]) == str(attendance_day):
-                minimum_hour = '00:00'
+                minimum_hour = "00:00"
                 break
         # Checking with based_on_week and attendance_date week
         if str(pairs[0]) == week_in_month:
             if str(pairs[1]) == str(attendance_day):
-                minimum_hour = '00:00'
+                minimum_hour = "00:00"
                 break
     return minimum_hour
 
@@ -322,11 +323,16 @@ def attendance_view(request):
     minot = strtime_seconds("00:00")
     if condition is not None and condition.minimum_overtime_to_approve is not None:
         minot = strtime_seconds(condition.minimum_overtime_to_approve)
-    validate_attendances = Attendance.objects.filter(attendance_validated=False)
-    attendances = Attendance.objects.filter(attendance_validated=True)
+    validate_attendances = Attendance.objects.filter(
+        attendance_validated=False, employee_id__is_active=True
+    )
+    attendances = Attendance.objects.filter(
+        attendance_validated=True, employee_id__is_active=True
+    )
     ot_attendances = Attendance.objects.filter(
         overtime_second__gte=minot,
         attendance_validated=True,
+        employee_id__is_active=True,
     )
     filter_obj = AttendanceFilters(request.GET, queryset=attendances)
     attendances = filtersubordinates(
@@ -882,9 +888,9 @@ def activity_datetime(attendance_activity):
     out_hour = attendance_activity.clock_out.hour
     out_minute = attendance_activity.clock_out.minute
     out_seconds = attendance_activity.clock_out.second
-    return datetime(in_year, in_month, in_day, in_hour, in_minute,in_seconds), datetime(
-        out_year, out_month, out_day, out_hour, out_minute,out_seconds
-    )
+    return datetime(
+        in_year, in_month, in_day, in_hour, in_minute, in_seconds
+    ), datetime(out_year, out_month, out_day, out_hour, out_minute, out_seconds)
 
 
 @login_required
@@ -1124,7 +1130,7 @@ def validate_this_attendance(request, obj_id):
         redirect="/attendance/view-my-attendance",
         icon="checkmark",
     )
-    return HttpResponseRedirect(modified_url)
+    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 
 
 @login_required
@@ -1198,7 +1204,7 @@ def approve_overtime(request, obj_id):
             redirect="/attendance/attendance-overtime-view",
             icon="checkmark",
         )
-    return HttpResponseRedirect(modified_url)
+    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 
 
 @login_required
@@ -1279,7 +1285,6 @@ def form_shift_dynamic_data(request):
 
 @login_required
 def form_date_checking(request):
-
     attendance_date_str = request.POST["attendance_date"]
 
     # Converting to date type.
@@ -1289,13 +1294,14 @@ def form_date_checking(request):
         shift_id = request.POST["shift_id"]
         day = attendance_date.strftime("%A").lower()
         schedule_today = EmployeeShiftSchedule.objects.filter(
-        shift_id__id=shift_id, day__day=day).first()
+            shift_id__id=shift_id, day__day=day
+        ).first()
 
         # Checking the Shift is present in the selected attendance day.
         if schedule_today is not None:
             minimum_hour = schedule_today.minimum_working_hour
         else:
-            minimum_hour ='00:00'
+            minimum_hour = "00:00"
 
     attendance_date = str(attendance_date)
     minimum_hour = attendance_day_checking(attendance_date, minimum_hour)
@@ -1396,7 +1402,14 @@ def activity_attendance_select(request):
     page_number = request.GET.get("page")
 
     if page_number == "all":
-        employees = AttendanceActivity.objects.all()
+        if request.user.has_perm("attendance.view_attendanceovertime"):
+            employees = AttendanceActivity.objects.all()
+        else:
+            employees = AttendanceActivity.objects.filter(
+                employee_id__employee_user_id=request.user
+            ) | AttendanceActivity.objects.filter(
+                employee_id__employee_work_info__reporting_manager_id__employee_user_id=request.user
+            )
 
     employee_ids = [str(emp.id) for emp in employees]
     total_count = employees.count()
@@ -1433,7 +1446,14 @@ def latecome_attendance_select(request):
     page_number = request.GET.get("page")
 
     if page_number == "all":
-        employees = AttendanceLateComeEarlyOut.objects.all()
+        if request.user.has_perm("attendance.view_attendancelatecomeearlyout"):
+            employees = AttendanceLateComeEarlyOut.objects.all()
+        else:
+            employees = AttendanceLateComeEarlyOut.objects.filter(
+                employee_id__employee_user_id=request.user
+            ) | AttendanceLateComeEarlyOut.objects.filter(
+                employee_id__employee_work_info__reporting_manager_id__employee_user_id=request.user
+            )
 
     employee_ids = [str(emp.id) for emp in employees]
     total_count = employees.count()
@@ -1463,3 +1483,114 @@ def latecome_attendance_select_filter(request):
         context = {"employee_ids": employee_ids, "total_count": total_count}
 
         return JsonResponse(context)
+
+
+@login_required
+@permission_required("attendance.add_gracetime")
+def create_grace_time(request):
+    """
+    function used to create grace time .
+
+    Parameters:
+    request (HttpRequest): The HTTP request object.
+
+    Returns:
+    GET : return grace time form template
+    """
+    form= GraceTimeForm()
+    is_default = eval(request.GET.get('default'))
+    if request.method == 'POST':
+        form = GraceTimeForm(request.POST)
+        if form.is_valid():
+            instance = form.save(commit=False)
+            instance.is_default = is_default
+            instance.save()
+            messages.success(request, _("Grace time created successfully."))
+            return HttpResponse("<script>window.location.reload()</script>")
+    return render(request,'attendance/grace_time/grace_time_form.html',{'form':form,'is_default':is_default})
+
+@login_required
+@permission_required("attendance.change_gracetime")
+def update_grace_time(request,grace_id):
+    """
+    function used to create grace time .
+
+    Parameters:
+    request (HttpRequest): The HTTP request object.
+    grace_id: id of grace time object
+    Returns:
+    GET : return grace time form template
+    """
+    grace_time=GraceTime.objects.get(id=grace_id)
+    form= GraceTimeForm(instance=grace_time)
+    is_default = eval(request.GET.get('default'))
+    if request.method == 'POST':
+        form = GraceTimeForm(request.POST,instance=grace_time)
+        if form.is_valid():
+            instance = form.save(commit=False)
+            instance.is_default = is_default
+            instance.save()
+            messages.success(request, _("Grace time updated successfully."))
+            return HttpResponse("<script>window.location.reload()</script>")
+    context = {
+        'form':form,
+        'grace_id':grace_id,
+        'is_default':is_default,
+    }
+    return render(request,'attendance/grace_time/grace_time_form.html',context=context)
+
+@login_required
+@permission_required("attendance.delete_gracetime")
+def delete_grace_time(request,grace_id):
+    """
+    function used to delete grace time .
+
+    Parameters:
+    request (HttpRequest): The HTTP request object.
+    grace_id: id of grace time object
+    Returns:
+    GET : return grace time form template
+    """
+    try:
+        GraceTime.objects.get(id=grace_id).delete()
+        messages.success(request, _("Grace time deleted successfully."))
+    except GraceTime.DoesNotExist:
+        messages.error(request, _("Grace Time Does not exists.."))
+    except ProtectedError:
+        messages.error(request, _("Related datas exists."))
+    if request.GET.get('view')=='shift':
+        return redirect("/settings/employee-shift-view")
+    else:
+        return redirect("/settings/attendance-settings-view")
+
+
+@login_required
+@permission_required("attendance.update_gracetime")
+def update_isactive_gracetime(request):
+    """
+    ajax function to update is active field in grace time.
+    Args:
+    - isChecked: Boolean value representing the state of grace time,
+    - graceId: Id of grace time object
+    """
+    isChecked = request.POST.get('isChecked')
+    graceId = request.POST.get('graceId')
+    grace_time = GraceTime.objects.get(id=graceId)
+    if isChecked == 'true':
+        grace_time.is_active = True
+
+        response = {
+                "type" :"success",
+                "message": _('Default grace time activated successfully.'),
+            }
+    else:
+        grace_time.is_active = False
+        response = {
+                "type" :"success",
+                "message": _('Default grace time deactivated successfully.'),
+            }
+    grace_time.save()
+    return JsonResponse(response)
+
+    
+

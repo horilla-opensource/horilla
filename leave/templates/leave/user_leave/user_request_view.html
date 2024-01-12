@@ -242,6 +242,8 @@
 	{% trans "Selected Requests" %}
 </div>
 
+{% include 'leave/user_leave/user_leave.html' %}
+
 <div class="oh-wrapper" id="userRequest">
 	{% if leave_requests %} 
         {% include 'leave/user_leave/user_requests.html' %} 
@@ -350,45 +352,89 @@
 	</div>
 </div>
 
+
+<!-- Leave creation from leave type card -->
+<div
+  class="oh-modal"
+  id="editDialog"
+  role="dialog"
+  aria-labelledby="editDialogModal"
+  aria-hidden="true"
+>
+  <div class="oh-modal__dialog">
+    <div class="oh-modal__dialog-header">
+      <h2 class="oh-modal__dialog-title" id="editDialogDialog">
+        {% trans "Leave Request" %}
+      </h2>
+      <button class="oh-modal__close" aria-label="Close">
+        <ion-icon name="close-outline"></ion-icon>
+      </button>
+    </div>
+    <div class="oh-modal__dialog-body" id="requestForm"></div>
+  </div>
+</div>
+<!-- End  -->
+
+
+
 <script src="{% static '/leave_request/action.js' %}"></script>
 <script>
-	  $(document).on('htmx:load', '#updateForm', function () {
-	      {% include 'select2.js' %}
-	      $('#startDate #id_start_date_breakdown').select2();
-	      $('#endDate #id_end_date_breakdown').select2();
-	  });
+
+	$(document).on('htmx:load','#userLeaves', function () {
+        // Create a new script element
+        var scriptElement = document.createElement("script");
+        // Set the source URL of the script file to be loaded
+        scriptElement.src = "{% static 'build/js/web.frontend.min.js' %}";
+        // Append the script element to the head of the HTML document
+        document.head.appendChild(scriptElement);
+    });
+	
+    $(document).on('htmx:load', '#requestForm', function () {
+		{% include 'select2.js' %}
+        $('#leaveType #id_leave_type_id').select2();
+        $('#employee #id_employee_id').select2();
+        $('#startDate #id_start_date_breakdown').select2();
+        $('#endDate #id_end_date_breakdown').select2();
+    });
+	
+	
+	$(document).on('htmx:load', '#updateForm', function () {
+		{% include 'select2.js' %}
+		$('#startDate #id_start_date_breakdown').select2();
+		$('#endDate #id_end_date_breakdown').select2();
+	});
 
 	  $('#delete-link').on('click', function (event) {
 	      event.preventDefault();
-
+		  
 	      const link = $(this);
 	      const confirmation = confirm("{% trans 'Are you sure you want to delete?' %}");
-
+		  
 	      if (confirmation) {
-	          window.location.href = link.attr('href');
-	      }
-	  });
-	  $(document).ready(function () {
-	$("#id_field").on("change", function () {
-		$(".filterButton")[0].click();
-	});
-	  });
-
-	function typeChange(selectElement) {
-		var selectedLeavetype =selectElement.val()
-		let parentForm = selectElement.parents().closest("form")
-		var employeeId = parentForm.find('[name = employee_id]').val()
-		$.ajax({
-			type: "post",
-			url: "{% url 'employee-leave-details' %}",
-			data: {
+			  window.location.href = link.attr('href');
+			}
+		});
+		$(document).ready(function () {
+			$("#id_field").on("change", function () {
+				$(".filterButton")[0].click();
+			});
+		});
+		
+		function typeChange(selectElement) {
+			var selectedLeavetype =selectElement.val()
+			let parentForm = selectElement.parents().closest("form")
+			var employeeId = parentForm.find('[name = employee_id]').val()
+			$.ajax({
+				type: "post",
+				url: "{% url 'employee-leave-details' %}",
+				data: {
 			csrfmiddlewaretoken: getCookie("csrftoken"),
 			"leave_type":selectedLeavetype,
 			"employee_id":employeeId,
-			},
-			success: function (response) {
-				
-				// Assuming parentForm is a reference to the form containing the element to update
+		},
+		success: function (response) {
+			
+			// Assuming parentForm is a reference to the form containing the element to update
 				var messageDiv = parentForm.find(".leave-message");
 
 				// Check if the messageDiv already exists, if not create it
@@ -440,8 +486,8 @@
 <script src="./build/js/web.frontend.min.js"></script>
 
 <script
-	type="module"
-	src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"
+type="module"
+src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"
 ></script>
 <script
 	nomodule

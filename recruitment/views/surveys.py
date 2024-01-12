@@ -268,7 +268,7 @@ def application_form(request):
 
 
 @login_required
-@permission_required(perm="recruitment.change_recruitmentsurvey")
+@permission_required(perm="recruitment.view_recruitmentsurvey")
 def single_survey(request, survey_id):
     """
     This view method is used to single view of question template

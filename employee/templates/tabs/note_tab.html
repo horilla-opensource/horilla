@@ -1,0 +1,131 @@
+{% load static %}{% load i18n %} {% load basefilters %}
+{% if notes != '' %}
+<span id="addnote" style="cursor: pointer;">
+  {% if perms.employee.add_employeenote or request.user|is_reportingmanager %}
+    <button
+      class="oh-btn oh-btn--secondary mt-2"
+      hx-get='{% url "add-employee-note" employee.id %}'
+      hx-target="#remark-content"
+      hx-swap="innerHTML"
+      data-toggle="oh-modal-toggle"
+      data-target="#addNoteModal"
+    >
+      <ion-icon class="" name="add-outline" style="font-size: 24px;">
+      </ion-icon>{% trans "Add Note" %}
+    </button>
+    {% endif %}
+  </span>
+  <ol class="oh-activity-sidebar__qa-list" role="list">
+    {% for note in notes %}
+    <li class="oh-activity-sidebar__qa-item">
+
+      <div class="d-flex justify-content-between">
+        {% if perms.employee.change_employeenote or request.user|is_reportingmanager %}
+        <span
+          class="oh-activity-sidebar__q"
+          data-toggle="oh-modal-toggle"
+          data-target="#updateNoteModal"
+          hx-get="{% url 'employee-note-update' note.id %}"
+          hx-target="#modalContent"
+          >{{forloop.counter}}. {{note.title}}</span
+          >
+        {% else %}
+          <span
+          class="oh-activity-sidebar__q"
+          >{{forloop.counter}}. {{note.title}}</span
+          >
+        {% endif %}
+        {% if perms.employee.delete_employeenote or request.user|is_reportingmanager %}
+        <a
+          title="{% trans 'Delete' %}"
+          href="{% url 'employee-note-delete' note.id %}"
+          id="deleteNote"
+        >
+          <ion-icon name="close-outline" style="font-size: 24px"></ion-icon
+        ></a>
+        {% endif %}
+      </div>
+      {% if perms.employee.change_employeenote or request.user|is_reportingmanager %}
+      <span
+        data-toggle="oh-modal-toggle"
+        data-target="#updateNoteModal"
+        hx-get="{% url 'employee-note-update' note.id %}"
+        hx-target="#modalContent"
+        >{{note.description}}</span
+      >
+      {% else %}
+      <span
+        >{{note.description}}</span
+      >
+      {% endif %}
+      <span class="oh-activity-sidebar__a">
+        {% trans "by" %}
+        <img
+          src="https://ui-avatars.com/api/?name={{note.updated_by.get_full_name}}&amp;background=random"
+          style="width: 1.5em; border-radius: 100%"
+          alt="User"
+        />
+        {{note.updated_by}}
+      </span>
+      <span class="oh-activity-sidebar__a">
+        {% trans "at" %} &nbsp
+        <span class="dateformat_changer">{{ note.created_at|date:"Y-m-d" }}</span> &nbsp
+        <span class="timeformat_changer">{{ note.created_at|time:"H:i" }}</span>
+    </span>
+    </li>
+    {% endfor %}
+  </ol>
+{% else %}
+
+  {% if messages %}
+    <div class="oh-wrapper">
+      {% for message in messages %}
+      <div class="oh-alert-container">
+        <div class="oh-alert oh-alert--animated {{message.tags}}">
+          {{ message }}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+  <span class="oh-activity-sidebar__header float-left" style="display: flex; justify-content: space-between;">
+    <span id="addnote" style="cursor: pointer;">
+      <button
+        class="oh-btn oh-btn--secondary mt-2"
+        hx-get='{% url "add-employee-note" employee.id %}'
+        hx-target="#remark-content"
+        hx-swap="innerHTML"
+        data-toggle="oh-modal-toggle"
+        data-target="#addNoteModal"
+      >
+        <ion-icon class="" name="add-outline" style="font-size: 24px;"></ion-icon>{% trans "Add Note" %}
+      </button>
+    </span>
+  </span>
+  <div class='d-flex mt-5' style='margin-left:30%;'>
+    <img style="width: 80px;height: 90px;" src="{% static 'images/ui/no_notes.png' %}"/>
+    <h5 class="oh-404__subtitle mt-4 ml-2">{% trans "No notes have been added for this employee" %}</h5>
+  </div>
+
+{% endif %}
+<div class="oh-modal" id="addNoteModal" role="dialog" aria-labelledby="addNoteModal" aria-hidden="true">
+  <div class="oh-modal__dialog">
+    <div class="oh-modal__dialog-header">
+      <span class="oh-modal__dialog-title" id="addNoteModalLabel">
+        <h5>{% trans "Add Note" %}</h5>
+      </span>
+      <button class="oh-modal__close" aria-label="Close">
+        <ion-icon name="close-outline"></ion-icon>
+      </button>
+    </div>
+    <div class="oh-modal__dialog-body" id='remark-content'>
+
+    </div>
+  </div>
+</div>
+
+<div class="oh-modal" id="updateNoteModal" role="dialog" aria-labelledby="updateNoteModal" aria-hidden="true">
+  <div class="oh-modal__dialog" id='modalContent'>
+
+  </div>
+</div>

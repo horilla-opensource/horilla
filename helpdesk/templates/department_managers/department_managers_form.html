@@ -1,0 +1,48 @@
+{% load i18n %}
+
+<div class="oh-modal__dialog">
+    <div class="oh-modal__dialog-header">
+        <h2 class="oh-modal__dialog-title" id="createModalTitle">
+            {% if dep_id %}
+            {% trans "Update department manager" %}
+            {% else %}
+            {% trans "Create department manager" %}
+            {% endif %}
+        </h2>
+        <button class="oh-modal__close" aria-label="Close">
+            <ion-icon name="close-outline"></ion-icon>
+        </button>
+    </div>
+    <div class="oh-modal__dialog-body" id="deparmentManagersForm">
+        {% if form.errors %}
+<!-- form errors  -->
+    <div class="oh-wrapper">
+        <div class="oh-alert-container">
+            {% for error in form.non_field_errors %}
+            <div class="oh-alert oh-alert--animated oh-alert--danger">
+                {{ error }}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endif %}
+<form  
+    {% if dep_id %}
+    hx-post="{% url 'department-manager-update' dep_id %}"
+    {% else	%}
+    hx-post="{% url 'department-manager-create' %}"
+    {% endif %}
+    hx-target="#deparmentManagersForm"
+    method="post" 
+    hx-encoding="multipart/form-data">
+    {% csrf_token %}
+    {{form.as_p}}
+    <button
+		type="submit"
+		class="oh-btn oh-btn--secondary mt-2 mr-0 oh-btn--w-100-resp"
+	>
+		{% trans "Save" %}
+	</button>
+</form>
+    </div>
+</div>

@@ -274,16 +274,28 @@ x-data="{searchShow: false}"
 </section>
 
 <div
-  class="oh-modal"
+  class="oh-modal" style="z-index: 60;"
   id="workTypeRequestSingleViewModal"
   role="dialog"
   aria-labelledby="workTypeRequestSingleViewModal"
   aria-hidden="true"
 >
   <div class="oh-modal__dialog">
-   <div class="oh-modal__dialog-body oh-modal__dialog-relative" id='workTypeRequestSingleViewTarget'>
+    <div class="oh-modal__dialog-header">
+      <h2
+        class="oh-modal__dialog-title"
+        id=""
+      >
+        {% trans "Details" %}
+      </h2>
+      <button class="oh-modal__close" aria-label="Close">
+        <ion-icon name="close-outline"></ion-icon>
+      </button>
     </div>
-    </div>
+    <div
+      class="oh-modal__dialog-body oh-modal__dialog-relative"
+      id="workTypeRequestSingleViewTarget"
+    ></div>
   </div>
 </div>
 

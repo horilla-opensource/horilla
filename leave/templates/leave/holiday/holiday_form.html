@@ -1,4 +1,20 @@
 {% load i18n %}
+{% if messages %}
+<div class="oh-wrapper">
+  {% for message in messages %}
+  <div class="oh-alert-container">
+    <div class="oh-alert oh-alert--animated {{ message.tags }}">
+      {{ message }}
+    </div>
+  </div>
+  {% endfor %}
+</div>
+<script>
+  setTimeout(() => {
+    $('.oh-modal__close').click();
+  }, 1000);
+</script>
+{% endif %}
 {% if form.errors %}
 <!-- form errors  -->
 <div class="oh-wrapper">

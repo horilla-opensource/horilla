@@ -3,6 +3,7 @@
 {% load basefilters %}
 {% comment %} {% include 'employee_nav.html' %} {% endcomment %}
 
+
 <style>
   .enlarge-image-container {
     display: none;
@@ -154,7 +155,7 @@
 						>{% trans "About" %}</a
 						>
 					</li>
-					{% if perms.employee.view_employee or request.user == employee.employee_user_id or request.user|check_manager:employee %}
+					{% if request.user == employee.employee_user_id or request.user|check_manager:employee %}
 					<li class="oh-general__tab">
 						<a
 						hx-get={% url 'shift-tab' employee.id %}
@@ -224,7 +225,7 @@
 						>{% trans "Team" %}</a
 						>
 					</li> {% endcomment %}
-					{% if perms.employee.view_historicalemployeeworkinformation or perms.employee.view_employee or request.user|check_manager:employee %}
+					{% if perms.employee.view_historicalemployeeworkinformation or request.user|check_manager:employee %}
 					<li class="oh-general__tab">
 						<a
 						href="#"
@@ -275,6 +276,19 @@
 						>
 					</li>
 					{% endif %}
+					{% if perms.employee.view_employeenote or request.user|check_manager:employee %}
+					<li class="oh-general__tab">
+						<a
+						hx-get={% url 'note-tab' employee.id %}
+						hx-target="#note_target"
+						data-action="general-tab"
+						data-target="#note_target"
+						class="oh-general__tab-link"
+						role="button"
+						>{% trans "Note" %}</a
+						>
+					</li>
+					{% endif %}
 				</ul>
 
 				<div
@@ -290,12 +304,21 @@
 				</div>
 
 				<div
-					class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
+				class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
+				id="note_target"
+				>
+				{% include "tabs/note_tab.html" %}
+				</div>
+
+				<div
+				  class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
+				  id="allowance_deduction"
+				>
+				</div>
+				<div class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
 					id="attendance_target"
 				 >
 				</div>
-
-				
 
 				<div
 				  class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
@@ -333,7 +356,7 @@
 					class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
 					id="history"
 				 >
-					{% if perms.employee.view_employee or request.user|check_manager:employee or request.user == employee.employee_user_id or perms.employee.view_historicalemployeeworkinformation %}
+					{% if request.user|check_manager:employee or request.user == employee.employee_user_id or perms.employee.view_historicalemployeeworkinformation %}
 						{% include "tabs/history.html" %}
 					{% endif %}
 
@@ -352,7 +375,7 @@
 					class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
 					id="leave"
 				 >
-					{% if perms.employee.view_employee or perms.leave.view_leaverequest or perms.leave.view_leavetype or request.user|check_manager:employee or request.user == employee.employee_user_id %}
+					{% if perms.leave.view_leaverequest or perms.leave.view_leavetype or request.user|check_manager:employee or request.user == employee.employee_user_id %}
 						{% include "tabs/leave-tab.html" %}
 					{% endif %}
 				</div>

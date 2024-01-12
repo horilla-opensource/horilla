@@ -5,8 +5,14 @@
       <div class="oh-sticky-table__th">{% trans "Tax Rate" %}</div>
       <div class="oh-sticky-table__th">{% trans "Min. Income" %}</div>
       <div class="oh-sticky-table__th">{% trans "Max. Income" %}</div>
+
+      {% if  perms.payroll.change_taxbracket %}
       <div class="oh-sticky-table__th"></div>
+      {% endif %}
+      {% if  perms.payroll.delete_taxbracket %}
       <div class="oh-sticky-table__th"></div>
+      {% endif %}
+
     </div>
   </div>
   <div class="oh-sticky-table__tbody">
@@ -21,9 +27,10 @@
       <div class="oh-sticky-table__td">
         {{currency}}{{ tax_bracket.get_display_max_income|stringformat:".2f" }}
       </div>
-      <div class="oh-sticky-table__td">
-        <div class="oh-btn-group">
-          <a
+      {% if  perms.payroll.change_taxbracket %}
+        <div class="oh-sticky-table__td">
+          <div class="oh-btn-group">
+            <a
             class="oh-btn oh-btn--light-bkg w-100"
             data-toggle="oh-modal-toggle"
             data-target="#TaxBracketModal"
@@ -31,30 +38,33 @@
             onclick="event.stopPropagation(); document.querySelector('#TaxBracketModal').classList.add('oh-modal--show')"
             hx-target="#TaxBracketFormTarget"
             title="{% trans 'Update' %}"
-          >
-            <ion-icon
+            >
+              <ion-icon
               name="create-outline"
               role="img"
               class="md hydrated"
               aria-label="create outline"
-            ></ion-icon>
-          </a>
+              ></ion-icon>
+            </a>
+          </div>
         </div>
-      </div>
-      <div class="oh-sticky-table__td">
-        <div class="oh-btn-group">
-          <form 
-            action="{% url 'tax-bracket-delete' tax_bracket_id=tax_bracket.id%}"
-            onsubmit="return confirm('{% trans "Are you sure to delete this Tax bracket ?" %}')" 
-            method="post"
-            style="display: contents">
-            {% csrf_token %}
-            <button class="oh-btn oh-btn--danger-outline  w-100" title="{% trans 'Delete' %}">
-              <ion-icon name="trash-outline" role="img" class="md hydrated" aria-label="trash outline"></ion-icon>
-            </button>
-          </form>
+      {% endif %}
+      {% if  perms.payroll.delete_taxbracket %}
+        <div class="oh-sticky-table__td">
+          <div class="oh-btn-group">
+            <form 
+              action="{% url 'tax-bracket-delete' tax_bracket_id=tax_bracket.id%}"
+              onsubmit="return confirm('{% trans "Are you sure to delete this Tax bracket ?" %}')" 
+              method="post"
+              style="display: contents">
+              {% csrf_token %}
+              <button class="oh-btn oh-btn--danger-outline  w-100" title="{% trans 'Delete' %}">
+                <ion-icon name="trash-outline" role="img" class="md hydrated" aria-label="trash outline"></ion-icon>
+              </button>
+            </form>
+          </div>
         </div>
-      </div>
+      {% endif %}
     </div>
     {% endfor %}
   </div>

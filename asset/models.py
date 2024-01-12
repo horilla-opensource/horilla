@@ -84,6 +84,22 @@ class Asset(models.Model):
         return super().clean()
 
 
+class AssetReport(models.Model):
+    title = models.CharField(max_length=255, blank=True, null=True)
+    asset_id = models.ForeignKey(Asset, related_name="asset_report",on_delete = models.CASCADE)
+
+    def __str__(self):
+        return f'{self.asset_id} - {self.title}' if self.title else f'report for {self.asset_id}'
+
+
+class AssetDocuments(models.Model):
+    asset_report = models.ForeignKey('AssetReport', related_name='documents', on_delete=models.CASCADE)
+    file = models.FileField(upload_to="asset/asset_report/documents/", blank=True, null=True)
+
+    def __str__(self):
+        return f'document for {self.asset_report}'
+    
+
 class AssetAssignment(models.Model):
     """
     Represents the allocation and return of assets to and from employees.

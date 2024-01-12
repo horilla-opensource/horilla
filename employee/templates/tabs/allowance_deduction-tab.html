@@ -2,18 +2,25 @@
 {% load static %}
 {% load basefilters %}
 {% load attendancefilters %}
-<div class="oh-wrapper mt-4">
+<div class="oh-wrapper mt-4" id="AllowanceAndDeduction">
     <div class="oh-tabs">
 		<ul class="oh-tabs__tablist">
-			<li class="oh-tabs__tab oh-tabs__tab--active" data-target="#allowance_tab">
+			<li class="oh-tabs__tab oh-tabs__tab--active d-flex justify-content-between" data-target="#allowance_tab">
 				<div>
-					<img
+					<div>
+            <img
 						src="{% static 'images/ui/allowance_icon.png' %}"
 						alt=""
 						style="width: 25px; height: 25px; margin-right: 3px"
 					/>
 					{% trans "Allowances" %}
+          </div>
 				</div>
+        {% if perms.payroll.add_allowance %}
+        <button title="Add Bonus" class="oh-btn oh-btn--secondary-outline oh-stop-prop oh-accordion-meta__btn p-2" title="Add" hx-get="{% url "add-bonus" %}?employee_id={{employee.id}}" hx-target="#addBonusModalBody" data-target="#addBonusModal" data-toggle="oh-modal-toggle">
+          <ion-icon class="md hydrated" name="add-outline" role="img" aria-label="add outline"></ion-icon>
+        </button>
+        {% endif %}
 			
 			</li>
 			<li class="oh-tabs__tab" data-target="#deduction_tab">
@@ -239,6 +246,16 @@
 <div class="oh-modal" id="AllowanceModal" role="dialog" aria-labelledby="AllowanceModal" aria-hidden="true">
     <div class="oh-modal__dialog oh-modal__dialog-relative" style="max-width: 550px" id="OneAllowanceTarget"></div>
 </div>
+
+<div class="oh-modal" id="addBonusModal" role="dialog" aria-hidden="true">
+  <div class="oh-modal__dialog">
+    <div class="oh-modal__dialog-header">
+      <button type="button" class="oh-modal__close" aria-label="Close"><ion-icon name="close-outline"></ion-icon></button>
+    </div>
+
+    <div class="oh-modal__dialog-body" id="addBonusModalBody"></div>
+  </div>
+</div>
 <div class="oh-modal" id="DeductionModal" role="dialog" aria-labelledby="DeductionModal" aria-hidden="true">
     <div class="oh-modal__dialog oh-modal__dialog-relative" style="max-width: 600px" id="OneDeductionTarget"></div>
 </div>
@@ -261,4 +278,8 @@
             $(newActiveTab).toggleClass("oh-tabs__content--active");
         });
     });
+    let activeTabs = $("#AllowanceAndDeduction .oh-tabs__tab--active").length
+    if(!activeTabs){
+      $("#AllowanceAndDeduction .oh-tabs__tab").first().toggleClass("oh-tabs__tab--active")
+    }
 </script>

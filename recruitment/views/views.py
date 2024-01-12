@@ -20,6 +20,7 @@ from urllib.parse import parse_qs
 from django.conf import settings
 from django.db.models import Q
 from django.http import JsonResponse, HttpResponse, HttpResponseRedirect
+from django.db.models import ProtectedError
 from django.shortcuts import render, redirect
 from django.core import serializers
 from django.core.paginator import Paginator
@@ -35,6 +36,12 @@ from horilla.decorators import permission_required, login_required, hx_request_r
 from base.methods import export_data, generate_pdf, get_key_instances
 from recruitment.views.paginator_qry import paginator_qry
 from recruitment.models import (
+    Recruitment, 
+    Candidate,
+    SkillZone,
+    SkillZoneCandidate, 
+    Stage, 
+    CandidateRating,
     RecruitmentMailTemplate,
     Recruitment,
     Candidate,
@@ -45,6 +52,8 @@ from recruitment.filters import (
     CandidateFilter,
     CandidateReGroup,
     RecruitmentFilter,
+    SkillZoneCandFilter,
+    SkillZoneFilter,
     StageFilter,
 )
 from recruitment.methods import recruitment_manages
@@ -53,10 +62,13 @@ from recruitment.forms import (
     CandidateExportForm,
     RecruitmentCreationForm,
     CandidateCreationForm,
+    SkillZoneCandidateForm,
+    SkillZoneCreateForm,
     StageCreationForm,
     StageDropDownForm,
     CandidateDropDownForm,
     StageNoteForm,
+    ToSkillZoneForm,
 )
 
 
@@ -160,7 +172,7 @@ def recruitment_view(request):
     if not request.GET:
         request.GET.copy().update({"is_active": "on"})
     form = RecruitmentCreationForm()
-    queryset = Recruitment.objects.all()
+    queryset = Recruitment.objects.filter(is_active = True)
     if queryset.exists():
         template = "recruitment/recruitment_view.html"
     else:
@@ -614,7 +626,7 @@ def create_note(request, cand_id=None):
 
 
 @login_required
-@permission_required(perm="recruitment.change_stagenote")
+@manager_can_enter(perm="recruitment.change_stagenote")
 def note_update(request, note_id):
     """
     This method is used to update the stage not
@@ -637,7 +649,7 @@ def note_update(request, note_id):
 
 
 @login_required
-@permission_required(perm="recruitment.change_stagenote")
+@manager_can_enter(perm="recruitment.change_stagenote")
 def note_update_individual(request, note_id):
     """
     This method is used to update the stage not
@@ -683,7 +695,7 @@ def candidate_schedule_date_update(request):
 
 
 @login_required
-@permission_required(perm="recruitment.add_stage")
+@manager_can_enter(perm="recruitment.add_stage")
 def stage(request):
     """
     This method is used to create stages, also several permission assigned to the stage managers
@@ -756,7 +768,7 @@ def stage_view(request):
 
 
 @login_required
-@permission_required(perm="recruitment.change_stage")
+@manager_can_enter(perm="recruitment.change_stage")
 @hx_request_required
 def stage_update(request, stage_id):
     """
@@ -950,9 +962,17 @@ def candidate_view_individual(request, cand_id, **kwargs):
     mails= list(Candidate.objects.values_list("email",flat=True))
     # Query the User model to check if any email is present
     existing_emails = list(User.objects.filter(username__in=mails).values_list('email', flat=True))
+    ratings = candidate_obj.candidate_rating.all()
+    rating_list = []
+    avg_rate = 0
+    for rating in ratings:
+        rating_list.append(rating.rating)
+    if len(rating_list) != 0:
+        avg_rate = round(sum(rating_list) / len(rating_list))
+    
 
     return render(request, "candidate/individual.html", 
-                  {"candidate": candidate_obj, "emp_list" : existing_emails })
+        {"candidate": candidate_obj, "emp_list" : existing_emails,"average_rate": avg_rate,})
 
 
 @login_required
@@ -1193,3 +1213,369 @@ def candidate_select_filter(request):
         context = {"employee_ids": employee_ids, "total_count": total_count}
 
         return JsonResponse(context)
+    
+
+@login_required
+def create_candidate_rating(request,cand_id):
+    cand_id = cand_id
+    candidate = Candidate.objects.get(id=cand_id)
+    employee_id = request.user.employee_get
+    rating = request.POST.get("rating")
+    CandidateRating.objects.create(candidate_id=candidate, rating=rating, employee_id=employee_id)
+    return redirect(recruitment_pipeline)
+
+#///////////////////////////////////////////////
+                    #skill zone
+#///////////////////////////////////////////////
+    
+@login_required
+@manager_can_enter(perm="recruitment.view_skillzone")
+def skill_zone_view(request):
+    """
+    This method is used to show Skill zone view
+    """
+    skill_zones = SkillZone.objects.filter(is_active = True)
+    skill_zones_filtered = SkillZoneFilter(request.GET,queryset=skill_zones).qs
+    previous_data = request.GET.urlencode()
+    data_dict = parse_qs(previous_data)
+    get_key_instances(SkillZone, data_dict)
+    context = {
+        "skill_zones":paginator_qry(skill_zones_filtered,request.GET.get('page')),
+        "page":request.GET.get('page'),
+        'pd':previous_data,
+        'f':SkillZoneFilter(),
+        "filter_dict": data_dict,
+    }
+    return render(
+        request,
+        "skill_zone/skill_zone_view.html",
+        context=context
+    )
+
+@login_required
+@manager_can_enter(perm="recruitment.add_skillzone")
+def skill_zone_create(request):
+    """
+    This method is used to create Skill zone.
+    """
+    form = SkillZoneCreateForm
+    if request.method == 'POST':
+        form = SkillZoneCreateForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request,_("Skill Zone created successfully."))
+            return HttpResponse("<script>window.location.reload()</script>")
+    return render(
+        request,
+        "skill_zone/skill_zone_create.html",
+        {'form':form},
+    )
+
+@login_required
+@manager_can_enter(perm="recruitment.change_skillzone")
+def skill_zone_update(request,sz_id):
+    """
+    This method is used to update Skill zone.
+    """
+    skill_zone = SkillZone.objects.get(id=sz_id)
+    form = SkillZoneCreateForm(instance=skill_zone)
+    if request.method == 'POST':
+        form = SkillZoneCreateForm(request.POST,instance = skill_zone)
+        if form.is_valid():
+            form.save()
+            messages.success(request,_("Skill Zone updated successfully."))
+            return HttpResponse("<script>window.location.reload()</script>")
+    return render(
+        request,
+        "skill_zone/skill_zone_update.html",
+        {'form':form,
+         'sz_id':sz_id},
+    )
+
+@login_required
+@manager_can_enter(perm="recruitment.delete_skillzone")
+def skill_zone_delete(request,sz_id):
+    """
+    function used to delete Skill zone.
+
+    Parameters:
+    request (HttpRequest): The HTTP request object.
+    sz_id : Skill zone id
+
+    Returns:
+    GET : return Skill zone view template
+    """
+    try:
+        SkillZone.objects.get(id=sz_id).delete()
+        messages.success(request, _("Skill zone deleted successfully.."))
+    except SkillZone.DoesNotExist:
+        messages.error(request, _("Skill zone not found."))
+    except ProtectedError:
+        messages.error(request, _("Related entries exists"))
+    return redirect(skill_zone_view)
+
+
+@login_required
+@manager_can_enter(perm="recruitment.delete_skillzone")
+def skill_zone_archive(request,sz_id):
+    """
+    function used to archive or un-archive Skill zone.
+
+    Parameters:
+    request (HttpRequest): The HTTP request object.
+    sz_id : Skill zone id
+
+    Returns:
+    GET : return Skill zone view template
+    """
+    try:
+        skill_zone = SkillZone.objects.get(id=sz_id)
+        is_active = skill_zone.is_active 
+        if is_active == True:
+            skill_zone.is_active = False
+            messages.success(request, _("Skill zone archived successfully.."))
+
+        else:
+            skill_zone.is_active = True
+            messages.success(request, _("Skill zone unarchived successfully.."))
+
+        skill_zone.save()
+    except SkillZone.DoesNotExist:
+        messages.error(request, _("Skill zone not found."))
+
+    return redirect(skill_zone_view)
+  
+@login_required
+@manager_can_enter(perm="recruitment.view_skillzone")
+def skill_zone_filter(request):
+    """
+    This method is used to filter and show Skill zone view.
+    """
+    template = 'skill_zone/skill_zone_card.html'
+    if request.GET.get("view") == 'list':
+        template = 'skill_zone/skill_zone_list.html'
+    skill_zone_filter = SkillZoneFilter(request.GET).qs.filter(is_active=True)
+    if request.GET.get('is_active') == 'false':
+        skill_zone_filter = SkillZoneFilter(request.GET).qs.filter(is_active=False)
+    previous_data = request.GET.urlencode()
+    data_dict = parse_qs(previous_data)
+    get_key_instances(SkillZone, data_dict)
+    context={
+        'skill_zones':paginator_qry(skill_zone_filter,request.GET.get('page')),
+        'pd':previous_data,
+        "filter_dict": data_dict,
+
+    }
+    return render(
+        request,
+        template,
+        context,
+    )
+
+@login_required
+@manager_can_enter(perm="recruitment.view_skillzonecandidate")
+def skill_zone_cand_card_view(request,sz_id):
+    """
+    This method is used to show Skill zone candidates.
+
+    Parameters:
+    request (HttpRequest): The HTTP request object.
+    sz_cand_id : Skill zone id
+
+    Returns:
+    GET : return Skill zone candidate view template
+    """
+    skill_zone = SkillZone.objects.get(id=sz_id)
+    template = "skill_zone_cand/skill_zone_cand_view.html"
+    sz_candidates = SkillZoneCandidate.objects.filter(skill_zone_id=skill_zone,is_active=True)
+    context={
+        'sz_candidates':paginator_qry(sz_candidates,request.GET.get("page")),
+        "pd":request.GET.urlencode(),
+        'sz_id':sz_id,
+
+    }
+    return render(request,template,context)
+
+@login_required
+@manager_can_enter(perm="recruitment.add_skillzonecandidate")
+def skill_zone_candidate_create(request,sz_id):
+    """
+    This method is used to add candidates to a Skill zone.
+
+    Parameters:
+    request (HttpRequest): The HTTP request object.
+    sz_cand_id : Skill zone id
+
+    Returns:
+    GET : return Skill zone candidate create template
+    """
+    skill_zone = SkillZone.objects.get(id=sz_id)
+    template = "skill_zone_cand/skill_zone_cand_form.html"
+    form = SkillZoneCandidateForm(initial={'skill_zone_id':skill_zone})
+    if request.method == "POST":
+        form = SkillZoneCandidateForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request,_("Candidate added successfully."))
+            return HttpResponse("<script>window.location.reload()</script>")
+
+    return render(request,template,{'form':form,'sz_id':sz_id})
+
+
+@login_required
+@manager_can_enter(perm="recruitment.change_skillzonecandidate")
+def skill_zone_cand_edit(request,sz_cand_id):
+    """
+    This method is used to edit candidates in a Skill zone.
+
+    Parameters:
+    request (HttpRequest): The HTTP request object.
+    sz_cand_id : Skill zone candidate id
+
+    Returns:
+    GET : return Skill zone candidate edit template
+    """
+    skill_zone_cand = SkillZoneCandidate.objects.filter(id=sz_cand_id).first()
+    template = "skill_zone_cand/skill_zone_cand_form.html"
+    form = SkillZoneCandidateForm(instance=skill_zone_cand)
+    if request.method == "POST":
+        form = SkillZoneCandidateForm(request.POST,instance=skill_zone_cand)
+        if form.is_valid():
+            form.save()
+            messages.success(request,_("Candidate edited successfully."))
+            return HttpResponse("<script>window.location.reload()</script>")
+
+    return render(request,template,{'form':form,'sz_cand_id':sz_cand_id})
+
+@login_required
+@manager_can_enter(perm="recruitment.delete_skillzonecandidate")
+def skill_zone_cand_delete(request,sz_cand_id):
+    """
+    function used to delete Skill zone candidate.
+
+    Parameters:
+    request (HttpRequest): The HTTP request object.
+    sz_cand_id : Skill zone candidate id
+
+    Returns:
+    GET : return Skill zone view template
+    """
+
+    try:
+        SkillZoneCandidate.objects.get(id=sz_cand_id).delete()
+        messages.success(request, _("Skill zone deleted successfully.."))
+    except SkillZoneCandidate.DoesNotExist:
+        messages.error(request, _("Skill zone not found."))
+    except ProtectedError:
+        messages.error(request, _("Related entries exists"))
+    return redirect(skill_zone_view)
+    
+
+@login_required
+@manager_can_enter(perm="recruitment.view_skillzonecandidate")
+def skill_zone_cand_filter(request):
+    template = 'skill_zone_cand/skill_zone_cand_card.html'
+    if request.GET.get("view") == 'list':
+        template = 'skill_zone_cand/skill_zone_cand_list.html'
+    
+    candidates = SkillZoneCandidate.objects.all()
+    candidates_filter = SkillZoneCandFilter(request.GET,queryset = candidates).qs
+    previous_data = request.GET.urlencode()
+    data_dict = parse_qs(previous_data)
+    get_key_instances(SkillZoneCandidate, data_dict)
+    context={
+        'candidates':paginator_qry(candidates_filter,request.GET.get('page')),
+        'pd':previous_data,
+        "filter_dict": data_dict,
+        'f':SkillZoneCandFilter()
+
+    }
+    return render(
+        request,
+        template,
+        context,
+    )
+
+@login_required
+@manager_can_enter(perm="recruitment.delete_skillzonecandidate")
+def skill_zone_cand_archive(request,sz_cand_id):
+    """
+    function used to archive or un-archive Skill zone candidate.
+
+    Parameters:
+    request (HttpRequest): The HTTP request object.
+    sz_cand_id : Skill zone candidate id
+
+    Returns:
+    GET : return Skill zone candidate view template
+    """
+    try:
+        skill_zone_cand = SkillZoneCandidate.objects.get(id=sz_cand_id)
+        is_active = skill_zone_cand.is_active 
+        if is_active == True:
+            skill_zone_cand.is_active = False
+            messages.success(request, _("Candidate archived successfully.."))
+
+        else:
+            skill_zone_cand.is_active = True
+            messages.success(request, _("Candidate unarchived successfully.."))
+
+        skill_zone_cand.save()
+    except SkillZone.DoesNotExist:
+        messages.error(request, _("Candidate not found."))
+    return redirect(skill_zone_view)
+
+
+@login_required
+@manager_can_enter(perm="recruitment.delete_skillzonecandidate")
+def skill_zone_cand_delete(request,sz_cand_id):
+    """
+    function used to delete Skill zone candidate.
+
+    Parameters:
+    request (HttpRequest): The HTTP request object.
+    sz_cand_id : Skill zone candidate id
+
+    Returns:
+    GET : return Skill zone view template
+    """
+    try:
+        SkillZoneCandidate.objects.get(id=sz_cand_id).delete()
+        messages.success(request, _("Candidate deleted successfully.."))
+    except SkillZoneCandidate.DoesNotExist:
+        messages.error(request, _("Candidate not found."))
+    except ProtectedError:
+        messages.error(request, _("Related entries exists"))
+    return redirect(skill_zone_view)
+
+login_required
+manager_can_enter(perm="recruitment.change_candidate")
+def to_skill_zone(request,cand_id):
+    candidate=Candidate.objects.get(id=cand_id)
+    template = "skill_zone_cand/to_skill_zone_form.html"
+    form = ToSkillZoneForm(initial={'candidate_id':candidate})
+    if request.method=='POST':
+        form = ToSkillZoneForm(request.POST)
+        if form.is_valid():
+            skill_cand = form.save(commit=False)
+            skill_zone_ids = form.data.getlist("skill_zone_ids")
+            for zone in skill_zone_ids:
+                zone_instance =SkillZone.objects.get(id=zone)
+                if not zone_instance.skillzonecandidate_set.filter(candidate_id=candidate).exists():
+                    skill_cand.skill_zone_id = zone_instance
+                    skill_cand.save()
+                    messages.success(request, _("Candidate added successfully.."))
+                    return HttpResponse("<script>window.location.reload()</script>")
+    return render(request,template,{'form':form,'cand_id':cand_id})
+        
+    
+@login_required
+def update_candidate_rating(request,cand_id):
+    cand_id = cand_id
+    candidate = Candidate.objects.get(id=cand_id)
+    employee_id = request.user.employee_get
+    rating = request.POST.get("rating")
+    rate = CandidateRating.objects.get(candidate_id=candidate, employee_id=employee_id)
+    rate.rating = int(rating)
+    rate.save()
+    return redirect(recruitment_pipeline)

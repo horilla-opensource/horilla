@@ -13,7 +13,7 @@ from recruitment.forms import OfferLetterForm
 
 
 @login_required
-@permission_required("recruitment.view_offerletterdelete")
+@permission_required("recruitment.view_recruitmentmailtemplate")
 def view_mail_templates(request):
     """
     This method will render template to disply the offerletter templates
@@ -28,7 +28,7 @@ def view_mail_templates(request):
 
 
 @login_required
-@permission_required("recruitment.change_offerletterdelete")
+@permission_required("recruitment.change_recruitmentmailtemplate")
 def view_letter(request, obj_id):
     """
     This method is used to display the template/form to edit
@@ -47,7 +47,7 @@ def view_letter(request, obj_id):
 
 @login_required
 @require_http_methods(["POST"])
-@permission_required("recruitment.add_offerletterdelete")
+@permission_required("recruitment.add_recruitmentmailtemplate")
 def create_letter(request):
     """
     This method is used to create offerletter template
@@ -63,10 +63,11 @@ def create_letter(request):
 
 
 @login_required
-@permission_required("recruitment.delete_offerlettertemplate")
+@permission_required("recruitment.delete_recruitmentmailtemplate")
 def delete_mail_templates(request):
     ids = request.GET.getlist("ids")
     result = RecruitmentMailTemplate.objects.filter(id__in=ids).delete()
+    messages.success(request, "Template deleted")
     return redirect(view_mail_templates)
 
 

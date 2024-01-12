@@ -16,9 +16,12 @@ from django.contrib import messages
 from django.http import JsonResponse, HttpResponse
 from django.views.decorators.http import require_http_methods
 from django.utils.translation import gettext_lazy as _
+from attendance.filters import PenaltyFilter
+from attendance.forms import PenaltyAccountForm
+from attendance.models import PenaltyAccount
 from horilla.decorators import login_required, hx_request_required
 from horilla.decorators import permission_required, manager_can_enter
-from base.methods import closest_numbers, export_data
+from base.methods import closest_numbers, export_data, filter_conditional_leave_request
 from base.threading import MailSendThread
 from base.models import *
 from base.methods import (
@@ -134,7 +137,7 @@ def leave_type_view(request):
 
 
 @login_required
-@manager_can_enter("leave.view_leaverequest")
+@manager_can_enter("leave.view_leavetype")
 def leave_type_individual_view(request, id):
     """
     function used to view one leave type.
@@ -192,7 +195,7 @@ def leave_type_filter(request):
 
 
 @login_required
-@permission_required("leave.update_leavetype")
+@permission_required("leave.change_leavetype")
 def leave_type_update(request, id, **kwargs):
     """
     function used to update leave type.
@@ -233,7 +236,7 @@ def leave_type_delete(request, id):
     """
     try:
         LeaveType.objects.get(id=id).delete()
-        messages.error(request, _("Leave type deleted successfully.."))
+        messages.success(request, _("Leave type deleted successfully.."))
     except LeaveType.DoesNotExist:
         messages.error(request, _("Leave type not found."))
     except ProtectedError as e:
@@ -343,7 +346,11 @@ def leave_request_view(request):
     GET : return leave request view template
     """
     queryset = LeaveRequestFilter(request.GET).qs.order_by("-id")
-    queryset = filtersubordinates(request, queryset, "leave.view_leaverequest")
+    multiple_approvals = filter_conditional_leave_request(request)
+    queryset = (
+        filtersubordinates(request, queryset, "leave.view_leaverequest")
+        | multiple_approvals
+    )
     page_number = request.GET.get("page")
     page_obj = paginator_qry(queryset, page_number)
     leave_request_filter = LeaveRequestFilter()
@@ -442,7 +449,7 @@ def leave_request_filter(request):
 
 @login_required
 @hx_request_required
-@manager_can_enter("leave.update_leaverequest")
+@manager_can_enter("leave.change_leaverequest")
 def leave_request_update(request, id):
     """
     function used to update leave request.
@@ -517,7 +524,7 @@ def leave_request_delete(request, id):
 
 
 @login_required
-@manager_can_enter("leave.update_leaverequest")
+@manager_can_enter("leave.change_leaverequest")
 def leave_request_approve(request, id, emp_id=None):
     """
     function used to approve a leave request.
@@ -556,8 +563,31 @@ def leave_request_approve(request, id, emp_id=None):
                 available_leave.available_days = temp - leave_request.requested_days
                 leave_request.approved_available_days = leave_request.requested_days
             leave_request.status = "approved"
-            available_leave.save()
-            leave_request.save()
+            if not leave_request.multiple_approvals():
+                available_leave.save()
+                leave_request.save()
+            else:
+                if request.user.is_superuser:
+                    LeaveRequestConditionApproval.objects.filter(
+                        leave_request_id=leave_request
+                    ).update(is_approved=True)
+                    available_leave.save()
+                    leave_request.save()
+                else:
+                    conditional_requests = leave_request.multiple_approvals()
+                    approver = [
+                        manager
+                        for manager in conditional_requests["managers"]
+                        if manager.employee_user_id == request.user
+                    ]
+                    condition_approval = LeaveRequestConditionApproval.objects.filter(
+                        manager_id=approver[0], leave_request_id=leave_request
+                    ).first()
+                    condition_approval.is_approved = True
+                    condition_approval.save()
+                    if approver[0] == conditional_requests["managers"][-1]:
+                        available_leave.save()
+                        leave_request.save()
             messages.success(request, _("Leave request approved successfully.."))
             with contextlib.suppress(Exception):
                 notify.send(
@@ -588,7 +618,7 @@ def leave_request_approve(request, id, emp_id=None):
 
 
 @login_required
-@manager_can_enter("leave.update_leaverequest")
+@manager_can_enter("leave.change_leaverequest")
 def leave_request_cancel(request, id, emp_id=None):
     """
     function used to Reject leave request.
@@ -624,6 +654,20 @@ def leave_request_cancel(request, id, emp_id=None):
                 leave_request.status = "cancelled_and_rejected"
             else:
                 leave_request.status = "rejected"
+                if leave_request.multiple_approvals() and not request.user.is_superuser:
+                    conditional_requests = leave_request.multiple_approvals()
+                    approver = [
+                        manager
+                        for manager in conditional_requests["managers"]
+                        if manager.employee_user_id == request.user
+                    ]
+                    condition_approval = LeaveRequestConditionApproval.objects.filter(
+                        manager_id=approver[0], leave_request_id=leave_request
+                    ).first()
+                    condition_approval.is_approved = False
+                    condition_approval.is_rejected = True
+                    condition_approval.save()
+
             leave_request.reject_reason = form.cleaned_data["reason"]
             leave_request.save()
             available_leave.save()
@@ -931,7 +975,7 @@ def leave_assign(request):
 
 @login_required
 @hx_request_required
-@manager_can_enter("leave.update_availableleave")
+@manager_can_enter("leave.change_availableleave")
 def available_leave_update(request, id):
     """
     function used to update available leave of an assigned leave type of an employee.
@@ -1140,13 +1184,6 @@ def holiday_creation(request):
         if form.is_valid():
             form.save()
             messages.success(request, _("New holiday created successfully.."))
-            response = render(
-                request, "leave/holiday/holiday_form.html", {"form": form}
-            )
-            return HttpResponse(
-                response.content.decode("utf-8")
-                + "<script>location. reload();</script>"
-            )
     return render(request, "leave/holiday/holiday_form.html", {"form": form})
 
 
@@ -1244,7 +1281,6 @@ def holiday_info_export(request):
 
 
 @login_required
-@permission_required("leave.view_holiday")
 def holiday_view(request):
     """
     function used to view holidays.
@@ -1255,7 +1291,7 @@ def holiday_view(request):
     Returns:
     GET : return holiday view  template
     """
-    queryset = Holiday.objects.all()
+    queryset = Holiday.objects.all()[::-1]
     previous_data = request.GET.urlencode()
     page_number = request.GET.get("page")
     page_obj = paginator_qry(queryset, page_number)
@@ -1292,7 +1328,7 @@ def holiday_filter(request):
     previous_data = request.GET.urlencode()
     holiday_filter = HolidayFilter(request.GET, queryset).qs
     page_number = request.GET.get("page")
-    page_obj = paginator_qry(holiday_filter, page_number)
+    page_obj = paginator_qry(holiday_filter[::-1], page_number)
     data_dict = parse_qs(previous_data)
     get_key_instances(Holiday, data_dict)
     return render(
@@ -1304,7 +1340,7 @@ def holiday_filter(request):
 
 @login_required
 @hx_request_required
-@permission_required("leave.update_holiday")
+@permission_required("leave.change_holiday")
 def holiday_update(request, id):
     """
     function used to update holiday.
@@ -1324,15 +1360,6 @@ def holiday_update(request, id):
         if form.is_valid():
             form.save()
             messages.info(request, _("Holiday updated successfully.."))
-            response = render(
-                request,
-                "leave/holiday/holiday_update_form.html",
-                {"form": form, "id": id},
-            )
-            return HttpResponse(
-                response.content.decode("utf-8")
-                + "<script>location. reload();</script>"
-            )
     return render(
         request, "leave/holiday/holiday_update_form.html", {"form": form, "id": id}
     )
@@ -1417,7 +1444,6 @@ def company_leave_creation(request):
 
 
 @login_required
-@permission_required("leave.view_companyleave")
 def company_leave_view(request):
     """
     function used to view company leave.
@@ -1482,7 +1508,7 @@ def company_leave_filter(request):
 
 @login_required
 @hx_request_required
-@permission_required("leave.update_companyleave")
+@permission_required("leave.change_companyleave")
 def company_leave_update(request, id):
     """
     function used to update company leave.
@@ -1897,6 +1923,9 @@ def user_request_view(request):
         request_ids = json.dumps(
             list(page_obj.object_list.values_list("id", flat=True))
         )
+
+        user_leave = AvailableLeave.objects.filter(employee_id=user.id)
+
         current_date = date.today()
         return render(
             request,
@@ -1908,6 +1937,7 @@ def user_request_view(request):
                 "current_date": current_date,
                 "gp_fields": MyLeaveRequestReGroup.fields,
                 "request_ids": request_ids,
+                "user_leaves": user_leave,
             },
         )
     except Exception as e:
@@ -1951,6 +1981,9 @@ def user_request_filter(request):
             status_list = data_dict["status"]
             if len(status_list) > 1:
                 data_dict["status"] = [status_list[-1]]
+
+        user_leave = AvailableLeave.objects.filter(employee_id=user.id)
+
         context = {
             "leave_requests": page_obj,
             "pd": previous_data,
@@ -1958,6 +1991,7 @@ def user_request_filter(request):
             "field": field,
             "current_date": date.today(),
             "request_ids": request_ids,
+            "user_leaves": user_leave,
         }
         return render(request, template, context=context)
     except Exception as e:
@@ -2012,7 +2046,10 @@ def employee_leave(request):
     today = date.today()
     employees = []
     leave_requests = LeaveRequest.objects.filter(
-        Q(start_date__lte=today) & Q(end_date__gte=today) & Q(status="approved") & Q(employee_id__is_active = True)
+        Q(start_date__lte=today)
+        & Q(end_date__gte=today)
+        & Q(status="approved")
+        & Q(employee_id__is_active=True)
     )
     for leave_request in leave_requests:
         if leave_request.employee_id.__str__() not in employees:
@@ -2201,7 +2238,9 @@ def employee_leave_chart(request):
     Returns:
     GET : return Json response of labels, dataset, message.
     """
-    leave_requests = LeaveRequest.objects.filter(status="approved")
+    leave_requests = LeaveRequest.objects.filter(
+        employee_id__is_active=True, status="approved"
+    )
     leave_types = LeaveType.objects.all()
     day = date.today()
     if request.GET.get("date"):
@@ -2904,7 +2943,12 @@ def assigned_leave_select(request):
     page_number = request.GET.get("page")
 
     if page_number == "all":
-        employees = AvailableLeave.objects.all()
+        if request.user.has_perm("leave.view_availableleave"):
+            employees = AvailableLeave.objects.all()
+        else:
+            employees = AvailableLeave.objects.filter(
+                employee_id__employee_work_info__reporting_manager_id__employee_user_id=request.user
+            )
 
     employee_ids = [str(emp.id) for emp in employees]
     total_count = employees.count()
@@ -2999,7 +3043,12 @@ def leave_request_select(request):
     page_number = request.GET.get("page")
 
     if page_number == "all":
-        employees = LeaveRequest.objects.all()
+        if request.user.has_perm("leave.view_leaverequest"):
+            employees = LeaveRequest.objects.all()
+        else:
+            employees = LeaveRequest.objects.filter(
+                employee_id__employee_work_info__reporting_manager_id__employee_user_id=request.user
+            )
 
     employee_ids = [str(emp.id) for emp in employees]
     total_count = employees.count()
@@ -3123,20 +3172,62 @@ def user_request_select_filter(request):
 
 @login_required
 def employee_leave_details(request):
-    balance_count = ''
-    if request.POST['employee_id']:
-        employee = request.POST['employee_id']
+    balance_count = ""
+    if request.POST["employee_id"]:
+        employee = request.POST["employee_id"]
     else:
-        employee = ''
-    if request.POST['leave_type'] and request.POST['employee_id']:
-        leave_type_id = request.POST['leave_type']
-        leave_type = LeaveType.objects.filter(id = leave_type_id ).first()
-        balance = AvailableLeave.objects.filter(Q (leave_type_id = leave_type.id) & Q (employee_id = employee))
+        employee = ""
+    if request.POST["leave_type"] and request.POST["employee_id"]:
+        leave_type_id = request.POST["leave_type"]
+        leave_type = LeaveType.objects.filter(id=leave_type_id).first()
+        balance = AvailableLeave.objects.filter(
+            Q(leave_type_id=leave_type.id) & Q(employee_id=employee)
+        )
         for i in balance:
             balance_count = i.available_days
-    return JsonResponse(
-    {
-        "leave_count": balance_count,
-        'employee': employee
-    })
+    return JsonResponse({"leave_count": balance_count, "employee": employee})
 
+
+@login_required
+@manager_can_enter("leave.change_availableleave")
+def cut_available_leave(request, instance_id):
+    """
+    This method is used to create the penalties
+    """
+    instance = LeaveRequest.objects.get(id=instance_id)
+    form = PenaltyAccountForm()
+    available = AvailableLeave.objects.filter(employee_id=instance.employee_id)
+    if request.method == "POST":
+        form = PenaltyAccountForm(request.POST)
+        if form.is_valid():
+            penalty_instance = form.instance
+            penalty = PenaltyAccount()
+            # leave request id
+            penalty.leave_request_id = instance
+            penalty.deduct_from_carry_forward = (
+                penalty_instance.deduct_from_carry_forward
+            )
+            penalty.employee_id = instance.employee_id
+            penalty.leave_type_id = penalty_instance.leave_type_id
+            penalty.minus_leaves = penalty_instance.minus_leaves
+            penalty.penalty_amount = penalty_instance.penalty_amount
+            penalty.save()
+            messages.success(request, "Penalty/Fine added")
+            return HttpResponse("<script>window.location.reload()</script>")
+    return render(
+        request,
+        "leave/leave_request/penalty/form.html",
+        {"available": available, "form": form, "instance": instance},
+    )
+
+
+@login_required
+@manager_can_enter("attendance.view_penalty")
+def view_penalties(request):
+    """
+    This method is used to filter or view the penalties
+    """
+    records = PenaltyFilter(request.GET).qs
+    return render(
+        request, "leave/leave_request/penalty/penalty_view.html", {"records": records}
+    )

@@ -20,7 +20,7 @@
     <div class="oh-main__titlebar oh-main__titlebar--right">
       <div class="oh-main__titlebar-button-container">
         <!-- checking  user permission for objective creation -->
-      {% if perms.pms.view_questiontemplate or request.user|filtersubordinates %}
+        {% if perms.pms.add_employeeobjective or request.user|filtersubordinates %}
         <div class="oh-btn-group ml-2">
           <div>
             <a href="{%url 'objective-creation' %}" class="oh-btn  oh-btn--secondary oh-btn--shadow" style="text-decoration: none;">

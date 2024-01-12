@@ -14,10 +14,6 @@ from django.utils.translation import gettext_lazy as _
 from payroll.models.tax_models import TaxBracket
 from base.methods import reload_queryset
 
-
-from payroll.models.tax_models import (
-    FederalTax,
-)
 from payroll.models.models import FilingStatus
 
 
@@ -92,12 +88,3 @@ class TaxBracketForm(ModelForm):
             ),
         }
 
-
-class FederalTaxForm(ModelForm):
-    """Form for creating and updating tax bracket."""
-
-    class Meta:
-        """Meta options for the form."""
-
-        model = FederalTax
-        fields = "__all__"

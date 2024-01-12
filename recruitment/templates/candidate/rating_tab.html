@@ -1,0 +1,40 @@
+{% load static %} {% load audit_filters %} {% load i18n %}
+<div class="row p-4">
+  {% for rate in candidate.candidate_rating.all %}
+  <div class="oh-history__container pb-2">
+    <div class="d-flex">
+        <div class="oh-history_user-img">
+            <img
+            src="{{rate.employee_id.get_avatar}}"
+            alt=""
+            class="oh-history_user-pic"
+            />
+            <div class="oh-history_user-state oh-user_inactive"></div>
+        </div>
+        <div class="oh-history_user-details">
+            <span class="oh-history__username">{{rate.employee_id}}</span>
+            <ul class="ul ps-0">
+                <div class="oh-rate">
+                    <input type="radio" id="star5" value="5" disabled {% if rate.rating == 5 %} checked {% endif %} />
+                    <label for="star5" title="5 Stars" class="star">5 {% trans "Stars" %}</label>
+                    <input type="radio" id="star4" value="4" disabled  {% if rate.rating == 4 %} checked {% endif %} />
+                    <label for="star4" title="4 Stars" class="star">4 {% trans "Stars" %}</label>
+                    <input type="radio" id="star3" value="3" disabled  {% if rate.rating == 3 %} checked {% endif %} />
+                    <label for="star3" title="3 Stars" class="star">3 {% trans "Stars" %}</label>
+                    <input type="radio" id="star2" value="2" disabled  {% if rate.rating == 2 %} checked {% endif %}  />
+                    <label for="star2" title="2 Stars" class="star">2 {% trans "Stars" %}</label>
+                    <input type="radio" id="star1" value="1" disabled  {% if rate.rating == 1 %} checked {% endif %} />
+                    <label for="star1" title="1 Star" class="star">1 {% trans "Star" %}</label>
+                </div>
+            </ul>
+            
+            {% comment %} <div class="oh-history_msg-container">
+            <div class="oh-history_task-tracker">
+                
+            </div>
+            </div> {% endcomment %}
+        </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>

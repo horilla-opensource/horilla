@@ -82,6 +82,12 @@ sidebar_urls = [
     "user-group-view",
     "company-view",
     "document-request-view",
+    "faq-category-view",
+    "ticket-view",
+    "tag-view",
+    "ticket-type-view",
+    "mail-server-conf",
+    "multiple-approval-condition",
 ]
 remove_urls = [
     "objective-detailed-view",

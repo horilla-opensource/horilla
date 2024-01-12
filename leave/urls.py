@@ -31,7 +31,7 @@ urlpatterns = [
         views.leave_requests_export,
         name="leave-requests-info-export",
     ),
-    path("request-view", views.leave_request_view, name="request-view"),
+    path("request-view/", views.leave_request_view, name="request-view"),
     path(
         "request-approve/<int:id>", views.leave_request_approve, name="request-approve"
     ),
@@ -116,7 +116,7 @@ urlpatterns = [
     path(
         "company-leave-filter", views.company_leave_filter, name="company-leave-filter"
     ),
-    path("user-leave", views.user_leave_view, name="user-leave"),
+    # path("user-leave", views.user_leave_view, name="user-leave"),
     path("user-leave-filter", views.user_leave_filter, name="user-leave-filter"),
     path("user-request-view", views.user_request_view, name="user-request-view"),
     path(
@@ -290,7 +290,6 @@ urlpatterns = [
         views.user_request_select_filter,
         name="user-request-select-filter",
     ),
-    
     # path(
     #     "leave-type-widget-filter",
     #     views.leave_type_widget_filter,
@@ -301,4 +300,8 @@ urlpatterns = [
         views.employee_leave_details,
         name="employee-leave-details",
     ),
+    path(
+        "cut-penalty/<int:instance_id>/", views.cut_available_leave, name="leave-cut-penalty"
+    ),
+    path("view-penalty/<int:instance_id>/", views.view_penalties, name="leave-view-penalty"),
 ]

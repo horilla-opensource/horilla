@@ -79,6 +79,7 @@
       ></ion-icon>
     </a>
   </div>
+  {% if perms.recruitment.add_recruitmentsurvey %}
   <div class="oh-main__titlebar oh-main__titlebar--right">
 
     <button
@@ -91,6 +92,7 @@
       <ion-icon name="add-sharp" class="mr-1"></ion-icon>{% trans "Add" %}
     </button>
   </div>
+  {% endif %}
 </section>
 
 <div

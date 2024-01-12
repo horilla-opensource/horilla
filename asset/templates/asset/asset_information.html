@@ -57,4 +57,27 @@
     </div>
   </div>
 
+  {% if asset.asset_report.all %}
+    <div class="oh-kanban__card-footer mt-3 bg-light" style="position:relative;padding-top:0">
+        <span
+            class="mb-2" style="font-weight:600;"
+            >{% trans "Reports" %}</span
+        >
+        <button onclick="event.stopPropagation();$(this).siblings('.oh-kanban__card-content').toggleClass('oh-kanban__card-content--hide')" class="oh-kanban__card-body-collapse oh-kanban__card-collapse--down" aria-label="Toggle Options" title="{% trans 'Assignees' %}"></button>
+        <div class="oh-kanban__card-content oh-kanban__card-content--hide mt-3">
+          {% for report in asset.asset_report.all %}
+            <li class="pt-2 ">                
+              {{report.title}}
+              <div class="d-flex m-2">
+                {% for doc in report.documents.all %}
+                <a href="{{doc.file.url}}" rel="noopener noreferrer" target="_blank"><span class="oh-file-icon oh-file-icon--pdf" title="{{doc}}" ></span></a>
+              {% endfor %}
+              </div>
+
+            </li>
+          {% endfor %}
+        </div>                                    
+    </div>
+  {% endif %}
+
 </div>

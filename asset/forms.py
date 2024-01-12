@@ -12,8 +12,9 @@ from base.forms import ModelForm
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 from employee.models import Employee
-from asset.models import Asset, AssetRequest, AssetAssignment, AssetCategory, AssetLot
+from asset.models import Asset, AssetDocuments, AssetReport, AssetRequest, AssetAssignment, AssetCategory, AssetLot
 from base.methods import reload_queryset
+from django.template.loader import render_to_string
 
 
 def set_date_field_initial(instance):
@@ -108,6 +109,38 @@ class AssetForm(ModelForm):
                 raise ValidationError(
                     {"asset_tracking_id": "Already asset with this tracking id exists."}
                 )
+
+
+class DocumentForm(forms.ModelForm):
+    file = forms.FileField(widget = forms.TextInput(attrs={
+            "name": "file",
+            "type": "File",
+            "class": "form-control",
+            "multiple": "True",
+        }))
+    class Meta:
+        model = AssetDocuments
+        fields = ['file',]
+
+
+class AssetReportForm(ModelForm):
+
+    class Meta:
+        model = AssetReport
+        fields = ['title', 'asset_id',]
+
+    # def __init__(self, *args, **kwargs):
+    #     super(AssetReportForm, self).__init__(*args, **kwargs)
+    #     self.fields['documents'].queryset = AssetDocuments.objects.all()
+
+    # def as_p(self, *args, **kwargs):
+    #     """
+    #     Render the form fields as HTML table rows with Bootstrap styling.
+    #     """
+    #     context = {"form": self}
+    #     table_html = render_to_string("attendance_form.html", context)
+    #     return table_html
+
 
 
 class AssetCategoryForm(ModelForm):

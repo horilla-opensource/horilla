@@ -34,6 +34,13 @@
         </div>
         <div class="oh-input-group mb-2">
             <label class='settings-label mb-1' for="">
+               {% trans "Grace Time" %}
+            </label>
+            {{form.grace_time_id.errors}}
+            {{form.grace_time_id}}
+        </div>
+        <div class="oh-input-group mb-2">
+            <label class='settings-label mb-1' for="">
                {% trans "Company" %}
             </label>
             {{form.company_id.errors}}

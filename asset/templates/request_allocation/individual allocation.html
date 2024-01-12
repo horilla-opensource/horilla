@@ -27,7 +27,8 @@
     </button>
 </div>
 
-<div class="oh-timeoff-modal__profile-content pt-4">
+<a class="oh-timeoff-modal__profile-content pt-4" style="text-decoration:none;" 
+	href ="{% url 'employee-view-individual' asset_allocation.assigned_to_employee_id.id %}">
     <div class="oh-profile mb-2">
         <div class="oh-profile__avatar">
             <img
@@ -49,7 +50,7 @@
             >
         </div>
     </div>
-</div>
+</a>
 
 <div class="oh-timeoff-modal__stats-container">
 	<div class="oh-timeoff-modal__stat">

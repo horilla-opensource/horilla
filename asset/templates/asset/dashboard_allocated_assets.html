@@ -1,0 +1,51 @@
+{% load i18n %}
+
+<div class="oh-sticky-table">
+    <div class="oh-sticky-table__table">
+        <div class="oh-sticky-table__thead">
+            <div class="oh-sticky-table__tr">
+                <div class="oh-sticky-table__th">{% trans "Allocated User" %}</div>
+                <div class="oh-sticky-table__th">{% trans "Asset" %}</div>
+                <div class="oh-sticky-table__th">{% trans "Assigned Date" %}</div>
+            </div>
+        </div>
+        <div class="oh-sticky-table__tbody">
+            {% for asset_allocation in asset_allocations %}
+            <div class="oh-sticky-table__tr" draggable="true"
+                data-toggle="oh-modal-toggle"
+                data-target="#allocateModal"
+                hx-get="{% url 'asset-allocation-individual-view' asset_allocation.id %}?allocations_ids={{allocations_ids}}"
+                hx-target="#singleAllocate"
+            >
+                <div
+                    class="oh-sticky-table__sd"
+                >
+                    <div class="oh-profile oh-profile--md">
+                        <div class="oh-profile__avatar mr-1">
+                            <img
+                                src="{{asset_allocation.assigned_to_employee_id.get_avatar}}"
+                                class="oh-profile__image"
+                                alt=""
+                            />
+                        </div>
+                        <span class="oh-profile__name oh-text--dark"
+                            >{{asset_allocation.assigned_to_employee_id}}</span
+                        >
+                    </div>
+                </div>
+                <div
+                    class="oh-sticky-table__td"
+                >
+                    {{asset_allocation.asset_id}}
+                </div>
+                <div
+                    class="oh-sticky-table__td dateformat_changer"
+                >
+                    {{asset_allocation.assigned_date}}
+                </div>
+            </div>
+
+            {% endfor %}
+        </div>
+    </div>
+</div>

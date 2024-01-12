@@ -7,21 +7,23 @@
 >
   <h2 class="oh-inner-sidebar-content__title">{% trans "Permissions" %}</h2>
   {% if show_assign %}
-  <button
-    class="oh-btn oh-btn--secondary oh-btn--shadow"
-    data-toggle="oh-modal-toggle"
-    data-target="#Permissions"
-    hx-get="{% url "permission-table" %}"
-    hx-target="#permissionForm"
-  >
-    <ion-icon
-      name="add-outline"
-      class="me-1 md hydrated"
-      role="img"
-      aria-label="add outline"
-    ></ion-icon>
-    {% trans "Assign" %}
-  </button>
+  {% if perms.auth.add_permission %}
+    <button
+      class="oh-btn oh-btn--secondary oh-btn--shadow"
+      data-toggle="oh-modal-toggle"
+      data-target="#Permissions"
+      hx-get="{% url "permission-table" %}"
+      hx-target="#permissionForm"
+    >
+      <ion-icon
+        name="add-outline"
+        class="me-1 md hydrated"
+        role="img"
+        aria-label="add outline"
+      ></ion-icon>
+      {% trans "Assign" %}
+    </button>
+  {% endif %}
   {% endif %}
 </div>
 {% for employee in employees %}
@@ -50,7 +52,9 @@
         checkSelected(`{{employee.employee_user_id.user_permissions.all|user_perms|safe}}`,"#panel{{employee.id}}",true)
       });
     </script>
+    {% if perms.auth.add_permission or perms.auth.change_permission or perms.auth.delete_permission %}
       {% include "base/auth/permission_table.html" %}
+    {% endif %}
   </div>
 </div>
 {% endfor %}
