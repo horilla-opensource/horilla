@@ -730,6 +730,26 @@ class WorkTypeRequest(models.Model):
             )
 
 
+class WorktyperequestComment(models.Model):
+    """
+    WorktyperequestComment Model
+    """
+    from employee.models import Employee
+    
+    request_id = models.ForeignKey(WorkTypeRequest, on_delete=models.CASCADE)
+    employee_id = models.ForeignKey(Employee, on_delete=models.CASCADE)
+    comment = models.TextField(null=True, verbose_name=_("Comment"))
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name=_("Created At"),
+        null=True,
+    )
+
+    def __str__(self) -> str:
+        return f"{self.comment}"
+
+
+
 class ShiftRequest(models.Model):
     """
     ShiftRequest model
@@ -843,6 +863,27 @@ class ShiftRequest(models.Model):
 
     def __str__(self):
         return f"{self.employee_id}"
+
+
+
+class ShiftrequestComment(models.Model):
+    """
+    ShiftrequestComment Model
+    """
+    from employee.models import Employee
+    
+    request_id = models.ForeignKey(ShiftRequest, on_delete=models.CASCADE)
+    employee_id = models.ForeignKey(Employee, on_delete=models.CASCADE)
+    comment = models.TextField(null=True, verbose_name=_("Comment"))
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name=_("Created At"),
+        null=True,
+    )
+
+    def __str__(self) -> str:
+        return f"{self.comment}"
+
 
 
 class Tags(models.Model):
@@ -976,7 +1017,7 @@ class MultipleApprovalCondition(models.Model):
     )
 
     def __str__(self) -> str:
-        return f"{self.department} {self.condition_field} {self.condition_operator}"
+        return f"{self.condition_field} {self.condition_operator}"
 
     def clean(self, *args, **kwargs):
         if self.condition_value:
@@ -985,7 +1026,7 @@ class MultipleApprovalCondition(models.Model):
                 condition_field=self.condition_field,
                 condition_operator=self.condition_operator,
                 condition_value=self.condition_value,
-            )
+            ).exclude(id=self.pk)
             if instance:
                 raise ValidationError(
                     _("A condition with the provided fields already exists")
@@ -1058,21 +1099,29 @@ class MultipleApprovalCondition(models.Model):
                     )
         super().clean(*args, **kwargs)
 
+    def save(self, *args, **kwargs):
+        if self.condition_operator != "range":
+            self.condition_start_value = None
+            self.condition_end_value = None
+        else:
+            self.condition_value = None
+        super().save(*args, **kwargs)
+
     def approval_managers(self, *args, **kwargs):
         managers = []
         from employee.models import Employee
-        queryset = MultipleApprovalManagers.objects.filter(condition_id=self.pk).order_by('sequence')
+
+        queryset = MultipleApprovalManagers.objects.filter(
+            condition_id=self.pk
+        ).order_by("sequence")
         for query in queryset:
-            employee = Employee.objects.get(id = query.employee_id)
+            employee = Employee.objects.get(id=query.employee_id)
             managers.append(employee)
-        
+
         return managers
-            
-        
 
 
 class MultipleApprovalManagers(models.Model):
-    
     condition_id = models.ForeignKey(
         MultipleApprovalCondition, on_delete=models.CASCADE
     )

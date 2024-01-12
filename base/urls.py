@@ -1,5 +1,5 @@
 from django.urls import path
-from base import views
+from base import request_and_approve, views
 from base.models import (
     Company,
     Department,
@@ -602,7 +602,7 @@ urlpatterns = [
         "audit-tag-delete/<int:tag_id>",views.audit_tag_delete,name="audit-tag-delete"
     ),
     path(
-        "multiple-approval-condition",
+        "configuration/multiple-approval-condition",
         views.multiple_approval_condition,
         name="multiple-approval-condition",
     ),
@@ -620,6 +620,46 @@ urlpatterns = [
         "multiple-level-approval-delete/<int:condition_id>",
         views.multiple_level_approval_delete,
         name="multiple-level-approval-delete",
+    ),
+    path(
+        "shift-request-add-comment/<int:shift_id>/",
+        views.create_shiftrequest_comment,
+        name="shift-request-add-comment",
+    ),
+    path(
+        "shift-request-view-comment/<int:shift_id>/",
+        views.view_shiftrequest_comment,
+        name="shift-request-view-comment",
+    ),
+    path(
+        "shift-request-delete-comment/<int:comment_id>/",
+        views.delete_shiftrequest_comment,
+        name="shift-request-delete-comment",
+    ),
+        path(
+        "worktype-request-add-comment/<int:worktype_id>/",
+        views.create_worktyperequest_comment,
+        name="worktype-request-add-comment",
+    ),
+    path(
+        "worktype-request-view-comment/<int:worktype_id>/",
+        views.view_worktyperequest_comment,
+        name="worktype-request-view-comment",
+    ),
+    path(
+        "worktype-request-delete-comment/<int:comment_id>/",
+        views.delete_worktyperequest_comment,
+        name="worktype-request-delete-comment",
+    ),
+    path(
+        "dashboard-shift-request",
+        request_and_approve.dashboard_shift_request,
+        name="dashboard-shift-request",
+    ),
+    path(
+        "dashboard-work-type-request",
+        request_and_approve.dashboard_work_type_request,
+        name="dashboard-work-type-request",
     ),
     
       

@@ -25,6 +25,7 @@ from base.models import (
     JobPosition,
     JobRole,
     MultipleApprovalCondition,
+    ShiftrequestComment,
     WorkType,
     EmployeeType,
     EmployeeShift,
@@ -37,6 +38,7 @@ from base.models import (
     ShiftRequest,
     EmployeeShiftDay,
     Tags,
+    WorktyperequestComment,
 )
 from base.methods import reload_queryset
 from horilla_audit.models import AuditTag
@@ -1529,6 +1531,33 @@ class AuditTagForm(ModelForm):
         model = AuditTag
         fields = "__all__"
 
+
+class ShiftrequestcommentForm(ModelForm):
+    """
+    Audit Tags form
+    """
+
+    class Meta:
+        """
+        Meta class for additional options
+        """
+
+        model = ShiftrequestComment
+        fields = ('comment',)
+
+
+class WorktyperequestcommentForm(ModelForm):
+    """
+    Audit Tags form
+    """
+
+    class Meta:
+        """
+        Meta class for additional options
+        """
+
+        model = WorktyperequestComment
+        fields = ('comment',)
 
 
 class DynamicMailConfForm(ModelForm):

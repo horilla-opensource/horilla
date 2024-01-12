@@ -31,6 +31,17 @@ def filtersubordinates(request, queryset, perm=None):
     return queryset
 
 
+def filter_own_recodes(request, queryset, perm=None):
+    """
+    This method is used to filter out subordinates queryset element.
+    """
+    user = request.user
+    if user.has_perm(perm):
+        return queryset
+    queryset = queryset.filter(employee_id=request.user.employee_get)
+    return queryset
+
+
 def filtersubordinatesemployeemodel(request, queryset, perm=None):
     """
     This method is used to filter out subordinates queryset element.
@@ -547,18 +558,22 @@ def generate_pdf(template_path, context, path=True, title=None):
         return response
     return None
 
+
 def filter_conditional_leave_request(request):
     approval_manager = Employee.objects.filter(employee_user_id=request.user).first()
-    leave_request_ids = [] 
-    multiple_approval_requests = LeaveRequestConditionApproval.objects.filter(manager_id=approval_manager)
+    leave_request_ids = []
+    multiple_approval_requests = LeaveRequestConditionApproval.objects.filter(
+        manager_id=approval_manager
+    )
     for instance in multiple_approval_requests:
         if instance.sequence > 1:
             pre_sequence = instance.sequence - 1
             leave_request_id = instance.leave_request_id
-            instance = LeaveRequestConditionApproval.objects.filter(leave_request_id = leave_request_id,sequence = pre_sequence).first()
+            instance = LeaveRequestConditionApproval.objects.filter(
+                leave_request_id=leave_request_id, sequence=pre_sequence
+            ).first()
             if instance.is_approved:
-                leave_request_ids.append(instance.leave_request_id.id) 
+                leave_request_ids.append(instance.leave_request_id.id)
         else:
-            leave_request_ids.append(instance.leave_request_id.id) 
+            leave_request_ids.append(instance.leave_request_id.id)
     return LeaveRequest.objects.filter(pk__in=leave_request_ids)
-
