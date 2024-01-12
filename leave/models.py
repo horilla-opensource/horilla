@@ -6,7 +6,7 @@ from django.utils import timezone
 from django.core.exceptions import ValidationError
 from dateutil.relativedelta import relativedelta
 from django.utils.translation import gettext_lazy as _
-from base.models import Company
+from base.models import Company, MultipleApprovalCondition
 from base.horilla_company_manager import HorillaCompanyManager
 from employee.models import Employee
 from .methods import calculate_requested_days
@@ -519,6 +519,29 @@ class LeaveRequest(models.Model):
         else:
             self.exclude_leaves()
         super().save(*args, **kwargs)
+        department_id = self.employee_id.employee_work_info.department_id
+        requested_days = self.requested_days
+        applicable_condition = False
+        conditions = MultipleApprovalCondition.objects.filter(department=department_id)
+        for condition in conditions:
+            operator = condition.condition_operator
+            if operator == "range":
+                start_value = float(condition.condition_start_value)
+                end_value = float(condition.condition_end_value)
+                if start_value <= requested_days <= end_value:
+                    applicable_condition = condition
+                    break
+        if applicable_condition and self.status=="requested":
+            LeaveRequestConditionApproval.objects.filter(leave_request_id=self).delete()
+            sequence = 0
+            managers = applicable_condition.approval_managers()
+            for manager in managers:
+                sequence += 1
+                LeaveRequestConditionApproval.objects.create(
+                    sequence=sequence,
+                    leave_request_id=self,
+                    manager_id=manager,
+                )
 
     def exclude_all_leaves(self):
         requested_dates = self.requested_dates()
@@ -570,6 +593,23 @@ class LeaveRequest(models.Model):
         self.status = "approved"
         available_leave.save()
 
+    def conditional_approvals(self, *args, **kwargs):
+        approvals = LeaveRequestConditionApproval.objects.filter(leave_request_id=self)
+        requested_query = approvals.filter(is_approved=False).order_by("sequence")
+        approved_query = approvals.filter(is_approved=True).order_by("sequence")
+        managers = []
+        for manager in approvals:
+            managers.append(manager.manager_id)
+        if approvals.exists():
+            result = {
+                "managers": managers,
+                "approved": approved_query,
+                "requested": requested_query,
+            }
+        else:
+            result = False
+        return result
+
 
 class LeaveAllocationRequest(models.Model):
     leave_type_id = models.ForeignKey(
@@ -605,3 +645,11 @@ class LeaveAllocationRequest(models.Model):
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
+
+
+class LeaveRequestConditionApproval(models.Model):
+    sequence = models.IntegerField()
+    is_approved = models.BooleanField(default=False)
+    is_rejected = models.BooleanField(default=False)
+    leave_request_id = models.ForeignKey(LeaveRequest, on_delete=models.CASCADE)
+    manager_id = models.ForeignKey(Employee, on_delete=models.CASCADE)
