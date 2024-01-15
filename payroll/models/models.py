@@ -1557,3 +1557,21 @@ class Reimbursement(models.Model):
         if self.allowance_id:
             self.allowance_id.delete()
         return super().delete(*args, **kwargs)
+
+
+class ReimbursementrequestComment(models.Model):
+    """
+    ReimbursementrequestComment Model
+    """
+    
+    request_id = models.ForeignKey(Reimbursement, on_delete=models.CASCADE)
+    employee_id = models.ForeignKey(Employee, on_delete=models.CASCADE)
+    comment = models.TextField(null=True, verbose_name=_("Comment"))
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name=_("Created At"),
+        null=True,
+    )
+
+    def __str__(self) -> str:
+        return f"{self.comment}"
