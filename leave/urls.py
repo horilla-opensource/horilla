@@ -304,4 +304,20 @@ urlpatterns = [
         "cut-penalty/<int:instance_id>/", views.cut_available_leave, name="leave-cut-penalty"
     ),
     path("view-penalty/<int:instance_id>/", views.view_penalties, name="leave-view-penalty"),
+    
+    path(
+        "leave-request-add-comment/<int:leave_id>/",
+        views.create_leaverequest_comment,
+        name="leave-request-add-comment",
+    ),
+    path(
+        "leave-request-view-comment/<int:leave_id>/",
+        views.view_leaverequest_comment,
+        name="leave-request-view-comment",
+    ),
+    path(
+        "leave-request-delete-comment/<int:comment_id>/",
+        views.delete_leaverequest_comment,
+        name="leave-request-delete-comment",
+    ),
 ]

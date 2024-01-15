@@ -641,6 +641,24 @@ class LeaveRequest(models.Model):
                 return  True
 
 
+class LeaverequestComment(models.Model):
+    """
+    LeaverequestComment Model
+    """
+    
+    request_id = models.ForeignKey(LeaveRequest, on_delete=models.CASCADE)
+    employee_id = models.ForeignKey(Employee, on_delete=models.CASCADE)
+    comment = models.TextField(null=True, verbose_name=_("Comment"))
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name=_("Created At"),
+        null=True,
+    )
+
+    def __str__(self) -> str:
+        return f"{self.comment}"
+
+
 class LeaveAllocationRequest(models.Model):
     leave_type_id = models.ForeignKey(
         LeaveType, on_delete=models.PROTECT, verbose_name="Leave type"

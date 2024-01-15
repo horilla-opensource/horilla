@@ -3231,3 +3231,58 @@ def view_penalties(request):
     return render(
         request, "leave/leave_request/penalty/penalty_view.html", {"records": records}
     )
+
+
+@login_required
+def create_leaverequest_comment(request, leave_id):
+    """
+    This method renders form and template to create Leave request comments
+    """
+    leave = LeaveRequest.objects.filter(id=leave_id).first()
+    emp = request.user.employee_get
+    form = LeaverequestcommentForm(initial={'employee_id':emp.id, 'request_id':leave_id})
+
+    if request.method == "POST":
+        form = LeaverequestcommentForm(request.POST )
+        if form.is_valid():
+            form.instance.employee_id = emp
+            form.instance.request_id = leave
+            form.save()
+            form = LeaverequestcommentForm(initial={'employee_id':emp.id, 'request_id':leave_id})
+            messages.success(request, _("Comment added successfully!"))
+            return HttpResponse("<script>window.location.reload()</script>")
+    return render(
+        request,
+        "leave/leave_request/leave_request_comment_form.html",
+        {
+            "form": form, "request_id":leave_id
+        },
+    )
+
+
+@login_required
+def view_leaverequest_comment(request, leave_id):
+    """
+    This method is used to show Leave request comments
+    """
+    comments = LeaverequestComment.objects.filter(request_id=leave_id).order_by('-created_at')
+    no_comments = False
+    if not comments.exists():
+        no_comments = True
+
+    return render(
+        request,
+        "leave/leave_request/comment_view.html",
+        {"comments": comments, 'no_comments': no_comments }
+    )
+
+
+@login_required
+def delete_leaverequest_comment(request, comment_id):
+    """
+    This method is used to delete Leave request comments
+    """
+    LeaverequestComment.objects.get(id=comment_id).delete()
+
+    messages.success(request, _("Comment deleted successfully!"))
+    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))

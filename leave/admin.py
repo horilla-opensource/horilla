@@ -11,6 +11,7 @@ from .models import (
     Holiday,
     CompanyLeave,
     LeaveAllocationRequest,
+    LeaverequestComment,
 )
 
 
@@ -22,3 +23,4 @@ admin.site.register(Holiday)
 admin.site.register(CompanyLeave)
 admin.site.register(LeaveAllocationRequest)
 admin.site.register(LeaveRequestConditionApproval)
+admin.site.register(LeaverequestComment)
