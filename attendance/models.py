@@ -567,6 +567,25 @@ class Attendance(models.Model):
                 )
 
 
+
+class AttendancerequestComment(models.Model):
+    """
+    AttendancerequestComment Model
+    """
+    
+    request_id = models.ForeignKey(Attendance, on_delete=models.CASCADE)
+    employee_id = models.ForeignKey(Employee, on_delete=models.CASCADE)
+    comment = models.TextField(null=True, verbose_name=_("Comment"))
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name=_("Created At"),
+        null=True,
+    )
+
+    def __str__(self) -> str:
+        return f"{self.comment}"
+    
+
 class AttendanceOverTime(models.Model):
     """
     AttendanceOverTime model

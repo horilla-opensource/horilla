@@ -42,6 +42,7 @@ from attendance.models import (
     AttendanceActivity,
     AttendanceLateComeEarlyOut,
     AttendanceValidationCondition,
+    AttendancerequestComment,
     GraceTime,
     PenaltyAccount,
     strtime_seconds,
@@ -779,3 +780,17 @@ class GraceTimeForm(ModelForm):
             'objects',
             'allowed_time_in_secs'
         ]
+
+
+class AttendancerequestCommentForm(ModelForm):
+    """
+    AttendancerequestComment form
+    """
+
+    class Meta:
+        """
+        Meta class for additional options
+        """
+
+        model = AttendancerequestComment
+        fields = ('comment',)

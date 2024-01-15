@@ -302,6 +302,20 @@ urlpatterns = [
     path('delete-garce-time/<int:grace_id>/',views.delete_grace_time,name="delete-grace-time"),
     path('update-isactive-gracetime',views.update_isactive_gracetime,name='update-isactive-gracetime'),
 
-    
+    path(
+        "attendance-request-add-comment/<int:attendance_id>/",
+        views.create_attendancerequest_comment,
+        name="attendance-request-add-comment",
+    ),
+    path(
+        "attendance-request-view-comment/<int:attendance_id>/",
+        views.view_attendancerequest_comment,
+        name="attendance-request-view-comment",
+    ),
+    path(
+        "attendance-request-delete-comment/<int:comment_id>/",
+        views.delete_attendancerequest_comment,
+        name="attendance-request-delete-comment",
+    ),
 
 ]
