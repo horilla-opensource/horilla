@@ -1,3 +1,4 @@
+{% load i18n %}
 {% if form.instance.id %}
 <form id="editForm" hx-post="{% url "view-mail-template" form.instance.id %}" hx-target="#viewTemplateModalBody">
 {% else %}
@@ -8,15 +9,15 @@
             <div class="my-3" id="keyResultCard">
                 <div class="oh-card oh-card--no-shadow oh-card__body">
                     <div class="oh-input__group">
-                        <label class="oh-input__label mt-0" for="keyTitle">Title</label>
+                        <label class="oh-input__label mt-0" for="keyTitle">{% trans "Title" %}</label>
                         {{ form.title }}
                     </div>
                     <div class="oh-input__group">
-                        <label class="oh-input__label mt-2" for="keyTitle">Body</label>
+                        <label class="oh-input__label mt-2" for="keyTitle">{% trans "Body" %}</label>
                         {{ form.body }}
                     </div>
                     <div class="oh-input__group">
-                        <label class="oh-input__label mt-2" for="keyTitle">Company</label>
+                        <label class="oh-input__label mt-2" for="keyTitle">{% trans "Company" %}</label>
                         {{ form.company_id }}
                     </div>
                 </div>

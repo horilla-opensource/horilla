@@ -139,6 +139,7 @@
                               {% if perms.recruitment.change_recruitment %}
                               <a hx-get="{% url 'recruitment-update' rec.id %}" hx-target='#updateFormContainer' hx-swap='innerHTML' data-toggle='oh-modal-toggle' data-target='#updateRecruitmentModal'  class="oh-btn oh-btn--light-bkg w-100" title="Edit"><ion-icon name="create-outline"></ion-icon></a>
                               {% endif %}
+                              <a hx-get="{% url 'recruitment-duplicate' rec.id %}" hx-target='#duplicateFormContainer' hx-swap='innerHTML' data-toggle='oh-modal-toggle' data-target='#duplicateRecruitmentModal'  class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Duplicate' %}"><ion-icon name="copy-outline"></ion-icon></a>
                               {% if perms.recruitment.delete_recruitment %}
                               <form 
                                 action="{% url 'recruitment-delete' rec.id  %}"
@@ -187,6 +188,27 @@ aria-hidden="true"
 </div>
 </div>
 
+<div
+  class="oh-modal"
+  id="duplicateRecruitmentModal"
+  role="dialog"
+  aria-labelledby="duplicateRecruitmentModal"
+  aria-hidden="true"
+  >
+  <div class="oh-modal__dialog">
+    <div class="oh-modal__dialog-header">
+      <h5 class="oh-modal__dialog-title" id="duplicateRecruitmentModalLabel"
+        >{% trans "Duplicate Recruitment" %}</span
+      >
+      <button class="oh-modal__close" aria-label="Close"title="{% trans "Close" %}" >
+        <ion-icon name="close-outline"></ion-icon>
+      </button>
+    </div>
+    <div class="oh-modal__dialog-body" id='duplicateFormContainer'>
+      
+    </div>
+  </div>
+</div>
 
 
 <div class="oh-pagination">

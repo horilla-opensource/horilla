@@ -42,7 +42,7 @@ def view_letter(request, obj_id):
             messages.success(request, "Template updated")
             return HttpResponse("<script>window.location.reload()</script>")
 
-    return render(request, "offerletter/htmx/form.html", {"form": form})
+    return render(request, "offerletter/htmx/form.html", {"form": form,"duplicate":False})
 
 
 @login_required

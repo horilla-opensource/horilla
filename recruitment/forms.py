@@ -590,6 +590,10 @@ class QuestionForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        instance = kwargs.get('instance', None)
+        if instance:
+            self.fields["recruitment"].initial = instance.recruitment_ids.all()
+            self.fields["job_positions"].initial = instance.job_position_ids.all()
         self.fields["type"].widget.attrs.update(
             {"class": " w-100", "style": "border:solid 1px #6c757d52;height:50px;"}
         )
