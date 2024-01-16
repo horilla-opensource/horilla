@@ -1,11 +1,11 @@
 {% load i18n %} {% load basefilters %}
 <div class="oh-modal__dialog oh-modal__dialog--navigation m-0 p-0">
-    <button hx-get="{% url "user-request-one-view" previous_instance %}?instances_ids={{instance_ids_json}}&validate={{request.GET.validate}}&ot={{request.GET.ot}}&all_attendance={{request.GET.all_attendance}}&my_attendance={{request.GET.my_attendance}}" hx-target="#detailAttendanceModalBody" class="oh-modal__diaglog-nav oh-modal__nav-prev">
+    <button hx-get="{% url "user-request-one-view" previous_instance %}?instances_ids={{instance_ids_json}}&validate={{request.GET.validate}}&ot={{request.GET.ot}}&all_attendance={{request.GET.all_attendance}}&my_attendance={{request.GET.my_attendance}}&dashboard={{dashboard}}" hx-target="{% if dashboard == 'true' %}#bigModalTarget{% else %}#detailAttendanceModalBody {% endif %}" class="oh-modal__diaglog-nav oh-modal__nav-prev">
         <ion-icon name="chevron-back-outline" class="md hydrated" role="img"
         aria-label="chevron back outline"></ion-icon>
     </button>
 
-    <button hx-get="{% url "user-request-one-view" next_instance %}?instances_ids={{instance_ids_json}}&validate={{request.GET.validate}}&ot={{request.GET.ot}}&all_attendance={{request.GET.all_attendance}}&my_attendance={{request.GET.my_attendance}}" hx-target="#detailAttendanceModalBody" class="oh-modal__diaglog-nav oh-modal__nav-next">
+    <button hx-get="{% url "user-request-one-view" next_instance %}?instances_ids={{instance_ids_json}}&validate={{request.GET.validate}}&ot={{request.GET.ot}}&all_attendance={{request.GET.all_attendance}}&my_attendance={{request.GET.my_attendance}}&dashboard={{dashboard}}" hx-target="{% if dashboard == 'true' %}#bigModalTarget{% else %}#detailAttendanceModalBody {% endif %}" class="oh-modal__diaglog-nav oh-modal__nav-next">
         <ion-icon name="chevron-forward-outline" class="md hydrated" role="img"
         aria-label="chevron forward outline"></ion-icon>
     </button>
@@ -118,10 +118,10 @@
             <div class="oh-btn-group">
                 <a 
                     class="oh-btn oh-btn--info"
-                    hx-get="{% url 'attendance-update' attendance_request.id %}"
-                    hx-target='#updateAttendanceModalBody' hx-swap='innerHTML' 
+                    hx-get="{% url 'attendance-update' attendance_request.id %}?dashboard={{dashboard}}"
+                    hx-target="{% if dashboard == 'true' %}#editModalForm {% else %}#updateAttendanceModalBody{% endif %}" hx-swap='innerHTML' 
                     data-toggle='oh-modal-toggle' 
-                    data-target='#updateAttendanceModal'
+                    data-target="{% if dashboard == 'true' %}#editModal {% else %}#updateAttendanceModal {% endif %}"
                     style="width: 50%;"
                     >
                     <ion-icon name="create-outline" role="img" 
@@ -160,9 +160,9 @@
             <a 
                 class="oh-btn oh-btn--info"
                 hx-get="{% url 'attendance-update' attendance_request.id %}"
-                hx-target='#updateAttendanceModalBody' hx-swap='innerHTML' 
+                hx-target="{% if dashboard == 'true' %}#editModalForm {% else %}#updateAttendanceModalBody{% endif %}" hx-swap='innerHTML' 
                 data-toggle='oh-modal-toggle' 
-                data-target='#updateAttendanceModal'
+                data-target="{% if dashboard == 'true' %}#editModal {% else %}#updateAttendanceModal {% endif %}"
                 style="width: 50%;"
                 >
                 <ion-icon name="create-outline" role="img" 

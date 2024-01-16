@@ -11,7 +11,8 @@ from payroll.models.models import (
     Payslip,
     WorkRecord,
     LoanAccount,
-    Reimbursement
+    Reimbursement,
+    ReimbursementrequestComment
 )
 from payroll.models.tax_models import (
     PayrollSettings,
@@ -29,3 +30,4 @@ admin.site.register(Payslip)
 admin.site.register(PayrollSettings)
 admin.site.register(LoanAccount)
 admin.site.register(Reimbursement)
+admin.site.register(ReimbursementrequestComment)

@@ -126,4 +126,20 @@ urlpatterns = [
         views.payslip_select_filter,
         name="payslip-select-filter",
     ),
+
+    path(
+        "payroll-request-add-comment/<int:payroll_id>/",
+        views.create_payrollrequest_comment,
+        name="payroll-request-add-comment",
+    ),
+    path(
+        "payroll-request-view-comment/<int:payroll_id>/",
+        views.view_payrollrequest_comment,
+        name="payroll-request-view-comment",
+    ),
+    path(
+        "payroll-request-delete-comment/<int:comment_id>/",
+        views.delete_payrollrequest_comment,
+        name="payroll-request-delete-comment",
+    ),
 ]

@@ -19,8 +19,8 @@ from base.methods import export_data, generate_colors, get_key_instances
 from employee.models import Employee, EmployeeWorkInformation
 from base.methods import closest_numbers
 from base.methods import generate_pdf
-from payroll.models.models import Payslip, WorkRecord, Contract
-from payroll.forms.forms import ContractForm, WorkRecordForm
+from payroll.models.models import Payslip, Reimbursement, ReimbursementrequestComment, WorkRecord, Contract
+from payroll.forms.forms import ContractForm, ReimbursementrequestCommentForm, WorkRecordForm
 from payroll.models.tax_models import PayrollSettings
 from payroll.forms.component_forms import ContractExportFieldForm, PayrollSettingsForm
 from payroll.methods.methods import save_payslip
@@ -1186,3 +1186,58 @@ def payslip_select_filter(request):
         context = {"payslip_ids": payslip_ids, "total_count": total_count}
 
         return JsonResponse(context)
+
+
+@login_required
+def create_payrollrequest_comment(request, payroll_id):
+    """
+    This method renders form and template to create Reimbursement request comments
+    """
+    payroll = Reimbursement.objects.filter(id=payroll_id).first()
+    emp = request.user.employee_get
+    form = ReimbursementrequestCommentForm(initial={'employee_id':emp.id, 'request_id':payroll_id})
+
+    if request.method == "POST":
+        form = ReimbursementrequestCommentForm(request.POST )
+        if form.is_valid():
+            form.instance.employee_id = emp
+            form.instance.request_id = payroll
+            form.save()
+            form = ReimbursementrequestCommentForm(initial={'employee_id':emp.id, 'request_id':payroll_id})
+            messages.success(request, _("Comment added successfully!"))
+            return HttpResponse("<script>window.location.reload()</script>")
+    return render(
+        request,
+        "payroll/reimbursement/reimbursement_request_comment_form.html",
+        {
+            "form": form, "request_id":payroll_id
+        },
+    )
+
+
+@login_required
+def view_payrollrequest_comment(request, payroll_id):
+    """
+    This method is used to show Reimbursement request comments
+    """
+    comments = ReimbursementrequestComment.objects.filter(request_id=payroll_id).order_by('-created_at')
+    no_comments = False
+    if not comments.exists():
+        no_comments = True
+
+    return render(
+        request,
+        "payroll/reimbursement/comment_view.html",
+        {"comments": comments, 'no_comments': no_comments }
+    )
+
+
+@login_required
+def delete_payrollrequest_comment(request, comment_id):
+    """
+    This method is used to delete Reimbursement request comments
+    """
+    ReimbursementrequestComment.objects.get(id=comment_id).delete()
+
+    messages.success(request, _("Comment deleted successfully!"))
+    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))

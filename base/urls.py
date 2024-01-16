@@ -661,6 +661,16 @@ urlpatterns = [
         request_and_approve.dashboard_work_type_request,
         name="dashboard-work-type-request",
     ),
+    path(
+        "dashboard-overtime-approve",
+        request_and_approve.dashboard_overtime_approve,
+        name="dashboard-overtime-approve",
+    ),
+    path(
+        "dashboard-attendance-validate",
+        request_and_approve.dashboard_attendance_validate,
+        name="dashboard-attendance-validate",
+    ),
     
       
 ]

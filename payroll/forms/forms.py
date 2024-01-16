@@ -5,7 +5,7 @@ from django import forms
 from django.forms import widgets
 from django.utils.translation import gettext_lazy as trans
 from django.template.loader import render_to_string
-from payroll.models.models import WorkRecord
+from payroll.models.models import ReimbursementrequestComment, WorkRecord
 from payroll.models.models import Contract
 from base.methods import reload_queryset
 
@@ -116,3 +116,17 @@ class WorkRecordForm(ModelForm):
 
         fields = "__all__"
         model = WorkRecord
+
+
+class ReimbursementrequestCommentForm(ModelForm):
+    """
+    ReimbursementrequestCommentForm form
+    """
+
+    class Meta:
+        """
+        Meta class for additional options
+        """
+
+        model = ReimbursementrequestComment
+        fields = ('comment',)

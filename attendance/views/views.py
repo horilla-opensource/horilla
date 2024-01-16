@@ -54,6 +54,7 @@ from attendance.forms import (
     AttendanceValidationConditionForm,
     AttendanceUpdateForm,
     AttendanceExportForm,
+    AttendancerequestCommentForm,
     GraceTimeForm,
     LateComeEarlyOutExportForm,
 )
@@ -64,6 +65,7 @@ from attendance.models import (
     AttendanceOverTime,
     AttendanceLateComeEarlyOut,
     AttendanceValidationCondition,
+    AttendancerequestComment,
     GraceTime,
 )
 from attendance.filters import (
@@ -425,9 +427,7 @@ def attendance_update(request, obj_id):
             return HttpResponse(
                 f"""
                     <script>
-                        var anchor = document.createElement('a');
-                        anchor.href = '{modified_url}';
-                        anchor.click();
+                        window.location.reload();
                     </script>
                 """
             )
@@ -1336,7 +1336,7 @@ def user_request_one_view(request, id):
     minutes_over_time = (over_time_seconds % 3600) // 60
     over_time = "{:02}:{:02}".format(hours_over_time, minutes_over_time)
     instance_ids_json = request.GET["instances_ids"]
-    instance_ids = json.loads(instance_ids_json)
+    instance_ids = json.loads(instance_ids_json) if instance_ids_json else []
     previous_instance, next_instance = closest_numbers(instance_ids, id)
     return render(
         request,
@@ -1348,6 +1348,7 @@ def user_request_one_view(request, id):
             "previous_instance": previous_instance,
             "next_instance": next_instance,
             "instance_ids_json": instance_ids_json,
+            'dashboard': request.GET.get('dashboard')
         },
     )
 
@@ -1594,3 +1595,56 @@ def update_isactive_gracetime(request):
 
     
 
+@login_required
+def create_attendancerequest_comment(request, attendance_id):
+    """
+    This method renders form and template to create Attendance request comments
+    """
+    attendance = Attendance.objects.filter(id=attendance_id).first()
+    emp = request.user.employee_get
+    form = AttendancerequestCommentForm(initial={'employee_id':emp.id, 'request_id':attendance_id})
+
+    if request.method == "POST":
+        form = AttendancerequestCommentForm(request.POST )
+        if form.is_valid():
+            form.instance.employee_id = emp
+            form.instance.request_id = attendance
+            form.save()
+            form = AttendancerequestCommentForm(initial={'employee_id':emp.id, 'request_id':attendance_id})
+            messages.success(request, _("Comment added successfully!"))
+            return HttpResponse("<script>window.location.reload()</script>")
+    return render(
+        request,
+        "requests/attendance/attendance_request_comment_form.html",
+        {
+            "form": form, "request_id":attendance_id
+        },
+    )
+
+
+@login_required
+def view_attendancerequest_comment(request, attendance_id):
+    """
+    This method is used to show Attendance request comments
+    """
+    comments = AttendancerequestComment.objects.filter(request_id=attendance_id).order_by('-created_at')
+    no_comments = False
+    if not comments.exists():
+        no_comments = True
+
+    return render(
+        request,
+        "requests/attendance/comment_view.html",
+        {"comments": comments, 'no_comments': no_comments }
+    )
+
+
+@login_required
+def delete_attendancerequest_comment(request, comment_id):
+    """
+    This method is used to delete Attendance request comments
+    """
+    AttendancerequestComment.objects.get(id=comment_id).delete()
+
+    messages.success(request, _("Comment deleted successfully!"))
+    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))

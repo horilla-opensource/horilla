@@ -126,7 +126,14 @@ def view_question_template(request):
     """
     questions = RecruitmentSurvey.objects.all()
     filter_obj = SurveyFilter()
-    requests_ids = json.dumps([instance.id for instance in paginator_qry(questions, request.GET.get("page")).object_list])
+    requests_ids = json.dumps(
+        [
+            instance.id
+            for instance in paginator_qry(
+                questions, request.GET.get("page")
+            ).object_list
+        ]
+    )
     if questions.exists():
         template = "survey/view_question_templates.html"
     else:
@@ -137,7 +144,7 @@ def view_question_template(request):
         {
             "questions": paginator_qry(questions, request.GET.get("page")),
             "f": filter_obj,
-            "requests_ids":requests_ids,
+            "requests_ids": requests_ids,
         },
     )
 
@@ -151,10 +158,6 @@ def update_question_template(request, survey_id):
     instance = RecruitmentSurvey.objects.get(id=survey_id)
     form = QuestionForm(
         instance=instance,
-        initial={
-            "recruitment": instance.recruitment_ids.all(),
-            "job_positions": instance.job_position_ids.all(),
-        },
     )
     if request.method == "POST":
         form = QuestionForm(request.POST, instance=instance)
@@ -209,7 +212,7 @@ def delete_survey_question(request, survey_id):
     except RecruitmentSurvey.DoesNotExist:
         messages.error(request, _("Question not found."))
     except ProtectedError:
-        messages.error(request, _("You cannot delete this question"))    
+        messages.error(request, _("You cannot delete this question"))
     return redirect(view_question_template)
 
 
@@ -275,7 +278,7 @@ def single_survey(request, survey_id):
     """
     question = RecruitmentSurvey.objects.get(id=survey_id)
     requests_ids_json = request.GET.get("instances_ids")
-    context = {'question' : question}
+    context = {"question": question}
     if requests_ids_json:
         requests_ids = json.loads(requests_ids_json)
         previous_id, next_id = closest_numbers(requests_ids, survey_id)

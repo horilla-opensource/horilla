@@ -1,0 +1,116 @@
+{% load i18n %} {% load static %}
+<form hx-post="{% url 'recruitment-duplicate' obj_id %}" hx-target='#duplicateFormContainer' hx-swap='innerHTML' data-toggle='oh-modal-toggle' data-target='#duplicateRecruitmentModal' class="oh-general__tab-target oh-profile-section">
+  <div>
+    {% csrf_token %}
+    <div class="row" id="recruitmentUpdateContainer">
+        <div class="col-12 col-sm-12 col-md-12 col-lg-12">
+          {% for error in form.non_field_errors %}
+          <ul class="errorlist">
+          <li>{{error}}</li>
+        </ul>
+          {% endfor %}
+          <label class="oh-label" for="">{% trans "Title" %}*</label>
+          {{form.title}} {{form.title.errors}}
+        </div>
+        <div class="col-12 col-sm-12 col-md-12 col-lg-12">
+          <label class="oh-label" for="">{% trans "Description" %}*</label>
+          {{form.description}} {{form.description.errors}}
+        </div>
+        <div class="col-12 col-sm-12 col-md-12 col-lg-4">
+          <label class="oh-label" for="id_is_event_based"  title="{{form.is_event_based.help_text|safe}}" 
+            >{% trans "Is Event Based?" %}</label
+          >
+          <div
+            class="w-100 d-flex"
+            style="align-items: center; justify-content: center !important"
+          >
+            <div class="oh-switch">{{form.is_event_based}}</div>
+          </div>
+        </div>
+        <div class="col-12 col-sm-12 col-md-12 col-lg-4">
+
+          <label class="oh-label"  title="{{form.closed.help_text|safe}}"  for="id_closed">{% trans "Is Closed?" %}</label>
+          <div
+            class="w-100 d-flex"
+            style="align-items: center; justify-content: center !important"
+          >
+            <div class="oh-switch">{{form.closed}}</div>
+          </div>
+        </div>
+        <div class="col-12 col-sm-12 col-md-12 col-lg-4">
+          <label class="oh-label" for="id_is_active" title="{{form.is_active.help_text|safe}}" 
+            >{% trans "Is Active?" %}</label
+          >
+          <div
+            class="w-100 d-flex"
+            style="align-items: center; justify-content: center !important"
+          >
+            <div class="oh-switch">{{form.is_active}}</div>
+          </div>
+        </div>
+        <div
+          class="col-12 col-sm-12 col-md-12 col-lg-6"
+          id="jobPositionUpdateContainer"
+        >
+          <label class="oh-label" for="">{% trans "Job Position" %} *</label>
+          {{form.job_position_id}} {{form.job_position_id.errors}}
+        </div>
+        <div
+          class="col-12 col-sm-12 col-md-12 col-lg-6"
+          id="openPositionUpdateContainer"
+        >
+          <label class="oh-label" for="">{% trans "Job Position" %}</label>
+          {{form.open_positions}} {{form.open_positions.errors}}
+        </div>
+        <div class="col-12 col-sm-12 col-md-12 col-lg-6">
+          <label class="oh-label" for="">{% trans "Managers" %}*</label>
+          {{form.recruitment_managers}} {{form.recruitment_managers.errors}}
+        </div>
+        <div class="col-12 col-sm-12 col-md-12 col-lg-6">
+          <label class="oh-label" for="">{% trans "Start Date" %}</label>
+          {{form.start_date}} {{form.start_date.errors}}
+        </div>
+        <div class="col-12 col-sm-12 col-md-12 col-lg-6">
+          <label class="oh-label" for="">{% trans "End Date" %}</label>
+          {{form.end_date}} {{form.end_date.errors}}
+        </div>
+        <div class="col-12 col-sm-12 col-md-12 col-lg-6">
+          <label class="oh-label" for="">{% trans "Vacancy" %}</label>
+          {{form.vacancy}} {{form.vacancy.errors}}
+        </div>
+        <div class="col-12 col-sm-12 col-md-12 col-lg-6">
+          <label class="oh-label" for="">{% trans "Company" %}</label>
+          {{form.company_id}} {{form.company_id.errors}}
+        </div> 
+      </div>
+  </div>
+  <div class="d-flex flex-row-reverse w-100 align-items-right mt-4">
+    <button
+      type="submit"
+      class="oh-btn oh-btn--secondary pl-5 pr-5"
+    >
+      {% trans "Add" %}
+    </button>
+  </div>
+</form>
+
+
+<script>
+    $(document).ready(function () {
+      function togglePosition() {
+        if ($("#recruitmentUpdateContainer #id_is_event_based").is(":checked")) {
+          $("#recruitmentUpdateContainer #jobPositionUpdateContainer").hide();
+          $("#recruitmentUpdateContainer #openPositionUpdateContainer").show();
+        } else {
+          $("#recruitmentUpdateContainer #jobPositionUpdateContainer").show();
+          $("#recruitmentUpdateContainer #openPositionUpdateContainer").hide();
+        }
+      }
+      togglePosition();
+      $("#recruitmentUpdateContainer #id_is_event_based").change(function (e) {
+        e.preventDefault();
+        togglePosition();
+      });
+    });
+  </script>
+  

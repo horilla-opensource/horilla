@@ -654,6 +654,39 @@ def object_delete(request, id, **kwargs):
 
 
 @login_required
+@delete_permission()
+def object_duplicate(request, obj_id, **kwargs):
+    model = kwargs["model"]
+    form_class = kwargs["form"]
+    template = kwargs["template"]
+    original_object = model.objects.get(id=obj_id)
+    form = form_class(instance=original_object)
+    if request.method == "GET":
+        for field_name, field in form.fields.items():
+            if isinstance(field, forms.CharField):
+                initial_value = f"{form.initial.get(field_name, '')} (copy)"
+                form.initial[field_name] = initial_value
+                form.fields[field_name].initial = initial_value
+        if hasattr(form.instance, 'id'):
+                form.instance.id = None
+
+    if request.method == "POST":
+        form = form_class(request.POST)
+        if form.is_valid():
+            new_object = form.save(commit=False)
+            new_object.id = None
+            new_object.save()
+            return HttpResponse("<script>window.location.reload()</script>")
+
+    context = {
+        "form": form,
+        "obj_id": obj_id,
+        "duplicate": True,
+    }
+    return render(request, template, context)
+
+
+@login_required
 @permission_required("base.view_dynamicemailconfiguration")
 def mail_server_conf(request):
     mail_servers = DynamicEmailConfiguration.objects.all()
@@ -2541,7 +2574,7 @@ def work_type_request_single_view(request, work_type_request_id):
     work_type_request = WorkTypeRequest.objects.get(id=work_type_request_id)
     context = {
         "work_type_request": work_type_request,
-        "dashboard":request.GET.get("dashboard"),
+        "dashboard": request.GET.get("dashboard"),
     }
     requests_ids_json = request.GET.get("instances_ids")
     if requests_ids_json:
@@ -2779,7 +2812,7 @@ def shift_request_details(request, id):
     requests_ids_json = request.GET.get("instances_ids")
     context = {
         "shift_request": shift_request,
-        "dashboard":request.GET.get("dashboard"),
+        "dashboard": request.GET.get("dashboard"),
     }
     if requests_ids_json:
         requests_ids = json.loads(requests_ids_json)
@@ -3846,7 +3879,9 @@ def clear_form_fields_and_remove_extra_fields(form, managers):
             del form.cleaned_data[field_name]
             form.fields.pop(field_name, None)
 
+
 from django.db.models import F
+
 
 def multiple_level_approval_edit(request, condition_id):
     create = False
@@ -3919,23 +3954,25 @@ def create_shiftrequest_comment(request, shift_id):
     """
     shift = ShiftRequest.objects.filter(id=shift_id).first()
     emp = request.user.employee_get
-    form = ShiftrequestcommentForm(initial={'employee_id':emp.id, 'request_id':shift_id})
+    form = ShiftrequestcommentForm(
+        initial={"employee_id": emp.id, "request_id": shift_id}
+    )
 
     if request.method == "POST":
-        form = ShiftrequestcommentForm(request.POST )
+        form = ShiftrequestcommentForm(request.POST)
         if form.is_valid():
             form.instance.employee_id = emp
             form.instance.request_id = shift
             form.save()
-            form = ShiftrequestcommentForm(initial={'employee_id':emp.id, 'request_id':shift_id})
+            form = ShiftrequestcommentForm(
+                initial={"employee_id": emp.id, "request_id": shift_id}
+            )
             messages.success(request, _("Comment added successfully!"))
             return HttpResponse("<script>window.location.reload()</script>")
     return render(
         request,
         "shift_request/htmx/shift_request_comment_form.html",
-        {
-            "form": form, "request_id":shift_id
-        },
+        {"form": form, "request_id": shift_id},
     )
 
 
@@ -3944,7 +3981,9 @@ def view_shiftrequest_comment(request, shift_id):
     """
     This method is used to show shift request comments
     """
-    comments = ShiftrequestComment.objects.filter(request_id=shift_id).order_by('-created_at')
+    comments = ShiftrequestComment.objects.filter(request_id=shift_id).order_by(
+        "-created_at"
+    )
     no_comments = False
     if not comments.exists():
         no_comments = True
@@ -3952,7 +3991,7 @@ def view_shiftrequest_comment(request, shift_id):
     return render(
         request,
         "shift_request/htmx/comment_view.html",
-        {"comments": comments, 'no_comments': no_comments }
+        {"comments": comments, "no_comments": no_comments},
     )
 
 
@@ -3974,23 +4013,25 @@ def create_worktyperequest_comment(request, worktype_id):
     """
     shift = WorkTypeRequest.objects.filter(id=worktype_id).first()
     emp = request.user.employee_get
-    form = WorktyperequestcommentForm(initial={'employee_id':emp.id, 'request_id':worktype_id})
+    form = WorktyperequestcommentForm(
+        initial={"employee_id": emp.id, "request_id": worktype_id}
+    )
 
     if request.method == "POST":
-        form = WorktyperequestcommentForm(request.POST )
+        form = WorktyperequestcommentForm(request.POST)
         if form.is_valid():
             form.instance.employee_id = emp
             form.instance.request_id = shift
             form.save()
-            form = WorktyperequestcommentForm(initial={'employee_id':emp.id, 'request_id':worktype_id})
+            form = WorktyperequestcommentForm(
+                initial={"employee_id": emp.id, "request_id": worktype_id}
+            )
             messages.success(request, _("Comment added successfully!"))
             return HttpResponse("<script>window.location.reload()</script>")
     return render(
         request,
         "work_type_request/htmx/worktype_request_comment_form.html",
-        {
-            "form": form, "request_id":worktype_id
-        },
+        {"form": form, "request_id": worktype_id},
     )
 
 
@@ -3999,7 +4040,9 @@ def view_worktyperequest_comment(request, worktype_id):
     """
     This method is used to show Work type request comments
     """
-    comments = WorktyperequestComment.objects.filter(request_id=worktype_id).order_by('-created_at')
+    comments = WorktyperequestComment.objects.filter(request_id=worktype_id).order_by(
+        "-created_at"
+    )
     no_comments = False
     if not comments.exists():
         no_comments = True
@@ -4007,7 +4050,7 @@ def view_worktyperequest_comment(request, worktype_id):
     return render(
         request,
         "work_type_request/htmx/comment_view.html",
-        {"comments": comments, 'no_comments': no_comments }
+        {"comments": comments, "no_comments": no_comments},
     )
 
 
@@ -4020,4 +4063,3 @@ def delete_worktyperequest_comment(request, comment_id):
 
     messages.success(request, _("Comment deleted successfully!"))
     return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
-

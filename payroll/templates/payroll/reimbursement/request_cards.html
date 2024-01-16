@@ -56,8 +56,17 @@
   </div>
   <h3 class="oh-faq-card__title">{{ req.title }}</h3>
   <p class="oh-faq-card__desc">{{ req.description }}.</p>
-  <span class="oh-card__footer--border-top pt-1" style="display: block;">
-    <i style="color: hsl(0,0%,45%);">{% trans 'Allowance on' %}</i> {{ req.allowance_on }}.
+  <span class="oh-card__footer--border-top pt-1 " style="display: block;">
+
+    <div class="mb-2">
+      <i><a hx-target="#shiftRequestCommentForm" hx-get="{% url 'payroll-request-add-comment' req.id %}" class="text-primary"
+        hx-swap="innerHTML" data-toggle="oh-modal-toggle" data-target="#shiftcommentModal" style='cursor:pointer;'>{% trans 'Add Comments' %}</a> &nbsp,
+
+        <a hx-target="#shiftRequestDetailTarget" hx-get="{% url 'payroll-request-view-comment' req.id %}" class="text-primary"
+        data-toggle='oh-modal-toggle' data-target = '#shiftRequestDetailModal' style='cursor:pointer;'>{% trans 'View Comments' %}</a></i>
+    </div>
+
+    <i style="color: hsl(0,0%,45%);">{% trans 'Allowance on' %}</i> <span class='dateformat_changer'>{{ req.allowance_on }}</span>
     {% if req.type == 'reimbursement' %}
     <i><a data-target="#reimbursementAttachementModal" data-toggle="oh-modal-toggle" hx-target="#reimbursementAttachementModalBody" hx-get="{% url "reimbursement-attachments" req.id %}" class="text-danger"
         title="Attachments" rel="noopener noreferrer">{% trans 'View Attachments' %}</a></i>
@@ -142,6 +151,54 @@
         {% endif %}
       </ul>
     </nav>
+  </div>
+</div>
+
+<!-- start of comment modal -->
+<div
+	class="oh-modal"
+	id="shiftcommentModal"
+	role="dialog"
+	aria-labelledby="emptagModal"
+	aria-hidden="true"
+>
+	<div class="oh-modal__dialog">
+		<div class="oh-modal__dialog-header">
+			<h2 class="oh-modal__dialog-title" id="createModalTitle">
+				{% trans "Add Comment" %}
+			</h2>
+			<button class="oh-modal__close" aria-label="Close">
+				<ion-icon name="close-outline"></ion-icon>
+			</button>
+		</div>
+		<div class="oh-modal__dialog-body" id="shiftRequestCommentForm"></div>
+	</div>
+</div>
+<!-- end of comment modal -->
+
+<div
+  class="oh-modal" style="z-index: 60;"
+  id="shiftRequestDetailModal"
+  role="dialog"
+  aria-labelledby="shiftRequestDetailModal"
+  aria-hidden="true"
+>
+  <div class="oh-modal__dialog">
+    <div class="oh-modal__dialog-header">
+      <h2
+        class="oh-modal__dialog-title"
+        id=""
+      >
+        {% trans "Details" %}
+      </h2>
+      <button class="oh-modal__close" aria-label="Close">
+        <ion-icon name="close-outline"></ion-icon>
+      </button>
+    </div>
+    <div
+      class="oh-modal__dialog-body oh-modal__dialog-relative"
+      id="shiftRequestDetailTarget"
+    ></div>
   </div>
 </div>
 

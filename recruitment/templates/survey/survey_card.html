@@ -47,6 +47,18 @@
               >
             </li>
             {% endif %}
+            {% if perms.recruitment.change_recruitmentsurvey %}
+            <li class="oh-dropdown__item">
+              <a
+                hx-get="{% url 'recruitment-survey-question-template-duplicate' question.id %}"
+                data-toggle="oh-modal-toggle"
+                data-target="#duplicateSurveyModal"
+                hx-target="#duplicateSurveyFormModal"
+                class="oh-dropdown__link"
+                >{% trans "Duplicate" %}</a
+              >
+            </li>
+            {% endif %}
             {% if perms.recruitment.delete_recruitmentsurvey %}
             <li class="oh-dropdown__item">
               <a

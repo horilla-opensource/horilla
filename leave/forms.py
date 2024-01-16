@@ -19,6 +19,7 @@ from .models import (
     Holiday,
     CompanyLeave,
     LeaveAllocationRequest,
+    LeaverequestComment,
 )
 from .methods import (
     calculate_requested_days,
@@ -792,3 +793,16 @@ class AssignLeaveForm(HorillaForm):
         ),
         self.fields['leave_type_id'].label = "Leave Type"
 
+
+class LeaverequestcommentForm(ModelForm):
+    """
+    LeaverequestComment form
+    """
+
+    class Meta:
+        """
+        Meta class for additional options
+        """
+
+        model = LeaverequestComment
+        fields = ('comment',)

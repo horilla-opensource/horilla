@@ -44,7 +44,7 @@
   role="dialog"
   aria-labelledby="updateSurvey"
   aria-hidden="true"
->
+ >
   <div class="oh-modal__dialog">
     <div class="oh-modal__dialog-header">
       <h2 class="oh-modal__dialog-title" id="addEmployeeModalLabel">
@@ -57,6 +57,29 @@
     <div
       class="oh-modal__dialog-body"
       id="updateSurveyModalBody"
+    ></div>
+  </div>
+</div>
+
+<div
+  class="oh-modal"
+  id="duplicateSurveyModal"
+  role="dialog"
+  aria-labelledby="duplicateSurveyModal"
+  aria-hidden="true"
+ >
+  <div class="oh-modal__dialog">
+    <div class="oh-modal__dialog-header">
+      <h2 class="oh-modal__dialog-title" id="duplicateSurveyModalLabel">
+        {% trans "Duplicate Survey Template" %}
+      </h2>
+      <button type="button" class="oh-modal_close--custom" onclick="$('#duplicateSurveyModal').removeClass('oh-modal--show');">
+        <ion-icon name="close-outline" role="img" aria-label="close outline"></ion-icon>
+      </button>
+    </div>
+    <div
+      class="oh-modal__dialog-body"
+      id="duplicateSurveyFormModal"
     ></div>
   </div>
 </div>
