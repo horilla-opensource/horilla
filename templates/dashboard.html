@@ -555,7 +555,7 @@
               </div>
             </div>      
             {% endif %}
-            {% if perms.attendance.change_leaverequest or request.user|is_reportingmanager %}
+            {% if perms.leave.change_leaverequest or request.user|is_reportingmanager %}
             <div
               class="col-12 col-sm-12 col-md-12 col-lg-6 oh-card-dashboard--moveable" id="LeaveApprove"
             >
@@ -579,7 +579,7 @@
               </div>              
             </div>      
             {% endif %}
-            {% if perms.attendance.change_leaveallocationrequest or request.user|is_reportingmanager %}
+            {% if perms.leave.change_leaveallocationrequest or request.user|is_reportingmanager %}
             <div
               class="col-12 col-sm-12 col-md-12 col-lg-6 oh-card-dashboard--moveable" id="LeaveAllocationApprove"
             >
@@ -600,6 +600,54 @@
                   style="height:80%"
                 >
                   {% include "request_and_approve/leave_request_approve.html" %}
+                </div>
+              </div>              
+            </div>      
+            {% endif %}
+            <div
+              class="col-12 col-sm-12 col-md-12 col-lg-6 oh-card-dashboard--moveable" id="feedbackAnswer"
+            >
+              <div
+                class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent" style="height:425px"
+              >
+                <div
+                  class="oh-card-dashboard__header oh-card-dashboard__header--divider"
+                >
+                  <span class="oh-card-dashboard__title"
+                    >{% trans "Feedback Answer" %}</span
+                  >
+                </div>
+                <div class="oh-card-dashboard__body"
+                  id="feedbackAnswerBody"
+                  hx-get='{% url "dashboard-feedback-answer" %}'
+                  hx-trigger="load"
+                  style="height:80%"
+                >
+                  {% include "request_and_approve/feedback_answer.html" %}
+                </div>
+              </div>              
+            </div>
+            {% if perms.asset.change_assetrequest or request.user|is_reportingmanager %}
+            <div
+              class="col-12 col-sm-12 col-md-12 col-lg-6 oh-card-dashboard--moveable" id="assetRequestApprove"
+            >
+              <div
+                class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent" style="height:425px"
+              >
+                <div
+                  class="oh-card-dashboard__header oh-card-dashboard__header--divider"
+                >
+                  <span class="oh-card-dashboard__title"
+                    >{% trans "Asset Request Approve" %}</span
+                  >
+                </div>
+                <div class="oh-card-dashboard__body"
+                  id="assetRequestApproveBody"
+                  hx-get='{% url "dashboard-asset-request-approve" %}'
+                  hx-trigger="load"
+                  style="height:80%"
+                >
+                  {% include "request_and_approve/asset_requests_approve.html" %}
                 </div>
               </div>              
             </div>      
@@ -708,7 +756,7 @@
       </button>
     </div>
     <div
-      class="oh-modal__dialog-body oh-modal__dialog-relative"
+      class="oh-modal__dialog-body oh-modal__dialog-relative oh-timeoff-modal__body"
       id="smallModalTarget"
     ></div>
       {% comment %} <div id="smallModalBody">

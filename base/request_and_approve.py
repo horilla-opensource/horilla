@@ -7,6 +7,7 @@ This module is used to map url patterns with request and approve methods in Dash
 from datetime import date
 import json
 from django.shortcuts import render
+from asset.models import AssetRequest
 from attendance.models import Attendance, AttendanceValidationCondition
 from attendance.views.views import strtime_seconds
 from base.methods import filtersubordinates
@@ -14,6 +15,8 @@ from base.models import ShiftRequest, WorkTypeRequest
 from employee.not_in_out_dashboard import paginator_qry
 from horilla.decorators import login_required
 from leave.models import LeaveAllocationRequest, LeaveRequest
+from pms.models import Feedback
+from django.db.models import Q
 
 
 @login_required
@@ -136,3 +139,26 @@ def leave_allocation_approve(request):
             # "current_date":date.today(),
         }
     )
+
+@login_required
+def dashboard_feedback_answer(request):
+    employee = request.user.employee_get
+    feedback_requested = Feedback.objects.filter(
+        Q(manager_id=employee,manager_id__is_active=True)
+        | Q(colleague_id=employee,colleague_id__is_active=True)
+        | Q(subordinate_id=employee,subordinate_id__is_active=True)
+    ).distinct()
+    feedbacks = feedback_requested.exclude(feedback_answer__employee_id = employee)
+
+    return render(request, "request_and_approve/feedback_answer.html",{'feedbacks': feedbacks,'current_date':date.today()})
+
+@login_required
+def dashboard_asset_request_approve(request):
+    asset_requests = AssetRequest.objects.filter(asset_request_status='Requested')
+
+    asset_requests =  filtersubordinates(
+        request, asset_requests, "asset.change_assetrequest", field="requested_employee_id"
+    )
+    requests_ids = json.dumps([instance.id for instance in asset_requests])
+
+    return render(request,  "request_and_approve/asset_requests_approve.html",{'asset_requests': asset_requests,'requests_ids': requests_ids,})

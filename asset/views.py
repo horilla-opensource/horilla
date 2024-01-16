@@ -17,7 +17,7 @@ from base.methods import closest_numbers, get_key_instances
 from base.models import Company
 from employee.models import EmployeeWorkInformation
 from notifications.signals import notify
-from horilla.decorators import login_required, hx_request_required
+from horilla.decorators import login_required, hx_request_required, manager_can_enter
 from horilla.decorators import permission_required
 from asset.models import (
     Asset,
@@ -516,7 +516,7 @@ def asset_request_creation(request):
 
 
 @login_required
-@permission_required(perm="asset.add_asset")
+@manager_can_enter(perm="asset.add_asset")
 def asset_request_approve(request, req_id):
     """
     Approves an asset request with the given ID and updates the corresponding asset record
@@ -565,16 +565,15 @@ def asset_request_approve(request, req_id):
                 "request_allocation/asset_approve.html",
                 {"asset_allocation_form": form, "id": req_id},
             )
-            return HttpResponse(
-                response.content.decode("utf-8") + "<script>location.reload();</script>"
-            )
+            return HttpResponse("<script>window.location.reload()</script>")
+
         context["asset_allocation_form"] = form
 
     return render(request, "request_allocation/asset_approve.html", context)
 
 
 @login_required
-@permission_required(perm="asset.add_asset")
+@manager_can_enter(perm="asset.add_asset")
 def asset_request_reject(request, req_id):
     """
     View function to reject an asset request.
@@ -903,7 +902,7 @@ def asset_request_alloaction_view_search_filter(request):
 
 def asset_request_individual_view(request, id):
     asset_request = AssetRequest.objects.get(id=id)
-    context = {"asset_request": asset_request}
+    context = {"asset_request": asset_request,'dashboard': request.GET.get('dashboard'),}
     requests_ids_json = request.GET.get("requests_ids")
     if requests_ids_json:
         requests_ids = json.loads(requests_ids_json)

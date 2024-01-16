@@ -696,4 +696,14 @@ urlpatterns = [
         request_and_approve.leave_allocation_approve,
         name="leave-allocation-approve",
     ),
+    path(
+        "dashboard-feedback-answer",
+        request_and_approve.dashboard_feedback_answer,
+        name="dashboard-feedback-answer",
+    ),
+    path(
+        "dashboard-asset-request-approve",
+        request_and_approve.dashboard_asset_request_approve,
+        name="dashboard-asset-request-approve",
+    ),
 ]
