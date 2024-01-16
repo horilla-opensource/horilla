@@ -2,6 +2,10 @@ $(document).ready(function () {
   var myDate = new Date();
   var year = myDate.getFullYear();
   var month = ("0" + myDate.getMonth()).slice(-2);
+  if (month == "00"){
+    month = "12"
+    year = year-1
+  }
   var formattedDate = year + "-" + month;
   var start_index = 0;
   var per_page = 10;
@@ -287,15 +291,20 @@ $(document).ready(function () {
   function contract_ending() {
     var period = $("#monthYearField").val();
 
-    var date = period.split('-');
-    var year = date[0];
-    var month = parseInt(date[1]);
+    // var date = period.split('-');
+    // var year = date[0];
+    // var month = parseInt(date[1]);
+
+    let date = new Date()
+    let year = date.getFullYear();
+    let month = date.getMonth();
 
     var monthNames = [
       "January", "February", "March", "April", "May", "June",
       "July", "August", "September", "October", "November", "December"
     ];
-    var formattedDate = `${monthNames[month - 1]} ${year}`;
+    console.log(month, year)
+    var formattedDate = `${monthNames[month]} ${year}`;
 
     $.ajax({
       url: "/payroll/dashboard-contract-ending",

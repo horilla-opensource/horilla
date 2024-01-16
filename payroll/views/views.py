@@ -637,13 +637,12 @@ def contract_ending(request):
     payroll dashboard contract ending details data
     """
 
-    date = request.GET.get("period")
-    year = date.split("-")[0]
-    month = date.split("-")[1]
+    today = datetime.today()
+    month = today.month
+    year = today.year
+
     contract_end = []
-    contract_end = Contract.objects.filter(
-        Q(contract_end_date__month=month) & Q(contract_end_date__year=year)
-    )
+    contract_end = Contract.objects.filter(contract_end_date__month=month,contract_end_date__year=year).exclude(contract_status__in = ['draft','terminated'])
 
     ending_contract = []
     for contract in contract_end:
