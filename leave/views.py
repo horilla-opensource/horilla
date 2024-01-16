@@ -614,7 +614,7 @@ def leave_request_approve(request, id, emp_id=None):
     if emp_id is not None:
         employee_id = emp_id
         return redirect(f"/employee/employee-view/{employee_id}/")
-    return redirect(leave_request_view)
+    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 
 
 @login_required
@@ -757,6 +757,8 @@ def one_request_view(request, id):
     leave_request = LeaveRequest.objects.get(id=id)
     context = {
         "leave_request": leave_request,
+        "current_date": date.today(),
+        "dashboard": request.GET.get("dashboard")
     }
     requests_ids_json = request.GET.get("instances_ids")
 
@@ -2603,6 +2605,7 @@ def leave_allocation_request_single_view(request, req_id):
         "instances_ids": requests_ids_json,
         "previous": previous_id,
         "next": next_id,
+        "dashboard":request.GET.get("dashboard")
     }
     return render(
         request,
@@ -2842,7 +2845,7 @@ def leave_allocation_request_approve(request, req_id):
             )
     else:
         messages.error(request, _("The leave allocation request can't be approved"))
-    return redirect(leave_allocation_request_view)
+    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 
 
 @login_required
@@ -3250,6 +3253,47 @@ def create_leaverequest_comment(request, leave_id):
             form.save()
             form = LeaverequestcommentForm(initial={'employee_id':emp.id, 'request_id':leave_id})
             messages.success(request, _("Comment added successfully!"))
+
+            if request.user.employee_get.id == leave.employee_id.id:
+                rec = leave.employee_id.employee_work_info.reporting_manager_id.employee_user_id
+                notify.send(
+                    request.user.employee_get,
+                    recipient=rec,
+                    verb=f"{leave.employee_id}'s leave request has received a comment.",
+                    verb_ar=f"تلقت طلب إجازة {leave.employee_id} تعليقًا.",
+                    verb_de=f"{leave.employee_id}s Urlaubsantrag hat einen Kommentar erhalten.",
+                    verb_es=f"La solicitud de permiso de {leave.employee_id} ha recibido un comentario.",
+                    verb_fr=f"La demande de congé de {leave.employee_id} a reçu un commentaire.",
+                    redirect="/leave/request-view",
+                    icon="chatbox-ellipses",
+                )
+            elif request.user.employee_get.id == leave.employee_id.employee_work_info.reporting_manager_id.id:
+                rec = leave.employee_id.employee_user_id
+                notify.send(
+                    request.user.employee_get,
+                    recipient=rec,
+                    verb="Your leave request has received a comment.",
+                    verb_ar="تلقى طلب إجازتك تعليقًا.",
+                    verb_de="Ihr Urlaubsantrag hat einen Kommentar erhalten.",
+                    verb_es="Tu solicitud de permiso ha recibido un comentario.",
+                    verb_fr="Votre demande de congé a reçu un commentaire.",
+                    redirect="/leave/user-request-view",
+                    icon="chatbox-ellipses",
+                )
+            else:
+                rec = [leave.employee_id.employee_user_id, leave.employee_id.employee_work_info.reporting_manager_id.employee_user_id]
+                notify.send(
+                    request.user.employee_get,
+                    recipient=rec,
+                    verb=f"{leave.employee_id}'s leave request has received a comment.",
+                    verb_ar=f"تلقت طلب إجازة {leave.employee_id} تعليقًا.",
+                    verb_de=f"{leave.employee_id}s Urlaubsantrag hat einen Kommentar erhalten.",
+                    verb_es=f"La solicitud de permiso de {leave.employee_id} ha recibido un comentario.",
+                    verb_fr=f"La demande de congé de {leave.employee_id} a reçu un commentaire.",
+                    redirect="/",
+                    icon="chatbox-ellipses",
+                )
+
             return HttpResponse("<script>window.location.reload()</script>")
     return render(
         request,

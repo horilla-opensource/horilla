@@ -4,6 +4,7 @@ views.py
 This module is used to map url patterns with request and approve methods in Dashboard.
 """
 
+from datetime import date
 import json
 from django.shortcuts import render
 from attendance.models import Attendance, AttendanceValidationCondition
@@ -12,6 +13,7 @@ from base.methods import filtersubordinates
 from base.models import ShiftRequest, WorkTypeRequest
 from employee.not_in_out_dashboard import paginator_qry
 from horilla.decorators import login_required
+from leave.models import LeaveAllocationRequest, LeaveRequest
 
 
 @login_required
@@ -82,3 +84,55 @@ def dashboard_attendance_validate(request):
         ]
     )
     return render(request, "request_and_approve/attendance_validate.html",{"validate_attendances": validate_attendances,"validate_attendances_ids": validate_attendances_ids, "pd": previous_data,})
+
+
+@login_required
+def leave_request_and_approve(request):
+    previous_data = request.GET.urlencode()
+    page_number = request.GET.get("page")
+    leave_requests = LeaveRequest.objects.filter(status = "requested")
+    leave_requests =  filtersubordinates(
+        request, leave_requests, "leave.change_leaverequest"
+    )
+    leave_requests = paginator_qry(leave_requests, page_number)
+    leave_requests_ids = json.dumps(
+        [
+            instance.id for instance in leave_requests
+        ]
+    )
+    return render(
+        request,
+        "request_and_approve/leave_request_approve.html",
+        {
+            "leave_requests": leave_requests,
+            "requests_ids": leave_requests_ids, 
+            "pd": previous_data,
+            # "current_date":date.today(),
+        }
+    )
+
+
+@login_required
+def leave_allocation_approve(request):
+    previous_data = request.GET.urlencode()
+    page_number = request.GET.get("page")
+    allocation_reqests = LeaveAllocationRequest.objects.filter(status = "requested")
+    allocation_reqests =  filtersubordinates(
+        request, allocation_reqests, "leave.view_leaveallocationrequest"
+    )
+    # allocation_reqests = paginator_qry(allocation_reqests, page_number)
+    allocation_reqests_ids = json.dumps(
+        [
+            instance.id for instance in allocation_reqests
+        ]
+    )
+    return render(
+        request,
+        "request_and_approve/leave_allocation_approve.html",
+        {
+            "allocation_reqests": allocation_reqests,
+            "reqests_ids": allocation_reqests_ids, 
+            "pd": previous_data,
+            # "current_date":date.today(),
+        }
+    )

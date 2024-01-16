@@ -1,5 +1,6 @@
 from django.urls import path
 from base import request_and_approve, views
+from base.forms import RotatingShiftAssignForm, RotatingWorkTypeAssignForm, RotatingWorkTypeForm
 from base.models import (
     Company,
     Department,
@@ -9,7 +10,9 @@ from base.models import (
     JobPosition,
     JobRole,
     RotatingShift,
+    RotatingShiftAssign,
     RotatingWorkType,
+    RotatingWorkTypeAssign,
     WorkType,
 )
 from django.contrib.auth.models import Group
@@ -83,7 +86,7 @@ urlpatterns = [
         views.mail_server_create_or_update,
         name="mail-server-create-update",
     ),
-    path("mail-server-delete",views.mail_server_delete,name="mail-server-delete"),
+    path("mail-server-delete", views.mail_server_delete, name="mail-server-delete"),
     path("settings/company-create/", views.company_create, name="company-create"),
     path("settings/company-view/", views.company_view, name="company-view"),
     path(
@@ -215,6 +218,16 @@ urlpatterns = [
         "settings/rotating-work-type-assign-update/<int:id>/",
         views.rotating_work_type_assign_update,
         name="rotating-work-type-assign-update",
+    ),
+    path(
+        "rotating-work-type-assign-duplicate/<int:obj_id>/",
+        views.object_duplicate,
+        name="rotating-work-type-assign-duplicate",
+        kwargs={
+            "model": RotatingWorkTypeAssign,
+            "form": RotatingWorkTypeAssignForm,
+            "template": "base/rotating_work_type/htmx/rotating_work_type_assign_form.html",
+        },
     ),
     path(
         "rotating-work-type-assign-archive/<int:id>/",
@@ -360,6 +373,16 @@ urlpatterns = [
         "settings/rotating-shift-assign-update/<int:id>/",
         views.rotating_shift_assign_update,
         name="rotating-shift-assign-update",
+    ),
+    path(
+        "rotating-shift-assign-duplicate/<int:obj_id>/",
+        views.object_duplicate,
+        name="rotating-shift-assign-duplicate",
+        kwargs={
+            "model": RotatingShiftAssign,
+            "form": RotatingShiftAssignForm,
+            "template": "base/rotating_shift/htmx/rotating_shift_assign_form.html",
+        },
     ),
     path(
         "rotating-shift-assign-archive/<int:id>/",
@@ -559,47 +582,39 @@ urlpatterns = [
         views.rotating_work_type_select_filter,
         name="r-work-type-select-filter",
     ),
+    path("settings/ticket-type-view/", views.ticket_type_view, name="ticket-type-view"),
+    path("ticket-type-create", views.ticket_type_create, name="ticket-type-create"),
     path(
-        "settings/ticket-type-view/",views.ticket_type_view,name="ticket-type-view"
+        "ticket-type-update/<int:t_type_id>",
+        views.ticket_type_update,
+        name="ticket-type-update",
     ),
     path(
-        "ticket-type-create",views.ticket_type_create,name="ticket-type-create"
+        "ticket-type-delete/<int:t_type_id>",
+        views.ticket_type_delete,
+        name="ticket-type-delete",
+    ),
+    path("settings/tag-view/", views.tag_view, name="tag-view"),
+    path("tag-create", views.tag_create, name="tag-create"),
+    path("tag-update/<int:tag_id>", views.tag_update, name="tag-update"),
+    path("tag-delete/<int:tag_id>", views.tag_delete, name="tag-delete"),
+    path("employee-tag-create", views.employee_tag_create, name="employee-tag-create"),
+    path(
+        "employee-tag-update/<int:tag_id>",
+        views.employee_tag_update,
+        name="employee-tag-update",
     ),
     path(
-        "ticket-type-update/<int:t_type_id>",views.ticket_type_update,name="ticket-type-update"
+        "employee-tag-delete/<int:tag_id>",
+        views.employee_tag_delete,
+        name="employee-tag-delete",
+    ),
+    path("audit-tag-create", views.audit_tag_create, name="audit-tag-create"),
+    path(
+        "audit-tag-update/<int:tag_id>", views.audit_tag_update, name="audit-tag-update"
     ),
     path(
-        "ticket-type-delete/<int:t_type_id>",views.ticket_type_delete,name="ticket-type-delete"
-    ),
-    path(
-        "settings/tag-view/",views.tag_view,name="tag-view"
-    ),
-    path(
-        "tag-create",views.tag_create,name="tag-create"
-    ),
-    path(
-        "tag-update/<int:tag_id>",views.tag_update,name="tag-update"
-    ),
-    path(
-        "tag-delete/<int:tag_id>",views.tag_delete,name="tag-delete"
-    ),
-    path(
-        "employee-tag-create",views.employee_tag_create,name="employee-tag-create"
-    ),
-    path(
-        "employee-tag-update/<int:tag_id>",views.employee_tag_update,name="employee-tag-update"
-    ),
-    path(
-        "employee-tag-delete/<int:tag_id>",views.employee_tag_delete,name="employee-tag-delete"
-    ),
-    path(
-        "audit-tag-create",views.audit_tag_create,name="audit-tag-create"
-    ),
-    path(
-        "audit-tag-update/<int:tag_id>",views.audit_tag_update,name="audit-tag-update"
-    ),
-    path(
-        "audit-tag-delete/<int:tag_id>",views.audit_tag_delete,name="audit-tag-delete"
+        "audit-tag-delete/<int:tag_id>", views.audit_tag_delete, name="audit-tag-delete"
     ),
     path(
         "configuration/multiple-approval-condition",
@@ -636,7 +651,7 @@ urlpatterns = [
         views.delete_shiftrequest_comment,
         name="shift-request-delete-comment",
     ),
-        path(
+    path(
         "worktype-request-add-comment/<int:worktype_id>/",
         views.create_worktyperequest_comment,
         name="worktype-request-add-comment",
@@ -671,6 +686,14 @@ urlpatterns = [
         request_and_approve.dashboard_attendance_validate,
         name="dashboard-attendance-validate",
     ),
-    
-      
+    path(
+        "leave-request-and-approve",
+        request_and_approve.leave_request_and_approve,
+        name="leave-request-and-approve",
+    ),
+    path(
+        "leave-allocation-approve",
+        request_and_approve.leave_allocation_approve,
+        name="leave-allocation-approve",
+    ),
 ]

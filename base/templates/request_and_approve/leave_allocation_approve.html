@@ -1,0 +1,75 @@
+{% load i18n %}
+{% if allocation_reqests %}
+<div class="oh-sticky-table">
+    <div class="oh-sticky-table__table ">
+        <div class="oh-sticky-table__thead">
+            <div class="oh-sticky-table__tr">
+                <div class="oh-sticky-table__th">{% trans "Employee" %}</div>
+                <div class="oh-sticky-table__th">{% trans "Leave Type" %}</div>
+                <div class="oh-sticky-table__th">{% trans "Requested Days" %}</div>
+                <div class="oh-sticky-table__th">{% trans "Actions" %}</div>
+            </div>
+        </div>
+        <div class="oh-sticky-table__tbody">
+            {% for leave_allocation_request in allocation_reqests %}
+                <div class="oh-sticky-table__tr" draggable="true"  
+                    data-toggle="oh-modal-toggle"
+                    data-target="#smallModal"
+                    hx-get="{% url 'leave-allocation-request-single-view' leave_allocation_request.id %}?instances_ids={{reqests_ids}}&dashboard=true" 
+                    hx-target="#smallModalTarget">
+                    <div class="oh-sticky-table__sd" >
+                        <div class="oh-profile oh-profile--md">
+                            <div class="oh-profile__avatar mr-1">
+                                {% if leave_allocation_request.employee_id.employee_profile %}
+                                <img src="{{leave_allocation_request.employee_id.get_avatar}}" class="oh-profile__image"
+                                    alt="" />
+                                {% else %}
+                                <img src="https://ui-avatars.com/api/?name={{leave_allocation_request.employee_id}}&background=random"
+                                    class="oh-profile__image" alt="" />
+                                {% endif %}
+                            </div>
+                            <span class="oh-profile__name oh-text--dark">{{leave_allocation_request.employee_id}}</span>
+                        </div>
+                    </div>
+                    <div class="oh-sticky-table__td">{{leave_allocation_request.leave_type_id}}</div>
+                    <div class="oh-sticky-table__td">{{leave_allocation_request.requested_days}}</div>
+                    <div class="oh-sticky-table__td" onclick="event.stopPropagation()">
+                        <div class="oh-btn-group">
+                            {% if leave_allocation_request.status == 'requested' %}
+                                <a type="submit" href="{% url 'leave-allocation-request-approve' leave_allocation_request.id %}" 
+                                    title="{% trans 'Approve' %}"
+                                    class="oh-btn oh-btn--success w-100">
+                                    <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
+                                </a>
+                            {% endif %}
+                            {% if leave_allocation_request.status == 'requested' or leave_allocation_request.status == 'approved' %}
+                                <a type="submit" data-toggle="oh-modal-toggle"
+                                    data-target="#bigModal" 
+                                    hx-get="{% url 'leave-allocation-request-reject' leave_allocation_request.id %}" 
+                                    hx-target="#bigModalTarget"
+                                    title="{% trans 'Reject' %}"
+                                    class="oh-btn oh-btn--danger w-100">
+                                    <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
+                                </a>
+                            {% else %}
+                                <a type="submit" href="#" title="{% trans 'Reject' %}"
+                                    class="oh-btn oh-btn--danger oh-btn--disabled
+                                    w-100" >
+                                    <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% else %}
+<div style="height: 380px; display:flex;align-items: center;justify-content: center;" class="">
+    <div style="" class="">
+        <img style="display: block;width: 70px;margin: 20px auto ;" src="/static/images/ui/joiningchart.png" class="" alt=""/>
+		<h3 style="font-size:16px" class="oh-404__subtitle">{% trans "No data Found..." %}</h3>
+	</div>
+</div>
+{% endif %}
