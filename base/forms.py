@@ -1534,7 +1534,7 @@ class AuditTagForm(ModelForm):
 
 class ShiftrequestcommentForm(ModelForm):
     """
-    Audit Tags form
+    Shift request comment form
     """
 
     class Meta:
@@ -1548,7 +1548,7 @@ class ShiftrequestcommentForm(ModelForm):
 
 class WorktyperequestcommentForm(ModelForm):
     """
-    Audit Tags form
+    Worktype request comment form
     """
 
     class Meta:
