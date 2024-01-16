@@ -1081,10 +1081,9 @@ def feedback_list_view(request):
     user = request.user
     employee = Employee.objects.filter(employee_user_id=user).first()
     feedback_requested_ids = Feedback.objects.filter(
-        Q(manager_id=employee)
-        | Q(colleague_id=employee)
-        | Q(subordinate_id=employee)
-        | Q(employee_id__is_active=True)
+        Q(manager_id=employee,manager_id__is_active=True)
+        | Q(colleague_id=employee,colleague_id__is_active=True)
+        | Q(subordinate_id=employee,subordinate_id__is_active=True)
     ).values_list("id", flat=True)
     feedback_own = Feedback.objects.filter(employee_id=employee).filter(
         archive=False, employee_id__is_active=True
