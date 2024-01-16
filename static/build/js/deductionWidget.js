@@ -1,5 +1,7 @@
 function conditionalVisibility() {
   if (!$("#id_is_condition_based").is(":checked")) {
+    $('[onclick="conditionAdd()"]').parent().hide()
+    $("#conditionContainer").hide();
     $("#id_field, #id_value, #id_condition").hide();
     $("#id_field, #id_value, #id_condition").parent().hide();
     $("[for='id_field'], [for='id_value'], [for='id_condition']").hide();
@@ -7,6 +9,8 @@ function conditionalVisibility() {
       .parent()
       .hide();
   } else {
+    $("#conditionContainer").show();
+    $('[onclick="conditionAdd()"]').parent().show()
     $("#id_field, #id_value, #id_condition").show();
     $("#id_field, #id_value, #id_condition").parent().show();
     $("[for='id_field'], [for='id_value'], [for='id_condition']").show();
@@ -225,21 +229,78 @@ function conditionalVisibility() {
     $("#id_is_tax,[for=id_is_tax],#id_if_choice,[for=id_if_choice],#id_if_value,[for=id_if_value],#id_if_condition,[for=id_if_condition],#id_if_amount,[for=id_if_amount]").show();
     $("#id_is_tax,[for=id_is_tax],#id_if_choice,[for=id_if_choice],#id_if_value,[for=id_if_value],#id_if_condition,[for=id_if_condition],#id_if_amount,[for=id_if_amount]").parent().show();
   }
-  if ($("#id_is_fixed").is(":checked")){
+  if ($("#id_is_fixed").is(":checked")) {
     $("#id_has_max_limit").parent().parent().hide();
     $("#id_maximum_unit,#id_maximum_amount").parent().hide();
-    }
-    else{
-      $("#id_has_max_limit").parent().parent().show();
-      if ($("#id_has_max_limit").is(":checked")) {
-                
-        $("#id_maximum_unit,#id_maximum_amount").parent().show();
-      }
+  }
+  else {
+    $("#id_has_max_limit").parent().parent().show();
+    if ($("#id_has_max_limit").is(":checked")) {
 
+      $("#id_maximum_unit,#id_maximum_amount").parent().show();
     }
+
+  }
 }
-$("input[type='checkbox'], select, input[type='radio']").change(function (e) {
-  e.preventDefault();
-  conditionalVisibility();
+$(document).ready(function () {
+  $("input[type='checkbox'], select, input[type='radio']").change(function (e) {
+    e.preventDefault();
+    conditionalVisibility();
+  });
+  $("#id_is_condition_based").parent().parent().attr("class","col-12")
+  $("#id_condition, #id_field, #id_value").parent().attr("class", "col-12 col-md-4 condition-highlight");
+  addMore = $(`
+  <div class="mt-3">
+  <div class="m-1 p-1"onclick="conditionAdd()" align="center" style="border-radius:15px; width:25px;border:solid 1px green;cursor:pointer;display:inline;" title="Add More">
+  +
+    </div>
+    
+    </div>
+    `)
+
+  // Adding add more mutton on the condition based check box
+  $('[name="is_condition_based"]').parent().after(addMore);
+
 });
+
+
+
+conditionContainer = $(`
+<div id="conditionContainer" class="row">
+</div>
+`)
+// Add condition container
+$('#id_value').parent().after(conditionContainer)
+
+function conditionAdd() {
+  let conditionSet = $(
+    `
+    <div class="row">
+      <div class="col-12 col-md-4 condition-highlight">
+        ${$("[for=id_field]").clone().attr("class", "style-widget form-control oh-label__info").prop("outerHTML")}
+        ${$("#id_field").clone().attr("name", "other_fields").attr("class", "style-widget form-control").prop("outerHTML")}
+      </div>
+      <div class="col-12 col-md-4 condition-highlight">
+        ${$("[for=id_condition]").clone().attr("class", "style-widget form-control oh-label__info").prop("outerHTML")}
+        ${$("#id_condition").clone().attr("name", "other_conditions").attr("class", "style-widget form-control").prop("outerHTML")}
+      </div>
+      <div class="col-12 col-md-4 condition-highlight">
+        <div class="d-flex">
+          ${$("[for=id_value]").clone().attr("class", "style-widget form-control oh-label__info").prop("outerHTML")}
+          <div class="m-1 p-1" onclick="$(this).closest('.row').remove()" align="center" style="border-radius:15px; width:25px;border:solid 1px red;cursor:pointer;display:inline;">
+            -
+          </div>
+        </div>
+        ${$("#id_value").clone().attr("name", "other_values").attr("class", "style-widget form-control").prop("outerHTML")}
+      </div>
+    </div>
+    `
+  );
+
+  $("#conditionContainer").append(conditionSet);
+}
 conditionalVisibility();
+
+
+
+
