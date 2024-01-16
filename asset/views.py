@@ -19,7 +19,14 @@ from employee.models import EmployeeWorkInformation
 from notifications.signals import notify
 from horilla.decorators import login_required, hx_request_required
 from horilla.decorators import permission_required
-from asset.models import Asset, AssetDocuments, AssetRequest, AssetAssignment, AssetCategory, AssetLot
+from asset.models import (
+    Asset,
+    AssetDocuments,
+    AssetRequest,
+    AssetAssignment,
+    AssetCategory,
+    AssetLot,
+)
 from asset.forms import (
     AssetBatchForm,
     AssetForm,
@@ -41,6 +48,7 @@ from asset.filters import (
     AssetFilter,
 )
 
+
 def asset_del(request, asset):
     try:
         asset.delete()
@@ -48,6 +56,7 @@ def asset_del(request, asset):
     except ProtectedError:
         messages.error(request, _("You cannot delete this asset."))
     return
+
 
 @login_required
 @hx_request_required
@@ -75,44 +84,51 @@ def asset_creation(request, id):
     """
     initial_data = {"asset_category_id": id}
     form = AssetForm(initial=initial_data)
-    context = {"asset_creation_form": form}
     if request.method == "POST":
         form = AssetForm(request.POST, initial=initial_data)
         if form.is_valid():
             form.save()
             messages.success(request, _("Asset created successfully"))
             return redirect("asset-creation", id=id)
-        else:
-            context["asset_creation_form"] = form
+    context = {"asset_creation_form": form}
     return render(request, "asset/asset_creation.html", context)
 
+
 @login_required
-def add_asset_report(request,asset_id=None):
+def add_asset_report(request, asset_id=None):
     """
     Function for adding asset report to the asset
     """
     asset_report_form = AssetReportForm()
     if asset_id:
         asset = Asset.objects.get(id=asset_id)
-        asset_report_form = AssetReportForm(initial={'asset_id':asset})
+        asset_report_form = AssetReportForm(initial={"asset_id": asset})
         if not request.GET.get("asset_list"):
-            if request.user.employee_get == AssetAssignment.objects.get(asset_id=asset_id, return_date__isnull=True).assigned_to_employee_id or  request.user.has_perm("asset.change_asset"):
+            if request.user.employee_get == AssetAssignment.objects.get(
+                asset_id=asset_id, return_date__isnull=True
+            ).assigned_to_employee_id or request.user.has_perm("asset.change_asset"):
                 pass
             else:
                 return redirect(asset_request_alloaction_view)
-    
-    if request.method == 'POST':
+
+    if request.method == "POST":
         asset_report_form = AssetReportForm(request.POST, request.FILES)
-        if asset_report_form.is_valid() :
+        if asset_report_form.is_valid():
             asset_report = asset_report_form.save()
 
             if asset_report_form.is_valid() and request.FILES:
-                for file in request.FILES.getlist('file'):
+                for file in request.FILES.getlist("file"):
                     AssetDocuments.objects.create(asset_report=asset_report, file=file)
 
                 return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 
-    return render(request, 'asset/asset_report_form.html', {'asset_report_form': asset_report_form,})
+    return render(
+        request,
+        "asset/asset_report_form.html",
+        {
+            "asset_report_form": asset_report_form,
+        },
+    )
 
 
 @login_required
@@ -227,7 +243,7 @@ def asset_delete(request, asset_id):
             # if this asset is used in any allocation
             messages.error(request, _("Asset is used in allocation!."))
             return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
-        
+
         asset_del(request, asset)
 
         return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
@@ -243,7 +259,7 @@ def asset_delete(request, asset_id):
             # if this asset is used in any allocation
             messages.error(request, _("Asset is used in allocation!."))
             return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
-        
+
         asset_del(request, asset)
 
         return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
@@ -628,8 +644,8 @@ def asset_allocate_return(request, asset_id):
 
     asset_return_form = AssetReturnForm()
     asset_allocation = AssetAssignment.objects.filter(
-                    asset_id=asset_id, return_status__isnull=True
-                ).first()
+        asset_id=asset_id, return_status__isnull=True
+    ).first()
     if request.method == "POST":
         asset_return_form = AssetReturnForm(request.POST)
 
@@ -638,10 +654,8 @@ def asset_allocate_return(request, asset_id):
             asset_return_status = request.POST.get("return_status")
             asset_return_date = request.POST.get("return_date")
             asset_return_condition = request.POST.get("return_condition")
-            context = {"asset_return_form":asset_return_form,"asset_id":asset_id}
-            response = render(
-                request, "asset/asset_return_form.html", context
-            )
+            context = {"asset_return_form": asset_return_form, "asset_id": asset_id}
+            response = render(request, "asset/asset_return_form.html", context)
             if asset_return_status == "Healthy":
                 asset_allocation = AssetAssignment.objects.filter(
                     asset_id=asset_id, return_status__isnull=True
@@ -654,7 +668,8 @@ def asset_allocate_return(request, asset_id):
                 asset.save()
                 messages.info(request, _("Asset Return Successful !."))
                 return HttpResponse(
-                response.content.decode("utf-8") + "<script>location.reload();</script>"
+                    response.content.decode("utf-8")
+                    + "<script>location.reload();</script>"
                 )
             asset.asset_status = "Not-Available"
             asset.save()
@@ -669,9 +684,9 @@ def asset_allocate_return(request, asset_id):
             return HttpResponse(
                 response.content.decode("utf-8") + "<script>location.reload();</script>"
             )
-    context = {"asset_return_form":asset_return_form,"asset_id":asset_id}
+    context = {"asset_return_form": asset_return_form, "asset_id": asset_id}
     context["asset_alocation"] = asset_allocation
-    return render(request, "asset/asset_return_form.html",context )
+    return render(request, "asset/asset_return_form.html", context)
 
 
 def filter_pagination_asset_request_allocation(request):
@@ -687,38 +702,102 @@ def filter_pagination_asset_request_allocation(request):
         .exclude(return_status__isnull=False)
         .filter(asset_id__asset_name__icontains=asset_request_alloaction_search)
     )
-    
+
     search_term = asset_request_alloaction_search.strip()
 
     if request.user.has_perm(("asset.view_assetrequest", "asset.view_assetassignment")):
         asset_allocations_queryset = AssetAssignment.objects.all().filter(
-            Q(assigned_to_employee_id__employee_first_name__icontains=search_term) |
-            Q(assigned_to_employee_id__employee_last_name__icontains=search_term) |
-            (Q(assigned_to_employee_id__employee_first_name__icontains=search_term.split()[0]) if search_term.split() else Q()) |
-            (Q(assigned_to_employee_id__employee_last_name__icontains=search_term.split()[-1]) if len(search_term.split()) > 1 else Q())
+            Q(assigned_to_employee_id__employee_first_name__icontains=search_term)
+            | Q(assigned_to_employee_id__employee_last_name__icontains=search_term)
+            | (
+                Q(
+                    assigned_to_employee_id__employee_first_name__icontains=search_term.split()[
+                        0
+                    ]
+                )
+                if search_term.split()
+                else Q()
+            )
+            | (
+                Q(
+                    assigned_to_employee_id__employee_last_name__icontains=search_term.split()[
+                        -1
+                    ]
+                )
+                if len(search_term.split()) > 1
+                else Q()
+            )
         )
         asset_requests_queryset = AssetRequest.objects.all().filter(
-            Q(requested_employee_id__employee_first_name__icontains=search_term) |
-            Q(requested_employee_id__employee_last_name__icontains=search_term) |
-            (Q(requested_employee_id__employee_first_name__icontains=search_term.split()[0]) if search_term.split() else Q()) |
-            (Q(requested_employee_id__employee_last_name__icontains=search_term.split()[-1]) if len(search_term.split()) > 1 else Q())
+            Q(requested_employee_id__employee_first_name__icontains=search_term)
+            | Q(requested_employee_id__employee_last_name__icontains=search_term)
+            | (
+                Q(
+                    requested_employee_id__employee_first_name__icontains=search_term.split()[
+                        0
+                    ]
+                )
+                if search_term.split()
+                else Q()
+            )
+            | (
+                Q(
+                    requested_employee_id__employee_last_name__icontains=search_term.split()[
+                        -1
+                    ]
+                )
+                if len(search_term.split()) > 1
+                else Q()
+            )
         )
     else:
         asset_allocations_queryset = AssetAssignment.objects.filter(
             assigned_to_employee_id=employee
         ).filter(
-            Q(assigned_to_employee_id__employee_first_name__icontains=search_term) |
-            Q(assigned_to_employee_id__employee_last_name__icontains=search_term) |
-            (Q(assigned_to_employee_id__employee_first_name__icontains=search_term.split()[0]) if search_term.split() else Q()) |
-            (Q(assigned_to_employee_id__employee_last_name__icontains=search_term.split()[-1]) if len(search_term.split()) > 1 else Q())
+            Q(assigned_to_employee_id__employee_first_name__icontains=search_term)
+            | Q(assigned_to_employee_id__employee_last_name__icontains=search_term)
+            | (
+                Q(
+                    assigned_to_employee_id__employee_first_name__icontains=search_term.split()[
+                        0
+                    ]
+                )
+                if search_term.split()
+                else Q()
+            )
+            | (
+                Q(
+                    assigned_to_employee_id__employee_last_name__icontains=search_term.split()[
+                        -1
+                    ]
+                )
+                if len(search_term.split()) > 1
+                else Q()
+            )
         )
         asset_requests_queryset = AssetRequest.objects.filter(
             requested_employee_id=employee
         ).filter(
-            Q(requested_employee_id__employee_first_name__icontains=search_term) |
-            Q(requested_employee_id__employee_last_name__icontains=search_term) |
-            (Q(requested_employee_id__employee_first_name__icontains=search_term.split()[0]) if search_term.split() else Q()) |
-            (Q(requested_employee_id__employee_last_name__icontains=search_term.split()[-1]) if len(search_term.split()) > 1 else Q())
+            Q(requested_employee_id__employee_first_name__icontains=search_term)
+            | Q(requested_employee_id__employee_last_name__icontains=search_term)
+            | (
+                Q(
+                    requested_employee_id__employee_first_name__icontains=search_term.split()[
+                        0
+                    ]
+                )
+                if search_term.split()
+                else Q()
+            )
+            | (
+                Q(
+                    requested_employee_id__employee_last_name__icontains=search_term.split()[
+                        -1
+                    ]
+                )
+                if len(search_term.split()) > 1
+                else Q()
+            )
         )
 
     previous_data = request.GET.urlencode()
@@ -736,7 +815,9 @@ def filter_pagination_asset_request_allocation(request):
 
     if allocation_field != "" and allocation_field is not None:
         allocation_field_copy = allocation_field.replace(".", "__")
-        asset_allocation_filtered = asset_allocation_filtered.order_by(allocation_field_copy)
+        asset_allocation_filtered = asset_allocation_filtered.order_by(
+            allocation_field_copy
+        )
 
     asset_paginator = Paginator(assets_filtered.qs, 20)
     asset_request_paginator = Paginator(asset_request_filtered, 20)
@@ -745,17 +826,9 @@ def filter_pagination_asset_request_allocation(request):
     assets = asset_paginator.get_page(page_number)
     asset_requests = asset_request_paginator.get_page(page_number)
     asset_allocations = asset_allocation_paginator.get_page(page_number)
-    requests_ids = json.dumps(
-        [
-            instance.id
-            for instance in asset_requests.object_list
-        ]
-    )
+    requests_ids = json.dumps([instance.id for instance in asset_requests.object_list])
     allocations_ids = json.dumps(
-        [
-            instance.id
-            for instance in asset_allocations.object_list
-        ]
+        [instance.id for instance in asset_allocations.object_list]
     )
 
     data_dict = parse_qs(previous_data)
@@ -767,16 +840,20 @@ def filter_pagination_asset_request_allocation(request):
         "asset_requests": asset_requests,
         "asset_allocations": asset_allocations,
         "assets_filter_form": assets_filtered.form,
-        "asset_request_filter_form": AssetRequestFilter(request.GET, queryset=asset_requests_queryset).form,
-        "asset_allocation_filter_form": AssetAllocationFilter(request.GET, queryset=asset_allocations_queryset).form,
+        "asset_request_filter_form": AssetRequestFilter(
+            request.GET, queryset=asset_requests_queryset
+        ).form,
+        "asset_allocation_filter_form": AssetAllocationFilter(
+            request.GET, queryset=asset_allocations_queryset
+        ).form,
         "pg": previous_data,
-        "filter_dict":data_dict,
+        "filter_dict": data_dict,
         "gp_request_fields": AssetRequestReGroup.fields,
         "gp_Allocation_fields": AssetAllocationReGroup.fields,
-        "request_field":request_field,
-        "allocation_field":allocation_field,
-        "requests_ids":requests_ids,
-        "allocations_ids":allocations_ids
+        "request_field": request_field,
+        "allocation_field": allocation_field,
+        "requests_ids": requests_ids,
+        "allocations_ids": allocations_ids,
     }
 
 
@@ -792,12 +869,15 @@ def asset_request_alloaction_view(request):
     context = filter_pagination_asset_request_allocation(request)
     template = "request_allocation/asset_request_allocation_view.html"
 
-    if request.GET.get("request_field") != "" and request.GET.get("request_field") is not None or request.GET.get("allocation_field") != "" and request.GET.get("allocation_field") is not None:
+    if (
+        request.GET.get("request_field") != ""
+        and request.GET.get("request_field") is not None
+        or request.GET.get("allocation_field") != ""
+        and request.GET.get("allocation_field") is not None
+    ):
         template = "request_allocation/group_by.html"
 
-    return render(
-        request, template , context
-    )
+    return render(request, template, context)
 
 
 def asset_request_alloaction_view_search_filter(request):
@@ -810,16 +890,20 @@ def asset_request_alloaction_view_search_filter(request):
     """
     context = filter_pagination_asset_request_allocation(request)
     template = "request_allocation/asset_request_allocation_list.html"
-    if request.GET.get("request_field") != "" and request.GET.get("request_field") is not None or request.GET.get("allocation_field") != "" and request.GET.get("allocation_field") is not None:
+    if (
+        request.GET.get("request_field") != ""
+        and request.GET.get("request_field") is not None
+        or request.GET.get("allocation_field") != ""
+        and request.GET.get("allocation_field") is not None
+    ):
         template = "request_allocation/group_by.html"
 
-    return render(
-        request, template, context
-    )
+    return render(request, template, context)
 
-def asset_request_individual_view(request,id):
+
+def asset_request_individual_view(request, id):
     asset_request = AssetRequest.objects.get(id=id)
-    context = {"asset_request":asset_request}
+    context = {"asset_request": asset_request}
     requests_ids_json = request.GET.get("requests_ids")
     if requests_ids_json:
         requests_ids = json.loads(requests_ids_json)
@@ -827,16 +911,12 @@ def asset_request_individual_view(request,id):
         context["requests_ids"] = requests_ids_json
         context["previous"] = previous_id
         context["next"] = next_id
-    return render(
-        request,
-        "request_allocation/individual_request.html",
-        context
-    )
+    return render(request, "request_allocation/individual_request.html", context)
 
 
-def asset_allocation_individual_view(request,id):
+def asset_allocation_individual_view(request, id):
     asset_allocation = AssetAssignment.objects.get(id=id)
-    context = {"asset_allocation":asset_allocation}
+    context = {"asset_allocation": asset_allocation}
     allocation_ids_json = request.GET.get("allocations_ids")
     if allocation_ids_json:
         allocation_ids = json.loads(allocation_ids_json)
@@ -844,11 +924,7 @@ def asset_allocation_individual_view(request,id):
         context["allocations_ids"] = allocation_ids_json
         context["previous"] = previous_id
         context["next"] = next_id
-    return render(
-        request,
-        "request_allocation/individual allocation.html",
-        context
-    )
+    return render(request, "request_allocation/individual allocation.html", context)
 
 
 def convert_nan(val):
@@ -976,9 +1052,8 @@ def asset_export_excel(request):
             # Get the value of the field for the current asset
             value = getattr(asset, field)
 
-                       
             if type(value) == date:
-                user= request.user
+                user = request.user
                 emp = user.employee_get
 
                 # Taking the company_name of the user
@@ -992,31 +1067,29 @@ def asset_export_excel(request):
                     # Access the date_format attribute directly
                     date_format = emp_company.date_format
                 else:
-                    date_format = 'MMM. D, YYYY'
+                    date_format = "MMM. D, YYYY"
                 # Define date formats
                 date_formats = {
-                    'DD-MM-YYYY': '%d-%m-%Y',
-                    'DD.MM.YYYY': '%d.%m.%Y',
-                    'DD/MM/YYYY': '%d/%m/%Y',
-                    'MM/DD/YYYY': '%m/%d/%Y',
-                    'YYYY-MM-DD': '%Y-%m-%d',
-                    'YYYY/MM/DD': '%Y/%m/%d',
-                    'MMMM D, YYYY': '%B %d, %Y',
-                    'DD MMMM, YYYY': '%d %B, %Y',
-                    'MMM. D, YYYY': '%b. %d, %Y',
-                    'D MMM. YYYY': '%d %b. %Y',
-                    'dddd, MMMM D, YYYY': '%A, %B %d, %Y',
+                    "DD-MM-YYYY": "%d-%m-%Y",
+                    "DD.MM.YYYY": "%d.%m.%Y",
+                    "DD/MM/YYYY": "%d/%m/%Y",
+                    "MM/DD/YYYY": "%m/%d/%Y",
+                    "YYYY-MM-DD": "%Y-%m-%d",
+                    "YYYY/MM/DD": "%Y/%m/%d",
+                    "MMMM D, YYYY": "%B %d, %Y",
+                    "DD MMMM, YYYY": "%d %B, %Y",
+                    "MMM. D, YYYY": "%b. %d, %Y",
+                    "D MMM. YYYY": "%d %b. %Y",
+                    "dddd, MMMM D, YYYY": "%A, %B %d, %Y",
                 }
 
                 # Convert the string to a datetime.date object
-                start_date = datetime.strptime(str(value), '%Y-%m-%d').date()
+                start_date = datetime.strptime(str(value), "%Y-%m-%d").date()
 
                 # Print the formatted date for each format
                 for format_name, format_string in date_formats.items():
                     if format_name == date_format:
                         value = start_date.strftime(format_string)
-
-
 
             # Append the value if it exists, or append None if it's None
             data[field].append(value if value is not None else None)
@@ -1230,6 +1303,7 @@ def delete_asset_category(request, cat_id):
         messages.error(request, _("Assets are located within this category."))
     return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 
+
 @login_required
 @permission_required(perm="asset.view_assetcategory")
 def asset_dashboard(request):
@@ -1246,7 +1320,7 @@ def asset_dashboard(request):
         "asset_in_use": asset_in_use,
         "asset_allocations": asset_allocations,
     }
-    return render(request,"asset/dashboard.html", context)
+    return render(request, "asset/dashboard.html", context)
 
 
 @login_required
@@ -1263,10 +1337,10 @@ def asset_available_chart(request):
     dataset = [
         {
             "label": _("asset"),
-            "data": [len(asset_in_use),len(asset_available),len(asset_unavailable)],
+            "data": [len(asset_in_use), len(asset_available), len(asset_unavailable)],
         },
     ]
-    
+
     response = {
         "labels": labels,
         "dataset": dataset,
@@ -1281,10 +1355,10 @@ def asset_category_chart(request):
     """
     This function returns the response for the asset category chart in the asset dashboard.
     """
-    asset_categories =AssetCategory.objects.all()
+    asset_categories = AssetCategory.objects.all()
     data = []
     for asset_category in asset_categories:
-        category_count=0
+        category_count = 0
         category_count = len(asset_category.asset_set.filter(asset_status="In use"))
         data.append(category_count)
 
@@ -1295,7 +1369,7 @@ def asset_category_chart(request):
             "data": data,
         },
     ]
-    
+
     response = {
         "labels": labels,
         "dataset": dataset,

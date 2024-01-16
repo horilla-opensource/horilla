@@ -81,7 +81,7 @@
               </button>
             </form>
             {% else %}
-              {% if perms.asset.change_asset %}
+             {% if perms.asset.change_asset %}
               <a 
               class="oh-btn oh-btn--light-bkg w-100 " 
               data-toggle="oh-modal-toggle" 
@@ -92,6 +92,18 @@
               onclick="event.stopPropagation()"
               id="oh-btn-asset-update-modal"> 
               <ion-icon name="create-outline" role="img" class="md hydrated" aria-label="create outline"></ion-icon>
+            </a>
+            <a 
+              class="oh-btn oh-btn--light-bkg w-100" 
+              data-toggle="oh-modal-toggle"
+              data-target="#AssetCategoryModal"
+              hx-get="{% url 'duplicate-asset' asset.id %}?{{pg}}"
+              title="{% trans 'Duplicate' %}"
+              hx-target="#AssetModal"
+              onclick="event.stopPropagation()"
+              style= "cursor: pointer;"
+             >
+              <ion-icon name="copy-outline"></ion-icon>
             </a>
             {% endif %}
             {% if asset.assetassignment_set.all %}
