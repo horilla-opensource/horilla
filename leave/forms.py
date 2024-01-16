@@ -19,6 +19,7 @@ from .models import (
     Holiday,
     CompanyLeave,
     LeaveAllocationRequest,
+    LeaveallocationrequestComment,
     LeaverequestComment,
 )
 from .methods import (
@@ -805,4 +806,18 @@ class LeaverequestcommentForm(ModelForm):
         """
 
         model = LeaverequestComment
+        fields = ('comment',)
+
+
+class LeaveallocationrequestcommentForm(ModelForm):
+    """
+    Leave Allocation Requestcomment form
+    """
+
+    class Meta:
+        """
+        Meta class for additional options
+        """
+
+        model = LeaveallocationrequestComment
         fields = ('comment',)
