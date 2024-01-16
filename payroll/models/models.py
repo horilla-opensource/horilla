@@ -613,6 +613,25 @@ FIELD_CHOICE = [
 ]
 
 
+class MultipleCondition(models.Model):
+    """
+    MultipleCondition Model
+    """
+
+    field = models.CharField(
+        max_length=255,
+    )
+    condition = models.CharField(
+        max_length=255, choices=CONDITION_CHOICE, null=True, blank=True
+    )
+    value = models.CharField(
+        max_length=255,
+        null=True,
+        blank=True,
+        help_text=_("The value must be like the data stored in the database"),
+    )
+
+
 class Allowance(models.Model):
     """
     Allowance model
@@ -819,6 +838,9 @@ class Allowance(models.Model):
     only_show_under_employee = models.BooleanField(default=False, editable=False)
     is_loan = models.BooleanField(default=False, editable=False)
     objects = HorillaCompanyManager()
+    other_conditions = models.ManyToManyField(
+        MultipleCondition, blank=True, editable=False
+    )
 
     class Meta:
         """
@@ -1113,6 +1135,9 @@ class Deduction(models.Model):
     objects = HorillaCompanyManager()
 
     is_installment = models.BooleanField(default=False, editable=False)
+    other_conditions = models.ManyToManyField(
+        MultipleCondition, blank=True, editable=False
+    )
 
     def installment_payslip(self):
         payslip = Payslip.objects.filter(installment_ids=self).first()
@@ -1471,7 +1496,7 @@ class Reimbursement(models.Model):
         Allowance, on_delete=models.SET_NULL, null=True, editable=False
     )
     created_at = models.DateTimeField(auto_now_add=True)
-    is_active=models.BooleanField(default=True,editable=False)
+    is_active = models.BooleanField(default=True, editable=False)
 
     def save(self, *args, **kwargs) -> None:
         request = getattr(thread_local_middleware._thread_locals, "request", None)
@@ -1563,7 +1588,7 @@ class ReimbursementrequestComment(models.Model):
     """
     ReimbursementrequestComment Model
     """
-    
+
     request_id = models.ForeignKey(Reimbursement, on_delete=models.CASCADE)
     employee_id = models.ForeignKey(Employee, on_delete=models.CASCADE)
     comment = models.TextField(null=True, verbose_name=_("Comment"))

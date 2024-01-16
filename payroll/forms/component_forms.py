@@ -7,6 +7,7 @@ import uuid
 import datetime
 from django import forms
 from django.utils.translation import gettext_lazy as _
+from notifications.signals import notify
 from django.template.loader import render_to_string
 from base import thread_local_middleware
 from horilla_widgets.forms import HorillaForm
@@ -22,6 +23,7 @@ from payroll.models.models import (
     Allowance,
     Contract,
     LoanAccount,
+    MultipleCondition,
     Payslip,
     Reimbursement,
     ReimbursementMultipleAttachment,
@@ -71,6 +73,30 @@ class AllowanceForm(forms.ModelForm):
         context = {"form": self}
         table_html = render_to_string("common_form.html", context)
         return table_html
+
+    def save(self, commit: bool = ...) -> Any:
+        super().save(commit)
+        other_conditions = self.data.getlist("other_conditions")
+        other_fields = self.data.getlist("other_fields")
+        other_values = self.data.getlist("other_values")
+        multiple_conditions = []
+        try:
+            if self.instance.pk:
+                self.instance.other_conditions.all().delete()
+            if self.instance.is_condition_based:
+                for index, field in enumerate(other_fields):
+                    condition = MultipleCondition(
+                        field=field,
+                        condition=other_conditions[index],
+                        value=other_values[index],
+                    )
+                    condition.save()
+                    multiple_conditions.append(condition)
+        except Exception as e:
+            print(e)
+        if commit:
+            self.instance.other_conditions.add(*multiple_conditions)
+        return multiple_conditions
 
 
 class DeductionForm(forms.ModelForm):
@@ -138,6 +164,30 @@ class DeductionForm(forms.ModelForm):
         context = {"form": self}
         table_html = render_to_string("common_form.html", context)
         return table_html
+
+    def save(self, commit: bool = ...) -> Any:
+        super().save(commit)
+        other_conditions = self.data.getlist("other_conditions")
+        other_fields = self.data.getlist("other_fields")
+        other_values = self.data.getlist("other_values")
+        multiple_conditions = []
+        try:
+            if self.instance.pk:
+                self.instance.other_conditions.all().delete()
+            if self.instance.is_condition_based:
+                for index, field in enumerate(other_fields):
+                    condition = MultipleCondition(
+                        field=field,
+                        condition=other_conditions[index],
+                        value=other_values[index],
+                    )
+                    condition.save()
+                    multiple_conditions.append(condition)
+        except Exception as e:
+            print(e)
+        if commit:
+            self.instance.other_conditions.add(*multiple_conditions)
+        return multiple_conditions
 
 
 class PayslipForm(ModelForm):
@@ -412,7 +462,6 @@ class AssetFineForm(LoanAccountForm):
                 del self.fields[field]
 
 
-
 class MultipleFileInput(forms.ClearableFileInput):
     allow_multiple_selected = True
 
@@ -507,6 +556,26 @@ class ReimbursementForm(ModelForm):
         for field in exclude_fields:
             if field in self.fields:
                 del self.fields[field]
+            
+        emp = Employee.objects.get(id = self.initial["employee_id"])
+
+        try:
+            notify.send(
+                emp,
+                recipient=(
+                    emp.employee_work_info.reporting_manager_id.employee_user_id
+                ),
+                verb=f"You have a new reimbursement request to approve for {emp}.",
+                verb_ar=f"لديك طلب استرداد نفقات جديد يتعين عليك الموافقة عليه لـ {emp}.",
+                verb_de=f"Sie haben einen neuen Rückerstattungsantrag zur Genehmigung für {emp}.",
+                verb_es=f"Tienes una nueva solicitud de reembolso para aprobar para {emp}.",
+                verb_fr=f"Vous avez une nouvelle demande de remboursement à approuver pour {emp}.",
+                icon="information",
+                redirect="/payroll/view-reimbursement",
+            )
+        except Exception as e:
+            pass
+
 
     def as_p(self):
         """
@@ -532,3 +601,17 @@ class ReimbursementForm(ModelForm):
         instance = super().save(commit)
         instance.other_attachments.add(*multiple_attachment_ids)
         return instance, attachemnts
+
+
+class ConditionForm(ModelForm):
+    """
+    Multiple condition form
+    """
+
+    class Meta:
+        model = Allowance
+        fields = [
+            "field",
+            "condition",
+            "value",
+        ]

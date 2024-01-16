@@ -13,6 +13,7 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse, JsonResponse, HttpResponseRedirect
 from django.contrib import messages
 from django.db.models import Q, ProtectedError
+from notifications.signals import notify
 from base.models import Company
 from horilla.decorators import login_required, permission_required
 from base.methods import export_data, generate_colors, get_key_instances
@@ -1205,6 +1206,47 @@ def create_payrollrequest_comment(request, payroll_id):
             form.save()
             form = ReimbursementrequestCommentForm(initial={'employee_id':emp.id, 'request_id':payroll_id})
             messages.success(request, _("Comment added successfully!"))
+            
+            if request.user.employee_get.id == payroll.employee_id.id:
+                rec = payroll.employee_id.employee_work_info.reporting_manager_id.employee_user_id
+                notify.send(
+                    request.user.employee_get,
+                    recipient=rec,
+                    verb=f"{payroll.employee_id}'s reimbursement request has received a comment.",
+                    verb_ar=f"تلقى طلب استرداد نفقات {payroll.employee_id} تعليقًا.",
+                    verb_de=f"{payroll.employee_id}s Rückerstattungsantrag hat einen Kommentar erhalten.",
+                    verb_es=f"La solicitud de reembolso de gastos de {payroll.employee_id} ha recibido un comentario.",
+                    verb_fr=f"La demande de remboursement de frais de {payroll.employee_id} a reçu un commentaire.",
+                    redirect="/payroll/view-reimbursement",
+                    icon="chatbox-ellipses",
+                )
+            elif request.user.employee_get.id == payroll.employee_id.employee_work_info.reporting_manager_id.id:
+                rec = payroll.employee_id.employee_user_id
+                notify.send(
+                    request.user.employee_get,
+                    recipient=rec,
+                    verb="Your reimbursement request has received a comment.",
+                    verb_ar="تلقى طلب استرداد نفقاتك تعليقًا.",
+                    verb_de="Ihr Rückerstattungsantrag hat einen Kommentar erhalten.",
+                    verb_es="Tu solicitud de reembolso ha recibido un comentario.",
+                    verb_fr="Votre demande de remboursement a reçu un commentaire.",
+                    redirect="/payroll/view-reimbursement",
+                    icon="chatbox-ellipses",
+                )
+            else:
+                rec = [payroll.employee_id.employee_user_id, payroll.employee_id.employee_work_info.reporting_manager_id.employee_user_id]
+                notify.send(
+                    request.user.employee_get,
+                    recipient=rec,
+                    verb=f"{payroll.employee_id}'s reimbursement request has received a comment.",
+                    verb_ar=f"تلقى طلب استرداد نفقات {payroll.employee_id} تعليقًا.",
+                    verb_de=f"{payroll.employee_id}s Rückerstattungsantrag hat einen Kommentar erhalten.",
+                    verb_es=f"La solicitud de reembolso de gastos de {payroll.employee_id} ha recibido un comentario.",
+                    verb_fr=f"La demande de remboursement de frais de {payroll.employee_id} a reçu un commentaire.",
+                    redirect="/payroll/view-reimbursement",
+                    icon="chatbox-ellipses",
+                )
+                
             return HttpResponse("<script>window.location.reload()</script>")
     return render(
         request,

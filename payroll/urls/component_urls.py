@@ -121,5 +121,9 @@ urlpatterns = [
         component_views.reimbursement_attachments,
         name="reimbursement-attachments",
     ),
-    path("delete-attachments/<int:_reimbursement_id>/",component_views.delete_attachments,name="delete-attachments")
+    path(
+        "delete-attachments/<int:_reimbursement_id>/",
+        component_views.delete_attachments,
+        name="delete-attachments",
+    ),
 ]

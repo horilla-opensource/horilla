@@ -1,7 +1,7 @@
 {% extends 'index.html' %} {% block content %} {% load static %}
 
 <div class="oh-wrapper d-flex justify-content-center mt-4 mb-4">
-  <form action="" class="oh-onboarding-card" method="post">
+  <form action="" hx-swap="none" class="oh-onboarding-card" method="post">
     {% csrf_token %} {{form.as_p}}
   </form>
 </div>
@@ -60,5 +60,40 @@
     });
   });
   toggleFunction();
+{% if form.instance.pk %}
+
+{% for condition in form.instance.other_conditions.all %}
+conditionSet = $(
+  `
+  <div class="row">
+    <div class="col-12 col-md-4 condition-highlight">
+      ${$("[for=id_field]").clone().attr("class", "style-widget form-control oh-label__info").prop("outerHTML")}
+      ${$("#id_field").clone().attr("data-initial-value", "{{condition.field}}").attr("name", "other_fields").attr("class", "style-widget form-control").prop("outerHTML")}
+    </div>
+    <div class="col-12 col-md-4 condition-highlight">
+      ${$("[for=id_condition]").clone().attr("class", "style-widget form-control oh-label__info").prop("outerHTML")}
+      ${$("#id_condition").clone().attr("data-initial-value", "{{condition.condition}}").attr("class", "style-widget form-control").attr("name", "other_conditions").attr("class", "style-widget form-control").prop("outerHTML")}
+    </div>
+    <div class="col-12 col-md-4 condition-highlight">
+      <div class="d-flex">
+        ${$("[for=id_value]").clone().attr("class", "style-widget form-control oh-label__info").prop("outerHTML")}
+        <div class="m-1 p-1"  onclick="$(this).closest('.row').remove()" align="center" style="border-radius:15px; width:25px;border:solid 1px red;cursor:pointer;display:inline;">
+          -
+        </div>
+      </div>
+      ${$("#id_value").clone().attr("data-initial-value", "{{condition.value}}").attr("name", "other_values").attr("value", "{{condition.value}}").change().attr("class", "style-widget form-control").prop("outerHTML")}
+    </div>
+  </div>
+  `
+);
+$("#conditionContainer").prepend(conditionSet)
+{% endfor %}
+function initialData () {
+  $.each($("[name=other_fields],[name=other_conditions]"), function (indexInArray, valueOfElement) { 
+     $(valueOfElement).val($(valueOfElement).attr("data-initial-value")).change()
+  });
+}
+initialData()
+{% endif %}
 </script>
 {% endblock content %}
