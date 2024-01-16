@@ -168,6 +168,9 @@ def login_user(request):
         if user is None:
             messages.error(request, _("Invalid username or password."))
             return redirect("/login")
+        if user.employee_get.is_active== False:
+            messages.error(request, _("This user is archived. Please contact the manager for more information."))
+            return redirect("/login")
         login(request, user)
         messages.success(request, _("Login Success"))
         if next_url:
