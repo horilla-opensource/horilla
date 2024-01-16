@@ -9,6 +9,7 @@ $(document).ready(function () {
   var formattedDate = year + "-" + month;
   var start_index = 0;
   var per_page = 10;
+  var initialLoad = true
 
   $("#monthYearField").val(formattedDate);
 
@@ -288,23 +289,24 @@ $(document).ready(function () {
     });
   }
 
-  function contract_ending() {
+  function contract_ending(initialLoad) {
     var period = $("#monthYearField").val();
-
-    // var date = period.split('-');
-    // var year = date[0];
-    // var month = parseInt(date[1]);
-
-    let date = new Date()
-    let year = date.getFullYear();
-    let month = date.getMonth();
+    var date = period.split('-');
+    var year = date[0];
+    var month = parseInt(date[1]);
 
     var monthNames = [
       "January", "February", "March", "April", "May", "June",
       "July", "August", "September", "October", "November", "December"
     ];
-    console.log(month, year)
-    var formattedDate = `${monthNames[month]} ${year}`;
+    if (initialLoad){
+      let date = new Date()
+      let year = date.getFullYear();
+      let month = date.getMonth();
+      var formattedDate = `${monthNames[month]} ${year}`;
+    } else {
+      var formattedDate = `${monthNames[month - 1]} ${year}`;
+    }
 
     $.ajax({
       url: "/payroll/dashboard-contract-ending",
@@ -315,6 +317,7 @@ $(document).ready(function () {
       },
       data: {
         period: period,
+        initialLoad:initialLoad
       },
       success: (response) => {
         var contract_end = response.contract_end;
@@ -331,11 +334,11 @@ $(document).ready(function () {
           $(".contract-number").html(`${formattedDate} : ${contract_end.length}`);
           $("#contract_ending").html(
             `<div style="display:flex;align-items: center;justify-content: center; padding-top:50px" class="">
-                        <div style="" class="">
-                        <img style="display: block;width: 70px;margin: 10px auto ;" src="/static/images/ui/contract.png" class="" alt=""/>
-                        <h3 style="font-size:16px" class="oh-404__subtitle">${response.message}</h3>
-                        </div>
-                    </div>`
+              <div style="" class="">
+                <img style="display: block;width: 70px;margin: 10px auto ;" src="/static/images/ui/contract.png" class="" alt=""/>
+                <h3 style="font-size:16px" class="oh-404__subtitle">${response.message}</h3>
+              </div>
+            </div>`
           );
         }
       },
@@ -348,13 +351,14 @@ $(document).ready(function () {
   employee_chart_view();
   payslip_details();
   department_chart_view();
-  contract_ending();
-
+  contract_ending(initialLoad);
+  
   $("#monthYearField").on("change", function () {
+    initialLoad = false
     employee_chart_view();
     payslip_details();
     department_chart_view();
-    contract_ending();
+    contract_ending(initialLoad);
   });
 
   $("#payroll-employee-next").on("click", function () {
