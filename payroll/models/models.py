@@ -1350,6 +1350,7 @@ class LoanAccount(models.Model):
     asset_id = models.ForeignKey(
         Asset, on_delete=models.PROTECT, null=True, editable=False
     )
+    objects = HorillaCompanyManager("employee_id__employee_work_info__company_id")
 
     def get_installments(self):
         loan_amount = self.loan_amount
@@ -1497,6 +1498,8 @@ class Reimbursement(models.Model):
     )
     created_at = models.DateTimeField(auto_now_add=True)
     is_active = models.BooleanField(default=True, editable=False)
+    objects = HorillaCompanyManager("employee_id__employee_work_info__company_id")
+
 
     def save(self, *args, **kwargs) -> None:
         request = getattr(thread_local_middleware._thread_locals, "request", None)
