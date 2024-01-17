@@ -250,7 +250,12 @@ $(document).ready(function () {
   $("#id_is_condition_based").parent().parent().attr("class","col-12")
   $("#id_condition, #id_field, #id_value").parent().attr("class", "col-12 col-md-4 condition-highlight");
   addMore = $(`
-  <div class="mt-3">
+  <div class="mt-3" style="
+  display: inline-block;
+  margin-top: 0 !important;
+  position: relative;
+  top: -17px;
+  left: 36px;">
   <div class="m-1 p-1"onclick="conditionAdd()" align="center" style="border-radius:15px; width:25px;border:solid 1px green;cursor:pointer;display:inline;" title="Add More">
   +
     </div>
@@ -266,7 +271,7 @@ $(document).ready(function () {
 
 
 conditionContainer = $(`
-<div id="conditionContainer" class="row">
+<div id="conditionContainer" class="col-12 col-md-12">
 </div>
 `)
 // Add condition container
