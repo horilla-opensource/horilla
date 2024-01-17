@@ -20,7 +20,7 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import Group, User, Permission
 from attendance.forms import AttendanceValidationConditionForm
-from attendance.models import AttendanceValidationCondition
+from attendance.models import AttendanceValidationCondition, GraceTime
 from django.views.decorators.csrf import csrf_exempt
 from horilla_audit.models import AuditTag
 from notifications.signals import notify
@@ -1509,8 +1509,8 @@ def employee_shift_view(request):
     """
 
     shifts = EmployeeShift.objects.all()
-
-    return render(request, "base/shift/shift.html", {"shifts": shifts})
+    grace_times =  GraceTime.objects.all().exclude(is_default=True)
+    return render(request, "base/shift/shift.html", {"shifts": shifts,'grace_times':grace_times})
 
 
 @login_required
@@ -3346,10 +3346,11 @@ def validation_condition_view(request):
     This method view attendance validation conditions.
     """
     condition = AttendanceValidationCondition.objects.first()
+    default_grace_time = GraceTime.objects.filter(is_default = True).first()
     return render(
         request,
         "attendance/break_point/condition.html",
-        {"condition": condition},
+        {"condition": condition,'default_grace_time':default_grace_time},
     )
 
 

@@ -426,6 +426,14 @@ class EmployeeShift(models.Model):
         max_length=6, default="200:00", validators=[validate_time_format]
     )
     company_id = models.ManyToManyField(Company, blank=True, verbose_name=_("Company"))
+    grace_time_id = models.ForeignKey(
+        'attendance.GraceTime',
+        null=True,
+        blank=True,
+        related_name="employee_shift",
+        on_delete=models.PROTECT,
+        verbose_name=_("Grace Time"),
+    )
 
     objects = HorillaCompanyManager("employee_shift__company_id")
 
