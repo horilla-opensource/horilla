@@ -1383,9 +1383,16 @@ def hour_attendance_select_filter(request):
     filters = json.loads(filtered) if filtered else {}
 
     if page_number == "all":
-        employee_filter = AttendanceOverTimeFilter(
-            filters, queryset=AttendanceOverTime.objects.all()
-        )
+        if request.user.has_perm("attendance.view_attendanceovertime"):
+            employee_filter = AttendanceOverTimeFilter(filters, queryset=AttendanceOverTime.objects.all())
+        else:
+            employee_filter = AttendanceOverTimeFilter(
+                filters, queryset=AttendanceOverTime.objects.filter(
+                            employee_id__employee_user_id=request.user
+                        ) | AttendanceOverTime.objects.filter(
+                            employee_id__employee_work_info__reporting_manager_id__employee_user_id=request.user
+                        )
+            )
 
         # Get the filtered queryset
         filtered_employees = employee_filter.qs
@@ -1427,9 +1434,16 @@ def activity_attendance_select_filter(request):
     filters = json.loads(filtered) if filtered else {}
 
     if page_number == "all":
-        employee_filter = AttendanceActivityFilter(
-            filters, queryset=AttendanceActivity.objects.all()
-        )
+        if request.user.has_perm("attendance.view_attendanceovertime"):
+            employee_filter = AttendanceActivityFilter(filters, queryset=AttendanceActivity.objects.all())
+        else:
+            employee_filter = AttendanceActivityFilter(
+                filters, queryset=AttendanceActivity.objects.filter(
+                        employee_id__employee_user_id=request.user
+                    ) | AttendanceActivity.objects.filter(
+                        employee_id__employee_work_info__reporting_manager_id__employee_user_id=request.user
+                    )
+            )
 
         # Get the filtered queryset
         filtered_employees = employee_filter.qs
@@ -1471,9 +1485,16 @@ def latecome_attendance_select_filter(request):
     filters = json.loads(filtered) if filtered else {}
 
     if page_number == "all":
-        employee_filter = LateComeEarlyOutFilter(
-            filters, queryset=AttendanceLateComeEarlyOut.objects.all()
-        )
+        if request.user.has_perm("attendance.view_attendancelatecomeearlyout"):
+            employee_filter = LateComeEarlyOutFilter(filters, queryset=AttendanceLateComeEarlyOut.objects.all())
+        else:
+            employee_filter = LateComeEarlyOutFilter(
+                filters, queryset=AttendanceLateComeEarlyOut.objects.filter(
+                                    employee_id__employee_user_id=request.user
+                                ) | AttendanceLateComeEarlyOut.objects.filter(
+                                    employee_id__employee_work_info__reporting_manager_id__employee_user_id=request.user
+                                )
+            )
 
         # Get the filtered queryset
         filtered_employees = employee_filter.qs
