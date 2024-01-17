@@ -2,6 +2,7 @@
 models.py
 Used to register models
 """
+import calendar
 from collections.abc import Iterable
 from datetime import date, datetime, timedelta
 import threading
@@ -1361,15 +1362,26 @@ class LoanAccount(models.Model):
         installment_schedule = {}
 
         installment_date = installment_start_date
-        for i in range(total_installments):
+        installment_date_copy = installment_start_date
+        installment_schedule = {}
+        for _ in range(total_installments):
             installment_schedule[str(installment_date)] = installment_amount
-            installment_date = installment_date + timedelta(days=30 * (i + 1))
+            month = installment_date.month + 1
+            year = installment_date.year
+            if month > 12:
+                month = 1
+                year = year + 1
+            day = installment_date_copy.day
+            total_days_in_month = calendar.monthrange(year, month)[1]
+            day = min(day, total_days_in_month)
+            installment_date = date(day=day, month=month, year=year)
 
         return installment_schedule
 
     def delete(self, *args, **kwargs):
         self.deduction_ids.all().delete()
-        self.allowance_id.delete()
+        if self.allowance_id is not None:
+            self.allowance_id.delete()
         if not Payslip.objects.filter(
             installment_ids__in=list(self.deduction_ids.values_list("id", flat=True))
         ).exists():
@@ -1499,7 +1511,6 @@ class Reimbursement(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     is_active = models.BooleanField(default=True, editable=False)
     objects = HorillaCompanyManager("employee_id__employee_work_info__company_id")
-
 
     def save(self, *args, **kwargs) -> None:
         request = getattr(thread_local_middleware._thread_locals, "request", None)
