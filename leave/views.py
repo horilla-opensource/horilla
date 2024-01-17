@@ -409,9 +409,11 @@ def leave_request_filter(request):
     GET : return leave request view template
     """
     previous_data = request.GET.urlencode()
-    queryset = LeaveRequest.objects.all()
+    queryset = LeaveRequestFilter(request.GET).qs
     field = request.GET.get("field")
-    queryset = sortby(request, queryset, "sortby")
+    queryset = (
+        filtersubordinates(request, queryset, "leave.view_leaverequest")
+    )
     leave_request_filter = LeaveRequestFilter(request.GET, queryset).qs
     page_number = request.GET.get("page")
     template = ("leave/leave_request/leave_requests.html",)
@@ -1315,7 +1317,6 @@ def holiday_view(request):
 
 @login_required
 @hx_request_required
-@permission_required("leave.view_holiday")
 def holiday_filter(request):
     """
     function used to filter holidays.
@@ -1476,7 +1477,6 @@ def company_leave_view(request):
 
 @login_required
 @hx_request_required
-@permission_required("leave.view_companyleave")
 def company_leave_filter(request):
     """
     function used to filter company leave.
@@ -2968,9 +2968,14 @@ def assigned_leave_select_filter(request):
     filters = json.loads(filtered) if filtered else {}
 
     if page_number == "all":
-        employee_filter = AssignedLeaveFilter(
-            filters, queryset=AvailableLeave.objects.all()
-        )
+        if request.user.has_perm("leave.view_availableleave"):
+            employee_filter = AssignedLeaveFilter(filters, queryset=AvailableLeave.objects.all())
+        else:
+            employee_filter = AssignedLeaveFilter(
+                filters, queryset=AvailableLeave.objects.filter(
+                    employee_id__employee_work_info__reporting_manager_id__employee_user_id=request.user
+                )
+            )
 
         # Get the filtered queryset
         filtered_employees = employee_filter.qs
@@ -3068,9 +3073,14 @@ def leave_request_select_filter(request):
     filters = json.loads(filtered) if filtered else {}
 
     if page_number == "all":
-        employee_filter = LeaveRequestFilter(
-            filters, queryset=LeaveRequest.objects.all()
-        )
+        if request.user.has_perm("leave.view_leaverequest"):
+            employee_filter = LeaveRequestFilter(filters, queryset=LeaveRequest.objects.all())
+        else:
+            employee_filter = LeaveRequestFilter(
+                filters, queryset=LeaveRequest.objects.filter(
+                    employee_id__employee_work_info__reporting_manager_id__employee_user_id=request.user
+                )
+            )
 
         # Get the filtered queryset
         filtered_employees = employee_filter.qs
