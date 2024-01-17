@@ -7,6 +7,7 @@ from django.db.utils import IntegrityError
 from django.db.models import Q
 from django.forms import modelformset_factory
 from django.contrib import messages
+from django.contrib.auth.models import User
 from django.core.paginator import Paginator
 from django.utils.translation import gettext_lazy as _
 from django.shortcuts import get_object_or_404, render, redirect
@@ -24,6 +25,7 @@ from pms.filters import (
 )
 from django.db.models import ProtectedError
 from pms.models import (
+    AnonymousFeedback,
     EmployeeKeyResult,
     EmployeeObjective,
     Comment,
@@ -36,6 +38,7 @@ from pms.models import (
     KeyResultFeedback,
 )
 from .forms import (
+    AnonymousFeedbackForm,
     QuestionForm,
     ObjectiveForm,
     KeyResultForm,
@@ -965,7 +968,7 @@ def feedback_update(request, id):
 
 @login_required
 def filter_pagination_feedback(
-    request, self_feedback, requested_feedback, all_feedback
+    request, self_feedback, requested_feedback, all_feedback, anonymous_feedback
 ):
     """
     This view is used to filter or search the feedback object  ,
@@ -990,7 +993,7 @@ def filter_pagination_feedback(
     feedback_filter_all = FeedbackFilter(
         request.GET or initial_data, queryset=all_feedback
     )
-
+    anonymous_feedback = anonymous_feedback
     feedback_paginator_own = Paginator(feedback_filter_own.qs, 50)
     feedback_paginator_requested = Paginator(feedback_filter_requested.qs, 50)
     feedback_paginator_all = Paginator(feedback_filter_all.qs, 50)
@@ -1006,6 +1009,7 @@ def filter_pagination_feedback(
         "superuser": "true",
         "self_feedback": feedbacks_own,
         "requested_feedback": feedbacks_requested,
+        "anonymous_feedback": anonymous_feedback,
         "all_feedbacks": feedbacks_all,
         "feedback_filter_form": feedback_filter_own.form,
         "pg": previous_data,
@@ -1047,11 +1051,16 @@ def feedback_list_search(request):
         review_cycle__icontains=feedback
     )
     all_feedback = Feedback.objects.all().filter(review_cycle__icontains=feedback)
+    anonymous_feedback = (
+        AnonymousFeedback.objects.filter(employee_id=employee_id)
+        if not request.user.has_perm("pms.view_feedback")
+        else AnonymousFeedback.objects.all()
+    )
 
     reporting_manager_to = employee_id.reporting_manager.all()
     if request.user.has_perm("pms.view_feedback"):
         context = filter_pagination_feedback(
-            request, self_feedback, requested_feedback, all_feedback
+            request, self_feedback, requested_feedback, all_feedback, anonymous_feedback
         )
     elif reporting_manager_to:
         employees_id = [i.id for i in reporting_manager_to]
@@ -1059,12 +1068,12 @@ def feedback_list_search(request):
             review_cycle__icontains=feedback
         )
         context = filter_pagination_feedback(
-            request, self_feedback, requested_feedback, all_feedback
+            request, self_feedback, requested_feedback, all_feedback, anonymous_feedback
         )
     else:
         all_feedback = Feedback.objects.none()
         context = filter_pagination_feedback(
-            request, self_feedback, requested_feedback, all_feedback
+            request, self_feedback, requested_feedback, all_feedback, anonymous_feedback
         )
 
     return render(request, "feedback/feedback_list.html", context)
@@ -1081,9 +1090,9 @@ def feedback_list_view(request):
     user = request.user
     employee = Employee.objects.filter(employee_user_id=user).first()
     feedback_requested_ids = Feedback.objects.filter(
-        Q(manager_id=employee,manager_id__is_active=True)
-        | Q(colleague_id=employee,colleague_id__is_active=True)
-        | Q(subordinate_id=employee,subordinate_id__is_active=True)
+        Q(manager_id=employee, manager_id__is_active=True)
+        | Q(colleague_id=employee, colleague_id__is_active=True)
+        | Q(subordinate_id=employee, subordinate_id__is_active=True)
     ).values_list("id", flat=True)
     feedback_own = Feedback.objects.filter(employee_id=employee).filter(
         archive=False, employee_id__is_active=True
@@ -1094,24 +1103,32 @@ def feedback_list_view(request):
     feedback_all = Feedback.objects.all().filter(
         archive=False, employee_id__is_active=True
     )
+    anonymous_feedback = (
+        AnonymousFeedback.objects.filter(employee_id=employee, archive=False)
+        if not request.user.has_perm("pms.view_feedback")
+        else AnonymousFeedback.objects.filter(archive=False)
+    )
+    anonymous_feedback = anonymous_feedback | AnonymousFeedback.objects.filter(
+        anonymous_feedback_id=request.user.id, archive=False
+    )
     employees = Employee.objects.filter(
         employee_work_info__reporting_manager_id=employee, is_active=True
     )  # checking the user is reporting manager or not
     feedback_available = Feedback.objects.all()
     if request.user.has_perm("pms.view_feedback"):
         context = filter_pagination_feedback(
-            request, feedback_own, feedback_requested, feedback_all
+            request, feedback_own, feedback_requested, feedback_all, anonymous_feedback
         )
     elif employees:
         # based on the reporting manager
         feedback_all = Feedback.objects.filter(employee_id__in=employees)
         context = filter_pagination_feedback(
-            request, feedback_own, feedback_requested, feedback_all
+            request, feedback_own, feedback_requested, feedback_all, anonymous_feedback
         )
     else:
         feedback_all = Feedback.objects.none()
         context = filter_pagination_feedback(
-            request, feedback_own, feedback_requested, feedback_all
+            request, feedback_own, feedback_requested, feedback_all, anonymous_feedback
         )
     if feedback_available.exists():
         template = "feedback/feedback_list_view.html"
@@ -2072,9 +2089,7 @@ def objective_select(request):
     page_number = request.GET.get("page")
     table = request.GET.get("tableName")
     user = request.user.employee_get
-    employees = EmployeeObjective.objects.filter(
-                employee_id=user, archive=False
-            )
+    employees = EmployeeObjective.objects.filter(employee_id=user, archive=False)
     if page_number == "all":
         if table == "all":
             if request.user.has_perm("pms.view_employeeobjective"):
@@ -2114,13 +2129,14 @@ def objective_select_filter(request):
         if table == "all":
             if request.user.has_perm("pms.view_employeeobjective"):
                 employee_filter = ObjectiveFilter(
-                        filters, queryset=EmployeeObjective.objects.all()
-                    )
+                    filters, queryset=EmployeeObjective.objects.all()
+                )
             else:
                 employee_filter = ObjectiveFilter(
-                    filters, queryset=EmployeeObjective.objects.filter(
+                    filters,
+                    queryset=EmployeeObjective.objects.filter(
                         employee_id__employee_work_info__reporting_manager_id__employee_user_id=request.user
-                    )
+                    ),
                 )
         else:
             employee_filter = ObjectiveFilter(
@@ -2135,3 +2151,99 @@ def objective_select_filter(request):
         context = {"employee_ids": employee_ids, "total_count": total_count}
 
         return JsonResponse(context)
+
+
+@login_required
+def anonymous_feedback_add(request):
+    if request.method == "POST":
+        form = AnonymousFeedbackForm(request.POST)
+        anonymous_id = request.user.id
+
+        if form.is_valid():
+            feedback = form.save(commit=False)
+            feedback.anonymous_feedback_id = anonymous_id
+            feedback.save()
+            if feedback.based_on == "employee":
+                try:
+                    notify.send(
+                        User.objects.filter(username="Horilla Bot").first(),
+                        recipient=feedback.employee_id.employee_user_id,
+                        verb="You received an anonymous feedback!",
+                        verb_ar="لقد تلقيت تقييمًا مجهولًا!",
+                        verb_de="Sie haben anonymes Feedback erhalten!",
+                        verb_es="¡Has recibido un comentario anónimo!",
+                        verb_fr="Vous avez reçu un feedback anonyme!",
+                        redirect="/pms/feedback-view/",
+                        icon="bag-check",
+                    )
+                except:
+                    pass
+            return HttpResponse("<script>window.location.reload();</script>")
+    else:
+        form = AnonymousFeedbackForm()
+
+    context = {"form": form, "create": True}
+    return render(request, "anonymous/anonymous_feedback_form.html", context)
+
+
+@login_required
+def edit_anonymous_feedback(request, id):
+    feedback = AnonymousFeedback.objects.get(id=id)
+    form = AnonymousFeedbackForm(instance=feedback)
+    anonymous_id = request.user.id
+    if request.method == "POST":
+        form = AnonymousFeedbackForm(request.POST, instance=feedback)
+        if form.is_valid():
+            feedback = form.save(commit=False)
+            feedback.anonymous_feedback_id = anonymous_id
+            feedback.save()
+            return HttpResponse("<script>window.location.reload();</script>")
+    context = {"form": form, "create": False}
+    return render(request, "anonymous/anonymous_feedback_form.html", context)
+
+
+@login_required
+def archive_anonymous_feedback(request, id):
+    """
+    this function is used to archive the feedback for employee
+    args:
+        id(int): primarykey of feedback
+    """
+
+    feedback = AnonymousFeedback.objects.get(id=id)
+    if feedback.archive:
+        feedback.archive = False
+        feedback.save()
+        messages.info(request, _("Feedback un-archived successfully!."))
+    elif not feedback.archive:
+        feedback.archive = True
+        feedback.save()
+        messages.info(request, _("Feedback archived successfully!."))
+    return redirect(feedback_list_view)
+
+
+@login_required
+def delete_anonymous_feedback(request, id):
+    try:
+        feedback = AnonymousFeedback.objects.get(id=id)
+        feedback.delete()
+        messages.success(request, _("Feedback deleted successfully!"))
+
+    except IntegrityError:
+        messages.error(
+            request, _("Failed to delete feedback: Feedback template is in use.")
+        )
+
+    except AnonymousFeedback.DoesNotExist:
+        messages.error(request, _("Feedback not found."))
+
+    except ProtectedError:
+        messages.error(request, _("Related entries exists"))
+
+    return redirect(feedback_list_view)
+
+
+@login_required
+def view_single_anonymous_feedback(request, id):
+    feedback = AnonymousFeedback.objects.get(id=id)
+    return render(request, "anonymous/single_view.html", {"feedback": feedback})

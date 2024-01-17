@@ -32,7 +32,7 @@
         {% else %}
             <p class="oh-navbar__notification-text" :class="markRead ? '' : 'oh-navbar__notification-text--unread' ">{{ notification.verb }}</p>
         {% endif %}
-        <span class="oh-navbar__notification-date">{{ notification.timesince }} {% trans "ago by" %} {{ notification.actor.employee_first_name }}</span>
+        <span class="oh-navbar__notification-date">{{ notification.timesince }} {% trans "ago by" %} {% if notification.actor.employee_first_name %}{{ notification.actor.employee_first_name }}{% else %}{% trans "Anonymous" %}{% endif %}</span>
       </div>
       <div>
         <div class="oh-navbar__notification-image">

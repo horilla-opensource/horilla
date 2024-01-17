@@ -208,4 +208,25 @@ urlpatterns = [
         views.objective_select_filter,
         name="objective-select-filter",
     ),
+    path(
+        "add-anonymous-feedback",
+        views.anonymous_feedback_add,
+        name="add-anonymous-feedback",
+    ),
+    path(
+        "edit-anonymous-feedback/<int:id>/",
+        views.edit_anonymous_feedback,
+        name="edit-anonymous-feedback",
+    ),
+    path("archive-anonymous-feedback/<int:id>/",views.archive_anonymous_feedback,name="archive-anonymous-feedback"),
+    path(
+        "delete-anonymous-feedback/<int:id>/",
+        views.delete_anonymous_feedback,
+        name="delete-anonymous-feedback",
+    ),
+    path(
+        "single-anonymous-feedback-view/<int:id>/",
+        views.view_single_anonymous_feedback,
+        name="single-anonymous-feedback-view",
+    ),
 ]

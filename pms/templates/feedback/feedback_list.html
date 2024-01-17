@@ -15,6 +15,13 @@
         {% endfor %}
     </ul>
 {% endif %}
+<style>
+  .oh-feedback-container {
+    display: flex;
+    align-items: center;
+}
+
+</style>
 
 {% include 'filter_tags.html' %}
 <div class="d-flex flex-row-reverse">
@@ -57,7 +64,15 @@
     <span class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round ms-2 mr-2" id="" data-category-id="1" title="{{all_feedbacks|length}} feedback" onclick="event.stopPropagation()">{{all_feedbacks|length}}</span>
   </li>
   {% endif %}
-
+  <li class="oh-tabs__tab" data-target="#tab_4">
+    {% trans "Anonymous Feedback" %}
+    <div class="oh-feedback-container">
+        <span class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round ms-2 mr-2" id="" data-category-id="1" title="{{requested_feedback|length}}" onclick="event.stopPropagation()">{{requested_feedback|length}}</span>
+        <button class="oh-btn oh-btn--secondary-outline oh-stop-prop oh-accordion-meta__btn p-2" data-toggle="oh-modal-toggle" title="{% trans 'Add' %}" hx-get = {% url "add-anonymous-feedback" %} data-target="#anonymousFeedbackModal" hx-target="#anonymousFeedbackFormModal">
+            <ion-icon class="md hydrated" name="add-outline" role="img" aria-label="add outline"></ion-icon>
+        </button>
+    </div>
+  </li>
 </ul>
 <div >
 <div class="oh-tabs__contents">
@@ -476,6 +491,95 @@
     </div>
     {% endif %}
 
+  </div>
+  <div class="oh-tabs__content" id="tab_4">
+    {% if anonymous_feedback %}
+    <div class="oh-sticky-table">
+      <div class="oh-sticky-table__table">
+        <div class="oh-sticky-table__thead">
+          <div class="oh-sticky-table__tr">
+            <div class="oh-sticky-table__th" style="width:10px;">
+              <div class="centered-div">
+                <input
+                  type="checkbox"
+                  class="requested-feedbacks oh-input oh-input__checkbox"
+                  id = "requestedFeedback"
+                  title='{% trans "Select All" %}'
+                />
+              </div>
+            </div>
+            <div class="oh-sticky-table__th">{% trans "Subject" %}</div>
+            <div class="oh-sticky-table__th">{% trans "Based on" %}</div>
+            <div class="oh-sticky-table__th">{% trans "Create At" %}</div>
+            <div class="oh-sticky-table__th"></div>
+
+          </div>
+        </div>
+        <div class="oh-sticky-table__tbody">
+          {% for feedback in anonymous_feedback %}
+            <div class="oh-sticky-table__tr" draggable="true" data-toggle="oh-modal-toggle" data-target ="#FeedbackModal" hx-get="{% url 'single-anonymous-feedback-view' feedback.id %}" hx-target = "#OneFeedbackTarget">
+              <div class="oh-sticky-table__sd">
+                
+                  <div class="centered-div">
+                    <input
+                      type="checkbox"
+                      id="{{feedback.id}}"
+                      value="{{feedback.id}}"
+                      class="oh-input feedback-checkbox oh-input__checkbox requested-feedback-row ms-2"
+                    />
+                  </div>
+              </div>
+              <div class="oh-sticky-table__sd" >
+                {{feedback.feedback_subject}}
+              </div>
+              <div class="oh-sticky-table__sd">
+                {% trans "Based on" %} : 
+                    {% if feedback.based_on == "employee" %}
+                      {{feedback.employee_id}}
+                    {% elif feedback.based_on == "department" %}
+                      {{feedback.department_id}}
+                    {% elif feedback.based_on == "job_position" %}
+                      {{feedback.job_position_id}}
+                    {% else %} 
+                      {{feedback.get_based_on_display}}
+                    {% endif %}
+              </div>
+              <div class="oh-sticky-table__sd">
+                {{feedback.created_at}}
+              </div>
+              <div class="oh-sticky-table__sd" onclick="event.stopPropagation();">
+                <div class="oh-btn-group">
+                  <a class="oh-btn w-100" data-toggle="oh-modal-toggle" data-target="#anonymousFeedbackModal" hx-get="{% url 'edit-anonymous-feedback' feedback.id %}" title="{% trans 'Edit' %}" hx-target="#anonymousFeedbackFormModal"><ion-icon name="create-outline"></ion-icon></a>
+                  <form action="{% url 'archive-anonymous-feedback' id=feedback.id %}" method="post"  style="display: contents">
+                    {% if feedback.archive == True %}
+                      <button class="oh-btn oh-btn--danger-outline  w-100 "  title="{% trans 'Un-archive' %}" >
+                    {% else %}
+                      <button class="oh-btn oh-btn--danger-outline  w-100 "  title="{% trans 'Archive' %}" >
+                    {% endif %}
+                     {% csrf_token %}
+                    <ion-icon name="archive-sharp" type="submit"></ion-icon>
+                  </button>
+                  </form>
+                  {% if perms.pms.delete_feedback %} 
+                    <form action="{% url 'delete-anonymous-feedback' id=feedback.id %}" method="post" onsubmit="return confirm('{% trans "Do you want Delete this Feedback ?" %}')" style="display: contents">
+                      {% csrf_token %}
+                      <button  class="oh-btn oh-btn--danger-outline  w-100" title="{% trans 'Delete' %}" > 
+                          <ion-icon name="trash-outline" role="img" class="md hydrated" aria-label="trash outline"></ion-icon>
+                      </button>
+                    </form>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          {% endfor%}
+        </div>
+      </div>
+    </div>
+    {% else %}
+    <div class="d-flex justify-content-center align-items-center" style="height:60vh">
+      <h5 class="oh-404__subtitle">{% trans "There are no Anonymous Feedbacks available." %}</h5>
+  </div>
+    {% endif %}
   </div>
 </div>
 </div>

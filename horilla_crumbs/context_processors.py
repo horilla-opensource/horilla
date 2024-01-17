@@ -88,6 +88,12 @@ sidebar_urls = [
     "ticket-type-view",
     "mail-server-conf",
     "multiple-approval-condition",
+    "skill-zone-view",
+    "view-mail-templates",
+    "view-loan",
+    "view-reimbursement",
+    "department-manager-view",
+    "date-settings",
 ]
 remove_urls = [
     "objective-detailed-view",

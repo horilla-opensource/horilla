@@ -524,7 +524,7 @@ urlpatterns = [
         name="delete-notifications",
     ),
     path("settings/currency/", views.settings, name="currency-settings"),
-    path("settings/date/", views.date_settings, name="date-settings"),
+    path("settings/date-settings/", views.date_settings, name="date-settings"),
     path("settings/save-date/", views.save_date_format, name="save_date_format"),
     path("settings/get-date-format/", views.get_date_format, name="get-date-format"),
     path("settings/save-time/", views.save_time_format, name="save_time_format"),

@@ -13,7 +13,9 @@ from django.forms.utils import ErrorList
 from django.utils.translation import gettext_lazy as _
 from employee.models import Department, JobPosition
 from django.forms import ModelForm
+from base.forms import ModelForm as BaseForm
 from pms.models import (
+    AnonymousFeedback,
     Question,
     EmployeeObjective,
     EmployeeKeyResult,
@@ -681,3 +683,10 @@ class PeriodForm(ModelForm):
         start_date = cleaned_data.get("start_date")
         end_date = cleaned_data.get("end_date")
         validate_date(start_date, end_date)
+
+
+class AnonymousFeedbackForm(BaseForm):
+    class Meta:
+        model = AnonymousFeedback
+        fields = "__all__"
+        exclude = ["status", "archive"]

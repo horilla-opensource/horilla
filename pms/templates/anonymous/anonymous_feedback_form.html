@@ -1,0 +1,72 @@
+{% load i18n %}
+<script>
+  $(document).ready(function () {
+    var fields = [
+      "#id_employee_field",
+      "#id_department_field",
+      "#id_job_position_field",
+    ];
+
+    function updateFieldsVisibility() {
+      var based_on = $("#id_based_on").val();
+
+      fields.forEach(function (field) {
+        if (field.includes(based_on)) {
+          $(field).show();
+        } else {
+          $(field).hide();
+        }
+      });
+    }
+
+    updateFieldsVisibility();
+
+    $("#id_based_on").change(function () {
+      updateFieldsVisibility();
+    });
+  });
+</script>
+<form
+  hx-post='{% if create %}{% url "add-anonymous-feedback" %} {% else %} {% url "edit-anonymous-feedback" form.instance.id %}{% endif %}'
+  hx-target="#anonymousFeedbackFormModal"
+>
+  {% csrf_token %}
+  <div class="oh-input__group">
+    <label class="oh-input__label" for="feedbackSubject" id="idFeedbackSubject"
+      >{% trans "Feedback Subject" %}:</label
+    >
+    {{form.feedback_subject}} {{form.feedback_subject.errors}}
+  </div>
+  <div class="oh-input__group">
+    <label class="oh-input__label" for="basedOn" id="idBasedOn">{% trans "Based on" %}:</label>
+    {{form.based_on}} {{form.based_on.errors}}
+  </div>
+  <div class="oh-input__group" id="id_employee_field">
+    <label class="oh-input__label" for="feedbackEmployee" id="idFeedbackEmployee">{% trans "Employee" %}:</label>
+    {{form.employee_id}} {{form.employee_id.errors}}
+  </div>
+  <div class="oh-input__group" id="id_department_field">
+    <label class="oh-input__label" for="feedbackDepartment" id="idFeedbackDepartment"
+      >{% trans "Department" %}:</label
+    >
+    {{form.department_id}} {{form.department_id.errors}}
+  </div>
+  <div class="oh-input__group" id="id_job_position_field">
+    <label class="oh-input__label" for="feedbackJobPosition" id="idFeedbackJobPosition"
+      >{% trans "Job Position" %}:</label
+    >
+    {{form.job_position_id}} {{form.job_position_id.errors}}
+  </div>
+  <div class="oh-input__group">
+    <label class="oh-input__label" for="keyType"
+      >{% trans "Feedback Desciption" %}:</label
+    >
+    {{form.feedback_description}} {{form.feedback_description.errors}}
+  </div>
+  <button
+    type="submit"
+    class="oh-btn oh-btn--small oh-btn--secondary w-100 mt-3"
+  >
+    {% trans "Save" %}
+  </button>
+</form>
