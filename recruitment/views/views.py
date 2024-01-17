@@ -571,13 +571,14 @@ def add_note(request, cand_id=None):
     form = StageNoteForm(initial={"candidate_id": cand_id})
     if request.method == "POST":
         form = StageNoteForm(
-            request.POST,
+            request.POST, request.FILES, 
         )
         if form.is_valid():
-            note = form.save(commit=False)
+            note,attachment_ids = form.save(commit=False)
             note.stage_id = note.candidate_id.stage_id
             note.updated_by = request.user.employee_get
             note.save()
+            note.stage_files.set(attachment_ids)
             messages.success(request, _("Note added successfully.."))
             response = render(
                 request, "pipeline/pipeline_components/add_note.html", {"form": form}

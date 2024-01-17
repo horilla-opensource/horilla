@@ -38,6 +38,7 @@ from recruitment.models import (
     Stage,
     Recruitment,
     Candidate,
+    StageFiles,
     StageNote,
     JobPosition,
     RecruitmentSurvey,
@@ -504,6 +505,24 @@ class StageDropDownForm(DropDownForm):
             self.instance.sequence = 1
 
 
+class MultipleFileInput(forms.ClearableFileInput):
+    allow_multiple_selected = True
+
+
+class MultipleFileField(forms.FileField):
+    def __init__(self, *args, **kwargs):
+        kwargs.setdefault("widget", MultipleFileInput())
+        super().__init__(*args, **kwargs)
+
+    def clean(self, data, initial=None):
+        single_file_clean = super().clean
+        if isinstance(data, (list, tuple)):
+            result = [single_file_clean(d, initial) for d in data]
+        else:
+            result = [single_file_clean(data, initial),]
+        return result[0]
+
+
 class StageNoteForm(ModelForm):
     """
     Form for StageNote model
@@ -525,6 +544,28 @@ class StageNoteForm(ModelForm):
         super().__init__(*args, **kwargs)
         field = self.fields["candidate_id"]
         field.widget = field.hidden_widget()
+        self.fields["stage_files"] = MultipleFileField(label="files")
+
+    def save(self, commit: bool = ...) -> Any:
+        attachement = []
+        multiple_attachment_ids = []
+        attachements = None
+        if self.files.getlist("stage_files"):
+            print("========================================")
+            attachements = self.files.getlist("stage_files")
+            self.instance.attachement = attachements[0]
+            multiple_attachment_ids = []
+
+            for attachement in attachements:
+                file_instance = StageFiles()
+                file_instance.files = attachement
+                file_instance.save()
+                multiple_attachment_ids.append(file_instance.pk)
+        instance = super().save(commit)
+        if commit:
+            instance.stage_files.add(*multiple_attachment_ids)
+        return instance, multiple_attachment_ids
+
 
 
 class QuestionForm(ModelForm):
