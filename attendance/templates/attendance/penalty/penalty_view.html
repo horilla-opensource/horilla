@@ -1,13 +1,14 @@
+{% load i18n %}
 <div class="oh-sticky-table__table mt-3">
   <div class="oh-sticky-table__thead">
     <div class="oh-sticky-table__tr">
-      <div class="oh-sticky-table__th">Leave Type</div>
-      <div class="oh-sticky-table__th">Minus Days</div>
+      <div class="oh-sticky-table__th">{% trans "Leave Type" %}</div>
+      <div class="oh-sticky-table__th">{% trans "Minus Days" %}</div>
       <div class="oh-sticky-table__th">
-        Deducted From <span title="Carry Forward Days">CFD</span>
+        {% trans "Deducted From" %} <span title="{% trans 'Carry Forward Days' %}">{% trans "CFD" %}</span>
       </div>
-      <div class="oh-sticky-table__th">Penalty amount</div>
-      <div class="oh-sticky-table__th">Created Date</div>
+      <div class="oh-sticky-table__th">{% trans "Penalty amount" %}</div>
+      <div class="oh-sticky-table__th">{% trans "Created Date" %}</div>
     </div>
   </div>
   <div class="oh-sticky-table__tbody">
@@ -17,9 +18,9 @@
         <div class="oh-sticky-table__td">{{ acc.minus_leaves }}</div>
         <div class="oh-sticky-table__td">
           {% if acc.deduct_from_carry_forward %}
-            Yes
+            {% trans "Yes" %}
           {% else %}
-            No
+            {% trans "No" %}
           {% endif %}
         </div>
         <div class="oh-sticky-table__td">{{ acc.penalty_amount }}</div>

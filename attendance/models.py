@@ -62,15 +62,16 @@ def validate_time_format(value):
         raise ValidationError(_("Invalid format, it should be HH:MM format"))
     try:
         hour, minute = value.split(":")
-        if len(hour) > 3 or len (minute)>2:
+        if len(hour) > 3 or len(minute) > 2:
             raise ValidationError(_("Invalid time"))
         hour = int(hour)
         minute = int(minute)
-        if len(str(hour)) > 3 or len(str(minute)) > 2 or minute not in range(60) :
+        if len(str(hour)) > 3 or len(str(minute)) > 2 or minute not in range(60):
             raise ValidationError(_("Invalid time, excepted MM:SS"))
     except ValueError as error:
         raise ValidationError(_("Invalid format")) from error
-    
+
+
 def validate_time_in_minutes(value):
     """
     this method is used to validate the format of duration like fields.
@@ -79,7 +80,7 @@ def validate_time_in_minutes(value):
         raise ValidationError(_("Invalid format, it should be MM:SS format"))
     try:
         minutes, sec = value.split(":")
-        if len(minutes) > 2 or len (sec)>2:
+        if len(minutes) > 2 or len(sec) > 2:
             raise ValidationError(_("Invalid time, excepted MM:SS"))
         minutes = int(minutes)
         sec = int(sec)
@@ -567,12 +568,11 @@ class Attendance(models.Model):
                 )
 
 
-
 class AttendancerequestComment(models.Model):
     """
     AttendancerequestComment Model
     """
-    
+
     request_id = models.ForeignKey(Attendance, on_delete=models.CASCADE)
     employee_id = models.ForeignKey(Employee, on_delete=models.CASCADE)
     comment = models.TextField(null=True, verbose_name=_("Comment"))
@@ -584,7 +584,7 @@ class AttendancerequestComment(models.Model):
 
     def __str__(self) -> str:
         return f"{self.comment}"
-    
+
 
 class AttendanceOverTime(models.Model):
     """
@@ -859,10 +859,31 @@ class PenaltyAccount(models.Model):
 
     def clean(self) -> None:
         super().clean()
+        if not self.leave_type_id and self.minus_leaves:
+            raise ValidationError(
+                {"leave_type_id": _("Specify the leave type to deduct the leave.")}
+            )
+        if self.leave_type_id and not self.minus_leaves:
+            raise ValidationError(
+                {
+                    "minus_leaves": _(
+                        "If a leave type is chosen for a penalty, minus leaves are required."
+                    )
+                }
+            )
+        if not self.minus_leaves and not self.penalty_amount:
+            raise ValidationError(
+                {
+                    "leave_type_id": _(
+                        "Either minus leaves or a penalty amount is required"
+                    )
+                }
+            )
+
         if (
             self.minus_leaves or self.deduct_from_carry_forward
         ) and not self.leave_type_id:
-            raise ValidationError({"leave_type_id": "Leave type is required"})
+            raise ValidationError({"leave_type_id": _("Leave type is required")})
         return
 
     class Meta:
@@ -912,13 +933,15 @@ def create_initial_stage(sender, instance, created, **kwargs):
                 available.carryforward_days = max(
                     0, (available.carryforward_days - unit)
                 )
-                
+
             available.save()
+
 
 class GraceTime(models.Model):
     """
-    Model for saving Grace time 
+    Model for saving Grace time
     """
+
     allowed_time = models.CharField(
         default="00:00",
         validators=[validate_time_in_minutes],
@@ -926,14 +949,14 @@ class GraceTime(models.Model):
         verbose_name=_("Allowed time"),
     )
     allowed_time_in_secs = models.IntegerField()
-    is_default =  models.BooleanField(default=False)
+    is_default = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     company_id = models.ManyToManyField(Company, blank=True, verbose_name=_("Company"))
     objects = HorillaCompanyManager()
 
     def __str__(self) -> str:
         return str(f"{self.allowed_time} - Minutes")
-    
+
     def clean(self):
         """
         This method is used to perform some custom validations
@@ -941,19 +964,28 @@ class GraceTime(models.Model):
         super().clean()
         if self.is_default:
             if GraceTime.objects.filter(is_default=True).exclude(id=self.id).exists():
-                raise ValidationError(_("There is already a default grace time that exists."))
-        
+                raise ValidationError(
+                    _("There is already a default grace time that exists.")
+                )
+
         allowed_time = self.allowed_time
-        if GraceTime.objects.filter(allowed_time=allowed_time).exclude(is_default=True).exclude(id=self.id).exists():
-            raise ValidationError(_("There is already a grace time with this allowed time that exists."))
-            
+        if (
+            GraceTime.objects.filter(allowed_time=allowed_time)
+            .exclude(is_default=True)
+            .exclude(id=self.id)
+            .exists()
+        ):
+            raise ValidationError(
+                _("There is already a grace time with this allowed time that exists.")
+            )
+
     def save(self, *args, **kwargs):
         allowed_time = self.allowed_time
         minute, secs = allowed_time.split(":")
-        minute_int= int(minute)
-        secs_int= int(secs)   
-        minute_str = f'{minute_int:02d}' 
-        secs_str = f'{secs_int:02d}' 
-        self.allowed_time = f'{minute_str}:{secs_str}'
-        self.allowed_time_in_secs = minute_int *60 + secs_int
+        minute_int = int(minute)
+        secs_int = int(secs)
+        minute_str = f"{minute_int:02d}"
+        secs_str = f"{secs_int:02d}"
+        self.allowed_time = f"{minute_str}:{secs_str}"
+        self.allowed_time_in_secs = minute_int * 60 + secs_int
         super().save(*args, **kwargs)

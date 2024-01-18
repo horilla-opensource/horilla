@@ -1,6 +1,12 @@
 {% load basefilters %}
 {% load i18n %}
-
+{% if messages %}
+    <div class="oh-alert-container">
+      {% for message in messages %}
+      <div class="oh-alert oh-alert--animated {{message.tags}}">{{ message }}</div>
+      {% endfor %}
+    </div>
+{% endif %}
 {% if no_comments %}
 
 <div class="oh-timeoff-modal__profile-content">
@@ -19,7 +25,12 @@
             <div class="oh-profile ms-4">
                 <div>
                     <span class="oh-timeoff-modal__stat-title fw-bold">{% trans "Comment" %}
-                    <a href='{% url "attendance-request-delete-comment" comment.id %}' title='Delete Comment'> 
+                         
+                    <a hx-get='{% url "attendance-request-delete-comment" comment.id %}'
+                       data-target="#shiftRequestDetailModal" 
+                       hx-swap="innerHTML"
+                       hx-target="#shiftRequestDetailTarget" title="{% trans 'Delete Comment' %}"
+                       > 
                         <ion-icon name="close-circle-outline" class="text-danger ms-3 mt-1" aria-label="close outline"></ion-icon></a>
                     </span>
                     <div>

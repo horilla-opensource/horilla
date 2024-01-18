@@ -26,7 +26,7 @@
               <div class="oh-sticky-table__tr">
                 <div class="oh-sticky-table__th" style="width: 20px;">
                   <div class="centered-div">
-                    <input type="checkbox" title='{% trans "Select All" %}' class="oh-input oh-input__checkbox all-latecome"/>
+                    <input type="checkbox" title="{% trans 'Select All' %}" class="oh-input oh-input__checkbox all-latecome"/>
                   </div>
                 </div>
                 <div class='oh-sticky-table__th' scope="col" hx-target='#report-container' hx-get="{% url 'late-come-early-out-search' %}?{{pd}}&sortby=employee_id__employee_first_name">{% trans "Employee" %}</div>

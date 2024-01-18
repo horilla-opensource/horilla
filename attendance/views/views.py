@@ -1633,7 +1633,6 @@ def create_attendancerequest_comment(request, attendance_id):
             form.save()
             form = AttendancerequestCommentForm(initial={'employee_id':emp.id, 'request_id':attendance_id})
             messages.success(request, _("Comment added successfully!"))
-
             if request.user.employee_get.id == attendance.employee_id.id:
                 rec = attendance.employee_id.employee_work_info.reporting_manager_id.employee_user_id
                 notify.send(
@@ -1673,8 +1672,6 @@ def create_attendancerequest_comment(request, attendance_id):
                     redirect="/attendance/request-attendance-view",
                     icon="chatbox-ellipses",
                 )
-
-            return HttpResponse("<script>window.location.reload()</script>")
     return render(
         request,
         "requests/attendance/attendance_request_comment_form.html",
@@ -1706,7 +1703,8 @@ def delete_attendancerequest_comment(request, comment_id):
     """
     This method is used to delete Attendance request comments
     """
-    AttendancerequestComment.objects.get(id=comment_id).delete()
-
+    comment=AttendancerequestComment.objects.get(id=comment_id)
+    attendance_id = comment.request_id.id
+    comment.delete()
     messages.success(request, _("Comment deleted successfully!"))
-    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+    return redirect('attendance-request-view-comment', attendance_id=attendance_id)

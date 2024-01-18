@@ -6,6 +6,7 @@ This module is used to write late come early out penatly methods
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.contrib import messages
+from django.utils.translation import gettext_lazy as _
 from attendance.forms import PenaltyAccountForm
 from attendance.filters import PenaltyFilter
 from attendance.models import AttendanceLateComeEarlyOut, PenaltyAccount
@@ -36,8 +37,8 @@ def cut_available_leave(request, instance_id):
             penalty.minus_leaves = penalty_instance.minus_leaves
             penalty.penalty_amount = penalty_instance.penalty_amount
             penalty.save()
-            messages.success(request, "Penalty/Fine added")
-            return HttpResponse("<script>window.location.reload()</script>")
+            messages.success(request, _("Penalty/Fine added"))
+            form = PenaltyAccountForm()
     return render(
         request,
         "attendance/penalty/form.html",

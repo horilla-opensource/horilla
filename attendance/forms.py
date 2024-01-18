@@ -312,7 +312,7 @@ class AttendanceForm(ModelForm):
 
         self.errors.pop("employee_id", None)
         if self.instance.employee_id is None:
-            raise ValidationError({"employee_id": "This field is required"})
+            raise ValidationError({"employee_id": _("This field is required")})
         super().clean()
         employee_ids = self.data.getlist("employee_id")
         existing_attendance = Attendance.objects.filter(
