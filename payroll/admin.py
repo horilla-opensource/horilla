@@ -12,7 +12,8 @@ from payroll.models.models import (
     WorkRecord,
     LoanAccount,
     Reimbursement,
-    ReimbursementrequestComment
+    ReimbursementrequestComment,
+    MultipleCondition
 )
 from payroll.models.tax_models import (
     PayrollSettings,
@@ -31,3 +32,4 @@ admin.site.register(PayrollSettings)
 admin.site.register(LoanAccount)
 admin.site.register(Reimbursement)
 admin.site.register(ReimbursementrequestComment)
+admin.site.register(MultipleCondition)

@@ -1,7 +1,7 @@
 from django.db import models
 from django.forms import ValidationError
 from django.utils.translation import gettext_lazy as _
-from base.models import Company
+from base.models import Company, Department, JobPosition
 from base.horilla_company_manager import HorillaCompanyManager
 
 # importing simple history
@@ -146,8 +146,10 @@ class EmployeeKeyResult(models.Model):
         if self.employee_id is None:
             self.employee_id = self.employee_objective_id.employee_id
         if self.target_value != 0:
-            self.progress_percentage = (int(self.current_value)/int(self.target_value))*100
-        
+            self.progress_percentage = (
+                int(self.current_value) / int(self.target_value)
+            ) * 100
+
         super().save(*args, **kwargs)
 
 
@@ -261,10 +263,91 @@ class Feedback(models.Model):
         EmployeeKeyResult,
         blank=True,
     )
-    objects = HorillaCompanyManager("employee_id__employee_work_info__company_id+")
+    objects = HorillaCompanyManager("employee_id__employee_work_info__company_id")
 
     def __str__(self):
         return f"{self.employee_id.employee_first_name} - {self.review_cycle}"
+
+
+class AnonymousFeedback(models.Model):
+    """feedback model for creating feedback"""
+
+    STATUS_CHOICES = (
+        ("On Track", _("On Track")),
+        ("Behind", _("Behind")),
+        ("Closed", _("Closed")),
+        ("At Risk", _("At Risk")),
+        ("Not Started", _("Not Started")),
+    )
+    BASED_ON_CHOICES = (
+        ("general", _("General")),
+        ("employee", _("Employee")),
+        ("department", _("Department")),
+        ("job_position", _("Job Position")),
+    )
+    feedback_subject = models.CharField(max_length=100, null=False, blank=False)
+    based_on = models.CharField(
+        max_length=50, choices=BASED_ON_CHOICES, default="general"
+    )
+    employee_id = models.ForeignKey(
+        Employee,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        verbose_name=_("Employee"),
+    )
+    department_id = models.ForeignKey(
+        Department,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        verbose_name=_("Department"),
+    )
+    job_position_id = models.ForeignKey(
+        JobPosition,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        verbose_name=_("Job Position"),
+    )
+    status = models.CharField(
+        max_length=50, choices=STATUS_CHOICES, default="Not Started"
+    )
+    created_at = models.DateField(auto_now_add=True)
+    archive = models.BooleanField(null=True, blank=True, default=False)
+    anonymous_feedback_id = models.CharField(
+        max_length=10, null=True, blank=False, editable=False
+    )
+    feedback_description = models.TextField(null=True, blank=True)
+
+    def __str__(self) -> str:
+        return f"Feedback based on a {self.based_on}"
+
+    def clean(self, *args, **kwargs):
+        if self.based_on == "employee":
+            self._validate_required_field("employee_id", "Employee")
+            self.department_id = None
+            self.job_position_id = None
+        elif self.based_on == "department":
+            self._validate_required_field("department_id", "Department")
+            self.employee_id = None
+            self.job_position_id = None
+        elif self.based_on == "job_position":
+            self._validate_required_field("job_position_id", "Job Position")
+            self.employee_id = None
+            self.department_id = None
+
+        return super().clean(*args, **kwargs)
+
+    def _validate_required_field(self, field_name, field_label):
+        if not getattr(self, field_name):
+            raise ValidationError(
+                {
+                    field_name: _(
+                        f"The {field_label} field is required when the 'Based on' field is set to '{field_label}'."
+                    )
+                }
+            )
 
 
 class Answer(models.Model):

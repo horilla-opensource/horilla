@@ -1,6 +1,6 @@
 {% load i18n %}
 <h5 >{% trans "Asset Approve" %}</h5>
-<form hx-post="{%url 'asset-request-approve' req_id=id %}" hx-target="#asset-request-allocation-modal-target">
+<form hx-post="{%url 'asset-request-approve' req_id=id %}">
     {% csrf_token %}
     <div class=" m-3">
         <!-- <div class="oh-input__group ">

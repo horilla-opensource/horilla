@@ -944,7 +944,7 @@ class GraceTime(models.Model):
                 raise ValidationError(_("There is already a default grace time that exists."))
         
         allowed_time = self.allowed_time
-        if GraceTime.objects.filter(allowed_time=allowed_time).exclude(is_default=True).exists():
+        if GraceTime.objects.filter(allowed_time=allowed_time).exclude(is_default=True).exclude(id=self.id).exists():
             raise ValidationError(_("There is already a grace time with this allowed time that exists."))
             
     def save(self, *args, **kwargs):

@@ -12,6 +12,7 @@ from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render, redirect
 from django.contrib import messages
+from notifications.signals import notify
 from django.utils.translation import gettext_lazy as _
 from django.http import HttpResponse
 import pandas as pd
@@ -28,6 +29,7 @@ from payroll.models.models import (
     Allowance,
     Deduction,
     LoanAccount,
+    MultipleCondition,
     Payslip,
     Reimbursement,
     ReimbursementMultipleAttachment,
@@ -238,6 +240,7 @@ def create_allowance(request):
             form = forms.AllowanceForm()
             messages.success(request, _("Allowance created."))
             return redirect(view_allowance)
+        print(form.errors)
     return render(request, "payroll/common/form.html", {"form": form})
 
 
@@ -363,6 +366,7 @@ def create_deduction(request):
     """
     This method is used to create deduction
     """
+    print("YESSSSSSSSSSSSSSSSSSSSSSSSSSSSSS")
     form = forms.DeductionForm()
     if request.method == "POST":
         form = forms.DeductionForm(request.POST)
@@ -370,6 +374,7 @@ def create_deduction(request):
             form.save()
             messages.success(request, _("Deduction created."))
             return redirect(view_deduction)
+        print(form.errors)
     return render(request, "payroll/common/form.html", {"form": form})
 
 
@@ -1097,11 +1102,36 @@ def approve_reimbursements(request):
         for reimbursement in reimbursements:
             if reimbursement.type == "leave_encashment":
                 reimbursement.amount = amount
+            emp = reimbursement.employee_id
             reimbursement.status = status
             reimbursement.save()
         messages.success(
             request, f"Request {reimbursement.get_status_display()} succesfully"
         )
+        if status == 'canceled':
+            notify.send(
+                request.user.employee_get,
+                recipient=emp.employee_user_id,
+                verb="Your reimbursement request has been cancelled.",
+                verb_ar="تم إلغاء طلب استرداد نفقاتك.",
+                verb_de="Ihr Rückerstattungsantrag wurde storniert.",
+                verb_es="Se ha cancelado tu solicitud de reembolso.",
+                verb_fr="Votre demande de remboursement a été annulée.",
+                redirect="/payroll/view-reimbursement",
+                icon="checkmark",
+            )
+        else:
+            notify.send(
+                request.user.employee_get,
+                recipient=emp.employee_user_id,
+                verb="Your reimbursement request has been approved.",
+                verb_ar="تمت الموافقة على طلب استرداد نفقاتك.",
+                verb_de="Ihr Rückerstattungsantrag wurde genehmigt.",
+                verb_es="Se ha aprobado tu solicitud de reembolso.",
+                verb_fr="Votre demande de remboursement a été approuvée.",
+                redirect="/payroll/view-reimbursement",
+                icon="checkmark",
+            )
     return redirect(view_reimbursement)
 
 
@@ -1114,8 +1144,20 @@ def delete_reimbursements(request):
     ids = request.GET.getlist("ids")
     reimbursements = Reimbursement.objects.filter(id__in=ids)
     for reimbursement in reimbursements:
+        user = reimbursement.employee_id.employee_user_id
         reimbursement.delete()
     messages.success(request, "Reimbursements deleted")
+    notify.send(
+        request.user.employee_get,
+        recipient=user,
+        verb="Your reimbursement request has been deleted.",
+        verb_ar="تم حذف طلب استرداد نفقاتك.",
+        verb_de="Ihr Rückerstattungsantrag wurde gelöscht.",
+        verb_es="Tu solicitud de reembolso ha sido eliminada.",
+        verb_fr="Votre demande de remboursement a été supprimée.",
+        redirect="/",
+        icon="trash",
+    )
 
     return redirect(view_reimbursement)
 

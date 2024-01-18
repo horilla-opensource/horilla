@@ -5,7 +5,7 @@ This page is used to register PMS models with admins site.
 """
 from django.contrib import admin
 from simple_history.admin import SimpleHistoryAdmin
-from .models import Comment, EmployeeKeyResult, Period, EmployeeObjective
+from .models import AnonymousFeedback, Comment, EmployeeKeyResult, Period, EmployeeObjective
 from .models import (
     Question,
     QuestionTemplate,

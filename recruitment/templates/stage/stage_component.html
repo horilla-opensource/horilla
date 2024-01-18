@@ -133,9 +133,9 @@
                       {% if perms.recruitment.change_stage %}
                         <a
                           hx-get="{% url 'rec-stage-duplicate' stage.id %}"
-                          hx-target="#duplicateStageFormModal"
+                          hx-target="#addStageModalBody"
                           data-toggle="oh-modal-toggle"
-                          data-target="#duplicateStageModal"
+                          data-target="#addStageModal"
                           class="oh-btn oh-btn--light-bkg w-50"
                           title="{% trans 'Duplicate' %}"
                          >
@@ -189,26 +189,7 @@
       </div>
     </div>
   </div>
-  <div 
-      class="oh-modal"
-      id="duplicateStageModal"
-      role="dialog"
-      aria-labelledby="duplicateStageModal"
-      aria-hidden="true"
-    >
-    <div class="oh-modal__dialog">
-      <div class="oh-modal__dialog-header">
-        <h5 class="oh-modal__dialog-title" id="duplicateStageModalLabel"
-          >{% trans "Duplicate Stage" %}</span
-        >
-        <button class="oh-modal__close" aria-label="Close" title="Close" >
-          <ion-icon name="close-outline"></ion-icon>
-        </button>
-      </div>
-      <div class="oh-modal__dialog-body" id='duplicateStageFormModal'></div>
-    </div>
-  </div>
-
+ 
   <div class="oh-pagination">
     <span
       class="oh-pagination__page"

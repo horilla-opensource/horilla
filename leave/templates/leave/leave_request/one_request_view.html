@@ -2,14 +2,14 @@
 {% if request.GET.instances_ids %}
 <div class="oh-modal__dialog oh-modal__dialog--navigation m-0 p-0">
     <button 
-        hx-get="{% url 'one-request-view' previous %}?instances_ids={{requests_ids}}" hx-target="#requestView"
+        hx-get="{% url 'one-request-view' previous %}?instances_ids={{requests_ids}}&dashboard={{dashboard}}" hx-target="{% if dashboard == 'true' %}#bigModalTarget {% else %}#requestView{% endif %}"
         class="oh-modal__diaglog-nav oh-modal__nav-prev">
         <ion-icon name="chevron-back-outline" class="md hydrated" role="img"
         aria-label="chevron back outline"></ion-icon>
     </button>
 
     <button  
-        hx-get="{% url 'one-request-view' next %}?instances_ids={{requests_ids}}" hx-target="#requestView"
+        hx-get="{% url 'one-request-view' next %}?instances_ids={{requests_ids}}&dashboard={{dashboard}}" hx-target="{% if dashboard == 'true' %}#bigModalTarget {% else %}#requestView{% endif %}"
         class="oh-modal__diaglog-nav oh-modal__nav-next">
         <ion-icon name="chevron-forward-outline" class="md hydrated" role="img"
         aria-label="chevron forward outline"></ion-icon>

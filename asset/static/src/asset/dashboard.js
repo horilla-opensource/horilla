@@ -26,7 +26,6 @@ $(document).ready(function() {
 		url: "/asset/asset-available-chart",
 		dataType: "json",
 		success: function (response) {
-            console.log("success");
             available_asset_chart(response);
 		},
 		error: (error) => {
@@ -39,7 +38,6 @@ $(document).ready(function() {
 		url: "/asset/asset-category-chart",
 		dataType: "json",
 		success: function (response) {
-            console.log("success");
             asset_category_chart(response);
 		},
 		error: (error) => {

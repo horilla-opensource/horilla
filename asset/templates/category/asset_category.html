@@ -58,6 +58,12 @@
                       <li class="oh-dropdown__item">
                         <a href="#" class="oh-dropdown__link " data-toggle="oh-modal-toggle"
                         onclick="event.stopPropagation()"
+                        data-target="#AssetCategoryModal" hx-get="{% url 'asset-category-duplicate' obj_id=asset_category.id %}?{{pg}}"
+                        hx-target="#AssetModal">{% trans "Duplicate" %}</a>
+                      </li>
+                      <li class="oh-dropdown__item">
+                        <a href="#" class="oh-dropdown__link " data-toggle="oh-modal-toggle"
+                        onclick="event.stopPropagation()"
                         data-target="#AssetCategoryModal" hx-get="{% url 'asset-category-update' cat_id=asset_category.id %}?{{pg}}"
                         hx-target="#AssetModal">{% trans "Update" %}</a>
                       </li>

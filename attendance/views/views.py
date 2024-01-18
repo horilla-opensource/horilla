@@ -1383,9 +1383,16 @@ def hour_attendance_select_filter(request):
     filters = json.loads(filtered) if filtered else {}
 
     if page_number == "all":
-        employee_filter = AttendanceOverTimeFilter(
-            filters, queryset=AttendanceOverTime.objects.all()
-        )
+        if request.user.has_perm("attendance.view_attendanceovertime"):
+            employee_filter = AttendanceOverTimeFilter(filters, queryset=AttendanceOverTime.objects.all())
+        else:
+            employee_filter = AttendanceOverTimeFilter(
+                filters, queryset=AttendanceOverTime.objects.filter(
+                            employee_id__employee_user_id=request.user
+                        ) | AttendanceOverTime.objects.filter(
+                            employee_id__employee_work_info__reporting_manager_id__employee_user_id=request.user
+                        )
+            )
 
         # Get the filtered queryset
         filtered_employees = employee_filter.qs
@@ -1427,9 +1434,16 @@ def activity_attendance_select_filter(request):
     filters = json.loads(filtered) if filtered else {}
 
     if page_number == "all":
-        employee_filter = AttendanceActivityFilter(
-            filters, queryset=AttendanceActivity.objects.all()
-        )
+        if request.user.has_perm("attendance.view_attendanceovertime"):
+            employee_filter = AttendanceActivityFilter(filters, queryset=AttendanceActivity.objects.all())
+        else:
+            employee_filter = AttendanceActivityFilter(
+                filters, queryset=AttendanceActivity.objects.filter(
+                        employee_id__employee_user_id=request.user
+                    ) | AttendanceActivity.objects.filter(
+                        employee_id__employee_work_info__reporting_manager_id__employee_user_id=request.user
+                    )
+            )
 
         # Get the filtered queryset
         filtered_employees = employee_filter.qs
@@ -1471,9 +1485,16 @@ def latecome_attendance_select_filter(request):
     filters = json.loads(filtered) if filtered else {}
 
     if page_number == "all":
-        employee_filter = LateComeEarlyOutFilter(
-            filters, queryset=AttendanceLateComeEarlyOut.objects.all()
-        )
+        if request.user.has_perm("attendance.view_attendancelatecomeearlyout"):
+            employee_filter = LateComeEarlyOutFilter(filters, queryset=AttendanceLateComeEarlyOut.objects.all())
+        else:
+            employee_filter = LateComeEarlyOutFilter(
+                filters, queryset=AttendanceLateComeEarlyOut.objects.filter(
+                                    employee_id__employee_user_id=request.user
+                                ) | AttendanceLateComeEarlyOut.objects.filter(
+                                    employee_id__employee_work_info__reporting_manager_id__employee_user_id=request.user
+                                )
+            )
 
         # Get the filtered queryset
         filtered_employees = employee_filter.qs
@@ -1612,6 +1633,47 @@ def create_attendancerequest_comment(request, attendance_id):
             form.save()
             form = AttendancerequestCommentForm(initial={'employee_id':emp.id, 'request_id':attendance_id})
             messages.success(request, _("Comment added successfully!"))
+
+            if request.user.employee_get.id == attendance.employee_id.id:
+                rec = attendance.employee_id.employee_work_info.reporting_manager_id.employee_user_id
+                notify.send(
+                    request.user.employee_get,
+                    recipient=rec,
+                    verb=f"{attendance.employee_id}'s attendance request has received a comment.",
+                    verb_ar=f"تلقت طلب الحضور {attendance.employee_id} تعليقًا.",
+                    verb_de=f"{attendance.employee_id}s Anfrage zur Anwesenheit hat einen Kommentar erhalten.",
+                    verb_es=f"La solicitud de asistencia de {attendance.employee_id} ha recibido un comentario.",
+                    verb_fr=f"La demande de présence de {attendance.employee_id} a reçu un commentaire.",
+                    redirect="/attendance/request-attendance-view",
+                    icon="chatbox-ellipses",
+                )
+            elif request.user.employee_get.id == attendance.employee_id.employee_work_info.reporting_manager_id.id:
+                rec = attendance.employee_id.employee_user_id
+                notify.send(
+                    request.user.employee_get,
+                    recipient=rec,
+                    verb="Your attendance request has received a comment.",
+                    verb_ar="تلقى طلب الحضور الخاص بك تعليقًا.",
+                    verb_de="Ihr Antrag auf Anwesenheit hat einen Kommentar erhalten.",
+                    verb_es="Tu solicitud de asistencia ha recibido un comentario.",
+                    verb_fr="Votre demande de présence a reçu un commentaire.",
+                    redirect="/attendance/request-attendance-view/",
+                    icon="chatbox-ellipses",
+                )
+            else:
+                rec = [attendance.employee_id.employee_user_id, attendance.employee_id.employee_work_info.reporting_manager_id.employee_user_id]
+                notify.send(
+                    request.user.employee_get,
+                    recipient=rec,
+                    verb=f"{attendance.employee_id}'s attendance request has received a comment.",
+                    verb_ar=f"تلقت طلب الحضور {attendance.employee_id} تعليقًا.",
+                    verb_de=f"{attendance.employee_id}s Anfrage zur Anwesenheit hat einen Kommentar erhalten.",
+                    verb_es=f"La solicitud de asistencia de {attendance.employee_id} ha recibido un comentario.",
+                    verb_fr=f"La demande de présence de {attendance.employee_id} a reçu un commentaire.",
+                    redirect="/attendance/request-attendance-view",
+                    icon="chatbox-ellipses",
+                )
+
             return HttpResponse("<script>window.location.reload()</script>")
     return render(
         request,

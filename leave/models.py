@@ -695,6 +695,24 @@ class LeaveAllocationRequest(models.Model):
         super().save(*args, **kwargs)
 
 
+class LeaveallocationrequestComment(models.Model):
+    """
+    LeaveallocationrequestComment Model
+    """
+    
+    request_id = models.ForeignKey(LeaveAllocationRequest, on_delete=models.CASCADE)
+    employee_id = models.ForeignKey(Employee, on_delete=models.CASCADE)
+    comment = models.TextField(null=True, verbose_name=_("Comment"))
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name=_("Created At"),
+        null=True,
+    )
+
+    def __str__(self) -> str:
+        return f"{self.comment}"
+
+
 class LeaveRequestConditionApproval(models.Model):
     sequence = models.IntegerField()
     is_approved = models.BooleanField(default=False)

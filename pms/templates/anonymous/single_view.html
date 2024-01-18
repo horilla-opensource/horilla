@@ -1,0 +1,92 @@
+{% load i18n %}
+<div class="oh-modal__dialog-header">
+  <span class="oh-modal__dialog-title" id="addEmployeeObjectiveModalLabel">
+    <h5 style="margin-bottom: 20px">{% trans "Anonymous Feedback" %}</h5>
+  </span>
+  <button
+    type="button"
+    class="oh-modal__close"
+    data-dismiss="oh-modal"
+    aria-label="Close"
+    data-toggle="oh-modal-toggle"
+    hx-target="#OneAllowanceTarget"
+  >
+    <ion-icon name="close-outline"></ion-icon>
+  </button>
+  <div class="row">
+    <div class="oh-timeoff-modal__stat">
+      <span class="oh-timeoff-modal__stat-title">{% trans "Subject" %}</span>
+      <span class="oh-timeoff-modal__stat-count"
+        >{{feedback.feedback_subject}}</span
+      >
+    </div>
+  </div>
+  <div class="oh-timeoff-modal__stats-container mt-3 mb-3">
+    <div class="oh-timeoff-modal__stat">
+      <span class="oh-timeoff-modal__stat-title"
+        >{% trans "Based on" %}</span
+      >
+      <span class="oh-timeoff-modal__stat-count">
+        {{feedback.get_based_on_display}}
+      </span>
+    </div>
+    {% if not feedback.based_on == "general" %}
+      <div class="oh-timeoff-modal__stat" style="margin-left: 20px">
+        {% if feedback.based_on == "employee" %}
+          <span class="oh-timeoff-modal__stat-title">{% trans "Employee" %}</span>
+          <span class="oh-timeoff-modal__stat-count">{{feedback.employee_id}}</span>
+        {% endif %}
+        {% if feedback.based_on == "department" %}
+          <span class="oh-timeoff-modal__stat-title">{% trans "Department" %}</span>
+          <span class="oh-timeoff-modal__stat-count">{{feedback.department_id}}</span>
+        {% endif %}
+        {% if feedback.based_on == "job_position" %}
+          <span class="oh-timeoff-modal__stat-title">{% trans "Job Position" %}</span>
+          <span class="oh-timeoff-modal__stat-count">{{feedback.job_position_id}}</span>
+        {% endif %}
+      </div>
+    {% endif %}
+  </div>
+  <div class="row">
+    <div class="oh-timeoff-modal__stat">
+      <span class="oh-timeoff-modal__stat-title">
+        {% trans "Description" %}
+      </span>
+      <span class="oh-timeoff-modal__stat-title" style="font-size:1.0rem;color:hsl(0deg 0% 0%);">{{feedback.feedback_description}}</span>
+    </div>
+  </div>
+  {% comment %} {% if perms.payroll.change_allowance or
+  perms.payroll.delete_allowance %}
+  <div class="oh-modal__button-container text-center">
+    <div class="oh-btn-group">
+      <a
+        href="{% url 'update-allowance' allowance.id %}"
+        class="oh-btn oh-btn--info"
+        style="width: 50%"
+      >
+        <ion-icon
+          name="create-outline"
+          role="img"
+          class="md hydrated"
+          aria-label="create outline"
+        ></ion-icon
+        >{% trans "Edit" %}
+      </a>
+      <a
+        href="{% url 'delete-allowance' allowance.id %}"
+        onclick="event.preventDefault();event.stopPropagation(); confirm(`Do you want to delete this allowance?`)"
+        class="oh-btn oh-btn--danger"
+        style="width: 50%"
+      >
+        <ion-icon
+          name="trash-outline"
+          role="img"
+          class="md hydrated"
+          aria-label="create outline"
+        ></ion-icon
+        >{% trans "Delete" %}
+      </a>
+    </div>
+  </div>
+  {% endif %} {% endcomment %}
+</div>

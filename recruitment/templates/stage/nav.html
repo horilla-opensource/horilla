@@ -60,16 +60,16 @@ x-data="{searchShow: false}"
     </div>
     <div class="oh-dropdown" x-data="{open: false}">
       {% if perms.recruitment.add_stage %}
-      <button hx-get="{% url 'rec-stage-create' %}" 
-      hx-target="#stageCreateModalBody"
-      class="oh-btn oh-btn--secondary ml-2" 
-      data-toggle='oh-modal-toggle'
-      data-target='#addStageModal'
-      >
-      <ion-icon name="add" class="mr-1"></ion-icon>{% trans "Create" %}
-      </button>
+        <button 
+          data-target='#addStageModal'
+          data-toggle='oh-modal-toggle'
+          class="oh-btn oh-btn--secondary ml-2"
+          hx-get="{% url 'rec-stage-create' %}" 
+          hx-target="#addStageModalBody"
+          >
+          <ion-icon name="add" class="mr-1"></ion-icon>{% trans "Create" %}
+        </button>
       {% endif %}
-    
       </div>
     
   </div>
@@ -93,10 +93,6 @@ x-data="{searchShow: false}"
         <ion-icon name="close-outline"></ion-icon>
       </button>
     </div>
-    <div class="oh-modal__dialog-body" id="addStageModalBody">
-      {% if perms.recruitment.add_stage %}
-        {% include 'stage/stage_form.html' %}
-      {% endif %}
-    </div>
+    <div class="oh-modal__dialog-body" id="addStageModalBody"></div>
   </div>
 </div>

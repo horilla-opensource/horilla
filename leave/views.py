@@ -409,9 +409,11 @@ def leave_request_filter(request):
     GET : return leave request view template
     """
     previous_data = request.GET.urlencode()
-    queryset = LeaveRequest.objects.all()
+    queryset = LeaveRequestFilter(request.GET).qs
     field = request.GET.get("field")
-    queryset = sortby(request, queryset, "sortby")
+    queryset = (
+        filtersubordinates(request, queryset, "leave.view_leaverequest")
+    )
     leave_request_filter = LeaveRequestFilter(request.GET, queryset).qs
     page_number = request.GET.get("page")
     template = ("leave/leave_request/leave_requests.html",)
@@ -614,7 +616,7 @@ def leave_request_approve(request, id, emp_id=None):
     if emp_id is not None:
         employee_id = emp_id
         return redirect(f"/employee/employee-view/{employee_id}/")
-    return redirect(leave_request_view)
+    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 
 
 @login_required
@@ -757,6 +759,8 @@ def one_request_view(request, id):
     leave_request = LeaveRequest.objects.get(id=id)
     context = {
         "leave_request": leave_request,
+        "current_date": date.today(),
+        "dashboard": request.GET.get("dashboard")
     }
     requests_ids_json = request.GET.get("instances_ids")
 
@@ -1313,7 +1317,6 @@ def holiday_view(request):
 
 @login_required
 @hx_request_required
-@permission_required("leave.view_holiday")
 def holiday_filter(request):
     """
     function used to filter holidays.
@@ -1474,7 +1477,6 @@ def company_leave_view(request):
 
 @login_required
 @hx_request_required
-@permission_required("leave.view_companyleave")
 def company_leave_filter(request):
     """
     function used to filter company leave.
@@ -2603,6 +2605,7 @@ def leave_allocation_request_single_view(request, req_id):
         "instances_ids": requests_ids_json,
         "previous": previous_id,
         "next": next_id,
+        "dashboard":request.GET.get("dashboard")
     }
     return render(
         request,
@@ -2842,7 +2845,7 @@ def leave_allocation_request_approve(request, req_id):
             )
     else:
         messages.error(request, _("The leave allocation request can't be approved"))
-    return redirect(leave_allocation_request_view)
+    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 
 
 @login_required
@@ -2965,9 +2968,14 @@ def assigned_leave_select_filter(request):
     filters = json.loads(filtered) if filtered else {}
 
     if page_number == "all":
-        employee_filter = AssignedLeaveFilter(
-            filters, queryset=AvailableLeave.objects.all()
-        )
+        if request.user.has_perm("leave.view_availableleave"):
+            employee_filter = AssignedLeaveFilter(filters, queryset=AvailableLeave.objects.all())
+        else:
+            employee_filter = AssignedLeaveFilter(
+                filters, queryset=AvailableLeave.objects.filter(
+                    employee_id__employee_work_info__reporting_manager_id__employee_user_id=request.user
+                )
+            )
 
         # Get the filtered queryset
         filtered_employees = employee_filter.qs
@@ -3065,9 +3073,14 @@ def leave_request_select_filter(request):
     filters = json.loads(filtered) if filtered else {}
 
     if page_number == "all":
-        employee_filter = LeaveRequestFilter(
-            filters, queryset=LeaveRequest.objects.all()
-        )
+        if request.user.has_perm("leave.view_leaverequest"):
+            employee_filter = LeaveRequestFilter(filters, queryset=LeaveRequest.objects.all())
+        else:
+            employee_filter = LeaveRequestFilter(
+                filters, queryset=LeaveRequest.objects.filter(
+                    employee_id__employee_work_info__reporting_manager_id__employee_user_id=request.user
+                )
+            )
 
         # Get the filtered queryset
         filtered_employees = employee_filter.qs
@@ -3250,6 +3263,47 @@ def create_leaverequest_comment(request, leave_id):
             form.save()
             form = LeaverequestcommentForm(initial={'employee_id':emp.id, 'request_id':leave_id})
             messages.success(request, _("Comment added successfully!"))
+
+            if request.user.employee_get.id == leave.employee_id.id:
+                rec = leave.employee_id.employee_work_info.reporting_manager_id.employee_user_id
+                notify.send(
+                    request.user.employee_get,
+                    recipient=rec,
+                    verb=f"{leave.employee_id}'s leave request has received a comment.",
+                    verb_ar=f"تلقت طلب إجازة {leave.employee_id} تعليقًا.",
+                    verb_de=f"{leave.employee_id}s Urlaubsantrag hat einen Kommentar erhalten.",
+                    verb_es=f"La solicitud de permiso de {leave.employee_id} ha recibido un comentario.",
+                    verb_fr=f"La demande de congé de {leave.employee_id} a reçu un commentaire.",
+                    redirect="/leave/request-view",
+                    icon="chatbox-ellipses",
+                )
+            elif request.user.employee_get.id == leave.employee_id.employee_work_info.reporting_manager_id.id:
+                rec = leave.employee_id.employee_user_id
+                notify.send(
+                    request.user.employee_get,
+                    recipient=rec,
+                    verb="Your leave request has received a comment.",
+                    verb_ar="تلقى طلب إجازتك تعليقًا.",
+                    verb_de="Ihr Urlaubsantrag hat einen Kommentar erhalten.",
+                    verb_es="Tu solicitud de permiso ha recibido un comentario.",
+                    verb_fr="Votre demande de congé a reçu un commentaire.",
+                    redirect="/leave/user-request-view",
+                    icon="chatbox-ellipses",
+                )
+            else:
+                rec = [leave.employee_id.employee_user_id, leave.employee_id.employee_work_info.reporting_manager_id.employee_user_id]
+                notify.send(
+                    request.user.employee_get,
+                    recipient=rec,
+                    verb=f"{leave.employee_id}'s leave request has received a comment.",
+                    verb_ar=f"تلقت طلب إجازة {leave.employee_id} تعليقًا.",
+                    verb_de=f"{leave.employee_id}s Urlaubsantrag hat einen Kommentar erhalten.",
+                    verb_es=f"La solicitud de permiso de {leave.employee_id} ha recibido un comentario.",
+                    verb_fr=f"La demande de congé de {leave.employee_id} a reçu un commentaire.",
+                    redirect="/",
+                    icon="chatbox-ellipses",
+                )
+
             return HttpResponse("<script>window.location.reload()</script>")
     return render(
         request,
@@ -3283,6 +3337,102 @@ def delete_leaverequest_comment(request, comment_id):
     This method is used to delete Leave request comments
     """
     LeaverequestComment.objects.get(id=comment_id).delete()
+
+    messages.success(request, _("Comment deleted successfully!"))
+    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+
+
+@login_required
+def create_allocationrequest_comment(request, leave_id):
+    """
+    This method renders form and template to create Allocation request comments
+    """
+    leave = LeaveAllocationRequest.objects.filter(id=leave_id).first()
+    emp = request.user.employee_get
+    form = LeaveallocationrequestcommentForm(initial={'employee_id':emp.id, 'request_id':leave_id})
+
+    if request.method == "POST":
+        form = LeaveallocationrequestcommentForm(request.POST )
+        if form.is_valid():
+            form.instance.employee_id = emp
+            form.instance.request_id = leave
+            form.save()
+            form = LeaveallocationrequestcommentForm(initial={'employee_id':emp.id, 'request_id':leave_id})
+            messages.success(request, _("Comment added successfully!"))
+
+            if request.user.employee_get.id == leave.employee_id.id:
+                rec = leave.employee_id.employee_work_info.reporting_manager_id.employee_user_id
+                notify.send(
+                    request.user.employee_get,
+                    recipient=rec,
+                    verb=f"{leave.employee_id}'s leave allocation request has received a comment.",
+                    verb_ar=f"تلقت طلب تخصيص الإجازة لـ {leave.employee_id} تعليقًا.",
+                    verb_de=f"{leave.employee_id}s Anfrage zur Urlaubszuweisung hat einen Kommentar erhalten.",
+                    verb_es=f"La solicitud de asignación de permisos de {leave.employee_id} ha recibido un comentario.",
+                    verb_fr=f"La demande d'allocation de congé de {leave.employee_id} a reçu un commentaire.",
+                    redirect="/leave/leave-allocation-request-view",
+                    icon="chatbox-ellipses",
+                )
+            elif request.user.employee_get.id == leave.employee_id.employee_work_info.reporting_manager_id.id:
+                rec = leave.employee_id.employee_user_id
+                notify.send(
+                    request.user.employee_get,
+                    recipient=rec,
+                    verb="Your leave allocation request has received a comment.",
+                    verb_ar="تلقى طلب تخصيص الإجازة الخاص بك تعليقًا.",
+                    verb_de="Ihr Antrag auf Urlaubszuweisung hat einen Kommentar erhalten.",
+                    verb_es="Tu solicitud de asignación de permisos ha recibido un comentario.",
+                    verb_fr="Votre demande d'allocation de congé a reçu un commentaire.",
+                    redirect="/leave/leave-allocation-request-view",
+                    icon="chatbox-ellipses",
+                )
+            else:
+                rec = [leave.employee_id.employee_user_id, leave.employee_id.employee_work_info.reporting_manager_id.employee_user_id]
+                notify.send(
+                    request.user.employee_get,
+                    recipient=rec,
+                    verb=f"{leave.employee_id}'s leave allocation request has received a comment.",
+                    verb_ar=f"تلقت طلب تخصيص الإجازة لـ {leave.employee_id} تعليقًا.",
+                    verb_de=f"{leave.employee_id}s Anfrage zur Urlaubszuweisung hat einen Kommentar erhalten.",
+                    verb_es=f"La solicitud de asignación de permisos de {leave.employee_id} ha recibido un comentario.",
+                    verb_fr=f"La demande d'allocation de congé de {leave.employee_id} a reçu un commentaire.",
+                    redirect="/leave/leave-allocation-request-view",
+                    icon="chatbox-ellipses",
+                )
+
+            return HttpResponse("<script>window.location.reload()</script>")
+    return render(
+        request,
+        "leave/leave_allocation_request/allocation_request_comment_form.html",
+        {
+            "form": form, "request_id":leave_id
+        },
+    )
+
+
+@login_required
+def view_allocationrequest_comment(request, leave_id):
+    """
+    This method is used to show Allocation request comments
+    """
+    comments = LeaveallocationrequestComment.objects.filter(request_id=leave_id).order_by('-created_at')
+    no_comments = False
+    if not comments.exists():
+        no_comments = True
+
+    return render(
+        request,
+        "leave/leave_allocation_request/comment_view.html",
+        {"comments": comments, 'no_comments': no_comments }
+    )
+
+
+@login_required
+def delete_allocationrequest_comment(request, comment_id):
+    """
+    This method is used to delete Allocation request comments
+    """
+    LeaveallocationrequestComment.objects.get(id=comment_id).delete()
 
     messages.success(request, _("Comment deleted successfully!"))
     return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))

@@ -1,11 +1,11 @@
 {% load i18n %}
-<form class='oh-general__tab-target oh-profile-section'>
+<form class='oh-general__tab-target oh-profile-section' hx-post="{% url 'add-note-post' %}"
+hx-target='#remark-content' hx-encoding="multipart/form-data">
   {{note_form.as_p}}
   <div class="d-flex flex-row-reverse">
     <button 
     class="oh-btn oh-btn--secondary pr-4 pl-4"
-    hx-post="{% url 'add-note-post' %}"
-    hx-target='#remark-content'
+    type="submit"
     >
     {% trans "Add" %}
   </button>

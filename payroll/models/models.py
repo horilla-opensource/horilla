@@ -2,6 +2,7 @@
 models.py
 Used to register models
 """
+import calendar
 from collections.abc import Iterable
 from datetime import date, datetime, timedelta
 import threading
@@ -613,6 +614,25 @@ FIELD_CHOICE = [
 ]
 
 
+class MultipleCondition(models.Model):
+    """
+    MultipleCondition Model
+    """
+
+    field = models.CharField(
+        max_length=255,
+    )
+    condition = models.CharField(
+        max_length=255, choices=CONDITION_CHOICE, null=True, blank=True
+    )
+    value = models.CharField(
+        max_length=255,
+        null=True,
+        blank=True,
+        help_text=_("The value must be like the data stored in the database"),
+    )
+
+
 class Allowance(models.Model):
     """
     Allowance model
@@ -819,6 +839,9 @@ class Allowance(models.Model):
     only_show_under_employee = models.BooleanField(default=False, editable=False)
     is_loan = models.BooleanField(default=False, editable=False)
     objects = HorillaCompanyManager()
+    other_conditions = models.ManyToManyField(
+        MultipleCondition, blank=True, editable=False
+    )
 
     class Meta:
         """
@@ -1113,6 +1136,9 @@ class Deduction(models.Model):
     objects = HorillaCompanyManager()
 
     is_installment = models.BooleanField(default=False, editable=False)
+    other_conditions = models.ManyToManyField(
+        MultipleCondition, blank=True, editable=False
+    )
 
     def installment_payslip(self):
         payslip = Payslip.objects.filter(installment_ids=self).first()
@@ -1325,6 +1351,7 @@ class LoanAccount(models.Model):
     asset_id = models.ForeignKey(
         Asset, on_delete=models.PROTECT, null=True, editable=False
     )
+    objects = HorillaCompanyManager("employee_id__employee_work_info__company_id")
 
     def get_installments(self):
         loan_amount = self.loan_amount
@@ -1335,15 +1362,26 @@ class LoanAccount(models.Model):
         installment_schedule = {}
 
         installment_date = installment_start_date
-        for i in range(total_installments):
+        installment_date_copy = installment_start_date
+        installment_schedule = {}
+        for _ in range(total_installments):
             installment_schedule[str(installment_date)] = installment_amount
-            installment_date = installment_date + timedelta(days=30 * (i + 1))
+            month = installment_date.month + 1
+            year = installment_date.year
+            if month > 12:
+                month = 1
+                year = year + 1
+            day = installment_date_copy.day
+            total_days_in_month = calendar.monthrange(year, month)[1]
+            day = min(day, total_days_in_month)
+            installment_date = date(day=day, month=month, year=year)
 
         return installment_schedule
 
     def delete(self, *args, **kwargs):
         self.deduction_ids.all().delete()
-        self.allowance_id.delete()
+        if self.allowance_id is not None:
+            self.allowance_id.delete()
         if not Payslip.objects.filter(
             installment_ids__in=list(self.deduction_ids.values_list("id", flat=True))
         ).exists():
@@ -1471,7 +1509,8 @@ class Reimbursement(models.Model):
         Allowance, on_delete=models.SET_NULL, null=True, editable=False
     )
     created_at = models.DateTimeField(auto_now_add=True)
-    is_active=models.BooleanField(default=True,editable=False)
+    is_active = models.BooleanField(default=True, editable=False)
+    objects = HorillaCompanyManager("employee_id__employee_work_info__company_id")
 
     def save(self, *args, **kwargs) -> None:
         request = getattr(thread_local_middleware._thread_locals, "request", None)
@@ -1563,7 +1602,7 @@ class ReimbursementrequestComment(models.Model):
     """
     ReimbursementrequestComment Model
     """
-    
+
     request_id = models.ForeignKey(Reimbursement, on_delete=models.CASCADE)
     employee_id = models.ForeignKey(Employee, on_delete=models.CASCADE)
     comment = models.TextField(null=True, verbose_name=_("Comment"))

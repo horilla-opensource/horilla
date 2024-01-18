@@ -1,0 +1,56 @@
+{% load i18n %}
+{% if feedbacks %}
+<div class="oh-sticky-table h-100">
+    <div class="oh-sticky-table__table">
+        <div class="oh-sticky-table__thead">
+            <div class="oh-sticky-table__tr">
+                <div class="oh-sticky-table__th">{% trans "Employee" %}</div>
+                <div class="oh-sticky-table__th">{% trans "Title" %}</div>
+                <div class="oh-sticky-table__th">{% trans "Due Date" %}</div>
+                <div class="oh-sticky-table__th"></div>
+            </div>
+        </div>
+        <div class="oh-sticky-table__tbody">
+            {% for feedback in feedbacks %}
+            <div class="oh-sticky-table__tr">
+                <div class="oh-sticky-table__sd">
+                    <div class="oh-profile oh-profile--md">
+                        <div class="oh-profile__avatar mr-1">
+                            <img
+                                src="{{feedback.employee_id.get_avatar}}"
+                                class="oh-profile__image"
+                            />
+                        </div>
+                        <span class="oh-profile__name oh-text--dark"
+                            >{{feedback.employee_id}}</span
+                        >
+                    </div>
+                </div>
+                <div class="oh-sticky-table__td">
+                    {{feedback.review_cycle | title}}
+                </div>
+                <div class="oh-sticky-table__td">
+                    {{ current_date|timesince:feedback.end_date }}
+                </div>
+                <div class="oh-sticky-table__td">
+                    <div class="oh-btn-group">
+                        <a
+                            class="oh-btn oh-btn--info w-100"
+                            href="{% url 'feedback-answer-get' id=feedback.id %}"
+                            title="{% trans 'Answer' %}"
+                            >{% trans "Answer" %}</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor%}
+        </div>
+    </div>
+</div>
+{% else %}
+<div style="height: 380px; display:flex;align-items: center;justify-content: center;" class="">
+	<div style="" class="">
+		<img style="display: block;width: 70px;margin: 20px auto ;" src="/static/images/ui/joiningchart.png" class="" alt=""/>
+		<h3 style="font-size:16px" class="oh-404__subtitle">{% trans "No data Found..." %}</h3>
+	</div>
+</div>
+{% endif %}

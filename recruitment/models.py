@@ -401,6 +401,12 @@ class Candidate(models.Model):
         ordering = ["sequence"]
 
 
+class StageFiles(models.Model):
+    files = models.FileField(upload_to="recruitment/stageFiles", blank=True, null=True)
+
+    def __str__(self):
+        return self.files.name.split("/")[-1]
+
 class StageNote(models.Model):
     """
     StageNote model
@@ -411,6 +417,7 @@ class StageNote(models.Model):
     description = models.TextField(verbose_name=_("Description"))
     stage_id = models.ForeignKey(Stage, on_delete=models.CASCADE)
     updated_by = models.ForeignKey(Employee, on_delete=models.CASCADE)
+    stage_files = models.ManyToManyField(StageFiles, blank=True)
     objects = HorillaCompanyManager(
         related_company_field="candidate_id__recruitment_id__company_id"
     )
@@ -533,6 +540,7 @@ class SkillZone(models.Model):
     def __str__(self) -> str:
         return self.title
 
+
 class SkillZoneCandidate(models.Model):
     """
     Model for saving candidate data's for future recruitment
@@ -582,7 +590,6 @@ class SkillZoneCandidate(models.Model):
 
     def __str__(self) -> str:
         return f" {self.candidate_id} | {self.skill_zone_id}"
-
 
 
 class CandidateRating(models.Model):

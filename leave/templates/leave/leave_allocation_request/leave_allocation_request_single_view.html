@@ -3,15 +3,15 @@
 {% if instances_ids %}
     <div class="oh-modal__dialog oh-modal__dialog--navigation m-0 p-0">
         <button 
-            hx-get="{% url 'leave-allocation-request-single-view' previous %}?instances_ids={{instances_ids}}&my_request={{my_request}}" 
-            hx-target="#singleViewTarget"
+            hx-get="{% url 'leave-allocation-request-single-view' previous %}?instances_ids={{instances_ids}}&my_request={{my_request}}&dashboard={{dashboard}}" 
+            hx-target="{% if dashboard == 'true' %}#smallModalTarget {% else %}#singleViewTarget{% endif %}"
             class="oh-modal__diaglog-nav oh-modal__nav-prev">
             <ion-icon name="chevron-back-outline" class="md hydrated" role="img"
             aria-label="chevron back outline"></ion-icon>
         </button>
         <button  
-            hx-get="{% url 'leave-allocation-request-single-view' next %}?instances_ids={{instances_ids}}&my_request={{my_request}}"  
-            hx-target="#singleViewTarget"
+            hx-get="{% url 'leave-allocation-request-single-view' next %}?instances_ids={{instances_ids}}&my_request={{my_request}}&dashboard={{dashboard}}"  
+            hx-target="{% if dashboard == 'true' %}#smallModalTarget {% else %}#singleViewTarget{% endif %}"
             class="oh-modal__diaglog-nav oh-modal__nav-next">
             <ion-icon name="chevron-forward-outline" class="md hydrated" role="img"
             aria-label="chevron forward outline"></ion-icon>
@@ -142,8 +142,8 @@
                     {% if leave_allocation_request.status == 'requested' or leave_allocation_request.status == 'approved' %}
                         <a 
                             hx-get="{% url 'leave-allocation-request-reject' leave_allocation_request.id %}" 
-                            data-target="#rejectModal"
-                            hx-target="#rejectTarget"
+                            data-target="{% if dashboard == 'true' %}#bigModal {% else %}#rejectModal {% endif %}"
+                            hx-target="{% if dashboard == 'true' %}#bigModalTarget {% else %}#rejectTarget{% endif %}"
                             class="oh-btn oh-btn--danger w-100"
                             data-toggle="oh-modal-toggle"
                             title="{% trans 'Reject' %}" 

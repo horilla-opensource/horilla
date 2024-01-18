@@ -8,7 +8,7 @@ import operator
 import contextlib
 from attendance.models import Attendance
 from payroll.models import models
-from payroll.models.models import Contract, Allowance, LoanAccount
+from payroll.models.models import Contract, Allowance, LoanAccount, MultipleCondition
 from payroll.methods.limits import compute_limit
 
 operator_mapping = {
@@ -173,15 +173,30 @@ def calculate_allowance(**kwargs):
     # Append allowances based on condition, or unconditionally to employee
     for allowance in allowances:
         if allowance.is_condition_based:
+            conditions = list(
+                allowance.other_conditions.values_list("field", "condition", "value")
+            )
             condition_field = allowance.field
             condition_operator = allowance.condition
             condition_value = allowance.value.lower().replace(" ", "_")
-            employee_value = dynamic_attr(employee, condition_field)
-            operator_func = operator_mapping.get(condition_operator)
-            if employee_value is not None:
-                condition_value = type(employee_value)(condition_value)
-                if operator_func(employee_value, condition_value):
-                    employee_allowances.append(allowance)
+            conditions.append((condition_field, condition_operator, condition_value))
+            applicable = True
+            for condition in conditions:
+                val = dynamic_attr(employee, condition[0])
+                if val is not None:
+                    operator_func = operator_mapping.get(condition[1])
+                    condition_value = type(val)(condition[2])
+                    if operator_func(val, condition_value):
+                        applicable = applicable * True
+                        continue
+                    else:
+                        applicable = False
+                        break
+                else:
+                    applicable = False
+                    break
+            if applicable:
+                employee_allowances.append(allowance)
         else:
             if allowance.based_on in filter_mapping:
                 filter_params = filter_mapping[allowance.based_on]["filter"](
@@ -375,16 +390,31 @@ def calculate_pre_tax_deduction(*_args, **kwargs):
 
     for deduction in deductions:
         if deduction.is_condition_based:
+            conditions = list(
+                deduction.other_conditions.values_list("field", "condition", "value")
+            )
             condition_field = deduction.field
             condition_operator = deduction.condition
             condition_value = deduction.value.lower().replace(" ", "_")
-            employee_value = dynamic_attr(employee, condition_field)
+            conditions.append((condition_field, condition_operator, condition_value))
             operator_func = operator_mapping.get(condition_operator)
-
-            if employee_value is not None:
-                condition_value = type(employee_value)(condition_value)
-                if operator_func(employee_value, condition_value):
-                    pre_tax_deductions.append(deduction)
+            applicable = True
+            for condition in conditions:
+                val = dynamic_attr(employee, condition[0])
+                if val is not None:
+                    operator_func = operator_mapping.get(condition[1])
+                    condition_value = type(val)(condition[2])
+                    if operator_func(val, condition_value):
+                        applicable = applicable * True
+                        continue
+                    else:
+                        applicable = False
+                        break
+                else:
+                    applicable = False
+                    break
+            if applicable:
+                pre_tax_deductions.append(deduction)
         else:
             pre_tax_deductions.append(deduction)
 
@@ -518,7 +548,7 @@ def calculate_post_tax_deduction(*_args, **kwargs):
     return {
         "post_tax_deductions": serialized_deductions,
         "net_pay_deduction": serialized_net_pay_deductions,
-        "installments":installments,
+        "installments": installments,
     }
 
 

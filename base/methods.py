@@ -17,14 +17,21 @@ from horilla.decorators import login_required
 from leave.models import LeaveRequest, LeaveRequestConditionApproval
 
 
-def filtersubordinates(request, queryset, perm=None):
+def filtersubordinates(request, queryset, perm=None,field=None):
     """
     This method is used to filter out subordinates queryset element.
     """
     user = request.user
     if user.has_perm(perm):
         return queryset
+    
     manager = Employee.objects.filter(employee_user_id=user).first()
+
+    if field:
+        filter_expression = f"{field}__employee_work_info__reporting_manager_id"
+        queryset = queryset.filter(**{filter_expression: manager})
+        return queryset
+    
     queryset = queryset.filter(
         employee_id__employee_work_info__reporting_manager_id=manager
     )
