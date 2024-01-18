@@ -121,6 +121,7 @@ function conditionalVisibility() {
   }
 
   if ($("#id_include_active_employees").is(":checked")) {
+    $("#id_is_condition_based").prop("checked",false)
     $(
       "#id_specific_employees, [for=id_specific_employees],#id_is_condition_based, [for=id_is_condition_based]"
     ).hide();
