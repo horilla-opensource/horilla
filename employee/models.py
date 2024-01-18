@@ -84,7 +84,9 @@ class Employee(models.Model):
     city = models.CharField(max_length=30, null=True, blank=True)
     zip = models.CharField(max_length=20, null=True, blank=True)
     dob = models.DateField(null=True, blank=True)
-    gender = models.CharField(max_length=10,null=True, choices=choice_gender, default="male")
+    gender = models.CharField(
+        max_length=10, null=True, choices=choice_gender, default="male"
+    )
     qualification = models.CharField(max_length=50, blank=True, null=True)
     experience = models.IntegerField(null=True, blank=True)
     marital_status = models.CharField(
@@ -208,15 +210,13 @@ class Employee(models.Model):
         This method is used to the employees current day shift status
         """
         today = datetime.today()
-        now = datetime.now()
-        forecasted_check_out = today.replace(
-            hour=now.hour, minute=now.minute, second=now.second
-        )
         attendance = self.employee_attendances.filter(attendance_date=today).first()
+        minimum_hour_seconds = strtime_seconds(getattr(attendance,"minimum_hour","0"))
         at_work = 0
         forecasted_pending_hours = 0
         if attendance:
             at_work = attendance.get_at_work_from_activities()
+        forecasted_pending_hours = max(0, (minimum_hour_seconds - at_work))
 
         return {
             "forecasted_at_work": format_time(at_work),
@@ -236,13 +236,17 @@ class Employee(models.Model):
     def get_archive_condition(self):
         from onboarding.models import OnboardingStage, OnboardingTask
         from recruitment.models import Stage, Recruitment
-    
-        reporting_manager_query = EmployeeWorkInformation.objects.filter(reporting_manager_id=self.pk)
+
+        reporting_manager_query = EmployeeWorkInformation.objects.filter(
+            reporting_manager_id=self.pk
+        )
         recruitment_stage_query = Stage.objects.filter(stage_managers=self.pk)
         onboarding_stage_query = OnboardingStage.objects.filter(employee_id=self.pk)
         onboarding_task_query = OnboardingTask.objects.filter(employee_id=self.pk)
-        recruitment_manager_query = Recruitment.objects.filter(recruitment_managers=self.pk)
-    
+        recruitment_manager_query = Recruitment.objects.filter(
+            recruitment_managers=self.pk
+        )
+
         if not (
             reporting_manager_query.exists()
             or recruitment_stage_query.exists()
@@ -263,10 +267,9 @@ class Employee(models.Model):
                 related_models.append("Onboarding task manager")
             if recruitment_manager_query.exists():
                 related_models.append("Recruitment manager")
-    
+
             related_models_dict = {"related_models": related_models}
             return related_models_dict
-
 
     def __str__(self) -> str:
         last_name = (
@@ -328,16 +331,19 @@ class Employee(models.Model):
             return self.save()
         return self
 
+
 class EmployeeTag(models.Model):
     """
     EmployeeTag Model
     """
-    title = models.CharField(max_length=50, null=True, verbose_name=_('Title'))
+
+    title = models.CharField(max_length=50, null=True, verbose_name=_("Title"))
     color = models.CharField(max_length=30, null=True)
 
     def __str__(self) -> str:
         return f"{self.title}"
-    
+
+
 class EmployeeWorkInformation(models.Model):
     """
     EmployeeWorkInformation model
