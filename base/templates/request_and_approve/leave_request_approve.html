@@ -28,7 +28,8 @@
                     <div class="oh-sticky-table__td" onclick="event.stopPropagation()">
                         <div class="oh-btn-group" >                        
                             <a type="submit" href="{% url 'request-approve' leave_request.id %}" title="{% trans 'Approve' %}"
-                                class="oh-btn oh-btn--success w-100">
+                                class="oh-btn oh-btn--success w-100"
+                                onclick="event.stopPropagation();return confirm('{% trans "Do you want to Approve this leave request?" %}')">
                                 <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
                             </a>
                             <a type="submit" data-toggle="oh-modal-toggle"

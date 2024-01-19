@@ -47,7 +47,7 @@
                     <div class="oh-sticky-table__td">
                         <a
                             href="{% url 'approve-overtime' attendance.id %}"
-                            onclick="event.stopPropagation()"
+                            onclick="event.stopPropagation();return confirm('{% trans "Do you want to Approve this overtime?" %}')"
                             class="oh-btn oh-btn--info"
                             >
                             {% trans "Approve" %}

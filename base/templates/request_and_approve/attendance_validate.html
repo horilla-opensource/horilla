@@ -69,7 +69,7 @@ class="oh-card-dashboard__header oh-card-dashboard__header--divider"
                         <a
                         href='{% url "validate-this-attendance" attendance.id %}'
                         class="oh-btn oh-btn--info"
-                        onclick="event.stopPropagation();"
+                        onclick="event.stopPropagation();return confirm('{% trans "Do you want to validate this attendance ?" %}')"
                         >
                         {% trans "Validate" %}
                         </a>
