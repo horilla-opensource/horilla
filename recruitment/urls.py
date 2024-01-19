@@ -388,4 +388,16 @@ urlpatterns = [
         views.update_candidate_rating,
         name="update-candidate-rating",
     ),
+    path(
+        "open-recruitments", views.open_recruitments, name="open-recruitments",
+    ),
+    path(
+        "recruitment-details/<int:id>/", views.recruitment_details, name="recruitment-details",
+    ),
+    path(
+        "add-more-files/<int:id>/", views.add_more_files, name="add-more-files",
+    ),
+    path(
+        "delete-stage-note-file/<int:id>/", views.delete_stage_note_file, name="delete-stage-note-file",
+    ),
 ]

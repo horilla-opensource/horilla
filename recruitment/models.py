@@ -77,6 +77,7 @@ class Recruitment(models.Model):
             "To close the recruitment, If closed then not visible on pipeline view."
         ),
     )
+    is_published = models.BooleanField(default = True)
     is_active = models.BooleanField(
         default=True,
         help_text=_(
@@ -108,6 +109,7 @@ class Recruitment(models.Model):
     start_date = models.DateField(default=django.utils.timezone.now)
     end_date = models.DateField(blank=True, null=True)
     objects = HorillaCompanyManager()
+    default = models.manager.Manager()
 
     class Meta:
         """

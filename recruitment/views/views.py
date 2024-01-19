@@ -46,6 +46,7 @@ from recruitment.models import (
     Recruitment,
     Candidate,
     Stage,
+    StageFiles,
     StageNote,
 )
 from recruitment.filters import (
@@ -68,6 +69,7 @@ from recruitment.forms import (
     StageDropDownForm,
     CandidateDropDownForm,
     StageNoteForm,
+    StageNoteUpdateForm,
     ToSkillZoneForm,
 )
 
@@ -605,15 +607,16 @@ def create_note(request, cand_id=None):
     form = StageNoteForm(initial={"candidate_id": cand_id})
     if request.method == "POST":
         form = StageNoteForm(
-            request.POST,
+            request.POST, request.FILES
         )
         if form.is_valid():
             candidate = form.cleaned_data.get("candidate_id")
             cand_id = candidate.id
-            note = form.save(commit=False)
+            note, attachment_ids = form.save(commit=False)
             note.stage_id = note.candidate_id.stage_id
             note.updated_by = request.user.employee_get
             note.save()
+            note.stage_files.set(attachment_ids)
             messages.success(request, _("Note added successfully.."))
             return redirect("view-note", cand_id=cand_id)
 
@@ -635,9 +638,9 @@ def note_update(request, note_id):
         id : stage note instance id
     """
     note = StageNote.objects.get(id=note_id)
-    form = StageNoteForm(instance=note)
+    form = StageNoteUpdateForm(instance=note)
     if request.POST:
-        form = StageNoteForm(request.POST, instance=note)
+        form = StageNoteUpdateForm(request.POST, request.FILES, instance=note)
         if form.is_valid():
             form.save()
             messages.success(request, _("Note updated successfully..."))
@@ -660,7 +663,7 @@ def note_update_individual(request, note_id):
     note = StageNote.objects.get(id=note_id)
     form = StageNoteForm(instance=note)
     if request.POST:
-        form = StageNoteForm(request.POST, instance=note)
+        form = StageNoteForm(request.POST, request.FILES, instance=note)
         if form.is_valid():
             form.save()
             messages.success(request, _("Note updated successfully..."))
@@ -680,6 +683,36 @@ def note_update_individual(request, note_id):
         },
     )
 
+@login_required
+@hx_request_required
+def add_more_files(request,id):
+    """
+    This method is used to Add more files to the stage candidate note.
+    Args:
+        id : stage note instance id
+    """
+    note = StageNote.objects.get(id=id)
+    if request.method == "POST" :
+        files = request.FILES.getlist("files")
+        files_ids = []
+        for file in files:
+            instance = StageFiles.objects.create(files = file)
+            files_ids.append(instance.id)
+
+            note.stage_files.add(instance.id)
+    return redirect("view-note", cand_id=note.candidate_id.id)
+
+@login_required
+def delete_stage_note_file(request,id):
+    """
+    This method is used to delete the stage note file
+    Args:
+        id : stage file instance id
+    """
+    file = StageFiles.objects.get(id=id)
+    cand_id = file.stagenote_set.all().first().candidate_id.id
+    file.delete()
+    return redirect("view-note", cand_id=cand_id)
 
 @login_required
 @permission_required(perm="recruitment.change_candidate")
@@ -901,6 +934,9 @@ def candidate_view(request):
 
 @login_required
 def candidate_export(request):
+    """
+    This method is used to Export candidate data
+    """
     return export_data(
         request=request,
         model=Candidate,
@@ -1019,6 +1055,11 @@ def candidate_update(request, cand_id, **kwargs):
 @login_required
 @manager_can_enter(perm="recruitment.change_candidate")
 def candidate_conversion(request, cand_id, **kwargs):
+    """
+    This method is used to convert a candidate into employee
+    Args:
+        cand_id : candidate instance id
+    """
 
     candidate_obj = Candidate.objects.filter(id = cand_id)
     for detail in candidate_obj:
@@ -1044,6 +1085,11 @@ def candidate_conversion(request, cand_id, **kwargs):
 @login_required
 @manager_can_enter(perm="recruitment.change_candidate")
 def delete_profile_image(request, obj_id):
+    """
+    This method is used to delete the profile image of the candidate
+    Args:
+        obj_id : candidate instance id
+    """
     candidate_obj = Candidate.objects.get(id=obj_id)
     try:
         if candidate_obj.profile:
@@ -1181,6 +1227,9 @@ def stage_sequence_update(request):
 
 @login_required
 def candidate_select(request):
+    """
+    This method is used for select all in candidate
+    """
     page_number = request.GET.get("page")
 
     if page_number == "all":
@@ -1198,6 +1247,9 @@ def candidate_select(request):
 
 @login_required
 def candidate_select_filter(request):
+    """
+    This method is used to select all filtered candidates
+    """
     page_number = request.GET.get("page")
     filtered = request.GET.get("filter")
     filters = json.loads(filtered) if filtered else {}
@@ -1218,6 +1270,11 @@ def candidate_select_filter(request):
 
 @login_required
 def create_candidate_rating(request,cand_id):
+    """
+    This method is used to create rating for the candidate
+    Args:
+        cand_id : candidate instance id
+    """
     cand_id = cand_id
     candidate = Candidate.objects.get(id=cand_id)
     employee_id = request.user.employee_get
@@ -1475,6 +1532,9 @@ def skill_zone_cand_delete(request,sz_cand_id):
 @login_required
 @manager_can_enter(perm="recruitment.view_skillzonecandidate")
 def skill_zone_cand_filter(request):
+    """
+    This method is used to filter the skill zone candidates
+    """
     template = 'skill_zone_cand/skill_zone_cand_card.html'
     if request.GET.get("view") == 'list':
         template = 'skill_zone_cand/skill_zone_cand_list.html'
@@ -1552,6 +1612,11 @@ def skill_zone_cand_delete(request,sz_cand_id):
 login_required
 manager_can_enter(perm="recruitment.change_candidate")
 def to_skill_zone(request,cand_id):
+    """
+    This method is used to Add candidate into skill zone
+    Args:
+        cand_id : candidate instance id
+    """
     candidate=Candidate.objects.get(id=cand_id)
     template = "skill_zone_cand/to_skill_zone_form.html"
     form = ToSkillZoneForm(initial={'candidate_id':candidate})
@@ -1572,6 +1637,11 @@ def to_skill_zone(request,cand_id):
     
 @login_required
 def update_candidate_rating(request,cand_id):
+    """
+    This method is used to update the candidate rating
+    Args:
+        id : candidate rating instance id
+    """
     cand_id = cand_id
     candidate = Candidate.objects.get(id=cand_id)
     employee_id = request.user.employee_get
@@ -1580,3 +1650,27 @@ def update_candidate_rating(request,cand_id):
     rate.rating = int(rating)
     rate.save()
     return redirect(recruitment_pipeline)
+
+def open_recruitments(request):
+    """
+    This method is used to render the open recruitment page
+    """
+    recruitments = Recruitment.default.filter(closed=False,is_published=True)
+    context = {
+        'recruitments':recruitments,
+    }
+    response = render(request,'recruitment/open_recruitments.html',context)
+    response['X-Frame-Options'] = 'ALLOW-FROM *'
+
+    return response
+
+
+def recruitment_details(request,id):
+    """
+    This method is used to render the recruitment details page
+    """
+    recruitment = Recruitment.default.get(id=id)
+    context = {
+        'recruitment':recruitment,
+    }
+    return render(request,'recruitment/recruitment_details.html',context)

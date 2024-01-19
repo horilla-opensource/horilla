@@ -1,0 +1,97 @@
+{% load i18n %}
+{% load static %}
+{% load recruitmentfilters %}
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>{% trans "Horilla - Open Recruitments" %}</title>
+        <link rel="stylesheet" href="{% static "/build/css/style.min.css" %}" />
+    </head>
+
+    <body>
+        <div id="main">
+            <main class="oh-onboarding">
+                <div class=" oh-job__page-container">
+                    <div class="oh-joblisting__title-container">
+                        <h1 class="oh-onboarding-card__title oh-onboarding-card__title--h1 text-center mb-3">
+                            {% trans "Open Job Listings" %}
+                        </h1>
+                        <p class="oh-onboarding__content text-center w-50 m-auto">
+                            {% trans "We're hiring! Join our team and be part of a vibrant workplace where your talents make a difference. Here are the open Recruitments...." %}
+                        </p>
+                    </div>
+                    <div class="oh-layout--grid-3 oh-jobs__container--list pt-3">
+                        {% for recruitment in recruitments %}
+                            <div class="oh-kanban-card oh-joblist_card">
+                                <div class="oh-joblist__header">
+                                    <div class="oh-job_recruit--detail">
+                                        <div class="oh-recruitment-company">
+                                            <img src="{{recruitment.company_id.icon.url}}" alt=""
+                                                class="oh-job-list_company-logo">
+                                        </div>
+                                        <div class="oh-recuritment__details">
+                                            <p class="oh-recuritment_company-name">{{recruitment.company_id}}</p>
+                                            <span class="oh-job_post--posteddate">02 days ago</span>
+                                        </div>
+                                    </div>
+                                    <div class="oh-recuritment_tag" style="background:hsl(121deg 81.26% 91.23%)"><a class=" text-success text-decoration-none" href="{% url "application-form" %}?recruitmentId={{recruitment.id}}" rel="noopener noreferrer" target="_blank">{% trans "Apply Now" %}</a></div>
+                                </div>
+                                <div class="d-flex mt-3 flex-wrap">                    
+                                {% for job_position in recruitment.open_positions.all %}
+                                    <div class="oh-recuritment_tag">{{job_position}}</div>
+                                {% endfor %}
+                                </div>
+                                <h5 class="oh-job__post">{{recruitment.title}}</h5>
+
+                                <div class="oh-recuritment__progress-bar">
+                                    <div class="oh-progress-bar__state" role="progressbar" aria-valuenow="70" aria-valuemin="0"
+                                        aria-valuemax="100" style="width:{{recruitment.candidate.all|length|percentage:recruitment.vacancy}}%">
+                                    </div>
+                                </div>
+                                <span class="oh-recuritment_application"><span class="oh-recuritment_application-count">{{recruitment.candidate.all|length}}
+                                        {% trans "Applied" %}</span> {% trans "of" %} {{recruitment.vacancy}} {% trans "Capacity" %}</span>
+                                        <div class="oh-job__apply-btn">
+                                    <a class="oh-btn  oh-apply_btn" role="button" data-toggle="oh-modal-toggle"
+                                        data-target="#jobDetailModal" hx-get='{% url "recruitment-details" recruitment.id %}' hx-target="#detailTarget">
+
+                                        {% trans "Details" %}
+                                    </a>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </main>
+            <div class="oh-modal" id="jobDetailModal" role="dialog" aria-labelledby="jobDetailModal" aria-hidden="true">
+                <div class=" oh-job-selected_detail">
+                
+                        <button class="oh-modal__close" aria-label="Close">
+                            <ion-icon name="close-outline"></ion-icon>
+                        </button>
+            
+                    <div class="oh-job-selected__detail--container" id="detailTarget">
+                        
+
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+        <script src="{% static 'htmx/htmx.min.js' %}"></script>
+        <script>
+            document.body.addEventListener('htmx:configRequest', (event) => {
+            event.detail.headers['X-CSRFToken'] = '{{ csrf_token }}';
+            })
+        </script>
+        <script src="{% static "build/js/web.frontend.min.js" %}"></script>
+        <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+        <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+        <script></script>
+    </body>
+
+</html>

@@ -1,0 +1,14 @@
+{% load i18n %}
+<h5 class="oh-job__post">{{recruitment.title}}</h5>
+<p class="oh-onboarding__content oh-job__post_description">{{recruitment.description|safe}}</p>
+<span class = "fw-bold d-block"> {% trans "Job positions :" %}</span>
+<ul class="oh-job__description-list mt-3">
+    {% for job in recruitment.open_positions.all %}
+        <li class="oh-job__description-list_item">{{job}}</li>
+    {% endfor %}
+</ul>
+
+    <a href='{% url "application-form" %}?recruitmentId={{recruitment.id}}' rel="noopener noreferrer" target="_blank" class="oh-btn  oh-apply_btn" role="button" data-toggle="oh-modal-toggle"
+    data-target="#jobDetailModal">
+    {% trans "Apply Now" %}
+</a>

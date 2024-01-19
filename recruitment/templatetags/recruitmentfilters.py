@@ -121,3 +121,9 @@ def avg_rating(candidate_ratings,cand):
         avg_rate = round(sum(rating_list) / len(rating_list))    
 
     return str(avg_rate)
+
+@register.filter(name='percentage')
+def percentage(value, total):
+    if total == 0:
+        return 0
+    return min(round((value / total) * 100, 2), 100)

@@ -373,7 +373,7 @@ class ApplicationForm(RegistrationForm):
     """
 
     load = forms.CharField(widget=widgets.RecruitmentAjaxWidget, required=False)
-    active_recruitment = Recruitment.objects.filter(is_active=True, closed=False)
+    active_recruitment = Recruitment.objects.filter(is_active=True, closed=False, is_published = True)
     recruitment_id = forms.ModelChoiceField(queryset=active_recruitment)
 
     class Meta:
@@ -520,7 +520,7 @@ class MultipleFileField(forms.FileField):
             result = [single_file_clean(d, initial) for d in data]
         else:
             result = [single_file_clean(data, initial),]
-        return result[0]
+        return result[0] if result else None
 
 
 class StageNoteForm(ModelForm):
@@ -545,13 +545,13 @@ class StageNoteForm(ModelForm):
         field = self.fields["candidate_id"]
         field.widget = field.hidden_widget()
         self.fields["stage_files"] = MultipleFileField(label="files")
+        self.fields["stage_files"].required = False
 
     def save(self, commit: bool = ...) -> Any:
         attachement = []
         multiple_attachment_ids = []
         attachements = None
         if self.files.getlist("stage_files"):
-            print("========================================")
             attachements = self.files.getlist("stage_files")
             self.instance.attachement = attachements[0]
             multiple_attachment_ids = []
@@ -567,6 +567,24 @@ class StageNoteForm(ModelForm):
         return instance, multiple_attachment_ids
 
 
+class StageNoteUpdateForm(ModelForm):
+    class Meta:
+        """
+        Meta class to add the additional info
+        """
+
+        model = StageNote
+        exclude = (
+            "updated_by",
+            "stage_id",
+            "stage_files"
+        )
+        fields = "__all__"
+        
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        field = self.fields["candidate_id"]
+        field.widget = field.hidden_widget()
 
 class QuestionForm(ModelForm):
     """
@@ -759,7 +777,6 @@ class ToSkillZoneForm(ModelForm):
         skill_zones = cleaned_data.get('skill_zone_ids')
         skill_zone_list=[]
         for skill_zone in skill_zones:
-            print(skill_zone,candidate)
             # Check for the unique together constraint manually
             if SkillZoneCandidate.objects.filter(candidate_id=candidate, skill_zone_id=skill_zone).exists():
                 # Raise a ValidationError with a custom error message
