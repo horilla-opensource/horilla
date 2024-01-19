@@ -215,9 +215,9 @@
 				<button
 					class="oh-btn oh-btn--secondary oh-btn--shadow"
 					data-toggle="oh-modal-toggle"
-					data-target="#editModal1"
+					data-target="#requestCreateModal"
 					hx-get="{% url 'leave-request-create' %}"
-					hx-target="#createForm"
+					hx-target="#requestCreateFormModal"
 				>
 					<ion-icon
 						name="add-outline"
@@ -294,21 +294,12 @@
 
 <div
 	class="oh-modal"
-	id="editModal1"
+	id="requestCreateModal"
 	role="dialog"
-	aria-labelledby="editDialogModal"
+	aria-labelledby="requestCreateModal"
 	aria-hidden="true"
 >
-	<div class="oh-modal__dialog">
-		<div class="oh-modal__dialog-header">
-			<h2 class="oh-modal__dialog-title" id="editDialogDialog">
-				{% trans "Create Leave Request" %}
-			</h2>
-			<button class="oh-modal__close" aria-label="Close">
-				<ion-icon name="close-outline"></ion-icon>
-			</button>
-		</div>
-		<div class="oh-modal__dialog-body" id="createForm"></div>
+	<div class="oh-modal__dialog" id="requestCreateFormModal">
 	</div>
 </div>
 

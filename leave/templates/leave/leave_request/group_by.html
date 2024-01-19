@@ -111,14 +111,14 @@
 
                                     <div class="oh-sticky-table__td" onclick="event.stopPropagation();">
                                         <div class="oh-btn-group" >
-                                          <button type="button" hx-get="{% url 'leave-request-add-comment' leave_request.id %}" title="Add Comment" hx-target="#shiftRequestCommentForm"
-                                                 hx-swap="innerHTML" class="oh-btn oh-btn--light" data-toggle="oh-modal-toggle" data-target="#shiftcommentModal" 
+                                          <button type="button" hx-get="{% url 'leave-request-add-comment' leave_request.id %}?{{pd}}" title="{% trans 'Add Comment' %}" hx-target="#requestCommentFormModal"
+                                                 hx-swap="innerHTML" class="oh-btn oh-btn--light" data-toggle="oh-modal-toggle" data-target="#requestCommentModal" 
                                                  style="flex: 1 0 auto; width:20px;height: 40.68px; padding: 0;">
                                             <ion-icon name="newspaper-outline" role="img" class="md hydrated" aria-label="newspaper outline"></ion-icon>
                                           </button>
                         
-                                          <button type="button" hx-get="{% url 'leave-request-view-comment' leave_request.id %}" hx-target="#shiftRequestDetailTarget" data-toggle='oh-modal-toggle' 
-                                                  data-target = '#shiftRequestDetailModal' title="View Comment"  class="oh-btn oh-btn--light" style="flex: 1 0 auto; width:20px;height: 40.68px; padding: 0;">
+                                          <button type="button" hx-get="{% url 'leave-request-view-comment' leave_request.id %}?{{pd}}" hx-target="#shiftRequestDetailTarget" data-toggle='oh-modal-toggle' 
+                                                  data-target = '#shiftRequestDetailModal' title="{% trans 'View Comment' %}"  class="oh-btn oh-btn--light" style="flex: 1 0 auto; width:20px;height: 40.68px; padding: 0;">
                                             <ion-icon name="eye-outline" role="img" class="md hydrated" aria-label="eye outline"></ion-icon>
                                           </button>
                                        </div>
@@ -224,13 +224,13 @@
 <!-- start of comment modal -->
 <div
 	class="oh-modal"
-	id="shiftcommentModal"
+	id="requestCommentModal"
 	role="dialog"
 	aria-labelledby="emptagModal"
 	aria-hidden="true"
 >
-	<div class="oh-modal__dialog">
-		<div class="oh-modal__dialog-header">
+	<div class="oh-modal__dialog" id="requestCommentFormModal">
+		{% comment %} <div class="oh-modal__dialog-header">
 			<h2 class="oh-modal__dialog-title" id="createModalTitle">
 				{% trans "Add Comment" %}
 			</h2>
@@ -238,7 +238,7 @@
 				<ion-icon name="close-outline"></ion-icon>
 			</button>
 		</div>
-		<div class="oh-modal__dialog-body" id="shiftRequestCommentForm"></div>
+		<div class="oh-modal__dialog-body" ></div> {% endcomment %}
 	</div>
 </div>
 <!-- end of comment modal -->

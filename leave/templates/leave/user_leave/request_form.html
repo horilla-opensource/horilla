@@ -1,4 +1,39 @@
 {% load i18n %}
-<form  hx-post="{% url 'leave-request-create' %}"  hx-encoding="multipart/form-data">
+{% if messages %}
+<div class="oh-wrapper">
+  {% for message in messages %}
+  <div class="oh-alert-container">
+    <div class="oh-alert oh-alert--animated {{message.tags}}">
+      {{ message }}
+    </div>
+  </div>
+  {% endfor %}
+  <script>
+    setTimeout(function () {
+      $(".oh-modal__close").click();
+    }, 1000);
+  </script>
+</div>
+{% endif %}
+<div class="oh-modal__dialog-header">
+  <h2 class="oh-modal__dialog-title" id="editDialogDialog">
+    {% trans "Create Leave Request" %}
+  </h2>
+  <button
+    class="oh-modal__close"
+    aria-label="Close"
+    hx-get="{% url 'user-request-filter' %}"
+    hx-target="#userRequest"
+  >
+    <ion-icon name="close-outline"></ion-icon>
+  </button>
+</div>
+<div class="oh-modal__dialog-body">
+  <form
+    hx-post="{% url 'leave-request-create' %}"
+    hx-target="#requestCreateFormModal"
+    hx-encoding="multipart/form-data"
+  >
     {{form.as_p}}
-</form>
+  </form>
+</div>

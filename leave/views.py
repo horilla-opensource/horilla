@@ -409,11 +409,9 @@ def leave_request_filter(request):
     GET : return leave request view template
     """
     previous_data = request.GET.urlencode()
-    queryset = LeaveRequestFilter(request.GET).qs
+    queryset = LeaveRequestFilter(request.GET).qs.order_by("-id")
     field = request.GET.get("field")
-    queryset = (
-        filtersubordinates(request, queryset, "leave.view_leaverequest")
-    )
+    queryset = filtersubordinates(request, queryset, "leave.view_leaverequest")
     leave_request_filter = LeaveRequestFilter(request.GET, queryset).qs
     page_number = request.GET.get("page")
     template = ("leave/leave_request/leave_requests.html",)
@@ -760,7 +758,7 @@ def one_request_view(request, id):
     context = {
         "leave_request": leave_request,
         "current_date": date.today(),
-        "dashboard": request.GET.get("dashboard")
+        "dashboard": request.GET.get("dashboard"),
     }
     requests_ids_json = request.GET.get("instances_ids")
 
@@ -2507,13 +2505,7 @@ def leave_request_create(request):
 
                     mail_thread = MailSendThread(request, leave_request, type="request")
                     mail_thread.start()
-                    response = render(
-                        request, "leave/user_leave/request_form.html", {"form": form}
-                    )
-                    return HttpResponse(
-                        response.content.decode("utf-8")
-                        + "<script>location.reload();</script>"
-                    )
+                    form = UserLeaveRequestCreationForm(initial={"employee_id": emp})
             return render(request, "leave/user_leave/request_form.html", {"form": form})
         else:
             messages.error(request, _("You don't have permission"))
@@ -2605,7 +2597,7 @@ def leave_allocation_request_single_view(request, req_id):
         "instances_ids": requests_ids_json,
         "previous": previous_id,
         "next": next_id,
-        "dashboard":request.GET.get("dashboard")
+        "dashboard": request.GET.get("dashboard"),
     }
     return render(
         request,
@@ -2637,6 +2629,7 @@ def leave_allocation_request_create(request):
         if form.is_valid():
             leave_allocation_request = form.save(commit=False)
             leave_allocation_request.created_by = employee
+            leave_allocation_request.skip_history = False
             leave_allocation_request.save()
             messages.success(request, _("New Leave allocation request is created"))
             with contextlib.suppress(Exception):
@@ -2763,6 +2756,7 @@ def leave_allocation_request_update(request, req_id):
         if form.is_valid():
             leave_allocation_request = form.save(commit=False)
             leave_allocation_request.created_by = request.user.employee_get
+            leave_allocation_request.skip_history = False
             leave_allocation_request.save()
             messages.info(
                 request, _("Leave allocation request is updated successfully.")
@@ -2969,12 +2963,15 @@ def assigned_leave_select_filter(request):
 
     if page_number == "all":
         if request.user.has_perm("leave.view_availableleave"):
-            employee_filter = AssignedLeaveFilter(filters, queryset=AvailableLeave.objects.all())
+            employee_filter = AssignedLeaveFilter(
+                filters, queryset=AvailableLeave.objects.all()
+            )
         else:
             employee_filter = AssignedLeaveFilter(
-                filters, queryset=AvailableLeave.objects.filter(
+                filters,
+                queryset=AvailableLeave.objects.filter(
                     employee_id__employee_work_info__reporting_manager_id__employee_user_id=request.user
-                )
+                ),
             )
 
         # Get the filtered queryset
@@ -3074,12 +3071,15 @@ def leave_request_select_filter(request):
 
     if page_number == "all":
         if request.user.has_perm("leave.view_leaverequest"):
-            employee_filter = LeaveRequestFilter(filters, queryset=LeaveRequest.objects.all())
+            employee_filter = LeaveRequestFilter(
+                filters, queryset=LeaveRequest.objects.all()
+            )
         else:
             employee_filter = LeaveRequestFilter(
-                filters, queryset=LeaveRequest.objects.filter(
+                filters,
+                queryset=LeaveRequest.objects.filter(
                     employee_id__employee_work_info__reporting_manager_id__employee_user_id=request.user
-                )
+                ),
             )
 
         # Get the filtered queryset
@@ -3225,8 +3225,8 @@ def cut_available_leave(request, instance_id):
             penalty.minus_leaves = penalty_instance.minus_leaves
             penalty.penalty_amount = penalty_instance.penalty_amount
             penalty.save()
+            form = PenaltyAccountForm()
             messages.success(request, "Penalty/Fine added")
-            return HttpResponse("<script>window.location.reload()</script>")
     return render(
         request,
         "leave/leave_request/penalty/form.html",
@@ -3253,19 +3253,26 @@ def create_leaverequest_comment(request, leave_id):
     """
     leave = LeaveRequest.objects.filter(id=leave_id).first()
     emp = request.user.employee_get
-    form = LeaverequestcommentForm(initial={'employee_id':emp.id, 'request_id':leave_id})
+    form = LeaverequestcommentForm(
+        initial={"employee_id": emp.id, "request_id": leave_id}
+    )
+    previous_data = request.GET.urlencode()
 
     if request.method == "POST":
-        form = LeaverequestcommentForm(request.POST )
+        form = LeaverequestcommentForm(request.POST)
         if form.is_valid():
             form.instance.employee_id = emp
             form.instance.request_id = leave
             form.save()
-            form = LeaverequestcommentForm(initial={'employee_id':emp.id, 'request_id':leave_id})
+            form = LeaverequestcommentForm(
+                initial={"employee_id": emp.id, "request_id": leave_id}
+            )
             messages.success(request, _("Comment added successfully!"))
 
             if request.user.employee_get.id == leave.employee_id.id:
-                rec = leave.employee_id.employee_work_info.reporting_manager_id.employee_user_id
+                rec = (
+                    leave.employee_id.employee_work_info.reporting_manager_id.employee_user_id
+                )
                 notify.send(
                     request.user.employee_get,
                     recipient=rec,
@@ -3277,7 +3284,10 @@ def create_leaverequest_comment(request, leave_id):
                     redirect="/leave/request-view",
                     icon="chatbox-ellipses",
                 )
-            elif request.user.employee_get.id == leave.employee_id.employee_work_info.reporting_manager_id.id:
+            elif (
+                request.user.employee_get.id
+                == leave.employee_id.employee_work_info.reporting_manager_id.id
+            ):
                 rec = leave.employee_id.employee_user_id
                 notify.send(
                     request.user.employee_get,
@@ -3291,7 +3301,10 @@ def create_leaverequest_comment(request, leave_id):
                     icon="chatbox-ellipses",
                 )
             else:
-                rec = [leave.employee_id.employee_user_id, leave.employee_id.employee_work_info.reporting_manager_id.employee_user_id]
+                rec = [
+                    leave.employee_id.employee_user_id,
+                    leave.employee_id.employee_work_info.reporting_manager_id.employee_user_id,
+                ]
                 notify.send(
                     request.user.employee_get,
                     recipient=rec,
@@ -3304,13 +3317,10 @@ def create_leaverequest_comment(request, leave_id):
                     icon="chatbox-ellipses",
                 )
 
-            return HttpResponse("<script>window.location.reload()</script>")
     return render(
         request,
         "leave/leave_request/leave_request_comment_form.html",
-        {
-            "form": form, "request_id":leave_id
-        },
+        {"form": form, "request_id": leave_id, "pd": previous_data},
     )
 
 
@@ -3319,7 +3329,9 @@ def view_leaverequest_comment(request, leave_id):
     """
     This method is used to show Leave request comments
     """
-    comments = LeaverequestComment.objects.filter(request_id=leave_id).order_by('-created_at')
+    comments = LeaverequestComment.objects.filter(request_id=leave_id).order_by(
+        "-created_at"
+    )
     no_comments = False
     if not comments.exists():
         no_comments = True
@@ -3327,7 +3339,7 @@ def view_leaverequest_comment(request, leave_id):
     return render(
         request,
         "leave/leave_request/comment_view.html",
-        {"comments": comments, 'no_comments': no_comments }
+        {"comments": comments, "no_comments": no_comments},
     )
 
 
@@ -3336,10 +3348,11 @@ def delete_leaverequest_comment(request, comment_id):
     """
     This method is used to delete Leave request comments
     """
-    LeaverequestComment.objects.get(id=comment_id).delete()
-
+    comment = LeaverequestComment.objects.get(id=comment_id)
+    leave_id = comment.request_id.id
+    comment.delete()
     messages.success(request, _("Comment deleted successfully!"))
-    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+    return redirect("leave-request-view-comment", leave_id=leave_id)
 
 
 @login_required
@@ -3349,19 +3362,25 @@ def create_allocationrequest_comment(request, leave_id):
     """
     leave = LeaveAllocationRequest.objects.filter(id=leave_id).first()
     emp = request.user.employee_get
-    form = LeaveallocationrequestcommentForm(initial={'employee_id':emp.id, 'request_id':leave_id})
+    form = LeaveallocationrequestcommentForm(
+        initial={"employee_id": emp.id, "request_id": leave_id}
+    )
 
     if request.method == "POST":
-        form = LeaveallocationrequestcommentForm(request.POST )
+        form = LeaveallocationrequestcommentForm(request.POST)
         if form.is_valid():
             form.instance.employee_id = emp
             form.instance.request_id = leave
             form.save()
-            form = LeaveallocationrequestcommentForm(initial={'employee_id':emp.id, 'request_id':leave_id})
+            form = LeaveallocationrequestcommentForm(
+                initial={"employee_id": emp.id, "request_id": leave_id}
+            )
             messages.success(request, _("Comment added successfully!"))
 
             if request.user.employee_get.id == leave.employee_id.id:
-                rec = leave.employee_id.employee_work_info.reporting_manager_id.employee_user_id
+                rec = (
+                    leave.employee_id.employee_work_info.reporting_manager_id.employee_user_id
+                )
                 notify.send(
                     request.user.employee_get,
                     recipient=rec,
@@ -3373,7 +3392,10 @@ def create_allocationrequest_comment(request, leave_id):
                     redirect="/leave/leave-allocation-request-view",
                     icon="chatbox-ellipses",
                 )
-            elif request.user.employee_get.id == leave.employee_id.employee_work_info.reporting_manager_id.id:
+            elif (
+                request.user.employee_get.id
+                == leave.employee_id.employee_work_info.reporting_manager_id.id
+            ):
                 rec = leave.employee_id.employee_user_id
                 notify.send(
                     request.user.employee_get,
@@ -3387,7 +3409,10 @@ def create_allocationrequest_comment(request, leave_id):
                     icon="chatbox-ellipses",
                 )
             else:
-                rec = [leave.employee_id.employee_user_id, leave.employee_id.employee_work_info.reporting_manager_id.employee_user_id]
+                rec = [
+                    leave.employee_id.employee_user_id,
+                    leave.employee_id.employee_work_info.reporting_manager_id.employee_user_id,
+                ]
                 notify.send(
                     request.user.employee_get,
                     recipient=rec,
@@ -3399,14 +3424,10 @@ def create_allocationrequest_comment(request, leave_id):
                     redirect="/leave/leave-allocation-request-view",
                     icon="chatbox-ellipses",
                 )
-
-            return HttpResponse("<script>window.location.reload()</script>")
     return render(
         request,
         "leave/leave_allocation_request/allocation_request_comment_form.html",
-        {
-            "form": form, "request_id":leave_id
-        },
+        {"form": form, "request_id": leave_id},
     )
 
 
@@ -3415,7 +3436,9 @@ def view_allocationrequest_comment(request, leave_id):
     """
     This method is used to show Allocation request comments
     """
-    comments = LeaveallocationrequestComment.objects.filter(request_id=leave_id).order_by('-created_at')
+    comments = LeaveallocationrequestComment.objects.filter(
+        request_id=leave_id
+    ).order_by("-created_at")
     no_comments = False
     if not comments.exists():
         no_comments = True
@@ -3423,7 +3446,7 @@ def view_allocationrequest_comment(request, leave_id):
     return render(
         request,
         "leave/leave_allocation_request/comment_view.html",
-        {"comments": comments, 'no_comments': no_comments }
+        {"comments": comments, "no_comments": no_comments},
     )
 
 

@@ -11,6 +11,7 @@ from base import thread_local_middleware
 from base.models import Company, MultipleApprovalCondition
 from base.horilla_company_manager import HorillaCompanyManager
 from employee.models import Employee
+from horilla_audit.models import HorillaAuditInfo, HorillaAuditLog
 from .methods import calculate_requested_days
 from django.core.files.storage import default_storage
 from django.conf import settings
@@ -658,7 +659,7 @@ class LeaverequestComment(models.Model):
     def __str__(self) -> str:
         return f"{self.comment}"
 
-
+from horilla_audit.methods import get_diff
 class LeaveAllocationRequest(models.Model):
     leave_type_id = models.ForeignKey(
         LeaveType, on_delete=models.PROTECT, verbose_name="Leave type"
@@ -684,6 +685,12 @@ class LeaveAllocationRequest(models.Model):
     )
     created_at = models.DateTimeField(auto_now="True")
     reject_reason = models.TextField(blank=True)
+    history = HorillaAuditLog(
+        related_name="history_set",
+        bases=[
+            HorillaAuditInfo,
+        ],
+    )
     objects = HorillaCompanyManager(
         related_company_field="employee_id__employee_work_info__company_id"
     )
@@ -693,6 +700,28 @@ class LeaveAllocationRequest(models.Model):
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.skip_history = False
+    
+    def tracking(self):
+        return get_diff(self)
+        
+    def allocate_tracking(self):
+        """
+        This method is used to return the tracked history of the instance
+        """
+        
+        try:
+            histories = get_diff(self)[:2]
+            for history in histories:
+                if history['type'] == 'Changes':
+                    for update in history['changes']:
+                        if update["field_name"] == "requested_days":
+                            return update
+        except:
+            return None
 
 
 class LeaveallocationrequestComment(models.Model):
