@@ -4,7 +4,7 @@ urls.py
 This module is used to map url path with view methods.
 """
 from django.urls import path
-from employee import not_in_out_dashboard, views
+from employee import not_in_out_dashboard, policies, views
 from employee.models import Employee
 
 urlpatterns = [
@@ -188,10 +188,22 @@ urlpatterns = [
     path("note-tab/<int:emp_id>", views.note_tab, name="note-tab"),
     path("add-employee-note/<int:emp_id>/", views.add_note, name="add-employee-note"),
     path("add-employee-note-post", views.add_note, name="add-employee-note-post"),
-    path("employee-note-update/<int:note_id>/", views.employee_note_update, name="employee-note-update"),
-    path("employee-note-delete/<int:note_id>/", views.employee_note_delete, name="employee-note-delete"),
+    path(
+        "employee-note-update/<int:note_id>/",
+        views.employee_note_update,
+        name="employee-note-update",
+    ),
+    path(
+        "employee-note-delete/<int:note_id>/",
+        views.employee_note_delete,
+        name="employee-note-delete",
+    ),
     path("attendance-tab/<int:emp_id>", views.attendance_tab, name="attendance-tab"),
-    path("allowances-deductions-tab/<int:emp_id>", views.allowances_deductions_tab, name="allowances-deductions-tab"),
+    path(
+        "allowances-deductions-tab/<int:emp_id>",
+        views.allowances_deductions_tab,
+        name="allowances-deductions-tab",
+    ),
     path("shift-tab/<int:emp_id>", views.shift_tab, name="shift-tab"),
     path(
         "contract-tab/<int:obj_id>",
@@ -207,7 +219,26 @@ urlpatterns = [
     ),
     path("not-in-yet/", not_in_out_dashboard.not_in_yet, name="not-in-yet"),
     path("not-out-yet/", not_in_out_dashboard.not_out_yet, name="not-out-yet"),
-    path("send-mail/<int:emp_id>/", not_in_out_dashboard.send_mail, name="send-mail-employee"),
-    path("send-mail", not_in_out_dashboard.send_mail_to_employee, name="send-mail-to-employee"),
-    path("get-template/<int:emp_id>/", not_in_out_dashboard.get_template, name="get-template-employee"),
+    path(
+        "send-mail/<int:emp_id>/",
+        not_in_out_dashboard.send_mail,
+        name="send-mail-employee",
+    ),
+    path(
+        "send-mail",
+        not_in_out_dashboard.send_mail_to_employee,
+        name="send-mail-to-employee",
+    ),
+    path(
+        "get-template/<int:emp_id>/",
+        not_in_out_dashboard.get_template,
+        name="get-template-employee",
+    ),
+    path("view-policies", policies.view_policies, name="view-policies"),
+    path("search-policies", policies.search_policies, name="search-policies"),
+    path("create-policy", policies.create_policy, name="create-policy"),
+    path("view-policy", policies.view_policy, name="view-policy"),
+    path("add-attachment-policy", policies.add_attachment, name="add-attachment-policy"),
+    path("remove-attachment-policy", policies.remove_attachment, name="remove-attachment-policy"),
+    path("get-attachments-policy", policies.get_attachments, name="get-attachments-policy"),
 ]

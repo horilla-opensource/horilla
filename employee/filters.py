@@ -4,6 +4,7 @@ filters.py
 This page is used to register filter for employee models
 
 """
+from employee.models import Policy
 import uuid
 from django import forms
 import django_filters
@@ -84,7 +85,7 @@ class EmployeeFilter(FilterSet):
             "employee_work_info__reporting_manager_id",
             "employee_work_info__company_id",
             "employee_work_info__shift_id",
-            "employee_work_info__tags"
+            "employee_work_info__tags",
         ]
 
     def not_in_yet_func(self, queryset, _, value):
@@ -196,3 +197,15 @@ class EmployeeReGroup:
         ("employee_work_info.reporting_manager_id", "Reporting Manager"),
         ("employee_work_info.company_id", "Company"),
     ]
+
+
+class PolicyFilter(FilterSet):
+    """
+    PolicyFilter filterset class
+    """
+
+    search = django_filters.CharFilter(field_name="title", lookup_expr="icontains")
+
+    class Meta:
+        model = Policy
+        fields = "__all__"

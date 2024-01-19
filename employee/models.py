@@ -7,6 +7,7 @@ This module is used to register models for employee app
 import datetime as dtime
 from datetime import date, datetime
 import json
+from typing import Any
 from django.conf import settings
 from django.db import models
 from django.contrib.auth.models import User, Permission
@@ -211,7 +212,7 @@ class Employee(models.Model):
         """
         today = datetime.today()
         attendance = self.employee_attendances.filter(attendance_date=today).first()
-        minimum_hour_seconds = strtime_seconds(getattr(attendance,"minimum_hour","0"))
+        minimum_hour_seconds = strtime_seconds(getattr(attendance, "minimum_hour", "0"))
         at_work = 0
         forecasted_pending_hours = 0
         if attendance:
@@ -546,3 +547,30 @@ class EmployeeNote(models.Model):
 
     def __str__(self) -> str:
         return f"{self.description}"
+
+
+class PolicyMultipleFile(models.Model):
+    """
+    PoliciesMultipleFile model
+    """
+
+    attachment = models.FileField(upload_to="employee/policies")
+
+
+class Policy(models.Model):
+    """
+    Policies model
+    """
+
+    title = models.CharField(max_length=50)
+    body = models.TextField()
+    is_visible_to_all = models.BooleanField(default=True)
+    specific_employees = models.ManyToManyField(Employee, blank=True,editable=False)
+    attachments = models.ManyToManyField(PolicyMultipleFile, blank=True)
+    company_id = models.ManyToManyField(Company, blank=True)
+
+    objects = HorillaCompanyManager()
+
+    def delete(self, *args, **kwargs):
+        super().delete(*args, **kwargs)
+        self.attachments.all().delete()

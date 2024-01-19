@@ -1,0 +1,34 @@
+{% load i18n %}
+<section class="oh-wrapper oh-main__topbar" style="padding-bottom: 1rem;">
+  <div class="oh-main__titlebar oh-main__titlebar--left oh-d-flex-column--resp oh-mb-3--small">
+    <h1 class="oh-main__titlebar-title fw-bold">{% trans 'Policies' %}</h1>
+  </div>
+
+  <div class="oh-main__titlebar oh-main__titlebar--right oh-d-flex-column--resp oh-mb-3--small">
+    <div class="oh-input-group oh-input__search-group mr-4">
+      <ion-icon name="search-outline" class="oh-input-group__icon oh-input-group__icon--left md hydrated" role="img" aria-label="search outline"></ion-icon>
+      <input hx-get="{% url 'search-policies' %}" name="search" hx-trigger="keyup changed delay:.2s" hx-target="#policyContainer" type="text" placeholder="Search" style="margin-right:10px" class="oh-input oh-input__icon mr-3" autocomplete="false" aria-label="Search Input" />
+    </div>
+    {% include 'policies/filter.html' %}
+    {% if perms.payroll.add_policyaccount %}
+      <div class="oh-main__titlebar-button-container">
+        <div class="oh-main__titlebar-button-container">
+          <a hx-get="{% url 'create-policy' %}" hx-target="#policyModalBody" data-toggle="oh-modal-toggle" data-target="#policyModal" class="oh-btn oh-btn--secondary">
+            <ion-icon name="add-outline"></ion-icon>
+            {% trans 'Create' %}
+          </a>
+        </div>
+      </div>
+    {% endif %}
+  </div>
+</section>
+
+<div class="oh-modal" id="policyModal" role="dialog" aria-hidden="true">
+  <div class="oh-modal__dialog" style="max-width: 550px">
+    <div class="oh-modal__dialog-header">
+      <button type="button" class="oh-modal__close" aria-label="Close"><ion-icon name="close-outline"></ion-icon></button>
+    </div>
+
+    <div class="oh-modal__dialog-body" id="policyModalBody"></div>
+  </div>
+</div>

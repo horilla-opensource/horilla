@@ -1,0 +1,7 @@
+{% load i18n %}
+<form hx-post="{% url 'create-policy' %}?instance_id={{form.instance.id}}" hx-encoding="multipart/form-data">
+  {{ form.as_p }}
+  <div class="d-flex flex-row-reverse">
+    <button type="submit" class="oh-btn oh-btn--secondary">{% trans 'Save' %}</button>
+  </div>
+</form>

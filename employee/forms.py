@@ -27,7 +27,14 @@ from django.contrib.auth.models import User
 from django.forms import DateInput, TextInput
 from django.utils.translation import gettext as _
 from django.utils.translation import gettext_lazy as trans
-from employee.models import Employee, EmployeeWorkInformation, EmployeeBankDetails, EmployeeNote
+from employee.models import (
+    Employee,
+    EmployeeWorkInformation,
+    EmployeeBankDetails,
+    EmployeeNote,
+    Policy,
+    PolicyMultipleFile,
+)
 from base.methods import reload_queryset
 
 
@@ -405,12 +412,69 @@ class EmployeeNoteForm(ModelForm):
         """
 
         model = EmployeeNote
-        exclude = (
-            "updated_by",
-        )
+        exclude = ("updated_by",)
         fields = "__all__"
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         field = self.fields["employee_id"]
         field.widget = field.hidden_widget()
+
+
+class MultipleFileInput(forms.ClearableFileInput):
+    allow_multiple_selected = True
+
+
+class MultipleFileField(forms.FileField):
+    def __init__(self, *args, **kwargs):
+        kwargs.setdefault("widget", MultipleFileInput())
+        super().__init__(*args, **kwargs)
+
+    def clean(self, data, initial=None):
+        single_file_clean = super().clean
+        if isinstance(data, (list, tuple)):
+            result = [single_file_clean(d, initial) for d in data]
+        else:
+            result = [single_file_clean(data, initial)]
+        if len(result) == 0:
+            result = [[]]
+        return result[0]
+
+
+class PolicyForm(ModelForm):
+    """
+    PolicyForm
+    """
+
+    class Meta:
+        model = Policy
+        fields = "__all__"
+        exclude = ["attachments"]
+        widgets = {
+            "body": forms.Textarea(
+                attrs={"data-summernote": "", "style": "display:none;"}
+            ),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["attachment"] = MultipleFileField(
+            label="Attachements", required=False
+        )
+
+    def save(self, *args, commit=True, **kwargs):
+        attachemnt = []
+        multiple_attachment_ids = []
+        attachemnts = None
+        if self.files.getlist("attachment"):
+            attachemnts = self.files.getlist("attachment")
+            multiple_attachment_ids = []
+            for attachemnt in attachemnts:
+                file_instance = PolicyMultipleFile()
+                file_instance.attachment = attachemnt
+                file_instance.save()
+                multiple_attachment_ids.append(file_instance.pk)
+        instance = super().save(commit)
+        if commit:
+            instance.attachments.add(*multiple_attachment_ids)
+        return instance, attachemnts

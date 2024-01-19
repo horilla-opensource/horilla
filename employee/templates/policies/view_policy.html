@@ -1,0 +1,15 @@
+<style>
+  #enlargeImageContainer {
+    position: absolute;
+    left: -300px;
+    top: 100px;
+    height: 200px;
+    width: 200px;
+  }
+</style>
+<h2>{{ policy.title }}</h2>
+<p class="oh-card__footer--border-top"></p>
+{{ policy.body|safe }}
+<div id="attachmentContainer" class="d-flex" hx-get="{% url 'get-attachments-policy' %}?policy_id={{ policy.id }}" hx-trigger="load"></div>
+
+<div id="enlargeImageContainer"></div>
