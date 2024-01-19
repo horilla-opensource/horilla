@@ -8,7 +8,7 @@
     </button>
   </div>
   <div class="oh-modal__dialog-body" id='update-remark-content'>
-    <form class='oh-general__tab-target oh-profile-section' hx-post="{% url 'note-update' form.instance.id %}" hx-target='#activitySidebar'>
+    <form class='oh-general__tab-target oh-profile-section' hx-post="{% url 'note-update' form.instance.id %}" hx-target='#activitySidebar' hx-encoding="multipart/form-data">
         {{form.as_p}}
         <div class="d-flex flex-row-reverse">
             <button class="oh-btn oh-btn--secondary pl-4 pr-4" onclick="$(this).parents().find('.oh-modal--show').removeClass('oh-modal--show')">

@@ -97,23 +97,34 @@
                 />
                 {{note.updated_by}} @{{note.stage_id}}
             </span>
-            {% if note.stage_files.all %}
             <div class="d-flex mt-2 mb-2">
+                {% if note.stage_files.all %}
                 {% for doc in note.stage_files.all %}
-                <a
-                    href="{{doc.files.url}}"
-                    rel="noopener noreferrer"
-                    target="_blank"
-					onmouseover="enlargeImage('{{doc.files.url}}')"
-                    ><span
-                        class="oh-file-icon oh-file-icon--pdf"
-                        title="{{doc}}"
-                    ></span
-                ></a>
+                    <a
+                        href="{{doc.files.url}}"
+                        rel="noopener noreferrer"
+                        target="_blank"
+                        ><span
+                            class="oh-file-icon oh-file-icon--pdf"
+                            onmouseover="enlargeImage('{{doc.files.url}}')"
+                            style="width:40px;height:40px"
+                        ><img src="{% static 'images/ui/minus-icon.png' %}" style="display:block;width:50%;height:50%" hx-get='{% url "delete-stage-note-file" doc.id %}' hx-target="#activitySidebar" onclick="event.stopPropagation();event.preventDefault()" /></span
+                    ></a>
                 {% endfor %}
+                {% endif %}
+                <form hx-post="{% url 'add-more-files' note.id %}" hx-target="#activitySidebar" class="add-files-form" method="post" hx-encoding="multipart/form-data">
+                    {% csrf_token %}
+                    <label for="addFile_{{note.id}}" title="Add Files">
+                        <ion-icon
+                            name="add-outline"
+                            style="font-size: 24px"
+                        ></ion-icon
+                        >
+                    </label>
+                    <input type="file" name="files" class="d-none" multiple='true' id="addFile_{{note.id}}" onchange="submitForm(this)" />
+                    <input type="submit" class='d-none add_more_submit' value="save" >
+                </form>
             </div>
-
-            {% endif %}
         </li>
         {% endfor %}
     </ol>

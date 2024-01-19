@@ -3,6 +3,7 @@
   class="oh-general__tab-target oh-profile-section"
   hx-post="{% url 'create-note-post' %}"
   hx-target="#activitySidebar"
+  hx-encoding="multipart/form-data"
 >
   {{note_form.as_p}}
   <div class="d-flex flex-row-reverse">
