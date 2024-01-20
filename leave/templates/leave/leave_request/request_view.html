@@ -13,17 +13,6 @@
     right: 15px;
   }
 </style>
-{% comment %} {% if messages %}
-<div class="oh-wrapper">
-  {% for message in messages %}
-  <div class="oh-alert-container">
-    <div class="oh-alert oh-alert--animated {{ message.tags }}">
-      {{ message }}
-    </div>
-  </div>
-  {% endfor %}
-</div>
-{% endif %} {% endcomment %}
 
 <section class="oh-wrapper oh-main__topbar" x-data="{searchShow: false}">
   <div class="oh-main__titlebar oh-main__titlebar--left">
@@ -44,6 +33,13 @@
   </div>
   <div class="oh-main__titlebar oh-main__titlebar--right">
     {% if leave_requests %}
+    <form
+        method="post"
+        hx-get="{% url 'request-filter' %}"
+        hx-target="#leaveRequest"
+        id="filterForm"
+        class="d-flex"
+       >
     <div
       class="oh-input-group oh-input__search-group"
       :class="searchShow ? 'oh-input__search-group--show' : ''"
@@ -51,26 +47,27 @@
       <ion-icon
         name="search-outline"
         class="oh-input-group__icon oh-input-group__icon--left"
-      ></ion-icon>
+       >
+      </ion-icon>
       <input
         type="text"
         class="oh-input oh-input__icon"
+        id="leave-request-search"
         aria-label="Search Input"
         placeholder="{% trans 'Search' %}"
-        name="employee_id"
-        hx-get="{% url 'request-filter' %}"
-        hx-trigger="keyup"
-        hx-target="#leaveRequest"
+        name="search"
       />
+      <div id="searchFieldDiv" style="display:none;">
+        <select name="search_field" class='oh-input__icon' style="border: none; display: flex; position: absolute; z-index: 999; margin-left:8%;" size="3" onclick="$('.filterButton')[0].click();">
+          <option style="margin-left: -10px;" value="leave_type">{% trans "Search in : Leave Type" %}</option>
+          <option style="margin-left: -10px;" value="status">{% trans "Search in : Status" %}</option>
+          <option style="margin-left: -10px;" value="department">{% trans "Search in : Department" %}</option>
+          <option style="margin-left: -10px;" value="job_position">{% trans "Search in : Job Position" %}</option>
+          <option style="margin-left: -10px;" value="company">{% trans "Search in : Company" %}</option>
+        </select>
+      </div>
     </div>
     <div class="oh-main__titlebar-button-container">
-      <form
-        method="post"
-        hx-get="{% url 'request-filter' %}"
-        hx-target="#leaveRequest"
-        id="filterForm"
-        class="d-flex"
-      >
         <div class="oh-dropdown" x-data="{open: false}">
           <button
             class="oh-btn ml-2"
@@ -472,6 +469,17 @@
       if (count > 0) {
           $("#filterCount").text("(" + count + ")");
       }
+    });
+    $('#leave-request-search').on('keyup', function () {
+      var searchFieldDiv = $('#searchFieldDiv');
+      var selectedField = searchFieldDiv.find(':selected');
+      if ($(this).val().trim() !== '') {
+          searchFieldDiv.show();
+      } else {
+          searchFieldDiv.hide();
+          selectedField.prop('selected', false);
+      }
+      $('.filterButton').eq(0).click();
     });
   $(document).ready(function () {
       $('#id_field').on('change',function(){

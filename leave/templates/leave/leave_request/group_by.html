@@ -15,13 +15,6 @@
     >
       {% trans "Unselect All Requests" %}
     </div>
-    {% comment %} <div
-    class="oh-checkpoint-badge text-info mb-2"
-    id="exportLeaverequests"
-    style="cursor: pointer; display: none"
-    >
-      {% trans "Export Requests" %}
-    </div> {% endcomment %}
 <div class="oh-checkpoint-badge text-danger mb-2" id="selectedShowLeaverequests" style="display: none"></div>
 <!-- end of selection buttons -->
 
@@ -65,8 +58,11 @@
                                     <div class="oh-sticky-table__th" hx-get="{% url 'request-filter' %}?{{pd}}&sortby=status" hx-target="#leaveRequest">{% trans "Status" %}</div>
                                     {% if  not dashboard %}
                                         <div class="oh-sticky-table__th">{% trans "Comment" %}</div>
+                                        <div class="oh-sticky-table__th" >{% trans "Penalties" %}</div>
                                         <div class="oh-sticky-table__th">{% trans "Options" %}</div>
-                                        <div class="oh-sticky-table__th">{% trans "Actions" %}</div>
+                                        {% if request.user|is_reportingmanager or perms.leave.chanage_leaverequest or perms.leave.delete_leaverequest or request.user|is_leave_approval_manager %}
+                                          <div class="oh-sticky-table__th">{% trans "Actions" %}</div>
+                                        {% endif %}
                                     {% endif %}
                                 </div>
                             </div>
@@ -125,6 +121,16 @@
                                     </div>
 
                                     <div class="oh-sticky-table__td" onclick="event.stopPropagation()">
+                                      {% if leave_request.get_penalties_count %}
+                                          <div data-target="#penaltyViewModal" data-toggle="oh-modal-toggle" 
+                                              hx-get="{% url "view-penalties" %}?leave_request_id={{leave_request.id}}" 
+                                              hx-target="#penaltyViewModalBody" align="center" style="background-color: rgba(229, 79, 56, 0.036); border: 2px solid rgb(229, 79, 56); border-radius: 18px; padding: 10px; font-weight: bold; width: 85%;">
+                                              {% trans "Penalties" %} :{{leave_request.get_penalties_count}}
+                                          </div>
+                                      {% endif %}
+                                    </div>
+
+                                    <div class="oh-sticky-table__td" onclick="event.stopPropagation()">
                                         <div class="oh-btn-group" >
                                             {% if leave_request.status == 'requested' or leave_request.status == 'rejected' %}
                                             <a type="submit" href="{% url 'request-approve' leave_request.id %}" title="{% trans 'Approve' %}"
@@ -156,6 +162,18 @@
                                     </div>
                                     <div class="oh-sticky-table__td" onclick="event.stopPropagation()">
                                         <div class="oh-btn-group">
+                                            {% if request.user|is_reportingmanager or perms.attendance.chanage_penaltyaccount or request.user|is_leave_approval_manager %}
+                                              <button 
+                                                  data-toggle="oh-modal-toggle"
+                                                  data-target="#penaltyModal"
+                                                  hx-target="#penaltyModalBody"
+                                                  hx-get="{% url "leave-cut-penalty" leave_request.id %}?{{pd}}"
+                                                  type='submit' 
+                                                  class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100" 
+                                                  title="{% trans 'Penalty' %}">
+                                                  <ion-icon name="information-circle-outline"></ion-icon>            
+                                              </button>
+                                            {% endif %}
                                             <button  class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Edit' %}" data-toggle="oh-modal-toggle"
                                                 data-target="#editModal2" hx-get="{% url 'request-update' leave_request.id %}"
                                                 hx-target="#updateForm"><ion-icon name="create-outline"></ion-icon></button>
@@ -226,22 +244,18 @@
 	class="oh-modal"
 	id="requestCommentModal"
 	role="dialog"
-	aria-labelledby="emptagModal"
+	aria-labelledby="requestCommentModal"
 	aria-hidden="true"
 >
-	<div class="oh-modal__dialog" id="requestCommentFormModal">
-		{% comment %} <div class="oh-modal__dialog-header">
-			<h2 class="oh-modal__dialog-title" id="createModalTitle">
-				{% trans "Add Comment" %}
-			</h2>
-			<button class="oh-modal__close" aria-label="Close">
-				<ion-icon name="close-outline"></ion-icon>
-			</button>
-		</div>
-		<div class="oh-modal__dialog-body" ></div> {% endcomment %}
-	</div>
+	<div class="oh-modal__dialog" id="requestCommentFormModal"></div>
 </div>
 <!-- end of comment modal -->
+
+<div class="oh-modal" id="penaltyModal" 
+    role="dialog" aria-labelledby="requestCommentModal" 
+    aria-hidden="true">
+  <div class="oh-modal__dialog" style="max-width: 550px" id="penaltyModalBody"></div>
+</div>
 
 <div
   class="oh-modal" style="z-index: 60;"
@@ -268,6 +282,16 @@
     ></div>
   </div>
 </div>
+
+<div class="oh-modal" id="penaltyViewModal" role="dialog" aria-hidden="true">
+  <div class="oh-modal__dialog" style="max-width: 1050px">
+    <div class="oh-modal__dialog-header">
+      <button type="button" class="oh-modal__close" aria-label="Close"><ion-icon name="close-outline"></ion-icon></button>
+    </div>
+    <div class="oh-modal__dialog-body" id="penaltyViewModalBody"></div>
+  </div>
+</div>
+
 
 
 <script>

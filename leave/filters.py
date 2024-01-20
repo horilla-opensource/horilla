@@ -25,9 +25,6 @@ from .models import (
 from base.filters import FilterSet
 
 
-
-
-
 class LeaveTypeFilter(FilterSet):
     """
     Filter class for LeaveType model.
@@ -37,8 +34,12 @@ class LeaveTypeFilter(FilterSet):
 
     name = filters.CharFilter(field_name="name", lookup_expr="icontains")
     search = filters.CharFilter(field_name="name", lookup_expr="icontains")
-    carry_forward_gte = filters.CharFilter(field_name="carryforward_max", lookup_expr="gte")
-    carry_forward_lte = filters.CharFilter(field_name="carryforward_max", lookup_expr="lte")
+    carry_forward_gte = filters.CharFilter(
+        field_name="carryforward_max", lookup_expr="gte"
+    )
+    carry_forward_lte = filters.CharFilter(
+        field_name="carryforward_max", lookup_expr="lte"
+    )
     total_days_gte = filters.CharFilter(field_name="total_days", lookup_expr="gte")
     total_days_lte = filters.CharFilter(field_name="total_days", lookup_expr="lte")
 
@@ -117,6 +118,9 @@ class AssignedLeaveFilter(FilterSet):
             self.form.fields[field].widget.attrs["id"] = f"{uuid.uuid4()}"
 
 
+from horilla.filters import filter_by_name
+
+
 class LeaveRequestFilter(FilterSet):
     """
     Filter class for LeaveRequest model.
@@ -126,9 +130,7 @@ class LeaveRequestFilter(FilterSet):
 
     overall_leave = django_filters.CharFilter(method="overall_leave_filter")
 
-    employee_id = filters.CharFilter(
-        field_name="employee_id__employee_first_name", lookup_expr="icontains"
-    )
+    search = django_filters.CharFilter(method="filter_by_name")
     from_date = DateFilter(
         field_name="start_date",
         lookup_expr="gte",
@@ -212,6 +214,41 @@ class LeaveRequestFilter(FilterSet):
             queryset = yearly_leave_requests
         else:
             queryset = today_leave_requests
+        return queryset
+
+    def filter_by_name(self, queryset, name, value):
+        # Call the imported function
+        filter_method = {
+            "leave_type": "leave_type_id__name__icontains",
+            "status": "status__icontains",
+            "department": "employee_id__employee_work_info__department_id__department__icontains",
+            "job_position": "employee_id__employee_work_info__job_position_id__job_position__icontains",
+            "company": "employee_id__employee_work_info__company_id__company__icontains",
+        }
+        search_field = self.data.get("search_field")
+        if not search_field:
+            parts = value.split()
+            first_name = parts[0]
+            last_name = " ".join(parts[1:]) if len(parts) > 1 else ""
+
+            # Filter the queryset by first name and last name
+            if first_name and last_name:
+                queryset = queryset.filter(
+                    employee_id__employee_first_name__icontains=first_name,
+                    employee_id__employee_last_name__icontains=last_name,
+                )
+            elif first_name:
+                queryset = queryset.filter(
+                    employee_id__employee_first_name__icontains=first_name
+                )
+            elif last_name:
+                queryset = queryset.filter(
+                    employee_id__employee_last_name__icontains=last_name
+                )
+        else:
+            filter = filter_method.get(search_field)
+            queryset = queryset.filter(**{filter: value})
+
         return queryset
 
     def __init__(self, data=None, queryset=None, *, request=None, prefix=None):

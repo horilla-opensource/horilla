@@ -16,7 +16,9 @@
 </div>
 {% endif %}
 <div class="oh-modal__dialog-header">
-  <button type="button" class="oh-modal__close" hx-target="#leaveRequest" hx-get="{% url 'request-filter' %}" aria-label="Close">
+  <button type="button" class="oh-modal__close" 
+          hx-target="#leaveRequest" hx-get="{% url 'request-filter' %}?{{pd}}" 
+          aria-label="Close">
     <ion-icon name="close-outline"></ion-icon>
   </button>
 </div>
@@ -35,7 +37,7 @@
     </div>
   </div>
 </div>
-<form hx-post="{% url 'leave-cut-penalty' instance.id %}" hx-target="#penaltyModalBody">
+<form hx-post="{% url 'leave-cut-penalty' instance.id %}?{{pd}}" hx-target="#penaltyModalBody">
   {{ form.as_p }}
 
   <div class="oh-sticky-table__table oh-table--sortable">

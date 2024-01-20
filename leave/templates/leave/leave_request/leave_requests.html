@@ -141,9 +141,9 @@
                      </div>
                     </div>
       
-                    <div class="oh-sticky-table__td">
+                    <div class="oh-sticky-table__td" onclick="event.stopPropagation()">
                         {% if leave_request.get_penalties_count %}
-                            <div data-target="#penaltyViewModal" data-toggle="oh-modal-toggle" hx-get="{% url "view-penalties" %}?leave_request_id={{leave_request.id}}" hx-target="#penaltyViewModalBody" align="center" style="background-color: rgba(229, 79, 56, 0.036); border: 2px solid rgb(229, 79, 56); border-radius: 18px; padding: 10px; font-weight: bold; width: 85%;">Penalties :{{leave_request.get_penalties_count}}</div>
+                            <div data-target="#penaltyViewModal" data-toggle="oh-modal-toggle" hx-get="{% url "view-penalties" %}?leave_request_id={{leave_request.id}}" hx-target="#penaltyViewModalBody" align="center" style="background-color: rgba(229, 79, 56, 0.036); border: 2px solid rgb(229, 79, 56); border-radius: 18px; padding: 10px; font-weight: bold; width: 85%;">{% trans "Penalties" %} :{{leave_request.get_penalties_count}}</div>
                         {% endif %}
                     </div>
                     <div class="oh-sticky-table__td" onclick="event.stopPropagation()">
@@ -185,7 +185,7 @@
                                 data-toggle="oh-modal-toggle"
                                 data-target="#penaltyModal"
                                 hx-target="#penaltyModalBody"
-                                hx-get="{% url "leave-cut-penalty" leave_request.id %}"
+                                hx-get="{% url "leave-cut-penalty" leave_request.id %}?{{pd}}"
                                 type='submit' 
                                 class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100" 
                                 title="{% trans 'Penalty' %}">
