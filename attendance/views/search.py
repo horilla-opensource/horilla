@@ -169,14 +169,10 @@ def attendance_overtime_search(request):
     for key in keys_to_remove:
         data_dict.pop(key)
     if field != "" and field is not None:
-        accounts = group_by_queryset(
-            accounts, field, request.GET.get("page"), "page"
-        )
+        accounts = group_by_queryset(accounts, field, request.GET.get("page"), "page")
         template = "attendance/attendance_account/group_by.html"
     else:
-        accounts = paginator_qry(
-            accounts,request.GET.get("page")
-        )
+        accounts = paginator_qry(accounts, request.GET.get("page"))
     return render(
         request,
         template,
@@ -216,7 +212,9 @@ def attendance_activity_search(request):
         )
         template = "attendance/attendance_activity/group_by.html"
     else:
-        attendance_activities = paginator_qry(attendance_activities, request.GET.get("page"))
+        attendance_activities = paginator_qry(
+            attendance_activities, request.GET.get("page")
+        )
     data_dict = parse_qs(previous_data)
     get_key_instances(AttendanceActivity, data_dict)
     keys_to_remove = [key for key, value in data_dict.items() if value == ["unknown"]]
@@ -255,9 +253,7 @@ def late_come_early_out_search(request):
     template = "attendance/late_come_early_out/report_list.html"
     if field != "" and field is not None:
         template = "attendance/late_come_early_out/group_by.html"
-        reports = group_by_queryset(
-            reports, field, request.GET.get("page"), "page"
-        )
+        reports = group_by_queryset(reports, field, request.GET.get("page"), "page")
     else:
         reports = paginator_qry(reports, request.GET.get("page"))
     reports = sortby(request, reports, "sortby")
@@ -334,7 +330,7 @@ def own_attendance_sort(request):
 def search_attendance_requests(request):
     field = request.GET.get("field")
     requests = Attendance.objects.filter(
-        is_validate_request=True,
+        is_validate_request=True, employee_id__is_active=True
     )
     requests = filtersubordinates(
         request=request,
@@ -387,8 +383,8 @@ def search_attendance_requests(request):
         )
         template = "requests/attendance/group_by.html"
     else:
-        requests = paginator_qry(requests,request.GET.get("rpage"))
-        attendances = paginator_qry(requests,request.GET.get("page"))
+        requests = paginator_qry(requests, request.GET.get("rpage"))
+        attendances = paginator_qry(attendances, request.GET.get("page"))
     return render(
         request,
         template,

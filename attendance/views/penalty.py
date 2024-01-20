@@ -21,6 +21,7 @@ def cut_available_leave(request, instance_id):
     """
     This method is used to create the penalties
     """
+    previous_data = request.GET.urlencode()
     instance = AttendanceLateComeEarlyOut.objects.get(id=instance_id)
     form = PenaltyAccountForm()
     available = AvailableLeave.objects.filter(employee_id=instance.employee_id)
@@ -31,7 +32,9 @@ def cut_available_leave(request, instance_id):
             penalty = PenaltyAccount()
             # late come early out id
             penalty.late_early_id = instance
-            penalty.deduct_from_carry_forward = penalty_instance.deduct_from_carry_forward
+            penalty.deduct_from_carry_forward = (
+                penalty_instance.deduct_from_carry_forward
+            )
             penalty.employee_id = instance.employee_id
             penalty.leave_type_id = penalty_instance.leave_type_id
             penalty.minus_leaves = penalty_instance.minus_leaves
@@ -42,7 +45,12 @@ def cut_available_leave(request, instance_id):
     return render(
         request,
         "attendance/penalty/form.html",
-        {"available": available, "form": form, "instance": instance},
+        {
+            "available": available,
+            "form": form,
+            "instance": instance,
+            "pd": previous_data,
+        },
     )
 
 

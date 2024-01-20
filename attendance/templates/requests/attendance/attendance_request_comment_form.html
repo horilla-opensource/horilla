@@ -38,7 +38,7 @@
         </div>
     {% endif %}
     <form
-      hx-post="{% url 'attendance-request-add-comment' request_id %}"
+      hx-post="{% url 'attendance-request-add-comment' request_id %}?{{pd}}"
       hx-target="#shiftRequestCommentForm"
       method="post"
       hx-encoding="multipart/form-data"

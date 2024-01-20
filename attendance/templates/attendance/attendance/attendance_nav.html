@@ -208,12 +208,17 @@
         id="attendance-search"
         name="search"
         placeholder="{% trans 'Search' %}"
-        {% comment %} hx-get="{% url 'attendance-search' %}"
-        hx-trigger="keyup changed delay:500ms, search" {% endcomment %}
-        onkeyup="$('.filterButton')[0].click()"
-        {% comment %} hx-target="#tab_contents"
-        hx-swap="innerHTML" {% endcomment %}
       />
+      <div id="searchFieldDiv" style="display:none;">
+        <select name="search_field" class='oh-input__icon' style="border: none; display: flex; position: absolute; z-index: 999; margin-left:8%;" size="3" onclick="$('.filterButton')[0].click();">
+          <option style="margin-left: -10px;" value="day">{% trans "Search in : Day" %}</option>
+          <option style="margin-left: -10px;" value="shift">{% trans "Search in : Shift" %}</option>
+          <option style="margin-left: -10px;" value="work_type">{% trans "Search in : Work Type" %}</option>
+          <option style="margin-left: -10px;" value="department">{% trans "Search in : Department" %}</option>
+          <option style="margin-left: -10px;" value="job_position">{% trans "Search in : Job Position" %}</option>
+          <option style="margin-left: -10px;" value="company">{% trans "Search in : Company" %}</option>
+        </select>
+      </div>
     </div>
     <div class="oh-main__titlebar-button-container">
       <div class="oh-dropdown" x-data="{open: false}">
@@ -362,6 +367,17 @@
     </div>
   </div>
   <script>
+    $('#attendance-search').on('keyup', function () {
+      var searchFieldDiv = $('#searchFieldDiv');
+      var selectedField = searchFieldDiv.find(':selected');
+      if ($(this).val().trim() !== '') {
+          searchFieldDiv.show();
+      } else {
+          searchFieldDiv.hide();
+          selectedField.prop('selected', false);
+      }
+      $('.filterButton').eq(0).click();
+    });
     $("#attendance-search").keydown(function (e) {
       var val = $(this).val();
       $(".pg").attr("hx-vals", `{"search":${val}}`);

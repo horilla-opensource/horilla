@@ -13,7 +13,7 @@
 {% endif %}
 <div class="oh-modal__dialog-header">
   <button type="button" class="oh-modal__close" aria-label="Close"
-    hx-get={% url "late-come-early-out-search" %}
+    hx-get="{% url 'late-come-early-out-search' %}?{{pd}}"
     hx-target="#report-container"
     hx-swap="innerHTML"
     >
@@ -35,7 +35,7 @@
     </div>
   </div>
 </div>
-<form hx-post="{% url 'cut-penalty' instance.id %}" hx-target="#penaltyModalBody">
+<form hx-post="{% url 'cut-penalty' instance.id %}?{{pd}}" hx-target="#penaltyModalBody">
   {{ form.as_p }}
 
   <div class="oh-sticky-table__table oh-table--sortable">

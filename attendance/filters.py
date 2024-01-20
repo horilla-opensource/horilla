@@ -454,6 +454,7 @@ class AttendanceFilters(FilterSet):
             "employee_id__employee_work_info__job_position_id",
             "employee_id__employee_work_info__location",
             "employee_id__employee_work_info__reporting_manager_id",
+            "attendance_day",
             "attendance_date",
             "work_type_id",
             "shift_id",
@@ -486,6 +487,42 @@ class AttendanceFilters(FilterSet):
         super().__init__(data=data, queryset=queryset, request=request, prefix=prefix)
         for field in self.form.fields.keys():
             self.form.fields[field].widget.attrs["id"] = f"{uuid.uuid4()}"
+
+    def filter_by_name(self, queryset, name, value):
+        # Call the imported function
+        filter_method = {
+            "day": "attendance_day__day__icontains",
+            "shift": "shift_id__employee_shift__icontains",
+            "work_type": "work_type_id__work_type__icontains",
+            "department": "employee_id__employee_work_info__department_id__department__icontains",
+            "job_position": "employee_id__employee_work_info__job_position_id__job_position__icontains",
+            "company": "employee_id__employee_work_info__company_id__company__icontains",
+        }
+        search_field = self.data.get("search_field")
+        if not search_field:
+            parts = value.split()
+            first_name = parts[0]
+            last_name = " ".join(parts[1:]) if len(parts) > 1 else ""
+
+            # Filter the queryset by first name and last name
+            if first_name and last_name:
+                queryset = queryset.filter(
+                    employee_id__employee_first_name__icontains=first_name,
+                    employee_id__employee_last_name__icontains=last_name,
+                )
+            elif first_name:
+                queryset = queryset.filter(
+                    employee_id__employee_first_name__icontains=first_name
+                )
+            elif last_name:
+                queryset = queryset.filter(
+                    employee_id__employee_last_name__icontains=last_name
+                )
+        else:
+            filter = filter_method.get(search_field)
+            queryset = queryset.filter(**{filter: value})
+
+        return queryset
 
 
 class LateComeEarlyOutReGroup:

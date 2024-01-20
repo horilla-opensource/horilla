@@ -72,7 +72,7 @@
               data-toggle="oh-modal-toggle"
               data-target="#penaltyModal"
               hx-target="#penaltyModalBody"
-              hx-get="{% url "cut-penalty" late_in_early_out.id %}"
+              hx-get="{% url "cut-penalty" late_in_early_out.id %}?{{pd}}"
               type='submit' 
               class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-50" 
               title="{% trans 'Penalty' %}">
