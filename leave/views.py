@@ -21,7 +21,7 @@ from attendance.forms import PenaltyAccountForm
 from attendance.models import PenaltyAccount
 from horilla.decorators import login_required, hx_request_required
 from horilla.decorators import permission_required, manager_can_enter
-from base.methods import closest_numbers, export_data, filter_conditional_leave_request
+from base.methods import closest_numbers, export_data, filter_conditional_leave_request, get_pagination
 from base.threading import MailSendThread
 from base.models import *
 from base.methods import (
@@ -97,7 +97,7 @@ def paginator_qry(qryset, page_number):
     """
     function used to paginate query set
     """
-    paginator = Paginator(qryset, 25)
+    paginator = Paginator(qryset, get_pagination())
     qryset = paginator.get_page(page_number)
     return qryset
 

@@ -34,7 +34,7 @@ from horilla.decorators import (
     hx_request_required,
     manager_can_enter,
 )
-from base.methods import closest_numbers, export_data
+from base.methods import closest_numbers, export_data, get_pagination
 from base.methods import get_key_instances
 from base.models import EmployeeShiftSchedule
 from base.methods import filtersubordinates, choosesubordinates
@@ -239,7 +239,7 @@ def paginator_qry(qryset, page_number):
     """
     This method is used to paginate queryset
     """
-    paginator = Paginator(qryset, get_record_per_page())
+    paginator = Paginator(qryset, get_pagination())
     qryset = paginator.get_page(page_number)
     return qryset
 

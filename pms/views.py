@@ -14,7 +14,7 @@ from django.shortcuts import get_object_or_404, render, redirect
 from horilla.decorators import manager_can_enter
 from horilla.decorators import login_required, hx_request_required
 from notifications.signals import notify
-from base.methods import get_key_instances
+from base.methods import get_key_instances, get_pagination
 from base.models import Department, JobPosition
 from employee.models import Employee, EmployeeWorkInformation
 from pms.filters import (
@@ -239,8 +239,8 @@ def objective_filter_pagination(request, objective_own, objective_all):
         field_copy = field.replace(".", "__")
         objective_filter_all = objective_filter_all.order_by(field_copy)
 
-    objective_paginator_own = Paginator(objective_filter_own.qs, 50)
-    objective_paginator_all = Paginator(objective_filter_all, 50)
+    objective_paginator_own = Paginator(objective_filter_own.qs, get_pagination())
+    objective_paginator_all = Paginator(objective_filter_all, get_pagination())
     page_number = request.GET.get("page")
     objectives_own = objective_paginator_own.get_page(page_number)
     objectives_all = objective_paginator_all.get_page(page_number)
@@ -994,9 +994,9 @@ def filter_pagination_feedback(
         request.GET or initial_data, queryset=all_feedback
     )
     anonymous_feedback = anonymous_feedback
-    feedback_paginator_own = Paginator(feedback_filter_own.qs, 50)
-    feedback_paginator_requested = Paginator(feedback_filter_requested.qs, 50)
-    feedback_paginator_all = Paginator(feedback_filter_all.qs, 50)
+    feedback_paginator_own = Paginator(feedback_filter_own.qs, get_pagination())
+    feedback_paginator_requested = Paginator(feedback_filter_requested.qs, get_pagination())
+    feedback_paginator_all = Paginator(feedback_filter_all.qs, get_pagination())
     page_number = request.GET.get("page")
 
     feedbacks_own = feedback_paginator_own.get_page(page_number)

@@ -31,7 +31,7 @@ from notifications.signals import notify
 from horilla import settings
 from horilla.decorators import login_required, hx_request_required, manager_can_enter
 from horilla.decorators import permission_required
-from base.methods import generate_pdf, get_key_instances
+from base.methods import generate_pdf, get_key_instances, get_pagination
 from recruitment.models import Candidate, Recruitment, RecruitmentMailTemplate
 from recruitment.filters import CandidateFilter, RecruitmentFilter
 from employee.models import Employee, EmployeeWorkInformation, EmployeeBankDetails
@@ -469,7 +469,7 @@ def paginator_qry(qryset, page_number):
     """
     function used to paginate query set
     """
-    paginator = Paginator(qryset, 25)
+    paginator = Paginator(qryset, get_pagination())
     qryset = paginator.get_page(page_number)
     return qryset
 
@@ -1045,8 +1045,6 @@ def candidate_task_update(request, taskId):
     POST : return candidate task template
     """
     status = request.POST.get("status")
-    print('============')
-    print(request.POST.get("single_view"))
     if request.POST.get("single_view"):
         candidate_task = CandidateTask.objects.get(id=taskId)
     else:
@@ -1056,9 +1054,6 @@ def candidate_task_update(request, taskId):
         candidate_task = CandidateTask.objects.filter(candidate_id=candidate,onboarding_task_id=onboarding_task).first()
     candidate_task.status = status
     candidate_task.save()
-    print('-----------------------')
-    print(candidate_task.status)
-    print('-----------------------')
     users = [
         employee.employee_user_id
         for employee in candidate_task.onboarding_task_id.employee_id.all()

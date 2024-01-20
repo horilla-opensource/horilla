@@ -36,12 +36,13 @@ from base.decorators import (
     shift_request_change_permission,
     work_type_request_change_permission,
 )
-from base.methods import closest_numbers, export_data
+from base.methods import closest_numbers, export_data, get_pagination
 from base.forms import (
     AuditTagForm,
     CompanyForm,
     DepartmentForm,
     DynamicMailConfForm,
+    DynamicPaginationForm,
     EmployeeTagForm,
     JobPositionForm,
     JobRoleForm,
@@ -76,6 +77,7 @@ from base.forms import (
 from base.models import (
     Company,
     DynamicEmailConfiguration,
+    DynamicPagination,
     JobPosition,
     JobRole,
     Department,
@@ -144,7 +146,7 @@ def paginator_qry(queryset, page_number):
     """
     Common paginator method
     """
-    paginator = Paginator(queryset, 50)
+    paginator = Paginator(queryset, get_pagination())
     queryset = paginator.get_page(page_number)
     return queryset
 
@@ -4147,3 +4149,22 @@ def delete_worktyperequest_comment(request, comment_id):
 
     messages.success(request, _("Comment deleted successfully!"))
     return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+
+@login_required
+def pagination_settings_view(request):
+    if DynamicPagination.objects.filter(user_id = request.user).exists():
+        pagination = DynamicPagination.objects.filter(user_id = request.user).first()
+        form = DynamicPaginationForm(instance=pagination)
+        if request.method == "POST":
+            form = DynamicPaginationForm(request.POST, instance=pagination)
+            if form.is_valid():
+                form.save()
+                messages.success(request, _("Default pagination updated."))
+    else:
+        form = DynamicPaginationForm()
+        if request.method == "POST":
+            form = DynamicPaginationForm(request.POST,)
+            if form.is_valid():
+                form.save()
+                messages.success(request, _("Default pagination updated."))
+    return render(request, "base/dynamic_pagination/pagination_settings.html", {"form": form})

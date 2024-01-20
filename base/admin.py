@@ -10,6 +10,7 @@ from base.models import (
     Company,
     Department,
     DynamicEmailConfiguration,
+    DynamicPagination,
     JobPosition,
     JobRole,
     EmployeeShiftSchedule,
@@ -51,3 +52,5 @@ admin.site.register(DynamicEmailConfiguration)
 admin.site.register(MultipleApprovalManagers)
 admin.site.register(ShiftrequestComment)
 admin.site.register(WorktyperequestComment)
+admin.site.register(DynamicPagination)
+

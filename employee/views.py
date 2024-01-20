@@ -62,6 +62,7 @@ from base.methods import (
     filtersubordinates,
     filtersubordinatesemployeemodel,
     get_key_instances,
+    get_pagination,
     sortby,
     check_manager,
     check_owner,
@@ -530,7 +531,7 @@ def paginator_qry(qryset, page_number):
     """
     This method is used to paginate query set
     """
-    paginator = Paginator(qryset, 50)
+    paginator = Paginator(qryset, get_pagination())
     qryset = paginator.get_page(page_number)
     return qryset
 

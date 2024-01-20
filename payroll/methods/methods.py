@@ -8,6 +8,7 @@ from datetime import timedelta, datetime, date
 from django.db.models import F, Q
 from django.core.paginator import Paginator
 from dateutil.relativedelta import relativedelta
+from base.methods import get_pagination
 from leave.models import Holiday, CompanyLeave
 from attendance.models import Attendance
 from payroll.models.models import Contract, Payslip
@@ -572,7 +573,7 @@ def paginator_qry(qryset, page_number):
     """
     This method is used to paginate queryset
     """
-    paginator = Paginator(qryset, 50)
+    paginator = Paginator(qryset, get_pagination())
     qryset = paginator.get_page(page_number)
     return qryset
 

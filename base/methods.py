@@ -11,7 +11,7 @@ from django.template.loader import render_to_string
 from django.utils.translation import gettext as _
 import pandas as pd
 from xhtml2pdf import pisa
-from base.models import Company
+from base.models import Company, DynamicPagination
 from employee.models import Employee, EmployeeWorkInformation
 from horilla.decorators import login_required
 from leave.models import LeaveRequest, LeaveRequestConditionApproval
@@ -584,3 +584,14 @@ def filter_conditional_leave_request(request):
         else:
             leave_request_ids.append(instance.leave_request_id.id)
     return LeaveRequest.objects.filter(pk__in=leave_request_ids)
+
+def get_pagination():
+    from base.thread_local_middleware import _thread_locals
+
+    request = getattr(_thread_locals,"request",None)
+    user = request.user
+    page  = DynamicPagination.objects.filter(user_id=user).first()
+    count = 50
+    if page:
+        count = page.pagination
+    return count

@@ -22,6 +22,7 @@ from base.models import (
     Company,
     Department,
     DynamicEmailConfiguration,
+    DynamicPagination,
     JobPosition,
     JobRole,
     MultipleApprovalCondition,
@@ -1606,3 +1607,14 @@ class MultipleApproveConditionForm(ModelForm):
     class Meta:
         model = MultipleApprovalCondition 
         fields = "__all__"
+
+class DynamicPaginationForm(ModelForm):
+    """
+    Form for setting default pagination
+    """
+    class Meta:
+        model = DynamicPagination
+        fields = "__all__"
+        exclude = ('user_id',)
+
+    

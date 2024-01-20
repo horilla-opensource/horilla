@@ -1135,3 +1135,28 @@ class MultipleApprovalManagers(models.Model):
     )
     sequence = models.IntegerField(null=False, blank=False)
     employee_id = models.IntegerField(null=False, blank=False)
+
+class DynamicPagination(models.Model):
+    """
+    model for storing pagination for employees
+    """
+    from django.contrib.auth.models import User
+
+    user_id = models.OneToOneField(
+        User,
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True,
+        related_name="dynamic_pagination",
+        verbose_name=_("User"),
+    )
+    pagination = models.IntegerField(default = 50)
+     
+    def save(self, *args, **kwargs):
+        request = getattr(_thread_locals,"request",None)
+        user = request.user
+        self.user_id = user
+        super().save(*args, **kwargs)
+    def __str__(self):
+        return (f"{self.user_id}|{self.pagination}")
+    

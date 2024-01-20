@@ -237,6 +237,14 @@
 							>
 						</li>
 						{% endif %}
+							<li class="oh-inner-sidebar__item">
+								<a
+									id="pagination"
+									href="{% url 'pagination-settings-view' %}"
+									class="oh-inner-sidebar__link oh-dropdown__link"
+									>{% trans "Records per page" %}</a
+								>
+							</li>
 						{% if perms.base.view_dynamicemailconfiguration %}
 
 						<li class="oh-inner-sidebar__item">

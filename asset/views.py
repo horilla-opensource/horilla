@@ -13,7 +13,7 @@ from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.contrib import messages
 from django.core.paginator import Paginator
 from django.utils.translation import gettext_lazy as _
-from base.methods import closest_numbers, get_key_instances
+from base.methods import closest_numbers, get_key_instances, get_pagination
 from base.models import Company
 from employee.models import EmployeeWorkInformation
 from notifications.signals import notify
@@ -422,7 +422,7 @@ def filter_pagination_asset_category(request):
         request.GET, queryset=asset_category_queryset
     )
     asset_export_filter = AssetExportFilter(request.GET, queryset=Asset.objects.all())
-    asset_category_paginator = Paginator(asset_category_filtered.qs, 20)
+    asset_category_paginator = Paginator(asset_category_filtered.qs, get_pagination())
     page_number = request.GET.get("page")
     asset_categorys = asset_category_paginator.get_page(page_number)
     data_dict = parse_qs(previous_data)
@@ -818,9 +818,9 @@ def filter_pagination_asset_request_allocation(request):
             allocation_field_copy
         )
 
-    asset_paginator = Paginator(assets_filtered.qs, 20)
-    asset_request_paginator = Paginator(asset_request_filtered, 20)
-    asset_allocation_paginator = Paginator(asset_allocation_filtered, 20)
+    asset_paginator = Paginator(assets_filtered.qs, get_pagination())
+    asset_request_paginator = Paginator(asset_request_filtered, get_pagination())
+    asset_allocation_paginator = Paginator(asset_allocation_filtered, get_pagination())
     page_number = request.GET.get("page")
     assets = asset_paginator.get_page(page_number)
     asset_requests = asset_request_paginator.get_page(page_number)

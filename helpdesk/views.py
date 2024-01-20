@@ -5,7 +5,7 @@ from urllib.parse import parse_qs
 from django.http import HttpResponse, JsonResponse, HttpResponseRedirect
 from django.shortcuts import redirect, render
 from base.forms import TagsForm
-from base.methods import filtersubordinates, get_key_instances
+from base.methods import filtersubordinates, get_key_instances, get_pagination
 from base.models import Department, JobPosition, Tags
 from employee.models import Employee
 from helpdesk.filter import FAQCategoryFilter, FAQFilter,TicketFilter, TicketReGroup
@@ -28,7 +28,7 @@ def paginator_qry(qryset, page_number):
     """
     This method is used to paginate query set
     """
-    paginator = Paginator(qryset, 25)
+    paginator = Paginator(qryset, get_pagination())
     qryset = paginator.get_page(page_number)
     return qryset
 

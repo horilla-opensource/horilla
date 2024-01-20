@@ -706,4 +706,5 @@ urlpatterns = [
         request_and_approve.dashboard_asset_request_approve,
         name="dashboard-asset-request-approve",
     ),
+    path('pagination-settings-view',views.pagination_settings_view,name="pagination-settings-view"),
 ]
