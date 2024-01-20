@@ -240,7 +240,6 @@ def create_allowance(request):
             form = forms.AllowanceForm()
             messages.success(request, _("Allowance created."))
             return redirect(view_allowance)
-        print(form.errors)
     return render(request, "payroll/common/form.html", {"form": form})
 
 
@@ -366,7 +365,6 @@ def create_deduction(request):
     """
     This method is used to create deduction
     """
-    print("YESSSSSSSSSSSSSSSSSSSSSSSSSSSSSS")
     form = forms.DeductionForm()
     if request.method == "POST":
         form = forms.DeductionForm(request.POST)
@@ -374,7 +372,6 @@ def create_deduction(request):
             form.save()
             messages.success(request, _("Deduction created."))
             return redirect(view_deduction)
-        print(form.errors)
     return render(request, "payroll/common/form.html", {"form": form})
 
 

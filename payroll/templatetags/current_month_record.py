@@ -1,5 +1,5 @@
 from django import template
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 
 register = template.Library()
 
@@ -13,3 +13,10 @@ def current_month_record(queryset):
         start_datetime__gte=current_month_start_date,
         start_datetime__lt=next_month_start_date,
     ).order_by("start_datetime")
+
+@register.filter
+def get_item(list, i):
+    try:
+        return list[i]
+    except:
+        return None

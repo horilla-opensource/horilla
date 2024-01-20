@@ -1,0 +1,58 @@
+{% extends 'index.html' %} {% block content %} {% load i18n %}
+
+<style>
+    table {
+        width: 100%;
+    }
+
+    th,
+    td {
+        border: 1px solid black;
+        padding: 5px;
+    }
+
+    th {
+        background-color: lightgray;
+    }
+
+    .oh-card {
+        background-color: #ededed;
+        border-radius: 5px;
+        padding: 10px;
+        margin-bottom: 20px;
+    }
+
+    .oh-card h4 {
+        color: #333;
+        margin: 0;
+        font-weight: bold;
+    }
+</style>
+
+<div class="oh-wrapper">
+    <div class="col-12 mt-4 mb-4">
+        <div class="oh-card d-flex justify-content-between align-items-center">
+            <div>
+                <h4>{% trans "Work Records" %}</h4>
+            </div>
+
+            <div class="me-3">
+                <h4 class="mb-2">{% trans "Date:" %} {{ current_date }}</h4>
+                <h4>
+                    {% trans "Month:" %}
+                    <input name="month" type="month"
+                        value="{{ current_date|date:"Y-m" }}"
+                        hx-get="{% url 'work-records-change-month' %}"
+                        hx-target="#workRecordTable"
+                        hx-trigger="input"
+                    />
+                </h4>
+            </div>
+        </div>
+        <div id="workRecordTable">
+            {% include "attendance/work_record/work_record_list.html" %}
+        </div>
+    </div>
+</div>
+
+{% endblock content %}

@@ -317,5 +317,7 @@ urlpatterns = [
         views.delete_attendancerequest_comment,
         name="attendance-request-delete-comment",
     ),
+    path("work-records",views.work_records,name="work-records"),
+    path("work-records-change-month",views.work_records_change_month,name="work-records-change-month"),
 
 ]

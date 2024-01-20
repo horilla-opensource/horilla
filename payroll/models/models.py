@@ -375,9 +375,20 @@ class WorkRecord(models.Model):
     is_attendance_record = models.BooleanField(default=False)
     is_leave_record = models.BooleanField(default=False)
     day_percentage = models.FloatField(default=0)
+    last_update = models.DateTimeField(null=True, blank=True)
     objects = HorillaCompanyManager("employee_id__employee_work_info__company_id")
 
     def save(self, *args, **kwargs):
+        self.last_update = datetime.now()
+        
+        if self.work_record_type == "CONF":
+            self.color = "#dc3545"
+        elif self.work_record_type == "FDP":
+            self.color = "#6dca6e"
+        elif self.work_record_type == "HDP":
+            self.color = "#f6b83c"
+        else:
+            self.color = "#938c8c"
         super().save(*args, **kwargs)
 
     def clean(self):
@@ -392,6 +403,14 @@ class WorkRecord(models.Model):
             else f"{self.work_record_type}-{self.date}"
         )
 
+class WorkRecordThread(threading.Thread):
+    
+    def run(self):
+        work_records = WorkRecord.objects.filter(last_update__isnull=True)
+        for work_record in work_records:
+            work_record.save()
+            
+WorkRecordThread().start()
 
 class OverrideAttendance(Attendance):
     """
@@ -406,36 +425,52 @@ class OverrideAttendance(Attendance):
         """
         min_hour_second = strtime_seconds(instance.minimum_hour)
         at_work_second = strtime_seconds(instance.attendance_worked_hour)
+
         status = "FDP" if instance.at_work_second >= min_hour_second else "HDP"
-        status = (
-            "CONF"
-            if WorkRecord.objects.filter(
+
+        if instance.first_save:
+            status = (
+                "CONF"
+                if WorkRecord.objects.filter(
+                    date=instance.attendance_date,
+                    is_attendance_record=True,
+                    employee_id=instance.employee_id,
+                ).exists()
+                or instance.attendance_validated is False
+                else status
+            )
+
+        message = _("Validate the attendance") if status == "CONF" else _("Validated")
+
+        if (
+            status == "CONF"
+            and WorkRecord.objects.filter(
                 date=instance.attendance_date,
-                is_attendance_record=False,
+                is_attendance_record=True,
                 employee_id=instance.employee_id,
             ).exists()
-            or instance.attendance_validated is False
-            else status
-        )
-        message = _("Validate the attendance") if status == "CONF" else _("Validated")
+        ):
+            message = _("Work record already exists")
         message = (
             _("Incomplete minimum hour")
             if status == "HDP" and min_hour_second / 2 > at_work_second
             else message
         )
+        if status == "HDP" and instance.is_leave_record:
+            message = _("Half day leave")
+
         work_record = (
             WorkRecord()
             if not WorkRecord.objects.filter(
-                is_attendance_record=True,
                 date=instance.attendance_date,
                 employee_id=instance.employee_id,
             ).exists()
             else WorkRecord.objects.filter(
-                is_attendance_record=True,
                 date=instance.attendance_date,
                 employee_id=instance.employee_id,
             ).first()
         )
+
         work_record.employee_id = instance.employee_id
         work_record.date = instance.attendance_date
         work_record.at_work = instance.attendance_worked_hour
@@ -489,12 +524,10 @@ class OverrideLeaveRequest(LeaveRequest):
                 try:
                     work_entry = (
                         WorkRecord.objects.filter(
-                            is_leave_record=True,
                             date=date,
                             employee_id=instance.employee_id,
                         )
                         if WorkRecord.objects.filter(
-                            is_leave_record=True,
                             date=date,
                             employee_id=instance.employee_id,
                         ).exists()
@@ -523,9 +556,9 @@ class OverrideLeaveRequest(LeaveRequest):
                     work_entry.work_record_type = status
                     work_entry.date = date
                     work_entry.message = (
-                        "Validated"
+                        "Absent"
                         if status == "ABS"
-                        else _("Half day need to validate")
+                        else _("Half day Attendance need to validate")
                     )
                     work_entry.save()
                 except:

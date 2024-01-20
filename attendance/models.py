@@ -162,6 +162,9 @@ class Attendance(models.Model):
     """
     Attendance model
     """
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.first_save = True
 
     status = [
         ("create_request", _("Create Request")),
@@ -413,6 +416,7 @@ class Attendance(models.Model):
             prev_attendance_approved = prev_state.attendance_overtime_approve
 
         super().save(*args, **kwargs)
+        self.first_save = False
         employee_ot = self.employee_id.employee_overtime.filter(
             month=self.attendance_date.strftime("%B").lower(),
             year=self.attendance_date.strftime("%Y"),

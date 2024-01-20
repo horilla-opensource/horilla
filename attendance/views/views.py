@@ -12,6 +12,7 @@ provide the main entry points for interacting with the application's functionali
 """
 
 
+import calendar
 import json
 import contextlib
 from datetime import datetime, timedelta
@@ -26,6 +27,7 @@ from django.core.paginator import Paginator
 from django.db.models import ProtectedError
 from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from django.views.decorators.http import require_http_methods
+from employee.models import Employee
 from horilla.decorators import (
     permission_required,
     login_required,
@@ -74,6 +76,7 @@ from attendance.filters import (
     LateComeEarlyOutReGroup,
     AttendanceActivityReGroup,
 )
+from payroll.models.models import WorkRecord
 
 
 # Create your views here.
@@ -1286,7 +1289,7 @@ def form_shift_dynamic_data(request):
 @login_required
 def form_date_checking(request):
     attendance_date_str = request.POST["attendance_date"]
-
+    minimum_hour = "00:00"
     # Converting to date type.
     attendance_date = datetime.strptime(attendance_date_str, "%Y-%m-%d").date()
 
@@ -1300,8 +1303,6 @@ def form_date_checking(request):
         # Checking the Shift is present in the selected attendance day.
         if schedule_today is not None:
             minimum_hour = schedule_today.minimum_working_hour
-        else:
-            minimum_hour = "00:00"
 
     attendance_date = str(attendance_date)
     minimum_hour = attendance_day_checking(attendance_date, minimum_hour)
@@ -1348,7 +1349,7 @@ def user_request_one_view(request, id):
             "previous_instance": previous_instance,
             "next_instance": next_instance,
             "instance_ids_json": instance_ids_json,
-            'dashboard': request.GET.get('dashboard')
+            "dashboard": request.GET.get("dashboard"),
         },
     )
 
@@ -1384,14 +1385,18 @@ def hour_attendance_select_filter(request):
 
     if page_number == "all":
         if request.user.has_perm("attendance.view_attendanceovertime"):
-            employee_filter = AttendanceOverTimeFilter(filters, queryset=AttendanceOverTime.objects.all())
+            employee_filter = AttendanceOverTimeFilter(
+                filters, queryset=AttendanceOverTime.objects.all()
+            )
         else:
             employee_filter = AttendanceOverTimeFilter(
-                filters, queryset=AttendanceOverTime.objects.filter(
-                            employee_id__employee_user_id=request.user
-                        ) | AttendanceOverTime.objects.filter(
-                            employee_id__employee_work_info__reporting_manager_id__employee_user_id=request.user
-                        )
+                filters,
+                queryset=AttendanceOverTime.objects.filter(
+                    employee_id__employee_user_id=request.user
+                )
+                | AttendanceOverTime.objects.filter(
+                    employee_id__employee_work_info__reporting_manager_id__employee_user_id=request.user
+                ),
             )
 
         # Get the filtered queryset
@@ -1435,14 +1440,18 @@ def activity_attendance_select_filter(request):
 
     if page_number == "all":
         if request.user.has_perm("attendance.view_attendanceovertime"):
-            employee_filter = AttendanceActivityFilter(filters, queryset=AttendanceActivity.objects.all())
+            employee_filter = AttendanceActivityFilter(
+                filters, queryset=AttendanceActivity.objects.all()
+            )
         else:
             employee_filter = AttendanceActivityFilter(
-                filters, queryset=AttendanceActivity.objects.filter(
-                        employee_id__employee_user_id=request.user
-                    ) | AttendanceActivity.objects.filter(
-                        employee_id__employee_work_info__reporting_manager_id__employee_user_id=request.user
-                    )
+                filters,
+                queryset=AttendanceActivity.objects.filter(
+                    employee_id__employee_user_id=request.user
+                )
+                | AttendanceActivity.objects.filter(
+                    employee_id__employee_work_info__reporting_manager_id__employee_user_id=request.user
+                ),
             )
 
         # Get the filtered queryset
@@ -1486,14 +1495,18 @@ def latecome_attendance_select_filter(request):
 
     if page_number == "all":
         if request.user.has_perm("attendance.view_attendancelatecomeearlyout"):
-            employee_filter = LateComeEarlyOutFilter(filters, queryset=AttendanceLateComeEarlyOut.objects.all())
+            employee_filter = LateComeEarlyOutFilter(
+                filters, queryset=AttendanceLateComeEarlyOut.objects.all()
+            )
         else:
             employee_filter = LateComeEarlyOutFilter(
-                filters, queryset=AttendanceLateComeEarlyOut.objects.filter(
-                                    employee_id__employee_user_id=request.user
-                                ) | AttendanceLateComeEarlyOut.objects.filter(
-                                    employee_id__employee_work_info__reporting_manager_id__employee_user_id=request.user
-                                )
+                filters,
+                queryset=AttendanceLateComeEarlyOut.objects.filter(
+                    employee_id__employee_user_id=request.user
+                )
+                | AttendanceLateComeEarlyOut.objects.filter(
+                    employee_id__employee_work_info__reporting_manager_id__employee_user_id=request.user
+                ),
             )
 
         # Get the filtered queryset
@@ -1519,9 +1532,9 @@ def create_grace_time(request):
     Returns:
     GET : return grace time form template
     """
-    form= GraceTimeForm()
-    is_default = eval(request.GET.get('default'))
-    if request.method == 'POST':
+    form = GraceTimeForm()
+    is_default = eval(request.GET.get("default"))
+    if request.method == "POST":
         form = GraceTimeForm(request.POST)
         if form.is_valid():
             instance = form.save(commit=False)
@@ -1529,11 +1542,16 @@ def create_grace_time(request):
             instance.save()
             messages.success(request, _("Grace time created successfully."))
             return HttpResponse("<script>window.location.reload()</script>")
-    return render(request,'attendance/grace_time/grace_time_form.html',{'form':form,'is_default':is_default})
+    return render(
+        request,
+        "attendance/grace_time/grace_time_form.html",
+        {"form": form, "is_default": is_default},
+    )
+
 
 @login_required
 @permission_required("attendance.change_gracetime")
-def update_grace_time(request,grace_id):
+def update_grace_time(request, grace_id):
     """
     function used to create grace time .
 
@@ -1543,11 +1561,11 @@ def update_grace_time(request,grace_id):
     Returns:
     GET : return grace time form template
     """
-    grace_time=GraceTime.objects.get(id=grace_id)
-    form= GraceTimeForm(instance=grace_time)
-    is_default = eval(request.GET.get('default'))
-    if request.method == 'POST':
-        form = GraceTimeForm(request.POST,instance=grace_time)
+    grace_time = GraceTime.objects.get(id=grace_id)
+    form = GraceTimeForm(instance=grace_time)
+    is_default = eval(request.GET.get("default"))
+    if request.method == "POST":
+        form = GraceTimeForm(request.POST, instance=grace_time)
         if form.is_valid():
             instance = form.save(commit=False)
             instance.is_default = is_default
@@ -1555,15 +1573,18 @@ def update_grace_time(request,grace_id):
             messages.success(request, _("Grace time updated successfully."))
             return HttpResponse("<script>window.location.reload()</script>")
     context = {
-        'form':form,
-        'grace_id':grace_id,
-        'is_default':is_default,
+        "form": form,
+        "grace_id": grace_id,
+        "is_default": is_default,
     }
-    return render(request,'attendance/grace_time/grace_time_form.html',context=context)
+    return render(
+        request, "attendance/grace_time/grace_time_form.html", context=context
+    )
+
 
 @login_required
 @permission_required("attendance.delete_gracetime")
-def delete_grace_time(request,grace_id):
+def delete_grace_time(request, grace_id):
     """
     function used to delete grace time .
 
@@ -1580,7 +1601,7 @@ def delete_grace_time(request,grace_id):
         messages.error(request, _("Grace Time Does not exists.."))
     except ProtectedError:
         messages.error(request, _("Related datas exists."))
-    if request.GET.get('view')=='shift':
+    if request.GET.get("view") == "shift":
         return redirect("/settings/employee-shift-view")
     else:
         return redirect("/settings/attendance-settings-view")
@@ -1595,46 +1616,52 @@ def update_isactive_gracetime(request):
     - isChecked: Boolean value representing the state of grace time,
     - graceId: Id of grace time object
     """
-    isChecked = request.POST.get('isChecked')
-    graceId = request.POST.get('graceId')
+    isChecked = request.POST.get("isChecked")
+    graceId = request.POST.get("graceId")
     grace_time = GraceTime.objects.get(id=graceId)
-    if isChecked == 'true':
+    if isChecked == "true":
         grace_time.is_active = True
 
         response = {
-                "type" :"success",
-                "message": _('Default grace time activated successfully.'),
-            }
+            "type": "success",
+            "message": _("Default grace time activated successfully."),
+        }
     else:
         grace_time.is_active = False
         response = {
-                "type" :"success",
-                "message": _('Default grace time deactivated successfully.'),
-            }
+            "type": "success",
+            "message": _("Default grace time deactivated successfully."),
+        }
     grace_time.save()
     return JsonResponse(response)
 
-    
 
 @login_required
 def create_attendancerequest_comment(request, attendance_id):
     """
     This method renders form and template to create Attendance request comments
     """
+    previous_data = request.GET.urlencode()
     attendance = Attendance.objects.filter(id=attendance_id).first()
     emp = request.user.employee_get
-    form = AttendancerequestCommentForm(initial={'employee_id':emp.id, 'request_id':attendance_id})
+    form = AttendancerequestCommentForm(
+        initial={"employee_id": emp.id, "request_id": attendance_id}
+    )
 
     if request.method == "POST":
-        form = AttendancerequestCommentForm(request.POST )
+        form = AttendancerequestCommentForm(request.POST)
         if form.is_valid():
             form.instance.employee_id = emp
             form.instance.request_id = attendance
             form.save()
-            form = AttendancerequestCommentForm(initial={'employee_id':emp.id, 'request_id':attendance_id})
+            form = AttendancerequestCommentForm(
+                initial={"employee_id": emp.id, "request_id": attendance_id}
+            )
             messages.success(request, _("Comment added successfully!"))
             if request.user.employee_get.id == attendance.employee_id.id:
-                rec = attendance.employee_id.employee_work_info.reporting_manager_id.employee_user_id
+                rec = (
+                    attendance.employee_id.employee_work_info.reporting_manager_id.employee_user_id
+                )
                 notify.send(
                     request.user.employee_get,
                     recipient=rec,
@@ -1646,7 +1673,10 @@ def create_attendancerequest_comment(request, attendance_id):
                     redirect="/attendance/request-attendance-view",
                     icon="chatbox-ellipses",
                 )
-            elif request.user.employee_get.id == attendance.employee_id.employee_work_info.reporting_manager_id.id:
+            elif (
+                request.user.employee_get.id
+                == attendance.employee_id.employee_work_info.reporting_manager_id.id
+            ):
                 rec = attendance.employee_id.employee_user_id
                 notify.send(
                     request.user.employee_get,
@@ -1660,7 +1690,10 @@ def create_attendancerequest_comment(request, attendance_id):
                     icon="chatbox-ellipses",
                 )
             else:
-                rec = [attendance.employee_id.employee_user_id, attendance.employee_id.employee_work_info.reporting_manager_id.employee_user_id]
+                rec = [
+                    attendance.employee_id.employee_user_id,
+                    attendance.employee_id.employee_work_info.reporting_manager_id.employee_user_id,
+                ]
                 notify.send(
                     request.user.employee_get,
                     recipient=rec,
@@ -1676,7 +1709,9 @@ def create_attendancerequest_comment(request, attendance_id):
         request,
         "requests/attendance/attendance_request_comment_form.html",
         {
-            "form": form, "request_id":attendance_id
+            "form": form,
+            "request_id": attendance_id,
+            "pd": previous_data,
         },
     )
 
@@ -1686,7 +1721,9 @@ def view_attendancerequest_comment(request, attendance_id):
     """
     This method is used to show Attendance request comments
     """
-    comments = AttendancerequestComment.objects.filter(request_id=attendance_id).order_by('-created_at')
+    comments = AttendancerequestComment.objects.filter(
+        request_id=attendance_id
+    ).order_by("-created_at")
     no_comments = False
     if not comments.exists():
         no_comments = True
@@ -1694,7 +1731,7 @@ def view_attendancerequest_comment(request, attendance_id):
     return render(
         request,
         "requests/attendance/comment_view.html",
-        {"comments": comments, 'no_comments': no_comments }
+        {"comments": comments, "no_comments": no_comments},
     )
 
 
@@ -1703,8 +1740,95 @@ def delete_attendancerequest_comment(request, comment_id):
     """
     This method is used to delete Attendance request comments
     """
-    comment=AttendancerequestComment.objects.get(id=comment_id)
+    comment = AttendancerequestComment.objects.get(id=comment_id)
     attendance_id = comment.request_id.id
     comment.delete()
     messages.success(request, _("Comment deleted successfully!"))
-    return redirect('attendance-request-view-comment', attendance_id=attendance_id)
+    return redirect("attendance-request-view-comment", attendance_id=attendance_id)
+
+
+@login_required
+def work_records(request):
+    employees = Employee.objects.filter(is_active=True)
+    data = []
+    today = date.today()
+    month_matrix = calendar.monthcalendar(today.year, today.month)
+
+    days = [day for week in month_matrix for day in week if day != 0]
+    current_month_date_list = [
+        datetime(today.year, today.month, day).date() for day in days
+    ]
+
+    for employee in employees:
+        work_record_list = []
+        work_records_dict = {
+            record.date: record
+            for record in WorkRecord.objects.filter(
+                employee_id=employee, date__in=current_month_date_list
+            )
+        }
+
+        for day in current_month_date_list:
+            work_record = work_records_dict.get(day, None)
+            work_record_list.append(work_record)
+        data.append(
+            {
+                "employee": employee,
+                "work_record": work_record_list,
+            }
+        )
+
+    context = {
+        "current_date": today,
+        "current_month_dates_list": current_month_date_list,
+        "data": paginator_qry(data, 1),
+    }
+    return render(
+        request, "attendance/work_record/work_record_view.html", context=context
+    )
+
+
+@login_required
+@hx_request_required
+def work_records_change_month(request):
+    if request.GET.get("month"):
+        date_obj = request.GET.get("month")
+        month = int(date_obj.split("-")[1])
+        year = int(date_obj.split("-")[0])
+    else:
+        month = date.today().month
+        year = date.today().year
+
+    employees = Employee.objects.filter(is_active=True)
+    data = []
+    month_matrix = calendar.monthcalendar(year, month)
+
+    days = [day for week in month_matrix for day in week if day != 0]
+    current_month_date_list = [datetime(year, month, day).date() for day in days]
+
+    for employee in employees:
+        work_record_list = []
+        work_records_dict = {
+            record.date: record
+            for record in WorkRecord.objects.filter(
+                employee_id=employee, date__in=current_month_date_list
+            )
+        }
+
+        for day in current_month_date_list:
+            work_record = work_records_dict.get(day, None)
+            work_record_list.append(work_record)
+        data.append(
+            {
+                "employee": employee,
+                "work_record": work_record_list,
+            }
+        )
+
+    context = {
+        "current_month_dates_list": current_month_date_list,
+        "data": paginator_qry(data, request.GET.get("page")),
+    }
+    return render(
+        request, "attendance/work_record/work_record_list.html", context=context
+    )

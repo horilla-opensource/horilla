@@ -493,6 +493,15 @@
                 >{% trans "Hour Account" %}</a
               >
             </li>
+            {% if perms.attendance.view_attendance or request.user|is_reportingmanager %}    
+            <li class="oh-sidebar__submenu-item">
+              <a
+                class="oh-sidebar__submenu-link"
+                href="{% url 'work-records' %}"
+                >{% trans "Work records" %}</a
+              >
+            </li>
+            {% endif %}
             <li class="oh-sidebar__submenu-item">
               <a
                 class="oh-sidebar__submenu-link"
