@@ -27,7 +27,24 @@ class EmployeeFilter(FilterSet):
     """
 
     search = django_filters.CharFilter(method="filter_by_name")
-
+    selected_search_field = django_filters.ChoiceFilter(
+        label="Search Field",
+        choices=[
+            ("employee", _("Search in : Employee")),
+            ("reporting_manager", _("Search in : Reporting manager")),
+            ("department", _("Search in : Department")),
+            ("job_position", _("Search in : Job Position")),
+        ],
+        method="filter_by_name_and_field",
+        widget=forms.Select(
+            attrs={
+                "size": 4,
+                "class": "oh-input__icon",
+                "style": "border: none; overflow: hidden; display: flex; position: absolute; z-index: 999; margin-left:8%;",
+                "onclick": "$('.filterButton')[0].click();",
+            }
+        ),
+    )
     employee_first_name = django_filters.CharFilter(lookup_expr="icontains")
     employee_last_name = django_filters.CharFilter(lookup_expr="icontains")
     country = django_filters.CharFilter(lookup_expr="icontains")
@@ -133,20 +150,52 @@ class EmployeeFilter(FilterSet):
         """
         Filter queryset by first name or last name.
         """
+        filter_method = {
+            "department": "employee_work_info__department_id__department__icontains",
+            "job_position": "employee_work_info__job_position_id__job_position__icontains",
+            "job_role": "employee_work_info__job_role_id__job_role__icontains",
+            "shift": "employee_work_info__shift_id__employee_shift__icontains",
+            "work_type": "employee_work_info__work_type_id__work_type__icontains",
+            "company": "employee_work_info__company_id__company__icontains",
+        }
+        search_field = self.data.get("search_field")
         # Split the search value into first name and last name
-        parts = value.split()
-        first_name = parts[0]
-        last_name = " ".join(parts[1:]) if len(parts) > 1 else ""
-        # Filter the queryset by first name and last name
-        if first_name and last_name:
-            queryset = queryset.filter(
-                employee_first_name__icontains=first_name,
-                employee_last_name__icontains=last_name,
-            )
-        elif first_name:
-            queryset = queryset.filter(employee_first_name__icontains=first_name)
-        elif last_name:
-            queryset = queryset.filter(employee_last_name__icontains=last_name)
+        if not search_field:
+            parts = value.split()
+            first_name = parts[0]
+            last_name = " ".join(parts[1:]) if len(parts) > 1 else ""
+            # Filter the queryset by first name and last name
+            if first_name and last_name:
+                queryset = queryset.filter(
+                    employee_first_name__icontains=first_name,
+                    employee_last_name__icontains=last_name,
+                )
+            elif first_name:
+                queryset = queryset.filter(employee_first_name__icontains=first_name)
+            elif last_name:
+                queryset = queryset.filter(employee_last_name__icontains=last_name)
+        else:
+            if search_field == "reporting_manager":
+                parts = value.split()
+                first_name = parts[0]
+                last_name = " ".join(parts[1:]) if len(parts) > 1 else ""
+                if first_name and last_name:
+                    queryset = queryset.filter(
+                        employee_work_info__reporting_manager_id__employee_first_name__icontains=first_name,
+                        employee_work_info__reporting_manager_id__employee_last_name__icontains=last_name,
+                    )
+                elif first_name:
+                    queryset = queryset.filter(
+                        employee_work_info__reporting_manager_id__employee_first_name__icontains=first_name
+                    )
+                elif last_name:
+                    queryset = queryset.filter(
+                        employee_work_info__reporting_manager_id__employee_last_name__icontains=last_name
+                    )
+            else:
+                filter = filter_method.get(search_field)
+                queryset = queryset.filter(**{filter: value})
+
         return queryset
 
     def __init__(self, data=None, queryset=None, *, request=None, prefix=None):
