@@ -20,15 +20,16 @@ class YourForm(forms.Form):
         # Custom validation logic goes here
         pass
 """
+from typing import Any
 import uuid
 from django import forms
-from django.forms import DateInput
+from django.forms import DateInput, ValidationError
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm as UserForm
 from django.utils.translation import gettext_lazy as _
 from employee.models import Employee, EmployeeBankDetails
 from recruitment.models import Candidate
-from onboarding.models import OnboardingStage, OnboardingTask
+from onboarding.models import CandidateTask, OnboardingStage, OnboardingTask
 from base.methods import reload_queryset
 
 
@@ -218,18 +219,69 @@ class OnboardingViewTaskForm(ModelForm):
     """
     Form for OnboardingTask model
     """
-
+    candidates = forms.ModelMultipleChoiceField(
+        queryset=Candidate.objects.all(),
+        # widget=forms.SelectMultiple(attrs={"class": "select2-hidden-accessible "}),      
+        required=False                                     
+    )
+    stage_id = forms.HiddenInput()
+    task_title = forms.CharField(label=(_("Task title")))
+    managers = forms.ModelMultipleChoiceField(queryset=Employee.objects.all(),
+        # widget=forms.SelectMultiple(attrs={"class": "select2-hidden-accessible "})
+    )
     class Meta:
         """
         Meta class for some additional options
         """
 
+        model = CandidateTask
+        fields = "__all__"
+        exclude = ("status","candidate_id","onboarding_task_id")
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        stage = self.initial.get('stage_id')
+        if stage:
+            # Adjust the queryset based on the 'stage'
+            candidate_ids = stage.candidate.all().values_list('candidate_id', flat=True)
+            cand_queryset = Candidate.objects.filter(id__in=candidate_ids)
+            self.fields['candidates'].queryset = cand_queryset
+            self.fields['candidates'].initial = cand_queryset
+
+    
+
+class OnboardingTaskForm(ModelForm):
+    """
+    Form for OnboardingTaskModel
+    """
+
+    class Meta:
+        """
+        Meta class for add some additional options
+        """
+
         model = OnboardingTask
         fields = "__all__"
-        exclude = ("recruitment_id",)
-        labels = {
-            "task_title": _("Task Title"),
+        exclude =('stage_id',)
+        widgets = {
+            "candidates": forms.SelectMultiple(
+                attrs={"class": "oh-select oh-select-2 w-100 select2-hidden-accessible"}
+            ),
         }
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        stage_id = self.initial.get('stage_id')
+        if stage_id:
+            stage = OnboardingStage.objects.get(id=stage_id)
+            recruitment = stage.recruitment_id
+
+            # Adjust the queryset based on the 'stage'
+            stage_queryset = recruitment.onboarding_stage.all()
+            self.fields['stage_id'].queryset = stage_queryset
+            candidate_ids = stage.candidate.all().values_list('candidate_id', flat=True)
+            cand_queryset = Candidate.objects.filter(id__in=candidate_ids)
+            self.fields['candidates'].queryset = cand_queryset
+
 
 
 class OnboardingViewStageForm(ModelForm):

@@ -151,7 +151,7 @@
                     <li class="oh-tabs__tab" {% if request.user|recruitment_manages:recruitment %} style="background-color: hsl(109.8deg 100% 50% / 20%);" {% endif %} data-target="#tab_{{recruitment.id}}">
                         {{recruitment}}
                         <span
-                            class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round ms-2 mr-2" title="{{recruitment.onboardingstage_set.all|length}} {% trans 'Stage' %}" style="padding-right: 0;" onclick="event.stopPropagation()">{{recruitment.onboardingstage_set.all|length}}</span>
+                            class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round ms-2 mr-2" title="{{recruitment.onboarding_stage.all|length}} {% trans 'Stage' %}" style="padding-right: 0;" onclick="event.stopPropagation()">{{recruitment.onboarding_stage.all|length}}</span>
                     </li>
                     {% endif %}
                 {% endfor %}
@@ -356,6 +356,8 @@
         let NewStage = $(element).val();
         let currentStage =$(element).data("stage")
         let checkbox = $(currentStage).find("input[type='checkbox']:checked");
+        console.log('checkbox======',checkbox)
+
         let ids =[] 
         let recruitment = $(element).data("recruitment")
         let target = "#onboardingTable"+recruitment 
@@ -388,6 +390,22 @@
         let stage = $(element).data("stage");
         $(stage).find('.checkbox-row').prop("checked", isChecked).change();
     }
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== "") {
+          const cookies = document.cookie.split(";");
+          for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) === name + "=") {
+              cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+              break;
+            }
+          }
+        }
+        return cookieValue;
+      }
+ 
     
 
     $(document).ready(function() {
@@ -404,6 +422,7 @@
             }
         });
     });
+
 </script>
 <script src="{% static 'onboarding_view/activeTab.js' %}"></script>
 <script src="{% static 'onboarding_view/search.js' %}"></script>

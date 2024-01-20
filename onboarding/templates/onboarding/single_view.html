@@ -63,7 +63,7 @@
                         border-radius: 0rem;" name="stage"
                         hx-post="{% url 'candidate-stage-update' candidate.id recruitment.id %}"
                         hx-trigger="change" hx-target="#onboardingTable{{recruitment.id}}">
-                        {% for stage in recruitment.onboardingstage_set.all %}
+                        {% for stage in recruitment.onboarding_stage.all %}
                         {% if candidate.onboarding_stage.onboarding_stage_id == stage %}
                         <option value="{{stage.id}}" selected>{{stage}}</option>
                         {% else %}
@@ -72,7 +72,7 @@
                         {% endfor %}
                     </select>
                     {% else %}
-                    {% for stage in recruitment.onboardingstage_set.all %}
+                    {% for stage in recruitment.onboarding_stage.all %}
                         {% if candidate.onboarding_stage_id == stage %}
                         {{stage}}
                         {% endif %}
@@ -89,10 +89,10 @@
             <div class="row ms-2">
                 {% for task in candidate.candidate_task.all %}
                     <div class="col-6 ps-0 pb-1">
-                        <div class="oh-timeoff-modal__stat-title mb-1 "><span class="oh-dot oh-dot--small  me-1 oh-dot--color-{{task.status}}"></span>{{task.onboarding_task_id.task_title}} </div>
-                        <div class="" id="task{{task.id}}">
+                        <div class="oh-timeoff-modal__stat-title mb-1 "><span class="oh-dot oh-dot--small  me-1 oh-dot--color-{{task.status}}"></span>{{task.onboarding_task_id}}, {{task.stage_id}} </div>
+                        <div class="" id="task{{task.id}}{{candidate.id}}">
                             {% if request.user|task_manager:task or perms.onboarding.change_candidatetask %}
-                            {% include 'onboarding/candidate_task.html' %}
+                                {% include 'onboarding/candidate_task.html' %}
                             {% else %}
                             {% for choice in choices %}
                             {% if choice.0 == task.status %}

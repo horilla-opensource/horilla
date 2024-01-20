@@ -5,6 +5,8 @@ This module is used to register models for onboarding app
 
 """
 from datetime import datetime
+import threading
+import time
 from typing import Any
 from django.db import models
 from django.db.models.signals import post_save
@@ -22,7 +24,12 @@ class OnboardingStage(models.Model):
     """
 
     stage_title = models.CharField(max_length=200)
-    recruitment_id = models.ManyToManyField(Recruitment)
+    recruitment_id = models.ForeignKey(
+        Recruitment, verbose_name=_("Recruitment"), 
+        null=True,
+        related_name = "onboarding_stage",
+        on_delete=models.CASCADE
+    )
     employee_id = models.ManyToManyField(Employee)
     sequence = models.IntegerField(null=True)
     is_final_stage = models.BooleanField(default=False)
@@ -58,8 +65,25 @@ class OnboardingTask(models.Model):
     """
 
     task_title = models.CharField(max_length=200)
-    recruitment_id = models.ManyToManyField(Recruitment, related_name="onboarding_task")
-    employee_id = models.ManyToManyField(Employee)
+    # recruitment_id = models.ManyToManyField(Recruitment, related_name="onboarding_task")
+    stage_id =models.ForeignKey(
+        OnboardingStage,
+        null = True,
+        blank = True,
+        on_delete = models.CASCADE,
+        related_name="onboarding_task",
+    )
+    candidates = models.ManyToManyField(
+        Candidate,
+        blank=True,
+        related_name ="cand_onboarding_task",                                    
+    )
+    employee_id = models.ManyToManyField(
+        Employee,
+        related_name="onboarding_task"                                    
+
+    )
+
     objects = HorillaCompanyManager("recruitment_id__company_id")
 
     def __str__(self):
@@ -89,6 +113,14 @@ class CandidateStage(models.Model):
             self.onboarding_end_date = datetime.today()
         super(CandidateStage, self).save(*args, **kwargs)
 
+    def task_completion_ratio(self):
+        # function that used for getting the numbers between task completed v/s tasks assigned
+        cans_tasks = CandidateTask.objects.filter(
+            candidate_id=self.candidate_id,
+            stage_id=self.onboarding_stage_id)
+        completed_tasks = cans_tasks.filter(status='done')
+        return f"{completed_tasks.count()}/{cans_tasks.count()}"
+
     class Meta:
         """
         Meta class for additional options
@@ -114,12 +146,17 @@ class CandidateTask(models.Model):
     candidate_id = models.ForeignKey(
         Candidate, on_delete=models.PROTECT, related_name="candidate_task"
     )
-    status = models.CharField(max_length=50, choices=choice, blank=True, null=True)
+    # managers = models.ManyToManyField(Employee)
+    stage_id = models.ForeignKey(
+        OnboardingStage,null= True,
+        on_delete=models.PROTECT, related_name="candidate_task"
+    )
+    status = models.CharField(max_length=50, choices=choice, blank=True, null=True,default='todo')
     onboarding_task_id = models.ForeignKey(OnboardingTask, on_delete=models.PROTECT)
     objects = HorillaCompanyManager("candidate_id__recruitment_id__company_id")
 
     def __str__(self):
-        return f"{self.candidate_id} | {self.onboarding_task_id} | {self.status}"
+        return f"{self.candidate_id}|{self.onboarding_task_id}"
 
     class Meta:
         """
@@ -127,7 +164,7 @@ class CandidateTask(models.Model):
         """
 
         verbose_name = _("Candidate onboarding task")
-        unique_together = ("candidate_id", "onboarding_task_id")
+        # unique_together = ("candidate_id", "onboarding_task_id")
 
 
 class OnboardingPortal(models.Model):
@@ -145,3 +182,45 @@ class OnboardingPortal(models.Model):
 
     def __str__(self):
         return f"{self.candidate_id} | {self.token}"
+
+
+class OnboardingStageThread(threading.Thread):
+
+    def run(self):
+        time.sleep(2) 
+        cand  = CandidateStage.objects.all()
+        for c in cand:
+            recruitment = c.candidate_id.recruitment_id
+            stage  = c.onboarding_stage_id
+            if stage.recruitment_id is None:
+                stage.recruitment_id = recruitment
+                stage.save()
+            cand_task = CandidateTask.objects.filter(candidate_id = c.candidate_id)
+            for c_task in cand_task:
+                if c_task.stage_id is None:
+                    c_task.stage_id =stage
+                    c_task.save()
+
+                if c_task.onboarding_task_id.stage_id is None:
+                    onboarding_task = c_task.onboarding_task_id
+                    onboarding_task.stage_id = stage
+                    onboarding_task.save
+
+        cand_task =CandidateTask.objects.all()
+        for c_task in cand_task:
+            cand = c_task.candidate_id
+            onboarding_task = c_task.onboarding_task_id
+            if cand not in onboarding_task.candidates.all():
+                onboarding_task.candidates.add(cand)
+        for c_task in CandidateTask.objects.all():
+
+            if c_task.stage_id != None and c_task.onboarding_task_id.stage_id == None:
+                ob_task = c_task.onboarding_task_id
+                ob_task.stage_id = c_task.stage_id
+                ob_task.save()
+            if c_task.stage_id == None and c_task.onboarding_task_id.stage_id != None:
+                c_task.stage_id = c_task.onboarding_task_id.stage_id 
+                c_task.save()
+
+
+OnboardingStageThread().start()

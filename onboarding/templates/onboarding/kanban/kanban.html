@@ -132,7 +132,7 @@
             {% for rec in recruitments %}
             <div class="oh-tabs__content " id="tab_{{rec.id}}" data-recruitment-id="{{rec.id}}">
                 <div class="oh-kanban">
-                    {% for stage in rec.onboardingstage_set.all %}
+                    {% for stage in rec.onboarding_stage.all %}
                     <div class="oh-kanban__section stage" id="b3a7bac2-2a16-40fe-9b7e-78a1101ee9d3" data-recruitment-id="{{rec.id}}" data-stage-id="{{stage.id}}" data-sequence="{{forloop.counter}}">
                         <div class="oh-kanban__section-head oh-kanban__section-head--white" {% if request.user.employee_get in stage.employee_id.all %} style="background-color: hsl(109.8deg 100% 50% / 20%) !important;" {% endif %}>
                             <div class="d-flex ">
@@ -176,7 +176,7 @@
                                     class="oh-btn oh-btn--small oh-btn--transparent p-0" 
                                     data-toggle="oh-modal-toggle"
                                     data-target="#taskModal"
-                                    hx-get="{% url 'task-creation' rec.id %}"
+                                    hx-get="{% url 'task-creation' %}?stage_id=stage.id"
                                     hx-target = "#taskModalBody"
 
                                     title="{% trans 'Add task' %}">
@@ -214,14 +214,16 @@
                                     </div>
                                 </div>
                                 <div class="oh-kanban__card-body">
-                                    {{candidate.candidate_id.job_position_id}} <br/>
+                                    {{candidate.candidate_id.job_position_id}} 
+                                    <div class="oh-checkpoint-badge oh-checkpoint-badge--primary" style="margin-left:94px" >
+                                        {{candidate.task_completion_ratio}} 
+                                    </div> <br/>
                                     <span class="oh-kanban__card-footer-text oh-text--light">{{candidate.candidate_id.email}}</span>
-                                
                                     <button class="oh-kanban__card-body-collapse oh-kanban__card-collapse--down" aria-label="Toggle Options" title="{% trans 'Tasks' %}"></button>
                                     <div class="oh-kanban__card-content oh-kanban__card-content--hide">
-                                        {% for task in candidate.candidate_id.candidate_task.all %}
-                                        <label class="oh-label oh-label--sm d-block">{{task.onboarding_task_id.task_title}}</label>
-                                        <div id="task{{task.id}}">
+                                        {% for task in candidate.onboarding_stage_id.onboarding_task.all %}
+                                        <label class="oh-label oh-label--sm d-block">{{task.task_title}}</label>
+                                        <div id="task{{task.id}}{{candidate.candidate_id.id}}">
                                             {% include 'onboarding/candidate_task.html' %}
                                         </div>
                                         {% endfor %}

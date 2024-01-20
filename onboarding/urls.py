@@ -15,10 +15,10 @@ urlpatterns = [
         name="stage-update",
     ),
     path("stage-delete/<int:stage_id>", views.stage_delete, name="stage-delete"),
-    path("task-creation/<str:obj_id>", views.task_creation, name="task-creation"),
+    path("task-creation", views.task_creation, name="task-creation"),
     path("task-delete/<int:task_id>", views.task_delete, name="task-delete"),
     path(
-        "task-update/<int:task_id>/<int:recruitment_id>",
+        "task-update/<int:task_id>/>",
         views.task_update,
         name="task-update",
     ),
@@ -46,9 +46,19 @@ urlpatterns = [
     path("onboarding-view/", views.onboarding_view, name="onboarding-view"),
     path("kanban-view", views.kanban_view, name="kanban-view"),
     path(
-        "candidate-task-update/<int:obj_id>",
+        "candidate-task-update/<int:taskId>",
         views.candidate_task_update,
         name="candidate-task-update",
+    ),
+    path(
+        "get-status/<int:task_id>",
+        views.get_status,
+        name="get-status",
+    ),
+    path(
+        "assign-task/<int:task_id>",
+        views.assign_task,
+        name="assign-task",
     ),
     path(
         "candidate-stage-update/<int:candidate_id>/<int:recruitment_id>/",

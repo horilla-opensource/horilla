@@ -1,28 +1,128 @@
 {% load i18n %}
-<select name="task"  class="w-100" 
-        data-task-id="{{task.id}}" data-candidate-id={{task.candidate_id.id}}
-        data-onboarding-task-id={{task.onboarding_task_id.id}} 
-        style="border: 1px solid hsl(213deg,22%,84%);
-                padding: 0.3rem 0.8rem 0.3rem 0.3rem;
-                border-radius: 0rem;" 
-        hx-post="{% url 'candidate-task-update' task.id  %}"
-        hx-trigger="change" hx-target="#task{{task.id}}"
-    >
-    {% for choice in choices %}
-        {% if choice.0 == task.status %}
-            <option value="{{choice.0}}" selected>{{choice.1}}</option>
-        {% else %}
-            <option value="{{choice.0}}">{{choice.1}}</option>
-        {% endif %}
-    {% endfor %}
-</select>
+{% if single_view %}
+  {% if candidate == task.candidate_id %}
+  <select name="task"  class="w-100" id="{{task.id}}"
+      data-task-id="{{task.id}}" data-candidate-id={{candidate.id}}
+      data-onboarding-task-id={{task.id}} 
+      style="border: 1px solid hsl(213deg,22%,84%);
+              padding: 0.3rem 0.8rem 0.3rem 0.3rem;
+              border-radius: 0rem;" 
+      onchange="updateSingleStatus(this,event)"
+  >
+      {% for choice in choices %}
+          {% if choice.0 == task.status %}
+              <option value="{{choice.0}}" selected>{{choice.1}}</option>
+          {% else %}
+              <option value="{{choice.0}}">{{choice.1}}</option>
+          {% endif %}
+      {% endfor %}
+  {% else %}
+  <button class="oh-checkpoint-badge text-danger" data-toggle="oh-modal-toggle" 
+      hx-post="{% url 'assign-task' task.id  %}?cand_id={{candidate.id}}&cand_stage={{candidate.id}}&stage_id={{stage.id}}"
+      hx-target="#task{{task.id}}{{candidate.id}}"
+  >
+      {% trans "Assign" %}
+  </button>
+  {% endif %}
+
+  </select>
+{% else %}
+  {% if candidate.candidate_id  in task.candidates.all %}
+  <select name="task"  class="w-100" id="{{candidate.candidate_id.id}}"
+      data-task-id="{{task.id}}" data-candidate-id={{candidate.candidate_id.id}}
+      data-onboarding-task-id={{task.id}} 
+      style="border: 1px solid hsl(213deg,22%,84%);
+              padding: 0.3rem 0.8rem 0.3rem 0.3rem;
+              border-radius: 0rem;" 
+      {% if not second_load %}
+          hx-post="{% url 'get-status' task.id  %}?cand_id={{candidate.candidate_id.id}}&cand_stage={{candidate.id}}"
+
+          hx-trigger="load" 
+          hx-target="#task{{task.id}}{{candidate.candidate_id.id}}"
+      {% endif %}
+      onchange="updateStatus(this,event)"
+  >
+      {% for choice in choices %}
+          {% if choice.0 == status %}
+              <option value="{{choice.0}}" selected>{{choice.1}}</option>
+          {% else %}
+              <option value="{{choice.0}}">{{choice.1}}</option>
+          {% endif %}
+      {% endfor %}
+  {% else %}
+      <button class="oh-checkpoint-badge text-danger" data-toggle="oh-modal-toggle" 
+          hx-post="{% url 'assign-task' task.id  %}?cand_id={{candidate.candidate_id.id}}&cand_stage={{candidate.id}}&stage_id={{stage.id}}"
+          hx-target="#task{{task.id}}{{candidate.candidate_id.id}}"
+      >
+          {% trans "Assign" %}
+      </button>
+  {% endif %}
+
+  </select>
+{% endif %}
+
 <script>
-$(document).ready(function() {
-    $("select[name='task']").on("htmx:afterRequest", function(event, xhr, data) {
-        var alertContainer = $('<div class="oh-alert-container">');
-        var alertDiv = $('<div class="oh-alert oh-alert--animated oh-alert--info">').text("{% trans 'Candidate task updated successfully..' %}");
-        alertContainer.append(alertDiv);
-        $(".messages").html(alertContainer);
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== "") {
+      const cookies = document.cookie.split(";");
+      for (let i = 0; i < cookies.length; i++) {
+        const cookie = cookies[i].trim();
+        // Does this cookie string begin with the name we want?
+        if (cookie.substring(0, name.length + 1) === name + "=") {
+          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+          break;
+        }
+      }
+    }
+    return cookieValue;
+  }
+
+  function updateStatus(selectElement,event) {
+    event.stopPropagation()
+    event.preventDefault()
+    var taskId = $(selectElement).data("task-id");
+    var candId = $(selectElement).data('candidate-id');
+    var status = $(selectElement).val();
+    $.ajax({
+        type: "POST",
+        url: "{% url 'candidate-task-update' 0 %}".replace('0', taskId),
+        data: { 'candId': candId,'status':status, 'csrfmiddlewaretoken': getCookie("csrftoken") },
+        dataType: "json",
+        success: function (response) {
+            $(".messages").append(`
+                    <div class="oh-alert-container">
+                      <div class="oh-alert oh-alert--animated oh-alert--${response.type}">
+                        ${response.message}
+                      </div>
+                    </div>`);
+                    duration = 1500;
+          }
+        
     });
-});
+}
+function updateSingleStatus(selectElement,event) {
+  event.stopPropagation()
+  event.preventDefault()
+  var taskId = $(selectElement).data("task-id");
+  var candId = $(selectElement).data('candidate-id'); 
+  var status = $(selectElement).val();
+  $.ajax({
+      type: "POST",
+      url: "{% url 'candidate-task-update' 0 %}".replace('0', taskId),
+      data: { 'single_view': candId,'status':status, 'csrfmiddlewaretoken': getCookie("csrftoken") },
+      dataType: "json",
+      success: function (response) {
+          $(".messages").append(`
+                  <div class="oh-alert-container">
+                    <div class="oh-alert oh-alert--animated oh-alert--${response.type}">
+                      ${response.message}
+                    </div>
+                  </div>`);
+                  duration = 1500;
+        }
+      
+  });
+}
+
 </script>

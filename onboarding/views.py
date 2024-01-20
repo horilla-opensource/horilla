@@ -38,6 +38,7 @@ from employee.models import Employee, EmployeeWorkInformation, EmployeeBankDetai
 from django.db.models import ProtectedError
 from onboarding.forms import (
     OnboardingCandidateForm,
+    OnboardingTaskForm,
     UserCreationForm,
     OnboardingViewTaskForm,
     OnboardingViewStageForm,
@@ -94,8 +95,8 @@ def stage_save(form, recruitment, request, rec_id):
     Returns:
     GET : return onboarding view
     """
-    stage = form.save()
-    stage.recruitment_id.add(recruitment)
+    stage = form.save(commit=False)
+    stage.recruitment_id = recruitment
     stage.save()
     messages.success(request, _("New stage created successfully.."))
     users = [employee.employee_user_id for employee in stage.employee_id.all()]
@@ -196,33 +197,37 @@ def stage_delete(request, stage_id):
 @login_required
 @hx_request_required
 @stage_manager_can_enter("onboarding.add_onboardingtask")
-def task_creation(request, obj_id):
+def task_creation(request):
     """
     function used to create onboarding task.
 
     Parameters:
     request (HttpRequest): The HTTP request object.
-    obj_id : recruitment id
 
     Returns:
     GET : return onboarding task creation form template
     POST : return onboarding view
     """
-    form = OnboardingViewTaskForm()
-    if request.method == "POST":
-        recruitment = Recruitment.objects.get(id=obj_id)
-        form_data = OnboardingViewTaskForm(request.POST)
-        if form_data.is_valid():
-            task = form_data.save()
-            task.recruitment_id.add(recruitment)
-            task.save()
-            for candidate in recruitment.candidate.filter(
-                hired=True, start_onboard=True
-            ):
-                CandidateTask(candidate_id=candidate, onboarding_task_id=task).save()
+    stage_id = request.GET.get('stage_id')
+    stage = OnboardingStage.objects.get(id=stage_id)
+    form = OnboardingViewTaskForm(initial={'stage_id':stage})
 
-            messages.success(request, _("New task created successfully..."))
-            users = [employee.employee_user_id for employee in task.employee_id.all()]
+    if request.method == "POST":
+        form_data = OnboardingViewTaskForm(request.POST,initial={'stage_id':stage})
+        if form_data.is_valid():
+            candidates= form_data.cleaned_data['candidates']
+            stage_id = form_data.cleaned_data['stage_id']
+            managers = form_data.cleaned_data['managers']
+            title = form_data.cleaned_data['task_title']
+            onboarding_task =OnboardingTask(task_title=title,stage_id=stage_id)
+            onboarding_task.save()
+            onboarding_task.employee_id.set(managers)
+            onboarding_task.candidates.set(candidates)
+            if candidates:
+                for cand in candidates:
+                    task = CandidateTask(candidate_id=cand,stage_id=stage_id,onboarding_task_id=onboarding_task)
+                    task.save()
+            users = [manager.employee_user_id for manager in onboarding_task.employee_id.all()]
             notify.send(
                 request.user.employee_get,
                 recipient=users,
@@ -235,25 +240,26 @@ def task_creation(request, obj_id):
                 redirect="/onboarding/onboarding-view",
             )
             response = render(
-                request, "onboarding/task_form.html", {"form": form, "id": obj_id}
+                request, "onboarding/task_form.html", {"form": form,"stage_id":stage_id}
             )
+            messages.success(request, _("New task created successfully..."))
+            
             return HttpResponse(
                 response.content.decode("utf-8") + "<script>location.reload();</script>"
             )
-    return render(request, "onboarding/task_form.html", {"form": form, "id": obj_id})
+    return render(request, "onboarding/task_form.html", {"form": form,"stage_id":stage_id})
 
 
 @login_required
 @hx_request_required
 @stage_manager_can_enter("onboarding.change_onboardingtask")
-def task_update(request, task_id, recruitment_id):
+def task_update(request, task_id,):
     """
     function used to update onboarding task.
 
     Parameters:
     request (HttpRequest): The HTTP request object.
     task_id : task id
-    recruitment_id : recruitment id
 
     Returns:
     GET : return onboarding task update form template
@@ -261,9 +267,14 @@ def task_update(request, task_id, recruitment_id):
     """
     onboarding_task = OnboardingTask.objects.get(id=task_id)
     if request.method == "POST":
-        form = OnboardingViewTaskForm(request.POST, instance=onboarding_task)
+        form = OnboardingTaskForm(request.POST, instance=onboarding_task)
         if form.is_valid():
             task = form.save()
+            for cand_task in onboarding_task.candidatetask_set.all():
+                if cand_task.candidate_id not in task.candidates.all():
+                    cand_task.delete()
+                else:
+                    cand_task.stage_id = task.stage_id
             messages.info(request, _("Task updated successfully.."))
             users = [employee.employee_user_id for employee in task.employee_id.all()]
             notify.send(
@@ -280,16 +291,16 @@ def task_update(request, task_id, recruitment_id):
             response = render(
                 request,
                 "onboarding/task_update.html",
-                {"form": form, "task_id": task_id, "recruitment_id": recruitment_id},
+                {"form": form, "task_id": task_id,},
             )
             return HttpResponse(
                 response.content.decode("utf-8") + "<script>location.reload();</script>"
             )
-    form = OnboardingViewTaskForm(instance=onboarding_task)
+    form = OnboardingTaskForm(instance=onboarding_task)
     return render(
         request,
         "onboarding/task_update.html",
-        {"form": form, "task_id": task_id, "recruitment_id": recruitment_id},
+        {"form": form, "task_id": task_id,},
     )
 
 
@@ -445,6 +456,7 @@ def candidates_single_view(request, id, **kwargs):
         "recruitment": recruitment,
         "choices": choices,
         "candidate": candidate,
+        'single_view':True
     }
     return render(
         request,
@@ -648,31 +660,32 @@ def onboarding_view(request):
     """
     candidates = Candidate.objects.filter(hired=True, start_onboard=True)
     job_positions = JobPosition.objects.all()
-    for candidate in candidates:
-        if not CandidateStage.objects.filter(candidate_id=candidate).exists():
-            try:
-                onboarding_stage = OnboardingStage.objects.filter(
-                    recruitment_id=candidate.recruitment_id
-                ).order_by("sequence")[0]
-                CandidateStage(
-                    candidate_id=candidate, onboarding_stage_id=onboarding_stage
-                ).save()
-            except Exception:
-                messages.error(
-                    request,
-                    _("%(recruitment)s has no stage..")
-                    % {"recruitment": candidate.recruitment_id},
-                )
-        if tasks := OnboardingTask.objects.filter(
-            recruitment_id=candidate.recruitment_id
-        ):
-            for task in tasks:
-                if not CandidateTask.objects.filter(
-                    candidate_id=candidate, onboarding_task_id=task
-                ).exists():
-                    CandidateTask(
-                        candidate_id=candidate, onboarding_task_id=task
-                    ).save()
+    # for candidate in candidates:
+    #     recruitment =candidate.recruitment_id
+    #     if not CandidateStage.objects.filter(candidate_id=candidate).exists():
+    #         try:
+    #             onboarding_stage = OnboardingStage.objects.filter(
+    #                 recruitment_id=candidate.recruitment_id
+    #             ).order_by("sequence")[0]
+    #             CandidateStage(
+    #                 candidate_id=candidate, onboarding_stage_id=onboarding_stage
+    #             ).save()
+    #         except Exception:
+    #             messages.error(
+    #                 request,
+    #                 _("%(recruitment)s has no stage..")
+    #                 % {"recruitment": candidate.recruitment_id},
+    #             )
+    #     if tasks := OnboardingTask.objects.filter(
+    #         recruitment_id=candidate.recruitment_id
+    #     ):
+    #         for task in tasks:
+    #             if not CandidateTask.objects.filter(
+    #                 candidate_id=candidate, onboarding_task_id=task
+    #             ).exists():
+    #                 CandidateTask(
+    #                     candidate_id=candidate, onboarding_task_id=task
+    #                 ).save()
 
     recruitments = Recruitment.objects.filter(closed=False)
     status = "closed"
@@ -711,31 +724,32 @@ def onboarding_view(request):
 def kanban_view(request):
     candidates = Candidate.objects.filter(hired=True, start_onboard=True)
     job_positions = JobPosition.objects.all()
-    for candidate in candidates:
-        if not CandidateStage.objects.filter(candidate_id=candidate).exists():
-            try:
-                onboarding_stage = OnboardingStage.objects.filter(
-                    recruitment_id=candidate.recruitment_id
-                ).order_by("sequence")[0]
-                CandidateStage(
-                    candidate_id=candidate, onboarding_stage_id=onboarding_stage
-                ).save()
-            except Exception:
-                messages.error(
-                    request,
-                    _("%(recruitment)s has no stage..")
-                    % {"recruitment": candidate.recruitment_id},
-                )
-        if tasks := OnboardingTask.objects.filter(
-            recruitment_id=candidate.recruitment_id
-        ):
-            for task in tasks:
-                if not CandidateTask.objects.filter(
-                    candidate_id=candidate, onboarding_task_id=task
-                ).exists():
-                    CandidateTask(
-                        candidate_id=candidate, onboarding_task_id=task
-                    ).save()
+    # for candidate in candidates:
+    #     if not CandidateStage.objects.filter(candidate_id=candidate).exists():
+    #         try:
+    #             onboarding_stage = OnboardingStage.objects.filter(
+    #                 recruitment_id=candidate.recruitment_id
+    #             ).order_by("sequence")[0]
+    #             CandidateStage(
+    #                 candidate_id=candidate, onboarding_stage_id=onboarding_stage
+    #             ).save()
+    #         except Exception:
+    #             messages.error(
+    #                 request,
+    #                 _("%(recruitment)s has no stage..")
+    #                 % {"recruitment": candidate.recruitment_id},
+    #             )
+    #     if tasks := OnboardingTask.objects.filter(
+    #         recruitment_id=candidate.recruitment_id
+    #     ):
+    #         for task in tasks:
+    #             if not CandidateTask.objects.filter(
+    #                 candidate_id=candidate, onboarding_task_id=task
+    #             ).exists():
+                    # pass
+                    # CandidateTask(
+                    #     candidate_id=candidate, onboarding_task_id=task
+                    # ).save()
 
     recruitments = Recruitment.objects.filter(closed=False)
     status = "closed"
@@ -749,12 +763,14 @@ def kanban_view(request):
     stage_form = OnboardingViewStageForm()
 
     previous_data = request.GET.urlencode()
+    
     filter_obj = RecruitmentFilter(
         request.GET, queryset=recruitments
     )
     paginator = Paginator(filter_obj.qs, 4)
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
+    
 
     return render(
         request,
@@ -1015,10 +1031,9 @@ def welcome_aboard(request):
 
 
 @login_required
-@hx_request_required
 @require_http_methods(["POST"])
 @all_manager_can_enter("onboarding.change_candidatetask")
-def candidate_task_update(request, obj_id):
+def candidate_task_update(request, taskId):
     """
     function used to update candidate task.
 
@@ -1029,10 +1044,21 @@ def candidate_task_update(request, obj_id):
     Returns:
     POST : return candidate task template
     """
-    status = request.POST.get("task")
-    candidate_task = CandidateTask.objects.get(id=obj_id)
+    status = request.POST.get("status")
+    print('============')
+    print(request.POST.get("single_view"))
+    if request.POST.get("single_view"):
+        candidate_task = CandidateTask.objects.get(id=taskId)
+    else:
+        canId = request.POST.get("candId")
+        onboarding_task = OnboardingTask.objects.get(id=taskId)
+        candidate= Candidate.objects.get(id=canId)
+        candidate_task = CandidateTask.objects.filter(candidate_id=candidate,onboarding_task_id=onboarding_task).first()
     candidate_task.status = status
     candidate_task.save()
+    print('-----------------------')
+    print(candidate_task.status)
+    print('-----------------------')
     users = [
         employee.employee_user_id
         for employee in candidate_task.onboarding_task_id.employee_id.all()
@@ -1049,12 +1075,76 @@ def candidate_task_update(request, obj_id):
         icon="people-circle",
         redirect="/onboarding/onboarding-view",
     )
-    choices = CandidateTask.choice
-    return render(
-        request,
-        "onboarding/candidate_task.html",
-        {"choices": choices, "task": candidate_task},
+    return JsonResponse(
+        {"message": _("Candidate onboarding stage updated"), "type": "success"}
     )
+
+@login_required
+def get_status(request,task_id):
+    """
+    htmx function that return the status of candidate task
+
+    Parameters:
+    request (HttpRequest): The HTTP request object.
+    task_id : Onboarding task id
+
+    Returns:
+    POST : return candidate task template
+    """
+    cand_id = request.GET.get('cand_id')
+    cand_stage = request.GET.get('cand_stage')
+    cand_stage_obj=CandidateStage.objects.get(id=cand_stage)
+    onboarding_task = OnboardingTask.objects.get(id=task_id)
+    candidate= Candidate.objects.get(id=cand_id)
+    candidate_task = CandidateTask.objects.filter(candidate_id=candidate,onboarding_task_id=onboarding_task).first()
+    status = candidate_task.status
+
+    return render(request,'onboarding/candidate_task.html',
+                  {   
+                      'status':status,
+                      'task':onboarding_task,
+                      'candidate':cand_stage_obj,
+                      'second_load':True,
+                      'choices':CandidateTask.choice
+                  }
+                  )
+
+@login_required
+@all_manager_can_enter("onboarding.change_candidatetask")
+def assign_task(request,task_id):
+    """
+    htmx function that used to assign a onboarding task to candidate 
+
+    Parameters:
+    request (HttpRequest): The HTTP request object.
+    task_id : Onboarding task id
+
+    Returns:
+    POST : return candidate task template
+    """
+    stage_id = request.GET.get('stage_id')
+    cand_id = request.GET.get('cand_id')
+    cand_stage = request.GET.get('cand_stage')
+    cand_stage_obj=CandidateStage.objects.get(id=cand_stage)
+    onboarding_task =OnboardingTask.objects.get(id=task_id)
+    candidate=Candidate.objects.get(id=cand_id)
+    onboarding_stage = OnboardingStage.objects.get(id=stage_id)
+    cand_task,created= CandidateTask.objects.get_or_create(
+        candidate_id=candidate,
+        stage_id = onboarding_stage,
+        onboarding_task_id = onboarding_task
+    )
+    cand_task.save()
+    onboarding_task.candidates.add(candidate)
+    return render(request,'onboarding/candidate_task.html',
+                  {   
+                      'status':cand_task.status,
+                      'task':onboarding_task,
+                      'candidate':cand_stage_obj,
+                      'second_load':True,
+                      'choices':CandidateTask.choice
+                  }
+                  )
 
 
 @login_required

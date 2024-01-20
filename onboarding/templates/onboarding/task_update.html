@@ -12,7 +12,7 @@
     </div>
 </div>
 {% endif %}
-<form  hx-post="{% url 'task-update' task_id recruitment_id %}">
+<form  hx-post="{% url 'task-update' task_id %}">
     <div class="oh-modal__dialog-body pb-2">
         <label class="oh-label d-block">{% trans "Task Title" %}</label>
         {{form.task_title}}
@@ -23,8 +23,14 @@
         {{form.employee_id}}
         {{form.employee_id.errors}}
     </div>
+    <div class="oh-modal__dialog-body pb-2" >
+        <label class="oh-label d-block">{% trans "Candidates" %}</label>
+        {{form.candidates}}
+        {{form.candidates.errors}}
+    </div>
     <div class="oh-modal__dialog-footer">
         <button type="submit" class="oh-btn oh-btn--secondary w-100">
             {% trans "Update" %}
         </button>
+    </div>
 </form>
