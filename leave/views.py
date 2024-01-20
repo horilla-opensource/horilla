@@ -3207,6 +3207,7 @@ def cut_available_leave(request, instance_id):
     """
     This method is used to create the penalties
     """
+    previous_data = request.GET.urlencode()
     instance = LeaveRequest.objects.get(id=instance_id)
     form = PenaltyAccountForm()
     available = AvailableLeave.objects.filter(employee_id=instance.employee_id)
@@ -3230,7 +3231,7 @@ def cut_available_leave(request, instance_id):
     return render(
         request,
         "leave/leave_request/penalty/form.html",
-        {"available": available, "form": form, "instance": instance},
+        {"available": available, "form": form, "instance": instance,"pd":previous_data},
     )
 
 
@@ -3360,6 +3361,7 @@ def create_allocationrequest_comment(request, leave_id):
     """
     This method renders form and template to create Allocation request comments
     """
+    previous_data = request.GET.urlencode()
     leave = LeaveAllocationRequest.objects.filter(id=leave_id).first()
     emp = request.user.employee_get
     form = LeaveallocationrequestcommentForm(
@@ -3427,7 +3429,7 @@ def create_allocationrequest_comment(request, leave_id):
     return render(
         request,
         "leave/leave_allocation_request/allocation_request_comment_form.html",
-        {"form": form, "request_id": leave_id},
+        {"form": form, "request_id": leave_id,"pd":previous_data},
     )
 
 
@@ -3455,7 +3457,8 @@ def delete_allocationrequest_comment(request, comment_id):
     """
     This method is used to delete Allocation request comments
     """
-    LeaveallocationrequestComment.objects.get(id=comment_id).delete()
-
+    command = LeaveallocationrequestComment.objects.get(id=comment_id)
+    request_id = command.request_id.id
+    command.delete()
     messages.success(request, _("Comment deleted successfully!"))
-    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+    return redirect("allocation-request-view-comment",leave_id=request_id)
