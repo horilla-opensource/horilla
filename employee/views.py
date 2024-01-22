@@ -69,6 +69,8 @@ from base.methods import (
 )
 from employee.filters import EmployeeFilter, EmployeeReGroup
 from employee.forms import (
+    BonusPointAddForm,
+    BonusPointRedeemForm,
     BulkUpdateFieldForm,
     EmployeeExportExcelForm,
     EmployeeForm,
@@ -79,9 +81,15 @@ from employee.forms import (
     EmployeeBankDetailsUpdateForm,
     excel_columns,
 )
-from employee.models import Employee, EmployeeNote, EmployeeWorkInformation, EmployeeBankDetails
+from employee.models import (
+    BonusPoint,
+    Employee,
+    EmployeeNote,
+    EmployeeWorkInformation,
+    EmployeeBankDetails,
+)
 from payroll.methods.payslip_calc import dynamic_attr
-from payroll.models.models import Allowance, Contract, Deduction
+from payroll.models.models import Allowance, Contract, Deduction, Reimbursement
 from pms.models import Feedback
 from recruitment.models import Candidate
 
@@ -445,7 +453,7 @@ def allowances_deductions_tab(request, emp_id):
         "active_contracts": active_contracts,
         "allowances": employee_allowances if employee_allowances else None,
         "deductions": employee_deductions if employee_deductions else None,
-        "employee":employee,
+        "employee": employee,
     }
     return render(request, "tabs/allowance_deduction-tab.html", context=context)
 
@@ -1100,7 +1108,7 @@ def employee_filter_view(request):
     previous_data = request.GET.urlencode()
     field = request.GET.get("field")
     queryset = Employee.objects.filter()
-    employees = EmployeeFilter(request.GET,queryset=queryset).qs
+    employees = EmployeeFilter(request.GET, queryset=queryset).qs
     if request.GET.get("is_active") != "False":
         employees = employees.filter(is_active=True)
     page_number = request.GET.get("page")
@@ -1342,7 +1350,9 @@ def employee_archive(request, obj_id):
         messages.success(request, message)
     else:
         related_models = ", ".join(model for model in result.get("related_models"))
-        messages.warning(request, _(f"Can't archive.Employee assigned as {related_models}"))
+        messages.warning(
+            request, _(f"Can't archive.Employee assigned as {related_models}")
+        )
     return HttpResponseRedirect(request.META.get("HTTP_REFERER"))
 
 
@@ -2132,6 +2142,7 @@ def employee_select_filter(request):
 
         return JsonResponse(context)
 
+
 @login_required
 @manager_can_enter(perm="employee.view_employeenote")
 def note_tab(request, emp_id):
@@ -2147,7 +2158,7 @@ def note_tab(request, emp_id):
     """
     # employee = Employee.objects.get(id=emp_id)
     employee_obj = Employee.objects.get(id=emp_id)
-    notes = EmployeeNote.objects.filter(employee_id = emp_id)
+    notes = EmployeeNote.objects.filter(employee_id=emp_id)
 
     return render(
         request,
@@ -2173,9 +2184,7 @@ def add_note(request, emp_id=None):
             note.updated_by = request.user.employee_get
             note.save()
             messages.success(request, _("Note added successfully.."))
-            response = render(
-                request, "tabs/add_note.html", {"form": form}
-            )
+            response = render(request, "tabs/add_note.html", {"form": form})
             return HttpResponse(
                 response.content.decode("utf-8") + "<script>location.reload();</script>"
             )
@@ -2221,6 +2230,7 @@ def employee_note_update(request, note_id):
         },
     )
 
+
 @login_required
 @manager_can_enter(perm="employee.delete_employeenote")
 def employee_note_delete(request, note_id):
@@ -2234,4 +2244,102 @@ def employee_note_delete(request, note_id):
     note.delete()
     messages.success(request, _("Note deleted successfully..."))
     return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+
+
+@login_required
+@manager_can_enter(perm="employee.view_bonuspoint")
+def bonus_points_tab(request, emp_id):
+    """
+    This function is used to view performance tab of an employee in employee individual & profile view.
+
+    Parameters:
+    request (HttpRequest): The HTTP request object.
+    emp_id (int): The id of the employee.
+
+    Returns: return note-tab template
+
+    """
+    employee_obj = Employee.objects.get(id=emp_id)
+    points = BonusPoint.objects.get(employee_id=emp_id)
+    trackings = points.tracking()
+
+    activity_list = []
+    for history in trackings:        
+        activity_list.append(
+            {
+                "type":history["type"],
+                "date": history["pair"][0].history_date,
+                "points": history["pair"][0].points - history["pair"][1].points,
+                "user":getattr(User.objects.filter(id = history["pair"][0].history_user_id).first(),"employee_get",None),
+                "reason": history["pair"][0].reason,
+            }
+        )
+    
+        
+    return render(
+        request,
+        "tabs/bonus_points.html",
+        {"employee": employee_obj, "points": points, "activity_list": activity_list},
+    )
+
+
+@login_required
+@manager_can_enter(perm="employee.add_bonuspoint")
+def add_bonus_points(request, emp_id):
+    bonus_point = BonusPoint.objects.get(employee_id=emp_id)
+    form = BonusPointAddForm()
+    if request.method == "POST":
+        form = BonusPointAddForm(
+            request.POST,
+            request.FILES,
+        )
+        if form.is_valid():
+            form.save(commit=False)
+            bonus_point.points += form.cleaned_data["points"]
+            bonus_point.reason = form.cleaned_data["reason"]
+            bonus_point.save()
+            messages.success(
+                request,
+                _("Added {} points to the bonus account").format(
+                    form.cleaned_data["points"]
+                ),
+            )
+            return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+
+    return render(
+        request,
+        "tabs/forms/add_points.html",
+        {
+            "form": form,
+            "emp_id": emp_id,
+        },
+    )
+    
+@login_required
+@owner_can_enter("employee.view_bonuspoint", Employee)
+def redeem_points(request,emp_id):
+    user = Employee.objects.get(id=emp_id)
+    form = BonusPointRedeemForm()
+    if request.method == 'POST':
+        form = BonusPointRedeemForm(request.POST)
+        if form.is_valid():
+            form.save(commit=False)
+            points = form.cleaned_data['points']
+            reimbursement = Reimbursement.objects.create(
+                title = f"Bonus point Redeem for {user}",
+                type = "bonus_encashment",
+                employee_id = user,
+                bonus_to_encash =points,
+                description = f"{user} want to redeem {points} points",
+                allowance_on = date.today(),
+            )            
+            return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+    return render(
+        request,
+        "tabs/forms/redeem_points_form.html",
+        {
+            "form": form,
+            "employee": user,
+        },
+    )
 

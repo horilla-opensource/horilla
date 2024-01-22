@@ -28,6 +28,7 @@ from django.forms import DateInput, TextInput
 from django.utils.translation import gettext as _
 from django.utils.translation import gettext_lazy as trans
 from employee.models import (
+    BonusPoint,
     Employee,
     EmployeeWorkInformation,
     EmployeeBankDetails,
@@ -478,3 +479,19 @@ class PolicyForm(ModelForm):
         if commit:
             instance.attachments.add(*multiple_attachment_ids)
         return instance, attachemnts
+
+
+class BonusPointAddForm(ModelForm):
+    
+    class Meta:
+        model = BonusPoint
+        fields = ["points", "reason"]
+        widgets = {
+            'reason': forms.TextInput(attrs={'required': 'required'}),
+        }
+        
+class BonusPointRedeemForm(ModelForm):
+    class Meta:
+        model = BonusPoint
+        fields = ["points"]
+    

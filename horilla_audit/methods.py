@@ -106,7 +106,10 @@ def get_diff(instance):
             }
         )
     if create_history:
-        updated_by = create_history.history_user.employee_get
+        try:
+            updated_by = create_history.history_user.employee_get
+        except:
+            updated_by = Bot()
         delta_changes.append(
             {
                 "type": f"{create_history.instance.__class__._meta.verbose_name.capitalize()} created",

@@ -214,6 +214,17 @@
 						>{% trans "Performance" %}</a
 						>
 					</li>
+					<li class="oh-general__tab">
+						<a
+						hx-get={% url 'bonus-points-tab' employee.id %}
+						hx-target="#bonus_points_target"
+						data-action="general-tab"
+						data-target="#bonus_points_target"
+						class="oh-general__tab-link"
+						role="button"
+						>{% trans "Bonus Points" %}</a
+						>
+					</li>
 				</ul>
 
 				<div
@@ -232,6 +243,12 @@
 					id="payroll"
 				>
 					{% include 'tabs/payroll-tab.html' %}
+				</div>
+				<div
+					class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
+					id="bonus_points_target"
+				>
+					{% include "tabs/bonus_points.html" %}
 				</div>
 				<div
 				  class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"

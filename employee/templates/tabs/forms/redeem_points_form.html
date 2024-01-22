@@ -1,0 +1,29 @@
+{% load i18n %}
+<form
+    class="oh-general__tab-target oh-profile-section"
+    action="{% url 'redeem-points' employee.id %}"
+    method="post"
+>
+    {% csrf_token %}
+    <div class="row mb-4">
+        <div class="col-12 col-sm-12 col-md-12 col-lg-12">
+            <label
+                class="oh-label"
+                for="id_points"
+                title="{{form.points.help_text|safe}}"
+                >{% trans "Points :" %}</label
+            >
+            <div
+                class="w-100 d-flex"
+                style="align-items: center; justify-content: center !important"
+            >
+                {{form.points}} {{form.points.errors}}
+            </div>
+        </div>
+    </div>
+    <div class="d-flex flex-row-reverse">
+        <button class="oh-btn oh-btn--secondary pr-4 pl-4" type="submit">
+            {% trans "Add" %}
+        </button>
+    </div>
+</form>

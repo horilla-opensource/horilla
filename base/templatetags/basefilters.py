@@ -108,3 +108,11 @@ def user_perms(perms):
     permission names return method
     """
     return json.dumps(list(perms.values_list("codename", flat="True")))
+
+
+@register.filter(name="abs_value")
+def abs_value(value):
+    """
+    permission names return method
+    """
+    return abs(value)

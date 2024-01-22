@@ -477,7 +477,7 @@ class MultipleFileField(forms.FileField):
             result = [single_file_clean(d, initial) for d in data]
         else:
             result = [single_file_clean(data, initial)]
-        return result[0]
+        return result[0] if result else None
 
 
 class ReimbursementForm(ModelForm):
@@ -535,7 +535,7 @@ class ReimbursementForm(ModelForm):
             type = self.data["type"]
         elif self.instance is not None:
             type = self.instance.type
-
+        print(type)
         if not request.user.has_perm("payroll.add_reimbursement"):
             exclude_fields.append("employee_id")
 
@@ -544,11 +544,21 @@ class ReimbursementForm(ModelForm):
                 "leave_type_id",
                 "cfd_to_encash",
                 "ad_to_encash",
+                "bonus_to_encash",
             ]
-        elif self.instance.pk or self.data.get("type") == "leave_encashment":
+        elif self.instance.pk and type == "leave_encashment" or self.data.get("type") == "leave_encashment":
             exclude_fields = exclude_fields + [
                 "attachment",
                 "amount",
+                "bonus_to_encash",
+            ]
+        elif self.instance.pk and type == "bonus_encashment" or self.data.get("type") == "bonus_encashment":
+            exclude_fields = exclude_fields + [
+                "attachment",
+                "amount",
+                "leave_type_id",
+                "cfd_to_encash",
+                "ad_to_encash",
             ]
         if self.instance.pk:
             exclude_fields = exclude_fields + ["type", "employee_id"]

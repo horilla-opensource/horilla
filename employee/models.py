@@ -7,10 +7,14 @@ This module is used to register models for employee app
 import datetime as dtime
 from datetime import date, datetime
 import json
+import threading
+import time
 from typing import Any
 from django.conf import settings
 from django.db import models
 from django.contrib.auth.models import User, Permission
+from django.dispatch import receiver
+from django.db.models.signals import post_save, pre_delete
 from django.utils.translation import gettext_lazy as trans
 from django.utils.translation import gettext as _
 from django.core.exceptions import ValidationError
@@ -574,3 +578,53 @@ class Policy(models.Model):
     def delete(self, *args, **kwargs):
         super().delete(*args, **kwargs)
         self.attachments.all().delete()
+
+
+class BonusPoint(models.Model):
+    CONDITIONS =[
+        ('==',_('equals')),
+        ('>',_('grater than')),
+        ('<',_('less than')),
+        ('>=',_('greater than or equal')),
+        ('<=',_('less than or equal')),
+    ]
+    employee_id = models.OneToOneField(Employee, on_delete=models.PROTECT ,blank=True, null=True, related_name='bonus_point')
+    points = models.IntegerField(default=0, help_text="Use negative numbers to reduce points.")
+    encashment_condition = models.CharField(max_length=100,choices = CONDITIONS,blank=True, null=True)
+    redeeming_points = models.IntegerField(blank=True, null=True)
+    reason = models.TextField(blank=True, null=True)
+    history = HorillaAuditLog(
+        related_name="history_set",
+        bases=[
+            HorillaAuditInfo,
+        ],
+    )
+    
+    def __str__(self):
+        return f"{self.employee_id} - {self.points} Points"
+    
+    def tracking(self):
+        """
+        This method is used to return the tracked history of the instance
+        """
+        return get_diff(self)
+    
+    @receiver(post_save, sender=Employee)
+    def bonus_post_save(sender, instance, **_kwargs):
+        if not BonusPoint.objects.filter(employee_id__id = instance.id).exists():
+            BonusPoint.objects.create(
+                employee_id = instance
+            )
+            
+class BonusPointThreading(threading.Thread):
+    
+    def run(self):
+        time.sleep(5)
+        employees = Employee.objects.all()
+        for employee in employees:
+            if not BonusPoint.objects.filter(employee_id__id = employee.id).exists():
+                BonusPoint.objects.create(
+                    employee_id = employee
+                )
+                
+BonusPointThreading().start()

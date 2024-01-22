@@ -1099,6 +1099,9 @@ def approve_reimbursements(request):
         for reimbursement in reimbursements:
             if reimbursement.type == "leave_encashment":
                 reimbursement.amount = amount
+            elif reimbursement.type == "bonus_encashment" :
+                reimbursement.amount = amount
+                
             emp = reimbursement.employee_id
             reimbursement.status = status
             reimbursement.save()

@@ -211,6 +211,9 @@ urlpatterns = [
         name="contract-tab",
         kwargs={"model": Employee},
     ),
+    path("bonus-points-tab/<int:emp_id>", views.bonus_points_tab, name="bonus-points-tab"),
+    path("add-bonus-points/<int:emp_id>", views.add_bonus_points, name="add-bonus-points"),
+    path("redeem-points/<int:emp_id>", views.redeem_points, name="redeem-points"),
     path("employee-select/", views.employee_select, name="employee-select"),
     path(
         "employee-select-filter/",

@@ -14,7 +14,7 @@
     
     {% endfor %}
     {% if perms.employee.add_policy %}
-    <input type="hidden" name="csrfmiddlewaretoken"/>
+    {% csrf_token %}
     <input type="file" name="files" class="d-none" multiple="true" id="addFile_18" onchange="submitForm(this)" />
     <input type="submit" class="d-none add_more_submit" value="save" />
     <label for="addFile_18" title="Add Files" onclick="console.log($(this).closest('[type=file]'));"

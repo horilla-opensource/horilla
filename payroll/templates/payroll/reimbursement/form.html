@@ -3,7 +3,7 @@
   hx-encoding="multipart/form-data">
   {{form.as_p}}
 </form>
-<table class="oh-table oh-table--sortable" {% if not form.instance.id or form.instance.type == "reimbursement" %}
+<table class="oh-table oh-table--sortable" {% if not form.instance.id or form.instance.type == "reimbursement" or form.instance.type == "bonus_encashment" %}
   id="availableTable" style="display: none;" {% endif %}>
   <thead>
     <tr>

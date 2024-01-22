@@ -5,6 +5,7 @@ This page is used to register the model with admins site.
 """
 from django.contrib import admin
 from employee.models import (
+    BonusPoint,
     Employee,
     EmployeeWorkInformation,
     EmployeeBankDetails,
@@ -21,4 +22,4 @@ from simple_history.admin import SimpleHistoryAdmin
 admin.site.register(Employee)
 admin.site.register(EmployeeBankDetails)
 admin.site.register(EmployeeWorkInformation, SimpleHistoryAdmin)
-admin.site.register([EmployeeNote, EmployeeTag, PolicyMultipleFile, Policy])
+admin.site.register([EmployeeNote, EmployeeTag, PolicyMultipleFile, Policy, BonusPoint])

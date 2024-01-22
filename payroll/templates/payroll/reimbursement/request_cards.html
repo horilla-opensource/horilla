@@ -80,6 +80,15 @@
     <p class="oh-faq-card__desc" style="height: 150px;">
       <iframe id="iframe_pdf" src="{{ req.attachment.url }}" style="width: 100%" frameborder="0"></iframe>
     </p>
+    {% elif req.type == 'bonus_encashment' %}
+    <p class="oh-faq-card__desc" style="max-height: 180px;">
+      <i>
+        {% trans 'Requsted for' %} <span class="text-danger"> {{ req.bonus_to_encash }} </span>
+        {% trans 'Bonus points to encash.' %}
+      </i>
+      <input style="display: block;padding: 10px;margin-top: 10px;" type="number" required default="0" min="0" placeholder="Amount"
+        name="amount" class="mt-2"{% if req.status == "approved" %}disabled{% endif %} {% if req.amount %} value="{{req.amount}}"{% endif %} />
+    </p>
     {% else %}
     <p class="oh-faq-card__desc" style="max-height: 180px;">
       <i>

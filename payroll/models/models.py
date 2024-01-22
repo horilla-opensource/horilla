@@ -18,7 +18,7 @@ from django.db.models.signals import pre_save, pre_delete
 from django.http import QueryDict
 from asset.models import Asset
 from base import thread_local_middleware
-from employee.models import EmployeeWorkInformation
+from employee.models import BonusPoint, EmployeeWorkInformation
 from employee.models import Employee, Department, JobPosition
 from base.models import Company, EmployeeShift, WorkType, JobRole
 from base.horilla_company_manager import HorillaCompanyManager
@@ -1497,6 +1497,7 @@ class Reimbursement(models.Model):
     reimbursement_types = [
         ("reimbursement", "Reimbursement"),
         ("leave_encashment", "Leave Encashment"),
+        ("bonus_encashment", "Bonus Point Encashment"),
     ]
     status_types = [
         ("requested", "Requested"),
@@ -1525,6 +1526,11 @@ class Reimbursement(models.Model):
         default=0,
         help_text="Carry Forward Days to encash",
         verbose_name="Carry forward days",
+    )
+    bonus_to_encash = models.IntegerField(
+        default=0,
+        help_text="Bonus points to encash",
+        verbose_name="Bonus points",
     )
     amount = models.FloatField(default=0)
     status = models.CharField(
@@ -1556,16 +1562,34 @@ class Reimbursement(models.Model):
             raise ValidationError({"attachment": "This field is required"})
         elif self.type == "leave_encashment" and self.leave_type_id is None:
             raise ValidationError({"leave_type_id": "This field is required"})
-        self.cfd_to_encash = max((round(self.cfd_to_encash * 2) / 2), 0)
-        self.ad_to_encash = max((round(self.ad_to_encash * 2) / 2), 0)
-        assigned_leave = self.leave_type_id.employee_available_leave.filter(
-            employee_id=self.employee_id
-        ).first()
+        if self.type == "leave_encashment":
+            self.cfd_to_encash = max((round(self.cfd_to_encash * 2) / 2), 0)
+            self.ad_to_encash = max((round(self.ad_to_encash * 2) / 2), 0)
+            assigned_leave = self.leave_type_id.employee_available_leave.filter(
+                employee_id=self.employee_id
+            ).first()
         if self.status != "approved" or self.allowance_id is None:
             super().save(*args, **kwargs)
             if self.status == "approved" and self.allowance_id is None:
                 if self.type == "reimbursement":
                     proceed = True
+                elif self.type == "bonus_encashment":
+                    proceed = False
+                    bonus_points = BonusPoint.objects.get(employee_id=self.employee_id)
+                    if bonus_points.points >= self.bonus_to_encash:
+                        proceed = True
+                        bonus_points.points -= self.bonus_to_encash
+                        bonus_points.reason = "bonus points has been redeemed."
+                        bonus_points.save()
+                    else:
+                        request = getattr(
+                                thread_local_middleware._thread_locals, "request", None
+                            )
+                        if request:
+                            messages.info(
+                                request,
+                                "The employee don't have that much bonus points to encash.",
+                            )
                 else:
                     proceed = False
                     if assigned_leave:
