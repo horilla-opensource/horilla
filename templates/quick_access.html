@@ -1,0 +1,325 @@
+{% load static %}
+{% load i18n %}
+
+<!-- ******************** Leave modal ******************** -->
+  
+  <div
+	class="oh-modal"
+	id="requestCreateModal"
+	role="dialog"
+	aria-labelledby="requestCreateModal"
+	aria-hidden="true"
+>
+	<div class="oh-modal__dialog" id="requestCreateFormModal">
+	</div>
+</div>
+
+<div
+	class="oh-modal"
+	id="tableTimeOff"
+	role="dialog"
+	aria-labelledby="tableTimeOffModal"
+	aria-hidden="true"
+>
+	<div
+		class="oh-modal__dialog oh-modal__dialog--timeoff oh-modal__dialog-relative oh-timeoff-modal"
+	>
+		<div class="oh-modal__dialog-header">
+			<button class="oh-modal__close" aria-label="Close">
+				<ion-icon name="close-outline"></ion-icon>
+			</button>
+		</div>
+
+		<div id="userRequestView"></div>
+	</div>
+</div>
+
+<!-- ******************** Attendance modal ******************** -->
+
+<div
+  class="oh-modal"
+  id="newAttendanceRequest"
+  role="dialog"
+  aria-labelledby="newAttendanceRequest"
+  aria-hidden="true"
+>
+  <div class="oh-modal__dialog">
+    <div class="oh-modal__dialog-header">
+      <h2 class="oh-modal__dialog-title" id="addEmployeeModalLabel">
+        {% trans "New Attendances Request" %}
+      </h2>
+      <button class="oh-modal__close" aria-label="Close">
+        <ion-icon name="close-outline"></ion-icon>
+      </button>
+    </div>
+    <div
+      class="oh-modal__dialog-body"
+      id="newAttendanceRequestModalBody"
+    ></div>
+  </div>
+</div>
+
+<!-- ******************** Shift modal ******************** -->
+
+<div class="oh-modal" id="shiftRequestModal" role="dialog" aria-labelledby="shiftRequestModal" aria-hidden="true">
+    <div class="oh-modal__dialog" id="shiftRequestTargetModal"></div>
+</div>
+
+<!-- ******************** Worktype modal ******************** -->
+
+<div
+  class="oh-modal"
+  id="workTypeRequestModal"
+  role="dialog"
+  aria-labelledby="workTypeRequestModal"
+  aria-hidden="true"
+>
+  <div class="oh-modal__dialog">
+    <div class="oh-modal__dialog-header">
+      <h5 class="oh-modal__dialog-title" id="workTypeRequestModalLabel"
+        >{% trans "Work Type Request" %}</span
+      >
+      <button class="oh-modal__close" aria-label="Close" >
+        <ion-icon name="close-outline"></ion-icon>
+      </button>
+    </div>
+   <div class="oh-modal__dialog-body" id='formBody'>
+    </div>
+    </div>
+  </div>
+</div>
+
+<!-- ******************** Reimbursement modal ******************** -->
+
+<div class="oh-modal" id="reimbursementModal" role="dialog" aria-hidden="true">
+    <div class="oh-modal__dialog" style="max-width: 550px">
+        <div class="oh-modal__dialog-header">
+        <button type="button" class="oh-modal__close" aria-label="Close"><ion-icon name="close-outline"></ion-icon></button>
+        </div>
+
+        <div class="oh-modal__dialog-body" id="reimbursementModalBody"></div>
+    </div>
+</div>
+
+
+<!-- ******************** Asset modal ******************** -->
+
+<div
+	class="oh-modal"
+	id="asset-request-allocation-modal"
+	role="dialog"
+	aria-labelledby="AssetRequestModal"
+	aria-hidden="true"
+>
+	<div class="oh-modal__dialog" style="max-width: 550px">
+		<div class="oh-modal__dialog-header">
+			<button type="button" class="oh-modal__close" aria-label="Close">
+				<ion-icon name="close-outline"></ion-icon>
+			</button>
+		</div>
+
+		<!-- htmx form -->
+		<div
+			class="oh-modal__dialog-body"
+			id="asset-request-allocation-modal-target"
+		></div>
+	</div>
+</div>
+
+
+<!-- ******************** Ticket modal ******************** -->
+
+<div
+	class="oh-modal"
+	id="createModal1"
+	role="dialog"
+	aria-labelledby="createDialogModal"
+	aria-hidden="true"
+>
+	<div class="oh-modal__dialog">
+		<div class="oh-modal__dialog-header">
+			<h2 class="oh-modal__dialog-title" id="createTitle">
+				{% trans "Create Ticket" %}
+			</h2>
+			<button class="oh-modal__close" aria-label="Close">
+				<ion-icon name="close-outline"></ion-icon>
+			</button>
+		</div>
+		<div class="oh-modal__dialog-body" id="createTarget"></div>
+	</div>
+</div>
+
+
+<script>
+    // ==================== Leave request ====================
+
+	$(document).on('htmx:load','#userLeaves', function () {
+        // Create a new script element
+        var scriptElement = document.createElement("script");
+        // Set the source URL of the script file to be loaded
+        scriptElement.src = "{% static 'build/js/web.frontend.min.js' %}";
+        // Append the script element to the head of the HTML document
+        document.head.appendChild(scriptElement);
+    });
+	
+    $(document).on('htmx:load', '#requestForm', function () {
+		{% include 'select2.js' %}
+        $('#leaveType #id_leave_type_id').select2();
+        $('#employee #id_employee_id').select2();
+        $('#startDate #id_start_date_breakdown').select2();
+        $('#endDate #id_end_date_breakdown').select2();
+    });
+
+    function typeChange(selectElement) {
+        var selectedLeavetype =selectElement.val()
+        let parentForm = selectElement.parents().closest("form")
+        var employeeId = parentForm.find('[name = employee_id]').val()
+        $.ajax({
+            type: "post",
+            url: "{% url 'employee-leave-details' %}",
+            data: {
+        csrfmiddlewaretoken: getCookie("csrftoken"),
+        "leave_type":selectedLeavetype,
+        "employee_id":employeeId,
+    },
+    success: function (response) {
+        
+        // Assuming parentForm is a reference to the form containing the element to update
+            var messageDiv = parentForm.find(".leave-message");
+
+            // Check if the messageDiv already exists, if not create it
+            if (!messageDiv.length) {
+                messageDiv = $("<div class='leave-message'></div>");
+                parentForm.prepend(messageDiv);
+            }
+            // Checking leave type is selected in the form or not
+            if (response.leave_count === ''){
+                messageDiv.hide()
+            }	
+            else if (response.leave_count === 0.0){
+                messageDiv.show()
+                messageDiv.text("Available Leaves :  " + response.leave_count);
+                messageDiv.css({
+                    'background-color': 'rgb(229 79 56 / 17%)',
+                    'border': '2px solid hsl(8,77%,56%)',
+                    'border-radius': '18px',
+                    'padding': '10px',
+                    'font-weight': 'bold',
+                    'margin-bottom': '15px',
+                    'width': '35%'
+                });
+            }
+            else{
+                messageDiv.show()
+                // Set the message content and apply styling
+                messageDiv.text("Available Leaves :  " + response.leave_count);
+                messageDiv.css({
+                    'background-color': '#dff0d8',
+                    'border': '2px solid #3c763d',
+                    'border-radius': '18px',
+                    'padding': '10px',
+                    'font-weight': 'bold',
+                    'margin-bottom': '15px',
+                    'width': '35%'
+                });
+            }
+
+        }
+    });
+	}
+
+    // ==================== Attendance request ====================
+
+    function shiftChange(selectElement) {
+        var shiftId =selectElement.val()
+        let parentForm = selectElement.parents().closest("form")
+        var attendanceDate = parentForm.find("[name=attendance_date]").first().val()
+        $.ajax({
+        type: "post",
+        url: "{% url 'update-shift-details' %}",
+        data: {
+            csrfmiddlewaretoken: getCookie("csrftoken"),
+            "shift_id":shiftId,
+            "attendance_date":attendanceDate
+    
+        },
+        success: function (response) {
+            parentForm.find("[name=attendance_clock_in]").val(response.shift_start_time)
+            parentForm.find("[name=attendance_clock_out]").val(response.shift_end_time)
+            parentForm.find("[name=attendance_worked_hour]").val(response.worked_hour)
+            parentForm.find("[name=minimum_hour]").val(response.minimum_hour)
+            parentForm.find("[name=attendance_clock_out_date]").val(response.checkout_date)
+            parentForm.find("[name=attendance_clock_in_date]").val(response.checkin_date)
+            if (parentForm.find("[name=attendance_date]").val().length == 0) {
+            parentForm.find("[name=attendance_date]").val(response.checkin_date)
+            }
+        }
+        });
+    }
+    
+    function dateChange(selectElement) {
+        var selectedDate =selectElement.val()
+        let parentForm = selectElement.parents().closest("form")
+        var shiftId = parentForm.find("[name=shift_id]").val()
+    
+        $.ajax({
+        type: "post",
+        url: "{% url 'update-date-details' %}",
+        data: {
+            csrfmiddlewaretoken: getCookie("csrftoken"),
+            "attendance_date":selectedDate,
+            "shift_id":shiftId
+        },
+        success: function (response) {
+            parentForm.find("[name=minimum_hour]").val(response.minimum_hour)
+    
+        }
+        });
+    }
+
+
+    // ==================== Reimbursement request ====================
+
+    function toggleReimbursmentType(element) {
+        if (element.val() == 'reimbursement') {
+          $('#reimbursementModalBody [name=attachment]').parent().show()
+          $('#reimbursementModalBody [name=attachment]').attr("required",true)
+
+            $('#reimbursementModalBody [name=leave_type_id]').parent().hide().attr("required",false)
+            $('#reimbursementModalBody [name=cfd_to_encash]').parent().hide().attr("required",false)
+            $('#reimbursementModalBody [name=ad_to_encash]').parent().hide().attr("required",false)
+            $('#reimbursementModalBody [name=amount]').parent().show().attr("required",true)
+            $('#reimbursementModalBody #availableTable').hide().attr("required",false)
+
+        } else if(element.val() == 'leave_encashment') {
+          $('#reimbursementModalBody [name=attachment]').parent().hide()
+          $('#reimbursementModalBody [name=attachment]').attr("required",false)
+            $('#reimbursementModalBody [name=leave_type_id]').parent().show().attr("required",true)
+            $('#reimbursementModalBody [name=cfd_to_encash]').parent().show().attr("required",true)
+            $('#reimbursementModalBody [name=ad_to_encash]').parent().show().attr("required",true)
+            $('#reimbursementModalBody [name=amount]').parent().hide().attr("required",false)
+            $('#reimbursementModalBody #availableTable').show().attr("required",true)
+
+
+        }
+    }
+    function getAssignedLeave(employeeId) {
+        $.ajax({
+            type: "get",
+            url: "{% url "get-assigned-leaves" %}",
+            data: { "employeeId": employeeId },
+            dataType: "json",
+            success: function (response) {
+                let rows = ""
+                for (let index = 0; index < response.length; index++) {
+                    const element = response[index];
+                    rows = rows + `<tr class="toggle-highlight"><td>${element.leave_type_id__name
+                        }</td><td>${element.available_days}</td><td>${element.carryforward_days}</td></tr>`
+                }
+                $("#availableTableBody").html($(rows))
+                removeHighlight()
+            }
+        });
+    }
+
+</script>

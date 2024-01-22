@@ -82,6 +82,33 @@
           <span>{% trans "Dashboard" %}</span>
         </a>
       </li>
+
+{% comment %}       
+      <li
+      class="oh-sidebar__menu-item"
+      x-data="{ isOpen: getOpenState('announcementNav') }"
+      >
+        <a
+          href="{%url 'announcement' %}"
+          onclick="window.location.href=this.href; return false;"
+          class="oh-sidebar__menu-link"
+          data-id="announcementNav"
+          x-on:click.prevent="isOpen = !isOpen; saveOpenState('announcementNav', isOpen)"
+          x-bind:class="isOpen ? 'oh-sidebar__menu-link--active' : ''"
+        >
+          <div class="oh-sidebar__menu-icon">
+            <img
+              src="{% static 'images/ui/announcement.svg' %}"
+              alt="Dashboard"
+              width="24"
+              height="24"
+            />
+          </div>
+          <span>{% trans "Announcement" %}</span>
+        </a>
+      </li>
+      
+ {% endcomment %}
       {% if request.user|is_stagemanager or 'recruitment' in perms %}
       <li
         class="oh-sidebar__menu-item"
