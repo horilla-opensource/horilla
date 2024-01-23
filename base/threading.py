@@ -1,62 +1,96 @@
+from django.core.mail import EmailMessage
 from django.contrib import messages
 from django.core.mail import send_mail
 from threading import Thread
 from django.conf import settings
 from django.utils.translation import gettext as _
+from django.template.loader import render_to_string
 from django.template.loader import get_template
 from employee.models import EmployeeWorkInformation
+from horilla.settings import EMAIL_HOST_USER
 
 
-class MailSendThread(Thread):
-    def __init__(self, request, leave_request,type):
+class LeaveMailSendThread(Thread):
+    
+    def __init__(self, request, leave_request, type):
         Thread.__init__(self)
         self.request = request
         self.leave_request = leave_request
         self.type = type
+        self.host = request.get_host()
+        self.protocol = "https" if request.is_secure() else "http"
+        
+    def send_email(self, subject, content, recipients, leave_request_id="#"):
+        host = self.host
+        protocol = self.protocol
+        if leave_request_id != "#":
+            link = int(leave_request_id)
+        for recipient in recipients:
+            html_message = render_to_string(
+                "base/mail_templates/leave_request_template.html",
+                {
+                    "link": link,
+                    "instance": recipient,
+                    "host": host,
+                    "protocol": protocol,
+                    "subject": subject,
+                    "content": content,
+                },
+            )
 
-    def run(self):
-        try:
-            protocol = 'https' if self.request.is_secure() else 'http'
-            send_to = self.leave_request.employee_id.employee_work_info.reporting_manager_id.employee_user_id
-            subject = _("**New leave request created**")
-            url = f"{protocol}://{self.request.get_host()}/leave/request-view?id={self.leave_request.id}"
+            email = EmailMessage(subject, html_message, EMAIL_HOST_USER, [recipient.email])
+            email.content_subtype = "html"
+            try:
+                email.send()
+            except:
+                messages.error(self.request, f"Mail not sent to {recipient.get_full_name()}")
 
-            if self.type == "request":
-                body = _(f"A new leave request has been created for {self.leave_request.employee_id}. Click here to go to the leave request view: {url}")
-                
-            elif self.type == "approve":
-                subject = _(f"**Leave Request Approved**")
-                send_to = list(EmployeeWorkInformation.objects.filter(employee_id = self.leave_request.employee_id).values_list("email",flat=True))
-                url = f"{protocol}://{self.request.get_host()}/leave/user-request-view?id={self.leave_request.id}"
-                body = _(f"Your leave request has been Approved by {self.request.user.employee_get.get_full_name()}. Click here to go to the leave request view: {url}")
-                
-            elif self.type == "reject":
-                subject = _("**Leave Request Rejected**")
-                send_to = list(EmployeeWorkInformation.objects.filter(employee_id = self.leave_request.employee_id).values_list("email",flat=True))
-                url = f"{protocol}://{self.request.get_host()}/leave/user-request-view?id={self.leave_request.id}"
-                body = _(f"Your leave request has been Rejected by {self.request.user.employee_get.get_full_name()}. Click here to go to the leave request view: {url}")
+    def run(self) -> None:
+        super().run()
+        if self.type == "request":
+            owner = self.leave_request.employee_id
+            reporting_manager = self.leave_request.employee_id.get_reporting_manager()
 
-            elif self.type == "cancel":
-                subject = _("**New Cancellation Request**")
-                body = _(f"A leave request needs to be cancelled for {self.leave_request.employee_id}. Click here to go to the leave request view: {url}")
+            content_manager = f"This is to inform you that a leave request has been requested by {owner}. Take the necessary actions for the leave request. Should you have any additional information or updates, please feel free to communicate directly with the {owner}."
+            subject_manager = f"Leave request has been requested by {owner}"
+            
+            self.send_email(subject_manager, content_manager, [reporting_manager], self.leave_request.id)
 
+            content_owner = f"This is to inform you that the leave request you created has been successfully logged into our system. The manager will now take the necessary actions to address leave request. Should you have any additional information or updates, please feel free to communicate directly with the {reporting_manager}."
+            subject_owner = "Leave request created successfully"
 
-            template_path = 'base/mail_templates/leave_request_template.html'
-            html_template = get_template(template_path)
+            self.send_email(subject_owner, content_owner, [owner], self.leave_request.id)
 
-            context = {
-                'subject': subject,
-                'leave_request': self.leave_request,
-                'url': url,
-            }
-            email_body = html_template.render(context)
+        elif self.type == "approve":            
+            owner = self.leave_request.employee_id
+            reporting_manager = self.leave_request.employee_id.get_reporting_manager()
 
+            subject = "The Leave request has been successfully approved"
+            content = f"This is to inform you that the leave request has been approved. If you have any questions or require further information, feel free to reach out to the {reporting_manager}."
 
-            res = send_mail(
-                subject, body, settings.EMAIL_HOST_USER, [send_to], fail_silently=False, html_message=email_body
-            )                 
-            if res==1:
-                messages.success(self.request, _(f"Mail has been send to {self.leave_request.employee_id.employee_work_info.reporting_manager_id.employee_user_id}"))
-    
-        except Exception as e:
-            print(f"Could not send the mail to {send_to}. Error: {e}")
+            self.send_email(subject, content, [owner], self.leave_request.id)
+
+        elif self.type == "reject":
+            owner = self.leave_request.employee_id
+            reporting_manager = self.leave_request.employee_id.get_reporting_manager()
+
+            subject = "The Leave request has been rejected"
+            content = f"This is to inform you that the leave request has been rejected. If you have any questions or require further information, feel free to reach out to the {reporting_manager}."
+
+            self.send_email(subject, content, [owner], self.leave_request.id)
+            
+        elif self.type == "cancel":
+            owner = self.leave_request.employee_id
+            reporting_manager = self.leave_request.employee_id.get_reporting_manager()
+
+            content_manager = f"This is to inform you that a leave request has been requested to cancel by {owner}. Take the necessary actions for the leave request. Should you have any additional information or updates, please feel free to communicate directly with the {owner}."
+            subject_manager = f"Leave request cancellation"
+            
+            self.send_email(subject_manager, content_manager, [reporting_manager], self.leave_request.id)
+
+            content_owner = f"This is to inform you that a cancellation request created for your leave request has been successfully logged into our system. The manager will now take the necessary actions to address the leave request. Should you have any additional information or updates, please feel free to communicate directly with the {reporting_manager}."
+            subject_owner = "Leave request cancellation requested"
+
+            self.send_email(subject_owner, content_owner, [owner], self.leave_request.id)
+            
+        return

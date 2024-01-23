@@ -27,7 +27,7 @@ from base.methods import (
     filter_conditional_leave_request,
     get_pagination,
 )
-from base.threading import MailSendThread
+from base.threading import LeaveMailSendThread
 from base.models import *
 from base.methods import (
     filtersubordinates,
@@ -314,6 +314,8 @@ def leave_request_creation(request, type_id=None, emp_id=None):
                 leave_request.created_by = request.user.employee_get
                 available_leave.save()
             leave_request.save()
+            mail_thread = LeaveMailSendThread(request, leave_request, type="request")
+            mail_thread.start()
             messages.success(request, _("Leave request created successfully.."))
             with contextlib.suppress(Exception):
                 notify.send(
@@ -607,7 +609,7 @@ def leave_request_approve(request, id, emp_id=None):
                     redirect="/leave/user-request-view",
                 )
 
-            mail_thread = MailSendThread(request, leave_request, type="approve")
+            mail_thread = LeaveMailSendThread(request, leave_request, type="approve")
             mail_thread.start()
         else:
             messages.error(
@@ -690,7 +692,7 @@ def leave_request_cancel(request, id, emp_id=None):
                     redirect="/leave/user-request-view",
                 )
 
-            mail_thread = MailSendThread(request, leave_request, type="reject")
+            mail_thread = LeaveMailSendThread(request, leave_request, type="reject")
             mail_thread.start()
             if emp_id is not None:
                 employee_id = emp_id
@@ -733,7 +735,7 @@ def user_leave_cancel(request, id):
                         request, _("Leave request cancelled successfully..")
                     )
 
-                    mail_thread = MailSendThread(request, leave_request, type="cancel")
+                    mail_thread = LeaveMailSendThread(request, leave_request, type="cancel")
                     mail_thread.start()
                     return HttpResponse("<script>location.reload();</script>")
             return render(
@@ -2508,7 +2510,7 @@ def leave_request_create(request):
                             redirect="/leave/request-view",
                         )
 
-                    mail_thread = MailSendThread(request, leave_request, type="request")
+                    mail_thread = LeaveMailSendThread(request, leave_request, type="request")
                     mail_thread.start()
                     form = UserLeaveRequestCreationForm(initial={"employee_id": emp})
             return render(request, "leave/user_leave/request_form.html", {"form": form})
