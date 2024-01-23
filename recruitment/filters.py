@@ -35,6 +35,20 @@ class CandidateFilter(FilterSet):
         lookup_expr="gte",
         widget=forms.DateInput(attrs={"type": "date"}),
     )
+    probation_end = django_filters.DateFilter(
+        field_name="probation_end",
+        widget=forms.DateInput(attrs={"type": "date"}),
+    )
+    probation_end_till = django_filters.DateFilter(
+        field_name="probation_end",
+        lookup_expr="lte",
+        widget=forms.DateInput(attrs={"type": "date"}),
+    )
+    probation_end_from = django_filters.DateFilter(
+        field_name="probation_end",
+        lookup_expr="gte",
+        widget=forms.DateInput(attrs={"type": "date"}),
+    )
     schedule_date = django_filters.DateFilter(
         field_name="schedule_date",
         widget=forms.DateInput(attrs={"type": "date"}),
