@@ -1,0 +1,44 @@
+{% extends 'index.html' %}
+{% block content %}
+  <style>
+    .search-highlight {
+      background-color: rgba(255, 68, 0, 0.076);
+    }
+  </style>
+  {% include 'offboarding/pipeline/nav.html' %}
+  {% include 'offboarding/pipeline/offboardings.html' %}
+  <script>
+    $('#pipelineSearch').keyup(function (e) {
+      e.preventDefault()
+      var search = $(this).val().toLowerCase()
+      $('[data-employee]').each(function () {
+        var employeeFullName = $(this).attr('data-employee')
+        if (employeeFullName.toLowerCase().includes(search)) {
+          $(this).show()
+          $(this).addClass('search-highlight')
+        } else {
+          $(this).hide()
+          $(this).removeClass('search-highlight')
+        }
+      })
+      if (search == '') {
+        $('.search-highlight').removeClass('search-highlight')
+        $('[data-employee]').show()
+      }
+      if (search != '') {
+        $('#filterTagContainerSectionNav').html('')
+        $('#filterTagContainerSectionNav').append(
+          '<span class="oh-titlebar__tag filter-field pipelineSearch">Search :' +
+            search +
+            `<button class="oh-titlebar__tag-close" onclick="$('#pipelineSearch').val('');$('#pipelineSearch').keyup()">
+                      <ion-icon name="close-outline">
+                      </ion-icon>
+                    </button>
+                  </span>`
+        )
+      } else {
+        $('#filterTagContainerSectionNav').html('')
+      }
+    })
+  </script>
+{% endblock %}

@@ -1,0 +1,3 @@
+<form hx-post="{% url 'create-offboarding-stage' %}?offboarding_id={{ form.instance.offboarding_id.id }}&instance_id={{ form.instance.pk }}">
+    {{ form.as_p }}
+</form>

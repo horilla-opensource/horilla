@@ -1,0 +1,6 @@
+<form hx-post="{% url "add-offboarding-note" %}?employee_id={{employee.id}}" hx-encoding="multipart/form-data">
+    {{form.as_p}}
+</form>
+<script>
+    $(".col-md-6").removeClass("col-md-6");
+</script>

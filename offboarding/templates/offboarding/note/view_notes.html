@@ -1,0 +1,43 @@
+{% load i18n static %}
+<style>
+  #enlargeImageContainer {
+    position: absolute;
+    left: -300px;
+    top: 100px;
+    height: 200px;
+    width: 200px;
+  }
+</style>
+<a hx-get="{% url 'add-offboarding-note' %}?employee_id={{ employee.id }}" style="width: 125px;position: sticky;top: 0;" hx-target="#offboardingModalBody" data-toggle="oh-modal-toggle" data-target="#offboardingModal" class="mb-3 oh-btn oh-btn--secondary">
+  <ion-icon name="add-outline" role="img" class="md hydrated" aria-label="add outline"></ion-icon>
+  {% trans 'Add note' %}
+</a>
+<ol class="oh-activity-sidebar__qa-list" role="list">
+  {% for note in employee.offboardingnote_set.all %}
+    <li class="oh-activity-sidebar__qa-item">
+      <span class="oh-activity-sidebar__q">{{ note.title }}</span>
+      <span class="oh-activity-sidebar__a">{{ note.description }}</span>
+
+      <div class="d-flex mt-2 mb-2">
+        {% for attachment in note.attachments.all %}
+          <a href="{{ attachment.attachment.url }}" rel="noopener noreferrer" target="_blank"><span class="oh-file-icon oh-file-icon--pdf" onmouseover="enlargeImage('{{ attachment.attachment.url }}',$(this))" style="width:40px;height:40px"><img src="{% static 'images/ui/minus-icon.png' %}" style="display:block;width:50%;height:50%" hx-get="{% url 'delete-note-attachment' %}?ids={{ attachment.id }}&employee_id={{ employee.id }}" hx-target="#activitySidebar" onclick="event.stopPropagation();event.preventDefault()" /></span></a>
+        {% endfor %}
+
+        <form hx-post="{% url 'view-offboarding-note' %}?note_id={{ note.id }}&employee_id={{ employee.id }}" hx-target="#noteContainer" class="add-files-form" hx-encoding="multipart/form-data">
+          {% csrf_token %}
+          <label for="addFile_20" title="Add Files"><ion-icon name="add-outline" style="font-size: 24px" role="img" class="md hydrated" aria-label="add outline"></ion-icon></label>
+          <input type="file" name="files" class="d-none" multiple="true" id="addFile_20" onchange="submitForm(this)" />
+          <input type="submit" class="d-none add_more_submit" value="save" />
+        </form>
+      </div>
+      <span class="oh-activity-sidebar__a">
+        {% trans 'by' %}
+        <img src="{{ note.note_by.get_avatar }}" style="width: 1.5em; border-radius: 100%" />
+        {{ note.note_by.get_full_name }} @{{ note.stage_id }}
+      </span>
+      <div style="width: 50%;">
+        <div id="enlargeImageContainer" class="enlargeImageContainer"></div>
+      </div>
+    </li>
+  {% endfor %}
+</ol>

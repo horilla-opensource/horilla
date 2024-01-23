@@ -1,0 +1,7 @@
+<form hx-post="{% url "offboarding-add-task" %}?instance_id={{form.instance.pk}}" hx-target="#offboardingModalBody">
+{{form.as_p}}
+</form>
+
+<script>
+    $(".col-md-6").removeClass("col-md-6");
+</script>

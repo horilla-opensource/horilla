@@ -1,0 +1,59 @@
+{% load i18n offboarding_filter %}
+<script>
+  function offboardingUpdateStage($element) {
+    submitButton = $element.closest("form").find("input[type=submit]")
+    submitButton.click()
+  }
+</script>
+<div class="oh-card" id="offboardingBody{{offboarding.id}}">
+  {% include "offboarding/stage/offboarding_body.html" %}
+</div>
+<div class="oh-activity-sidebar" id="activitySidebar">
+  <div class="oh-activity-sidebar__header">
+    <a
+    style="cursor: pointer;"
+    onclick="$('.oh-activity-sidebar--show').removeClass('oh-activity-sidebar--show');">
+      <ion-icon
+      name="chevron-back-outline"
+      class="oh-activity-sidebar__header-icon me-2 oh-activity-sidebar__close"
+      data-target="#activitySidebar"
+      ></ion-icon>
+    </a>
+    <span class="oh-activity-sidebar__title"> {% trans "Notes" %} </span>
+  </div>
+  <div class="oh-activity-sidebar__body" id="noteContainer">
+  </div>
+</div>
+</div>
+<script>
+  // This lines is used to set default selected stage for exits lines
+
+  function enlargeImage(src,$element) {
+      var enlargeImageContainer = $element.parents().closest("li").find("#enlargeImageContainer")
+      enlargeImageContainer.empty()
+      style = 'width:100%; height:90%; box-shadow: 0 10px 10px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.2); background:white'
+      var enlargedImage = $('<iframe>').attr({ src: src, style: style })
+      var name = $('<span>').text(src.split('/').pop().replace(/_/g, ' '))
+      enlargeImageContainer.append(enlargedImage)
+      enlargeImageContainer.append(name)
+      setTimeout(function () {
+          enlargeImageContainer.show()
+
+          const iframe = document.querySelector('iframe').contentWindow
+          var iframe_document = iframe.document
+          iframe_image = iframe_document.getElementsByTagName('img')[0]
+          $(iframe_image).attr('style', 'width:100%; height:100%;')
+      }, 100)
+  }
+
+  function hideEnlargeImage() {
+      var enlargeImageContainer = $('.enlargeImageContainer')
+      enlargeImageContainer.empty()
+  }
+
+  $(document).on('click', function (event) {
+      if (!$(event.target).closest('#enlargeImageContainer').length) {
+          hideEnlargeImage()
+      }
+  })
+</script>

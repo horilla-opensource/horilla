@@ -1,0 +1,73 @@
+{% load i18n offboarding_filter %}
+<style>
+  .oh-select-custom {
+    border: 1px solid hsl(213,22%,84%);
+    padding: 0.3rem 0.8rem 0.3rem 0.3rem;
+    border-radius: 0rem;
+  }
+
+</style>
+<div id="messages" class="oh-alert-container"></div>
+<div class="oh-wrapper">
+  <div class="oh-tabs">
+    <ul class="oh-tabs__tablist">
+      {% for offboarding in offboardings %}
+        <li class="oh-tabs__tab" onclick="localStorage.setItem('activeTabOffboarding',$(this).attr('data-target'));" data-target="#Offboarding{{ offboarding.id }}">
+          {{ offboarding.title }}
+          <div class="d-flex">
+            <div class="oh-tabs__input-badge-container">
+              <span class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round ms-2 mr-2" id="recruitmentCandidateCount1" title="{{ offboarding.offboardingstage_set.all|length }} Stages" onclick="event.stopPropagation()">
+                {{ offboarding.offboardingstage_set.all|length }}
+                </span>
+            </div>
+            <div class="oh-dropdown" x-data="{open: false}">
+              <button class="oh-btn oh-stop-prop oh-btn--transparent oh-accordion-meta__btn" @click="open = !open" @click.outside="open = false" title="Actions">
+                <ion-icon name="ellipsis-vertical" role="img" class="md hydrated" aria-label="ellipsis vertical"></ion-icon>
+              </button>
+              <div class="oh-dropdown__menu oh-dropdown__menu--right" x-show="open" style="display: none;">
+                <ul class="oh-dropdown__items">
+                  {% if perms.offboarding.change_offboarding or request.user.employee_get|is_offboarding_manager %}
+                  <li class="oh-dropdown__item">
+                    <a hx-get="{% url "create-offboarding" %}?instance_id={{offboarding.id}}" hx-target="#offboardingModalBody" data-toggle="oh-modal-toggle" data-target="#offboardingModal" class="oh-dropdown__link">{% trans "Edit" %}</a>
+                  </li>
+                  {% endif %}
+                  {% if perms.offboarding.delete_offboarding %}
+                  <li class="oh-dropdown__item">
+                    <form action="{% url "delete-offboarding" %}" onsubmit="return confirm('Are you sure you want to delete this offboarding?');" method="post">
+                      {% csrf_token %}
+                      <button type="submit" class="oh-dropdown__link oh-dropdown__link--danger">
+                        {% trans "Delete" %}
+                      </button>
+                    </form>
+                  </li>
+                  {% endif %}
+                </ul>
+              </div>
+            </div>      
+          </div>
+        </li>
+      {% endfor %}
+    </ul>
+    <div class="oh-tabs__contents">
+      {% for offboarding in offboardings %}
+      <div class="oh-tabs__content" id="Offboarding{{ offboarding.id }}">
+          {% if perms.offboarding.add_offboardingstage or request.user.employee_get|any_manager %}
+            <a hx-get="{% url 'create-offboarding-stage' %}?offboarding_id={{offboarding.id}}" style="width: 100px;" hx-target="#offboardingModalBody" data-toggle="oh-modal-toggle" data-target="#offboardingModal" class="mb-3 oh-btn oh-btn--secondary">
+              <ion-icon name="add-outline"></ion-icon>
+              {% trans 'Stage' %}
+            </a>
+          {% endif %}
+          {% include "offboarding/stage/stages.html" %}
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+<script>
+  let activeTab = localStorage.getItem("activeTabOffboarding")
+  if (activeTab) {
+    $(`.oh-tabs__tab[data-target="${activeTab}"]`).addClass("oh-tabs__tab--active")
+    $(`${activeTab}`).addClass("oh-tabs__content--active")
+  }
+</script>
