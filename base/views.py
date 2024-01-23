@@ -170,8 +170,13 @@ def login_user(request):
         if user is None:
             messages.error(request, _("Invalid username or password."))
             return redirect("/login")
-        if user.employee_get.is_active== False:
-            messages.error(request, _("This user is archived. Please contact the manager for more information."))
+        if user.employee_get.is_active == False:
+            messages.error(
+                request,
+                _(
+                    "This user is archived. Please contact the manager for more information."
+                ),
+            )
             return redirect("/login")
         login(request, user)
         messages.success(request, _("Login Success"))
@@ -672,8 +677,8 @@ def object_duplicate(request, obj_id, **kwargs):
                 initial_value = f"{form.initial.get(field_name, '')} (copy)"
                 form.initial[field_name] = initial_value
                 form.fields[field_name].initial = initial_value
-        if hasattr(form.instance, 'id'):
-                form.instance.id = None
+        if hasattr(form.instance, "id"):
+            form.instance.id = None
 
     if request.method == "POST":
         form = form_class(request.POST)
@@ -874,7 +879,7 @@ def job_position_creation(request):
     """
     This method is used to create job position
     """
-
+    dynamic = request.GET.get("dynamic")
     form = JobPositionForm()
     if request.method == "POST":
         form = JobPositionForm(request.POST)
@@ -887,6 +892,7 @@ def job_position_creation(request):
         "base/job_position/job_position_form.html",
         {
             "form": form,
+            "dynamic": dynamic,
         },
     )
 
@@ -921,7 +927,7 @@ def job_role_create(request):
     """
     This method is used to create job role.
     """
-
+    dynamic = request.GET.get("dynamic")
     form = JobRoleForm()
     if request.method == "POST":
         form = JobRoleForm(request.POST)
@@ -937,6 +943,7 @@ def job_role_create(request):
         "base/job_role/job_role_form.html",
         {
             "form": form,
+            "dynamic": dynamic,
         },
     )
 
@@ -989,7 +996,7 @@ def work_type_create(request):
     """
     This method is used to create work type
     """
-
+    dynamic = request.GET.get("dynamic")
     form = WorkTypeForm()
     work_types = WorkType.objects.all()
     if request.method == "POST":
@@ -1004,7 +1011,7 @@ def work_type_create(request):
     return render(
         request,
         "base/work_type/work_type_form.html",
-        {"form": form, "work_types": work_types},
+        {"form": form, "work_types": work_types, "dynamic": dynamic},
     )
 
 
@@ -1461,7 +1468,7 @@ def employee_type_create(request):
     """
     This method is used to create employee type
     """
-
+    dynamic = request.GET.get("dynamic")
     form = EmployeeTypeForm()
     types = EmployeeType.objects.all()
     if request.method == "POST":
@@ -1474,7 +1481,7 @@ def employee_type_create(request):
     return render(
         request,
         "base/employee_type/employee_type_form.html",
-        {"form": form, "employee_types": types},
+        {"form": form, "employee_types": types, "dynamic": dynamic},
     )
 
 
@@ -1511,8 +1518,10 @@ def employee_shift_view(request):
     """
 
     shifts = EmployeeShift.objects.all()
-    grace_times =  GraceTime.objects.all().exclude(is_default=True)
-    return render(request, "base/shift/shift.html", {"shifts": shifts,'grace_times':grace_times})
+    grace_times = GraceTime.objects.all().exclude(is_default=True)
+    return render(
+        request, "base/shift/shift.html", {"shifts": shifts, "grace_times": grace_times}
+    )
 
 
 @login_required
@@ -1521,7 +1530,7 @@ def employee_shift_create(request):
     """
     This method is used to create employee shift
     """
-
+    dynamic = request.GET.get("dynamic")
     form = EmployeeShiftForm()
     shifts = EmployeeShift.objects.all()
     if request.method == "POST":
@@ -1534,7 +1543,9 @@ def employee_shift_create(request):
             )
             return HttpResponse("<script>window.location.reload();</script>")
     return render(
-        request, "base/shift/shift_form.html", {"form": form, "shifts": shifts}
+        request,
+        "base/shift/shift_form.html",
+        {"form": form, "shifts": shifts, "dynamic": dynamic},
     )
 
 
@@ -3348,11 +3359,11 @@ def validation_condition_view(request):
     This method view attendance validation conditions.
     """
     condition = AttendanceValidationCondition.objects.first()
-    default_grace_time = GraceTime.objects.filter(is_default = True).first()
+    default_grace_time = GraceTime.objects.filter(is_default=True).first()
     return render(
         request,
         "attendance/break_point/condition.html",
-        {"condition": condition,'default_grace_time':default_grace_time},
+        {"condition": condition, "default_grace_time": default_grace_time},
     )
 
 
@@ -3976,7 +3987,9 @@ def create_shiftrequest_comment(request, shift_id):
             messages.success(request, _("Comment added successfully!"))
 
             if request.user.employee_get.id == shift.employee_id.id:
-                rec = shift.employee_id.employee_work_info.reporting_manager_id.employee_user_id
+                rec = (
+                    shift.employee_id.employee_work_info.reporting_manager_id.employee_user_id
+                )
                 notify.send(
                     request.user.employee_get,
                     recipient=rec,
@@ -3988,7 +4001,10 @@ def create_shiftrequest_comment(request, shift_id):
                     redirect="/employee/shift-request-view",
                     icon="chatbox-ellipses",
                 )
-            elif request.user.employee_get.id == shift.employee_id.employee_work_info.reporting_manager_id.id:
+            elif (
+                request.user.employee_get.id
+                == shift.employee_id.employee_work_info.reporting_manager_id.id
+            ):
                 rec = shift.employee_id.employee_user_id
                 notify.send(
                     request.user.employee_get,
@@ -4002,7 +4018,10 @@ def create_shiftrequest_comment(request, shift_id):
                     icon="chatbox-ellipses",
                 )
             else:
-                rec = [shift.employee_id.employee_user_id, shift.employee_id.employee_work_info.reporting_manager_id.employee_user_id]
+                rec = [
+                    shift.employee_id.employee_user_id,
+                    shift.employee_id.employee_work_info.reporting_manager_id.employee_user_id,
+                ]
                 notify.send(
                     request.user.employee_get,
                     recipient=rec,
@@ -4075,7 +4094,9 @@ def create_worktyperequest_comment(request, worktype_id):
             messages.success(request, _("Comment added successfully!"))
 
             if request.user.employee_get.id == work_type.employee_id.id:
-                rec = work_type.employee_id.employee_work_info.reporting_manager_id.employee_user_id
+                rec = (
+                    work_type.employee_id.employee_work_info.reporting_manager_id.employee_user_id
+                )
                 notify.send(
                     request.user.employee_get,
                     recipient=rec,
@@ -4087,7 +4108,10 @@ def create_worktyperequest_comment(request, worktype_id):
                     redirect="/employee/work-type-request-view",
                     icon="chatbox-ellipses",
                 )
-            elif request.user.employee_get.id == work_type.employee_id.employee_work_info.reporting_manager_id.id:
+            elif (
+                request.user.employee_get.id
+                == work_type.employee_id.employee_work_info.reporting_manager_id.id
+            ):
                 rec = work_type.employee_id.employee_user_id
                 notify.send(
                     request.user.employee_get,
@@ -4101,7 +4125,10 @@ def create_worktyperequest_comment(request, worktype_id):
                     icon="chatbox-ellipses",
                 )
             else:
-                rec = [work_type.employee_id.employee_user_id, work_type.employee_id.employee_work_info.reporting_manager_id.employee_user_id]
+                rec = [
+                    work_type.employee_id.employee_user_id,
+                    work_type.employee_id.employee_work_info.reporting_manager_id.employee_user_id,
+                ]
                 notify.send(
                     request.user.employee_get,
                     recipient=rec,

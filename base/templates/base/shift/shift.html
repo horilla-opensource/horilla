@@ -1,46 +1,34 @@
-{% extends 'settings.html' %}
-{% load i18n %}
-{% block settings %}
+{% extends 'settings.html' %} {% load i18n %} {% block settings %}
 <div class="oh-inner-sidebar-content">
-    {% if perms.base.view_employeeshift %}
-    <div class="oh-inner-sidebar-content__header d-flex justify-content-between align-items-center">
-        <h2 class="oh-inner-sidebar-content__title">{% trans "Shift" %}</h2>
-        {% if perms.base.add_employeeshift %}
-            <button
-                class="oh-btn oh-btn--secondary oh-btn--shadow"
-                data-toggle="oh-modal-toggle"
-                data-target="#shiftModal"
-                hx-get="{% url 'employee-shift-create' %}"
-                hx-target="#shiftForm"
-            >
-                <ion-icon name="add-outline" class="me-1"></ion-icon>
-                {% trans "Create" %}
-            </button>
-        {% endif %}
-    </div>
-    {% include 'base/shift/shift_view.html' %}
+  {% if perms.base.view_employeeshift %}
+  <div
+    class="oh-inner-sidebar-content__header d-flex justify-content-between align-items-center"
+  >
+    <h2 class="oh-inner-sidebar-content__title">{% trans "Shift" %}</h2>
+    {% if perms.base.add_employeeshift %}
+    <button
+      class="oh-btn oh-btn--secondary oh-btn--shadow"
+      data-toggle="oh-modal-toggle"
+      data-target="#shiftModal"
+      hx-get="{% url 'employee-shift-create' %}"
+      hx-target="#shiftForm"
+    >
+      <ion-icon name="add-outline" class="me-1"></ion-icon>
+      {% trans "Create" %}
+    </button>
     {% endif %}
-
+  </div>
+  {% include 'base/shift/shift_view.html' %} {% endif %}
 </div>
 
 <div
-	class="oh-modal"
-	id="shiftModal"
-	role="dialog"
-	aria-labelledby="shiftModal"
-	aria-hidden="true"
+  class="oh-modal"
+  id="shiftModal"
+  role="dialog"
+  aria-labelledby="shiftModalLabel"
+  aria-hidden="true"
 >
-	<div class="oh-modal__dialog">
-		<div class="oh-modal__dialog-header">
-			<h2 class="oh-modal__dialog-title" id="editModal1ModalLabel">
-				{% trans "Employee Shift" %}
-			</h2>
-			<button class="oh-modal__close" aria-label="Close">
-				<ion-icon name="close-outline"></ion-icon>
-			</button>
-		</div>
-		<div class="oh-modal__dialog-body" id="shiftForm"></div>
-	</div>
+  <div class="oh-modal__dialog" id="shiftForm"></div>
 </div>
 
 {% endblock settings %}
