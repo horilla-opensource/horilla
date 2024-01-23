@@ -33,6 +33,7 @@ urlpatterns = [
     path('attendance/',include('attendance.urls')), 
     path('payroll/',include('payroll.urls.urls')), 
     path('helpdesk/',include('helpdesk.urls')), 
+    path('offboarding/',include('offboarding.urls')), 
     re_path('^inbox/notifications/', include(notifications.urls, namespace='notifications')),
     path('i18n/', include('django.conf.urls.i18n')),
 
