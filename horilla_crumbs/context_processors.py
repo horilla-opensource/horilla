@@ -99,6 +99,7 @@ remove_urls = [
     "objective-detailed-view",
     "feedback-detailed-view",
     "question-template-detailed-view",
+    "employee-view-new",
 ]
 
 user_breadcrumbs = {}
