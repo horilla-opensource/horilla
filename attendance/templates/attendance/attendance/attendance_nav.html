@@ -272,7 +272,7 @@
           </div>
         </div>
       </div>
-      <script>
+      {% comment %} <script>
         var dynamicValues ="{{request.GET|safe}}";
         // start converting querystring to objects format and converting to object
         var jsonContent = dynamicValues.match(/\{(.+?)\}/)[0];
@@ -288,7 +288,7 @@
               document.getElementById("filterForm").appendChild(input);
             }
         }
-    </script>
+    </script> {% endcomment %}
     </form>
       <div class="oh-dropdown ml-2" x-data="{open: false}">
         <button

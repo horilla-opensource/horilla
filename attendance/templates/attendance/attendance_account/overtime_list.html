@@ -2,33 +2,44 @@
 {% load static %}
 {% load basefilters %}
 {% include 'filter_tags.html' %}
-<div id='ot-table'>
+<div class="oh-table_sticky--wrapper" id="ot-table">
+	<div class="oh-sticky-dropdown--header">
+		<div class="oh-dropdown" x-data="{open: false}">
+		  <button class="oh-sticky-dropdown_btn " @click="open = !open"><ion-icon name="ellipsis-vertical-sharp"
+			  role="img" class="md hydrated" aria-label="ellipsis vertical sharp"></ion-icon></button>
+		  <div class="oh-dropdown__menu oh-sticky-table_dropdown" x-show="open" @click.outside="open = false">
+			<ul class="oh-dropdown__items" id="fieldContainerTable">
+			</ul>
+		  </div>
+		</div>
+	  </div>
+	<div style="display: none;" id='overtime-table' data-table-name="attendance_account_table">
 	<div class="oh-sticky-table">
 		<div class="oh-sticky-table__table oh-table--sortable">
-			<div class="oh-sticky-table__thead">
-			  	<div class="oh-sticky-table__tr">
+			<div class="oh-sticky-table__thead" >
+				<div class="oh-sticky-table__tr">
 					<div class="oh-sticky-table__th" style="width:10px;">
 						<div class="centered-div">
 							<input type="checkbox" class="oh-input oh-input__checkbox all-hour-account" title="Select All" 
-									id = "allHourAccount"/>
+							id = "allHourAccount"/>
 						</div>
 					</div>
-			  	  	<div class="oh-sticky-table__th" hx-get="{% url 'attendance-ot-search' %}?{{pd}}&sortby=employee_id__employee_first_name" hx-target="#ot-table">{% trans "Employee" %}</div>
-			  	  	<div class="oh-sticky-table__th" hx-get="{% url 'attendance-ot-search' %}?{{pd}}&sortby=month" hx-target="#ot-table">{% trans "Month" %}</div>
-			  	  	<div class="oh-sticky-table__th" hx-get="{% url 'attendance-ot-search' %}?{{pd}}&sortby=year" hx-target="#ot-table">{% trans "Year" %}</div>
-			  	  	<div class="oh-sticky-table__th" hx-get="{% url 'attendance-ot-search' %}?{{pd}}&sortby=hour_account_second" hx-target="#ot-table">{% trans "Worked Hours" %}</div>
-			  	  	<div class="oh-sticky-table__th">{% trans "Hours to Validate" %}</div>
-			  	  	<div class="oh-sticky-table__th">{% trans "Pending Hours" %}</div>
-			  	  	<div class="oh-sticky-table__th" hx-get="{% url 'attendance-ot-search' %}?{{pd}}&sortby=overtime_second" hx-target="#ot-table">{% trans "Overtime Hours" %}</div>
-			  	  	<div class="oh-sticky-table__th">{% trans "Not Approved OT Hours" %}</div>
-			  	  	<div class="oh-sticky-table__th"></div>
-			  	</div>
+					<div class="oh-sticky-table__th" data-cell-index="1" data-cell-title="{% trans "Employee" %}" hx-get="{% url 'attendance-ot-search' %}?{{pd}}&sortby=employee_id__employee_first_name" hx-target="#ot-table">{% trans "Employee" %}</div>
+					<div class="oh-sticky-table__th" data-cell-index="2" data-cell-title="{% trans "Month" %}" hx-get="{% url 'attendance-ot-search' %}?{{pd}}&sortby=month" hx-target="#ot-table">{% trans "Month" %}</div>
+					<div class="oh-sticky-table__th" data-cell-index="3" data-cell-title="{% trans "Year" %}" hx-get="{% url 'attendance-ot-search' %}?{{pd}}&sortby=year" hx-target="#ot-table">{% trans "Year" %}</div>
+					<div class="oh-sticky-table__th" data-cell-index="4" data-cell-title="{% trans "Worked Hours" %}" hx-get="{% url 'attendance-ot-search' %}?{{pd}}&sortby=hour_account_second" hx-target="#ot-table">{% trans "Worked Hours" %}</div>
+					<div class="oh-sticky-table__th" data-cell-index="5" data-cell-title="{% trans "Hours to Validate" %}">{% trans "Hours to Validate" %}</div>
+					<div class="oh-sticky-table__th" data-cell-index="6" data-cell-title="{% trans "Pending Hours" %}">{% trans "Pending Hours" %}</div>
+					<div class="oh-sticky-table__th" data-cell-index="7" data-cell-title="{% trans "Overtime" %}" hx-get="{% url 'attendance-ot-search' %}?{{pd}}&sortby=overtime_second" hx-target="#ot-table">{% trans "Overtime Hours" %}</div>
+					<div class="oh-sticky-table__th" data-cell-index="8" data-cell-title="{% trans "Not Approved OT Hours" %}">{% trans "Not Approved OT Hours" %}</div>
+					<div class="oh-sticky-table__th" ></div>
+				</div>
 			</div>
 			<div class="oh-sticky-table__tbody">
 				{% for ot in accounts %}
 					{% with dates=ot.month_days %}
 					  	<div class="oh-sticky-table__tr" {% if perms.attendance.view_attendance %} hx-get="{% url 'attendance-search' %}?employee_id={{ot.employee_id.id}}&attendance_validated=true&attendance_date__gte={{ dates.0|date:"Y-m-d" }}&attendance_date__lte={{ dates.1|date:"Y-m-d" }}" hx-target="#ot-table" onclick="hiding()"{% endif %}  draggable="true" >
-							<div class="oh-sticky-table__sd" onclick="event.stopPropagation();">
+							<div  class="oh-sticky-table__sd" onclick="event.stopPropagation();">
 								<div class="centered-div">
 								  <input
 									type="checkbox"
@@ -38,7 +49,7 @@
 								  />
 								</div>
 							  </div>
-					  		<div class="oh-sticky-table__td">
+					  		<div data-cell-index="1"  class="oh-sticky-table__td">
 					  			<div class="oh-profile oh-profile--md">
 					  				<div class="oh-profile__avatar mr-1">
 					  				    <img
@@ -50,17 +61,17 @@
 					  				<span class="oh-profile__name oh-text--dark">{{ot.employee_id}}</span>
 					  			</div>
 					  		</div>
-					  		<div class="oh-sticky-table__td">
+					  		<div data-cell-index="2"  class="oh-sticky-table__td">
 								{% with  month=ot.month|capfirst  %}{% trans month %}{% endwith %} 
 							</div>
-					  		<div class="oh-sticky-table__td">{{ot.year}}</div>
-					  		<div class="oh-sticky-table__td">{{ot.worked_hours}}</div>
-					  		<div class="oh-sticky-table__td"  onclick="event.stopPropagation();localStorage.setItem('activeTabAttendance', '#tab_1');window.location.href=`{% url "attendance-view" %}?employee_id={{ot.employee_id.id}}&month={{ot.get_month_index}}&year={{ot.year}}`">
+					  		<div data-cell-index="3"  class="oh-sticky-table__td">{{ot.year}}</div>
+					  		<div data-cell-index="4"  class="oh-sticky-table__td">{{ot.worked_hours}}</div>
+					  		<div  data-cell-index="5" class="oh-sticky-table__td"  onclick="event.stopPropagation();localStorage.setItem('activeTabAttendance', '#tab_1');window.location.href=`{% url "attendance-view" %}?employee_id={{ot.employee_id.id}}&month={{ot.get_month_index}}&year={{ot.year}}`">
 								{{ot.not_validated_hrs}}
 							</div>
-					  		<div class="oh-sticky-table__td">{{ot.pending_hours}}</div>
-					  		<div class="oh-sticky-table__td">{{ot.overtime}}</div>
-					  		<div class="oh-sticky-table__td" onclick="event.stopPropagation();localStorage.setItem('activeTabAttendance', '#tab_3');window.location.href=`{% url "attendance-view" %}?employee_id={{ot.employee_id.id}}&month={{ot.get_month_index}}&year={{ot.year}}`" >
+					  		<div data-cell-index="6"  class="oh-sticky-table__td">{{ot.pending_hours}}</div>
+					  		<div data-cell-index="7"  class="oh-sticky-table__td">{{ot.overtime}}</div>
+					  		<div data-cell-index="8"  class="oh-sticky-table__td" onclick="event.stopPropagation();localStorage.setItem('activeTabAttendance', '#tab_3');window.location.href=`{% url "attendance-view" %}?employee_id={{ot.employee_id.id}}&month={{ot.get_month_index}}&year={{ot.year}}`" >
 								{{ot.not_approved_ot_hrs}}
 							</div>
 					  		<div class="oh-sticky-table__td" onclick="event.stopPropagation()">
@@ -145,38 +156,43 @@
 	</div>
 </div>
 {% endif %}
+</div>
+
 
 <script>
-  function hiding() {
-    $("#selectAllInstances").hide();
-    $("#unselectAllInstances").hide();
-    $("#exportAccounts").hide();
-    $("#selectedShow").hide();
-  }
+	function hiding() {
+		$("#selectAllInstances").hide();
+		$("#unselectAllInstances").hide();
+		$("#exportAccounts").hide();
+		$("#selectedShow").hide();
+	}
 
-  $(document).ready(function () {
-    $("#selectAllInstances").show();
-    $("#unselectAllInstances").show();
+	$(document).ready(function () {
+		$("#selectAllInstances").show();
+		$("#unselectAllInstances").show();
 
-    $(".all-hour-account-row").change(function () {
-      addingHourAccountsIds();
-      $("#selectedShow").show();
-      $("#exportAccounts").show();
-    });
+		$(".all-hour-account-row").change(function () {
+			addingHourAccountsIds();
+			$("#selectedShow").show();
+			$("#exportAccounts").show();
+		});
 
-    $(".all-hour-account").change(function () {
-      addingHourAccountsIds();
+		$(".all-hour-account").change(function () {
+			addingHourAccountsIds();
 
-      $("#selectedShow").show();
-      $("#exportAccounts").show();
-    });
+			$("#selectedShow").show();
+			$("#exportAccounts").show();
+		});
 
-    $("#selectAllInstances").click(function () {
-      selectAllHourAcconts();
-    });
+		$("#selectAllInstances").click(function () {
+			selectAllHourAcconts();
+		});
 
-    $("#unselectAllInstances").click(function () {
-      unselectAllHourAcconts();
-    });
-  });
+		$("#unselectAllInstances").click(function () {
+			unselectAllHourAcconts();
+		});
+	});
+</script>
+<script>
+	toggleColumns("overtime-table","fieldContainerTable")
 </script>
