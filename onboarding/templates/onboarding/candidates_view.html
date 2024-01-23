@@ -61,25 +61,25 @@
     onclick="$('[name=joining_set]').val('true'); $('[name=joining_set]').first().change(); $('.filterButton').click()"
     style="cursor: pointer">
     <span class="oh-dot oh-dot--small me-1" style="background-color:yellow"></span>
-    Joining Set
+    {% trans "Joining Set" %}
   </span>
   <span class="m-3"
     onclick="$('[name=joining_set]').val('false'); $('[name=joining_set]').first().change(); $('.filterButton').click()"
     style="cursor: pointer">
     <span class="oh-dot oh-dot--small me-1" style="background-color:burlywood"></span>
-    Joining Not-Set
+    {% trans "Joining Not-Set" %}
   </span>
   <span class="m-3"
     onclick="$('[name=portal_sent]').val('false'); $('[name=portal_sent]').first().change(); $('.filterButton').click()"
     style="cursor: pointer">
     <span class="oh-dot oh-dot--small me-1" style="background-color:rgba(128, 128, 128, 0.482)"></span>
-    Portal Not-Sent
+    {% trans "Portal Not-Sent" %}
   </span>
   <span class="m-3"
     onclick="$('[name=portal_sent]').val('true'); $('[name=portal_sent]').first().change(); $('.filterButton').click()"
     style="cursor: pointer">
     <span class="oh-dot oh-dot--small me-1" style="background-color:yellowgreen"></span>
-    Portal Sent
+    {% trans "Portal Sent" %}
   </span>
 </div>
 <div id="messages" class="oh-alert-container">
@@ -101,8 +101,8 @@
 <div class="oh-modal" id="addAttachments" role="dialog" aria-labelledby="addAttachments" aria-hidden="true">
   <div class="oh-modal__dialog">
     <div class="oh-modal__dialog-header">
-      <span class="oh-modal__dialog-title" id="addEmployeeModalLabel">Attachments <span
-          style="color: #80808080;font-size: 14px;">(Optional)</span></span>
+      <span class="oh-modal__dialog-title" id="addEmployeeModalLabel">{% trans "Attachments" %} <span
+          style="color: #80808080;font-size: 14px;">({% trans "Optional" %})</span></span>
       <button class="oh-modal__close" aria-label="Close">
         <ion-icon name="close-outline"></ion-icon>
       </button>
@@ -122,7 +122,7 @@
                   </select>
                 </div>
                 <div class="oh-input__group">
-                  <label class="oh-input__label mt-0" for="keyTitle">Template as Attachments</label>
+                  <label class="oh-input__label mt-0" for="keyTitle">{% trans "Template as Attachments" %}</label>
                   <select name="template_attachment_ids" id="template_attachment_ids" multiple
                     class="oh-select oh-select-2 w-100">
                     {% for template in mail_templates %}
@@ -131,7 +131,7 @@
                   </select>
                 </div>
                 <div class="oh-input__group">
-                  <label class="oh-input__label" for="keyDesc">Other Attachments</label>
+                  <label class="oh-input__label" for="keyDesc">{% trans "Other Attachments" %}</label>
                   <input type="file" multiple name="other_attachments" id="other_attachments">
                 </div>
               </div>
@@ -148,7 +148,7 @@
           `)
         )"
           class="oh-btn oh-btn--secondary oh-btn--shadow" id="trigger-onboarding">
-          Send Portal Link
+          {% trans "Send Portal Link" %}
         </button>
       </div>
     </form>

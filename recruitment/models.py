@@ -77,7 +77,7 @@ class Recruitment(models.Model):
             "To close the recruitment, If closed then not visible on pipeline view."
         ),
     )
-    is_published = models.BooleanField(default = True)
+    is_published = models.BooleanField(default=True)
     is_active = models.BooleanField(
         default=True,
         help_text=_(
@@ -225,7 +225,11 @@ class Candidate(models.Model):
     """
 
     choices = [("male", _("Male")), ("female", _("Female")), ("other", _("Other"))]
-    source_choices = [("application", _("Application Form")), ("software", _("Inside software")), ("other", _("Other"))]
+    source_choices = [
+        ("application", _("Application Form")),
+        ("software", _("Inside software")),
+        ("other", _("Other")),
+    ]
     name = models.CharField(max_length=100, null=True, verbose_name=_("Name"))
     profile = models.ImageField(upload_to="recruitment/profile", null=True)
     portfolio = models.URLField(max_length=200, blank=True)
@@ -293,7 +297,11 @@ class Candidate(models.Model):
         max_length=15, choices=choices, null=True, verbose_name=_("Gender")
     )
     source = models.CharField(
-        max_length=20, choices=source_choices, null=True, blank=True, verbose_name=_("Source")
+        max_length=20,
+        choices=source_choices,
+        null=True,
+        blank=True,
+        verbose_name=_("Source"),
     )
     start_onboard = models.BooleanField(default=False, verbose_name=_("Start Onboard"))
     hired = models.BooleanField(default=False, verbose_name=_("Hired"))
@@ -319,6 +327,7 @@ class Candidate(models.Model):
         ],
         default="not_sent",
     )
+    probation_end = models.DateField(null=True, editable=False)
     objects = HorillaCompanyManager(related_company_field="recruitment_id__company_id")
 
     def __str__(self):
@@ -408,6 +417,7 @@ class StageFiles(models.Model):
 
     def __str__(self):
         return self.files.name.split("/")[-1]
+
 
 class StageNote(models.Model):
     """
@@ -518,27 +528,24 @@ class RecruitmentMailTemplate(models.Model):
     title = models.CharField(max_length=25, unique=True)
     body = models.TextField()
     company_id = models.ForeignKey(
-        Company, null=True, blank=True, on_delete=models.CASCADE,verbose_name="Company"
+        Company, null=True, blank=True, on_delete=models.CASCADE, verbose_name="Company"
     )
 
 
 class SkillZone(models.Model):
-    """"
+    """ "
     Model for talent pool
     """
+
     title = models.CharField(max_length=50, verbose_name="Skill Zone")
     description = models.TextField(verbose_name=_("Description"))
-    created_on = models.DateField(
-        default=django.utils.timezone.now
-    )
+    created_on = models.DateField(default=django.utils.timezone.now)
     is_active = models.BooleanField(default=True, verbose_name=_("Is Active"))
     objects = HorillaCompanyManager(related_company_field="recruitment_id__company_id")
 
-
-        
     def get_active(self):
-        return SkillZoneCandidate.objects.filter(is_active=True,skill_zone_id=self)
-    
+        return SkillZoneCandidate.objects.filter(is_active=True, skill_zone_id=self)
+
     def __str__(self) -> str:
         return self.title
 
@@ -547,19 +554,20 @@ class SkillZoneCandidate(models.Model):
     """
     Model for saving candidate data's for future recruitment
     """
+
     skill_zone_id = models.ForeignKey(
         SkillZone,
         verbose_name=_("Skill Zone"),
-        related_name="skillzonecandidate_set", 
+        related_name="skillzonecandidate_set",
         on_delete=models.PROTECT,
-        null=True
+        null=True,
     )
     candidate_id = models.ForeignKey(
         Candidate,
-        on_delete= models.PROTECT,
+        on_delete=models.PROTECT,
         null=True,
         related_name="skillzonecandidate_set",
-        verbose_name=_("Candidate")
+        verbose_name=_("Candidate"),
     )
     # job_position_id=models.ForeignKey(
     #     JobPosition,
@@ -569,10 +577,7 @@ class SkillZoneCandidate(models.Model):
     #     verbose_name=_("Job Position")
     # )
 
-    reason = models.CharField(
-        max_length=200,
-        verbose_name=_("Reason")
-    )
+    reason = models.CharField(max_length=200, verbose_name=_("Reason"))
     is_active = models.BooleanField(default=True, verbose_name=_("Is Active"))
     added_on = models.DateField(
         default=django.utils.timezone.now,
@@ -595,12 +600,18 @@ class SkillZoneCandidate(models.Model):
 
 
 class CandidateRating(models.Model):
-    employee_id = models.ForeignKey(Employee,on_delete=models.PROTECT, related_name="candidate_rating")
-    candidate_id = models.ForeignKey(Candidate,on_delete=models.PROTECT, related_name="candidate_rating")
-    rating = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(5)])
-    
+    employee_id = models.ForeignKey(
+        Employee, on_delete=models.PROTECT, related_name="candidate_rating"
+    )
+    candidate_id = models.ForeignKey(
+        Candidate, on_delete=models.PROTECT, related_name="candidate_rating"
+    )
+    rating = models.IntegerField(
+        validators=[MinValueValidator(0), MaxValueValidator(5)]
+    )
+
     class Meta:
-        unique_together = ['employee_id', 'candidate_id']
+        unique_together = ["employee_id", "candidate_id"]
 
     def __str__(self) -> str:
         return f"{self.employee_id} - {self.candidate_id} rating {self.rating}"

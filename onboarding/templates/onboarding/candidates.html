@@ -18,6 +18,7 @@
         <div class="oh-sticky-table__th">{% trans "Candidate" %}</div>
         <div class="oh-sticky-table__th">{% trans "Email" %}</div>
         <div class="oh-sticky-table__th">{% trans "Date of joining" %}</div>
+        <div class="oh-sticky-table__th">{% trans "Probation ends" %}</div>
         <div class="oh-sticky-table__th">{% trans "Job position" %}</div>
         <div class="oh-sticky-table__th">{% trans "Recruitment" %}</div>
         <div class="oh-sticky-table__th">{% trans "Actions" %}</div>
@@ -47,8 +48,12 @@
         </div>
         <a style="color: inherit; text-decoration: none" class="oh-sticky-table__td">{{candidate.email}}</a>
         <a style="color: inherit; text-decoration: none" class="oh-sticky-table__td">
-          <input type="date" class="oh-input joining-date" value={{candidate.joining_date|date:"Y-m-d"}}
+          <input type="date" class="oh-input joining-date" style="width: 150px;" value={{candidate.joining_date|date:"Y-m-d"}}
             name="joining_date" data-candidate-id="{{candidate.id}}">
+        </a>
+        <a style="color: inherit; text-decoration: none" class="oh-sticky-table__td">
+          <input type="date" class="oh-input" style="width: 150px;" value={{candidate.probation_end|date:"Y-m-d"}}
+            name="probation_end" onchange="probotionEnd($(this))" data-candidate-id="{{candidate.id}}">
         </a>
         <a style="color: inherit; text-decoration: none" class="oh-sticky-table__td">{{candidate.job_position_id}}</a>
         <a style="color: inherit; text-decoration: none" class="oh-sticky-table__td">{{candidate.recruitment_id}}</a>
@@ -119,6 +124,25 @@
 
 </div>
 <script>
+  function probotionEnd($element){
+    candId = $element.attr("data-candidate-id");
+    dateVal = $element.val()
+    $.ajax({
+      type: "get",
+      url: "{% url 'update-probotion-end' %}",
+      data: {
+        "candidate_id":candId,
+        "probation_end":dateVal,
+      },
+      success: function (response) {
+        $("#ohMessages").append(`
+            <div class="oh-alert-container">
+                  <div class="oh-alert oh-alert--animated oh-alert--${response.type}">
+                    ${response.message}
+            </div>`);
+      }
+    });
+  }
   $(document).ready(function () {
     $(".joining-date").change(function (e) {
       let candId = $(this).attr("data-candidate-id");

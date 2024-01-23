@@ -222,5 +222,7 @@ class OnboardingStageThread(threading.Thread):
                 c_task.stage_id = c_task.onboarding_task_id.stage_id 
                 c_task.save()
 
-
-OnboardingStageThread().start()
+try:
+    OnboardingStageThread().start()
+except:
+    pass

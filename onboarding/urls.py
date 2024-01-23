@@ -125,4 +125,5 @@ urlpatterns = [
         views.onboarding_send_mail,
         name="onboarding-send-mail",
     ),
+    path("update-probotion-end",views.update_probation_end,name="update-probotion-end")
 ]

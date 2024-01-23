@@ -208,26 +208,33 @@ def task_creation(request):
     GET : return onboarding task creation form template
     POST : return onboarding view
     """
-    stage_id = request.GET.get('stage_id')
+    stage_id = request.GET.get("stage_id")
     stage = OnboardingStage.objects.get(id=stage_id)
-    form = OnboardingViewTaskForm(initial={'stage_id':stage})
+    form = OnboardingViewTaskForm(initial={"stage_id": stage})
 
     if request.method == "POST":
-        form_data = OnboardingViewTaskForm(request.POST,initial={'stage_id':stage})
+        form_data = OnboardingViewTaskForm(request.POST, initial={"stage_id": stage})
         if form_data.is_valid():
-            candidates= form_data.cleaned_data['candidates']
-            stage_id = form_data.cleaned_data['stage_id']
-            managers = form_data.cleaned_data['managers']
-            title = form_data.cleaned_data['task_title']
-            onboarding_task =OnboardingTask(task_title=title,stage_id=stage_id)
+            candidates = form_data.cleaned_data["candidates"]
+            stage_id = form_data.cleaned_data["stage_id"]
+            managers = form_data.cleaned_data["managers"]
+            title = form_data.cleaned_data["task_title"]
+            onboarding_task = OnboardingTask(task_title=title, stage_id=stage_id)
             onboarding_task.save()
             onboarding_task.employee_id.set(managers)
             onboarding_task.candidates.set(candidates)
             if candidates:
                 for cand in candidates:
-                    task = CandidateTask(candidate_id=cand,stage_id=stage_id,onboarding_task_id=onboarding_task)
+                    task = CandidateTask(
+                        candidate_id=cand,
+                        stage_id=stage_id,
+                        onboarding_task_id=onboarding_task,
+                    )
                     task.save()
-            users = [manager.employee_user_id for manager in onboarding_task.employee_id.all()]
+            users = [
+                manager.employee_user_id
+                for manager in onboarding_task.employee_id.all()
+            ]
             notify.send(
                 request.user.employee_get,
                 recipient=users,
@@ -240,20 +247,27 @@ def task_creation(request):
                 redirect="/onboarding/onboarding-view",
             )
             response = render(
-                request, "onboarding/task_form.html", {"form": form,"stage_id":stage_id}
+                request,
+                "onboarding/task_form.html",
+                {"form": form, "stage_id": stage_id},
             )
             messages.success(request, _("New task created successfully..."))
-            
+
             return HttpResponse(
                 response.content.decode("utf-8") + "<script>location.reload();</script>"
             )
-    return render(request, "onboarding/task_form.html", {"form": form,"stage_id":stage_id})
+    return render(
+        request, "onboarding/task_form.html", {"form": form, "stage_id": stage_id}
+    )
 
 
 @login_required
 @hx_request_required
 @stage_manager_can_enter("onboarding.change_onboardingtask")
-def task_update(request, task_id,):
+def task_update(
+    request,
+    task_id,
+):
     """
     function used to update onboarding task.
 
@@ -291,7 +305,10 @@ def task_update(request, task_id,):
             response = render(
                 request,
                 "onboarding/task_update.html",
-                {"form": form, "task_id": task_id,},
+                {
+                    "form": form,
+                    "task_id": task_id,
+                },
             )
             return HttpResponse(
                 response.content.decode("utf-8") + "<script>location.reload();</script>"
@@ -300,7 +317,10 @@ def task_update(request, task_id,):
     return render(
         request,
         "onboarding/task_update.html",
-        {"form": form, "task_id": task_id,},
+        {
+            "form": form,
+            "task_id": task_id,
+        },
     )
 
 
@@ -456,7 +476,7 @@ def candidates_single_view(request, id, **kwargs):
         "recruitment": recruitment,
         "choices": choices,
         "candidate": candidate,
-        'single_view':True
+        "single_view": True,
     }
     return render(
         request,
@@ -698,9 +718,7 @@ def onboarding_view(request):
     onboarding_stages = OnboardingStage.objects.all()
     choices = CandidateTask.choice
     previous_data = request.GET.urlencode()
-    filter_obj = RecruitmentFilter(
-        request.GET, queryset=recruitments
-    )
+    filter_obj = RecruitmentFilter(request.GET, queryset=recruitments)
     paginator = Paginator(filter_obj.qs, 4)
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
@@ -746,10 +764,10 @@ def kanban_view(request):
     #             if not CandidateTask.objects.filter(
     #                 candidate_id=candidate, onboarding_task_id=task
     #             ).exists():
-                    # pass
-                    # CandidateTask(
-                    #     candidate_id=candidate, onboarding_task_id=task
-                    # ).save()
+    # pass
+    # CandidateTask(
+    #     candidate_id=candidate, onboarding_task_id=task
+    # ).save()
 
     recruitments = Recruitment.objects.filter(closed=False)
     status = "closed"
@@ -763,14 +781,11 @@ def kanban_view(request):
     stage_form = OnboardingViewStageForm()
 
     previous_data = request.GET.urlencode()
-    
-    filter_obj = RecruitmentFilter(
-        request.GET, queryset=recruitments
-    )
+
+    filter_obj = RecruitmentFilter(request.GET, queryset=recruitments)
     paginator = Paginator(filter_obj.qs, 4)
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
-    
 
     return render(
         request,
@@ -783,7 +798,7 @@ def kanban_view(request):
             "stage_form": stage_form,
             "status": status,
             "choices": choices,
-            "pd":previous_data,
+            "pd": previous_data,
         },
     )
 
@@ -1050,8 +1065,10 @@ def candidate_task_update(request, taskId):
     else:
         canId = request.POST.get("candId")
         onboarding_task = OnboardingTask.objects.get(id=taskId)
-        candidate= Candidate.objects.get(id=canId)
-        candidate_task = CandidateTask.objects.filter(candidate_id=candidate,onboarding_task_id=onboarding_task).first()
+        candidate = Candidate.objects.get(id=canId)
+        candidate_task = CandidateTask.objects.filter(
+            candidate_id=candidate, onboarding_task_id=onboarding_task
+        ).first()
     candidate_task.status = status
     candidate_task.save()
     users = [
@@ -1074,8 +1091,9 @@ def candidate_task_update(request, taskId):
         {"message": _("Candidate onboarding stage updated"), "type": "success"}
     )
 
+
 @login_required
-def get_status(request,task_id):
+def get_status(request, task_id):
     """
     htmx function that return the status of candidate task
 
@@ -1086,29 +1104,34 @@ def get_status(request,task_id):
     Returns:
     POST : return candidate task template
     """
-    cand_id = request.GET.get('cand_id')
-    cand_stage = request.GET.get('cand_stage')
-    cand_stage_obj=CandidateStage.objects.get(id=cand_stage)
+    cand_id = request.GET.get("cand_id")
+    cand_stage = request.GET.get("cand_stage")
+    cand_stage_obj = CandidateStage.objects.get(id=cand_stage)
     onboarding_task = OnboardingTask.objects.get(id=task_id)
-    candidate= Candidate.objects.get(id=cand_id)
-    candidate_task = CandidateTask.objects.filter(candidate_id=candidate,onboarding_task_id=onboarding_task).first()
+    candidate = Candidate.objects.get(id=cand_id)
+    candidate_task = CandidateTask.objects.filter(
+        candidate_id=candidate, onboarding_task_id=onboarding_task
+    ).first()
     status = candidate_task.status
 
-    return render(request,'onboarding/candidate_task.html',
-                  {   
-                      'status':status,
-                      'task':onboarding_task,
-                      'candidate':cand_stage_obj,
-                      'second_load':True,
-                      'choices':CandidateTask.choice
-                  }
-                  )
+    return render(
+        request,
+        "onboarding/candidate_task.html",
+        {
+            "status": status,
+            "task": onboarding_task,
+            "candidate": cand_stage_obj,
+            "second_load": True,
+            "choices": CandidateTask.choice,
+        },
+    )
+
 
 @login_required
 @all_manager_can_enter("onboarding.change_candidatetask")
-def assign_task(request,task_id):
+def assign_task(request, task_id):
     """
-    htmx function that used to assign a onboarding task to candidate 
+    htmx function that used to assign a onboarding task to candidate
 
     Parameters:
     request (HttpRequest): The HTTP request object.
@@ -1117,29 +1140,31 @@ def assign_task(request,task_id):
     Returns:
     POST : return candidate task template
     """
-    stage_id = request.GET.get('stage_id')
-    cand_id = request.GET.get('cand_id')
-    cand_stage = request.GET.get('cand_stage')
-    cand_stage_obj=CandidateStage.objects.get(id=cand_stage)
-    onboarding_task =OnboardingTask.objects.get(id=task_id)
-    candidate=Candidate.objects.get(id=cand_id)
+    stage_id = request.GET.get("stage_id")
+    cand_id = request.GET.get("cand_id")
+    cand_stage = request.GET.get("cand_stage")
+    cand_stage_obj = CandidateStage.objects.get(id=cand_stage)
+    onboarding_task = OnboardingTask.objects.get(id=task_id)
+    candidate = Candidate.objects.get(id=cand_id)
     onboarding_stage = OnboardingStage.objects.get(id=stage_id)
-    cand_task,created= CandidateTask.objects.get_or_create(
+    cand_task, created = CandidateTask.objects.get_or_create(
         candidate_id=candidate,
-        stage_id = onboarding_stage,
-        onboarding_task_id = onboarding_task
+        stage_id=onboarding_stage,
+        onboarding_task_id=onboarding_task,
     )
     cand_task.save()
     onboarding_task.candidates.add(candidate)
-    return render(request,'onboarding/candidate_task.html',
-                  {   
-                      'status':cand_task.status,
-                      'task':onboarding_task,
-                      'candidate':cand_stage_obj,
-                      'second_load':True,
-                      'choices':CandidateTask.choice
-                  }
-                  )
+    return render(
+        request,
+        "onboarding/candidate_task.html",
+        {
+            "status": cand_task.status,
+            "task": onboarding_task,
+            "candidate": cand_stage_obj,
+            "second_load": True,
+            "choices": CandidateTask.choice,
+        },
+    )
 
 
 @login_required
@@ -1487,3 +1512,15 @@ def onboarding_send_mail(request, candidate_id):
         )
 
     return response
+
+
+@login_required
+@stage_manager_can_enter("recruitment.change_stage")
+def update_probation_end(request):
+    """
+    This method is used to update the probotion end date
+    """
+    candidate_id = request.GET.getlist("candidate_id")
+    probation_end = request.GET["probation_end"]
+    Candidate.objects.filter(id__in=candidate_id).update(probation_end=probation_end)
+    return JsonResponse({"message":"Probation end date updated","type":"success"})
