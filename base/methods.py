@@ -17,21 +17,21 @@ from horilla.decorators import login_required
 from leave.models import LeaveRequest, LeaveRequestConditionApproval
 
 
-def filtersubordinates(request, queryset, perm=None,field=None):
+def filtersubordinates(request, queryset, perm=None, field=None):
     """
     This method is used to filter out subordinates queryset element.
     """
     user = request.user
     if user.has_perm(perm):
         return queryset
-    
+
     manager = Employee.objects.filter(employee_user_id=user).first()
 
     if field:
         filter_expression = f"{field}__employee_work_info__reporting_manager_id"
         queryset = queryset.filter(**{filter_expression: manager})
         return queryset
-    
+
     queryset = queryset.filter(
         employee_id__employee_work_info__reporting_manager_id=manager
     )
@@ -289,6 +289,7 @@ def get_key_instances(model, data_dict):
 
     if "csrfmiddlewaretoken" in data_dict:
         del data_dict["csrfmiddlewaretoken"]
+
     if "vpage" in data_dict:
         del data_dict["vpage"]
 
@@ -303,7 +304,7 @@ def get_key_instances(model, data_dict):
         key
         for key, value in data_dict.items()
         if value == ["unknown"]
-        or key in ["sortby", "orderby", "view", "page", "group_by"]
+        or key in ["sortby", "orderby", "view", "page", "group_by", "target"]
     ]
     for key in keys_to_remove:
         del data_dict[key]
@@ -585,12 +586,13 @@ def filter_conditional_leave_request(request):
             leave_request_ids.append(instance.leave_request_id.id)
     return LeaveRequest.objects.filter(pk__in=leave_request_ids)
 
+
 def get_pagination():
     from base.thread_local_middleware import _thread_locals
 
-    request = getattr(_thread_locals,"request",None)
+    request = getattr(_thread_locals, "request", None)
     user = request.user
-    page  = DynamicPagination.objects.filter(user_id=user).first()
+    page = DynamicPagination.objects.filter(user_id=user).first()
     count = 50
     if page:
         count = page.pagination

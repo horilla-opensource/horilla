@@ -21,7 +21,12 @@ from attendance.forms import PenaltyAccountForm
 from attendance.models import PenaltyAccount
 from horilla.decorators import login_required, hx_request_required
 from horilla.decorators import permission_required, manager_can_enter
-from base.methods import closest_numbers, export_data, filter_conditional_leave_request, get_pagination
+from base.methods import (
+    closest_numbers,
+    export_data,
+    filter_conditional_leave_request,
+    get_pagination,
+)
 from base.threading import MailSendThread
 from base.models import *
 from base.methods import (
@@ -3231,7 +3236,12 @@ def cut_available_leave(request, instance_id):
     return render(
         request,
         "leave/leave_request/penalty/form.html",
-        {"available": available, "form": form, "instance": instance,"pd":previous_data},
+        {
+            "available": available,
+            "form": form,
+            "instance": instance,
+            "pd": previous_data,
+        },
     )
 
 
@@ -3257,8 +3267,9 @@ def create_leaverequest_comment(request, leave_id):
     form = LeaverequestcommentForm(
         initial={"employee_id": emp.id, "request_id": leave_id}
     )
+    target = request.GET.get("target")
+    url = "request-filter" if target == "leaveRequest" else "user-request-filter"
     previous_data = request.GET.urlencode()
-
     if request.method == "POST":
         form = LeaverequestcommentForm(request.POST)
         if form.is_valid():
@@ -3321,7 +3332,13 @@ def create_leaverequest_comment(request, leave_id):
     return render(
         request,
         "leave/leave_request/leave_request_comment_form.html",
-        {"form": form, "request_id": leave_id, "pd": previous_data},
+        {
+            "form": form,
+            "request_id": leave_id,
+            "pd": previous_data,
+            "target": target,
+            "url": url,
+        },
     )
 
 
@@ -3429,7 +3446,7 @@ def create_allocationrequest_comment(request, leave_id):
     return render(
         request,
         "leave/leave_allocation_request/allocation_request_comment_form.html",
-        {"form": form, "request_id": leave_id,"pd":previous_data},
+        {"form": form, "request_id": leave_id, "pd": previous_data},
     )
 
 
@@ -3461,4 +3478,4 @@ def delete_allocationrequest_comment(request, comment_id):
     request_id = command.request_id.id
     command.delete()
     messages.success(request, _("Comment deleted successfully!"))
-    return redirect("allocation-request-view-comment",leave_id=request_id)
+    return redirect("allocation-request-view-comment", leave_id=request_id)
