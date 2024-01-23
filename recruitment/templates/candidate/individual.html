@@ -1,5 +1,38 @@
 {% extends 'index.html' %} {% load i18n %} {% load yes_no %} {% load static %} {% block content %} {% load recruitmentfilters %}
 
+<script>
+  function submitForm(elem) {
+    $(elem).siblings('.add_more_submit').click()
+  }
+  function enlargeImage(src,$element) {
+    var enlargeImageContainer = $element.parents().closest("li").find("#enlargeImageContainer")
+    enlargeImageContainer.empty()
+    style = 'width:100%; height:90%; box-shadow: 0 10px 10px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.2); background:white'
+    var enlargedImage = $('<iframe>').attr({ src: src, style: style })
+    var name = $('<span>').text(src.split('/').pop().replace(/_/g, ' '))
+    enlargeImageContainer.append(enlargedImage)
+    enlargeImageContainer.append(name)
+    setTimeout(function () {
+        enlargeImageContainer.show()
+
+        const iframe = document.querySelector('iframe').contentWindow
+        var iframe_document = iframe.document
+        iframe_image = iframe_document.getElementsByTagName('img')[0]
+        $(iframe_image).attr('style', 'width:100%; height:100%;')
+    }, 100)
+}
+
+function hideEnlargeImage() {
+    var enlargeImageContainer = $('.enlargeImageContainer')
+    enlargeImageContainer.empty()
+}
+
+$(document).on('click', function (event) {
+    if (!$(event.target).closest('#enlargeImageContainer').length) {
+        hideEnlargeImage()
+    }
+})
+</script>
 <style>
   .enlarge-image-container {
     display: none;
@@ -27,7 +60,7 @@
   }
 </style>
 
-<div id="enlargeImageContainer" class="enlarge-image-container"></div>
+<div id="showImageContainer" class="enlarge-image-container"></div>
 
 <div class="oh-wrapper" id="section">
   <div class="oh-card mt-4 mb-5">
@@ -59,8 +92,8 @@
                 class="oh-profile-section__avatar preview"
                 alt="Username"
                 style="border-radius:10%"
-                onmouseover="enlargeImage(this)"
-                onmouseout="hideEnlargeImage()"
+                onmouseover="showImage(this)"
+                onmouseout="hideshowImage()"
               />
             </div>
             <span
@@ -383,15 +416,47 @@
                   hx-target="#modalContent"
                   >{{note.description}}</span
                 >
+                <div class="d-flex mt-2 mb-2">
+
+                  {% for attachment in note.stage_files.all %}
+                    <a href="{{ attachment.files.url }}" 
+                      rel="noopener noreferrer" 
+                      target="_blank">
+                        <span class="oh-file-icon oh-file-icon--pdf" 
+                            onmouseover="enlargeImage('{{ attachment.files.url }}',$(this))" 
+                            style="width:40px;height:40px"
+                            >
+                              <img src="{% static 'images/ui/minus-icon.png' %}" 
+                                style="display:block;width:50%;height:50%" 
+                                hx-get="{% url 'delete-stage-note-file' attachment.id %}" 
+                                hx-target="#note" 
+                                onclick="event.stopPropagation();event.preventDefault()" 
+                              />
+                        </span>
+                    </a>
+                  {% endfor %}
+
+                  <form hx-post="{% url 'add-more-files' note.id %}" hx-swap="none" onsubmit="setTimeout(() => {
+                    window.location.reload()
+                  }, 100);" hx-target="#note" class="add-files-form" hx-encoding="multipart/form-data">
+                    {% csrf_token %}
+                    <label for="addFile_20" title="Add Files"><ion-icon name="add-outline" style="font-size: 24px" role="img" class="md hydrated" aria-label="add outline"></ion-icon></label>
+                    <input type="file" name="files" class="d-none" multiple="true" id="addFile_20" onchange="submitForm(this)" />
+                    <input type="submit" class="d-none add_more_submit" value="save" />
+                  </form>
+                </div>
                 <span class="oh-activity-sidebar__a">
                   {% trans "by" %}
                   <img
-                    src="https://ui-avatars.com/api/?name={{note.updated_by.get_full_name}}&amp;background=random"
+                    src="{{note.updated_by.get_avatar}}"
                     style="width: 1.5em; border-radius: 100%"
                     alt="User"
                   />
                   {{note.updated_by}}
                 </span>
+                <div style="width: 50%;">
+                  <div id="enlargeImageContainer" class="enlargeImageContainer"></div>
+                </div>
               </li>
               {% endfor %}
             </ol>
@@ -609,23 +674,23 @@
 
 // Profile picture enlarging
 
-  function enlargeImage(image) {
-    var enlargeImageContainer = document.getElementById('enlargeImageContainer');
-    enlargeImageContainer.innerHTML = ''; 
+  function showImage(image) {
+    var showImageContainer = document.getElementById('showImageContainer');
+    showImageContainer.innerHTML = ''; 
   
     var enlargedImage = document.createElement('img');
     enlargedImage.src = image.src;
-    enlargeImageContainer.appendChild(enlargedImage);
+    showImageContainer.appendChild(enlargedImage);
   
     setTimeout(function() {
-      enlargeImageContainer.style.display = 'block';
+      showImageContainer.style.display = 'block';
     }, 250);
   }
   
-  function hideEnlargeImage() {
-    var enlargeImageContainer = document.getElementById('enlargeImageContainer');
-    enlargeImageContainer.innerHTML = ''; // Clear the content
-    enlargeImageContainer.style.display = 'none';
+  function hideshowImage() {
+    var showImageContainer = document.getElementById('showImageContainer');
+    showImageContainer.innerHTML = ''; // Clear the content
+    showImageContainer.style.display = 'none';
   
   }
 

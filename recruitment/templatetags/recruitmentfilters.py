@@ -124,6 +124,6 @@ def avg_rating(candidate_ratings,cand):
 
 @register.filter(name='percentage')
 def percentage(value, total):
-    if total == 0:
+    if total == 0 or not total:
         return 0
     return min(round((value / total) * 100, 2), 100)

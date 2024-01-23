@@ -520,7 +520,7 @@ class MultipleFileField(forms.FileField):
             result = [single_file_clean(d, initial) for d in data]
         else:
             result = [single_file_clean(data, initial),]
-        return result[0] if result else None
+        return result[0] if result else []
 
 
 class StageNoteForm(ModelForm):

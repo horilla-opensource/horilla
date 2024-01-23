@@ -97,7 +97,7 @@ class Recruitment(models.Model):
         related_name="recruitment",
         verbose_name=_("Job Position"),
     )
-    vacancy = models.IntegerField(blank=True, null=True)
+    vacancy = models.IntegerField(default=0, null=True)
     recruitment_managers = models.ManyToManyField(Employee)
     company_id = models.ForeignKey(
         Company,
@@ -433,6 +433,7 @@ class StageNote(models.Model):
     objects = HorillaCompanyManager(
         related_company_field="candidate_id__recruitment_id__company_id"
     )
+    created_at = models.DateTimeField(auto_now_add=True,null=True)
 
     def __str__(self) -> str:
         return f"{self.description}"
