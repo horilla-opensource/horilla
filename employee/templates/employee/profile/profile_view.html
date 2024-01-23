@@ -1,5 +1,9 @@
 {% extends 'index.html' %} {% load i18n %} {% load static %} {% block content %}
-
+<style>
+	.oh-general__tab{
+		margin-bottom: 15px;
+	}
+</style>
 <style>
   .enlarge-image-container {
     display: none;
@@ -30,6 +34,43 @@
 	}
   .oh-tabs__tablist .oh-tabs__tab--active:nth-last-child(2) {
       border-right: 1px solid hsl(213deg,22%,84%);
+  }
+  .oh-badge--small {
+	  margin-top: 6px;
+	  width: 34px;
+	  height: 34px;
+	  font-size: 1.75rem;
+  }
+  .custom-dialog {
+	  max-width:1000px;
+	  max-height: 800px;
+  }
+  .file-validation {
+	  color: #4f5bd9;
+	  background-color: #d8e7f0;
+	  border-color: #d6e9c6;
+	  padding: 15px;
+	  border: 1px solid transparent;
+	  border-radius: 4px;
+  
+  }
+  .oh-not-found {
+	  display: flex;
+	  justify-content: center;
+	  align-items: center;
+	  flex-direction: column;
+	  height: 50vh;
+	  opacity: 0.5;
+  }
+  .editable-input:read-only {
+	  color: hsl(0,0%,11%);
+	  background-color: transparent;
+	  border: none;
+	  height: 100%;
+	  border: 1px solid transparent;
+  }
+  .editable-input:read-only:hover {
+	  border: 1px solid hsl(213,22%,84%);
   }
 </style>
 
@@ -112,207 +153,244 @@
 				</ul>
 			</div>
 		</div>
-		<div class="row">
-			<div class="col-sm-12 col-md-12 col lg-12">
-				<ul
-				class="oh-general__tabs oh-general__tabs--border oh-general__tabs--profile oh-general__tabs--no-grow oh-profile-section__tab mt-5"
-				>
-					<li class="oh-general__tab">
-						<a
-							hx-get={% url 'contract-tab' employee.id %}
-							hx-target="#personal_target"
-							class="oh-general__tab-link oh-general__tab-link--active"
-							data-action="general-tab"
-							role="button"
-							data-target="#personal_target"
-							>{% trans "About" %}</a
-						>
-					</li>
-					<li class="oh-general__tab">
-						<a
-						hx-get="{% url 'shift-tab' employee.id %}?profile=true"
-						hx-target="#shift_target"
-						data-action="general-tab"
-						data-target="#shift_target"
-						class="oh-general__tab-link pointer"
-						role="button"
-						>{% trans "Work type & Shift" %}</a
-						>
-					</li>
-					<li class="oh-general__tab">
-						<a
-						hx-get={% url 'profile-attendance-tab' %}
-						hx-target="#attendance_target"
-						data-action="general-tab"
-						data-target="#attendance_target"
-						id="asset"
-						class="oh-general__tab-link"
-						role="button"
-						>{% trans "Attendance" %}</a
-						>
-					</li>
-					<li class="oh-general__tab">
-						<a
-						href="#"
-						class="oh-general__tab-link"
-						data-action="general-tab"
-						data-target="#leave"
-						>{% trans "Leave" %}</a
-						>
-					</li>
-					<li class="oh-general__tab">
-						<a
-						href="#"
-						class="oh-general__tab-link"
-						data-action="general-tab"
-						data-target="#payroll"
-						>{% trans "Payroll" %}</a
-						>
-					</li>
-					<li class="oh-general__tab">
-						<a
-						hx-get="{% url 'allowances-deductions-tab' employee.id %}"
-						hx-target="#allowance_deduction"
-						data-action="general-tab"
-						data-target="#allowance_deduction"
-						class="oh-general__tab-link"
-						role="button"
-						>{% trans "Allowance & Deduction" %}</a
-						>
-					</li>
-					<li class="oh-general__tab">
-						<a
-						data-action="general-tab"
-						data-target="#penaltyTarget"
-						id="penalty"
-						class="oh-general__tab-link"
-						role="button"
-						>{% trans "Penalty Account" %}</a
-						>
-					</li>
-					<li class="oh-general__tab">
-						<a
-						hx-get={% url 'profile-asset-tab' employee.id %}
-						hx-target="#asset_target"
-						data-action="general-tab"
-						data-target="#asset_target"
-						id="asset"
-						class="oh-general__tab-link pointer"
-						role="button"
-						>{% trans "Assets" %}</a
-						>
-					</li>
-					<li class="oh-general__tab">
-						<a
-						hx-get={% url 'performance-tab' employee.id %}
-						hx-target="#performance_target"
-						data-action="general-tab"
-						data-target="#performance_target"
-						id="asset"
-						class="oh-general__tab-link"
-						role="button"
-						>{% trans "Performance" %}</a
-						>
-					</li>
-					<li class="oh-general__tab">
-						<a
-						hx-get={% url 'bonus-points-tab' employee.id %}
-						hx-target="#bonus_points_target"
-						data-action="general-tab"
-						data-target="#bonus_points_target"
-						class="oh-general__tab-link"
-						role="button"
-						>{% trans "Bonus Points" %}</a
-						>
-					</li>
-				</ul>
 
-				<div
-					class="oh-general__tab-target oh-profile__info-tab mb-4"
-					id="personal_target"
-				 >
+		<div class="oh-table_sticky--wrapper">
+			<div class="oh-sticky-dropdown--header">
+				<div class="oh-dropdown" x-data="{open: false}">
+				<button class="oh-sticky-dropdown_btn " @click="open = !open"><ion-icon name="ellipsis-vertical-sharp"
+					role="img" class="md hydrated" aria-label="ellipsis vertical sharp"></ion-icon></button>
+				<div class="oh-dropdown__menu oh-sticky-table_dropdown" x-show="open" @click.outside="open = false">
+					<ul class="oh-dropdown__items" id="fieldContainerTable">
+					</ul>
 				</div>
-				<div
-				class="oh-general__tab-target oh-profile__info-tab mb-4"
-				id="penaltyTarget"
-				>
-				{% include 'tabs/penalty_account.html' %}
 				</div>
-				<div
-					class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
-					id="payroll"
-				>
-					{% include 'tabs/payroll-tab.html' %}
-				</div>
-				<div
-					class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
-					id="bonus_points_target"
-				>
-					{% include "tabs/bonus_points.html" %}
-				</div>
-				<div
-				  class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
-				  id="allowance_deduction"
-				>
-				</div>
-				<div class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
-					id="shift_target"
-				 >
-				</div>
+			</div>
+			<div id="employee-tab-profile" data-table-name="employee_tab_profile">
+				<div class="row">
+					<div class="col-sm-12 col-md-12 col lg-12">
+						<ul
+						class="oh-general__tabs oh-general__tabs--border oh-general__tabs--profile oh-general__tabs--no-grow oh-profile-section__tab mt-5"
+						>
+							<li class="oh-general__tab">
+								<a
+									hx-get={% url 'contract-tab' employee.id %}
+									hx-target="#personal_target"
+									class="oh-general__tab-link oh-general__tab-link--active"
+									data-action="general-tab"
+									role="button"
+									data-target="#personal_target"
+									>{% trans "About" %}</a
+								>
+							</li>
+							<li data-cell-index="19" data-cell-title="{% trans "Work type & Shift" %}" class="oh-general__tab">
+								<a
+								hx-get="{% url 'shift-tab' employee.id %}?profile=true"
+								hx-target="#shift_target"
+								data-action="general-tab"
+								data-target="#shift_target"
+								class="oh-general__tab-link pointer"
+								role="button"
+								>{% trans "Work Type & Shift" %}</a
+								>
+							</li>
+							<li data-cell-index="18" data-cell-title="{% trans "Attendance" %}" class="oh-general__tab">
+								<a
+								hx-get={% url 'profile-attendance-tab' %}
+								hx-target="#attendance_target"
+								data-action="general-tab"
+								data-target="#attendance_target"
+								id="asset"
+								class="oh-general__tab-link"
+								role="button"
+								>{% trans "Attendance" %}</a
+								>
+							</li>
+							<li data-cell-index="17" data-cell-title="{% trans "Leave" %}" class="oh-general__tab">
+								<a
+								href="#"
+								class="oh-general__tab-link"
+								data-action="general-tab"
+								data-target="#leave"
+								>{% trans "Leave" %}</a
+								>
+							</li>
+							<li data-cell-index="16" data-cell-title="{% trans "Payroll" %}" class="oh-general__tab">
+								<a
+								href="#"
+								class="oh-general__tab-link"
+								data-action="general-tab"
+								data-target="#payroll"
+								>{% trans "Payroll" %}</a
+								>
+							</li>
+							<li data-cell-index="15" data-cell-title="{% trans "Allowance & Deduction" %}" class="oh-general__tab">
+								<a
+								hx-get="{% url 'allowances-deductions-tab' employee.id %}"
+								hx-target="#allowance_deduction"
+								data-action="general-tab"
+								data-target="#allowance_deduction"
+								class="oh-general__tab-link"
+								role="button"
+								>{% trans "Allowance & Deduction" %}</a
+								>
+							</li>
+							<li data-cell-index="14" data-cell-title="{% trans "Penalty Account" %}" class="oh-general__tab">
+								<a
+								data-action="general-tab"
+								data-target="#penaltyTarget"
+								id="penalty"
+								class="oh-general__tab-link"
+								role="button"
+								>{% trans "Penalty Account" %}</a
+								>
+							</li>
+							<li data-cell-index="13" data-cell-title="{% trans "Assets" %}" class="oh-general__tab">
+								<a
+								hx-get={% url 'profile-asset-tab' employee.id %}
+								hx-target="#asset_target"
+								data-action="general-tab"
+								data-target="#asset_target"
+								id="asset"
+								class="oh-general__tab-link pointer"
+								role="button"
+								>{% trans "Assets" %}</a
+								>
+							</li>
+							<li data-cell-index="12" data-cell-title="{% trans "Performance" %}" class="oh-general__tab">
+								<a
+								hx-get={% url 'performance-tab' employee.id %}
+								hx-target="#performance_target"
+								data-action="general-tab"
+								data-target="#performance_target"
+								id="asset"
+								class="oh-general__tab-link"
+								role="button"
+								>{% trans "Performance" %}</a
+								>
+							</li>
+							<li data-cell-index="11" data-cell-title="{% trans "Documents" %}" class="oh-general__tab">
+								<a
+								hx-get="{% url 'document-tab' employee.id %}?employee_view=true"
+								hx-target="#document_target"
+								data-action="general-tab"
+								data-target="#document_target"
+								class="oh-general__tab-link"
+								role="button"
+								>{% trans "Documents" %}</a
+								>
+							</li>
+							<li data-cell-index="10" data-cell-title="{% trans "Bonus Points" %}" class="oh-general__tab">
+								<a
+								hx-get={% url 'bonus-points-tab' employee.id %}
+								hx-target="#bonus_points_target"
+								data-action="general-tab"
+								data-target="#bonus_points_target"
+								class="oh-general__tab-link"
+								role="button"
+								>{% trans "Bonus Points" %}</a
+								>
+							</li>
+						</ul>
 
-				<div
-					class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
-					id="attendance_target"
-				 >
-				</div>
+						<div
+							class="oh-general__tab-target oh-profile__info-tab mb-4"
+							id="personal_target"
+						>
+						</div>
+						<div
+						class="oh-general__tab-target oh-profile__info-tab mb-4"
+						id="penaltyTarget"
+						>
+						{% include 'tabs/penalty_account.html' %}
+						</div>
+						<div
+							class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
+							id="payroll"
+						>
+							{% include 'tabs/payroll-tab.html' %}
+						</div>
+						<div
+							class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
+							id="bonus_points_target"
+						>
+							{% include "tabs/bonus_points.html" %}
+						</div>
+						<div
+						class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
+						id="allowance_deduction"
+						>
+						</div>
+						<div class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
+							id="shift_target"
+						>
+						</div>
 
-				
-				<div
-				  class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
-				  id="allowance_deduction"
-				>
-				</div>
-				
-				
-				<!-- <div
-					class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
-					id="team"
-				 >
-				</div>
+						<div
+							class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
+							id="attendance_target"
+						>
+						</div>
 
-				<div
-					class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
-					id="timesheet"
-				 >
-				</div> -->
-				<div
-					class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
-					id="asset_target"
-				>
-				</div>
-				<div
-					class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
-					id="performance_target"
-				>
-				</div>
-				
-				<div
-					class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
-					id="leave"
-				 >
-					{% include 'tabs/leave-tab.html' %}
-				</div>
-				<div
-				class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
-				id="attendance_target"
-				>
-				{% include 'tabs/note_tab.html' %}
+						
+						<div
+						class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
+						id="allowance_deduction"
+						>
+						</div>
+						
+						
+						<!-- <div
+							class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
+							id="team"
+						>
+						</div>
+
+						<div
+							class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
+							id="timesheet"
+						>
+						</div> -->
+						<div
+							class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
+							id="asset_target"
+						>
+						</div>
+						
+						<div
+						class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
+						id="document_target"
+						>
+						</div>
+
+						<div
+							class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
+							id="performance_target"
+						>
+						</div>
+						
+						<div
+							class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
+							id="leave"
+						>
+							{% include 'tabs/leave-tab.html' %}
+						</div>
+						<div
+						class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
+						id="attendance_target"
+						>
+						{% include 'tabs/note_tab.html' %}
+						</div>
+					</div>
 				</div>
 			</div>
 		</div>
+
 	</div>
 </div>
 <script src="{% static 'employee/search.js' %}"></script>
 <script src="{% static 'basedOn.js' %}"></script>
+<script>
+	toggleColumns("employee-tab-profile","fieldContainerTable")
+</script>
 
 {% endblock content %}

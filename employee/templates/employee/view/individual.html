@@ -2,7 +2,11 @@
 {% load static %} 
 {% load basefilters %}
 {% comment %} {% include 'employee_nav.html' %} {% endcomment %}
-
+<style>
+	.oh-general__tab{
+		margin-bottom: 15px;
+	}
+</style>
 
 <style>
   .enlarge-image-container {
@@ -48,6 +52,43 @@
 	}
   .oh-tabs__tablist .oh-tabs__tab--active:nth-last-child(2) {
       border-right: 1px solid hsl(213deg,22%,84%);
+  }
+  .oh-badge--small {
+	  margin-top: 6px;
+	  width: 34px;
+	  height: 34px;
+	  font-size: 1.75rem;
+  }
+  .custom-dialog {
+	  max-width:1000px;
+	  max-height: 800px;
+  }
+  .file-validation {
+	  color: #4f5bd9;
+	  background-color: #d8e7f0;
+	  border-color: #d6e9c6;
+	  padding: 15px;
+	  border: 1px solid transparent;
+	  border-radius: 4px;
+  
+  }
+  .oh-not-found {
+	  display: flex;
+	  justify-content: center;
+	  align-items: center;
+	  flex-direction: column;
+	  height: 50vh;
+	  opacity: 0.5;
+  }
+  .editable-input:read-only {
+	  color: hsl(0,0%,11%);
+	  background-color: transparent;
+	  border: none;
+	  height: 100%;
+	  border: 1px solid transparent;
+  }
+  .editable-input:read-only:hover {
+	  border: 1px solid hsl(213,22%,84%);
   }
 </style>
 
@@ -139,267 +180,302 @@
 				</ul>
 			</div>
 		</div>
-		<div class="row">
-			<div class="col-sm-12 col-md-12 col lg-12">
-				<ul
-				class="oh-general__tabs oh-general__tabs--border oh-general__tabs--profile oh-general__tabs--no-grow oh-profile-section__tab mt-5"
-				>	
-					<li class="oh-general__tab">
-						<a
-						hx-get={% url 'contract-tab' employee.id %}
-						hx-target="#personal_target"
-						class="oh-general__tab-link"
-						data-action="general-tab"
-						role="button"
-						data-target="#personal_target"
-						>{% trans "About" %}</a
+		
+		<div class="oh-table_sticky--wrapper">
+			<div class="oh-sticky-dropdown--header">
+				<div class="oh-dropdown" x-data="{open: false}">
+				<button class="oh-sticky-dropdown_btn " @click="open = !open"><ion-icon name="ellipsis-vertical-sharp"
+					role="img" class="md hydrated" aria-label="ellipsis vertical sharp"></ion-icon></button>
+				<div class="oh-dropdown__menu oh-sticky-table_dropdown" x-show="open" @click.outside="open = false">
+					<ul class="oh-dropdown__items" id="fieldContainerTable">
+					</ul>
+				</div>
+				</div>
+			</div>
+			<div id="employee-tab" data-table-name="employee_tab">  
+				<div class="row">
+					<div class="col-sm-12 col-md-12 col lg-12">
+						<ul
+						class="oh-general__tabs oh-general__tabs--border oh-general__tabs--profile oh-general__tabs--no-grow oh-profile-section__tab mt-5"
+						>	
+							<li class="oh-general__tab">
+								<a
+								hx-get={% url 'contract-tab' employee.id %}
+								hx-target="#personal_target"
+								class="oh-general__tab-link"
+								data-action="general-tab"
+								role="button"
+								data-target="#personal_target"
+								>{% trans "About" %}</a
+								>
+							</li>
+							{% if request.user == employee.employee_user_id or request.user|check_manager:employee %}
+							<li data-cell-index="10" data-cell-title="{% trans 'Work Type & Shift' %}" class="oh-general__tab">
+								<a
+								hx-get={% url 'shift-tab' employee.id %}
+								hx-target="#shift_target"
+								data-action="general-tab"
+								data-target="#shift_target"
+								class="oh-general__tab-link pointer"
+								role="button"
+								>{% trans "Work Type & Shift" %}</a
+								>
+							</li>
+							{% endif %}
+							{% if perms.attendance.view_attendance or request.user|check_manager:employee %}
+							<li data-cell-index="11" data-cell-title="{% trans 'Attendance' %}" class="oh-general__tab">
+								<a
+								hx-get="{% url 'attendance-tab' employee.id %}"
+								hx-target="#attendance_target"
+								data-action="general-tab"
+								data-target="#attendance_target"
+								class="oh-general__tab-link"
+								role="button"
+								>{% trans "Attendance" %}</a
+								>
+							</li>
+							{% endif %}
+							{% if perms.leave.view_leaverequest or request.user|check_manager:employee or request.user == employee.employee_user_id %}
+							<li data-cell-index="12" data-cell-title="{% trans 'Leave' %}" class="oh-general__tab">
+								<a
+								href="#"
+								class="oh-general__tab-link"
+								data-action="general-tab"
+								data-target="#leave"
+								>{% trans "Leave" %}</a
+								>
+							</li>
+							{% endif %}
+							{% if perms.payroll.view_payslip or request.user == employee.employee_user_id %}
+							<li data-cell-index="13" data-cell-title="{% trans 'Payroll' %}" class="oh-general__tab">
+								<a
+								href="#"
+								class="oh-general__tab-link"
+								data-action="general-tab"
+								data-target="#payroll"
+								>{% trans "Payroll" %}</a
+								>
+							</li>
+							{% endif %}
+							{% if perms.payroll.view_payslip or request.user == employee.employee_user_id %}
+							<li data-cell-index="14" data-cell-title="{% trans 'Allowance & Deduction' %}" class="oh-general__tab">
+								<a
+								hx-get="{% url 'allowances-deductions-tab' employee.id %}"
+								hx-target="#allowance_deduction"
+								data-action="general-tab"
+								data-target="#allowance_deduction"
+								class="oh-general__tab-link"
+								role="button"
+								>{% trans "Allowance & Deduction" %}</a
+								>
+							</li>
+							{% endif %}
+							{% comment %} <li class="oh-general__tab">
+								<a
+								href="#"
+								class="oh-general__tab-link"
+								data-action="general-tab"
+								data-target="#team"
+								>{% trans "Team" %}</a
+								>
+							</li> {% endcomment %}
+							{% if perms.employee.view_historicalemployeeworkinformation or request.user|check_manager:employee %}
+							<li data-cell-index="15" data-cell-title="{% trans 'History' %}" class="oh-general__tab">
+								<a
+								href="#"
+								class="oh-general__tab-link"
+								data-action="general-tab"
+								data-target="#history"
+								>{% trans "History" %}</a
+								>
+							</li>
+							{% endif %}
+							{% if perms.asset.view_asset or request.user|check_manager:employee or request.user == employee.employee_user_id %}
+							
+							<li data-cell-index="16" data-cell-title="{% trans 'Assets' %}" class="oh-general__tab">
+								<a
+								hx-get={% url 'asset-tab' employee.id %}
+								hx-target="#asset_target"
+								data-action="general-tab"
+								data-target="#asset_target"
+								class="oh-general__tab-link pointer"
+								role="button"
+								>{% trans "Assets" %}</a
+								>
+							</li>
+							{% endif %}
+							{% if perms.pms.view_feedback or request.user|check_manager:employee or request.user == employee.employee_user_id %}
+							<li data-cell-index="17" data-cell-title="{% trans 'Performance' %}" class="oh-general__tab">
+								<a
+								hx-get={% url 'performance-tab' employee.id %}
+								hx-target="#performance_target"
+								data-action="general-tab"
+								data-target="#performance_target"
+								class="oh-general__tab-link"
+								role="button"
+								>{% trans "Performance" %}</a
+								>
+							</li>
+							{% endif %}
+							{% if perms.auth.view_permission or perms.auth.view_group %}
+							<li data-cell-index="18" data-cell-title="{% trans 'Groups & Permissions' %}" class="oh-general__tab">
+								<a
+								data-action="general-tab"
+								data-target="#permission_tab_content"
+								hx-get="{% url 'employee-permission-assign' %}?profile_tab=true&employee_id={{employee.id}}"
+								hx-target="#tab_1_permission"
+								class="oh-general__tab-link"
+								role="button"
+								>{% trans "Groups & Permissions" %}</a
+								>
+							</li>
+							{% endif %}
+							{% if perms.employee.view_employeenote or request.user|check_manager:employee %}
+							<li data-cell-index="19" data-cell-title="{% trans 'Note' %}" class="oh-general__tab">
+								<a
+								hx-get={% url 'note-tab' employee.id %}
+								hx-target="#note_target"
+								data-action="general-tab"
+								data-target="#note_target"
+								class="oh-general__tab-link"
+								role="button"
+								>{% trans "Note" %}</a
+								>
+							</li>
+							{% endif %}					
+							{% if request.user|check_manager:employee %}
+							<li data-cell-index="20" data-cell-title="{% trans 'Documents' %}" class="oh-general__tab">
+								<a
+								hx-get="{% url 'document-tab' employee.id %}?employee_view=true"
+								hx-target="#document_target"
+								data-action="general-tab"
+								data-target="#document_target"
+								class="oh-general__tab-link"
+								role="button"
+								>{% trans "Documents" %}</a
+								>
+							</li>
+							{% endif %}
+							{% if perms.employee.view_employeenote or request.user|check_manager:employee %}
+							<li data-cell-index="21" data-cell-title="{% trans 'Bonus' %}" class="oh-general__tab">
+								<a
+								hx-get={% url 'bonus-points-tab' employee.id %}
+								hx-target="#bonus_points_target"
+								data-action="general-tab"
+								data-target="#bonus_points_target"
+								class="oh-general__tab-link"
+								role="button"
+								>{% trans "Bonus Points" %}</a
+								>
+							</li>
+							{% endif %}
+						</ul>
+
+						<div
+							class="oh-general__tab-target oh-profile__info-tab mb-4"
+							id="personal_target"
 						>
-					</li>
-					{% if request.user == employee.employee_user_id or request.user|check_manager:employee %}
-					<li class="oh-general__tab">
-						<a
-						hx-get={% url 'shift-tab' employee.id %}
-						hx-target="#shift_target"
-						data-action="general-tab"
-						data-target="#shift_target"
-						class="oh-general__tab-link pointer"
-						role="button"
-						>{% trans "Work type & Shift" %}</a
+						</div>
+
+						<div
+							class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
+							id="shift_target"
 						>
-					</li>
-					{% endif %}
-					{% if perms.attendance.view_attendance or request.user|check_manager:employee %}
-					<li class="oh-general__tab">
-						<a
-						hx-get="{% url 'attendance-tab' employee.id %}"
-						hx-target="#attendance_target"
-						data-action="general-tab"
-						data-target="#attendance_target"
-						class="oh-general__tab-link"
-						role="button"
-						>{% trans "Attendance" %}</a
+						</div>
+
+						<div
+						class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
+						id="bonus_points_target"
 						>
-					</li>
-					{% endif %}
-					{% if perms.leave.view_leaverequest or request.user|check_manager:employee or request.user == employee.employee_user_id %}
-					<li class="oh-general__tab">
-						<a
-						href="#"
-						class="oh-general__tab-link"
-						data-action="general-tab"
-						data-target="#leave"
-						>{% trans "Leave" %}</a
+						{% include "tabs/bonus_points.html" %}
+						</div>
+						<div
+						class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
+						id="note_target"
 						>
-					</li>
-					{% endif %}
-					{% if perms.payroll.view_payslip or request.user == employee.employee_user_id %}
-					<li class="oh-general__tab">
-						<a
-						href="#"
-						class="oh-general__tab-link"
-						data-action="general-tab"
-						data-target="#payroll"
-						>{% trans "Payroll" %}</a
+						{% include "tabs/note_tab.html" %}
+						</div>
+
+						<div
+						class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
+						id="allowance_deduction"
 						>
-					</li>
-					{% endif %}
-					{% if perms.payroll.view_payslip or request.user == employee.employee_user_id %}
-					<li class="oh-general__tab">
-						<a
-						hx-get="{% url 'allowances-deductions-tab' employee.id %}"
-						hx-target="#allowance_deduction"
-						data-action="general-tab"
-						data-target="#allowance_deduction"
-						class="oh-general__tab-link"
-						role="button"
-						>{% trans "Allowance & Deduction" %}</a
+						</div>
+						<div class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
+							id="attendance_target"
 						>
-					</li>
-					{% endif %}
-					{% comment %} <li class="oh-general__tab">
-						<a
-						href="#"
-						class="oh-general__tab-link"
-						data-action="general-tab"
-						data-target="#team"
-						>{% trans "Team" %}</a
+						</div>
+
+						<div
+						class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
+						id="allowance_deduction"
 						>
-					</li> {% endcomment %}
-					{% if perms.employee.view_historicalemployeeworkinformation or request.user|check_manager:employee %}
-					<li class="oh-general__tab">
-						<a
-						href="#"
-						class="oh-general__tab-link"
-						data-action="general-tab"
-						data-target="#history"
-						>{% trans "History" %}</a
+						</div>
+
+						<div
+							class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
+							id="performance_target"
 						>
-					</li>
-					{% endif %}
-					{% if perms.asset.view_asset or request.user|check_manager:employee or request.user == employee.employee_user_id %}
+						</div>
+
+						<div
+							class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
+							id="asset_target"
+						>
+						</div>
 					
-					<li class="oh-general__tab">
-						<a
-						hx-get={% url 'asset-tab' employee.id %}
-						hx-target="#asset_target"
-						data-action="general-tab"
-						data-target="#asset_target"
-						class="oh-general__tab-link pointer"
-						role="button"
-						>{% trans "Assets" %}</a
+						<div
+						class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
+						id="document_target"
 						>
-					</li>
-					{% endif %}
-					{% if perms.pms.view_feedback or request.user|check_manager:employee or request.user == employee.employee_user_id %}
-					<li class="oh-general__tab">
-						<a
-						hx-get={% url 'performance-tab' employee.id %}
-						hx-target="#performance_target"
-						data-action="general-tab"
-						data-target="#performance_target"
-						class="oh-general__tab-link"
-						role="button"
-						>{% trans "Performance" %}</a
+						</div>
+
+						<div
+							class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
+							id="team"
 						>
-					</li>
-					{% endif %}
-					{% if perms.auth.view_permission or perms.auth.view_group %}
-					<li class="oh-general__tab">
-						<a
-						data-action="general-tab"
-						data-target="#permission_tab_content"
-						hx-get="{% url 'employee-permission-assign' %}?profile_tab=true&employee_id={{employee.id}}"
-						hx-target="#tab_1_permission"
-						class="oh-general__tab-link"
-						role="button"
-						>{% trans "Groups & Permissions" %}</a
+						</div>
+						<div
+							class="oh-general__tab-target oh-profile__info-tab mb-4 p-4"
+							id="permission_tab_content"
 						>
-					</li>
-					{% endif %}
-					{% if perms.employee.view_employeenote or request.user|check_manager:employee %}
-					<li class="oh-general__tab">
-						<a
-						hx-get={% url 'note-tab' employee.id %}
-						hx-target="#note_target"
-						data-action="general-tab"
-						data-target="#note_target"
-						class="oh-general__tab-link"
-						role="button"
-						>{% trans "Note" %}</a
+							{% if perms.auth.view_permission or perms.auth.view_group or request.user|is_reportingmanager or request.user == employee.employee_user_id %}
+								{% include "tabs/group_permissions.html" %}
+							{% endif %}
+						</div>
+
+						<div
+							class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
+							id="history"
 						>
-					</li>
-					{% endif %}
-					{% if perms.employee.view_employeenote or request.user|check_manager:employee %}
-					<li class="oh-general__tab">
-						<a
-						hx-get={% url 'bonus-points-tab' employee.id %}
-						hx-target="#bonus_points_target"
-						data-action="general-tab"
-						data-target="#bonus_points_target"
-						class="oh-general__tab-link"
-						role="button"
-						>{% trans "Bonus Points" %}</a
+							{% if request.user|check_manager:employee or request.user == employee.employee_user_id or perms.employee.view_historicalemployeeworkinformation %}
+								{% include "tabs/history.html" %}
+							{% endif %}
+
+						</div>
+
+						<div
+							class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
+							id="payroll"
 						>
-					</li>
-					{% endif %}
-				</ul>
+							{% if perms.view_payslip %}
+								{% include "tabs/payroll-tab.html" %}
+							{% endif %}
+						</div>
 
-				<div
-					class="oh-general__tab-target oh-profile__info-tab mb-4"
-					id="personal_target"
-				 >
-				</div>
-
-				<div
-					class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
-					id="shift_target"
-				 >
-				</div>
-
-				<div
-				class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
-				id="bonus_points_target"
-				>
-				{% include "tabs/bonus_points.html" %}
-				</div>
-				<div
-				class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
-				id="note_target"
-				>
-				{% include "tabs/note_tab.html" %}
-				</div>
-
-				<div
-				  class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
-				  id="allowance_deduction"
-				>
-				</div>
-				<div class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
-					id="attendance_target"
-				 >
-				</div>
-
-				<div
-				  class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
-				  id="allowance_deduction"
-				 >
-				</div>
-
-				<div
-					class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
-					id="performance_target"
-				 >
-				</div>
-
-				<div
-					class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
-					id="asset_target"
-				 >
-				</div>
-			
-				<div
-					class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
-					id="team"
-				 >
-				</div>
-				<div
-					class="oh-general__tab-target oh-profile__info-tab mb-4 p-4"
-					id="permission_tab_content"
-			     >
-					{% if perms.auth.view_permission or perms.auth.view_group or request.user|is_reportingmanager or request.user == employee.employee_user_id %}
-						{% include "tabs/group_permissions.html" %}
-					{% endif %}
-				</div>
-
-				<div
-					class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
-					id="history"
-				 >
-					{% if request.user|check_manager:employee or request.user == employee.employee_user_id or perms.employee.view_historicalemployeeworkinformation %}
-						{% include "tabs/history.html" %}
-					{% endif %}
-
-				</div>
-
-				<div
-					class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
-					id="payroll"
-				 >
-					{% if perms.view_payslip %}
-						{% include "tabs/payroll-tab.html" %}
-					{% endif %}
-				</div>
-
-				<div
-					class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
-					id="leave"
-				 >
-					{% if perms.leave.view_leaverequest or perms.leave.view_leavetype or request.user|check_manager:employee or request.user == employee.employee_user_id %}
-						{% include "tabs/leave-tab.html" %}
-					{% endif %}
+						<div
+							class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
+							id="leave"
+						>
+							{% if perms.leave.view_leaverequest or perms.leave.view_leavetype or request.user|check_manager:employee or request.user == employee.employee_user_id %}
+								{% include "tabs/leave-tab.html" %}
+							{% endif %}
+						</div>
+					</div>
 				</div>
 			</div>
 		</div>
+
 	</div>
 </div>
 <script src="{% static 'employee/search.js' %}"></script>
@@ -411,6 +487,8 @@
 			$("#view-container").find(".oh-general__tab-link")[0].click()
 		}
 	});
+	toggleColumns("employee-tab","fieldContainerTable")
+
 </script>
 
 {% endblock content %}
