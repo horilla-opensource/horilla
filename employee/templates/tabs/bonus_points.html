@@ -52,11 +52,11 @@
             >
         </div>
     </div>
-    <div class="oh-faq-card" style="width: 60%;">
+    <div class="oh-faq-card" style="width: 60%; max-height:320px; overflow-y:auto">
         {% for activity in activity_list %}
             <div class="oh-helpdesk__chat-update pb-0">
                 {% if activity.type == 'Bonus point created' %}
-                    <span> --> {% trans "Bonus Account created" %} </span>
+                    <span> <strong>--></strong> {% trans "Bonus Account created" %} </span>
                     <span class="dateformat_changer">{{ activity.date|date:"d N Y"}}</span>
                 {% else %}                
                 <span
