@@ -1,0 +1,17 @@
+{% load i18n %}
+<form
+	id="file-form"
+	hx-post="{% url 'document-reject' document_obj.id %}"
+	hx-target="#uploadFileForm"
+	hx-encoding="multipart/form-data"
+>
+	{% csrf_token %}
+	{{form.non_field_errors}} 
+	{{form.reject_reason}}
+	{{form.reject_reason.errors}}
+	<div class="d-flex justify-content-between w-100 align-items-center mt-4">
+		<button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow">
+			{% trans "Save" %}
+		</button>
+	</div>
+</form>

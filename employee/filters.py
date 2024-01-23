@@ -16,6 +16,8 @@ from base.methods import reload_queryset
 from base.models import WorkType
 from horilla.filters import FilterSet
 from employee.models import Employee
+from horilla_documents.models import Document
+from django_filters import CharFilter
 
 
 class EmployeeFilter(FilterSet):
@@ -258,3 +260,35 @@ class PolicyFilter(FilterSet):
     class Meta:
         model = Policy
         fields = "__all__"
+
+
+class DocumentRequestFilter(FilterSet):
+    """
+    Custom filter for Document Requests.
+    """
+
+    search = CharFilter(field_name="title", lookup_expr="icontains")
+
+    class Meta:
+        """
+        A nested class that specifies the model and fields for the filter.
+        """
+
+        model = Document
+        fields = [
+            "employee_id",
+            "document_request_id",
+            "status",
+            "employee_id__employee_first_name",
+            "employee_id__employee_last_name",
+            "employee_id__is_active",
+            "employee_id__gender",
+            "employee_id__employee_work_info__job_position_id",
+            "employee_id__employee_work_info__department_id",
+            "employee_id__employee_work_info__work_type_id",
+            "employee_id__employee_work_info__employee_type_id",
+            "employee_id__employee_work_info__job_role_id",
+            "employee_id__employee_work_info__reporting_manager_id",
+            "employee_id__employee_work_info__company_id",
+            "employee_id__employee_work_info__shift_id",
+        ]

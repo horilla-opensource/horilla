@@ -26,7 +26,7 @@ from django.db.models import F, ProtectedError
 from django.conf import settings
 from django.contrib import messages
 from django.core.paginator import Paginator
-from django.shortcuts import render, redirect
+from django.shortcuts import get_object_or_404, render, redirect
 from django.utils.translation import gettext as __
 from django.contrib.auth.models import User
 from django.views.decorators.http import require_http_methods
@@ -59,6 +59,7 @@ from base.models import (
 )
 from base.forms import ModelForm
 from base.methods import (
+    choosesubordinates,
     filtersubordinates,
     filtersubordinatesemployeemodel,
     get_key_instances,
@@ -67,7 +68,7 @@ from base.methods import (
     check_manager,
     check_owner,
 )
-from employee.filters import EmployeeFilter, EmployeeReGroup
+from employee.filters import EmployeeFilter, EmployeeReGroup, DocumentRequestFilter
 from employee.forms import (
     BonusPointAddForm,
     BonusPointRedeemForm,
@@ -81,6 +82,7 @@ from employee.forms import (
     EmployeeBankDetailsUpdateForm,
     excel_columns,
 )
+from horilla_documents.forms import DocumentForm, DocumentRejectForm, DocumentRequestForm, DocumentUpdateForm
 from employee.models import (
     BonusPoint,
     Employee,
@@ -92,6 +94,7 @@ from payroll.methods.payslip_calc import dynamic_attr
 from payroll.models.models import Allowance, Contract, Deduction, Reimbursement
 from pms.models import Feedback
 from recruitment.models import Candidate
+from horilla_documents.models import Document, DocumentRequest
 
 
 operator_mapping = {
@@ -489,6 +492,374 @@ def shift_tab(request, emp_id):
 
 
 @login_required
+@manager_can_enter("horilla_documents.view_documentrequests")
+def document_request_view(request):
+    """
+    This function is used to view documents requests of employees.
+
+    Parameters:
+    request (HttpRequest): The HTTP request object.
+
+    Returns: return document_request template
+    """
+    f= DocumentRequestFilter()
+    document_requests = DocumentRequest.objects.all()
+    documents = Document.objects.filter(document_request_id__isnull=False).order_by("document_request_id")
+    documents = filtersubordinates(
+        request=request,
+        perm="attendance.view_attendance",
+        queryset=documents,
+    )
+    context = {
+        "document_requests":document_requests,
+        "documents":documents,
+        "f":f,
+
+    }
+    return render(request, "documents/document_requests.html", context=context)
+
+
+
+@login_required
+@manager_can_enter("horilla_documents.view_documentrequests")
+def document_filter_view(request):
+    """
+    This method is used to filter employee.
+    """
+    document_requests = DocumentRequest.objects.all()
+    previous_data = request.GET.urlencode()
+    documents = DocumentRequestFilter(request.GET).qs
+    documents=documents.exclude(document_request_id__isnull = True).order_by("document_request_id")
+    data_dict = parse_qs(previous_data)
+    get_key_instances(Document, data_dict)
+    
+    return render(
+        request,
+        "documents/requests.html",
+        {
+            "documents": documents,
+            "f": EmployeeFilter(request.GET),
+            "pd": previous_data,
+            "filter_dict": data_dict,
+            "document_requests":document_requests,
+        },
+    )
+
+
+@login_required
+@manager_can_enter("horilla_documents.add_documentrequests")
+def document_request_create(request):
+    """
+    This function is used to create document requests of an employee in employee requests view.
+
+    Parameters:
+    request (HttpRequest): The HTTP request object.
+
+    Returns: return document_request_create_form template
+    """
+    form = DocumentRequestForm()
+    form = choosesubordinates(request, form, "horilla_documents.add_documentrequest")
+    if request.method == 'POST':
+        form = DocumentRequestForm(request.POST)
+        form = choosesubordinates(request, form, "horilla_documents.add_documentrequest")
+        if form.is_valid():
+            form.save()
+            return HttpResponse("<script>window.location.reload();</script>")
+
+    context = {
+        "form" : form,
+    }
+    return render(request, "documents/document_request_create_form.html", context=context)
+
+
+@login_required
+@manager_can_enter("horilla_documents.change_documentrequests")
+def document_request_update(request,id):
+    """
+    This function is used to update document requests of an employee in employee requests view.
+
+    Parameters:
+    request (HttpRequest): The HTTP request object.
+
+    Returns: return document_request_create_form template
+    """
+    document_request = get_object_or_404(DocumentRequest,id=id)
+    form = DocumentRequestForm(instance = document_request)
+    if request.method == 'POST':
+        form = DocumentRequestForm(request.POST,instance = document_request)
+        if form.is_valid():
+            form.save()
+            return HttpResponse("<script>window.location.reload();</script>")
+
+    context = {
+        "form" : form,
+        "document_request":document_request,
+    }
+    return render(request, "documents/document_request_create_form.html", context=context)
+
+
+@login_required
+@owner_can_enter("horilla_documents.view_document",Employee)
+def document_tab(request, emp_id):
+    """
+    This function is used to view documents tab of an employee in employee individual & profile view.
+
+    Parameters:
+    request (HttpRequest): The HTTP request object.
+    emp_id (int): The id of the employee.
+
+    Returns: return document_tab template
+    """
+    
+    form = DocumentUpdateForm(request.POST,request.FILES)
+    documents = Document.objects.filter(employee_id=emp_id)
+
+    context = {
+        "documents": documents,
+        "form": form,
+        "emp_id":emp_id,
+    }
+    return render(request, "tabs/document_tab.html", context=context)
+
+
+@login_required
+@owner_can_enter("horilla_documents.add_document",Employee)
+def document_create(request,emp_id):
+    """
+    This function is used to create documents from employee individual & profile view.
+
+    Parameters:
+    request (HttpRequest): The HTTP request object.
+    emp_id (int): The id of the employee
+
+    Returns: return document_tab template
+    """
+    employee_id = Employee.objects.get(id=emp_id)
+    form = DocumentForm(initial = {"employee_id":employee_id})
+    if request.method == 'POST':
+        form = DocumentForm(request.POST,request.FILES)
+        if form.is_valid():
+            form.save()
+            messages.success(request,_("Document created successfully."))
+            return HttpResponse('<script>window.location.reload();</script>')
+
+    context = {
+        "form": form,
+        "emp_id":emp_id,
+    }
+    return render(request, "tabs/htmx/document_create_form.html", context=context)
+
+
+@login_required
+def update_document_title(request, id):
+    """
+    This function is used to create documents from employee individual & profile view.
+
+    Parameters:
+    request (HttpRequest): The HTTP request object.
+
+    Returns: return document_tab template
+    """
+    document = get_object_or_404(Document, id=id)
+    name = request.POST.get("title")
+    if request.method == 'POST':
+        document.title = name
+        document.save()
+
+        return JsonResponse({'success': True, 'message': 'Document title updated successfully'})
+    else:
+        return JsonResponse({'success': False, 'message': 'Invalid request'}, status=400)
+
+
+@login_required
+def document_delete(request, id):
+    try:
+        document = get_object_or_404(Document, id=id)
+        document.delete()
+        messages.success(request, _("Document {} deleted successfully").format(document))
+
+    except ProtectedError:
+        messages.error(request, _("You cannot delete this document."))
+
+    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))    
+
+
+@login_required
+def file_upload(request, id):
+    """
+    This function is used to upload documents of an employee in employee individual & profile view.
+
+    Parameters:
+    request (HttpRequest): The HTTP request object.
+    id (int): The id of the document.
+
+    Returns: return document_form template
+    """
+
+    document_item = Document.objects.get(id=id)
+    form = DocumentUpdateForm(instance=document_item)
+    if request.method == 'POST':
+        form = DocumentUpdateForm(request.POST,request.FILES,instance=document_item)
+        if form.is_valid():
+            form.save()
+            return HttpResponse("<script>window.location.reload();</script>")
+
+    context = {
+        "form" : form,
+        "document" : document_item
+    }
+    return render(request, "tabs/htmx/document_form.html", context=context)
+
+@login_required
+def view_file(request, id):
+    """
+    This function used to view the uploaded document in the modal.
+    Parameters:
+
+    request (HttpRequest): The HTTP request object.
+    id (int): The id of the document.
+
+    Returns: return view_file template
+    """
+
+    document_obj = get_object_or_404(Document, id=id)
+    context = {
+        "document":document_obj,
+    }
+    if document_obj.document:
+        file_path = document_obj.document.path
+        file_extension = os.path.splitext(file_path)[1][1:].lower()  # Get the lowercase file extension
+
+        content_type = get_content_type(file_extension)
+
+        with open(file_path, 'rb') as file:
+            file_content = file.read() # Decode the binary content for display
+
+        context["file_content"] = file_content
+        context["file_extension"] = file_extension
+        context["content_type"] = content_type
+    
+
+    return render(request, 'tabs/htmx/view_file.html', context)
+
+
+def get_content_type(file_extension):
+    """
+    This function retuns the content type of a file
+    parameters:
+
+    file_extension: The file extension of the file
+    """
+
+    content_types = {
+        'pdf': 'application/pdf',
+        'txt': 'text/plain',
+        'docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        'xlsx': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        'jpg': 'image/jpeg',
+        'png': 'image/png',
+        'jpeg': 'image/jpeg',
+    }
+
+    # Default to application/octet-stream if the file extension is not recognized
+    return content_types.get(file_extension, 'application/octet-stream')
+
+
+@login_required
+@manager_can_enter("horilla_documents.add_document")
+def document_approve(request, id):
+    """
+    This function used to view the approve uploaded document.
+    Parameters:
+
+    request (HttpRequest): The HTTP request object.
+    id (int): The id of the document.
+
+    Returns: 
+    """
+
+    document_obj = get_object_or_404(Document, id=id)
+    if document_obj.document:
+        document_obj.status = "approved"
+        document_obj.save()
+        messages.success(request, _("Document request approved"))
+    else:
+        messages.error(request, _("No document uploaded"))
+
+
+
+    return HttpResponse("<script>window.location.reload();</script>")
+
+
+@login_required
+@manager_can_enter("horilla_documents.add_document")
+def document_reject(request, id):
+    """
+    This function used to view the reject uploaded document.
+    Parameters:
+
+    request (HttpRequest): The HTTP request object.
+    id (int): The id of the document.
+
+    Returns: 
+    """
+    document_obj = get_object_or_404(Document, id=id)
+    form = DocumentRejectForm()
+    if document_obj.document:
+        if request.method == "POST":
+            form = DocumentRejectForm(request.POST,instance=document_obj)
+            if form.is_valid():
+                document_obj.status = "rejected"
+                document_obj.save()
+                messages.error(request, _("Document request rejected"))
+
+                return HttpResponse("<script>window.location.reload();</script>")
+    else:
+        messages.error(request, _("No document uploaded"))
+        return HttpResponse("<script>window.location.reload();</script>")
+        
+    return render(request,"tabs/htmx/reject_form.html",{"form":form,"document_obj":document_obj})
+    
+
+@login_required
+@manager_can_enter("horilla_documents.add_document")
+def document_bulk_approve(request):
+    """
+    This function used to view the approve uploaded document.
+    Parameters:
+
+    request (HttpRequest): The HTTP request object.
+
+    Returns: 
+    """
+    ids = request.GET.getlist('ids')
+    document_obj = Document.objects.filter(id__in=ids,).exclude(document ="")
+    document_obj.update(status="approved")
+    messages.success(request, _(f"{len(document_obj)} Document request approved"))
+        
+    return HttpResponse("success")
+
+
+@login_required
+@manager_can_enter("horilla_documents.add_document")
+def document_bulk_reject(request):
+    """
+    This function used to view the reject uploaded document.
+    Parameters:
+
+    request (HttpRequest): The HTTP request object.
+
+    Returns: 
+    """
+    ids = request.POST.getlist('ids')
+    reason = request.POST.get('reason')
+    document_obj = Document.objects.filter(id__in=ids)
+    document_obj.update(status="rejected",reject_reason = reason)
+    messages.success(request, _("Document request rejected"))
+    return HttpResponse("success")
+
+
+@login_required
 @require_http_methods(["POST"])
 def employee_profile_bank_details(request):
     """
@@ -842,6 +1213,11 @@ def employee_view_update(request, obj_id, **kwargs):
                         icon="briefcase",
                     )
                     messages.success(request, _("Employee work information updated."))
+                work_form = EmployeeWorkInformationForm(
+                    instance=EmployeeWorkInformation.objects.filter(
+                        employee_id=employee
+                    ).first()
+                )
             elif request.POST.get("any_other_code1"):
                 instance = EmployeeBankDetails.objects.filter(
                     employee_id=employee
@@ -2250,13 +2626,13 @@ def employee_note_delete(request, note_id):
 @manager_can_enter(perm="employee.view_bonuspoint")
 def bonus_points_tab(request, emp_id):
     """
-    This function is used to view performance tab of an employee in employee individual & profile view.
+    This function is used to view Bonus Points tab of an employee in employee individual & profile view.
 
     Parameters:
     request (HttpRequest): The HTTP request object.
     emp_id (int): The id of the employee.
 
-    Returns: return note-tab template
+    Returns: return bonus_points template
 
     """
     employee_obj = Employee.objects.get(id=emp_id)
@@ -2286,6 +2662,16 @@ def bonus_points_tab(request, emp_id):
 @login_required
 @manager_can_enter(perm="employee.add_bonuspoint")
 def add_bonus_points(request, emp_id):
+    """
+    This function is used to add bonus points to an employee
+
+    Args:
+        request (HttpRequest): The HTTP request object.
+        emp_id (int): The id of the employee.
+
+    Returns: returns add_points form
+    """
+    
     bonus_point = BonusPoint.objects.get(employee_id=emp_id)
     form = BonusPointAddForm()
     if request.method == "POST":
@@ -2318,6 +2704,15 @@ def add_bonus_points(request, emp_id):
 @login_required
 @owner_can_enter("employee.view_bonuspoint", Employee)
 def redeem_points(request,emp_id):
+    """
+    This function is used to redeem bonus points for an employee
+
+    Args:
+        request (HttpRequest): The HTTP request object.
+        emp_id (int): The id of the employee.
+
+    Returns: returns redeem_points_form form
+    """
     user = Employee.objects.get(id=emp_id)
     form = BonusPointRedeemForm()
     if request.method == 'POST':

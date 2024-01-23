@@ -1,4 +1,4 @@
-{% load static %} {% load i18n %} {% load attendancefilters %} 
+{% load static %} {% load i18n %} {% load attendancefilters offboarding_filter %} 
 {% load recruitmentfilters %} {% load onboardingfilters %} {% load basefilters %}
 <script>
   function activeNav(id) {
@@ -327,6 +327,15 @@
                 >{% trans "Employee" %}</a
               >
             </li>
+            {% if perms.employee_document.view_documentrequest or request.user|is_reportingmanager%}
+            <li class="oh-sidebar__submenu-item">
+              <a
+                class="oh-sidebar__submenu-link"
+                href="{% url 'document-request-view' %}"
+                >{% trans "Document Request" %}</a
+              >
+            </li>
+            {% endif %}
             <li class="oh-sidebar__submenu-item">
               <a
                 class="oh-sidebar__submenu-link"
@@ -726,6 +735,49 @@
           </ul>
         </div>
       </li>
+      {% if perms.offboarding.view_offboarding or request.user.employee_get|any_manager %}
+        <li
+          class="oh-sidebar__menu-item"
+          x-data="{ isOpen: getOpenState('OffboardingNav') }"
+        >
+          <a
+            class="oh-sidebar__menu-link"
+            data-id="OffboardingNav"
+            x-on:click.prevent="isOpen = !isOpen; saveOpenState('OffboardingNav', isOpen)"
+            x-bind:class="isOpen ? 'oh-sidebar__menu-link--active' : ''"
+            style="cursor: pointer"
+          >
+            <div class="oh-sidebar__menu-icon">
+              <img
+              style="filter: invert(1);"
+                src="{% static 'images/ui/exit-outline.svg' %}"
+                alt="Dashboard"
+                width="24"
+                height="24"
+              />
+            </div>
+            <span>{% trans "Offboarding" %}</span>
+          </a>
+          <div
+            class="oh-sidebar__submenu"
+            id="OffboardingNav"
+            x-show="isOpen"
+            x-transition
+            style="display: none"
+          >
+            <ul class="oh-sidebar__submenu-items">
+              <li class="oh-sidebar__submenu-item">
+                <a
+                  href="{% url 'offboarding-pipeline'  %}"
+                  class="oh-sidebar__submenu-link"
+                  >{% trans "Pipeline" %}</a
+                >
+              </li>
+            </ul>
+          </div>
+        </li>
+      {% endif %}
+
       <li
         class="oh-sidebar__menu-item"
         x-data="{ isOpen: getOpenState('assetNav') }"

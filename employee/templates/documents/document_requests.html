@@ -1,0 +1,118 @@
+{% extends "index.html" %} {% block content %} {% load static %} {% load i18n %}
+{% load basefilters %} {% load attendancefilters %} 
+<style>
+	.file-upload {
+		margin-top: 6px;
+		width: 34px;
+		height: 34px;
+		font-size: 1.75rem;
+	}
+
+	.custom-dialog {
+		max-width:1000px;
+		max-height: 800px;
+	}
+	.oh-not-found {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		flex-direction: column;
+		height: 50vh;
+		opacity: 0.5;
+	}
+
+.file-validation {
+	color: #4f5bd9;
+	background-color: #d8e7f0;
+	border-color: #d6e9c6;
+	padding: 15px;
+	border: 1px solid transparent;
+	border-radius: 4px;
+
+}
+</style>
+{% include 'documents/document_nav.html' %}
+<div
+	class="oh-checkpoint-badge mb-2"
+	id="selectedDocuments"
+	data-ids="[]"
+	data-clicked=""
+	style="display: none"
+>
+	{% trans "Selected Documents" %}
+</div>
+<div id="view-container" class="oh-wrapper">
+	{% include 'documents/requests.html' %} 
+</div>
+
+<script>
+	$(document).ready(function () {
+		$(".bulk_approve").on("click", function () {
+			checkedRows = $("[type=checkbox]:checked");
+			ids = [];
+			checkedRows.each(function () {
+				if($(this).attr("id") != ""){
+					ids.push($(this).attr("id"));
+				}
+			});
+			$.ajax({
+				type: "GET",
+				url: "{% url 'document-bulk-approve' %}",
+				data: {
+					"ids": ids,
+				},
+				traditional:true,
+				success: function () {
+					// console.log("Success");
+					// currentUrl = window.location.href;
+					// $("#view-container").load(currentUrl + " #view-container > *");
+					window.location.reload()
+
+				},
+				error: function () {
+					console.log("Error");
+				},
+			});
+		});
+		$(".bulk_reject").on("click", function () {
+			checkedRows = $("[type=checkbox]:checked");
+			reason = $("#bulk_rejection_reason").val()
+			ids = [];
+			checkedRows.each(function () {
+				if($(this).attr("id") != ""){
+					ids.push($(this).attr("id"));
+				}
+			});
+			console.log(ids)
+			$.ajax({
+				type: "POST",
+				url: "{% url 'document-bulk-reject' %}",
+				data: {
+					"ids": ids,
+					"reason": reason,
+					csrfmiddlewaretoken: getCookie("csrftoken"),
+				},
+				traditional:true,
+				success: function () {
+					console.log("Success");
+					// currentUrl = window.location.href;
+					// $("#view-container").load(currentUrl + " #view-container");
+					// demo = $("#view-container").html()
+					window.location.reload()	
+				},
+				error: function () {
+					console.log("Error");
+				},
+			});
+		});
+
+		$(".select_all").on("change", function(){
+			var is_checked = $(this).prop("checked");
+
+			$(this).closest(".oh-accordion-meta__header").siblings(".oh-accordion-meta__body").find("[type=checkbox]").prop("checked", is_checked);
+			// console.log($(this).closest(".oh-accordion-meta__header").siblings(".oh-accordion-meta__body").find("[type=checkbox]"));
+		})
+	});
+</script>
+
+{% endblock content %}

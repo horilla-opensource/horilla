@@ -4,8 +4,10 @@ urls.py
 This module is used to map url path with view methods.
 """
 from django.urls import path
+from base.views import object_delete
 from employee import not_in_out_dashboard, policies, views
 from employee.models import Employee
+from horilla_documents.models import DocumentRequest
 
 urlpatterns = [
     path("get-language-code/", views.get_language_code, name="get-language-code"),
@@ -211,6 +213,7 @@ urlpatterns = [
         name="contract-tab",
         kwargs={"model": Employee},
     ),
+    path("document-tab/<int:emp_id>", views.document_tab, name="document-tab"),
     path("bonus-points-tab/<int:emp_id>", views.bonus_points_tab, name="bonus-points-tab"),
     path("add-bonus-points/<int:emp_id>", views.add_bonus_points, name="add-bonus-points"),
     path("redeem-points/<int:emp_id>", views.redeem_points, name="redeem-points"),
@@ -244,4 +247,28 @@ urlpatterns = [
     path("add-attachment-policy", policies.add_attachment, name="add-attachment-policy"),
     path("remove-attachment-policy", policies.remove_attachment, name="remove-attachment-policy"),
     path("get-attachments-policy", policies.get_attachments, name="get-attachments-policy"),
+    path("file-upload/<int:id>", views.file_upload, name="file-upload"),
+    path("view-file/<int:id>", views.view_file, name="view-file"),
+    path("document-create", views.document_create, name="document-create"),
+    path("document-create/<int:emp_id>", views.document_create, name="document-create"),
+    path("update-document-title/<int:id>", views.update_document_title, name="update-document-title"),
+    path("document-approve/<int:id>", views.document_approve, name="document-approve"),
+    path("document-bulk-approve", views.document_bulk_approve, name="document-bulk-approve"),
+    path("document-bulk-reject", views.document_bulk_reject, name="document-bulk-reject"),
+    path("document-reject/<int:id>", views.document_reject, name="document-reject"),
+    path("document-request-view/", views.document_request_view, name="document-request-view"),
+    path("document-request-filter-view", views.document_filter_view, name="document-request-filter-view"),
+    path("document-request-create", views.document_request_create, name="document-request-create"),
+    path("document-request-update/<int:id>", views.document_request_update, name="document-request-update"),
+    path(
+        "document-request-kwargs={'model':Employee}delete/<int:id>/",
+        object_delete,
+        name="document-request-delete",
+        kwargs={"model": DocumentRequest, "redirect": "document-request-view"},
+    ),
+    path(
+        "document-delete/<int:id>/",
+        views.document_delete,
+        name="document-delete",
+    ),
 ]

@@ -1,0 +1,309 @@
+{% load static %} {% load i18n %} {% load basefilters %}
+
+<section class="oh-wrapper oh-main__topbar" x-data="{searchShow: false}">
+	<div class="oh-main__titlebar oh-main__titlebar--left">
+		<a
+			href='{% url "shift-request-view" %}'
+			class="oh-main__titlebar-title fw-bold mb-0 text-dark"
+			style="text-decoration: none"
+			>{% trans "document Requests" %}
+			<a
+				class="oh-main__titlebar-search-toggle"
+				role="button"
+				aria-label="Toggle Search"
+				@click="searchShow = !searchShow"
+			>
+				<ion-icon
+					name="search-outline"
+					class="oh-main__titlebar-serach-icon"
+				></ion-icon>
+			</a>
+		</a>
+	</div>
+	<div class="oh-main__titlebar oh-main__titlebar--right">
+		{% if documents %}
+		<form
+			hx-get="{% url 'document-request-filter-view' %}"
+			hx-target="#view-container"
+			id="filterForm"
+			class="d-flex"
+			>
+			<div
+				class="oh-input-group oh-input__search-group"
+				:class="searchShow ? 'oh-input__search-group--show' : ''"
+			>
+				<ion-icon
+					name="search-outline"
+					class="oh-input-group__icon oh-input-group__icon--left"
+				></ion-icon>
+				<input
+					type="text"
+					class="oh-input oh-input__icon"
+					aria-label="Search Input"
+					placeholder="{% trans 'Search' %}"
+					name="search"
+					onkeyup="$('.filterButton').click()"
+				/>
+			</div>
+			{% endif %}
+			<div class="oh-main__titlebar-button-container">
+				{% if documents %}
+				
+					<div class="oh-dropdown" x-data="{open: false}">
+						<button
+							class="oh-btn ml-2"
+							@click="open = !open"
+							onclick="event.preventDefault()"
+						>
+							<ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}
+							<div id="filterCount"></div>
+						</button>
+						<div
+							class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4"
+							x-show="open"
+							@click.outside="open = false"
+							style="display: none"
+						>
+							<div class="oh-dropdown__filter-body">
+								<div class="oh-accordion">
+									<div class="oh-accordion-header">{% trans "Work Info" %}</div>
+									<div class="oh-accordion-body">
+										<div class="row">
+											<div class="col-sm-12 col-md-12 col-lg-6">
+												<div class="oh-input-group">
+													<label class="oh-label" for="{{f.form.employee_id.id_for_label}}">{% trans "Employee" %}</label>
+													{{f.form.employee_id}}
+												</div>
+												<div class="oh-input-group">
+													<label class="oh-label" for ="{{f.form.employee_id__employee_work_info__job_position_id.id_for_label}}"
+														>{% trans "Job Position" %}</label
+													>
+													{{f.form.employee_id__employee_work_info__job_position_id}}
+												</div>
+												<div class="oh-input-group">
+													<label class="oh-label" for="{{f.form.employee_id__employee_work_info__shift_id.id_for_label}}">{% trans "Shift" %}</label>
+													{{f.form.employee_id__employee_work_info__shift_id}}
+												</div>
+												<div class="oh-input-group">
+													<label class="oh-label" for="{{f.form.employee_id__employee_work_info__company_id.id_for_label}}">{% trans "Company" %}</label>
+													{{f.form.employee_id__employee_work_info__company_id}}
+												</div>
+												<div class="oh-input-group">
+													<label class="oh-label" for="{{f.form.employee_id__is_active.id_for_label}}">{% trans "Is Active" %}?</label>
+													{{f.form.employee_id__is_active}}
+												</div>
+											</div>
+											<div class="col-sm-12 col-md-12 col-lg-6">
+												<div class="oh-input-group">
+													<label class="oh-label" for="{{f.form.employee_id__employee_work_info__department_id.id_for_label}}">{% trans "Department" %}</label>
+													{{f.form.employee_id__employee_work_info__department_id}}
+												</div>
+												<div class="oh-input-group">
+													<label class="oh-label" for="{{f.form.employee_id__employee_work_info__job_role_id.id_for_label}}">{% trans "Job Role" %}</label>
+													{{f.form.employee_id__employee_work_info__job_role_id}}
+												</div>
+												<div class="oh-input-group">
+													<label class="oh-label" for="{{f.form.employee_id__employee_work_info__work_type_id.id_for_label}}">{% trans "Work Type" %}</label>
+													{{f.form.employee_id__employee_work_info__work_type_id}}
+												</div>
+												<div class="oh-input-group">
+													<label class="oh-label" for="{{f.form.employee_id__employee_work_info__reporting_manager_id.id_for_label}}"
+														>{% trans "Reporting Manager" %}</label
+													>
+													{{f.form.employee_id__employee_work_info__reporting_manager_id}}
+												</div>
+												<div class="oh-input-group">
+													<label class="oh-label" for="{{f.form.employee_id__gender.id_for_label}}">{% trans "Gender" %}</label>
+													{{f.form.employee_id__gender}}
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+								<div class="oh-accordion">
+									<div class="oh-accordion-header">
+										{% trans "Document Request" %}
+									</div>
+									<div class="oh-accordion-body">
+										<div class="row">
+											<div class="col-sm-12 col-md-12 col-lg-6">
+												{% comment %} <div class="oh-input-group">
+													<label class="oh-label"
+														>{% trans "title" %}</label
+													>
+													{{f.form.title}}
+												</div> {% endcomment %}
+												<div class="oh-input-group">
+													<label class="oh-label" for="{{f.form.status.id_for_label}}">{% trans "Status" %}</label>
+													{{f.form.status}}
+												</div>
+											</div>
+											
+											<div class="col-sm-12 col-md-12 col-lg-6">
+												{% comment %} <div class="oh-input-group">
+													<label class="oh-label"
+														>{% trans "Employee" %}</label
+													>
+													{{f.form.employee_id}}
+												</div> {% endcomment %}
+												<div class="oh-input-group">
+													<label class="oh-label" for="{{f.form.document_request_id.id_for_label}}">{% trans "Document request" %}</label>
+													{{f.form.document_request_id}}
+												</div>
+											</div>
+											
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="oh-dropdown__filter-footer">
+								<button
+									class="oh-btn oh-btn--secondary oh-btn--small w-100 filterButton"
+								>
+									{% trans "Filter" %}
+								</button>
+							</div>
+						</div>
+					</div>
+				{% if 'employee' in perms or request.user|is_reportingmanager %}
+				<div class="oh-btn-group ml-2">
+					<div class="oh-dropdown" x-data="{open: false}">
+						<button
+							class="oh-btn oh-btn--dropdown"
+							@click="open = !open"
+							@click.outside="open = false"
+							onclick="event.preventDefault()"
+						>
+							{% trans "Actions" %}
+						</button>
+						<div
+							class="oh-dropdown__menu oh-dropdown__menu--right"
+							x-show="open"
+							style="display: none"
+						>
+							<ul class="oh-dropdown__items">
+								{% if perms.base.view_shiftrequest %}
+								<li class="oh-dropdown__item">
+									<a
+										href="#"
+										class="oh-dropdown__link"
+										data-toggle="oh-modal-toggle"
+										data-target="#shiftRequestsExport"
+										>{% trans "Export" %}</a
+									>
+								</li>
+								{% endif %} 
+								{% if perms.horilla_documnets.change_documentrequest or request.user|is_reportingmanager %}
+
+								<li class="oh-dropdown__item">
+									<a class="oh-dropdown__link mb-2 bulk_approve"
+										>{% trans "Bulk Approve Requests" %}</a
+									>
+								</li>
+								{% endif %} 
+								{% if perms.base.change_shiftrequest or request.user|is_reportingmanager %}
+
+								<li class="oh-dropdown__item">
+									<a class="oh-dropdown__link mb-2 " data-toggle="oh-modal-toggle"
+										data-target="#BulkRejectModal"
+										>{% trans "Bulk Reject Requests" %}</a
+									>
+								</li>
+
+								{% comment %}
+								<li class="oh-dropdown__item">
+									<a
+										href="#"
+										class="oh-dropdown__link oh-dropdown__link--danger"
+										id="deleteShiftRequest"
+										>{% trans "Delete" %}</a
+									>
+								</li>
+								{% endcomment %} {% endif %}
+							</ul>
+						</div>
+					</div>
+				</div>
+				{% endif %} {% endif %}
+				<div class="oh-btn-group ml-2">
+					<div>
+						<button
+							class="oh-btn oh-btn--secondary"
+							data-toggle="oh-modal-toggle"
+							data-target="#documentRequestCreateModal"
+							hx-get="{% url 'document-request-create' %}"
+							hx-target="#documentRequestCreateForm"
+							onclick="event.preventDefault()"
+
+						>
+							<ion-icon name="add-sharp" class="mr-2"></ion-icon>{% trans "Create" %}
+						</button>
+					</div>
+				</div>
+			</div>
+		</form>
+	</div>
+</section>
+
+<div
+	class="oh-modal"
+	id="documentRequestCreateModal"
+	role="dialog"
+	aria-labelledby="documentRequestCreateModal"
+	aria-hidden="true"
+>
+	<div class="oh-modal__dialog">
+		<div class="oh-modal__dialog-header">
+			<h5 class="oh-modal__dialog-title" id="documentRequestModalLabel">
+				{% trans "document Request" %}
+			</h5>
+			<button class="oh-modal__close" aria-label="Close">
+				<ion-icon name="close-outline"></ion-icon>
+			</button>
+		</div>
+		<div class="oh-modal__dialog-body" id="documentRequestCreateForm"></div>
+	</div>
+</div>
+
+<div
+	class="oh-modal"
+	id="BulkRejectModal"
+	role="dialog"
+	aria-labelledby="BulkRejectModal"
+	aria-hidden="true"
+>
+	<div class="oh-modal__dialog">
+		<div class="oh-modal__dialog-header">
+			<span class="oh-modal__dialog-title" id="BulkRejectModalLabel"
+				>{% trans "Bulk Rejection Reason" %}</span
+			>
+			<button class="oh-modal__close" aria-label="Close">
+				<ion-icon
+					name="close-outline"
+					role="img"
+					class="md hydrated"
+					aria-label="close outline"
+				></ion-icon>
+			</button>
+		</div>
+		<div class="oh-modal__dialog-body" id="BulkRejectForm">
+			<form id="bulk-reject-form"> 
+				<textarea name="rejection_reason" cols="40" rows="2" class="oh-input w-100" placeholder="Rejection reason" id="bulk_rejection_reason"></textarea>
+				
+				<div class="d-flex justify-content-between w-100 align-items-center mt-4">
+					<button type="button" class="oh-btn oh-btn--secondary oh-btn--shadow bulk_reject">
+						{% trans "Save" %}
+					</button>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+<script>
+	$(document).ready(function () {
+		$("#id_field").on("change", function () {
+			$(".filterButton")[0].click();
+		});
+	});
+</script>
+<script src="{% static '/base/filter.js' %}"></script>

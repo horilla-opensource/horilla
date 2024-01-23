@@ -1,0 +1,29 @@
+{% load i18n %}
+
+<form
+	id="file-form"
+	hx-post="{% url 'file-upload' document.id %}"
+	hx-target="#uploadFileForm"
+	hx-encoding="multipart/form-data"
+>
+	{% csrf_token %}
+	<input type="hidden" name="employee_id" value="{{form.employee_id.value}}">
+	<input type="hidden" name="status" value="requested">
+	<input type="hidden" name="title" value="{{form.instance.title}}">
+	<input type="hidden" name="rejection_reason" value="{{form.rejection_reason.value}}">
+	<input type="hidden" name="document_request_id" value="{{form.document_request_id.value}}">
+	{{form.non_field_errors}} 
+	{{form.document}}
+	{{form.document.errors}}
+	<div class="file-validation">
+		<ul class="m-0">
+			<li style="list-style:disc">{% trans "Upload only " %}<b>{{form.instance.document_request_id.format}}</b> {% trans "file" %}</li>
+			<li style="list-style:disc">{% trans "Max size of the file" %} {{form.instance.document_request_id.max_size}}MB</li>
+		</ul>
+	</div>
+	<div class="d-flex justify-content-between w-100 align-items-center mt-4">
+		<button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow">
+			{% trans "Save" %}
+		</button>
+	</div>
+</form>

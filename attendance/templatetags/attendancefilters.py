@@ -4,6 +4,7 @@ attendancefilters.py
 This module is used to write custom template filters.
 
 """
+import base64
 from itertools import groupby
 from django import template
 from django.forms.widgets import SelectMultiple, Textarea
@@ -208,3 +209,8 @@ def is_text_area(widget):
     {% endif %}
     """
     return isinstance(widget, Textarea)
+
+
+@register.filter
+def base64_encode(value):
+    return base64.b64encode(value).decode('utf-8')
