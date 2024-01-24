@@ -434,7 +434,7 @@ def calculate_pre_tax_deduction(*_args, **kwargs):
                     "allowances": kwargs["allowances"],
                     "total_allowance": kwargs["total_allowance"],
                     "basic_pay": kwargs["basic_pay"],
-                    "day_dic": kwargs["day_dict"],
+                    "day_dict": kwargs["day_dict"],
                 }
             )
             kwargs["amount"] = amount

@@ -380,7 +380,7 @@ class WorkRecord(models.Model):
 
     def save(self, *args, **kwargs):
         self.last_update = datetime.now()
-        
+
         if self.work_record_type == "CONF":
             self.color = "#dc3545"
         elif self.work_record_type == "FDP":
@@ -403,14 +403,16 @@ class WorkRecord(models.Model):
             else f"{self.work_record_type}-{self.date}"
         )
 
+
 class WorkRecordThread(threading.Thread):
-    
     def run(self):
         work_records = WorkRecord.objects.filter(last_update__isnull=True)
         for work_record in work_records:
             work_record.save()
-            
+
+
 WorkRecordThread().start()
+
 
 class OverrideAttendance(Attendance):
     """
@@ -1357,9 +1359,9 @@ class LoanAccount(models.Model):
     """
 
     loan_type = [
-        ("loan", "Loan"),
-        ("advanced_salary", "Advanced Salary"),
-        ("fine", "Penalty / Fine"),
+        ("loan", _("Loan")),
+        ("advanced_salary", _("Advanced Salary")),
+        ("fine", _("Penalty / Fine")),
     ]
     type = models.CharField(default="loan", choices=loan_type, max_length=15)
     title = models.CharField(max_length=20)
@@ -1487,6 +1489,7 @@ class ReimbursementMultipleAttachment(models.Model):
     """
 
     attachment = models.FileField(upload_to="payroll/reimbursements")
+    objects = models.Manager()
 
 
 class Reimbursement(models.Model):
@@ -1583,8 +1586,8 @@ class Reimbursement(models.Model):
                         bonus_points.save()
                     else:
                         request = getattr(
-                                thread_local_middleware._thread_locals, "request", None
-                            )
+                            thread_local_middleware._thread_locals, "request", None
+                        )
                         if request:
                             messages.info(
                                 request,

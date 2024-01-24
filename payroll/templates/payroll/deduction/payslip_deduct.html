@@ -1,0 +1,7 @@
+{% load i18n %}{% load widget_tweaks %}
+<form
+  hx-post="{% url 'add-payslip-deduction' %}?employee_id={{employee_id}}&payslip_id={{payslip_id}}"
+  hx-target="#addDeductionFormModal"
+>
+  {{form.as_p}}
+</form>

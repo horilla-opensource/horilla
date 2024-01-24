@@ -22,6 +22,7 @@ from payroll.widgets import component_widgets as widget
 from payroll.models.models import (
     Allowance,
     Contract,
+    Deduction,
     LoanAccount,
     MultipleCondition,
     Payslip,
@@ -143,7 +144,7 @@ class DeductionForm(forms.ModelForm):
                 and len(self.data.getlist("specific_employees")) == 0
             ):
                 raise forms.ValidationError(
-                    {"specific_employees": "You need to choose the employee."}
+                    {"specific_employees": _("You need to choose the employee.")}
                 )
 
             if (
@@ -151,10 +152,10 @@ class DeductionForm(forms.ModelForm):
                 and self.data.get("one_time_date") == ""
             ):
                 raise forms.ValidationError(
-                    {"one_time_date": "This field is required."}
+                    {"one_time_date": _("This field is required.")}
                 )
             if self.data.get("amount") is None and self.data.get("amount") == "":
-                raise forms.ValidationError({"amount": "This field is required."})
+                raise forms.ValidationError({"amount": _("This field is required.")})
         return super().clean()
 
     def as_p(self):
@@ -409,6 +410,48 @@ class BonusForm(Form):
         )
 
 
+class PayslipAllowanceForm(BonusForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["date"].widget = forms.HiddenInput()
+
+
+class PayslipDeductionForm(ModelForm):
+    """
+    Bonus Creating Form
+    """
+    verbose_name = _("Deduction")
+    class Meta:
+        model = Deduction
+        fields = [
+            "title",
+            "one_time_date",
+            "update_compensation",
+            "is_tax",
+            "is_pretax",
+            "is_fixed",
+            "amount",
+            "based_on",
+            "rate",
+            "employer_rate",
+            "has_max_limit",
+            "maximum_amount",
+        ]
+        widgets = {
+            "one_time_date": forms.HiddenInput(),
+        }
+
+    employee_id = forms.IntegerField(label="Employee", widget=forms.HiddenInput())
+
+    def as_p(self):
+        """
+        Render the form fields as HTML table rows with Bootstrap styling.
+        """
+        context = {"form": self}
+        table_html = render_to_string("one_time_deduction.html", context)
+        return table_html
+        
+
 class LoanAccountForm(ModelForm):
     """
     LoanAccountForm
@@ -535,7 +578,6 @@ class ReimbursementForm(ModelForm):
             type = self.data["type"]
         elif self.instance is not None:
             type = self.instance.type
-        print(type)
         if not request.user.has_perm("payroll.add_reimbursement"):
             exclude_fields.append("employee_id")
 
@@ -546,13 +588,21 @@ class ReimbursementForm(ModelForm):
                 "ad_to_encash",
                 "bonus_to_encash",
             ]
-        elif self.instance.pk and type == "leave_encashment" or self.data.get("type") == "leave_encashment":
+        elif (
+            self.instance.pk
+            and type == "leave_encashment"
+            or self.data.get("type") == "leave_encashment"
+        ):
             exclude_fields = exclude_fields + [
                 "attachment",
                 "amount",
                 "bonus_to_encash",
             ]
-        elif self.instance.pk and type == "bonus_encashment" or self.data.get("type") == "bonus_encashment":
+        elif (
+            self.instance.pk
+            and type == "bonus_encashment"
+            or self.data.get("type") == "bonus_encashment"
+        ):
             exclude_fields = exclude_fields + [
                 "attachment",
                 "amount",
@@ -566,8 +616,8 @@ class ReimbursementForm(ModelForm):
         for field in exclude_fields:
             if field in self.fields:
                 del self.fields[field]
-            
-        emp = Employee.objects.get(id = self.initial["employee_id"])
+
+        emp = Employee.objects.get(id=self.initial["employee_id"])
 
         try:
             notify.send(
@@ -585,7 +635,6 @@ class ReimbursementForm(ModelForm):
             )
         except Exception as e:
             pass
-
 
     def as_p(self):
         """

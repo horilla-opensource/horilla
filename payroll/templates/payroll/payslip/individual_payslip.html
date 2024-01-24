@@ -123,13 +123,23 @@
           <tr class="oh-payslip__table-row">
             <th class="oh-payslip__table-th">{% trans "Allowances" %}</th>
             <th class="oh-payslip__table-th">{% trans "Amount" %}</th>
+            <th class="oh-payslip__table-th">
+              {% if perms.payroll.add_allowance %}
+                  <button title="{% trans 'Add Allowance' %}" class="oh-btn oh-btn--secondary-outline oh-stop-prop oh-accordion-meta__btn p-2" 
+                          hx-get="{% url "add-bonus" %}?employee_id={{employee.id}}&payslip_id={{instance.id}}" hx-target="#addBonusModalBody" 
+                          data-target="#addBonusModal" data-toggle="oh-modal-toggle"
+                          >
+                      <ion-icon class="md hydrated" name="add-outline" role="img" aria-label="add outline"></ion-icon>
+                  </button>
+              {% endif %}
+            </th>   
           </tr>
         </thead>
         <tbody class="oh-payslip__table-tbody">
           <tr class="oh-payslip__table-tr">
             <td
               class="oh-payslip__table-td"
-              title="Some deductions will update basic pay before payslip calculation starts, eg: LOP is Deduducted from basic pay if 'Deduct leave from basic pay' field is enabled on the contract, and also with the update compensation deduction through"
+              title="{% trans 'Some deductions will update basic pay before payslip calculation starts, eg: LOP is Deduducted from basic pay if `Deduct leave from basic pay` field is enabled on the contract, and also with the update compensation deduction through' %}"
             >
               {% trans "Basic Pay" %}
             </td>
@@ -150,7 +160,7 @@
           <tr class="oh-payslip__table-tr">
             <th
               class="oh-payslip__table-tf"
-              title="Some Deduction will update the total gross pay using the deductions that are enabled update compensation"
+              title="{% trans 'Some Deduction will update the total gross pay using the deductions that are enabled update compensation' %}"
             >
               {% trans "Total Gross Pay" %}
             </th>
@@ -166,6 +176,16 @@
           <tr class="oh-payslip__table-row">
             <th class="oh-payslip__table-th">{% trans "Deductions" %}</th>
             <th class="oh-payslip__table-th">{% trans "Amount" %}</th>
+            <th class="oh-payslip__table-th">
+              {% if perms.payroll.add_deduction %}
+                  <button title="{% trans 'Add Deduction' %}" class="oh-btn oh-btn--secondary-outline oh-stop-prop oh-accordion-meta__btn p-2" 
+                          hx-get="{% url "add-payslip-deduction" %}?employee_id={{employee.id}}&payslip_id={{instance.id}}" hx-target="#addDeductionFormModal" 
+                          data-target="#addDeductionModal" data-toggle="oh-modal-toggle"
+                          >
+                      <ion-icon class="md hydrated" name="add-outline" role="img" aria-label="add outline"></ion-icon>
+                  </button>
+              {% endif %}
+            </th> 
           </tr>
         </thead>
         <tbody class="oh-payslip__table-tbody">
@@ -232,7 +252,7 @@
           <tr class="oh-payslip__table-tr">
             <th
               class="oh-payslip__table-tf"
-              title="Some deductions are not calculated to total deductions because they are deduducted before the calculation starts they deducted from basic pay, gross pay and some deduct after calculating the net pay"
+              title="{% trans 'Some deductions are not calculated to total deductions because they are deduducted before the calculation starts they deducted from basic pay, gross pay and some deduct after calculating the net pay' %}"
             >
               {% trans "Total Deductions" %}
             </th>
@@ -294,10 +314,24 @@
         </select>
       </div>
     </div>
-
   </div>
 </div>
+
 <div id="messageContainer"></div>
+
+<div class="oh-modal" id="addBonusModal" role="dialog" aria-labelledby="addBonusModalLabel" aria-hidden="true">
+  <div class="oh-modal__dialog" id="addBonusModalBody"> </div>
+</div>
+
+<div class="oh-modal" id="addDeductionModal" aria-labelledby="addDeductionModalLabel" role="dialog" aria-hidden="true">
+  <div class="oh-modal__dialog" style="max-width: 550px">
+    <div class="oh-modal__dialog-header">
+      <button type="button" class="oh-modal__close" aria-label="Close" style="margin-top: 34px;margin-right: 34px;"><ion-icon name="close-outline"></ion-icon></button>
+    </div>
+    <div class="oh-modal__dialog-body" id="addDeductionFormModal"></div>
+  </div>
+</div>
+
 <script>
   $("#id_status").change(function (e) {
     var endDate = "{{instance.end_date|date:'Y-m-d'}}"

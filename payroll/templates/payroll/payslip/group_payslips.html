@@ -11,7 +11,7 @@
       >
         <span class="oh-accordion-meta__title d-flex">
           <div class="oh-tabs__input-badge-container">
-            <span class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round ms-2 mr-2" title="{{payslip.list|length}} payslips">
+            <span class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round ms-2 mr-2" title="{{payslip.list|length}} {% trans 'payslips' %}">
               {{payslip.list|length}}
               </span>
           </div>
@@ -38,7 +38,7 @@
                   <div class="centered-div">
                     <input
                       type="checkbox"
-                      title="Select all users"
+                      title="{% trans 'Select all users' %}"
                       class="oh-input oh-input__checkbox select-all-payslip-row"
                       data-accordion-id="{{payslip.grouper}}Container"
                     />

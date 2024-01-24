@@ -9,27 +9,24 @@ import operator
 from datetime import date, datetime
 from urllib.parse import parse_qs
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
-from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+from django.http import HttpResponse, JsonResponse, QueryDict
 from django.shortcuts import render, redirect
 from django.contrib import messages
-from notifications.signals import notify
 from django.utils.translation import gettext_lazy as _
-from django.http import HttpResponse
+from notifications.signals import notify
 import pandas as pd
 from asset.models import Asset
-from base.models import Company
 from employee.models import Employee, EmployeeWorkInformation
 from horilla.decorators import login_required, owner_can_enter, permission_required
 from horilla.settings import EMAIL_HOST_USER
-from base.methods import filter_own_recodes, get_key_instances
-from base.methods import closest_numbers
+from base.models import Company
+from base.methods import filter_own_recodes, get_key_instances, closest_numbers
 from leave.models import AvailableLeave
 import payroll.models.models
 from payroll.models.models import (
     Allowance,
     Deduction,
     LoanAccount,
-    MultipleCondition,
     Payslip,
     Reimbursement,
     ReimbursementMultipleAttachment,
@@ -536,7 +533,7 @@ def generate_payslip(request):
 
 @login_required
 @permission_required("payroll.add_payslip")
-def create_payslip(request):
+def create_payslip(request, new_post_data=None):
     """
     Create a payslip for an employee.
 
@@ -548,6 +545,8 @@ def create_payslip(request):
     Returns:
         A rendered HTML template for the payslip creation form.
     """
+    if new_post_data:
+        request.POST = new_post_data
     form = forms.PayslipForm()
     if request.method == "POST":
         form = forms.PayslipForm(request.POST)
@@ -878,15 +877,99 @@ def send_slip(request):
 @permission_required("payroll.add_allowance")
 def add_bonus(request):
     employee_id = request.GET["employee_id"]
-    form = forms.BonusForm(initial={"employee_id": employee_id})
+    payslip_id = request.GET.get("payslip_id")
+    if payslip_id:
+        instance = Payslip.objects.get(id=payslip_id)
+        form = forms.PayslipAllowanceForm(
+            initial={"employee_id": employee_id, "date": instance.start_date}
+        )
+    else:
+        form = forms.BonusForm(initial={"employee_id": employee_id})
     if request.method == "POST":
         form = forms.BonusForm(request.POST, initial={"employee_id": employee_id})
         if form.is_valid():
             form.save()
-            messages.success(request, "Bonus Added")
+            messages.success(request, _("Bonus Added"))
+            if payslip_id:
+                new_post_data = QueryDict(mutable=True)
+                new_post_data.update(
+                    {
+                        "employee_id": instance.employee_id,
+                        "start_date": instance.start_date,
+                        "end_date": instance.end_date,
+                    }
+                )
+                instance.delete()
+                create_payslip(request, new_post_data)
+                payslip = Payslip.objects.filter(
+                    employee_id=instance.employee_id,
+                    start_date=instance.start_date,
+                    end_date=instance.end_date,
+                ).first()
+                return HttpResponse(
+                    f"<script>window.location.href='/payroll/view-payslip/{payslip.id}'</script>"
+                )
             return HttpResponse("<script>window.location.reload()</script>")
     return render(
-        request, "payroll/bonus/form.html", {"form": form, "employee_id": employee_id}
+        request,
+        "payroll/bonus/form.html",
+        {"form": form, "employee_id": employee_id, "payslip_id": payslip_id},
+    )
+
+
+@login_required
+@permission_required("payroll.add_allowance")
+def add_deduction(request):
+    employee_id = request.GET["employee_id"]
+    payslip_id = request.GET.get("payslip_id")
+    instance = Payslip.objects.get(id=payslip_id)
+
+    if request.method == "POST":
+        form = forms.PayslipDeductionForm(
+            request.POST,
+            initial={"employee_id": employee_id, "one_time_date": instance.start_date},
+        )
+        if form.is_valid():
+            
+            # Save the form to create the Deduction instance
+            deduction_instance = form.save(commit=False)
+            deduction_instance.only_show_under_employee = True
+            deduction_instance.save()
+
+            # Now that the Deduction instance is saved, add the related employees
+            deduction_instance.specific_employees.set([employee_id])
+            deduction_instance.include_active_employees = False
+            deduction_instance.save()
+            
+            # Now create new payslip by deleting existing payslip
+            new_post_data = QueryDict(mutable=True)
+            new_post_data.update(
+                {
+                    "employee_id": instance.employee_id,
+                    "start_date": instance.start_date,
+                    "end_date": instance.end_date,
+                }
+            )
+            instance.delete()
+            create_payslip(request, new_post_data)
+            payslip = Payslip.objects.filter(
+                employee_id=instance.employee_id,
+                start_date=instance.start_date,
+                end_date=instance.end_date,
+            ).first()
+            return HttpResponse(
+                f"<script>window.location.href='/payroll/view-payslip/{payslip.id}'</script>"
+            )
+
+    else:
+        form = forms.PayslipDeductionForm(
+            initial={"employee_id": employee_id, "one_time_date": instance.start_date}
+        )
+
+    return render(
+        request,
+        "payroll/deduction/payslip_deduct.html",
+        {"form": form, "employee_id": employee_id, "payslip_id": payslip_id},
     )
 
 
@@ -1024,7 +1107,7 @@ def view_reimbursement(request):
         {
             "requests": paginator_qry(requests, request.GET.get("page")),
             "f": filter_object,
-            "pd":request.GET.urlencode(),
+            "pd": request.GET.urlencode(),
             "filter_dict": data_dict,
         },
     )
@@ -1099,16 +1182,16 @@ def approve_reimbursements(request):
         for reimbursement in reimbursements:
             if reimbursement.type == "leave_encashment":
                 reimbursement.amount = amount
-            elif reimbursement.type == "bonus_encashment" :
+            elif reimbursement.type == "bonus_encashment":
                 reimbursement.amount = amount
-                
+
             emp = reimbursement.employee_id
             reimbursement.status = status
             reimbursement.save()
         messages.success(
             request, f"Request {reimbursement.get_status_display()} succesfully"
         )
-        if status == 'canceled':
+        if status == "canceled":
             notify.send(
                 request.user.employee_get,
                 recipient=emp.employee_user_id,
