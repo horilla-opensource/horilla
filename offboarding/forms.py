@@ -165,7 +165,8 @@ class TaskForm(ModelForm):
 
     verbose_name = "Offboarding Task"
     tasks_to = forms.ModelMultipleChoiceField(
-        queryset=OffboardingEmployee.objects.all()
+        queryset=OffboardingEmployee.objects.all(),
+        required=False,
     )
 
     class Meta:
@@ -179,6 +180,8 @@ class TaskForm(ModelForm):
         super().__init__(*args, **kwargs)
         self.fields["stage_id"].empty_label = "All Stages in Offboarding"
         self.fields["managers"].empty_label = None
+        queryset = OffboardingEmployee.objects.filter(stage_id__offboarding_id=OffboardingStage.objects.filter(id=self.initial.get("stage_id")).first().offboarding_id)
+        self.fields["tasks_to"].queryset = queryset
 
     def as_p(self):
         """
@@ -192,7 +195,6 @@ class TaskForm(ModelForm):
         super().save(commit)
         if commit:
             employees = self.cleaned_data["tasks_to"]
-            print(employees)
             for employee in employees:
                 assinged_task = EmployeeTask.objects.get_or_create(
                     employee_id=employee,

@@ -6,6 +6,9 @@ from django.dispatch import receiver
 from base import thread_local_middleware
 from employee.models import Employee
 from horilla_audit.models import HorillaAuditInfo, HorillaAuditLog
+from notifications.signals import notify
+from django.contrib.auth.models import User
+from base.thread_local_middleware import _thread_locals
 
 # Create your models here.
 
@@ -22,6 +25,9 @@ class Offboarding(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     status = models.CharField(max_length=10, default="ongoing", choices=statuses)
     is_active = models.BooleanField(default=True)
+    
+    def __str__(self):
+        return self.title
 
 
 class OffboardingStage(models.Model):
@@ -150,6 +156,21 @@ class EmployeeTask(models.Model):
 
     class Meta:
         unique_together = ["employee_id", "task_id"]
+        
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        request = getattr(_thread_locals, "request", None)
+        notify.send(
+            request.user.employee_get,
+            recipient=self.employee_id.employee_id.employee_user_id,
+            verb=f'Offboarding task "{self.task_id.title}" has been assiged',
+            verb_ar=f"",
+            verb_de=f"",
+            verb_es=f"",
+            verb_fr=f"",
+            redirect="offboarding/offboarding-pipeline",
+            icon="information",
+        )
 
 
 class ExitReason(models.Model):

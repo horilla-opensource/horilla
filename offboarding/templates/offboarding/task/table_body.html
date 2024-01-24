@@ -1,82 +1,92 @@
 {% load i18n offboarding_filter %}
-{% for employee in stage.offboardingemployee_set.all %}
-<div class="oh-sticky-table__tr oh-multiple-table-sort__movable" data-employee="{{employee.employee_id.get_full_name}}" data-employee-id="{{ employee.id }}">
-  <div class="oh-sticky-table__sd">
-    <div class="oh-profile oh-profile--md">
-      <div class="oh-profile__avatar mr-1">
-        <img src="{{ employee.employee_id.get_avatar }}" class="oh-profile__image" />
-      </div>
-      <span class="oh-profile__name oh-text--dark">{{ employee.employee_id.get_full_name }}</span>
-    </div>
-  </div>
-  <div class="oh-sticky-table__td">
-    {% trans 'In' %} {{ employee.notice_period }}
-    {{ employee.get_unit_display }}
-  </div>
-  <div class="oh-sticky-table__td">{{ employee.notice_period_starts }}</div>
-  <div class="oh-sticky-table__td">{{ employee.notice_period_ends }}</div>
-  <div class="oh-sticky-table__td">
-    <form hx-get="{% url "offboarding-change-stage" %}?employee_ids={{employee.id}}"
-      hx-target="#offboardingBody{{offboarding.id}}">
-      {{ stage_forms|stages:stage }}
-      <input type="submit" hidden>
-    </form>
-
-  </div>
-  <div class="oh-sticky-table__td">
-    <div class="oh-btn-group">
-      <button type="button" hx-get="{% url 'send-mail-employee' employee.employee_id.id %}"
-        title="{% trans 'Send Mail' %}" hx-target="#offboardingModalBody" class="oh-btn oh-btn--light"
-        data-toggle="oh-modal-toggle" data-target="#offboardingModal"
-        style="flex: 1 0 auto; width:20px;height: 40.68px; padding: 0;"><ion-icon
-          name="mail-open-outline"></ion-icon></button>
-      <button type="button" title="{% trans 'Notes' %}" class="oh-btn oh-btn--light oh-activity-sidebar__open"
-        data-target="#activitySidebar" hx-get="{% url 'view-offboarding-note' %}?employee_id={{ employee.id }}"
-        hx-target="#noteContainer" style="flex: 1 0 auto; width:20px;height: 40.68px; padding: 0;"><ion-icon
-          name="newspaper-outline"></ion-icon>
-      </button>
-      {% if not employee.employee_id.is_active %}
-      <a type="button" href="{% url 'employee-archive' employee.employee_id.id %}" title="{% trans 'Un Archive' %}"
-        class="oh-btn oh-btn--light tex-primary"
-        style="flex: 1 0 auto; width:20px;height: 40.68px; padding: 0;"><ion-icon name="archive"></ion-icon></a>
-      {% else %}
-        <a type="button" hx-target="#offboardingModalBody" data-toggle="oh-modal-toggle" data-target="#offboardingModal" hx-get="{% url "add-employee" %}?instance_id={{employee.id}}&stage_id={{stage.id}}" title="{% trans 'Edit' %}"
-          class="oh-btn oh-btn--light tex-primary"
-          style="flex: 1 0 auto; width:20px;height: 40.68px; padding: 0;"><ion-icon name="create-outline"></ion-icon></a>
-      {% endif %}
-      {% if perms.offboarding.delete_offboardingemployee %}
-      <a type="button" style="flex: 1 0 auto; width:20px;height: 40.68px; padding: 0;" title="{% trans 'Delete' %}" onclick="return confirm('Do you want to delete this offboarding user?')" class="oh-btn oh-btn--light" href="{% url "delete-offboarding-employee" %}"><ion-icon
-          name="trash-outline"></ion-icon>
-      </a>      
-      {% endif %}
-      
-    </div>
-  </div>
-  {% for task in stage.offboardingtask_set.all %}
-  <div class="oh-sticky-table__td">
-    {% if task|have_task:employee %}
-    {% for assinged_tasks in employee|get_assigned_task:task %}
-    <select hx-get="{% url "update-task-status" %}?stage_id={{stage.id}}&employee_ids={{employee.id}}&task_id={{assinged_tasks.task_id.id}}"
-      hx-target="#offboardingBody{{offboarding.id}}" name="task_status" id="task_status{{assinged_tasks.id}}"
-      class="oh-select-custom w-100">
-      {% for assinged_task in assinged_tasks.statuses %}
-      {% if assinged_tasks.status == assinged_task.0 %}
-      <option value="{{ assinged_task.0 }}" selected>{{ assinged_task.1 }}</option>
-      {% else %}
-      <option value="{{ assinged_task.0 }}">{{ assinged_task.1 }}</option>
-      {% endif %}
-      {% endfor %}
-    </select>
-    {% endfor %}
-    {% else %}
-    <button hx-get="{% url "offboarding-assign-task" %}?employee_ids={{employee.id}}&task_id={{task.id}}"
-      hx-target="#offboardingBody{{offboarding.id}}" class="oh-checkpoint-badge text-info"
-      data-toggle="oh-modal-toggle">{% trans 'Assign' %}</button>
-    {% endif %}
-  </div>
-  {% endfor %}
-  <div class="oh-sticky-table__td"></div>
+{% if response_message %}
+<div class="oh-alert-container">
+  <div class="oh-alert oh-alert--animated oh-alert--success">
+        {{response_message}}
+  </div> 
 </div>
+{% endif %}
+{% for employee in stage.offboardingemployee_set.all %}
+  {% if perms.offboarding.view_offboarding or request.user.employee_get|is_in_managers:offboarding or request.user.employee_get|is_in_managers:stage or request.user.employee_get|is_in_managers:employee %}
+    <div class="oh-sticky-table__tr oh-multiple-table-sort__movable" data-employee="{{employee.employee_id.get_full_name}}" data-employee-id="{{ employee.id }}">
+      <div class="oh-sticky-table__sd">
+        <div class="oh-profile oh-profile--md">
+          <div class="oh-profile__avatar mr-1">
+            <img src="{{ employee.employee_id.get_avatar }}" class="oh-profile__image" />
+          </div>
+          <span class="oh-profile__name oh-text--dark">{{ employee.employee_id.get_full_name }}</span>
+        </div>
+      </div>
+      <div class="oh-sticky-table__td">
+        {% trans 'In' %} {{ employee.notice_period }}
+        {{ employee.get_unit_display }}
+      </div>
+      <div class="oh-sticky-table__td">{{ employee.notice_period_starts }}</div>
+      <div class="oh-sticky-table__td">{{ employee.notice_period_ends }}</div>
+      {% if request.user.employee_get|is_any_stage_manager or perms.offboarding.change_offboarding or perms.offboarding.change_offboardingemployee %}
+      <div class="oh-sticky-table__td">
+        <form hx-get="{% url "offboarding-change-stage" %}?employee_ids={{employee.id}}"
+          hx-target="#offboardingBody{{offboarding.id}}">
+          {{ stage_forms|stages:stage }}
+          <input type="submit" hidden>
+        </form>
+      </div>
+      {% endif %}
+      <div class="oh-sticky-table__td">
+        <div class="oh-btn-group">
+          <button type="button" hx-get="{% url 'send-mail-employee' employee.employee_id.id %}"
+            title="{% trans 'Send Mail' %}" hx-target="#offboardingModalBody" class="oh-btn oh-btn--light"
+            data-toggle="oh-modal-toggle" data-target="#offboardingModal"
+            style="flex: 1 0 auto; width:20px;height: 40.68px; padding: 0;"><ion-icon
+              name="mail-open-outline"></ion-icon></button>
+          <button type="button" title="{% trans 'Notes' %}" class="oh-btn oh-btn--light oh-activity-sidebar__open"
+            data-target="#activitySidebar" hx-get="{% url 'view-offboarding-note' %}?employee_id={{ employee.id }}"
+            hx-target="#noteContainer" style="flex: 1 0 auto; width:20px;height: 40.68px; padding: 0;"><ion-icon
+              name="newspaper-outline"></ion-icon>
+          </button>
+          {% if not employee.employee_id.is_active %}
+          <a type="button" href="{% url 'employee-archive' employee.employee_id.id %}" title="{% trans 'Un Archive' %}"
+            class="oh-btn oh-btn--light tex-primary"
+            style="flex: 1 0 auto; width:20px;height: 40.68px; padding: 0;"><ion-icon name="archive"></ion-icon></a>
+          {% else %}
+            <a type="button" hx-target="#offboardingModalBody" data-toggle="oh-modal-toggle" data-target="#offboardingModal" hx-get="{% url "add-employee" %}?instance_id={{employee.id}}&stage_id={{stage.id}}" title="{% trans 'Edit' %}"
+              class="oh-btn oh-btn--light tex-primary"
+              style="flex: 1 0 auto; width:20px;height: 40.68px; padding: 0;"><ion-icon name="create-outline"></ion-icon></a>
+          {% endif %}
+          {% if perms.offboarding.delete_offboardingemployee %}
+          <a type="button" style="flex: 1 0 auto; width:20px;height: 40.68px; padding: 0;" title="{% trans 'Delete' %}" onclick="return confirm('Do you want to delete this offboarding user?')" class="oh-btn oh-btn--light" href="{% url "delete-offboarding-employee" %}?employee_ids={{employee.id}}"><ion-icon
+              name="trash-outline"></ion-icon>
+          </a>      
+          {% endif %}
+          
+        </div>
+      </div>
+      {% for task in stage.offboardingtask_set.all %}
+      <div class="oh-sticky-table__td">
+        {% if task|have_task:employee %}
+        {% for assinged_tasks in employee|get_assigned_task:task %}
+        <select hx-get="{% url "update-task-status" %}?stage_id={{stage.id}}&employee_ids={{employee.id}}&task_id={{assinged_tasks.task_id.id}}"
+          hx-target="#offboardingBody{{offboarding.id}}" name="task_status" id="task_status{{assinged_tasks.id}}"
+          class="oh-select-custom w-100">
+          {% for assinged_task in assinged_tasks.statuses %}
+          {% if assinged_tasks.status == assinged_task.0 %}
+          <option value="{{ assinged_task.0 }}" selected>{{ assinged_task.1 }}</option>
+          {% else %}
+          <option value="{{ assinged_task.0 }}">{{ assinged_task.1 }}</option>
+          {% endif %}
+          {% endfor %}
+        </select>
+        {% endfor %}
+        {% else %}
+        <button hx-get="{% url "offboarding-assign-task" %}?employee_ids={{employee.id}}&task_id={{task.id}}"
+          hx-target="#offboardingBody{{offboarding.id}}" class="oh-checkpoint-badge text-info"
+          data-toggle="oh-modal-toggle">{% trans 'Assign' %}</button>
+        {% endif %}
+      </div>
+      {% endfor %}
+      <div class="oh-sticky-table__td"></div>
+    </div>
+  {% endif %}
 {% endfor %}
 <script>
   $("[data-archive-stage=true]").find(".oh-sticky-table__tr[data-employee-id]").hide();
