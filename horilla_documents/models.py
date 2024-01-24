@@ -84,9 +84,9 @@ class Document(models.Model):
         if file and self.document_request_id:
             format = self.document_request_id.format
             max_size = self.document_request_id.max_size
-
-            if file.size > max_size * 1024 * 1024:
-                raise ValidationError("File size exceeds the limit")
+            if max_size:
+                if file.size > max_size * 1024 * 1024:
+                    raise ValidationError("File size exceeds the limit")
             
             ext = file.name.split(".")[1].lower()
             if format == "any":
