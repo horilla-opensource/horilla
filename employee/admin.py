@@ -13,6 +13,8 @@ from employee.models import (
     EmployeeTag,
     PolicyMultipleFile,
     Policy,
+    DisciplinaryAction,
+    Actiontype
 )
 from simple_history.admin import SimpleHistoryAdmin
 
@@ -23,3 +25,5 @@ admin.site.register(Employee)
 admin.site.register(EmployeeBankDetails)
 admin.site.register(EmployeeWorkInformation, SimpleHistoryAdmin)
 admin.site.register([EmployeeNote, EmployeeTag, PolicyMultipleFile, Policy, BonusPoint])
+admin.site.register([DisciplinaryAction, Actiontype])    
+

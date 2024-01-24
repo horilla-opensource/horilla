@@ -628,3 +628,40 @@ class BonusPointThreading(threading.Thread):
                 )
                 
 BonusPointThreading().start()
+
+
+class Actiontype(models.Model):
+    """
+    Action type model
+    """
+
+    choice_actions = [
+            ("warning", trans("Warning")),
+            ("suspension", trans("Suspension")),
+            ("dismissal", trans("Dismissal")),
+        ]
+
+    title = models.CharField(max_length=50)
+    action_type = models.CharField(max_length=30, choices=choice_actions)
+
+    def __str__(self) -> str:
+        return f"{self.title}"
+
+
+class DisciplinaryAction(models.Model):
+    """
+    Disciplinary model
+    """
+
+    employee_id = models.ManyToManyField(Employee)
+    action = models.ForeignKey(Actiontype, on_delete=models.CASCADE)
+    description = models.TextField()
+    days = models.IntegerField(null=True, blank = True)
+    start_date = models.DateField(null=True)
+    attachment = models.FileField(upload_to="employee/discipline", null=True, blank = True)
+    company_id = models.ManyToManyField(Company, blank=True)
+
+    objects = HorillaCompanyManager()
+
+    def __str__(self) -> str:
+        return f"{self.action}"

@@ -1,0 +1,197 @@
+{% extends 'index.html' %}
+{% block content %}
+{% load i18n %}
+<section class="oh-wrapper oh-main__topbar" style="padding-bottom: 1rem;">
+  <div class="oh-main__titlebar oh-main__titlebar--left oh-d-flex-column--resp oh-mb-3--small">
+    <h1 class="oh-main__titlebar-title fw-bold">{% trans 'Disciplinary Actions' %}</h1>
+  </div>
+
+  <div class="oh-main__titlebar oh-main__titlebar--right oh-d-flex-column--resp oh-mb-3--small">
+
+    {% if perms.employee.add_disciplinaryaction %}
+    
+      <div class="oh-main__titlebar-button-container">
+        <div class="oh-input-group oh-input__search-group mr-4">
+          <ion-icon name="search-outline" class="oh-input-group__icon oh-input-group__icon--left md hydrated" role="img" aria-label="search outline"></ion-icon>
+          <input hx-get="{% url 'search-disciplinary' %}" name="search" hx-trigger="keyup changed delay:.2s" hx-target="#policyContainer" type="text" placeholder="Search" style="margin-right:10px" class="oh-input oh-input__icon mr-3" autocomplete="false" aria-label="Search Input" />
+        </div>
+      <form
+        hx-get="{% url 'disciplinary-filter-view' %}"
+        hx-target="#policyContainer"
+        id="filterForm"
+        class="d-flex"
+        >
+        <div class="oh-dropdown" x-data="{open: false}">
+          <button
+            class="oh-btn ml-2"
+            @click="open = !open"
+            onclick="event.preventDefault()"
+          >
+            <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}
+            <div id="filterCount"></div>
+          </button>
+          <div
+            class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4"
+            x-show="open"
+            @click.outside="open = false"
+            style="display: none"
+          >
+            <div class="oh-dropdown__filter-body">
+              <div class="oh-accordion">
+                <div class="oh-accordion-header">{% trans "Disciplinary Action" %}</div>
+                <div class="oh-accordion-body">
+                  <div class="row">
+                    <div class="col-sm-12 col-md-12 col-lg-12">
+                      <div class="oh-input-group">
+                        <label class="oh-label" for="{{f.form.employee_id.id_for_label}}">{% trans "Employee" %}</label>
+                        {{f.form.employee_id}}
+                      </div>
+                      <div class="oh-input-group">
+                        <label class="oh-label" for ="{{f.form.action.id_for_label}}"
+                          >{% trans "Action Taken" %}</label
+                        >
+                        {{f.form.action}}
+                      </div>
+                      <div class="oh-input-group">
+                        <label class="oh-label" for="{{f.form.start_date.id_for_label}}">{% trans "Date" %}</label>
+                        {{f.form.start_date}}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+
+
+              <div class="oh-accordion">
+                <div class="oh-accordion-header">{% trans "Work Information" %}</div>
+                <div class="oh-accordion-body">
+                  <div class="row">
+                    <div class="col-sm-12 col-md-12 col-lg-6">
+                      <div class="oh-input-group">
+                        <label class="oh-label" for="{{f.form.employee_id__employee_work_info__company_id.id_for_label}}">{% trans "Company" %}</label>
+                        {{f.form.employee_id__employee_work_info__company_id}}
+                      </div>
+                      <div class="oh-input-group">
+                        <label class="oh-label" for ="{{f.form.employee_id__employee_work_info__department_id_for_label}}"
+                          >{% trans "Department" %}</label
+                        >
+                        {{f.form.employee_id__employee_work_info__department_id}}
+                      </div>
+                      <div class="oh-input-group">
+                        <label class="oh-label" for="{{f.form.employee_id__employee_work_info__shift_id.id_for_label}}">{% trans "Shift" %}</label>
+                        {{f.form.employee_id__employee_work_info__shift_id}}
+                      </div>
+                    </div>
+
+                    <div class="col-sm-12 col-md-12 col-lg-6">
+                      <div class="oh-input-group">
+                        <label class="oh-label" for ="{{f.form.employee_id__employee_work_info__reporting_manager_id.id_for_label}}"
+                          >{% trans "Reporting Manager" %}</label
+                        >
+                        {{f.form.employee_id__employee_work_info__reporting_manager_id}}
+                      </div>
+                      <div class="oh-input-group">
+                        <label class="oh-label" for="{{f.form.employee_id__employee_work_info__job_position_id.id_for_label}}">{% trans "Job Position" %}</label>
+                        {{f.form.employee_id__employee_work_info__job_position_id}}
+                      </div>
+                      <div class="oh-input-group">
+                        <label class="oh-label" for="{{f.form.employee_id__employee_work_info__work_type_id.id_for_label}}">{% trans "Work Type" %}</label>
+                        {{f.form.employee_id__employee_work_info__work_type_id}}
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+
+
+            </div>
+            <div class="oh-dropdown__filter-footer">
+              <button
+                class="oh-btn oh-btn--secondary oh-btn--small w-100 filterButton"
+              >
+                {% trans "Filter" %}
+              </button>
+            </div>
+          </div>
+        </div>
+
+
+        <div class="oh-main__titlebar-button-container">
+          <a hx-get="{% url 'create-actions' %}" hx-target="#createannouncementForm" hx-swap="innerHTML" data-toggle="oh-modal-toggle" data-target="#anouncementModal" class="oh-btn oh-btn--secondary">
+            <ion-icon name="add-outline"></ion-icon>
+            {% trans 'Take An Action' %}
+          </a>
+        </div>
+
+      </form>
+
+      </div>
+    {% endif %}
+  </div>
+</section>
+
+<div class="oh-modal" id="policyModal" role="dialog" aria-hidden="true">
+  <div class="oh-modal__dialog" style="max-width: 550px">
+    <div class="oh-modal__dialog-header">
+      <button type="button" class="oh-modal__close" aria-label="Close"><ion-icon name="close-outline"></ion-icon></button>
+    </div>
+
+    <div class="oh-modal__dialog-body" id="policyModalBody"></div>
+  </div>
+</div>
+
+
+<!-- start of create modal -->
+<div
+	class="oh-modal"
+	id="anouncementModal"
+	role="dialog"
+	aria-labelledby="emptagModal"
+	aria-hidden="true"
+>
+	<div class="oh-modal__dialog">
+		<div class="oh-modal__dialog-header">
+			<h2 class="oh-modal__dialog-title" id="createModalTitle">
+				{% trans "Take An Action." %}
+			</h2>
+			<button class="oh-modal__close" aria-label="Close">
+				<ion-icon name="close-outline"></ion-icon>
+			</button>
+		</div>
+		<div class="oh-modal__dialog-body" id="createannouncementForm"></div>
+	</div>
+</div>
+<!-- end of create modal -->
+
+
+<!-- start of update modal -->
+<div
+class="oh-modal"
+id="announcementUpdateModal"
+role="dialog"
+aria-labelledby="announcementUpdateModal"
+aria-hidden="true"
+>
+<div class="oh-modal__dialog">
+  <div class="oh-modal__dialog-header">
+    <h5 class="oh-modal__dialog-title" id="announcementUpdateModalLabel"
+      >{% trans "Edit Action." %}</span
+    >
+    <button class="oh-modal__close" aria-label="Close" >
+      <ion-icon name="close-outline"></ion-icon>
+    </button>
+  </div>
+  <div class="oh-modal__dialog-body" id='announcementUpdate'>
+    
+  </div>
+</div>
+</div>
+<!-- end of update modal -->
+
+
+  <div class="oh-wrapper" id="policyContainer">
+    {% include 'disciplinary_actions/disciplinary_records.html' %}
+  </div>
+{% endblock %}

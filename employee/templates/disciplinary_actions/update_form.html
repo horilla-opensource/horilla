@@ -1,0 +1,49 @@
+{% load i18n %}
+{% if form.errors %}
+<!-- form errors  -->
+    <div class="oh-wrapper">
+        <div class="oh-alert-container">
+            {% for error in form.non_field_errors %}
+                <div class="oh-alert oh-alert--animated oh-alert--danger">
+                    {{ error }}
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endif %}
+<form  
+    hx-post="{% url 'update-actions' form.instance.id %}"
+    hx-target="#announcementUpdate"
+    method="post" 
+    hx-encoding="multipart/form-data">
+    {% csrf_token %}
+    <div id="employeeIdDiv">
+        <label class="oh-input__label">{% trans "Employee" %}</label>
+        {{ form.employee_id }}
+    </div>
+    <div id="actionDiv">
+        <label class="oh-input__label">{% trans "Action" %}</label>
+        {{ form.action }}
+    </div>
+    <div id="daysDiv" style="display: none;">
+        <label class="oh-input__label">{% trans "Days" %}</label>
+        {{ form.days }}
+    </div>
+
+    <div id="startdateDiv">
+        <label class="oh-input__label">{% trans "Action Date" %}</label>
+        {{ form.start_date }}
+    </div>
+
+    <div id="descriptionDiv">
+        <label class="oh-input__label">{% trans "Description" %}</label>
+        {{ form.description }}
+    </div>
+    <div id="attachmentDiv">
+        <label class="oh-input__label">{% trans "Attachment" %}</label>
+        {{ form.attachment }}
+    </div>
+
+    <button type="submit" class="oh-btn oh-btn--secondary">{% trans "Submit" %}</button>
+</form>
+

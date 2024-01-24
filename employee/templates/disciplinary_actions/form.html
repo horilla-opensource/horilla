@@ -1,0 +1,35 @@
+{% load i18n %}
+
+<form hx-post="{% url 'create-actions' %}" hx-target="#createannouncementForm"
+      method="post" hx-encoding="multipart/form-data" id="disciplinaryActionForm">
+    {% csrf_token %}
+
+    <div id="employeeIdDiv">
+        <label class="oh-input__label">{% trans "Employee" %}</label>
+        {{ form.employee_id }}
+    </div>
+    <div id="actionDiv">
+        <label class="oh-input__label">{% trans "Action" %}</label>
+        {{ form.action }}
+    </div>
+    <div id="daysDiv" style="display: none;">
+        <label class="oh-input__label">{% trans "Days" %}</label>
+        {{ form.days }}
+    </div>
+    <div id="startdateDiv">
+        <label class="oh-input__label">{% trans "Action Date" %}</label>
+        {{ form.start_date }}
+    </div>
+
+    <div id="descriptionDiv">
+        <label class="oh-input__label">{% trans "Description" %}</label>
+        {{ form.description }}
+    </div>
+    <div id="attachmentDiv">
+        <label class="oh-input__label">{% trans "Attachment" %}</label>
+        {{ form.attachment }}
+    </div>
+
+    <button type="submit" class="oh-btn oh-btn--secondary">{% trans "Submit" %}</button>
+</form>
+

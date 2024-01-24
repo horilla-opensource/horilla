@@ -4,20 +4,19 @@ filters.py
 This page is used to register filter for employee models
 
 """
-from employee.models import Policy
+from employee.models import DisciplinaryAction, Policy
 import uuid
 from django import forms
 import django_filters
 from django.contrib.auth.models import Permission, Group
 from django import forms
-from django_filters.filters import ModelChoiceFilter
 from django.utils.translation import gettext as _
 from base.methods import reload_queryset
 from base.models import WorkType
-from horilla.filters import FilterSet
+from horilla.filters import FilterSet, filter_by_name
 from employee.models import Employee
 from horilla_documents.models import Document
-from django_filters import CharFilter
+from django_filters import CharFilter, DateFilter
 
 
 class EmployeeFilter(FilterSet):
@@ -292,3 +291,32 @@ class DocumentRequestFilter(FilterSet):
             "employee_id__employee_work_info__company_id",
             "employee_id__employee_work_info__shift_id",
         ]
+
+
+class DisciplinaryActionFilter(FilterSet):
+
+    """
+    Custom filter for Disciplinary Action.
+
+    """
+
+    search = CharFilter(method=filter_by_name)
+
+    start_date = django_filters.DateFilter(
+    widget=forms.DateInput(attrs={"type": "date"}),
+    )
+
+    class Meta:
+
+        model = DisciplinaryAction
+        fields = [  
+                    "employee_id",
+                    "action",
+                    "employee_id__employee_work_info__job_position_id",
+                    "employee_id__employee_work_info__department_id",
+                    "employee_id__employee_work_info__work_type_id",
+                    "employee_id__employee_work_info__job_role_id",
+                    "employee_id__employee_work_info__reporting_manager_id",
+                    "employee_id__employee_work_info__company_id",
+                    "employee_id__employee_work_info__shift_id",
+                ]

@@ -28,7 +28,9 @@ from django.forms import DateInput, ModelChoiceField, TextInput
 from django.utils.translation import gettext as _
 from django.utils.translation import gettext_lazy as trans
 from employee.models import (
+    Actiontype,
     BonusPoint,
+    DisciplinaryAction,
     Employee,
     EmployeeWorkInformation,
     EmployeeBankDetails,
@@ -536,3 +538,31 @@ class BonusPointRedeemForm(ModelForm):
     class Meta:
         model = BonusPoint
         fields = ["points"]
+
+
+
+class DisciplinaryActionForm(ModelForm):
+    class Meta:
+        model = DisciplinaryAction
+        fields = "__all__"
+        exclude = ["company_id","objects"]
+
+        widgets = {
+            "start_date": DateInput(attrs={"type": "date"}),
+        }
+
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["action"].widget.attrs.update(
+            {
+                "onchange": "actiontypechange($(this))",
+            }
+        )
+
+
+class ActiontypeForm(ModelForm):
+
+    class Meta:
+        model = Actiontype
+        fields = "__all__"

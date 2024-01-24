@@ -271,4 +271,15 @@ urlpatterns = [
         views.document_delete,
         name="document-delete",
     ),
+
+    path("delete-policies",policies.delete_policies,name="delete-policies"),
+
+    path("disciplinary-actions/", policies.disciplinary_actions, name="disciplinary-actions"),
+    path("create-actions", policies.create_actions, name="create-actions"),
+    path("update-actions/<int:action_id>/", policies.update_actions, name="update-actions"),
+    path("delete-actions/<int:action_id>/",policies.delete_actions, name="delete-actions"),
+    path("action-type-details",policies.action_type_details,name="action-type-details",),
+    path("disciplinary-filter-view", policies.disciplinary_filter_view, name="disciplinary-filter-view"),
+    path("search-disciplinary", policies.search_disciplinary, name="search-disciplinary"),
+
 ]

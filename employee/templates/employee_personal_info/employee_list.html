@@ -330,5 +330,8 @@
     });
   });
 	toggleColumns("employee-table","fieldContainerTable")
+  if (!localStorage.getItem("employee_table")) {
+		$("#fieldContainerTable").find("[type=checkbox]").prop("checked",true).change()
+	}
 
 </script>
