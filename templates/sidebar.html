@@ -735,7 +735,7 @@
           </ul>
         </div>
       </li>
-      {% if perms.offboarding.view_offboarding or request.user.employee_get|any_manager %}
+      {% if perms.offboarding.view_offboarding or request.user.employee_get|any_manager or request.user.employee_get|is_offboarding_employee %}
         <li
           class="oh-sidebar__menu-item"
           x-data="{ isOpen: getOpenState('OffboardingNav') }"
