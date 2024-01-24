@@ -113,7 +113,6 @@
     $("select[name='task']").on("change", function() {
         var value = $(this).val();
         var dot = $(this).closest('.col-6').find('span.oh-dot');
-        console.log(dot)
     
         // Update the class
         dot.removeClass().addClass('oh-dot oh-dot--small me-1 oh-dot--color-' + value);

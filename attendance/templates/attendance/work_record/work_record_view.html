@@ -37,16 +37,20 @@
             </div>
 
             <div class="me-3">
-                <h4 class="mb-2">{% trans "Date:" %} {{ current_date }}</h4>
-                <h4>
-                    {% trans "Month:" %}
-                    <input name="month" type="month"
+                <h6 class="mb-2 fw-bold">{% trans "Date:" %} {{ current_date }}</h6>
+                <h6>
+                    <div style = "cursor: pointer;">
+                        <label for="monthYearField" class="text-danger fw-bold" style = "cursor: pointer;">{% trans "Month" %}</label>
+                        <input class="oh-select p-2 w-75 m-1" 
+                        type="month" 
+                        id="monthYearField"
                         value="{{ current_date|date:"Y-m" }}"
+                        name="month" 
                         hx-get="{% url 'work-records-change-month' %}"
                         hx-target="#workRecordTable"
-                        hx-trigger="input"
-                    />
-                </h4>
+                        hx-trigger="input"> 
+                    </div>
+                </h6>
             </div>
         </div>
         <div id="workRecordTable">

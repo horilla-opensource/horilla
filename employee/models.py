@@ -621,13 +621,19 @@ class BonusPointThreading(threading.Thread):
     def run(self):
         time.sleep(5)
         employees = Employee.objects.all()
-        for employee in employees:
-            if not BonusPoint.objects.filter(employee_id__id = employee.id).exists():
-                BonusPoint.objects.create(
-                    employee_id = employee
-                )
-                
-BonusPointThreading().start()
+        try:
+            for employee in employees:
+                if not BonusPoint.objects.filter(employee_id__id = employee.id).exists():
+                    BonusPoint.objects.create(
+                        employee_id = employee
+                    )
+        except:
+            pass
+
+try:            
+    BonusPointThreading().start()
+except:
+    pass
 
 
 class Actiontype(models.Model):
