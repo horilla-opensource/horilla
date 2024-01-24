@@ -5,6 +5,18 @@
     padding: 0.3rem 0.8rem 0.3rem 0.3rem;
     border-radius: 0rem;
   }
+  .oh-dot--color-completed {
+    background-color: hsl(148deg, 71%, 44%)
+  }
+  .oh-dot--color-stuck {
+    background-color: #ff0400
+  }
+  .oh-dot--color-inprogress {
+    background-color: hsl(204deg, 70%, 53%)
+  }
+  .oh-dot--color-todo {
+    background-color: #e3b75f80
+  }
 
 </style>
 <div id="messages" class="oh-alert-container"></div>
@@ -68,10 +80,31 @@
   </div>
 </div>
 
+<div class="oh-modal" id="singleModal" role="dialog" aria-labelledby="singleModalModal" aria-hidden="true">
+    <div class="oh-modal__dialog ">
+        <div class="oh-modal__dialog-header">
+
+            <button class="oh-modal__close" aria-label="Close">
+                <ion-icon name="close-outline"></ion-icon>
+            </button>
+        </div>
+
+        <div id="singleView">
+
+        </div>
+        
+    </div>
+</div>
+
 <script>
   let activeTab = localStorage.getItem("activeTabOffboarding")
   if (activeTab) {
     $(`.oh-tabs__tab[data-target="${activeTab}"]`).addClass("oh-tabs__tab--active")
     $(`${activeTab}`).addClass("oh-tabs__content--active")
   }
+  function myFunction(val) {
+    var selects = $("[data-selected-stage]").val(val)
+    selects.siblings('[type=submit]').click()
+
+}
 </script>

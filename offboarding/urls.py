@@ -30,4 +30,5 @@ urlpatterns = [
     path("offboarding-assign-task", views.task_assign, name="offboarding-assign-task"),
      path("delete-offboarding-employee",views.delete_employee,name="delete-offboarding-employee"),
      path("delete-offboarding-task",views.delete_task,name="delete-offboarding-task"),
+     path("offboarding-individual-view/<int:emp_id>/",views.offboarding_individual_view,name="offboarding-individual-view"),
 ]

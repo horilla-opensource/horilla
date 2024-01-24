@@ -33,6 +33,20 @@ def stages(stages_dict: dict, stage: OffboardingStage):
     return form
 
 
+@register.filter(name="individual_view_stages")
+def individual_view_stages(stages_dict: dict, stage: OffboardingStage):
+    """
+    This method will return stage drop accordingly to the offboarding
+    """
+    form = stages_dict[str(stage.offboarding_id.id)]
+    attrs = form.fields["stage_id"].widget.attrs
+    attrs["id"] = "stage" + str(stage.id) + str(stage.offboarding_id.id)
+    attrs["data-selected-stage"] = stage.id
+    attrs["onchange"] = "myFunction($(this).val())"
+    form.fields["stage_id"].widget.attrs.update(attrs)
+    return form
+
+
 @register.filter(name="have_task")
 def have_task(task: OffboardingTask, employee: Employee):
     """

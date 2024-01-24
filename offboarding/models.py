@@ -134,7 +134,7 @@ class EmployeeTask(models.Model):
 
     statuses = [
         ("todo", "Todo"),
-        ("inprogress", "Inprogress"),
+        ("inprogress", "In progress"),
         ("stuck", "Stuck"),
         ("completed", "Completed"),
     ]

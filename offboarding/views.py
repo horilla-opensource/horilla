@@ -413,3 +413,24 @@ def delete_task(request):
     OffboardingTask.objects.filter(id__in=task_ids).delete()
     messages.success(request, "Task deleted")
     return redirect(pipeline)
+
+@login_required
+def offboarding_individual_view(request,emp_id):
+    """
+    This method is used to get the individual view of the offboarding employees
+    parameters:
+        emp_id(int): the id of the offboarding employee
+    """
+    employee = OffboardingEmployee.objects.get(id=emp_id)
+    tasks = EmployeeTask.objects.filter(employee_id=emp_id)
+    stage_forms = {}
+    offboarding_stages = OffboardingStage.objects.filter(offboarding_id = employee.stage_id.offboarding_id)
+    stage_forms[str(employee.stage_id.offboarding_id.id)] = StageSelectForm(offboarding=employee.stage_id.offboarding_id)
+    context = {
+        'employee':employee,
+        "tasks":tasks,
+        "choices": EmployeeTask.statuses,
+        "offboarding_stages":offboarding_stages,
+        "stage_forms":stage_forms
+    }
+    return render(request, 'offboarding/pipeline/individual_view.html', context)

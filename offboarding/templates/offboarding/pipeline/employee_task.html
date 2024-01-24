@@ -1,0 +1,44 @@
+{% load i18n %} {% load i18n offboarding_filter %}
+
+{% if task.task_id|have_task:employee %} 
+		{% for assinged_tasks in employee|get_assigned_task:task.task_id %}
+        
+        <select
+			hx-get="{% url "update-task-status" %}?stage_id={{employee.stage_id.id}}&employee_ids={{employee.id}}&task_id={{assinged_tasks.task_id.id}}"
+            hx-target="#offboardingBody{{employee.stage_id.offboarding_id.id}}"
+            name="task_status"
+            id="task_status{{assinged_tasks.id}}"
+            class="oh-select-custom w-100"
+			onclick="event.stopPropagation()"
+        >
+            {% for assinged_task in assinged_tasks.statuses %}
+			{% if assinged_tasks.status == assinged_task.0 %}
+            <option value="{{ assinged_task.0 }}" selected>
+                {{ assinged_task.1 }}
+            </option>
+            {% else %}
+            <option value="{{ assinged_task.0 }}">{{ assinged_task.1 }}</option>
+            {% endif %} {% endfor %}
+        </select>
+        {% endfor %} 
+    {% else %}
+        <button
+			hx-get="{% url "offboarding-assign-task" %}?employee_ids={{employee.id}}&task_id={{task.id}}"
+            hx-target="#offboardingBody{{offboarding.id}}"
+            class="oh-checkpoint-badge text-info"
+            data-toggle="oh-modal-toggle"
+			onclick="event.stopPropagation()"
+        >
+            {% trans 'Assign' %}
+        </button>
+    {% endif %}
+
+<script>
+    $("select[name='task_status']").on("change", function() {
+        var value = $(this).val();
+        var dot = $(this).closest('.col-6').find('span.oh-dot');
+    
+        // Update the class
+        dot.removeClass().addClass('oh-dot oh-dot--small me-1 oh-dot--color-' + value);
+    })
+</script>
