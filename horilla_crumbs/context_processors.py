@@ -94,6 +94,8 @@ sidebar_urls = [
     "view-reimbursement",
     "department-manager-view",
     "date-settings",
+    "offboarding-pipeline",
+    "pagination-settings-view",
 ]
 remove_urls = [
     "objective-detailed-view",
