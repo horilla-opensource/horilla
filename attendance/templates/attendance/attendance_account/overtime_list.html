@@ -195,4 +195,7 @@
 </script>
 <script>
 	toggleColumns("overtime-table","fieldContainerTable")
+	if (!localStorage.getItem("attendance_account_table")) {
+		$("#fieldContainerTable").find("[type=checkbox]").prop("checked",true).change()
+	}
 </script>

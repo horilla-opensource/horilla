@@ -879,9 +879,22 @@
       localStorage.setItem("activeTabAttendance", activeTab);
     });
   });
-	toggleColumns("validated-attendance-table","fieldContainerTable")
 	toggleColumns("validate-attendance-table","fieldContainerTableValidate")
 	toggleColumns("ot-attendance-table","fieldContainerTableOverTime")
+	toggleColumns("validated-attendance-table","fieldContainerTable")
+  localStorageValidateCells = localStorage.getItem("validate_attendances_tab")
+  localStorageOtCells = localStorage.getItem("ot_attendances_tab")
+  localStorageValidatedCells = localStorage.getItem("validated_attendances_tab")
+  console.log(localStorageValidateCells, localStorageValidateCells,localStorageOtCells)
+  if (!localStorageValidateCells) {
+    $("#fieldContainerTableValidate").find("[type=checkbox]").prop("checked",true)
+  }
+  if (!localStorageOtCells) {
+    $("#fieldContainerTableOverTime").find("[type=checkbox]").prop("checked",true)
+  }
+  if (!localStorageValidatedCells) {
+    $("#fieldContainerTable").find("[type=checkbox]").prop("checked",true)
+  }
   $("[type=checkbox]").change()
 
 </script>
