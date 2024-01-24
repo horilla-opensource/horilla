@@ -1,0 +1,70 @@
+{% extends 'settings.html' %}
+{% load i18n %}
+{% block settings %}
+<div class="oh-inner-sidebar-content">
+
+	<div class="oh-inner-sidebar-content__header d-flex justify-content-between align-items-center">
+		<h2 class="oh-inner-sidebar-content__title">{% trans "Action Type" %}</h2>
+		{% if perms.employee.add_actiontype %}
+		<button
+			class="oh-btn oh-btn--secondary oh-btn--shadow"
+			data-toggle="oh-modal-toggle"
+			data-target="#ticketModal"
+			hx-get="{% url 'action-type-create' %}" 
+			hx-target="#ticketForm"
+		>
+			<ion-icon name="add-outline" class="me-1"></ion-icon>
+			{% trans "Create" %}
+		</button>
+		{% endif %}
+	</div>
+	{% include 'base/action_type/action_type_view.html' %}     
+
+</div>
+
+<!-- start of modals -->
+
+<!-- start of create modal -->
+<div
+	class="oh-modal"
+	id="ticketModal"
+	role="dialog"
+	aria-labelledby="ticketModal"
+	aria-hidden="true"
+>
+	<div class="oh-modal__dialog">
+		<div class="oh-modal__dialog-header">
+			<h2 class="oh-modal__dialog-title" id="createModalTitle">
+				{% trans "Create Action Type" %}
+			</h2>
+			<button class="oh-modal__close" aria-label="Close">
+				<ion-icon name="close-outline"></ion-icon>
+			</button>
+		</div>
+		<div class="oh-modal__dialog-body" id="ticketForm"></div>
+	</div>
+</div>
+<!-- end of create modal -->
+<!-- start of edit modal -->
+<div
+	class="oh-modal"
+	id="ticketEditModal"
+	role="dialog"
+	aria-labelledby="ticketEditModal"
+	aria-hidden="true"
+>
+	<div class="oh-modal__dialog">
+		<div class="oh-modal__dialog-header">
+			<h2 class="oh-modal__dialog-title" id="editModaltitle">
+				{% trans "Action Type Update" %}
+			</h2>
+			<button class="oh-modal__close" aria-label="Close">
+				<ion-icon name="close-outline"></ion-icon>
+			</button>
+		</div>
+		<div class="oh-modal__dialog-body" id="ticketEditForm"></div>
+	</div>
+</div>
+<!-- end of edit modal -->
+<!-- end of modals -->
+{% endblock settings %}

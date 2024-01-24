@@ -7,6 +7,8 @@ from django.contrib import admin
 from simple_history.admin import SimpleHistoryAdmin
 
 from base.models import (
+    Announcement,
+    Attachment,
     Company,
     Department,
     DynamicEmailConfiguration,
@@ -53,4 +55,10 @@ admin.site.register(MultipleApprovalManagers)
 admin.site.register(ShiftrequestComment)
 admin.site.register(WorktyperequestComment)
 admin.site.register(DynamicPagination)
+admin.site.register(Announcement)
+admin.site.register(Attachment)
+
+
+
+
 

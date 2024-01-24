@@ -1,5 +1,5 @@
 from django.urls import path
-from base import request_and_approve, views
+from base import request_and_approve, views, announcement
 from base.forms import RotatingShiftAssignForm, RotatingWorkTypeAssignForm, RotatingWorkTypeForm
 from base.models import (
     Company,
@@ -707,4 +707,49 @@ urlpatterns = [
         name="dashboard-asset-request-approve",
     ),
     path('settings/pagination-settings-view/',views.pagination_settings_view,name="pagination-settings-view"),
+
+
+    path("settings/action-type/", views.action_type_view, name="action-type"),
+    path("action-type-create", views.action_type_create, name="action-type-create"),
+    path(
+        "action-type-update/<int:act_id>",
+        views.action_type_update,
+        name="action-type-update",
+    ),
+    path(
+        "action-type-delete/<int:act_id>",
+        views.action_type_delete,
+        name="action-type-delete",
+    ),
+
+
+    path('pagination-settings-view',views.pagination_settings_view,name="pagination-settings-view"),
+
+        path(
+        "announcement/", 
+        announcement.announcement_view, name="announcement"
+    ),
+    path(
+        "create-announcement", 
+        announcement.create_announcement, name="create-announcement"
+    ),
+    path(
+        "delete-announcement/<int:anoun_id>", 
+        announcement.delete_announcement, name="delete-announcement"
+    ),
+    path(
+        "update-announcement/<int:anoun_id>", 
+        announcement.update_announcement, name="update-announcement"
+    ),
+    path(
+        "announcement-add-comment/<int:anoun_id>/",
+        announcement.create_announcement_comment,
+        name="announcement-add-comment",
+    ),
+    path(
+        "announcement-view-comment/<int:anoun_id>/",
+        announcement.comment_view,
+        name="announcement-view-comment",
+    ),
+
 ]

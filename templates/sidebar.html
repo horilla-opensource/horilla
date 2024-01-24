@@ -200,7 +200,6 @@
                 ><ion-icon name="link-sharp" role="img" class="md hydrated" aria-label="create outline"></ion-icon>
                 </a
               >
-
             </li>
             {% endif %} {% if perms.recruitment.view_skillzone %}
               <li class="oh-sidebar__submenu-item">
@@ -367,6 +366,14 @@
               >
             </li>
             {% endif %}
+
+            <li class="oh-sidebar__submenu-item">
+              <a
+              class="oh-sidebar__submenu-link"
+              href="{% url 'disciplinary-actions' %}"
+              >{% trans "Disciplinary Actions" %}</a
+              >
+            </li>
             <li class="oh-sidebar__submenu-item">
               <a
                 class="oh-sidebar__submenu-link"

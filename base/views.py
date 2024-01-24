@@ -22,6 +22,7 @@ from django.contrib.auth.models import Group, User, Permission
 from attendance.forms import AttendanceValidationConditionForm
 from attendance.models import AttendanceValidationCondition, GraceTime
 from django.views.decorators.csrf import csrf_exempt
+from employee.forms import ActiontypeForm
 from horilla_audit.models import AuditTag
 from notifications.signals import notify
 from horilla.decorators import (
@@ -31,7 +32,7 @@ from horilla.decorators import (
     manager_can_enter,
 )
 from horilla.settings import EMAIL_HOST_USER
-from employee.models import Employee, EmployeeTag, EmployeeWorkInformation
+from employee.models import Actiontype, Employee, EmployeeTag, EmployeeWorkInformation
 from base.decorators import (
     shift_request_change_permission,
     work_type_request_change_permission,
@@ -4195,3 +4196,67 @@ def pagination_settings_view(request):
                 form.save()
                 messages.success(request, _("Default pagination updated."))
     return render(request, "base/dynamic_pagination/pagination_settings.html", {"form": form})
+
+
+@login_required
+def action_type_view(request):
+    """
+    This method is used to show Action Type
+    """
+    action_types = Actiontype.objects.all()
+    return render(
+        request, "base/action_type/action_type.html", {"action_types": action_types}
+    )
+
+
+@login_required
+def action_type_create(request):
+    """
+    This method renders form and template to create Action Type
+    """
+    form = ActiontypeForm()
+    if request.method == "POST":
+        form = ActiontypeForm(request.POST)
+        if form.is_valid():
+            form.save()
+            form = ActiontypeForm()
+            messages.success(request, _("Action has been created successfully!"))
+            return HttpResponse("<script>window.location.reload()</script>")
+    return render(
+        request,
+        "base/action_type/action_type_form.html",
+        {
+            "form": form,
+        },
+    )
+
+
+@login_required
+def action_type_update(request, act_id):
+    """
+    This method renders form and template to update Action type
+    """
+    action = Actiontype.objects.get(id=act_id)
+    form = ActiontypeForm(instance=action)
+    if request.method == "POST":
+        form = ActiontypeForm(request.POST, instance=action)
+        if form.is_valid():
+            form.save()
+            form = ActiontypeForm()
+            messages.success(request, _("Action has been updated successfully!"))
+            return HttpResponse("<script>window.location.reload()</script>")
+    return render(
+        request,
+        "base/action_type/action_type_form.html",
+        {"form": form, "act_id": act_id},
+    )
+
+
+@login_required
+def action_type_delete(request, act_id):
+    """
+    This method is used to delete the action type.
+    """
+    Actiontype.objects.filter(id=act_id).delete()
+    messages.success(request, _("Action has been deleted successfully!"))
+    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))

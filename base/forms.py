@@ -5,6 +5,7 @@ This module is used to register forms for base module
 """
 import calendar
 import os
+from typing import Any
 import uuid
 import datetime
 from datetime import timedelta
@@ -19,6 +20,9 @@ from django.template.loader import render_to_string
 from employee.filters import EmployeeFilter
 from employee.models import Employee, EmployeeTag
 from base.models import (
+    Announcement,
+    AnnouncementComment,
+    Attachment,
     Company,
     Department,
     DynamicEmailConfiguration,
@@ -1617,4 +1621,78 @@ class DynamicPaginationForm(ModelForm):
         fields = "__all__"
         exclude = ('user_id',)
 
+
+
+class MultipleFileInput(forms.ClearableFileInput):
+    allow_multiple_selected = True
+
+
+class MultipleFileField(forms.FileField):
+    def __init__(self, *args, **kwargs):
+        kwargs.setdefault("widget", MultipleFileInput())
+        super().__init__(*args, **kwargs)
+
+    def clean(self, data, initial=None):
+        single_file_clean = super().clean
+        if isinstance(data, (list, tuple)):
+            result = [single_file_clean(d, initial) for d in data]
+        else:
+            result = [single_file_clean(data, initial),]
+        return result[0] if result else None
+
+
+class AnnouncementForm(ModelForm):
+    """
+    Announcement Form
+    """
+
+    class Meta:
+        """
+        Meta class for additional options
+        """
+
+        model = Announcement
+        fields = '__all__'
+        excluded_fields = ['created_on']
+        widgets = {
+            "description": forms.Textarea(attrs={"data-summernote": ""}),
+        }
     
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["attachments"] = MultipleFileField(label="Attachments ")
+        self.fields["attachments"].required=False
+    
+    def save(self, commit: bool = ...) -> Any:
+        attachement = []
+        multiple_attachment_ids = []
+        attachements = None
+        if self.files.getlist("attachments"):
+            attachements = self.files.getlist("attachments")
+            self.instance.attachement = attachements[0]
+            multiple_attachment_ids = []
+
+            for attachement in attachements:
+                file_instance = Attachment()
+                file_instance.file = attachement
+                file_instance.save()
+                multiple_attachment_ids.append(file_instance.pk)
+        instance = super().save(commit)
+        if commit:
+            instance.attachements.add(*multiple_attachment_ids)
+        return instance, multiple_attachment_ids
+
+class AnnouncementcommentForm(ModelForm):
+    """
+    Announcement comment form
+    """
+
+    class Meta:
+        """
+        Meta class for additional options
+        """
+
+        model = AnnouncementComment
+        fields = ('comment',)
+

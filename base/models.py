@@ -1159,4 +1159,44 @@ class DynamicPagination(models.Model):
         super().save(*args, **kwargs)
     def __str__(self):
         return (f"{self.user_id}|{self.pagination}")
+
+
+class Attachment(models.Model):
+    """
+    Attachment model for multiple attachments in announcemnts.
+    """
+    file = models.FileField(upload_to='attachments/')
+
+    def __str__(self):
+        return self.file.name
+
+class Announcement(models.Model):
+
+    """
+    Anonuncement Model for stroing all announcements.
+    """
+    title = models.CharField(max_length=30)
+    description = models.TextField(null=True)
+    attachments = models.ManyToManyField(Attachment, related_name='announcement_attachments', blank=True)
+    created_on = models.DateTimeField(auto_now_add=True)
+    department = models.ManyToManyField(Department, blank=True)
+    job_position = models.ManyToManyField(JobPosition, blank=True)
+
+    def __str__(self):
+        return self.title
+
+
+class AnnouncementComment(models.Model):
+    """
+    AnnouncementComment Model
+    """
+    from employee.models import Employee
     
+    announcement_id = models.ForeignKey(Announcement, on_delete=models.CASCADE)
+    employee_id = models.ForeignKey(Employee, on_delete=models.CASCADE)
+    comment = models.TextField(null=True, verbose_name=_("Comment"))
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name=_("Created At"),
+        null=True,
+    )

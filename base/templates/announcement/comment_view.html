@@ -1,0 +1,63 @@
+{% load basefilters %}
+{% load i18n %}
+
+{% if no_comments %}
+
+<div class="oh-timeoff-modal__profile-content">
+    <div class="">
+        <div>
+            <span class="oh-timeoff-title fw-bold" style="display: block;">{% trans "There is no comments to show." %}</span>
+            <img style="display: block;width: 100px;margin: 20px auto ;" src="/static/images/ui/comment.png" class="">
+        </div>
+    </div>
+</div>
+
+{% else %}
+
+    {% for comment in comments %}
+        <div class="oh-timeoff-modal__profile-content">
+            <div class="oh-profile ms-4">
+                <div>
+                    <span class="oh-timeoff-modal__stat-title fw-bold">{% trans "Comment" %}
+                    {% comment %} <a href='{% url "shift-request-delete-comment" comment.id %}' title='Delete Comment'> 
+                        <ion-icon name="close-circle-outline" class="text-danger ms-3 mt-1" aria-label="close outline"></ion-icon></a> {% endcomment %}
+                    </span>
+                    <div>
+                        <span class="oh-timeoff-title fw-bold">{{comment.comment}}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="oh-modal__dialog-body">
+            <div class="oh-timeoff-modal__stats-container">
+                <div class="oh-timeoff-modal__stat">
+                    <span class="oh-timeoff-modal__stat-title fw-bold">{% trans "By" %}</span>
+                    <a style="text-decoration:none;" 
+                    href ="{% url 'employee-view-individual' comment.employee_id.id %}">
+
+                    <div class="oh-profile oh-profile--md">
+                        <div class="oh-profile__avatar mr-1">
+                            <small><img src="{{comment.employee_id.get_avatar}}" class="oh-profile__image" alt="Username"></small>
+                        </div>
+                    </div>
+
+                    <span class="oh-timeoff-modal__stat-count">{{ comment.employee_id }}</span></a>
+                </div>
+                <div class="oh-timeoff-modal__stat" style="margin-left: 20px;">
+                    <span class="oh-timeoff-modal__stat-title fw-bold">{% trans "Date & Time" %}</span>
+                    <span class="oh-timeoff-modal__stat-count">
+                        {% trans "on" %} &nbsp<span class="dateformat_changer">{{ comment.created_at|date:"F j, Y" }}</span> &nbsp 
+                        {% trans "at" %} &nbsp <span class="timeformat_changer">{{ comment.created_at|time:"g:i A" }}</span>
+                    </span>
+                </div>
+
+            </div>
+            <hr>
+        </div>
+
+        
+    {% endfor %}
+
+{% endif %}
+
+
