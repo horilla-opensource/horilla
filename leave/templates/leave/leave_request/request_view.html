@@ -243,9 +243,9 @@
           <button
           class="oh-btn oh-btn--secondary oh-btn--shadow"
           data-toggle="oh-modal-toggle"
-          data-target="#editModal1"
+          data-target="#requestCreateModal"
           hx-get="{% url 'request-creation' %}"
-          hx-target="#requestForm"
+          hx-target="#requestCreateFormModal"
           >
           <ion-icon name="add-outline" class="me-1"></ion-icon>
           {% trans "Create" %}
@@ -297,28 +297,29 @@
 </div>
 
 <!-- Create request -->
-
 <div
-  class="oh-modal"
-  id="editModal1"
-  role="dialog"
-  aria-labelledby="editModal1"
-  aria-hidden="true"
+	class="oh-modal"
+	id="requestCreateModal"
+	role="dialog"
+	aria-labelledby="requestCreateModalLabel"
+	aria-hidden="true"
 >
-  <div class="oh-modal__dialog">
-    <div class="oh-modal__dialog-header">
-      <h2 class="oh-modal__dialog-title" id="editModal1ModalLabel">
-        {% trans "Leave Request Create" %}
-      </h2>
-      <button class="oh-modal__close" aria-label="Close">
-        <ion-icon name="close-outline"></ion-icon>
-      </button>
-    </div>
-    <div class="oh-modal__dialog-body" id="requestForm"></div>
-  </div>
+	<div class="oh-modal__dialog" id="requestCreateFormModal">
+	</div>
 </div>
 
 <!-- update request -->
+<div
+	class="oh-modal"
+	id="requestCreateModal"
+	role="dialog"
+	aria-labelledby="requestEditModalLabel"
+	aria-hidden="true"
+  >
+	<div class="oh-modal__dialog" id="requestEditFormModal">
+	</div>
+</div>
+
 <div
   class="oh-modal"
   id="editModal2"

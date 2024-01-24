@@ -23,8 +23,8 @@
 <div class="oh-scrollable-container oh-wrapper mb-3">
     <div class="oh-layout--grid-3 mt-2 mb-2">
         {% for user_leave in user_leaves %}
-        <div class="oh-kanban-card" data-toggle="oh-modal-toggle" data-target="#editDialog"
-            hx-get="{% url 'user-request' user_leave.leave_type_id.id %}" hx-target="#requestForm">
+        <div class="oh-kanban-card" id="requestCreateCard" data-toggle="oh-modal-toggle" data-target="#requestCreateModal"
+            hx-get="{% url 'user-request' user_leave.leave_type_id.id %}" hx-target="#requestCreateFormModal">
             <div class="oh-kanban-card__avatar">
                 <div class="oh-kanban-card__profile-container">
                     <img src="{{user_leave.leave_type_id.get_avatar }}" class="oh-kanban-card__profile-image"

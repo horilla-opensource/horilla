@@ -329,12 +329,7 @@ def leave_request_creation(request, type_id=None, emp_id=None):
                     icon="people-circle",
                     redirect="/leave/request-view",
                 )
-            response = render(
-                request, "leave/leave_request/leave_request_form.html", {"form": form}
-            )
-            return HttpResponse(
-                response.content.decode("utf-8") + "<script>location.reload();</script>"
-            )
+            form = LeaveRequestCreationForm()
     return render(
         request, "leave/leave_request/leave_request_form.html", {"form": form}
     )
@@ -735,7 +730,9 @@ def user_leave_cancel(request, id):
                         request, _("Leave request cancelled successfully..")
                     )
 
-                    mail_thread = LeaveMailSendThread(request, leave_request, type="cancel")
+                    mail_thread = LeaveMailSendThread(
+                        request, leave_request, type="cancel"
+                    )
                     mail_thread.start()
                     return HttpResponse("<script>location.reload();</script>")
             return render(
@@ -1588,6 +1585,7 @@ def user_leave_request(request, id):
     GET : return user leave request creation form template
     POST : user my leave view template
     """
+    previous_data = unquote(request.GET.urlencode())[len("pd="):]
     employee = request.user.employee_get
     leave_type = LeaveType.objects.get(id=id)
     form = UserLeaveRequestForm(
@@ -1700,15 +1698,6 @@ def user_leave_request(request, id):
                         icon="people-circle",
                         redirect="/leave/user-request-view",
                     )
-                response = render(
-                    request,
-                    "leave/user_leave/user_request_form.html",
-                    {"form": form, "id": id},
-                )
-                return HttpResponse(
-                    response.content.decode("utf-8")
-                    + "<script>location. reload();</script>"
-                )
         else:
             form.add_error(
                 None, _("You dont have enough leave days to make the request..")
@@ -1716,7 +1705,7 @@ def user_leave_request(request, id):
     return render(
         request,
         "leave/user_leave/user_request_form.html",
-        {"form": form, "id": id, "leave_type": leave_type},
+        {"form": form, "id": id, "leave_type": leave_type,"pd":previous_data},
     )
 
 
@@ -1734,6 +1723,7 @@ def user_request_update(request, id):
     GET : return user leave request update form template
     POST : return user leave request view template
     """
+    previous_data = request.GET.urlencode()
     leave_request = LeaveRequest.objects.get(id=id)
     try:
         if request.user.employee_get == leave_request.employee_id:
@@ -1795,15 +1785,6 @@ def user_request_update(request, id):
                         messages.info(
                             request, _("Leave request updated successfully..")
                         )
-                        response = render(
-                            request,
-                            "leave/user_leave/user_request_update.html",
-                            {"form": form, "id": id},
-                        )
-                        return HttpResponse(
-                            response.content.decode("utf-8")
-                            + "<script>location. reload();</script>"
-                        )
                     else:
                         form.add_error(
                             None,
@@ -1812,7 +1793,7 @@ def user_request_update(request, id):
             return render(
                 request,
                 "leave/user_leave/user_request_update.html",
-                {"form": form, "id": id},
+                {"form": form, "id": id, "pd": previous_data},
             )
     except Exception as e:
         messages.error(request, _("User has no leave request.."))
@@ -2422,7 +2403,7 @@ def leave_over_period(request):
     }
     return JsonResponse(response)
 
-
+from urllib.parse import unquote
 @login_required
 def leave_request_create(request):
     """
@@ -2435,6 +2416,7 @@ def leave_request_create(request):
     GET : return leave request form template
     POST : return leave request view
     """
+    previous_data = unquote(request.GET.urlencode())[len("pd="):]
     employee = request.user.employee_get
     emp_id = employee.id
     emp = Employee.objects.get(id=emp_id)
@@ -2510,10 +2492,16 @@ def leave_request_create(request):
                             redirect="/leave/request-view",
                         )
 
-                    mail_thread = LeaveMailSendThread(request, leave_request, type="request")
+                    mail_thread = LeaveMailSendThread(
+                        request, leave_request, type="request"
+                    )
                     mail_thread.start()
                     form = UserLeaveRequestCreationForm(initial={"employee_id": emp})
-            return render(request, "leave/user_leave/request_form.html", {"form": form})
+            return render(
+                request,
+                "leave/user_leave/request_form.html",
+                {"form": form, "pd": previous_data},
+            )
         else:
             messages.error(request, _("You don't have permission"))
             response = render(
@@ -2522,7 +2510,7 @@ def leave_request_create(request):
             return HttpResponse(
                 response.content.decode("utf-8") + "<script>location.reload();</script>"
             )
-    return render(request, "leave/user_leave/request_form.html", {"form": form})
+    return render(request, "leave/user_leave/request_form.html", {"form": form,"pd":previous_data})
 
 
 @login_required

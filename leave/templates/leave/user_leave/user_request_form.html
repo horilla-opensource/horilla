@@ -1,5 +1,36 @@
-{% load i18n %} 
-
-<form hx-post="{% url 'user-request' id %}" hx-encoding="multipart/form-data">
-  {{form.as_p}}
+{% load i18n %} {% if messages %}
+<div class="oh-wrapper">
+  {% for message in messages %}
+  <div class="oh-alert-container">
+    <div class="oh-alert oh-alert--animated {{message.tags}}">
+      {{ message }}
+    </div>
+  </div>
+  {% endfor %}
+  <script>
+    setTimeout(function () {
+      $(".oh-modal__close").click();
+    }, 1000);
+  </script>
+</div>
+{% endif %}
+<div class="oh-modal__dialog-header">
+  <span class="oh-modal__dialog-title" id="requestCreateModalLabel"
+    >{% trans "Leave Request" %}</span
+  >
+  <button
+    class="oh-modal__close"
+    aria-label="Close"
+    hx-get="{% url 'user-request-filter' %}?{{pd}}"
+    hx-target="#userRequest"
+  >
+    <ion-icon name="close-outline"></ion-icon>
+  </button>
+</div>
+<form
+  hx-post="{% url 'user-request' id %}?{{pd}}"
+  hx-target="#requestCreateFormModal"
+  hx-encoding="multipart/form-data"
+>
+  <div class="oh-modal__dialog-body">{{form.as_p}}</div>
 </form>

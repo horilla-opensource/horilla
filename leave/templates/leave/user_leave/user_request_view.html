@@ -213,6 +213,7 @@
 		<div class="oh-btn-group ml-2">
 			<div class="oh-dropdown" x-data="{open: false}">
 				<button
+					id="requestCreateButton"
 					class="oh-btn oh-btn--secondary oh-btn--shadow"
 					data-toggle="oh-modal-toggle"
 					data-target="#requestCreateModal"
@@ -292,6 +293,8 @@
 	</div>
 </div>
 
+<!-- Create request -->
+
 <div
 	class="oh-modal"
 	id="requestCreateModal"
@@ -300,6 +303,18 @@
 	aria-hidden="true"
 >
 	<div class="oh-modal__dialog" id="requestCreateFormModal">
+	</div>
+</div>
+
+<!-- Update request -->
+<div
+	class="oh-modal"
+	id="requestEditModal"
+	role="dialog"
+	aria-labelledby="requestEditModalLabel"
+	aria-hidden="true"
+  >
+	<div class="oh-modal__dialog" id="requestEditFormModal">
 	</div>
 </div>
 
@@ -473,9 +488,6 @@
 </script>
 
 <script src="{% static '/base/filter.js' %}"></script>
-
-<script src="./build/js/web.frontend.min.js"></script>
-
 <script
 type="module"
 src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"
