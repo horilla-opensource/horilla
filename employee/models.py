@@ -588,7 +588,7 @@ class BonusPoint(models.Model):
         ('>=',_('greater than or equal')),
         ('<=',_('less than or equal')),
     ]
-    employee_id = models.OneToOneField(Employee, on_delete=models.PROTECT ,blank=True, null=True, related_name='bonus_point')
+    employee_id = models.OneToOneField(Employee, on_delete=models.CASCADE ,blank=True, null=True, related_name='bonus_point')
     points = models.IntegerField(default=0, help_text="Use negative numbers to reduce points.")
     encashment_condition = models.CharField(max_length=100,choices = CONDITIONS,blank=True, null=True)
     redeeming_points = models.IntegerField(blank=True, null=True)
