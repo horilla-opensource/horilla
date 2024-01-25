@@ -447,6 +447,7 @@ def contract_info_initial(request):
 
 
 @login_required
+@permission_required("payroll.view_contract")
 def view_payroll_dashboard(request):
     """
     Dashboard rendering views

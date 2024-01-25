@@ -420,6 +420,7 @@
           style="display: none"
         >
           <ul class="oh-sidebar__submenu-items">
+            {% if perms.payroll.view_contract %}
             <li class="oh-sidebar__submenu-item">
               <a
                 href="{%url 'view-payroll-dashboard' %}"
@@ -427,6 +428,7 @@
                 >{% trans "Dashboard" %}</a
               >
             </li>
+            {%endif%} 
             {% if perms.payroll.view_contract %}
             <li class="oh-sidebar__submenu-item">
               <a
@@ -896,6 +898,7 @@
           </ul>
         </div>
       </li>
+      {% if perms.Leave.view_leaverequest %}
       <li
         class="oh-sidebar__menu-item"
         x-data="{ isOpen: getOpenState('configNav') }"
@@ -964,6 +967,7 @@
           </ul>
         </div>
       </li>
+      {% endif %}
     </ul>
   </div>
 </div>
