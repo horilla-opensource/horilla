@@ -1,9 +1,9 @@
-from collections.abc import Iterable
-from typing import Any
+from datetime import date
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from base import thread_local_middleware
+from base.models import Company
 from employee.models import Employee
 from horilla_audit.models import HorillaAuditInfo, HorillaAuditLog
 from notifications.signals import notify
@@ -25,7 +25,10 @@ class Offboarding(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     status = models.CharField(max_length=10, default="ongoing", choices=statuses)
     is_active = models.BooleanField(default=True)
-    
+    company_id = models.ForeignKey(
+        Company, on_delete=models.CASCADE, null=True, editable=False
+    )
+
     def __str__(self):
         return self.title
 
@@ -91,16 +94,89 @@ class OffboardingEmployee(models.Model):
         Employee, on_delete=models.CASCADE, verbose_name="Employee"
     )
     stage_id = models.ForeignKey(
-        OffboardingStage, on_delete=models.PROTECT, verbose_name="Stage"
+        OffboardingStage, on_delete=models.PROTECT, verbose_name="Stage", null=True
     )
-    notice_period = models.IntegerField()
-    unit = models.CharField(max_length=10, choices=units)
-    notice_period_starts = models.DateField()
-    notice_period_ends = models.DateField()
+    notice_period = models.IntegerField(null=True)
+    unit = models.CharField(max_length=10, choices=units, null=True)
+    notice_period_starts = models.DateField(null=True)
+    notice_period_ends = models.DateField(null=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self) -> str:
         return self.employee_id.get_full_name()
+
+
+class ResignationLetter(models.Model):
+    """
+    Resignation Request Employee model
+    """
+
+    statuses = [
+        ("requested", "Requested"),
+        ("approved", "Approved"),
+        ("rejected", "Rejected"),
+    ]
+    employee_id = models.ForeignKey(
+        Employee, on_delete=models.CASCADE, verbose_name="Employee"
+    )
+    title = models.CharField(max_length=30, null=True)
+    description = models.TextField(
+        null=True,
+    )
+    planned_to_leave_on = models.DateField()
+    status = models.CharField(max_length=10, choices=statuses, default="requested")
+    offboarding_employee_id = models.ForeignKey(
+        OffboardingEmployee, on_delete=models.CASCADE, editable=False, null=True
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_active = models.BooleanField(default=True)
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        if self.status == "approved":
+            pass
+
+        return
+
+    def to_offboarding_employee(
+        self, offboarding, notice_period_starts, notice_period_ends
+    ):
+        """
+        This method is used to convert/add employee to offboarding
+        """
+        offboarding_employee = OffboardingEmployee.objects.filter(
+            employee_id=self.employee_id
+        ).first()
+        offboarding_employee = (
+            offboarding_employee if offboarding_employee else OffboardingEmployee()
+        )
+        offboarding_employee.employee_id = self.employee_id
+        offboarding_employee.stage_id = (
+            OffboardingStage.objects.order_by("created_at")
+            .filter(offboarding_id=offboarding)
+            .first()
+        )
+        offboarding_employee.notice_period_starts = notice_period_starts
+        offboarding_employee.notice_period_ends = notice_period_ends
+        if (
+            notice_period_starts
+            and notice_period_ends
+            and not isinstance(notice_period_starts, str)
+            and not isinstance(notice_period_ends, str)
+        ):
+            diffs = date(
+                day=notice_period_ends.day,
+                month=notice_period_ends.month,
+                year=notice_period_ends.year,
+            ) - date(
+                day=notice_period_starts.day,
+                month=notice_period_starts.month,
+                year=notice_period_starts.year,
+            )
+            diffs = diffs.days
+            offboarding_employee.notice_period = diffs if diffs > 0  else None
+            offboarding_employee.unit = "day" if diffs > 0  else None
+        offboarding_employee.save()
 
 
 class OffboardingTask(models.Model):
@@ -146,6 +222,7 @@ class EmployeeTask(models.Model):
     )
     status = models.CharField(max_length=10, choices=statuses, default="todo")
     task_id = models.ForeignKey(OffboardingTask, on_delete=models.CASCADE)
+    description = models.TextField(null=True, editable=False)
     history = HorillaAuditLog(
         related_name="history_set",
         bases=[
@@ -156,7 +233,7 @@ class EmployeeTask(models.Model):
 
     class Meta:
         unique_together = ["employee_id", "task_id"]
-        
+
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
         request = getattr(_thread_locals, "request", None)
@@ -218,3 +295,10 @@ class OffboardingNote(models.Model):
         if self.employee_id:
             self.stage_id = self.employee_id.stage_id
         return super().save(*args, **kwargs)
+
+
+class OffboardingGeneralSetting(models.Model):
+    """
+    OffboardingGeneralSettings
+    """
+    resignation_request = models.BooleanField(default=True)

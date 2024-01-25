@@ -4,11 +4,14 @@ offboarding/forms.py
 This module is used to register forms for offboarding app
 """
 
+import contextlib
 from typing import Any
 from django import forms
 from django.template.loader import render_to_string
 from base.forms import ModelForm
+from base import thread_local_middleware
 from employee.forms import MultipleFileField
+from notifications.signals import notify
 from offboarding.models import (
     EmployeeTask,
     Offboarding,
@@ -17,6 +20,7 @@ from offboarding.models import (
     OffboardingStage,
     OffboardingStageMultipleFile,
     OffboardingTask,
+    ResignationLetter,
 )
 
 
@@ -89,8 +93,15 @@ class OffboardingEmployeeForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         if self.instance.pk:
-            self.initial["notice_period_starts"] = self.instance.notice_period_starts.strftime("%Y-%m-%d")
-            self.initial["notice_period_ends"] = self.instance.notice_period_ends.strftime("%Y-%m-%d")
+            if self.instance.notice_period_starts:
+                self.initial[
+                    "notice_period_starts"
+                ] = self.instance.notice_period_starts.strftime("%Y-%m-%d")
+            if self.instance.notice_period_ends:
+                self.initial[
+                    "notice_period_ends"
+                ] = self.instance.notice_period_ends.strftime("%Y-%m-%d")
+
 
 class StageSelectForm(ModelForm):
     """
@@ -180,7 +191,13 @@ class TaskForm(ModelForm):
         super().__init__(*args, **kwargs)
         self.fields["stage_id"].empty_label = "All Stages in Offboarding"
         self.fields["managers"].empty_label = None
-        queryset = OffboardingEmployee.objects.filter(stage_id__offboarding_id=OffboardingStage.objects.filter(id=self.initial.get("stage_id")).first().offboarding_id)
+        queryset = OffboardingEmployee.objects.filter(
+            stage_id__offboarding_id=OffboardingStage.objects.filter(
+                id=self.initial.get("stage_id")
+            )
+            .first()
+            .offboarding_id
+        )
         self.fields["tasks_to"].queryset = queryset
 
     def as_p(self):
@@ -200,3 +217,69 @@ class TaskForm(ModelForm):
                     employee_id=employee,
                     task_id=self.instance,
                 )
+
+
+class ResignationLetterForm(ModelForm):
+    """
+    Resignation Letter
+    """
+
+    description = forms.CharField(
+        widget=forms.Textarea(attrs={"data-summernote": "", "style": "display:none;"}),
+        label="Description",
+    )
+    verbose_name = "Resignation Letter"
+
+    class Meta:
+        model = ResignationLetter
+        fields = "__all__"
+
+    def as_p(self):
+        """
+        Render the form fields as HTML table rows with Bootstrap styling.
+        """
+        context = {"form": self}
+        table_html = render_to_string("common_form.html", context)
+        return table_html
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["planned_to_leave_on"].widget = forms.DateInput(
+            attrs={"type": "date", "class": "oh-input w-100"}
+        )
+        exclude = []
+        if self.instance.pk:
+            exclude.append("employee_id")
+            self.verbose_name = (
+                self.instance.employee_id.get_full_name() + " Resignation Letter"
+            )
+
+        request = getattr(thread_local_middleware._thread_locals, "request", None)
+
+        if request and not request.user.has_perm("offboarding.add_offboardingemployee"):
+            exclude = exclude + [
+                "employee_id",
+                "status",
+                "is_active",
+            ]
+            self.instance.employee_id = request.user.employee_get
+        for field in exclude:
+            del self.fields[field]
+
+    def save(self, commit: bool = ...) -> Any:
+        instance = super().save(commit)
+        request = getattr(thread_local_middleware._thread_locals, "request", None)
+        if request and not request.user.has_perm("offboarding.add_offboardingemployee"):
+            with contextlib.suppress(Exception):
+                notify.send(
+                    request.user.employee_get,
+                    recipient=self.instance.employee_id.get_reporting_manager().employee_user_id,
+                    verb=f"{self.instance.employee_id.get_full_name()} requested for resignation.",
+                    verb_ar=f"",
+                    verb_de=f"",
+                    verb_es=f"",
+                    verb_fr=f"",
+                    redirect="#",
+                    icon="information",
+                )
+        return instance

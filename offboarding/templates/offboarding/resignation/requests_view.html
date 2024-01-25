@@ -1,0 +1,18 @@
+{% extends "index.html" %}
+{% block content %}
+<style>
+    .reisgn-status {
+        background: #73bbe12b;
+        font-size: 0.8rem;
+        padding: 4px 8px;
+        border-radius: 10px;
+        margin-bottom: 6px;
+        font-weight: 600;
+        color: #357579;
+      }
+</style>
+{% include "offboarding/resignation/nav.html" %}
+<div id="resignationLetterContianer">
+    {% include "offboarding/resignation/request_cards.html" %}
+</div>
+{% endblock content %}

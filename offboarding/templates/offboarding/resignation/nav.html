@@ -1,0 +1,35 @@
+{% load i18n %}
+<section class="oh-wrapper oh-main__topbar" style="padding-bottom: 1rem;">
+  <div class="oh-main__titlebar oh-main__titlebar--left oh-d-flex-column--resp oh-mb-3--small">
+    <h1 class="oh-main__titlebar-title fw-bold">{% trans 'Resignations' %}</h1>
+  </div>
+  <div class="oh-main__titlebar oh-main__titlebar--right oh-d-flex-column--resp oh-mb-3--small">
+    <form class="oh-main__titlebar oh-main__titlebar--right oh-d-flex-column--resp oh-mb-3--small" hx-get="{% url 'search-resignation-request' %}" hx-target="#resignationLetterContianer">
+      <div class="oh-input-group oh-input__search-group"></div>
+      <div class="oh-input-group oh-input__search-group">
+        <ion-icon name="search-outline" class="oh-input-group__icon oh-input-group__icon--left md hydrated" role="img" aria-label="search outline"></ion-icon>
+        <input onkeyup="$(this).closest('form').find('input[type=submit]').click()" name="search" id="pipelineSearch" hx-target="#offboardingContainer" type="text" placeholder="Search" style="margin-right:10px" class="oh-input oh-input__icon mr-3" aria-label="Search Input" />
+      </div>
+      {% include 'offboarding/resignation/filter.html' %}
+      <input type="submit" hidden>
+    </form>
+    <div class="oh-main__titlebar-button-container">
+      <div class="oh-main__titlebar-button-container">
+        <a hx-get="{% url 'create-resignation-request' %}" hx-target="#resignationModalBody" data-toggle="oh-modal-toggle" data-target="#resignationModal" class="oh-btn oh-btn--secondary">
+          <ion-icon name="add-outline"></ion-icon>
+          {% trans 'Create' %}
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="oh-modal" id="resignationModal" role="dialog" aria-hidden="true">
+  <div class="oh-modal__dialog" style="max-width: 550px">
+    <div class="oh-modal__dialog-header">
+      <button type="button" class="oh-modal__close" aria-label="Close"><ion-icon name="close-outline"></ion-icon></button>
+    </div>
+
+    <div class="oh-modal__dialog-body" id="resignationModalBody"></div>
+  </div>
+</div>

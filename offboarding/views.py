@@ -1,19 +1,24 @@
+import datetime
+from urllib.parse import parse_qs
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
 from django.contrib import messages
 from django.contrib.auth.models import User
 from employee.models import Employee
 from horilla.decorators import login_required, permission_required
+from base.views import paginator_qry
 from offboarding.decorators import (
     any_manager_can_enter,
     offboarding_manager_can_enter,
     offboarding_or_stage_manager_can_enter,
 )
+from offboarding.filters import LetterFilter
 from offboarding.forms import (
     NoteForm,
     OffboardingEmployeeForm,
     OffboardingForm,
     OffboardingStageForm,
+    ResignationLetterForm,
     StageSelectForm,
     TaskForm,
 )
@@ -21,10 +26,12 @@ from offboarding.models import (
     EmployeeTask,
     Offboarding,
     OffboardingEmployee,
+    OffboardingGeneralSetting,
     OffboardingNote,
     OffboardingStage,
     OffboardingStageMultipleFile,
     OffboardingTask,
+    ResignationLetter,
 )
 from notifications.signals import notify
 from django.utils.translation import gettext_lazy as _
@@ -161,12 +168,14 @@ def delete_employee(request):
     This method is used to delete the offboarding employee
     """
     employee_ids = request.GET.getlist("employee_ids")
-    instances = OffboardingEmployee.objects.filter(id__in=employee_ids)    
+    instances = OffboardingEmployee.objects.filter(id__in=employee_ids)
     OffboardingEmployee.objects.filter(id__in=employee_ids).delete()
     messages.success(request, _("Offboarding employee deleted"))
     notify.send(
         request.user.employee_get,
-        recipient=User.objects.filter(id__in=instances.values_list("employee_id__employee_user_id",flat=True)),
+        recipient=User.objects.filter(
+            id__in=instances.values_list("employee_id__employee_user_id", flat=True)
+        ),
         verb=f"You have been removed from the offboarding",
         verb_ar=f"",
         verb_de=f"",
@@ -215,7 +224,9 @@ def change_stage(request):
     )
     notify.send(
         request.user.employee_get,
-        recipient=User.objects.filter(id__in=employees.values_list("employee_id__employee_user_id",flat=True)),
+        recipient=User.objects.filter(
+            id__in=employees.values_list("employee_id__employee_user_id", flat=True)
+        ),
         verb=f"Offboarding stage has been changed",
         verb_ar=f"",
         verb_de=f"",
@@ -227,12 +238,18 @@ def change_stage(request):
     return render(
         request,
         "offboarding/stage/offboarding_body.html",
-        {"offboarding": stage.offboarding_id, "stage_forms": stage_forms,"response_message":_("stage changed successfully.")},
+        {
+            "offboarding": stage.offboarding_id,
+            "stage_forms": stage_forms,
+            "response_message": _("stage changed successfully."),
+        },
     )
 
 
 @login_required
-@any_manager_can_enter("offboarding.view_offboardingnote",offboarding_employee_can_enter=True)
+@any_manager_can_enter(
+    "offboarding.view_offboardingnote", offboarding_employee_can_enter=True
+)
 def view_notes(request):
     """
     This method is used to render all the notes of the employee
@@ -329,21 +346,31 @@ def add_task(request):
         instance=instance,
     )
     if request.method == "POST":
-        form = TaskForm(request.POST, instance=instance,initial={
-            "stage_id": stage_id,
-        })
+        form = TaskForm(
+            request.POST,
+            instance=instance,
+            initial={
+                "stage_id": stage_id,
+            },
+        )
         if form.is_valid():
             form.save()
             messages.success(request, "Task Added")
             return HttpResponse("<script>window.location.reload()</script>")
-    return render(request, "offboarding/task/form.html", {"form": form,})
+    return render(
+        request,
+        "offboarding/task/form.html",
+        {
+            "form": form,
+        },
+    )
 
 
 @login_required
 @any_manager_can_enter(
     "offboarding.change_employeetask", offboarding_employee_can_enter=True
 )
-def update_task_status(request,*args, **kwargs):
+def update_task_status(request, *args, **kwargs):
     """
     This method is used to update the assigned tasks status
     """
@@ -357,7 +384,11 @@ def update_task_status(request,*args, **kwargs):
     employee_task.update(status=status)
     notify.send(
         request.user.employee_get,
-        recipient=User.objects.filter(id__in=employee_task.values_list("task_id__managers__employee_user_id",flat=True)),
+        recipient=User.objects.filter(
+            id__in=employee_task.values_list(
+                "task_id__managers__employee_user_id", flat=True
+            )
+        ),
         verb=f"Offboarding Task status has been updated",
         verb_ar=f"",
         verb_de=f"",
@@ -374,7 +405,11 @@ def update_task_status(request,*args, **kwargs):
     return render(
         request,
         "offboarding/stage/offboarding_body.html",
-        {"offboarding": stage.offboarding_id, "stage_forms": stage_forms,"response_message": _("Task status changed successfully.")},
+        {
+            "offboarding": stage.offboarding_id,
+            "stage_forms": stage_forms,
+            "response_message": _("Task status changed successfully."),
+        },
     )
 
 
@@ -414,8 +449,9 @@ def delete_task(request):
     messages.success(request, "Task deleted")
     return redirect(pipeline)
 
+
 @login_required
-def offboarding_individual_view(request,emp_id):
+def offboarding_individual_view(request, emp_id):
     """
     This method is used to get the individual view of the offboarding employees
     parameters:
@@ -424,13 +460,153 @@ def offboarding_individual_view(request,emp_id):
     employee = OffboardingEmployee.objects.get(id=emp_id)
     tasks = EmployeeTask.objects.filter(employee_id=emp_id)
     stage_forms = {}
-    offboarding_stages = OffboardingStage.objects.filter(offboarding_id = employee.stage_id.offboarding_id)
-    stage_forms[str(employee.stage_id.offboarding_id.id)] = StageSelectForm(offboarding=employee.stage_id.offboarding_id)
+    offboarding_stages = OffboardingStage.objects.filter(
+        offboarding_id=employee.stage_id.offboarding_id
+    )
+    stage_forms[str(employee.stage_id.offboarding_id.id)] = StageSelectForm(
+        offboarding=employee.stage_id.offboarding_id
+    )
     context = {
-        'employee':employee,
-        "tasks":tasks,
+        "employee": employee,
+        "tasks": tasks,
         "choices": EmployeeTask.statuses,
-        "offboarding_stages":offboarding_stages,
-        "stage_forms":stage_forms
+        "offboarding_stages": offboarding_stages,
+        "stage_forms": stage_forms,
     }
-    return render(request, 'offboarding/pipeline/individual_view.html', context)
+    return render(request, "offboarding/pipeline/individual_view.html", context)
+
+
+@login_required
+@permission_required("offboarding.view_resignationletter")
+def request_view(request):
+    """
+    This method is used to view the resignation request
+    """
+    defatul_filter = {"status": "requested"}
+    filter_instance = LetterFilter(defatul_filter)
+    offboardings = Offboarding.objects.all()
+
+    return render(
+        request,
+        "offboarding/resignation/requests_view.html",
+        {
+            "letters": paginator_qry(filter_instance.qs, request.GET.get("page")),
+            "f": filter_instance,
+            "filter_dict": {"status": ["Requested"]},
+            "offboardings": offboardings,
+        },
+    )
+
+
+@login_required
+def search_resignation_request(request):
+    """
+    This method is used to search/filter the letter
+    """
+    if request.user.has_perm("offboarding.view_resignationletter"):
+        letters = LetterFilter(request.GET).qs
+    else:
+        letters = ResignationLetter.objects.filter(
+            employee_id__employee_user_id=request.user
+        )
+    data_dict = parse_qs(request.GET.urlencode())
+    return render(
+        request,
+        "offboarding/resignation/request_cards.html",
+        {
+            "letters": paginator_qry(letters, request.GET.get("page")),
+            "filter_dict": data_dict,
+            "pd": request.GET.urlencode(),
+        },
+    )
+
+
+@login_required
+@permission_required("offboarding.delete_resignationletter")
+def delete_resignation_request(request):
+    """
+    This method is used to delete resignation letter instance
+    """
+    ids = request.GET.getlist("letter_ids")
+    ResignationLetter.objects.filter(id__in=ids).delete()
+    messages.success(request, "Resignation letter deleted")
+    return redirect(request_view)
+
+
+def create_resignation_request(request):
+    """
+    This method is used to render form to create resignation requests
+    """
+    instance_id = eval(str(request.GET.get("instance_id")))
+    instance = None
+    if instance_id:
+        instance = ResignationLetter.objects.get(id=instance_id)
+    form = ResignationLetterForm(instance=instance)
+    if request.method == "POST":
+        form = ResignationLetterForm(request.POST, instance=instance)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Resingation letter saved")
+            return HttpResponse("<script>window.location.reload()</script>")
+    return render(request, "offboarding/resignation/form.html", {"form": form})
+
+
+@login_required
+@permission_required("offboarding.change_resignationletter")
+def update_status(request):
+    """
+    This method is used to update the status of resignation letter
+    """
+    ids = request.GET.getlist("letter_ids")
+    status = request.GET["status"]
+    offboarding_id = request.GET.get("offboarding_id")
+    if offboarding_id:
+        offboarding = Offboarding.objects.get(id=offboarding_id)
+        notice_period_starts = request.GET.get("notice_period_starts")
+        notice_period_ends = request.GET.get("notice_period_ends")
+        if (notice_period_starts and notice_period_ends) is not None:
+            notice_period_starts = datetime.datetime.strptime(
+                notice_period_starts, "%Y-%m-%d"
+            ).date()
+            notice_period_ends = datetime.datetime.strptime(
+                notice_period_ends, "%Y-%m-%d"
+            ).date()
+
+    letters = ResignationLetter.objects.filter(id__in=ids)
+    # if use update method instead of save then save method will not trigger
+    if status in ["approved", "rejected"]:
+        for letter in letters:
+            letter.status = status
+            letter.save()
+            if status == "approved":
+                letter.to_offboarding_employee(
+                    offboarding, notice_period_starts, notice_period_ends
+                )
+            messages.success(
+                request, f"Resingation request has been {letter.get_status_display()}"
+            )
+            notify.send(
+                request.user.employee_get,
+                recipient=letter.employee_id.employee_user_id,
+                verb=f"Resingation request has been {letter.get_status_display()}",
+                verb_ar=f"",
+                verb_de=f"",
+                verb_es=f"",
+                verb_fr=f"",
+                redirect="#",
+                icon="information",
+            )
+    return redirect(request_view)
+
+
+@login_required
+@permission_required("offboarding.offboardinggeneralsetting")
+def enable_resignation_request(request):
+    """
+    Enable disable resignation letter feature
+    """
+    resignation_request_feature = OffboardingGeneralSetting.objects.first()
+    resignation_request_feature = resignation_request_feature if resignation_request_feature else OffboardingGeneralSetting()
+    resignation_request_feature.resignation_request = "resignation_request" in request.GET.keys()
+    resignation_request_feature.save()
+    return HttpResponse("Success")

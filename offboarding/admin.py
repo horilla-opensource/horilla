@@ -4,10 +4,17 @@ from offboarding.models import (
     OffboardingNote,
     OffboardingTask,
     EmployeeTask,
+    ResignationLetter,
 )
 
 # Register your models here.
 
 admin.site.register(
-    [OffboardingStageMultipleFile, OffboardingNote, OffboardingTask, EmployeeTask]
+    [
+        OffboardingStageMultipleFile,
+        ResignationLetter,
+        OffboardingNote,
+        OffboardingTask,
+        EmployeeTask,
+    ]
 )
