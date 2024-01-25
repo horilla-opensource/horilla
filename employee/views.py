@@ -2645,7 +2645,7 @@ def employee_note_delete(request, note_id):
 
 
 @login_required
-@manager_can_enter(perm="employee.view_bonuspoint")
+@owner_can_enter("employee.view_bonuspoint", Employee)
 def bonus_points_tab(request, emp_id):
     """
     This function is used to view Bonus Points tab of an employee in employee individual & profile view.

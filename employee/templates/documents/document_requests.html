@@ -63,9 +63,6 @@
 				},
 				traditional:true,
 				success: function () {
-					// console.log("Success");
-					// currentUrl = window.location.href;
-					// $("#view-container").load(currentUrl + " #view-container > *");
 					window.location.reload()
 
 				},
@@ -83,7 +80,6 @@
 					ids.push($(this).attr("id"));
 				}
 			});
-			console.log(ids)
 			$.ajax({
 				type: "POST",
 				url: "{% url 'document-bulk-reject' %}",
@@ -94,10 +90,6 @@
 				},
 				traditional:true,
 				success: function () {
-					console.log("Success");
-					// currentUrl = window.location.href;
-					// $("#view-container").load(currentUrl + " #view-container");
-					// demo = $("#view-container").html()
 					window.location.reload()	
 				},
 				error: function () {
@@ -110,7 +102,6 @@
 			var is_checked = $(this).prop("checked");
 
 			$(this).closest(".oh-accordion-meta__header").siblings(".oh-accordion-meta__body").find("[type=checkbox]").prop("checked", is_checked);
-			// console.log($(this).closest(".oh-accordion-meta__header").siblings(".oh-accordion-meta__body").find("[type=checkbox]"));
 		})
 	});
 </script>
