@@ -1,4 +1,4 @@
-{% load static %} {% load basefilters %} {% load recruitmentfilters %} {% load i18n %} {% load tz %} {% now "Y-m-d" as current_date %}
+{% load static %} {% load basefilters %} {% load recruitmentfilters %} {% load employee_filter %} {% load i18n %} {% load tz %} {% now "Y-m-d" as current_date %}
 <div id="mainNav"></div>
 <!-- End of Navigation -->
 <style>
@@ -56,6 +56,13 @@
       border-radius: 18px;
       margin-right:10px;
       background-color:hsl(138.46deg 100% 74.19% / 33%);
+  }
+
+  .announcement_title{
+    margin-bottom: 10px;
+    padding: 8px;
+    margin-right:10px;
+    text-decoration:none;
   }
 </style>
 <main>
@@ -672,7 +679,7 @@
         </div>
       </div>
       <div class="oh-dashboard__right col-12 col-sm-12 col-md-12 col-lg-3">
-        <div class="oh-dashboard__events mb-3">
+        <div class="oh-dashboard__events">
           <div
             class="oh-dashbaord__events-reel w-100"
             id="birthdayContainer"
@@ -681,18 +688,73 @@
           </ul>
         </div>
 
-        <div
-        class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent mb-3"
-      >
-        <div
-          class="oh-card-dashboard__header oh-card-dashboard__header--divider"
-        >
-          <span class="oh-card-dashboard__title">{% trans "On Leave" %}</span>
+        <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent mb-3 mt-3">
+          <div class="oh-card-dashboard__title fw-bold" style="font-size:20px;">
+              <img style="width: 30px; height: 30px; display: inline-block;" src="{% static 'images/ui/megaphone.png' %}" class="oh-404__image ms-2"/>
+              <span class="ms-1">{% trans "Announcements." %}</span>
+              {% if perms.base.add_announcement %}
+                <span>
+                    <button style="display: inline-block;font-size: 20px; padding:5px; margin-top:-8px;" class="oh-btn oh-btn--secondary-outline float-end me-2" hx-get='{% url "create-announcement" %}' 
+                            hx-target="#createannouncementForm" hx-swap="innerHTML" data-toggle="oh-modal-toggle" data-target="#anouncementModal" title='{% trans "Create Announcement." %}'>
+                        <ion-icon name="add-outline"></ion-icon>
+                    </button>
+                </span>
+              {% endif %}
+          </div>
+        
+          <hr>
+
+          <div class="oh-card-dashboard__body">
+            <div class="oh-sticky-table" style="height:400px; border:none;">
+              <div class="oh-sticky-table__table oh-table--sortable">
+                <div class="oh-sticky-table__tbody">
+
+
+                  {% if announcement == '' %}
+
+                    <div class="oh-sticky-table__tr" draggable="true">
+                        <div class="announcement_title fw-bold">
+                          No Announcement.
+                        </div>
+                    </div>
+
+                  {% else %}
+
+                    {% for i in announcement %}
+                      <div class="oh-sticky-table__tr" draggable="true">
+                        {% if i.expire_date|date:"Y-m-d" >= current_date or i.expire_date == None %}
+                          <div class="announcement_title">
+                            <a class="oh-profile oh-profile--md" data-toggle="oh-modal-toggle" style="text-decoration:none;"
+                              data-target="#announcement"
+                              hx-get="{% url 'announcement-single-view' i.id %}"
+                              hx-target="#announcementModalBody">
+                                <div class="oh-profile__avatar mr-1">
+                                  <img src="https://ui-avatars.com/api/?name={{i.title}}&background=random" class="oh-profile__image" />
+                                </div>
+                                <span class="oh-profile__name oh-text--dark fw-bold">
+                                  {{i.title}}
+                                </span>
+                                {% now "Y-m-d" as current_date %}
+                                {% if i.created_on|date:"Y-m-d" == current_date %}
+                                  <span class="oh-profile__info-value ms-2" style="background-color: hsl(8,77%,56%); color:white;
+                                font-size: 0.7rem; padding: 3px 8px; border-radius: 15px; font-weight: 800; width:auto;"
+                                  >NEW</span>
+                              {% endif %}
+
+                            </a>
+                          </div>
+                        {% endif %}
+                      </div>
+                    {% endfor %}
+
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-        <div class="oh-card-dashboard__body">
-          <ul class="oh-card-dashboard__user-list" id="leaveEmployee"></ul>
-        </div>
-      </div>
+
+
 
         <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent mb-3 mt-2">
           <div class="oh-card-dashboard__title mt-4 mb-3">{% trans "Quick Actions" %}</div> <hr>  
@@ -704,7 +766,7 @@
 
                     <div class="oh-sticky-table__tr" draggable="true">
                       <div class="oh-kanban-card__title">
-                        <a class="oh-profile oh-profile--md" data-toggle="oh-modal-toggle"
+                        <a class="oh-profile oh-profile--md" data-toggle="oh-modal-toggle" style="text-decoration:none;"
                           data-target="#newAttendanceRequest"
                           hx-get="{% url 'request-new-attendance' %}"
                           hx-target="#newAttendanceRequestModalBody">
@@ -720,7 +782,7 @@
       
                     <div class="oh-sticky-table__tr" draggable="true">
                       <div class="oh-kanban-card__title">
-                          <a class="oh-profile oh-profile--md" data-toggle="oh-modal-toggle"
+                          <a class="oh-profile oh-profile--md" data-toggle="oh-modal-toggle" style="text-decoration:none;"
                               data-target="#requestCreateModal"
                               hx-get="{% url 'leave-request-create' %}"
                               hx-target="#requestCreateFormModal">
@@ -736,7 +798,7 @@
       
                     <div class="oh-sticky-table__tr" draggable="true">
                       <div class="oh-kanban-card__title">
-                        <a class="oh-profile oh-profile--md" data-toggle="oh-modal-toggle"
+                        <a class="oh-profile oh-profile--md" data-toggle="oh-modal-toggle" style="text-decoration:none;"
                           data-target="#shiftRequestModal"
                           hx-get="{% url 'shift-request' %}?emp_id={{request.user.employee_get.id}}"
                           hx-target="#shiftRequestTargetModal">
@@ -752,7 +814,7 @@
 
                     <div class="oh-sticky-table__tr" draggable="true">
                       <div class="oh-kanban-card__title">
-                        <a class="oh-profile oh-profile--md" data-toggle='oh-modal-toggle'
+                        <a class="oh-profile oh-profile--md" data-toggle='oh-modal-toggle' style="text-decoration:none;"
                           data-target='#workTypeRequestModal'
                           hx-get="{% url 'work-type-request' %}"
                           hx-target='#formBody'>
@@ -768,7 +830,8 @@
 
                     <div class="oh-sticky-table__tr" draggable="true">
                       <div class="oh-kanban-card__title">
-                        <a class="oh-profile oh-profile--md" hx-get="{% url 'create-reimbursement' %}" hx-target="#reimbursementModalBody" data-toggle="oh-modal-toggle" data-target="#reimbursementModal">
+                        <a class="oh-profile oh-profile--md" hx-get="{% url 'create-reimbursement' %}" style="text-decoration:none;"
+                        hx-target="#reimbursementModalBody" data-toggle="oh-modal-toggle" data-target="#reimbursementModal">
                           <div class="oh-profile__avatar mr-1">
                               <img src="https://ui-avatars.com/api/?name=R R&background=random" class="oh-profile__image" />
                             </div>
@@ -781,7 +844,7 @@
 
                     <div class="oh-sticky-table__tr" draggable="true">
                       <div class="oh-kanban-card__title">
-                        <a class="oh-profile oh-profile--md" data-toggle="oh-modal-toggle"
+                        <a class="oh-profile oh-profile--md" data-toggle="oh-modal-toggle" style="text-decoration:none;"
                           data-target="#asset-request-allocation-modal"
                           hx-get="{%url 'asset-request-creation'%}"
                           hx-target="#asset-request-allocation-modal-target">
@@ -797,7 +860,7 @@
 
                     <div class="oh-sticky-table__tr" draggable="true">
                       <div class="oh-kanban-card__title">
-                        <a class="oh-profile oh-profile--md" data-toggle="oh-modal-toggle"
+                        <a class="oh-profile oh-profile--md" data-toggle="oh-modal-toggle" style="text-decoration:none;"
                           data-target="#createModal1"
                           hx-get="{% url 'ticket-create' %}"
                           hx-target="#createTarget">
@@ -815,8 +878,146 @@
               </div>
             </div>
           </div>
-        </div> 
-     
+        </div>
+          
+        
+        <div
+        class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent mb-3"
+      >
+        <div
+          class="oh-card-dashboard__header oh-card-dashboard__header--divider"
+        >
+          <span class="oh-card-dashboard__title">{% trans "On Leave" %}</span>
+        </div>
+        <div class="oh-card-dashboard__body">
+          <ul class="oh-card-dashboard__user-list" id="leaveEmployee"></ul>
+        </div>
+      </div>
+
+        {% comment %} <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent mb-3 mt-2">
+          <div class="oh-card-dashboard__title mt-4 mb-3">{% trans "Quick Actions" %}</div> <hr>  
+
+          <div class="oh-card-dashboard__body">
+            <div class="oh-sticky-table" style="height:400px; border:none;">
+              <div class="oh-sticky-table__table oh-table--sortable">
+                <div class="oh-sticky-table__tbody">
+
+                    <div class="oh-sticky-table__tr" draggable="true">
+                      <div class="oh-kanban-card__title">
+                        <a class="oh-profile oh-profile--md" data-toggle="oh-modal-toggle" style="text-decoration:none;"
+                          data-target="#newAttendanceRequest"
+                          hx-get="{% url 'request-new-attendance' %}"
+                          hx-target="#newAttendanceRequestModalBody">
+                          <div class="oh-profile__avatar mr-1">
+                            <img src="https://ui-avatars.com/api/?name=A R&background=random" class="oh-profile__image" />
+                          </div>
+                          <span class="oh-profile__name oh-text--dark">
+                            {% trans "Attendance Request" %}
+                          </span>
+                        </a>
+                      </div>
+                    </div>
+      
+                    <div class="oh-sticky-table__tr" draggable="true">
+                      <div class="oh-kanban-card__title">
+                          <a class="oh-profile oh-profile--md" data-toggle="oh-modal-toggle" style="text-decoration:none;"
+                              data-target="#requestCreateModal"
+                              hx-get="{% url 'leave-request-create' %}"
+                              hx-target="#requestCreateFormModal">
+                              <div class="oh-profile__avatar mr-1">
+                                  <img src="https://ui-avatars.com/api/?name=L R&background=random" class="oh-profile__image" />
+                              </div>
+                              <span class="oh-profile__name oh-text--dark">
+                              {% trans "Leave Request" %}
+                              </span>
+                          </a>
+                      </div>
+                    </div>
+      
+                    <div class="oh-sticky-table__tr" draggable="true">
+                      <div class="oh-kanban-card__title">
+                        <a class="oh-profile oh-profile--md" data-toggle="oh-modal-toggle" style="text-decoration:none;"
+                          data-target="#shiftRequestModal"
+                          hx-get="{% url 'shift-request' %}?emp_id={{request.user.employee_get.id}}"
+                          hx-target="#shiftRequestTargetModal">
+                          <div class="oh-profile__avatar mr-1">
+                              <img src="https://ui-avatars.com/api/?name=S R&background=random" class="oh-profile__image" />
+                            </div>
+                            <span class="oh-profile__name oh-text--dark">
+                              {% trans "Shift Request" %}
+                            </span>
+                        </a>
+                      </div>
+                    </div>
+
+                    <div class="oh-sticky-table__tr" draggable="true">
+                      <div class="oh-kanban-card__title">
+                        <a class="oh-profile oh-profile--md" data-toggle='oh-modal-toggle' style="text-decoration:none;"
+                          data-target='#workTypeRequestModal'
+                          hx-get="{% url 'work-type-request' %}"
+                          hx-target='#formBody'>
+                          <div class="oh-profile__avatar mr-1">
+                              <img src="https://ui-avatars.com/api/?name=W R&background=random" class="oh-profile__image" />
+                            </div>
+                            <span class="oh-profile__name oh-text--dark">
+                              {% trans "Worktype Request" %}
+                            </span>
+                        </a>
+                      </div>
+                    </div>
+
+                    <div class="oh-sticky-table__tr" draggable="true">
+                      <div class="oh-kanban-card__title">
+                        <a class="oh-profile oh-profile--md" hx-get="{% url 'create-reimbursement' %}" style="text-decoration:none;"
+                        hx-target="#reimbursementModalBody" data-toggle="oh-modal-toggle" data-target="#reimbursementModal">
+                          <div class="oh-profile__avatar mr-1">
+                              <img src="https://ui-avatars.com/api/?name=R R&background=random" class="oh-profile__image" />
+                            </div>
+                            <span class="oh-profile__name oh-text--dark">
+                              {% trans "Reimbursement Request" %}
+                            </span>
+                          </a>
+                      </div>
+                    </div>
+
+                    <div class="oh-sticky-table__tr" draggable="true">
+                      <div class="oh-kanban-card__title">
+                        <a class="oh-profile oh-profile--md" data-toggle="oh-modal-toggle" style="text-decoration:none;"
+                          data-target="#asset-request-allocation-modal"
+                          hx-get="{%url 'asset-request-creation'%}"
+                          hx-target="#asset-request-allocation-modal-target">
+                          <div class="oh-profile__avatar mr-1">
+                              <img src="https://ui-avatars.com/api/?name=A R&background=random" class="oh-profile__image" />
+                            </div>
+                            <span class="oh-profile__name oh-text--dark">
+                              {% trans "Asset Request" %}
+                            </span>
+                        </a>
+                      </div>
+                    </div>
+
+                    <div class="oh-sticky-table__tr" draggable="true">
+                      <div class="oh-kanban-card__title">
+                        <a class="oh-profile oh-profile--md" data-toggle="oh-modal-toggle" style="text-decoration:none;"
+                          data-target="#createModal1"
+                          hx-get="{% url 'ticket-create' %}"
+                          hx-target="#createTarget">
+                          <div class="oh-profile__avatar mr-1">
+                              <img src="https://ui-avatars.com/api/?name=T C&background=random" class="oh-profile__image" />
+                            </div>
+                            <span class="oh-profile__name oh-text--dark">
+                              {% trans "Ticket Creation" %}
+                            </span>
+                        </a>
+                      </div>
+                    </div>
+
+                  </div>
+              </div>
+            </div>
+          </div>
+        </div> {% endcomment %}
+
         {% if perms.leave.view_leaverequest or request.user|is_reportingmanager%}
         <div
           class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent"
@@ -962,6 +1163,7 @@
 </div>
 
 {% include "quick_access.html" %}
+{% include "announcement_single_view.html" %}
 
 
 </main>

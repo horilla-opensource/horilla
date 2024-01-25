@@ -213,7 +213,16 @@
 								>{% trans "Disciplinary Action Type" %}</a
 							>
 						</li>
-
+						{% if perms.base.add_announcement %}
+						<li class="oh-inner-sidebar__item">
+							<a
+								id="currency"
+								href="{% url 'general-settings' %}"
+								class="oh-inner-sidebar__link oh-dropdown__link"
+								>{% trans "General Settings" %}</a
+							>
+						</li>
+						{% endif %}
 						{% if perms.base.view_company %}
 
 						<li class="oh-inner-sidebar__item">

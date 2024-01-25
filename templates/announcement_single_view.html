@@ -1,0 +1,170 @@
+{% load static %}
+{% load i18n %}
+
+
+<style>
+  .oh-modal_close--custom {
+    border: none;
+    background: none;
+    font-size: 1.5rem;
+    opacity: 0.7;
+    position: absolute;
+    top: 25px;
+    right: 15px;
+  }
+</style>
+
+<!-- Announcement single Modal -->
+
+<div
+  class="oh-modal"
+  id="announcement"
+  role="dialog"
+  aria-labelledby="announcement"
+  aria-hidden="true"
+>
+  <div class="oh-modal__dialog">
+    <div class="oh-modal__dialog-header">
+
+      <button class="oh-modal__close" aria-label="Close">
+        <ion-icon name="close-outline"></ion-icon>
+      </button>
+    </div>
+    <div
+      class="oh-modal__dialog-body"
+      id="announcementModalBody"
+    ></div>
+  </div>
+</div>
+
+<!-- End of single modal-->
+
+
+<!-- start of create modal -->
+<div
+	class="oh-modal"
+	id="anouncementModal"
+	role="dialog"
+	aria-labelledby="emptagModal"
+	aria-hidden="true"
+>
+	<div class="oh-modal__dialog">
+		<div class="oh-modal__dialog-header">
+			<h2 class="oh-modal__dialog-title" id="createModalTitle">
+				{% trans "Create Announcements." %}
+			</h2>
+      <button
+      type="button"
+      class="oh-modal_close--custom"
+      onclick="$('#anouncementModal').removeClass('oh-modal--show');"
+        >
+        <ion-icon
+          name="close-outline"
+          role="img"
+          aria-label="close outline"
+        ></ion-icon>
+    </button>
+		</div>
+		<div class="oh-modal__dialog-body" id="createannouncementForm"></div>
+	</div>
+</div>
+<!-- end of create modal -->
+
+<!-- start of update modal -->
+<div
+class="oh-modal"
+id="announcementUpdateModal"
+role="dialog"
+aria-labelledby="announcementUpdateModal"
+aria-hidden="true"
+>
+<div class="oh-modal__dialog">
+  <div class="oh-modal__dialog-header">
+    <h5 class="oh-modal__dialog-title" id="announcementUpdateModalLabel"
+      >{% trans "Edit Announcement." %}</span
+    >
+    <button
+      type="button"
+      class="oh-modal_close--custom"
+      onclick="$('#announcementUpdateModal').removeClass('oh-modal--show');"
+        >
+        <ion-icon
+          name="close-outline"
+          role="img"
+          aria-label="close outline"
+        ></ion-icon>
+    </button>
+  </div>
+  <div class="oh-modal__dialog-body" id='announcementUpdate'>
+    
+  </div>
+</div>
+</div>
+<!-- end of update modal -->
+
+<!-- start of comment modal -->
+<div
+	class="oh-modal"
+	id="commentModal"
+	role="dialog"
+	aria-labelledby="emptagModal"
+	aria-hidden="true"
+>
+	<div class="oh-modal__dialog">
+		<div class="oh-modal__dialog-header">
+			<h2 class="oh-modal__dialog-title" id="createModalTitle">
+				{% trans "Add Comment." %}
+			</h2>
+			<button
+        type="button"
+        class="oh-modal_close--custom"
+        onclick="$('#commentModal').removeClass('oh-modal--show');"
+          >
+          <ion-icon
+            name="close-outline"
+            role="img"
+            aria-label="close outline"
+          ></ion-icon>
+      </button>
+		</div>
+		<div class="oh-modal__dialog-body" id="commentForm"></div>
+	</div>
+</div>
+<!-- end of comment modal -->
+
+<!-- start of comment view modal -->
+<div
+  class="oh-modal"
+  id="commentviewModal"
+  role="dialog"
+  aria-labelledby="commentviewModal"
+  aria-hidden="true"
+>
+  <div class="oh-modal__dialog">
+    <div class="oh-modal__dialog-header">
+      <h2
+        class="oh-modal__dialog-title"
+        id=""
+      >
+        {% trans "Comments." %}
+      </h2>
+      <button
+        type="button"
+        class="oh-modal_close--custom"
+        onclick="$('#commentviewModal').removeClass('oh-modal--show');"
+          >
+          <ion-icon
+            name="close-outline"
+            role="img"
+            aria-label="close outline"
+          ></ion-icon>
+      </button>
+    </div>
+    <div
+      class="oh-modal__dialog-body oh-modal__dialog-relative"
+      id="commentviewTarget"
+    ></div>
+  </div>
+</div>
+
+<!-- end of comment view modal -->
