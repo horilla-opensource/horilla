@@ -102,6 +102,19 @@ def clock_in_attendance_and_activity(
     """
 
     # attendance activity create
+    activity = AttendanceActivity.objects.filter(
+        employee_id=employee,
+        attendance_date=attendance_date,
+        clock_in_date=date_today,
+        shift_day=day,
+        clock_out=None,
+    ).first()
+    
+    if activity and not activity.clock_out:
+        activity.clock_out = in_datetime
+        activity.clock_out_date = date_today
+        activity.save()
+    
     AttendanceActivity(
         employee_id=employee,
         attendance_date=attendance_date,
