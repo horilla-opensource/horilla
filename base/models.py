@@ -1170,6 +1170,15 @@ class Attachment(models.Model):
     def __str__(self):
         return self.file.name
 
+
+class AnnouncementExpire(models.Model):
+    """
+    This model for setting a expire days for announcement if no expire date for announcement
+    """
+    days = models.IntegerField(null=True, blank = True, default = 30)
+
+
+
 class Announcement(models.Model):
 
     """
@@ -1179,6 +1188,7 @@ class Announcement(models.Model):
     description = models.TextField(null=True)
     attachments = models.ManyToManyField(Attachment, related_name='announcement_attachments', blank=True)
     created_on = models.DateTimeField(auto_now_add=True)
+    expire_date = models.DateField(null=True, blank=True)
     department = models.ManyToManyField(Department, blank=True)
     job_position = models.ManyToManyField(JobPosition, blank=True)
 

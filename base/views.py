@@ -39,6 +39,7 @@ from base.decorators import (
 )
 from base.methods import closest_numbers, export_data, get_pagination
 from base.forms import (
+    AnnouncementExpireForm,
     AuditTagForm,
     CompanyForm,
     DepartmentForm,
@@ -76,6 +77,8 @@ from base.forms import (
     WorktyperequestcommentForm,
 )
 from base.models import (
+    Announcement,
+    AnnouncementExpire,
     Company,
     DynamicEmailConfiguration,
     DynamicPagination,
@@ -388,10 +391,22 @@ def home(request):
             },
         )
 
+    announcement_list = Announcement.objects.all().order_by('-created_on')
+    general_expire = AnnouncementExpire.objects.all().first()
+    general_expire_date = 30 if  not general_expire  else general_expire.days
+
+    for announcement in announcement_list:
+        if announcement.expire_date is None:
+            calculated_expire_date = announcement.created_on + timedelta(days=general_expire_date)
+            announcement.expire_date = calculated_expire_date
+
     context = {
         "first_day_of_week": first_day_of_week.strftime("%Y-%m-%d"),
         "last_day_of_week": last_day_of_week.strftime("%Y-%m-%d"),
         "employees_with_pending": employees_with_pending,
+        "announcement" : announcement_list,
+        "general_expire_date":general_expire_date,
+
     }
 
     return render(request, "index.html", context)
@@ -3218,6 +3233,23 @@ def settings(request):
             form.save()
             messages.success(request, _("Payroll settings updated."))
     return render(request, "payroll/settings/payroll_settings.html", {"form": form})
+
+
+
+@login_required
+def general_settings(request):
+    """
+    This method is used to render settings template
+    """
+    instance = AnnouncementExpire.objects.first()
+    form = AnnouncementExpireForm(instance=instance)
+    if request.method == "POST":
+        form = AnnouncementExpireForm(request.POST, instance=instance)
+        if form.is_valid():
+            form.save()
+            messages.success(request, _("Settings updated."))
+    return render(request, "base/general_settings.html", {'form':form})
+
 
 
 @login_required

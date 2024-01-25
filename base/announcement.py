@@ -1,4 +1,4 @@
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import redirect, render
 from base.forms import AnnouncementForm, AnnouncementcommentForm
 from base.models import Announcement, AnnouncementComment
@@ -123,7 +123,7 @@ def delete_announcement(request, anoun_id):
     announcement = Announcement.objects.filter(id=anoun_id)
     announcement.delete()
     messages.success(request, _("Announcement deleted successfully."))
-    return redirect(announcement_view)
+    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 
 
 @login_required
@@ -249,3 +249,13 @@ def comment_view(request, anoun_id):
         {"comments": comments, "no_comments": no_comments},
     )
 
+
+@login_required
+def announcement_single_view(request, anoun_id):
+
+    """
+    This method is used to render single announcemnts.
+    """
+
+    announcement = Announcement.objects.filter(id=anoun_id)
+    return render(request, "announcement/announcement_one.html", {'announcements': announcement})

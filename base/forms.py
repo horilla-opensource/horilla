@@ -22,6 +22,7 @@ from employee.models import Employee, EmployeeTag
 from base.models import (
     Announcement,
     AnnouncementComment,
+    AnnouncementExpire,
     Attachment,
     Company,
     Department,
@@ -1656,6 +1657,7 @@ class AnnouncementForm(ModelForm):
         excluded_fields = ['created_on']
         widgets = {
             "description": forms.Textarea(attrs={"data-summernote": ""}),
+            "expire_date": DateInput(attrs={"type": "date"}),
         }
     
 
@@ -1696,3 +1698,15 @@ class AnnouncementcommentForm(ModelForm):
         model = AnnouncementComment
         fields = ('comment',)
 
+class AnnouncementExpireForm(ModelForm):
+    """
+    Announcement Expire form
+    """
+
+    class Meta:
+        """
+        Meta class for additional options
+        """
+
+        model = AnnouncementExpire
+        fields = ('days',)

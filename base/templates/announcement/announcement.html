@@ -1,4 +1,4 @@
-{% extends "index.html" %}
+{% comment %} {% extends "index.html" %} {% endcomment %}
 {% load i18n %}
 {% load static %}
 {% load basefilters %}
@@ -8,32 +8,34 @@
     <div class="oh-main__titlebar oh-main__titlebar--left">
         <a href='{% url "announcement" %}' class="oh-main__titlebar-title fw-bold mb-0 text-dark" style='text-decoration: none;'>{% trans "Announcements" %} </a>
     </div>
-    <div class="oh-main__titlebar oh-main__titlebar--right">
-
-      <div class="oh-main__titlebar-button-container">
     
-          <div class="oh-btn-group ml-2">
-              <button class="oh-btn oh-btn--secondary oh-btn--shadow" hx-get='{% url "create-announcement" %}' 
-                  hx-target="#createannouncementForm" hx-swap="innerHTML" data-toggle="oh-modal-toggle" data-target="#anouncementModal">
-                  <ion-icon class="me-1" name="add-outline"></ion-icon>{% trans "Create" %}</button>
-          </div>
+    {% if perms.announcemnt.add_announcemnt or request.user|is_reportingmanager %}
+      <div class="oh-main__titlebar oh-main__titlebar--right">
+
+        <div class="oh-main__titlebar-button-container">
+      
+            <div class="oh-btn-group ml-2">
+                <button class="oh-btn oh-btn--secondary oh-btn--shadow" hx-get='{% url "create-announcement" %}' 
+                    hx-target="#createannouncementForm" hx-swap="innerHTML" data-toggle="oh-modal-toggle" data-target="#anouncementModal">
+                    <ion-icon class="me-1" name="add-outline"></ion-icon>{% trans "Create" %}</button>
+            </div>
+        </div>
       </div>
-    </div>
+    {% endif %}
+
 </section>
 
-
-
 {% if perms.announcemnt.add_announcemnt or request.user|is_reportingmanager %}
-<div class="card mx-auto p-3" style="max-width: 808px; margin-bottom: 30px;border-bottom: 1px solid grey;box-shadow: 0px 5px 5px grey;border-radius:10px;">
-    <div class="card-header d-flex align-items-center ms-2">
-        <a hx-get='{% url "create-announcement" %}' style="color:hsl(8,77%,56%); text-decoration:none; cursor:pointer;" 
-        hx-target="#createannouncementForm" hx-swap="innerHTML" data-toggle="oh-modal-toggle" data-target="#anouncementModal" >
-            <ion-icon name="send-sharp" class="mr-2"></ion-icon></a>
-        <a hx-get='{% url "create-announcement" %}' style="color:hsl(8,77%,56%); text-decoration:none; cursor:pointer;" 
-        hx-target="#createannouncementForm" hx-swap="innerHTML" data-toggle="oh-modal-toggle" data-target="#anouncementModal">
-            <h6 class="card-title fw-bold mt-1">{% trans "Create Announcements." %}</h6></a>
-    </div>
-</div>
+  <div class="card mx-auto p-3" style="max-width: 808px; margin-bottom: 30px;border-bottom: 1px solid grey;box-shadow: 0px 5px 5px grey;border-radius:10px;">
+      <div class="card-header d-flex align-items-center ms-2">
+          <a hx-get='{% url "create-announcement" %}' style="color:hsl(8,77%,56%); text-decoration:none; cursor:pointer;" 
+          hx-target="#createannouncementForm" hx-swap="innerHTML" data-toggle="oh-modal-toggle" data-target="#anouncementModal" >
+              <ion-icon name="send-sharp" class="mr-2"></ion-icon></a>
+          <a hx-get='{% url "create-announcement" %}' style="color:hsl(8,77%,56%); text-decoration:none; cursor:pointer;" 
+          hx-target="#createannouncementForm" hx-swap="innerHTML" data-toggle="oh-modal-toggle" data-target="#anouncementModal">
+              <h6 class="card-title fw-bold mt-1">{% trans "Create Announcements." %}</h6></a>
+      </div>
+  </div>
 {% endif %}
 
 <div class="container mt-3" style="max-height: 900px; overflow-y: auto;">
@@ -128,7 +130,7 @@
                     {% endif %}
                     {% if attachment.file.url|slice:"-4:" == '.png' or attachment.file.url|slice:"-4:" == '.jpg' or attachment.file.url|slice:"-5:" == '.jpeg' or attachment.file.url|slice:"-4:" == '.gif' or attachment.file.url|slice:"-4:" == '.bmp' or attachment.file.url|slice:"-5:" == '.webp' or attachment.file.url|slice:"-5:" == '.tiff' or attachment.file.url|slice:"-4:" == '.tif' or attachment.file.url|slice:"-4:" == '.svg' %}                        <!-- If not a PDF, display the image -->
                         <a href="{{ attachment.file.url }}" target="_blank">
-                            <img style="max-width: 740px;" src="{{ attachment.file.url }}" class="img-fluid rounded" alt="Attachment Image"></a>
+                            <img style="max-width: 484px;" src="{{ attachment.file.url }}" class="img-fluid rounded" alt="Attachment Image"></a>
                     {% else %}
                         <!-- If the file is a PDF or something, display a link to download -->
                         <i><a href="{{ attachment.file.url }}" class='text-danger fw-bold' target="_blank">
@@ -158,21 +160,9 @@
     {% endfor %} {% endcomment %}
 
 
-    <!--55555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555-->
-    <!--55555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555-->
-    <!--55555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555-->
-    <!--55555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555-->
-    <!--55555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555-->
-    <!--55555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555-->
-    <!--55555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555-->
-    <!--55555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555-->
-    <!--55555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555-->
-    <!--55555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555-->
-    <!--55555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555-->
-    <!--55555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555-->
-    <!--55555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555-->
-    <!--55555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555-->
-    <!--55555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555-->
+    <!--********************************************************************************************************-->
+    <!--********************************************************************************************************-->
+    <!--********************************************************************************************************-->
 
 
     <section class="oh-wrapper oh-main__topbar oh-announcement_topbar" x-data="{searchShow: false}">
@@ -301,54 +291,10 @@
       </div>
       {% endfor %}
   </div>
-  
 
-    <!--55555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555-->
-    <!--55555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555-->
-    <!--55555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555-->
-    <!--55555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555-->
-    <!--55555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555-->
-    <!--55555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555-->
-    <!--55555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555-->
-    <!--55555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555-->
-    <!--55555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555-->
-    <!--55555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555-->
-    <!--55555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555-->
-    <!--55555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555-->
-    <!--55555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555-->
-    <!--55555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555-->
-    <!--55555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555-->
-    <!--55555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555-->
-    <!--55555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555-->
-    <!--55555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555-->
-    <!--55555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555-->
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  <!--********************************************************************************************************-->
+  <!--********************************************************************************************************-->
+  <!--********************************************************************************************************-->
 
 
     <!-- Pagination section start -->

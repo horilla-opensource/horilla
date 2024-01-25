@@ -524,6 +524,7 @@ urlpatterns = [
         name="delete-notifications",
     ),
     path("settings/currency/", views.settings, name="currency-settings"),
+    path("settings/general-settings/", views.general_settings, name="general-settings"),
     path("settings/date-settings/", views.date_settings, name="date-settings"),
     path("settings/save-date/", views.save_date_format, name="save_date_format"),
     path("settings/get-date-format/", views.get_date_format, name="get-date-format"),
@@ -725,7 +726,7 @@ urlpatterns = [
 
     path('pagination-settings-view',views.pagination_settings_view,name="pagination-settings-view"),
 
-        path(
+    path(
         "announcement/", 
         announcement.announcement_view, name="announcement"
     ),
@@ -750,6 +751,10 @@ urlpatterns = [
         "announcement-view-comment/<int:anoun_id>/",
         announcement.comment_view,
         name="announcement-view-comment",
+    ),
+    path(
+        "announcement-single-view/<int:anoun_id>", 
+        announcement.announcement_single_view, name="announcement-single-view"
     ),
 
 ]
