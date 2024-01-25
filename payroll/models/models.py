@@ -14,6 +14,7 @@ from django.contrib import messages
 from django.db.models.signals import post_save
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
+from django.utils import timezone
 from django.db.models.signals import pre_save, pre_delete
 from django.http import QueryDict
 from asset.models import Asset
@@ -366,11 +367,6 @@ class WorkRecord(models.Model):
     at_work_second = models.IntegerField(null=True, blank=True, default=0)
     min_hour_second = models.IntegerField(null=True, blank=True, default=0)
     note = models.TextField()
-    color = models.CharField(
-        max_length=10,
-        null=True,
-        blank=True,
-    )
     message = models.CharField(max_length=30, null=True, blank=True)
     is_attendance_record = models.BooleanField(default=False)
     is_leave_record = models.BooleanField(default=False)
@@ -379,16 +375,8 @@ class WorkRecord(models.Model):
     objects = HorillaCompanyManager("employee_id__employee_work_info__company_id")
 
     def save(self, *args, **kwargs):
-        self.last_update = datetime.now()
+        self.last_update = timezone.now()
 
-        if self.work_record_type == "CONF":
-            self.color = "#dc3545"
-        elif self.work_record_type == "FDP":
-            self.color = "#6dca6e"
-        elif self.work_record_type == "HDP":
-            self.color = "#f6b83c"
-        else:
-            self.color = "#938c8c"
         super().save(*args, **kwargs)
 
     def clean(self):
@@ -411,7 +399,10 @@ class WorkRecordThread(threading.Thread):
             work_record.save()
 
 
-WorkRecordThread().start()
+try:
+    WorkRecordThread().start()
+except:
+    pass
 
 
 class OverrideAttendance(Attendance):
@@ -429,7 +420,7 @@ class OverrideAttendance(Attendance):
         at_work_second = strtime_seconds(instance.attendance_worked_hour)
 
         status = "FDP" if instance.at_work_second >= min_hour_second else "HDP"
-
+        status = "ABS" if instance.at_work_second <= min_hour_second / 2 else status
         if instance.first_save:
             status = (
                 "CONF"
@@ -458,9 +449,16 @@ class OverrideAttendance(Attendance):
             if status == "HDP" and min_hour_second / 2 > at_work_second
             else message
         )
-        if status == "HDP" and instance.is_leave_record:
+        work_record =WorkRecord.objects.filter(
+                date=instance.attendance_date,
+                is_attendance_record=True,
+                employee_id=instance.employee_id,
+            )
+        if status == "HDP" and work_record.first().is_leave_record:
             message = _("Half day leave")
 
+        if status == "FDP":
+            message = _("Present")
         work_record = (
             WorkRecord()
             if not WorkRecord.objects.filter(
@@ -472,7 +470,6 @@ class OverrideAttendance(Attendance):
                 employee_id=instance.employee_id,
             ).first()
         )
-
         work_record.employee_id = instance.employee_id
         work_record.date = instance.attendance_date
         work_record.at_work = instance.attendance_worked_hour
@@ -486,6 +483,28 @@ class OverrideAttendance(Attendance):
             work_record.day_percentage = (
                 1.00 if at_work_second > min_hour_second / 2 else 0.50
             )
+        work_record.save()
+
+    @receiver(post_save, sender=Attendance)
+    def attendance_post_save(sender, instance, **_kwargs):
+        work_record = (
+            WorkRecord()
+            if not WorkRecord.objects.filter(
+                date=instance.attendance_date,
+                employee_id=instance.employee_id,
+            ).exists()
+            else WorkRecord.objects.filter(
+                date=instance.attendance_date,
+                employee_id=instance.employee_id,
+            ).first()
+        )
+        message = work_record.message
+        status = work_record.work_record_type
+        if not instance.attendance_clock_out:
+            status = "FDP"
+            message = _("Currently working")
+        work_record.message = message
+        work_record.work_record_type = status
         work_record.save()
 
     @receiver(pre_delete, sender=Attendance)

@@ -4,15 +4,25 @@
     table {
         width: 100%;
     }
+    /* #workRecordTable thead {
+        position: sticky;
+        top: 0;
+        z-index: 2;
+    }
 
+    #workRecordTable th {
+        position: sticky;
+        top: 0;
+        z-index: 2;
+    } */
     th,
     td {
-        border: 1px solid black;
+        border: 1px solid hsl(213,22%,84%);
         padding: 5px;
     }
 
     th {
-        background-color: lightgray;
+        background-color: lightgray !important;
     }
 
     .oh-card {
@@ -26,6 +36,16 @@
         color: #333;
         margin: 0;
         font-weight: bold;
+    }
+    .days {
+        width:30px;
+    }
+    #workRecordTable a {
+        color:inherit;
+    }
+    .oh-sticky-table__th {
+        padding:5px !important;
+        text-align: center;
     }
 </style>
 
@@ -53,7 +73,7 @@
                 </h6>
             </div>
         </div>
-        <div id="workRecordTable">
+        <div id="workRecordTable" class="oh-sticky-table">
             {% include "attendance/work_record/work_record_list.html" %}
         </div>
     </div>
