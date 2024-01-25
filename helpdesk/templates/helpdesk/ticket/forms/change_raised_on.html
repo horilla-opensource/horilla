@@ -29,7 +29,6 @@
   $(document).ready( function(){
     $('#id_assigning_type').change(function(){
       var assigning_type = $('#id_assigning_type').val()
-      console.log(assigning_type)
       $.ajax({
         type: "GET",
         url: "/helpdesk/get-raised-on",
@@ -37,7 +36,6 @@
           'assigning_type':assigning_type,
         },
         success: function (response) {
-          console.log(response.raised_on)
           var raised_on = response.raised_on
           // Clear the existing options
           $('#id_raised_on').empty();
@@ -46,7 +44,6 @@
           $('#id_raised_on').append(options)
           $.each(raised_on, function (id,obj) {
             // looping all raised_on
-            console.log(obj.id,obj.name)
             var options = $(`<option value=" ${obj.id}">`).text(obj.name);
             $('#id_raised_on').append(options)
           });    

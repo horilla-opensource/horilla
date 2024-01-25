@@ -477,15 +477,11 @@
     </div>
     <script>
       function handleSuccess() {
-        alert('----------------------------')
     
       }
       function updateStatus(){
-        console.log('-----updateStatus-----')
         var status = $("[name='status_update']").val()
         var ticketID = $("[name='ticketId']").attr('id');
-        console.log(ticketID)
-        console.log(status)
         $.ajax({
           type: "post",
           url: `/helpdesk/change-ticket-status/${ticketID}/`,
@@ -517,20 +513,15 @@
       }
       function showTag()
       function updateTag(event) {
-        console.log('--------updateTag------');
         var ticketId = $("[name='ticketId']").attr('id');
-        console.log(ticketId)
         var selectedValues = $("#id_tags option:selected").map(function(){
           return $(this).val();
         }).get();
-        console.log(selectedValues)
         // Check if 'create_new_tag' exists in the list
         if (selectedValues.includes('create_new_tag')) {
-          console.log("'create_new_tag' is selected. Perform specific action.");
           $("#editModal").addClass("oh-modal--show");
         } else {
           // ajax function for save the tag to ticket
-          console.log("'create_new_tag' is not selected. Perform other action.");
           $.ajax({
             type:'GET',
             url:'/helpdesk/ticket-change-tag',
