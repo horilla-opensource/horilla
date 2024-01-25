@@ -2,15 +2,18 @@
 <div class="oh-modal__dialog-body oh-timeoff-modal__body  pb-2">
     <div class="oh-timeoff-modal__profile-content">
         <div class="oh-profile">
-            <div class="oh-profile-section__edit-photo me-3" >
+            <div class="oh-profile-section__edit-photo me-3" style="width: 80px; height: 80px;" >
                 <img src="{{employee.employee_id.get_avatar}}"
                     class="oh-profile-section__modal-image" alt="" />
             </div>
             <div  >
-
-                <div class="oh-timeoff-modal__profile-info mb-2">
-                    <span class="oh-timeoff-modal__user fw-bold">{{employee}}</span>
-                </div>
+                <a class="oh-timeoff-modal__profile-content" style="text-decoration:none;" 
+                    href ="{% url 'employee-view-individual' employee.employee_id.id %}">
+                    <div class="oh-timeoff-modal__profile-info mb-2">
+                        <span class="oh-timeoff-modal__user fw-bold">{{employee}}</span>
+                        <span class="oh-timeoff-modal__position">{{employee.employee_id.employee_work_info.department_id}}</span>
+                    </div>
+                </a>
             </div>
         </div>
     </div>
@@ -51,14 +54,6 @@
                     {{ stage_forms|individual_view_stages:employee.stage_id }}
                     <input type="submit" hidden />
                 </form>
-                    {% comment %} {% else %}
-                    {% for stage in recruitment.onboarding_stage.all %}
-                        {% if employee.onboarding_stage_id == stage %}
-                        {{stage}}
-                        {% endif %}
-                    {% endfor %} {% endcomment %}
-        
-                    {% comment %} {% endif %} {% endcomment %}
             </span>
         </div>
     </div>
