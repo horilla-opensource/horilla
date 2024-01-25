@@ -1,0 +1,47 @@
+{% extends 'index.html' %}
+{% block content %}
+<style>
+
+</style>
+  <body>
+        <!-- Navigation -->
+        <div id="mainNav"></div>
+        <!-- End of Navigation -->
+        <main :class="sidebarOpen ? 'oh-main__sidebar-visible' : ''">
+          <section class="oh-wrapper oh-main__topbar">
+            <div
+              class="oh-main__titlebar oh-main__titlebar--left oh-d-flex-column--resp oh-mb-3--small"
+            >
+              <h1 class="oh-main__titlebar-title fw-bold">
+                Organizational Chart
+              </h1>
+              <select id="mangerSelect" class="oh-select"
+                style="
+                    height: 100px
+                    width:50%
+                    align-items: center;
+                    background-color: #fff;
+                    border: 1px solid #aaa;
+                    border-radius: 2px;
+                }"
+                name="manager_id"   
+                title="Reporting Managers"
+                hx-post="{% url 'organisation-chart' %}"
+                hx-target="#chart_target" 
+              >
+                {% for manager_id, values in reporting_manager_dict.items %}
+                  <option value="{{ manager_id }}" {% if act_manager_id == manager_id %} selected {% endif %}>{{ values }}</option>
+                {% endfor %}
+                            
+             </select>
+            </div>
+            <div class="oh-main__titlebar oh-main__titlebar--right"></div>
+          </section>
+              <div class="oh-wrapper" id="chart_target">
+                  {% include "organisation_chart/chart.html" %}
+              </div>
+        </main>
+
+  </body>
+{% endblock %}
+

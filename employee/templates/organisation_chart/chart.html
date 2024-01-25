@@ -1,0 +1,13 @@
+<div
+    class="oh-main__org-chart-container"
+    id="chart-container"
+></div>
+<script>
+    orgChartLoad()
+    var blah = {{act_datasource|safe}}
+    $("#chart-container").orgchart(
+        {data:blah,nodeContent:"title"}
+    )
+</script>
+
+

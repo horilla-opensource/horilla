@@ -312,6 +312,12 @@
           style="display: none"
         >
           <ul class="oh-sidebar__submenu-items">
+            <li class="oh-sidebar__submenu-item">
+              <a class="oh-sidebar__submenu-link" 
+                  href="{% url 'organisation-chart' %}"
+                >{% trans "Staff Organogram" %}</a
+              >
+            </li>
             {% if request.session.selected_company == "all" or request.user.employee_get.employee_work_info.company_id.id == request.session.selected_company|default:"-1"|add:"0" %}
             <li class="oh-sidebar__submenu-item">
               <a

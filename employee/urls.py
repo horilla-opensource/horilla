@@ -271,6 +271,7 @@ urlpatterns = [
         views.document_delete,
         name="document-delete",
     ),
+    path("organisation-chart", views.organisation_chart, name="organisation-chart"),
 
     path("delete-policies",policies.delete_policies,name="delete-policies"),
 

@@ -82,7 +82,12 @@ from employee.forms import (
     EmployeeBankDetailsUpdateForm,
     excel_columns,
 )
-from horilla_documents.forms import DocumentForm, DocumentRejectForm, DocumentRequestForm, DocumentUpdateForm
+from horilla_documents.forms import (
+    DocumentForm,
+    DocumentRejectForm,
+    DocumentRequestForm,
+    DocumentUpdateForm,
+)
 from employee.models import (
     BonusPoint,
     Employee,
@@ -502,22 +507,22 @@ def document_request_view(request):
 
     Returns: return document_request template
     """
-    f= DocumentRequestFilter()
+    f = DocumentRequestFilter()
     document_requests = DocumentRequest.objects.all()
-    documents = Document.objects.filter(document_request_id__isnull=False).order_by("document_request_id")
+    documents = Document.objects.filter(document_request_id__isnull=False).order_by(
+        "document_request_id"
+    )
     documents = filtersubordinates(
         request=request,
         perm="attendance.view_attendance",
         queryset=documents,
     )
     context = {
-        "document_requests":document_requests,
-        "documents":documents,
-        "f":f,
-
+        "document_requests": document_requests,
+        "documents": documents,
+        "f": f,
     }
     return render(request, "documents/document_requests.html", context=context)
-
 
 
 @login_required
@@ -529,10 +534,12 @@ def document_filter_view(request):
     document_requests = DocumentRequest.objects.all()
     previous_data = request.GET.urlencode()
     documents = DocumentRequestFilter(request.GET).qs
-    documents=documents.exclude(document_request_id__isnull = True).order_by("document_request_id")
+    documents = documents.exclude(document_request_id__isnull=True).order_by(
+        "document_request_id"
+    )
     data_dict = parse_qs(previous_data)
     get_key_instances(Document, data_dict)
-    
+
     return render(
         request,
         "documents/requests.html",
@@ -541,7 +548,7 @@ def document_filter_view(request):
             "f": EmployeeFilter(request.GET),
             "pd": previous_data,
             "filter_dict": data_dict,
-            "document_requests":document_requests,
+            "document_requests": document_requests,
         },
     )
 
@@ -559,22 +566,26 @@ def document_request_create(request):
     """
     form = DocumentRequestForm()
     form = choosesubordinates(request, form, "horilla_documents.add_documentrequest")
-    if request.method == 'POST':
+    if request.method == "POST":
         form = DocumentRequestForm(request.POST)
-        form = choosesubordinates(request, form, "horilla_documents.add_documentrequest")
+        form = choosesubordinates(
+            request, form, "horilla_documents.add_documentrequest"
+        )
         if form.is_valid():
             form.save()
             return HttpResponse("<script>window.location.reload();</script>")
 
     context = {
-        "form" : form,
+        "form": form,
     }
-    return render(request, "documents/document_request_create_form.html", context=context)
+    return render(
+        request, "documents/document_request_create_form.html", context=context
+    )
 
 
 @login_required
 @manager_can_enter("horilla_documents.change_documentrequests")
-def document_request_update(request,id):
+def document_request_update(request, id):
     """
     This function is used to update document requests of an employee in employee requests view.
 
@@ -583,23 +594,25 @@ def document_request_update(request,id):
 
     Returns: return document_request_create_form template
     """
-    document_request = get_object_or_404(DocumentRequest,id=id)
-    form = DocumentRequestForm(instance = document_request)
-    if request.method == 'POST':
-        form = DocumentRequestForm(request.POST,instance = document_request)
+    document_request = get_object_or_404(DocumentRequest, id=id)
+    form = DocumentRequestForm(instance=document_request)
+    if request.method == "POST":
+        form = DocumentRequestForm(request.POST, instance=document_request)
         if form.is_valid():
             form.save()
             return HttpResponse("<script>window.location.reload();</script>")
 
     context = {
-        "form" : form,
-        "document_request":document_request,
+        "form": form,
+        "document_request": document_request,
     }
-    return render(request, "documents/document_request_create_form.html", context=context)
+    return render(
+        request, "documents/document_request_create_form.html", context=context
+    )
 
 
 @login_required
-@owner_can_enter("horilla_documents.view_document",Employee)
+@owner_can_enter("horilla_documents.view_document", Employee)
 def document_tab(request, emp_id):
     """
     This function is used to view documents tab of an employee in employee individual & profile view.
@@ -610,21 +623,21 @@ def document_tab(request, emp_id):
 
     Returns: return document_tab template
     """
-    
-    form = DocumentUpdateForm(request.POST,request.FILES)
+
+    form = DocumentUpdateForm(request.POST, request.FILES)
     documents = Document.objects.filter(employee_id=emp_id)
 
     context = {
         "documents": documents,
         "form": form,
-        "emp_id":emp_id,
+        "emp_id": emp_id,
     }
     return render(request, "tabs/document_tab.html", context=context)
 
 
 @login_required
-@owner_can_enter("horilla_documents.add_document",Employee)
-def document_create(request,emp_id):
+@owner_can_enter("horilla_documents.add_document", Employee)
+def document_create(request, emp_id):
     """
     This function is used to create documents from employee individual & profile view.
 
@@ -635,17 +648,17 @@ def document_create(request,emp_id):
     Returns: return document_tab template
     """
     employee_id = Employee.objects.get(id=emp_id)
-    form = DocumentForm(initial = {"employee_id":employee_id})
-    if request.method == 'POST':
-        form = DocumentForm(request.POST,request.FILES)
+    form = DocumentForm(initial={"employee_id": employee_id})
+    if request.method == "POST":
+        form = DocumentForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
-            messages.success(request,_("Document created successfully."))
-            return HttpResponse('<script>window.location.reload();</script>')
+            messages.success(request, _("Document created successfully."))
+            return HttpResponse("<script>window.location.reload();</script>")
 
     context = {
         "form": form,
-        "emp_id":emp_id,
+        "emp_id": emp_id,
     }
     return render(request, "tabs/htmx/document_create_form.html", context=context)
 
@@ -662,13 +675,17 @@ def update_document_title(request, id):
     """
     document = get_object_or_404(Document, id=id)
     name = request.POST.get("title")
-    if request.method == 'POST':
+    if request.method == "POST":
         document.title = name
         document.save()
 
-        return JsonResponse({'success': True, 'message': 'Document title updated successfully'})
+        return JsonResponse(
+            {"success": True, "message": "Document title updated successfully"}
+        )
     else:
-        return JsonResponse({'success': False, 'message': 'Invalid request'}, status=400)
+        return JsonResponse(
+            {"success": False, "message": "Invalid request"}, status=400
+        )
 
 
 @login_required
@@ -676,12 +693,14 @@ def document_delete(request, id):
     try:
         document = get_object_or_404(Document, id=id)
         document.delete()
-        messages.success(request, _("Document {} deleted successfully").format(document))
+        messages.success(
+            request, _("Document {} deleted successfully").format(document)
+        )
 
     except ProtectedError:
         messages.error(request, _("You cannot delete this document."))
 
-    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))    
+    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 
 
 @login_required
@@ -698,17 +717,15 @@ def file_upload(request, id):
 
     document_item = Document.objects.get(id=id)
     form = DocumentUpdateForm(instance=document_item)
-    if request.method == 'POST':
-        form = DocumentUpdateForm(request.POST,request.FILES,instance=document_item)
+    if request.method == "POST":
+        form = DocumentUpdateForm(request.POST, request.FILES, instance=document_item)
         if form.is_valid():
             form.save()
             return HttpResponse("<script>window.location.reload();</script>")
 
-    context = {
-        "form" : form,
-        "document" : document_item
-    }
+    context = {"form": form, "document": document_item}
     return render(request, "tabs/htmx/document_form.html", context=context)
+
 
 @login_required
 def view_file(request, id):
@@ -724,23 +741,24 @@ def view_file(request, id):
 
     document_obj = get_object_or_404(Document, id=id)
     context = {
-        "document":document_obj,
+        "document": document_obj,
     }
     if document_obj.document:
         file_path = document_obj.document.path
-        file_extension = os.path.splitext(file_path)[1][1:].lower()  # Get the lowercase file extension
+        file_extension = os.path.splitext(file_path)[1][
+            1:
+        ].lower()  # Get the lowercase file extension
 
         content_type = get_content_type(file_extension)
 
-        with open(file_path, 'rb') as file:
-            file_content = file.read() # Decode the binary content for display
+        with open(file_path, "rb") as file:
+            file_content = file.read()  # Decode the binary content for display
 
         context["file_content"] = file_content
         context["file_extension"] = file_extension
         context["content_type"] = content_type
-    
 
-    return render(request, 'tabs/htmx/view_file.html', context)
+    return render(request, "tabs/htmx/view_file.html", context)
 
 
 def get_content_type(file_extension):
@@ -752,17 +770,17 @@ def get_content_type(file_extension):
     """
 
     content_types = {
-        'pdf': 'application/pdf',
-        'txt': 'text/plain',
-        'docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-        'xlsx': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-        'jpg': 'image/jpeg',
-        'png': 'image/png',
-        'jpeg': 'image/jpeg',
+        "pdf": "application/pdf",
+        "txt": "text/plain",
+        "docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        "xlsx": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "jpg": "image/jpeg",
+        "png": "image/png",
+        "jpeg": "image/jpeg",
     }
 
     # Default to application/octet-stream if the file extension is not recognized
-    return content_types.get(file_extension, 'application/octet-stream')
+    return content_types.get(file_extension, "application/octet-stream")
 
 
 @login_required
@@ -775,7 +793,7 @@ def document_approve(request, id):
     request (HttpRequest): The HTTP request object.
     id (int): The id of the document.
 
-    Returns: 
+    Returns:
     """
 
     document_obj = get_object_or_404(Document, id=id)
@@ -785,8 +803,6 @@ def document_approve(request, id):
         messages.success(request, _("Document request approved"))
     else:
         messages.error(request, _("No document uploaded"))
-
-
 
     return HttpResponse("<script>window.location.reload();</script>")
 
@@ -801,13 +817,13 @@ def document_reject(request, id):
     request (HttpRequest): The HTTP request object.
     id (int): The id of the document.
 
-    Returns: 
+    Returns:
     """
     document_obj = get_object_or_404(Document, id=id)
     form = DocumentRejectForm()
     if document_obj.document:
         if request.method == "POST":
-            form = DocumentRejectForm(request.POST,instance=document_obj)
+            form = DocumentRejectForm(request.POST, instance=document_obj)
             if form.is_valid():
                 document_obj.status = "rejected"
                 document_obj.save()
@@ -817,9 +833,13 @@ def document_reject(request, id):
     else:
         messages.error(request, _("No document uploaded"))
         return HttpResponse("<script>window.location.reload();</script>")
-        
-    return render(request,"tabs/htmx/reject_form.html",{"form":form,"document_obj":document_obj})
-    
+
+    return render(
+        request,
+        "tabs/htmx/reject_form.html",
+        {"form": form, "document_obj": document_obj},
+    )
+
 
 @login_required
 @manager_can_enter("horilla_documents.add_document")
@@ -830,13 +850,15 @@ def document_bulk_approve(request):
 
     request (HttpRequest): The HTTP request object.
 
-    Returns: 
+    Returns:
     """
-    ids = request.GET.getlist('ids')
-    document_obj = Document.objects.filter(id__in=ids,).exclude(document ="")
+    ids = request.GET.getlist("ids")
+    document_obj = Document.objects.filter(
+        id__in=ids,
+    ).exclude(document="")
     document_obj.update(status="approved")
     messages.success(request, _(f"{len(document_obj)} Document request approved"))
-        
+
     return HttpResponse("success")
 
 
@@ -849,12 +871,12 @@ def document_bulk_reject(request):
 
     request (HttpRequest): The HTTP request object.
 
-    Returns: 
+    Returns:
     """
-    ids = request.POST.getlist('ids')
-    reason = request.POST.get('reason')
+    ids = request.POST.getlist("ids")
+    reason = request.POST.get("reason")
     document_obj = Document.objects.filter(id__in=ids)
-    document_obj.update(status="rejected",reject_reason = reason)
+    document_obj.update(status="rejected", reject_reason=reason)
     messages.success(request, _("Document request rejected"))
     return HttpResponse("success")
 
@@ -2640,18 +2662,21 @@ def bonus_points_tab(request, emp_id):
     trackings = points.tracking()
 
     activity_list = []
-    for history in trackings:        
+    for history in trackings:
         activity_list.append(
             {
-                "type":history["type"],
+                "type": history["type"],
                 "date": history["pair"][0].history_date,
                 "points": history["pair"][0].points - history["pair"][1].points,
-                "user":getattr(User.objects.filter(id = history["pair"][0].history_user_id).first(),"employee_get",None),
+                "user": getattr(
+                    User.objects.filter(id=history["pair"][0].history_user_id).first(),
+                    "employee_get",
+                    None,
+                ),
                 "reason": history["pair"][0].reason,
             }
         )
-    
-        
+
     return render(
         request,
         "tabs/bonus_points.html",
@@ -2671,7 +2696,7 @@ def add_bonus_points(request, emp_id):
 
     Returns: returns add_points form
     """
-    
+
     bonus_point = BonusPoint.objects.get(employee_id=emp_id)
     form = BonusPointAddForm()
     if request.method == "POST":
@@ -2700,10 +2725,11 @@ def add_bonus_points(request, emp_id):
             "emp_id": emp_id,
         },
     )
-    
+
+
 @login_required
 @owner_can_enter("employee.view_bonuspoint", Employee)
-def redeem_points(request,emp_id):
+def redeem_points(request, emp_id):
     """
     This function is used to redeem bonus points for an employee
 
@@ -2715,19 +2741,19 @@ def redeem_points(request,emp_id):
     """
     user = Employee.objects.get(id=emp_id)
     form = BonusPointRedeemForm()
-    if request.method == 'POST':
+    if request.method == "POST":
         form = BonusPointRedeemForm(request.POST)
         if form.is_valid():
             form.save(commit=False)
-            points = form.cleaned_data['points']
+            points = form.cleaned_data["points"]
             reimbursement = Reimbursement.objects.create(
-                title = f"Bonus point Redeem for {user}",
-                type = "bonus_encashment",
-                employee_id = user,
-                bonus_to_encash =points,
-                description = f"{user} want to redeem {points} points",
-                allowance_on = date.today(),
-            )            
+                title=f"Bonus point Redeem for {user}",
+                type="bonus_encashment",
+                employee_id=user,
+                bonus_to_encash=points,
+                description=f"{user} want to redeem {points} points",
+                allowance_on=date.today(),
+            )
             return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
     return render(
         request,
@@ -2738,3 +2764,76 @@ def redeem_points(request,emp_id):
         },
     )
 
+
+@login_required
+# @manager_can_enter(perm="employee.view_employee")
+def organisation_chart(request):
+    """
+    This method is used to view oganisation chart
+    """
+    reporting_managers = Employee.objects.filter(reporting_manager__isnull=False).distinct()
+
+    # Iterate through the queryset and add reporting manager id and name to the dictionary
+    result_dict = {item.id: item.get_full_name() for item in reporting_managers}
+
+    entered_req_managers=[]
+
+    # Helper function to recursively create the hierarchy structure
+    def create_hierarchy(manager):
+        """
+        Hierarchy generator method
+        """
+        nodes = []
+        # check the manager is a reporting manager if yes, store it into entered_req_managers
+        if manager.id in result_dict.keys():
+            entered_req_managers.append(manager)
+        # filter the subordinates
+        subordinates = Employee.objects.filter(employee_work_info__reporting_manager_id=manager).exclude(id=manager.id)
+
+        # itrating through subordinates
+        for employee in subordinates:
+            if employee in entered_req_managers:
+               continue
+            # check the employee is a reporting manager if yes,remove className store it into entered_req_managers
+            if employee.id in result_dict.keys():
+                nodes.append({
+                    "name":employee.get_full_name(),
+                    "title":getattr(employee.get_job_position(),"job_position","Not set"),
+                    "children":create_hierarchy(employee),
+                })
+                entered_req_managers.append(employee)
+
+            else:
+                nodes.append({
+                    "name":employee.get_full_name(),
+                    "title":getattr(employee.get_job_position(),"job_position","Not set"),
+                    "className":"middle-level",
+                    "children":create_hierarchy(employee),
+                })
+        return nodes  
+    manager= request.user.employee_get
+    new_dict = {manager.id:manager.get_full_name(), **result_dict}
+    # POST method is used to change the reporting manager 
+    if request.method == "POST":
+        manager_id = int(request.POST.get("manager_id"))
+        manager = Employee.objects.get(id=manager_id)
+        node = {
+        "name":manager.get_full_name(),
+        "title":getattr(manager.get_job_position(),"job_position","Not set"),
+        "children":create_hierarchy(manager),
+    }
+        context = {"act_datasource": node}
+        return render(request, "organisation_chart/chart.html", context=context)
+    
+    node = {
+        "name":manager.get_full_name(),
+        "title":getattr(manager.get_job_position(),"job_position","Not set"),
+        "children":create_hierarchy(manager),
+    }
+
+    context = {
+        "act_datasource": node,
+        "reporting_manager_dict": new_dict,
+        "act_manager_id": manager.id,
+    }
+    return render(request, "organisation_chart/org_chart.html", context=context)
