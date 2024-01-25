@@ -747,6 +747,7 @@ def attendance_activity_view(request):
     )
     attendance_activities = attendance_activities | self_attendance_activities
     attendance_activities = attendance_activities.distinct()
+    attendance_activities = attendance_activities.order_by("-pk")
     export_form = AttendanceActivityExportForm()
     if attendance_activities.exists():
         template = "attendance/attendance_activity/attendance_activity_view.html"
