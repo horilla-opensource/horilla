@@ -788,7 +788,7 @@
                   >{% trans "Pipeline" %}</a
                 >
               </li>
-              {% if perms.offboarding.view_resignationletter %}
+              {% if perms.offboarding.view_resignationletter and enabled_resignation_request %}
               <li class="oh-sidebar__submenu-item">
                 <a
                   href="{% url 'resignation-request-view'  %}"

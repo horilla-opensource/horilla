@@ -7,6 +7,7 @@ from django.urls import path
 from django.http import HttpResponse
 from base.models import Company
 from base.urls import urlpatterns
+from offboarding.models import OffboardingGeneralSetting
 
 
 class AllCompany:
@@ -90,3 +91,14 @@ urlpatterns.append(
         name="update-selected-company",
     )
 )
+
+
+def resignation_request_enabled(request):
+    """
+    Check weather resignation_request enabled of not in offboarding
+    """
+    first = OffboardingGeneralSetting.objects.first()
+    enabled_resignation_request = True
+    if first:
+        enabled_resignation_request = first.resignation_request
+    return {"enabled_resignation_request": enabled_resignation_request}
