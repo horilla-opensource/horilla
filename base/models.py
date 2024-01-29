@@ -10,6 +10,7 @@ from base.thread_local_middleware import _thread_locals
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 from django.db import models
+from django.contrib.auth.models import User
 from base.horilla_company_manager import HorillaCompanyManager
 
 # Create your models here.
@@ -629,6 +630,10 @@ class RotatingShiftAssign(models.Model):
             raise ValidationError(_("Date must be greater than or equal to today"))
 
 
+class BaserequestFile(models.Model):
+    file = models.FileField(upload_to="base/request_files")
+
+
 class WorkTypeRequest(models.Model):
     """
     WorkTypeRequest model
@@ -748,6 +753,7 @@ class WorktyperequestComment(models.Model):
     request_id = models.ForeignKey(WorkTypeRequest, on_delete=models.CASCADE)
     employee_id = models.ForeignKey(Employee, on_delete=models.CASCADE)
     comment = models.TextField(null=True, verbose_name=_("Comment"))
+    files = models.ManyToManyField(BaserequestFile,blank=True)
     created_at = models.DateTimeField(
         auto_now_add=True,
         verbose_name=_("Created At"),
@@ -882,6 +888,7 @@ class ShiftrequestComment(models.Model):
 
     request_id = models.ForeignKey(ShiftRequest, on_delete=models.CASCADE)
     employee_id = models.ForeignKey(Employee, on_delete=models.CASCADE)
+    files = models.ManyToManyField(BaserequestFile,blank=True)
     comment = models.TextField(null=True, verbose_name=_("Comment"))
     created_at = models.DateTimeField(
         auto_now_add=True,
@@ -1217,6 +1224,15 @@ class AnnouncementComment(models.Model):
         verbose_name=_("Created At"),
         null=True,
     )
+
+
+class AnnouncementView(models.Model):
+    """
+    Announcemnt View Model
+    """
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    announcement = models.ForeignKey(Announcement, on_delete=models.CASCADE)
+    viewed = models.BooleanField(default=False)
 
 
 class EmailLog(models.Model):

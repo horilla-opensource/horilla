@@ -1,7 +1,7 @@
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
-from django.shortcuts import redirect, render
+from django.shortcuts import get_object_or_404, redirect, render
 from base.forms import AnnouncementForm, AnnouncementcommentForm
-from base.models import Announcement, AnnouncementComment
+from base.models import Announcement, AnnouncementComment, AnnouncementView
 from employee.models import EmployeeWorkInformation
 from horilla.decorators import login_required
 from django.contrib import messages
@@ -258,4 +258,16 @@ def announcement_single_view(request, anoun_id):
     """
 
     announcement = Announcement.objects.filter(id=anoun_id)
+
+    for i in announcement:
+        # Taking the announcement instance
+        announcement_instance = get_object_or_404(Announcement, id=i.id)
+
+        # Check if the user has viewed the announcement
+        announcement_view, created = AnnouncementView.objects.get_or_create(user=request.user, announcement=announcement_instance)
+        
+        # Update the viewed status
+        announcement_view.viewed = True
+        announcement_view.save()
+    
     return render(request, "announcement/announcement_one.html", {'announcements': announcement})

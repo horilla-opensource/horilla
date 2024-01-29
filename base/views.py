@@ -79,6 +79,8 @@ from base.forms import (
 from base.models import (
     Announcement,
     AnnouncementExpire,
+    AnnouncementView,
+    BaserequestFile,
     Company,
     DynamicEmailConfiguration,
     DynamicPagination,
@@ -399,6 +401,10 @@ def home(request):
         if announcement.expire_date is None:
             calculated_expire_date = announcement.created_on + timedelta(days=general_expire_date)
             announcement.expire_date = calculated_expire_date
+
+        # Check if the user has viewed the announcement
+        announcement_view = AnnouncementView.objects.filter(announcement=announcement, user=request.user).first()
+        announcement.has_viewed = announcement_view is not None and announcement_view.viewed
 
     context = {
         "first_day_of_week": first_day_of_week.strftime("%Y-%m-%d"),
@@ -4071,6 +4077,53 @@ def create_shiftrequest_comment(request, shift_id):
         request,
         "shift_request/htmx/shift_request_comment_form.html",
         {"form": form, "request_id": shift_id},
+    )
+
+
+@login_required
+def view_shift_comment(request, shift_id):
+    """
+    This method is used to render all the notes of the employee
+    """
+    comments = ShiftrequestComment.objects.filter(request_id = shift_id)
+    if request.FILES:
+        files = request.FILES.getlist("files")
+        comment_id = request.GET["comment_id"]
+        comment = ShiftrequestComment.objects.get(id=comment_id)
+        attachments = []
+        for file in files:
+            file_instance = BaserequestFile()
+            file_instance.file = file
+            file_instance.save()
+            attachments.append(file_instance)
+        comment.files.add(*attachments)
+    return render(
+        request,
+        "shift_request/htmx/shift_comment.html",
+        {
+            "comments": comments,
+            "request_id": shift_id,
+        },
+    )
+
+
+@login_required
+@permission_required("offboarding.delete_offboardingnote")
+def delete_comment_file(request):
+    """
+    Used to delete attachment
+    """
+    ids = request.GET.getlist("ids")
+    BaserequestFile.objects.filter(id__in=ids).delete()
+    shift_id = request.GET["shift_id"]
+    comments = ShiftrequestComment.objects.filter(request_id = shift_id)
+    return render(
+        request,
+        "shift_request/htmx/shift_comment.html",
+        {
+            "comments": comments,
+            "request_id": shift_id,
+        },
     )
 
 
