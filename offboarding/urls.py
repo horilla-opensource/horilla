@@ -39,7 +39,7 @@ urlpatterns = [
         views.offboarding_individual_view,
         name="offboarding-individual-view",
     ),
-    path("requests-view", views.request_view, name="resignation-request-view"),
+    path("resignation-requests-view/", views.request_view, name="resignation-request-view"),
     path(
         "create-resignation-request",
         views.create_resignation_request,

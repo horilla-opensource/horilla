@@ -4,6 +4,10 @@ filters.py
 This page is used to register filter for employee models
 
 """
+import datetime
+
+import django
+from attendance.models import Attendance
 from employee.models import DisciplinaryAction, Policy
 import uuid
 from django import forms
@@ -68,6 +72,9 @@ class EmployeeFilter(FilterSet):
             (True, "Yes"),
             (False, "No"),
         ],
+    )
+    working_today = django_filters.BooleanFilter(
+        label="Working", method="get_working_today"
     )
 
     not_in_yet = django_filters.DateFilter(
@@ -135,17 +142,42 @@ class EmployeeFilter(FilterSet):
         """
         Override the default filtering behavior to handle None option.
         """
+        from django.db.models import Q
+
         data = self.form.cleaned_data
-        not_set_dict = {key: value for key, value in data.items() if value == "not_set"}
+        not_set_dict = {}
+        for key, value in data.items():
+            if isinstance(value,(list,django.db.models.query.QuerySet)):
+                if value and "not_set" in value:
+                    not_set_dict[key] = value
+
         if not_set_dict:
-            filtered_data = queryset
-            for key, value in not_set_dict.items():
-                not_set = f"{key}__isnull"
-                filtered_data = filtered_data.filter(**{not_set: True})
-            return filtered_data
+            q_objects = Q()
+            for key, values in not_set_dict.items():
+                for value in values:
+                    if value == "not_set":
+                        q_objects |= Q(**{f"{key}__isnull": True})
+                    else:
+                        q_objects |= Q(**{key: value})
+            return queryset.filter(q_objects)
         return super().filter_queryset(queryset)
 
         # Continue with the default behavior for other filters
+
+    def get_working_today(self, queryset, _, value):
+        today = datetime.datetime.now().date()
+        yesterday = today - datetime.timedelta(days=1)
+
+        working_employees = Attendance.objects.filter(
+            attendance_date__gte=yesterday,
+            attendance_date__lte=today,
+            attendance_clock_out_date__isnull=True,
+        ).values_list("employee_id", flat=True)
+        if value:
+            queryset = queryset.filter(id__in=working_employees)
+        else:
+            queryset = queryset.exclude(id__in=working_employees)
+        return queryset
 
     def filter_by_name(self, queryset, _, value):
         """
@@ -207,7 +239,7 @@ class EmployeeFilter(FilterSet):
         self.model_choice_filters = [
             filter
             for filter in self.filters.values()
-            if isinstance(filter, django_filters.ModelChoiceFilter)
+            if isinstance(filter, django_filters.ModelMultipleChoiceFilter)
         ]
         for model_choice_filter in self.model_choice_filters:
             queryset = (
@@ -216,20 +248,25 @@ class EmployeeFilter(FilterSet):
                 else model_choice_filter.queryset
             )
             choices = [
-                ("", "---------"),
                 ("not_set", _("Not Set")),
             ]
             choices.extend([(obj.id, str(obj)) for obj in queryset])
-            self.form.fields[model_choice_filter.field_name] = forms.ChoiceField(
-                choices=choices,
-                required=False,
-                widget=forms.Select(
-                    attrs={
-                        "class": "oh-select oh-select-2 select2-hidden-accessible",
-                        "id": uuid.uuid4(),
-                    }
-                ),
-            )
+            if (
+                model_choice_filter.field_name != "user_permissions"
+                and model_choice_filter.field_name != "groups"
+            ):
+                self.form.fields[
+                    model_choice_filter.field_name
+                ] = forms.MultipleChoiceField(
+                    choices=choices,
+                    required=False,
+                    widget=forms.SelectMultiple(
+                        attrs={
+                            "class": "oh-select oh-select-2 select2-hidden-accessible",
+                            "id": uuid.uuid4(),
+                        }
+                    ),
+                )
 
 
 class EmployeeReGroup:
@@ -303,20 +340,19 @@ class DisciplinaryActionFilter(FilterSet):
     search = CharFilter(method=filter_by_name)
 
     start_date = django_filters.DateFilter(
-    widget=forms.DateInput(attrs={"type": "date"}),
+        widget=forms.DateInput(attrs={"type": "date"}),
     )
 
     class Meta:
-
         model = DisciplinaryAction
-        fields = [  
-                    "employee_id",
-                    "action",
-                    "employee_id__employee_work_info__job_position_id",
-                    "employee_id__employee_work_info__department_id",
-                    "employee_id__employee_work_info__work_type_id",
-                    "employee_id__employee_work_info__job_role_id",
-                    "employee_id__employee_work_info__reporting_manager_id",
-                    "employee_id__employee_work_info__company_id",
-                    "employee_id__employee_work_info__shift_id",
-                ]
+        fields = [
+            "employee_id",
+            "action",
+            "employee_id__employee_work_info__job_position_id",
+            "employee_id__employee_work_info__department_id",
+            "employee_id__employee_work_info__work_type_id",
+            "employee_id__employee_work_info__job_role_id",
+            "employee_id__employee_work_info__reporting_manager_id",
+            "employee_id__employee_work_info__company_id",
+            "employee_id__employee_work_info__shift_id",
+        ]

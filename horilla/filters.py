@@ -4,7 +4,12 @@ filters.py
 import uuid
 import django_filters
 from django import forms
+from django.db import models
 from base.methods import reload_queryset
+from django_filters.filterset import FILTER_FOR_DBFIELD_DEFAULTS
+
+
+FILTER_FOR_DBFIELD_DEFAULTS[models.ForeignKey]["filter_class"]=django_filters.ModelMultipleChoiceFilter
 
 def filter_by_name(queryset, name, value):
     """

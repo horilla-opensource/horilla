@@ -324,9 +324,12 @@ def get_nested_instances(model, field_names, field_values):
                 related_model = related_field.remote_field.model
             except:
                 pass
-        field_values = [int(value) for value in field_values]
-        related_instances = related_model.objects.filter(id__in=field_values)
-        return [str(instance) for instance in related_instances]
+        object_ids = [int(value) for value in field_values if value != "not_set"]
+        related_instances = related_model.objects.filter(id__in=object_ids)
+        result = [str(instance) for instance in related_instances]
+        if "not_set" in field_values:
+            result.insert(0, "not_set")
+        return result
     except (ObjectDoesNotExist, ValueError):
         return None
 

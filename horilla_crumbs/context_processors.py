@@ -96,6 +96,12 @@ sidebar_urls = [
     "date-settings",
     "offboarding-pipeline",
     "pagination-settings-view",
+    "organisation-chart",
+    "disciplinary-actions",
+    "view-policies",
+    "resignation-requests-view",
+    "action-type",
+    "general-settings",
 ]
 remove_urls = [
     "objective-detailed-view",
