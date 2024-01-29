@@ -427,7 +427,7 @@ class EmployeeShift(models.Model):
     )
     company_id = models.ManyToManyField(Company, blank=True, verbose_name=_("Company"))
     grace_time_id = models.ForeignKey(
-        'attendance.GraceTime',
+        "attendance.GraceTime",
         null=True,
         blank=True,
         related_name="employee_shift",
@@ -742,8 +742,9 @@ class WorktyperequestComment(models.Model):
     """
     WorktyperequestComment Model
     """
+
     from employee.models import Employee
-    
+
     request_id = models.ForeignKey(WorkTypeRequest, on_delete=models.CASCADE)
     employee_id = models.ForeignKey(Employee, on_delete=models.CASCADE)
     comment = models.TextField(null=True, verbose_name=_("Comment"))
@@ -755,7 +756,6 @@ class WorktyperequestComment(models.Model):
 
     def __str__(self) -> str:
         return f"{self.comment}"
-
 
 
 class ShiftRequest(models.Model):
@@ -873,13 +873,13 @@ class ShiftRequest(models.Model):
         return f"{self.employee_id}"
 
 
-
 class ShiftrequestComment(models.Model):
     """
     ShiftrequestComment Model
     """
+
     from employee.models import Employee
-    
+
     request_id = models.ForeignKey(ShiftRequest, on_delete=models.CASCADE)
     employee_id = models.ForeignKey(Employee, on_delete=models.CASCADE)
     comment = models.TextField(null=True, verbose_name=_("Comment"))
@@ -891,7 +891,6 @@ class ShiftrequestComment(models.Model):
 
     def __str__(self) -> str:
         return f"{self.comment}"
-
 
 
 class Tags(models.Model):
@@ -1136,10 +1135,12 @@ class MultipleApprovalManagers(models.Model):
     sequence = models.IntegerField(null=False, blank=False)
     employee_id = models.IntegerField(null=False, blank=False)
 
+
 class DynamicPagination(models.Model):
     """
     model for storing pagination for employees
     """
+
     from django.contrib.auth.models import User
 
     user_id = models.OneToOneField(
@@ -1150,22 +1151,24 @@ class DynamicPagination(models.Model):
         related_name="dynamic_pagination",
         verbose_name=_("User"),
     )
-    pagination = models.IntegerField(default = 50)
-     
+    pagination = models.IntegerField(default=50)
+
     def save(self, *args, **kwargs):
-        request = getattr(_thread_locals,"request",None)
+        request = getattr(_thread_locals, "request", None)
         user = request.user
         self.user_id = user
         super().save(*args, **kwargs)
+
     def __str__(self):
-        return (f"{self.user_id}|{self.pagination}")
+        return f"{self.user_id}|{self.pagination}"
 
 
 class Attachment(models.Model):
     """
     Attachment model for multiple attachments in announcemnts.
     """
-    file = models.FileField(upload_to='attachments/')
+
+    file = models.FileField(upload_to="attachments/")
 
     def __str__(self):
         return self.file.name
@@ -1175,8 +1178,8 @@ class AnnouncementExpire(models.Model):
     """
     This model for setting a expire days for announcement if no expire date for announcement
     """
-    days = models.IntegerField(null=True, blank = True, default = 30)
 
+    days = models.IntegerField(null=True, blank=True, default=30)
 
 
 class Announcement(models.Model):
@@ -1184,9 +1187,12 @@ class Announcement(models.Model):
     """
     Anonuncement Model for stroing all announcements.
     """
+
     title = models.CharField(max_length=30)
     description = models.TextField(null=True)
-    attachments = models.ManyToManyField(Attachment, related_name='announcement_attachments', blank=True)
+    attachments = models.ManyToManyField(
+        Attachment, related_name="announcement_attachments", blank=True
+    )
     created_on = models.DateTimeField(auto_now_add=True)
     expire_date = models.DateField(null=True, blank=True)
     department = models.ManyToManyField(Department, blank=True)
@@ -1200,8 +1206,9 @@ class AnnouncementComment(models.Model):
     """
     AnnouncementComment Model
     """
+
     from employee.models import Employee
-    
+
     announcement_id = models.ForeignKey(Announcement, on_delete=models.CASCADE)
     employee_id = models.ForeignKey(Employee, on_delete=models.CASCADE)
     comment = models.TextField(null=True, verbose_name=_("Comment"))
@@ -1209,4 +1216,21 @@ class AnnouncementComment(models.Model):
         auto_now_add=True,
         verbose_name=_("Created At"),
         null=True,
+    )
+
+
+class EmailLog(models.Model):
+    """
+    EmailLog Keeping model
+    """
+
+    statuses = [("sent", "Sent"), ("failed", "Failed")]
+    subject = models.CharField(max_length=255)
+    body = models.TextField()
+    from_email = models.EmailField()
+    to = models.EmailField()
+    status = models.CharField(max_length=6, choices=statuses)
+    created_at = models.DateTimeField(auto_now_add=True)
+    company_id = models.ForeignKey(
+        Company, on_delete=models.CASCADE, null=True, editable=False
     )

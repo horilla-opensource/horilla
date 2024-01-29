@@ -18,7 +18,7 @@ from django.dispatch import receiver
 from horilla_audit.models import HorillaAuditLog, HorillaAuditInfo
 from horilla_audit.methods import get_diff
 from employee.models import Employee
-from base.models import JobPosition, Company
+from base.models import EmailLog, JobPosition, Company
 from django.core.files.storage import default_storage
 from base.horilla_company_manager import HorillaCompanyManager
 from django.core.validators import MinValueValidator, MaxValueValidator
@@ -382,6 +382,16 @@ class Candidate(models.Model):
         """
         return get_diff(self)
 
+    def get_last_sent_mail(self):
+        """
+        This method is used to get last send mail
+        """
+        return (
+            EmailLog.objects.filter(to__icontains=self.email)
+            .order_by("-created_at")
+            .first()
+        )
+
     def save(self, *args, **kwargs):
         # Check if the 'stage_id' attribute is not None
         if self.stage_id is not None:
@@ -433,7 +443,7 @@ class StageNote(models.Model):
     objects = HorillaCompanyManager(
         related_company_field="candidate_id__recruitment_id__company_id"
     )
-    created_at = models.DateTimeField(auto_now_add=True,null=True)
+    created_at = models.DateTimeField(auto_now_add=True, null=True)
 
     def __str__(self) -> str:
         return f"{self.description}"

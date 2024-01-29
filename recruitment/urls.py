@@ -6,8 +6,19 @@ This module is used to map url path with view methods.
 
 from django.urls import path
 from base.views import object_duplicate
-from recruitment.forms import OfferLetterForm, QuestionForm, RecruitmentCreationForm, StageCreationForm
-from recruitment.models import Candidate, Recruitment, RecruitmentMailTemplate, RecruitmentSurvey, Stage
+from recruitment.forms import (
+    OfferLetterForm,
+    QuestionForm,
+    RecruitmentCreationForm,
+    StageCreationForm,
+)
+from recruitment.models import (
+    Candidate,
+    Recruitment,
+    RecruitmentMailTemplate,
+    RecruitmentSurvey,
+    Stage,
+)
 from recruitment.views import views
 import recruitment.views.actions
 import recruitment.views.dashboard
@@ -281,11 +292,10 @@ urlpatterns = [
         object_duplicate,
         name="recruitment-survey-question-template-duplicate",
         kwargs={
-            "model":RecruitmentSurvey,
-            "form":QuestionForm,
-            "template":"survey/template_form.html",
-            
-        }
+            "model": RecruitmentSurvey,
+            "form": QuestionForm,
+            "template": "survey/template_form.html",
+        },
     ),
     path(
         "recruitment-survey-question-template-delete/<int:survey_id>/",
@@ -369,11 +379,10 @@ urlpatterns = [
         object_duplicate,
         name="duplicate-mail-template",
         kwargs={
-            "model":RecruitmentMailTemplate,
-            "form":OfferLetterForm,
-            "template":"offerletter/htmx/form.html",
-            
-        }
+            "model": RecruitmentMailTemplate,
+            "form": OfferLetterForm,
+            "template": "offerletter/htmx/form.html",
+        },
     ),
     path("create-mail-template/", create_letter, name="create-mail-template"),
     path("delete-mail-template/", delete_mail_templates, name="delete-mail-template"),
@@ -389,15 +398,24 @@ urlpatterns = [
         name="update-candidate-rating",
     ),
     path(
-        "open-recruitments", views.open_recruitments, name="open-recruitments",
+        "open-recruitments",
+        views.open_recruitments,
+        name="open-recruitments",
     ),
     path(
-        "recruitment-details/<int:id>/", views.recruitment_details, name="recruitment-details",
+        "recruitment-details/<int:id>/",
+        views.recruitment_details,
+        name="recruitment-details",
     ),
     path(
-        "add-more-files/<int:id>/", views.add_more_files, name="add-more-files",
+        "add-more-files/<int:id>/",
+        views.add_more_files,
+        name="add-more-files",
     ),
     path(
-        "delete-stage-note-file/<int:id>/", views.delete_stage_note_file, name="delete-stage-note-file",
+        "delete-stage-note-file/<int:id>/",
+        views.delete_stage_note_file,
+        name="delete-stage-note-file",
     ),
+    path("get-mail-log-rec", views.get_mail_log, name="get-mail-log-rec"),
 ]

@@ -215,6 +215,16 @@ $(document).on('click', function (event) {
             >
           </li>
           {% endif %}
+          <li class="oh-general__tab">
+            <a
+            hx-get="{% url 'get-mail-log-rec' %}?candidate_id={{candidate.id}}"
+            hx-target="#maillog"
+            class="oh-general__tab-link"
+            data-action="general-tab"
+            data-target="#maillog"
+            >{% trans "Mail Log" %}</a
+            >
+          </li>
         </ul>
 
         <div
@@ -531,6 +541,11 @@ $(document).on('click', function (event) {
           id="rating"
         >
         {% include "candidate/rating_tab.html" %}
+        </div>
+        <div
+          class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
+          id="maillog"
+        >
         </div>
         <div
           class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"

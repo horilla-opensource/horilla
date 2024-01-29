@@ -245,21 +245,21 @@
                         <input type="checkbox" class="oh-input oh-input__checkbox stage-candidates" data-stage-id="{{stage.id}}" title="Select All" id="tick">
                       </div>
                     </div>
-                    <div class="oh-sticky-table__th oh-table-config__th" style="width: 235px;">
+                    <div class="oh-sticky-table__th oh-table-config__th" style="width: 200px;">
                       <span> {% trans "Candidate" %} </span>
                     </div>
 
-                    <div class="oh-sticky-table__th oh-table-config__th">
+                    <div class="oh-sticky-table__th oh-table-config__th" style="width: 135">
                       <span> {% trans "Email" %}</span>
                     </div>
-                    <div class="oh-sticky-table__th oh-table-config__th">
+                    <div class="oh-sticky-table__th oh-table-config__th" style="width: 135px;">
                       <span> {% trans "Job Position" %} </span>
                     </div>
-                    <div class="oh-sticky-table__th oh-table-config__th">
+                    <div class="oh-sticky-table__th oh-table-config__th" style="width: 135px;">
                       <span> {% trans "Contact" %} </span>
                     </div>
                     {% if request.user|stage_manages:rec or perms.recruitment.change_candidate %}
-                    <div class="oh-sticky-table__th oh-table-config__th">
+                    <div class="oh-sticky-table__th oh-table-config__th" style="width: 135px;">
                       <span> {% trans "Rating" %} </span>
                     </div>
                     {% endif %}
@@ -317,8 +317,14 @@
                       </div>
                     </a>
 
-                    <div class="oh-sticky-table__td oh-table-config__td">
-                      {{cand.email}}
+                    <div class="oh-sticky-table__td oh-table-config__td" style="width: 200px">
+                      <span title="{{cand.email}}">
+                        {{cand.email|truncatechars:10}}
+                      </span>
+                      
+                      {% if cand.get_last_sent_mail %}
+                      <span title="{{cand.get_last_sent_mail.subject}} | {{cand.get_last_sent_mail.get_status_display}}" class="oh-dot oh-dot--small me-1" style="background-color:{% if cand.get_last_sent_mail.status == "sent" %}yellowgreen{% else %}red{% endif %}"></span>
+                      {% endif %}
                     </div>
                     <div class="oh-sticky-table__td oh-table-config__td">
                       <span title="{{cand.job_position_id}}">

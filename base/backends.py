@@ -4,6 +4,7 @@ email_backend.py
 This module is used to write email backends
 """
 from django.core.mail.backends.smtp import EmailBackend
+from base.models import EmailLog
 from horilla import settings
 from base.thread_local_middleware import _thread_locals
 
@@ -32,6 +33,10 @@ class ConfiguredEmailBackend(EmailBackend):
         configuration = DynamicEmailConfiguration.objects.filter(
             company_id=compay
         ).first()
+        if configuration is None:
+            configuration = DynamicEmailConfiguration.objects.filter(
+                company_id__isnull=True
+            ).first()
         # Use default settings if configuration is not available
         host = configuration.host if configuration else host or settings.EMAIL_HOST
         port = configuration.port if configuration else port or settings.EMAIL_PORT
@@ -53,17 +58,17 @@ class ConfiguredEmailBackend(EmailBackend):
         fail_silently = (
             configuration.fail_silently
             if configuration
-            else fail_silently or getattr(settings,"EMAIL_FAIL_SILENTLY",True)
+            else fail_silently or getattr(settings, "EMAIL_FAIL_SILENTLY", True)
         )
         use_ssl = (
             configuration.use_ssl
             if configuration
-            else use_ssl or getattr(settings,"EMAIL_USE_SSL",None)
+            else use_ssl or getattr(settings, "EMAIL_USE_SSL", None)
         )
         timeout = (
             configuration.timeout
             if configuration
-            else timeout or getattr(settings,"EMAIL_TIMEOUT",None)
+            else timeout or getattr(settings, "EMAIL_TIMEOUT", None)
         )
         ssl_keyfile = (
             getattr(configuration, "ssl_keyfile", None)
@@ -75,6 +80,7 @@ class ConfiguredEmailBackend(EmailBackend):
             if configuration
             else ssl_keyfile or getattr(settings, "ssl_certfile", None)
         )
+        self.mail_sent_from = username
         super(ConfiguredEmailBackend, self).__init__(
             host=host,
             port=port,
@@ -88,6 +94,20 @@ class ConfiguredEmailBackend(EmailBackend):
             ssl_certfile=ssl_certfile,
             **kwargs
         )
+
+    def send_messages(self, email_messages):
+        response = super(ConfiguredEmailBackend, self).send_messages(email_messages)
+        # Save the email status in the EmailLog model
+        for message in email_messages:
+            email_log = EmailLog(
+                subject=message.subject,
+                from_email=self.mail_sent_from,
+                to=message.to,
+                body=message.body,
+                status="sent" if response else "failed",
+            )
+            email_log.save()
+        return response
 
 
 __all__ = ["ConfiguredEmailBackend"]

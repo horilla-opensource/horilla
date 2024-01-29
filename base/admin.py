@@ -13,6 +13,7 @@ from base.models import (
     Department,
     DynamicEmailConfiguration,
     DynamicPagination,
+    EmailLog,
     JobPosition,
     JobRole,
     EmployeeShiftSchedule,
@@ -57,6 +58,7 @@ admin.site.register(WorktyperequestComment)
 admin.site.register(DynamicPagination)
 admin.site.register(Announcement)
 admin.site.register(Attachment)
+admin.site.register(EmailLog)
 
 
 

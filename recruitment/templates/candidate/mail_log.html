@@ -1,0 +1,41 @@
+{% load i18n %}
+<div class="oh-sticky-table">
+  <div class="oh-sticky-table__table oh-table--sortable">
+    <div class="oh-sticky-table__thead">
+      <div class="oh-sticky-table__tr">
+        <div class="oh-sticky-table__th">
+          {% trans 'Subject' %}
+        </div>
+        <div class="oh-sticky-table__th">
+          {% trans 'Body' %}
+        </div>
+        <div class="oh-sticky-table__th">
+          {% trans 'Status' %}
+        </div>
+      </div>
+    </div>
+    <div class="oh-sticky-table__tbody">
+      {% for log in tracked_mails %}
+        <div class="oh-sticky-table__tr">
+          <div class="oh-sticky-table__td">
+            <strong>
+                {{log.subject}}
+            </strong>
+          </div>
+          <div class="oh-sticky-table__td">{{log.body|safe}}</div>
+          <div align="center" class="oh-sticky-table__td">
+            {% if log.status == 'sent' %}
+            <div style="width: 25%;border-radius:10px;" class="oh-btn oh-btn--success oh-btn--disabled">
+                {{log.get_status_display}}
+            </div>
+            {% else %}
+            <div style="width: 25%;border-radius:10px;" class="oh-btn oh-btn--danger oh-btn--disabled">
+                {{log.get_status_display}}
+            </div>
+            {% endif %}
+        </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
