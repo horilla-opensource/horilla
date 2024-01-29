@@ -647,6 +647,17 @@ urlpatterns = [
         views.view_shiftrequest_comment,
         name="shift-request-view-comment",
     ),
+    
+    path(
+        "view-shift-comment/<int:shift_id>/",
+        views.view_shift_comment,
+        name="view-shift-comment",
+    ),
+    path(
+        "delete-comment-file/",
+        views.delete_comment_file,
+        name="delete-comment-file",
+    ),
     path(
         "shift-request-delete-comment/<int:comment_id>/",
         views.delete_shiftrequest_comment,

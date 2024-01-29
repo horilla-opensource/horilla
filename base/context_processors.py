@@ -5,6 +5,7 @@ This module is used to register context processor`
 """
 from django.urls import path
 from django.http import HttpResponse
+from attendance.models import AttendanceGeneralSetting
 from base.models import Company
 from base.urls import urlpatterns
 from offboarding.models import OffboardingGeneralSetting
@@ -102,3 +103,14 @@ def resignation_request_enabled(request):
     if first:
         enabled_resignation_request = first.resignation_request
     return {"enabled_resignation_request": enabled_resignation_request}
+
+
+def timerunner_enabled(request):
+    """
+    Check weather resignation_request enabled of not in offboarding
+    """
+    first = AttendanceGeneralSetting.objects.first()
+    enabled_timerunner = True
+    if first:
+        enabled_timerunner = first.time_runner
+    return {"enabled_timerunner": enabled_timerunner}
