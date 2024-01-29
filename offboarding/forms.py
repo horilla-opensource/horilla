@@ -8,6 +8,7 @@ import contextlib
 from typing import Any
 from django import forms
 from django.template.loader import render_to_string
+from django.contrib import messages
 from base.forms import ModelForm
 from base import thread_local_middleware
 from employee.forms import MultipleFileField
@@ -263,13 +264,28 @@ class ResignationLetterForm(ModelForm):
                 "is_active",
             ]
             self.instance.employee_id = request.user.employee_get
+        exclude = list(set(exclude))
         for field in exclude:
             del self.fields[field]
 
     def save(self, commit: bool = ...) -> Any:
-        instance = super().save(commit)
         request = getattr(thread_local_middleware._thread_locals, "request", None)
-        if request and not request.user.has_perm("offboarding.add_offboardingemployee"):
+        instance = self.instance
+        if (
+            not request.user.has_perm("offboarding.add_offboardingemployee")
+            and instance.status == "requested"
+        ) or request.user.has_perm("add_offboardingemployee"):
+            instance = super().save(commit)
+        else:
+            messages.info(
+                request, "You cannot edit a request that has been rejected/approved"
+            )
+
+        if (
+            instance.status == "requested"
+            and request
+            and not request.user.has_perm("offboarding.add_offboardingemployee")
+        ):
             with contextlib.suppress(Exception):
                 notify.send(
                     request.user.employee_get,
