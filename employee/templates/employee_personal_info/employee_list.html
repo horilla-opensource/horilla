@@ -7,6 +7,17 @@
   {% endfor %}
 </div>
 {% endif %} 
+
+<div class="d-flex flex-row-reverse p-0 mb-1">
+  <span class="ml-3 mr-3" onclick="$('[name=working_today]').val('false'); $('[name=working_today]').first().change(); $('.filterButton').click()" style="cursor: pointer;margin-left: 10px;">
+    <span class="oh-dot oh-dot--small me-1" style="background-color:rgba(128, 128, 128, 0.482)"></span>
+    {% trans "Not-working" %}
+  </span>
+  <span class="ml-3 mr-3" onclick="$('[name=working_today]').val('true'); $('[name=working_today]').first().change(); $('.filterButton').click()" style="cursor: pointer;margin-left: 10px;">
+    <span class="oh-dot oh-dot--small me-1" style="background-color:yellowgreen"></span>
+    {% trans "Now-Working" %}
+  </span>
+</div>
 {% if perms.employee.view_employee or request.user|is_reportingmanager %}
 <div
   class="oh-checkpoint-badge text-success mb-2"
