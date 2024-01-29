@@ -3,8 +3,16 @@
 	.oh-general__tab{
 		margin-bottom: 15px;
 	}
-</style>
-<style>
+
+.reisgn-status {
+	background: #73bbe12b;
+	font-size: 0.8rem;
+	padding: 4px 8px;
+	border-radius: 10px;
+	margin-bottom: 6px;
+	font-weight: 600;
+	color: #357579;
+	}
   .enlarge-image-container {
     display: none;
     position: fixed;
@@ -282,7 +290,7 @@
 							<li data-cell-index="10" data-cell-title="{% trans "Bonus Points" %}" class="oh-general__tab">
 								<a
 								hx-get={% url 'bonus-points-tab' employee.id %}
-								hx-target="#bonus_points_target"
+								hx-target="#resignation_hx_target"
 								data-action="general-tab"
 								data-target="#bonus_points_target"
 								class="oh-general__tab-link"
@@ -290,6 +298,20 @@
 								>{% trans "Bonus Points" %}</a
 								>
 							</li>
+							{% if enabled_resignation_request %}
+							<li data-cell-index="09" data-cell-title="{% trans "Resignation" %}" class="oh-general__tab">
+								<a
+								hx-get={% url 'search-resignation-request' %}
+								hx-target="#resignation_hx_target"
+								data-action="general-tab"
+								data-target="#resignation_target"
+								class="oh-general__tab-link"
+								role="button"
+								>{% trans "Resignation" %}</a
+								>
+							</li>
+							{% endif %}
+
 						</ul>
 
 						<div
@@ -312,12 +334,19 @@
 						<div
 							class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
 							id="bonus_points_target"
-						>
+						 >
 							{% include "tabs/bonus_points.html" %}
 						</div>
 						<div
-						class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
-						id="allowance_deduction"
+							class="oh-general__tab-target oh-profile__info-tab mt-3 mb-4 d-none"
+							id="resignation_target"
+						 >
+							{% include "tabs/resignation.html" %}
+							<div id="resignation_hx_target"></div>
+						</div>
+						<div
+							class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
+							id="allowance_deduction"
 						>
 						</div>
 						<div class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"

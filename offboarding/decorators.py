@@ -6,7 +6,12 @@ This module is used to write custom authentication decorators for offboarding mo
 from django.contrib import messages
 from django.http import HttpResponse, HttpResponseRedirect
 from horilla.decorators import decorator_with_arguments
-from offboarding.models import Offboarding, OffboardingStage, OffboardingTask
+from offboarding.models import (
+    Offboarding,
+    OffboardingGeneralSetting,
+    OffboardingStage,
+    OffboardingTask,
+)
 
 
 @decorator_with_arguments
@@ -59,5 +64,18 @@ def offboarding_or_stage_manager_can_enter(function, perm):
         else:
             messages.info(request, "You dont have permission.")
             return HttpResponse("<script>window.location.reload()</script>")
+
+    return _function
+
+
+@decorator_with_arguments
+def check_feature_endabled(function, feature_name):
+    def _function(request, *args, **kwargs):
+        general_setting = OffboardingGeneralSetting.objects.first()
+        enabled = getattr(general_setting, feature_name, False)
+        if enabled:
+            return function(request, *args, **kwargs)
+        messages.info(request, "Feature is not enabled on the settings")
+        return HttpResponse("<script>window.location.reload()</script>")
 
     return _function

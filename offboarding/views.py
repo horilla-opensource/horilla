@@ -9,6 +9,7 @@ from horilla.decorators import login_required, permission_required
 from base.views import paginator_qry
 from offboarding.decorators import (
     any_manager_can_enter,
+    check_feature_endabled,
     offboarding_manager_can_enter,
     offboarding_or_stage_manager_can_enter,
 )
@@ -478,6 +479,7 @@ def offboarding_individual_view(request, emp_id):
 
 @login_required
 @permission_required("offboarding.view_resignationletter")
+@check_feature_endabled("resignation_request")
 def request_view(request):
     """
     This method is used to view the resignation request
@@ -499,6 +501,7 @@ def request_view(request):
 
 
 @login_required
+@check_feature_endabled("resignation_request")
 def search_resignation_request(request):
     """
     This method is used to search/filter the letter
@@ -522,6 +525,7 @@ def search_resignation_request(request):
 
 
 @login_required
+@check_feature_endabled("resignation_request")
 @permission_required("offboarding.delete_resignationletter")
 def delete_resignation_request(request):
     """
@@ -532,7 +536,8 @@ def delete_resignation_request(request):
     messages.success(request, "Resignation letter deleted")
     return redirect(request_view)
 
-
+@login_required
+@check_feature_endabled("resignation_request")
 def create_resignation_request(request):
     """
     This method is used to render form to create resignation requests
@@ -552,6 +557,7 @@ def create_resignation_request(request):
 
 
 @login_required
+@check_feature_endabled("resignation_request")
 @permission_required("offboarding.change_resignationletter")
 def update_status(request):
     """
