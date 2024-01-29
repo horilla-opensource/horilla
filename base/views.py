@@ -4109,7 +4109,7 @@ def view_shift_comment(request, shift_id):
 
 @login_required
 @permission_required("offboarding.delete_offboardingnote")
-def delete_comment_file(request):
+def delete_shift_comment_file(request):
     """
     Used to delete attachment
     """
@@ -4123,6 +4123,53 @@ def delete_comment_file(request):
         {
             "comments": comments,
             "request_id": shift_id,
+        },
+    )
+
+
+@login_required
+def view_work_type_comment(request, work_type_id):
+    """
+    This method is used to render all the notes of the employee
+    """
+    comments = WorktyperequestComment.objects.filter(request_id = work_type_id)
+    if request.FILES:
+        files = request.FILES.getlist("files")
+        comment_id = request.GET["comment_id"]
+        comment = WorktyperequestComment.objects.get(id=comment_id)
+        attachments = []
+        for file in files:
+            file_instance = BaserequestFile()
+            file_instance.file = file
+            file_instance.save()
+            attachments.append(file_instance)
+        comment.files.add(*attachments)
+    return render(
+        request,
+        "work_type_request/htmx/work_type_comment.html",
+        {
+            "comments": comments,
+            "request_id": work_type_id,
+        },
+    )
+
+
+@login_required
+@permission_required("offboarding.delete_offboardingnote")
+def delete_work_type_comment_file(request):
+    """
+    Used to delete attachment
+    """
+    ids = request.GET.getlist("ids")
+    BaserequestFile.objects.filter(id__in=ids).delete()
+    work_type_id = request.GET["work_type_id"]
+    comments = WorktyperequestComment.objects.filter(request_id = work_type_id)
+    return render(
+        request,
+        "work_type_request/htmx/work_type_comment.html",
+        {
+            "comments": comments,
+            "request_id": work_type_id,
         },
     )
 

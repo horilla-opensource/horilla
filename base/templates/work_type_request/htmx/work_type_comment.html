@@ -9,11 +9,11 @@
     }
 </style>
 <a
-    hx-get="{% url 'shift-request-add-comment' request_id %}"
+    hx-get="{% url 'worktype-request-add-comment' request_id %}"
     style="width: 165px; position: sticky; top: 0"
-    hx-target="#shiftRequestCommentForm"
+    hx-target="#WorktypeRequestCommentForm"
     data-toggle="oh-modal-toggle"
-    data-target="#shiftcommentModal"
+    data-target="#WorktypecommentModal"
     class="mb-3 oh-btn oh-btn--secondary"
 >
     <ion-icon
@@ -43,14 +43,14 @@
 							><img
 								src="{% static 'images/ui/minus-icon.png' %}"
 								style="display: block; width: 50%; height: 50%"
-								hx-get="{% url 'delete-shift-comment-file' %}?ids={{ file.id }}&shift_id={{ request_id }}"
+								hx-get="{% url 'delete-work-type-comment-file' %}?ids={{ file.id }}&work_type_id={{ request_id }}"
 								hx-target="#commentContainer"
 								onclick="event.stopPropagation();event.preventDefault()" /></span
 					></a>
 					{% endfor %}
 
 					<form
-						hx-post="{% url 'view-shift-comment' comment.request_id.id %}?comment_id={{ comment.id }}"
+						hx-post="{% url 'view-work-type-comment' comment.request_id.id %}?comment_id={{ comment.id }}"
 						hx-target="#commentContainer"
 						class="add-files-form"
 						hx-encoding="multipart/form-data"
@@ -87,7 +87,7 @@
 						style="width: 1.5em; border-radius: 100%"
 					/>
 					{{ comment.employee_id.get_full_name }} @ {{comment.request_id.employee_id.get_full_name }}
-					{% trans "'s shift request" %}
+					{% trans "'s Work type request" %}
 				</span>
 				<div style="width: 50%">
 					<div id="enlargeImageContainer" class="enlargeImageContainer"></div>

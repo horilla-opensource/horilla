@@ -1,59 +1,112 @@
-{% extends "index.html" %}
-{% load i18n %}
-{% block content %}
-
-{% include 'work_type_request/work_type_request_nav.html' %}
-<div class="oh-checkpoint-badge mb-2" id="selectedWorktypes" data-ids="[]" data-clicked="" style="display:none;" >
-  {% trans "Selected Worktypes" %}
+{% extends "index.html" %} {% load i18n %} {% block content %} {% include 'work_type_request/work_type_request_nav.html' %}
+<div
+    class="oh-checkpoint-badge mb-2"
+    id="selectedWorktypes"
+    data-ids="[]"
+    data-clicked=""
+    style="display: none"
+>
+    {% trans "Selected Worktypes" %}
 </div>
 <div id="view-container" class="oh-wrapper">
-  {% if data %}
-    {% include 'work_type_request/htmx/requests.html' %}
-  {% else %}
-    {% include 'work_type_request/htmx/empty_request.html' %}
-  {% endif %}
+    {% if data %} {% include 'work_type_request/htmx/requests.html' %} {% else %}
+	{% include 'work_type_request/htmx/empty_request.html' %} {% endif %}
 </div>
 
 <div
-  class="oh-modal"
-  id="workTypeRequestUpdateModal"
-  role="dialog"
-  aria-labelledby="workTypeRequestUpdateModal"
-  aria-hidden="true"
+    class="oh-modal"
+    id="workTypeRequestUpdateModal"
+    role="dialog"
+    aria-labelledby="workTypeRequestUpdateModal"
+    aria-hidden="true"
 >
-  <div class="oh-modal__dialog">
-    <div class="oh-modal__dialog-header">
-      <h5 class="oh-modal__dialog-title" id="workTypeRequestUpdateModalLabel"
-        >{% trans "Update Request" %}</span
-      >
-      <button class="oh-modal__close--custom" aria-label="Close" onclick="$(this).parents().closest('.oh-modal--show').toggleClass('oh-modal--show')">
-        <ion-icon name="close-outline"></ion-icon>
-      </button>
-    </div>
-    
-    <div class="oh-modal__dialog-body" id='workTypeRequestUpdateModalBody'>
+    <div class="oh-modal__dialog">
+        <div class="oh-modal__dialog-header">
+            <h5
+                class="oh-modal__dialog-title"
+                id="workTypeRequestUpdateModalLabel"
+            >
+                {% trans "Update Request" %}
+            </h5>
+            <button
+                class="oh-modal__close--custom"
+                aria-label="Close"
+                onclick="$(this).parents().closest('.oh-modal--show').toggleClass('oh-modal--show')"
+            >
+                <ion-icon name="close-outline"></ion-icon>
+            </button>
+        </div>
 
+        <div
+            class="oh-modal__dialog-body"
+            id="workTypeRequestUpdateModalBody"
+        ></div>
     </div>
-   </div>
-  </div>
 </div>
 
-
+<div class="oh-activity-sidebar" id="activitySidebar">
+    <div class="oh-activity-sidebar__header">
+        <a
+            style="cursor: pointer"
+            onclick="$('.oh-activity-sidebar--show').removeClass('oh-activity-sidebar--show');"
+        >
+            <ion-icon
+                name="chevron-back-outline"
+                class="oh-activity-sidebar__header-icon me-2 oh-activity-sidebar__close"
+                data-target="#activitySidebar"
+            ></ion-icon>
+        </a>
+        <span class="oh-activity-sidebar__title"> {% trans "Comments" %} </span>
+    </div>
+    <div class="oh-activity-sidebar__body" id="commentContainer"></div>
+</div>
 
 <script>
-
-  $(document).on('htmx:load',"#view-container",function () {
-    $("[data-toggle='oh-modal-toggle']").on('click',function(){
-      let clickedEl = $(this).closest('[data-toggle = "oh-modal-toggle"]');
-      if (clickedEl != null) {
-      const targetEl = clickedEl.data('target');
-      $(targetEl).addClass('oh-modal--show');
-      }
-  });
-  $('.oh-modal__close').on('click', function(){
+    $(document).on("htmx:load", "#view-container", function () {
+        $("[data-toggle='oh-modal-toggle']").on("click", function () {
+            let clickedEl = $(this).closest(
+                '[data-toggle = "oh-modal-toggle"]'
+            );
+            if (clickedEl != null) {
+                const targetEl = clickedEl.data("target");
+                $(targetEl).addClass("oh-modal--show");
+            }
+        });
+        $(".oh-modal__close").on("click", function () {
+            $(".oh-modal--show").removeClass("oh-modal--show");
+        });
+    });
+	function enlargeImage(src,$element) {
+		$(".enlargeImageContainer").empty()
+		var enlargeImageContainer = $element.parents().closest("li").find(".enlargeImageContainer")
+		enlargeImageContainer.empty()
+		style = 'width:100%; height:90%; box-shadow: 0 10px 10px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.2); background:white'
+		var enlargedImage = $('<iframe>').attr({ src: src, style: style })
+		var name = $('<span>').text(src.split('/').pop().replace(/_/g, ' '))
+		enlargeImageContainer.append(enlargedImage)
+		enlargeImageContainer.append(name)
+		setTimeout(function () {
+			enlargeImageContainer.show()
   
-      $('.oh-modal--show').removeClass('oh-modal--show');
-  })
-  });
+			const iframe = document.querySelector('iframe').contentWindow
+			var iframe_document = iframe.document
+			iframe_image = iframe_document.getElementsByTagName('img')[0]
+			$(iframe_image).attr('style', 'width:100%; height:100%;')
+		}, 100)
+	}
+  
+	function hideEnlargeImage() {
+		var enlargeImageContainer = $('.enlargeImageContainer')
+		enlargeImageContainer.empty()
+	}
+  
+	$(document).on('click', function (event) {
+		if (!$(event.target).closest('#enlargeImageContainer').length) {
+			hideEnlargeImage()
+		}
+	})  
+	function submitForm(elem) {
+	  $(elem).siblings(".add_more_submit").click();
+  }
 </script>
 {% endblock content %}
