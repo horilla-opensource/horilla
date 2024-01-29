@@ -162,6 +162,7 @@ class Attendance(models.Model):
     """
     Attendance model
     """
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.first_save = True
@@ -993,3 +994,11 @@ class GraceTime(models.Model):
         self.allowed_time = f"{minute_str}:{secs_str}"
         self.allowed_time_in_secs = minute_int * 60 + secs_int
         super().save(*args, **kwargs)
+
+
+class AttendanceGeneralSetting(models.Model):
+    """
+    AttendanceGeneralSettings
+    """
+
+    time_runner = models.BooleanField(default=True)

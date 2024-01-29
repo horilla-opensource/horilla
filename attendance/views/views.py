@@ -64,6 +64,7 @@ from attendance.forms import (
 from attendance.models import (
     Attendance,
     AttendanceActivity,
+    AttendanceGeneralSetting,
     AttendanceOverTime,
     AttendanceLateComeEarlyOut,
     AttendanceValidationCondition,
@@ -1833,3 +1834,17 @@ def work_records_change_month(request):
     return render(
         request, "attendance/work_record/work_record_list.html", context=context
     )
+
+
+@login_required
+@permission_required("attendance.add_attendancegeneralsetting")
+def enable_timerunner(request):
+    """
+    This method is used to enable/disable the timerunner feature
+    """
+
+    time_runner = AttendanceGeneralSetting.objects.first()
+    time_runner = time_runner if time_runner else AttendanceGeneralSetting()
+    time_runner.time_runner = "time_runner" in request.GET.keys()
+    time_runner.save()
+    return HttpResponse("success")

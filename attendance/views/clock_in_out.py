@@ -7,10 +7,16 @@ from datetime import date, datetime, timedelta
 from django.db.models import Q
 from django.http import HttpResponse
 from django.utils.translation import gettext_lazy as _
+from base.context_processors import timerunner_enabled
 from base.models import EmployeeShiftDay
 from horilla.decorators import login_required
 from base.thread_local_middleware import _thread_locals
-from attendance.models import Attendance, AttendanceActivity, AttendanceLateComeEarlyOut, GraceTime
+from attendance.models import (
+    Attendance,
+    AttendanceActivity,
+    AttendanceLateComeEarlyOut,
+    GraceTime,
+)
 from attendance.views.views import (
     activity_datetime,
     attendance_validate,
@@ -36,7 +42,8 @@ def late_come_create(attendance):
     late_come_obj.save()
     return late_come_obj
 
-def late_come(attendance, start_time, end_time,shift):
+
+def late_come(attendance, start_time, end_time, shift):
     """
     this method is used to mark the late check-in  attendance after the shift starts
     args:
@@ -45,20 +52,23 @@ def late_come(attendance, start_time, end_time,shift):
         end_time : attendance day shift end time
 
     """
-    request = getattr(_thread_locals,"request",None)
+    request = getattr(_thread_locals, "request", None)
 
     now_sec = strtime_seconds(datetime.now().strftime("%H:%M"))
     mid_day_sec = strtime_seconds("12:00")
 
-    # Checking gracetime allowance before creating late come 
-    if shift.grace_time_id :
+    # Checking gracetime allowance before creating late come
+    if shift.grace_time_id:
         # checking grace time in shift, it has the higher priority
         if shift.grace_time_id.is_active == True:
             # Setting allowance for the check in time
             now_sec -= shift.grace_time_id.allowed_time_in_secs
-    # checking default grace time 
-    elif GraceTime.objects.filter(is_default=True,is_active=True).exists() :
-        grace_time = GraceTime.objects.filter(is_default=True,is_active=True,).first()
+    # checking default grace time
+    elif GraceTime.objects.filter(is_default=True, is_active=True).exists():
+        grace_time = GraceTime.objects.filter(
+            is_default=True,
+            is_active=True,
+        ).first()
         # Setting allowance for the check in time
         now_sec -= grace_time.allowed_time_in_secs
     else:
@@ -74,6 +84,7 @@ def late_come(attendance, start_time, end_time,shift):
     elif start_time < now_sec:
         late_come_create(attendance)
     return True
+
 
 def clock_in_attendance_and_activity(
     employee,
@@ -109,12 +120,12 @@ def clock_in_attendance_and_activity(
         shift_day=day,
         clock_out=None,
     ).first()
-    
+
     if activity and not activity.clock_out:
         activity.clock_out = in_datetime
         activity.clock_out_date = date_today
         activity.save()
-    
+
     AttendanceActivity(
         employee_id=employee,
         attendance_date=attendance_date,
@@ -140,7 +151,9 @@ def clock_in_attendance_and_activity(
         attendance.minimum_hour = minimum_hour
         attendance.save()
         # check here late come or not
-        late_come(attendance=attendance, start_time=start_time, end_time=end_time,shift=shift)
+        late_come(
+            attendance=attendance, start_time=start_time, end_time=end_time, shift=shift
+        )
     else:
         attendance = attendance[0]
         attendance.attendance_clock_out = None
@@ -201,29 +214,49 @@ def clock_in(request):
             end_time=end_time_sec,
             in_datetime=datetime_now,
         )
+        script = ""
+        hidden_label = ""
+        time_runner_enabled = timerunner_enabled(request)["enabled_timerunner"]
+        mouse_in = ""
+        mouse_out = ""
+        if time_runner_enabled:
+            script = """
+            <script>
+                    $(".time-runner").removeClass("stop-runner");
+                    run = 1;
+                    at_work_seconds = {at_work_seconds_forecasted};
+                </script>
+                """.format(
+                at_work_seconds_forecasted=employee.get_forecasted_at_work()[
+                    "forecasted_at_work_seconds"
+                ]
+            )
+            hidden_label = """
+            style="display:none"
+            """
+            mouse_in = """ onmouseenter = "$(this).find('span').show();$(this).find('.time-runner').hide();" """
+            mouse_out = """ onmouseleave = "$(this).find('span').hide();$(this).find('.time-runner').show();" """
+
         return HttpResponse(
             """
               <button class="oh-btn oh-btn--warning-outline check-in mr-2"
-              onmouseenter="$(this).find('span').show();$(this).find('.time-runner').hide();"
-              onmouseleave="$(this).find('span').hide();$(this).find('.time-runner').show();"
+              {mouse_in}
+              {mouse_out}
                 hx-get="/attendance/clock-out"
                     hx-target='#attendance-activity-container'
                     hx-swap='innerHTML'><ion-icon class="oh-navbar__clock-icon mr-2
                     text-warning"
                         name="exit-outline"></ion-icon>
-               <span style="display:none" class="hr-check-in-out-text">{check_out}</span>
+               <span {hidden_label} class="hr-check-in-out-text">{check_out}</span>
                 <div class="time-runner"></div>  
               </button>
-              <script>
-                $(".time-runner").removeClass("stop-runner");
-                run = 1;
-                at_work_seconds = {at_work_seconds_forecasted};
-              </script>
+              {script}
             """.format(
                 check_out=_("Check-Out"),
-                at_work_seconds_forecasted=employee.get_forecasted_at_work()[
-                    "forecasted_at_work_seconds"
-                ],
+                script=script,
+                hidden_label=hidden_label,
+                mouse_in=mouse_in,
+                mouse_out=mouse_out,
             )
         )
     return HttpResponse(
@@ -354,11 +387,26 @@ def clock_out(request):
     clock_out_attendance_and_activity(
         employee=employee, date_today=date_today, now=now, out_datetime=datetime_now
     )
+    script = """
+        <script>
+        $(document).ready(function () {{
+            $('.at-work-seconds').html(secondsToDuration({at_work_seconds_forecasted}))
+        }});
+        run = 0;
+        at_work_seconds = {at_work_seconds_forecasted};
+        </script>
+    """.format(
+        at_work_seconds_forecasted=employee.get_forecasted_at_work()[
+            "forecasted_at_work_seconds"
+        ],
+    )
+    mouse_in = """onmouseenter="$(this).find('span').show();$(this).find('.at-work-seconds').hide();"""
+    mouse_out = """onmouseleave="$(this).find('span').hide();$(this).find('.at-work-seconds').show();" """
     return HttpResponse(
         """
               <button class="oh-btn oh-btn--success-outline mr-2" 
-              onmouseenter="$(this).find('span').show();$(this).find('.at-work-seconds').hide();"
-              onmouseleave="$(this).find('span').hide();$(this).find('.at-work-seconds').show();" 
+              {mouse_in}
+              {mouse_out}
               hx-get="/attendance/clock-in" 
               hx-target='#attendance-activity-container' 
               hx-swap='innerHTML'>
@@ -367,17 +415,11 @@ def clock_out(request):
                <span class="hr-check-in-out-text">{check_in}</span>
                <div class="at-work-seconds"></div>
               </button>
-              <script>
-                $(document).ready(function () {{
-                    $('.at-work-seconds').html(secondsToDuration({at_work_seconds_forecasted}))
-                }});
-                run = 0;
-                at_work_seconds = {at_work_seconds_forecasted};
-              </script>
+              {script}
             """.format(
             check_in=_("Check-In"),
-            at_work_seconds_forecasted=employee.get_forecasted_at_work()[
-                "forecasted_at_work_seconds"
-            ],
+            script=script,
+            mouse_in=mouse_in,
+            mouse_out=mouse_out,
         )
     )
