@@ -84,78 +84,7 @@
             style="display: none"
             @click.outside="open = false"
           >
-            <div class="oh-dropdown__filter-body">
-              <div class="oh-accordion">
-                <div
-                  class="oh-accordion-header"
-                  onclick="event.stopImmediatePropagation();$(this).parent().toggleClass('oh-accordion--show');"
-                >
-                  {% trans "Leave Request" %}
-                </div>
-                <div class="oh-accordion-body">
-                  <input type="hidden" value="{{request.GET.id}}" name="id">
-                  <div class="row">
-                    <div class="col-sm-12 col-md-12 col-lg-12">
-                      <div class="oh-input-group">
-                        <label class="oh-label">{% trans "Leave Type" %}</label>
-                        {{form.leave_type_id}}
-                      </div>
-                    </div>
-                    <div class="col-sm-12 col-md-12 col-lg-6">
-                      <div class="oh-input-group">
-                        <label class="oh-label">{% trans "Start Date" %}</label>
-                        {{form.start_date}}
-                      </div>
-                    </div>
-                    <div class="col-sm-12 col-md-12 col-lg-6">
-                      <div class="oh-input-group">
-                        <label class="oh-label">{% trans "End Date" %}</label>
-                        {{form.end_date}}
-                      </div>
-                    </div>
-                    <div class="col-sm-12 col-md-12">
-                      <div class="oh-input-group">
-                        <label class="oh-label">{% trans "Status" %}</label>
-                        {{form.status}}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="oh-accordion">
-                <div
-                  class="oh-accordion-header"
-                  onclick="event.stopImmediatePropagation();$(this).parent().toggleClass('oh-accordion--show');"
-                >
-                  {% trans "Advanced" %}
-                </div>
-                <div class="oh-accordion-body">
-                  <div class="row">
-                    <div class="col-sm-12 col-md-12 col-lg-6">
-                      <div class="oh-input-group">
-                        <label class="oh-label">{% trans "From Date" %}</label>
-                        {{form.from_date}}
-                      </div>
-                    </div>
-
-                    <div class="col-sm-12 col-md-12 col-lg-6">
-                      <div class="oh-input-group">
-                        <label class="oh-label">{% trans "To Date" %}</label>
-                        {{form.to_date}}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="oh-dropdown__filter-footer">
-              <button
-                class="oh-btn oh-btn--secondary oh-btn--small w-100 filterButton"
-                type="submit"
-              >
-                {% trans "Filter" %}
-              </button>
-            </div>
+          {% include 'leave/leave_request/filter_leave_requests.html' %}
           </div>
         </div>
         <div class="oh-dropdown" x-data="{open: false}">
@@ -174,11 +103,11 @@
             style="display: none"
           >
             <div class="oh-accordion">
-              <label>{% trans "Group By" %}</label>
+              <label for="id_field">{% trans "Group By" %}</label>
               <div class="row">
                 <div class="col-sm-12 col-md-12 col-lg-6">
                   <div class="oh-input-group">
-                    <label class="oh-label">{% trans "Field" %}</label>
+                    <label class="oh-label" for="id_field">{% trans "Field" %}</label>
                   </div>
                 </div>
                 <div class="col-sm-12 col-md-12 col-lg-6">
@@ -200,7 +129,7 @@
           </div>
         </div>
       </form>
-      <div class="oh-dropdown ml-2" x-data="{open: false}">
+      <div class="oh-dropdown ml-2" x-data="{open: false}" onclick="event.preventDefault();">
         <button
           class="oh-btn oh-btn--dropdown"
           @click="open = !open"
@@ -241,11 +170,12 @@
       <div class="oh-btn-group ml-2">
         <div class="oh-dropdown" x-data="{open: false}">
           <button
-          class="oh-btn oh-btn--secondary oh-btn--shadow"
-          data-toggle="oh-modal-toggle"
-          data-target="#requestCreateModal"
-          hx-get="{% url 'request-creation' %}"
-          hx-target="#requestCreateFormModal"
+            id="requestCreateButton"
+            class="oh-btn oh-btn--secondary oh-btn--shadow"
+            data-toggle="oh-modal-toggle"
+            data-target="#requestCreateModal"
+            hx-get="{% url 'request-creation' %}"
+            hx-target="#requestCreateFormModal"
           >
           <ion-icon name="add-outline" class="me-1"></ion-icon>
           {% trans "Create" %}

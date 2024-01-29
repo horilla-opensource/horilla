@@ -231,7 +231,7 @@
 
 <!-- End of Sticky Table -->
 {% if  not dashboard %}
-<div class="oh-pagination">
+<div class="oh-pagination" data-pd="{{pd}}">
     <span class="oh-pagination__page">
         {% trans "Page" %} {{ leave_requests.number }} {% trans "of" %} {{ leave_requests.paginator.num_pages }}.
     </span>
@@ -335,6 +335,9 @@
     });
   
     $(document).ready(function () {
+      var pd = $(".oh-pagination").attr('data-pd');
+      var hxVals = JSON.stringify(pd)
+      $("#requestCreateButton").attr('hx-vals',`{"pd":${hxVals}}`);
       tickLeaverequestsCheckboxes();
       $(".all-leave-requests-row").change(function () {
         addingLeaverequestsIds();

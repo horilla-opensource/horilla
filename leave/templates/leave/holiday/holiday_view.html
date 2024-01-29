@@ -44,11 +44,12 @@
         class="oh-input-group__icon oh-input-group__icon--left"
       ></ion-icon>
       <input
+        id="searchHoliday"
         type="text"
         class="oh-input oh-input__icon"
         aria-label="Search Input"
         placeholder="{% trans 'Search' %}"
-        name="name"
+        name="search"
         hx-get="{% url 'holiday-filter' %}"
         hx-trigger="keyup"
         hx-target="#holidays"
@@ -126,11 +127,13 @@
         <div class="oh-btn-group ml-2">
           <div class="oh-dropdown" x-data="{open: false}">
             <button
+              id="holidayCreateButton"
               class="oh-btn oh-btn--secondary oh-btn--shadow"
               data-toggle="oh-modal-toggle"
-              data-target="#editModal1"
+              data-target="#holidayCreateModal"
               hx-get="{% url 'holiday-creation' %}"
-              hx-target="#holidayForm"
+              hx-target="#holidayCreateFormModal"
+              onclick="createHolidayHxValue();"
             >
               <ion-icon name="add-outline" class="me-1"></ion-icon>
               {% trans "Create" %}
@@ -184,23 +187,12 @@
 <!-- Holiday creation -->
 <div
   class="oh-modal"
-  id="editModal1"
+  id="holidayCreateModal"
   role="dialog"
-  aria-labelledby="editDialogModal"
+  aria-labelledby="holidayCreateModalLabel"
   aria-hidden="true"
->
-  <div class="oh-modal__dialog oh-modal__dialog--timeoff">
-    <div class="oh-modal__dialog-header">
-      <span class="oh-modal__dialog-title" id="editDialogDialog"
-        >{% trans "Create Holiday" %}</span
-      >
-      <button class="oh-modal__close" aria-label="Close" 
-              hx-get="{% url 'holiday-filter' %}" hx-target="#holidays"
-          >
-        <ion-icon name="close-outline"></ion-icon>
-      </button>
-    </div>
-    <div id="holidayForm"></div>
+  >
+  <div class="oh-modal__dialog" id="holidayCreateFormModal">
   </div>
 </div>
 
@@ -209,23 +201,12 @@
 <!-- start of Update Holiday -->
 <div
   class="oh-modal"
-  id="editModal2"
+  id="holidayEditModal"
   role="dialog"
-  aria-labelledby="editDialogModal"
+  aria-labelledby="holidayEditModalLabel"
   aria-hidden="true"
 >
-  <div class="oh-modal__dialog oh-modal__dialog--timeoff">
-    <div class="oh-modal__dialog-header">
-      <span class="oh-modal__dialog-title" id="editDialogDialog"
-        >{% trans "Update Holiday" %}</span
-      >
-      <button class="oh-modal__close" aria-label="Close"
-              hx-get="{% url 'holiday-filter' %}" hx-target="#holidays" 
-          >
-        <ion-icon name="close-outline"></ion-icon>
-      </button>
-    </div>
-    <div id="updateForm"></div>
+  <div class="oh-modal__dialog" id="holidayEditFormModal">
   </div>
 </div>
 <!-- end of update modal -->
@@ -265,7 +246,7 @@
             </div>
           </div>
           <div id="uploadContainer">
-            <label class="oh-dropdown__import-label" for="uploadFile">
+            <label class="oh-dropdown__import-label" for="importHoliday">
               <ion-icon
                 name="cloud-upload"
                 class="oh-dropdown__import-form-icon"
@@ -277,7 +258,7 @@
                 >{% trans "Drag and drop files here" %}</span
               >
             </label>
-            <input type="file" name="holidays_import" id="" required />
+            <input type="file" name="holidays_import" id="importHoliday" required />
           </div>
           <button
             type="submit"

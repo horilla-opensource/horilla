@@ -440,6 +440,10 @@ class HolidayForm(ModelForm):
         labels = {
             "name": _("Name"),
         }
+    
+    def __init__(self, *args, **kwargs):
+        super(HolidayForm, self).__init__(*args, **kwargs)
+        self.fields['name'].widget.attrs['autocomplete'] = 'name'
 
 
 class LeaveOneAssignForm(ModelForm):

@@ -118,9 +118,6 @@ class AssignedLeaveFilter(FilterSet):
             self.form.fields[field].widget.attrs["id"] = f"{uuid.uuid4()}"
 
 
-from horilla.filters import filter_by_name
-
-
 class LeaveRequestFilter(FilterSet):
     """
     Filter class for LeaveRequest model.
@@ -170,6 +167,12 @@ class LeaveRequestFilter(FilterSet):
             "status",
             "department_name",
             "overall_leave",
+            "employee_id__employee_work_info__company_id",
+            "employee_id__employee_work_info__reporting_manager_id",
+            "employee_id__employee_work_info__department_id",
+            "employee_id__employee_work_info__job_position_id",
+            "employee_id__employee_work_info__shift_id",
+            "employee_id__employee_work_info__work_type_id",
         ]
 
     def overall_leave_filter(self, queryset, _, value):

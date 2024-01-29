@@ -1,5 +1,4 @@
-{% load i18n %}
-{% if messages %}
+{% load i18n %} {% if messages %}
 <div class="oh-wrapper">
   {% for message in messages %}
   <div class="oh-alert-container">
@@ -11,47 +10,51 @@
 </div>
 <script>
   setTimeout(() => {
-    $('.oh-modal__close').click();
+    $(".oh-modal__close").click();
   }, 1000);
 </script>
 {% endif %}
-{% if form.errors %}
-<!-- form errors  -->
-<div class="oh-wrapper">
-    <div class="oh-alert-container">
-
-        {% for error in form.non_field_errors %}
-        <div class="oh-alert oh-alert--animated oh-alert--danger">
-            {{ error }}
-        </div>
-        {% endfor %}
-    </div>
+<div class="oh-modal__dialog-header">
+  <span class="oh-modal__dialog-title" id="editDialogDialog"
+    >{% trans "Create Holiday" %}</span
+  >
+  <button
+    class="oh-modal__close"
+    aria-label="Close"
+    hx-get="{% url 'holiday-filter' %}?{{pd}}"
+    hx-target="#holidays"
+  >
+    <ion-icon name="close-outline"></ion-icon>
+  </button>
 </div>
-{% endif %}
+<form
+  hx-post="{% url 'holiday-update' id %}?{{pd}}"
+  hx-target="#holidayEditFormModal"
+>
+  <div class="oh-modal__dialog-body pb-2">
+    <label class="oh-label d-block" for="{{ form.name.id_for_label }}"
+      >{% trans "Holiday Name" %}</label
+    >
+    {{form.name}} {{form.name.errors}}
 
-<form hx-post="{% url 'holiday-update' id %}">
-    <div class="oh-modal__dialog-body pb-2">
-        <label class="oh-label d-block">{% trans "Holiday Name" %}</label>
-        {{form.name}}
-        {{form.name.errors}}
-      </div>
-      <div class="oh-modal__dialog-body pb-2">
-        <label class="oh-label d-block">{% trans "Start Date" %}</label>
-        {{form.start_date}}
-        {{form.start_date.errors}}
-      </div>
-      <div class="oh-modal__dialog-body pb-2">
-        <label class="oh-label d-block">{% trans "End Date" %}</label>
-        {{form.end_date}}
-        {{form.end_date.errors}}
-      </div>
-      <div class="oh-modal__dialog-body pb-2">
-        <label class="oh-label d-block">{% trans "Recurring" %}</label>
-        {{form.recurring}}
-        {{form.recurring.errors}}
-      </div>
-      <div class="oh-modal__dialog-footer">
-        <button type="submit" class="oh-btn oh-btn--secondary w-100">
-          {% trans "Apply" %}
-        </button>
- </form>
+    <label class="oh-label d-block" for="{{ form.start_date.id_for_label }}"
+      >{% trans "Start Date" %}</label
+    >
+    {{form.start_date}} {{form.start_date.errors}}
+
+    <label class="oh-label d-block" for="{{ form.end_date.id_for_label }}"
+      >{% trans "End Date" %}</label
+    >
+    {{form.end_date}} {{form.end_date.errors}}
+
+    <label class="oh-label d-block" for="{{ form.recurring.id_for_label }}"
+      >{% trans "Recurring" %}</label
+    >
+    {{form.recurring}} {{form.recurring.errors}}
+  </div>
+  <div class="oh-modal__dialog-footer">
+    <button type="submit" class="oh-btn oh-btn--secondary w-100">
+      {% trans "Apply" %}
+    </button>
+  </div>
+</form>

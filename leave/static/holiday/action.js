@@ -29,6 +29,12 @@ var downloadMessages = {
   fr: "Voulez-vous télécharger le modèle ?",
 };
 
+function createHolidayHxValue() {
+  var pd = $(".oh-pagination").attr('data-pd');
+  var hxValue = JSON.stringify(pd)
+  $("#holidayCreateButton").attr('hx-vals',`{"pd":${hxValue}}`);
+}
+
 tickHolidayCheckboxes();
 function makeHolidayListUnique(list) {
   return Array.from(new Set(list));

@@ -274,6 +274,7 @@ def leave_request_creation(request, type_id=None, emp_id=None):
     GET : return leave request form template
     POST : return leave request view
     """
+    previous_data = unquote(request.GET.urlencode())[len("pd=") :]
     form = LeaveRequestCreationForm()
     if type_id and emp_id:
         initial_data = {
@@ -331,7 +332,9 @@ def leave_request_creation(request, type_id=None, emp_id=None):
                 )
             form = LeaveRequestCreationForm()
     return render(
-        request, "leave/leave_request/leave_request_form.html", {"form": form}
+        request,
+        "leave/leave_request/leave_request_form.html",
+        {"form": form, "pd": previous_data},
     )
 
 
@@ -1184,13 +1187,19 @@ def holiday_creation(request):
     GET : return holiday creation form template
     POST : return holiday view template
     """
+    
+    query_string = request.GET.urlencode()
+    if query_string.startswith("pd="):
+        previous_data = unquote(query_string[len("pd="):])
+    else:
+        previous_data = unquote(query_string)
     form = HolidayForm()
     if request.method == "POST":
         form = HolidayForm(request.POST)
         if form.is_valid():
             form.save()
             messages.success(request, _("New holiday created successfully.."))
-    return render(request, "leave/holiday/holiday_form.html", {"form": form})
+    return render(request, "leave/holiday/holiday_form.html", {"form": form,"pd":previous_data})
 
 
 def holidays_excel_template(request):
@@ -1358,6 +1367,11 @@ def holiday_update(request, id):
     GET : return holiday update form template
     POST : return holiday view template
     """
+    query_string = request.GET.urlencode()
+    if query_string.startswith("pd="):
+        previous_data = unquote(query_string[len("pd="):])
+    else:
+        previous_data = unquote(query_string)
     holiday = Holiday.objects.get(id=id)
     form = HolidayForm(instance=holiday)
     if request.method == "POST":
@@ -1366,7 +1380,7 @@ def holiday_update(request, id):
             form.save()
             messages.info(request, _("Holiday updated successfully.."))
     return render(
-        request, "leave/holiday/holiday_update_form.html", {"form": form, "id": id}
+        request, "leave/holiday/holiday_update_form.html", {"form": form, "id": id,"pd":previous_data}
     )
 
 
@@ -1585,7 +1599,7 @@ def user_leave_request(request, id):
     GET : return user leave request creation form template
     POST : user my leave view template
     """
-    previous_data = unquote(request.GET.urlencode())[len("pd="):]
+    previous_data = unquote(request.GET.urlencode())[len("pd=") :]
     employee = request.user.employee_get
     leave_type = LeaveType.objects.get(id=id)
     form = UserLeaveRequestForm(
@@ -1705,7 +1719,7 @@ def user_leave_request(request, id):
     return render(
         request,
         "leave/user_leave/user_request_form.html",
-        {"form": form, "id": id, "leave_type": leave_type,"pd":previous_data},
+        {"form": form, "id": id, "leave_type": leave_type, "pd": previous_data},
     )
 
 
@@ -2403,7 +2417,10 @@ def leave_over_period(request):
     }
     return JsonResponse(response)
 
+
 from urllib.parse import unquote
+
+
 @login_required
 def leave_request_create(request):
     """
@@ -2416,7 +2433,7 @@ def leave_request_create(request):
     GET : return leave request form template
     POST : return leave request view
     """
-    previous_data = unquote(request.GET.urlencode())[len("pd="):]
+    previous_data = unquote(request.GET.urlencode())[len("pd=") :]
     employee = request.user.employee_get
     emp_id = employee.id
     emp = Employee.objects.get(id=emp_id)
@@ -2510,7 +2527,11 @@ def leave_request_create(request):
             return HttpResponse(
                 response.content.decode("utf-8") + "<script>location.reload();</script>"
             )
-    return render(request, "leave/user_leave/request_form.html", {"form": form,"pd":previous_data})
+    return render(
+        request,
+        "leave/user_leave/request_form.html",
+        {"form": form, "pd": previous_data},
+    )
 
 
 @login_required
