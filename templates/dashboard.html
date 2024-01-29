@@ -709,42 +709,41 @@
               <div class="oh-sticky-table__table oh-table--sortable">
                 <div class="oh-sticky-table__tbody">
 
-
-                  {% if announcement == '' %}
+                  {% if not announcement %}
 
                     <div class="oh-sticky-table__tr" draggable="true">
-                        <div class="announcement_title fw-bold">
-                          No Announcement.
-                        </div>
+                          <div class="oh-404" style="margin-top:130px;">
+                            <h5 class="oh-404__subtitle">{% trans "No Announcements to show." %}</h5>
+                            <img style="width: 80px;height: 80px;" src="{% static 'images/ui/no-announcement.svg' %}" class="oh-404__image" alt="Page not found. 404."/>
+                          </div>
                     </div>
 
                   {% else %}
 
                     {% for i in announcement %}
-                      <div class="oh-sticky-table__tr" draggable="true">
-                        {% if i.expire_date|date:"Y-m-d" >= current_date or i.expire_date == None %}
-                          <div class="announcement_title">
-                            <a class="oh-profile oh-profile--md" data-toggle="oh-modal-toggle" style="text-decoration:none;"
-                              data-target="#announcement"
-                              hx-get="{% url 'announcement-single-view' i.id %}"
-                              hx-target="#announcementModalBody">
-                                <div class="oh-profile__avatar mr-1">
-                                  <img src="https://ui-avatars.com/api/?name={{i.title}}&background=random" class="oh-profile__image" />
+                        <div class="oh-sticky-table__tr" draggable="true">
+                            {% if i.expire_date|date:"Y-m-d" >= current_date or i.expire_date == None %}
+                                <div class="announcement_title">
+                                    <a class="oh-profile oh-profile--md" data-toggle="oh-modal-toggle" style="text-decoration:none;"
+                                        data-target="#announcement"
+                                        hx-get="{% url 'announcement-single-view' i.id %}"
+                                        hx-target="#announcementModalBody"
+                                        onclick="closeNew(this)">
+                                        <div class="oh-profile__avatar mr-1">
+                                            <img src="https://ui-avatars.com/api/?name={{i.title}}&background=random" class="oh-profile__image" />
+                                        </div>
+                                        <span class="oh-profile__name oh-text--dark fw-bold">
+                                            {{i.title}}
+                                        </span>
+                                        {% if i.created_on|date:"Y-m-d" == current_date and not i.has_viewed %}
+                                            <span class="oh-profile__info-value ms-2" id="newTab" style="background-color: hsl(8,77%,56%); color:white;
+                                                font-size: 0.7rem; padding: 3px 8px; border-radius: 15px; font-weight: 800; width:auto;" 
+                                            >NEW</span>
+                                        {% endif %}
+                                    </a>
                                 </div>
-                                <span class="oh-profile__name oh-text--dark fw-bold">
-                                  {{i.title}}
-                                </span>
-                                {% now "Y-m-d" as current_date %}
-                                {% if i.created_on|date:"Y-m-d" == current_date %}
-                                  <span class="oh-profile__info-value ms-2" style="background-color: hsl(8,77%,56%); color:white;
-                                font-size: 0.7rem; padding: 3px 8px; border-radius: 15px; font-weight: 800; width:auto;"
-                                  >NEW</span>
-                              {% endif %}
-
-                            </a>
-                          </div>
-                        {% endif %}
-                      </div>
+                            {% endif %}
+                        </div>
                     {% endfor %}
 
                   {% endif %}
@@ -1256,6 +1255,10 @@
       }, 10);
     });
   });
+
+  function closeNew(anchorElement){
+    $(anchorElement).parent().find('#newTab').hide();
+  }
 
   $(document).ready(function() {
       // Add an input event listener to the search bar
