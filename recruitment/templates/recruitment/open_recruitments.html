@@ -46,7 +46,7 @@
                                 {% endfor %}
                                 </div>
                                 <h5 class="oh-job__post">{{recruitment.title}}</h5>
-
+                                {% if perms.recruitment.view_recruitment %}
                                 <div class="oh-recuritment__progress-bar">
                                     <div class="oh-progress-bar__state" role="progressbar" aria-valuenow="70" aria-valuemin="0"
                                         aria-valuemax="100" style="width:{{recruitment.candidate.all|length|percentage:recruitment.vacancy}}%">
@@ -54,7 +54,17 @@
                                 </div>
                                 <span class="oh-recuritment_application"><span class="oh-recuritment_application-count">{{recruitment.candidate.all|length}}
                                         {% trans "Applied" %}</span> {% trans "of" %} {{recruitment.vacancy}} {% trans "Capacity" %}</span>
-                                        <div class="oh-job__apply-btn">
+                                        
+                                {% else %}
+                                <div style="color: gray;">
+                                    {{recruitment.start_date}} - {{recruitment.end_date}} <br>
+                                    {% if recruitment.vacancy %}
+                                    {% trans "Total vacancies" %} {{recruitment.vacancy}}
+                                    {% endif %}
+                                </div>
+                                {% endif %}
+
+                                <div class="oh-job__apply-btn">
                                     <a class="oh-btn  oh-apply_btn" role="button" data-toggle="oh-modal-toggle"
                                         data-target="#jobDetailModal" hx-get='{% url "recruitment-details" recruitment.id %}' hx-target="#detailTarget">
 
