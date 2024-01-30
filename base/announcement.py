@@ -88,7 +88,7 @@ def create_announcement(request):
                 verb_de="Ihr Abteilung wurde in einem Beitrag erwähnt.",
                 verb_es="Tu departamento fue mencionado en una publicación.",
                 verb_fr="Votre département a été mentionné dans un post.",
-                redirect="/announcement",
+                redirect="/",
                 icon="chatbox-ellipses",
             )
 
@@ -100,7 +100,7 @@ def create_announcement(request):
                 verb_de="Ihre Arbeitsposition wurde in einem Beitrag erwähnt.",
                 verb_es="Tu puesto de trabajo fue mencionado en una publicación.",
                 verb_fr="Votre poste de travail a été mentionné dans un post.",
-                redirect="/announcement",
+                redirect="/",
                 icon="chatbox-ellipses",
             )
 
@@ -177,7 +177,7 @@ def update_announcement(request, anoun_id):
                 verb_de="Ihr Abteilung wurde in einem Beitrag erwähnt.",
                 verb_es="Tu departamento fue mencionado en una publicación.",
                 verb_fr="Votre département a été mentionné dans un post.",
-                redirect="/announcement",
+                redirect="/",
                 icon="chatbox-ellipses",
             )
 
@@ -189,7 +189,7 @@ def update_announcement(request, anoun_id):
                 verb_de="Ihre Arbeitsposition wurde in einem Beitrag erwähnt.",
                 verb_es="Tu puesto de trabajo fue mencionado en una publicación.",
                 verb_fr="Votre poste de travail a été mentionné dans un post.",
-                redirect="/announcement",
+                redirect="/",
                 icon="chatbox-ellipses",
             )
 
