@@ -5,7 +5,11 @@ from django import forms
 from django.forms import widgets
 from django.utils.translation import gettext_lazy as trans
 from django.template.loader import render_to_string
-from payroll.models.models import ReimbursementrequestComment, WorkRecord
+from payroll.models.models import (
+    PayrollGeneralSetting,
+    ReimbursementrequestComment,
+    WorkRecord,
+)
 from payroll.models.models import Contract
 from base.methods import reload_queryset
 
@@ -63,7 +67,6 @@ class ContractForm(ModelForm):
     contract_start_date = forms.DateField()
     contract_end_date = forms.DateField()
 
-
     class Meta:
         """
         Meta class for additional options
@@ -82,18 +85,21 @@ class ContractForm(ModelForm):
         )
         self.fields["contract_start_date"].widget = widgets.DateInput(
             attrs={
-                "type":"date",
+                "type": "date",
                 "class": "oh-input w-100",
                 "placeholder": "Select a date",
             }
         )
         self.fields["contract_end_date"].widget = widgets.DateInput(
             attrs={
-                "type":"date",
+                "type": "date",
                 "class": "oh-input w-100",
                 "placeholder": "Select a date",
             }
         )
+        first = PayrollGeneralSetting.objects.first()
+        if first and self.instance.pk is None:
+            self.initial["notice_period_in_month"] = first.notice_period
 
     def as_p(self):
         """
@@ -129,4 +135,4 @@ class ReimbursementrequestCommentForm(ModelForm):
         """
 
         model = ReimbursementrequestComment
-        fields = ('comment',)
+        fields = ("comment",)

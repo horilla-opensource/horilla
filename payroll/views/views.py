@@ -20,7 +20,7 @@ from base.methods import export_data, generate_colors, get_key_instances
 from employee.models import Employee, EmployeeWorkInformation
 from base.methods import closest_numbers
 from base.methods import generate_pdf
-from payroll.models.models import Payslip, Reimbursement, ReimbursementrequestComment, WorkRecord, Contract
+from payroll.models.models import PayrollGeneralSetting, Payslip, Reimbursement, ReimbursementrequestComment, WorkRecord, Contract
 from payroll.forms.forms import ContractForm, ReimbursementrequestCommentForm, WorkRecordForm
 from payroll.models.tax_models import PayrollSettings
 from payroll.forms.component_forms import ContractExportFieldForm, PayrollSettingsForm
@@ -1288,4 +1288,19 @@ def delete_payrollrequest_comment(request, comment_id):
     ReimbursementrequestComment.objects.get(id=comment_id).delete()
 
     messages.success(request, _("Comment deleted successfully!"))
+    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+
+
+@login_required
+@permission_required("payroll.add_payrollgeneralsetting")
+def initial_notice_period(request):
+    """
+    This method is used to set initial value notice period
+    """
+    notice_period = eval(request.GET["notice_period"])
+    settings = PayrollGeneralSetting.objects.first()
+    settings = settings if settings else PayrollGeneralSetting()
+    settings.notice_period = max(notice_period,0)
+    settings.save()
+    messages.success(request,"Initial notice period updated")
     return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))

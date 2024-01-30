@@ -142,4 +142,5 @@ urlpatterns = [
         views.delete_payrollrequest_comment,
         name="payroll-request-delete-comment",
     ),
+    path("initial-notice-period",views.initial_notice_period,name="initial-notice-period")
 ]
