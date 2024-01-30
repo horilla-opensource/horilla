@@ -510,7 +510,7 @@ def document_request_view(request):
     f = DocumentRequestFilter()
     document_requests = DocumentRequest.objects.all()
     documents = Document.objects.filter(document_request_id__isnull=False).order_by(
-        "document_request_id"
+        "-document_request_id"
     )
     documents = filtersubordinates(
         request=request,
@@ -535,7 +535,7 @@ def document_filter_view(request):
     previous_data = request.GET.urlencode()
     documents = DocumentRequestFilter(request.GET).qs
     documents = documents.exclude(document_request_id__isnull=True).order_by(
-        "document_request_id"
+        "-document_request_id"
     )
     data_dict = parse_qs(previous_data)
     get_key_instances(Document, data_dict)

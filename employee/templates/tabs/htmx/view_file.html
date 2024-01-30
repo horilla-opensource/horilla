@@ -14,7 +14,7 @@
 		{% if document.document %}
 		{% if perms.horilla_document.change_documentrequest %} 
 			{% if document.status == "approved" %}
-				<a class="oh-btn oh-btn--success w-100 oh-btn--disabled">
+				<a class="oh-btn oh-btn--success w-100 oh-btn--disabled" title="{% trans 'Approved' %}">
 					<ion-icon class="me-1" name="checkmark-outline"></ion-icon>
 				</a>
 			{% else %}
@@ -29,7 +29,7 @@
 				</a>
 			{% endif %} 
 			{% if document.status == "rejected" %}
-				<a class="oh-btn oh-btn--danger w-100 oh-btn--disabled">
+				<a class="oh-btn oh-btn--danger w-100 oh-btn--disabled" title="{% trans 'Rejected' %}">
 					<ion-icon class="me-1" name="close-circle-outline"></ion-icon>
 				</a>
 			{% else %}
@@ -50,6 +50,7 @@
 			href="data:{{ content_type }};base64,{{ file_content|base64_encode }}"
 			class="oh-btn oh-btn--info w-100"
 			download="{{document.title}}"
+			title="{% trans 'Download' %}"
 			><ion-icon class="me-1" name="download-outline"></ion-icon
 		></a>
 		{% endif %}

@@ -1,64 +1,54 @@
 {% load i18n %}
 <form
-	id="file-form"
-	{% if document_request %}
-	hx-post="{% url 'document-request-update' document_request.id %}"
-	{% else %}
-	hx-post="{% url 'document-request-create' %}"
-	{% endif %}
-	hx-target="#documentRequestCreateForm"
-	hx-encoding="multipart/form-data"
+  id="file-form"
+  {% if document_request %}
+  	hx-post="{% url 'document-request-update' document_request.id %}"
+  {% else %}
+  	hx-post="{% url 'document-request-create' %}"
+  {% endif %}
+  	hx-target="#documentRequestCreateForm"
+  hx-encoding="multipart/form-data"
 >
-	<div class="row">
-		<div class="col-sm-12 col-md-12 col-lg-6">
-			<div class="oh-input-group">
-				<label class="oh-label"
-				>{% trans "Title" %}</label
-				>
-				{{form.title}}
-			</div>
-		</div>
-		<div class="col-sm-12 col-md-12 col-lg-6">
-			<div class="oh-input-group">
-				<label class="oh-label"
-				>{% trans "Employees" %}</label
-				>
-				{{form.employee_id}}
-			</div>
-		</div>
-	</div>
-	<div class="row">
-		<div class="col-sm-12 col-md-12 col-lg-6">
-			<div class="oh-input-group">
-				<label class="oh-label"
-				>{% trans "Format" %}</label
-				>
-				{{form.format}}
-			</div>
-		</div>
-		<div class="col-sm-12 col-md-12 col-lg-6">
-			<div class="oh-input-group">
-				<label class="oh-label"
-				>{% trans "Max size (in MB)" %}</label
-				>
-				{{form.max_size}}
-			</div>
-		</div>
-	</div>
-	<div class="row">
-		<div class="col-sm-12 col-md-12 col-lg-12">
-			<div class="oh-input-group">
-				<label class="oh-label"
-				>{% trans "Description" %}</label
-				>
-				{{form.description}}
-			</div>
-		</div>
-	</div>
+  <div class="row">
+    <div class="col-sm-12 col-md-12 col-lg-6">
+      <div class="oh-input-group">
+        <label class="oh-label" for="{{form.title.id_for_label}}">{% trans "Title" %}</label>
+        {{form.title}}
+      </div>
+    </div>
+    <div class="col-sm-12 col-md-12 col-lg-6">
+      <div class="oh-input-group">
+        <label class="oh-label" for="{{form.employee_id.id_for_label}}">{% trans "Employees" %}</label>
+        {{form.employee_id}}
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-sm-12 col-md-12 col-lg-6">
+      <div class="oh-input-group">
+        <label class="oh-label" for="{{form.format.id_for_label}}">{% trans "Format" %}</label>
+        {{form.format}}
+      </div>
+    </div>
+    <div class="col-sm-12 col-md-12 col-lg-6">
+      <div class="oh-input-group">
+        <label class="oh-label" for="{{form.max_size.id_for_label}}">{% trans "Max size (in MB)" %}</label>
+        {{form.max_size}}
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-sm-12 col-md-12 col-lg-12">
+      <div class="oh-input-group">
+        <label class="oh-label" for="{{form.description.id_for_label}}">{% trans "Description" %}</label>
+        {{form.description}}
+      </div>
+    </div>
+  </div>
 
-	<div class="d-flex justify-content-between w-100 align-items-center mt-4">
-		<button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow">
-			{% trans "Save" %}
-		</button>
-	</div>
+  <div class="d-flex justify-content-between w-100 align-items-center mt-4">
+    <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow">
+      {% trans "Save" %}
+    </button>
+  </div>
 </form>
