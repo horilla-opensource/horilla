@@ -11,6 +11,7 @@ from django import forms
 from django.db import models
 from django.dispatch import receiver
 from django.contrib import messages
+from django.core.validators import MinValueValidator
 from django.db.models.signals import post_save
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
@@ -30,10 +31,19 @@ from attendance.models import (
     Attendance,
     strtime_seconds,
 )
+from horilla_audit.models import HorillaAuditInfo, HorillaAuditLog
 from leave.models import LeaveRequest, LeaveType
 
 
 # Create your models here.
+
+
+def min_zero(value):
+    """
+    The minimum value zero validation method
+    """
+    if value < 0:
+        raise ValidationError(_("Value must be greater than zero"))
 
 
 def get_date_range(start_date, end_date):
@@ -223,8 +233,20 @@ class Contract(models.Model):
     deduct_leave_from_basic_pay = models.BooleanField(
         default=True, verbose_name=_("Deduct From Basic Pay")
     )
+    notice_period_in_month = models.IntegerField(
+        default=3,
+        help_text="Notice period in total months",
+        validators=[min_zero],
+    )
 
     note = models.TextField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True, null=True)
+    history = HorillaAuditLog(
+        related_name="history_set",
+        bases=[
+            HorillaAuditInfo,
+        ],
+    )
 
     objects = HorillaCompanyManager("employee_id__employee_work_info__company_id")
 
@@ -449,11 +471,11 @@ class OverrideAttendance(Attendance):
             if status == "HDP" and min_hour_second / 2 > at_work_second
             else message
         )
-        work_record =WorkRecord.objects.filter(
-                date=instance.attendance_date,
-                is_attendance_record=True,
-                employee_id=instance.employee_id,
-            )
+        work_record = WorkRecord.objects.filter(
+            date=instance.attendance_date,
+            is_attendance_record=True,
+            employee_id=instance.employee_id,
+        )
         if status == "HDP" and work_record.first().is_leave_record:
             message = _("Half day leave")
 
@@ -627,14 +649,6 @@ def rate_validator(value):
         raise ValidationError(_("Rate must be greater than 0"))
     if value > 100:
         raise ValidationError(_("Rate must be less than 100"))
-
-
-def min_zero(value):
-    """
-    The minimum value zero validation method
-    """
-    if value < 0:
-        raise ValidationError(_("Value must be greater than zero"))
 
 
 CONDITION_CHOICE = [
@@ -1693,3 +1707,16 @@ class ReimbursementrequestComment(models.Model):
 
     def __str__(self) -> str:
         return f"{self.comment}"
+
+
+class PayrollGeneralSetting(models.Model):
+    """
+    PayrollGeneralSetting
+    """
+
+    notice_period = models.IntegerField(
+        help_text="Notice period in month",
+        validators=[min_zero],
+        default=3,
+    )
+    company_id = models.ForeignKey(Company,on_delete=models.CASCADE,null=True)

@@ -214,11 +214,14 @@
               {% endif %}
               </div>
             </div>
-            <div class="oh-kanban__card-actions oh-kanban__dropdown">
+            <div class="oh-kanban__card-actions oh-kanban__dropdown" onclick="event.stopPropagation();">
               <button
                 class="oh-btn oh-btn--small oh-btn--transparent oh-kanban__btn oh-kanban__dropdown-toggle"
                 title={% trans "Actions" %}
-              >
+                style="
+                      width: 25px;
+                      height: 25px;"
+                >
                 <ion-icon
                   name="ellipsis-vertical-sharp"
                   role="img"

@@ -19,6 +19,7 @@ import pandas as pd
 from base.models import Company, EmployeeShift, EmployeeShiftDay, WorkType
 from base.horilla_company_manager import HorillaCompanyManager
 from employee.models import Employee
+from horilla_audit.models import HorillaAuditInfo, HorillaAuditLog
 from leave.models import (
     WEEK_DAYS,
     WEEKS,
@@ -257,7 +258,13 @@ class Attendance(models.Model):
     objects = HorillaCompanyManager(
         related_company_field="employee_id__employee_work_info__company_id"
     )
-
+    created_at = models.DateTimeField(auto_now_add=True, null=True)
+    history = HorillaAuditLog(
+        related_name="history_set",
+        bases=[
+            HorillaAuditInfo,
+        ],
+    )
     class Meta:
         """
         Meta class to add some additional options
@@ -1002,3 +1009,5 @@ class AttendanceGeneralSetting(models.Model):
     """
 
     time_runner = models.BooleanField(default=True)
+    company_id = models.ForeignKey(Company,on_delete=models.CASCADE,null=True)
+
