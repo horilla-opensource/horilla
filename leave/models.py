@@ -642,6 +642,10 @@ class LeaveRequest(models.Model):
                 return  True
 
 
+class LeaverequestFile(models.Model):
+    file = models.FileField(upload_to="leave/request_files")
+
+
 class LeaverequestComment(models.Model):
     """
     LeaverequestComment Model
@@ -649,6 +653,7 @@ class LeaverequestComment(models.Model):
     
     request_id = models.ForeignKey(LeaveRequest, on_delete=models.CASCADE)
     employee_id = models.ForeignKey(Employee, on_delete=models.CASCADE)
+    files = models.ManyToManyField(LeaverequestFile,blank=True)
     comment = models.TextField(null=True, verbose_name=_("Comment"))
     created_at = models.DateTimeField(
         auto_now_add=True,
@@ -731,6 +736,7 @@ class LeaveallocationrequestComment(models.Model):
     
     request_id = models.ForeignKey(LeaveAllocationRequest, on_delete=models.CASCADE)
     employee_id = models.ForeignKey(Employee, on_delete=models.CASCADE)
+    files = models.ManyToManyField(LeaverequestFile,blank=True)
     comment = models.TextField(null=True, verbose_name=_("Comment"))
     created_at = models.DateTimeField(
         auto_now_add=True,

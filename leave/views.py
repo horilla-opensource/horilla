@@ -3339,7 +3339,7 @@ def create_leaverequest_comment(request, leave_id):
                     redirect="/",
                     icon="chatbox-ellipses",
                 )
-
+            return HttpResponse("<script>window.location.reload()</script>")
     return render(
         request,
         "leave/leave_request/leave_request_comment_form.html",
@@ -3365,12 +3365,42 @@ def view_leaverequest_comment(request, leave_id):
     if not comments.exists():
         no_comments = True
 
+    if request.FILES:
+        files = request.FILES.getlist("files")
+        comment_id = request.GET["comment_id"]
+        comment = LeaverequestComment.objects.get(id=comment_id)
+        attachments = []
+        for file in files:
+            file_instance = LeaverequestFile()
+            file_instance.file = file
+            file_instance.save()
+            attachments.append(file_instance)
+        comment.files.add(*attachments)
+
     return render(
         request,
-        "leave/leave_request/comment_view.html",
-        {"comments": comments, "no_comments": no_comments},
+        "leave/leave_request/leave_comment.html",
+        {"comments": comments, "no_comments": no_comments, 'request_id': leave_id },
     )
 
+
+@login_required
+def delete_comment_file(request):
+    """
+    Used to delete attachment
+    """
+    ids = request.GET.getlist("ids")
+    LeaverequestFile.objects.filter(id__in=ids).delete()
+    leave_id = request.GET["leave_id"]
+    comments = LeaverequestComment.objects.filter(request_id = leave_id).order_by("-created_at")
+    return render(
+        request,
+        "leave/leave_request/leave_comment.html",
+        {
+            "comments": comments,
+            "request_id": leave_id,
+        },
+    )
 
 @login_required
 def delete_leaverequest_comment(request, comment_id):
@@ -3454,6 +3484,7 @@ def create_allocationrequest_comment(request, leave_id):
                     redirect="/leave/leave-allocation-request-view",
                     icon="chatbox-ellipses",
                 )
+            return HttpResponse("<script>window.location.reload()</script>")
     return render(
         request,
         "leave/leave_allocation_request/allocation_request_comment_form.html",
@@ -3473,10 +3504,22 @@ def view_allocationrequest_comment(request, leave_id):
     if not comments.exists():
         no_comments = True
 
+    if request.FILES:
+        files = request.FILES.getlist("files")
+        comment_id = request.GET["comment_id"]
+        comment = LeaveallocationrequestComment.objects.get(id=comment_id)
+        attachments = []
+        for file in files:
+            file_instance = LeaverequestFile()
+            file_instance.file = file
+            file_instance.save()
+            attachments.append(file_instance)
+        comment.files.add(*attachments)
+
     return render(
         request,
-        "leave/leave_allocation_request/comment_view.html",
-        {"comments": comments, "no_comments": no_comments},
+        "leave/leave_allocation_request/leave_allocation_comment.html",
+        {"comments": comments, "no_comments": no_comments, 'request_id': leave_id },
     )
 
 
@@ -3490,3 +3533,22 @@ def delete_allocationrequest_comment(request, comment_id):
     command.delete()
     messages.success(request, _("Comment deleted successfully!"))
     return redirect("allocation-request-view-comment", leave_id=request_id)
+
+
+@login_required
+def delete_allocation_comment_file(request):
+    """
+    Used to delete attachment
+    """
+    ids = request.GET.getlist("ids")
+    LeaverequestFile.objects.filter(id__in=ids).delete()
+    leave_id = request.GET["leave_id"]
+    comments = LeaveallocationrequestComment.objects.filter(request_id = leave_id).order_by("-created_at")
+    return render(
+        request,
+        "leave/leave_allocation_request/leave_allocation_comment.html",
+        {
+            "comments": comments,
+            "request_id": leave_id,
+        },
+    )

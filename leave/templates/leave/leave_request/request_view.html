@@ -349,6 +349,23 @@
   </div>
 </div>
 
+<div class="oh-activity-sidebar" id="activitySidebar" style="z-index:1000;">
+  <div class="oh-activity-sidebar__header">
+    <a
+    style="cursor: pointer;"
+    onclick="$('.oh-activity-sidebar--show').removeClass('oh-activity-sidebar--show');">
+      <ion-icon
+      name="chevron-back-outline"
+      class="oh-activity-sidebar__header-icon me-2 oh-activity-sidebar__close"
+      data-target="#activitySidebar"
+      ></ion-icon>
+    </a>
+    <span class="oh-activity-sidebar__title"> {% trans "Comments" %} </span>
+  </div>
+  <div class="oh-activity-sidebar__body" id="commentContainer">
+  </div>
+</div>
+
 <script src="{% static '/leave_request/action.js' %}"></script>
 <script>
   $(document).on('htmx:afterSwap', function () {
@@ -565,6 +582,39 @@
 			}
 		});
 	}
+
+  function enlargeImage(src,$element) {
+      $(".enlargeImageContainer").empty()
+      var enlargeImageContainer = $element.parents().closest("li").find(".enlargeImageContainer")
+      enlargeImageContainer.empty()
+      style = 'width:100%; height:90%; box-shadow: 0 10px 10px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.2); background:white'
+      var enlargedImage = $('<iframe>').attr({ src: src, style: style })
+      var name = $('<span>').text(src.split('/').pop().replace(/_/g, ' '))
+      enlargeImageContainer.append(enlargedImage)
+      enlargeImageContainer.append(name)
+      setTimeout(function () {
+          enlargeImageContainer.show()
+
+          const iframe = document.querySelector('iframe').contentWindow
+          var iframe_document = iframe.document
+          iframe_image = iframe_document.getElementsByTagName('img')[0]
+          $(iframe_image).attr('style', 'width:100%; height:100%;')
+      }, 100)
+  }
+
+  function hideEnlargeImage() {
+      var enlargeImageContainer = $('.enlargeImageContainer')
+      enlargeImageContainer.empty()
+  }
+
+  $(document).on('click', function (event) {
+      if (!$(event.target).closest('#enlargeImageContainer').length) {
+          hideEnlargeImage()
+      }
+  })  
+  function submitForm(elem) {
+    $(elem).siblings(".add_more_submit").click();
+  }
 
 </script>
 {% endblock %}

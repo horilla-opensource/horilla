@@ -1,0 +1,113 @@
+{% load i18n static %}
+<style>
+    #enlargeImageContainer {
+        position: absolute;
+        left: -300px;
+        top: 100px;
+        height: 200px;
+        width: 200px;
+    }
+</style>
+<a
+    hx-get="{% url 'leave-request-add-comment' request_id %}?{{pd}}&target=leaveRequest"
+    style="width: 165px; position: sticky; top: 0"
+    hx-target="#requestCommentFormModal"
+    data-toggle="oh-modal-toggle"
+    data-target="#requestcommentModal"
+    class="mb-3 oh-btn oh-btn--secondary"
+>
+    <ion-icon
+        name="add-outline"
+        role="img"
+        class="md hydrated"
+        aria-label="add outline"
+    ></ion-icon>
+    {% trans 'Add comment' %}
+</a>
+{% if comments %}
+	<ol class="oh-activity-sidebar__qa-list" role="list">
+		{% for comment in comments %}
+			<li class="oh-activity-sidebar__qa-item">
+				<span class="oh-activity-sidebar__q">{{ comment.comment }}</span>
+
+				<div class="d-flex mt-2 mb-2">
+					{% for file in comment.files.all %}
+					<a
+						href="{{ file.file.url }}"
+						rel="noopener noreferrer"
+						target="_blank"
+						><span
+							class="oh-file-icon oh-file-icon--pdf"
+							onmouseover="enlargeImage('{{ file.file.url }}',$(this))"
+							style="width: 40px; height: 40px"
+							><img
+								src="{% static 'images/ui/minus-icon.png' %}"
+								style="display: block; width: 50%; height: 50%"
+								hx-get="{% url 'delete-comment-file' %}?ids={{ file.id }}&leave_id={{ request_id }}"
+								hx-target="#commentContainer"
+								onclick="event.stopPropagation();event.preventDefault()" /></span
+					></a>
+					{% endfor %}
+
+					<form
+						hx-post="{% url 'leave-request-view-comment' comment.request_id.id %}?comment_id={{ comment.id }}"
+						hx-target="#commentContainer"
+						class="add-files-form"
+						hx-encoding="multipart/form-data"
+					>
+						{% csrf_token %}
+						<label for="addFile_{{comment.id}}" title="Add Files"
+							><ion-icon
+								name="add-outline"
+								style="font-size: 24px"
+								role="img"
+								class="md hydrated"
+								aria-label="add outline"
+							></ion-icon
+						></label>
+						<input
+							type="file"
+							name="files"
+							class="d-none"
+							multiple="true"
+							id="addFile_{{comment.id}}"
+							onchange="submitForm(this)"
+						/>
+						<input
+							type="submit"
+							class="d-none add_more_submit"
+							value="save"
+						/>
+					</form>
+				</div>
+				<span class="oh-activity-sidebar__a">
+					{% trans 'by' %}
+					<img
+						src="{{ note.note_by.get_avatar }}"
+						style="width: 1.5em; border-radius: 100%"
+					/>
+					{{ comment.employee_id.get_full_name }} @ {{comment.request_id.employee_id.get_full_name }}
+					{% trans "'s shift request" %}
+				</span>
+				<div style="width: 50%">
+					<div id="enlargeImageContainer" class="enlargeImageContainer"></div>
+				</div>
+			</li>
+		{% endfor %}
+	</ol>
+{% else %}
+	<div class="oh-timeoff-modal__profile-content">
+		<div class="oh-404">
+			<div class="">
+				<span class="oh-timeoff-title fw-bold" style="display: block"
+					>{% trans "There are no comments to show." %}</span
+				>
+				<img
+					style="display: block; width: 100px; margin: 20px auto"
+					src="/static/images/ui/comment.png"
+					class=""
+				/>
+			</div>
+		</div>
+	</div>
+{% endif %}
