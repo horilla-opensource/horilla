@@ -97,9 +97,9 @@ class OffboardingEmployee(models.Model):
         OffboardingStage, on_delete=models.PROTECT, verbose_name="Stage", null=True
     )
     notice_period = models.IntegerField(null=True)
-    unit = models.CharField(max_length=10, choices=units, null=True)
+    unit = models.CharField(max_length=10, choices=units, default="month", null=True)
     notice_period_starts = models.DateField(null=True)
-    notice_period_ends = models.DateField(null=True)
+    notice_period_ends = models.DateField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self) -> str:
@@ -174,8 +174,8 @@ class ResignationLetter(models.Model):
                 year=notice_period_starts.year,
             )
             diffs = diffs.days
-            offboarding_employee.notice_period = diffs if diffs > 0  else None
-            offboarding_employee.unit = "day" if diffs > 0  else None
+            offboarding_employee.notice_period = diffs if diffs > 0 else None
+            offboarding_employee.unit = "day" if diffs > 0 else None
         offboarding_employee.save()
 
 
@@ -301,4 +301,6 @@ class OffboardingGeneralSetting(models.Model):
     """
     OffboardingGeneralSettings
     """
+
     resignation_request = models.BooleanField(default=True)
+    company_id = models.ForeignKey(Company, on_delete=models.CASCADE, null=True)

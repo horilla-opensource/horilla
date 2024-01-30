@@ -39,7 +39,11 @@ urlpatterns = [
         views.offboarding_individual_view,
         name="offboarding-individual-view",
     ),
-    path("resignation-requests-view/", views.request_view, name="resignation-request-view"),
+    path(
+        "resignation-requests-view/",
+        views.request_view,
+        name="resignation-request-view",
+    ),
     path(
         "create-resignation-request",
         views.create_resignation_request,
@@ -56,5 +60,10 @@ urlpatterns = [
         name="delete-resignation-request",
     ),
     path("update-letter-status", views.update_status, name="update-letter-status"),
-    path("enable-resignation-request", views.enable_resignation_request, name="enable-resignation-request"),
+    path(
+        "enable-resignation-request",
+        views.enable_resignation_request,
+        name="enable-resignation-request",
+    ),
+    path("get-notice-period", views.get_notice_period, name="get-notice-period"),
 ]

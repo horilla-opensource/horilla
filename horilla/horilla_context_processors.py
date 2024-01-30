@@ -11,3 +11,9 @@ TEMPLATES[0]["OPTIONS"]["context_processors"].append(
 TEMPLATES[0]["OPTIONS"]["context_processors"].append(
     "base.context_processors.resignation_request_enabled",
 )
+TEMPLATES[0]["OPTIONS"]["context_processors"].append(
+    "base.context_processors.timerunner_enabled",
+)
+TEMPLATES[0]["OPTIONS"]["context_processors"].append(
+    "base.context_processors.intial_notice_period",
+)

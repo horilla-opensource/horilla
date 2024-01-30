@@ -93,6 +93,9 @@ class OffboardingEmployeeForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        attrs = self.fields["employee_id"].widget.attrs
+        attrs["onchange"] = "intialNoticePeriod($(this))"
+        self.fields["employee_id"].widget.attrs.update(attrs)
         if self.instance.pk:
             if self.instance.notice_period_starts:
                 self.initial[

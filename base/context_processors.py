@@ -9,6 +9,7 @@ from attendance.models import AttendanceGeneralSetting
 from base.models import Company
 from base.urls import urlpatterns
 from offboarding.models import OffboardingGeneralSetting
+from payroll.models.models import PayrollGeneralSetting
 
 
 class AllCompany:
@@ -114,3 +115,14 @@ def timerunner_enabled(request):
     if first:
         enabled_timerunner = first.time_runner
     return {"enabled_timerunner": enabled_timerunner}
+
+
+def intial_notice_period(request):
+    """
+    Check weather resignation_request enabled of not in offboarding
+    """
+    first = PayrollGeneralSetting.objects.first()
+    initial = 3
+    if first:
+        initial = first.notice_period
+    return {"get_initial_notice_period": initial}

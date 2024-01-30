@@ -4,6 +4,7 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
 from django.contrib import messages
 from django.contrib.auth.models import User
+from base.context_processors import intial_notice_period
 from employee.models import Employee
 from horilla.decorators import login_required, permission_required
 from base.views import paginator_qry
@@ -36,6 +37,8 @@ from offboarding.models import (
 )
 from notifications.signals import notify
 from django.utils.translation import gettext_lazy as _
+
+from payroll.models.models import Contract
 
 
 # Create your views here.
@@ -536,6 +539,7 @@ def delete_resignation_request(request):
     messages.success(request, "Resignation letter deleted")
     return redirect(request_view)
 
+
 @login_required
 @check_feature_endabled("resignation_request")
 def create_resignation_request(request):
@@ -606,13 +610,46 @@ def update_status(request):
 
 
 @login_required
-@permission_required("offboarding.offboardinggeneralsetting")
+@permission_required("offboarding.add_offboardinggeneralsetting")
 def enable_resignation_request(request):
     """
     Enable disable resignation letter feature
     """
     resignation_request_feature = OffboardingGeneralSetting.objects.first()
-    resignation_request_feature = resignation_request_feature if resignation_request_feature else OffboardingGeneralSetting()
-    resignation_request_feature.resignation_request = "resignation_request" in request.GET.keys()
+    resignation_request_feature = (
+        resignation_request_feature
+        if resignation_request_feature
+        else OffboardingGeneralSetting()
+    )
+    resignation_request_feature.resignation_request = (
+        "resignation_request" in request.GET.keys()
+    )
     resignation_request_feature.save()
     return HttpResponse("Success")
+
+
+@login_required
+@permission_required("offboarding.add_offboardingemployee")
+def get_notice_period(request):
+    """
+    This method is used to get initial details for notice period
+    """
+    employee_id = request.GET["employee_id"]
+    employee_contract = (
+        (Contract.objects.order_by("-id").filter(employee_id__id=employee_id).first())
+        if Contract.objects.filter(
+            employee_id__id=employee_id, contract_status="active"
+        ).first()
+        else Contract.objects.filter(
+            employee_id__id=employee_id, contract_status="active"
+        ).first()
+    )
+
+    response = {
+        "notice_period": intial_notice_period(request)["get_initial_notice_period"],
+        "unit": "month",
+        "notice_period_starts": str(datetime.datetime.today().date()),
+    }
+    if employee_contract:
+        response["notice_period"] = employee_contract.notice_period_in_month
+    return JsonResponse(response)

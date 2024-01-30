@@ -1,45 +1,62 @@
 {% extends 'index.html' %}
 {% block content %}
-  <style>
-    .search-highlight {
-      background-color: rgba(255, 68, 0, 0.076);
-    }
-  </style>
-  {% include 'offboarding/pipeline/nav.html' %}
-  {% include 'offboarding/pipeline/offboardings.html' %}
-  <script>
-    $('#pipelineSearch').keyup(function (e) {
-      e.preventDefault()
-      var search = $(this).val().toLowerCase()
-      $('[data-employee]').each(function () {
-        var employeeFullName = $(this).attr('data-employee')
-        if (employeeFullName.toLowerCase().includes(search)) {
-          $(this).show()
-          $(this).addClass('search-highlight')
-        } else {
-          $(this).hide()
-          $(this).removeClass('search-highlight')
-        }
-      })
-      if (search == '') {
-        $('.search-highlight').removeClass('search-highlight')
-        $('[data-employee]').show()
-      }
-      $('[title="Toggle Archived"]').change()
-      if (search != '') {
-        $('#filterTagContainerSectionNav').html('')
-        $('#filterTagContainerSectionNav').append(
-          '<span class="oh-titlebar__tag filter-field pipelineSearch">Search :' +
-            search +
-            `<button class="oh-titlebar__tag-close" onclick="$('#pipelineSearch').val('');$('#pipelineSearch').keyup()">
-                      <ion-icon name="close-outline">
-                      </ion-icon>
-                    </button>
-                  </span>`
-        )
+<style>
+  .search-highlight {
+    background-color: rgba(255, 68, 0, 0.076);
+  }
+</style>
+{% include 'offboarding/pipeline/nav.html' %}
+{% include 'offboarding/pipeline/offboardings.html' %}
+<script>
+  $('#pipelineSearch').keyup(function (e) {
+    e.preventDefault()
+    var search = $(this).val().toLowerCase()
+    $('[data-employee]').each(function () {
+      var employeeFullName = $(this).attr('data-employee')
+      if (employeeFullName.toLowerCase().includes(search)) {
+        $(this).show()
+        $(this).addClass('search-highlight')
       } else {
-        $('#filterTagContainerSectionNav').html('')
+        $(this).hide()
+        $(this).removeClass('search-highlight')
       }
     })
-  </script>
+    if (search == '') {
+      $('.search-highlight').removeClass('search-highlight')
+      $('[data-employee]').show()
+    }
+    $('[title="Toggle Archived"]').change()
+    if (search != '') {
+      $('#filterTagContainerSectionNav').html('')
+      $('#filterTagContainerSectionNav').append(
+        '<span class="oh-titlebar__tag filter-field pipelineSearch">Search :' +
+        search +
+        `<button class="oh-titlebar__tag-close" onclick="$('#pipelineSearch').val('');$('#pipelineSearch').keyup()">
+                          <ion-icon name="close-outline">
+                          </ion-icon>
+                        </button>
+                      </span>`
+      )
+    } else {
+      $('#filterTagContainerSectionNav').html('')
+    }
+  })
+  // intial select notice period starts and end
+  function intialNoticePeriod($element) {
+    let employeeId = $element.val()
+    $.ajax({
+      type: 'get',
+      url: "{% url 'get-notice-period' %}",
+      data: { employee_id: employeeId },
+      success: function (response) {
+        let totalNoticePeriod = response["notice_period"]
+        let unit = response["unit"]
+        let noticePeriodStarts = response["notice_period_starts"]
+        $("#offboardingEmployeeForm [name=unit]").val(unit);
+        $("#offboardingEmployeeForm [name=notice_period_starts]").val(noticePeriodStarts);
+        $("#offboardingEmployeeForm [name=notice_period]").val(totalNoticePeriod);
+      }
+    })
+  }
+</script>
 {% endblock %}
