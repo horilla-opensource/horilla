@@ -4,17 +4,17 @@
     {% csrf_token %}
     <div class=" m-3">
         <div class="oh-input__group ">
-            <label class="oh-input__label" for="objective">{% trans "Assigned To" %}</label>
+            <label class="oh-input__label" for="{{asset_allocation_form.assigned_to_employee_id.id_for_label}}">{% trans "Assigned To" %}</label>
             {{asset_allocation_form.assigned_to_employee_id}}
             {{asset_allocation_form.assigned_to_employee_id.errors}}
         </div>
         <div class="oh-input__group ">
-            <label class="oh-input__label" for="objective">{% trans "Asset" %}</label>
+            <label class="oh-input__label" for="{{asset_allocation_form.asset_id.id_for_label}}">{% trans "Asset" %}</label>
             {{asset_allocation_form.asset_id}}
             {{asset_allocation_form.asset_id.errors}}
         </div>
         <div class="oh-input__group ">
-            <label class="oh-input__label" for="objective">{% trans "Assigned By" %}</label>
+            <label class="oh-input__label" for="{{asset_allocation_form.assigned_by_employee_id.id_for_label}}">{% trans "Assigned By" %}</label>
             {{asset_allocation_form.assigned_by_employee_id}}
             {{asset_allocation_form.assigned_by_employee_id.errors}}
         </div>

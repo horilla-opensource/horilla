@@ -69,26 +69,26 @@
           <div class="my-3" id="keyResultCard">
             <div class=" " id="assetUpdateFormContainer">
               <div class="oh-input__group ">
-                <label class="oh-input__label" for="objective">{% trans "Asset Name" %}</label>
+                <label class="oh-input__label" for="{{asset_form.asset_name.id_for_label}}" >{% trans "Asset Name" %}</label>
                 {{asset_form.asset_name}} 
                 {{asset_form.asset_name.errors}}
               </div>
               <div class="oh-input__group ">
-                <label class="oh-input__label" for="objective">{% trans "Asset Description" %}</label>
+                <label class="oh-input__label" for="{{asset_form.asset_description.id_for_label}}" >{% trans "Asset Description" %}</label>
                 {{asset_form.asset_description}}
                 {{asset_form.asset_description.errors}}
               </div>
               <div class="row">
                 <div class="col-12 col-sm-12 col-md-6 col-lg-6">
                   <div class="oh-input__group">
-                    <label class="oh-input__label" for="keyType">{% trans "Tracking Id" %}</label>
+                    <label class="oh-input__label" for="{{asset_form.asset_tracking_id.id_for_label}}" >{% trans "Tracking Id" %}</label>
                     {{asset_form.asset_tracking_id}}
                     {{asset_form.asset_tracking_id.errors}}
                   </div>
                 </div>
                 <div class="col-12 col-sm-12 col-md-6 col-lg-6">
                   <div class="oh-input__group">
-                    <label class="oh-input__label" for="startDate">{% trans "Category" %}</label>
+                    <label class="oh-input__label" for="{{asset_form.asset_category_id.id_for_label}}" >{% trans "Category" %}</label>
                     {{asset_form.asset_category_id }}
                     {{asset_form.asset_category_id.errors }}
                   </div>
@@ -97,14 +97,14 @@
               <div class="row">
                 <div class="col-12 col-sm-12 col-md-6 col-lg-6">
                   <div class="oh-input__group">
-                    <label class="oh-input__label" for="startDate">{% trans "Purchase Date" %}</label>
+                    <label class="oh-input__label" for="{{asset_form.asset_purchase_date.id_for_label}}" >{% trans "Purchase Date" %}</label>
                     {{asset_form.asset_purchase_date }}
                     {{asset_form.asset_purchase_date.errors }}
                   </div>
                 </div>
                 <div class="col-12 col-sm-12 col-md-6 col-lg-6">
                   <div class="oh-input__group">
-                    <label class="oh-input__label" for="endDate">{% trans "Cost" %}</label>
+                    <label class="oh-input__label" for="{{asset_form.asset_purchase_cost.id_for_label}}" >{% trans "Cost" %}</label>
                     {{asset_form.asset_purchase_cost}}
                     {{asset_form.asset_purchase_cost.errors}}
                   </div>
@@ -113,14 +113,14 @@
               <div class="row">
                 <div class="col-12 col-sm-12 col-md-6 col-lg-6">
                   <div class="oh-input__group">
-                    <label class="oh-input__label" for="keyType">{% trans "Status" %}</label>
+                    <label class="oh-input__label" for="{{asset_form.asset_status.id_for_label}}" >{% trans "Status" %}</label>
                     {{asset_form.asset_status}}
                     {{asset_form.asset_status.errors}}
                   </div>
                 </div>
                 <div class="col-12 col-sm-12 col-md-6 col-lg-6">
                   <div class="oh-input__group">
-                    <label class="oh-input__label" for="keyType">{% trans "Batch No" %}</label>
+                    <label class="oh-input__label" for="{{asset_form.asset_lot_number_id.id_for_label}}" >{% trans "Batch No" %}</label>
                     {{asset_form.asset_lot_number_id}}
                     {{asset_form.asset_lot_number_id.errors}}
                   </div>

@@ -13,12 +13,12 @@
     {% csrf_token %}
     <div class="oh-modal__dialog-body">
         <div class="oh-input__group ">
-            <label class="oh-input__label" for="objective">{% trans "Batch Number" %}</label>
+            <label class="oh-input__label" for="{{asset_batch_form.lot_number.id_for_label}}">{% trans "Batch Number" %}</label>
             {{asset_batch_form.lot_number}}
             {{asset_batch_form.lot_number.errors}}
         </div>
         <div class="oh-input__group ">
-            <label class="oh-input__label" for="objective">{% trans "Description" %}</label>
+            <label class="oh-input__label" for="{{asset_batch_form.lot_description.id_for_label}}">{% trans "Description" %}</label>
             {{asset_batch_form.lot_description}}
             {{asset_batch_form.lot_description.errors}}
         </div>
