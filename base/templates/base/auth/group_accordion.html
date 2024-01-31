@@ -1,5 +1,5 @@
 {% load basefilters %}
-{% load i18n %}
+{% load i18n %}{% load static %}
 <style>
     input:focus{
       outline: .5px solid #7592aa5c !important;
@@ -19,66 +19,29 @@
       <h2 class="oh-inner-sidebar-content__title">
         {% trans "Group Permissions" %}
       </h2>
-      {% if perms.auth.add_group %}
-        <button
-          class="oh-btn oh-btn--secondary oh-btn--shadow"
-          data-toggle="oh-modal-toggle"
-          data-target="#Permissions"
-        >
-          <ion-icon name="add-outline"></ion-icon>
-          {% trans "Create" %}
-        </button>
-        {% endif %}
+      <div class=" d-flex">
+          <div class="oh-input-group oh-input__search-group">
+            <ion-icon name="search-outline" class="oh-input-group__icon oh-input-group__icon--left md hydrated" role="img" aria-label="search outline"></ion-icon>
+              <input hx-get="{% url 'user-group-search' %}" hx-target="#permissionContainer" hx-trigger="keyup changed delay:.2s" type="text" id="permissionSearch" placeholder="Search" name="search" class="oh-input oh-input__icon" aria-label="Search Input">
+          </div>
+          {% if perms.auth.add_group %}
+          <button
+            style="margin-left: 10px;"
+            class="oh-btn oh-btn--secondary oh-btn--shadow"
+            data-toggle="oh-modal-toggle"
+            data-target="#Permissions"
+          >
+            <ion-icon name="add-outline"></ion-icon>
+            {% trans "Create" %}
+          </button>
+          {% endif %}
+      </div>
     </div>
+  </div>
+  <div id="permissionContainer">
+    {% include "base/auth/group_lines.html" %}
   </div>
   
-  {% for group in groups %}
-  <div class="oh-user_permission-list_item" onclick="$(this).next().toggle();$(this).toggleClass('perm-accordion-active');">
-    <div class="oh-user_permission-list_profile">
-        <div class="oh-navbar__user-photo oh-user_permission--profile">
-            <img src="https://ui-avatars.com/api/?name={{group}}&background=random"
-                class="oh-navbar__user-image" loading="lazy">
-        </div>
-        <div class="oh-feedback-card__name-container ms-1">
-          <form hx-post='{% url "update-group-permission" %}' hx-vals='{"name_update": "true"}' hx-swap="none">
-            <input type="hidden" name="id" value="{{group.id}}">
-            <span class="oh-card__title oh-card__title--sm fw-bold me-1">
-              <input class="oh-tabs__movable-title oh-table__editable-input" value="{{group}}" onkeyup="event.stopPropagation();$(this).closest('form').find('#hxSubmit').click()" hx-target="#hxSubmit"  name="name"style="width: 250px;" readonly="">
-            </span>
-            <button style="display: none;" type="submit" onclick="event.stopPropagation()" id="hxSubmit"></button>
-          </form>
-          <span class="oh-user_permission_list-text oh-text--light">{% trans "Total" %} {{group.user_set.all|length}} {% trans "users in this group" %}</span>
-        </div>
-    </div>
-    {% if perms.auth.change_group or perms.auth.delete_group %}
-      <div class="btn-group">
-        {% if perms.auth.change_group %}
-          <button class=" oh-btn oh-btn--light" hx-get="{% url "user-group-assign" %}" hx-vals='{"group":"{{group.id}}"}' hx-target="#groupAssignBody" data-toggle="oh-modal-toggle" data-target="#groupAssign" onclick="event.stopPropagation()">
-            <ion-icon name="person-add-outline" class="text-dark"></ion-icon>    
-          </button>
-        {% endif %}
-        {% if perms.auth.delete_group %}
-        <form action="{% url "user-group-delete" group.id %}" onsubmit="return confirm('Do you want to delete this group permission?')" method="post" style="display: inline;">
-          {% csrf_token %}
-          <button type="submit" class="oh-btn oh-btn--light" onclick="event.stopPropagation();"  >
-            <ion-icon name="trash-outline" class="text-danger"></ion-icon>
-          </button>
-        </form>
-        {% endif %}
-      </div>
-    {% endif %}
-  </div>
-  <div class="panel view-employees" id="panel{{group.id}}" data-group-id="{{group.id}}" data-group-name="{{group.name}}">
-    <div class="oh-general__tab-target oh-profile-section">
-      <script>
-        $(document).ready(function () {
-          checkSelected(`{{group.permissions.all|user_perms|safe}}`,"#panel{{group.id}}",true)
-        });
-      </script>
-        {% include "base/auth/permission_table.html" %}
-    </div>
-  </div>
-  {% endfor %}
   <div
     class="oh-modal"
     id="Permissions"
