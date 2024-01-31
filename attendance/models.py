@@ -981,9 +981,13 @@ class GraceTime(models.Model):
                 )
 
         allowed_time = self.allowed_time
+        is_default = self.is_default
+        exclude_default = not is_default
+
+
         if (
             GraceTime.objects.filter(allowed_time=allowed_time)
-            .exclude(is_default=True)
+            .exclude(is_default=exclude_default)
             .exclude(id=self.id)
             .exists()
         ):

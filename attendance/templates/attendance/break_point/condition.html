@@ -1,4 +1,4 @@
-{% extends 'settings.html' %} {% load i18n %} {% block settings %}
+{% extends 'settings.html' %} {% load i18n %} {% block settings %}{% load static %}
   <div id="ohMessages"></div>
 
   <div class="oh-inner-sidebar-content">
@@ -46,6 +46,11 @@
           </div>
         </div>
       </div>
+    {% else %}
+      <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%;">
+        <img style="display: block; width: 15%; margin: 20px auto; filter: opacity(0.5);" src="{% static 'images/ui/conditions.png' %}" class="" alt="Page not found. 404." />
+        <h5 class="oh-404__subtitle">{% trans "There is no attendance conditions at this moment." %}</h5>
+    </div>
     {% endif %}
 
     <!--start of Grace time  -->
@@ -140,6 +145,11 @@
                 </div>
             </div>
           </div>
+        </div>
+      {% else %}
+        <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%;">
+          <img style="display: block; width: 15%; margin: 20px auto; filter: opacity(0.5);" src="{% static 'images/ui/Hour_glass.png' %}" class="" alt="Page not found. 404." />
+          <h5 class="oh-404__subtitle">{% trans "There is no default grace time at this moment." %}</h5>
         </div>
       {% endif %}
     </div>

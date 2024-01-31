@@ -5,7 +5,7 @@ $(document).ready(function () {
     labels: [],
     datasets: [],
   };
-  window["departmentOverChart"] = {};
+  window["departmentOvertimeChart"] = {};
   const departmentOvertimeChart = document.getElementById("departmentOverChart");
   var departmentAttendanceChart = new Chart(departmentOvertimeChart, {
     type: "pie",
