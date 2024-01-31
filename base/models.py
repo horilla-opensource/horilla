@@ -742,6 +742,10 @@ class WorkTypeRequest(models.Model):
                 _("A work type request already exists during this time period.")
             )
 
+    def __str__(self) -> str:
+        return f"{self.employee_id.employee_first_name} \
+            {self.employee_id.employee_last_name} - {self.requested_date}"
+
 
 class WorktyperequestComment(models.Model):
     """
@@ -875,8 +879,10 @@ class ShiftRequest(models.Model):
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
 
-    def __str__(self):
-        return f"{self.employee_id}"
+    def __str__(self) -> str:
+        return f"{self.employee_id.employee_first_name} \
+            {self.employee_id.employee_last_name} - {self.requested_date}"
+
 
 
 class ShiftrequestComment(models.Model):

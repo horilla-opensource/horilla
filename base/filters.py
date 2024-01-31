@@ -99,6 +99,7 @@ class WorkTypeRequestFilter(FilterSet):
         fields = "__all__"
         model = WorkTypeRequest
         fields = [
+            "id",
             "employee_id",
             "requested_date",
             "previous_work_type_id",

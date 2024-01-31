@@ -2473,7 +2473,7 @@ def work_type_request(request):
                     verb_fr=f"Vous avez une nouvelle demande de type de travail\
                             à valider pour {instance.employee_id}",
                     icon="information",
-                    redirect=f"/employee/work-type-request-view?employee_id={instance.employee_id.id}&requested_date={instance.requested_date}",
+                    redirect=f"/employee/work-type-request-view?id={instance.id}",
                 )
             except Exception as error:
                 pass
@@ -2518,7 +2518,7 @@ def work_type_request_cancel(request, id):
             verb_de="Ihre Arbeitstypanfrage wurde storniert",
             verb_es="Su solicitud de tipo de trabajo ha sido cancelada",
             verb_fr="Votre demande de type de travail a été annulée",
-            redirect="/",
+            redirect=f"/employee/work-type-request-view?id={work_type_request.id}",
             icon="close",
         )
         return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
@@ -2558,7 +2558,7 @@ def work_type_request_bulk_cancel(request):
                 verb_de="Ihre Arbeitstypanfrage wurde storniert.",
                 verb_es="Su solicitud de tipo de trabajo ha sido cancelada.",
                 verb_fr="Votre demande de type de travail a été annulée.",
-                redirect="/",
+                redirect=f"/employee/work-type-request-view?id={work_type_request.id}",
                 icon="close",
             )
             result = True
@@ -2594,7 +2594,7 @@ def work_type_request_approve(request, id):
                 verb_de="Ihre Arbeitstypanfrage wurde genehmigt.",
                 verb_es="Su solicitud de tipo de trabajo ha sido aprobada.",
                 verb_fr="Votre demande de type de travail a été approuvée.",
-                redirect="/",
+                redirect=f"/employee/work-type-request-view?id={work_type_request.id}",
                 icon="checkmark",
             )
 
@@ -2642,7 +2642,7 @@ def work_type_request_bulk_approve(request):
                 verb_de="Ihre Arbeitstypanfrage wurde genehmigt.",
                 verb_es="Su solicitud de tipo de trabajo ha sido aprobada.",
                 verb_fr="Votre demande de type de travail a été approuvée.",
-                redirect="/",
+                redirect=f"/employee/work-type-request-view?id={work_type_request.id}",
                 icon="checkmark",
             )
             result = True
@@ -2705,7 +2705,7 @@ def work_type_request_delete(request, id):
             verb_de="Ihre Arbeitstypanfrage wurde gelöscht.",
             verb_es="Su solicitud de tipo de trabajo ha sido eliminada.",
             verb_fr="Votre demande de type de travail a été supprimée.",
-            redirect="/",
+            redirect="#",
             icon="trash",
         )
     except WorkTypeRequest.DoesNotExist:
@@ -2765,7 +2765,7 @@ def work_type_request_bulk_delete(request):
                 verb_de="Ihre Arbeitstypanfrage wurde gelöscht.",
                 verb_es="Su solicitud de tipo de trabajo ha sido eliminada.",
                 verb_fr="Votre demande de type de travail a été supprimée.",
-                redirect="/",
+                redirect="#",
                 icon="trash",
             )
         except WorkTypeRequest.DoesNotExist:
@@ -3041,7 +3041,7 @@ def shift_request_cancel(request, id):
             verb_de="Ihr Schichtantrag wurde storniert.",
             verb_es="Se ha cancelado su solicitud de turno.",
             verb_fr="Votre demande de quart a été annulée.",
-            redirect="/",
+            redirect=f"/employee/shift-request-view?id={shift_request.id}",
             icon="close",
         )
 
@@ -3083,7 +3083,7 @@ def shift_request_bulk_cancel(request):
                 verb_de="Ihr Schichtantrag wurde storniert.",
                 verb_es="Se ha cancelado su solicitud de turno.",
                 verb_fr="Votre demande de quart a été annulée.",
-                redirect="/",
+                redirect=f"/employee/shift-request-view?id={shift_request.id}",
                 icon="close",
             )
             result = True
@@ -3124,7 +3124,7 @@ def shift_request_approve(request, id):
                 verb_de="Ihr Schichtantrag wurde genehmigt.",
                 verb_es="Se ha aprobado su solicitud de turno.",
                 verb_fr="Votre demande de quart a été approuvée.",
-                redirect="/",
+                redirect=f"/employee/shift-request-view?id={shift_request.id}",
                 icon="checkmark",
             )
             return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
@@ -3172,7 +3172,7 @@ def shift_request_bulk_approve(request):
                 verb_de="Ihr Schichtantrag wurde genehmigt.",
                 verb_es="Se ha aprobado su solicitud de turno.",
                 verb_fr="Votre demande de quart a été approuvée.",
-                redirect="/",
+                redirect=f"/employee/shift-request-view?id={shift_request.id}",
                 icon="checkmark",
             )
         result = True
@@ -3201,7 +3201,7 @@ def shift_request_delete(request, id):
             verb_de="Ihr Schichtantrag wurde gelöscht.",
             verb_es="Se ha eliminado su solicitud de turno.",
             verb_fr="Votre demande de quart a été supprimée.",
-            redirect="/",
+            redirect="#",
             icon="trash",
         )
 
@@ -3239,7 +3239,7 @@ def shift_request_bulk_delete(request):
                 verb_de="Ihr Schichtantrag wurde gelöscht.",
                 verb_es="Se ha eliminado su solicitud de turno.",
                 verb_fr="Votre demande de quart a été supprimée.",
-                redirect="/",
+                redirect="#",
                 icon="trash",
             )
         except ShiftRequest.DoesNotExist:
@@ -3783,6 +3783,18 @@ def ticket_type_create(request):
     form = TicketTypeForm()
     if request.method == "POST":
         form = TicketTypeForm(request.POST)
+        if request.GET.get('ajax'):
+            if form.is_valid():
+                instance = form.save()
+                response= {
+                        "errors": 'no_error',
+                        "ticket_id": instance.id,
+                        "title": instance.title,
+                    }
+                return JsonResponse(response)
+                    
+            errors = form.errors.as_json()
+            return JsonResponse({"errors": errors})
         if form.is_valid():
             form.save()
             form = TicketTypeForm()
@@ -3795,7 +3807,6 @@ def ticket_type_create(request):
             "form": form,
         },
     )
-
 
 @login_required
 def ticket_type_update(request, t_type_id):
@@ -4174,7 +4185,7 @@ def create_shiftrequest_comment(request, shift_id):
                     verb_de=f"{shift.employee_id}s Schichtantrag hat einen Kommentar erhalten.",
                     verb_es=f"La solicitud de turno de {shift.employee_id} ha recibido un comentario.",
                     verb_fr=f"La demande de changement de poste de {shift.employee_id} a reçu un commentaire.",
-                    redirect="/employee/shift-request-view",
+                    redirect=f"/employee/shift-request-view?id={shift.id}",
                     icon="chatbox-ellipses",
                 )
             elif (
@@ -4190,7 +4201,7 @@ def create_shiftrequest_comment(request, shift_id):
                     verb_de="Ihr Schichtantrag hat einen Kommentar erhalten.",
                     verb_es="Tu solicitud de turno ha recibido un comentario.",
                     verb_fr="Votre demande de changement de poste a reçu un commentaire.",
-                    redirect="/employee/shift-request-view",
+                    redirect=f"/employee/shift-request-view?id={shift.id}",
                     icon="chatbox-ellipses",
                 )
             else:
@@ -4206,7 +4217,7 @@ def create_shiftrequest_comment(request, shift_id):
                     verb_de=f"{shift.employee_id}s Schichtantrag hat einen Kommentar erhalten.",
                     verb_es=f"La solicitud de turno de {shift.employee_id} ha recibido un comentario.",
                     verb_fr=f"La demande de changement de poste de {shift.employee_id} a reçu un commentaire.",
-                    redirect="/employee/shift-request-view",
+                    redirect=f"/employee/shift-request-view?id={shift.id}",
                     icon="chatbox-ellipses",
                 )
             return HttpResponse("<script>window.location.reload()</script>")
@@ -4375,7 +4386,7 @@ def create_worktyperequest_comment(request, worktype_id):
                     verb_de=f"{work_type.employee_id}s Arbeitsart-Antrag hat einen Kommentar erhalten.",
                     verb_es=f"La solicitud de tipo de trabajo de {work_type.employee_id} ha recibido un comentario.",
                     verb_fr=f"La demande de type de travail de {work_type.employee_id} a reçu un commentaire.",
-                    redirect="/employee/work-type-request-view",
+                    redirect=f"/employee/work-type-request-view?id={work_type.id}",
                     icon="chatbox-ellipses",
                 )
             elif (
@@ -4391,7 +4402,7 @@ def create_worktyperequest_comment(request, worktype_id):
                     verb_de="Ihr Arbeitsart-Antrag hat einen Kommentar erhalten.",
                     verb_es="Tu solicitud de tipo de trabajo ha recibido un comentario.",
                     verb_fr="Votre demande de type de travail a reçu un commentaire.",
-                    redirect="/employee/work-type-request-view",
+                    redirect=f"/employee/work-type-request-view?id={work_type.id}",
                     icon="chatbox-ellipses",
                 )
             else:
@@ -4407,7 +4418,7 @@ def create_worktyperequest_comment(request, worktype_id):
                     verb_de=f"{work_type.employee_id}s Arbeitsart-Antrag hat einen Kommentar erhalten.",
                     verb_es=f"La solicitud de tipo de trabajo de {work_type.employee_id} ha recibido un comentario.",
                     verb_fr=f"La demande de type de travail de {work_type.employee_id} a reçu un commentaire.",
-                    redirect="/employee/work-type-request-view",
+                    redirect=f"/employee/work-type-request-view?id={work_type.id}",
                     icon="chatbox-ellipses",
                 )
             return HttpResponse("<script>window.location.reload()</script>")
