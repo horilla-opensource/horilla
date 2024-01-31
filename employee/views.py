@@ -2676,11 +2676,15 @@ def bonus_points_tab(request, emp_id):
                 "reason": history["pair"][0].reason,
             }
         )
-
+    context = {
+        "employee": employee_obj,
+        "points": points,
+        "activity_list": activity_list,
+    }
     return render(
         request,
         "tabs/bonus_points.html",
-        {"employee": employee_obj, "points": points, "activity_list": activity_list},
+        context,
     )
 
 
@@ -2771,12 +2775,14 @@ def organisation_chart(request):
     """
     This method is used to view oganisation chart
     """
-    reporting_managers = Employee.objects.filter(reporting_manager__isnull=False).distinct()
+    reporting_managers = Employee.objects.filter(
+        reporting_manager__isnull=False
+    ).distinct()
 
     # Iterate through the queryset and add reporting manager id and name to the dictionary
     result_dict = {item.id: item.get_full_name() for item in reporting_managers}
 
-    entered_req_managers=[]
+    entered_req_managers = []
 
     # Helper function to recursively create the hierarchy structure
     def create_hierarchy(manager):
@@ -2788,47 +2794,58 @@ def organisation_chart(request):
         if manager.id in result_dict.keys():
             entered_req_managers.append(manager)
         # filter the subordinates
-        subordinates = Employee.objects.filter(employee_work_info__reporting_manager_id=manager).exclude(id=manager.id)
+        subordinates = Employee.objects.filter(
+            employee_work_info__reporting_manager_id=manager
+        ).exclude(id=manager.id)
 
         # itrating through subordinates
         for employee in subordinates:
             if employee in entered_req_managers:
-               continue
+                continue
             # check the employee is a reporting manager if yes,remove className store it into entered_req_managers
             if employee.id in result_dict.keys():
-                nodes.append({
-                    "name":employee.get_full_name(),
-                    "title":getattr(employee.get_job_position(),"job_position","Not set"),
-                    "children":create_hierarchy(employee),
-                })
+                nodes.append(
+                    {
+                        "name": employee.get_full_name(),
+                        "title": getattr(
+                            employee.get_job_position(), "job_position", "Not set"
+                        ),
+                        "children": create_hierarchy(employee),
+                    }
+                )
                 entered_req_managers.append(employee)
 
             else:
-                nodes.append({
-                    "name":employee.get_full_name(),
-                    "title":getattr(employee.get_job_position(),"job_position","Not set"),
-                    "className":"middle-level",
-                    "children":create_hierarchy(employee),
-                })
-        return nodes  
-    manager= request.user.employee_get
-    new_dict = {manager.id:manager.get_full_name(), **result_dict}
-    # POST method is used to change the reporting manager 
+                nodes.append(
+                    {
+                        "name": employee.get_full_name(),
+                        "title": getattr(
+                            employee.get_job_position(), "job_position", "Not set"
+                        ),
+                        "className": "middle-level",
+                        "children": create_hierarchy(employee),
+                    }
+                )
+        return nodes
+
+    manager = request.user.employee_get
+    new_dict = {manager.id: _("My view"), **result_dict}
+    # POST method is used to change the reporting manager
     if request.method == "POST":
         manager_id = int(request.POST.get("manager_id"))
         manager = Employee.objects.get(id=manager_id)
         node = {
-        "name":manager.get_full_name(),
-        "title":getattr(manager.get_job_position(),"job_position","Not set"),
-        "children":create_hierarchy(manager),
-    }
+            "name": manager.get_full_name(),
+            "title": getattr(manager.get_job_position(), "job_position", "Not set"),
+            "children": create_hierarchy(manager),
+        }
         context = {"act_datasource": node}
         return render(request, "organisation_chart/chart.html", context=context)
-    
+
     node = {
-        "name":manager.get_full_name(),
-        "title":getattr(manager.get_job_position(),"job_position","Not set"),
-        "children":create_hierarchy(manager),
+        "name": manager.get_full_name(),
+        "title": getattr(manager.get_job_position(), "job_position", "Not set"),
+        "children": create_hierarchy(manager),
     }
 
     context = {
