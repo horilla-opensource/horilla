@@ -86,6 +86,7 @@ def request_attendance_view(request):
     attendances = attendances.filter(
         employee_id__is_active=True,
     )
+    attendances = AttendanceFilters(request.GET,attendances).qs
     filter_obj = AttendanceFilters()
     check_attendance = Attendance.objects.all()
     if check_attendance.exists():
@@ -233,7 +234,7 @@ def attendance_request_changes(request, attendance_id):
                           {user_last_name} el {attendance.attendance_date}",
                     verb_fr=f"La demande de mise à jour de présence de {employee.employee_first_name}\
                           {user_last_name} pour le {attendance.attendance_date} a été créée",
-                    redirect=f"/attendance/request-attendance-view?search={employee}&attendance_date={attendance.attendance_date}",
+                    redirect=f"/attendance/request-attendance-view?id={attendance.id}",
                     icon="checkmark-circle-outline",
                 )
             return HttpResponse(
@@ -361,7 +362,7 @@ def approve_validate_attendance_request(request, attendance_id):
             para la fecha {attendance.attendance_date}",
         verb_fr=f"Votre demande de présence pour la date \
             {attendance.attendance_date} est validée",
-        redirect=f"/attendance/request-attendance-view?search={employee}&attendance_date={attendance.attendance_date}",
+        redirect=f"/attendance/request-attendance-view?id={attendance.id}",
         icon="checkmark-circle-outline",
     )
     if attendance.employee_id.employee_work_info.reporting_manager_id:
@@ -382,7 +383,7 @@ def approve_validate_attendance_request(request, attendance_id):
                 {employee.employee_first_name} {user_last_name} para el {attendance.attendance_date}",
             verb_fr=f"La demande de présence de {employee.employee_first_name} \
                 {user_last_name} pour le {attendance.attendance_date} a été validée",
-            redirect=f"/attendance/request-attendance-view?search={employee}&attendance_date={attendance.attendance_date}",
+            redirect=f"/attendance/request-attendance-view?id={attendance.id}",
             icon="checkmark-circle-outline",
         )
     return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
@@ -420,7 +421,7 @@ def cancel_attendance_request(request, attendance_id):
             verb_de=f"Ihr Antrag auf Teilnahme am {attendance.attendance_date} wurde storniert",
             verb_es=f"Se ha cancelado su solicitud de asistencia para el {attendance.attendance_date}",
             verb_fr=f"Votre demande de participation pour le {attendance.attendance_date} a été annulée",
-            redirect="/attendance/request-attendance-view",
+            redirect=f"/attendance/request-attendance-view?id={attendance.id}",
             icon="close-circle-outline",
         )
     return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))

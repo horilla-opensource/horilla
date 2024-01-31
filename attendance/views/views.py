@@ -1098,7 +1098,7 @@ def validate_bulk_attendance(request):
             verb_de=f"Ihre Anwesenheit für das Datum {attendance.attendance_date} wurde bestätigt",
             verb_es=f"Se ha validado su asistencia para la fecha {attendance.attendance_date}",
             verb_fr=f"Votre présence pour la date {attendance.attendance_date} est validée",
-            redirect="/attendance/view-my-attendance",
+            redirect=f"/attendance/view-my-attendance?id={attendance.id}",
             icon="checkmark",
         )
     return JsonResponse({"message": f"{attendance.employee_id} success"})
@@ -1132,7 +1132,7 @@ def validate_this_attendance(request, obj_id):
         verb_de=f"Deine Anwesenheit für das Datum {attendance.attendance_date} ist bestätigt.",
         verb_es=f"Se valida tu asistencia para la fecha {attendance.attendance_date}.",
         verb_fr=f"Votre présence pour la date {attendance.attendance_date} est validée.",
-        redirect="/attendance/view-my-attendance",
+        redirect=f"/attendance/view-my-attendance?id={attendance.id}",
         icon="checkmark",
     )
     return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
@@ -1168,7 +1168,7 @@ def revalidate_this_attendance(request, obj_id):
                     para la asistencia del {attendance.attendance_date}",
                 verb_fr=f"{attendance.employee_id} a demandé une revalidation pour la \
                     présence du {attendance.attendance_date}",
-                redirect="/attendance/view-my-attendance",
+                redirect=f"/attendance/view-my-attendance?id={attendance.id}",
                 icon="refresh",
             )
         return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
@@ -1206,7 +1206,7 @@ def approve_overtime(request, obj_id):
                 {attendance.attendance_date}.",
             verb_fr=f"Les heures supplémentaires pour la date\
                   {attendance.attendance_date} ont été approuvées.",
-            redirect="/attendance/attendance-overtime-view",
+            redirect=f"/attendance/attendance-overtime-view?id={attendance.id}",
             icon="checkmark",
         )
     return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
@@ -1238,7 +1238,7 @@ def approve_bulk_overtime(request):
                 {attendance.attendance_date}",
             verb_fr=f"Heures supplémentaires approuvées pour la présence du \
                 {attendance.attendance_date}",
-            redirect="/attendance/attendance-overtime-view",
+            redirect=f"/attendance/attendance-overtime-view?id={attendance.id}",
             icon="checkmark",
         )
 
@@ -1534,13 +1534,13 @@ def create_grace_time(request):
     Returns:
     GET : return grace time form template
     """
-    form = GraceTimeForm()
     is_default = eval(request.GET.get("default"))
+    form = GraceTimeForm(initial={'is_default':is_default})
+
     if request.method == "POST":
         form = GraceTimeForm(request.POST)
         if form.is_valid():
             instance = form.save(commit=False)
-            instance.is_default = is_default
             instance.save()
             messages.success(request, _("Grace time created successfully."))
             return HttpResponse("<script>window.location.reload()</script>")
@@ -1565,19 +1565,16 @@ def update_grace_time(request, grace_id):
     """
     grace_time = GraceTime.objects.get(id=grace_id)
     form = GraceTimeForm(instance=grace_time)
-    is_default = eval(request.GET.get("default"))
     if request.method == "POST":
         form = GraceTimeForm(request.POST, instance=grace_time)
         if form.is_valid():
             instance = form.save(commit=False)
-            instance.is_default = is_default
             instance.save()
             messages.success(request, _("Grace time updated successfully."))
             return HttpResponse("<script>window.location.reload()</script>")
     context = {
         "form": form,
         "grace_id": grace_id,
-        "is_default": is_default,
     }
     return render(
         request, "attendance/grace_time/grace_time_form.html", context=context
@@ -1672,7 +1669,7 @@ def create_attendancerequest_comment(request, attendance_id):
                     verb_de=f"{attendance.employee_id}s Anfrage zur Anwesenheit hat einen Kommentar erhalten.",
                     verb_es=f"La solicitud de asistencia de {attendance.employee_id} ha recibido un comentario.",
                     verb_fr=f"La demande de présence de {attendance.employee_id} a reçu un commentaire.",
-                    redirect="/attendance/request-attendance-view",
+                    redirect=f"/attendance/request-attendance-view?id={attendance.id}",
                     icon="chatbox-ellipses",
                 )
             elif (
@@ -1688,7 +1685,7 @@ def create_attendancerequest_comment(request, attendance_id):
                     verb_de="Ihr Antrag auf Anwesenheit hat einen Kommentar erhalten.",
                     verb_es="Tu solicitud de asistencia ha recibido un comentario.",
                     verb_fr="Votre demande de présence a reçu un commentaire.",
-                    redirect="/attendance/request-attendance-view/",
+                    redirect=f"/attendance/request-attendance-view?id={attendance.id}",
                     icon="chatbox-ellipses",
                 )
             else:
@@ -1704,7 +1701,7 @@ def create_attendancerequest_comment(request, attendance_id):
                     verb_de=f"{attendance.employee_id}s Anfrage zur Anwesenheit hat einen Kommentar erhalten.",
                     verb_es=f"La solicitud de asistencia de {attendance.employee_id} ha recibido un comentario.",
                     verb_fr=f"La demande de présence de {attendance.employee_id} a reçu un commentaire.",
-                    redirect="/attendance/request-attendance-view",
+                    redirect=f"/attendance/request-attendance-view?id={attendance.id}",
                     icon="chatbox-ellipses",
                 )
     return render(
