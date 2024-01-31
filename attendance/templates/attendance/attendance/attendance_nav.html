@@ -292,6 +292,7 @@
     </form>
       <div class="oh-dropdown ml-2" x-data="{open: false}">
         <button
+          onclick="event.stopPropagation();event.preventDefault()"
           class="oh-btn oh-btn--dropdown"
           @click="open = !open"
           @click.outside="open = false"
