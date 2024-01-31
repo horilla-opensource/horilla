@@ -1207,6 +1207,7 @@ class Deduction(models.Model):
     other_conditions = models.ManyToManyField(
         MultipleCondition, blank=True, editable=False
     )
+    created_at = models.DateTimeField(auto_now_add=True, null=True)
 
     def installment_payslip(self):
         payslip = Payslip.objects.filter(installment_ids=self).first()
@@ -1311,6 +1312,7 @@ class Payslip(models.Model):
     sent_to_employee = models.BooleanField(null=True, default=False)
     objects = HorillaCompanyManager("employee_id__employee_work_info__company_id")
     installment_ids = models.ManyToManyField(Deduction, editable=False)
+    created_at = models.DateTimeField(auto_now_add=True, null=True)
 
     def __str__(self) -> str:
         return f"Payslip for {self.employee_id} - Period: {self.start_date} to {self.end_date}"
@@ -1719,4 +1721,4 @@ class PayrollGeneralSetting(models.Model):
         validators=[min_zero],
         default=3,
     )
-    company_id = models.ForeignKey(Company,on_delete=models.CASCADE,null=True)
+    company_id = models.ForeignKey(Company, on_delete=models.CASCADE, null=True)

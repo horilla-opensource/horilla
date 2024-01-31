@@ -8,7 +8,13 @@ import operator
 import contextlib
 from attendance.models import Attendance
 from payroll.models import models
-from payroll.models.models import Contract, Allowance, LoanAccount, MultipleCondition
+from payroll.models.models import (
+    Contract,
+    Allowance,
+    Deduction,
+    LoanAccount,
+    MultipleCondition,
+)
 from payroll.methods.limits import compute_limit
 
 operator_mapping = {
@@ -53,6 +59,16 @@ filter_mapping = {
         }
     },
 }
+
+
+def calculate_employer_contribution(deduction: Deduction, amount: float):
+    """
+    This method is used to calculate the employer contribution
+    """
+    employer_contribution_amount = 0
+    if max(0, deduction.employer_rate):
+        employer_contribution_amount = (amount * deduction.employer_rate) / 100
+    return employer_contribution_amount
 
 
 def dynamic_attr(obj, attribute_path):
@@ -269,6 +285,7 @@ def calculate_allowance(**kwargs):
     # Serialize taxable allowances
     for allowance, amount in zip(tax_allowances, tax_allowances_amt):
         serialized_allowance = {
+            "allowance_id": allowance.id,
             "title": allowance.title,
             "is_taxable": allowance.is_taxable,
             "amount": amount,
@@ -278,6 +295,7 @@ def calculate_allowance(**kwargs):
     # Serialize no-taxable allowances
     for allowance, amount in zip(no_tax_allowances, no_tax_allowances_amt):
         serialized_allowance = {
+            "allowance_id": allowance.id,
             "title": allowance.title,
             "is_taxable": allowance.is_taxable,
             "amount": amount,
@@ -338,10 +356,16 @@ def calculate_tax_deduction(*_args, **kwargs):
         amount = if_condition_on(**kwargs)
         deductions_amt.append(amount)
     for deduction, amount in zip(deductions, deductions_amt):
+        employer_contribution_amount = calculate_employer_contribution(
+            deduction, amount
+        )
         serialized_deduction = {
+            "deduction_id": deduction.id,
             "title": deduction.title,
             "is_tax": deduction.is_tax,
             "amount": amount,
+            "employer_contribution_rate": deduction.employer_rate,
+            "employer_contribution_amount": employer_contribution_amount,
         }
         serialized_deductions.append(serialized_deduction)
     return {"tax_deductions": serialized_deductions}
@@ -441,10 +465,16 @@ def calculate_pre_tax_deduction(*_args, **kwargs):
             kwargs["component"] = deduction
             pre_tax_deductions_amt.append(if_condition_on(**kwargs))
     for deduction, amount in zip(pre_tax_deductions, pre_tax_deductions_amt):
+        employer_contribution_amount = calculate_employer_contribution(
+            deduction, amount
+        )
         serialized_deduction = {
+            "deduction_id": deduction.id,
             "title": deduction.title,
             "is_pretax": deduction.is_pretax,
             "amount": amount,
+            "employer_contribution_rate": deduction.employer_rate,
+            "employer_contribution_amount": employer_contribution_amount,
         }
         serialized_deductions.append(serialized_deduction)
     return {"pretax_deductions": serialized_deductions, "installments": installments}
@@ -535,10 +565,16 @@ def calculate_post_tax_deduction(*_args, **kwargs):
                 post_tax_deductions_amt.append(amount)
 
     for deduction, amount in zip(post_tax_deductions, post_tax_deductions_amt):
+        employer_contribution_amount = calculate_employer_contribution(
+            deduction, amount
+        )
         serialized_deduction = {
+            "deduction_id": deduction.id,
             "title": deduction.title,
             "is_pretax": deduction.is_pretax,
             "amount": amount,
+            "employer_contribution_rate": deduction.employer_rate,
+            "employer_contribution_amount": employer_contribution_amount,
         }
         serialized_deductions.append(serialized_deduction)
     for deduction in post_tax_deductions:
@@ -576,10 +612,16 @@ def calculate_net_pay_deduction(net_pay, net_pay_deductions, **kwargs):
         deduction_amt.append(amount)
     net_deduction = 0
     for deduction, amount in zip(deductions, deduction_amt):
+        employer_contribution_amount = calculate_employer_contribution(
+            deduction, amount
+        )
         serialized_deduction = {
+            "deduction_id": deduction.id,
             "title": deduction.title,
             "is_pretax": deduction.is_pretax,
             "amount": amount,
+            "employer_contribution_rate": deduction.employer_rate,
+            "employer_contribution_amount": employer_contribution_amount,
         }
         net_deduction = amount + net_deduction
         serialized_net_pay_deductions.append(serialized_deduction)

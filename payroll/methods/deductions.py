@@ -28,7 +28,18 @@ def update_compensation_deduction(
     for deduction in deduction_heads:
         amount = deduction.amount if deduction.amount else 0
         compensation_amount = compensation_amount - float(amount)
-        deductions.append({"title": deduction.title, "amount": amount})
+        employer_contribution_amount = 0
+        if max(0, deduction.employer_rate):
+            employer_contribution_amount = (amount * deduction.employer_rate) / 100
+        deductions.append(
+            {
+                "deduction_id": deductions.id,
+                "title": deduction.title,
+                "amount": amount,
+                "employer_contribution_rate": deduction.employer_rate,
+                "employer_contribution_amount": employer_contribution_amount,
+            }
+        )
 
     difference_amount = temp - compensation_amount
     return {
