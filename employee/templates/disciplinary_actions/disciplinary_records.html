@@ -156,11 +156,10 @@
 
 
 <script>
-  function actiontypechange(selectElement) {
-      var selectedActiontype = selectElement.val();
-
+  function actionTypeChange(selectElement) {
+    var selectedActiontype = selectElement.val();
+    if (selectedActiontype !== "create") {
       let parentForm = selectElement.parents().closest("form");
-
       $.ajax({
           type: "post",
           url: "{% url 'action-type-details' %}",
@@ -170,7 +169,6 @@
           },
           success: function (response) {
               console.log(response.action_type);
-
               // Check if the response.action_type is "suspension"
               if (response.action_type === "suspension") {
                   // Show the 'days' field
@@ -183,5 +181,8 @@
               }
           },
       });
+    }else{
+      $("#dynamicActionType").click();
+    }
   }
 </script>

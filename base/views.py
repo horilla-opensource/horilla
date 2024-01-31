@@ -4512,25 +4512,30 @@ def action_type_view(request):
         request, "base/action_type/action_type.html", {"action_types": action_types}
     )
 
-
 @login_required
 def action_type_create(request):
     """
     This method renders form and template to create Action Type
     """
     form = ActiontypeForm()
+    dynamic = request.GET.get("dynamic")
     if request.method == "POST":
         form = ActiontypeForm(request.POST)
         if form.is_valid():
             form.save()
             form = ActiontypeForm()
             messages.success(request, _("Action has been created successfully!"))
-            return HttpResponse("<script>window.location.reload()</script>")
+            if dynamic=="None":
+                return HttpResponse("<script>window.location.reload()</script>")
+            else:
+                from employee.policies import create_actions
+                return redirect(create_actions)
     return render(
         request,
         "base/action_type/action_type_form.html",
         {
             "form": form,
+            "dynamic":dynamic,
         },
     )
 

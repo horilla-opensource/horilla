@@ -74,7 +74,7 @@
                         {{f.form.employee_id__employee_work_info__company_id}}
                       </div>
                       <div class="oh-input-group">
-                        <label class="oh-label" for ="{{f.form.employee_id__employee_work_info__department_id_for_label}}"
+                        <label class="oh-label" for ="{{f.form.employee_id__employee_work_info__department_id.id_for_label}}"
                           >{% trans "Department" %}</label
                         >
                         {{f.form.employee_id__employee_work_info__department_id}}
@@ -120,7 +120,7 @@
       </form>
 
         <div class="oh-main__titlebar-button-container">
-          <a hx-get="{% url 'create-actions' %}" hx-target="#createannouncementForm" hx-swap="innerHTML" data-toggle="oh-modal-toggle" data-target="#anouncementModal" class="oh-btn oh-btn--secondary">
+          <a hx-get="{% url 'create-actions' %}" hx-target="#createannouncementForm" data-toggle="oh-modal-toggle" data-target="#anouncementModal" class="oh-btn oh-btn--secondary">
             <ion-icon name="add-outline"></ion-icon>
             {% trans 'Take An Action' %}
           </a>
@@ -131,6 +131,12 @@
     {% endif %}
   </div>
 </section>
+<div class="oh-modal" id="dynamicCreateModal" role="dialog" aria-hidden="true" style="z-index: 1022;">
+  <div class="oh-modal__dialog" style="max-width: 550px;" id="dynamicCreateModalBody"></div>
+</div>
+  <span name="" id="dynamicActionType" style="display: none" data-toggle="oh-modal-toggle" data-target="#dynamicCreateModal" 
+        hx-get="{% url 'action-type-create' %}?dynamic=employee" hx-target="#dynamicCreateModalBody">
+  </span>
   {% if data  %}
     <div class="oh-wrapper" id="policyContainer">
       {% include 'disciplinary_actions/disciplinary_records.html' %}
@@ -145,6 +151,34 @@
         </div>
       </div>
     </main>
+    <script>
+      function actionTypeChange(selectElement) {
+        var selectedActiontype = selectElement.val();
+        if (selectedActiontype !== "create") {
+          let parentForm = selectElement.parents().closest("form");
+          $.ajax({
+              type: "post",
+              url: "{% url 'action-type-details' %}",
+              data: {
+                  csrfmiddlewaretoken: getCookie("csrftoken"),
+                  "action_type": selectedActiontype,
+              },
+              success: function (response) {
+                  console.log(response.action_type);
+                  if (response.action_type === "suspension") {
+                      parentForm.find('#daysDiv').show();
+                      parentForm.find('[name=days]').prop('required', true);
+                  } else {
+                      parentForm.find('#daysDiv').hide();
+                      parentForm.find('[name=days]').prop('required', false);
+                  }
+              },
+          });
+        }else{
+      $("#dynamicActionType").click();
+    }
+      }
+    </script>
   {% endif %}
   
 <div class="oh-modal" id="policyModal" role="dialog" aria-hidden="true">

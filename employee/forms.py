@@ -20,6 +20,7 @@ class YourForm(forms.Form):
         # Custom validation logic goes here
         pass
 """
+
 import re
 from django import forms
 from django.db.models import Q
@@ -441,9 +442,9 @@ class BulkUpdateFieldForm(forms.Form):
         ]
         self.fields["update_fields"].choices = updated_choices
         for visible in self.visible_fields():
-            visible.field.widget.attrs[
-                "class"
-            ] = "oh-select oh-select-2 select2-hidden-accessible oh-input w-100"
+            visible.field.widget.attrs["class"] = (
+                "oh-select oh-select-2 select2-hidden-accessible oh-input w-100"
+            )
 
 
 class EmployeeNoteForm(ModelForm):
@@ -540,25 +541,35 @@ class BonusPointRedeemForm(ModelForm):
         fields = ["points"]
 
 
-
 class DisciplinaryActionForm(ModelForm):
     class Meta:
         model = DisciplinaryAction
         fields = "__all__"
-        exclude = ["company_id","objects"]
+        exclude = ["company_id", "objects"]
 
         widgets = {
             "start_date": DateInput(attrs={"type": "date"}),
         }
 
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields["action"].widget.attrs.update(
-            {
-                "onchange": "actiontypechange($(this))",
-            }
+        action_queryset = self.fields["action"].queryset
+        action_choices = [("", _("---Choose Action---"))] + list(
+            action_queryset.values_list("id", "title")
         )
+        self.fields["action"] = forms.ChoiceField(
+            choices=action_choices,
+            required=self.fields["action"].required,
+            label=_("Action"),
+            initial=self.fields["action"].initial,
+            widget=forms.Select(
+                attrs={
+                    "class": "oh-select oh-select-2 select2-hidden-accessible",
+                    "onchange": "actionTypeChange($(this))",
+                }
+            ),
+        )
+        self.fields["action"].choices += [("create", _("Create new action type "))]
 
 
 class ActiontypeForm(ModelForm):
