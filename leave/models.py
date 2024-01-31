@@ -1,7 +1,9 @@
 import calendar
 from collections.abc import Iterable
 from datetime import datetime, timedelta
+import math
 import operator
+import sys
 from django.db import models
 from django.utils import timezone
 from django.core.exceptions import ValidationError
@@ -15,6 +17,7 @@ from horilla_audit.models import HorillaAuditInfo, HorillaAuditLog
 from .methods import calculate_requested_days
 from django.core.files.storage import default_storage
 from django.conf import settings
+from horilla_audit.methods import get_diff
 
 
 operator_mapping = {
@@ -108,7 +111,6 @@ LEAVE_STATUS = (
     ("approved", _("Approved")),
     ("cancelled", _("Cancelled")),
     ("rejected", _("Rejected")),
-    ("cancelled_and_rejected", _("Cancelled & Rejected")),
 )
 
 LEAVE_ALLOCATION_STATUS = (
@@ -160,7 +162,7 @@ class LeaveType(models.Model):
     carryforward_type = models.CharField(
         max_length=30, choices=CARRYFORWARD_TYPE, default="no carryforward"
     )
-    carryforward_max = models.IntegerField(null=True, blank=True)
+    carryforward_max = models.FloatField(null=True, blank=True)
     carryforward_expire_in = models.IntegerField(null=True, blank=True)
     carryforward_expire_period = models.CharField(
         max_length=30, choices=TIME_PERIOD, null=True, blank=True
@@ -196,6 +198,11 @@ class LeaveType(models.Model):
             if default_storage.exists(full_filename):
                 url = self.icon.url
         return url
+
+    def save(self, *args, **kwargs):
+        if self.carryforward_type != "no carryforward" and self.carryforward_max is None:
+            self.carryforward_max = math.inf
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.name
@@ -274,19 +281,18 @@ class AvailableLeave(models.Model):
 
         # Resetting carryforward days
 
-    def update_carryforward(self, available_leave):
-        if available_leave.leave_type_id.carryforward_type != "no carryforward":
+    def update_carryforward(self):
+        if self.leave_type_id.carryforward_type != "no carryforward":
             if (
-                available_leave.leave_type_id.carryforward_max
-                >= available_leave.total_leave_days
+                self.leave_type_id.carryforward_max
+                >= self.total_leave_days
             ):
-                available_leave.carryforward_days = available_leave.total_leave_days
+                self.carryforward_days = self.total_leave_days
             else:
-                available_leave.carryforward_days = (
-                    available_leave.leave_type_id.carryforward_max
+                self.carryforward_days = (
+                    self.leave_type_id.carryforward_max
                 )
-        available_leave.available_days = available_leave.leave_type_id.total_days
-        available_leave.save()
+        self.available_days = self.leave_type_id.total_days
 
     # Setting the reset date for carryforward leaves
     def set_reset_date(self, assigned_date, available_leave):
@@ -376,6 +382,7 @@ class AvailableLeave(models.Model):
                 )
                 self.expired_date = expired_date
 
+        self.update_carryforward()
         self.total_leave_days = self.available_days + self.carryforward_days
         super().save(*args, **kwargs)
 
@@ -430,11 +437,20 @@ class LeaveRequest(models.Model):
     )
     approved_available_days = models.FloatField(default=0)
     approved_carryforward_days = models.FloatField(default=0)
-    created_at = models.DateTimeField(auto_now="True")
-    reject_reason = models.TextField(blank=True, verbose_name=_("Reject Reason"))
+    created_at = models.DateTimeField(auto_now_add="True")
+    reject_reason = models.TextField(blank=True, verbose_name=_("Reject Reason"))    
+    history = HorillaAuditLog(
+        related_name="history_set",
+        bases=[
+            HorillaAuditInfo,
+        ],
+    )
     objects = HorillaCompanyManager(
         related_company_field="employee_id__employee_work_info__company_id"
     )
+    
+    def tracking(self):
+        return get_diff(self)
 
     def __str__(self):
         return f"{self.employee_id} | {self.leave_type_id} | {self.status}"
@@ -664,7 +680,6 @@ class LeaverequestComment(models.Model):
     def __str__(self) -> str:
         return f"{self.comment}"
 
-from horilla_audit.methods import get_diff
 class LeaveAllocationRequest(models.Model):
     leave_type_id = models.ForeignKey(
         LeaveType, on_delete=models.PROTECT, verbose_name="Leave type"
