@@ -316,6 +316,11 @@ class AssetReturnForm(ModelForm):
                 attrs={"class": "oh-select oh-select-2", "required": "true"},
             ),
         }
+        
+    def __init__(self, *args, **kwargs):
+        super(AssetReturnForm, self).__init__(*args, **kwargs)
+        self.fields["return_date"].initial = date.today()
+
 
     def clean_return_date(self):
         return_date = self.cleaned_data.get("return_date")

@@ -125,6 +125,7 @@ class AssetAssignment(models.Model):
     return_status = models.CharField(
         choices=STATUS, max_length=30, null=True, blank=True
     )
+    return_request = models.BooleanField(default = False)
     objects = HorillaCompanyManager("asset_id__asset_lot_number_id__company_id")
 
 

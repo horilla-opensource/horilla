@@ -107,6 +107,11 @@ urlpatterns = [
         views.asset_allocate_return,
         name="asset-allocate-return",
     ),
+    path(
+        "asset-allocate-return-request/<int:asset_id>/",
+        views.asset_allocate_return_request,
+        name="asset-allocate-return-request",
+    ),
     path("asset-excel", views.asset_excel, name="asset-excel"),
     path("asset-import", views.asset_import, name="asset-import"),
     path("asset-export-excel", views.asset_export_excel, name="asset-export-excel"),

@@ -630,6 +630,13 @@ def asset_allocate_creation(request):
 
     return render(request, "request_allocation/asset_allocation_creation.html", context)
 
+def asset_allocate_return_request(request, asset_id):
+    asset_assign = AssetAssignment.objects.get(id=asset_id)
+    asset_assign.return_request = True
+    asset_assign.save()
+    message = _("Return request for {} initiated.").format(asset_assign.asset_id)
+    messages.info(request, message)
+    return redirect('asset-request-allocation-view')
 
 @login_required
 def asset_allocate_return(request, asset_id):
@@ -662,6 +669,7 @@ def asset_allocate_return(request, asset_id):
                 asset_allocation.return_date = asset_return_date
                 asset_allocation.return_status = asset_return_status
                 asset_allocation.return_condition = asset_return_condition
+                asset_allocation.return_request = False
                 asset_allocation.save()
                 asset.asset_status = "Available"
                 asset.save()
@@ -1344,6 +1352,7 @@ def asset_available_chart(request):
         "labels": labels,
         "dataset": dataset,
         "message": _("Oops!! No Asset found..."),
+        "emptyImageSrc":"/static/images/ui/asset.png",
     }
     return JsonResponse(response)
 
@@ -1373,5 +1382,6 @@ def asset_category_chart(request):
         "labels": labels,
         "dataset": dataset,
         "message": _("Oops!! No Asset found..."),
+        "emptyImageSrc":"/static/images/ui/asset.png",
     }
     return JsonResponse(response)
