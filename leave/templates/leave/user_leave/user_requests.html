@@ -64,11 +64,11 @@
                             />
                         </div>
                     </div>
-                    <div class="oh-sticky-table__th" hx-get="{% url 'user-request-filter' %}?{{pd}}&sortby=leave_type_id" hx-target="#userRequest">{% trans "Leave Type" %}</div>
-                    <div class="oh-sticky-table__th" hx-get="{% url 'user-request-filter' %}?{{pd}}&sortby=start_date" hx-target="#userRequest">{% trans "Start Date" %}</div>
-                    <div class="oh-sticky-table__th" hx-get="{% url 'user-request-filter' %}?{{pd}}&sortby=end_date" hx-target="#userRequest">{% trans "End Date" %}</div>
-                    <div class="oh-sticky-table__th" hx-get="{% url 'user-request-filter' %}?{{pd}}&sortby=requested_days" hx-target="#userRequest">{% trans "Requested Days" %}</div>
-                    <div class="oh-sticky-table__th" hx-get="{% url 'user-request-filter' %}?{{pd}}&sortby=status" hx-target="#userRequest">{% trans "Status" %}</div>
+                    <div class="oh-sticky-table__th {% if request.sort_option.order == '-leave_type_id' %}arrow-up {% elif request.sort_option.order == 'leave_type_id' %}arrow-down {% else %}arrow-up-down {% endif %}" hx-get="{% url 'user-request-filter' %}?{{pd}}&sortby=leave_type_id" hx-target="#userRequest">{% trans "Leave Type" %}</div>
+                    <div class="oh-sticky-table__th {% if request.sort_option.order == '-start_date' %}arrow-up {% elif request.sort_option.order == 'start_date' %}arrow-down {% else %}arrow-up-down {% endif %}" hx-get="{% url 'user-request-filter' %}?{{pd}}&sortby=start_date" hx-target="#userRequest">{% trans "Start Date" %}</div>
+                    <div class="oh-sticky-table__th {% if request.sort_option.order == '-end_date' %}arrow-up {% elif request.sort_option.order == 'end_date' %}arrow-down {% else %}arrow-up-down {% endif %}" hx-get="{% url 'user-request-filter' %}?{{pd}}&sortby=end_date" hx-target="#userRequest">{% trans "End Date" %}</div>
+                    <div class="oh-sticky-table__th {% if request.sort_option.order == '-requested_days' %}arrow-up {% elif request.sort_option.order == 'requested_days' %}arrow-down {% else %}arrow-up-down {% endif %}" hx-get="{% url 'user-request-filter' %}?{{pd}}&sortby=requested_days" hx-target="#userRequest">{% trans "Requested Days" %}</div>
+                    <div class="oh-sticky-table__th {% if request.sort_option.order == '-status' %}arrow-up {% elif request.sort_option.order == 'status' %}arrow-down {% else %}arrow-up-down {% endif %}" hx-get="{% url 'user-request-filter' %}?{{pd}}&sortby=status" hx-target="#userRequest">{% trans "Status" %}</div>
                     <div class="oh-sticky-table__th">{% trans "Comment" %}</div>
                     <div class="oh-sticky-table__th">{% trans 'Options' %}</div>
                     <div class="oh-sticky-table__th">{% trans "Actions" %}</div>

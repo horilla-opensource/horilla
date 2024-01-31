@@ -1965,12 +1965,12 @@ def user_request_filter(request):
     """
     try:
         user = request.user.employee_get
-        queryset = user.leaverequest_set.all()
+        queryset = user.leaverequest_set.all().order_by("-id")
         previous_data = request.GET.urlencode()
         page_number = request.GET.get("page")
         field = request.GET.get("field")
         queryset = sortby(request, queryset, "sortby")
-        user_request_filter = UserLeaveRequestFilter(request.GET, queryset).qs.order_by("-id")
+        user_request_filter = UserLeaveRequestFilter(request.GET, queryset).qs
         template = ("leave/user_leave/user_requests.html",)
         if field != "" and field is not None:
             field_copy = field.replace(".", "__")
