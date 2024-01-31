@@ -415,6 +415,8 @@ class LeaveAllocationRequestFilter(FilterSet):
     based on leave type, date range, and status.
     """
 
+    id = django_filters.NumberFilter(field_name="id")
+
     leave_type = filters.CharFilter(
         field_name="leave_type_id__name", lookup_expr="icontains"
     )
@@ -435,6 +437,7 @@ class LeaveAllocationRequestFilter(FilterSet):
 
         model = LeaveAllocationRequest
         fields = {
+            "id": ["exact"],
             "created_by": ["exact"],
             "status": ["exact"],
             "leave_type_id": ["exact"],

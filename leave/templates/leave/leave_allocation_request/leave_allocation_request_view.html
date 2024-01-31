@@ -48,7 +48,7 @@
 		</a>
 	</div>
 	<div class="oh-main__titlebar oh-main__titlebar--right">
-		{% if my_leave_allocation_requests %}
+
 		<form
 			method="post"
 			hx-get="{% url 'leave-allocation-request-filter' %}"
@@ -197,7 +197,7 @@
 			</div>
 		</form>
 		<!-- end of filter  -->
-		{% endif %}
+
 		<!-- start of create button  -->
 		<div class="oh-btn-group ml-2">
 			<div class="oh-dropdown" x-data="{open: false}">
