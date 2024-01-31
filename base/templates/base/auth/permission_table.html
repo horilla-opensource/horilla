@@ -125,4 +125,49 @@
       e.preventDefault();
     });
   });
+  $(document).ready(function () {
+    $(".view-employees [name=permissions]").change(function (e) {
+      e.preventDefault();
+      var permissions = [];
+      var panelId =
+        "#" +
+        $(this).closest(".panel.view-employees").closest(".panel").attr("id");
+      var userId = $(panelId).attr("data-user-id");
+
+      $(panelId + " [name=permissions]").each(function () {
+        if ($(this).is(":checked")) {
+          var permissionValue = $(this).val();
+          permissions.push(permissionValue);
+        }
+      });
+      $.ajax({
+        type: "post",
+        url: '{% url "update-user-permission" %}',
+        traditional: true,
+        data: {
+          csrfmiddlewaretoken: getCookie("csrftoken"),
+          permissions: permissions,
+          employee: userId,
+        },
+        success: function (response) {
+          $("#messages").html(
+            $(`
+            <div class="oh-alert oh-alert--animated oh-alert--${response.type}">
+              ${response.message}.
+            </div>
+          `)
+          );
+        },
+        error: function (response) {
+          $("#messages").html(
+            $(`
+            <div class="oh-alert oh-alert--animated oh-alert--danger">
+              Sever error.
+            </div>
+          `)
+          );
+        },
+      });
+    });
+  });
 </script>
