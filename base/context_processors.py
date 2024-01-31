@@ -10,6 +10,7 @@ from base.models import Company
 from base.urls import urlpatterns
 from offboarding.models import OffboardingGeneralSetting
 from payroll.models.models import PayrollGeneralSetting
+from recruitment.models import RecruitmentGeneralSetting
 
 
 class AllCompany:
@@ -126,3 +127,25 @@ def intial_notice_period(request):
     if first:
         initial = first.notice_period
     return {"get_initial_notice_period": initial}
+
+
+def check_candidate_self_tracking(request):
+    """
+    This method is used to get the candidate self tracking is enabled or not
+    """
+    first = RecruitmentGeneralSetting.objects.first()
+    candidate_self_tracking = False
+    if first:
+        candidate_self_tracking = first.candidate_self_tracking
+    return {"check_candidate_self_tracking": candidate_self_tracking}
+
+
+def check_candidate_self_tracking_rating(request):
+    """
+    This method is used to check enabled/disabled of rating option
+    """
+    first = RecruitmentGeneralSetting.objects.first()
+    rating_option = False
+    if first:
+        rating_option = first.show_overall_rating
+    return {"check_candidate_self_tracking_rating": rating_option}

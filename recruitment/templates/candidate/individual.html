@@ -129,18 +129,19 @@ $(document).on('click', function (event) {
             <span class="oh-profile__info-value">{{candidate.mobile}}</span>
           </li>
         </ul>
-        <div class="oh-rate">
-          <input type="radio" id="star5" value="5" disabled {% if average_rate == 5 %} checked {% endif %} />
-          <label for="star5" title="5 Stars" class="rating-star">5 {% trans "Stars" %}</label>
-          <input type="radio" id="star4" value="4" disabled  {% if average_rate == 4 %} checked {% endif %} />
-          <label for="star4" title="4 Stars" class="rating-star">4 {% trans "Stars" %}</label>
-          <input type="radio" id="star3" value="3" disabled  {% if average_rate == 3 %} checked {% endif %} />
-          <label for="star3" title="3 Stars" class="rating-star">3 {% trans "Stars" %}</label>
-          <input type="radio" id="star2" value="2" disabled  {% if average_rate == 2 %} checked {% endif %}  />
-          <label for="star2" title="2 Stars" class="rating-star">2 {% trans "Stars" %}</label>
-          <input type="radio" id="star1" value="1" disabled  {% if average_rate == 1 %} checked {% endif %} />
-          <label for="star1" title="1 Star" class="rating-star">1 {% trans "Star" %}</label>
-        </div>
+        {% with request.user.employee_get.candidate_rating.all as candidate_ratings  %}
+            <form >
+              <div class="d-block mb-0">                           
+                <div class="oh-rate" onmouseenter="event.stopPropagation()">
+                  {% for i in "54321" %}
+                  <input type="radio" id="star{{i}}{{cand.id}}" name="rating" class="rating-radio" value="{{i}}" disabled {% if cand.candidate_rating.all|avg_rating:cand == i %} checked {% endif %} />
+                  <label for="star{{i}}{{cand.id}}" >5 {% trans "Stars" %}</label>
+                  {% endfor %}
+                </div>
+                <span id="rating-radio-error"></span>
+              </div>
+            </form>
+          {% endwith %}
       </div>
     </div>
     <div class="row">

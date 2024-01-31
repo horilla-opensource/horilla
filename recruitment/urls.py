@@ -418,4 +418,15 @@ urlpatterns = [
         name="delete-stage-note-file",
     ),
     path("get-mail-log-rec", views.get_mail_log, name="get-mail-log-rec"),
+    path(
+        "candidate-self-tracking",
+        views.candidate_self_tracking,
+        name="candidate-self-tracking",
+    ),
+    path(
+        "candidate-self-tracking-rating-option",
+        views.candidate_self_tracking_rating_option,
+        name="candidate-self-tracking-rating-option",
+    ),
+    path("candidate-self-status-tracking",views.candidate_self_status_tracking,name="candidate-self-status-tracking")
 ]

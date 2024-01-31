@@ -11,6 +11,7 @@ This module is part of the recruitment project and is intended to
 provide the main entry points for interacting with the application's functionality.
 """
 
+import datetime
 from django import template
 from django.core.mail import EmailMessage
 import os
@@ -24,6 +25,7 @@ from django.db.models import ProtectedError
 from django.shortcuts import render, redirect
 from django.core import serializers
 from django.core.paginator import Paginator
+from base.context_processors import check_candidate_self_tracking
 from base.models import EmailLog, JobPosition
 from django.contrib import messages
 from django.contrib.auth.models import User
@@ -32,12 +34,18 @@ from django.utils.translation import gettext_lazy as _
 from employee.models import Employee, EmployeeWorkInformation
 from notifications.signals import notify
 from horilla import settings
-from horilla.decorators import permission_required, login_required, hx_request_required,logger
+from horilla.decorators import (
+    permission_required,
+    login_required,
+    hx_request_required,
+    logger,
+)
 from base.methods import export_data, generate_pdf, get_key_instances
 from recruitment.views.paginator_qry import paginator_qry
 from recruitment.models import (
     Recruitment,
     Candidate,
+    RecruitmentGeneralSetting,
     SkillZone,
     SkillZoneCandidate,
     Stage,
@@ -1206,12 +1214,12 @@ def send_acknowledgement(request):
         {"instance": candidate_obj, "self": request.user.employee_get}
     )
     render_bdy = template_bdy.render(context)
-
+    to = request.POST["to"]
     email = EmailMessage(
         subject,
         render_bdy,
         host,
-        [candidate_obj.email],
+        [to],
     )
     email.content_subtype = "html"
 
@@ -1330,6 +1338,11 @@ def skill_zone_view(request):
     previous_data = request.GET.urlencode()
     data_dict = parse_qs(previous_data)
     get_key_instances(SkillZone, data_dict)
+    if skill_zones.exists():
+        template = "skill_zone/skill_zone_view.html"
+    else:
+        template = "skill_zone/empty_skill_zone.html"
+
     context = {
         "skill_zones": paginator_qry(skill_zones_filtered, request.GET.get("page")),
         "page": request.GET.get("page"),
@@ -1337,7 +1350,7 @@ def skill_zone_view(request):
         "f": SkillZoneFilter(),
         "filter_dict": data_dict,
     }
-    return render(request, "skill_zone/skill_zone_view.html", context=context)
+    return render(request, template, context=context)
 
 
 @login_required
@@ -1725,5 +1738,56 @@ def get_mail_log(request):
     """
     candidate_id = request.GET["candidate_id"]
     candidate = Candidate.objects.get(id=candidate_id)
-    tracked_mails = EmailLog.objects.filter(to__icontains=candidate.email).order_by("-created_at")
-    return render(request,"candidate/mail_log.html", {"tracked_mails": tracked_mails})
+    tracked_mails = EmailLog.objects.filter(to__icontains=candidate.email).order_by(
+        "-created_at"
+    )
+    return render(request, "candidate/mail_log.html", {"tracked_mails": tracked_mails})
+
+
+@login_required
+@permission_required("recruitment.add_recruitmentgeneralsetting")
+def candidate_self_tracking(request):
+    """
+    This method is used to update the recruitment general setting
+    """
+    settings = RecruitmentGeneralSetting.objects.first()
+    settings = settings if settings else RecruitmentGeneralSetting()
+    settings.candidate_self_tracking = "candidate_self_tracking" in request.GET.keys()
+    settings.save()
+    return HttpResponse("success")
+
+
+@login_required
+@permission_required("recruitment.add_recruitmentgeneralsetting")
+def candidate_self_tracking_rating_option(request):
+    """
+    This method is used to enable/disable the selt tracking rating field
+    """
+    settings = RecruitmentGeneralSetting.objects.first()
+    settings = settings if settings else RecruitmentGeneralSetting()
+    settings.show_overall_rating = "candidate_self_tracking" in request.GET.keys()
+    settings.save()
+    return HttpResponse("success")
+
+
+def candidate_self_status_tracking(request):
+    """
+    This method is accessed by the candidates
+    """
+    self_tracking_feature = check_candidate_self_tracking(request)[
+        "check_candidate_self_tracking"
+    ]
+    if self_tracking_feature:
+        if request.method == "POST":
+            email = request.POST["email"]
+            phone = request.POST["phone"]
+            candidate = Candidate.objects.filter(
+                email=email, mobile=phone, is_active=True
+            ).first()
+            if candidate:
+                return render(
+                    request, "candidate/self_tracking.html", {"candidate": candidate}
+                )
+            messages.info(request, "No matching record")
+        return render(request, "candidate/self_login.html")
+    return render(request, "404.html")

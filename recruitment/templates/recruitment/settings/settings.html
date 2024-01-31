@@ -1,0 +1,22 @@
+{% load i18n %}
+{% csrf_token %}
+<div class="oh-inner-sidebar-content__header mt-4">
+    <h2 class="oh-inner-sidebar-content__title">{% trans 'Candidate Self Tracking' %}</h2>
+</div>
+<div class="row">
+    <form class="col-6"  hx-get="{% url 'candidate-self-tracking' %}" hx-swap="none">
+        <i class="pb-3">{% trans 'By enabling the feature candidates can track their recruitment progress' %}</i>
+        <div class="oh-switch p-3">
+            <input type="checkbox"class="oh-switch__checkbox" name="candidate_self_tracking" onchange="$(this).closest('form').find('input[type=submit]').click()" {% if check_candidate_self_tracking %} checked {% endif %} />
+        </div>
+        <input type="submit" hidden>
+    </form>
+    <form class="col-6"  hx-get="{% url 'candidate-self-tracking-rating-option' %}" hx-swap="none">
+        <i class="pb-3">{% trans 'By enabling the feature candidates can view their recruitment overall rating' %}</i>
+        <div class="oh-switch p-3">
+            <input type="checkbox"class="oh-switch__checkbox" name="candidate_self_tracking" onchange="$(this).closest('form').find('input[type=submit]').click()" {% if check_candidate_self_tracking_rating %} checked {% endif %} />
+        </div>
+        <input type="submit" hidden>
+    </form>
+</div>
+<div class="oh-inner-sidebar-content__footer"></div>

@@ -17,3 +17,9 @@ TEMPLATES[0]["OPTIONS"]["context_processors"].append(
 TEMPLATES[0]["OPTIONS"]["context_processors"].append(
     "base.context_processors.intial_notice_period",
 )
+TEMPLATES[0]["OPTIONS"]["context_processors"].append(
+    "base.context_processors.check_candidate_self_tracking",
+)
+TEMPLATES[0]["OPTIONS"]["context_processors"].append(
+    "base.context_processors.check_candidate_self_tracking_rating",
+)

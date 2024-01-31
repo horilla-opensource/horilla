@@ -626,3 +626,13 @@ class CandidateRating(models.Model):
 
     def __str__(self) -> str:
         return f"{self.employee_id} - {self.candidate_id} rating {self.rating}"
+
+
+class RecruitmentGeneralSetting(models.Model):
+    """
+    RecruitmentGeneralSettings model
+    """
+
+    candidate_self_tracking = models.BooleanField(default=False)
+    show_overall_rating = models.BooleanField(default=False)
+    company_id = models.ForeignKey(Company, on_delete=models.CASCADE,null=True)
