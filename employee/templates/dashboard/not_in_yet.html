@@ -2,49 +2,57 @@
 <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent">
   <div class="oh-card-dashboard__header oh-card-dashboard__header--divider mb-0">
     {% if employees.has_previous %}
-
-    <span class="oh-card-dashboard__title" id="employee-previous" style="cursor: pointer;" hx-target="#notInYetId"
-    hx-get="{% url 'not-in-yet' %}?{{pd}}&page={{ employees.previous_page_number }}">
-      <ion-icon name="caret-back-outline" role="img" class="md hydrated" aria-label="caret back outline"></ion-icon>
-    </span>
-    {% endif %}
-    <span class="oh-card-dashboard__title">{% trans 'Not In Yet' %} </span>
-    {% if employees.has_next %}
-    
-    <span class="oh-card-dashboard__title float-end" id="employee-previous" style="cursor: pointer;" hx-target="#notInYetId"
-    hx-get="{% url 'not-in-yet' %}?{{pd}}&page={{ employees.next_page_number }}">
+      <span class="oh-card-dashboard__title" id="employee-previous" style="cursor: pointer;" hx-target="#notInYetId"
+        hx-get="{% url 'not-in-yet' %}?{{pd}}&page={{ employees.previous_page_number }}">
+        <ion-icon name="caret-back-outline" role="img" class="md hydrated" aria-label="caret back outline"></ion-icon>
+      </span>
+      {% endif %}
+      <span class="oh-card-dashboard__title">{% trans 'Not In Yet' %} </span>
+      {% if employees.has_next %}
+      
+      <span class="oh-card-dashboard__title float-end" id="employee-previous" style="cursor: pointer;" hx-target="#notInYetId"
+      hx-get="{% url 'not-in-yet' %}?{{pd}}&page={{ employees.next_page_number }}">
       <ion-icon name="caret-forward-outline" role="img" class="md hydrated" aria-label="caret back outline"></ion-icon>
-    </span>
+      </span>
     {% endif %}
   </div>
-  <div class="oh-card-dashboard__body">
-    <div class="oh-sticky-table" style="height:320px;">
-      <div class="oh-sticky-table__table oh-table--sortable">
-        <div class="oh-sticky-table__tbody">
-          {% for emp in employees %}
-            <div class="oh-sticky-table__tr" draggable="true">
-              <div class="oh-sticky-table__sd">
-                <div class="oh-profile oh-profile--md">
-                  <div class="oh-profile__avatar mr-1">
-                    <img src="{{ emp.get_avatar }}" class="oh-profile__image" />
+  {% if employees %}
+    <div class="oh-card-dashboard__body">
+      <div class="oh-sticky-table" style="height:320px;">
+        <div class="oh-sticky-table__table oh-table--sortable">
+          <div class="oh-sticky-table__tbody">
+            {% for emp in employees %}
+              <div class="oh-sticky-table__tr" draggable="true">
+                <div class="oh-sticky-table__sd">
+                  <div class="oh-profile oh-profile--md">
+                    <div class="oh-profile__avatar mr-1">
+                      <img src="{{ emp.get_avatar }}" class="oh-profile__image" />
+                    </div>
+                    <span class="oh-profile__name oh-text--dark">
+                      {{ emp.get_full_name }}
+                      <span class="oh-recuritment_tag" style="font-size: .5rem;">{{ emp.get_leave_status }}</span>
+                    </span>
                   </div>
-                  <span class="oh-profile__name oh-text--dark">
-                    {{ emp.get_full_name }}
-                    <span class="oh-recuritment_tag" style="font-size: .5rem;">{{ emp.get_leave_status }}</span>
-                  </span>
+                </div>
+                <div 
+                  hx-get='{% url "send-mail-employee" emp.id %}'
+                  class="oh-sticky-table__td" title="{% trans 'Send Mail' %}"
+                  hx-target="#mail-content" data-toggle="oh-modal-toggle"
+                  data-target="#sendMailModal" align="center" style="width: 50px;">
+                  <ion-icon name="mail-outline"></ion-icon>
                 </div>
               </div>
-              <div 
-                hx-get='{% url "send-mail-employee" emp.id %}'
-                class="oh-sticky-table__td" title="{% trans 'Send Mail' %}"
-                hx-target="#mail-content" data-toggle="oh-modal-toggle"
-                data-target="#sendMailModal" align="center" style="width: 50px;">
-                <ion-icon name="mail-outline"></ion-icon>
-              </div>
-            </div>
-          {% endfor %}
+            {% endfor %}
+          </div>
         </div>
       </div>
     </div>
+  {% else %}
+  <div style="height: 380px; display:flex;align-items: center;justify-content: center;" class="">
+    <div style="" class="">
+      <img style="display: block;width: 70px;margin: 20px auto ;" src="/static/images/ui/joiningchart.png" class="" alt=""/>
+      <h3 style="font-size:16px" class="oh-404__subtitle">{% trans "No data Found..." %}</h3>
+    </div>
   </div>
+  {% endif %}
 </div>

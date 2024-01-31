@@ -986,7 +986,7 @@ def view_loans(request):
         "payroll/loan/view_loan.html",
         {
             "records": paginator_qry(records, request.GET.get("page")),
-            "f": filter_instance,
+            # "f": filter_instance,
         },
     )
 

@@ -295,21 +295,33 @@
   </div>
 </section>
 
-{% include "payroll/payslip/payslips_quick_filter.html" %}
-<div class="oh-checkpoint-badge mb-2" id="selectedPayslip" data-ids="[]" data-clicked="0" style="display:none;" >
-  {% trans "Selected Employees" %}
-</div>
-<div class="oh-tabs oh-wrapper">
-  <div class="oh-tabs__contents">
-    <div
-      class="oh-tabs__content oh-tabs__content--active"
-      style="padding-top: 10px"
-      id="allPaySlips"
-    >
-      <div id="payroll-payslip-container">
-          {% include 'payroll/payslip/list_payslips.html' %}
+{% if payslips %}
+  {% include "payroll/payslip/payslips_quick_filter.html" %}
+  <div class="oh-checkpoint-badge mb-2" id="selectedPayslip" data-ids="[]" data-clicked="0" style="display:none;" >
+    {% trans "Selected Employees" %}
+  </div>
+  <div class="oh-tabs oh-wrapper">
+    <div class="oh-tabs__contents">
+      <div
+        class="oh-tabs__content oh-tabs__content--active"
+        style="padding-top: 10px"
+        id="allPaySlips"
+      >
+        <div id="payroll-payslip-container">
+            {% include 'payroll/payslip/list_payslips.html' %}
+        </div>
+      </div>
+{% else %}
+  <main :class="sidebarOpen ? 'oh-main__sidebar-visible' : ''">
+    <div class="oh-wrapper">
+      <div class="oh-404">
+          <img style="    width: 150px;height: 150px;" src="{% static 'images/ui/salary.png' %}" class="oh-404__image mb-4" alt="Page not found. 404."/>
+          <h5 class="oh-404__subtitle">{% trans "There are currently no payslips to consider." %}</h5>
       </div>
     </div>
+</main>
+{% endif %}
+
     <div id="messageContainer"></div>
 
     <script>

@@ -20,9 +20,14 @@ def view_mail_templates(request):
     """
     templates = RecruitmentMailTemplate.objects.all()
     form = OfferLetterForm()
+    if templates.exists():
+        template = "offerletter/view_templates.html"
+    else:
+        template = "offerletter/empty_mail_template.html"
+
     return render(
         request,
-        "offerletter/view_templates.html",
+        template,
         {"templates": templates, "form": form},
     )
 

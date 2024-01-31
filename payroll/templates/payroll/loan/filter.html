@@ -2,7 +2,7 @@
 <div class="oh-main__titlebar-button-container">
   <div class="oh-dropdown" x-data="{open: false}">
     <button class="oh-btn ml-2" @click="open = !open">
-      <ion-icon name="filter" class="mr-1"></ion-icon>Filter
+      <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}
     </button>
     <div
       class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4"
@@ -51,7 +51,7 @@
         </div>
       </div>
       <div class="oh-dropdown__filter-footer">
-        <button class="oh-btn oh-btn--secondary oh-btn--small w-100 filterButton">Filter</button>
+        <button class="oh-btn oh-btn--secondary oh-btn--small w-100 filterButton">{% trans "Filter" %}</button>
       </div>
     </div>
   </div>

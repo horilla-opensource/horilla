@@ -184,6 +184,53 @@
             {% endfor %}
         </div>
     </div>
+     <!-- Paginator Section -->
+     <div class="oh-pagination">
+        <span
+          class="oh-pagination__page"
+          data-toggle="modal"
+          data-target="#addEmployeeModal"
+          >
+          {% trans "Page" %} {{ recruitments.number }} {% trans "of" %} {{ recruitments.paginator.num_pages }}.
+          </span
+          >
+          
+        <nav class="oh-pagination__nav">
+          <div class="oh-pagination__input-container me-3">
+              <span class="oh-pagination__label me-1">{% trans "Page" %}</span>
+              
+              <input
+              type="number"
+              name="page"
+              class="oh-pagination__input"
+              value="{{recruitments.number}}"
+              {% comment %} hx-get="{% url 'recruitment-search' %}?{{pd}}" hx-target="#tab_rec_{{rec.id}}" {% endcomment %}
+              min="1"
+              />
+              <span class="oh-pagination__label">{% trans "of" %} {{recruitments.paginator.num_pages}}</span>
+            </div>
+            
+            <ul class="oh-pagination__items">
+              {% if recruitments.has_previous %}
+              <li class="oh-pagination__item oh-pagination__item--wide">
+                <a href="{% url 'onboarding-view' %}?{{pd}}&page=1" class="oh-pagination__link">{% trans "First" %}</a>
+              </li>
+              <li class="oh-pagination__item oh-pagination__item--wide">
+                  <a href="{% url 'onboarding-view' %}?{{pd}}&page={{ recruitments.previous_page_number }}" class="oh-pagination__link">{% trans "Previous" %}</a>
+                </li>
+              {% endif %}
+              {% if recruitments.has_next %}
+              <li class="oh-pagination__item oh-pagination__item--wide">
+                  <a href="{% url 'onboarding-view' %}?{{pd}}&page={{ recruitments.next_page_number }}" class="oh-pagination__link">{% trans "Next" %}</a>
+              </li>
+              <li class="oh-pagination__item oh-pagination__item--wide">
+                  <a href="{% url 'onboarding-view' %}?{{pd}}&page={{ recruitments.paginator.num_pages }}" class="oh-pagination__link">{% trans "Last" %}</a>
+                </li>
+              {% endif %}
+              
+            </ul>
+          </nav>
+        </div>
     {% else %}
     {% if request.GET.closed %}
         <div style="height: 70vh; display:flex;align-items: center;justify-content: center;" class="">
@@ -202,53 +249,7 @@
         {% endif %}
         {% endif %}
 
-    <!-- Paginator Section -->
-    <div class="oh-pagination">
-    <span
-      class="oh-pagination__page"
-      data-toggle="modal"
-      data-target="#addEmployeeModal"
-      >
-      {% trans "Page" %} {{ recruitments.number }} {% trans "of" %} {{ recruitments.paginator.num_pages }}.
-      </span
-      >
-      
-    <nav class="oh-pagination__nav">
-      <div class="oh-pagination__input-container me-3">
-          <span class="oh-pagination__label me-1">{% trans "Page" %}</span>
-          
-          <input
-          type="number"
-          name="page"
-          class="oh-pagination__input"
-          value="{{recruitments.number}}"
-          {% comment %} hx-get="{% url 'recruitment-search' %}?{{pd}}" hx-target="#tab_rec_{{rec.id}}" {% endcomment %}
-          min="1"
-          />
-          <span class="oh-pagination__label">{% trans "of" %} {{recruitments.paginator.num_pages}}</span>
-        </div>
-        
-        <ul class="oh-pagination__items">
-          {% if recruitments.has_previous %}
-          <li class="oh-pagination__item oh-pagination__item--wide">
-            <a href="{% url 'onboarding-view' %}?{{pd}}&page=1" class="oh-pagination__link">{% trans "First" %}</a>
-          </li>
-          <li class="oh-pagination__item oh-pagination__item--wide">
-              <a href="{% url 'onboarding-view' %}?{{pd}}&page={{ recruitments.previous_page_number }}" class="oh-pagination__link">{% trans "Previous" %}</a>
-            </li>
-          {% endif %}
-          {% if recruitments.has_next %}
-          <li class="oh-pagination__item oh-pagination__item--wide">
-              <a href="{% url 'onboarding-view' %}?{{pd}}&page={{ recruitments.next_page_number }}" class="oh-pagination__link">{% trans "Next" %}</a>
-          </li>
-          <li class="oh-pagination__item oh-pagination__item--wide">
-              <a href="{% url 'onboarding-view' %}?{{pd}}&page={{ recruitments.paginator.num_pages }}" class="oh-pagination__link">{% trans "Last" %}</a>
-            </li>
-          {% endif %}
-          
-        </ul>
-      </nav>
-    </div>
+   
     
 </div>
 </div>
@@ -356,7 +357,6 @@
         let NewStage = $(element).val();
         let currentStage =$(element).data("stage")
         let checkbox = $(currentStage).find("input[type='checkbox']:checked");
-        console.log('checkbox======',checkbox)
 
         let ids =[] 
         let recruitment = $(element).data("recruitment")

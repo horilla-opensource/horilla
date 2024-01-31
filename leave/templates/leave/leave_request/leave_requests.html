@@ -9,21 +9,17 @@
         <span class="oh-dot oh-dot--small me-1" style="background-color:red"></span>
         {% trans "Rejected" %}
     </span>
-    <span class="m-3 review_ongoing"  onclick="$('[name=status]').val('cancelled_and_rejected');$('[name=status]').first().change();$('.filterButton').click()" style="cursor: pointer">
-      <span class="oh-dot oh-dot--small me-1" style="background-color:#000"></span>
-      {% trans "Cancelled & rejected" %}
-    </span>
     <span class="m-3 review_ongoing" onclick="$('[name=status]').val('cancelled');$('[name=status]').first().change();$('.filterButton').click()" style="cursor: pointer">
       <span class="oh-dot oh-dot--small me-1" style="background-color:grey"></span>
       {% trans "Cancelled" %}
     </span>
-    <span class="m-3 confirmed" onclick="$('[name=status]').val('requested');$('[name=status]').first().change();$('.filterButton').click()" style="cursor: pointer">
-      <span class="oh-dot oh-dot--small me-1" style="background-color:rgb(103, 171, 238)"></span>
-      {% trans "Requested" %}
-    </span>
     <span class="m-3 paid" onclick="$('[name=status]').val('approved');$('[name=status]').first().change();$('.filterButton').click()" style="cursor: pointer">
       <span class="oh-dot oh-dot--small me-1" style="background-color:yellowgreen"></span>
       {% trans "Approved" %}
+    </span>
+    <span class="m-3 confirmed" onclick="$('[name=status]').val('requested');$('[name=status]').first().change();$('.filterButton').click()" style="cursor: pointer">
+      <span class="oh-dot oh-dot--small me-1" style="background-color:rgb(103, 171, 238)"></span>
+      {% trans "Requested" %}
     </span>
   </div>
   <!-- start of selection buttons -->
@@ -68,12 +64,12 @@
                             </div>
                         </div>
                     {% endif %}
-                    <div class="oh-sticky-table__th" hx-get="{% url 'request-filter' %}?{{pd}}&sortby=employee_id" hx-target="#leaveRequest">{% trans "Employee" %}</div>
-                    <div class="oh-sticky-table__th" hx-get="{% url 'request-filter' %}?{{pd}}&sortby=leave_type_id" hx-target="#leaveRequest">{% trans "Leave Type" %}</div>
-                    <div class="oh-sticky-table__th" hx-get="{% url 'request-filter' %}?{{pd}}&sortby=start_date" hx-target="#leaveRequest">{% trans "Start Date" %}</div>
-                    <div class="oh-sticky-table__th" hx-get="{% url 'request-filter' %}?{{pd}}&sortby=end_date" hx-target="#leaveRequest">{% trans "End Date" %}</div>
-                    <div class="oh-sticky-table__th" hx-get="{% url 'request-filter' %}?{{pd}}&sortby=requested_days" hx-target="#leaveRequest">{% trans "Requested Days" %}</div>
-                    <div class="oh-sticky-table__th" hx-get="{% url 'request-filter' %}?{{pd}}&sortby=status" hx-target="#leaveRequest">{% trans "Status" %}</div>
+                    <div class="oh-sticky-table__th {% if request.sort_option.order == '-employee_id__employee_first_name' %}arrow-up {% elif request.sort_option.order == 'employee_id__employee_first_name' %}arrow-down{% endif %}" hx-get="{% url 'request-filter' %}?{{pd}}&sortby=employee_id__employee_first_name&sortby=employee_id__employee_first_name" hx-target="#leaveRequest" >{% trans "Employee" %}</div>
+                    <div class="oh-sticky-table__th {% if request.sort_option.order == '-leave_type_id' %}arrow-up {% elif request.sort_option.order == 'leave_type_id' %}arrow-down{% endif %}" hx-get="{% url 'request-filter' %}?{{pd}}&sortby=leave_type_id" hx-target="#leaveRequest" >{% trans "Leave Type" %}</div>
+                    <div class="oh-sticky-table__th {% if request.sort_option.order == '-start_date' %}arrow-up {% elif request.sort_option.order == 'start_date' %}arrow-down{% endif %}" hx-get="{% url 'request-filter' %}?{{pd}}&sortby=start_date" hx-target="#leaveRequest" >{% trans "Start Date" %}</div>
+                    <div class="oh-sticky-table__th {% if request.sort_option.order == '-end_date' %}arrow-up {% elif request.sort_option.order == 'end_date' %}arrow-down{% endif %}" hx-get="{% url 'request-filter' %}?{{pd}}&sortby=end_date" hx-target="#leaveRequest" >{% trans "End Date" %}</div>
+                    <div class="oh-sticky-table__th {% if request.sort_option.order == '-requested_days' %}arrow-up {% elif request.sort_option.order == 'requested_days' %}arrow-down{% endif %}" hx-get="{% url 'request-filter' %}?{{pd}}&sortby=requested_days" hx-target="#leaveRequest" >{% trans "Requested Days" %}</div>
+                    <div class="oh-sticky-table__th {% if request.sort_option.order == '-status' %}arrow-up {% elif request.sort_option.order == 'status' %}arrow-down{% endif %}" hx-get="{% url 'request-filter' %}?{{pd}}&sortby=status" hx-target="#leaveRequest" >{% trans "Status" %}</div>
                     {% if  not dashboard %}
                         <div class="oh-sticky-table__th">{% trans "Comment" %}</div>
                         <div class="oh-sticky-table__th" >{% trans "Penalties" %}</div>
@@ -84,7 +80,7 @@
                     {% endif %}
                 </div>
             </div>
-            <div class="oh-sticky-table__tbody">
+            <div class="oh-sticky-table__tbody" id="leaveRequestTableBody">
                 {% for leave_request in leave_requests %}
                 <div class="oh-sticky-table__tr" draggable="true" data-toggle="oh-modal-toggle" data-target="#tableTimeOff"
                 hx-get="{% url 'one-request-view' leave_request.id %}?instances_ids={{requests_ids}}" hx-target="#requestView">
@@ -149,7 +145,7 @@
                     <div class="oh-sticky-table__td" onclick="event.stopPropagation()">
                         <div class="oh-btn-group" >
                           
-                            {% if leave_request.is_approved and leave_request.status == 'requested' %}
+                            {% if leave_request.is_approved and leave_request.status == 'requested' and leave_request.end_date >= current_date %}
                             <a type="submit" href="{% url 'request-approve' leave_request.id %}" title="{% trans 'Approve' %}"
                                 class="oh-btn oh-btn--success w-100">
                                 <ion-icon class="me-1" name="checkmark-outline"></ion-icon>

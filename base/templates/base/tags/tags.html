@@ -1,6 +1,6 @@
 {% extends 'settings.html' %}
 {% load i18n %}
-{% block settings %}
+{% block settings %}{% load static %}
 
 <!-- ******************* EMPLOYEE TAGS ******************* -->
 
@@ -21,7 +21,14 @@
 				</button>
 			{% endif %}
         </div>
-        {% include 'base/employee_tag/employee_tag_view.html' %}     
+		{% if employeetags %}
+        	{% include 'base/employee_tag/employee_tag_view.html' %}     
+		{% else %}
+			<div style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%;">
+				<img style="display: block; width: 15%; margin: 20px auto; filter: opacity(0.5);" src="{% static 'images/ui/price-tag.png' %}" class="" alt="Page not found. 404." />
+				<h5 class="oh-404__subtitle">{% trans "There is no employee tags at this moment." %}</h5>
+			</div>
+		{% endif %}
     {% endif %}
 
 </div>
@@ -91,7 +98,14 @@
 				</button>
 			{% endif %}
         </div>
-        {% include 'base/tags/tags_view.html' %}     
+		{% if tags %}
+        	{% include 'base/tags/tags_view.html' %}     
+		{% else %}
+			<div style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%;">
+				<img style="display: block; width: 15%; margin: 20px auto; filter: opacity(0.5);" src="{% static 'images/ui/price-tag.png' %}" class="" alt="Page not found. 404." />
+				<h5 class="oh-404__subtitle">{% trans "There is no helpdesk tags at this moment." %}</h5>
+			</div>
+		{% endif %}
     {% endif %}
 
 </div>
@@ -160,7 +174,14 @@
 				</button>
 			{% endif %}
         </div>
-        {% include 'base/audit_tag/audit_tag_view.html' %}     
+		{% if audittags %}
+			{% include 'base/audit_tag/audit_tag_view.html' %}         
+		{% else %}
+			<div style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%;">
+				<img style="display: block; width: 15%; margin: 20px auto; filter: opacity(0.5);" src="{% static 'images/ui/price-tag.png' %}" class="" alt="Page not found. 404." />
+				<h5 class="oh-404__subtitle">{% trans "There is no audit tags at this moment." %}</h5>
+			</div>
+		{% endif %}
     {% endif %}
 
 </div>

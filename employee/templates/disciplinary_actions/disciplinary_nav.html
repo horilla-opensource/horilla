@@ -1,5 +1,6 @@
 {% extends 'index.html' %}
 {% block content %}
+{% load static %}
 {% load i18n %}
 <section class="oh-wrapper oh-main__topbar" style="padding-bottom: 1rem;">
   <div class="oh-main__titlebar oh-main__titlebar--left oh-d-flex-column--resp oh-mb-3--small">
@@ -116,7 +117,7 @@
             </div>
           </div>
         </div>
-
+      </form>
 
         <div class="oh-main__titlebar-button-container">
           <a hx-get="{% url 'create-actions' %}" hx-target="#createannouncementForm" hx-swap="innerHTML" data-toggle="oh-modal-toggle" data-target="#anouncementModal" class="oh-btn oh-btn--secondary">
@@ -125,13 +126,27 @@
           </a>
         </div>
 
-      </form>
 
       </div>
     {% endif %}
   </div>
 </section>
-
+  {% if data  %}
+    <div class="oh-wrapper" id="policyContainer">
+      {% include 'disciplinary_actions/disciplinary_records.html' %}
+    </div>
+  {% else %}
+    <main :class="sidebarOpen ? 'oh-main__sidebar-visible' : ''">
+      
+      <div class="oh-wrapper">
+        <div class="oh-404">
+            <img style="    width: 150px;height: 150px;" src="{% static 'images/ui/legal.png' %}" class="oh-404__image mb-4" alt="Page not found. 404."/>
+            <h5 class="oh-404__subtitle">{% trans "There are currently no disciplinary actions to consider." %}</h5>
+        </div>
+      </div>
+    </main>
+  {% endif %}
+  
 <div class="oh-modal" id="policyModal" role="dialog" aria-hidden="true">
   <div class="oh-modal__dialog" style="max-width: 550px">
     <div class="oh-modal__dialog-header">
@@ -191,7 +206,5 @@ aria-hidden="true"
 <!-- end of update modal -->
 
 
-  <div class="oh-wrapper" id="policyContainer">
-    {% include 'disciplinary_actions/disciplinary_records.html' %}
-  </div>
+  
 {% endblock %}

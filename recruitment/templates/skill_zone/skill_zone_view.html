@@ -4,7 +4,7 @@
 
 <div class="oh-wrapper">
     {% include 'skill_zone/skill_zone_nav.html' %}
-    {% if skill_zones %}
+    {% comment %} {% if skill_zones %} {% endcomment %}
         <div id="skill_zone_container">
             {% if request.GET.view == 'list' %}
                 {% include "skill_zone/skill_zone_list.html" %}
@@ -12,7 +12,7 @@
                 {% include "skill_zone/skill_zone_card.html" %}
             {% endif %}
         </div>
-    {% else %}
+    {% comment %} {% else %}
         <div>
             <div style="height: 310px; display:flex;align-items: center;justify-content: center;" >
                 <div style="" class="">
@@ -21,7 +21,7 @@
                 </div>
             </div>
         </div>
-    {% endif %}
+    {% endif %} {% endcomment %}
 </div>
 {% endblock %}
 

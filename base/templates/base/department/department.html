@@ -1,4 +1,4 @@
-{% extends 'settings.html' %} {% load i18n %} {% block settings %}
+{% extends 'settings.html' %} {% load i18n %} {% block settings %} {% load static %}
 <div class="oh-inner-sidebar-content">
   {% if perms.base.view_department %}
   <div
@@ -6,19 +6,27 @@
   >
     <h2 class="oh-inner-sidebar-content__title">{% trans "Department" %}</h2>
     {% if perms.base.add_department %}
-    <button
-      class="oh-btn oh-btn--secondary oh-btn--shadow"
-      data-toggle="oh-modal-toggle"
-      data-target="#departmentModal"
-      hx-get="{% url 'department-creation' %}"
-      hx-target="#departmentForm"
-    >
-      <ion-icon name="add-outline" class="me-1"></ion-icon>
-      {% trans "Create" %}
+      <button
+        class="oh-btn oh-btn--secondary oh-btn--shadow"
+        data-toggle="oh-modal-toggle"
+        data-target="#departmentModal"
+        hx-get="{% url 'department-creation' %}"
+        hx-target="#departmentForm"
+      >
+        <ion-icon name="add-outline" class="me-1"></ion-icon>
+        {% trans "Create" %}
     </button>
     {% endif %}
   </div>
-  {% include 'base/department/department_view.html' %} {% endif %}
+    {% if departments %}
+      {% include 'base/department/department_view.html' %} 
+    {% else %}
+      <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%;">
+        <img style="display: block; width: 15%; margin: 20px auto; filter: opacity(0.5);" src="{% static 'images/ui/connection.png' %}" class="" alt="Page not found. 404." />
+        <h5 class="oh-404__subtitle">{% trans "There is no department at this moment." %}</h5>
+      </div>
+    {% endif %}
+  {% endif %}
 </div>
 
 <div

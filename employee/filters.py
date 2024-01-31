@@ -234,6 +234,9 @@ class EmployeeFilter(FilterSet):
     def __init__(self, data=None, queryset=None, *, request=None, prefix=None):
         super().__init__(data=data, queryset=queryset, request=request, prefix=prefix)
         self.form.fields["is_active"].initial = True
+        self.form.fields['email'].widget.attrs['autocomplete'] = 'email'
+        self.form.fields['phone'].widget.attrs['autocomplete'] = 'phone'
+        self.form.fields['country'].widget.attrs['autocomplete'] = 'country'
         for field in self.form.fields.keys():
             self.form.fields[field].widget.attrs["id"] = f"{uuid.uuid4()}"
         self.model_choice_filters = [

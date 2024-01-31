@@ -1,4 +1,4 @@
-{% extends 'settings.html' %} {% load i18n %} {% block settings %}
+{% extends 'settings.html' %} {% load i18n %} {% block settings %}{% load static %}
 <div class="oh-inner-sidebar-content">
 	{% if perms.base.view_company %}
 	<div
@@ -18,8 +18,15 @@
 		</button>
 		{% endif %}
 	</div>
-
-	{% include 'base/company/company_view.html' %} {% endif %}
+	{% if companies %}
+		{% include 'base/company/company_view.html' %} 
+	{% else %}
+		<div style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%;">
+			<img style="display: block; width: 15%; margin: 20px auto; filter: opacity(0.5);" src="{% static 'images/ui/company.png' %}" class="" alt="Page not found. 404." />
+			<h5 class="oh-404__subtitle">{% trans "There is no companies at this moment." %}</h5>
+		</div>
+	{% endif %}
+	{% endif %}
 </div>
 
 <div

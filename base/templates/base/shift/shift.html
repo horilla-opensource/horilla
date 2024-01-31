@@ -1,4 +1,4 @@
-{% extends 'settings.html' %} {% load i18n %} {% block settings %}
+{% extends 'settings.html' %} {% load i18n %} {% block settings %} {% load static %}
 <div class="oh-inner-sidebar-content">
   {% if perms.base.view_employeeshift %}
   <div
@@ -18,7 +18,8 @@
     </button>
     {% endif %}
   </div>
-  {% include 'base/shift/shift_view.html' %} {% endif %}
+      {% include 'base/shift/shift_view.html' %} 
+  {% endif %}
 </div>
 
 <div

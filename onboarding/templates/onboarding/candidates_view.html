@@ -56,6 +56,7 @@
     </div>
   </div>
 </section>
+{% if candidates %}
 <div class="d-flex flex-row-reverse oh-wrapper">
   <span class="m-3"
     onclick="$('[name=joining_set]').val('true'); $('[name=joining_set]').first().change(); $('.filterButton').click()"
@@ -86,7 +87,7 @@
   
 </div>
 <div class="oh-wrapper" id="candidates">
-  {% if candidates %}
+  
   {% include 'onboarding/candidates.html' %}
   {% else %}
   <div style="height: 70vh; display:flex;align-items: center;justify-content: center;" class="">
