@@ -4,6 +4,7 @@ component_views.py
 This module is used to write methods to the component_urls patterns respectively
 """
 from collections import defaultdict
+from itertools import groupby
 import json
 import operator
 from datetime import date, datetime
@@ -930,7 +931,6 @@ def add_deduction(request):
             initial={"employee_id": employee_id, "one_time_date": instance.start_date},
         )
         if form.is_valid():
-            
             # Save the form to create the Deduction instance
             deduction_instance = form.save(commit=False)
             deduction_instance.only_show_under_employee = True
@@ -940,7 +940,7 @@ def add_deduction(request):
             deduction_instance.specific_employees.set([employee_id])
             deduction_instance.include_active_employees = False
             deduction_instance.save()
-            
+
             # Now create new payslip by deleting existing payslip
             new_post_data = QueryDict(mutable=True)
             new_post_data.update(
@@ -1269,3 +1269,66 @@ def delete_attachments(request, _reimbursement_id):
     ReimbursementMultipleAttachment.objects.filter(id__in=ids).delete()
     messages.success(request, "Attachment deleted")
     return redirect(view_reimbursement)
+
+
+@login_required
+@permission_required("payroll.view_payslip")
+def get_contribution_report(request):
+    """
+    This method is used to get the contribution report
+    """
+    employee_id = request.GET["employee_id"]
+    deudction_id = request.GET.get("deduction_id")
+    pay_heads = Payslip.objects.filter(employee_id__id=employee_id).values_list(
+        "pay_head_data", flat=True
+    )
+    contribution_deductions = []
+    deductions = []
+    for head in pay_heads:
+        for deduction in head["gross_pay_deductions"]:
+            if deduction.get("deduction_id"):
+                deductions.append(deduction)
+        for deduction in head["basic_pay_deductions"]:
+            if deduction.get("deduction_id"):
+                deductions.append(deduction)
+        for deduction in head["pretax_deductions"]:
+            if deduction.get("deduction_id"):
+                deductions.append(deduction)
+        for deduction in head["post_tax_deductions"]:
+            if deduction.get("deduction_id"):
+                deductions.append(deduction)
+        for deduction in head["tax_deductions"]:
+            if deduction.get("deduction_id"):
+                deductions.append(deduction)
+        for deduction in head["net_deductions"]:
+            deductions.append(deduction)
+
+    deductions.sort(key=lambda x: x["deduction_id"])
+    grouped_deductions = {
+        key: list(group)
+        for key, group in groupby(deductions, key=lambda x: x["deduction_id"])
+    }
+
+    for deduction_id, group in grouped_deductions.items():
+        title = group[0]["title"]
+        employee_contribution = sum(item["amount"] for item in group)
+        employer_contribution = sum(
+            item["employer_contribution_amount"] for item in group
+        )
+        total_contribution = employee_contribution + employer_contribution
+
+        contribution_deductions.append(
+            {
+                "deduction_id": deduction_id,
+                "title": title,
+                "employee_contribution": employee_contribution,
+                "employer_contribution": employer_contribution,
+                "total_contribution": total_contribution,
+            }
+        )
+
+    return render(
+        request,
+        "payroll/dashboard/contribution.html",
+        {"contribution_deductions": contribution_deductions},
+    )

@@ -171,6 +171,40 @@
                         </div>
                     </div>
                     
+                    <div class="col-12 col-sm-12 col-md-12 col-lg-6 oh-card-dashboard--moveable mb-4">
+                        <form hx-get="{% url 'get-contribution-report' %}" hx-trigger="load, submit"  hx-target="#contributionReportContainer" class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent" >
+                            <div class="d-flex justify-content-between oh-card-dashboard__header oh-card-dashboard__header--divider" style = "cursor: default;">
+                                {% comment %} <span class="oh-card-dashboard__title" id="employee-previous" style = "cursor: pointer;"><ion-icon name="caret-back-outline"></ion-icon></span> {% endcomment %}
+                                <span class="oh-card-dashboard__title">{% trans "Employer Contributions" %}</span>
+                                <div>
+                                    <span class="oh-card-dashboard__title">
+                                        <select name="employee_id" class="oh-select" onchange="$(this).closest('form').find('[type=submit]').click()" id="deduction">
+                                            {% for employee in get_active_employees %}
+                                                {% if request.user == employee.employee_user_id %}
+                                                    <option value="{{employee.id}}" selected>{{employee.get_full_name}}</option>
+                                                    {% else %}
+                                                    <option value="{{employee.id}}">{{employee.get_full_name}}</option>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </select>
+                                    </span>
+                                    {% comment %} <span class="oh-card-dashboard__title">
+                                        <select name="deduction_id" class="oh-select" onchange="$(this).closest('form').find('[type=submit]').click()" id="deduction">
+                                            <option value="">{% trans "All" %}</option>
+                                            {% for deduction in get_deductions %}
+                                            <option value="{{deduction.id}}">{{deduction.title}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </span> {% endcomment %}
+                                </div>
+                                {% comment %} <span class="oh-card-dashboard__title float-end" id="payroll-employee-next" style = "cursor: pointer;"><ion-icon name="caret-forward"></ion-icon></span> {% endcomment %}
+
+                            </div>
+                            <div class="oh-card-dashboard__body" id="contributionReportContainer" >
+                            </div>
+                            <button type="submit" hidden>
+                        </form>
+                    </div>
                     <div class="col-12 col-sm-12 col-md-12 col-lg-6 oh-card-dashboard--moveable">
                         <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent" style = "cursor: default;">
                             <h4 class="ms-4 m-2 fw-bold text-danger">{% trans "Contracts ending " %}  <b><span class=""></span></b></h4>

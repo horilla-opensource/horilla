@@ -1,0 +1,39 @@
+{% load i18n static %}
+<div class="oh-sticky-table" style="height: 250px;">
+  <div class="oh-sticky-table__table oh-table--sortable">
+    <div class="oh-sticky-table__thead">
+      <div class="oh-sticky-table__tr">
+        <div class="oh-sticky-table__th">
+          {% trans 'Deduction' %}
+        </div>
+        <div class="oh-sticky-table__th">
+          {% trans 'Employee Contribution' %}
+        </div>
+        <div class="oh-sticky-table__th">
+          {% trans 'Employer Contribution' %}
+        </div>
+      </div>
+    </div>
+    <div class="oh-sticky-table__tbody">
+      {% for deduction in contribution_deductions %}
+        <div class="oh-sticky-table__tr" draggable="true">
+          <div class="oh-sticky-table__sd">
+            <div class="oh-profile oh-profile--md">
+              <div class="oh-profile__avatar mr-1">
+                <img src="https://ui-avatars.com/api/?name={{ deduction.title }}&background=random" class="oh-profile__image" />
+              </div>
+              <span class="oh-profile__name oh-text--dark">{{ deduction.title }}</span>
+            </div>
+          </div>
+          <div class="oh-sticky-table__td">{{ currency }} {{ deduction.employee_contribution }}</div>
+          <div class="oh-sticky-table__td">{{ currency }} {{ deduction.employer_contribution }}</div>
+        </div>
+      {% endfor %}
+      {% if not contribution_deductions %}
+        <div align="center" style="width: 720px">
+          <img width="100px" class="mt-5" src="{% static 'images/ui/joiningchart.png' %}" alt="" srcset="" />
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>

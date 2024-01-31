@@ -3,6 +3,7 @@ urls.py
 
 This module is used to map url pattern or request path with view functions
 """
+
 from django.urls import path, include
 from payroll.views import views
 from payroll.models.models import Contract, Payslip
@@ -17,6 +18,11 @@ urlpatterns = [
         views.contract_update,
         name="update-contract",
         kwargs={"model": Contract},
+    ),
+    path(
+        "update-contract-status/<int:contract_id>",
+        views.contract_status_update,
+        name="update-contract-status",
     ),
     path(
         "delete-contract/<int:contract_id>",
@@ -126,7 +132,6 @@ urlpatterns = [
         views.payslip_select_filter,
         name="payslip-select-filter",
     ),
-
     path(
         "payroll-request-add-comment/<int:payroll_id>/",
         views.create_payrollrequest_comment,
@@ -142,5 +147,9 @@ urlpatterns = [
         views.delete_payrollrequest_comment,
         name="payroll-request-delete-comment",
     ),
-    path("initial-notice-period",views.initial_notice_period,name="initial-notice-period")
+    path(
+        "initial-notice-period",
+        views.initial_notice_period,
+        name="initial-notice-period",
+    ),
 ]

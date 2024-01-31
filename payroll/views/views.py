@@ -3,6 +3,7 @@ views.py
 
 This module is used to define the method for the path in the urls
 """
+
 from collections import defaultdict
 from urllib.parse import parse_qs
 import pandas as pd
@@ -20,8 +21,19 @@ from base.methods import export_data, generate_colors, get_key_instances
 from employee.models import Employee, EmployeeWorkInformation
 from base.methods import closest_numbers
 from base.methods import generate_pdf
-from payroll.models.models import PayrollGeneralSetting, Payslip, Reimbursement, ReimbursementrequestComment, WorkRecord, Contract
-from payroll.forms.forms import ContractForm, ReimbursementrequestCommentForm, WorkRecordForm
+from payroll.models.models import (
+    PayrollGeneralSetting,
+    Payslip,
+    Reimbursement,
+    ReimbursementrequestComment,
+    WorkRecord,
+    Contract,
+)
+from payroll.forms.forms import (
+    ContractForm,
+    ReimbursementrequestCommentForm,
+    WorkRecordForm,
+)
 from payroll.models.tax_models import PayrollSettings
 from payroll.forms.component_forms import ContractExportFieldForm, PayrollSettingsForm
 from payroll.methods.methods import save_payslip
@@ -92,6 +104,20 @@ def contract_update(request, contract_id, **kwargs):
             "form": contract_form,
         },
     )
+
+
+def contract_status_update(request, contract_id):
+    if request.method == "POST":
+        contract = Contract.objects.get(id=contract_id)
+        contract_form = ContractForm(request.POST, request.FILES, instance=contract)
+        if contract_form.is_valid():
+            contract_form.save()
+            messages.success(request, _("Contract status updated"))
+        else:
+            for errors in contract_form.errors.values():
+                for error in errors:
+                    messages.error(request, error)
+        return HttpResponse("<script>window.location.reload()</script>")
 
 
 @login_required
@@ -424,24 +450,26 @@ def contract_info_initial(request):
     employee_id = request.GET["employee_id"]
     work_info = EmployeeWorkInformation.objects.filter(employee_id=employee_id).first()
     response_data = {
-        "department": work_info.department_id.id
-        if work_info.department_id is not None
-        else "",
-        "job_position": work_info.job_position_id.id
-        if work_info.job_position_id is not None
-        else "",
-        "job_role": work_info.job_role_id.id
-        if work_info.job_role_id is not None
-        else "",
+        "department": (
+            work_info.department_id.id if work_info.department_id is not None else ""
+        ),
+        "job_position": (
+            work_info.job_position_id.id
+            if work_info.job_position_id is not None
+            else ""
+        ),
+        "job_role": (
+            work_info.job_role_id.id if work_info.job_role_id is not None else ""
+        ),
         "shift": work_info.shift_id.id if work_info.shift_id is not None else "",
-        "work_type": work_info.work_type_id.id
-        if work_info.work_type_id is not None
-        else "",
+        "work_type": (
+            work_info.work_type_id.id if work_info.work_type_id is not None else ""
+        ),
         "wage": work_info.basic_salary,
         "contract_start_date": work_info.date_joining if work_info.date_joining else "",
-        "contract_end_date": work_info.contract_end_date
-        if work_info.contract_end_date
-        else "",
+        "contract_end_date": (
+            work_info.contract_end_date if work_info.contract_end_date else ""
+        ),
     }
     return JsonResponse(response_data)
 
@@ -641,15 +669,19 @@ def contract_ending(request):
     date = request.GET.get("period")
     month = date.split("-")[1]
     year = date.split("-")[0]
-    
-    if request.GET.get("initialLoad") == 'true':
-        if month == '12':
-            month =0
+
+    if request.GET.get("initialLoad") == "true":
+        if month == "12":
+            month = 0
             year = int(year) + 1
 
-        contract_end = Contract.objects.filter(contract_end_date__month=int(month)+1,contract_end_date__year=int(year))
+        contract_end = Contract.objects.filter(
+            contract_end_date__month=int(month) + 1, contract_end_date__year=int(year)
+        )
     else:
-        contract_end = Contract.objects.filter(contract_end_date__month=int(month),contract_end_date__year=int(year))        
+        contract_end = Contract.objects.filter(
+            contract_end_date__month=int(month), contract_end_date__year=int(year)
+        )
 
     ending_contract = []
     for contract in contract_end:
@@ -851,9 +883,11 @@ def payslip_export(request):
 
     df_table3 = df_table3.rename(
         columns={
-            "contract_ending": f"Contract Ending {start_date} to {end_date}"
-            if start_date and end_date
-            else f"Contract Ending",
+            "contract_ending": (
+                f"Contract Ending {start_date} to {end_date}"
+                if start_date and end_date
+                else f"Contract Ending"
+            ),
         }
     )
 
@@ -918,9 +952,11 @@ def payslip_export(request):
         0,
         0,
         max_columns - 1,
-        f"Payroll details {start_date} to {end_date}"
-        if start_date and end_date
-        else f"Payroll details",
+        (
+            f"Payroll details {start_date} to {end_date}"
+            if start_date and end_date
+            else f"Payroll details"
+        ),
         heading_format,
     )
 
@@ -1202,19 +1238,25 @@ def create_payrollrequest_comment(request, payroll_id):
     """
     payroll = Reimbursement.objects.filter(id=payroll_id).first()
     emp = request.user.employee_get
-    form = ReimbursementrequestCommentForm(initial={'employee_id':emp.id, 'request_id':payroll_id})
+    form = ReimbursementrequestCommentForm(
+        initial={"employee_id": emp.id, "request_id": payroll_id}
+    )
 
     if request.method == "POST":
-        form = ReimbursementrequestCommentForm(request.POST )
+        form = ReimbursementrequestCommentForm(request.POST)
         if form.is_valid():
             form.instance.employee_id = emp
             form.instance.request_id = payroll
             form.save()
-            form = ReimbursementrequestCommentForm(initial={'employee_id':emp.id, 'request_id':payroll_id})
+            form = ReimbursementrequestCommentForm(
+                initial={"employee_id": emp.id, "request_id": payroll_id}
+            )
             messages.success(request, _("Comment added successfully!"))
-            
+
             if request.user.employee_get.id == payroll.employee_id.id:
-                rec = payroll.employee_id.employee_work_info.reporting_manager_id.employee_user_id
+                rec = (
+                    payroll.employee_id.employee_work_info.reporting_manager_id.employee_user_id
+                )
                 notify.send(
                     request.user.employee_get,
                     recipient=rec,
@@ -1226,7 +1268,10 @@ def create_payrollrequest_comment(request, payroll_id):
                     redirect="/payroll/view-reimbursement",
                     icon="chatbox-ellipses",
                 )
-            elif request.user.employee_get.id == payroll.employee_id.employee_work_info.reporting_manager_id.id:
+            elif (
+                request.user.employee_get.id
+                == payroll.employee_id.employee_work_info.reporting_manager_id.id
+            ):
                 rec = payroll.employee_id.employee_user_id
                 notify.send(
                     request.user.employee_get,
@@ -1240,7 +1285,10 @@ def create_payrollrequest_comment(request, payroll_id):
                     icon="chatbox-ellipses",
                 )
             else:
-                rec = [payroll.employee_id.employee_user_id, payroll.employee_id.employee_work_info.reporting_manager_id.employee_user_id]
+                rec = [
+                    payroll.employee_id.employee_user_id,
+                    payroll.employee_id.employee_work_info.reporting_manager_id.employee_user_id,
+                ]
                 notify.send(
                     request.user.employee_get,
                     recipient=rec,
@@ -1252,14 +1300,12 @@ def create_payrollrequest_comment(request, payroll_id):
                     redirect="/payroll/view-reimbursement",
                     icon="chatbox-ellipses",
                 )
-                
+
             return HttpResponse("<script>window.location.reload()</script>")
     return render(
         request,
         "payroll/reimbursement/reimbursement_request_comment_form.html",
-        {
-            "form": form, "request_id":payroll_id
-        },
+        {"form": form, "request_id": payroll_id},
     )
 
 
@@ -1268,7 +1314,9 @@ def view_payrollrequest_comment(request, payroll_id):
     """
     This method is used to show Reimbursement request comments
     """
-    comments = ReimbursementrequestComment.objects.filter(request_id=payroll_id).order_by('-created_at')
+    comments = ReimbursementrequestComment.objects.filter(
+        request_id=payroll_id
+    ).order_by("-created_at")
     no_comments = False
     if not comments.exists():
         no_comments = True
@@ -1276,7 +1324,7 @@ def view_payrollrequest_comment(request, payroll_id):
     return render(
         request,
         "payroll/reimbursement/comment_view.html",
-        {"comments": comments, 'no_comments': no_comments }
+        {"comments": comments, "no_comments": no_comments},
     )
 
 
@@ -1300,7 +1348,7 @@ def initial_notice_period(request):
     notice_period = eval(request.GET["notice_period"])
     settings = PayrollGeneralSetting.objects.first()
     settings = settings if settings else PayrollGeneralSetting()
-    settings.notice_period = max(notice_period,0)
+    settings.notice_period = max(notice_period, 0)
     settings.save()
-    messages.success(request,"Initial notice period updated")
+    messages.success(request, "Initial notice period updated")
     return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))

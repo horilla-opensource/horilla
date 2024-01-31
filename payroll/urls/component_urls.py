@@ -127,4 +127,5 @@ urlpatterns = [
         component_views.delete_attachments,
         name="delete-attachments",
     ),
+    path("get-contribution-report",component_views.get_contribution_report,name="get-contribution-report")
 ]

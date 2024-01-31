@@ -204,6 +204,9 @@ class PayslipForm(ModelForm):
             for contract in active_contracts
             if contract.employee_id.is_active
         ]
+        if self.instance.pk is None:
+            self.initial["start_date"] = datetime.date.today().replace(day=1)
+            self.initial["end_date"] = datetime.date.today()
 
     class Meta:
         """
@@ -281,6 +284,8 @@ class GeneratePayslipForm(HorillaForm):
         self.fields["start_date"].widget.attrs.update({"class": "oh-input w-100"})
         self.fields["group_name"].widget.attrs.update({"class": "oh-input w-100"})
         self.fields["end_date"].widget.attrs.update({"class": "oh-input w-100"})
+        self.initial["start_date"] = datetime.date.today().replace(day=1)
+        self.initial["end_date"] = datetime.date.today()
 
     class Meta:
         """
@@ -420,7 +425,9 @@ class PayslipDeductionForm(ModelForm):
     """
     Bonus Creating Form
     """
+
     verbose_name = _("Deduction")
+
     class Meta:
         model = Deduction
         fields = [
@@ -450,7 +457,7 @@ class PayslipDeductionForm(ModelForm):
         context = {"form": self}
         table_html = render_to_string("one_time_deduction.html", context)
         return table_html
-        
+
 
 class LoanAccountForm(ModelForm):
     """

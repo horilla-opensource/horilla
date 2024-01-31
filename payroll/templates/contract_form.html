@@ -8,6 +8,9 @@
           {{ form.verbose_name }}
       </div>
     </div>
+    <div class="oh-payslip__header-right">
+          {{ form.contract_status }}
+    </div>
   </div>
   <div class="oh-profile-section__card">
     <div class="row">
@@ -16,6 +19,7 @@
       </div>
 
       {% for field in form.visible_fields %}
+      {% if field.name != 'contract_status' %}
       <div class="col-12 col-md-6">
         <div class="oh-label__info" for="id_{{ field.name }}">
           <label class="oh-label" for="id_{{ field.name }}">{% trans field.label %}</label> 
@@ -31,6 +35,7 @@
         {% else %} {{ field|add_class:"form-control" }} {% endif %} 
         {{field.errors}}
       </div>
+      {% endif %}
       {% endfor %}
     </div>
 
