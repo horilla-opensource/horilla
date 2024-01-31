@@ -21,6 +21,7 @@
     {% if requests %}
       {% include 'payroll/reimbursement/request_cards.html' %}
     {% else %}
+      {% include "filter_tags.html" %}
       <main :class="sidebarOpen ? 'oh-main__sidebar-visible' : ''">
         <div class="oh-wrapper">
           <div class="oh-404">

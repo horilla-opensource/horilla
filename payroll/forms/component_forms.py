@@ -624,24 +624,6 @@ class ReimbursementForm(ModelForm):
             if field in self.fields:
                 del self.fields[field]
 
-        emp = Employee.objects.get(id=self.initial["employee_id"])
-
-        try:
-            notify.send(
-                emp,
-                recipient=(
-                    emp.employee_work_info.reporting_manager_id.employee_user_id
-                ),
-                verb=f"You have a new reimbursement request to approve for {emp}.",
-                verb_ar=f"لديك طلب استرداد نفقات جديد يتعين عليك الموافقة عليه لـ {emp}.",
-                verb_de=f"Sie haben einen neuen Rückerstattungsantrag zur Genehmigung für {emp}.",
-                verb_es=f"Tienes una nueva solicitud de reembolso para aprobar para {emp}.",
-                verb_fr=f"Vous avez une nouvelle demande de remboursement à approuver pour {emp}.",
-                icon="information",
-                redirect="/payroll/view-reimbursement",
-            )
-        except Exception as e:
-            pass
 
     def as_p(self):
         """
@@ -652,6 +634,7 @@ class ReimbursementForm(ModelForm):
         return table_html
 
     def save(self, commit: bool = ...) -> Any:
+        is_new = not self.instance.pk
         attachemnt = []
         multiple_attachment_ids = []
         attachemnts = None
@@ -666,6 +649,29 @@ class ReimbursementForm(ModelForm):
                 multiple_attachment_ids.append(file_instance.pk)
         instance = super().save(commit)
         instance.other_attachments.add(*multiple_attachment_ids)
+
+        emp = Employee.objects.get(id=self.initial["employee_id"])
+        print("+++++++++++++++++++++++++")
+        print(self.instance.pk)
+        print("+++++++++++++++++++++++++")
+        try:
+            if is_new:
+                notify.send(
+                    emp,
+                    recipient=(
+                        emp.employee_work_info.reporting_manager_id.employee_user_id
+                    ),
+                    verb=f"You have a new reimbursement request to approve for {emp}.",
+                    verb_ar=f"لديك طلب استرداد نفقات جديد يتعين عليك الموافقة عليه لـ {emp}.",
+                    verb_de=f"Sie haben einen neuen Rückerstattungsantrag zur Genehmigung für {emp}.",
+                    verb_es=f"Tienes una nueva solicitud de reembolso para aprobar para {emp}.",
+                    verb_fr=f"Vous avez une nouvelle demande de remboursement à approuver pour {emp}.",
+                    icon="information",
+                    redirect=f"/payroll/view-reimbursement?id={instance.id}",
+                )
+        except Exception as e:
+            pass
+
         return instance, attachemnts
 
 

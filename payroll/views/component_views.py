@@ -524,6 +524,17 @@ def generate_payslip(request):
                 data["installments"] = payslip["installments"]
                 instance = save_payslip(**data)
                 instances.append(instance)
+                notify.send(
+                    request.user.employee_get,
+                    recipient=employee.employee_user_id,
+                    verb="Payslip has been generated for you.",
+                    verb_ar="تم إصدار كشف راتب لك.",
+                    verb_de="Gehaltsabrechnung wurde für Sie erstellt.",
+                    verb_es="Se ha generado la nómina para usted.",
+                    verb_fr="La fiche de paie a été générée pour vous.",
+                    redirect=f"/payroll/view-payslip/{instance.id}",
+                    icon="close",
+                )
             messages.success(request, f"{employees.count()} payslip saved as draft")
             return redirect(
                 f"/payroll/view-payslip?group_by=group_name&active_group={group_name}"
@@ -589,6 +600,17 @@ def create_payslip(request, new_post_data=None):
                 payslip_data["instance"] = save_payslip(**data)
                 form = forms.PayslipForm()
                 messages.success(request, _("Payslip Saved"))
+                notify.send(
+                    request.user.employee_get,
+                    recipient=employee.employee_user_id,
+                    verb="Payslip has been generated for you.",
+                    verb_ar="تم إصدار كشف راتب لك.",
+                    verb_de="Gehaltsabrechnung wurde für Sie erstellt.",
+                    verb_es="Se ha generado la nómina para usted.",
+                    verb_fr="La fiche de paie a été générée pour vous.",
+                    redirect=f"/payroll/view-payslip/{payslip.id}",
+                    icon="close",
+                )
                 return render(
                     request,
                     "payroll/payslip/individual_payslip.html",
@@ -1095,7 +1117,10 @@ def view_reimbursement(request):
     """
     This method is used to render template to view reimbursements
     """
-    filter_object = ReimbursementFilter({"status": "requested"})
+    if request.GET:
+        filter_object = ReimbursementFilter(request.GET)
+    else:
+        filter_object = ReimbursementFilter({"status": "requested"})
     requests = filter_own_recodes(
         request, filter_object.qs, "payroll.view_reimbursement"
     )
@@ -1200,7 +1225,7 @@ def approve_reimbursements(request):
                 verb_de="Ihr Rückerstattungsantrag wurde storniert.",
                 verb_es="Se ha cancelado tu solicitud de reembolso.",
                 verb_fr="Votre demande de remboursement a été annulée.",
-                redirect="/payroll/view-reimbursement",
+                redirect=f"/payroll/view-reimbursement?id={reimbursement.id}",
                 icon="checkmark",
             )
         else:
@@ -1212,7 +1237,7 @@ def approve_reimbursements(request):
                 verb_de="Ihr Rückerstattungsantrag wurde genehmigt.",
                 verb_es="Se ha aprobado tu solicitud de reembolso.",
                 verb_fr="Votre demande de remboursement a été approuvée.",
-                redirect="/payroll/view-reimbursement",
+                redirect=f"/payroll/view-reimbursement?id={reimbursement.id}",
                 icon="checkmark",
             )
     return redirect(view_reimbursement)

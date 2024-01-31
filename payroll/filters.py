@@ -330,6 +330,7 @@ class ReimbursementFilter(FilterSet):
     class Meta:
         model = Reimbursement
         fields = [
+            "id",
             "status",
             "type",
             "employee_id",
