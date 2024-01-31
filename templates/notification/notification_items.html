@@ -10,8 +10,8 @@
     </div>
     {% endif %}
 <ul class="oh-navbar__nofication-list"> 
-    {% for notification in notifications %}
-    <a class="oh-navbar__notification-item" href="{{notification.data.redirect}}#">
+  {% for notification in notifications %}
+    <a class="oh-navbar__notification-item" href="{{notification.data.redirect}}#" id="notification" data-id={{notification.id}}> 
       <div>
         {% if notification.unread %}
         <span class="oh-navbar__notification-dot oh-navbar__notification-dot--green"
@@ -40,5 +40,38 @@
         </div>
       </div>
     </a>
-    {% endfor %}
-  </ul>
+  {% endfor %}
+</ul>
+<script>
+  $(document).ready(function() {
+      $('.oh-navbar__notification-item').on('click', function(event) {
+          event.preventDefault();
+          var notificationLink = $(this);
+          var notificationId = notificationLink.data('id');
+          $.ajax({
+              type: "post",
+              url: '/mark-as-read-notification/',
+              data: {
+                  csrfmiddlewaretoken: getCookie("csrftoken"),
+                  'notification_id': notificationId
+              },
+              success: function(response) {
+                  if (response.success) {
+                      window.location.href = notificationLink.attr('href');
+                  } else {
+                      window.location.href = notificationLink.attr('href');
+                      console.error('Failed to mark notification as read');
+                      if (response.error) {
+                          console.error('Error:', response.error);
+                      }
+                  }
+              },
+              error: function(xhr, status, error) {
+                  window.location.href = notificationLink.attr('href');
+                  console.error('Error:', status, error);
+              }
+          });
+      });
+  });
+</script>
+

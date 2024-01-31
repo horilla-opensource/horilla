@@ -20,18 +20,21 @@
                 <span style="width: 10px;height: 10px;border-radius: 100%; background-color: hsl(8deg,77%,56%);display: inline-block;right: 5px;"></span>
                 {% endif %}
                 {% if LANGUAGE_CODE == 'ar' %}
-                    <p class="oh-navbar__notification-text" :class="markRead ? '' : 'oh-navbar__notification-text--unread' ">{{ notification.data.verb_ar }}</p>
+                    <p class="oh-navbar__notification-text" class="oh-navbar__notification-text--unread">{{ notification.data.verb_ar }}</p>
                 {% elif LANGUAGE_CODE == 'de' %}
-                    <p class="oh-navbar__notification-text" :class="markRead ? '' : 'oh-navbar__notification-text--unread' ">{{ notification.data.verb_de }}</p>
+                    <p class="oh-navbar__notification-text" class="oh-navbar__notification-text--unread">{{ notification.data.verb_de }}</p>
                 {% elif LANGUAGE_CODE == 'fr' %}
-                    <p class="oh-navbar__notification-text" :class="markRead ? '' : 'oh-navbar__notification-text--unread' ">{{ notification.data.verb_fr }}</p>
+                    <p class="oh-navbar__notification-text" class="oh-navbar__notification-text--unread">{{ notification.data.verb_fr }}</p>
                 {% elif LANGUAGE_CODE == 'es' %}
-                    <p class="oh-navbar__notification-text" :class="markRead ? '' : 'oh-navbar__notification-text--unread' ">{{ notification.data.verb_es }}</p>
+                    <p class="oh-navbar__notification-text" class="oh-navbar__notification-text--unread">{{ notification.data.verb_es }}</p>
                 {% else %}
-                    <p class="oh-navbar__notification-text" :class="markRead ? '' : 'oh-navbar__notification-text--unread' ">{{ notification.verb }}</p>
+                    <p class="oh-navbar__notification-text" class="oh-navbar__notification-text--unread">{{ notification.verb }}</p>
                 {% endif %}
             </span>
-        <ion-icon name="close-outline" hx-target="#allNotificationBody" hx-post="{% url 'delete-notifications' notification.id %}" role="img" aria-label="close outline"></ion-icon>
+        <div hx-target="#allNotificationBody" hx-post="{% url 'delete-notifications' notification.id %}">
+            <ion-icon name="close-outline"role="img" aria-label="close outline"></ion-icon>
+        </div>
+        
     </div>
         <span class="oh-activity-sidebar__a">
         {{ notification.timesince }} {% trans "ago by" %}<img src="https://ui-avatars.com/api/?name={{notification.actor}}&amp;background=random" style="width: 1.5em; border-radius: 100%;" alt="User"> {{notification.actor}} 

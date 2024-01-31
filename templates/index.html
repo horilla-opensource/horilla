@@ -282,20 +282,44 @@
       overflow: hidden;
       
     }
-    .perm-accordion{
-      border: 1px solid #6c757d1c !important;
-      margin: 0 0 2px 0 !important;
-      width: -100%;
-    }
-    .app-permissions{
-      background-color: rgba(242, 249, 255, 0.586);
-    }
-    .perm-accordion-active{
-      background-color: rgba(215, 233, 251, 0.621) !important;
-    }
-    .perm-accordion-active:hover{
-      background-color: rgba(215, 233, 251, 0.408) !important;
-    }
+.perm-accordion{
+  border: 1px solid #6c757d1c !important;
+  margin: 0 0 2px 0 !important;
+  width: -100%;
+}
+.app-permissions{
+  background-color: rgba(242, 249, 255, 0.586);
+}
+.perm-accordion-active{
+  background-color: rgba(215, 233, 251, 0.621) !important;
+}
+.perm-accordion-active:hover{
+  background-color: rgba(215, 233, 251, 0.408) !important;
+}    
+.arrow-up::before {
+  content: '\25B2';
+  font-size:12px;
+  display: inline-block;
+  margin-right: 5px; 
+}
+.arrow-down::before {
+  content: '\25BC';
+  font-size:12px;
+  display: inline-block;
+  margin-right: 5px; 
+}
+.oh-activity-sidebar__header {
+    position: relative; 
+}
+
+.delete-all-link {
+    position: absolute;
+    color: rgb(63 124 242);
+    top: -5px; 
+    right: 10px; 
+    margin: 10px; 
+    cursor: pointer;
+}
   </style>
 </head>
 
@@ -363,16 +387,17 @@
     <!-- End of Confirm Modal -->
     <div class="oh-activity-sidebar " id="allNotifications">
       <div class="oh-activity-sidebar__header">
-        {% comment %} <ion-icon name="chevron-back-outline" id="notificationClose" class="oh-activity-sidebar__header-icon me-2 oh-activity-sidebar__close md hydrated"  role="img" aria-label="chevron back outline"></ion-icon> {% endcomment %}
         <span id="notificationClose" style="cursor: pointer;" title="{% trans 'Close' %}">
-          <ion-icon
-            name="chevron-back-outline"
-            class="oh-activity-sidebar__header-icon me-2 oh-activity-sidebar__close"
-            id="close"
-            data-target="#activitySidebar"
-            style="font-size: 24px;"
-          ></ion-icon>
+            <ion-icon
+                name="chevron-back-outline"
+                class="oh-activity-sidebar__header-icon me-2 oh-activity-sidebar__close"
+                id="close"
+                data-target="#activitySidebar"
+                style="font-size: 24px;"
+            ></ion-icon>
+        </span>
         <span class="oh-activity-sidebar__title"> {% trans "All Notifications" %}</span>
+        <a class="delete-all-link" hx-target="#allNotificationBody" hx-post="{% url 'delete-all-notifications'%}">{% trans "Delete all" %}</a>    
       </div>
       <div class="oh-activity-sidebar__body" id="allNotificationBody">
         {% include "notification/all_notifications.html" %}

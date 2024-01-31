@@ -29,6 +29,7 @@ urlpatterns = [
         "settings/user-group-create/", views.user_group_table, name="user-group-create"
     ),
     path("settings/user-group-view/", views.user_group, name="user-group-view"),
+    path("settings/user-group-search/", views.user_group_search, name="user-group-search"),
     path(
         "settings/user-group-update/<int:id>/",
         views.user_group_update,
@@ -516,7 +517,9 @@ urlpatterns = [
     ),
     path("notifications", views.notifications, name="notifications"),
     path("clear-notifications", views.clear_notification, name="clear-notifications"),
+    path("delete-all-notifications", views.delete_all_notifications, name="delete-all-notifications"),
     path("read-notifications", views.read_notifications, name="read-notifications"),
+    path('mark-as-read-notification/', views.mark_as_read_notification, name='mark-as-read-notification'),
     path("all-notifications", views.all_notifications, name="all-notifications"),
     path(
         "delete-notifications/<id>/",

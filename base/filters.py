@@ -43,6 +43,7 @@ class ShiftRequestFilter(FilterSet):
         fields = "__all__"
         model = ShiftRequest
         fields = [
+            "id",
             "employee_id",
             "requested_date",
             "previous_shift_id",
