@@ -122,10 +122,17 @@
 								{% endif %}
 							/>
 						</div>
+						{% if employee.check_online %}
 						<span
-						class="oh-profile__active-badge oh-profile__active-badge--secondary"
-						title="{% trans 'Active' %}">
+							class="oh-profile__active-badge oh-profile__active-badge--secondary" style="background-color: yellowgreen;"
+							title="{% trans 'Online' %}">
 						</span>
+						{% else %}
+						<span
+							class="oh-profile__active-badge oh-profile__active-badge--secondary" style="background-color: rgba(128, 128, 128, 0.482);"
+							title="{% trans 'Offline' %}">
+						</span>
+						{% endif %}
 					</div>
 					<div class="oh-profile__info-container">
 						<h1 class="oh-profile__info-name">{{employee}}</h1>

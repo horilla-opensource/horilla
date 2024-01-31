@@ -5,14 +5,14 @@
 
 
 
-<div class="d-flex flex-row-reverse p-0">
-  <span class="ml-3 mr-3" onclick="$('[name=working_today]').val('false'); $('[name=working_today]').first().change(); $('.filterButton').click()" style="cursor: pointer;margin-left: 10px;">
+<div class="d-flex flex-row-reverse">
+  <span class="m-3" onclick="$('[name=working_today]').val('false'); $('[name=working_today]').first().change(); $('.filterButton').click()" style="cursor: pointer;margin-left: 10px;">
     <span class="oh-dot oh-dot--small me-1" style="background-color:rgba(128, 128, 128, 0.482)"></span>
-    {% trans "Not-working" %}
+    {% trans "Offline" %}
   </span>
-  <span class="ml-3 mr-3" onclick="$('[name=working_today]').val('true'); $('[name=working_today]').first().change(); $('.filterButton').click()" style="cursor: pointer;margin-left: 10px;">
+  <span class="m-3" onclick="$('[name=working_today]').val('true'); $('[name=working_today]').first().change(); $('.filterButton').click()" style="cursor: pointer;margin-left: 10px;">
     <span class="oh-dot oh-dot--small me-1" style="background-color:yellowgreen"></span>
-    {% trans "Now-Working" %}
+    {% trans "Online" %}
   </span>
 </div>
 {% if messages %}
@@ -58,6 +58,13 @@
       <span class="oh-kanban-card__title">{{emp}}</span>
       <span class="oh-kanban-card__subtitle">{{emp.email}}</span><br>
       <span class="oh-kanban-card__subtitle">{{emp.employee_work_info.job_position_id}}</span>
+      <div class="oh-kanban-card__subtitle">
+        {% if emp.check_online %}
+        <span class="oh-dot oh-dot--small me-1" style="background-color:yellowgreen"></span> {% trans "Online" %}
+        {% else %}
+        <span class="oh-dot oh-dot--small me-1" style="background-color:rgba(128, 128, 128, 0.482)"></span> {% trans "Offline" %}
+        {% endif %}
+      </div>
     </div>
   </a>
   {% if perms.employee.change_employee or perms.employee.delete_employee or request.user|check_manager:emp %}

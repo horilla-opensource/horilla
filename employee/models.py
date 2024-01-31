@@ -5,7 +5,7 @@ This module is used to register models for employee app
 
 """
 import datetime as dtime
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 import json
 import threading
 import time
@@ -20,6 +20,7 @@ from django.utils.translation import gettext as _
 from django.core.exceptions import ValidationError
 from django.core.files.storage import default_storage
 from simple_history.models import HistoricalRecords
+from base import thread_local_middleware
 from horilla_audit.models import HorillaAuditLog, HorillaAuditInfo
 from horilla_audit.methods import get_diff
 from base.models import (
@@ -281,6 +282,25 @@ class Employee(models.Model):
             self.employee_last_name if self.employee_last_name is not None else ""
         )
         return f"{self.employee_first_name} {last_name}"
+
+    def check_online(self):
+        """
+        This method is used to check the user in online users or not
+        """
+        from attendance.models import Attendance
+
+        request = getattr(thread_local_middleware._thread_locals, "request", None)
+        if not getattr(request, "working_employees", None):
+            today = datetime.now().date()
+            yesterday = today - timedelta(days=1)
+            working_employees = Attendance.objects.filter(
+                attendance_date__gte=yesterday,
+                attendance_date__lte=today,
+                attendance_clock_out_date__isnull=True,
+            ).values_list("employee_id", flat=True)
+            setattr(request, "working_employees", working_employees)
+        working_employees = request.working_employees
+        return self.id in working_employees
 
     class Meta:
         """
@@ -569,7 +589,7 @@ class Policy(models.Model):
     title = models.CharField(max_length=50)
     body = models.TextField()
     is_visible_to_all = models.BooleanField(default=True)
-    specific_employees = models.ManyToManyField(Employee, blank=True,editable=False)
+    specific_employees = models.ManyToManyField(Employee, blank=True, editable=False)
     attachments = models.ManyToManyField(PolicyMultipleFile, blank=True)
     company_id = models.ManyToManyField(Company, blank=True)
 
@@ -581,16 +601,26 @@ class Policy(models.Model):
 
 
 class BonusPoint(models.Model):
-    CONDITIONS =[
-        ('==',_('equals')),
-        ('>',_('grater than')),
-        ('<',_('less than')),
-        ('>=',_('greater than or equal')),
-        ('<=',_('less than or equal')),
+    CONDITIONS = [
+        ("==", _("equals")),
+        (">", _("grater than")),
+        ("<", _("less than")),
+        (">=", _("greater than or equal")),
+        ("<=", _("less than or equal")),
     ]
-    employee_id = models.OneToOneField(Employee, on_delete=models.CASCADE ,blank=True, null=True, related_name='bonus_point')
-    points = models.IntegerField(default=0, help_text="Use negative numbers to reduce points.")
-    encashment_condition = models.CharField(max_length=100,choices = CONDITIONS,blank=True, null=True)
+    employee_id = models.OneToOneField(
+        Employee,
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True,
+        related_name="bonus_point",
+    )
+    points = models.IntegerField(
+        default=0, help_text="Use negative numbers to reduce points."
+    )
+    encashment_condition = models.CharField(
+        max_length=100, choices=CONDITIONS, blank=True, null=True
+    )
     redeeming_points = models.IntegerField(blank=True, null=True)
     reason = models.TextField(blank=True, null=True)
     history = HorillaAuditLog(
@@ -599,38 +629,35 @@ class BonusPoint(models.Model):
             HorillaAuditInfo,
         ],
     )
-    
+
     def __str__(self):
         return f"{self.employee_id} - {self.points} Points"
-    
+
     def tracking(self):
         """
         This method is used to return the tracked history of the instance
         """
         return get_diff(self)
-    
+
     @receiver(post_save, sender=Employee)
     def bonus_post_save(sender, instance, **_kwargs):
-        if not BonusPoint.objects.filter(employee_id__id = instance.id).exists():
-            BonusPoint.objects.create(
-                employee_id = instance
-            )
-            
+        if not BonusPoint.objects.filter(employee_id__id=instance.id).exists():
+            BonusPoint.objects.create(employee_id=instance)
+
+
 class BonusPointThreading(threading.Thread):
-    
     def run(self):
         time.sleep(5)
         employees = Employee.objects.all()
         try:
             for employee in employees:
-                if not BonusPoint.objects.filter(employee_id__id = employee.id).exists():
-                    BonusPoint.objects.create(
-                        employee_id = employee
-                    )
+                if not BonusPoint.objects.filter(employee_id__id=employee.id).exists():
+                    BonusPoint.objects.create(employee_id=employee)
         except:
             pass
 
-try:            
+
+try:
     BonusPointThreading().start()
 except:
     pass
@@ -642,10 +669,10 @@ class Actiontype(models.Model):
     """
 
     choice_actions = [
-            ("warning", trans("Warning")),
-            ("suspension", trans("Suspension")),
-            ("dismissal", trans("Dismissal")),
-        ]
+        ("warning", trans("Warning")),
+        ("suspension", trans("Suspension")),
+        ("dismissal", trans("Dismissal")),
+    ]
 
     title = models.CharField(max_length=50)
     action_type = models.CharField(max_length=30, choices=choice_actions)
@@ -662,9 +689,11 @@ class DisciplinaryAction(models.Model):
     employee_id = models.ManyToManyField(Employee)
     action = models.ForeignKey(Actiontype, on_delete=models.CASCADE)
     description = models.TextField()
-    days = models.IntegerField(null=True, blank = True)
+    days = models.IntegerField(null=True, blank=True)
     start_date = models.DateField(null=True)
-    attachment = models.FileField(upload_to="employee/discipline", null=True, blank = True)
+    attachment = models.FileField(
+        upload_to="employee/discipline", null=True, blank=True
+    )
     company_id = models.ManyToManyField(Company, blank=True)
 
     objects = HorillaCompanyManager()

@@ -111,10 +111,17 @@
 								{% endif %}
 							/>
 						</div>
+						{% if employee.check_online %}
 						<span
-						class="oh-profile__active-badge oh-profile__active-badge--secondary"
-						title="{% trans 'Active' %}">
+							class="oh-profile__active-badge oh-profile__active-badge--secondary" style="background-color: yellowgreen;"
+							title="{% trans 'Online' %}">
 						</span>
+						{% else %}
+						<span
+							class="oh-profile__active-badge oh-profile__active-badge--secondary" style="background-color: rgba(128, 128, 128, 0.482);"
+							title="{% trans 'Offline' %}">
+						</span>
+						{% endif %}
 					</div>
 					<div class="oh-profile__info-container">
 						<h1 class="oh-profile__info-name">{{employee}}</h1>
@@ -290,7 +297,7 @@
 							<li data-cell-index="10" data-cell-title="{% trans "Bonus Points" %}" class="oh-general__tab">
 								<a
 								hx-get={% url 'bonus-points-tab' employee.id %}
-								hx-target="#resignation_hx_target"
+								hx-target="#bonus_points_target"
 								data-action="general-tab"
 								data-target="#bonus_points_target"
 								class="oh-general__tab-link"
@@ -335,7 +342,7 @@
 							class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
 							id="bonus_points_target"
 						 >
-							{% include "tabs/bonus_points.html" %}
+							{% comment %} {% include "tabs/bonus_points.html" %} {% endcomment %}
 						</div>
 						<div
 							class="oh-general__tab-target oh-profile__info-tab mt-3 mb-4 d-none"
