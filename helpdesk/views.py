@@ -400,7 +400,7 @@ def ticket_create(request):
     form = TicketForm(initial={'employee_id':request.user})
     if request.GET.get('status'):
         status = request.GET.get('status')
-        form = TicketForm(initial={'status':status})
+        form = TicketForm(initial={'status':status,'employee_id':request.user})
     if request.method == "POST":
         form = TicketForm(request.POST,request.FILES)
         if form.is_valid():          
@@ -470,7 +470,9 @@ def ticket_update(request,ticket_id):
             return HttpResponse("<script>window.location.reload()</script>")
     context = {
         'form': form,
-        'ticket_id':ticket_id
+        'ticket_id':ticket_id,
+        't_type_form':TicketTypeForm(),
+
     }
     return render(request, "helpdesk/ticket/ticket_form.html", context)
 

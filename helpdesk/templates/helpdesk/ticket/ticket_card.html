@@ -177,14 +177,20 @@
                                                 >{{ticket.employee_id}} </span
                                             >
                                         </div>
-                                        <div title="{{ticket.priority}} priority">
-                                            {% if ticket.priority == 'high' %}
-                                            <ion-icon name="star-sharp"></ion-icon> <ion-icon name="star-sharp"></ion-icon> <ion-icon name="star-sharp"></ion-icon>
-                                            {% elif ticket.priority == 'medium' %}
-                                            <ion-icon name="star-sharp"></ion-icon> <ion-icon name="star-sharp"></ion-icon> 
-                                            {% elif ticket.priority == 'low' %}
-                                            <ion-icon name="star-sharp"></ion-icon> 
-                                            {% endif %}                                            
+                                        <div title="{{ticket.priority}} priority" style="text-align:right">
+                                                {% if ticket.priority == 'high' %}
+                                                <img style="width:10%;" src="{% static 'images/ui/orange_star.png' %}"/>
+                                                <img style="width:10%;" src="{% static 'images/ui/orange_star.png' %}"/>
+                                                <img style="width:10%;" src="{% static 'images/ui/orange_star.png' %}"/>            
+                                                {% elif ticket.priority == 'medium' %}
+                                                <img style="width:10%;" src="{% static 'images/ui/orange_star.png' %}"/>
+                                                <img style="width:10%;" src="{% static 'images/ui/orange_star.png' %}"/>
+                                                <img style="width:10%;" src="{% static 'images/ui/star.png' %}"/>
+                                                {% elif ticket.priority == 'low' %}
+                                                <img style="width:10%;" src="{% static 'images/ui/orange_star.png' %}"/>
+                                                <img style="width:10%;" src="{% static 'images/ui/star.png' %}"/>
+                                                <img style="width:10%;" src="{% static 'images/ui/star.png' %}"/>
+                                                {% endif %}                                          
                                             <div>
                                                 <span class='float-end' title = 'due {% if ticket.deadline == today %}today {% else %}in {{ticket.deadline|sub:today}}{% endif %}'><ion-icon class="text-{% if ticket.deadline < today %}danger {% elif ticket.deadline == today %}warning {% else %}success{% endif %}" name="time-sharp"></ion-icon></span>
                                             </div>
@@ -413,14 +419,20 @@
                                                 >{{ticket.employee_id}} </span
                                             >
                                         </div>
-                                        <div>
-                                            {% if ticket.priority == 'high' %}
-                                            <ion-icon name="star-sharp"></ion-icon> <ion-icon name="star-sharp"></ion-icon> <ion-icon name="star-sharp"></ion-icon>
-                                            {% elif ticket.priority == 'medium' %}
-                                            <ion-icon name="star-sharp"></ion-icon> <ion-icon name="star-sharp"></ion-icon> 
-                                            {% elif ticket.priority == 'low' %}
-                                            <ion-icon name="star-sharp"></ion-icon> 
-                                            {% endif %}
+                                        <div title="{{ticket.priority}} priority" style="text-align:right">
+                                                {% if ticket.priority == 'high' %}
+                                                    <img style="width:10%;" src="{% static 'images/ui/orange_star.png' %}"/>
+                                                    <img style="width:10%;" src="{% static 'images/ui/orange_star.png' %}"/>
+                                                    <img style="width:10%;" src="{% static 'images/ui/orange_star.png' %}"/>            
+                                                    {% elif ticket.priority == 'medium' %}
+                                                    <img style="width:10%;" src="{% static 'images/ui/orange_star.png' %}"/>
+                                                    <img style="width:10%;" src="{% static 'images/ui/orange_star.png' %}"/>
+                                                    <img style="width:10%;" src="{% static 'images/ui/star.png' %}"/>
+                                                    {% elif ticket.priority == 'low' %}
+                                                    <img style="width:10%;" src="{% static 'images/ui/orange_star.png' %}"/>
+                                                    <img style="width:10%;" src="{% static 'images/ui/star.png' %}"/>
+                                                    <img style="width:10%;" src="{% static 'images/ui/star.png' %}"/>
+                                                {% endif %}  
                                             <div>
                                                 <span class='float-end' title = 'due {% if ticket.deadline == today %}today {% else %}in {{ticket.deadline|sub:today}}{% endif %}'><ion-icon class="text-{% if ticket.deadline < today %}danger {% elif ticket.deadline == today %}warning {% else %}success{% endif %}" name="time-sharp"></ion-icon></span>
                                             </div>                                        
@@ -633,14 +645,20 @@
                                                 >{{ticket.employee_id}} </span
                                             >
                                         </div>
-                                        <div>
+                                        <div title="{{ticket.priority}} priority" style="text-align:right">
                                             {% if ticket.priority == 'high' %}
-                                            <ion-icon name="star-sharp"></ion-icon> <ion-icon name="star-sharp"></ion-icon> <ion-icon name="star-sharp"></ion-icon>
-                                            {% elif ticket.priority == 'medium' %}
-                                            <ion-icon name="star-sharp"></ion-icon> <ion-icon name="star-sharp"></ion-icon> 
-                                            {% elif ticket.priority == 'low' %}
-                                            <ion-icon name="star-sharp"></ion-icon> 
-                                            {% endif %}
+                                                <img style="width:10%;" src="{% static 'images/ui/orange_star.png' %}"/>
+                                                <img style="width:10%;" src="{% static 'images/ui/orange_star.png' %}"/>
+                                                <img style="width:10%;" src="{% static 'images/ui/orange_star.png' %}"/>            
+                                                {% elif ticket.priority == 'medium' %}
+                                                <img style="width:10%;" src="{% static 'images/ui/orange_star.png' %}"/>
+                                                <img style="width:10%;" src="{% static 'images/ui/orange_star.png' %}"/>
+                                                <img style="width:10%;" src="{% static 'images/ui/star.png' %}"/>
+                                                {% elif ticket.priority == 'low' %}
+                                                <img style="width:10%;" src="{% static 'images/ui/orange_star.png' %}"/>
+                                                <img style="width:10%;" src="{% static 'images/ui/star.png' %}"/>
+                                                <img style="width:10%;" src="{% static 'images/ui/star.png' %}"/>
+                                            {% endif %}  
                                             <div>
                                                 <span class='float-end' title = 'due {% if ticket.deadline == today %}today {% else %}in {{ticket.deadline|sub:today}}{% endif %}'><ion-icon class="text-{% if ticket.deadline < today %}danger {% elif ticket.deadline == today %}warning {% else %}success{% endif %}" name="time-sharp"></ion-icon></span>
                                             </div>

@@ -35,6 +35,7 @@
                     align-items: center;
                     border: 1px solid #aaa;
                     border-radius: 2px;
+                    background-color: #fff;
                 ">
                       {% for status in ticket_status %}
                       <option value="{{status.0}}"  {% if status.0 == ticket.status %} selected {% endif %}>
