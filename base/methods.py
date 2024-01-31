@@ -127,15 +127,16 @@ def sortby(request, queryset, key):
     if sortby is not None and sortby != "":
         # here will update the orderingList
         ordering["field"] = sortby
-        if queryset.query.order_by == queryset.query.order_by:
-            queryset = queryset.order_by(f'{ordering["ordering"]}{sortby}')
+        queryset = queryset.order_by(f'{ordering["ordering"]}{sortby}')
         if ordering["ordering"] == "-":
             ordering["ordering"] = ""
         else:
             ordering["ordering"] = "-"
         orderingList = [item for item in orderingList if item["id"] != id]
         orderingList.append(ordering)
-
+    order = f'{ordering["ordering"]}{sortby}'
+    setattr(request, 'sort_option', {})
+    request.sort_option["order"] = order
     return queryset
 
 
