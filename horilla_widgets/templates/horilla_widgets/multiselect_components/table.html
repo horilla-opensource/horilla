@@ -1,3 +1,4 @@
+{% load i18n %}
 <div class="oh-sticky-table" style="height: 50vh">
   <div
     class="oh-sticky-table__table oh-table--sortable"
@@ -15,7 +16,7 @@
                 id="choose-all-user"
               />
             </div>
-            Employee
+            {% trans "Employee" %}
           </div>
         </div>
       </div>
@@ -26,7 +27,7 @@
         class="oh-sticky-table__tr oh-sticky-table__tr--custom"
         data-instance-id="{{instance.id}}"
         data-label="{{instance}}"
-        data-avatar="{% if instance.get_image %}{{instance.get_image}}{% else %}https://ui-avatars.com/api/?name={{instance}}&background=random{% endif %}"
+        data-avatar="{{instance.get_avatar}}"
         draggable="true"
       >
         <div
@@ -44,7 +45,7 @@
             <div class="oh-profile oh-profile--md">
               <div class="oh-profile__avatar mr-1">
                 <img
-                  src="{% if instance.get_image %}{{instance.get_image}}{% else %}https://ui-avatars.com/api/?name={{instance}}&background=random{% endif %}"
+                  src="{{instance.get_avatar}}"
                   class="oh-profile__image"
                 />
               </div>

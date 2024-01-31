@@ -144,6 +144,7 @@
     {% endfor %}
   </select>
 </div>
+<!-- custom scroll/ horizontal scroll section -->
 <div class="d-flex justify-content-between custom-scroll">
   <div class="avatars" id="avatarsContainer"></div>
 </div>
@@ -167,7 +168,7 @@
       width: 50px;
     "
   >
-    <ion-icon name="filter-circle"></ion-icon> Filter
+    <ion-icon name="filter-circle"></ion-icon> {% trans "Filter" %}
   </span>
 </span>
 <div
@@ -205,7 +206,7 @@
             class="oh-btn oh-btn--secondary oh-btn--shadow pr-3 pl-3"
             onclick="event.stopPropagation();event.preventDefault;$('#filterChoose').toggleClass('oh-modal--show');"
           >
-            Add
+            {% trans "Add" %}
         </a>
         </div>
       </div>

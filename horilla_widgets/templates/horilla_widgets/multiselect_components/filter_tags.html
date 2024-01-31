@@ -1,3 +1,4 @@
+{% load i18n %}
 <style>
   .oh-checkpoint-badge--success {
     color: yellowgreen;
@@ -19,17 +20,17 @@
       data-toggle="oh-modal-toggle"
       data-target="#viewSelectedModal"
     >
-      Selected <span class="selected-count">0</span>/<span class="total-count">{{queryset|length}}</span>
+      {% trans "Selected" %} <span class="selected-count">0</span>/<span class="total-count">{{queryset|length}}</span>
     </div>
     <div class="oh-checkpoint-badge oh-checkpoint-badge--secondary" id="selectAllUsers">
-      Select All <span class="total-count visible-count">{{queryset|length}}</span> user
+      {% trans "Select All" %} <span class="total-count visible-count">{{queryset|length}}</span> {% trans "user" %}
     </div>
     <div class="oh-checkpoint-badge" id="unselectAllUsers">
-      Unselect All
+      {% trans "Unselect All" %}
     </div>
   </div>
 
   <div class="oh-checkpoint-badge oh-checkpoint-badge--success m-zero" id="selectAllInstances">
-    Select All {{queryset|length}} Item
+    {% trans "Select All" %} {{queryset|length}} {% trans "Item" %}
   </div>
 </div>

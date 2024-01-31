@@ -1,3 +1,4 @@
+{% load i18n %}
 <section
   class="oh-main__topbar p-3 mb-1 m-0"
   style="padding-left: 0 !important; padding-right: 0 !important"
@@ -24,22 +25,27 @@
     </div>
     <div class="oh-main__titlebar-button-container">
       <div class="oh-dropdown" x-data="{open: false}">
-        <button class="oh-btn ml-2" @click="open = !open">
+        <button
+         hx-get="{% url 'get-filter-form' %}?template_path={{filter_template_path}}"
+         hx-target="#wodgetFilterContainer"
+         class="oh-btn ml-2" @click="open = !open">
           <ion-icon
             name="filter"
             class="mr-1 md hydrated"
             role="img"
             aria-label="filter"
           ></ion-icon
-          >Filter
+          >{% trans "Filter" %}
           <div id="filterCount"></div>
         </button>
         <div
           class="oh-dropdown__menu oh-dropdown__menu--left oh-dropdown__filter p-4"
           x-show="open"
           @click.outside="open = false"
-        >
-          {% include filter_template_path %}
+        > 
+          <div id="wodgetFilterContainer">
+            {% comment %} {% include filter_template_path %} {% endcomment %}
+          </div>
           <div class="oh-dropdown__filter-footer">
             <button
               type="submit"
@@ -47,7 +53,7 @@
               data-action="{% url filter_route_name %}"
               id="widgetFilterButton{{self.attrs.id}}"
             >
-              Filter
+              {% trans "Filter" %}
             </button>
           </div>
         </div>

@@ -1,3 +1,4 @@
+{% load i18n %}
 <section
   class="oh-main__topbar p-3 mb-1 m-0"
   style="padding-left: 0 !important; padding-right: 0 !important"
@@ -21,12 +22,12 @@
     <div
       class="oh-checkpoint-badge oh-checkpoint-badge--secondary"
     >
-      Selected <span class="selected-count">0</span>/<span class="total-count">138</span>
+      {% trans "Selected" %} <span class="selected-count">0</span>/<span class="total-count">138</span>
     </div>
     <div class="oh-checkpoint-badge oh-checkpoint-badge--secondary" id="selectSelected">
-      Select All
+      {% trans "Select All" %}
     </div>
-    <div class="oh-checkpoint-badge" id="unselectSelected">Unselect All</div>
+    <div class="oh-checkpoint-badge" id="unselectSelected">{% trans "Unselect All" %}</div>
   </div>
 
   <!-- <div class="oh-checkpoint-badge oh-checkpoint-badge--success m-zero">
