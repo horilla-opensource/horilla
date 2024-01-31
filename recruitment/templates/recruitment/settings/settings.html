@@ -5,14 +5,22 @@
 </div>
 <div class="row">
     <form class="col-6"  hx-get="{% url 'candidate-self-tracking' %}" hx-swap="none">
-        <i class="pb-3">{% trans 'By enabling the feature candidates can track their recruitment progress' %}</i>
+        <div class="oh-label__info" for="application_tracking">
+            <label class="oh-label" for="application_tracking">{% trans "Application Tracking" %}</label> 
+            <span class="oh-info mr-2" title="{% trans "By enabling the feature candidates can track their recruitment progress" %}">
+            </span> 
+        </div>
         <div class="oh-switch p-3">
             <input type="checkbox"class="oh-switch__checkbox" name="candidate_self_tracking" onchange="$(this).closest('form').find('input[type=submit]').click()" {% if check_candidate_self_tracking %} checked {% endif %} />
         </div>
         <input type="submit" hidden>
     </form>
     <form class="col-6"  hx-get="{% url 'candidate-self-tracking-rating-option' %}" hx-swap="none">
-        <i class="pb-3">{% trans 'By enabling the feature candidates can view their recruitment overall rating' %}</i>
+        <div class="oh-label__info" for="rating_visiblity">
+            <label class="oh-label" for="rating_visiblity">{% trans "Rating Visiblity" %}</label> 
+            <span class="oh-info mr-2" title="{% trans "By enabling the feature candidates can view their recruitment overall rating" %}">
+            </span> 
+          </div>
         <div class="oh-switch p-3">
             <input type="checkbox"class="oh-switch__checkbox" name="candidate_self_tracking" onchange="$(this).closest('form').find('input[type=submit]').click()" {% if check_candidate_self_tracking_rating %} checked {% endif %} />
         </div>

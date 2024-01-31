@@ -6,6 +6,11 @@
     <h2 class="oh-inner-sidebar-content__title">{% trans "Announcement Expire" %}</h2>
   </div>
   <div>
+    <div class="oh-label__info" for="defatul_expire">
+      <label class="oh-label" for="defatul_expire">{% trans "Default Expire Days" %}</label> 
+      <span class="oh-info mr-2" title="{% trans "Set default notice period expire days" %}">
+      </span> 
+    </div>
     <input type="number" name="days" value="{{form.instance.days}}" class="oh-input w-25" placeholder="Days" id="id_days">
   {% if perms.payroll.change_payrollsettings %}
     <button
