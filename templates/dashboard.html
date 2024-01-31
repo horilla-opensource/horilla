@@ -689,12 +689,11 @@
         </div>
 
         <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent mb-3 mt-3">
-          <div class="oh-card-dashboard__title fw-bold" style="font-size:20px;">
-              <img style="width: 30px; height: 30px; display: inline-block;" src="{% static 'images/ui/megaphone.png' %}" class="oh-404__image ms-2"/>
-              <span class="ms-1">{% trans "Announcements." %}</span>
+          <div style="display: inline-block;">
+              <span class="oh-card-dashboard__title">{% trans "Announcements." %}</span>
               {% if perms.base.add_announcement %}
                 <span>
-                    <button style="display: inline-block;font-size: 20px; padding:5px; margin-top:-8px;" class="oh-btn oh-btn--secondary-outline float-end me-2" hx-get='{% url "create-announcement" %}' 
+                    <button style="display: inline-block;font-size: 16px; padding:3px; margin-top:-8px;" class="oh-btn oh-btn--secondary-outline float-end ms-2" hx-get='{% url "create-announcement" %}' 
                             hx-target="#createannouncementForm" hx-swap="innerHTML" data-toggle="oh-modal-toggle" data-target="#anouncementModal" title='{% trans "Create Announcement." %}'>
                         <ion-icon name="add-outline"></ion-icon>
                     </button>
