@@ -12,62 +12,68 @@ from django.dispatch import receiver
 
 
 STATUS = [
-    ('requested', 'Requested'),
-    ('approved', 'Approved'),
-    ('rejected', 'Rejected'),
+    ("requested", "Requested"),
+    ("approved", "Approved"),
+    ("rejected", "Rejected"),
 ]
 FORMATS = [
-    ('any', 'Any'),
-    ('pdf', 'PDF'),
-    ('txt', 'TXT'),
-    ('docx', 'DOCX'),
-    ('xlsx', 'XLSX'),
-    ('jpg', 'JPG'),
-    ('png', 'PNG'),
-    ('jpeg', 'JPEG'),
+    ("any", "Any"),
+    ("pdf", "PDF"),
+    ("txt", "TXT"),
+    ("docx", "DOCX"),
+    ("xlsx", "XLSX"),
+    ("jpg", "JPG"),
+    ("png", "PNG"),
+    ("jpeg", "JPEG"),
 ]
+
 
 def document_create(instance):
     employees = instance.employee_id.all()
     for employee in employees:
         Document.objects.get_or_create(
-            title = f"Upload {instance.title}",
+            title=f"Upload {instance.title}",
             employee_id=employee,
-            document_request_id = instance
+            document_request_id=instance,
         )
+
 
 class DocumentRequest(models.Model):
     title = models.CharField(max_length=100)
     employee_id = models.ManyToManyField(Employee)
-    format = models.CharField(choices=FORMATS,max_length=10)
-    max_size = models.IntegerField(blank=True,null=True)
-    description = models.TextField(blank=True,null=True)
+    format = models.CharField(choices=FORMATS, max_length=10)
+    max_size = models.IntegerField(blank=True, null=True)
+    description = models.TextField(blank=True, null=True)
     objects = HorillaCompanyManager()
     is_active = models.BooleanField(default=True)
 
-    def __str__ (self):
+    def __str__(self):
         return self.title
-    
+
+
 @receiver(post_save, sender=DocumentRequest)
 def doc_request_post_save(sender, instance, **kwargs):
     document_create(instance)
 
+
 @receiver(m2m_changed, sender=DocumentRequest.employee_id.through)
 def your_model_m2m_changed(sender, instance, action, **kwargs):
-    if action == 'post_add':
+    if action == "post_add":
         document_create(instance)
 
-    elif action == 'post_remove':
+    elif action == "post_remove":
         document_create(instance)
 
 
 class Document(models.Model):
     title = models.CharField(max_length=25)
-    employee_id = models.ForeignKey(Employee,on_delete=models.PROTECT)
-    document_request_id = models.ForeignKey(DocumentRequest,on_delete=models.PROTECT,null=True)
-    document = models.FileField(upload_to="employee/documents",null=True)
-    status = models.CharField(choices=STATUS, max_length=10,default="requested")
-    reject_reason = models.TextField(blank=True,null=True)
+    employee_id = models.ForeignKey(Employee, on_delete=models.PROTECT)
+    document_request_id = models.ForeignKey(
+        DocumentRequest, on_delete=models.PROTECT, null=True
+    )
+    document = models.FileField(upload_to="employee/documents", null=True)
+    status = models.CharField(choices=STATUS, max_length=10, default="requested")
+    reject_reason = models.TextField(blank=True, null=True)
     is_digital_asset = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     objects = HorillaCompanyManager(
@@ -87,26 +93,36 @@ class Document(models.Model):
             if max_size:
                 if file.size > max_size * 1024 * 1024:
                     raise ValidationError("File size exceeds the limit")
-            
+
             ext = file.name.split(".")[1].lower()
             if format == "any":
                 pass
             elif ext != format:
                 raise ValidationError(f"Please upload {format} file only.")
-            
-    def save(self,*args, **kwargs):
-        if len(self.title)<3:
+
+    def save(self, *args, **kwargs):
+        if len(self.title) < 3:
             raise ValidationError(_("Title must be at least 3 characters"))
         if self.is_digital_asset:
-            asset_category = AssetCategory.objects.get_or_create(asset_category_name ="Digital Asset")
-            
+            asset_category = AssetCategory.objects.get_or_create(
+                asset_category_name="Digital Asset"
+            )
+
             Asset.objects.create(
-                asset_name = self.title,
-                asset_purchase_date = date.today(),
-                asset_category_id = asset_category[0],
-                asset_status = "Not-Available",
+                asset_name=self.title,
+                asset_purchase_date=date.today(),
+                asset_category_id=asset_category[0],
+                asset_status="Not-Available",
                 asset_purchase_cost=0,
             )
-            
+
         super().save(*args, **kwargs)
 
+    def upload_documents_count(self):
+        total_requests = Document.objects.filter(
+            document_request_id=self.document_request_id
+        )
+        without_documents = total_requests.filter(document ='').count()
+        count = total_requests.count() - without_documents
+        return count
+ 
