@@ -9,7 +9,7 @@ from base.methods import filtersubordinates, get_key_instances, get_pagination
 from base.models import Department, JobPosition, Tags
 from employee.models import Employee
 from helpdesk.filter import FAQCategoryFilter, FAQFilter,TicketFilter, TicketReGroup
-from helpdesk.forms import AttachmentForm, CommentForm, DepartmentManagerCreateForm, FAQCategoryForm, FAQForm,TicketForm, TicketRaisedOnForm, TicketTagForm ,TicketAssigneesForm
+from helpdesk.forms import AttachmentForm, CommentForm, DepartmentManagerCreateForm, FAQCategoryForm, FAQForm,TicketForm, TicketRaisedOnForm, TicketTagForm ,TicketAssigneesForm, TicketTypeForm
 from django.utils.translation import gettext as _
 from django.contrib import messages
 from django.db.models import ProtectedError
@@ -402,9 +402,13 @@ def ticket_create(request):
         status = request.GET.get('status')
         form = TicketForm(initial={'status':status})
     if request.method == "POST":
-        form = TicketForm(request.POST)
-        if form.is_valid():
+        form = TicketForm(request.POST,request.FILES)
+        if form.is_valid():          
             ticket = form.save()
+            attachments = form.files.getlist('attachment')
+            for attachment in attachments:
+                attachment_instance= Attachment(file=attachment,ticket=ticket)
+                attachment_instance.save()
             mail_thread = TicketSendThread(request, ticket, type="create")
             mail_thread.start()
             messages.success(
@@ -431,6 +435,7 @@ def ticket_create(request):
             return HttpResponse("<script>window.location.reload()</script>")
     context = {
         'form': form,
+        't_type_form':TicketTypeForm(),
     }
     return render(request, "helpdesk/ticket/ticket_form.html", context)
 
@@ -452,9 +457,13 @@ def ticket_update(request,ticket_id):
     ticket = Ticket.objects.get(id=ticket_id)
     form = TicketForm(instance=ticket)
     if request.method == "POST":
-        form = TicketForm(request.POST,instance=ticket)
+        form = TicketForm(request.POST,request.FILES,instance=ticket)
         if form.is_valid():
-            form.save()
+            ticket = form.save()
+            attachments = form.files.getlist('attachment')
+            for attachment in attachments:
+                attachment_instance= Attachment(file=attachment,ticket=ticket)
+                attachment_instance.save()
             messages.success(
                 request, _('The Ticket updated successfully.')
             )
@@ -729,8 +738,11 @@ def ticket_detail(request,ticket_id,**kwargs):
         context=context
     )
 @login_required
-@owner_can_enter("perms.helpdesk.helpdesk_changeticket", Ticket)
+# @owner_can_enter("perms.helpdesk.helpdesk_changeticket", Ticket)
 def ticket_update_tag(request):
+    """
+    method to update the tags of ticket
+    """
     data = request.GET
     ticket = Ticket.objects.get(id=data['ticketId'])
     tagids = data.getlist('selectedValues[]')
@@ -807,6 +819,7 @@ def create_tag(request):
     """
     This is an ajax method to return json response to create tag in the change tag form.
     """
+
     if request.method == "POST":
         form = TagsForm(request.POST)
 

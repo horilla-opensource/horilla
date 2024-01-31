@@ -18,11 +18,119 @@
     {{form.as_p}}
 </form>
 
+<!-- start of create tag modal. -->
+<div id="addTagModal">                  
+    <div id="addTagTarget">
+    </div>
+  </div>
+  <div
+    class="oh-modal"
+    id="createTagModal"
+    role="dialog"
+    aria-labelledby="editDialogModal"
+    aria-hidden="true"
+  >
+    <div class="oh-modal__dialog">
+      <div class="oh-modal__dialog-header">
+        <h2 class="oh-modal__dialog-title" id="editTitle">
+          {% trans "Create Tag" %}
+        </h2>
+                
+            <button style="order: none;
+                background: none;
+                font-size: 1.5rem;
+                opacity: 0.7;
+                position: absolute;
+                top: 25px;
+                right: 15px;
+                cursor: pointer;
+                -webkit-transition: all 0.3s ease-in-out;
+                transition: all 0.3s ease-in-out;"
+                
+                aria-label="Close" 
+                onclick="event.stopPropagation(); $('#createTagModal').removeClass('oh-modal--show'); $('#id_tags option[value=\'create_new_tag\']').prop('selected', false);"
+
+
+            >
+          <ion-icon name="close-outline"></ion-icon>
+        </button>
+      </div>
+      <div class="oh-modal__dialog-body" id="editTarget">
+        
+        <form
+          onsubmit="saveTag();event.preventDefault();"
+        >
+          {% csrf_token %}
+          
+            <label class="oh-label">{% trans "Title" %}</label>
+            <input type="text" name="title" maxlength="30" class="oh-input w-100" placeholder="Title" required="" id="id_tag_title">
+
+            <label class="oh-label">{% trans "Color" %}</label>
+            <input type="color" name="color" style="height:50px" maxlength="30" class="oh-input w-100" placeholder="Color" required="" id="id_tag_color">
+            <input type="checkbox" name="is_active" class="oh-switch__checkbox" id="id_tag_is_active" checked style="display: none;">
+          
+          <button
+            type="submit"
+            class="oh-btn oh-btn--secondary mt-2 mr-0 oh-btn--w-100-resp"
+          >
+            {% trans "Save" %}
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+<!-- end of create tag modal. -->
+<!-- start of create ticket type modal. -->
+
+<div id="addTicketTypeModal">                  
+    <div id="addTicketTypeTarget">
+    </div>
+  </div>
+  <div
+    class="oh-modal"
+    id="createTicketTypeModal"
+    role="dialog"
+    aria-labelledby="editDialogModal"
+    aria-hidden="true"
+  >
+    <div class="oh-modal__dialog">
+      <div class="oh-modal__dialog-header">
+        <h2 class="oh-modal__dialog-title" id="editTitle">
+          {% trans "Create Ticket Type" %}
+        </h2>
+        <button class="oh-modal__close" aria-label="Close">
+          <ion-icon name="close-outline"></ion-icon>
+        </button>
+      </div>
+      <div class="oh-modal__dialog-body" id="editTarget">
+        
+        <form
+          onsubmit="saveTicketType();event.preventDefault();"
+        >
+          {% csrf_token %}
+          
+            <label class="oh-label">{% trans "Title" %}</label>
+            <input type="text" name="title" maxlength="30" class="oh-input w-100" placeholder="Title" required="" id="id_ticket_type_title">
+            <label class="oh-label">{% trans "Type" %}</label>
+                {{ t_type_form.type }}
+            <label class="oh-label">{% trans "Prefix" %}</label>
+                {{ t_type_form.prefix }}
+                <input type="checkbox" name="is_active" class="oh-switch__checkbox" id="id_ticket_type_is_active" checked style="display: none;">
+          <button
+            type="submit"
+            class="oh-btn oh-btn--secondary mt-2 mr-0 oh-btn--w-100-resp"
+          >
+            {% trans "Save" %}
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+<!-- end of create ticket type modal. -->
+
 <script>
     $(document).ready( function(){
         var assigning_type = $('#id_assigning_type').val();
-        
-    
         if (assigning_type) {  
             $.ajax({
                 type: "GET",
@@ -75,5 +183,22 @@
                 },
             });
         })
+        $('#id_tags').change(function(){
+            var selectedValues = $("#id_tags option:selected").map(function(){
+                return $(this).val();
+              }).get();
+              // Check if 'create_new_tag' exists in the list
+              if (selectedValues.includes('create_new_tag')) {
+                $("#createTagModal").addClass("oh-modal--show");
+              }
+        })
+        $('#id_ticket_type').change(function(){
+            var selectedValues = $("#id_ticket_type").val()
+              // Check if 'create_new_ticket_type' is selected
+              if (selectedValues == 'create_new_ticket_type') {
+                $("#createTicketTypeModal").addClass("oh-modal--show");
+              }
+        })
     })
+    
 </script>

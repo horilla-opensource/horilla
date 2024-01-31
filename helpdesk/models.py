@@ -1,9 +1,10 @@
-import datetime
+from datetime import datetime
 import os
 from django import apps
 from django.db import models
+from django.forms import ValidationError
 from base.models import Department, JobPosition, Tags
-
+from django.utils.translation import gettext_lazy as _
 from employee.models import Employee
 from base.models import Company
 from base.horilla_company_manager import HorillaCompanyManager
@@ -93,7 +94,7 @@ class Ticket(models.Model):
     created_date = models.DateField(auto_now_add=True)
     resolved_date = models.DateField(blank=True, null=True)
     assigning_type = models.CharField(choices = MANAGER_TYPES, max_length=100)
-    raised_on = models.CharField(max_length=100)
+    raised_on = models.CharField(max_length=100,verbose_name="Forward To")
     assigned_to = models.ManyToManyField(Employee,blank=True,related_name="ticket_assigned_to")
     deadline = models.DateField(null=True,blank=True)
     tags = models.ManyToManyField(Tags,blank=True,related_name="ticket_tags")
@@ -108,7 +109,12 @@ class Ticket(models.Model):
     objects = HorillaCompanyManager(
         related_company_field="employee_id__employee__work_info__company_id"
     )
-
+    def clean(self, *args, **kwargs):
+        super().clean(*args, **kwargs)
+        deadline = self.deadline
+        today = datetime.today().date()
+        if deadline < today:
+            raise ValidationError(_("Deadline should be greater than today"))
     def get_raised_on(self):
         obj_id = self.raised_on
         if self.assigning_type == 'department':

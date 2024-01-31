@@ -29,7 +29,13 @@
                   <p class="oh-helpdesk__header-title">{{ticket.title}}</p>
                   
                   <span class="helpdesk__card-value me-3">
-                    <select name="status_update" class="oh-select w-100" onchange="updateStatus()">
+                    <select name="status_update" title='{% trans "Status" %}' class="oh-select" onchange="updateStatus()" 
+                    style="
+                    width:190px;
+                    align-items: center;
+                    border: 1px solid #aaa;
+                    border-radius: 2px;
+                ">
                       {% for status in ticket_status %}
                       <option value="{{status.0}}"  {% if status.0 == ticket.status %} selected {% endif %}>
                         <span class="oh-dot oh-dot--small oh-dot--warning">{{status.1}}</span></option>
@@ -273,11 +279,17 @@
                         <span class="helpdesk__card-label">{% trans "Priority" %}</span>
                         <span class="helpdesk__card-value" name="priority">
                           {% if ticket.priority == 'high' %}
-                          <ion-icon name="star-sharp"></ion-icon> <ion-icon name="star-sharp"></ion-icon> <ion-icon name="star-sharp"></ion-icon>
+                          <img style="width:4%;" src="{% static 'images/ui/orange_star.png' %}"/>
+                          <img style="width:4%;" src="{% static 'images/ui/orange_star.png' %}"/>
+                          <img style="width:4%;" src="{% static 'images/ui/orange_star.png' %}"/>            
                           {% elif ticket.priority == 'medium' %}
-                          <ion-icon name="star-sharp"></ion-icon> <ion-icon name="star-sharp"></ion-icon> 
+                          <img style="width:4%;" src="{% static 'images/ui/orange_star.png' %}"/>
+                          <img style="width:4%;" src="{% static 'images/ui/orange_star.png' %}"/>
+                          <img style="width:4%;" src="{% static 'images/ui/star.png' %}"/>
                           {% elif ticket.priority == 'low' %}
-                          <ion-icon name="star-sharp"></ion-icon> 
+                          <img style="width:4%;" src="{% static 'images/ui/orange_star.png' %}"/>
+                          <img style="width:4%;" src="{% static 'images/ui/star.png' %}"/>
+                          <img style="width:4%;" src="{% static 'images/ui/star.png' %}"/>
                           {% endif %}
                         </span>
                       </li>
@@ -311,7 +323,7 @@
                   <div class="oh-helpdesk__card-body">
                     <div class="oh-helpdesk__subcard">
                       <div class="oh-helpdesk__subcard-header">
-                        <span class="oh-helpdesk__subcard-title">{% trans "Raised on" %}</span>
+                        <span class="oh-helpdesk__subcard-title">{% trans "Forward to" %}</span>
                         {% if perms.helpdesk.changeticket or request.user.employee_get == ticket.employee_id %}
                         <a
                           hx-get="{% url 'ticket-change-raised-on' ticket.id %}"
@@ -411,6 +423,8 @@
       </div>
     </div>
 
+<!-- start of create tag modal. -->
+
     <div id="addTagModal">                  
       <div id="addTagTarget">
       </div>
@@ -447,9 +461,9 @@
         </div>
       </div>
     </div>
+<!-- end of create tag modal. -->
 
     <script>
-
       function showTag(){
         var title=$('#id_title').val()
         var color = $("#id_color").val()

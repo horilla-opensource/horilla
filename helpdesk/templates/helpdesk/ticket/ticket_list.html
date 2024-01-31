@@ -20,21 +20,23 @@
 							<div class="oh-sticky-table__th">{% trans "Title" %}</div>
 							<div class="oh-sticky-table__th">{% trans "Owner" %}</div>
 							<div class="oh-sticky-table__th">{% trans "Type" %}</div>
-							<div class="oh-sticky-table__th">{% trans "Raised on" %}</div>
+							<div class="oh-sticky-table__th">{% trans "Forward to" %}</div>
 							<div class="oh-sticky-table__th">{% trans "Assigned to" %}</div>
 							<div class="oh-sticky-table__th">{% trans "Status" %}</div>
+							<div class="oh-sticky-table__th">{% trans "Priority" %}</div>
 							<div class="oh-sticky-table__th">{% trans "Tags" %}</div>
 							<div class="oh-sticky-table__th">{% trans "Actions" %}</div>
 						</div>
 					</div>
 					<div class="oh-sticky-table__tbody">
 						{% for ticket in my_tickets %}
-							<div class="oh-sticky-table__tr" >	
+							<div class="oh-sticky-table__tr" onclick="window.location.href = `{% url 'ticket-detail' ticket.id %}`" >	
 								<div class="oh-sticky-table__sd {% if ticket.status == 'new' %}row-status--blue 
 															{% elif ticket.status == 'in_progress' %}row-status--orange
 															{% elif ticket.status == 'resolved' %}row-status--yellowgreen 
 															{% elif ticket.status == 'on_hold' %}row-status--red  
 															{% elif ticket.status == 'canceled' %}row-status--grey{% endif %}"
+															onclick="event.stopPropagation()"
 								>
 									<div class="centered-div">
 										<input
@@ -64,6 +66,22 @@
 								<div class="oh-sticky-table__td">{{ticket.get_raised_on}}</div>
 								<div class="oh-sticky-table__td">{{ticket.assigned_to.all|join:" , "}}</div>
 								<div class="oh-sticky-table__td">{{ticket.get_status_display}}</div>
+								<div class="oh-sticky-table__td">
+									{% if ticket.priority == 'high' %}
+									<img style="width:15%;" src="{% static 'images/ui/orange_star.png' %}"/>
+									<img style="width:15%;" src="{% static 'images/ui/orange_star.png' %}"/>
+									<img style="width:15%;" src="{% static 'images/ui/orange_star.png' %}"/>            
+									{% elif ticket.priority == 'medium' %}
+									<img style="width:15%;" src="{% static 'images/ui/orange_star.png' %}"/>
+									<img style="width:15%;" src="{% static 'images/ui/orange_star.png' %}"/>
+									<img style="width:15%;" src="{% static 'images/ui/star.png' %}"/>
+									{% elif ticket.priority == 'low' %}
+									<img style="width:15%;" src="{% static 'images/ui/orange_star.png' %}"/>
+									<img style="width:15%;" src="{% static 'images/ui/star.png' %}"/>
+									<img style="width:15%;" src="{% static 'images/ui/star.png' %}"/>
+									{% endif %}
+								</div>
+
 								<div class="oh-sticky-table__td">{{ticket.tags.all|join:" , "}}</div>
 								<div class="oh-sticky-table__td" onclick="event.stopPropagation()">
 									<div class="oh-btn-group">
@@ -172,27 +190,10 @@
 			</div>
 		{% else %}
 			<!-- start of empty page-->  
-            <div
-                style="
-                    height: 70vh;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                "
-                class=""
-            >
-                <div style="" class="oh-404">
-                    <img
-                        style="display: block; width: 150px; height: 150px; margin: 10px auto top:70% !importent"
-                        src="{% static 'images/ui/ticket.png' %}"
-                        class="mb-4"
-                        alt=""
-                    />
-                    <h3 style="font-size: 20px" class="oh-404__subtitle">
-                        {% trans "There are no tickets at the moment." %}
-                    </h3>
-                </div>	
-            </div>
+            <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%;">
+				<img style="display: block; width: 15%; margin: 20px auto; filter: opacity(0.5);" src="{% static 'images/ui/ticket.png' %}" class="" alt="Page not found. 404." />
+				<h5 class="oh-404__subtitle">{% trans "There are no tickets at the moment." %}</h5>
+			</div>
             <!-- end of empty page--> 
 		{% endif %}
 	</div>
@@ -215,9 +216,10 @@
 							<div class="oh-sticky-table__th">{% trans "Title" %}</div>
 							<div class="oh-sticky-table__th">{% trans "Owner" %}</div>
 							<div class="oh-sticky-table__th">{% trans "Type" %}</div>
-							<div class="oh-sticky-table__th">{% trans "Raised on" %}</div>
+							<div class="oh-sticky-table__th">{% trans "Forward to" %}</div>
 							<div class="oh-sticky-table__th">{% trans "Assigned to" %}</div>
 							<div class="oh-sticky-table__th">{% trans "Status" %}</div>
+							<div class="oh-sticky-table__th">{% trans "Priority" %}</div>
 							<div class="oh-sticky-table__th">{% trans "Tags" %}</div>
 							<div class="oh-sticky-table__th">{% trans "Actions" %}</div>
 							<div class="oh-sticky-table__th"></div>
@@ -225,12 +227,13 @@
 					</div>
 					<div class="oh-sticky-table__tbody">
 						{% for ticket in allocated_tickets %}
-							<div class="oh-sticky-table__tr" >	
+							<div class="oh-sticky-table__tr" onclick="window.location.href = `{% url 'ticket-detail' ticket.id %}`" >	
 								<div class="oh-sticky-table__sd {% if ticket.status == 'new' %}row-status--blue 
 															{% elif ticket.status == 'in_progress' %}row-status--orange
 															{% elif ticket.status == 'resolved' %}row-status--yellowgreen 
 															{% elif ticket.status == 'on_hold' %}row-status--red  
 															{% elif ticket.status == 'canceled' %}row-status--grey{% endif %}"
+															onclick="event.stopPropagation()"
 								>
 									<div class="centered-div">
 										<input
@@ -260,6 +263,21 @@
 								<div class="oh-sticky-table__td">{{ticket.get_raised_on}}</div>
 								<div class="oh-sticky-table__td">{{ticket.assigned_to.all|join:" , "}}</div>
 								<div class="oh-sticky-table__td">{{ticket.get_status_display}}</div>
+								<div class="oh-sticky-table__td">
+									{% if ticket.priority == 'high' %}
+									<img style="width:15%;" src="{% static 'images/ui/orange_star.png' %}"/>
+									<img style="width:15%;" src="{% static 'images/ui/orange_star.png' %}"/>
+									<img style="width:15%;" src="{% static 'images/ui/orange_star.png' %}"/>            
+									{% elif ticket.priority == 'medium' %}
+									<img style="width:15%;" src="{% static 'images/ui/orange_star.png' %}"/>
+									<img style="width:15%;" src="{% static 'images/ui/orange_star.png' %}"/>
+									<img style="width:15%;" src="{% static 'images/ui/star.png' %}"/>
+									{% elif ticket.priority == 'low' %}
+									<img style="width:15%;" src="{% static 'images/ui/orange_star.png' %}"/>
+									<img style="width:15%;" src="{% static 'images/ui/star.png' %}"/>
+									<img style="width:15%;" src="{% static 'images/ui/star.png' %}"/>
+									{% endif %}
+								</div>
 								<div class="oh-sticky-table__td">{{ticket.tags.all|join:" , "}}</div>
 								<div class="oh-sticky-table__td" onclick="event.stopPropagation()">
 									<div class="oh-btn-group" style="border:none">
@@ -390,27 +408,10 @@
 			</div>
 		{% else %}
 			<!-- start of empty page-->  
-            <div
-                style="
-                    height: 70vh;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                "
-                class=""
-            >
-                <div style="" class="oh-404">
-                    <img
-                        style="display: block; width: 150px; height: 150px; margin: 10px auto"
-                        src="{% static 'images/ui/ticket.png' %}"
-                        class="mb-4"
-                        alt=""
-                    />
-                    <h3 style="font-size: 20px" class="oh-404__subtitle">
-                        {% trans "There are no tickets at the moment." %}
-                    </h3>
-                </div>
-            </div>
+			<div style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%;">
+				<img style="display: block; width: 15%; margin: 20px auto; filter: opacity(0.5);" src="{% static 'images/ui/ticket.png' %}" class="" alt="Page not found. 404." />
+				<h5 class="oh-404__subtitle">{% trans "There are no tickets at the moment." %}</h5>
+			</div>
             <!-- end of empty page--> 
 		{% endif %}		
 	</div>
@@ -433,21 +434,23 @@
 							<div class="oh-sticky-table__th">{% trans "Title" %}</div>
 							<div class="oh-sticky-table__th">{% trans "Owner" %}</div>
 							<div class="oh-sticky-table__th">{% trans "Type" %}</div>
-							<div class="oh-sticky-table__th">{% trans "Raised on" %}</div>
+							<div class="oh-sticky-table__th">{% trans "Forward to" %}</div>
 							<div class="oh-sticky-table__th">{% trans "Assigned to" %}</div>
 							<div class="oh-sticky-table__th">{% trans "Status" %}</div>
+							<div class="oh-sticky-table__th">{% trans "Priority" %}</div>
 							<div class="oh-sticky-table__th">{% trans "Tags" %}</div>
 							<div class="oh-sticky-table__th">{% trans "Actions" %}</div>
 						</div>
 					</div>
 					<div class="oh-sticky-table__tbody">
 						{% for ticket in all_tickets %}
-							<div class="oh-sticky-table__tr" >	
+							<div class="oh-sticky-table__tr" onclick="window.location.href = `{% url 'ticket-detail' ticket.id %}`">	
 								<div class="oh-sticky-table__sd {% if ticket.status == 'new' %}row-status--blue 
 															{% elif ticket.status == 'in_progress' %}row-status--orange
 															{% elif ticket.status == 'resolved' %}row-status--yellowgreen 
 															{% elif ticket.status == 'on_hold' %}row-status--red  
 															{% elif ticket.status == 'canceled' %}row-status--grey{% endif %}"
+								onclick="event.stopPropagation()"
 								>
 									<div class="centered-div">
 										<input
@@ -477,6 +480,21 @@
 								<div class="oh-sticky-table__td">{{ticket.get_raised_on}}</div>
 								<div class="oh-sticky-table__td">{{ticket.assigned_to.all|join:" , "}}</div>
 								<div class="oh-sticky-table__td">{{ticket.get_status_display}}</div>
+								<div class="oh-sticky-table__td">
+									{% if ticket.priority == 'high' %}
+									<img style="width:15%;" src="{% static 'images/ui/orange_star.png' %}"/>
+									<img style="width:15%;" src="{% static 'images/ui/orange_star.png' %}"/>
+									<img style="width:15%;" src="{% static 'images/ui/orange_star.png' %}"/>            
+									{% elif ticket.priority == 'medium' %}
+									<img style="width:15%;" src="{% static 'images/ui/orange_star.png' %}"/>
+									<img style="width:15%;" src="{% static 'images/ui/orange_star.png' %}"/>
+									<img style="width:15%;" src="{% static 'images/ui/star.png' %}"/>
+									{% elif ticket.priority == 'low' %}
+									<img style="width:15%;" src="{% static 'images/ui/orange_star.png' %}"/>
+									<img style="width:15%;" src="{% static 'images/ui/star.png' %}"/>
+									<img style="width:15%;" src="{% static 'images/ui/star.png' %}"/>
+									{% endif %}
+								</div>
 								<div class="oh-sticky-table__td">{{ticket.tags.all|join:" , "}}</div>
 								<div class="oh-sticky-table__td" onclick="event.stopPropagation()">
 									<div class="oh-btn-group">
@@ -584,27 +602,10 @@
 			</div>
 		{% else %}
 			<!-- start of empty page-->  
-            <div
-                style="
-                    height: 70vh;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                "
-                class=""
-            >
-                <div style="" class="oh-404">
-                    <img
-                        style="display: block; width: 150px; height: 150px; margin: 10px auto"
-                        src="{% static 'images/ui/ticket.png' %}"
-                        class="mb-4"
-                        alt=""
-                    />
-                    <h3 style="font-size: 20px" class="oh-404__subtitle">
-                        {% trans "There are no tickets at the moment." %}
-                    </h3>
-                </div>
-            </div>
+            <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%;">
+				<img style="display: block; width: 15%; margin: 20px auto; filter: opacity(0.5);" src="{% static 'images/ui/ticket.png' %}" class="" alt="Page not found. 404." />
+				<h5 class="oh-404__subtitle">{% trans "There are no tickets at the moment." %}</h5>
+			</div>
             <!-- end of empty page--> 
 		{% endif %}		
 	</div>

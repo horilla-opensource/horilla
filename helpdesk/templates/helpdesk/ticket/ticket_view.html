@@ -131,7 +131,7 @@
 					{% trans "My Tickets" %}
 				</li>
 				<li class="oh-tabs__tab" data-target="#tab_2">
-					{% trans "Allocated Tickets" %}
+					{% trans "Suggested Tickets" %}
 				</li>
 				{% if request.user|is_reportingmanager %}
 					<li class="oh-tabs__tab" data-target="#tab_3">
@@ -232,6 +232,57 @@
 			$(".ticket-view-type").attr("hx-vals", hxVals);   
 		});
 	});
+	function saveTag(){
+        var title=$('#id_tag_title').val()
+        var color = $("#id_tag_color").val()
+        var is_active = $("#id_tag_is_active").val()
+        $.ajax({
+          type: "post",
+          url: `/helpdesk/ticket-create-tag`,
+          data: {
+            csrfmiddlewaretoken: getCookie("csrftoken"),
+            "title": title,
+            "color":color,
+            "is_active":is_active,
+          },
+          success: function (response) {
+            if (response.errors === "no_error") {
+              var newOption = $('<option selected></option>').val(response.tag_id).text(response.title)
+              $("#createTagModal").removeClass("oh-modal--show");
+              $("#id_tags option[value='create_new_tag']").before(newOption);
+              $("#id_tags option[value='create_new_tag']").prop('selected',false)
+                {% comment %} updateTag() {% endcomment %}
+            }    
+          }
+        });
+    }
+	function saveTicketType(){
+		var title=$('#id_ticket_type_title').val()
+        var type = $("#id_type").val()
+        var prefix = $("#id_prefix").val()
+        var is_active = $("#id_ticket_type_is_active").val()
+		$.ajax({
+			type: "post",
+			url: "{% url 'ticket-type-create' %}?ajax=True",
+			data: {
+			  csrfmiddlewaretoken: getCookie("csrftoken"),
+			  "title": title,
+			  "type":type,
+			  'prefix':prefix,
+			  "is_active":is_active,
+			},
+			success: function (response) {
+			  if (response.errors === "no_error") {
+				var newOption = $('<option selected></option>').val(response.ticket_id).text(response.title)
+				$("#createTicketTypeModal").removeClass("oh-modal--show");
+				$("#id_ticket_type option[value='create_new_ticket_type']").before(newOption);
+				$("#id_ticket_type option[value='create_new_ticket_type']").prop('selected',false)
+				  {% comment %} updateTag() {% endcomment %}
+			  }    
+			}
+		  });
+	}
+
   </script>
 
 {% endblock %}

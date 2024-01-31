@@ -20,8 +20,10 @@ class YourForm(forms.Form):
         # Custom validation logic goes here
         pass
 """
+from typing import Any
 from base.forms import ModelForm
 from base.models import Department, JobPosition
+from employee.forms import MultipleFileField
 from employee.models import Employee
 from helpdesk.models import Attachment, DepartmentManager, TicketType, FAQ,Ticket, FAQCategory, Comment
 from django import forms
@@ -73,27 +75,15 @@ class TicketForm(ModelForm):
         context = {"form": self}
         table_html = render_to_string("attendance_form.html", context)
         return table_html
-
-# def get_updated_choices(assigning_type):
-#     new_choices =[
-#             ('', '---------'),
-#         ]
-#     if assigning_type:
-#         if assigning_type == 'department':
-#             # Retrieve data from the Department model and format it as a list of dictionaries
-#             departments = Department.objects.values('id', 'department')
-#             raised_on = [{'id': dept['id'], 'name': dept['department']} for dept in departments]
-#         elif assigning_type == 'job_position':
-#             jobpositions = JobPosition.objects.values('id','job_position')
-#             raised_on = [{'id': job['id'], 'name': job['job_position']} for job in jobpositions]
-#         elif assigning_type == 'individual':
-#             employees = Employee.objects.values('id','employee_first_name','employee_last_name')
-#             raised_on = [{'id': employee['id'], 'name': f"{employee['employee_first_name']} {employee['employee_last_name']}"} for employee in employees]
-
-#         new_choices = [
-#             (choice['id'], choice['name']) for choice in raised_on
-#             ]
-#         return new_choices
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["attachment"] = MultipleFileField(
+            label="Attachements", required=False
+        )
+        self.fields["tags"].choices = list(self.fields["tags"].choices)
+        self.fields["tags"].choices.append(("create_new_tag", "Create new tag"))
+        self.fields["ticket_type"].choices = list(self.fields["ticket_type"].choices)
+        self.fields["ticket_type"].choices.append(("create_new_ticket_type", "Create new ticket type"))
 
 class TicketTagForm(ModelForm):
     class Meta:
