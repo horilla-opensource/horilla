@@ -7,6 +7,7 @@ from django.forms import widgets
 from django.utils.translation import gettext_lazy as trans
 from django.template.loader import render_to_string
 from payroll.models.models import (
+    EncashmentGeneralSettings,
     PayrollGeneralSetting,
     ReimbursementrequestComment,
     WorkRecord,
@@ -154,3 +155,9 @@ class ReimbursementrequestCommentForm(ModelForm):
 
         model = ReimbursementrequestComment
         fields = ("comment",)
+
+
+class EncashmentGeneralSettingsForm(ModelForm):
+    class Meta:
+        model = EncashmentGeneralSettings
+        fields = "__all__"

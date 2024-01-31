@@ -123,7 +123,9 @@ from base.methods import (
     get_key_instances,
     sortby,
 )
+from payroll.forms.forms import EncashmentGeneralSettingsForm
 from payroll.forms.component_forms import PayrollSettingsForm
+from payroll.models.models import EncashmentGeneralSettings
 from payroll.models.tax_models import PayrollSettings
 from helpdesk.models import TicketType
 from helpdesk.forms import TicketTypeForm
@@ -554,7 +556,11 @@ def user_group(request):
     return render(
         request,
         "base/auth/group.html",
-        {"permissions": permissions, "form": form, "groups": paginator_qry(groups,request.GET.get("page"))},
+        {
+            "permissions": permissions,
+            "form": form,
+            "groups": paginator_qry(groups, request.GET.get("page")),
+        },
     )
 
 
@@ -599,7 +605,11 @@ def user_group_search(request):
     return render(
         request,
         "base/auth/group_lines.html",
-        {"permissions": permissions, "form": form, "groups": paginator_qry(groups,request.GET.get("page"))},
+        {
+            "permissions": permissions,
+            "form": form,
+            "groups": paginator_qry(groups, request.GET.get("page")),
+        },
     )
 
 
@@ -3385,14 +3395,22 @@ def general_settings(request):
     """
     instance = AnnouncementExpire.objects.first()
     form = AnnouncementExpireForm(instance=instance)
+    encashment_instance = EncashmentGeneralSettings.objects.first()
+    encashment_form = EncashmentGeneralSettingsForm(instance=encashment_instance)
     if request.method == "POST":
         form = AnnouncementExpireForm(request.POST, instance=instance)
         if form.is_valid():
             form.save()
             messages.success(request, _("Settings updated."))
             return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
-    return render(request, "base/general_settings.html", {'form':form})
-
+    return render(
+        request,
+        "base/general_settings.html",
+        {
+            "form": form,
+            "encashment_form": encashment_form,
+        },
+    )
 
 
 @login_required
@@ -3783,16 +3801,16 @@ def ticket_type_create(request):
     form = TicketTypeForm()
     if request.method == "POST":
         form = TicketTypeForm(request.POST)
-        if request.GET.get('ajax'):
+        if request.GET.get("ajax"):
             if form.is_valid():
                 instance = form.save()
-                response= {
-                        "errors": 'no_error',
-                        "ticket_id": instance.id,
-                        "title": instance.title,
-                    }
+                response = {
+                    "errors": "no_error",
+                    "ticket_id": instance.id,
+                    "title": instance.title,
+                }
                 return JsonResponse(response)
-                    
+
             errors = form.errors.as_json()
             return JsonResponse({"errors": errors})
         if form.is_valid():
@@ -3807,6 +3825,7 @@ def ticket_type_create(request):
             "form": form,
         },
     )
+
 
 @login_required
 def ticket_type_update(request, t_type_id):

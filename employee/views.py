@@ -95,8 +95,9 @@ from employee.models import (
     EmployeeWorkInformation,
     EmployeeBankDetails,
 )
+from payroll.forms.forms import EncashmentGeneralSettingsForm
 from payroll.methods.payslip_calc import dynamic_attr
-from payroll.models.models import Allowance, Contract, Deduction, Reimbursement
+from payroll.models.models import Allowance, Contract, Deduction, EncashmentGeneralSettings, Reimbursement
 from pms.models import Feedback
 from recruitment.models import Candidate
 from horilla_documents.models import Document, DocumentRequest
@@ -2745,16 +2746,20 @@ def redeem_points(request, emp_id):
     """
     user = Employee.objects.get(id=emp_id)
     form = BonusPointRedeemForm()
+    amount_for_bonus_point = EncashmentGeneralSettings.objects.first().bonus_amount if EncashmentGeneralSettings.objects.first() else 1
     if request.method == "POST":
         form = BonusPointRedeemForm(request.POST)
         if form.is_valid():
             form.save(commit=False)
             points = form.cleaned_data["points"]
+            amount = amount_for_bonus_point * points
+            
             reimbursement = Reimbursement.objects.create(
                 title=f"Bonus point Redeem for {user}",
                 type="bonus_encashment",
                 employee_id=user,
                 bonus_to_encash=points,
+                amount = amount,
                 description=f"{user} want to redeem {points} points",
                 allowance_on=date.today(),
             )
@@ -2854,3 +2859,17 @@ def organisation_chart(request):
         "act_manager_id": manager.id,
     }
     return render(request, "organisation_chart/org_chart.html", context=context)
+
+
+@login_required
+def encashment_condition_create(request):
+    instance = EncashmentGeneralSettings.objects.first()
+    encashment_form = EncashmentGeneralSettingsForm(instance=instance)
+    if request.method == "POST":
+        encashment_form = EncashmentGeneralSettingsForm(request.POST,instance=instance)
+        if encashment_form.is_valid():
+            encashment_form.save()
+            messages.success(request, _("Settings updated."))
+            return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+    
+    return render(request, "settings/encashment_settings.html", {"encashment_form":encashment_form,})

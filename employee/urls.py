@@ -282,5 +282,6 @@ urlpatterns = [
     path("action-type-details",policies.action_type_details,name="action-type-details",),
     path("disciplinary-filter-view", policies.disciplinary_filter_view, name="disciplinary-filter-view"),
     path("search-disciplinary", policies.search_disciplinary, name="search-disciplinary"),
+    path("encashment-condition-create", views.encashment_condition_create, name="encashment-condition-create"),
 
 ]

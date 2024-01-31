@@ -1591,6 +1591,7 @@ class Reimbursement(models.Model):
 
     def save(self, *args, **kwargs) -> None:
         request = getattr(thread_local_middleware._thread_locals, "request", None)
+        amount_for_leave = EncashmentGeneralSettings.objects.first().leave_amount if EncashmentGeneralSettings.objects.first() else 1
 
         # Setting the created use if the used dont have the permission
         has_perm = request.user.has_perm("payroll.add_reimbursement")
@@ -1601,6 +1602,8 @@ class Reimbursement(models.Model):
         elif self.type == "leave_encashment" and self.leave_type_id is None:
             raise ValidationError({"leave_type_id": "This field is required"})
         if self.type == "leave_encashment":
+            if self.status == "requested":
+                self.amount = (self.cfd_to_encash + self.ad_to_encash) * amount_for_leave
             self.cfd_to_encash = max((round(self.cfd_to_encash * 2) / 2), 0)
             self.ad_to_encash = max((round(self.ad_to_encash * 2) / 2), 0)
             assigned_leave = self.leave_type_id.employee_available_leave.filter(
@@ -1655,7 +1658,6 @@ class Reimbursement(models.Model):
                                     "The employee don't have that much leaves to encash in CFD / Available days",
                                 )
 
-                    # if self.ad
 
                 if proceed:
                     reimbursement = Allowance()
@@ -1677,15 +1679,16 @@ class Reimbursement(models.Model):
             elif self.status == "canceled" and self.allowance_id is not None:
                 cfd_days = self.cfd_to_encash
                 available_days = self.ad_to_encash
-                if assigned_leave:
-                    assigned_leave.available_days = (
-                        assigned_leave.available_days + available_days
-                    )
-                    assigned_leave.carryforward_days = (
-                        assigned_leave.carryforward_days + cfd_days
-                    )
-                    assigned_leave.save()
-                self.allowance_id.delete()
+                if self.type == "leave encashment":
+                    if assigned_leave:
+                        assigned_leave.available_days = (
+                            assigned_leave.available_days + available_days
+                        )
+                        assigned_leave.carryforward_days = (
+                            assigned_leave.carryforward_days + cfd_days
+                        )
+                        assigned_leave.save()
+                    self.allowance_id.delete()
 
     def delete(self, *args, **kwargs):
         if self.allowance_id:
@@ -1721,4 +1724,13 @@ class PayrollGeneralSetting(models.Model):
         validators=[min_zero],
         default=3,
     )
-    company_id = models.ForeignKey(Company, on_delete=models.CASCADE, null=True)
+    company_id = models.ForeignKey(Company,on_delete=models.CASCADE,null=True)
+
+
+class EncashmentGeneralSettings(models.Model):
+    """
+    BonusPointGeneralSettings model
+    """
+    bonus_amount = models.IntegerField(default = 1)
+    leave_amount = models.IntegerField(blank = True, null = True, verbose_name = "Amount")
+
