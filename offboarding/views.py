@@ -96,7 +96,7 @@ def delete_offboarding(request):
     """
     This method is used to delete offboardings
     """
-    ids = request.GET.getlits("id")
+    ids = request.GET.getlist("id")
     Offboarding.objects.filter(id__in=ids).delete()
     messages.success(request, _("Offboarding deleted"))
     return redirect(pipeline)

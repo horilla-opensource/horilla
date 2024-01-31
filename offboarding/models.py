@@ -1,3 +1,4 @@
+from collections.abc import Iterable
 from datetime import date
 from django.db import models
 from django.db.models.signals import post_save
@@ -32,6 +33,26 @@ class Offboarding(models.Model):
     def __str__(self):
         return self.title
 
+    def save(self, *args, **kwargs):
+        is_new = not self.pk
+        super().save(*args, **kwargs)
+        if is_new:
+            stages = [
+                ("Exit interview", "interview"),
+                ("Work Handover", "handover"),
+                ("FNF", "fnf"),
+                ("Farewell", "other"),
+                ("Archived", "archived"),
+            ]
+            for stage in stages:
+                new = OffboardingStage()
+                new.offboarding_id = self
+                new.title = stage[0]
+                new.type = stage[1]
+                new.save()
+
+        return
+
 
 class OffboardingStage(models.Model):
     """
@@ -42,12 +63,14 @@ class OffboardingStage(models.Model):
         ("notice_period", "Notice period"),
         ("fnf", "FnF Settlement"),
         ("other", "Other"),
+        ("interview", "Interview"),
+        ("handover", "Work handover"),
         ("archived", "Archived"),
     ]
 
     title = models.CharField(max_length=20)
     type = models.CharField(max_length=13, choices=types)
-    offboarding_id = models.ForeignKey(Offboarding, on_delete=models.PROTECT)
+    offboarding_id = models.ForeignKey(Offboarding, on_delete=models.CASCADE)
     managers = models.ManyToManyField(Employee)
     sequence = models.IntegerField(default=0, editable=False)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -94,7 +117,7 @@ class OffboardingEmployee(models.Model):
         Employee, on_delete=models.CASCADE, verbose_name="Employee"
     )
     stage_id = models.ForeignKey(
-        OffboardingStage, on_delete=models.PROTECT, verbose_name="Stage", null=True
+        OffboardingStage, on_delete=models.CASCADE, verbose_name="Stage", null=True
     )
     notice_period = models.IntegerField(null=True)
     unit = models.CharField(max_length=10, choices=units, default="month", null=True)
