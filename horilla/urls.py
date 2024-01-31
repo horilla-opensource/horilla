@@ -34,6 +34,7 @@ urlpatterns = [
     path('payroll/',include('payroll.urls.urls')), 
     path('helpdesk/',include('helpdesk.urls')), 
     path('offboarding/',include('offboarding.urls')), 
+    path('horilla-widget/',include('horilla_widgets.urls')), 
     re_path('^inbox/notifications/', include(notifications.urls, namespace='notifications')),
     path('i18n/', include('django.conf.urls.i18n')),
 
