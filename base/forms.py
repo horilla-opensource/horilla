@@ -12,7 +12,7 @@ from datetime import timedelta
 from django.contrib.auth import authenticate
 from django import forms
 from django.contrib.auth.models import Group, Permission, User
-from django.forms import DateInput,TextInput
+from django.forms import DateInput, TextInput
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext as _
 from django.utils.translation import gettext_lazy as _trans
@@ -361,10 +361,12 @@ class AssignPermission(Form):
         """
         Save method to assign permission to employee
         """
-        employees = self.data["employee"]
+        user_ids = Employee.objects.filter(id__in=self.data.getlist("employee")).values_list(
+            "employee_user_id", flat=True
+        )
         permissions = self.cleaned_data["permissions"]
         permissions = Permission.objects.filter(codename__in=permissions)
-        users = User.objects.filter(employee_get__id__in=employees)
+        users = User.objects.filter(id__in=user_ids)
         for user in users:
             user.user_permissions.set(permissions)
 
@@ -1488,6 +1490,7 @@ class RotatingWorkTypeAssignExportForm(forms.Form):
         ],
     )
 
+
 class TagsForm(ModelForm):
     """
     Tags form
@@ -1500,13 +1503,8 @@ class TagsForm(ModelForm):
 
         model = Tags
         fields = "__all__"
-        widgets = {
-            
-            'color':TextInput(attrs={'type':'color','style':'height:50px'})
-        }
-        exclude = (
-            'objects',
-        )
+        widgets = {"color": TextInput(attrs={"type": "color", "style": "height:50px"})}
+        exclude = ("objects",)
 
 
 class EmployeeTagForm(ModelForm):
@@ -1521,10 +1519,7 @@ class EmployeeTagForm(ModelForm):
 
         model = EmployeeTag
         fields = "__all__"
-        widgets = {
-            
-            'color':TextInput(attrs={'type':'color','style':'height:50px'})
-        }
+        widgets = {"color": TextInput(attrs={"type": "color", "style": "height:50px"})}
 
 
 class AuditTagForm(ModelForm):
@@ -1552,8 +1547,8 @@ class ShiftrequestcommentForm(ModelForm):
         """
 
         model = ShiftrequestComment
-        fields = ('comment',)
-        
+        fields = ("comment",)
+
 
 class shiftCommentForm(ModelForm):
     """
@@ -1608,17 +1603,18 @@ class WorktyperequestcommentForm(ModelForm):
         """
 
         model = WorktyperequestComment
-        fields = ('comment',)
+        fields = ("comment",)
 
 
 class DynamicMailConfForm(ModelForm):
     """
     DynamicEmailConfiguration
     """
+
     class Meta:
         model = DynamicEmailConfiguration
         fields = "__all__"
-    
+
     def as_p(self):
         """
         Render the form fields as HTML table rows with Bootstrap styling.
@@ -1626,7 +1622,8 @@ class DynamicMailConfForm(ModelForm):
         context = {"form": self}
         table_html = render_to_string("attendance_form.html", context)
         return table_html
-    
+
+
 class MultipleApproveConditionForm(ModelForm):
     CONDITION_CHOICE = [
         ("equal", _("Equal (==)")),
@@ -1655,18 +1652,19 @@ class MultipleApproveConditionForm(ModelForm):
     )
 
     class Meta:
-        model = MultipleApprovalCondition 
+        model = MultipleApprovalCondition
         fields = "__all__"
+
 
 class DynamicPaginationForm(ModelForm):
     """
     Form for setting default pagination
     """
+
     class Meta:
         model = DynamicPagination
         fields = "__all__"
-        exclude = ('user_id',)
-
+        exclude = ("user_id",)
 
 
 class MultipleFileInput(forms.ClearableFileInput):
@@ -1683,7 +1681,9 @@ class MultipleFileField(forms.FileField):
         if isinstance(data, (list, tuple)):
             result = [single_file_clean(d, initial) for d in data]
         else:
-            result = [single_file_clean(data, initial),]
+            result = [
+                single_file_clean(data, initial),
+            ]
         return result[0] if result else None
 
 
@@ -1698,19 +1698,18 @@ class AnnouncementForm(ModelForm):
         """
 
         model = Announcement
-        fields = '__all__'
-        excluded_fields = ['created_on']
+        fields = "__all__"
+        excluded_fields = ["created_on"]
         widgets = {
             "description": forms.Textarea(attrs={"data-summernote": ""}),
             "expire_date": DateInput(attrs={"type": "date"}),
         }
-    
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["attachments"] = MultipleFileField(label="Attachments ")
-        self.fields["attachments"].required=False
-    
+        self.fields["attachments"].required = False
+
     def save(self, commit: bool = ...) -> Any:
         attachement = []
         multiple_attachment_ids = []
@@ -1730,6 +1729,7 @@ class AnnouncementForm(ModelForm):
             instance.attachements.add(*multiple_attachment_ids)
         return instance, multiple_attachment_ids
 
+
 class AnnouncementcommentForm(ModelForm):
     """
     Announcement comment form
@@ -1741,7 +1741,8 @@ class AnnouncementcommentForm(ModelForm):
         """
 
         model = AnnouncementComment
-        fields = ('comment',)
+        fields = ("comment",)
+
 
 class AnnouncementExpireForm(ModelForm):
     """
@@ -1754,4 +1755,4 @@ class AnnouncementExpireForm(ModelForm):
         """
 
         model = AnnouncementExpire
-        fields = ('days',)
+        fields = ("days",)

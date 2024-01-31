@@ -3,6 +3,7 @@ views.py
 
 This module is used to map url pattens with django views or methods
 """
+
 from django import forms
 from django.apps import apps
 from datetime import timedelta, datetime
@@ -22,8 +23,11 @@ from django.contrib.auth.models import Group, User, Permission
 from attendance.forms import AttendanceValidationConditionForm
 from attendance.models import AttendanceValidationCondition, GraceTime
 from django.views.decorators.csrf import csrf_exempt
+from employee.filters import EmployeeFilter
 from employee.forms import ActiontypeForm
 from horilla_audit.models import AuditTag
+from notifications.models import Notification
+from notifications.base.models import AbstractNotification
 from notifications.signals import notify
 from horilla.decorators import (
     delete_permission,
@@ -393,26 +397,31 @@ def home(request):
             },
         )
 
-    announcement_list = Announcement.objects.all().order_by('-created_on')
+    announcement_list = Announcement.objects.all().order_by("-created_on")
     general_expire = AnnouncementExpire.objects.all().first()
-    general_expire_date = 30 if  not general_expire  else general_expire.days
+    general_expire_date = 30 if not general_expire else general_expire.days
 
     for announcement in announcement_list:
         if announcement.expire_date is None:
-            calculated_expire_date = announcement.created_on + timedelta(days=general_expire_date)
+            calculated_expire_date = announcement.created_on + timedelta(
+                days=general_expire_date
+            )
             announcement.expire_date = calculated_expire_date
 
         # Check if the user has viewed the announcement
-        announcement_view = AnnouncementView.objects.filter(announcement=announcement, user=request.user).first()
-        announcement.has_viewed = announcement_view is not None and announcement_view.viewed
+        announcement_view = AnnouncementView.objects.filter(
+            announcement=announcement, user=request.user
+        ).first()
+        announcement.has_viewed = (
+            announcement_view is not None and announcement_view.viewed
+        )
 
     context = {
         "first_day_of_week": first_day_of_week.strftime("%Y-%m-%d"),
         "last_day_of_week": last_day_of_week.strftime("%Y-%m-%d"),
         "employees_with_pending": employees_with_pending,
-        "announcement" : announcement_list,
-        "general_expire_date":general_expire_date,
-
+        "announcement": announcement_list,
+        "general_expire_date": general_expire_date,
     }
 
     return render(request, "index.html", context)
@@ -444,6 +453,9 @@ def user_group_table(request):
         "attendance",
         "payroll",
         "auth",
+        "offboarding",
+        "horilla_documents",
+        "helpdesk",
     ]
     form = UserGroupForm()
     for app_name in apps:
@@ -523,6 +535,9 @@ def user_group(request):
         "attendance",
         "payroll",
         "auth",
+        "offboarding",
+        "horilla_documents",
+        "helpdesk",
     ]
     form = UserGroupForm()
     for app_name in apps:
@@ -539,7 +554,52 @@ def user_group(request):
     return render(
         request,
         "base/auth/group.html",
-        {"permissions": permissions, "form": form, "groups": groups},
+        {"permissions": permissions, "form": form, "groups": paginator_qry(groups,request.GET.get("page"))},
+    )
+
+
+@login_required
+@permission_required("auth.view_group")
+def user_group_search(request):
+    """
+    This method is used to create user permission group
+    """
+    permissions = []
+
+    apps = [
+        "base",
+        "recruitment",
+        "employee",
+        "leave",
+        "pms",
+        "onboarding",
+        "asset",
+        "attendance",
+        "payroll",
+        "auth",
+        "offboarding",
+        "horilla_documents",
+        "helpdesk",
+    ]
+    form = UserGroupForm()
+    for app_name in apps:
+        app_models = []
+        for model in get_models_in_app(app_name):
+            app_models.append(
+                {
+                    "verbose_name": model._meta.verbose_name.capitalize(),
+                    "model_name": model._meta.model_name,
+                }
+            )
+        permissions.append({"app": app_name.capitalize(), "app_models": app_models})
+    search = ""
+    if request.GET.get("search"):
+        search = str(request.GET["search"])
+    groups = Group.objects.filter(name__icontains=search)
+    return render(
+        request,
+        "base/auth/group_lines.html",
+        {"permissions": permissions, "form": form, "groups": paginator_qry(groups,request.GET.get("page"))},
     )
 
 
@@ -882,6 +942,9 @@ def job_position(request):
     """
 
     departments = Department.objects.all()
+    jobs = False
+    if JobPosition.objects.exists():
+        jobs = True
     form = JobPositionForm()
     if request.method == "POST":
         form = JobPositionForm(request.POST)
@@ -891,7 +954,7 @@ def job_position(request):
     return render(
         request,
         "base/job_position/job_position.html",
-        {"form": form, "departments": departments},
+        {"form": form, "departments": departments, "jobs": jobs},
     )
 
 
@@ -978,8 +1041,15 @@ def job_role_view(request):
     """
 
     jobs = JobPosition.objects.all()
+    job_role = False
+    if JobRole.objects.exists():
+        job_role = True
 
-    return render(request, "base/job_role/job_role.html", {"job_positions": jobs})
+    return render(
+        request,
+        "base/job_role/job_role.html",
+        {"job_positions": jobs, "job_role": job_role},
+    )
 
 
 @login_required
@@ -1599,10 +1669,16 @@ def employee_shift_schedule_view(request):
     """
     This method is used to view schedule for shift
     """
-
+    shift_schedule = False
+    if EmployeeShiftSchedule.objects.exists():
+        shift_schedule = True
     shifts = EmployeeShift.objects.all()
 
-    return render(request, "base/shift/schedule.html", {"shifts": shifts})
+    return render(
+        request,
+        "base/shift/schedule.html",
+        {"shifts": shifts, "shift_schedule": shift_schedule},
+    )
 
 
 @login_required
@@ -2092,6 +2168,9 @@ def employee_permission_assign(request):
         "attendance",
         "payroll",
         "auth",
+        "offboarding",
+        "horilla_documents",
+        "helpdesk",
     ]
     for app_name in apps:
         app_models = []
@@ -2104,7 +2183,7 @@ def employee_permission_assign(request):
             )
         permissions.append({"app": app_name.capitalize(), "app_models": app_models})
     context["permissions"] = permissions
-    context["employees"] = employees
+    context["employees"] = paginator_qry(employees, request.GET.get("page"))
     return render(
         request,
         template,
@@ -2118,21 +2197,49 @@ def employee_permission_search(request, codename=None, uid=None):
     """
     This method renders template to view all instances of user permissions
     """
-
-    search = ""
-    if request.GET.get("search") is not None:
-        search = request.GET.get("search")
-    employees = Employee.objects.filter(
-        employee_first_name__icontains=search
-    ) | Employee.objects.filter(employee_last_name__icontains=search)
-    previous_data = request.GET.urlencode()
+    context = {}
+    template = "base/auth/permission_lines.html"
+    employees = EmployeeFilter(request.GET).qs
+    if request.GET.get("profile_tab"):
+        template = "base/auth/permission_accordion.html"
+        employees = employees.filter(id=request.GET["employee_id"]).distinct()
+    else:
+        employees = employees.filter(
+            employee_user_id__user_permissions__isnull=False
+        ).distinct()
+        context["show_assign"] = True
+    permissions = []
+    apps = [
+        "base",
+        "recruitment",
+        "employee",
+        "leave",
+        "pms",
+        "onboarding",
+        "asset",
+        "attendance",
+        "payroll",
+        "auth",
+        "offboarding",
+        "horilla_documents",
+        "helpdesk",
+    ]
+    for app_name in apps:
+        app_models = []
+        for model in get_models_in_app(app_name):
+            app_models.append(
+                {
+                    "verbose_name": model._meta.verbose_name.capitalize(),
+                    "model_name": model._meta.model_name,
+                }
+            )
+        permissions.append({"app": app_name.capitalize(), "app_models": app_models})
+    context["permissions"] = permissions
+    context["employees"] = paginator_qry(employees, request.GET.get("page"))
     return render(
         request,
-        "base/auth/permission_view.html",
-        {
-            "employees": paginator_qry(employees, request.GET.get("page")),
-            "pd": previous_data,
-        },
+        template,
+        context,
     )
 
 
@@ -2180,6 +2287,10 @@ def permission_table(request):
         "asset",
         "attendance",
         "payroll",
+        "auth",
+        "offboarding",
+        "horilla_documents",
+        "helpdesk",
     ]
     form = AssignPermission()
     for app_name in apps:
@@ -2716,7 +2827,7 @@ def shift_request(request):
                     verb_fr=f"Vous avez une nouvelle demande de quart de\
                         travail à approuver pour {instance.employee_id}",
                     icon="information",
-                    redirect=f"/employee/shift-request-view?employee_id={instance.employee_id.id}&requested_date={instance.requested_date}",
+                    redirect=f"/employee/shift-request-view?id={instance.id}",
                 )
             except Exception as e:
                 pass
@@ -3179,6 +3290,20 @@ def clear_notification(request):
 
 
 @login_required
+def delete_all_notifications(request):
+    try:
+        request.user.notifications.read().delete()
+        request.user.notifications.unread().delete()
+        messages.success(request, _("All notifications removed."))
+    except Exception as e:
+        messages.error(request, e)
+    notifications = request.user.notifications.all()
+    return render(
+        request, "notification/all_notifications.html", {"notifications": notifications}
+    )
+
+
+@login_required
 def delete_notification(request, id):
     """
     This method is used to delete notification
@@ -3192,6 +3317,18 @@ def delete_notification(request, id):
     return render(
         request, "notification/all_notifications.html", {"notifications": notifications}
     )
+
+
+@login_required
+def mark_as_read_notification(request):
+    try:
+        notification_id = request.POST["notification_id"]
+        notification_id = int(notification_id)
+        notification = Notification.objects.get(id=notification_id)
+        notification.mark_as_read()
+        return JsonResponse({"success": True})
+    except:
+        return JsonResponse({"success": False, "error": "Invalid request"})
 
 
 @login_required
@@ -3241,7 +3378,6 @@ def settings(request):
     return render(request, "payroll/settings/payroll_settings.html", {"form": form})
 
 
-
 @login_required
 def general_settings(request):
     """
@@ -3254,6 +3390,7 @@ def general_settings(request):
         if form.is_valid():
             form.save()
             messages.success(request, _("Settings updated."))
+            return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
     return render(request, "base/general_settings.html", {'form':form})
 
 
@@ -4085,7 +4222,7 @@ def view_shift_comment(request, shift_id):
     """
     This method is used to render all the notes of the employee
     """
-    comments = ShiftrequestComment.objects.filter(request_id = shift_id)
+    comments = ShiftrequestComment.objects.filter(request_id=shift_id)
     if request.FILES:
         files = request.FILES.getlist("files")
         comment_id = request.GET["comment_id"]
@@ -4116,7 +4253,7 @@ def delete_shift_comment_file(request):
     ids = request.GET.getlist("ids")
     BaserequestFile.objects.filter(id__in=ids).delete()
     shift_id = request.GET["shift_id"]
-    comments = ShiftrequestComment.objects.filter(request_id = shift_id)
+    comments = ShiftrequestComment.objects.filter(request_id=shift_id)
     return render(
         request,
         "shift_request/htmx/shift_comment.html",
@@ -4132,7 +4269,7 @@ def view_work_type_comment(request, work_type_id):
     """
     This method is used to render all the notes of the employee
     """
-    comments = WorktyperequestComment.objects.filter(request_id = work_type_id)
+    comments = WorktyperequestComment.objects.filter(request_id=work_type_id)
     if request.FILES:
         files = request.FILES.getlist("files")
         comment_id = request.GET["comment_id"]
@@ -4163,7 +4300,7 @@ def delete_work_type_comment_file(request):
     ids = request.GET.getlist("ids")
     BaserequestFile.objects.filter(id__in=ids).delete()
     work_type_id = request.GET["work_type_id"]
-    comments = WorktyperequestComment.objects.filter(request_id = work_type_id)
+    comments = WorktyperequestComment.objects.filter(request_id=work_type_id)
     return render(
         request,
         "work_type_request/htmx/work_type_comment.html",
@@ -4310,10 +4447,11 @@ def delete_worktyperequest_comment(request, comment_id):
     messages.success(request, _("Comment deleted successfully!"))
     return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 
+
 @login_required
 def pagination_settings_view(request):
-    if DynamicPagination.objects.filter(user_id = request.user).exists():
-        pagination = DynamicPagination.objects.filter(user_id = request.user).first()
+    if DynamicPagination.objects.filter(user_id=request.user).exists():
+        pagination = DynamicPagination.objects.filter(user_id=request.user).first()
         form = DynamicPaginationForm(instance=pagination)
         if request.method == "POST":
             form = DynamicPaginationForm(request.POST, instance=pagination)
@@ -4323,11 +4461,15 @@ def pagination_settings_view(request):
     else:
         form = DynamicPaginationForm()
         if request.method == "POST":
-            form = DynamicPaginationForm(request.POST,)
+            form = DynamicPaginationForm(
+                request.POST,
+            )
             if form.is_valid():
                 form.save()
                 messages.success(request, _("Default pagination updated."))
-    return render(request, "base/dynamic_pagination/pagination_settings.html", {"form": form})
+    return render(
+        request, "base/dynamic_pagination/pagination_settings.html", {"form": form}
+    )
 
 
 @login_required
