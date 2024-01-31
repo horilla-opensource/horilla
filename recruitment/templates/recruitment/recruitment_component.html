@@ -56,7 +56,7 @@
                           <div class="oh-sticky-table__th" hx-get="{% url 'recruitment-search' %}?{{pd}}&orderby=start_date" hx-target="#recruitment-container">{% trans "Start Date" %}</div>
                           <div class="oh-sticky-table__th" hx-get="{% url 'recruitment-search' %}?{{pd}}&orderby=end_date" hx-target="#recruitment-container">{% trans "End Date" %}</div>
                           <div class="oh-sticky-table__th">{% trans "Status" %}</div>
-                          <div class="oh-sticky-table__th">{% trans "Actions" %}</div>
+                          <div class="oh-sticky-table__th" style="width: 250px;">{% trans "Actions" %}</div>
                         </div>
                       </div>
                       <div class="oh-sticky-table__tbody">
