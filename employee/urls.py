@@ -214,8 +214,12 @@ urlpatterns = [
         kwargs={"model": Employee},
     ),
     path("document-tab/<int:emp_id>", views.document_tab, name="document-tab"),
-    path("bonus-points-tab/<int:emp_id>", views.bonus_points_tab, name="bonus-points-tab"),
-    path("add-bonus-points/<int:emp_id>", views.add_bonus_points, name="add-bonus-points"),
+    path(
+        "bonus-points-tab/<int:emp_id>", views.bonus_points_tab, name="bonus-points-tab"
+    ),
+    path(
+        "add-bonus-points/<int:emp_id>", views.add_bonus_points, name="add-bonus-points"
+    ),
     path("redeem-points/<int:emp_id>", views.redeem_points, name="redeem-points"),
     path("employee-select/", views.employee_select, name="employee-select"),
     path(
@@ -244,22 +248,58 @@ urlpatterns = [
     path("search-policies", policies.search_policies, name="search-policies"),
     path("create-policy", policies.create_policy, name="create-policy"),
     path("view-policy", policies.view_policy, name="view-policy"),
-    path("add-attachment-policy", policies.add_attachment, name="add-attachment-policy"),
-    path("remove-attachment-policy", policies.remove_attachment, name="remove-attachment-policy"),
-    path("get-attachments-policy", policies.get_attachments, name="get-attachments-policy"),
+    path(
+        "add-attachment-policy", policies.add_attachment, name="add-attachment-policy"
+    ),
+    path(
+        "remove-attachment-policy",
+        policies.remove_attachment,
+        name="remove-attachment-policy",
+    ),
+    path(
+        "get-attachments-policy",
+        policies.get_attachments,
+        name="get-attachments-policy",
+    ),
     path("file-upload/<int:id>", views.file_upload, name="file-upload"),
     path("view-file/<int:id>", views.view_file, name="view-file"),
     path("document-create", views.document_create, name="document-create"),
     path("document-create/<int:emp_id>", views.document_create, name="document-create"),
-    path("update-document-title/<int:id>", views.update_document_title, name="update-document-title"),
+    path(
+        "update-document-title/<int:id>",
+        views.update_document_title,
+        name="update-document-title",
+    ),
     path("document-approve/<int:id>", views.document_approve, name="document-approve"),
-    path("document-bulk-approve", views.document_bulk_approve, name="document-bulk-approve"),
-    path("document-bulk-reject", views.document_bulk_reject, name="document-bulk-reject"),
+    path(
+        "document-bulk-approve",
+        views.document_bulk_approve,
+        name="document-bulk-approve",
+    ),
+    path(
+        "document-bulk-reject", views.document_bulk_reject, name="document-bulk-reject"
+    ),
     path("document-reject/<int:id>", views.document_reject, name="document-reject"),
-    path("document-request-view/", views.document_request_view, name="document-request-view"),
-    path("document-request-filter-view", views.document_filter_view, name="document-request-filter-view"),
-    path("document-request-create", views.document_request_create, name="document-request-create"),
-    path("document-request-update/<int:id>", views.document_request_update, name="document-request-update"),
+    path(
+        "document-request-view/",
+        views.document_request_view,
+        name="document-request-view",
+    ),
+    path(
+        "document-request-filter-view",
+        views.document_filter_view,
+        name="document-request-filter-view",
+    ),
+    path(
+        "document-request-create",
+        views.document_request_create,
+        name="document-request-create",
+    ),
+    path(
+        "document-request-update/<int:id>",
+        views.document_request_update,
+        name="document-request-update",
+    ),
     path(
         "document-request-kwargs={'model':Employee}delete/<int:id>/",
         object_delete,
@@ -272,16 +312,40 @@ urlpatterns = [
         name="document-delete",
     ),
     path("organisation-chart/", views.organisation_chart, name="organisation-chart"),
-
-    path("delete-policies",policies.delete_policies,name="delete-policies"),
-
-    path("disciplinary-actions/", policies.disciplinary_actions, name="disciplinary-actions"),
+    path("delete-policies", policies.delete_policies, name="delete-policies"),
+    path(
+        "disciplinary-actions/",
+        policies.disciplinary_actions,
+        name="disciplinary-actions",
+    ),
     path("create-actions", policies.create_actions, name="create-actions"),
-    path("update-actions/<int:action_id>/", policies.update_actions, name="update-actions"),
-    path("delete-actions/<int:action_id>/",policies.delete_actions, name="delete-actions"),
-    path("action-type-details",policies.action_type_details,name="action-type-details",),
-    path("disciplinary-filter-view", policies.disciplinary_filter_view, name="disciplinary-filter-view"),
-    path("search-disciplinary", policies.search_disciplinary, name="search-disciplinary"),
-    path("encashment-condition-create", views.encashment_condition_create, name="encashment-condition-create"),
-
+    path(
+        "update-actions/<int:action_id>/",
+        policies.update_actions,
+        name="update-actions",
+    ),
+    path(
+        "delete-actions/<int:action_id>/",
+        policies.delete_actions,
+        name="delete-actions",
+    ),
+    path(
+        "action-type-details",
+        policies.action_type_details,
+        name="action-type-details",
+    ),
+    path(
+        "disciplinary-filter-view",
+        policies.disciplinary_filter_view,
+        name="disciplinary-filter-view",
+    ),
+    path(
+        "search-disciplinary", policies.search_disciplinary, name="search-disciplinary"
+    ),
+    path(
+        "encashment-condition-create",
+        views.encashment_condition_create,
+        name="encashment-condition-create",
+    ),
+    path("initial-prefix",views.initial_prefix,name="initial-prefix")
 ]

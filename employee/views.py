@@ -91,13 +91,20 @@ from horilla_documents.forms import (
 from employee.models import (
     BonusPoint,
     Employee,
+    EmployeeGeneralSetting,
     EmployeeNote,
     EmployeeWorkInformation,
     EmployeeBankDetails,
 )
 from payroll.forms.forms import EncashmentGeneralSettingsForm
 from payroll.methods.payslip_calc import dynamic_attr
-from payroll.models.models import Allowance, Contract, Deduction, EncashmentGeneralSettings, Reimbursement
+from payroll.models.models import (
+    Allowance,
+    Contract,
+    Deduction,
+    EncashmentGeneralSettings,
+    Reimbursement,
+)
 from pms.models import Feedback
 from recruitment.models import Candidate
 from horilla_documents.models import Document, DocumentRequest
@@ -2746,20 +2753,24 @@ def redeem_points(request, emp_id):
     """
     user = Employee.objects.get(id=emp_id)
     form = BonusPointRedeemForm()
-    amount_for_bonus_point = EncashmentGeneralSettings.objects.first().bonus_amount if EncashmentGeneralSettings.objects.first() else 1
+    amount_for_bonus_point = (
+        EncashmentGeneralSettings.objects.first().bonus_amount
+        if EncashmentGeneralSettings.objects.first()
+        else 1
+    )
     if request.method == "POST":
         form = BonusPointRedeemForm(request.POST)
         if form.is_valid():
             form.save(commit=False)
             points = form.cleaned_data["points"]
             amount = amount_for_bonus_point * points
-            
+
             reimbursement = Reimbursement.objects.create(
                 title=f"Bonus point Redeem for {user}",
                 type="bonus_encashment",
                 employee_id=user,
                 bonus_to_encash=points,
-                amount = amount,
+                amount=amount,
                 description=f"{user} want to redeem {points} points",
                 allowance_on=date.today(),
             )
@@ -2866,10 +2877,30 @@ def encashment_condition_create(request):
     instance = EncashmentGeneralSettings.objects.first()
     encashment_form = EncashmentGeneralSettingsForm(instance=instance)
     if request.method == "POST":
-        encashment_form = EncashmentGeneralSettingsForm(request.POST,instance=instance)
+        encashment_form = EncashmentGeneralSettingsForm(request.POST, instance=instance)
         if encashment_form.is_valid():
             encashment_form.save()
             messages.success(request, _("Settings updated."))
             return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
-    
-    return render(request, "settings/encashment_settings.html", {"encashment_form":encashment_form,})
+
+    return render(
+        request,
+        "settings/encashment_settings.html",
+        {
+            "encashment_form": encashment_form,
+        },
+    )
+
+
+@login_required
+@permission_required("employee.add_employeegeneralsetting")
+def initial_prefix(request):
+    """
+    This method is used to set initial prefix
+    """
+    instance = EmployeeGeneralSetting.objects.first()
+    instance = instance if instance else EmployeeGeneralSetting()
+    instance.badge_id_prefix = request.POST["initial_prefix"]
+    instance.save()
+    messages.success(request,"Initial prefix update")
+    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))

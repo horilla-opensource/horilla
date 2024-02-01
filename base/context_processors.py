@@ -8,6 +8,7 @@ from django.http import HttpResponse
 from attendance.models import AttendanceGeneralSetting
 from base.models import Company
 from base.urls import urlpatterns
+from employee.models import EmployeeGeneralSetting
 from offboarding.models import OffboardingGeneralSetting
 from payroll.models.models import PayrollGeneralSetting
 from recruitment.models import RecruitmentGeneralSetting
@@ -149,3 +150,17 @@ def check_candidate_self_tracking_rating(request):
     if first:
         rating_option = first.show_overall_rating
     return {"check_candidate_self_tracking_rating": rating_option}
+
+
+
+def get_intial_prefix(request):
+    """
+    This method is used to get the initial prefexi
+    """
+    settings = EmployeeGeneralSetting.objects.first()
+    instance_id = None
+    prefix = "PEP"
+    if settings:
+        instance_id = settings.id
+        prefix = settings.badge_id_prefix
+    return {"get_intial_prefix":prefix,"prefix_instance_id":instance_id}

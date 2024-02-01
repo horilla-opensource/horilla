@@ -23,3 +23,8 @@ TEMPLATES[0]["OPTIONS"]["context_processors"].append(
 TEMPLATES[0]["OPTIONS"]["context_processors"].append(
     "base.context_processors.check_candidate_self_tracking_rating",
 )
+
+TEMPLATES[0]["OPTIONS"]["context_processors"].append(
+    "base.context_processors.get_intial_prefix",
+)
+
