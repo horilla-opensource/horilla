@@ -43,7 +43,10 @@
             <span class="oh-timeoff-modal__stat-count">{{leave_type.total_days}}</span>
         </div>
         <div class="oh-timeoff-modal__stat">
-            <span class="oh-timeoff-modal__stat-title">{% trans "Reset" %}</span>
+            <div class="oh-label__info">
+                <span class="oh-timeoff-modal__stat-title">{% trans "Reset" %}</span>
+                <span class=" oh-info me-3" title="{% trans 'resetting the leaves based on conditions or not' %}"></span>
+            </div>
             <span class="oh-timeoff-modal__stat-count">{{leave_type.reset|yes_no}}</span>
         </div>
         {% if leave_type.reset_based %}

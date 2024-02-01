@@ -72,9 +72,13 @@
             </div>
           </div>
           <div class="col-sm-12 col-md-12">
-            <div class="oh-input-group">
-              <label for="" class="oh-label">{% trans "Reset" %}</label>
-              {{form.reset}} {{form.reset.errors}}
+            <div class="oh-input-group oh-label__info">
+              <label for="id_reset" class="oh-label">{% trans "Reset" %}</label>
+              <span class=" oh-info me-3" title="{% trans "Do you want to reset leaves based on conditions?" %}"></span>
+              <div class="oh-switch p-3 ">
+                {{form.reset}}
+                {{form.reset.errors}}
+              </div>
             </div>
           </div>
           <div class="col-sm-12 col-md-12">
