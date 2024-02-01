@@ -73,28 +73,6 @@
                 <p class="card-text">{{ anoun.description|safe }}</p>
             </div>
 
-            {% if anoun.department.all %}
-                <div class="card-footer mb-3">
-                    <u><span class='card-text fw-bold mb-1'>{% trans "Departments" %}</span></u>
-                    <div style= "display: flex; flex-wrap: wrap;">
-                        {% for dep in anoun.department.all %}
-                            <i><span class="mr-2 fw-bold text-secondary">#{{ dep.department }}</span></i>
-                        {% endfor %}
-                    </div>
-                </div>
-            {% endif %}
-
-            {% if anoun.job_position.all %}
-                <div class="card-footer mb-3">
-                    <u><span class='card-text fw-bold mb-1'>{% trans "Jobpositions" %}</span></u>
-                    <div style= "display: flex; flex-wrap: wrap;">
-                        {% for job in anoun.job_position.all %}
-                            <i><span class="mr-2 fw-bold text-secondary">#{{ job.job_position }}</span></i>
-                        {% endfor %}
-                    </div>
-                </div>
-            {% endif %}
-
  
             <div class="card-footer">
                 {% for attachment in anoun.attachments.all %}
@@ -114,7 +92,15 @@
 
 
             <div class="card-footer mt-2">
+
                 <div class="oh-announcement__comment-view">
+                    
+                    {% if anoun.department.all or anoun.job_position.all %}
+                        <button class="oh-btn me-1 oh-announcement-btn" type="button" onmouseover="showDetails()" onmouseout="hideDetails()">
+                            <ion-icon name="information"></ion-icon>
+                        </button>
+                    {% endif %}
+
                     <button class="oh-btn me-1 oh-announcement-btn" hx-get='{% url "announcement-add-comment" anoun.id %}' type="button"  title="Add Comment" hx-target="#commentForm"
                         hx-swap="innerHTML" data-toggle="oh-modal-toggle" data-target="#commentModal">
                         <ion-icon name="chatbox-outline" class="md hydrated" role="img" aria-label="chevron back outline"></ion-icon>
@@ -124,8 +110,33 @@
                         <ion-icon name="eye-outline" class="md hydrated" role="img" aria-label="chevron back outline"></ion-icon>
                       </button>
                 </div>
+
+            </div>            
+
+            
+            <div id="infoDiv" style="display:none;">
+                {% if anoun.department.all %}
+                    <div class="oh-announcement-hastag__container" style="z-index:1000">
+                        <span class="oh-announcement-hashtags" style="font-size:0.8rem;">{% trans "Department" %}</span>
+                        <div class="oh-announcement-hashtags">
+                            {% for dep in anoun.department.all %}
+                                <span class="oh-announcement__tags">#{{ dep.department }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endif %}
+            
+                {% if anoun.job_position.all %}
+                    <div class="oh-announcement-hastag__container">
+                        <span class="oh-announcement-hashtags" style="font-size:0.8rem;">{% trans "Job Position" %}</span>
+                        <div class="oh-announcement-hashtags">
+                            {% for job in anoun.job_position.all %}
+                                <span class="oh-announcement__tags">#{{ job.job_position }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endif %}
             </div>
 
-
         </div>
-    {% endfor %}
+        {% endfor %}

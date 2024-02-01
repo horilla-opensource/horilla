@@ -212,6 +212,12 @@ def create_announcement_comment(request, anoun_id):
     form = AnnouncementcommentForm(
         initial={"employee_id": emp.id, "request_id": anoun_id}
     )
+    comments = AnnouncementComment.objects.filter(announcement_id = anoun_id)
+    commentators = []
+    if comments:
+        for i in comments:
+            commentators.append(i.employee_id.employee_user_id)
+    unique_users = list(set(commentators))
 
     if request.method == "POST":
         form = AnnouncementcommentForm(request.POST)
@@ -223,6 +229,17 @@ def create_announcement_comment(request, anoun_id):
                 initial={"employee_id": emp.id, "request_id": anoun_id}
             )
             messages.success(request, _("You commented a post."))
+            notify.send(
+                request.user.employee_get,
+                recipient=unique_users,
+                verb=f"Comment under the announcement {anoun.title}.",
+                verb_ar=f"تعليق تحت الإعلان {anoun.title}.",
+                verb_de=f"Kommentar unter der Ankündigung {anoun.title}.",
+                verb_es=f"Comentario bajo el anuncio {anoun.title}.",
+                verb_fr=f"Commentaire sous l'annonce {anoun.title}.",
+                redirect="/",
+                icon="chatbox-ellipses",
+            )
             return HttpResponse("<script>window.location.reload()</script>")
     return render(
         request,
