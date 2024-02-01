@@ -1,5 +1,4 @@
 {% load i18n %}
-
 {% if perms.auth.view_permission or perms.auth.view_group %}
 
 <div class="oh-tabs__contents">
@@ -10,7 +9,7 @@
   <div class="oh-tabs__content oh-tabs__content--active" style="display: none;" id="tab_2_permission">
     <div class="oh-inner-sidebar-content__header d-flex justify-content-between align-items-center">
       <h2 class="oh-inner-sidebar-content__title">
-        Groups
+        {% trans "Groups" %}
       </h2>
     </div>
     {% for gp in employee.employee_user_id.groups.all %}
@@ -35,6 +34,7 @@
     $.each(panels, function (indexInArray, valueOfElement) {
       var check = $(valueOfElement).find("[name=permissions]:checked").length;
       $(valueOfElement).prev().find(".oh-badge.permission-badge").html(check);
+      $(valueOfElement).prev().find(".oh-badge.permission-badge").attr("title",check + " Permissions");
     });
   }
 

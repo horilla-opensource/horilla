@@ -6,10 +6,15 @@
 >
   <h2 class="oh-inner-sidebar-content__title">{% trans "Permissions" %}</h2>
   <div class=" d-flex">
-    <div class="oh-input-group oh-input__search-group">
+    <div class="oh-input-group oh-input__search-group" id="searchContainer" style="display: none;">
       <ion-icon name="search-outline" class="oh-input-group__icon oh-input-group__icon--left md hydrated" role="img" aria-label="search outline"></ion-icon>
         <input hx-get="{% url 'permission-search' %}" hx-target="#permissionContainer" hx-trigger="keyup changed delay:.2s" type="text" id="permissionSearch" placeholder="Search" name="search" class="oh-input oh-input__icon" aria-label="Search Input">
     </div>
+    <script>
+      if (showSearch) {
+        $("#searchContainer").show();
+      }
+    </script>
     {% if show_assign %}
     {% if perms.auth.add_permission %}
       <button
