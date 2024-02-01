@@ -40,15 +40,18 @@
                 />
               </div>
             </div>
-            <div class="oh-sticky-table__th" hx-target="#view-container" hx-get="{% url 'rotating-shift-assign-view' %}?{{pd}}&orderby=employee_id__employee_first_name">
+            <div class="oh-sticky-table__th {% if request.sort_option.order == '-employee_id__employee_first_name' %}arrow-up {% elif request.sort_option.order == 'employee_id__employee_first_name' %}arrow-down {% else %} arrow-up-down {% endif %}"
+             hx-target="#view-container" hx-get="{% url 'rotating-shift-assign-view' %}?{{pd}}&orderby=employee_id__employee_first_name">
               {% trans "Employee" %}
             </div>
             <div class="oh-sticky-table__th">{% trans "Title" %}</div>
             <div class="oh-sticky-table__th">{% trans "Based On" %}</div>
             <div class="oh-sticky-table__th">{% trans "Rotate" %}</div>
-            <div class="oh-sticky-table__th" hx-target="#view-container" hx-get="{% url 'rotating-shift-assign-view' %}?{{pd}}&orderby=start_date">{% trans "Start Date" %}</div>
+            <div class="oh-sticky-table__th {% if request.sort_option.order == '-start_date' %}arrow-up {% elif request.sort_option.order == 'start_date' %}arrow-down {% else %} arrow-up-down {% endif %}"
+             hx-target="#view-container" hx-get="{% url 'rotating-shift-assign-view' %}?{{pd}}&orderby=start_date">{% trans "Start Date" %}</div>
             <div class="oh-sticky-table__th">{% trans "Current Shift" %}</div>
-            <div class="oh-sticky-table__th" hx-target="#view-container" hx-get="{% url 'rotating-shift-assign-view' %}?{{pd}}&orderby=next_change_date">{% trans "Next Switch" %}</div>
+            <div class="oh-sticky-table__th {% if request.sort_option.order == '-next_change_date' %}arrow-up {% elif request.sort_option.order == 'next_change_date' %}arrow-down {% else %} arrow-up-down {% endif %}"
+             hx-target="#view-container" hx-get="{% url 'rotating-shift-assign-view' %}?{{pd}}&orderby=next_change_date">{% trans "Next Switch" %}</div>
             <div class="oh-sticky-table__th">{% trans "Next Shift" %}</div>
             <div class="oh-sticky-table__th" style="width: 250px;"></div>
           </div>
