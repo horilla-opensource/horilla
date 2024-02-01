@@ -24,14 +24,14 @@
 							id = "allHourAccount"/>
 						</div>
 					</div>
-					<div class="oh-sticky-table__th" data-cell-index="1" data-cell-title="{% trans "Employee" %}" hx-get="{% url 'attendance-ot-search' %}?{{pd}}&sortby=employee_id__employee_first_name" hx-target="#ot-table">{% trans "Employee" %}</div>
-					<div class="oh-sticky-table__th" data-cell-index="2" data-cell-title="{% trans "Month" %}" hx-get="{% url 'attendance-ot-search' %}?{{pd}}&sortby=month" hx-target="#ot-table">{% trans "Month" %}</div>
-					<div class="oh-sticky-table__th" data-cell-index="3" data-cell-title="{% trans "Year" %}" hx-get="{% url 'attendance-ot-search' %}?{{pd}}&sortby=year" hx-target="#ot-table">{% trans "Year" %}</div>
-					<div class="oh-sticky-table__th" data-cell-index="4" data-cell-title="{% trans "Worked Hours" %}" hx-get="{% url 'attendance-ot-search' %}?{{pd}}&sortby=hour_account_second" hx-target="#ot-table">{% trans "Worked Hours" %}</div>
-					<div class="oh-sticky-table__th" data-cell-index="5" data-cell-title="{% trans "Hours to Validate" %}">{% trans "Hours to Validate" %}</div>
-					<div class="oh-sticky-table__th" data-cell-index="6" data-cell-title="{% trans "Pending Hours" %}">{% trans "Pending Hours" %}</div>
-					<div class="oh-sticky-table__th" data-cell-index="7" data-cell-title="{% trans "Overtime" %}" hx-get="{% url 'attendance-ot-search' %}?{{pd}}&sortby=overtime_second" hx-target="#ot-table">{% trans "Overtime Hours" %}</div>
-					<div class="oh-sticky-table__th" data-cell-index="8" data-cell-title="{% trans "Not Approved OT Hours" %}">{% trans "Not Approved OT Hours" %}</div>
+					<div class="oh-sticky-table__th {% if request.sort_option.order == '-employee_id__employee_first_name' %}arrow-up {% elif request.sort_option.order == 'employee_id__employee_first_name' %}arrow-down {% else %}arrow-up-down {% endif %}" data-cell-index="1" data-cell-title="{% trans "Employee" %}" hx-get="{% url 'attendance-ot-search' %}?{{pd}}&sortby=employee_id__employee_first_name" hx-target="#ot-table">{% trans "Employee" %}</div>
+					<div class="oh-sticky-table__th {% if request.sort_option.order == '-month' %}arrow-up {% elif request.sort_option.order == 'month' %}arrow-down {% else %}arrow-up-down {% endif %}" data-cell-index="2" data-cell-title="{% trans "Month" %}" hx-get="{% url 'attendance-ot-search' %}?{{pd}}&sortby=month" hx-target="#ot-table">{% trans "Month" %}</div>
+					<div class="oh-sticky-table__th {% if request.sort_option.order == '-year' %}arrow-up {% elif request.sort_option.order == 'year' %}arrow-down {% else %}arrow-up-down {% endif %}" data-cell-index="3" data-cell-title="{% trans "Year" %}" hx-get="{% url 'attendance-ot-search' %}?{{pd}}&sortby=year" hx-target="#ot-table">{% trans "Year" %}</div>
+					<div class="oh-sticky-table__th {% if request.sort_option.order == '-hour_account_second' %}arrow-up {% elif request.sort_option.order == 'hour_account_second' %}arrow-down {% else %}arrow-up-down {% endif %}" data-cell-index="4" data-cell-title="{% trans "Worked Hours" %}" hx-get="{% url 'attendance-ot-search' %}?{{pd}}&sortby=hour_account_second" hx-target="#ot-table">{% trans "Worked Hours" %}</div>
+					<div class="oh-sticky-table__th " data-cell-index="5" data-cell-title="{% trans "Hours to Validate" %}">{% trans "Hours to Validate" %}</div>
+					<div class="oh-sticky-table__th " data-cell-index="6" data-cell-title="{% trans "Pending Hours" %}">{% trans "Pending Hours" %}</div>
+					<div class="oh-sticky-table__th {% if request.sort_option.order == '-overtime_second' %}arrow-up {% elif request.sort_option.order == 'overtime_second' %}arrow-down {% else %}arrow-up-down {% endif %}" data-cell-index="7" data-cell-title="{% trans "Overtime" %}" hx-get="{% url 'attendance-ot-search' %}?{{pd}}&sortby=overtime_second" hx-target="#ot-table">{% trans "Overtime Hours" %}</div>
+					<div class="oh-sticky-table__th " data-cell-index="8" data-cell-title="{% trans "Not Approved OT Hours" %}">{% trans "Not Approved OT Hours" %}</div>
 					<div class="oh-sticky-table__th" ></div>
 				</div>
 			</div>

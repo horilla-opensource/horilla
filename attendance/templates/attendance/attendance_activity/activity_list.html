@@ -12,12 +12,12 @@
                     class="oh-input oh-input__checkbox all-attendance-activity"/>
             </div>
           </div>
-          <div class="oh-sticky-table__th" hx-target='#activity-table' hx-get="{% url 'attendance-activity-search' %}?{{pd}}&orderby=employee_id__employee_first_name">{% trans "Employee" %}</div>
-          <div class='oh-sticky-table__th' hx-target='#activity-table' hx-get="{% url 'attendance-activity-search' %}?{{pd}}&orderby=attendance_date">{% trans "Attendance Date" %}</div>
-          <div class='oh-sticky-table__th' hx-target='#activity-table' hx-get="{% url 'attendance-activity-search' %}?{{pd}}&orderby=clock_in_date">{% trans "In Date" %}</div>
+          <div class="oh-sticky-table__th {% if request.sort_option.order == '-employee_id__employee_first_name' %}arrow-up {% elif request.sort_option.order == 'employee_id__employee_first_name' %}arrow-down {% else %}arrow-up-down {% endif %}" hx-target='#activity-table' hx-get="{% url 'attendance-activity-search' %}?{{pd}}&orderby=employee_id__employee_first_name">{% trans "Employee" %}</div>
+          <div class="oh-sticky-table__th {% if request.sort_option.order == '-attendance_date' %}arrow-up {% elif request.sort_option.order == 'attendance_date' %}arrow-down {% else %}arrow-up-down {% endif %}" hx-target='#activity-table' hx-get="{% url 'attendance-activity-search' %}?{{pd}}&orderby=attendance_date">{% trans "Attendance Date" %}</div>
+          <div class="oh-sticky-table__th {% if request.sort_option.order == '-clock_in_date' %}arrow-up {% elif request.sort_option.order == 'clock_in_date' %}arrow-down {% else %}arrow-up-down {% endif %}" hx-target='#activity-table' hx-get="{% url 'attendance-activity-search' %}?{{pd}}&orderby=clock_in_date">{% trans "In Date" %}</div>
           <div class='oh-sticky-table__th'>{% trans "Check In" %}</div>
           <div class='oh-sticky-table__th'>{% trans "Check Out" %}</div>
-          <div class='oh-sticky-table__th' hx-target='#activity-table' hx-get="{% url 'attendance-activity-search' %}?{{pd}}&orderby=clock_out_date">{% trans "Out Date" %}</div>
+          <div class="oh-sticky-table__th {% if request.sort_option.order == '-clock_out_date' %}arrow-up {% elif request.sort_option.order == 'clock_out_date' %}arrow-down {% else %}arrow-up-down {% endif %}" hx-target='#activity-table' hx-get="{% url 'attendance-activity-search' %}?{{pd}}&orderby=clock_out_date">{% trans "Out Date" %}</div>
           <div class='oh-sticky-table__th' scope="col" style="width: 80px;"></div>
         </div> 
       </div>

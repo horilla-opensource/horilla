@@ -250,13 +250,13 @@ def late_come_early_out_search(request):
     )
     reports = reports | self_reports
     reports.distinct()
+    reports = sortby(request, reports, "sortby")
     template = "attendance/late_come_early_out/report_list.html"
     if field != "" and field is not None:
         template = "attendance/late_come_early_out/group_by.html"
         reports = group_by_queryset(reports, field, request.GET.get("page"), "page")
     else:
         reports = paginator_qry(reports, request.GET.get("page"))
-    reports = sortby(request, reports, "sortby")
     data_dict = parse_qs(previous_data)
     get_key_instances(AttendanceLateComeEarlyOut, data_dict)
     keys_to_remove = [key for key, value in data_dict.items() if value == ["unknown"]]
