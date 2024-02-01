@@ -10,6 +10,31 @@
         <ion-icon name="search-outline" class="oh-input-group__icon oh-input-group__icon--left md hydrated" role="img" aria-label="search outline"></ion-icon>
         <input type="text" id="pipelineSearch" placeholder="Search" style="margin-right:10px" onkeyup="$('.filterButton').click()" name="search" class="oh-input oh-input__icon mr-3" aria-label="Search Input" />
       </div>
+      <input type="hidden" name="view" value="{{request.GET.view}}" id="reimbursementViewType">
+        <ul class="oh-view-types ml-2" style="margin-bottom: 0">
+          <li class="oh-view-type employee-view-type" data-view="list">
+            <a
+              id="list"
+              onclick="$('#reimbursementViewType').val('list');setTimeout(() => {
+              $('.filterButton')[0].click();
+              }, 10);"
+              class="oh-btn oh-btn--view {% if request.GET.view == 'list' %} oh-btn--view-active {% endif %}"
+              title='{% trans "List" %}'
+              ><ion-icon name="list-outline"></ion-icon
+            ></a>
+          </li>
+          <li class="oh-view-type employee-view-type" data-view="card">
+            <a
+              id="card"
+              onclick="$('#reimbursementViewType').val('card');setTimeout(() => {
+              $('.filterButton')[0].click();
+              }, 10);"
+              class="oh-btn oh-btn--view {% if request.GET.view != 'list' %} oh-btn--view-active {% endif %}"
+              title='{% trans "Card" %}'
+              ><ion-icon name="grid-outline"></ion-icon
+            ></a>
+          </li>
+        </ul>
       {% comment %} <ul class="oh-view-types ml-2" style="margin-bottom: 0;">
         <li class="oh-view-type" data-view="list" onclick="event.stopPropagation()">
           <a class="oh-btn oh-btn--view" title="List"><ion-icon name="list-outline" role="img" class="md hydrated" aria-label="list outline"></ion-icon></a>

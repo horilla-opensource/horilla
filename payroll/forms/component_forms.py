@@ -651,9 +651,6 @@ class ReimbursementForm(ModelForm):
         instance.other_attachments.add(*multiple_attachment_ids)
 
         emp = Employee.objects.get(id=self.initial["employee_id"])
-        print("+++++++++++++++++++++++++")
-        print(self.instance.pk)
-        print("+++++++++++++++++++++++++")
         try:
             if is_new:
                 notify.send(

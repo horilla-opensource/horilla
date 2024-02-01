@@ -19,7 +19,11 @@
   </style>
   <div id="reimbursementContainer">
     {% if requests %}
-      {% include 'payroll/reimbursement/request_cards.html' %}
+    {% if view == "list" %}
+    {% include 'payroll/reimbursement/reimbursement_list.html' %}
+    {% else %}
+    {% include 'payroll/reimbursement/request_cards.html' %}
+    {% endif %}
     {% else %}
       {% include "filter_tags.html" %}
       <main :class="sidebarOpen ? 'oh-main__sidebar-visible' : ''">
