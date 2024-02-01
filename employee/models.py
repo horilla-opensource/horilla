@@ -281,7 +281,8 @@ class Employee(models.Model):
         last_name = (
             self.employee_last_name if self.employee_last_name is not None else ""
         )
-        return f"{self.employee_first_name} {last_name}"
+        badge_id = ((f"({self.badge_id})") if self.badge_id is not None else "")
+        return f"{self.employee_first_name} {last_name} {badge_id}"
 
     def check_online(self):
         """
@@ -700,3 +701,12 @@ class DisciplinaryAction(models.Model):
 
     def __str__(self) -> str:
         return f"{self.action}"
+
+
+class EmployeeGeneralSetting(models.Model):
+    """
+    EmployeeGeneralSetting
+    """
+
+    badge_id_prefix = models.CharField(max_length=5, default="PEP")
+    company_id = models.ForeignKey(Company,null=True,on_delete=models.CASCADE)
