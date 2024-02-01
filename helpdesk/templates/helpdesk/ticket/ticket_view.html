@@ -42,7 +42,7 @@
 		<!-- start of Quick filters  -->
 		<div class="d-flex flex-row-reverse">
 			<span
-				class="m-3 review_ongoing"
+				class="m-1 review_ongoing"
 				onclick="$('[name=status]').val('canceled');$('[name=status]').first().change();$('.filterButton').click()"
 				style="cursor: pointer"
 			>
@@ -53,7 +53,7 @@
 				{% trans "Canceled" %}
 			</span>
 			<span
-				class="m-3 confirmed"
+				class="m-1 confirmed"
 				onclick="$('[name=status]').val('resolved');$('[name=status]').first().change();$('.filterButton').click()"
 				style="cursor: pointer"
 			>
@@ -64,7 +64,7 @@
 				{% trans "Resolved" %}
 			</span>
 			<span
-				class="m-3 paid"
+				class="m-1 paid"
 				onclick="$('[name=status]').val('on_hold');$('[name=status]').first().change();$('.filterButton').click()"
 				style="cursor: pointer"
 			>
@@ -75,7 +75,7 @@
 				{% trans "On Hold" %}
 			</span>
 			<span
-				class="m-3 paid"
+				class="m-1 paid"
 				onclick="$('[name=status]').val('in_progress');$('[name=status]').first().change();$('.filterButton').click()"
 				style="cursor: pointer"
 			>
@@ -86,7 +86,7 @@
 				{% trans "In Progress" %}
 			</span>
 			<span
-				class="m-3 confirmed"
+				class="m-1 confirmed"
 				onclick="$('[name=status]').val('new');$('[name=status]').first().change();$('.filterButton').click()"
 				style="cursor: pointer"
 			>
