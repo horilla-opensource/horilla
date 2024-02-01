@@ -1181,7 +1181,8 @@ def search_reimbursement(request):
     template = "payroll/reimbursement/request_cards.html"
     if view == "list":
         template = "payroll/reimbursement/reimbursement_list.html"
-    data_dict.pop("view")
+    print(data_dict)
+    data_dict.pop("view",None)
     return render(
         request,
         template,
@@ -1235,7 +1236,7 @@ def approve_reimbursements(request):
             reimbursement.save()
             if reimbursement.get_status_display() != "Requested":
                 messages.success(
-                    request, f"Request {reimbursement.get_status_display()} succesfully"
+                    request, f"Request {reimbursement.get_status_display()} successfully"
                 )
         if status == "canceled":
             notify.send(

@@ -13,17 +13,6 @@
     </span>
     <span
         class="mb-3"
-        onclick="$('[name=status]').val('requested').change(); $('.filterButton').click()"
-        style="cursor: pointer; margin-right: 15px"
-    >
-        <span
-            class="oh-dot oh-dot--small me-1"
-            style="background-color: rgba(128, 128, 128, 0.482)"
-        ></span>
-        {% trans "Requested" %}
-    </span>
-    <span
-        class="mb-3"
         onclick="$('[name=status]').val('approved').change();$('.filterButton').click()"
         style="cursor: pointer; margin-right: 15px"
     >
@@ -32,6 +21,17 @@
             style="background-color: yellowgreen"
         ></span>
         {% trans "Approved" %}
+    </span>
+    <span
+        class="mb-3"
+        onclick="$('[name=status]').val('requested').change(); $('.filterButton').click()"
+        style="cursor: pointer; margin-right: 15px"
+    >
+        <span
+            class="oh-dot oh-dot--small me-1"
+            style="background-color: rgba(128, 128, 128, 0.482)"
+        ></span>
+        {% trans "Requested" %}
     </span>
     
 </div>
