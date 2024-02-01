@@ -30,28 +30,28 @@
               <div class="oh-sticky-table__thead">
                 <div class="oh-sticky-table__tr">
                   <div
-                    class="oh-sticky-table__th"
+                    class="oh-sticky-table__th {% if request.sort_option.order == '-stage' %}arrow-up {% elif request.sort_option.order == 'stage' %}arrow-down {% else %} arrow-up-down {% endif %}"
                     hx-get="{% url 'stage-search' %}?{{pd}}&orderby=stage"
                     hx-target="#stage-container"
                   >
                     {% trans "Title" %}
                   </div>
                   <div
-                    class="oh-sticky-table__th"
+                    class="oh-sticky-table__th {% if request.sort_option.order == '-stage_managers' %}arrow-up {% elif request.sort_option.order == 'stage_managers' %}arrow-down {% else %} arrow-up-down {% endif %}"
                     hx-get="{% url 'stage-search' %}?{{pd}}&orderby=stage_managers"
                     hx-target="#stage-container"
                   >
                     {% trans "Managers" %}
                   </div>
                   <div
-                    class="oh-sticky-table__th"
+                    class="oh-sticky-table__th {% if request.sort_option.order == '-stage_type' %}arrow-up {% elif request.sort_option.order == 'stage_type' %}arrow-down {% else %} arrow-up-down {% endif %}"
                     hx-get="{% url 'stage-search' %}?{{pd}}&orderby=stage_type"
                     hx-target="#stage-container"
                   >
                     {% trans "Type" %}
                   </div>
                   <div
-                    class="oh-sticky-table__th"
+                    class="oh-sticky-table__th {% if request.sort_option.order == '-recruitment_id__start_date' %}arrow-up {% elif request.sort_option.order == 'recruitment_id__start_date' %}arrow-down {% else %} arrow-up-down {% endif %}"
                     hx-get="{% url 'stage-search' %}?{{pd}}&orderby=recruitment_id__start_date"
                     hx-target="#stage-container"
                   >

@@ -49,12 +49,12 @@
                     <div class="oh-sticky-table__table">
                       <div class="oh-sticky-table__thead">
                         <div class="oh-sticky-table__tr">
-                          <div class="oh-sticky-table__th" hx-get="{% url 'recruitment-search' %}?{{pd}}&orderby=title" hx-target="#recruitment-container">{% trans "Recruitment" %}</div>
+                          <div class="oh-sticky-table__th {% if request.sort_option.order == '-title' %}arrow-up {% elif request.sort_option.order == 'title' %}arrow-down {% else %} arrow-up-down {% endif %}" hx-get="{% url 'recruitment-search' %}?{{pd}}&orderby=title" hx-target="#recruitment-container">{% trans "Recruitment" %}</div>
                           <div class="oh-sticky-table__th" >{% trans "Managers" %}</div>
                           <div class="oh-sticky-table__th" >{% trans "Open Jobs" %}</div>
-                          <div class="oh-sticky-table__th" hx-get="{% url 'recruitment-search' %}?{{pd}}&orderby=vacancy" hx-target="#recruitment-container">{% trans "Vacancy" %}</div>
-                          <div class="oh-sticky-table__th" hx-get="{% url 'recruitment-search' %}?{{pd}}&orderby=start_date" hx-target="#recruitment-container">{% trans "Start Date" %}</div>
-                          <div class="oh-sticky-table__th" hx-get="{% url 'recruitment-search' %}?{{pd}}&orderby=end_date" hx-target="#recruitment-container">{% trans "End Date" %}</div>
+                          <div class="oh-sticky-table__th {% if request.sort_option.order == '-vacancy' %}arrow-up {% elif request.sort_option.order == 'vacancy' %}arrow-down {% else %} arrow-up-down {% endif %}" hx-get="{% url 'recruitment-search' %}?{{pd}}&orderby=vacancy" hx-target="#recruitment-container">{% trans "Vacancy" %}</div>
+                          <div class="oh-sticky-table__th {% if request.sort_option.order == '-start_date' %}arrow-up {% elif request.sort_option.order == 'start_date' %}arrow-down {% else %} arrow-up-down {% endif %}" hx-get="{% url 'recruitment-search' %}?{{pd}}&orderby=start_date" hx-target="#recruitment-container">{% trans "Start Date" %}</div>
+                          <div class="oh-sticky-table__th {% if request.sort_option.order == '-end_date' %}arrow-up {% elif request.sort_option.order == 'end_date' %}arrow-down {% else %} arrow-up-down {% endif %}" hx-get="{% url 'recruitment-search' %}?{{pd}}&orderby=end_date" hx-target="#recruitment-container">{% trans "End Date" %}</div>
                           <div class="oh-sticky-table__th">{% trans "Status" %}</div>
                           <div class="oh-sticky-table__th" style="width: 250px;">{% trans "Actions" %}</div>
                         </div>
