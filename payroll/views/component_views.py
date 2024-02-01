@@ -1124,16 +1124,25 @@ def view_reimbursement(request):
     requests = filter_own_recodes(
         request, filter_object.qs, "payroll.view_reimbursement"
     )
+    reimbursements = requests.filter(type = "reimbursement")
+    leave_encashments = requests.filter(type = "leave_encashment")
+    bonus_encashment = requests.filter(type = "bonus_encashment")
     data_dict = {"status": ["requested"]}
+    view = request.GET.get("view")
+    template = "payroll/reimbursement/view_reimbursement.html"
 
     return render(
         request,
-        "payroll/reimbursement/view_reimbursement.html",
+        template,
         {
             "requests": paginator_qry(requests, request.GET.get("page")),
+            "reimbursements":paginator_qry(reimbursements, request.GET.get("rpage")),
+            "leave_encashments":paginator_qry(leave_encashments, request.GET.get("lpage")),
+            "bonus_encashments":paginator_qry(bonus_encashment, request.GET.get("bpage")),
             "f": filter_object,
             "pd": request.GET.urlencode(),
             "filter_dict": data_dict,
+            "view": view,
         },
     )
 
@@ -1164,12 +1173,23 @@ def search_reimbursement(request):
     """
     requests = ReimbursementFilter(request.GET).qs
     requests = filter_own_recodes(request, requests, "payroll.view_reimbursement")
-    data_dict = parse_qs(request.GET.urlencode())
+    data_dict = parse_qs(request.GET.urlencode())    
+    reimbursements = requests.filter(type = "reimbursement")
+    leave_encashments = requests.filter(type = "leave_encashment")
+    bonus_encashment = requests.filter(type = "bonus_encashment")    
+    view = request.GET.get("view")
+    template = "payroll/reimbursement/request_cards.html"
+    if view == "list":
+        template = "payroll/reimbursement/reimbursement_list.html"
+    data_dict.pop("view")
     return render(
         request,
-        "payroll/reimbursement/request_cards.html",
+        template,
         {
             "requests": paginator_qry(requests, request.GET.get("page")),
+            "reimbursements":paginator_qry(reimbursements, request.GET.get("rpage")),
+            "leave_encashments":paginator_qry(leave_encashments, request.GET.get("lpage")),
+            "bonus_encashments":paginator_qry(bonus_encashment, request.GET.get("bpage")),
             "filter_dict": data_dict,
             "pd": request.GET.urlencode(),
         },
@@ -1213,9 +1233,10 @@ def approve_reimbursements(request):
             emp = reimbursement.employee_id
             reimbursement.status = status
             reimbursement.save()
-        messages.success(
-            request, f"Request {reimbursement.get_status_display()} succesfully"
-        )
+            if reimbursement.get_status_display() != "Requested":
+                messages.success(
+                    request, f"Request {reimbursement.get_status_display()} succesfully"
+                )
         if status == "canceled":
             notify.send(
                 request.user.employee_get,
