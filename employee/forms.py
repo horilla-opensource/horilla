@@ -546,29 +546,27 @@ class DisciplinaryActionForm(ModelForm):
         model = DisciplinaryAction
         fields = "__all__"
         exclude = ["company_id", "objects"]
-
         widgets = {
-            "start_date": DateInput(attrs={"type": "date"}),
+            "start_date": forms.DateInput(attrs={"type": "date"}),
         }
+
+    action = forms.ModelChoiceField(
+        queryset=Actiontype.objects.all(),
+        label=_("Action"),
+        widget=forms.Select(
+            attrs={
+                "class": "oh-select oh-select-2 select2-hidden-accessible",
+                "onchange": "actionTypeChange($(this))",
+            }
+        ),
+    )
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        action_queryset = self.fields["action"].queryset
         action_choices = [("", _("---Choose Action---"))] + list(
-            action_queryset.values_list("id", "title")
+            self.fields["action"].queryset.values_list("id", "title")
         )
-        self.fields["action"] = forms.ChoiceField(
-            choices=action_choices,
-            required=self.fields["action"].required,
-            label=_("Action"),
-            initial=self.fields["action"].initial,
-            widget=forms.Select(
-                attrs={
-                    "class": "oh-select oh-select-2 select2-hidden-accessible",
-                    "onchange": "actionTypeChange($(this))",
-                }
-            ),
-        )
+        self.fields["action"].choices = action_choices
         self.fields["action"].choices += [("create", _("Create new action type "))]
 
 

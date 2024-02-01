@@ -154,8 +154,8 @@
     <script>
       function actionTypeChange(selectElement) {
         var selectedActiontype = selectElement.val();
+        var parentForm = selectElement.parents().closest("form");
         if (selectedActiontype !== "create") {
-          let parentForm = selectElement.parents().closest("form");
           $.ajax({
               type: "post",
               url: "{% url 'action-type-details' %}",
@@ -175,8 +175,11 @@
               },
           });
         }else{
-      $("#dynamicActionType").click();
-    }
+          let dynamicActionType = $("#dynamicActionType");
+          var view = parentForm.serialize()
+          dynamicActionType.attr("hx-vals", `{"data":"${view}"}`);
+          dynamicActionType.click();
+        }
       }
     </script>
   {% endif %}

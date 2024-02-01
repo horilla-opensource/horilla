@@ -18,29 +18,29 @@
     hx-encoding="multipart/form-data">
     {% csrf_token %}
     <div id="employeeIdDiv">
-        <label class="oh-input__label">{% trans "Employee" %}</label>
+        <label class="oh-input__label" for="{{form.employee_id.id_for_label}}">{% trans "Employee" %}</label>
         {{ form.employee_id }}
     </div>
     <div id="actionDiv">
-        <label class="oh-input__label">{% trans "Action" %}</label>
+        <label class="oh-input__label" for="{{form.action.id_for_label}}">{% trans "Action" %}</label>
         {{ form.action }}
     </div>
     <div id="daysDiv" style="display: none;">
-        <label class="oh-input__label">{% trans "Days" %}</label>
+        <label class="oh-input__label" for="{{form.days.id_for_label}}">{% trans "Days" %}</label>
         {{ form.days }}
     </div>
 
     <div id="startdateDiv">
-        <label class="oh-input__label">{% trans "Action Date" %}</label>
+        <label class="oh-input__label" for="{{form.start_date.id_for_label}}">{% trans "Action Date" %}</label>
         {{ form.start_date }}
     </div>
 
     <div id="descriptionDiv">
-        <label class="oh-input__label">{% trans "Description" %}</label>
+        <label class="oh-input__label" for="{{form.description.id_for_label}}">{% trans "Description" %}</label>
         {{ form.description }}
     </div>
     <div id="attachmentDiv">
-        <label class="oh-input__label">{% trans "Attachment" %}</label>
+        <label class="oh-input__label" for="{{form.attachment.id_for_label}}">{% trans "Attachment" %}</label>
         {{ form.attachment }}
     </div>
 

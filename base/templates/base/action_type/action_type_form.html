@@ -28,7 +28,7 @@
     {% if act_id %}
     	hx-post="{% url 'action-type-update' act_id %}"
     {% else %}
-    	hx-post="{% url 'action-type-create' %}?dynamic={{dynamic}}"
+    	hx-post="{% url 'action-type-create' %}?dynamic={{dynamic}}&{{hx_vals}}"
     {% endif %}
 	{% if dynamic %}
 		hx-target="#createannouncementForm"

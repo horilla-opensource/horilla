@@ -4519,6 +4519,7 @@ def action_type_create(request):
     """
     form = ActiontypeForm()
     dynamic = request.GET.get("dynamic")
+    hx_vals = request.GET.get("data")
     if request.method == "POST":
         form = ActiontypeForm(request.POST)
         if form.is_valid():
@@ -4528,14 +4529,20 @@ def action_type_create(request):
             if dynamic=="None":
                 return HttpResponse("<script>window.location.reload()</script>")
             else:
-                from employee.policies import create_actions
-                return redirect(create_actions)
+                from django.urls import reverse
+                url = reverse('create-actions')
+                instance = Actiontype.objects.all().order_by('-id').first()
+                mutable_get = request.GET.copy()
+                mutable_get['action'] = str(instance.id)
+                return redirect(f"{url}?{mutable_get.urlencode()}")
+
     return render(
         request,
         "base/action_type/action_type_form.html",
         {
             "form": form,
             "dynamic":dynamic,
+            "hx_vals":hx_vals,
         },
     )
 

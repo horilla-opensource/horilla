@@ -171,8 +171,7 @@ def create_actions(request):
     """
     Method is used to create Disciplinaryaction
     """
-
-    form = DisciplinaryActionForm(getattr(request,"previous_post",{}),request.FILES)
+    form = DisciplinaryActionForm(request.GET)
     employees = []
     if request.method == "POST":
         form = DisciplinaryActionForm(request.POST, request.FILES)
@@ -182,10 +181,8 @@ def create_actions(request):
             for i in emp:
                 name = i.employee_user_id
                 employees.append(name)
-
             form.save()
             messages.success(request, _("Disciplinary action taken."))
-
             notify.send(
                 request.user.employee_get,
                 recipient=employees,
