@@ -790,6 +790,7 @@ class AttendanceLateComeEarlyOut(models.Model):
         """
 
         unique_together = [("attendance_id"), ("type")]
+        ordering = ["-attendance_id__attendance_date"]
 
     def __str__(self) -> str:
         return f"{self.attendance_id.employee_id.employee_first_name} \

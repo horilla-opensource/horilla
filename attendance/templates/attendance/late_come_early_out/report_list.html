@@ -22,17 +22,17 @@
                 <input type="checkbox" title="{% trans 'Select All' %}" class="oh-input oh-input__checkbox all-latecome"/>
               </div>
             </div>
-            <div class='oh-sticky-table__th' scope="col" hx-target='#report-container' hx-get="{% url 'late-come-early-out-search' %}?{{pd}}&sortby=employee_id__employee_first_name">{% trans "Employee" %}</div>
-            <div class='oh-sticky-table__th' data-cell-index="1" data-cell-title='{% trans "Type" %}' scope="col" hx-target='#report-container' hx-get="{% url 'late-come-early-out-search' %}?{{pd}}&sortby=type">{% trans "Type" %}</div>
-            <div class='oh-sticky-table__th' data-cell-index="2" data-cell-title='{% trans "Attendance Date" %}' scope="col" hx-target='#report-container' hx-get="{% url 'late-come-early-out-search' %}?{{pd}}&sortby=attendance_id__attendance_date">{% trans "Attendance Date" %}</div>
-            <div class='oh-sticky-table__th' data-cell-index="3" data-cell-title='{% trans "Check-In" %}' scope="col" hx-target='#report-container' hx-get="{% url 'late-come-early-out-search' %}?{{pd}}&sortby=">{% trans "Check-In" %}</div>
-            <div class='oh-sticky-table__th' data-cell-index="4" data-cell-title='{% trans "In-Date" %}' scope="col" hx-target='#report-container' hx-get="{% url 'late-come-early-out-search' %}?{{pd}}&sortby=attendance_id__attendance_clock_in_date">{% trans "In Date" %}</div>
-            <div class='oh-sticky-table__th' data-cell-index="5" data-cell-title='{% trans "Check-Out" %}' scope="col" hx-target='#report-container' hx-get="{% url 'late-come-early-out-search' %}?{{pd}}&sortby=">{% trans "Check-Out" %}</div>
-            <div class='oh-sticky-table__th' data-cell-index="6" data-cell-title='{% trans "Out-Date" %}' scope="col" hx-target='#report-container' hx-get="{% url 'late-come-early-out-search' %}?{{pd}}&sortby=attendance_id__attendance_clock_out_date">{% trans "Out Date" %}</div>
-            <div class='oh-sticky-table__th' data-cell-index="7" data-cell-title='{% trans "Min Hour" %}' scope="col" hx-target='#report-container' hx-get="{% url 'late-come-early-out-search' %}?{{pd}}&sortby=">{% trans "Min Hour" %}</div>
-            <div class='oh-sticky-table__th' data-cell-index="8" data-cell-title='{% trans "At Work" %}' scope="col" hx-target='#report-container' hx-get="{% url 'late-come-early-out-search' %}?{{pd}}&sortby=attendance_id__at_work_second">{% trans "At Work" %}</div>
-            <div class='oh-sticky-table__th' data-cell-index="9" scope="col"></div>
-            <div class='oh-sticky-table__th'  scope="col" style="width: 150px;"></div>
+            <div class="oh-sticky-table__th {% if request.sort_option.order == '-employee_id__employee_first_name' %}arrow-up {% elif request.sort_option.order == 'employee_id__employee_first_name' %}arrow-down {% else %} arrow-up-down {% endif %}" scope="col" hx-target='#report-container' hx-get="{% url 'late-come-early-out-search' %}?{{pd}}&sortby=employee_id__employee_first_name">{% trans "Employee" %}</div>
+            <div class="oh-sticky-table__th {% if request.sort_option.order == '-employee_id__employee_first_name' %}arrow-up {% elif request.sort_option.order == 'type' %} arrow-down {% else %} arrow-up-down {% endif %}" data-cell-index="1" data-cell-title='{% trans "Type" %}' scope="col" hx-target='#report-container' hx-get="{% url 'late-come-early-out-search' %}?{{pd}}&sortby=type">{% trans "Type" %}</div>
+            <div class="oh-sticky-table__th {% if request.sort_option.order == '-employee_id__employee_first_name' %}arrow-up {% elif request.sort_option.order == 'attendance_id__attendance_date' %}arrow-down {% else %} arrow-up-down {% endif %}" data-cell-index="2" data-cell-title='{% trans "Attendance Date" %}' scope="col" hx-target='#report-container' hx-get="{% url 'late-come-early-out-search' %}?{{pd}}&sortby=attendance_id__attendance_date">{% trans "Attendance Date" %}</div>
+            <div class="oh-sticky-table__th " data-cell-index="3" data-cell-title='{% trans "Check-In" %}' scope="col" hx-target='#report-container' hx-get="{% url 'late-come-early-out-search' %}?{{pd}}&sortby=">{% trans "Check-In" %}</div>
+            <div class="oh-sticky-table__th {% if request.sort_option.order == '-employee_id__employee_first_name' %}arrow-up {% elif request.sort_option.order == 'attendance_id__attendance_clock_in_date' %}arrow-down {% else %} arrow-up-down {% endif %}" data-cell-index="4" data-cell-title='{% trans "In-Date" %}' scope="col" hx-target='#report-container' hx-get="{% url 'late-come-early-out-search' %}?{{pd}}&sortby=attendance_id__attendance_clock_in_date">{% trans "In Date" %}</div>
+            <div class="oh-sticky-table__th " data-cell-index="5" data-cell-title='{% trans "Check-Out" %}' scope="col" hx-target='#report-container' hx-get="{% url 'late-come-early-out-search' %}?{{pd}}&sortby=">{% trans "Check-Out" %}</div>
+            <div class="oh-sticky-table__th {% if request.sort_option.order == '-employee_id__employee_first_name' %}arrow-up {% elif request.sort_option.order == 'attendance_id__attendance_clock_out_date' %}arrow-down {% else %} arrow-up-down {% endif %}" data-cell-index="6" data-cell-title='{% trans "Out-Date" %}' scope="col" hx-target='#report-container' hx-get="{% url 'late-come-early-out-search' %}?{{pd}}&sortby=attendance_id__attendance_clock_out_date">{% trans "Out Date" %}</div>
+            <div class="oh-sticky-table__th " data-cell-index="7" data-cell-title='{% trans "Min Hour" %}' scope="col" hx-target='#report-container' hx-get="{% url 'late-come-early-out-search' %}?{{pd}}&sortby=">{% trans "Min Hour" %}</div>
+            <div class="oh-sticky-table__th {% if request.sort_option.order == '-employee_id__employee_first_name' %}arrow-up {% elif request.sort_option.order == 'attendance_id__at_work_second' %}arrow-down {% else %} arrow-up-down {% endif %}" data-cell-index="8" data-cell-title='{% trans "At Work" %}' scope="col" hx-target='#report-container' hx-get="{% url 'late-come-early-out-search' %}?{{pd}}&sortby=attendance_id__at_work_second">{% trans "At Work" %}</div>
+            <div class="oh-sticky-table__th "  scope="col" style="width: 150px;">{% trans "Actions" %}</div>
+            <div class="oh-sticky-table__th " data-cell-index="9" scope="col">{% trans "Penalties" %}</div>
             {% comment %} <div class='oh-sticky-table__th' scope="col" style="width: 80px;"></div> {% endcomment %}
           </div>
         </div>
@@ -72,11 +72,6 @@
             <div data-cell-index="6" class='oh-sticky-table__td dateformat_changer'>{{laXte_in_early_out.attendance_id.attendance_clock_out_date}}</div>
             <div data-cell-index="7" class='oh-sticky-table__td'>{{late_in_early_out.attendance_id.minimum_hour}}</div>
             <div data-cell-index="8" class='oh-sticky-table__td'>{{late_in_early_out.attendance_id.attendance_worked_hour}}</div>
-            <div data-cell-index="9" class='oh-sticky-table__td'>
-              {% if late_in_early_out.get_penalties_count %}
-              <div class="" data-target="#penaltyViewModal" data-toggle="oh-modal-toggle" hx-get="{% url "view-penalties" %}?late_early_id={{late_in_early_out.id}}" hx-target="#penaltyViewModalBody" align="center" style="background-color: rgba(229, 79, 56, 0.036); border: 2px solid rgb(229, 79, 56); border-radius: 18px; padding: 10px; font-weight: bold; width: 85%;">Penalties :{{late_in_early_out.get_penalties_count}}</div>
-              {% endif %}
-            </div>
             <div class="oh-sticky-table__td">
               <div class="oh-btn-group">
                 {% if request.user|is_reportingmanager or perms.attendance.chanage_penaltyaccount %}
@@ -101,6 +96,11 @@
                 </form>
                 {% endif %}
               </div>
+            </div>
+            <div data-cell-index="9" class='oh-sticky-table__td'>
+              {% if late_in_early_out.get_penalties_count %}
+              <div class="" data-target="#penaltyViewModal" data-toggle="oh-modal-toggle" hx-get="{% url "view-penalties" %}?late_early_id={{late_in_early_out.id}}" hx-target="#penaltyViewModalBody" align="center" style="background-color: rgba(229, 79, 56, 0.036); border: 2px solid rgb(229, 79, 56); border-radius: 18px; padding: 10px; font-weight: bold; width: 85%;">Penalties :{{late_in_early_out.get_penalties_count}}</div>
+              {% endif %}
             </div>
           </div>
           {% endfor %}
