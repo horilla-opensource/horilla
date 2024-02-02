@@ -52,12 +52,16 @@ def attendance_search(request):
     field = request.GET.get("field")
     minot = strtime_seconds("00:00")
     condition = AttendanceValidationCondition.objects.first()
+    all_attendances = Attendance.objects.all()
+    if request.GET.get("sortby"):
+        all_attendances = sortby(request, all_attendances, "sortby")
+
     if condition is not None and condition.minimum_overtime_to_approve is not None:
         minot = strtime_seconds(condition.minimum_overtime_to_approve)
 
-    validate_attendances = Attendance.objects.filter(attendance_validated=False)
-    attendances = Attendance.objects.filter(attendance_validated=True)
-    ot_attendances = Attendance.objects.filter(
+    validate_attendances = all_attendances.filter(attendance_validated=False)
+    attendances = all_attendances.filter(attendance_validated=True)
+    ot_attendances = all_attendances.filter(
         overtime_second__gte=minot,
         attendance_validated=True,
     )
@@ -76,10 +80,6 @@ def attendance_search(request):
         ot_attendances = filtersubordinates(
             request, ot_attendances, "attendance.view_attendance"
         )
-    if request.GET.get("sortby"):
-        attendances = sortby(request, attendances, "sortby")
-        validate_attendances = sortby(request, validate_attendances, "sortby")
-        ot_attendances = sortby(request, ot_attendances, "sortby")
     data_dict = parse_qs(previous_data)
     get_key_instances(Attendance, data_dict)
     keys_to_remove = [
@@ -329,7 +329,11 @@ def own_attendance_sort(request):
 @login_required
 def search_attendance_requests(request):
     field = request.GET.get("field")
-    requests = Attendance.objects.filter(
+    all_attendance = Attendance.objects.all()    
+    if request.GET.get("sortby"):
+        all_attendance = sortby(request, all_attendance, "sortby")
+        
+    requests = all_attendance.filter(
         is_validate_request=True, employee_id__is_active=True
     )
     requests = filtersubordinates(
@@ -337,7 +341,7 @@ def search_attendance_requests(request):
         perm="attendance.view_attendance",
         queryset=requests,
     )
-    requests = requests | Attendance.objects.filter(
+    requests = requests | all_attendance.filter(
         employee_id__employee_user_id=request.user,
         is_validate_request=True,
     )
@@ -345,9 +349,9 @@ def search_attendance_requests(request):
     attendances = filtersubordinates(
         request=request,
         perm="attendance.view_attendance",
-        queryset=Attendance.objects.all(),
+        queryset=all_attendance.all(),
     )
-    attendances = attendances | Attendance.objects.filter(
+    attendances = attendances | all_attendance.filter(
         employee_id__employee_user_id=request.user
     )
     attendances = AttendanceFilters(request.GET, attendances).qs
