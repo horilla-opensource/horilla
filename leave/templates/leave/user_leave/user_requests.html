@@ -7,21 +7,17 @@
         <span class="oh-dot oh-dot--small me-1" style="background-color:red"></span>
         {% trans "Rejected" %}
     </span>
-    <span class="m-3 review_ongoing"  onclick="$('[name=status]').val('cancelled_and_rejected');$('[name=status]').first().change();$('.filterButton').click()" style="cursor: pointer">
-        <span class="oh-dot oh-dot--small me-1" style="background-color:#000"></span>
-        {% trans "Cancelled & rejected" %}
-    </span>
     <span class="m-3" style="cursor:pointer;" onclick="$('[name=status]').val('cancelled');$('[name=status]').first().change();$('.filterButton').click()">
         <span class="oh-dot oh-dot--small me-1" style="background-color:gray"></span>
         {% trans "Cancelled" %}
     </span>
-    <span class="m-3" style="cursor:pointer;" onclick="$('[name=status]').val('requested');$('[name=status]').first().change();$('.filterButton').click()">
-        <span class="oh-dot oh-dot--small me-1" style="background-color:orange;"></span>
-        {% trans "Requested" %}
-    </span>
     <span class="m-3" style="cursor:pointer;" onclick="$('[name=status]').val('approved');$('[name=status]').first().change();$('.filterButton').click()">
         <span class="oh-dot oh-dot--small me-1" style="background-color:yellowgreen"></span>
         {% trans "Approved" %}
+    </span>
+    <span class="m-3" style="cursor:pointer;" onclick="$('[name=status]').val('requested');$('[name=status]').first().change();$('.filterButton').click()">
+        <span class="oh-dot oh-dot--small me-1" style="background-color:orange;"></span>
+        {% trans "Requested" %}
     </span>
 </div>
 <!-- start of selection buttons -->
@@ -80,7 +76,7 @@
                     hx-get="{% url 'user-request-one' leave_request.id %}?instances_ids={{request_ids}}" 
                     hx-target="#userRequestView">
                     <div class="oh-sticky-table__sd {% if leave_request.status == "requested" %}row-status--orange 
-                        {% elif leave_request.status == "cancelled_and_rejected" %} row-status--black {% elif leave_request.status == "cancelled" %} row-status--gray 
+                        {% elif leave_request.status == "cancelled" %} row-status--gray 
                         {% elif leave_request.status == "approved" %} row-status--yellow {% elif leave_request.status == "rejected" %} row-status--red{% endif %}" onclick="event.stopPropagation()">
                         <div class="centered-div">
                             <input
