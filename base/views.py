@@ -3330,7 +3330,14 @@ def delete_notification(request, id):
 
 
 @login_required
-def mark_as_read_notification(request):
+def mark_as_read_notification(request, notification_id):
+    notification = Notification.objects.get(id=notification_id)
+    notification.mark_as_read()
+    return redirect(notifications)
+
+
+@login_required
+def mark_as_read_notification_json(request):
     try:
         notification_id = request.POST["notification_id"]
         notification_id = int(notification_id)
@@ -4512,6 +4519,7 @@ def action_type_view(request):
         request, "base/action_type/action_type.html", {"action_types": action_types}
     )
 
+
 @login_required
 def action_type_create(request):
     """
@@ -4526,14 +4534,15 @@ def action_type_create(request):
             form.save()
             form = ActiontypeForm()
             messages.success(request, _("Action has been created successfully!"))
-            if dynamic=="None":
+            if dynamic == "None":
                 return HttpResponse("<script>window.location.reload()</script>")
             else:
                 from django.urls import reverse
-                url = reverse('create-actions')
-                instance = Actiontype.objects.all().order_by('-id').first()
+
+                url = reverse("create-actions")
+                instance = Actiontype.objects.all().order_by("-id").first()
                 mutable_get = request.GET.copy()
-                mutable_get['action'] = str(instance.id)
+                mutable_get["action"] = str(instance.id)
                 return redirect(f"{url}?{mutable_get.urlencode()}")
 
     return render(
@@ -4541,8 +4550,8 @@ def action_type_create(request):
         "base/action_type/action_type_form.html",
         {
             "form": form,
-            "dynamic":dynamic,
-            "hx_vals":hx_vals,
+            "dynamic": dynamic,
+            "hx_vals": hx_vals,
         },
     )
 

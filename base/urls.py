@@ -1,6 +1,10 @@
 from django.urls import path
 from base import request_and_approve, views, announcement
-from base.forms import RotatingShiftAssignForm, RotatingWorkTypeAssignForm, RotatingWorkTypeForm
+from base.forms import (
+    RotatingShiftAssignForm,
+    RotatingWorkTypeAssignForm,
+    RotatingWorkTypeForm,
+)
 from base.models import (
     Company,
     Department,
@@ -29,7 +33,9 @@ urlpatterns = [
         "settings/user-group-create/", views.user_group_table, name="user-group-create"
     ),
     path("settings/user-group-view/", views.user_group, name="user-group-view"),
-    path("settings/user-group-search/", views.user_group_search, name="user-group-search"),
+    path(
+        "settings/user-group-search/", views.user_group_search, name="user-group-search"
+    ),
     path(
         "settings/user-group-update/<int:id>/",
         views.user_group_update,
@@ -517,9 +523,18 @@ urlpatterns = [
     ),
     path("notifications", views.notifications, name="notifications"),
     path("clear-notifications", views.clear_notification, name="clear-notifications"),
-    path("delete-all-notifications", views.delete_all_notifications, name="delete-all-notifications"),
+    path(
+        "delete-all-notifications",
+        views.delete_all_notifications,
+        name="delete-all-notifications",
+    ),
     path("read-notifications", views.read_notifications, name="read-notifications"),
-    path('mark-as-read-notification/', views.mark_as_read_notification, name='mark-as-read-notification'),
+    path("mark-as-read-notification/<int:notification_id>", views.mark_as_read_notification, name="mark-as-read-notification"),
+    path(
+        "mark-as-read-notification-json/",
+        views.mark_as_read_notification_json,
+        name="mark-as-read-notification-json",
+    ),
     path("all-notifications", views.all_notifications, name="all-notifications"),
     path(
         "delete-notifications/<id>/",
@@ -660,7 +675,6 @@ urlpatterns = [
         views.delete_shift_comment_file,
         name="delete-shift-comment-file",
     ),
-        
     path(
         "view-work-type-comment/<int:work_type_id>/",
         views.view_work_type_comment,
@@ -731,9 +745,11 @@ urlpatterns = [
         request_and_approve.dashboard_asset_request_approve,
         name="dashboard-asset-request-approve",
     ),
-    path('settings/pagination-settings-view/',views.pagination_settings_view,name="pagination-settings-view"),
-
-
+    path(
+        "settings/pagination-settings-view/",
+        views.pagination_settings_view,
+        name="pagination-settings-view",
+    ),
     path("settings/action-type/", views.action_type_view, name="action-type"),
     path("action-type-create", views.action_type_create, name="action-type-create"),
     path(
@@ -746,25 +762,26 @@ urlpatterns = [
         views.action_type_delete,
         name="action-type-delete",
     ),
-
-
-    path('pagination-settings-view',views.pagination_settings_view,name="pagination-settings-view"),
-
     path(
-        "announcement/", 
-        announcement.announcement_view, name="announcement"
+        "pagination-settings-view",
+        views.pagination_settings_view,
+        name="pagination-settings-view",
+    ),
+    path("announcement/", announcement.announcement_view, name="announcement"),
+    path(
+        "create-announcement",
+        announcement.create_announcement,
+        name="create-announcement",
     ),
     path(
-        "create-announcement", 
-        announcement.create_announcement, name="create-announcement"
+        "delete-announcement/<int:anoun_id>",
+        announcement.delete_announcement,
+        name="delete-announcement",
     ),
     path(
-        "delete-announcement/<int:anoun_id>", 
-        announcement.delete_announcement, name="delete-announcement"
-    ),
-    path(
-        "update-announcement/<int:anoun_id>", 
-        announcement.update_announcement, name="update-announcement"
+        "update-announcement/<int:anoun_id>",
+        announcement.update_announcement,
+        name="update-announcement",
     ),
     path(
         "announcement-add-comment/<int:anoun_id>/",
@@ -777,8 +794,8 @@ urlpatterns = [
         name="announcement-view-comment",
     ),
     path(
-        "announcement-single-view/<int:anoun_id>", 
-        announcement.announcement_single_view, name="announcement-single-view"
+        "announcement-single-view/<int:anoun_id>",
+        announcement.announcement_single_view,
+        name="announcement-single-view",
     ),
-
 ]

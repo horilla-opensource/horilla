@@ -1,77 +1,122 @@
-{% load i18n %}
-{% get_current_language as LANGUAGE_CODE %}
+{% load i18n %} 
+{% get_current_language as LANGUAGE_CODE %} 
 {% if messages %}
-    <div class="oh-alert-container">
-        {% for message in messages %}
-        <div class="oh-alert oh-alert--animated {{message.tags}}">
-              {{ message }}
-        </div> 
-        {% endfor %}
-    </div>
-    {% endif %}
-<ul class="oh-navbar__nofication-list"> 
+<div class="oh-alert-container">
+  {% for message in messages %}
+  <div class="oh-alert oh-alert--animated {{message.tags}}">{{ message }}</div>
+  {% endfor %}
+</div>
+{% endif %}
+<ul class="oh-navbar__nofication-list">
   {% for notification in notifications %}
-    <a class="oh-navbar__notification-item" href="{{notification.data.redirect}}#" id="notification" data-id={{notification.id}}> 
+    <a class="oh-navbar__notification-item" href="{{notification.data.redirect}}#"
+      id="notification" data-id="{{notification.id}}"
+      >
       <div>
         {% if notification.unread %}
-        <span class="oh-navbar__notification-dot oh-navbar__notification-dot--green"
-          :class="markRead ? '': 'oh-navbar__notification-dot--unread'">
+        <span
+          class="oh-navbar__notification-dot oh-navbar__notification-dot--green"
+          :class="markRead ? '': 'oh-navbar__notification-dot--unread'"
+        >
         </span>
         {% endif %}
-
       </div>
       <div>
         {% if LANGUAGE_CODE == 'ar' %}
-            <p class="oh-navbar__notification-text" :class="markRead ? '' : 'oh-navbar__notification-text--unread' ">{{ notification.data.verb_ar }}</p>
+          <p
+            class="oh-navbar__notification-text"
+            :class="markRead ? '' : 'oh-navbar__notification-text--unread' "
+          >
+            {{ notification.data.verb_ar }}
+          </p>
         {% elif LANGUAGE_CODE == 'de' %}
-            <p class="oh-navbar__notification-text" :class="markRead ? '' : 'oh-navbar__notification-text--unread' ">{{ notification.data.verb_de }}</p>
+          <p
+            class="oh-navbar__notification-text"
+            :class="markRead ? '' : 'oh-navbar__notification-text--unread' "
+          >
+            {{ notification.data.verb_de }}
+          </p>
         {% elif LANGUAGE_CODE == 'fr' %}
-            <p class="oh-navbar__notification-text" :class="markRead ? '' : 'oh-navbar__notification-text--unread' ">{{ notification.data.verb_fr }}</p>
+          <p
+            class="oh-navbar__notification-text"
+            :class="markRead ? '' : 'oh-navbar__notification-text--unread' "
+          >
+            {{ notification.data.verb_fr }}
+          </p>
         {% elif LANGUAGE_CODE == 'es' %}
-            <p class="oh-navbar__notification-text" :class="markRead ? '' : 'oh-navbar__notification-text--unread' ">{{ notification.data.verb_es }}</p>
+          <p
+            class="oh-navbar__notification-text"
+            :class="markRead ? '' : 'oh-navbar__notification-text--unread' "
+          >
+            {{ notification.data.verb_es }}
+          </p>
         {% else %}
-            <p class="oh-navbar__notification-text" :class="markRead ? '' : 'oh-navbar__notification-text--unread' ">{{ notification.verb }}</p>
+          <p
+            class="oh-navbar__notification-text"
+            :class="markRead ? '' : 'oh-navbar__notification-text--unread' "
+          >
+            {{ notification.verb }}
+          </p>
         {% endif %}
-        <span class="oh-navbar__notification-date">{{ notification.timesince }} {% trans "ago by" %} {% if notification.actor.employee_first_name %}{{ notification.actor.employee_first_name }}{% else %}{% trans "Anonymous" %}{% endif %}</span>
+        <span class="oh-navbar__notification-date">
+          {{ notification.timesince }} {% trans "ago by" %} 
+          {% if notification.actor.employee_first_name %}
+            {{ notification.actor.employee_first_name }}
+          {% else %}
+            {% trans "Anonymous"%}
+          {% endif %}
+        </span>
       </div>
       <div>
-        <div class="oh-navbar__notification-image">
-          <ion-icon name="{{notification.data.icon}}"></ion-icon>
+        <div style="display: flex">
+          <div class="oh-navbar__notification-image" style="margin-left: 5px">
+            <ion-icon name="{{notification.data.icon}}"></ion-icon>
+          </div>
+          <div
+            class="oh-navbar__notification-image"
+            style="margin-left: 5px"
+            onclick="event.stopPropagation();event.preventDefault();"
+            hx-target="#notificationContainer"
+            hx-post="{% url 'mark-as-read-notification' notification.id %}"
+
+
+          >
+            <ion-icon name="checkmark-outline"></ion-icon>
+          </div>
         </div>
       </div>
     </a>
   {% endfor %}
 </ul>
 <script>
-  $(document).ready(function() {
-      $('.oh-navbar__notification-item').on('click', function(event) {
-          event.preventDefault();
-          var notificationLink = $(this);
-          var notificationId = notificationLink.data('id');
-          $.ajax({
-              type: "post",
-              url: '/mark-as-read-notification/',
-              data: {
-                  csrfmiddlewaretoken: getCookie("csrftoken"),
-                  'notification_id': notificationId
-              },
-              success: function(response) {
-                  if (response.success) {
-                      window.location.href = notificationLink.attr('href');
-                  } else {
-                      window.location.href = notificationLink.attr('href');
-                      console.error('Failed to mark notification as read');
-                      if (response.error) {
-                          console.error('Error:', response.error);
-                      }
-                  }
-              },
-              error: function(xhr, status, error) {
-                  window.location.href = notificationLink.attr('href');
-                  console.error('Error:', status, error);
-              }
-          });
+  $(document).ready(function () {
+    $(".oh-navbar__notification-item").on("click", function (event) {
+      event.preventDefault();
+      var notificationLink = $(this);
+      var notificationId = notificationLink.data("id");
+      $.ajax({
+        type: "post",
+        url: "/mark-as-read-notification-json/",
+        data: {
+          csrfmiddlewaretoken: getCookie("csrftoken"),
+          notification_id: notificationId,
+        },
+        success: function (response) {
+          if (response.success) {
+            window.location.href = notificationLink.attr("href");
+          } else {
+            window.location.href = notificationLink.attr("href");
+            console.error("Failed to mark notification as read");
+            if (response.error) {
+              console.error("Error:", response.error);
+            }
+          }
+        },
+        error: function (xhr, status, error) {
+          window.location.href = notificationLink.attr("href");
+          console.error("Error:", status, error);
+        },
       });
+    });
   });
 </script>
-
