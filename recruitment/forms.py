@@ -49,8 +49,6 @@ from base.methods import reload_queryset
 from django.core.exceptions import NON_FIELD_ERRORS
 
 
-
-
 class ModelForm(forms.ModelForm):
     """
     Overriding django default model form to apply some styles
@@ -226,7 +224,7 @@ class RecruitmentCreationForm(ModelForm):
         reload_queryset(self.fields)
         if not self.instance.pk:
             self.fields["recruitment_managers"] = HorillaMultiSelectField(
-                queryset=Employee.objects.filter(is_active = True),
+                queryset=Employee.objects.filter(is_active=True),
                 widget=HorillaMultiSelectWidget(
                     filter_route_name="employee-widget-filter",
                     filter_class=EmployeeFilter,
@@ -267,7 +265,7 @@ class StageCreationForm(ModelForm):
         reload_queryset(self.fields)
         if not self.instance.pk:
             self.fields["stage_managers"] = HorillaMultiSelectField(
-                queryset=Employee.objects.filter(is_active = True),
+                queryset=Employee.objects.filter(is_active=True),
                 widget=HorillaMultiSelectWidget(
                     filter_route_name="employee-widget-filter",
                     filter_class=EmployeeFilter,
@@ -373,7 +371,9 @@ class ApplicationForm(RegistrationForm):
     """
 
     load = forms.CharField(widget=widgets.RecruitmentAjaxWidget, required=False)
-    active_recruitment = Recruitment.objects.filter(is_active=True, closed=False, is_published = True)
+    active_recruitment = Recruitment.objects.filter(
+        is_active=True, closed=False, is_published=True
+    )
     recruitment_id = forms.ModelChoiceField(queryset=active_recruitment)
 
     class Meta:
@@ -519,7 +519,9 @@ class MultipleFileField(forms.FileField):
         if isinstance(data, (list, tuple)):
             result = [single_file_clean(d, initial) for d in data]
         else:
-            result = [single_file_clean(data, initial),]
+            result = [
+                single_file_clean(data, initial),
+            ]
         return result[0] if result else []
 
 
@@ -574,17 +576,14 @@ class StageNoteUpdateForm(ModelForm):
         """
 
         model = StageNote
-        exclude = (
-            "updated_by",
-            "stage_id",
-            "stage_files"
-        )
+        exclude = ("updated_by", "stage_id", "stage_files")
         fields = "__all__"
-        
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         field = self.fields["candidate_id"]
         field.widget = field.hidden_widget()
+
 
 class QuestionForm(ModelForm):
     """
@@ -649,7 +648,7 @@ class QuestionForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        instance = kwargs.get('instance', None)
+        instance = kwargs.get("instance", None)
         if instance:
             self.fields["recruitment"].initial = instance.recruitment_ids.all()
             self.fields["job_positions"].initial = instance.job_position_ids.all()
@@ -715,76 +714,109 @@ class OfferLetterForm(ModelForm):
                 attrs={"data-summernote": "", "style": "display:none;"}
             ),
         }
-           
-        
-class SkillZoneCreateForm(forms.ModelForm):
+
+
+class SkillZoneCreateForm(ModelForm):
+    verbose_name = "Skill Zone"
+
     class Meta:
         """
         Class Meta for additional options
         """
+
         model = SkillZone
-        fields = "__all__"        
+        fields = "__all__"
         exclude = [
             "created_on",
             "objects",
             "company_id",
         ]
 
-    
+    def as_p(self, *args, **kwargs):
+        """
+        Render the form fields as HTML table rows with Bootstrap styling.
+        """
+        context = {"form": self}
+        table_html = render_to_string("common_form.html", context)
+        return table_html
+
+
 class SkillZoneCandidateForm(ModelForm):
+    verbose_name = "Skill Zone Candidate"
     class Meta:
         """
         Class Meta for additional options
         """
+
         model = SkillZoneCandidate
         fields = "__all__"
         exclude = [
             "added_on",
         ]
-        widgets = {
-            "skill_zone_id": forms.HiddenInput(),
-        }
-        
+
+
+    def as_p(self, *args, **kwargs):
+        """
+        Render the form fields as HTML table rows with Bootstrap styling.
+        """
+        context = {"form": self}
+        table_html = render_to_string("common_form.html", context)
+        return table_html
+
+    def __init__(self, *args, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
+        if self.instance.pk:
+            self.verbose_name = self.instance.candidate_id.name + " / "+ self.instance.skill_zone_id.title
 
 class ToSkillZoneForm(ModelForm):
-
+    verbose_name = "Add To Skill Zone"
     skill_zone_ids = forms.ModelMultipleChoiceField(
-        queryset=SkillZone.objects.all(), 
-        label=_("Skill Zones")
+        queryset=SkillZone.objects.all(), label=_("Skill Zones")
     )
+
     class Meta:
         """
         Class Meta for additional options
         """
+
         model = SkillZoneCandidate
         fields = "__all__"
         exclude = [
             "skill_zone_id",
+            "is_active",
+            "candidate_id",
         ]
-        widgets = {
-            "candidate_id": forms.HiddenInput(),
-            # 'skill_zone_id':forms.MultiValueField()
-        }
         error_messages = {
             NON_FIELD_ERRORS: {
-                'unique_together': "This candidate alreay exist in this skill zone",
+                "unique_together": "This candidate alreay exist in this skill zone",
             }
         }
 
     def clean(self):
         cleaned_data = super().clean()
-        candidate = cleaned_data.get('candidate_id')
-        skill_zones = cleaned_data.get('skill_zone_ids')
-        skill_zone_list=[]
+        candidate = cleaned_data.get("candidate_id")
+        skill_zones = cleaned_data.get("skill_zone_ids")
+        skill_zone_list = []
         for skill_zone in skill_zones:
             # Check for the unique together constraint manually
-            if SkillZoneCandidate.objects.filter(candidate_id=candidate, skill_zone_id=skill_zone).exists():
+            if SkillZoneCandidate.objects.filter(
+                candidate_id=candidate, skill_zone_id=skill_zone
+            ).exists():
                 # Raise a ValidationError with a custom error message
                 skill_zone_list.append(skill_zone)
-        if len(skill_zone_list) > 0 :
-            skill_zones_str = ', '.join(str(skill_zone) for skill_zone in skill_zone_list)       
+        if len(skill_zone_list) > 0:
+            skill_zones_str = ", ".join(
+                str(skill_zone) for skill_zone in skill_zone_list
+            )
             raise ValidationError(f"{candidate} already exists in {skill_zones_str}.")
 
             # cleaned_data['skill_zone_id'] =skill_zone
         return cleaned_data
-    
+
+    def as_p(self, *args, **kwargs):
+        """
+        Render the form fields as HTML table rows with Bootstrap styling.
+        """
+        context = {"form": self}
+        table_html = render_to_string("common_form.html", context)
+        return table_html

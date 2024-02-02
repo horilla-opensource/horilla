@@ -1086,7 +1086,6 @@ def candidate_conversion(request, cand_id, **kwargs):
     Args:
         cand_id : candidate instance id
     """
-
     candidate_obj = Candidate.objects.filter(id=cand_id)
     for detail in candidate_obj:
         can_name = detail.name
@@ -1100,7 +1099,7 @@ def candidate_conversion(request, cand_id, **kwargs):
     user_exists = User.objects.filter(email=can_mail).exists()
     if user_exists:
         messages.error(request, _("Employee instance already exist"))
-    else:
+    elif not Employee.objects.filter(email=can_mail).exists():
         new_employee = Employee.objects.create(
             employee_first_name=can_name,
             email=can_mail,
@@ -1115,6 +1114,8 @@ def candidate_conversion(request, cand_id, **kwargs):
             company_id=can_company,
         )
         messages.success(request, _("Employee instance created successfully"))
+    else:
+        messages.info(request, "A employee with this mail already exists")
     return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 
 
@@ -1359,7 +1360,7 @@ def skill_zone_create(request):
     """
     This method is used to create Skill zone.
     """
-    form = SkillZoneCreateForm
+    form = SkillZoneCreateForm()
     if request.method == "POST":
         form = SkillZoneCreateForm(request.POST)
         if form.is_valid():
@@ -1549,7 +1550,6 @@ def skill_zone_cand_edit(request, sz_cand_id):
             form.save()
             messages.success(request, _("Candidate edited successfully."))
             return HttpResponse("<script>window.location.reload()</script>")
-
     return render(request, template, {"form": form, "sz_cand_id": sz_cand_id})
 
 
@@ -1674,17 +1674,15 @@ def to_skill_zone(request, cand_id):
     if request.method == "POST":
         form = ToSkillZoneForm(request.POST)
         if form.is_valid():
-            skill_cand = form.save(commit=False)
-            skill_zone_ids = form.data.getlist("skill_zone_ids")
-            for zone in skill_zone_ids:
-                zone_instance = SkillZone.objects.get(id=zone)
-                if not zone_instance.skillzonecandidate_set.filter(
-                    candidate_id=candidate
-                ).exists():
-                    skill_cand.skill_zone_id = zone_instance
-                    skill_cand.save()
-                    messages.success(request, _("Candidate added successfully.."))
-                    return HttpResponse("<script>window.location.reload()</script>")
+            skill_zones = form.cleaned_data["skill_zone_ids"]
+            for zone in skill_zones:
+                if not SkillZoneCandidate.objects.filter(candidate_id=candidate,skill_zone_id=zone).exists():
+                    zone_candidate = SkillZoneCandidate()
+                    zone_candidate.candidate_id = candidate
+                    zone_candidate.skill_zone_id = zone
+                    zone.save()
+            messages.success(request,"Candidate ")
+            return HttpResponse("<script>window.location.reload()</script>")
     return render(request, template, {"form": form, "cand_id": cand_id})
 
 
