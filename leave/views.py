@@ -571,14 +571,14 @@ def leave_request_approve(request, id, emp_id=None):
                 leave_request.approved_available_days = leave_request.requested_days
             leave_request.status = "approved"
             if not leave_request.multiple_approvals():
-                available_leave.save()
+                super(AvailableLeave,available_leave).save()
                 leave_request.save()
             else:
                 if request.user.is_superuser:
                     LeaveRequestConditionApproval.objects.filter(
                         leave_request_id=leave_request
                     ).update(is_approved=True)
-                    available_leave.save()
+                    super(AvailableLeave,available_leave).save()
                     leave_request.save()
                 else:
                     conditional_requests = leave_request.multiple_approvals()
@@ -593,7 +593,7 @@ def leave_request_approve(request, id, emp_id=None):
                     condition_approval.is_approved = True
                     condition_approval.save()
                     if approver[0] == conditional_requests["managers"][-1]:
-                        available_leave.save()
+                        super(AvailableLeave,available_leave).save()
                         leave_request.save()
             messages.success(request, _("Leave request approved successfully.."))
             with contextlib.suppress(Exception):
@@ -3211,6 +3211,7 @@ def employee_leave_details(request):
         employee = request.POST["employee_id"]
     else:
         employee = ""
+    # date =  request.POST.get("date","")
     if request.POST["leave_type"] and request.POST["employee_id"]:
         leave_type_id = request.POST["leave_type"]
         leave_type = LeaveType.objects.filter(id=leave_type_id).first()
@@ -3219,6 +3220,13 @@ def employee_leave_details(request):
         )
         for i in balance:
             balance_count = i.available_days
+        # if date and balance.first().available_days == 0:
+        #     try:
+        #         balance_count = balance.first().forcasted_leaves()[date[:7]]
+        #     except:
+        #         pass
+                
+                
     return JsonResponse({"leave_count": balance_count, "employee": employee})
 
 
