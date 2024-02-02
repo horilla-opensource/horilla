@@ -1,33 +1,19 @@
 {% load i18n %}
+<form  
+    id="skillform"
+    {% if sz_id %}
+        hx-post="{% url 'skill-zone-cand-create' sz_id %}" 
+    {% elif cand_id %}
+        hx-post="{% url 'to-skill-zone' cand_id %}" 
+    {% else %}
+        hx-post="{% url 'skill-zone-cand-edit' sz_cand_id %}"
+    {% endif %}
+    hx-target="#editCandTarget"
+    hx-encoding="multipart/form-data">
+    {% csrf_token %}
+    {{form.as_p}} 
+</form>
 
-<div class="oh-modal__dialog-header">
-
-    <h2 class="oh-modal__dialog-title" id="createTitle">
-        {% if sz_id or cand_id %}
-            {% trans "Add Candidate" %}
-        {% else %}
-            {% trans "Edit Candidate" %}
-        {% endif %}
-    </h2>
-    <button class="oh-modal__close" aria-label="Close">
-        <ion-icon name="close-outline"></ion-icon>
-    </button>
-</div>
-<div class="oh-modal__dialog-body" >
-    <form  
-        {% if sz_id %}
-            hx-post="{% url 'skill-zone-cand-create' sz_id %}" 
-        {% elif cand_id %}
-            hx-post="{% url 'to-skill-zone' cand_id %}" 
-        {% else %}
-            hx-post="{% url 'skill-zone-cand-edit' sz_cand_id %}"
-        {% endif %}
-        hx-target="#editCandTarget"
-        hx-encoding="multipart/form-data">
-        {% csrf_token %}
-        {{form.as_p}}
-        <div class="oh-modal__dialog-footer">
-            <input class="oh-btn oh-btn--secondary oh-btn--shadow" type="submit" value='{% trans "Save" %}'>
-        </div>   
-    </form>
-</div> 
+<script>
+    $("#skillform .col-md-6").toggleClass("col-md-6");
+</script>

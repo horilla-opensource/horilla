@@ -2,8 +2,13 @@
 {% block content %}
 {% load static %}
 {% load i18n %}
-
 <style>
+  .to-employee{
+    background: #f1ffd5;
+  }
+  .to-employee:hover{
+    background-color: #f1ffd5 !important;
+  }
   .oh-rate:not(:checked)>label:hover, .oh-rate:not(:checked)>label:hover~label{
     color: #ccc
   }
@@ -34,6 +39,16 @@
     {% else %}
       {% include 'candidate/candidate_card.html' %}
     {% endif %}
+  </div>
+</div>
+
+<div class="oh-modal" id="createModal" role="dialog" aria-hidden="true">
+  <div class="oh-modal__dialog" style="max-width: 550px">
+      <div class="oh-modal__dialog-header">
+      <button type="button" class="oh-modal__close" aria-label="Close"><ion-icon name="close-outline"></ion-icon></button>
+      </div>
+
+      <div class="oh-modal__dialog-body" id="createTarget"></div>
   </div>
 </div>
 

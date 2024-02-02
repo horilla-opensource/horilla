@@ -4,25 +4,34 @@
 
 <div class="oh-wrapper">
     {% include 'skill_zone/skill_zone_nav.html' %}
-    {% comment %} {% if skill_zones %} {% endcomment %}
         <div id="skill_zone_container">
-            {% if request.GET.view == 'list' %}
-                {% include "skill_zone/skill_zone_list.html" %}
-            {% else %}
-                {% include "skill_zone/skill_zone_card.html" %}
+          {% if request.GET.get.view == 'card' %}
+            {% include "skill_zone/skill_zone_card.html" %}
+          {% else %}
+            {% include "skill_zone/skill_zone_list.html" %}
             {% endif %}
         </div>
-    {% comment %} {% else %}
-        <div>
-            <div style="height: 310px; display:flex;align-items: center;justify-content: center;" >
-                <div style="" class="">
-                    <img style="display: block;width: 70px;margin: 10px auto ;" src="{% static 'images/ui/cv.png' %}" class="" alt=""/>
-                    <h3 style="font-size:16px" class="oh-404__subtitle">{% trans "You have no Skill Zone." %}</h3>
-                </div>
-            </div>
-        </div>
-    {% endif %} {% endcomment %}
 </div>
+
+<div class="oh-modal" id="editCandModal" role="dialog" aria-hidden="true">
+    <div class="oh-modal__dialog" style="max-width: 550px">
+        <div class="oh-modal__dialog-header">
+        <button type="button" class="oh-modal__close" aria-label="Close"><ion-icon name="close-outline"></ion-icon></button>
+        </div>
+        <div class="oh-modal__dialog-body" id="editCandTarget"></div>
+    </div>
+</div>
+<div class="oh-modal" id="createModal" role="dialog" aria-hidden="true">
+    <div class="oh-modal__dialog" style="max-width: 550px">
+        <div class="oh-modal__dialog-header">
+        <button type="button" class="oh-modal__close" aria-label="Close"><ion-icon name="close-outline"></ion-icon></button>
+        </div>
+
+        <div class="oh-modal__dialog-body" id="createTarget"></div>
+    </div>
+</div>
+  
+  
 {% endblock %}
 
 

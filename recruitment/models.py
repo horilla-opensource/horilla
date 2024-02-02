@@ -589,11 +589,11 @@ class SkillZoneCandidate(models.Model):
     # )
 
     reason = models.CharField(max_length=200, verbose_name=_("Reason"))
-    is_active = models.BooleanField(default=True, verbose_name=_("Is Active"))
     added_on = models.DateField(
         default=django.utils.timezone.now,
         editable=False,
     )
+    is_active = models.BooleanField(default=True, verbose_name=_("Is Active"))
     objects = HorillaCompanyManager(related_company_field="skill_zone__company_id")
 
     class Meta:

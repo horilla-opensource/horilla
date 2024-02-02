@@ -15,7 +15,13 @@
             </div>
         </div>
         <div class="oh-kanban-card__details">
-            <span class="oh-kanban-card__title">{{skill_zone}}</span>
+          
+            <span class="oh-kanban-card__title d-flex">
+              {{skill_zone}}
+              <span class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round ms-2 mr-2"  title="{{skill_zone.skillzonecandidate_set.all|length}} Candidates" title="4 Stages" onclick="event.stopPropagation()">
+                {{skill_zone.skillzonecandidate_set.all|length}}
+              </span>
+            </span>
         </div>
         <div class="oh-kanban-card__dots">
             <div class="oh-dropdown" x-data="{show: false}" onclick="event.stopPropagation()">
@@ -31,14 +37,26 @@
                 @click.outside="show = false"
                 >
                 <ul class="oh-dropdown__items">
+                    {% if perms.add_skillzonecandidate %}
+                    <li class="oh-dropdown__item">
+                        <a onclick="event.stopPropagation();"
+                          hx-get="{% url 'skill-zone-cand-create' skill_zone.id %}"
+                          hx-target="#editCandTarget"
+                          data-toggle="oh-modal-toggle"
+                          data-target="#editCandModal"
+                        >{% trans "Add Candidate" %}</a>
+                    </li>
+                    {% endif %}
+                    {% if perms.change_skillzone %}
                     <li class="oh-dropdown__item">
                         <a onclick="event.stopPropagation();"
                           hx-get="{% url 'skill-zone-update' skill_zone.id %}"
-                          hx-target="#editTarget"
+                          hx-target="#createTarget"
                           data-toggle="oh-modal-toggle"
-                          data-target="#editModal1"
+                          data-target="#createModal"
                         >{% trans "Edit" %}</a>
                     </li>
+                    {% endif %}
                     {% if skill_zone.is_active %}
                       <li class="oh-dropdown__item">
                         <a 
@@ -110,18 +128,3 @@
       </ul>
     </nav>
 </div> 
-
-<div
-class="oh-modal"
-id="editModal1"
-role="dialog"
-aria-labelledby="editDialogModal"
-aria-hidden="true"
->
-<div class="oh-modal__dialog">
-    <div class="oh-modal__dialog-header">
-
-    </div>
-    <div class="oh-modal__dialog-body" id="editTarget"></div>
-</div>
-</div>

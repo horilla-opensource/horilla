@@ -57,6 +57,16 @@
         </button>
         <div class="oh-dropdown__menu oh-dropdown__menu--dark-border oh-dropdown__menu--right" x-show="show" @click.outside="show = false" style="display: none;">
           <ul class="oh-dropdown__items">
+            {% if perms.recruitment.add_skillzonecandidate %}
+            <li class="oh-dropdown__item">
+              <a 
+                data-toggle="oh-modal-toggle"
+                data-target="#createModal"
+                hx-get="{% url 'to-skill-zone' cand.id %}"
+                hx-target="#createTarget"
+              >{% trans "Add to Skill Zone" %}</a>
+            </li>
+            {% endif %}
             {% if perms.recruitment.change_candidate %}
             <li class="oh-dropdown__item">
               <a href="{% url 'rec-candidate-update' cand.id %}" class="oh-dropdown__link">{% trans "Edit Profile" %}</a>

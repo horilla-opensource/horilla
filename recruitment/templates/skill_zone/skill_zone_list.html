@@ -17,12 +17,23 @@
                         </div>
                     </span>
                     <div class="oh-btn-group">
+                        <a    class="oh-btn oh-btn--secondary oh-btn--shadow"
+                            onclick="event.stopPropagation();"
+
+                            data-toggle="oh-modal-toggle"
+                            data-target="#editCandModal"
+                            hx-get="{% url 'skill-zone-cand-create' skill_zone.id %}"
+                            hx-target="#editCandTarget"
+                        >
+                              <ion-icon name="add-outline" class="me-1"></ion-icon>
+                              {% trans "Add" %}
+                            </a>
                         <a
                           onclick="event.stopPropagation();"
                           hx-get="{% url 'skill-zone-update' skill_zone.id %}"
-                          hx-target="#editTarget"
+                          hx-target="#createTarget"
                           data-toggle="oh-modal-toggle"
-                          data-target="#editModal"
+                          data-target="#createModal"
                           class="oh-btn oh-btn--light-bkg w-100"
                           title="{% trans 'Edit' %}"
                           ><ion-icon name="create-outline"></ion-icon
@@ -74,19 +85,6 @@
                 </div>
                 <div class="oh-accordion-meta__body d-none">
                     <div class="oh-sticky-table oh-sticky-table--no-overflow mb-5">
-                        
-                        <div class="oh-btn-group ml-2" style="margin-left:90%">
-                            <a
-                              class="oh-btn oh-btn--secondary oh-btn--shadow"
-                              data-toggle="oh-modal-toggle"
-                              data-target="#editCandModal"
-                              hx-get="{% url 'skill-zone-cand-create' skill_zone.id %}"
-                              hx-target="#editCandTarget"
-                            >
-                              <ion-icon name="add-outline" class="me-1"></ion-icon>
-                              {% trans "Add" %}
-                            </a>
-                        </div>
                         <!-- start of sticky table -->
                         <div class="oh-sticky-table">
                             <div class="oh-sticky-table__table ">
@@ -270,27 +268,3 @@
 </div> 
 
 
-<div
-class="oh-modal"
-id="editModal"
-role="dialog"
-aria-labelledby="editDialogModal"
-aria-hidden="true"
->
-<div class="oh-modal__dialog">
-
-    <div class="oh-modal__dialog-body" id="editTarget"></div>
-</div>
-</div>
-
-<div
-    class="oh-modal"
-    id="editCandModal"
-    role="dialog"
-    aria-labelledby="editDialogModal"
-    aria-hidden="true"
->
-    <div class="oh-modal__dialog">
-        <div class="oh-modal__dialog-header" id="editCandTarget"></div>  
-    </div>
-</div>

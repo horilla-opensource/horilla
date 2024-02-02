@@ -1,51 +1,12 @@
 {% load i18n %}
-
-<div class="oh-modal__dialog-header">
-
-    <h2 class="oh-modal__dialog-title" id="createTitle">
-            {% trans "Add Candidate" %}
-    </h2>
-    <button class="oh-modal__close" aria-label="Close">
-        <ion-icon name="close-outline"></ion-icon>
-    </button>
-</div>
-<div class="oh-modal__dialog-body" >
     <form  
         hx-post="{% url 'to-skill-zone' cand_id %}" 
-        hx-target="#editCandTarget"
+        hx-target="#createTarget"
         hx-encoding="multipart/form-data"
-    >
-        {% csrf_token %}
-        
-        {% if form.non_field_errors %}
-        <span class="error">{{ form.non_field_errors }}</span>
-        {% endif %}
-        <div class="col-12 col-sm-12 col-md-6 col-lg-12">
-            {{form.candidate_id}}
-            <div class="oh-input__group">
-              <label class="oh-input__label" for="keyType">{% trans "Skill zones" %}</label>
-              {{form.skill_zone_ids}}
-              {{form.skill_zone_ids.errors}}
-            </div>
-        </div> 
-        <div class="col-12 col-sm-12 col-md-6 col-lg-12">
-            <div class="oh-input__group">
-              <label class="oh-input__label" for="keyType">{% trans "Reason" %}</label>
-              {{form.reason}}
-              {{form.reason.errors}}
-            </div>
-        </div> 
-        <div class="col-12 col-sm-12 col-md-6 col-lg-12">
-            <div class="oh-input__group">
-              <label class="oh-input__label" for="keyType">{% trans "Is active" %}</label>
-              {{form.is_active}}
-              {{form.is_active.errors}}
-            </div>
-        </div> 
-
-            {% comment %} {{form.as_p}} {% endcomment %}
-        <div class="oh-modal__dialog-footer">
-            <input class="oh-btn oh-btn--secondary oh-btn--shadow" type="submit" value='{% trans "Save" %}'>
-        </div>   
+        id="skillform"
+    >        
+        {{form.as_p}}
     </form>
-</div> 
+    <script>
+        $("#skillform .col-md-6").toggleClass("col-md-6");
+    </script>
