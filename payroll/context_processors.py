@@ -42,5 +42,5 @@ def get_active_employees(request):
     """
     This method used to return the deduction
     """
-    employees = Employee.objects.filter(is_active=True)
+    employees = Employee.objects.filter(is_active=True,contract_set__isnull=False)
     return {"get_active_employees": employees}
