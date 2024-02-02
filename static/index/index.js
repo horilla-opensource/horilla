@@ -30,55 +30,47 @@ function getCookie(name) {
   return cookieValue;
 }
 
-function getCurrentLanguageCode(callback) {
-  $.ajax({
-    type: "GET",
-    url: "/employee/get-language-code/",
-    success: function (response) {
-      var languageCode = response.language_code;
-      callback(languageCode); // Pass the language code to the callback
-    },
-  });
-}
 
 var originalConfirm = window.confirm;
 // Override the default confirm function with SweetAlert
-window.confirm = function(message) {
+window.confirm = function (message) {
   var event = window.event || {};
   event.preventDefault();
   var languageCode = null;
-  getCurrentLanguageCode(function (code) {
-    languageCode = code;
-    var confirm = confirmModal[languageCode];
-    var cancel = cancelModal[languageCode];
+  languageCode = $("#main-section-data").attr("data-lang");
+  var confirm =
+    confirmModal[languageCode] ||
+    ((languageCode = "en"), confirmModal[languageCode]);
+  var cancel =
+    cancelModal[languageCode] ||
+    ((languageCode = "en"), cancelModal[languageCode]);
   // Add event listener to "Confirm" button
-    $("#confirmModalBody").html(message)
-    var submit = false;
-    Swal.fire({
-      text: message,
-      icon: 'question',
-      showCancelButton: true,
-      confirmButtonColor: '#008000',
-      cancelButtonColor: '#d33',
-      confirmButtonText: confirm,
-      cancelButtonText: cancel,
-    }).then((result) => {
-      if (result.isConfirmed) {
-        if (event.target.tagName.toLowerCase() === 'form') {
-          event.target.submit();
-        }
-        else if (event.target.tagName.toLowerCase() === 'a') {
-          window.location.href = event.target.href;
-        }
-      } 
-      else {
+  $("#confirmModalBody").html(message);
+  var submit = false;
+  Swal.fire({
+    text: message,
+    icon: "question",
+    showCancelButton: true,
+    confirmButtonColor: "#008000",
+    cancelButtonColor: "#d33",
+    confirmButtonText: confirm,
+    cancelButtonText: cancel,
+  }).then((result) => {
+    if (result.isConfirmed) {
+      if (event.target.tagName.toLowerCase() === "form") {
+        event.target.submit();
+      } else if (event.target.tagName.toLowerCase() === "a") {
+        window.location.href = event.target.href;
       }
-    })
+    } else {
+    }
   });
 };
 var nav = $("section.oh-wrapper.oh-main__topbar");
-nav.after($(
-  `
+nav.after(
+  $(
+    `
   <div id="filterTagContainerSectionNav" class="oh-titlebar-container__filters mb-2 mt-0 oh-wrapper"></div>
   `
-))
+  )
+);

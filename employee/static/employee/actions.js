@@ -67,16 +67,20 @@ function getCookie(name) {
   return cookieValue;
 }
 
-function getCurrentLanguageCode(callback) {
-  $.ajax({
-    type: "GET",
-    url: "/employee/get-language-code/",
-    success: function (response) {
-      var languageCode = response.language_code;
-      callback(languageCode); // Pass the language code to the callback
-    },
-  });
-}
+// function getCurrentLanguageCode(callback) {
+//   var language_code = $("#main-section-data").attr("data-lang");
+//   console.log("[[[[[[[[[[[[[[[[]]]]]]]]]]]]]]]]]]]]]]]]]");
+//   console.log(language_code);
+//   console.log("[[[[[[[[[[[[[[[[]]]]]]]]]]]]]]]]]]]]]]]]]");
+//   $.ajax({
+//     type: "GET",
+//     url: "/employee/get-language-code/",
+//     success: function (response) {
+//       var languageCode = response.language_code;
+//       callback(languageCode); // Pass the language code to the callback
+//     },
+//   });
+// }
 
 $(".all-employee").change(function (e) {
   var is_checked = $(this).is(":checked");
@@ -122,22 +126,19 @@ function addingIds() {
 
   ids = makeListUnique(ids);
   selectedCount = ids.length;
-
-  getCurrentLanguageCode(function (code) {
-    languageCode = code;
-    var message = rowMessages[languageCode];
-
-    $("#selectedInstances").attr("data-ids", JSON.stringify(ids));
-
-    if (selectedCount === 0) {
-      $("#selectedShow").css("display", "none");
-      $("#exportInstances").css("display", "none");
-    } else {
-      $("#exportInstances").css("display", "inline-flex");
-      $("#selectedShow").css("display", "inline-flex");
-      $("#selectedShow").text(selectedCount + " - " + message);
-    }
-  });
+  languageCode = $("#main-section-data").attr("data-lang");
+  var message =
+    rowMessages[languageCode] ||
+    ((languageCode = "en"), rowMessages[languageCode]);
+  $("#selectedInstances").attr("data-ids", JSON.stringify(ids));
+  if (selectedCount === 0) {
+    $("#selectedShow").css("display", "none");
+    $("#exportInstances").css("display", "none");
+  } else {
+    $("#exportInstances").css("display", "inline-flex");
+    $("#selectedShow").css("display", "inline-flex");
+    $("#selectedShow").text(selectedCount + " - " + message);
+  }
 }
 
 function tickCheckboxes() {
@@ -153,18 +154,18 @@ function tickCheckboxes() {
     $("#" + id).prop("checked", true);
   });
   var selectedCount = uniqueIds.length;
-  getCurrentLanguageCode(function (code) {
-    languageCode = code;
-    var message = rowMessages[languageCode];
-    if (selectedCount > 0) {
-      $("#exportInstances").css("display", "inline-flex");
-      $("#selectedShow").css("display", "inline-flex");
-      $("#selectedShow").text(selectedCount + " -" + message);
-    } else {
-      $("#selectedShow").css("display", "none");
-      $("#exportInstances").css("display", "none");
-    }
-  });
+  languageCode = $("#main-section-data").attr("data-lang");
+  var message =
+    rowMessages[languageCode] ||
+    ((languageCode = "en"), rowMessages[languageCode]);
+  if (selectedCount > 0) {
+    $("#exportInstances").css("display", "inline-flex");
+    $("#selectedShow").css("display", "inline-flex");
+    $("#selectedShow").text(selectedCount + " -" + message);
+  } else {
+    $("#selectedShow").css("display", "none");
+    $("#exportInstances").css("display", "none");
+  }
 }
 
 function selectAllInstances() {
@@ -284,229 +285,234 @@ function unselectAllInstances() {
 $("#exportInstances").click(function (e) {
   var currentDate = new Date().toISOString().slice(0, 10);
   var languageCode = null;
+  languageCode = $("#main-section-data").attr("data-lang");
+  var confirmMessage =
+    excelMessages[languageCode] ||
+    ((languageCode = "en"), excelMessages[languageCode]);
   ids = [];
   ids.push($("#selectedInstances").attr("data-ids"));
   ids = JSON.parse($("#selectedInstances").attr("data-ids"));
-  getCurrentLanguageCode(function (code) {
-    languageCode = code;
-    var confirmMessage = excelMessages[languageCode];
+  Swal.fire({
+    text: confirmMessage,
+    icon: "question",
+    showCancelButton: true,
+    confirmButtonColor: "#008000",
+    cancelButtonColor: "#d33",
+    confirmButtonText: "Confirm",
+  }).then(function (result) {
+    if (result.isConfirmed) {
+      $.ajax({
+        type: "GET",
+        url: "/employee/work-info-export",
+        data: {
+          ids: JSON.stringify(ids),
+        },
+        dataType: "binary",
+        xhrFields: {
+          responseType: "blob",
+        },
+        success: function (response) {
+          const file = new Blob([response], {
+            type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+          });
+          const url = URL.createObjectURL(file);
+          const link = document.createElement("a");
+          link.href = url;
+          link.download = "employee_export_" + currentDate + ".xlsx";
+          document.body.appendChild(link);
+          link.click();
+        },
+        error: function (xhr, textStatus, errorThrown) {
+          console.error("Error downloading file:", errorThrown);
+        },
+      });
+    }
+  });
+});
+
+$("#employeeBulkUpdateId").click(function (e) {
+  var languageCode = null;
+  languageCode = $("#main-section-data").attr("data-lang");
+  var textMessage =
+    noRowMessages[languageCode] ||
+    ((languageCode = "en"), noRowMessages[languageCode]);
+  ids = [];
+  ids.push($("#selectedInstances").attr("data-ids"));
+  ids = JSON.parse($("#selectedInstances").attr("data-ids"));
+  if (ids.length === 0) {
+    $("#bulkUpdateModal").removeClass("oh-modal--show");
+    Swal.fire({
+      text: textMessage,
+      icon: "warning",
+      confirmButtonText: "Close",
+    });
+  } else {
+    $("#id_bulk_employee_ids").val(JSON.stringify(ids));
+  }
+});
+
+$("#archiveEmployees").click(function (e) {
+  e.preventDefault();
+  var languageCode = null;
+  languageCode = $("#main-section-data").attr("data-lang");
+  var confirmMessage =
+    archiveMessages[languageCode] ||
+    ((languageCode = "en"), archiveMessages[languageCode]);
+  var textMessage =
+    noRowMessages[languageCode] ||
+    ((languageCode = "en"), noRowMessages[languageCode]);
+  ids = [];
+  ids.push($("#selectedInstances").attr("data-ids"));
+  ids = JSON.parse($("#selectedInstances").attr("data-ids"));
+  if (ids.length === 0) {
+    Swal.fire({
+      text: textMessage,
+      icon: "warning",
+      confirmButtonText: "Close",
+    });
+  } else {
     Swal.fire({
       text: confirmMessage,
-      icon: "question",
+      icon: "info",
       showCancelButton: true,
       confirmButtonColor: "#008000",
       cancelButtonColor: "#d33",
       confirmButtonText: "Confirm",
     }).then(function (result) {
       if (result.isConfirmed) {
+        e.preventDefault();
+        ids = [];
+        ids.push($("#selectedInstances").attr("data-ids"));
+        ids = JSON.parse($("#selectedInstances").attr("data-ids"));
         $.ajax({
-          type: "GET",
-          url: "/employee/work-info-export",
+          type: "POST",
+          url: "/employee/employee-bulk-archive?is_active=False",
           data: {
+            csrfmiddlewaretoken: getCookie("csrftoken"),
             ids: JSON.stringify(ids),
           },
-          dataType: "binary",
-          xhrFields: {
-            responseType: "blob",
-          },
-          success: function (response) {
-            const file = new Blob([response], {
-              type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-            });
-            const url = URL.createObjectURL(file);
-            const link = document.createElement("a");
-            link.href = url;
-            link.download = "employee_export_" + currentDate + ".xlsx";
-            document.body.appendChild(link);
-            link.click();
-          },
-          error: function (xhr, textStatus, errorThrown) {
-            console.error("Error downloading file:", errorThrown);
+          success: function (response, textStatus, jqXHR) {
+            if (jqXHR.status === 200) {
+              location.reload(); // Reload the current page
+            } else {
+              // console.log("Unexpected HTTP status:", jqXHR.status);
+            }
           },
         });
       }
     });
-  });
-});
-
-$("#employeeBulkUpdateId").click(function (e) {
-  var languageCode = null;
-  getCurrentLanguageCode(function (code) {
-    languageCode = code;
-    var textMessage = noRowMessages[languageCode];
-    ids = [];
-    ids.push($("#selectedInstances").attr("data-ids"));
-    ids = JSON.parse($("#selectedInstances").attr("data-ids"));
-    if (ids.length === 0) {
-      $("#bulkUpdateModal").removeClass("oh-modal--show");
-      Swal.fire({
-        text: textMessage,
-        icon: "warning",
-        confirmButtonText: "Close",
-      });
-    } else {
-      $("#id_bulk_employee_ids").val(JSON.stringify(ids));
-    }
-  });
-});
-
-$("#archiveEmployees").click(function (e) {
-  e.preventDefault();
-  var languageCode = null;
-  getCurrentLanguageCode(function (code) {
-    languageCode = code;
-    var confirmMessage = archiveMessages[languageCode];
-    var textMessage = noRowMessages[languageCode];
-    ids = [];
-    ids.push($("#selectedInstances").attr("data-ids"));
-    ids = JSON.parse($("#selectedInstances").attr("data-ids"));
-    if (ids.length === 0) {
-      Swal.fire({
-        text: textMessage,
-        icon: "warning",
-        confirmButtonText: "Close",
-      });
-    } else {
-      Swal.fire({
-        text: confirmMessage,
-        icon: "info",
-        showCancelButton: true,
-        confirmButtonColor: "#008000",
-        cancelButtonColor: "#d33",
-        confirmButtonText: "Confirm",
-      }).then(function (result) {
-        if (result.isConfirmed) {
-          e.preventDefault();
-          ids = [];
-          ids.push($("#selectedInstances").attr("data-ids"));
-          ids = JSON.parse($("#selectedInstances").attr("data-ids"));
-
-          $.ajax({
-            type: "POST",
-            url: "/employee/employee-bulk-archive?is_active=False",
-            data: {
-              csrfmiddlewaretoken: getCookie("csrftoken"),
-              ids: JSON.stringify(ids),
-            },
-            success: function (response, textStatus, jqXHR) {
-              if (jqXHR.status === 200) {
-                location.reload(); // Reload the current page
-              } else {
-                // console.log("Unexpected HTTP status:", jqXHR.status);
-              }
-            },
-          });
-        }
-      });
-    }
-  });
+  }
 });
 
 $("#unArchiveEmployees").click(function (e) {
   e.preventDefault();
   var languageCode = null;
-  getCurrentLanguageCode(function (code) {
-    languageCode = code;
-    var confirmMessage = unarchiveMessages[languageCode];
-    var textMessage = noRowMessages[languageCode];
-    ids = [];
-    ids.push($("#selectedInstances").attr("data-ids"));
-    ids = JSON.parse($("#selectedInstances").attr("data-ids"));
-    if (ids.length === 0) {
-      Swal.fire({
-        text: textMessage,
-        icon: "warning",
-        confirmButtonText: "Close",
-      });
-    } else {
-      Swal.fire({
-        text: confirmMessage,
-        icon: "info",
-        showCancelButton: true,
-        confirmButtonColor: "#008000",
-        cancelButtonColor: "#d33",
-        confirmButtonText: "Confirm",
-      }).then(function (result) {
-        if (result.isConfirmed) {
-          e.preventDefault();
+  languageCode = $("#main-section-data").attr("data-lang");
+  var confirmMessage =
+    unarchiveMessages[languageCode] ||
+    ((languageCode = "en"), unarchiveMessages[languageCode]);
+  var textMessage =
+    noRowMessages[languageCode] ||
+    ((languageCode = "en"), noRowMessages[languageCode]);
+  ids = [];
+  ids.push($("#selectedInstances").attr("data-ids"));
+  ids = JSON.parse($("#selectedInstances").attr("data-ids"));
+  if (ids.length === 0) {
+    Swal.fire({
+      text: textMessage,
+      icon: "warning",
+      confirmButtonText: "Close",
+    });
+  } else {
+    Swal.fire({
+      text: confirmMessage,
+      icon: "info",
+      showCancelButton: true,
+      confirmButtonColor: "#008000",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Confirm",
+    }).then(function (result) {
+      if (result.isConfirmed) {
+        e.preventDefault();
 
-          ids = [];
+        ids = [];
 
-          ids.push($("#selectedInstances").attr("data-ids"));
-          ids = JSON.parse($("#selectedInstances").attr("data-ids"));
+        ids.push($("#selectedInstances").attr("data-ids"));
+        ids = JSON.parse($("#selectedInstances").attr("data-ids"));
 
-          $.ajax({
-            type: "POST",
-            url: "/employee/employee-bulk-archive?is_active=True",
-            data: {
-              csrfmiddlewaretoken: getCookie("csrftoken"),
-              ids: JSON.stringify(ids),
-            },
-            success: function (response, textStatus, jqXHR) {
-              if (jqXHR.status === 200) {
-                location.reload(); // Reload the current page
-              } else {
-                // console.log("Unexpected HTTP status:", jqXHR.status);
-              }
-            },
-          });
-        }
-      });
-    }
-  });
+        $.ajax({
+          type: "POST",
+          url: "/employee/employee-bulk-archive?is_active=True",
+          data: {
+            csrfmiddlewaretoken: getCookie("csrftoken"),
+            ids: JSON.stringify(ids),
+          },
+          success: function (response, textStatus, jqXHR) {
+            if (jqXHR.status === 200) {
+              location.reload(); // Reload the current page
+            } else {
+              // console.log("Unexpected HTTP status:", jqXHR.status);
+            }
+          },
+        });
+      }
+    });
+  }
 });
 
 $("#deleteEmployees").click(function (e) {
   e.preventDefault();
   var languageCode = null;
-  getCurrentLanguageCode(function (code) {
-    languageCode = code;
-    var confirmMessage = deleteMessages[languageCode];
-    var textMessage = noRowMessages[languageCode];
-    ids = [];
-    ids.push($("#selectedInstances").attr("data-ids"));
-    ids = JSON.parse($("#selectedInstances").attr("data-ids"));
-    if (ids.length === 0) {
-      Swal.fire({
-        text: textMessage,
-        icon: "warning",
-        confirmButtonText: "Close",
-      });
-    } else {
-      Swal.fire({
-        text: confirmMessage,
-        icon: "error",
-        showCancelButton: true,
-        confirmButtonColor: "#008000",
-        cancelButtonColor: "#d33",
-        confirmButtonText: "Confirm",
-      }).then(function (result) {
-        if (result.isConfirmed) {
-          e.preventDefault();
+  languageCode = $("#main-section-data").attr("data-lang");
+  var confirmMessage =
+    deleteMessages[languageCode] ||
+    ((languageCode = "en"), deleteMessages[languageCode]);
+  var textMessage =
+    noRowMessages[languageCode] ||
+    ((languageCode = "en"), noRowMessages[languageCode]);
+  ids = [];
+  ids.push($("#selectedInstances").attr("data-ids"));
+  ids = JSON.parse($("#selectedInstances").attr("data-ids"));
+  if (ids.length === 0) {
+    Swal.fire({
+      text: textMessage,
+      icon: "warning",
+      confirmButtonText: "Close",
+    });
+  } else {
+    Swal.fire({
+      text: confirmMessage,
+      icon: "error",
+      showCancelButton: true,
+      confirmButtonColor: "#008000",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Confirm",
+    }).then(function (result) {
+      if (result.isConfirmed) {
+        e.preventDefault();
 
-          ids = [];
-          ids.push($("#selectedInstances").attr("data-ids"));
-          ids = JSON.parse($("#selectedInstances").attr("data-ids"));
+        ids = [];
+        ids.push($("#selectedInstances").attr("data-ids"));
+        ids = JSON.parse($("#selectedInstances").attr("data-ids"));
 
-          $.ajax({
-            type: "POST",
-            url: "/employee/employee-bulk-delete",
-            data: {
-              csrfmiddlewaretoken: getCookie("csrftoken"),
-              ids: JSON.stringify(ids),
-            },
-            success: function (response, textStatus, jqXHR) {
-              if (jqXHR.status === 200) {
-                location.reload(); // Reload the current page
-              } else {
-                // console.log("Unexpected HTTP status:", jqXHR.status);
-              }
-            },
-          });
-        }
-      });
-    }
-  });
+        $.ajax({
+          type: "POST",
+          url: "/employee/employee-bulk-delete",
+          data: {
+            csrfmiddlewaretoken: getCookie("csrftoken"),
+            ids: JSON.stringify(ids),
+          },
+          success: function (response, textStatus, jqXHR) {
+            if (jqXHR.status === 200) {
+              location.reload(); // Reload the current page
+            } else {
+              // console.log("Unexpected HTTP status:", jqXHR.status);
+            }
+          },
+        });
+      }
+    });
+  }
 });
 
 $("#select-all-fields").change(function () {

@@ -104,7 +104,7 @@
   role="dialog"
   aria-labelledby="employeeExport"
   aria-hidden="true"
-  >
+>
   <div class="oh-modal__dialog" style="max-width: 750px">
     <div class="oh-modal__dialog-header">
       <h2 class="oh-modal__dialog-title" id="employeeExportLavel">
@@ -153,8 +153,7 @@
           onsubmit="event.stopPropagation();$(this).parents().find('.oh-modal--show').last().toggleClass('oh-modal--show');"
           id="bulkUpdateModalForm"
         >
-          {% csrf_token %} 
-          {{update_fields_form.update_fields.label}}
+          {% csrf_token %} {{update_fields_form.update_fields.label}}
           {{update_fields_form.update_fields}}
           {{update_fields_form.bulk_employee_ids}}
           <div class="oh-dropdown__filter-footer">
@@ -196,12 +195,12 @@
       id="filterForm"
       hx-target="#view-container"
       class="d-flex"
-     >
+    >
       {% if emp %}
       <div
         class="oh-input-group oh-input__search-group"
         :class="searchShow ? 'oh-input__search-group--show' : ''"
-       >
+      >
         <ion-icon
           name="search-outline"
           class="oh-input-group__icon oh-input-group__icon--left"
@@ -215,15 +214,41 @@
           class="oh-input oh-input__icon"
           aria-label="Search Input"
         />
-        <div id="searchFieldDiv" style="display:none;">
-          <select name="search_field" class='oh-input__icon' style="border: none; display: flex; position: absolute; z-index: 999; margin-left:8%;" size="3" onclick="$('.filterButton')[0].click();">
-              <option style="margin-left: -10px;" value="reporting_manager">{% trans "Search in : Reporting Manager" %}</option>
-              <option style="margin-left: -10px;" value="department">{% trans "Search in : Department" %}</option>
-              <option style="margin-left: -10px;" value="job_position">{% trans "Search in : Job Position" %}</option>
-              <option style="margin-left: -10px;" value="job_role">{% trans "Search in : Job Role" %}</option>
-              <option style="margin-left: -10px;" value="shift">{% trans "Search in : Shift" %}</option>
-              <option style="margin-left: -10px;" value="work_type">{% trans "Search in : Work Type" %}</option>
-              <option style="margin-left: -10px;" value="company">{% trans "Search in : Company" %}</option>
+        <div id="searchFieldDiv" style="display: none">
+          <select
+            name="search_field"
+            class="oh-input__icon"
+            style="
+              border: none;
+              display: flex;
+              position: absolute;
+              z-index: 999;
+              margin-left: 8%;
+            "
+            size="3"
+            onclick="$('.filterButton')[0].click();"
+          >
+            <option style="margin-left: -10px" value="reporting_manager">
+              {% trans "Search in : Reporting Manager" %}
+            </option>
+            <option style="margin-left: -10px" value="department">
+              {% trans "Search in : Department" %}
+            </option>
+            <option style="margin-left: -10px" value="job_position">
+              {% trans "Search in : Job Position" %}
+            </option>
+            <option style="margin-left: -10px" value="job_role">
+              {% trans "Search in : Job Role" %}
+            </option>
+            <option style="margin-left: -10px" value="shift">
+              {% trans "Search in : Shift" %}
+            </option>
+            <option style="margin-left: -10px" value="work_type">
+              {% trans "Search in : Work Type" %}
+            </option>
+            <option style="margin-left: -10px" value="company">
+              {% trans "Search in : Company" %}
+            </option>
           </select>
         </div>
       </div>
@@ -231,7 +256,12 @@
 
       <div class="oh-main__titlebar-button-container">
         {% if emp %}
-		  <input type="hidden" name="view" value="{{request.GET.view}}" id="employeeViewType">
+        <input
+          type="hidden"
+          name="view"
+          value="{{request.GET.view}}"
+          id="employeeViewType"
+        />
         <ul class="oh-view-types ml-2" style="margin-bottom: 0">
           <li class="oh-view-type employee-view-type" data-view="list">
             <a
@@ -262,7 +292,7 @@
             class="oh-btn ml-2"
             @click="open = !open"
             onclick="event.preventDefault()"
-            >
+          >
             <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}
             <div id="filterCount"></div>
           </button>
@@ -271,14 +301,14 @@
             x-show="open"
             @click.outside="open = false"
             style="display: none"
-            >
+          >
             {% include 'employee_filters.html' %}
             <div class="oh-dropdown__filter-footer">
               <button
                 class="oh-btn oh-btn--secondary oh-btn--small w-100 filterButton"
                 id="#employeeFilter"
                 onclick="employeeFilter(this)"
-                >
+              >
                 {% trans "Filter" %}
               </button>
             </div>
@@ -289,9 +319,9 @@
             class="oh-btn ml-2"
             @click="open = !open"
             onclick="event.preventDefault()"
-           >
+          >
             <ion-icon name="library-outline" class="mr-1"></ion-icon>
-			     {% trans "Group By" %}
+            {% trans "Group By" %}
             <div id="filterCount"></div>
           </button>
           <div
@@ -299,13 +329,15 @@
             x-show="open"
             @click.outside="open = false"
             style="display: none"
-            > 
+          >
             <div class="oh-accordion">
               <label for="id_field">{% trans "Group By" %}</label>
               <div class="row">
                 <div class="col-sm-12 col-md-12 col-lg-6">
                   <div class="oh-input-group">
-                    <label class="oh-label" for="id_field">{% trans "Field" %}</label>
+                    <label class="oh-label" for="id_field"
+                      >{% trans "Field" %}</label
+                    >
                   </div>
                 </div>
                 <div class="col-sm-12 col-md-12 col-lg-6">
@@ -315,7 +347,7 @@
                       id="id_field"
                       name="field"
                       class="select2-selection select2-selection--single"
-                      >
+                    >
                       {% for field in gp_fields %}
                       <option value="{{ field.0 }}">{% trans field.1 %}</option>
                       {% endfor %}
@@ -327,20 +359,20 @@
           </div>
         </div>
         {% endif %}
-        <div class="oh-btn-group ml-2">
+        <div class="oh-btn-group ml-2" onclick="event.preventDefault();">
           <div class="oh-dropdown" x-data="{open: false}">
             <button
               class="oh-btn oh-btn--dropdown"
               @click="open = !open"
               @click.outside="open = false"
-              >
+            >
               {% trans "Actions" %}
             </button>
             <div
               class="oh-dropdown__menu oh-dropdown__menu--right"
               x-show="open"
               style="display: none"
-              >
+            >
               <ul class="oh-dropdown__items">
                 <li class="oh-dropdown__item">
                   <a
@@ -349,7 +381,7 @@
                     id="work-info-import"
                     data-toggle="oh-modal-toggle"
                     data-target="#workInfoImport"
-                    >
+                  >
                     {% trans "Import" %}
                   </a>
                 </li>
@@ -361,7 +393,7 @@
                     id="employee-info-export"
                     data-toggle="oh-modal-toggle"
                     data-target="#employeeExport"
-                    >
+                  >
                     {% trans "Export" %}
                   </a>
                 </li>
@@ -382,7 +414,7 @@
                     id="employeeBulkUpdateId"
                     data-toggle="oh-modal-toggle"
                     data-target="#bulkUpdateModal"
-                    >
+                  >
                     {% trans "Bulk Update" %}
                   </a>
                 </li>
@@ -419,7 +451,7 @@
   </div>
 </section>
 <script>
-	function clearFilterFromTag(element) {
+  function clearFilterFromTag(element) {
     let field_id = element.attr("data-x-field");
     $(`[name=${field_id}]`).val("");
     $(`[name=${field_id}]`).change();
@@ -463,16 +495,16 @@
     return value;
   }
   $(document).ready(function () {
-    $('#employee-search').on('keyup', function () {
-      var searchFieldDiv = $('#searchFieldDiv');
-      var selectedField = searchFieldDiv.find(':selected');
-      if ($(this).val().trim() !== '') {
-          searchFieldDiv.show();
+    $("#employee-search").on("keyup", function () {
+      var searchFieldDiv = $("#searchFieldDiv");
+      var selectedField = searchFieldDiv.find(":selected");
+      if ($(this).val().trim() !== "") {
+        searchFieldDiv.show();
       } else {
-          searchFieldDiv.hide();
-          selectedField.prop('selected', false);
+        searchFieldDiv.hide();
+        selectedField.prop("selected", false);
       }
-      $('.filterButton').eq(0).click();
+      $(".filterButton").eq(0).click();
     });
     $("#id_field").on("change", function () {
       $(".filterButton")[0].click();
@@ -483,7 +515,12 @@
       formData.split("&").forEach(function (field) {
         var parts = field.split("=");
         var value = parts[1];
-        if (value && value !== "unknown" && parts[0] != 'field' && parts[0] != 'view') {
+        if (
+          value &&
+          value !== "unknown" &&
+          parts[0] != "field" &&
+          parts[0] != "view"
+        ) {
           count++;
         }
       });
@@ -492,7 +529,7 @@
         $("#filterCount").text(`(${count})`);
       }
     }
-    
+
     $("#filterForm").submit(function (e) {
       filterFormSubmit("filterForm");
     });
