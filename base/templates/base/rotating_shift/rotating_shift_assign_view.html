@@ -53,7 +53,7 @@
             <div class="oh-sticky-table__th {% if request.sort_option.order == '-next_change_date' %}arrow-up {% elif request.sort_option.order == 'next_change_date' %}arrow-down {% else %} arrow-up-down {% endif %}"
              hx-target="#view-container" hx-get="{% url 'rotating-shift-assign-view' %}?{{pd}}&orderby=next_change_date">{% trans "Next Switch" %}</div>
             <div class="oh-sticky-table__th">{% trans "Next Shift" %}</div>
-            <div class="oh-sticky-table__th" style="width: 250px;"></div>
+            <div class="oh-sticky-table__th" style="width: 250px;">{% trans "Actions" %}</div>
           </div>
         </div>
         <div class="oh-sticky-table__tbody">

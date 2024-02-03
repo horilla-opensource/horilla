@@ -50,8 +50,7 @@ style="cursor: pointer; display: none"
           <div class="oh-sticky-table__th">{% trans "Comment" %}</div>
           <div class="oh-sticky-table__th">{% trans "Actions" %}</div>
           {% if perms.base.change_worktyperequest or request.user|is_reportingmanager %}
-            <div class="oh-sticky-table__th"></div>
-            <div class="oh-sticky-table__th"></div>
+            <div class="oh-sticky-table__th" style="width:180px">{% trans "Actions" %}</div>
           {% endif %}
         </div>
       </div>
@@ -133,19 +132,35 @@ style="cursor: pointer; display: none"
           </div>
           {% if perms.base.change_worktyperequest or request.user|is_reportingmanager %}
             <div class="oh-sticky-table__td" onclick="event.stopPropagation();"> 
-              {% if work_type_request.approved == False and work_type_request.canceled == False %}
-                <a href="/work-type-request-approve/{{work_type_request.id}}/" onclick="return confirm('{% trans "Do you want to approve this request?" %}')" class='oh-btn oh-btn--info'>{% trans "Approve" %}</a></td>
-              {% else %}
-                <button class='oh-btn oh-btn--info w-100' disabled>{% trans "Approve" %}</button></td>
-              {% endif %}
-            </div>
-            <div class="oh-sticky-table__td" onclick="event.stopPropagation();"> 
-              {% if work_type_request.canceled == False %}
-                <a href="/work-type-request-cancel/{{work_type_request.id}}/" onclick="return confirm('{% trans "Do you want to cancel this request?" %}')" class='oh-btn oh-btn--primary'>{% trans "Cancel" %}</a></td>
-              {% else %}
-                <button disabled class='oh-btn oh-btn--primary w-100'>{% trans "Canceled" %}</button></td>
-              {% endif %}
-
+              <div class="oh-btn-group" >
+                {% if work_type_request.approved == False and work_type_request.canceled == False %}
+                  <a href="/work-type-request-approve/{{work_type_request.id}}/" 
+                    title="{% trans 'Approve' %}"
+                    onclick="return confirm('{% trans "Do you want to approve this request?" %}')"
+                    class="oh-btn oh-btn--success w-100">
+                    <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
+                  </a>
+                {% else %}
+                  <a type="submit" href="#" title="{% trans 'Approve' %}"
+                      class="oh-btn oh-btn--success oh-btn--disabled w-100">
+                      <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
+                  </a>
+                {% endif %}
+                {% if work_type_request.canceled == False %}
+                  <a href="/work-type-request-cancel/{{work_type_request.id}}/" 
+                      title="{% trans 'Reject' %}"
+                      onclick="return confirm('{% trans "Do you want to reject this request?" %}')"
+                      class="oh-btn oh-btn--danger w-100">
+                      <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
+                  </a>
+                {% else %}
+                  <a type="submit" href="#" title="{% trans 'Reject' %}"
+                      class="oh-btn oh-btn--danger oh-btn--disabled
+                      w-100" >
+                      <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
+                  </a>
+                {% endif %}
+              </div>
             </div>
           {% endif %}
 

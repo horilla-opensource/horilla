@@ -2519,11 +2519,11 @@ def work_type_request_cancel(request, id):
         )
         work_type_request.employee_id.employee_work_info.save()
         work_type_request.save()
-        messages.success(request, _("Work type request has been canceled."))
+        messages.success(request, _("Work type request has been rejected."))
         notify.send(
             request.user.employee_get,
             recipient=work_type_request.employee_id.employee_user_id,
-            verb="Your work type request has been canceled.",
+            verb="Your work type request has been rejected.",
             verb_ar="تم إلغاء طلب نوع وظيفتك",
             verb_de="Ihre Arbeitstypanfrage wurde storniert",
             verb_es="Su solicitud de tipo de trabajo ha sido cancelada",
@@ -2800,9 +2800,11 @@ def shift_request(request):
     This method is used to create shift request
     """
     form = ShiftRequestForm()
+    employee = request.user.employee_get.id
     if request.GET.get("emp_id"):
         employee = request.GET.get("emp_id")
-        form = ShiftRequestForm(initial={"employee_id": employee})
+
+    form = ShiftRequestForm(initial={"employee_id": employee})
     form = choosesubordinates(
         request,
         form,
@@ -2921,15 +2923,11 @@ def shift_request_search(request):
     """
     This method is used search shift request by employee and also used to filter shift request.
     """
-    employee = Employee.objects.filter(employee_user_id=request.user).first()
     previous_data = request.GET.urlencode()
-    f = ShiftRequestFilter(request.GET)
     field = request.GET.get("field")
-    shift_requests = filtersubordinates(request, f.qs, "base.add_shiftrequest")
-    if set(ShiftRequest.objects.filter(employee_id=employee)).issubset(set(f.qs)):
-        shift_requests = shift_requests | ShiftRequest.objects.filter(
-            employee_id=employee
-        )
+    f = ShiftRequestFilter(request.GET)
+    shift_requests = filtersubordinates(request,f.qs, "base.add_shiftrequest")
+    shift_requests = shift_requests| f.qs.filter(employee_id__employee_user_id=request.user)
     shift_requests = sortby(request, shift_requests, "orderby")
     requests_ids = json.dumps(
         [
@@ -3042,11 +3040,11 @@ def shift_request_cancel(request, id):
         )
         shift_request.employee_id.employee_work_info.save()
         shift_request.save()
-        messages.success(request, _("Shift request canceled"))
+        messages.success(request, _("Shift request rejected"))
         notify.send(
             request.user.employee_get,
             recipient=shift_request.employee_id.employee_user_id,
-            verb="Your shift request has been canceled.",
+            verb="Your shift request has been rejected.",
             verb_ar="تم إلغاء طلبك للوردية.",
             verb_de="Ihr Schichtantrag wurde storniert.",
             verb_es="Se ha cancelado su solicitud de turno.",

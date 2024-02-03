@@ -822,7 +822,7 @@ class ShiftRequest(models.Model):
             ("cancel_shiftrequest", "Cancel Shift Request"),
         )
         ordering = [
-            "requested_date",
+            "-id",
         ]
 
     def clean(self):
@@ -836,6 +836,11 @@ class ShiftRequest(models.Model):
             raise ValidationError(
                 _("A shift request already exists during this time period.")
             )
+        if not self.is_permanent_shift:
+            if not self.requested_till:
+                raise ValidationError(
+                    _("Requested till field is required.")
+                )
 
     def is_any_request_exists(self):
         approved_shift_requests_range = ShiftRequest.objects.filter(

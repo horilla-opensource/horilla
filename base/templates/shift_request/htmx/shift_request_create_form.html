@@ -42,11 +42,11 @@
 <script>
   function toggleFunctionShiftRequestForm() {
     if ($("#id_is_permanent_shift").is(":checked")) {
-      $("[for=id_requested_date],[for=id_requested_till]").hide();
-      $("#id_requested_date,#id_requested_till").hide();
+      $("[for=id_requested_till]").hide();
+      $("#id_requested_till").hide();
     } else {
-      $("[for=id_requested_date],[for=id_requested_till]").show();
-      $("#id_requested_date,#id_requested_till").show();
+      $("[for=id_requested_till]").show();
+      $("#id_requested_till").show();
     }
   }
   toggleFunctionShiftRequestForm();

@@ -77,8 +77,8 @@
                   <div class="oh-sticky-table__th">{% trans "At Work" %}</div>
                   <div class="oh-sticky-table__th">{% trans "Pending Hours" %}</div>
                   <div class="oh-sticky-table__th">{% trans "Overtime" %}</div>
-                  <div class="oh-sticky-table__th oh-sticky-table__right"></div>
-                  <div class="oh-sticky-table__th"></div>
+                  <div class="oh-sticky-table__th oh-sticky-table__right">{% trans "Options" %}</div>
+                  <div class="oh-sticky-table__th">{% trans "Actions" %}</div>
                 </div>
               </div>
               <div class="oh-sticky-table__tbody">
@@ -136,20 +136,19 @@
                   </div>
                   <div class="oh-sticky-table__td oh-sticky-table__right">
                       {% if attendance.attendance_overtime_approve %}
-                        <a
-                          href="#"
-                          class="oh-btn oh-btn--info disabled"
-                          onclick="event.stopPropagation()"
+                          <a type="submit" href="#" title="{% trans 'Approved' %}"
+                            class="oh-btn oh-btn--success oh-btn--disabled w-100"
+                            onclick="event.stopPropagation()"
                           >
-                          {% trans "Approved" %}
+                            <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
                         </a>
                       {% else %}
-                          <a
-                            href="{% url 'approve-overtime' attendance.id %}?opage={{overtime_attendances.number}}&{{attendance_list.dynamic_name}}={{ attendance_list.list.number }}"
-                            onclick="event.stopPropagation()"
-                            class="oh-btn oh-btn--info"
-                            >
-                            {% trans "Approve" %}
+                          <a type="submit" href="{% url 'approve-overtime' attendance.id %}" 
+                              title="{% trans 'Approve' %}"
+                              class="oh-btn oh-btn--success w-100"
+                              onclick="event.stopPropagation()"
+                              >
+                              <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
                           </a>
                       {% endif %}
                   </div>
@@ -342,8 +341,8 @@
                   <div class="oh-sticky-table__th">{% trans "At Work" %}</div>
                   <div class="oh-sticky-table__th">{% trans "Pending Hours" %}</div>
                   <div class="oh-sticky-table__th">{% trans "Overtime" %}</div>
-                  <div class="oh-sticky-table__th oh-sticky-table__right"></div>
-                  <div class="oh-sticky-table__th"></div>
+                  <div class="oh-sticky-table__th oh-sticky-table__right">{% trans "Options" %}</div>
+                  <div class="oh-sticky-table__th">{% trans "Actions" %}</div>
                 </div>
               </div>
               <div class="oh-sticky-table__tbody">
@@ -600,7 +599,7 @@
                   <div class="oh-sticky-table__th">{% trans "At Work" %}</div>
                   <div class="oh-sticky-table__th">{% trans "Pending Hours" %}</div>
                   <div class="oh-sticky-table__th">{% trans "Overtime" %}</div>
-                  <div class="oh-sticky-table__th oh-sticky-table__right"></div>
+                  <div class="oh-sticky-table__th oh-sticky-table__right">{% trans "Actions" %}</div>
                 </div>
               </div>
               <div class="oh-sticky-table__tbody">
