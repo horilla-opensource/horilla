@@ -70,7 +70,7 @@
           </div>
         </div>
         <div
-          class="oh-sticky-table__th"
+          class="oh-sticky-table__th {% if request.sort_option.order == '-employee_first_name' %}arrow-up {% elif request.sort_option.order == 'employee_first_name' %}arrow-down {% else %}arrow-up-down {% endif %}"
           hx-target="#view-container"
           hx-get="{% url 'employee-filter-view' %}?{{pd}}&orderby=employee_first_name"
         >
@@ -81,7 +81,7 @@
         <div class="oh-sticky-table__th" data-cell-index="2" data-cell-title='{% trans "Phone" %}'>{% trans "Phone" %}</div>
         {% endif %}
         <div
-          class="oh-sticky-table__th" data-cell-index="3" data-cell-title='{% trans "Badge Id" %}'
+          class="oh-sticky-table__th {% if request.sort_option.order == '-badge_id' %}arrow-up {% elif request.sort_option.order == 'badge_id' %}arrow-down {% else %}arrow-up-down {% endif %}" data-cell-index="3" data-cell-title='{% trans "Badge Id" %}'
           hx-target="#view-container"
           hx-get="{% url 'employee-filter-view' %}?{{pd}}&orderby=badge_id"
         >
@@ -93,7 +93,7 @@
         <div class="oh-sticky-table__th" data-cell-index="7" data-cell-title='{% trans "Work Type" %}'>{% trans "Work Type" %}</div>
         <div class="oh-sticky-table__th" data-cell-index="8" data-cell-title='{% trans "Job Role" %}'>{% trans "Job Role" %}</div>
         <div
-          class="oh-sticky-table__th" data-cell-index="9" data-cell-title='{% trans "Reporting Manager" %}'
+          class="oh-sticky-table__th {% if request.sort_option.order == '-employee_work_info__reporting_manager_id' %}arrow-up {% elif request.sort_option.order == 'employee_work_info__reporting_manager_id' %}arrow-down {% else %}arrow-up-down {% endif %}" data-cell-index="9" data-cell-title='{% trans "Reporting Manager" %}'
           hx-target="#view-container"
           hx-get="{% url 'employee-filter-view' %}?{{pd}}&orderby=employee_work_info__reporting_manager_id"
         >
@@ -102,9 +102,9 @@
         <div class="oh-sticky-table__th" data-cell-index="10" data-cell-title='{% trans "Company" %}'>{% trans "Company" %}</div>
         <div class="oh-sticky-table__th" data-cell-index="11" data-cell-title='{% trans "Work Email" %}'>{% trans "Work Email" %}</div>
         <div
-          class="oh-sticky-table__th" data-cell-index="12" data-cell-title='{% trans "Date of Joining" %}'
+          class="oh-sticky-table__th {% if request.sort_option.order == '-employee_work_info__date_joining' %}arrow-up {% elif request.sort_option.order == 'employee_work_info__date_joining' %}arrow-down {% else %}arrow-up-down {% endif %}" data-cell-index="12" data-cell-title='{% trans "Date of Joining" %}'
           hx-target="#view-container"
-          hx-get="{% url 'employee-filter-view' %}?{{pd}}&orderby=date_joining"
+          hx-get="{% url 'employee-filter-view' %}?{{pd}}&orderby=employee_work_info__date_joining"
         >
           {% trans "Date of Joining" %}
         </div>

@@ -4,6 +4,7 @@ models.py
 This module is used to register models for employee app
 
 """
+
 import datetime as dtime
 from datetime import date, datetime, timedelta
 import json
@@ -265,14 +266,14 @@ class Employee(models.Model):
             related_models = []
             if reporting_manager_query.exists():
                 related_models.append("Reporting manager")
+            if recruitment_manager_query.exists():
+                related_models.append("Recruitment manager")
             if recruitment_stage_query.exists():
                 related_models.append("Recruitment stage manager")
             if onboarding_stage_query.exists():
                 related_models.append("Onboarding stage manager")
             if onboarding_task_query.exists():
                 related_models.append("Onboarding task manager")
-            if recruitment_manager_query.exists():
-                related_models.append("Recruitment manager")
 
             related_models_dict = {"related_models": related_models}
             return related_models_dict
@@ -281,7 +282,7 @@ class Employee(models.Model):
         last_name = (
             self.employee_last_name if self.employee_last_name is not None else ""
         )
-        badge_id = ((f"({self.badge_id})") if self.badge_id is not None else "")
+        badge_id = (f"({self.badge_id})") if self.badge_id is not None else ""
         return f"{self.employee_first_name} {last_name} {badge_id}"
 
     def check_online(self):
@@ -709,4 +710,4 @@ class EmployeeGeneralSetting(models.Model):
     """
 
     badge_id_prefix = models.CharField(max_length=5, default="PEP")
-    company_id = models.ForeignKey(Company,null=True,on_delete=models.CASCADE)
+    company_id = models.ForeignKey(Company, null=True, on_delete=models.CASCADE)

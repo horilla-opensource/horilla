@@ -15,6 +15,7 @@
     {% trans "Online" %}
   </span>
 </div>
+<div id="relatedModel"></div>
 {% if messages %}
     <div class="oh-alert-container">
         {% for message in messages %}
@@ -84,9 +85,9 @@
             {% if perms.employee.delete_employee %}
             <li class="oh-dropdown__item">
               {% if emp.is_active %}
-              <a href="{% url 'employee-archive' emp.id %}" onclick="return confirm('{% trans "Do you want to archive this employee?" %}')" class="oh-dropdown__link">
-                {% trans "Archive" %}
-              </a>
+                <a hx-confirm="{% trans 'Do you want to archive this employee?' %}" hx-post="{% url 'employee-archive' emp.id %}" hx-target="#relatedModel" class="oh-dropdown__link">
+                  {% trans "Archive" %}
+                </a>
                 {% else %}
                 <a href="{% url 'employee-archive' emp.id %}" onclick="return confirm('{% trans "Do you want to un archive this employee?" %}')" class="oh-dropdown__link">
                   {% trans "Un-Archive" %}

@@ -1,0 +1,33 @@
+{% load i18n %}
+<div
+  class="oh-modal oh-modal--show"
+  role="dialog"
+  id="confirmModal"
+  aria-labelledby="confirmModalLabel"
+  aria-hidden="true"
+>
+  <div class="oh-modal__dialog oh-modal__dialog--confirm">
+    <div
+      class="oh-modal__dialog-header"
+      style="display: flex; justify-content: center"
+    >
+      <span class="oh-modal__dialog-title" id="confirmModalLabel"
+        >{% trans "Can't Archive" %}
+      </span>
+    </div>
+    <div class="oh-modal__dialog-body" id="confirmModalBody">
+      <p>{{employee}} {% trans "assigned as" %} :</p>
+      {% for related_model in related_models %}
+      <p style="margin-left: 24px">{{forloop.counter}}.{{related_model}}</p>
+      {% endfor %}
+    </div>
+    <div
+      class="oh-modal__dialog-footer"
+      style="display: flex; justify-content: center"
+    >
+      <button class="oh-btn oh-btn--info oh-modal__cancel" id="cancel">
+        {% trans "Close" %}
+      </button>
+    </div>
+  </div>
+</div>

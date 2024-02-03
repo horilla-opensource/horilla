@@ -60,7 +60,19 @@ window.confirm = function (message) {
       if (event.target.tagName.toLowerCase() === "form") {
         event.target.submit();
       } else if (event.target.tagName.toLowerCase() === "a") {
-        window.location.href = event.target.href;
+        if (event.target.href) {
+          window.location.href = event.target.href;
+        } else {
+          var path = event.target["htmx-internal-data"].path;
+          var verb = event.target["htmx-internal-data"].verb;
+          var hxTarget = $(event.target).attr("hx-target");
+          if (verb === "post") {
+            // hx.post(path)
+            htmx.ajax("POST", path, hxTarget);
+          } else {
+            htmx.ajax("GET", path, hxTarget);
+          }
+        }
       }
     } else {
     }
