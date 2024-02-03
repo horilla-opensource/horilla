@@ -148,7 +148,7 @@ def add_employee(request):
             instance = form.save(commit=False)
             instance.stage_id = stage
             instance.save()
-            messages.success(request, _("Employee added to the stage"))
+            messages.success(request, _("Employee saved"))
             if not instance_id:
                 notify.send(
                     request.user.employee_get,

@@ -29,8 +29,9 @@ def any_manager_can_enter(function, perm, offboarding_employee_can_enter=False):
         ):
             return function(request, *args, **kwargs)
         else:
-            messages.info(request, "You dont have permission.")
-            return HttpResponse("<script>window.location.reload()</script>")
+            previous_url = request.META.get("HTTP_REFERER", "/")
+            script = f'<script>window.location.href = "{previous_url}"</script>'
+            return HttpResponse(script)
 
     return _function
 
@@ -46,7 +47,9 @@ def offboarding_manager_can_enter(function, perm):
             return function(request, *args, **kwargs)
         else:
             messages.info(request, "You dont have permission.")
-            return HttpResponse("<script>window.location.reload()</script>")
+            previous_url = request.META.get("HTTP_REFERER", "/")
+            script = f'<script>window.location.href = "{previous_url}"</script>'
+            return HttpResponse(script)
 
     return _function
 
@@ -63,7 +66,9 @@ def offboarding_or_stage_manager_can_enter(function, perm):
             return function(request, *args, **kwargs)
         else:
             messages.info(request, "You dont have permission.")
-            return HttpResponse("<script>window.location.reload()</script>")
+            previous_url = request.META.get("HTTP_REFERER", "/")
+            script = f'<script>window.location.href = "{previous_url}"</script>'
+            return HttpResponse(script)
 
     return _function
 
@@ -76,6 +81,8 @@ def check_feature_endabled(function, feature_name):
         if enabled:
             return function(request, *args, **kwargs)
         messages.info(request, "Feature is not enabled on the settings")
-        return HttpResponse("<script>window.location.reload()</script>")
+        previous_url = request.META.get("HTTP_REFERER", "/")
+        script = f'<script>window.location.href = "{previous_url}"</script>'
+        return HttpResponse(script)
 
     return _function
