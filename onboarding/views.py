@@ -31,7 +31,7 @@ from notifications.signals import notify
 from horilla import settings
 from horilla.decorators import login_required, hx_request_required, manager_can_enter
 from horilla.decorators import permission_required
-from base.methods import generate_pdf, get_key_instances, get_pagination
+from base.methods import generate_pdf, get_key_instances, get_pagination, sortby
 from recruitment.models import Candidate, Recruitment, RecruitmentMailTemplate
 from recruitment.filters import CandidateFilter, RecruitmentFilter
 from employee.models import Employee, EmployeeWorkInformation, EmployeeBankDetails
@@ -565,12 +565,13 @@ def candidate_filter(request):
         hired=True,
         recruitment_id__closed=False,
     )
-    candidate_filter_obj = CandidateFilter(request.GET, queryset).qs
+    candidates = CandidateFilter(request.GET, queryset).qs
     previous_data = request.GET.urlencode()
     page_number = request.GET.get("page")
     data_dict = parse_qs(previous_data)
     get_key_instances(Candidate, data_dict)
-    page_obj = paginator_qry(candidate_filter_obj, page_number)
+    candidates = sortby(request, candidates, "orderby")
+    page_obj = paginator_qry(candidates, page_number)
     return render(
         request,
         "onboarding/candidates.html",
@@ -663,6 +664,16 @@ def email_send(request):
             messages.error(request, f"Mail not send to {candidate.name}")
         candidate.start_onboard = True
         candidate.save()
+        try:
+            onboarding_candidate = CandidateStage()
+            onboarding_candidate.onboarding_stage_id = (
+                candidate.recruitment_id.onboarding_stage.first()
+            )
+            onboarding_candidate.candidate_id = candidate
+            onboarding_candidate.save()
+        except:
+            messages.error(request, "Something went wrong.")
+
     return HttpResponse("<script>window.location.reload()</script>")
 
 
@@ -1523,4 +1534,4 @@ def update_probation_end(request):
     candidate_id = request.GET.getlist("candidate_id")
     probation_end = request.GET["probation_end"]
     Candidate.objects.filter(id__in=candidate_id).update(probation_end=probation_end)
-    return JsonResponse({"message":"Probation end date updated","type":"success"})
+    return JsonResponse({"message": "Probation end date updated", "type": "success"})

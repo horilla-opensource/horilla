@@ -15,10 +15,10 @@
               />
             </div>
           </div>
-        <div class="oh-sticky-table__th">{% trans "Candidate" %}</div>
+        <div class="oh-sticky-table__th {% if request.sort_option.order == '-name' %}arrow-up {% elif request.sort_option.order == 'name' %}arrow-down {% else %} arrow-up-down {% endif %}" hx-target="#candidates" hx-get="{% url 'candidate-filter' %}?{{pd}}&orderby=name">{% trans "Candidate" %}</div>
         <div class="oh-sticky-table__th">{% trans "Email" %}</div>
-        <div class="oh-sticky-table__th">{% trans "Date of joining" %}</div>
-        <div class="oh-sticky-table__th">{% trans "Probation ends" %}</div>
+        <div class="oh-sticky-table__th {% if request.sort_option.order == '-joining_date' %}arrow-up {% elif request.sort_option.order == 'joining_date' %}arrow-down {% else %} arrow-up-down {% endif %}" hx-target="#candidates" hx-get="{% url 'candidate-filter' %}?{{pd}}&orderby=joining_date">{% trans "Date of joining" %}</div>
+        <div class="oh-sticky-table__th {% if request.sort_option.order == '-probation_end' %}arrow-up {% elif request.sort_option.order == 'probation_end' %}arrow-down {% else %} arrow-up-down {% endif %}" hx-target="#candidates" hx-get="{% url 'candidate-filter' %}?{{pd}}&orderby=probation_end">{% trans "Probation ends" %}</div>
         <div class="oh-sticky-table__th">{% trans "Job position" %}</div>
         <div class="oh-sticky-table__th">{% trans "Recruitment" %}</div>
         <div class="oh-sticky-table__th">{% trans "Actions" %}</div>
