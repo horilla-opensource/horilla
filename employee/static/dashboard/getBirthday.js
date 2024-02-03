@@ -29,6 +29,7 @@ function upcomingBirthdays(response) {
           <span class="oh-dashboard__event-title">Birthday</span>
           <span class="oh-dashboard__event-main">${element.name}</span>
           <span class="oh-dashboard__event-date">${element.dob}, ${element.daysUntilBirthday}</span>
+          <span class="oh-dashboard__event-date" style="font-size:10px;">${element.job_position}, ${element.department}</span>
         </div>
       </div>
       `);

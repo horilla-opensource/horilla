@@ -103,15 +103,15 @@
               {% endif %}
             </div>
             <div class="oh-dasboard__event-details">
-              <span class="oh-dashboard__event-title">Birthday</span>
+              <span class="oh-dashboard__event-title">{% trans "Birthday" %}</span>
               <span class="oh-dashboard__event-main">{{employee}}</span>
               <span class="oh-dashboard__event-date">{{employee.dob}},
                 {% if employee.days_until_birthday == 0 %}
-                Today
+                {% trans "Today" %}
                 {% elif employee.days_until_birthday == 1 %}
-                Tomorrow<br>
+                {% trans "Tomorrow" %}<br>
                 {% else %}
-                In {{ employee.days_until_birthday }} days<br>
+                {% trans "In" %} {{ employee.days_until_birthday }} {% trans "days" %}<br>
                 {% endif %}</span>
             </div>
           </div>
