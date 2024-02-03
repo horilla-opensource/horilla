@@ -347,5 +347,6 @@ urlpatterns = [
         views.encashment_condition_create,
         name="encashment-condition-create",
     ),
-    path("initial-prefix",views.initial_prefix,name="initial-prefix")
+    path("initial-prefix",views.initial_prefix,name="initial-prefix"),
+    path("get-first-last-badge-id",views.first_last_badge,name="get-first-last-badge-id"),
 ]

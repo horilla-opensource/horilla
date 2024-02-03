@@ -35,6 +35,7 @@ from django.forms import CharField, ChoiceField, DateInput, Select
 from asset.models import AssetAssignment, AssetRequest
 from django.utils.translation import gettext_lazy as _
 from attendance.models import Attendance, AttendanceOverTime
+from employee.methods.methods import get_ordered_badge_ids
 from leave.models import LeaveRequest
 from notifications.signals import notify
 from horilla.decorators import (
@@ -1529,7 +1530,7 @@ def employee_filter_view(request):
         employees = employees.order_by(field_copy)
         employees = employees.exclude(employee_work_info__isnull=True)
         template = "employee_personal_info/group_by.html"
-
+    employees = sortby(request, employees, "orderby")
     return render(
         request,
         template,
@@ -1754,12 +1755,13 @@ def employee_archive(request, obj_id):
     if save:
         employee.save()
         messages.success(request, message)
+        return HttpResponse("<script>window.location.reload();</script>")
     else:
-        related_models = ", ".join(model for model in result.get("related_models"))
-        messages.warning(
-            request, _(f"Can't archive.Employee assigned as {related_models}")
+        return render(
+            request,
+            "related_models.html",
+            {"employee": employee, "related_models": result.get("related_models")},
         )
-    return HttpResponseRedirect(request.META.get("HTTP_REFERER"))
 
 
 @login_required
@@ -2340,6 +2342,8 @@ def get_employees_birthday(_):
                 "name": name,
                 "dob": dob,
                 "daysUntilBirthday": days_till_birthday,
+                "department": emp.get_department().department,
+                "job_position": emp.get_job_position().job_position,
             }
         )
     return JsonResponse({"birthdays": birthdays})
@@ -2902,5 +2906,22 @@ def initial_prefix(request):
     instance = instance if instance else EmployeeGeneralSetting()
     instance.badge_id_prefix = request.POST["initial_prefix"]
     instance.save()
-    messages.success(request,"Initial prefix update")
+    messages.success(request, "Initial prefix update")
     return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+
+
+
+
+@login_required
+@manager_can_enter("employee.view_employee")
+def first_last_badge(request):
+    """
+    This method is used to return the first last badge ids in grouped and ordere
+    """
+    badge_ids =get_ordered_badge_ids()
+
+    return render(
+        request,
+        "employee_personal_info/first_last_badge.html",
+        {"badge_ids": badge_ids},
+    )

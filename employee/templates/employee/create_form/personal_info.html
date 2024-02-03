@@ -1,4 +1,13 @@
 {% load i18n %}
+<div class="oh-modal" id="badgeModal" role="dialog" aria-hidden="true">
+  <div class="oh-modal__dialog" style="max-width: 550px">
+    <div class="oh-modal__dialog-header">
+      <button type="button" class="oh-modal__close" aria-label="Close"><ion-icon name="close-outline"></ion-icon></button>
+    </div>
+
+    <div class="oh-modal__dialog-body" id="badgeModalBody"></div>
+  </div>
+</div>
 <div class="oh-wrapper" data-select2-id="select2-data-40-yu7x">
     
     <div class="oh-general__tab-target oh-profile-section mb-4" id="personal" data-select2-id="select2-data-personal">
@@ -58,7 +67,11 @@
   </div>
         <div class="row">
             <div class="col-12 col-sm-12 col-md-12 col-lg-6">
-              <label class="oh-label" for="firstname">{% trans "Badge Id" %}</label>
+              <label class="oh-label" for="firstname">{% trans "Badge Id" %}
+                <div hx-get="{% url 'get-first-last-badge-id' %}" hx-target="#badgeModalBody" data-target="#badgeModal" data-toggle="oh-modal-toggle" class="oh-checkpoint-badge text-success mb-2" id="selectAllInstances" style="cursor: pointer">
+                  {% trans "Show" %}
+                </div>
+              </label>
               {{form.badge_id}}
               {{form.badge_id.errors}}
             </div>

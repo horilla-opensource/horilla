@@ -152,45 +152,33 @@ class EmployeeForm(ModelForm):
         """
         This method is used to generate badge id
         """
-        try:
-            # total_employee_count = Employee.objects.count()
-            badge_ids = Employee.objects.filter(~Q(badge_id=None)).order_by("-badge_id")
-            greatest_id = badge_ids.first().badge_id
-            match = re.findall(r"\d+", greatest_id[::-1])
-            total_employee_count = 0
-            if match:
-                total_employee_count = int(match[0][::-1])
-        except Exception:
-            total_employee_count = 0
-        try:
-            string = (
-                Employee.objects.filter(~Q(badge_id=None))
-                .order_by("-badge_id")
-                .last()
-                .badge_id
-            )
-        except Exception:
-            string = "DUDE"
-        # Find the index of the last integer group in the string
-        integer_group_index = None
-        for i in range(len(string) - 1, -1, -1):
-            if string[i].isdigit():
-                integer_group_index = i
-            elif integer_group_index is not None:
-                break
+        from base.context_processors import get_intial_prefix
+        from employee.methods.methods import get_ordered_badge_ids
 
-        if integer_group_index is None:
-            # There is no integer group in the string, so just append #01
-            return string + "#01"
-        # Extract the integer group from the string
-        integer_group = string[integer_group_index:]
-        prefix = string[:integer_group_index]
+        prefix = get_intial_prefix(None)["get_intial_prefix"]
+        data = get_ordered_badge_ids()
+        result = []
+        for sublist in data:
+            for item in sublist:
+                if isinstance(item, str) and item.lower().startswith(prefix.lower()):
+                    # Find the index of the item in the sublist
+                    index = sublist.index(item)
+                    # Check if there is a next item in the sublist
+                    if index + 1 < len(sublist):
+                        result = sublist[index + 1]
+                        result = re.findall(r"[a-zA-Z]+|\d+|[^a-zA-Z\d\s]", result)
 
-        # Set the integer group to the total number of employees plus one
-        new_integer_group = str(total_employee_count + 1).zfill(len(integer_group))
+        if result:
+            prefix = []
+            incremented = False
+            for item in reversed(result):
+                if not incremented and isinstance(eval(str(item)), int):
+                    item = eval(item) + 1
+                    incremented = True
+                prefix.insert(0, str(item))
+            prefix = "".join(prefix)
 
-        # Return the new string
-        return prefix + new_integer_group
+        return prefix
 
     def clean_badge_id(self):
         """
@@ -442,9 +430,9 @@ class BulkUpdateFieldForm(forms.Form):
         ]
         self.fields["update_fields"].choices = updated_choices
         for visible in self.visible_fields():
-            visible.field.widget.attrs["class"] = (
-                "oh-select oh-select-2 select2-hidden-accessible oh-input w-100"
-            )
+            visible.field.widget.attrs[
+                "class"
+            ] = "oh-select oh-select-2 select2-hidden-accessible oh-input w-100"
 
 
 class EmployeeNoteForm(ModelForm):
@@ -571,7 +559,6 @@ class DisciplinaryActionForm(ModelForm):
 
 
 class ActiontypeForm(ModelForm):
-
     class Meta:
         model = Actiontype
         fields = "__all__"
