@@ -1,0 +1,23 @@
+{% load i18n %}
+<div class="oh-main__titlebar oh-main__titlebar--left">
+    <span class="oh-main__titlebar-title fw-bold mb-0 text-dark">{% trans "Viewed By" %} </span>
+</div>
+<div class="oh-sticky-table mt-3 m-2">
+    <div class="oh-sticky-table__tbody">
+        {% for instance in viewed_by %}
+          <div class="oh-sticky-table__tr" >
+            <div class="oh-sticky-table__sd" style="width: 1000px;">
+              <div class="oh-profile oh-profile--md">
+                <div class="oh-profile__avatar mr-1">
+                  <img src="{{instance.user.employee_get.get_avatar}}" class="oh-profile__image" />
+                </div>
+                <span class="oh-profile__name oh-text--dark">
+                  {{instance.user.employee_get}}
+                  <span class="oh-recuritment_tag" style="font-size: .5rem;">{{instance.created_at}}</span>
+                </span>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+</div>

@@ -3,7 +3,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from base.forms import AnnouncementForm, AnnouncementcommentForm
 from base.models import Announcement, AnnouncementComment, AnnouncementView
 from employee.models import EmployeeWorkInformation
-from horilla.decorators import login_required
+from horilla.decorators import login_required, permission_required
 from django.contrib import messages
 from django.utils.translation import gettext_lazy as _
 from notifications.signals import notify
@@ -288,3 +288,15 @@ def announcement_single_view(request, anoun_id):
         announcement_view.save()
     
     return render(request, "announcement/announcement_one.html", {'announcements': announcement})
+
+
+
+@login_required
+@permission_required("base.view_announcement")
+def viewed_by(request):
+    """
+    This method is used to view the employees
+    """
+    announcement_id = request.GET.get("announcement_id")
+    viewed_by = AnnouncementView.objects.filter(announcement_id__id = announcement_id,viewed=True)
+    return render(request,"announcement/viewed_by.html",{"viewed_by":viewed_by})

@@ -1216,6 +1216,11 @@ class Announcement(models.Model):
     department = models.ManyToManyField(Department, blank=True)
     job_position = models.ManyToManyField(JobPosition, blank=True)
 
+    def get_views(self):
+        """
+        This method is used to get the view count of the announcement
+        """
+        return self.announcementview_set.filter(viewed=True)
     def __str__(self):
         return self.title
 
@@ -1244,6 +1249,7 @@ class AnnouncementView(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     announcement = models.ForeignKey(Announcement, on_delete=models.CASCADE)
     viewed = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True,null=True)
 
 
 class EmailLog(models.Model):

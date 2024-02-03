@@ -1,7 +1,6 @@
 {% load i18n %}
 {% load static %}
 {% load basefilters %}
-
 <section class="oh-wrapper oh-main__topbar" x-data="{searchShow: false}">
 
     <div class="oh-main__titlebar oh-main__titlebar--left">
@@ -61,7 +60,16 @@
             {% endif %}  
 
             <div class="card-header mb-3">
-                <h5 class="card-title fw-bold">{{ anoun.title }}</h5>
+                <h5 class="card-title fw-bold">{{ anoun.title }}
+                    {% if perms.base.view_announcement %}
+                    <div data-toggle="oh-modal-toggle" hx-target="#viewedByBody" hx-get="{% url 'announcement-viewed-by' %}?announcement_id={{anoun.id}}" data-target="#viewedBy" title="{{anoun.get_views|length}} {% trans "Views" %}" class="oh-checkpoint-badge text-success mb-2" id="selectAllInstances" style="cursor: pointer">
+                        <span>{{anoun.get_views|length}}</span>
+                        <span align="center">
+                            <ion-icon name="eye-outline"></ion-icon>
+                        </span> 
+                    </div>
+                    {% endif %}
+                </h5> 
 
                 <span class="text-muted fw-bold"><small>
                     {% trans "Posted on" %} &nbsp<span class="dateformat_changer">{{ anoun.created_on|date:"F j, Y" }}</span> &nbsp 
@@ -140,3 +148,13 @@
 
         </div>
         {% endfor %}
+
+        <div  class="oh-modal" id="viewedBy" role="dialog" aria-hidden="true">
+            <div  class="oh-modal__dialog" style="max-width: 550px">
+              <div  class="oh-modal__dialog-header">
+                <button  class="oh-modal__close--custom" onclick="$(this).closest('.oh-modal--show').removeClass('oh-modal--show');" ><ion-icon  name="close-outline"></ion-icon></button>
+              </div>
+        
+              <div class="oh-modal__dialog-body" id="viewedByBody"></div>
+            </div>
+          </div>

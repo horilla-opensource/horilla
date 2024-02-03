@@ -798,4 +798,5 @@ urlpatterns = [
         announcement.announcement_single_view,
         name="announcement-single-view",
     ),
+    path("announcement-viewed-by",announcement.viewed_by,name="announcement-viewed-by")
 ]
