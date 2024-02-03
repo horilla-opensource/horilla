@@ -1,3 +1,4 @@
+from datetime import datetime
 import re
 from typing import Any
 import uuid
@@ -275,6 +276,16 @@ class LeaveRequestCreationForm(ModelForm):
             start_date, end_date, start_date_breakdown, end_date_breakdown
         )
         effective_requested_days = cal_effective_requested_days(start_date=start_date,end_date=end_date,leave_type_id=leave_type_id,requested_days=requested_days)
+        leave_dates = leave_requested_dates(start_date,end_date)
+        month_year = [f"{date.year}-{date.strftime('%m')}" for date in leave_dates]
+        today = datetime.today()
+        unique_dates = list(set(month_year))
+        if f"{today.month}-{today.year}" in unique_dates:
+            unique_dates.remove(f"{today.strftime('%m')}-{today.year}")
+        forcasted_leaves = available_leave.forcasted_leaves()
+        if f"{today.year}-{today.strftime('%m')}" not in unique_dates:
+            for item in unique_dates:
+                total_leave_days += forcasted_leaves[item]
         if not effective_requested_days <= total_leave_days:
             raise forms.ValidationError(_("Employee doesn't have enough leave days.."))
 
@@ -291,6 +302,11 @@ class LeaveRequestCreationForm(ModelForm):
         self.fields["employee_id"].widget.attrs.update(
             {
                 "onchange": "employeeChange($(this))",
+            }
+        )
+        self.fields["start_date"].widget.attrs.update(
+            {
+                "onchange": "dateChange($(this))",
             }
         )
 
@@ -359,6 +375,16 @@ class LeaveRequestUpdationForm(ModelForm):
             start_date, end_date, start_date_breakdown, end_date_breakdown
         )
         effective_requested_days = cal_effective_requested_days(start_date=start_date,end_date=end_date,leave_type_id=leave_type_id,requested_days=requested_days)
+        leave_dates = leave_requested_dates(start_date,end_date)
+        month_year = [f"{date.year}-{date.strftime('%m')}" for date in leave_dates]
+        today = datetime.today()
+        unique_dates = list(set(month_year))
+        if f"{today.month}-{today.year}" in unique_dates:
+            unique_dates.remove(f"{today.strftime('%m')}-{today.year}")
+        forcasted_leaves = available_leave.forcasted_leaves()
+        if f"{today.year}-{today.strftime('%m')}" not in unique_dates:
+            for item in unique_dates:
+                total_leave_days += forcasted_leaves[item]
         if not effective_requested_days <= total_leave_days:
             raise forms.ValidationError(_("Employee doesn't have enough leave days.."))
 
@@ -375,6 +401,11 @@ class LeaveRequestUpdationForm(ModelForm):
         self.fields["employee_id"].widget.attrs.update(
             {
                 "onchange": "employeeChange($(this))",
+            }
+        )
+        self.fields["start_date"].widget.attrs.update(
+            {
+                "onchange": "dateChange($(this))",
             }
         )
 

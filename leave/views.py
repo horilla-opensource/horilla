@@ -3211,7 +3211,7 @@ def employee_leave_details(request):
         employee = request.POST["employee_id"]
     else:
         employee = ""
-    # date =  request.POST.get("date","")
+    date =  request.POST.get("date","")
     if request.POST["leave_type"] and request.POST["employee_id"]:
         leave_type_id = request.POST["leave_type"]
         leave_type = LeaveType.objects.filter(id=leave_type_id).first()
@@ -3220,11 +3220,11 @@ def employee_leave_details(request):
         )
         for i in balance:
             balance_count = i.available_days
-        # if date and balance.first().available_days == 0:
-        #     try:
-        #         balance_count = balance.first().forcasted_leaves()[date[:7]]
-        #     except:
-        #         pass
+        if date:
+            try:
+                balance_count += balance.first().forcasted_leaves()[date[:7]]
+            except:
+                pass
                 
                 
     return JsonResponse({"leave_count": balance_count, "employee": employee})

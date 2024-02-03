@@ -278,8 +278,18 @@ class AvailableLeave(models.Model):
 
     def __str__(self):
         return f"{self.employee_id} | {self.leave_type_id}"
+    
+    def forcasted_leaves(self):
+        forecasted_leave = {}
+        if self.leave_type_id.reset_based == 'monthly':
+            today = datetime.now()
+            for i in range(1, 7):  # Calculate for the next 6 months
+                next_month = today + relativedelta(months=i)
+                forecasted_leave[next_month.strftime("%Y-%m")] = self.available_days + (self.leave_type_id.total_days * i)
+        return forecasted_leave
+        
 
-        # Resetting carryforward days
+    # Resetting carryforward days
 
     def update_carryforward(self):
         if self.leave_type_id.carryforward_type != "no carryforward":
