@@ -260,6 +260,7 @@
                                             {% if perms.leave.change_leaveallocationrequest or request.user|is_reportingmanager %}
                                                 {% if leave_allocation_request.status == 'requested' %}
                                                     <a type="submit" href="{% url 'leave-allocation-request-approve' leave_allocation_request.id %}" 
+                                                        onclick="return confirm('{% trans "Do you want to approve this request?" %}')"
                                                         title="{% trans 'Approve' %}"
                                                         class="oh-btn oh-btn--success w-100">
                                                         <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
