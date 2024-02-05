@@ -1,4 +1,4 @@
-{% load static i18n %}
+{% load static i18n %} 
 {% if asset_form.instance.id %}
 <!-- start of messages -->
 {% if messages %}
@@ -68,10 +68,21 @@
         <div id="ObjecitveContainer">
           <div class="my-3" id="keyResultCard">
             <div class=" " id="assetUpdateFormContainer">
-              <div class="oh-input__group ">
-                <label class="oh-input__label" for="{{asset_form.asset_name.id_for_label}}" >{% trans "Asset Name" %}</label>
-                {{asset_form.asset_name}} 
-                {{asset_form.asset_name.errors}}
+              <div class="row">
+                <div class="col-12 col-sm-12 col-md-6 col-lg-6">
+                  <div class="oh-input__group">
+                    <label class="oh-input__label" for="{{asset_form.asset_name.id_for_label}}" >{% trans "Asset Name" %}</label>
+                    {{asset_form.asset_name}}
+                    {{asset_form.asset_name.errors}}
+                  </div>
+                </div>
+                <div class="col-12 col-sm-12 col-md-6 col-lg-6">
+                  <div class="oh-input__group">
+                    <label class="oh-input__label" for="{{asset_form.owner.id_for_label}}" >{% trans "Owner" %}</label>
+                    {{asset_form.owner }}
+                    {{asset_form.owner.errors }}
+                  </div>
+                </div>
               </div>
               <div class="oh-input__group ">
                 <label class="oh-input__label" for="{{asset_form.asset_description.id_for_label}}" >{% trans "Asset Description" %}</label>
@@ -126,6 +137,22 @@
                   </div>
                 </div>
               </div>
+              <div class="row">
+                <div class="col-12 col-sm-12 col-md-6 col-lg-6">
+                  <div class="oh-input__group">
+                    <label class="oh-input__label" for="{{asset_form.expiry_date.id_for_label}}" >{% trans "Expiry Date" %}</label>
+                    {{asset_form.expiry_date}}
+                    {{asset_form.expiry_date.errors}}
+                  </div>
+                </div>
+                <div class="col-12 col-sm-12 col-md-6 col-lg-6 {% if not asset_form.expiry_date.value %} d-none {% endif %} notify">
+                  <div class="oh-input__group">
+                    <label class="oh-input__label" for="{{asset_form.notify_before.id_for_label}}" >{% trans "Notify Before(days)" %}</label>
+                    {{asset_form.notify_before}}
+                    {{asset_form.notify_before.errors}}
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -150,3 +177,13 @@
 </div>
 
 {% endif %}
+
+<script>
+  $(document).ready(function() {
+    $("#id_expiry_date").on('change', function() {
+      $(".notify").removeClass('d-none');
+    })
+  })
+  $("#id_expiry_date").change()
+
+</script>

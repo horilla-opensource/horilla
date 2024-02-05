@@ -63,6 +63,9 @@ class AssetForm(ModelForm):
             "asset_purchase_date": forms.DateInput(
                 attrs={"type": "date", "class": "oh-input  w-100"}
             ),
+            "expiry_date": forms.DateInput(
+                attrs={"type": "date", "class": "oh-input  w-100"}
+            ),
             "asset_purchase_cost": forms.NumberInput(
                 attrs={"class": "oh-input w-100", "placeholder": "1200.00."}
             ),

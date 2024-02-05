@@ -120,6 +120,30 @@
           </div>
         </div>
       </div>
+      <div class="row">
+        <div class="col-12 col-sm-12 col-md-4 col-lg-6">
+          <div class="oh-input__group">
+            <label
+              class="oh-input__label"
+              for="{{asset_creation_form.expiry_date.id_for_label}}"
+              >{% trans "Expiry Date" %}</label
+            >
+            {{asset_creation_form.expiry_date |attr:"type:date" }}
+            {{asset_creation_form.expiry_date.errors }}
+          </div>
+        </div>
+        <div class="col-12 col-sm-12 col-md-4 col-lg-6 d-none notify">
+          <div class="oh-input__group">
+            <label
+              class="oh-input__label"
+              for="{{asset_creation_form.notify_before.id_for_label}}"
+              >{% trans "Notify Before (days)" %}</label
+            >
+            {{asset_creation_form.notify_before}}
+            {{asset_creation_form.notify_before.errors}}
+          </div>
+        </div>
+      </div>
       <div class="oh-modal__dialog-footer">
         <button
           type="submit"
@@ -132,3 +156,12 @@
   </form>
 </div>
 {% endif %}
+
+<script>
+  $(document).ready(function() {
+    $("#id_expiry_date").on('change', function() {
+      $(".notify").removeClass('d-none');
+    })
+  })
+
+</script>

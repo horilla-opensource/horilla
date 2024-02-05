@@ -63,7 +63,11 @@
           {% if notification.actor.employee_first_name %}
             {{ notification.actor.employee_first_name }}
           {% else %}
-            {% trans "Anonymous"%}
+            {% if notification.data.label %}
+              {{notification.data.label}}
+            {% else %}
+              {% trans "Anonymous"%}
+            {% endif %}
           {% endif %}
         </span>
       </div>

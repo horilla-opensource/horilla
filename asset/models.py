@@ -51,6 +51,7 @@ class Asset(models.Model):
         ("Not-Available", _("Not-Available")),
     ]
     asset_name = models.CharField(max_length=255)
+    owner = models.ForeignKey(Employee,on_delete=models.PROTECT,null=True,blank=True)
     asset_description = models.TextField(null=True, blank=True)
     asset_tracking_id = models.CharField(max_length=30, null=False, unique=True)
     asset_purchase_date = models.DateField()
@@ -62,6 +63,8 @@ class Asset(models.Model):
     asset_lot_number_id = models.ForeignKey(
         AssetLot, on_delete=models.PROTECT, null=True, blank=True
     )
+    expiry_date = models.DateField(null=True, blank=True)
+    notify_before = models.IntegerField(default=1,null=True)
     objects = HorillaCompanyManager("asset_category_id__company_id")
 
     def __str__(self):
