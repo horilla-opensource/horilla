@@ -58,9 +58,10 @@
                                 ></ion-icon>
                             </a>
                             <a
-                                onclick = "event.preventDefault();event.stopPropagation(); confirm(`{% trans 'Do you want to delete this Contract?' %}`)"
+                                onclick = "event.preventDefault();event.stopPropagation();"
                                 class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
-                                href="{% url 'delete-contract' contract.id %}"
+                                hx-confirm="{% trans 'Do you want to delete this Contract?' %}"
+                                hx-post="{% url 'delete-contract-modal' contract.id %}?{{pd}}"
                                 title='{% trans "Delete" %}'
                             >
                                 <ion-icon
