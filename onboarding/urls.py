@@ -125,5 +125,14 @@ urlpatterns = [
         views.onboarding_send_mail,
         name="onboarding-send-mail",
     ),
-    path("update-probotion-end",views.update_probation_end,name="update-probotion-end")
+    path(
+        "update-probotion-end", views.update_probation_end, name="update-probotion-end"
+    ),
+    path("task-report-onboarding", views.task_report, name="task-report-onboarding"),
+    path(
+        "candidate-tasks-status",
+        views.candidate_tasks_status,
+        name="candidate-tasks-status",
+    ),
+    path("change-task-status", views.change_task_status, name="change-task-status"),
 ]

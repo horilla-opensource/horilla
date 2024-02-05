@@ -12,6 +12,7 @@ from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils.translation import gettext_lazy as _
+from horilla_audit.models import HorillaAuditInfo, HorillaAuditLog
 from recruitment.models import Recruitment, Candidate
 from employee.models import Employee
 from base.horilla_company_manager import HorillaCompanyManager
@@ -133,7 +134,6 @@ class CandidateTask(models.Model):
     """
 
     choice = (
-        ("", ""),
         ("todo", _("Todo")),
         ("scheduled", _("Scheduled")),
         ("ongoing", _("Ongoing")),
@@ -155,6 +155,12 @@ class CandidateTask(models.Model):
     )
     onboarding_task_id = models.ForeignKey(OnboardingTask, on_delete=models.PROTECT)
     objects = HorillaCompanyManager("candidate_id__recruitment_id__company_id")
+    history = HorillaAuditLog(
+        related_name="history_set",
+        bases=[
+            HorillaAuditInfo,
+        ],
+    )
 
     def __str__(self):
         return f"{self.candidate_id}|{self.onboarding_task_id}"

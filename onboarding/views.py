@@ -29,7 +29,7 @@ from django.views.decorators.http import require_http_methods
 from base.models import JobPosition
 from notifications.signals import notify
 from horilla import settings
-from horilla.decorators import login_required, hx_request_required, manager_can_enter
+from horilla.decorators import login_required, hx_request_required
 from horilla.decorators import permission_required
 from base.methods import generate_pdf, get_key_instances, get_pagination, sortby
 from recruitment.models import Candidate, Recruitment, RecruitmentMailTemplate
@@ -439,7 +439,7 @@ def candidate_delete(request, obj_id):
 
 
 @login_required
-@manager_can_enter("onboarding.view_candidatestage")
+@all_manager_can_enter("onboarding.view_candidatestage")
 def candidates_single_view(request, id, **kwargs):
     """
     Candidate individual view for the onboarding candidates
@@ -1535,3 +1535,69 @@ def update_probation_end(request):
     probation_end = request.GET["probation_end"]
     Candidate.objects.filter(id__in=candidate_id).update(probation_end=probation_end)
     return JsonResponse({"message": "Probation end date updated", "type": "success"})
+
+
+@login_required
+@all_manager_can_enter("onboarding.change_onboardingtask")
+def task_report(request):
+    """
+    This method is used to show the task report.
+    """
+    stage_id = request.GET.get("stage_id")
+    employee_id = request.GET.get("employee_id")
+    if not employee_id:
+        employee_id = request.user.employee_get.id
+    my_tasks = OnboardingTask.objects.filter(
+        employee_id__id=employee_id,
+        candidates__recruitment_id__closed=False,
+    ).distinct()
+    tasks = []
+    for task in my_tasks:
+        tasks.append(
+            {
+                "task": task,
+                "total_candidates": task.candidatetask_set.count(),
+                "todo": task.candidatetask_set.filter(status="todo").count(),
+                "scheduled": task.candidatetask_set.filter(status="scheduled").count(),
+                "ongoing": task.candidatetask_set.filter(status="ongoing").count(),
+                "stuck": task.candidatetask_set.filter(status="stuck").count(),
+                "done": task.candidatetask_set.filter(status="done").count(),
+            }
+        )
+    return render(request, "onboarding/dashboard/task_report.html", {"tasks": tasks})
+
+
+@login_required
+@all_manager_can_enter("onboarding.view_candidatetask")
+def candidate_tasks_status(request):
+    """
+    This method is used to render template to show the onboarding tasks
+    """
+    task_id = request.GET["task_id"]
+    candidate_tasks = CandidateTask.objects.filter(onboarding_task_id__id=task_id)
+    return render(
+        request,
+        "onboarding/dashboard/status_list.html",
+        {"candidate_tasks": candidate_tasks},
+    )
+
+
+@login_required
+@all_manager_can_enter("onboarding.change_candidatetask")
+def change_task_status(request):
+    """
+    This method is to update the candidate task
+    """
+    task_id = request.GET["task_id"]
+    candidate_task = CandidateTask.objects.get(id=task_id)
+    status = request.GET["status"]
+    if status in [
+        "todo",
+        "scheduled",
+        "ongoing",
+        "stuck",
+        "done",
+    ]:
+        candidate_task.status = status
+        candidate_task.save()
+    return HttpResponse("Success")

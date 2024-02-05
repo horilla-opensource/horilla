@@ -2,7 +2,23 @@
 {% block content %}
 {% load static i18n %}
 {% load i18n %}
-
+<style>
+    .done-task{
+        background-color: #9acd322e !important;
+    }
+    .scheduled-task{
+        background-color: #00afff2e !important;
+    }
+    .ongoing-task{
+        background-color: #e6ff002e !important;
+    }
+    .stuck-task{
+        background-color: #ff45003b !important;
+    }
+    .todo-task{
+        background-color: #8d8d8d2e !important;
+    }
+</style>
 <!-- End of Navigation -->
 <main :class="sidebarOpen ? 'oh-main__sidebar-visible' : ''">
     <div class="oh-wrapper">
@@ -120,6 +136,13 @@
                         {% endif %}
                         </div>
                       </div>
+                      <div
+                        class="col-12 col-sm-12 col-md-12 col-lg-6 oh-card-dashboard--moveable"
+                        id="taskStatus"
+                        hx-get="{% url "task-report-onboarding" %}"
+                        hx-trigger="load"
+                        >
+                    </div>
                 </div>
                 
             </div>

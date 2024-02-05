@@ -1,0 +1,61 @@
+{% load i18n %}
+<div class="oh-main__titlebar oh-main__titlebar--left">
+  <span class="oh-main__titlebar-title fw-bold mb-0 text-dark">{{ candidate_tasks.first.onboarding_task_id.task_title }}</span>
+</div>
+<div class="oh-sticky-table mt-3 m-2">
+  <div class="oh-sticky-table__tbody">
+    {% for task in candidate_tasks %}
+      <div class="oh-sticky-table__tr">
+        <div class="oh-sticky-table__sd d-flex justify-content-between" style="width: 477px;overflow: hidden;">
+          <div class="oh-profile oh-profile--md">
+            <div class="oh-profile__avatar mr-1">
+              <img src="{{ task.candidate_id.get_avatar }}" class="oh-profile__image" />
+            </div>
+            <span class="oh-profile__name oh-text--dark">{{ task.candidate_id.name }}</span>
+          </div>
+          <span class="oh-recuritment_tag  {% if task.status == 'done' %} done-task {% elif task.status == 'scheduled' %} scheduled-task{% elif task.status == 'ongoing' %} ongoing-task{% elif task.status == 'stuck' %} dd stuck-task {% elif task.status == 'todo' %} todo-task{% endif %}">
+            <select hx-swap="none" onchange="
+            if ($(this).val() == 'done') {
+                $(this).parent().addClass('done-task')
+            }else{
+                $(this).parent().removeClass('done-task')
+            }
+            if ($(this).val() == 'scheduled') {
+                $(this).parent().addClass('scheduled-task')
+            }else{
+                $(this).parent().removeClass('scheduled-task')
+            }
+            if ($(this).val() == 'ongoing') {
+                $(this).parent().addClass('ongoing-task')
+            }else{
+                $(this).parent().removeClass('ongoing-task')
+            }
+            if ($(this).val() == 'stuck') {
+                $(this).parent().addClass('stuck-task')
+            }else{
+                $(this).parent().removeClass('stuck-task')
+            }
+            if ($(this).val() == 'todo') {
+                $(this).parent().addClass('todo-task')
+            }else{
+                $(this).parent().removeClass('todo-task')
+            }
+            " hx-get="{% url 'change-task-status' %}?task_id={{task.id}}"
+            name="status" 
+            class="" 
+            style="width: 150px;"
+            id="task_status{{task.id}}">
+                {% for status in task.choice %}
+                <option value="{{status.0}}"
+                {% if status.0 == task.status %}
+                selected
+                {% endif %}
+                >{{status.1}}</option>
+                {% endfor %}
+            </select>
+          </span>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</div>

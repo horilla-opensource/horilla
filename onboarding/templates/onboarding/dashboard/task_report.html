@@ -1,0 +1,68 @@
+{% load i18n %}
+<div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent">
+  <div class="oh-card-dashboard__header oh-card-dashboard__header--divider mb-0">
+    <span class="oh-card-dashboard__title">{% trans 'My Onboarding Tasks' %}</span>
+  </div>
+  {% if tasks %}
+    <div class="oh-card-dashboard__body">
+      <div class="oh-sticky-table" style="max-height:320px;">
+        <div class="oh-sticky-table__table oh-table--sortable">
+          <div class="oh-sticky-table__thead">
+            <div class="oh-sticky-table__tr">
+              <div class="oh-sticky-table__th" align="center">
+                {% trans 'Task' %}
+              </div>
+              <div class="oh-sticky-table__th" style="width: 100px;" align="center">
+                {% trans 'Todo' %}
+              </div>
+              <div class="oh-sticky-table__th" style="width: 100px;" align="center">
+                {% trans 'Scheduled' %}
+              </div>
+              <div class="oh-sticky-table__th" style="width: 100px;" align="center">
+                {% trans 'Ongoing' %}
+              </div>
+              <div class="oh-sticky-table__th" style="width: 100px;" align="center">
+                {% trans 'Stuck' %}
+              </div>
+              <div class="oh-sticky-table__th oh-sticky-table__right" style="width: 100px;" align="center">
+                {% trans 'Done' %}
+              </div>
+            </div>
+          </div>
+          <div class="oh-sticky-table__tbody">
+            {% for task in tasks %}
+              <div class="oh-sticky-table__tr" draggable="true" data-toggle="oh-modal-toggle" data-target="#taskModal" hx-get="{% url 'candidate-tasks-status' %}?task_id={{ task.task.id }}" hx-target="#taskModalBody">
+                <div class="oh-sticky-table__sd">
+                  {{ task.task }}
+                  <span title="Total ({{ task.total_candidates }}) candidates in this task">({{ task.total_candidates }})</span>
+                </div>
+                <div class="oh-sticky-table__td">{{ task.todo }}</div>
+                <div class="oh-sticky-table__td">{{ task.scheduled }}</div>
+                <div class="oh-sticky-table__td">{{ task.ongoing }}</div>
+                <div class="oh-sticky-table__td">{{ task.stuck }}</div>
+                <div class="oh-sticky-table__td oh-sticky-table__right" title="{% trans 'Send Mail' %}">{{ task.done }}</div>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+  {% else %}
+    <div style="height: 380px; display:flex;align-items: center;justify-content: center;" class="">
+      <div style="" class="">
+        <img style="display: block;width: 70px;margin: 20px auto ;" src="/static/images/ui/joiningchart.png" class="" alt="" />
+        <h3 style="font-size:16px" class="oh-404__subtitle">{% trans 'No data Found...' %}</h3>
+      </div>
+    </div>
+  {% endif %}
+</div>
+
+<div class="oh-modal" id="taskModal" role="dialog" aria-hidden="true">
+  <div class="oh-modal__dialog" style="max-width: 550px">
+    <div class="oh-modal__dialog-header">
+      <button type="button" class="oh-modal__close" aria-label="Close"><ion-icon name="close-outline"></ion-icon></button>
+    </div>
+
+    <div class="oh-modal__dialog-body" id="taskModalBody"></div>
+  </div>
+</div>
