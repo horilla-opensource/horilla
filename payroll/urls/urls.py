@@ -29,6 +29,11 @@ urlpatterns = [
         views.contract_delete,
         name="delete-contract",
     ),
+    path(
+        "delete-contract-modal/<int:contract_id>",
+        views.contract_delete,
+        name="delete-contract-modal",
+    ),
     path("view-contract/", views.contract_view, name="view-contract"),
     path(
         "single-contract-view/<int:contract_id>/",

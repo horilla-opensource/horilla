@@ -136,6 +136,11 @@ def contract_delete(request, contract_id):
     try:
         Contract.objects.get(id=contract_id).delete()
         messages.success(request, _("Contract deleted"))
+        request_path = request.path.split("/")
+        if "delete-contract-modal" in request_path:
+            return HttpResponse("<script>window.location.reload();</script>")
+        else:
+            return redirect(f"/payroll/contract-filter?{request.GET.urlencode()}")
     except Contract.DoesNotExist:
         messages.error(request, _("Contract not found."))
     except ProtectedError:
