@@ -40,7 +40,12 @@ def permission_required(function, perm):
             return function(request, *args, **kwargs)
         else:
             messages.info(request, "You dont have permission.")
-            return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+            previous_url = request.META.get("HTTP_REFERER", "/")
+            key = "HTTP_HX_REQUEST"
+            if key in request.META.keys():
+                return render(request,"decorator_404.html")
+            script = f'<script>window.location.href = "{previous_url}"</script>'
+            return HttpResponse(script)
 
     return _function
 
@@ -63,7 +68,12 @@ def delete_permission(function):
             return function(request, *args, **kwargs)
         else:
             messages.info(request, "You dont have permission for delete.")
-            return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+            previous_url = request.META.get("HTTP_REFERER", "/")
+            key = "HTTP_HX_REQUEST"
+            if key in request.META.keys():
+                return render(request,"decorator_404.html")
+            script = f'<script>window.location.href = "{previous_url}"</script>'
+            return HttpResponse(script)
 
     return _function
 
@@ -103,7 +113,12 @@ def manager_can_enter(function, perm):
             return function(request, *args, **kwargs)
         else:
             messages.info(request, "You dont have permission.")
-            return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+            previous_url = request.META.get("HTTP_REFERER", "/")
+            script = f'<script>window.location.href = "{previous_url}"</script>'
+            key = "HTTP_HX_REQUEST"
+            if key in request.META.keys():
+                return render(request,"decorator_404.html")
+            return HttpResponse(script)
 
     return _function
 

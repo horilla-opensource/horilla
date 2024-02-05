@@ -2,7 +2,8 @@
 decorator functions for leave
 """
 from django.contrib import messages
-from django.http import HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect
+from django.shortcuts import render
 from.models import LeaveAllocationRequest
 from django.utils.translation import gettext_lazy as _
 
@@ -34,7 +35,12 @@ def leave_allocation_change_permission(function=None, *args, **kwargs):
             request,
             _("You dont have permission.")
         )
-        return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+        previous_url = request.META.get("HTTP_REFERER", "/")
+        script = f'<script>window.location.href = "{previous_url}"</script>'
+        key = "HTTP_HX_REQUEST"
+        if key in request.META.keys():
+            return render(request,"decorator_404.html")
+        return HttpResponse(script)
     return check_permission
 
 
@@ -60,7 +66,12 @@ def leave_allocation_delete_permission(function=None, *args, **kwargs):
             request,
             _("You dont have permission.")
         )
-        return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+        previous_url = request.META.get("HTTP_REFERER", "/")
+        script = f'<script>window.location.href = "{previous_url}"</script>'
+        key = "HTTP_HX_REQUEST"
+        if key in request.META.keys():
+            return render(request,"decorator_404.html")
+        return HttpResponse(script)
 
     return check_permission
 
@@ -86,6 +97,11 @@ def leave_allocation_reject_permission(function=None, *args, **kwargs):
             request,
             _("You dont have permission.")
         )
-        return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+        previous_url = request.META.get("HTTP_REFERER", "/")
+        script = f'<script>window.location.href = "{previous_url}"</script>'
+        key = "HTTP_HX_REQUEST"
+        if key in request.META.keys():
+            return render(request,"decorator_404.html")
+        return HttpResponse(script)
 
     return check_permission

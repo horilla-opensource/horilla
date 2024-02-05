@@ -8,6 +8,7 @@ import uuid
 from django.template.defaultfilters import register
 from django import template
 from django.contrib.auth.models import User
+from onboarding.models import OnboardingTask
 
 from recruitment.models import CandidateRating
 
@@ -127,3 +128,14 @@ def percentage(value, total):
     if total == 0 or not total:
         return 0
     return min(round((value / total) * 100, 2), 100)
+
+
+@register.filter(name="is_in_task_managers")
+def is_in_task_managers(user):
+    """
+    This method is used to check the user in the task manager or not
+    """
+    print("+++++++++++++++++++++++++++++++")
+    print(OnboardingTask.objects.filter(employee_id__employee_user_id=user))
+    print("+++++++++++++++++++++++++++++++")
+    return OnboardingTask.objects.filter(employee_id__employee_user_id=user).exists()
