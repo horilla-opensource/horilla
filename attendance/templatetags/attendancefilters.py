@@ -213,4 +213,7 @@ def is_text_area(widget):
 
 @register.filter
 def base64_encode(value):
-    return base64.b64encode(value).decode('utf-8')
+    try:
+        return base64.b64encode(value).decode('utf-8')
+    except:
+        pass
