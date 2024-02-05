@@ -1,5 +1,21 @@
-{% extends 'index.html' %} {% block content %} {% load mathfilters %} 
-{% load static %} {% load i18n %}
+{% extends 'index.html' %} {% block content %} {% load mathfilters static recruitmentfilters i18n %}
+<style>
+    .done-task{
+        background-color: #9acd322e !important;
+    }
+    .scheduled-task{
+        background-color: #00afff2e !important;
+    }
+    .ongoing-task{
+        background-color: #e6ff002e !important;
+    }
+    .stuck-task{
+        background-color: #ff45003b !important;
+    }
+    .todo-task{
+        background-color: #8d8d8d2e !important;
+    }
+</style>
 <div class="oh-wrapper">
 	<div class="oh-dashboard row">
 		<div class="oh-dashboard__left col-12 col-sm-12 col-md-12 col-lg-12">
@@ -105,7 +121,7 @@
 						</div>
 					</div>
 
-					<div class="col-12 col-sm-12 col-md-12 col-lg-3 oh-card-dashboard--moveable">
+					<div class="col-12 col-sm-12 col-md-12 col-lg-3 oh-card-dashboard--moveable" style="background-color: white;">
 						<div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent ">
 							<div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
 								<span class="oh-card-dashboard__title">{% trans "Open Positions By Department" %}</span>
@@ -168,6 +184,18 @@
 
 
 			<div class="oh-dashboard__movable-cards row mt-4">
+				{% if request.user|is_in_task_managers %}
+				<div
+                        class="col-12 col-sm-12 col-md-12 col-lg-6 oh-card-dashboard--moveable"
+						style="height: 420px;
+						background-color: white;
+						margin-bottom: 20px;"
+                        id="taskStatus"
+                        hx-get="{% url "task-report-onboarding" %}"
+                        hx-trigger="load"
+                        >
+				</div>
+				{% endif %}
 				<div
 				class="col-12 col-sm-12 col-md-12 col-lg-5 oh-card-dashboard--moveable"
 				>
