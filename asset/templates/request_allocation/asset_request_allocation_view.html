@@ -455,6 +455,9 @@
     $("#gp_allocation").on("change", function () {
       $(".filterButton")[0].click();
     });
+  $("#assetFineModalBody").on("click",".oh-btn--secondary", function () {
+    $('#assetFineModal').removeClass('oh-modal--show');
+  })
   });
 </script>
 <script src="{% static '/base/filter.js' %}"></script>

@@ -46,7 +46,7 @@ class Asset(models.Model):
     """
 
     ASSET_STATUS = [
-        ("In use", _("In use")),
+        ("In use", _("Allocated")),
         ("Available", _("Available")),
         ("Not-Available", _("Not-Available")),
     ]
