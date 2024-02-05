@@ -50,12 +50,12 @@
                 <div class="row">
                     <div class="col-sm-12 col-md-12 col-lg-12">
                         <div class="oh-input__group ">
-                            <label class="oh-input__label" for="objective">{% trans "Title" %}</label>
+                            <label class="oh-input__label" for="{{key_result_form.key_result.id_for_label}}">{% trans "Title" %}</label>
                             {{key_result_form.key_result}}
                             {{key_result_form.key_result.errors}}
                         </div>
                         <div class="oh-input__group">
-                            <label class="oh-input__label" for="lastname">{% trans "Description" %}</label>
+                            <label class="oh-input__label" for="{{key_result_form.key_result_description.id_for_label}}">{% trans "Description" %}</label>
                             {{key_result_form.key_result_description}}
                             {{key_result_form.key_result_description.errors}}
                         </div>
@@ -64,7 +64,7 @@
                 <div class="row">
                     <div class="col-12 col-sm-12 col-md-4 col-lg-4">
                         <div class="oh-input__group">
-                            <label class="oh-input__label" for="keyType">{% trans "Key Results" %}
+                            <label class="oh-input__label" for="{{key_result_form.progress_type.id_for_label}}">{% trans "Key Results" %}
                                 {% trans "type" %}</label>
                             {{key_result_form.progress_type}}
                             {{key_result_form.progress_type.errors}}
@@ -72,7 +72,7 @@
                     </div>
                     <div class="col-12 col-sm-12 col-md-4 col-lg-4">
                         <div class="oh-input__group">
-                            <label class="oh-input__label" for="startDate">{% trans "Current Value" %}
+                            <label class="oh-input__label" for="{{key_result_form.current_value.id_for_label}}">{% trans "Current Value" %}
                                 </label>
                             {{key_result_form.current_value}}
                             {{key_result_form.current_value.errors}}
@@ -80,7 +80,7 @@
                     </div>
                     <div class="col-12 col-sm-12 col-md-4 col-lg-4">
                         <div class="oh-input__group">
-                            <label class="oh-input__label" for="endDate">{% trans "Target Value" %}
+                            <label class="oh-input__label" for="{{key_result_form.target_value.id_for_label}}">{% trans "Target Value" %}
                                 </label>
                             {{key_result_form.target_value}}
                             {{key_result_form.target_value.errors}}
@@ -90,21 +90,21 @@
                 <div class="row">
                     <div class="col-12 col-sm-12 col-md-4 col-lg-4">
                         <div class="oh-input__group">
-                            <label class="oh-input__label" for="keyType">{% trans "Period" %}</label>
+                            <label class="oh-input__label" for="{{key_result_form.period.id_for_label}}">{% trans "Period" %}</label>
                             {{key_result_form.period}}
                             {{key_result_form.period.errors}}
                         </div>
                     </div>
                     <div class="col-12 col-sm-12 col-md-4 col-lg-4">
                         <div class="oh-input__group">
-                            <label class="oh-input__label" for="startDate">{% trans "Start Date" %} </label>
+                            <label class="oh-input__label" for="{{key_result_form.start_date.id_for_label}}">{% trans "Start Date" %} </label>
                             {{key_result_form.start_date}}
                             {{key_result_form.start_date.errors}}
                         </div>
                     </div>
                     <div class="col-12 col-sm-12 col-md-4 col-lg-4">
                         <div class="oh-input__group">
-                            <label class="oh-input__label" for="endDate">{% trans "End Date" %} </label>
+                            <label class="oh-input__label" for="{{key_result_form.end_date.id_for_label}}">{% trans "End Date" %} </label>
                             {{key_result_form.end_date}}
                             {{key_result_form.end_date.errors}}
                         </div>
@@ -115,7 +115,7 @@
                 <div class="row">
                     <div class="col-12 col-sm-12 col-md-12 col-lg-12">
                         <div class="oh-input__group me-2">
-                            <label class="oh-input__label" for="startDate">{% trans "Employee" %} </label>
+                            <label class="oh-input__label" for="{{key_result_form.employee_id.id_for_label}}">{% trans "Employee" %} </label>
                             {% render_field key_result_form.employee_id|attr:"required:true" %}
                             {{ key_result_form.employee_id.errors}}
                         </div>

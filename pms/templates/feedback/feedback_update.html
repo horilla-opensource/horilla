@@ -15,7 +15,7 @@
 <form hx-post="{%url 'feedback-update' id=feedback_form.instance.id %}" hx-target="#feedbackModalTarget">
    {% csrf_token %}
         <div class="oh-input__group ">
-            <label class="oh-input__label" for="objective">{% trans "Review Cycle" %}</label>
+            <label class="oh-input__label" for="{{feedback_form.review_cycle.id_for_label}}">{% trans "Review Cycle" %}</label>
             {{feedback_form.review_cycle}}
             {{feedback_form.review_cycle.errors}}
         </div>
@@ -23,7 +23,7 @@
             <div class="col-12 col-sm-12 col-md-6 col-lg-6">
                 <div class="oh-input__group">
                     <div class="oh-input__group">
-                        <label class="oh-input__label" for="endDate">{% trans "Employee" %}</label>
+                        <label class="oh-input__label" for="{{feedback_form.employee_id.id_for_label}}">{% trans "Employee" %}</label>
                         {{feedback_form.employee_id }}
                         {{feedback_form.employee_id.errors }}
                     </div>
@@ -32,7 +32,7 @@
             <div class="col-12 col-sm-12 col-md-6 col-lg-6">
                 <div class="oh-input__group">
                     <div class="oh-input__group">
-                        <label class="oh-input__label" for="endDate">{% trans "Manager" %}</label>
+                        <label class="oh-input__label" for="{{feedback_form.manager_id.id_for_label}}">{% trans "Manager" %}</label>
                         {{feedback_form.manager_id}}
                         {{feedback_form.manager_id.errros}}
                     </div>
@@ -43,7 +43,7 @@
             <div class="col-12 col-sm-12 col-md-6 col-lg-6">
                 <div class="oh-input__group">
                     <div class="oh-input__group">
-                        <label class="oh-input__label" for="endDate">{% trans "Subordinates" %}</label>
+                        <label class="oh-input__label" for="{{feedback_form.subordinate_id.id_for_label}}">{% trans "Subordinates" %}</label>
                         {{feedback_form.subordinate_id}}
                         {{feedback_form.subordinate_id.errors}}
                     </div>
@@ -52,7 +52,7 @@
             <div class="col-12 col-sm-12 col-md-6 col-lg-6">
                 <div class="oh-input__group">
                     <div class="oh-input__group">
-                        <label class="oh-input__label" for="endDate">{% trans "Colleague" %}</label>
+                        <label class="oh-input__label" for="{{feedback_form.colleague_id.id_for_label}}">{% trans "Colleague" %}</label>
                         {{feedback_form.colleague_id}}
                         {{feedback_form.colleague_id.errors}}
                     </div>
@@ -63,7 +63,7 @@
             <div class="col-12 col-sm-12 col-md-6 col-lg-6">
                 <div class="oh-input__group">
                     <div class="oh-input__group">
-                        <label class="oh-input__label" for="startDate">{% trans "Start Date" %}</label>
+                        <label class="oh-input__label" for="{{feedback_form.start_date.id_for_label}}">{% trans "Start Date" %}</label>
                         {{feedback_form.start_date}}
                         {{feedback_form.start_date.errors}}
                     </div>
@@ -72,7 +72,7 @@
             <div class="col-12 col-sm-12 col-md-6 col-lg-6">
                 <div class="oh-input__group">
                     <div class="oh-input__group">
-                        <label class="oh-input__label" for="startDate">{% trans "End Date" %}</label>
+                        <label class="oh-input__label" for="{{feedback_form.end_date.id_for_label}}">{% trans "End Date" %}</label>
                         {{feedback_form.end_date}}
                         {{feedback_form.end_date.errors}}
                     </div>
@@ -82,14 +82,14 @@
         <div class="row">
             <div class="col-12 col-sm-12 col-md-6 col-lg-6">
                 <div class="oh-input__group">
-                    <label class="oh-input__label" for="startDate">{% trans "Question Template" %}</label>
+                    <label class="oh-input__label" for="{{feedback_form.question_template_id.id_for_label}}">{% trans "Question Template" %}</label>
                     {{feedback_form.question_template_id}}
                     {{feedback_form.question_template_id.errors}}
                 </div>
             </div>
             <div class="col-12 col-sm-12 col-md-6 col-lg-6">
                 <div class="oh-input__group">
-                    <label class="oh-input__label" for="startDate">{% trans "Key Result" %}</label>
+                    <label class="oh-input__label" for="{{id_employee_key_results_id}}">{% trans "Key Result" %}</label>
                     <select name="employee_key_results_id" id="id_employee_key_results_id"
                         class="oh-select  oh-select--lg oh-select-no-search w-100 oh-select-2--large"
                         multiple="multiple" style="display: none;">

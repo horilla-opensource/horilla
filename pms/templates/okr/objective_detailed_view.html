@@ -77,9 +77,9 @@
                         </div>
                         <div class="row mt-4">
                             <div class="col-6 col-sm-6 col-md-6 col-lg-6">
-                                <label class="oh-label my-2 my-2 me-2" for="status">{% trans "Status" %}</label>
+                                <label class="oh-label my-2 my-2 me-2" for="objectiveStatus">{% trans "Status" %}</label>
                                 <select
-                                    id="status" class="oh-select oh-select--sm" name="objective_status"
+                                    id="objectiveStatus" class="oh-select oh-select--sm" name="objective_status"
                                     hx-post="{%url 'objective-detailed-view-objective-status'  id=employee_objective.id %}"
                                     hx-trigger="change" hx-target="#objective_detailed_view_activity">
                                     <option value="{{employee_objective.status}}" selected>
@@ -168,10 +168,11 @@
                                         <div class="row mb-3">
                                             <div class="col-12 col-sm-12 col-md-6 col-lg-4">
                                                 <div class="oh-container oh-container--outline">
-                                                    <label class="oh-input__label oh-text--secondary fw-bold oh-text--xs mb-0 mt-1">
+                                                    <label class="oh-input__label oh-text--secondary fw-bold oh-text--xs mb-0 mt-1" for="startValue">
                                                         {% trans "Start Value" %} 
                                                     </label>
                                                     <input 
+                                                        id="startValue"
                                                         class="oh-input oh-input--small oh-input--block px-0" min="0"
                                                         value="{{employee_key_result.start_value}} {{employee_key_result.progress_type}}"
                                                         readonly />
@@ -179,7 +180,7 @@
                                             </div>
                                             <div class="col-12 col-sm-12 col-md-6 col-lg-4">
                                                 <div class="oh-container oh-container--outline ">
-                                                    <label class="oh-input__label oh-text--secondary fw-bold oh-text--xs mb-0 mt-1">
+                                                    <label class="oh-input__label oh-text--secondary fw-bold oh-text--xs mb-0 mt-1" for="{{employee_key_result.id}}">
                                                         {% trans "Current Value" %}
                                                     </label>
                                                     <input 
@@ -197,10 +198,11 @@
                                             </div>
                                             <div class="col-12 col-sm-12 col-md-6 col-lg-4">
                                                 <div class="oh-container oh-container--outline">
-                                                    <label class="oh-input__label oh-text--secondary fw-bold oh-text--xs mb-0 mt-1">
+                                                    <label class="oh-input__label oh-text--secondary fw-bold oh-text--xs mb-0 mt-1" for="targetValue">
                                                         {% trans "Target Value" %}
                                                     </label>
                                                     <input
+                                                        id="targetValue"
                                                         name ="target_value"
                                                         class="oh-input oh-input--small oh-input--block px-0" min="0"
                                                         value=" {{employee_key_result.target_value}} {{employee_key_result.progress_type}}"
@@ -211,9 +213,9 @@
                                     </div>
                                     <div class="oh-list-card__footer d-flex align-items-center justify-content-between flex-wrap">
                                         <div class="oh-input-group">
-                                            <label class="oh-label my-2 my-2 me-2" for="status">{% trans "Status" %}</label>
+                                            <label class="oh-label my-2 my-2 me-2" for="keyResultStatus">{% trans "Status" %}</label>
                                             <select 
-                                                id="status" name="key_result_status"
+                                                id="keyResultStatus" name="key_result_status"
                                                 hx-post="{%url 'objective-detailed-view-key-result-status'  obj_id=employee_objective.id kr_id=employee_key_result.id %}"
                                                 hx-trigger="change" class="oh-select oh-select--sm"
                                                 hx-target="#objective_detailed_view_activity">

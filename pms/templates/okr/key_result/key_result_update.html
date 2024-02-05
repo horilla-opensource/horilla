@@ -25,7 +25,7 @@
 <div class="oh-modal__dialog-body">
 
     <div class="oh-input__group">
-        <label class="oh-input__label mt-0" for="keyTitle">{% trans "Title" %}</label>
+        <label class="oh-input__label mt-0" for="{{key_result_form.key_result.id_for_label}}">{% trans "Title" %}</label>
 
         {{ key_result_form.key_result }}
        
@@ -34,13 +34,13 @@
 
     </div>
     <div class="oh-input__group">
-        <label class="oh-input__label" for="keyDesc">{% trans "Description" %}</label>
+        <label class="oh-input__label" for="{{key_result_form.key_result_description.id_for_label}}">{% trans "Description" %}</label>
         {{ key_result_form.key_result_description }}
     </div>
     <div class="row">
         <div class="col-12 col-sm-12 col-md-4 col-lg-4">
             <div class="oh-input__group">
-                <label class="oh-input__label" for="keyDesc">{% trans "Key Results" %}
+                <label class="oh-input__label" for="{{key_result_form.progress_type.id_for_label}}">{% trans "Key Results" %}
                     type</label>
                 {{key_result_form.progress_type}}
                 {{key_result_form.progress_type.errors}}
@@ -49,13 +49,13 @@
         <div class="col-12 col-sm-12 col-md-8 col-lg-8">
             <div class="d-flex align-items-center">
                 <div class="oh-input__group me-2">
-                    <label class="oh-input__label" for="keyDesc">{% trans "Current Value" %}
+                    <label class="oh-input__label" for="{{key_result_form.current_value.id_for_label}}">{% trans "Current Value" %}
                         </label>
                     {{key_result_form.current_value}}
                     {{key_result_form.current_value.errors}}
                 </div>
                 <div class="oh-input__group">
-                    <label class="oh-input__label" for="keyDesc">{% trans "Target Value" %}
+                    <label class="oh-input__label" for="{{key_result_form.target_value.id_for_label}}">{% trans "Target Value" %}
                         </label>
                     {{key_result_form.target_value}}
                     {{key_result_form.target_value.errors}}
@@ -69,7 +69,7 @@
 
         <div class="col-6 col-sm-6 col-md- col-lg-6">
             <div class="oh-input__group">
-                <label class="oh-input__label" for="startDate">{% trans "Start Date" %}
+                <label class="oh-input__label" for="{{key_result_form.start_date.id_for_label}}">{% trans "Start Date" %}
                     </label>
                 {{key_result_form.start_date}}
                 {{key_result_form.start_date.errors}}
@@ -78,7 +78,7 @@
         </div>
         <div class="col-6 col-sm-6 col-md-6 col-lg-6">
             <div class="oh-input__group">
-                <label class="oh-input__label" for="endDate">{% trans "End Date" %} </label>
+                <label class="oh-input__label" for="{{key_result_form.end_date.id_for_label}}">{% trans "End Date" %} </label>
                 {{key_result_form.end_date}}
                 {{key_result_form.end_date.errors}}
 
@@ -89,7 +89,7 @@
     </div>
     <div class="col-12 col-sm-12 col-md-12 col-lg-12">
         <div class="oh-input__group">
-            <label class="oh-input__label" for="endDate">{% trans "Employee" %}</label>
+            <label class="oh-input__label" for="{{key_result_form.employee_id.id_for_label}}">{% trans "Employee" %}</label>
             {{key_result_form.employee_id}}
            
             {{key_result_form.employee_id.errors}}

@@ -71,35 +71,35 @@
 											<div class="row">
 												<div class="col-sm-12 col-md-12 col-lg-6">
 													<div class="oh-input-group">
-														<label class="oh-label"
+														<label class="oh-label" for="{{objective_filer_form.objective.id_for_label}}"
 															>{% trans "Objective" %}</label
 														>
 														{{objective_filer_form.objective}}
 													</div>
 													<div class="oh-input-group">
-														<label class="oh-label">{% trans "Status" %}</label>
+														<label class="oh-label" for="{{objective_filer_form.status.id_for_label}}">{% trans "Status" %}</label>
 														{{objective_filer_form.status}}
 													</div>
 												</div>
 												<div class="col-sm-12 col-md-12 col-lg-6">
 													<div class="oh-input-group">
-														<label class="oh-label">{% trans "Employee" %}</label>
+														<label class="oh-label" for="{{objective_filer_form.employee_id.id_for_label}}">{% trans "Employee" %}</label>
 														{{objective_filer_form.employee_id}}
 													</div>
 													<div class="oh-input-group">
-														<label class="oh-label">{% trans "Created" %} </label>
+														<label class="oh-label" for="{{objective_filer_form.created_at.id_for_label}}">{% trans "Created" %} </label>
 														{{objective_filer_form.created_at}}
 													</div>
 												</div>
 												<div class="col-sm-12 col-md-12 col-lg-6">
 													<div class="oh-input-group">
-														<label class="oh-label"
+														<label class="oh-label" for="{{objective_filer_form.start_date.id_for_label}}"
 															>{% trans "Start Date" %}</label
 														>
 														{{objective_filer_form.start_date}}
 													</div>
 													<div class="oh-input-group">
-														<label class="oh-label"
+														<label class="oh-label" for="{{objective_filer_form.updated_at.id_for_label}}"
 															>{% trans "Updated At" %}</label
 														>
 														{{objective_filer_form.updated_at}}
@@ -107,16 +107,16 @@
 												</div>
 												<div class="col-sm-12 col-md-12 col-lg-6">
 													<div class="oh-input-group">
-														<label class="oh-label">{% trans "End Date" %}</label>
+														<label class="oh-label" for="{{objective_filer_form.end_date.id_for_label}}">{% trans "End Date" %}</label>
 														{{objective_filer_form.end_date}}
 													</div>
 													<div class="oh-input-group">
-														<label class="oh-label">{% trans "Archive" %}</label>
+														<label class="oh-label" for="{{objective_filer_form.archive.id_for_label}}">{% trans "Archive" %}</label>
 														{{ objective_filer_form.archive }}
 													</div>
 												</div>
 												<div class="oh-input-group">
-													<label class="oh-label">{% trans "Key Result" %}</label>
+													<label class="oh-label" for="{{objective_filer_form.emp_obj_id.id_for_label}}">{% trans "Key Result" %}</label>
 													{{ objective_filer_form.emp_obj_id }}
 												</div>
 											</div>
@@ -196,11 +196,11 @@
 								style="display: none"
 							>
 								<div class="oh-accordion">
-									<label>{% trans "Group By" %}</label>
+									<label for="id_field">{% trans "Group By" %}</label>
 									<div class="row">
 										<div class="col-sm-12 col-md-12 col-lg-6">
 											<div class="oh-input-group">
-												<label class="oh-label">{% trans "Field" %}</label>
+												<label class="oh-label" for="id_field">{% trans "Field" %}</label>
 											</div>
 										</div>
 										<div class="col-sm-12 col-md-12 col-lg-6">
