@@ -350,7 +350,7 @@
 								>
 							</li>
 							{% endif %}					
-							{% if request.user|check_manager:employee %}
+							{% if perms.horilla_documents.view_document %}
 							<li data-cell-index="20" data-cell-title="{% trans 'Documents' %}" class="oh-general__tab">
 								<a
 								hx-get="{% url 'document-tab' employee.id %}?employee_view=true"

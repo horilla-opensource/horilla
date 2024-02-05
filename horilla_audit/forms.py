@@ -1,10 +1,12 @@
 """
 forms.py
 """
+
 from collections.abc import Mapping
 from typing import Any
 from django import forms
 from django.forms.utils import ErrorList
+from django.utils.translation import gettext_lazy as _
 from django.template.loader import render_to_string
 from horilla_audit.models import HorillaAuditInfo, AuditTag
 
@@ -14,16 +16,18 @@ class HistoryForm(forms.Form):
     HistoryForm
     """
 
-    history_title = forms.CharField(required=False)
+    history_title = forms.CharField(required=False, label=_("Updation title"))
     history_description = forms.CharField(
         widget=forms.Textarea(
             attrs={"placeholder": "Enter text", "class": "oh-input w-100", "rows": "2"}
         ),
         required=False,
+        label=_("Updation description"),
     )
-    history_highlight = forms.BooleanField(required=False)
+    history_highlight = forms.BooleanField(required=False,label=_("Updation highlight"))
     history_tags = forms.ModelMultipleChoiceField(
-        queryset=AuditTag.objects.all(), required=False
+        queryset=AuditTag.objects.all(), required=False,
+        label = _("Updation tag")
     )
 
     def __init__(self, *args, **kwargs) -> None:
