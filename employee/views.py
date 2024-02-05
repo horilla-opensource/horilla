@@ -604,11 +604,13 @@ def document_request_update(request, id):
     Returns: return document_request_create_form template
     """
     document_request = get_object_or_404(DocumentRequest, id=id)
+    documents = Document.objects.filter(document_request_id=document_request.id)
     form = DocumentRequestForm(instance=document_request)
     if request.method == "POST":
         form = DocumentRequestForm(request.POST, instance=document_request)
         if form.is_valid():
-            form.save()
+            form = form.save()
+            documents.exclude(employee_id__in =form.employee_id.all()).delete()
             return HttpResponse("<script>window.location.reload();</script>")
 
     context = {
@@ -760,8 +762,11 @@ def view_file(request, id):
 
         content_type = get_content_type(file_extension)
 
-        with open(file_path, "rb") as file:
-            file_content = file.read()  # Decode the binary content for display
+        try:
+            with open(file_path, "rb") as file:
+                file_content = file.read()  # Decode the binary content for display
+        except:
+            file_content = None
 
         context["file_content"] = file_content
         context["file_extension"] = file_extension

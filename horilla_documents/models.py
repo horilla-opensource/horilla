@@ -74,8 +74,10 @@ class Document(models.Model):
     document = models.FileField(upload_to="employee/documents", null=True)
     status = models.CharField(choices=STATUS, max_length=10, default="requested")
     reject_reason = models.TextField(blank=True, null=True)
-    is_digital_asset = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
+    expiry_date = models.DateField(null=True,blank=True)
+    notify_before = models.IntegerField(default=1,null=True)
+    is_digital_asset = models.BooleanField(default=False)
     objects = HorillaCompanyManager(
         related_company_field="employee_id__employee_work_info__company_id"
     )
@@ -103,6 +105,7 @@ class Document(models.Model):
     def save(self, *args, **kwargs):
         if len(self.title) < 3:
             raise ValidationError(_("Title must be at least 3 characters"))
+        super().save(*args, **kwargs)
         if self.is_digital_asset:
             asset_category = AssetCategory.objects.get_or_create(
                 asset_category_name="Digital Asset"
@@ -114,9 +117,11 @@ class Document(models.Model):
                 asset_category_id=asset_category[0],
                 asset_status="Not-Available",
                 asset_purchase_cost=0,
+                expiry_date = self.expiry_date,
+                notify_before = self.notify_before,
+                asset_tracking_id = f"DIG_ID0{self.pk}",
             )
 
-        super().save(*args, **kwargs)
 
     def upload_documents_count(self):
         total_requests = Document.objects.filter(

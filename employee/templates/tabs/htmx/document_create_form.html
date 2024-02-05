@@ -1,8 +1,6 @@
 {% load i18n %}
 <form id="add-form" 
     hx-post="{% url 'document-create' emp_id %}" hx-target="#documentCreateForm" hx-swap = 'innerHTML' method='post' hx-encoding="multipart/form-data">
+    {{form.errors}}
       {{form.as_p}}
-      <div class="oh-modal__dialog-footer">
-        <input type="submit" value='{% trans "Save" %}' class="oh-btn oh-btn--secondary oh-btn--shadow pl-5 pr-5">
-      </div>
 </form>

@@ -1,6 +1,7 @@
 from django import forms
 from horilla_documents.models import Document, DocumentRequest
 from base.forms import ModelForm
+from django.template.loader import render_to_string
 
 
 class DocumentRequestForm(ModelForm):
@@ -26,7 +27,8 @@ class DocumentRequestForm(ModelForm):
 
 class DocumentForm(ModelForm):
     """ form to create a new Document"""
-         
+    expiry_date = forms.DateField(widget=forms.DateInput(attrs={"type": "date"}),required=False,)
+
     class Meta:
         model = Document
         fields = "__all__"
@@ -34,6 +36,14 @@ class DocumentForm(ModelForm):
         widgets = {
             "employee_id": forms.HiddenInput(),
         }
+        
+    def as_p(self):
+        """
+        Render the form fields as HTML table rows with Bootstrap styling.
+        """
+        context = {"form": self}
+        table_html = render_to_string("common_form.html", context)
+        return table_html
 
 class DocumentUpdateForm(ModelForm):
     """ form to Update a Document"""

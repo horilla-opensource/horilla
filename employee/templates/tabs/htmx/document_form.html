@@ -15,6 +15,8 @@
 	{{form.non_field_errors}} 
 	{{form.document}}
 	{{form.document.errors}}
+	{{form.expiry_date}}
+	{{form.expiry_date.errors}}
 	<div class="file-validation">
 		<ul class="m-0">
 			<li style="list-style:disc">{% trans "Upload only " %}<b>{{form.instance.document_request_id.format}}</b> {% trans "file" %}</li>
