@@ -1170,8 +1170,11 @@ class ShiftRequestForm(ModelForm):
         model = ShiftRequest
         fields = "__all__"
         exclude = (
+            "reallocate_to",
             "approved",
             "canceled",
+            "reallocate_approved",
+            "reallocate_canceled",
             "previous_shift_id",
             "is_active",
             "shift_changed",
@@ -1204,6 +1207,60 @@ class ShiftRequestForm(ModelForm):
         return super().save(commit)
 
     # here set default filter for all the employees those have work information filled.
+
+
+class ShiftAllocationForm(ModelForm):
+    """
+    ShiftRequest model's form
+    """
+
+    class Meta:
+        """
+        Meta class for additional options
+        """
+
+        model = ShiftRequest
+        fields = "__all__"
+        exclude = (
+            "is_permanent_shift",
+            "approved",
+            "canceled",
+            "reallocate_approved",
+            "reallocate_canceled",
+            "previous_shift_id",
+            "is_active",
+            "shift_changed",
+        )
+        widgets = {
+            "requested_date": DateInput(attrs={"type": "date"}),
+            "requested_till": DateInput(attrs={"type": "date", "required": "true"}),
+        }
+
+        labels = {
+            "description": _trans("Description"),
+            "requested_date": _trans("Requested Date"),
+            "requested_till": _trans("Requested Till"),
+        }
+
+    def as_p(self):
+        """
+        Render the form fields as HTML table rows with Bootstrap styling.
+        """
+        context = {"form": self}
+        table_html = render_to_string("attendance_form.html", context)
+        return table_html
+
+    def save(self, commit: bool = ...):
+        if not self.instance.approved:
+            employee = self.instance.employee_id
+            if hasattr(employee, "employee_work_info"):
+                self.instance.previous_shift_id = employee.employee_work_info.shift_id
+                if not self.instance.requested_till:
+                    self.instance.requested_till = (
+                        employee.employee_work_info.contract_end_date
+                    )
+        return super().save(commit)
+
 
 
 class WorkTypeRequestForm(ModelForm):

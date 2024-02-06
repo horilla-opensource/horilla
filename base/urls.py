@@ -468,6 +468,8 @@ urlpatterns = [
         name="work-type-request-bulk-delete",
     ),
     path("shift-request", views.shift_request, name="shift-request"),
+    path("shift-request-reallocate", views.shift_request_allocation, name="shift-request-reallocate"),
+    path("update-employee-allocation", views.update_employee_allocation, name="update-employee-allocation"),
     path(
         "employee/shift-request-view",
         views.shift_request_view,
@@ -487,14 +489,29 @@ urlpatterns = [
         name="shift-request-details",
     ),
     path(
+        "shift-allocation-request-details/<int:id>/",
+        views.shift_allocation_request_details,
+        name="shift-allocation-request-details",
+    ),
+    path(
         "shift-request-update/<int:shift_request_id>/",
         views.shift_request_update,
         name="shift-request-update",
     ),
     path(
+        "shift-allocation-request-update/<int:shift_request_id>/",
+        views.shift_allocation_request_update,
+        name="shift-allocation-request-update",
+    ),
+    path(
         "shift-request-cancel/<int:id>/",
         views.shift_request_cancel,
         name="shift-request-cancel",
+    ),
+    path(
+        "shift-allocation-request-cancel/<int:id>/",
+        views.shift_allocation_request_cancel,
+        name="shift-allocation-request-cancel",
     ),
     path(
         "shift-request-bulk-cancel",
@@ -505,6 +522,11 @@ urlpatterns = [
         "shift-request-approve/<int:id>/",
         views.shift_request_approve,
         name="shift-request-approve",
+    ),
+    path(
+        "shift-allocation-request-approve/<int:id>/",
+        views.shift_allocation_request_approve,
+        name="shift-allocation-request-approve",
     ),
     path(
         "shift-request-bulk-approve",
