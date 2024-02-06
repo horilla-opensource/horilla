@@ -21,7 +21,7 @@ from employee.models import Employee, EmployeeWorkInformation
 from horilla.decorators import login_required, owner_can_enter, permission_required
 from horilla.settings import EMAIL_HOST_USER
 from base.models import Company
-from base.methods import filter_own_records, get_key_instances, closest_numbers
+from base.methods import filter_own_records, get_key_instances, closest_numbers, sortby
 from leave.models import AvailableLeave
 import payroll.models.models
 from payroll.models.models import (
@@ -300,6 +300,7 @@ def filter_allowance(request):
     template = card_view
     if request.GET.get("view") == "list":
         template = list_view
+    allowances = sortby(request,allowances,'sortby')
     allowances = paginator_qry(allowances, request.GET.get("page"))
     allowance_ids = json.dumps([instance.id for instance in allowances.object_list])
     data_dict = parse_qs(query_string)
@@ -432,6 +433,7 @@ def filter_deduction(request):
     template = card_view
     if request.GET.get("view") == "list":
         template = list_view
+    deductions = sortby(request,deductions,"sortby")
     deductions = paginator_qry(deductions, request.GET.get("page"))
     deduction_ids = json.dumps([instance.id for instance in deductions.object_list])
     data_dict = parse_qs(query_string)

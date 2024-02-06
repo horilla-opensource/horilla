@@ -132,6 +132,7 @@ class AllowanceFilter(FilterSet):
             "is_condition_based",
             "is_fixed",
             "based_on",
+            'amount'
         ]
 
     def filter_by_employee(self, queryset, _, value):
@@ -180,6 +181,7 @@ class DeductionFilter(FilterSet):
             "is_condition_based",
             "is_fixed",
             "based_on",
+            'amount'
         ]
 
     def filter_by_employee(self, queryset, _, value):

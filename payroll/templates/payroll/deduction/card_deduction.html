@@ -1,7 +1,9 @@
-{% load i18n %} {% load yes_no %}
+{% load i18n %} {% load yes_no %}{% load static %}
 {% include 'filter_tags.html' %}
-<div class="oh-layout--grid-3">
-      {% for deduction in deductions %}
+{% if deductions %}
+  <!-- start of kanban -->
+  <div class="oh-layout--grid-3">
+    {% for deduction in deductions %}
       <div class="oh-kanban-card" data-toggle="oh-modal-toggle" data-target="#DeductionModal" hx-get="{% url 'single-deduction-view' deduction.id %}?instances_ids={{deduction_ids}}" hx-target = "#OneDeductionTarget" >
         <div class="oh-kanban-card__avatar">
         <div class="oh-kanban-card__profile-container">
@@ -32,13 +34,13 @@
             <ul class="oh-dropdown__items">
                 <li class="oh-dropdown__item">
                 <a onclick="event.stopPropagation();"
-                   href="{% url 'update-deduction' deduction.id %}"
+                  href="{% url 'update-deduction' deduction.id %}"
                 >{% trans "Edit" %}</a>
                 </li>
                 <li class="oh-dropdown__item">
                 <a class="text-danger"
-                   href="{% url 'delete-deduction' deduction.id %}"
-                   onclick = "event.preventDefault();event.stopPropagation(); confirm(`{% trans 'Do you want to delete this deduction?' %}`)"
+                  href="{% url 'delete-deduction' deduction.id %}"
+                  onclick = "event.preventDefault();event.stopPropagation(); confirm(`{% trans 'Do you want to delete this deduction?' %}`)"
                 >{% trans "Delete" %}</a
                 >
                 </li>
@@ -46,12 +48,13 @@
             </div>
         </div>
         </div>
-    </div>
+      </div>
     {% endfor %}
-</div>
+  </div>
+  <!-- end of kanban -->
 
-
-<div class="oh-pagination">
+  <!-- start of pagination -->
+  <div class="oh-pagination">
     <span
       class="oh-pagination__page"
       >
@@ -93,3 +96,20 @@
       </ul>
     </nav>
   </div>
+  <!-- end of pagination -->
+{% else %}
+<!-- start of empty page -->
+<div class="oh-404">
+  <img
+    style="width: 150px; height: 150px"
+    src="{% static 'images/ui/no-results.png' %}"
+    class="oh-404__image mb-4"
+  />
+  <h5 class="oh-404__subtitle">
+    {% trans "No search result found!" %}
+  </h5>
+</div>
+<!-- end of empty page -->
+{% endif %}
+
+
