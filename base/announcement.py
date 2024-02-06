@@ -1,13 +1,15 @@
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from base.forms import AnnouncementForm, AnnouncementcommentForm
+from base.methods import filter_own_records
 from base.models import Announcement, AnnouncementComment, AnnouncementView
-from employee.models import EmployeeWorkInformation
+from employee.models import Employee
 from horilla.decorators import login_required, permission_required
 from django.contrib import messages
 from django.utils.translation import gettext_lazy as _
 from notifications.signals import notify
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.contrib.auth.models import User
 
 
 
@@ -53,32 +55,18 @@ def create_announcement(request):
             anou,attachment_ids = form.save(commit=False)
             anou.save()
             anou.attachments.set(attachment_ids)
+            employees = form.cleaned_data["employees"]
             departments = form.cleaned_data["department"]
             job_positions = form.cleaned_data["job_position"]
             anou.department.set(departments)
             anou.job_position.set(job_positions)
             messages.success(request, _("Announcement created successfully."))
 
-            depar = []
-            jobs = []
-            emp_dep = []
-            emp_jobs = []
-            for i in departments:
-                depar.append(i.id)
-            for i in job_positions:
-                jobs.append(i.id)
-
-            for i in depar:
-                emp = EmployeeWorkInformation.objects.filter(department_id = i)
-                for i in emp:
-                    name = i.employee_id
-                    emp_dep.append(name.employee_user_id)
-
-            for i in jobs:
-                emp = EmployeeWorkInformation.objects.filter(job_position_id = i)
-                for i in emp:
-                    name = i.employee_id
-                    emp_jobs.append(name.employee_user_id)
+            emp_dep = User.objects.filter(employee_get__employee_work_info__department_id__in = departments)
+            emp_jobs = User.objects.filter(employee_get__employee_work_info__job_position_id__in = job_positions)
+            employees = employees | Employee.objects.filter(employee_work_info__department_id__in = departments)
+            employees = employees | Employee.objects.filter(employee_work_info__job_position_id__in = job_positions)
+            anou.employees.add(*employees)
 
             notify.send(
                 request.user.employee_get,
@@ -142,32 +130,18 @@ def update_announcement(request, anoun_id):
             anou,attachment_ids = form.save(commit=False)
             announcement = anou.save()
             anou.attachments.set(attachment_ids)
+            employees = form.cleaned_data["employees"]
             departments = form.cleaned_data["department"]
             job_positions = form.cleaned_data["job_position"]
             anou.department.set(departments)
             anou.job_position.set(job_positions)
             messages.success(request, _("Announcement updated successfully."))
 
-            depar = []
-            jobs = []
-            emp_dep = []
-            emp_jobs = []
-            for i in departments:
-                depar.append(i.id)
-            for i in job_positions:
-                jobs.append(i.id)
-
-            for i in depar:
-                emp = EmployeeWorkInformation.objects.filter(department_id = i)
-                for i in emp:
-                    name = i.employee_id
-                    emp_dep.append(name.employee_user_id)
-
-            for i in jobs:
-                emp = EmployeeWorkInformation.objects.filter(job_position_id = i)
-                for i in emp:
-                    name = i.employee_id
-                    emp_jobs.append(name.employee_user_id)
+            emp_dep = User.objects.filter(employee_get__employee_work_info__department_id__in = departments)
+            emp_jobs = User.objects.filter(employee_get__employee_work_info__job_position_id__in = job_positions)
+            employees = employees | Employee.objects.filter(employee_work_info__department_id__in = departments)
+            employees = employees | Employee.objects.filter(employee_work_info__job_position_id__in = job_positions)
+            anou.employees.add(*employees)
 
             notify.send(
                 request.user.employee_get,
@@ -255,6 +229,9 @@ def comment_view(request, anoun_id):
     """
     comments = AnnouncementComment.objects.filter(announcement_id=anoun_id).order_by(
         "-created_at"
+    )
+    comments = filter_own_records(
+        request, comments , "base.view_announcementcomment"
     )
     no_comments = False
     if not comments.exists():
