@@ -20,325 +20,352 @@
       </a>
     </a>
   </div>
-  <div class="oh-main__titlebar oh-main__titlebar--right">
-    {% if data %}
-    <div
-      class="oh-input-group oh-input__search-group"
-      :class="searchShow ? 'oh-input__search-group--show' : ''"
-    >
-      <ion-icon
-        name="search-outline"
-        class="oh-input-group__icon oh-input-group__icon--left"
-      ></ion-icon>
-      <input
-        type="text"
-        class="oh-input oh-input__icon"
-        aria-label="Search Input"
-        placeholder="{% trans 'Search' %}"
-        name="search"
-        hx-get="{% url 'shift-request-search' %}"
-        hx-target="#view-container"
-        hx-trigger="keyup changed delay:500ms, search"
-      />
-    </div>
-    {% endif %}
-    <div class="oh-main__titlebar-button-container">
-      {% if data %}
-      <form
-        hx-get="{% url 'shift-request-search' %}"
-        hx-target="#view-container"
-        id="filterForm"
-        class="d-flex"
-        >
-        <div class="oh-dropdown" x-data="{open: false}">
-          <button
-            class="oh-btn ml-2"
-            @click="open = !open"
-            onclick="event.preventDefault()"
-          >
-            <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}
-            <div id="filterCount"></div>
-          </button>
-          <div
-            class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4"
-            x-show="open"
-            @click.outside="open = false"
-            style="display: none"
-          >
-            <div class="oh-dropdown__filter-body">
-              <div class="oh-accordion">
-                <div class="oh-accordion-header">
-                  {% trans "Work Info" %}
-                </div>
-                <div class="oh-accordion-body">
-                  <div class="row">
-                    <div class="col-sm-12 col-md-12 col-lg-6">
-                      <div class="oh-input-group">
-                        <label class="oh-label"
-                          >{% trans "Employee" %}</label
-                        >
-                        {{f.form.employee_id}}
+  <form
+      hx-get="{% url 'shift-request-search' %}"
+      hx-target="#view-container"
+      id="filterForm"
+      class="d-flex"
+      >
+    <div class="oh-main__titlebar oh-main__titlebar--right">
+      {% if data or allocated_data %}
+      <div
+        class="oh-input-group oh-input__search-group"
+        :class="searchShow ? 'oh-input__search-group--show' : ''"
+      >
+        <ion-icon
+          name="search-outline"
+          class="oh-input-group__icon oh-input-group__icon--left"
+        ></ion-icon>
+        <input
+          type="text"
+          class="oh-input oh-input__icon"
+          aria-label="Search Input"
+          placeholder="{% trans 'Search' %}"
+          name="search"
+          onkeyup="$('.filterButton').click()"
+        />
+      </div>
+      {% endif %}
+      <div class="oh-main__titlebar-button-container">
+        {% if data or allocated_data %}
+        {% comment %} <form
+          hx-get="{% url 'shift-request-search' %}"
+          hx-target="#view-container"
+          id="filterForm"
+          class="d-flex"
+          > {% endcomment %}
+          <div class="oh-dropdown" x-data="{open: false}">
+            <button
+              class="oh-btn ml-2"
+              @click="open = !open"
+              onclick="event.preventDefault()"
+            >
+              <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}
+              <div id="filterCount"></div>
+            </button>
+            <div
+              class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4"
+              x-show="open"
+              @click.outside="open = false"
+              style="display: none"
+            >
+              <div class="oh-dropdown__filter-body">
+                <div class="oh-accordion">
+                  <div class="oh-accordion-header">
+                    {% trans "Work Info" %}
+                  </div>
+                  <div class="oh-accordion-body">
+                    <div class="row">
+                      <div class="col-sm-12 col-md-12 col-lg-6">
+                        <div class="oh-input-group">
+                          <label class="oh-label"
+                            >{% trans "Employee" %}</label
+                          >
+                          {{f.form.employee_id}}
+                        </div>
+                        <div class="oh-input-group">
+                          <label class="oh-label"
+                            >{% trans "Job Position" %}</label
+                          >
+                          {{f.form.employee_id__employee_work_info__job_position_id}}
+                        </div>
+                        <div class="oh-input-group">
+                          <label class="oh-label">{% trans "Shift" %}</label>
+                          {{f.form.employee_id__employee_work_info__shift_id}}
+                        </div>
+                        <div class="oh-input-group">
+                          <label class="oh-label"
+                            >{% trans "Company" %}</label
+                          >
+                          {{f.form.employee_id__employee_work_info__company_id}}
+                        </div>
+                        <div class="oh-input-group">
+                          <label class="oh-label"
+                            >{% trans "Is Active" %}?</label
+                          >
+                          {{f.form.employee_id__is_active}}
+                        </div>
                       </div>
-                      <div class="oh-input-group">
-                        <label class="oh-label"
-                          >{% trans "Job Position" %}</label
-                        >
-                        {{f.form.employee_id__employee_work_info__job_position_id}}
-                      </div>
-                      <div class="oh-input-group">
-                        <label class="oh-label">{% trans "Shift" %}</label>
-                        {{f.form.employee_id__employee_work_info__shift_id}}
-                      </div>
-                      <div class="oh-input-group">
-                        <label class="oh-label"
-                          >{% trans "Company" %}</label
-                        >
-                        {{f.form.employee_id__employee_work_info__company_id}}
-                      </div>
-                      <div class="oh-input-group">
-                        <label class="oh-label"
-                          >{% trans "Is Active" %}?</label
-                        >
-                        {{f.form.employee_id__is_active}}
+                      <div class="col-sm-12 col-md-12 col-lg-6">
+                        <div class="oh-input-group">
+                          <label class="oh-label"
+                            >{% trans "Department" %}</label
+                          >
+                          {{f.form.employee_id__employee_work_info__department_id}}
+                        </div>
+                        <div class="oh-input-group">
+                          <label class="oh-label"
+                            >{% trans "Job Role" %}</label
+                          >
+                          {{f.form.employee_id__employee_work_info__job_role_id}}
+                        </div>
+                        <div class="oh-input-group">
+                          <label class="oh-label"
+                            >{% trans "Work Type" %}</label
+                          >
+                          {{f.form.employee_id__employee_work_info__work_type_id}}
+                        </div>
+                        <div class="oh-input-group">
+                          <label class="oh-label"
+                            >{% trans "Reporting Manager" %}</label
+                          >
+                          {{f.form.employee_id__employee_work_info__reporting_manager_id}}
+                        </div>
+                        <div class="oh-input-group">
+                          <label class="oh-label">{% trans "Gender" %}</label>
+                          {{f.form.employee_id__gender}}
+                        </div>
                       </div>
                     </div>
-                    <div class="col-sm-12 col-md-12 col-lg-6">
-                      <div class="oh-input-group">
-                        <label class="oh-label"
-                          >{% trans "Department" %}</label
-                        >
-                        {{f.form.employee_id__employee_work_info__department_id}}
+                  </div>
+                </div>
+                <div class="oh-accordion">
+                  <div class="oh-accordion-header">
+                    {% trans "Shift Request" %}
+                  </div>
+                  <div class="oh-accordion-body">
+                    <div class="row">
+                      <div class="col-sm-12 col-md-12 col-lg-6">
+                        <div class="oh-input-group">
+                          <label class="oh-label"
+                            >{% trans "Requested Date" %}</label
+                          >
+                          {{f.form.requested_date}}
+                        </div>
+                        <div class="oh-input-group">
+                          <label class="oh-label"
+                            >{% trans "Approved" %}?</label
+                          >
+                          {{f.form.approved}}
+                        </div>
+                        <div class="oh-input-group">
+                          <label class="oh-label"
+                            >{% trans "Canceled" %}?</label
+                          >
+                          {{f.form.canceled}}
+                        </div>
                       </div>
-                      <div class="oh-input-group">
-                        <label class="oh-label"
-                          >{% trans "Job Role" %}</label
-                        >
-                        {{f.form.employee_id__employee_work_info__job_role_id}}
+                      <div class="col-sm-12 col-md-12 col-lg-6">
+                        <div class="oh-input-group">
+                          <label class="oh-label"
+                            >{% trans "Requested Shift" %}</label
+                          >
+                          {{f.form.shift_id}}
+                        </div>
+                        <div class="oh-input-group">
+                          <label class="oh-label"
+                            >{% trans "Previous Shift" %}</label
+                          >
+                          {{f.form.previous_shift_id}}
+                        </div>
                       </div>
-                      <div class="oh-input-group">
-                        <label class="oh-label"
-                          >{% trans "Work Type" %}</label
-                        >
-                        {{f.form.employee_id__employee_work_info__work_type_id}}
+                    </div>
+                  </div>
+                </div>
+                <div class="oh-accordion">
+                  <div class="oh-accordion-header">
+                    {% trans "Advanced" %}
+                  </div>
+                  <div class="oh-accordion-body">
+                    <div class="row">
+                      <div class="col-sm-12 col-md-12 col-lg-6">
+                        <div class="oh-input-group">
+                          <label class="oh-label"
+                            >{% trans "Requested Date From" %}</label
+                          >
+                          {{f.form.requested_date__gte}}
+                        </div>
                       </div>
-                      <div class="oh-input-group">
-                        <label class="oh-label"
-                          >{% trans "Reporting Manager" %}</label
-                        >
-                        {{f.form.employee_id__employee_work_info__reporting_manager_id}}
-                      </div>
-                      <div class="oh-input-group">
-                        <label class="oh-label">{% trans "Gender" %}</label>
-                        {{f.form.employee_id__gender}}
+                      <div class="col-sm-12 col-md-12 col-lg-6">
+                        <div class="oh-input-group">
+                          <label class="oh-label"
+                            >{% trans "Requested Date Till" %}</label
+                          >
+                          {{f.form.requested_date__lte}}
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
-              <div class="oh-accordion">
-                <div class="oh-accordion-header">
-                  {% trans "Shift Request" %}
-                </div>
-                <div class="oh-accordion-body">
-                  <div class="row">
-                    <div class="col-sm-12 col-md-12 col-lg-6">
-                      <div class="oh-input-group">
-                        <label class="oh-label"
-                          >{% trans "Requested Date" %}</label
-                        >
-                        {{f.form.requested_date}}
-                      </div>
-                      <div class="oh-input-group">
-                        <label class="oh-label"
-                          >{% trans "Approved" %}?</label
-                        >
-                        {{f.form.approved}}
-                      </div>
-                      <div class="oh-input-group">
-                        <label class="oh-label"
-                          >{% trans "Canceled" %}?</label
-                        >
-                        {{f.form.canceled}}
-                      </div>
-                    </div>
-                    <div class="col-sm-12 col-md-12 col-lg-6">
-                      <div class="oh-input-group">
-                        <label class="oh-label"
-                          >{% trans "Requested Shift" %}</label
-                        >
-                        {{f.form.shift_id}}
-                      </div>
-                      <div class="oh-input-group">
-                        <label class="oh-label"
-                          >{% trans "Previous Shift" %}</label
-                        >
-                        {{f.form.previous_shift_id}}
-                      </div>
-                    </div>
-                  </div>
-                </div>
+              <div class="oh-dropdown__filter-footer">
+                <button
+                  class="oh-btn oh-btn--secondary oh-btn--small w-100 filterButton"
+                >
+                  {% trans "Filter" %}
+                </button>
               </div>
-              <div class="oh-accordion">
-                <div class="oh-accordion-header">
-                  {% trans "Advanced" %}
-                </div>
-                <div class="oh-accordion-body">
-                  <div class="row">
-                    <div class="col-sm-12 col-md-12 col-lg-6">
-                      <div class="oh-input-group">
-                        <label class="oh-label"
-                          >{% trans "Requested Date From" %}</label
-                        >
-                        {{f.form.requested_date__gte}}
-                      </div>
-                    </div>
-                    <div class="col-sm-12 col-md-12 col-lg-6">
-                      <div class="oh-input-group">
-                        <label class="oh-label"
-                          >{% trans "Requested Date Till" %}</label
-                        >
-                        {{f.form.requested_date__lte}}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="oh-dropdown__filter-footer">
-              <button
-                class="oh-btn oh-btn--secondary oh-btn--small w-100 filterButton"
-              >
-                {% trans "Filter" %}
-              </button>
             </div>
           </div>
-        </div>
-        <div class="oh-dropdown" x-data="{open: false}">
-          <button
-            class="oh-btn ml-2"
-            @click="open = !open"
-            onclick="event.preventDefault()"
-          >
-            <ion-icon name="library-outline" class="mr-1"></ion-icon>{% trans "Group By" %}
-            <div id="filterCount"></div>
-          </button>
-          <div
-            class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4"
-            x-show="open"
-            @click.outside="open = false"
-            style="display: none"
-          >
-            <div class="oh-accordion">
-              <label>{% trans "Group By" %}</label>
-              <div class="row">
-                <div class="col-sm-12 col-md-12 col-lg-6">
-                  <div class="oh-input-group">
-                    <label class="oh-label">{% trans "Field" %}</label>
+          <div class="oh-dropdown" x-data="{open: false}">
+            <button
+              class="oh-btn ml-2"
+              @click="open = !open"
+              onclick="event.preventDefault()"
+            >
+              <ion-icon name="library-outline" class="mr-1"></ion-icon>{% trans "Group By" %}
+              <div id="filterCount"></div>
+            </button>
+            <div
+              class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4"
+              x-show="open"
+              @click.outside="open = false"
+              style="display: none"
+            >
+              <div class="oh-accordion">
+                <label>{% trans "Group By" %}</label>
+                <div class="row">
+                  <div class="col-sm-12 col-md-12 col-lg-6">
+                    <div class="oh-input-group">
+                      <label class="oh-label">{% trans "Field" %}</label>
+                    </div>
+                  </div>
+                  <div class="col-sm-12 col-md-12 col-lg-6">
+                    <div class="oh-input-group">
+                      <select
+                        class="oh-select mt-1 w-100"
+                        id="id_field"
+                        name="field"
+                        class="select2-selection select2-selection--single"
+                      >
+                        {% for field in gp_fields %}
+                        <option value="{{ field.0 }}">
+                          {% trans field.1 %}
+                        </option>
+                        {% endfor %}
+                      </select>
+                    </div>
                   </div>
                 </div>
-                <div class="col-sm-12 col-md-12 col-lg-6">
-                  <div class="oh-input-group">
-                    <select
-                      class="oh-select mt-1 w-100"
-                      id="id_field"
-                      name="field"
-                      class="select2-selection select2-selection--single"
+              </div>
+            </div>
+          </div>
+
+        {% if 'employee' in perms or request.user|is_reportingmanager %}
+        <div class="oh-btn-group ml-2">
+          <div class="oh-dropdown" x-data="{open: false}">
+            <button
+              class="oh-btn oh-btn--dropdown"
+              @click="open = !open"
+              @click.outside="open = false"
+              onclick="event.preventDefault()"
+            >
+              {% trans "Actions" %}
+            </button>
+            <div
+              class="oh-dropdown__menu oh-dropdown__menu--right"
+              x-show="open"
+              style="display: none"
+            >
+              <ul class="oh-dropdown__items">
+                {% if perms.base.view_shiftrequest %}
+                  <li class="oh-dropdown__item">
+                    <a
+                      href="#"
+                      class="oh-dropdown__link"
+                      data-toggle="oh-modal-toggle"
+                      data-target="#shiftRequestsExport"
+                      >{% trans "Export" %}</a
                     >
-                      {% for field in gp_fields %}
-                      <option value="{{ field.0 }}">
-                        {% trans field.1 %}
-                      </option>
-                      {% endfor %}
-                    </select>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </form>
-      {% if 'employee' in perms or request.user|is_reportingmanager %}
-      <div class="oh-btn-group ml-2">
-        <div class="oh-dropdown" x-data="{open: false}">
-          <button
-            class="oh-btn oh-btn--dropdown"
-            @click="open = !open"
-            @click.outside="open = false"
-          >
-            {% trans "Actions" %}
-          </button>
-          <div
-            class="oh-dropdown__menu oh-dropdown__menu--right"
-            x-show="open"
-            style="display: none"
-          >
-            <ul class="oh-dropdown__items">
-              {% if perms.base.view_shiftrequest %}
+                  </li>
+                {% endif %} {% if perms.base.change_shiftrequest or request.user|is_reportingmanager %}
                 <li class="oh-dropdown__item">
                   <a
                     href="#"
                     class="oh-dropdown__link"
-                    data-toggle="oh-modal-toggle"
-                    data-target="#shiftRequestsExport"
-                    >{% trans "Export" %}</a
+                    id="approveShiftRequest"
+                    >{% trans "Approve Requests" %}</a
                   >
                 </li>
-              {% endif %} {% if perms.base.change_shiftrequest or request.user|is_reportingmanager %}
-              <li class="oh-dropdown__item">
-                <a
-                  href="#"
-                  class="oh-dropdown__link"
-                  id="approveShiftRequest"
-                  >{% trans "Approve Requests" %}</a
-                >
-              </li>
-              {% endif %} {% if perms.base.change_shiftrequest or request.user|is_reportingmanager %}
-              <li class="oh-dropdown__item">
-                <a
-                  href="#"
-                  class="oh-dropdown__link"
-                  id="cancelShiftRequest"
-                  >{% trans "Reject Requests" %}</a
-                >
-              </li>
+                {% endif %} {% if perms.base.change_shiftrequest or request.user|is_reportingmanager %}
+                <li class="oh-dropdown__item">
+                  <a
+                    href="#"
+                    class="oh-dropdown__link"
+                    id="cancelShiftRequest"
+                    >{% trans "Reject Requests" %}</a
+                  >
+                </li>
 
-              <li class="oh-dropdown__item">
-                <a
-                  href="#"
-                  class="oh-dropdown__link oh-dropdown__link--danger"
-                  id="deleteShiftRequest"
-                  >{% trans "Delete" %}</a
-                >
-              </li>
+                <li class="oh-dropdown__item">
+                  <a
+                    href="#"
+                    class="oh-dropdown__link oh-dropdown__link--danger"
+                    id="deleteShiftRequest"
+                    >{% trans "Delete" %}</a
+                  >
+                </li>
+                {% endif %}
+              </ul>
+            </div>
+          </div>
+        </div>
+        {% endif %} {% endif %}
+        <div class="oh-btn-group ml-2">
+          <div>
+            <button
+              class="oh-btn oh-btn--secondary"
+              data-toggle="oh-modal-toggle"
+              data-target="#shiftRequestModal"
+              {% if perms.base.add_shiftrequest or request.user|is_reportingmanager %}
+              hx-get="{% url 'shift-request' %}"
+              {% else %}
+              hx-get="{% url 'shift-request' %}?emp_id={{request.user.employee_get.id}}"
               {% endif %}
-            </ul>
+              hx-target="#shiftRequestTargetModal"
+              >
+              <ion-icon name="add-sharp" class="mr-2"></ion-icon>{% trans "Create" %}
+            </button>
           </div>
         </div>
       </div>
-      {% endif %} {% endif %}
-      <div class="oh-btn-group ml-2">
-        <div>
-          <button
-            class="oh-btn oh-btn--secondary"
-            data-toggle="oh-modal-toggle"
-            data-target="#shiftRequestModal"
-            {% if perms.base.add_shiftrequest or request.user|is_reportingmanager %}
-            hx-get="{% url 'shift-request' %}"
-            {% else %}
-            hx-get="{% url 'shift-request' %}?emp_id={{request.user.employee_get.id}}"
-            {% endif %}
-            hx-target="#shiftRequestTargetModal"
-            >
-            <ion-icon name="add-sharp" class="mr-2"></ion-icon>{% trans "Create" %}
-          </button>
-        </div>
-      </div>
+    </div>
+  </form>
+
+</section>
+
+<div
+  class="oh-modal"
+  id="shiftRequestModal"
+  role="dialog"
+  aria-labelledby="shiftRequestModal"
+  aria-hidden="true"
+>
+  <div class="oh-modal__dialog">
+    <div class="oh-modal__dialog-header">
+      <h5 class="oh-modal__dialog-title" id="shiftRequestModalLabel">
+        {% trans "Shift Request" %}
+      </h5>
+      <button class="oh-modal__close" aria-label="Close">
+        <ion-icon name="close-outline"></ion-icon>
+      </button>
+    </div>
+    <div class="oh-modal__dialog-body" id="shiftRequestModal">
+      <div id="shiftRequestTargetModal"></div>
     </div>
   </div>
-</section>
-<div class="oh-modal" id="shiftRequestModal" role="dialog" aria-labelledby="shiftRequestModal" aria-hidden="true">
-  <div class="oh-modal__dialog" id="shiftRequestTargetModal"></div>
 </div>
+
 <div
   class="oh-modal"
   id="shiftRequestsExport"

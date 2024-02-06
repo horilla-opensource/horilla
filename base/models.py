@@ -12,6 +12,7 @@ from django.utils.translation import gettext_lazy as _
 from django.db import models
 from django.contrib.auth.models import User
 from base.horilla_company_manager import HorillaCompanyManager
+from horilla_audit.models import HorillaAuditInfo, HorillaAuditLog
 
 # Create your models here.
 
@@ -315,6 +316,13 @@ class RotatingWorkTypeAssign(models.Model):
     )
 
     is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True, null=True)
+    history = HorillaAuditLog(
+        related_name="history_set",
+        bases=[
+            HorillaAuditInfo,
+        ],
+    )
     objects = HorillaCompanyManager("employee_id__employee_work_info__company_id")
 
     class Meta:
@@ -607,6 +615,13 @@ class RotatingShiftAssign(models.Model):
         verbose_name=_("Rotate Every Month"),
     )
     is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True, null=True)
+    history = HorillaAuditLog(
+        related_name="history_set",
+        bases=[
+            HorillaAuditInfo,
+        ],
+    )
     objects = HorillaCompanyManager("employee_id__employee_work_info__company_id")
 
     class Meta:
@@ -674,6 +689,13 @@ class WorkTypeRequest(models.Model):
     canceled = models.BooleanField(default=False, verbose_name=_("Canceled"))
     work_type_changed = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True, null=True)
+    history = HorillaAuditLog(
+        related_name="history_set",
+        bases=[
+            HorillaAuditInfo,
+        ],
+    )
     objects = HorillaCompanyManager("employee_id__employee_work_info__company_id")
 
     class Meta:
@@ -802,6 +824,16 @@ class ShiftRequest(models.Model):
     requested_date = models.DateField(
         null=True, default=django.utils.timezone.now, verbose_name=_("Requested Date")
     )
+    reallocate_to = models.ForeignKey(
+        "employee.Employee",
+        on_delete=models.PROTECT,
+        null=True,
+        blank=True,
+        related_name="reallocate_shift_request",
+        verbose_name=_("Reallocate Employee"),
+    )
+    reallocate_approved = models.BooleanField(default=False, verbose_name=_("Approved"))
+    reallocate_canceled = models.BooleanField(default=False, verbose_name=_("Canceled"))
     requested_till = models.DateField(
         null=True, blank=True, verbose_name=_("Requested Till")
     )
@@ -813,6 +845,13 @@ class ShiftRequest(models.Model):
     canceled = models.BooleanField(default=False, verbose_name=_("Canceled"))
     shift_changed = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True, null=True)
+    history = HorillaAuditLog(
+        related_name="history_set",
+        bases=[
+            HorillaAuditInfo,
+        ],
+    )
     objects = HorillaCompanyManager("employee_id__employee_work_info__company_id")
 
     class Meta:
@@ -1165,6 +1204,7 @@ class DynamicPagination(models.Model):
     """
 
     from django.contrib.auth.models import User
+    from django.core.validators import MinValueValidator
 
     user_id = models.OneToOneField(
         User,
@@ -1174,7 +1214,7 @@ class DynamicPagination(models.Model):
         related_name="dynamic_pagination",
         verbose_name=_("User"),
     )
-    pagination = models.IntegerField(default=50)
+    pagination = models.IntegerField(default=50, validators=[MinValueValidator(1)])
 
     def save(self, *args, **kwargs):
         request = getattr(_thread_locals, "request", None)

@@ -17,6 +17,7 @@ from django.views.decorators.http import require_http_methods
 from django.core.paginator import Paginator
 from django.core.mail import send_mail
 from django.utils.translation import gettext as _
+from django.db.models import Q
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import Group, User, Permission
@@ -57,6 +58,7 @@ from base.forms import (
     EmployeeTypeForm,
     RotatingShiftAssignExportForm,
     RotatingWorkTypeAssignExportForm,
+    ShiftAllocationForm,
     ShiftRequestColumnForm,
     ShiftrequestcommentForm,
     WorkTypeForm,
@@ -2847,16 +2849,103 @@ def shift_request(request):
             except Exception as e:
                 pass
             messages.success(request, _("Request Added"))
-            form = ShiftRequestForm()
-            if len(f.queryset) == 1:
-                # Refresh the whole page to display the navbar otherwise refresh the requets container
-                return HttpResponse(
-                    response.content.decode("utf-8")
-                    + "<script>location.reload();</script>"
-                )
+            return HttpResponse(response.content.decode("utf-8")+ "<script>location.reload();</script>")
+            # form = ShiftRequestForm()
+            # if len(f.queryset) == 1:
+            #     # Refresh the whole page to display the navbar otherwise refresh the requets container
+            #     return HttpResponse(
+            #         response.content.decode("utf-8")
+            #         + "<script>location.reload();</script>"
+            #     )
     return render(
         request,
         "shift_request/htmx/shift_request_create_form.html",
+        {"form": form, "f": f},
+    )
+
+
+@login_required
+def update_employee_allocation(request):
+
+    shift = request.POST["shift_id"]
+
+    shift = EmployeeShift.objects.filter(
+        id=shift
+    ).first()
+
+    return JsonResponse(
+        {
+            "shift_name": shift.employee_shift,
+            "employee_data":list(shift.employeeworkinformation_set.values_list("employee_id","employee_id__employee_first_name","employee_id__employee_last_name","employee_id__badge_id"))
+        }
+    )
+
+
+@login_required
+def shift_request_allocation(request):
+    """
+    This method is used to create shift request reallocation
+    """
+    form = ShiftAllocationForm()
+    if request.GET.get("emp_id"):
+        employee = request.GET.get("emp_id")
+        form = ShiftAllocationForm(initial={"employee_id": employee})
+    form = choosesubordinates(
+        request,
+        form,
+        "base.add_shiftrequest",
+    )
+    form = include_employee_instance(request, form)
+    f = ShiftRequestFilter()
+    if request.method == "POST":
+        form = ShiftAllocationForm(request.POST)
+        form = choosesubordinates(request, form, "base.add_shiftrequest")
+        form = include_employee_instance(request, form)
+        response = render(
+            request,
+            "shift_request/htmx/shift_allocation_form.html",
+            {"form": form, "f": f},
+        )
+        if form.is_valid():
+            instance = form.save()
+            reallocate_emp = form.cleaned_data['reallocate_to']
+            try:
+                notify.send(
+                    instance.employee_id,
+                    recipient=(
+                        instance.employee_id.employee_work_info.reporting_manager_id.employee_user_id
+                    ),
+                    verb=f"You have a new shift reallocation request to approve for {instance.employee_id}.",
+                    verb_ar=f"لديك طلب تخصيص جديد للورديات يتعين عليك الموافقة عليه لـ {instance.employee_id}.",
+                    verb_de=f"Sie haben eine neue Anfrage zur Verschiebung der Schichtzuteilung zur Genehmigung für {instance.employee_id}.",
+                    verb_es=f"Tienes una nueva solicitud de reasignación de turnos para aprobar para {instance.employee_id}.",
+                    verb_fr=f"Vous avez une nouvelle demande de réaffectation de shift à approuver pour {instance.employee_id}.",
+                    icon="information",
+                    redirect=f"/employee/shift-request-view?id={instance.id}",
+                )
+            except Exception as e:
+                pass
+
+            try:
+                notify.send(
+                    instance.employee_id,
+                    recipient= reallocate_emp,
+                    verb=f"You have a new shift reallocation request from {instance.employee_id}.",
+                    verb_ar=f"لديك طلب تخصيص جديد للورديات من {instance.employee_id}.",
+                    verb_de=f"Sie haben eine neue Anfrage zur Verschiebung der Schichtzuteilung von {instance.employee_id}.",
+                    verb_es=f"Tienes una nueva solicitud de reasignación de turnos de {instance.employee_id}.",
+                    verb_fr=f"Vous avez une nouvelle demande de réaffectation de shift de {instance.employee_id}.",
+                    icon="information",
+                    redirect=f"/employee/shift-request-view?id={instance.id}",
+                )
+            except Exception as e:
+                pass
+
+            messages.success(request, _("Request Added"))
+            return HttpResponse(response.content.decode("utf-8")+ "<script>location.reload();</script>")
+    return render(
+        request,
+        "shift_request/htmx/shift_allocation_form.html",
         {"form": form, "f": f},
     )
 
@@ -2869,15 +2958,32 @@ def shift_request_view(request):
     previous_data = request.GET.urlencode()
     employee = Employee.objects.filter(employee_user_id=request.user).first()
     shift_requests = filtersubordinates(
-        request, ShiftRequest.objects.all(), "base.add_shiftrequest"
+        request, ShiftRequest.objects.filter(reallocate_to__isnull=True), "base.add_shiftrequest"
     )
     shift_requests = shift_requests | ShiftRequest.objects.filter(employee_id=employee)
     shift_requests = shift_requests.filter(employee_id__is_active=True)
+
+    allocated_shift_requests = filtersubordinates(
+        request, ShiftRequest.objects.filter(reallocate_to__isnull=False), "base.add_shiftrequest"
+    )
+    allocated_requests = ShiftRequest.objects.filter(reallocate_to__isnull=False)
+    if not request.user.has_perm("base.view_shiftrequest"):
+        allocated_requests = allocated_requests.filter(Q(reallocate_to=employee) | Q(employee_id=employee))
+    allocated_shift_requests = allocated_shift_requests | allocated_requests
+
     requests_ids = json.dumps(
         [
             instance.id
             for instance in paginator_qry(
                 shift_requests, request.GET.get("page")
+            ).object_list
+        ]
+    )
+    allocated_ids = json.dumps(
+        [
+            instance.id
+            for instance in paginator_qry(
+                allocated_shift_requests, request.GET.get("page")
             ).object_list
         ]
     )
@@ -2897,6 +3003,7 @@ def shift_request_view(request):
         request,
         "shift_request/shift_request_view.html",
         {
+            "allocated_data": paginator_qry(allocated_shift_requests, request.GET.get("page")),
             "data": paginator_qry(f.qs, request.GET.get("page")),
             "f": f,
             "form": form,
@@ -2904,10 +3011,10 @@ def shift_request_view(request):
             "export_fields": export_fields,
             "export_filter": export_filter,
             "requests_ids": requests_ids,
+            "allocated_ids": allocated_ids,
             "gp_fields": ShiftRequestReGroup.fields,
         },
     )
-
 
 @login_required
 @manager_can_enter("base.view_shiftrequest")
@@ -2926,14 +3033,19 @@ def shift_request_search(request):
     """
     This method is used search shift request by employee and also used to filter shift request.
     """
+
+    employee = Employee.objects.filter(employee_user_id=request.user).first()
     previous_data = request.GET.urlencode()
     field = request.GET.get("field")
     f = ShiftRequestFilter(request.GET)
-    shift_requests = filtersubordinates(request, f.qs, "base.add_shiftrequest")
-    shift_requests = shift_requests | f.qs.filter(
-        employee_id__employee_user_id=request.user
-    )
-    shift_requests = sortby(request, shift_requests, "orderby")
+    f = sortby(request, f.qs, "sortby")
+    shift_requests = filtersubordinates(request,f.filter(reallocate_to__isnull=True), "base.add_shiftrequest")
+    shift_requests = shift_requests| f.filter(employee_id__employee_user_id=request.user)
+
+    allocated_shift_requests = filtersubordinates(request,f.filter(reallocate_to__isnull=False), "base.add_shiftrequest")
+    if not request.user.has_perm("base.view_shiftrequest"):
+        allocated_shift_requests = allocated_shift_requests |f.filter(Q(reallocate_to=employee) | Q(employee_id=employee))
+
     requests_ids = json.dumps(
         [
             instance.id
@@ -2942,22 +3054,36 @@ def shift_request_search(request):
             ).object_list
         ]
     )
+
+    allocated_ids = json.dumps(
+        [
+            instance.id
+            for instance in paginator_qry(
+                allocated_shift_requests, request.GET.get("page")
+            ).object_list
+        ]
+    )
+
     data_dict = parse_qs(previous_data)
     template = "shift_request/htmx/requests.html"
     if field != "" and field is not None:
         field_copy = field.replace(".", "__")
         shift_requests = shift_requests.order_by(f"-{field_copy}")
+        allocated_shift_requests = allocated_shift_requests.order_by(f"-{field_copy}")
         template = "shift_request/htmx/group_by.html"
+
 
     get_key_instances(ShiftRequest, data_dict)
     return render(
         request,
         template,
         {
+            "allocated_data": paginator_qry(allocated_shift_requests, request.GET.get("page")),
             "data": paginator_qry(shift_requests, request.GET.get("page")),
             "pd": previous_data,
             "filter_dict": data_dict,
             "requests_ids": requests_ids,
+            "allocated_ids":allocated_ids,
             "field": field,
         },
     )
@@ -2987,6 +3113,33 @@ def shift_request_details(request, id):
         "shift_request/htmx/shift_request_detail.html",
         context,
     )
+
+
+@login_required
+def shift_allocation_request_details(request, id):
+    """
+    This method is used to show shift request details in a modal
+    args:
+        id : shift request instance id
+    """
+    shift_request = ShiftRequest.objects.get(id=id)
+    requests_ids_json = request.GET.get("instances_ids")
+    context = {
+        "shift_request": shift_request,
+        "dashboard": request.GET.get("dashboard"),
+    }
+    if requests_ids_json:
+        requests_ids = json.loads(requests_ids_json)
+        previous_id, next_id = closest_numbers(requests_ids, id)
+        context["previous"] = previous_id
+        context["next"] = next_id
+        context["allocation_ids"] = requests_ids_json
+    return render(
+        request,
+        "shift_request/htmx/allocation_details.html",
+        context,
+    )
+
 
 
 @login_required
@@ -3023,6 +3176,71 @@ def shift_request_update(request, shift_request_id):
 
 
 @login_required
+def shift_allocation_request_update(request, shift_request_id):
+    """
+    This method is used to update shift request instance
+    args:
+        id : shift request instance id
+    """
+    shift_request = ShiftRequest.objects.get(id=shift_request_id)
+    form = ShiftAllocationForm(instance=shift_request)
+    form = choosesubordinates(request, form, "base.change_shiftrequest")
+    form = include_employee_instance(request, form)
+    if request.method == "POST":
+        response = render(
+            request,
+            "shift_request/request_update_form.html",
+            {
+                "form": form,
+            },
+        )
+        form = ShiftAllocationForm(request.POST, instance=shift_request)
+        form = choosesubordinates(request, form, "base.change_shiftrequest")
+        form = include_employee_instance(request, form)
+        if form.is_valid():
+            form.save()
+            instance = form.save()
+            reallocate_emp = form.cleaned_data['reallocate_to']
+            try:
+                notify.send(
+                    instance.employee_id,
+                    recipient=(
+                        instance.employee_id.employee_work_info.reporting_manager_id.employee_user_id
+                    ),
+                    verb=f"You have a new shift reallocation request to approve for {instance.employee_id}.",
+                    verb_ar=f"لديك طلب تخصيص جديد للورديات يتعين عليك الموافقة عليه لـ {instance.employee_id}.",
+                    verb_de=f"Sie haben eine neue Anfrage zur Verschiebung der Schichtzuteilung zur Genehmigung für {instance.employee_id}.",
+                    verb_es=f"Tienes una nueva solicitud de reasignación de turnos para aprobar para {instance.employee_id}.",
+                    verb_fr=f"Vous avez une nouvelle demande de réaffectation de shift à approuver pour {instance.employee_id}.",
+                    icon="information",
+                    redirect=f"/employee/shift-request-view?id={instance.id}",
+                )
+            except Exception as e:
+                pass
+
+            try:
+                notify.send(
+                    instance.employee_id,
+                    recipient= reallocate_emp,
+                    verb=f"You have a new shift reallocation request from {instance.employee_id}.",
+                    verb_ar=f"لديك طلب تخصيص جديد للورديات من {instance.employee_id}.",
+                    verb_de=f"Sie haben eine neue Anfrage zur Verschiebung der Schichtzuteilung von {instance.employee_id}.",
+                    verb_es=f"Tienes una nueva solicitud de reasignación de turnos de {instance.employee_id}.",
+                    verb_fr=f"Vous avez une nouvelle demande de réaffectation de shift de {instance.employee_id}.",
+                    icon="information",
+                    redirect=f"/employee/shift-request-view?id={instance.id}",
+                )
+            except Exception as e:
+                pass
+            messages.success(request, _("Request Updated Successfully"))
+            return HttpResponse(
+                response.content.decode("utf-8") + "<script>location.reload();</script>"
+            )
+
+    return render(request, "shift_request/allocation_request_update_form.html", {"form": form})
+
+
+@login_required
 def shift_request_cancel(request, id):
     """
     This method is used to update or cancel shift request
@@ -3043,13 +3261,18 @@ def shift_request_cancel(request, id):
         shift_request.employee_id.employee_work_info.shift_id = (
             shift_request.previous_shift_id
         )
+
+        if shift_request.reallocate_to:
+            shift_request.reallocate_to.employee_work_info.shift_id = shift_request.shift_id
+            shift_request.reallocate_to.employee_work_info.save()
+
         shift_request.employee_id.employee_work_info.save()
         shift_request.save()
         messages.success(request, _("Shift request rejected"))
         notify.send(
             request.user.employee_get,
             recipient=shift_request.employee_id.employee_user_id,
-            verb="Your shift request has been rejected.",
+            verb="Your shift request has been canceled.",
             verb_ar="تم إلغاء طلبك للوردية.",
             verb_de="Ihr Schichtantrag wurde storniert.",
             verb_es="Se ha cancelado su solicitud de turno.",
@@ -3057,9 +3280,56 @@ def shift_request_cancel(request, id):
             redirect=f"/employee/shift-request-view?id={shift_request.id}",
             icon="close",
         )
+        if shift_request.reallocate_to:
+            notify.send(
+                request.user.employee_get,
+                recipient=shift_request.reallocate_to.employee_user_id,
+                verb="Your shift request has been rejected.",
+                verb_ar="تم إلغاء طلبك للوردية.",
+                verb_de="Ihr Schichtantrag wurde storniert.",
+                verb_es="Se ha cancelado su solicitud de turno.",
+                verb_fr="Votre demande de quart a été annulée.",
+                redirect=f"/employee/shift-request-view?id={shift_request.id}",
+                icon="close",
+            )
 
         return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
     return HttpResponse("You cant cancel the request")
+
+
+@login_required
+def shift_allocation_request_cancel(request, id):
+    """
+    This method is used to update or cancel shift request
+    args:
+        id : shift request id
+
+    """
+
+    shift_request = ShiftRequest.objects.get(id=id)
+
+    shift_request.reallocate_canceled = True
+    shift_request.reallocate_approved = False
+    shift_request.employee_id.employee_work_info.shift_id = (
+        shift_request.previous_shift_id
+    )
+    shift_request.employee_id.employee_work_info.save()
+    shift_request.save()
+    messages.success(request, _("Shift request canceled"))
+    notify.send(
+        request.user.employee_get,
+        recipient=shift_request.employee_id.employee_user_id,
+        verb="Your shift request has been canceled.",
+        verb_ar="تم إلغاء طلبك للوردية.",
+        verb_de="Ihr Schichtantrag wurde storniert.",
+        verb_es="Se ha cancelado su solicitud de turno.",
+        verb_fr="Votre demande de quart a été annulée.",
+        redirect=f"/employee/shift-request-view?id={shift_request.id}",
+        icon="close",
+    )
+
+    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+
 
 
 @login_required
@@ -3085,6 +3355,11 @@ def shift_request_bulk_cancel(request):
             shift_request.employee_id.employee_work_info.shift_id = (
                 shift_request.previous_shift_id
             )
+
+            if shift_request.reallocate_to:
+                shift_request.reallocate_to.employee_work_info.shift_id = shift_request.shift_id
+                shift_request.reallocate_to.employee_work_info.save()
+
             shift_request.employee_id.employee_work_info.save()
             shift_request.save()
             messages.success(request, _("Shift request canceled"))
@@ -3099,6 +3374,18 @@ def shift_request_bulk_cancel(request):
                 redirect=f"/employee/shift-request-view?id={shift_request.id}",
                 icon="close",
             )
+            if shift_request.reallocate_to:
+                notify.send(
+                    request.user.employee_get,
+                    recipient=shift_request.employee_id.employee_user_id,
+                    verb="Your shift request has been canceled.",
+                    verb_ar="تم إلغاء طلبك للوردية.",
+                    verb_de="Ihr Schichtantrag wurde storniert.",
+                    verb_es="Se ha cancelado su solicitud de turno.",
+                    verb_fr="Votre demande de quart a été annulée.",
+                    redirect=f"/employee/shift-request-view?id={shift_request.id}",
+                    icon="close",
+                )
             result = True
     return JsonResponse({"result": result})
 
@@ -3127,6 +3414,11 @@ def shift_request_approve(request, id):
         if not shift_request.is_any_request_exists():
             shift_request.approved = True
             shift_request.canceled = False
+
+            if shift_request.reallocate_to:
+                shift_request.reallocate_to.employee_work_info.shift_id = shift_request.previous_shift_id
+                shift_request.reallocate_to.employee_work_info.save()
+
             shift_request.save()
             messages.success(request, _("Shift has been approved."))
             notify.send(
@@ -3140,6 +3432,18 @@ def shift_request_approve(request, id):
                 redirect=f"/employee/shift-request-view?id={shift_request.id}",
                 icon="checkmark",
             )
+            if shift_request.reallocate_to:
+                notify.send(
+                    request.user.employee_get,
+                    recipient=shift_request.reallocate_to.employee_user_id,
+                    verb="Your shift request has been approved.",
+                    verb_ar="تمت الموافقة على طلبك للوردية.",
+                    verb_de="Ihr Schichtantrag wurde genehmigt.",
+                    verb_es="Se ha aprobado su solicitud de turno.",
+                    verb_fr="Votre demande de quart a été approuvée.",
+                    redirect=f"/employee/shift-request-view?id={shift_request.id}",
+                    icon="checkmark",
+                )
             return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
         else:
             messages.error(
@@ -3147,6 +3451,41 @@ def shift_request_approve(request, id):
             )
             return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
     return HttpResponse("You Dont Have Permission")
+
+
+
+@login_required
+def shift_allocation_request_approve(request, id):
+    """
+    This method is used to approve shift request
+    args:
+        id : shift request instance id
+    """
+
+    shift_request = ShiftRequest.objects.get(id=id)
+
+    if not shift_request.is_any_request_exists():
+        shift_request.reallocate_approved = True
+        shift_request.reallocate_canceled = False
+        shift_request.save()
+        messages.success(request, _("You are available for shift reallocation."))
+        notify.send(
+            request.user.employee_get,
+            recipient=shift_request.employee_id.employee_user_id,
+            verb=f"{request.user.employee_get} is available for shift reallocation.",
+            verb_ar=f"{request.user.employee_get} متاح لإعادة توزيع الورديات.",
+            verb_de=f"{request.user.employee_get} steht für die Verschiebung der Schichtzuteilung zur Verfügung.",
+            verb_es=f"{request.user.employee_get} está disponible para la reasignación de turnos.",
+            verb_fr=f"{request.user.employee_get} est disponible pour la réaffectation de shift.",
+            redirect=f"/employee/shift-request-view?id={shift_request.id}",
+            icon="checkmark",
+        )
+        return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+    else:
+        messages.error(
+            request, _("A shift request already exists during this time period.")
+        )
+        return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 
 
 @login_required
@@ -3172,6 +3511,11 @@ def shift_request_bulk_approve(request):
             """
             shift_request.approved = True
             shift_request.canceled = False
+
+            if shift_request.reallocate_to:
+                shift_request.reallocate_to.employee_work_info.shift_id = shift_request.previous_shift_id
+                shift_request.reallocate_to.employee_work_info.save()
+
             employee_work_info = shift_request.employee_id.employee_work_info
             employee_work_info.shift_id = shift_request.shift_id
             employee_work_info.save()

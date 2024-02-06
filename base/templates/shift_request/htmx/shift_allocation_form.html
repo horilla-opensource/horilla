@@ -1,0 +1,62 @@
+{% load i18n %} {% load static %} {% if messages %}
+<div class="oh-wrapper">
+  {% for message in messages %}
+  <div class="oh-alert-container">
+    <div class="oh-alert oh-alert--animated {{message.tags}}">
+      {{ message }}
+    </div>
+  </div>
+  {% endfor %}
+  <script>
+    setTimeout(function () {
+      $(".oh-modal__close").click();
+    }, 1000);
+  </script>
+</div>
+{% endif %}
+
+<div class="oh-modal__dialog-body" style="padding: 0;">
+  <form
+    hx-post="{% url 'shift-request-reallocate' %}?emp_id={{request.user.employee_get.id}}"
+    hx-target="#shiftRequestTargetModal"
+    id="addForm"
+  >
+    {{form.as_p}}
+  </form>
+</div>
+
+
+<script>
+
+  $("#id_shift_id").change(function(e){
+    var selectedElement = $("#id_shift_id")
+    var selectElement = $("#id_shift_id").val();
+    let parentForm = selectedElement.parents().closest("form")
+    console.log(selectElement)
+    $.ajax({
+      type: "post",
+      url: "{% url 'update-employee-allocation' %}",
+      data: {
+        csrfmiddlewaretoken: getCookie("csrftoken"),
+        "shift_id":selectElement
+      },
+      success: function (response) {
+
+        var reallocateToSelect = parentForm.find("[name=reallocate_to]");
+        reallocateToSelect.empty(); // Clear existing options
+    
+        for (var i = 0; i < response.employee_data.length; i++) {
+            var employee = response.employee_data[i];
+    
+            // Log the values being added
+            console.log('Adding option:', employee[0], employee[1]);
+    
+            reallocateToSelect.append('<option value="' + employee[0] + '">' + employee[1] + ' ' + employee[2] + '</option>');
+        }
+
+      }
+    });
+
+  });
+
+</script>

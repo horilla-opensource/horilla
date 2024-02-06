@@ -14,22 +14,8 @@
   </script>
 </div>
 {% endif %}
-<div class="oh-modal__dialog-header">
-  <button
-    type="button"
-    class="oh-modal__close"
-    data-dismiss="oh-modal"
-    aria-label="Close"
-    hx-get="{% url 'shift-request-search' %}"
-    hx-target="#view-container"
-  >
-    <ion-icon name="close-outline"></ion-icon>
-  </button>
-  <span class="oh-modal__dialog-title ml-5" id="shiftRequestModalLabel">
-    <h5>{% trans "Shift Request" %}</h5>
-  </span>
-</div>
-<div class="oh-modal__dialog-body">
+
+<div class="oh-modal__dialog-body" style="padding: 0;">
   <form
     hx-post="{% url 'shift-request' %}"
     hx-target="#shiftRequestTargetModal"
@@ -42,11 +28,9 @@
 <script>
   function toggleFunctionShiftRequestForm() {
     if ($("#id_is_permanent_shift").is(":checked")) {
-      $("[for=id_requested_till]").hide();
-      $("#id_requested_till").hide();
+      $("#id_requested_till").parent().hide();
     } else {
-      $("[for=id_requested_till]").show();
-      $("#id_requested_till").show();
+      $("#id_requested_till").parent().show();
     }
   }
   toggleFunctionShiftRequestForm();

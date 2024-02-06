@@ -4,15 +4,75 @@
 {% load basefilters %}
 {% load attendancefilters %}
 {% include 'shift_request/shift_request_nav.html' %}
+
 <div class="oh-checkpoint-badge mb-2" id="selectedShifts" data-ids="[]" data-clicked="" style="display:none;" >
   {% trans "Selected Shifts" %}
 </div>
-<div id="view-container" class="oh-wrapper">
-  {% if data %}
-    {% include 'shift_request/htmx/requests.html' %}
-  {% else %}
-    {% include 'shift_request/htmx/empty_request.html' %}
-  {% endif %}
+<div  class="oh-wrapper">
+
+  <!-- start of Quick filters  -->
+    <div class="d-flex flex-row-reverse" style="height:3px;">
+      <span
+        class="m-3 review_ongoing"
+        onclick="$('[name=canceled]').val('true');$('[name=approved]').val('unknown');$('[name=canceled]').first().change();$('.filterButton').click()"
+        style="cursor: pointer"
+      >
+        <span
+          class="oh-dot oh-dot--small me-1"
+          style="background-color: red"
+        ></span>
+        {% trans "Rejected" %}
+      </span>
+      <span
+        class="m-3 paid"
+        onclick="$('[name=approved]').val('true');$('[name=canceled]').val('unknown');$('[name=approved]').first().change();$('.filterButton').click()"
+        style="cursor: pointer"
+      >
+        <span
+          class="oh-dot oh-dot--small me-1"
+          style="background-color: yellowgreen"
+        ></span>
+        {% trans "Approved" %}
+      </span>
+    </div>
+  <!-- end of quick filters  -->
+
+  <div
+    class="oh-checkpoint-badge text-success mb-2"
+    id="selectAllShifts"
+    style="cursor: pointer"
+    >
+      {% trans "Select All Shifts" %}
+    </div>
+    <div
+    class="oh-checkpoint-badge text-secondary mb-2"
+    id="unselectAllShifts"
+    style="cursor: pointer"
+    >
+      {% trans "Unselect All Shifts" %}
+    </div>
+    <div
+    class="oh-checkpoint-badge text-info mb-2"
+    id="exportShifts"
+    style="cursor: pointer;"
+    >
+      {% trans "Export Shifts" %}
+    </div>
+    <div class="oh-checkpoint-badge text-danger mb-2" id="selectedShowShifts" style="display: none"></div>
+
+
+    <div class="oh-tabs">
+      <ul class="oh-tabs__tablist">
+        <li class="oh-tabs__tab oh-tabs__tab--active" data-target="#tab_1">
+          {% trans "Shift Requests" %}
+        </li>
+        <li class="oh-tabs__tab" data-target="#tab_2">
+          {% trans "Allocated Shift Requests" %}
+        </li>
+      </ul>  
+      <div id="view-container">
+        {% include 'shift_request/htmx/requests.html' %}
+      </div>
 </div>
 
 
