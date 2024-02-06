@@ -200,7 +200,10 @@ class LeaveType(models.Model):
         return url
 
     def save(self, *args, **kwargs):
-        if self.carryforward_type != "no carryforward" and self.carryforward_max is None:
+        if (
+            self.carryforward_type != "no carryforward"
+            and self.carryforward_max is None
+        ):
             self.carryforward_max = math.inf
         super().save(*args, **kwargs)
 
@@ -278,30 +281,26 @@ class AvailableLeave(models.Model):
 
     def __str__(self):
         return f"{self.employee_id} | {self.leave_type_id}"
-    
+
     def forcasted_leaves(self):
         forecasted_leave = {}
-        if self.leave_type_id.reset_based == 'monthly':
+        if self.leave_type_id.reset_based == "monthly":
             today = datetime.now()
             for i in range(1, 7):  # Calculate for the next 6 months
                 next_month = today + relativedelta(months=i)
-                forecasted_leave[next_month.strftime("%Y-%m")] = self.available_days + (self.leave_type_id.total_days * i)
+                forecasted_leave[next_month.strftime("%Y-%m")] = self.available_days + (
+                    self.leave_type_id.total_days * i
+                )
         return forecasted_leave
-        
 
     # Resetting carryforward days
 
     def update_carryforward(self):
         if self.leave_type_id.carryforward_type != "no carryforward":
-            if (
-                self.leave_type_id.carryforward_max
-                >= self.total_leave_days
-            ):
+            if self.leave_type_id.carryforward_max >= self.total_leave_days:
                 self.carryforward_days = self.total_leave_days
             else:
-                self.carryforward_days = (
-                    self.leave_type_id.carryforward_max
-                )
+                self.carryforward_days = self.leave_type_id.carryforward_max
         self.available_days = self.leave_type_id.total_days
 
     # Setting the reset date for carryforward leaves
@@ -393,10 +392,16 @@ class AvailableLeave(models.Model):
                 self.expired_date = expired_date
 
         self.update_carryforward()
-        self.total_leave_days = self.available_days + self.carryforward_days
+        self.total_leave_days = max(self.available_days + self.carryforward_days, 0)
+        self.carryforward_days = max(self.carryforward_days, 0)
         super().save(*args, **kwargs)
 
-
+try:
+    available_leaves = AvailableLeave.objects.all()
+    for available_leave in available_leaves:
+        available_leave.save()
+except:
+    pass
 class LeaveRequest(models.Model):
     employee_id = models.ForeignKey(
         Employee, on_delete=models.CASCADE, verbose_name=_("Employee")
@@ -448,7 +453,7 @@ class LeaveRequest(models.Model):
     approved_available_days = models.FloatField(default=0)
     approved_carryforward_days = models.FloatField(default=0)
     created_at = models.DateTimeField(auto_now_add="True")
-    reject_reason = models.TextField(blank=True, verbose_name=_("Reject Reason"))    
+    reject_reason = models.TextField(blank=True, verbose_name=_("Reject Reason"))
     history = HorillaAuditLog(
         related_name="history_set",
         bases=[
@@ -458,7 +463,7 @@ class LeaveRequest(models.Model):
     objects = HorillaCompanyManager(
         related_company_field="employee_id__employee_work_info__company_id"
     )
-    
+
     def tracking(self):
         return get_diff(self)
 
@@ -560,7 +565,9 @@ class LeaveRequest(models.Model):
         department_id = self.employee_id.employee_work_info.department_id
         requested_days = self.requested_days
         applicable_condition = False
-        conditions = MultipleApprovalCondition.objects.filter(department=department_id).order_by('condition_value')
+        conditions = MultipleApprovalCondition.objects.filter(
+            department=department_id
+        ).order_by("condition_value")
         if conditions:
             for condition in conditions:
                 operator = condition.condition_operator
@@ -576,8 +583,8 @@ class LeaveRequest(models.Model):
                     if operator_func(requested_days, condition_value):
                         applicable_condition = condition
                         break
-                
-        if applicable_condition and self.status=="requested":
+
+        if applicable_condition and self.status == "requested":
             LeaveRequestConditionApproval.objects.filter(leave_request_id=self).delete()
             sequence = 0
             managers = applicable_condition.approval_managers()
@@ -651,21 +658,23 @@ class LeaveRequest(models.Model):
                 "managers": managers,
                 "approved": approved_query,
                 "requested": requested_query,
-                "approvals":approvals,
+                "approvals": approvals,
             }
         else:
             result = False
         return result
-    
+
     def is_approved(self):
-        request = getattr(thread_local_middleware._thread_locals,"request",None)
+        request = getattr(thread_local_middleware._thread_locals, "request", None)
         if request:
-            employee =  Employee.objects.filter(employee_user_id = request.user).first()
-            condition_approval = LeaveRequestConditionApproval.objects.filter(leave_request_id=self,manager_id = employee.id).first()
+            employee = Employee.objects.filter(employee_user_id=request.user).first()
+            condition_approval = LeaveRequestConditionApproval.objects.filter(
+                leave_request_id=self, manager_id=employee.id
+            ).first()
             if condition_approval:
                 return not condition_approval.is_approved
             else:
-                return  True
+                return True
 
 
 class LeaverequestFile(models.Model):
@@ -676,10 +685,10 @@ class LeaverequestComment(models.Model):
     """
     LeaverequestComment Model
     """
-    
+
     request_id = models.ForeignKey(LeaveRequest, on_delete=models.CASCADE)
     employee_id = models.ForeignKey(Employee, on_delete=models.CASCADE)
-    files = models.ManyToManyField(LeaverequestFile,blank=True)
+    files = models.ManyToManyField(LeaverequestFile, blank=True)
     comment = models.TextField(null=True, verbose_name=_("Comment"))
     created_at = models.DateTimeField(
         auto_now_add=True,
@@ -689,6 +698,7 @@ class LeaverequestComment(models.Model):
 
     def __str__(self) -> str:
         return f"{self.comment}"
+
 
 class LeaveAllocationRequest(models.Model):
     leave_type_id = models.ForeignKey(
@@ -730,24 +740,24 @@ class LeaveAllocationRequest(models.Model):
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
-    
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.skip_history = False
-    
+
     def tracking(self):
         return get_diff(self)
-        
+
     def allocate_tracking(self):
         """
         This method is used to return the tracked history of the instance
         """
-        
+
         try:
             histories = get_diff(self)[:2]
             for history in histories:
-                if history['type'] == 'Changes':
-                    for update in history['changes']:
+                if history["type"] == "Changes":
+                    for update in history["changes"]:
                         if update["field_name"] == "requested_days":
                             return update
         except:
@@ -758,10 +768,10 @@ class LeaveallocationrequestComment(models.Model):
     """
     LeaveallocationrequestComment Model
     """
-    
+
     request_id = models.ForeignKey(LeaveAllocationRequest, on_delete=models.CASCADE)
     employee_id = models.ForeignKey(Employee, on_delete=models.CASCADE)
-    files = models.ManyToManyField(LeaverequestFile,blank=True)
+    files = models.ManyToManyField(LeaverequestFile, blank=True)
     comment = models.TextField(null=True, verbose_name=_("Comment"))
     created_at = models.DateTimeField(
         auto_now_add=True,
