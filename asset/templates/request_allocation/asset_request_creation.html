@@ -13,7 +13,7 @@
 {% endif %}
 <form hx-post="{%url 'asset-request-creation' %}" hx-target="#asset-request-allocation-modal-target">
     {% csrf_token %}
-    <div class="m-3">
+    <div class="oh-general__tab-target oh-profile-section">
         <div class="oh-input__group ">
             <label class="oh-input__label" for="{{asset_request_form.requested_employee_id.id_for_label}}">{% trans "Requesting User" %}</label>
             {{asset_request_form.requested_employee_id}}
@@ -29,10 +29,10 @@
             {{asset_request_form.description}}
             {{asset_request_form.description.errors}}
         </div>
-    </div>
-    <div class="oh-modal__dialog-footer">
-        <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow ">
-            {% trans "Save" %}
-        </button>
+        <div class="d-flex flex-row-reverse mt-2">
+            <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow ">
+                {% trans "Save" %}
+            </button>
+        </div>
     </div>
 </form>

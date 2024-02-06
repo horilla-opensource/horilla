@@ -11,7 +11,6 @@ class DocumentRequestForm(ModelForm):
     #     queryset=DocumentRequest._meta.get_field('employee').remote_field.model.objects.all(),
     #     required=False,
     # )
-
     class Meta:
         model = DocumentRequest
         fields = '__all__'
@@ -29,6 +28,8 @@ class DocumentForm(ModelForm):
     """ form to create a new Document"""
     expiry_date = forms.DateField(widget=forms.DateInput(attrs={"type": "date"}),required=False,)
 
+    verbose_name = "Document"
+    
     class Meta:
         model = Document
         fields = "__all__"
@@ -47,6 +48,7 @@ class DocumentForm(ModelForm):
 
 class DocumentUpdateForm(ModelForm):
     """ form to Update a Document"""
+    verbose_name = "Document"
 
     class Meta:
         model = Document

@@ -302,6 +302,7 @@ def profile_asset_tab(request, emp_id):
     Returns: return profile-asset-tab template
 
     """
+    print("HEREEEEEEEEEEEEEEEEEEEEEEEEE")
     assets = AssetAssignment.objects.filter(assigned_to_employee_id=emp_id)
     context = {
         "assets": assets,
