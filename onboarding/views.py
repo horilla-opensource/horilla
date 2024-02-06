@@ -32,7 +32,8 @@ from horilla import settings
 from horilla.decorators import login_required, hx_request_required
 from horilla.decorators import permission_required
 from base.methods import generate_pdf, get_key_instances, get_pagination, sortby
-from recruitment.models import Candidate, Recruitment, RecruitmentMailTemplate
+from recruitment.forms import RejectedCandidateForm
+from recruitment.models import Candidate, Recruitment, RecruitmentMailTemplate, RejectedCandidate
 from recruitment.filters import CandidateFilter, RecruitmentFilter
 from employee.models import Employee, EmployeeWorkInformation, EmployeeBankDetails
 from django.db.models import ProtectedError
@@ -1601,3 +1602,39 @@ def change_task_status(request):
         candidate_task.status = status
         candidate_task.save()
     return HttpResponse("Success")
+
+
+@login_required
+@permission_required("recruitment.change_recruitment")
+def update_offer_letter_status(request):
+    """
+    This method is used to update the offer letter status
+    """
+    candidate_id = request.GET["candidate_id"]
+    status = request.GET["status"]
+    candidate = Candidate.objects.get(id=candidate_id)
+    if status in ["not_sent", "sent", "accepted", "rejected", "joined"]:
+        candidate.offer_letter_status = status
+        candidate.save()
+    return HttpResponse("Success")
+
+
+@login_required
+@permission_required("recruitment.add_rejectedcandidate")
+def add_to_rejected_candidates(request):
+    """
+    This method is used to add candidates to rejected candidates
+    """
+    candidate_id = request.GET.get("candidate_id")
+    instance = None
+    if candidate_id:
+        instance = RejectedCandidate.objects.filter(candidate_id=candidate_id).first()
+        
+    form = RejectedCandidateForm(initial={"candidate_id": candidate_id},instance=instance)
+    if request.method == "POST":
+        form = RejectedCandidateForm(request.POST,instance=instance)
+        if form.is_valid():
+            form.save()
+            messages.success(request,"Candidate reject reason saved")
+            return HttpResponse("<script>window.location.reload()</script>")
+    return render(request, "onboarding/rejection/form.html", {"form": form})

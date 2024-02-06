@@ -3,6 +3,7 @@ urls.py
 
 This module is used to map url path with view methods.
 """
+
 from django.urls import path
 from onboarding import views
 from recruitment.models import Candidate
@@ -135,4 +136,14 @@ urlpatterns = [
         name="candidate-tasks-status",
     ),
     path("change-task-status", views.change_task_status, name="change-task-status"),
+    path(
+        "update-offer-letter-status",
+        views.update_offer_letter_status,
+        name="update-offer-letter-status",
+    ),
+    path(
+        "add-to-rejected-candidates",
+        views.add_to_rejected_candidates,
+        name="add-to-rejected-candidates",
+    ),
 ]

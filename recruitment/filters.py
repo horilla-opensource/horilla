@@ -4,10 +4,18 @@ filters.py
 This page is used to register filter for recruitment models
 
 """
+
 import uuid
 import django_filters
 from django import forms
-from recruitment.models import Candidate, Recruitment, SkillZone, SkillZoneCandidate, Stage, RecruitmentSurvey
+from recruitment.models import (
+    Candidate,
+    Recruitment,
+    SkillZone,
+    SkillZoneCandidate,
+    Stage,
+    RecruitmentSurvey,
+)
 from base.filters import FilterSet
 
 # from django.forms.widgets import Boo
@@ -108,6 +116,8 @@ class CandidateFilter(FilterSet):
             "skillzonecandidate_set__candidate_id",
             "portal_sent",
             "joining_set",
+            "rejected_candidate__reject_reason_id",
+            "offer_letter_status",
         ]
 
     def __init__(self, *args, **kwargs):
@@ -300,6 +310,7 @@ class CandidateReGroup:
         ("hired", "Status"),
     ]
 
+
 class SkillZoneFilter(FilterSet):
     """
     Skillzone FIlter
@@ -316,16 +327,19 @@ class SkillZoneFilter(FilterSet):
         fields = "__all__"
         exclude = [
             "objects",
-            'company_id',
-            'description',
+            "company_id",
+            "description",
         ]
+
 
 class SkillZoneCandFilter(FilterSet):
     """
     Skillzone Candidate FIlter
     """
 
-    search = django_filters.CharFilter(field_name="candidate_id__name", lookup_expr="icontains")
+    search = django_filters.CharFilter(
+        field_name="candidate_id__name", lookup_expr="icontains"
+    )
 
     class Meta:
         """
@@ -336,6 +350,6 @@ class SkillZoneCandFilter(FilterSet):
         fields = "__all__"
         exclude = [
             "skill_zone_id",
-            'reason',
-            'objects',
+            "reason",
+            "objects",
         ]

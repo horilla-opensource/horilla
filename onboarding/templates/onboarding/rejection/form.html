@@ -1,0 +1,7 @@
+<form hx-post="{% url 'add-to-rejected-candidates' %}?candidate_id={{form.instance.candidate_id.id}}">
+    {{form.as_p}}
+</form>
+
+<script>
+    $("form[hx-post] .col-md-6").removeClass("col-md-6");
+</script>

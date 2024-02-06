@@ -1,14 +1,4 @@
-{% extends 'index.html' %} {% load i18n %} {% load static %} {% block content %} {% if messages %}
-<div class="oh-wrapper">
-  {% for message in messages %}
-  <div class="oh-alert-container">
-    <div class="oh-alert oh-alert--animated {{message.tags}}">
-      {{ message }}
-    </div>
-  </div>
-  {% endfor %}
-</div>
-{% endif %}
+{% extends 'index.html' %} {% load i18n %} {% load static %} {% block content %}
 
 <div class="oh-wrapper">
   <div class="oh-alert-container" id="message"></div>
@@ -148,7 +138,7 @@
           </div>
           `)
         )"
-          class="oh-btn oh-btn--secondary oh-btn--shadow" id="trigger-onboarding">
+          class="oh-btn oh-btn--secondary oh-btn--shadow" id="trigger-onboarding" title="Send portal link / Trigger Onboarding">
           {% trans "Send Portal Link" %}
         </button>
       </div>
