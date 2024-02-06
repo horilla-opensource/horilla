@@ -1,8 +1,23 @@
 {% load i18n %} {% load static %} 
 {% load basefilters %}
 {% load attendancefilters %}
+
+
 <div class="oh-wrapper mt-4">
-  <div class="oh-tabs">
+	<span class="fw-bold" style="font-size:17px;"> {% trans "Current Shift" %} &nbsp : &nbsp {{shift_data.0.employee_id.employee_work_info.shift_id}}.</span>
+
+	<button style="display:inline-block;"
+			class="oh-btn oh-btn--secondary ms-3"
+			data-toggle="oh-modal-toggle"
+			data-target="#shiftRequestModal"
+			hx-get="{% url 'shift-request-reallocate' %}?emp_id={{request.user.employee_get.id}}"
+			hx-target="#shiftRequestTargetModal"
+		>
+		<ion-icon name="add-sharp" class="mr-1 md hydrated" role="img" aria-label="add sharp"></ion-icon>{% trans "Reallocate Shift." %}
+	</button>
+
+
+  <div class="oh-tabs mt-3">
     <ul class="oh-tabs__tablist">
       <li class="oh-tabs__tab oh-tabs__tab--active" data-target="#shift_tab_1">
         <div>
@@ -896,6 +911,7 @@
       <div id="shiftRequestTargetModal"></div>
     </div>
   </div>
+  
 </div>
 
 <div
