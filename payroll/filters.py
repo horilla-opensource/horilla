@@ -78,6 +78,7 @@ class ContractFilter(FilterSet):
             "filing_status",
             "pay_frequency",
             "contract_status",
+            "wage",
         ]
 
     def __init__(self, data=None, queryset=None, *, request=None, prefix=None):

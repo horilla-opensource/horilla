@@ -17,7 +17,7 @@ from django.db.models import Q, ProtectedError
 from notifications.signals import notify
 from base.models import Company
 from horilla.decorators import login_required, permission_required
-from base.methods import export_data, generate_colors, get_key_instances
+from base.methods import export_data, generate_colors, get_key_instances, sortby
 from employee.models import Employee, EmployeeWorkInformation
 from base.methods import closest_numbers
 from base.methods import generate_pdf
@@ -233,6 +233,7 @@ def contract_filter(request):
         field_copy = field.replace(".", "__")
         contracts = contracts.order_by(field_copy)
         template = "payroll/contract/group_by.html"
+    contracts = sortby(request,contracts,"orderby")
     contracts = paginator_qry(contracts, request.GET.get("page"))
     contract_ids_json = json.dumps([instance.id for instance in contracts.object_list])
     data_dict = parse_qs(query_string)

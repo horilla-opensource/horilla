@@ -51,7 +51,7 @@
 									<div class="oh-sticky-table__th">{% trans "Basic Salary" %}</div>
 									<div class="oh-sticky-table__th">{% trans "Filing Status" %}</div>
 									<div class="oh-sticky-table__th">{% trans "Status" %}</div>
-									<div class="oh-sticky-table__th"></div>
+									<div class="oh-sticky-table__th oh-sticky-table__right">{% trans "Actions" %}</div>
 								</div>
 						  </div>
 						  <div class="oh-sticky-table__tbody">
@@ -84,7 +84,7 @@
 								<div class="oh-sticky-table__td">
 									{{ contract.get_contract_status_display}}
 								</div>
-								<div class="oh-sticky-table__td">
+								<div class="oh-sticky-table__td oh-sticky-table__right">
 									<div class="oh-btn-group">
 										<a
 										onclick="event.stopPropagation()"
@@ -101,19 +101,19 @@
 											></ion-icon>
 										</a>
 										<a
-              								onclick = "event.preventDefault();event.stopPropagation();"
-              								class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
-              								hx-confirm="{% trans 'Do you want to delete this Contract?' %}"
-              								hx-post="{% url 'delete-contract' contract.id %}?{{pd}}"
-              								hx-target="#payroll-contract-container"
-              								hx-swap="innerHTML"
-              								title="{% trans 'Delete' %}"
-            							  >
+											onclick = "event.preventDefault();event.stopPropagation();"
+											class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+											hx-confirm="{% trans 'Do you want to delete this Contract?' %}"
+											hx-post="{% url 'delete-contract' contract.id %}?{{pd}}"
+											hx-target="#payroll-contract-container"
+											hx-swap="innerHTML"
+											title="{% trans 'Delete' %}"
+											>
 											<ion-icon
-											name="trash-outline"
-											role="img"
-											class="md hydrated"
-											aria-label="trash outline"
+												name="trash-outline"
+												role="img"
+												class="md hydrated"
+												aria-label="trash outline"
 											></ion-icon>
 										</a>
 									</div>

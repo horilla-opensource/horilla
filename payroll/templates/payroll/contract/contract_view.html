@@ -52,6 +52,14 @@
       </a>
     </div>
     <div class="oh-main__titlebar oh-main__titlebar--right">
+
+      <form
+        hx-get='{% url "contract-filter" %}'
+        id="filterForm"
+        hx-swap="innerHTML"
+        hx-target="#payroll-contract-container"
+        class="d-flex"
+      >
       <div
         class="oh-input-group oh-input__search-group"
         :class="searchShow ? 'oh-input__search-group--show' : ''"
@@ -67,20 +75,13 @@
           id="contract-filter"
           name="search"
           placeholder="{% trans 'Search' %}"
-          hx-get="{% url 'contract-filter' %}"
+          onkeyup="$('.filterButton')[0].click()"
+          {% comment %} hx-get="{% url 'contract-filter' %}"
           hx-trigger="keyup changed delay:500ms, search"
           hx-target="#payroll-contract-container"
-          hx-swap="innerHTML"
+          hx-swap="innerHTML" {% endcomment %}
         />
       </div>
-
-      <form
-        hx-get='{% url "contract-filter" %}'
-        id="filterForm"
-        hx-swap="innerHTML"
-        hx-target="#payroll-contract-container"
-        class="d-flex"
-      >
         <div class="oh-dropdown" x-data="{open: false}">
           <button
             class="oh-btn ml-2"
@@ -313,3 +314,6 @@
 </script>
 <script src="{% static 'payroll/action.js' %}"></script>
 {% endblock content %}
+
+
+
