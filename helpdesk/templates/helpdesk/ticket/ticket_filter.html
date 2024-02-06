@@ -65,25 +65,25 @@
                         <div class="row">
                             <div class="col-sm-12 col-md-12 col-lg-12">
                                 <div class="oh-input-group">
-                                    <label class="oh-label">{% trans "Ticket Type" %}</label>
+                                    <label class="oh-label" for="{{f.form.ticket_type.id_for_label}}">{% trans "Ticket Type" %}</label>
                                     {{f.form.ticket_type}}
                                 </div>
                             </div>
                             <div class="col-sm-12 col-md-12 col-lg-6">
                                 <div class="oh-input-group">
-                                    <label class="oh-label">{% trans "Owner" %}</label>
+                                    <label class="oh-label" for="{{f.form.employee_id.id_for_label}}">{% trans "Owner" %}</label>
                                     {{f.form.employee_id}}
                                 </div>
                             </div>
                             <div class="col-sm-12 col-md-12 col-lg-6">
                                 <div class="oh-input-group">
-                                    <label class="oh-label">{% trans "Assigned to" %}</label>
+                                    <label class="oh-label" for="{{f.form.assigned_to.id_for_label}}">{% trans "Assigned to" %}</label>
                                     {{f.form.assigned_to}}
                                 </div>
                             </div>
                             <div class="col-sm-12 col-md-12 col-lg-6">
                                 <div class="oh-input-group">
-                                    <label class="oh-label"
+                                    <label class="oh-label" for="{{f.form.to_date.id_for_label}}"
                                         >{% trans "Till date" %}</label
                                     >
                                     {{f.form.to_date}}
@@ -91,7 +91,7 @@
                             </div>
                             <div class="col-sm-12 col-md-12 col-lg-6">
                                 <div class="oh-input-group">
-                                    <label class="oh-label"
+                                    <label class="oh-label" for="{{f.form.priority.id_for_label}}"
                                         >{% trans "Priority" %}</label
                                     >
                                     {{f.form.priority}}
@@ -99,7 +99,7 @@
                             </div>
                             <div class="col-sm-12 col-md-12 col-lg-6">
                                 <div class="oh-input-group">
-                                    <label class="oh-label"
+                                    <label class="oh-label" for="{{f.form.tags.id_for_label}}"
                                         >{% trans "Tags" %}</label
                                     >
                                     {{f.form.tags}}
@@ -107,7 +107,7 @@
                             </div>
                             <div class="col-sm-12 col-md-12 col-lg-6">
                                 <div class="oh-input-group">
-                                    <label class="oh-label"
+                                    <label class="oh-label" for="{{f.form.is_active.id_for_label}}"
                                         >{% trans "Is Active" %}</label
                                     >
                                     {{f.form.is_active}}
@@ -115,7 +115,7 @@
                             </div>
                             <div class="col-sm-12 col-md-12">
                                 <div class="oh-input-group">
-                                    <label class="oh-label">{% trans "Status" %}</label>
+                                    <label class="oh-label" for="{{f.form.status.id_for_label}}">{% trans "Status" %}</label>
                                     {{f.form.status}}
                                 </div>
                             </div>
@@ -150,11 +150,11 @@
                 style="display: none"
             >
                 <div class="oh-accordion">
-                    <label>{% trans "Group By" %}</label>
+                    <label for="id_field">{% trans "Group By" %}</label>
                     <div class="row">
                         <div class="col-sm-12 col-md-12 col-lg-6">
                             <div class="oh-input-group">
-                                <label class="oh-label">{% trans "Field" %}</label>
+                                <label class="oh-label" for="id_field">{% trans "Field" %}</label>
                             </div>
                         </div>
                         <div class="col-sm-12 col-md-12 col-lg-6">

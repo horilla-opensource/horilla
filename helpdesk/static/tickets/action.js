@@ -1,4 +1,4 @@
-var TicketarchiveMessages = {
+var TicketArchiveMessages = {
   ar: "",
   de: "",
   es: "",
@@ -6,7 +6,7 @@ var TicketarchiveMessages = {
   fr: "",
 };
 
-var TicketunarchiveMessages = {
+var ticketUnarchiveMessages = {
   ar: "",
   de: "",
   es: "",
@@ -14,7 +14,7 @@ var TicketunarchiveMessages = {
   fr: "",
 };
 
-var TicketdeleteMessages = {
+var ticketDeleteMessages = {
   ar: "",
   de: "",
   es: "",
@@ -22,7 +22,7 @@ var TicketdeleteMessages = {
   fr: "",
 };
 
-var norowMessages = {
+var noRowMessages = {
   ar: "لم يتم تحديد أي صفوف.",
   de: "Es wurden keine Zeilen ausgewählt.",
   es: "No se han seleccionado filas.",
@@ -43,40 +43,38 @@ function makeTicketsListUnique(list) {
   return Array.from(new Set(list));
 }
 
-
-	// TO recogonise recently used tab
-  var activeTab = localStorage.getItem("activeTabTicket");
-  if (activeTab != null) {
-      var tab = $(`[data-target="${activeTab}"]`);
-      var tabContent = $(activeTab);
-      $(tab).attr("class", "oh-tabs__tab oh-tabs__tab--active");
-      $(tabContent).attr(
-          "class",
-          "oh-tabs__content oh-tabs__content--active"
-      );
-  } else {
-      $('[data-target="#tab_1"]').attr(
-          "class",
-          "oh-tabs__tab oh-tabs__tab--active"
-      );
-      $("#tab_1").attr("class", "oh-tabs__content oh-tabs__content--active");
-  }
-  $(".oh-tabs__tab").click(function (e) {
-      var activeTab = $(this).attr("data-target");
-      localStorage.setItem("activeTabTicket", activeTab);
-  });
+// TO recognize recently used tab
+var activeTab = localStorage.getItem("activeTabTicket");
+if (activeTab != null) {
+  var tab = $(`[data-target="${activeTab}"]`);
+  var tabContent = $(activeTab);
+  $(tab).attr("class", "oh-tabs__tab oh-tabs__tab--active");
+  $(tabContent).attr("class", "oh-tabs__content oh-tabs__content--active");
+} else {
+  $('[data-target="#tab_1"]').attr(
+    "class",
+    "oh-tabs__tab oh-tabs__tab--active"
+  );
+  $("#tab_1").attr("class", "oh-tabs__content oh-tabs__content--active");
+}
+$(".oh-tabs__tab").click(function (e) {
+  var activeTab = $(this).attr("data-target");
+  localStorage.setItem("activeTabTicket", activeTab);
+});
 
 // TO toggle class for select all button in All tickets tab
 $(".allTicketsAll").change(function (e) {
   var is_checked = $(this).is(":checked");
   if (is_checked) {
-    $(".all-tickets-row").prop("checked", true)
-    .closest(".oh-sticky-table__tr")
-    .addClass("highlight-selected");
+    $(".all-tickets-row")
+      .prop("checked", true)
+      .closest(".oh-sticky-table__tr")
+      .addClass("highlight-selected");
   } else {
-    $(".all-tickets-row").prop("checked", false)
-    .closest(".oh-sticky-table__tr")
-    .removeClass("highlight-selected");
+    $(".all-tickets-row")
+      .prop("checked", false)
+      .closest(".oh-sticky-table__tr")
+      .removeClass("highlight-selected");
   }
 });
 
@@ -84,13 +82,15 @@ $(".allTicketsAll").change(function (e) {
 $(".allocatedTicketsAll").change(function (e) {
   var is_checked = $(this).is(":checked");
   if (is_checked) {
-    $(".allocted-tickets-row").prop("checked", true)
-    .closest(".oh-sticky-table__tr")
-    .addClass("highlight-selected");
+    $(".allocated-tickets-row")
+      .prop("checked", true)
+      .closest(".oh-sticky-table__tr")
+      .addClass("highlight-selected");
   } else {
-    $(".allocted-tickets-row").prop("checked", false)
-    .closest(".oh-sticky-table__tr")
-    .removeClass("highlight-selected");
+    $(".allocated-tickets-row")
+      .prop("checked", false)
+      .closest(".oh-sticky-table__tr")
+      .removeClass("highlight-selected");
   }
 });
 
@@ -98,13 +98,15 @@ $(".allocatedTicketsAll").change(function (e) {
 $(".myTicketsAll").change(function (e) {
   var is_checked = $(this).is(":checked");
   if (is_checked) {
-    $(".my-tickets-row").prop("checked", true)
-    .closest(".oh-sticky-table__tr")
-    .addClass("highlight-selected");
+    $(".my-tickets-row")
+      .prop("checked", true)
+      .closest(".oh-sticky-table__tr")
+      .addClass("highlight-selected");
   } else {
-    $(".my-tickets-row").prop("checked", false)
-    .closest(".oh-sticky-table__tr")
-    .removeClass("highlight-selected");
+    $(".my-tickets-row")
+      .prop("checked", false)
+      .closest(".oh-sticky-table__tr")
+      .removeClass("highlight-selected");
   }
 });
 
@@ -126,14 +128,28 @@ function getCookie(name) {
 
 // To get the current language code
 function getCurrentLanguageCode(callback) {
-  $.ajax({
-    type: "GET",
-    url: "/employee/get-language-code/",
-    success: function (response) {
-      var languageCode = response.language_code;
-      callback(languageCode); // Pass the language code to the callback
-    },
-  });
+  var languageCode = $("#main-section-data").attr("data-lang");
+  var allowedLanguageCodes = ["ar", "de", "es", "en", "fr"];
+  if (allowedLanguageCodes.includes(languageCode)) {
+    callback(languageCode);
+  } else {
+    $.ajax({
+      type: "GET",
+      url: "/employee/get-language-code/",
+      success: function (response) {
+        var ajaxLanguageCode = response.language_code;
+        $("#main-section-data").attr("data-lang", ajaxLanguageCode);
+        callback(
+          allowedLanguageCodes.includes(ajaxLanguageCode)
+            ? ajaxLanguageCode
+            : "en"
+        );
+      },
+      error: function () {
+        callback("en");
+      },
+    });
+  }
 }
 
 // To mark tick on the selected checkboxes
@@ -143,24 +159,24 @@ function tickTicketsCheckboxes() {
   toggleHighlight(uniqueIds);
   click = $("#selectedTickets").attr("data-clicked");
   if (click === "1") {
-    var tableName = localStorage.getItem('activeTabTicket');
-    if (tableName === '#tab_1'){
-        tableName = 'my';
-        $('.myTicketsAll').prop('checked', true);
-    }
-    else if (tableName === '#tab_2'){
-        tableName = 'allocated';
-        $('.allocatedTicketsAll').prop('checked', true);
-    }
-    else {
-        tableName = 'all';    
-        $('.allTicketsAll').prop('checked', true);
-        $('.myTicketsAll').prop('checked', true);
+    var tableName = localStorage.getItem("activeTabTicket");
+    if (tableName === "#tab_1") {
+      tableName = "my";
+      $(".myTicketsAll").prop("checked", true);
+    } else if (tableName === "#tab_2") {
+      tableName = "allocated";
+      $(".allocatedTicketsAll").prop("checked", true);
+    } else {
+      tableName = "all";
+      $(".allTicketsAll").prop("checked", true);
+      $(".myTicketsAll").prop("checked", true);
     }
   }
   uniqueIds.forEach(function (id) {
-    $("#" + id).prop("checked", true).closest(".oh-sticky-table__tr")
-    .addClass("highlight-selected");
+    $("#" + id)
+      .prop("checked", true)
+      .closest(".oh-sticky-table__tr")
+      .addClass("highlight-selected");
   });
   var selectedCount = uniqueIds.length;
 
@@ -181,9 +197,9 @@ function tickTicketsCheckboxes() {
 function addingTicketsIds() {
   var ids = JSON.parse($("#selectedTickets").attr("data-ids") || "[]");
   var selectedCount = 0;
-  var tableName = localStorage.getItem('activeTabTicket');
-  if (tableName === '#tab_1'){
-    tableName = 'my'
+  var tableName = localStorage.getItem("activeTabTicket");
+  if (tableName === "#tab_1") {
+    tableName = "my";
     $(".my-tickets-row").each(function () {
       if ($(this).is(":checked")) {
         ids.push(this.id);
@@ -194,10 +210,9 @@ function addingTicketsIds() {
         }
       }
     });
-  }
-  else if (tableName === '#tab_2'){
-    tableName = 'allocated'
-    $(".allocted-tickets-row").each(function () {
+  } else if (tableName === "#tab_2") {
+    tableName = "allocated";
+    $(".allocated-tickets-row").each(function () {
       if ($(this).is(":checked")) {
         ids.push(this.id);
       } else {
@@ -207,9 +222,8 @@ function addingTicketsIds() {
         }
       }
     });
-  }
-  else{
-    tableName = 'all'  
+  } else {
+    tableName = "all";
     $(".all-tickets-row").each(function () {
       if ($(this).is(":checked")) {
         ids.push(this.id);
@@ -219,7 +233,7 @@ function addingTicketsIds() {
           ids.splice(index, 1);
         }
       }
-    });  
+    });
   }
 
   ids = makeTicketsListUnique(ids);
@@ -244,26 +258,29 @@ function selectAllTickets() {
   $("#selectedTickets").attr("data-clicked", 1);
   $("#selectedShowTickets").removeAttr("style");
   var savedFilters = JSON.parse(localStorage.getItem("savedFilters"));
-  var tableName = localStorage.getItem('activeTabTicket');
-  if (tableName === '#tab_1'){
-    tableName = 'my'
-    $('.myTicketsAll').prop('checked',true)
+  var tableName = localStorage.getItem("activeTabTicket");
+  if (tableName === "#tab_1") {
+    tableName = "my";
+    $(".myTicketsAll").prop("checked", true);
   }
-  if (tableName === '#tab_2'){
-    tableName = 'allocated'
-    $('.allocatedTicketsAll').prop('checked',true)
-  }
-  else{
-    tableName = 'all'    
-    $('.allocatedTicketsAll').prop('checked',true)
-    $('.myTicketsAll').prop('checked',true)
-    $('.allocatedTicketsAll').prop('checked',true)
+  if (tableName === "#tab_2") {
+    tableName = "allocated";
+    $(".allocatedTicketsAll").prop("checked", true);
+  } else {
+    tableName = "all";
+    $(".allocatedTicketsAll").prop("checked", true);
+    $(".myTicketsAll").prop("checked", true);
+    $(".allocatedTicketsAll").prop("checked", true);
   }
   if (savedFilters && savedFilters["filterData"] !== null) {
     var filter = savedFilters["filterData"];
     $.ajax({
       url: "/helpdesk/tickets-select-filter",
-      data: { page: "all", filter: JSON.stringify(filter), "tableName":tableName },
+      data: {
+        page: "all",
+        filter: JSON.stringify(filter),
+        tableName: tableName,
+      },
       type: "GET",
       dataType: "json",
       success: function (response) {
@@ -285,7 +302,7 @@ function selectAllTickets() {
   } else {
     $.ajax({
       url: "/helpdesk/tickets-select-filter",
-      data: { page: "all", "tableName": tableName },
+      data: { page: "all", tableName: tableName },
       type: "GET",
       dataType: "json",
       success: function (response) {
@@ -293,8 +310,10 @@ function selectAllTickets() {
 
         for (var i = 0; i < ticketIds.length; i++) {
           var tickId = ticketIds[i];
-          $("#" + tickId).prop("checked", true).closest(".oh-sticky-table__tr")
-          .addClass("highlight-selected");
+          $("#" + tickId)
+            .prop("checked", true)
+            .closest(".oh-sticky-table__tr")
+            .addClass("highlight-selected");
         }
         var previousIds = $("#selectedTickets").attr("data-ids");
         $("#selectedTickets").attr(
@@ -315,25 +334,22 @@ function selectAllTickets() {
 
 function unselectAllTickets() {
   $("#selectedTickets").attr("data-clicked", 0);
-  var tableName = localStorage.getItem('activeTabTicket');
-  if (tableName === '#tab_1'){
-    tableName = 'my'
-    $('.myTicketsAll').prop('checked',false)
-  }
-  else if (tableName === '#tab_2'){
-    tableName = 'allocated'
-    $('.allocatedTicketsAll').prop('checked',false)
-  }
-  else{
-    tableName = 'all'
-    $('.allTicketsAll').prop('checked',false)
-    $('.myTicketsAll').prop('checked',false)
-    $('.allocatedTicketsAll').prop('checked',false)
-
+  var tableName = localStorage.getItem("activeTabTicket");
+  if (tableName === "#tab_1") {
+    tableName = "my";
+    $(".myTicketsAll").prop("checked", false);
+  } else if (tableName === "#tab_2") {
+    tableName = "allocated";
+    $(".allocatedTicketsAll").prop("checked", false);
+  } else {
+    tableName = "all";
+    $(".allTicketsAll").prop("checked", false);
+    $(".myTicketsAll").prop("checked", false);
+    $(".allocatedTicketsAll").prop("checked", false);
   }
   $.ajax({
     url: "/helpdesk/tickets-select-filter",
-    data: { page: "all", filter: "{}", "tableName": tableName },
+    data: { page: "all", filter: "{}", tableName: tableName },
     type: "GET",
     dataType: "json",
     success: function (response) {
@@ -341,9 +357,10 @@ function unselectAllTickets() {
 
       for (var i = 0; i < ticketIds.length; i++) {
         var tickId = ticketIds[i];
-        $("#" + tickId).prop("checked", false)
-        .closest(".oh-sticky-table__tr")
-        .removeClass("highlight-selected");
+        $("#" + tickId)
+          .prop("checked", false)
+          .closest(".oh-sticky-table__tr")
+          .removeClass("highlight-selected");
       }
       var ids = JSON.parse($("#selectedTickets").attr("data-ids") || "[]");
       var uniqueIds = makeTicketsListUnique(ids);
@@ -360,160 +377,158 @@ function unselectAllTickets() {
   });
 }
 
-
 function ticketBulkArchive(e) {
-    e.preventDefault();
+  e.preventDefault();
 
-    var languageCode = null;
-    getCurrentLanguageCode(function (code) {
-      languageCode = code;
-      var confirmMessage = TicketarchiveMessages[languageCode];
-      var textMessage = norowMessages[languageCode];
-      ids = [];
-      ids.push($("#selectedTickets").attr("data-ids"));
-      ids = JSON.parse($("#selectedTickets").attr("data-ids"));
-      if (ids.length === 0) {
-            Swal.fire({
-            text: textMessage,
-            icon: "warning",
-            confirmButtonText: "Close",
-            });
-        } else {
-          Swal.fire({
-            text: confirmMessage,
-            icon: "info",
-            showCancelButton: true,
-            confirmButtonColor: "#008000",
-            cancelButtonColor: "#d33",
-            confirmButtonText: "Confirm",
-          }).then(function (result) {
-          if (result.isConfirmed) {
-            e.preventDefault();
-            ids = [];
-            ids.push($("#selectedTickets").attr("data-ids"));
-            ids = JSON.parse($("#selectedTickets").attr("data-ids"));
-            $.ajax({
-                type: "POST",
-                url: "/helpdesk/tickets-bulk-archive?is_active=False",
-                data: {
-                    csrfmiddlewaretoken: getCookie("csrftoken"),
-                ids: JSON.stringify(ids),
-                },
-                success: function (response, textStatus, jqXHR) {
-                    if (jqXHR.status === 200) {
-                        location.reload(); // Reload the current page
-                    } else {
-                        // console.log("Unexpected HTTP status:", jqXHR.status);
-                    }
-                },
-            });
-           }
-        });
-      }
-    });
+  var languageCode = null;
+  getCurrentLanguageCode(function (code) {
+    languageCode = code;
+    var confirmMessage = TicketArchiveMessages[languageCode];
+    var textMessage = noRowMessages[languageCode];
+    ids = [];
+    ids.push($("#selectedTickets").attr("data-ids"));
+    ids = JSON.parse($("#selectedTickets").attr("data-ids"));
+    if (ids.length === 0) {
+      Swal.fire({
+        text: textMessage,
+        icon: "warning",
+        confirmButtonText: "Close",
+      });
+    } else {
+      Swal.fire({
+        text: confirmMessage,
+        icon: "info",
+        showCancelButton: true,
+        confirmButtonColor: "#008000",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Confirm",
+      }).then(function (result) {
+        if (result.isConfirmed) {
+          e.preventDefault();
+          ids = [];
+          ids.push($("#selectedTickets").attr("data-ids"));
+          ids = JSON.parse($("#selectedTickets").attr("data-ids"));
+          $.ajax({
+            type: "POST",
+            url: "/helpdesk/tickets-bulk-archive?is_active=False",
+            data: {
+              csrfmiddlewaretoken: getCookie("csrftoken"),
+              ids: JSON.stringify(ids),
+            },
+            success: function (response, textStatus, jqXHR) {
+              if (jqXHR.status === 200) {
+                location.reload(); // Reload the current page
+              } else {
+                // console.log("Unexpected HTTP status:", jqXHR.status);
+              }
+            },
+          });
+        }
+      });
+    }
+  });
 }
 
 function ticketBulkUnArchive(e) {
-    e.preventDefault();
+  e.preventDefault();
 
-    var languageCode = null;
-    getCurrentLanguageCode(function (code) {
-      languageCode = code;
-      var confirmMessage = TicketunarchiveMessages[languageCode];
-      var textMessage = norowMessages[languageCode];
-      ids = [];
-      ids.push($("#selectedTickets").attr("data-ids"));
-      ids = JSON.parse($("#selectedTickets").attr("data-ids"));
-      if (ids.length === 0) {
-            Swal.fire({
-            text: textMessage,
-            icon: "warning",
-            confirmButtonText: "Close",
-            });
-        } else {
-          Swal.fire({
-            text: confirmMessage,
-            icon: "info",
-            showCancelButton: true,
-            confirmButtonColor: "#008000",
-            cancelButtonColor: "#d33",
-            confirmButtonText: "Confirm",
-          }).then(function (result) {
-          if (result.isConfirmed) {
-                e.preventDefault();
-                ids = [];
-                ids.push($("#selectedTickets").attr("data-ids"));
-                ids = JSON.parse($("#selectedTickets").attr("data-ids"));
-                $.ajax({
-                    type: "POST",
-                    url: "/helpdesk/tickets-bulk-archive?is_active=True",
-                    data: {
-                        csrfmiddlewaretoken: getCookie("csrftoken"),
-                        ids: JSON.stringify(ids),
-                    },
-                    success: function (response, textStatus, jqXHR) {
-                        if (jqXHR.status === 200) {
-                            location.reload(); // Reload the current page
-                        } else {
-                            // console.log("Unexpected HTTP status:", jqXHR.status);
-                        }
-                    },
-                });
-            }
-        });
+  var languageCode = null;
+  getCurrentLanguageCode(function (code) {
+    languageCode = code;
+    var confirmMessage = ticketUnarchiveMessages[languageCode];
+    var textMessage = noRowMessages[languageCode];
+    ids = [];
+    ids.push($("#selectedTickets").attr("data-ids"));
+    ids = JSON.parse($("#selectedTickets").attr("data-ids"));
+    if (ids.length === 0) {
+      Swal.fire({
+        text: textMessage,
+        icon: "warning",
+        confirmButtonText: "Close",
+      });
+    } else {
+      Swal.fire({
+        text: confirmMessage,
+        icon: "info",
+        showCancelButton: true,
+        confirmButtonColor: "#008000",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Confirm",
+      }).then(function (result) {
+        if (result.isConfirmed) {
+          e.preventDefault();
+          ids = [];
+          ids.push($("#selectedTickets").attr("data-ids"));
+          ids = JSON.parse($("#selectedTickets").attr("data-ids"));
+          $.ajax({
+            type: "POST",
+            url: "/helpdesk/tickets-bulk-archive?is_active=True",
+            data: {
+              csrfmiddlewaretoken: getCookie("csrftoken"),
+              ids: JSON.stringify(ids),
+            },
+            success: function (response, textStatus, jqXHR) {
+              if (jqXHR.status === 200) {
+                location.reload(); // Reload the current page
+              } else {
+                // console.log("Unexpected HTTP status:", jqXHR.status);
+              }
+            },
+          });
         }
-    });
+      });
+    }
+  });
 }
 
 function ticketsBulkDelete(e) {
-    e.preventDefault();
+  e.preventDefault();
 
-    var languageCode = null;
-    getCurrentLanguageCode(function (code) {
-      languageCode = code;
-      var confirmMessage = TicketdeleteMessages[languageCode];
-      var textMessage = norowMessages[languageCode];
-      ids = [];
-      ids.push($("#selectedTickets").attr("data-ids"));
-      ids = JSON.parse($("#selectedTickets").attr("data-ids"));
-      if (ids.length === 0) {
-            Swal.fire({
-            text: textMessage,
-            icon: "warning",
-            confirmButtonText: "Close",
-            });
-        } else {
-          Swal.fire({
-            text: confirmMessage,
-            icon: "error",
-            showCancelButton: true,
-            confirmButtonColor: "#008000",
-            cancelButtonColor: "#d33",
-            confirmButtonText: "Confirm",
-            }).then(function (result) {
-            if (result.isConfirmed) {
-                e.preventDefault();
-                ids = [];
-                ids.push($("#selectedTickets").attr("data-ids"));
-                ids = JSON.parse($("#selectedTickets").attr("data-ids"));                
-                $.ajax({
-                    type: "POST",
-                    url: "/helpdesk/tickets-bulk-delete",
-                    data: {
-                    csrfmiddlewaretoken: getCookie("csrftoken"),
-                    ids: JSON.stringify(ids),
-                    },
-                    success: function (response, textStatus, jqXHR) {
-                        if (jqXHR.status === 200) {
-                            location.reload(); // Reload the current page
-                        } else {
-                            // console.log("Unexpected HTTP status:", jqXHR.status);
-                        }
-                    },
-                });
-
-            }
-        });
+  var languageCode = null;
+  getCurrentLanguageCode(function (code) {
+    languageCode = code;
+    var confirmMessage = ticketDeleteMessages[languageCode];
+    var textMessage = noRowMessages[languageCode];
+    ids = [];
+    ids.push($("#selectedTickets").attr("data-ids"));
+    ids = JSON.parse($("#selectedTickets").attr("data-ids"));
+    if (ids.length === 0) {
+      Swal.fire({
+        text: textMessage,
+        icon: "warning",
+        confirmButtonText: "Close",
+      });
+    } else {
+      Swal.fire({
+        text: confirmMessage,
+        icon: "error",
+        showCancelButton: true,
+        confirmButtonColor: "#008000",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Confirm",
+      }).then(function (result) {
+        if (result.isConfirmed) {
+          e.preventDefault();
+          ids = [];
+          ids.push($("#selectedTickets").attr("data-ids"));
+          ids = JSON.parse($("#selectedTickets").attr("data-ids"));
+          $.ajax({
+            type: "POST",
+            url: "/helpdesk/tickets-bulk-delete",
+            data: {
+              csrfmiddlewaretoken: getCookie("csrftoken"),
+              ids: JSON.stringify(ids),
+            },
+            success: function (response, textStatus, jqXHR) {
+              if (jqXHR.status === 200) {
+                location.reload(); // Reload the current page
+              } else {
+                // console.log("Unexpected HTTP status:", jqXHR.status);
+              }
+            },
+          });
+        }
+      });
     }
-});
+  });
 }

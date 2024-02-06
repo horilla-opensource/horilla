@@ -240,7 +240,7 @@
 										type="checkbox"
 										id="{{ticket.id}}"
 										onchange="highlightRow($(this))"
-										class="oh-input holiday-checkbox oh-input__checkbox allocted-tickets-row"
+										class="oh-input holiday-checkbox oh-input__checkbox allocated-tickets-row"
 										/>
 									</div>
 								</div>
@@ -652,11 +652,11 @@
 	$(".allocatedTicketsAll").change(function (e) {
 		var is_checked = $(this).is(":checked");
 		if (is_checked) {
-		  $(".allocted-tickets-row").prop("checked", true)
+		  $(".allocated-tickets-row").prop("checked", true)
 		  .closest(".oh-sticky-table__tr")
 		  .addClass("highlight-selected");
 		} else {
-		  $(".allocted-tickets-row").prop("checked", false)
+		  $(".allocated-tickets-row").prop("checked", false)
 		  .closest(".oh-sticky-table__tr")
 		  .removeClass("highlight-selected");
 		}
@@ -684,7 +684,7 @@
 			addingTicketsIds();
 		});
 
-		$(".allocted-tickets-row").change(function () {
+		$(".allocated-tickets-row").change(function () {
 			addingTicketsIds();
 		});
 		$(".allocatedTicketsAll").change(function () {
