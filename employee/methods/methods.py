@@ -47,5 +47,6 @@ def get_ordered_badge_ids():
     result = [[group[0], group[-1]] for group in grouped_data]
 
     # Add the list of pure numbers at the beginning
-    result.insert(0, [pure_numbers[0], pure_numbers[-1]])
+    if pure_numbers:
+        result.insert(0, [pure_numbers[0], pure_numbers[-1]])
     return result
