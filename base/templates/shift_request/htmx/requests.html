@@ -267,16 +267,16 @@ style="cursor: pointer;"
   <!-- end of pagination -->
 {% else %}
   <!-- start of empty page -->
-    <div class="oh-404">
-      <img
-        style="width: 150px; height: 150px"
-        src="{% static 'images/ui/no_request.png' %}"
-        class="oh-404__image mb-4"
-      />
-      <h5 class="oh-404__subtitle">
-        {% trans "There are currently no shift requests to consider." %}
-      </h5>
-    </div>
+  <div class="oh-404">
+    <img
+      style="width: 150px; height: 150px"
+      src="{% static 'images/ui/no-results.png' %}"
+      class="oh-404__image mb-4"
+    />
+    <h5 class="oh-404__subtitle">
+      {% trans "No search result found!" %}
+    </h5>
+  </div>
   <!-- end of empty page -->
 {% endif %}
 

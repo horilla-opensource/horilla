@@ -42,7 +42,7 @@
 </div>
 {% endif %}
 <div class="oh-checkpoint-badge text-danger mb-2" id="selectedShow"></div>
-
+{% if data %}
 <div class="oh-table_sticky--wrapper">
 	<div class="oh-sticky-dropdown--header">
 		<div class="oh-dropdown" x-data="{open: false}">
@@ -108,7 +108,7 @@
         >
           {% trans "Date of Joining" %}
         </div>
-        <div class="oh-sticky-table__th"></div>
+        <div class="oh-sticky-table__th oh-sticky-table__right" style="width:190px">{% trans "Actions" %}</div>
       </div>
     </div>
     {% for emp in data %}
@@ -214,7 +214,7 @@
         >
         <div
           style="color: inherit; text-decoration: none"
-          class="oh-sticky-table__td"
+          class="oh-sticky-table__td oh-sticky-table__right"
         >
           <div class="oh-btn-group">
             {% if perms.employee.change_employee or request.user|check_manager:emp %}
@@ -226,6 +226,7 @@
             ></a>
             {% endif %} {% if perms.employee.delete_employee %} {% if emp.is_active %}
             <form action="{% url 'employee-archive' emp.id %}" 
+                style = "width:100%"
                 onsubmit="return confirm('{% trans "Do you want to archive this employee?" %}')" method="post" > 
               {% csrf_token %}
               <button
@@ -237,7 +238,12 @@
               </button>
             </form>
             {% else %}
-            <form action="{% url 'employee-archive' emp.id %}" onsubmit="return confirm('{% trans "Do you want to un archive this employee?" %}')" method="post" > 
+                
+                <form 
+                  action="{% url 'employee-archive' emp.id %}" 
+                  onsubmit="return confirm('{% trans "Do you want to un archive this employee?" %}')" method="post"
+                  style = "width:100%"
+                 > 
                 {% csrf_token %}
                 <button
                   type="submit"
@@ -248,7 +254,11 @@
                 </button>
               </form>
             {% endif %} {% endif %} {% if perms.employee.delete_employee %}
-            <form action="{% url 'employee-delete' emp.id %}?view=list" onsubmit="return confirm('{% trans "Are you sure want to delete this employee?" %}')" method="post" > {% csrf_token %}
+            <form 
+              action="{% url 'employee-delete' emp.id %}?view=list" 
+              onsubmit="return confirm('{% trans "Are you sure want to delete this employee?" %}')" 
+              method="post" style = "width:100%"
+            > {% csrf_token %}
               <button
                 type="submit"
                 class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
@@ -327,6 +337,22 @@
     </ul>
   </nav>
 </div>
+{% else %}
+<!-- start of empty page -->
+<div class="oh-404">
+  <img
+    style="width: 150px; height: 150px"
+    src="{% static 'images/ui/no-results.png' %}"
+    class="oh-404__image mb-4"
+  />
+  <h5 class="oh-404__subtitle">
+    {% trans "No search result found!" %}
+  </h5>
+</div>
+<!-- end of empty page -->
+
+{% endif %}
+
 
 <script src="{% static 'employee/actions.js' %}"></script>
 <script>

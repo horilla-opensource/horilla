@@ -1,6 +1,7 @@
-{% load i18n %} {% load yes_no %}
+{% load i18n %} {% load yes_no %} {% load static %}
 {% include 'filter_tags.html' %}
-<div class="oh-layout--grid-3">
+{% if allowances %}
+  <div class="oh-layout--grid-3">
     {% for allowance in allowances %}
     <div class="oh-kanban-card" data-toggle="oh-modal-toggle" data-target = "#AllowanceModal" hx-get="{% url 'single-allowance-view' allowance.id %}?instances_ids={{allowance_ids}}" hx-target = "#OneAllowanceTarget">
         <div class="oh-kanban-card__avatar">
@@ -31,13 +32,13 @@
             <ul class="oh-dropdown__items">
                 <li class="oh-dropdown__item">
                 <a onclick="event.stopPropagation();"
-                   href="{% url 'update-allowance' allowance.id %}"
+                  href="{% url 'update-allowance' allowance.id %}"
                 >{% trans "Edit" %}</a>
                 </li>
                 <li class="oh-dropdown__item">
                 <a class="text-danger"
-                   href="{% url 'delete-allowance' allowance.id %}"
-                   onclick = "event.preventDefault();event.stopPropagation(); confirm(`{% trans 'Do you want to delete this Allowance?' %}`)"
+                  href="{% url 'delete-allowance' allowance.id %}"
+                  onclick = "event.preventDefault();event.stopPropagation(); confirm(`{% trans 'Do you want to delete this Allowance?' %}`)"
       
                 >{% trans "Delete" %}</a
                 >
@@ -48,10 +49,9 @@
         </div>
     </div>
     {% endfor %}
-</div>
+  </div>
 
-
-<div class="oh-pagination">
+  <div class="oh-pagination">
     <span
       class="oh-pagination__page"
       >
@@ -89,7 +89,22 @@
           <a hx-target='#payroll-allowance-container' hx-get="{% url 'filter-allowance' %}?{{pd}}&view=card&page={{ allowances.paginator.num_pages }}" class="oh-pagination__link">{% trans "Last" %}</a>
         </li>
         {% endif %}
-  
+
       </ul>
     </nav>
   </div>
+{% else %}
+<!-- start of empty page -->
+<div class="oh-404">
+  <img
+    style="width: 150px; height: 150px"
+    src="{% static 'images/ui/no-results.png' %}"
+    class="oh-404__image mb-4"
+  />
+  <h5 class="oh-404__subtitle">
+    {% trans "No search result found!" %}
+  </h5>
+</div>
+<!-- end of empty page -->
+{% endif %}
+
