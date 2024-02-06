@@ -1210,6 +1210,7 @@ class Announcement(models.Model):
     """
     Anonuncement Model for stroing all announcements.
     """
+    from employee.models import Employee
 
     title = models.CharField(max_length=30)
     description = models.TextField(null=True)
@@ -1218,8 +1219,10 @@ class Announcement(models.Model):
     )
     created_on = models.DateTimeField(auto_now_add=True)
     expire_date = models.DateField(null=True, blank=True)
+    employees = models.ManyToManyField(Employee, related_name="announcement_employees", blank=True)
     department = models.ManyToManyField(Department, blank=True)
     job_position = models.ManyToManyField(JobPosition, blank=True)
+    disable_comments = models.BooleanField(default=False)
 
     def get_views(self):
         """

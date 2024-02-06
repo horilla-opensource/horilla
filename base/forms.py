@@ -1695,7 +1695,6 @@ class AnnouncementForm(ModelForm):
 
         model = Announcement
         fields = "__all__"
-        excluded_fields = ["created_on"]
         widgets = {
             "description": forms.Textarea(attrs={"data-summernote": ""}),
             "expire_date": DateInput(attrs={"type": "date"}),
