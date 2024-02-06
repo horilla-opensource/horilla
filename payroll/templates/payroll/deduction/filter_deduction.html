@@ -1,13 +1,6 @@
 {% load static %} {% load i18n %}
 
-<form
-  hx-get='{% url "filter-deduction" %}'
-  id="filterForm"
-  hx-swap="innerHTML"
-  hx-target="#payroll-deduction-container"
->
-<input type="hidden" name="view" id="filterView" value="{{request.GET.view}}">
-<input type="hidden" name="search" id="filterSearch">
+<input type="hidden" name="view" id="filterView" value="">
   <div class="oh-dropdown__filter-body">
     <div class="oh-accordion">
       <div class="oh-accordion-header">{% trans "Deduction" %}</div>
@@ -51,7 +44,6 @@
       {% trans "Filter" %}
     </button>
   </div>
-</form>
 
 <script>
   $("#filterForm").submit(function (e) {
@@ -60,9 +52,11 @@
     formData.split("&").forEach(function (field) {
       parts = field.split("=");
       value = parts[1];
-      if (value && value !== "unknown") {
-        count++;
-      }
+      if (parts[0] !== "view"){
+        if (value && value !== "unknown") {
+          count++;
+        }
+      }  
     });
     $("#filterCount").empty();
     if (count > 0) {
