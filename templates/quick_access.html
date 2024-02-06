@@ -61,8 +61,27 @@
 
 <!-- ******************** Shift modal ******************** -->
 
-<div class="oh-modal" id="shiftRequestModal" role="dialog" aria-labelledby="shiftRequestModal" aria-hidden="true">
-    <div class="oh-modal__dialog" id="shiftRequestTargetModal"></div>
+
+<div
+  class="oh-modal"
+  id="shiftRequestModal"
+  role="dialog"
+  aria-labelledby="shiftRequestModal"
+  aria-hidden="true"
+>
+  <div class="oh-modal__dialog">
+    <div class="oh-modal__dialog-header">
+      <h5 class="oh-modal__dialog-title" id="shiftRequestModalLabel">
+        {% trans "Shift Request" %}
+      </h5>
+      <button class="oh-modal__close" aria-label="Close">
+        <ion-icon name="close-outline"></ion-icon>
+      </button>
+    </div>
+    <div class="oh-modal__dialog-body" id="shiftRequestModal">
+      <div id="shiftRequestTargetModal"></div>
+    </div>
+  </div>
 </div>
 
 <!-- ******************** Worktype modal ******************** -->
