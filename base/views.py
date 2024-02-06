@@ -398,8 +398,11 @@ def home(request):
                 "completed_field_count": "0",
             },
         )
-
-    announcement_list = Announcement.objects.all().order_by("-created_on")
+    announcements = Announcement.objects.all().order_by('-created_on')
+    announcement_list = announcements.filter(employees=request.user.employee_get)
+    announcement_list =announcement_list | announcements.filter(employees__isnull=True)
+    if request.user.has_perm("base.view_announcement"):
+        announcement_list = announcements
     general_expire = AnnouncementExpire.objects.all().first()
     general_expire_date = 30 if not general_expire else general_expire.days
 
@@ -2926,8 +2929,10 @@ def shift_request_search(request):
     previous_data = request.GET.urlencode()
     field = request.GET.get("field")
     f = ShiftRequestFilter(request.GET)
-    shift_requests = filtersubordinates(request,f.qs, "base.add_shiftrequest")
-    shift_requests = shift_requests| f.qs.filter(employee_id__employee_user_id=request.user)
+    shift_requests = filtersubordinates(request, f.qs, "base.add_shiftrequest")
+    shift_requests = shift_requests | f.qs.filter(
+        employee_id__employee_user_id=request.user
+    )
     shift_requests = sortby(request, shift_requests, "orderby")
     requests_ids = json.dumps(
         [
