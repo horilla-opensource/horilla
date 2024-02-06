@@ -261,5 +261,7 @@ function conditionAdd() {
 
 
 conditionalVisibility();
-
-
+$(document).ready(function () {
+  
+  $("#id_is_condition_based").change()
+});
