@@ -20,6 +20,7 @@ class YourForm(forms.Form):
         # Custom validation logic goes here
         pass
 """
+
 import json
 import uuid, datetime
 from collections import OrderedDict
@@ -159,12 +160,12 @@ class AttendanceUpdateForm(ModelForm):
                 ),
             }
             if instance.attendance_clock_out_date is not None:
-                initial[
-                    "attendance_clock_out"
-                ] = instance.attendance_clock_out.strftime("%H:%M")
-                initial[
-                    "attendance_clock_out_date"
-                ] = instance.attendance_clock_out_date.strftime("%Y-%m-%d")
+                initial["attendance_clock_out"] = (
+                    instance.attendance_clock_out.strftime("%H:%M")
+                )
+                initial["attendance_clock_out_date"] = (
+                    instance.attendance_clock_out_date.strftime("%Y-%m-%d")
+                )
             kwargs["initial"] = initial
         super().__init__(*args, **kwargs)
         self.fields["employee_id"].widget.attrs.update({"id": str(uuid.uuid4())})
@@ -261,12 +262,12 @@ class AttendanceForm(ModelForm):
                 ),
             }
             if instance.attendance_clock_out_date is not None:
-                initial[
-                    "attendance_clock_out"
-                ] = instance.attendance_clock_out.strftime("%H:%M")
-                initial[
-                    "attendance_clock_out_date"
-                ] = instance.attendance_clock_out_date.strftime("%Y-%m-%d")
+                initial["attendance_clock_out"] = (
+                    instance.attendance_clock_out.strftime("%H:%M")
+                )
+                initial["attendance_clock_out_date"] = (
+                    instance.attendance_clock_out_date.strftime("%Y-%m-%d")
+                )
         kwargs["initial"] = initial
         super().__init__(*args, **kwargs)
         reload_queryset(self.fields)
@@ -503,12 +504,12 @@ class AttendanceRequestForm(ModelForm):
                 ),
             }
             if instance.attendance_clock_out_date is not None:
-                initial[
-                    "attendance_clock_out"
-                ] = instance.attendance_clock_out.strftime("%H:%M")
-                initial[
-                    "attendance_clock_out_date"
-                ] = instance.attendance_clock_out_date.strftime("%Y-%m-%d")
+                initial["attendance_clock_out"] = (
+                    instance.attendance_clock_out.strftime("%H:%M")
+                )
+                initial["attendance_clock_out_date"] = (
+                    instance.attendance_clock_out_date.strftime("%Y-%m-%d")
+                )
             kwargs["initial"] = initial
         super().__init__(*args, **kwargs)
         self.fields["attendance_clock_out_date"].required = False
@@ -627,6 +628,8 @@ class NewRequestForm(AttendanceRequestForm):
             data["work_type_id"] = self.data["work_type_id"]
             data["shift_id"] = self.data["shift_id"]
             attendance = attendances.first()
+            for key, value in data.items():
+                data[key] = str(value)
             attendance.requested_data = json.dumps(data)
             attendance.is_validate_request = True
             if attendance.request_type != "create_request":
@@ -767,6 +770,7 @@ class AttendanceOverTimeExportForm(forms.Form):
         ],
     )
 
+
 class GraceTimeForm(ModelForm):
     """
     Form for create or update Grace time
@@ -775,17 +779,12 @@ class GraceTimeForm(ModelForm):
     class Meta:
         model = GraceTime
         fields = "__all__"
-        widgets = { 
+        widgets = {
             "is_default": forms.HiddenInput(),
-            "allowed_time": forms.TextInput(
-                attrs={'placeholder': '00:00 minutes'}
-            )
+            "allowed_time": forms.TextInput(attrs={"placeholder": "00:00 minutes"}),
         }
 
-        exclude = [
-            'objects',
-            'allowed_time_in_secs'
-        ]
+        exclude = ["objects", "allowed_time_in_secs"]
 
 
 class AttendancerequestCommentForm(ModelForm):
@@ -799,4 +798,4 @@ class AttendancerequestCommentForm(ModelForm):
         """
 
         model = AttendancerequestComment
-        fields = ('comment',)
+        fields = ("comment",)
