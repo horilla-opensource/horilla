@@ -161,7 +161,7 @@ def find_late_come(start_date, department=None, end_date=None):
         late_come_obj = LateComeEarlyOutFilter(
             {
                 "type": "late_come",
-                "employee_id__employee_work_info__department_id": department,
+                "department": department,
                 "attendance_date__gte": start_date,
                 "attendance_date__lte": end_date,
             }
@@ -185,7 +185,7 @@ def find_early_out(start_date, end_date=None, department=None):
         early_out_obj = LateComeEarlyOutFilter(
             {
                 "type": "early_out",
-                "employee_id__employee_work_info__department_id": department,
+                "department": department,
                 "attendance_date__gte": start_date,
                 "attendance_date__lte": end_date,
             }
@@ -237,6 +237,10 @@ def generate_data_set(request, start_date, type, end_date, dept):
     """
     This method is used to generate all the dashboard data
     """
+    attendance = []
+    late_come_obj = []
+    early_out_obj = []
+    on_time = 0
     if type == "day":
         start_date = start_date
         end_date = start_date
@@ -265,11 +269,15 @@ def generate_data_set(request, start_date, type, end_date, dept):
         department=dept, start_date=start_date, end_date=end_date
     )
     on_time = len(attendance) - len(late_come_obj)
-    data = {
-        "label": dept.department,
-        "data": [on_time, len(late_come_obj), len(early_out_obj)],
-    }
-    return data
+    
+    data = {}
+    if on_time or late_come_obj or early_out_obj:
+        data = {
+            "label": dept.department,
+            "data": [on_time, len(late_come_obj), len(early_out_obj)],
+        }
+
+    return data if data else None
 
 
 @login_required
@@ -304,6 +312,7 @@ def dashboard_attendance(request):
     for dept in departments:
         data_set.append(generate_data_set(request, start_date, type, end_date, dept))
     message = _("No data Found...")
+    data_set = list(filter(None,data_set))
     return JsonResponse({"dataSet": data_set, "labels": labels, "message": message})
 
 

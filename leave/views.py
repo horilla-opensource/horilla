@@ -2080,11 +2080,12 @@ def overall_leave(request):
     departments = Department.objects.all()
     leave_requests = LeaveRequestFilter(request.GET).qs
     for department in departments:
-        labels.append(department.department)
         count = leave_requests.filter(
             employee_id__employee_work_info__department_id=department
         ).count()
-        data.append(count)
+        if count:
+            labels.append(department.department)            
+            data.append(count)
     return JsonResponse({"labels": labels, "data": data})
 
 

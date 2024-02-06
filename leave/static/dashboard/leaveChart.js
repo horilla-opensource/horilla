@@ -22,11 +22,7 @@ $(document).ready(function () {
         let datasetLabel = e.chart.data.datasets[datasetIndex].label;
         let value = e.chart.data.datasets[datasetIndex].data[dataIndex];
         let label = e.chart.data.labels[dataIndex];
-        params =
-          "?department_name=" +
-          label +
-          "&overall_leave=" +
-          $("#overAllLeaveSelect").val();
+        params =`?department_name=${label}&overall_leave=${$("#overAllLeaveSelect").val()}`;
         window.location.href = "/leave/request-view" + params;
       },
     },

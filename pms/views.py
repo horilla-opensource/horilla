@@ -1880,10 +1880,9 @@ def dashboard_objective_status(request):
             objectives_count = filtersubordinates(
                 request, queryset=objectives, perm="pms.view_employeeobjective"
             ).count()
-            # if not objectives_count:
-
-            data.setdefault("objective_label", []).append(status[1])
-            data.setdefault("objective_value", []).append(objectives_count)
+            if objectives_count:
+                data.setdefault("objective_label", []).append(status[1])
+                data.setdefault("objective_value", []).append(objectives_count)
         return JsonResponse(data)
 
 
@@ -1899,8 +1898,9 @@ def dashboard_key_result_status(request):
             key_results_count = filtersubordinates(
                 request, queryset=key_results, perm="pms.view_employeekeyresult"
             ).count()
-            data.setdefault("key_result_label", []).append(i[1])
-            data.setdefault("key_result_value", []).append(key_results_count)
+            if key_results_count:
+                data.setdefault("key_result_label", []).append(i[1])
+                data.setdefault("key_result_value", []).append(key_results_count)
         return JsonResponse(data)
 
 
@@ -1916,8 +1916,9 @@ def dashboard_feedback_status(request):
             feedback_count = filtersubordinates(
                 request, queryset=feedbacks, perm="pms.view_feedback"
             ).count()
-            data.setdefault("feedback_label", []).append(i[1])
-            data.setdefault("feedback_value", []).append(feedback_count)
+            if feedback_count:
+                data.setdefault("feedback_label", []).append(i[1])
+                data.setdefault("feedback_value", []).append(feedback_count)
         return JsonResponse(data)
 
 
