@@ -135,7 +135,4 @@ def is_in_task_managers(user):
     """
     This method is used to check the user in the task manager or not
     """
-    print("+++++++++++++++++++++++++++++++")
-    print(OnboardingTask.objects.filter(employee_id__employee_user_id=user))
-    print("+++++++++++++++++++++++++++++++")
     return OnboardingTask.objects.filter(employee_id__employee_user_id=user).exists()
