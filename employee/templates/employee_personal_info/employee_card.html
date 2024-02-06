@@ -44,7 +44,7 @@
 <div class="oh-layout--grid-3">
   {% if data %}
     {% for emp in data %}
-    <div  class="oh-kanban-card" style="color: inherit;text-decoration: none;{% if emp.employee_work_info.reporting_manager_id == request.user.employee_get %} background-color: hsl(109.8deg 100% 50% / 15%);{% endif %}">
+    <div  class="oh-kanban-card" style="color: inherit;text-decoration: none;{% if emp.employee_work_info.reporting_manager_id == request.user.employee_get %} background-color: hsl(38.08deg 100% 50% / 8%);{% endif %}">
       <a href="{% url 'employee-view-individual' emp.id %}" style="color: inherit;text-decoration: none; display: flex;">
       <div class="oh-kanban-card__avatar">
           <div class="oh-kanban-card__profile-container {% if emp.employee_profile %} profile-picture {% endif %}">
