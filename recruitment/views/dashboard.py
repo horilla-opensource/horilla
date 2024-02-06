@@ -238,12 +238,12 @@ def dashboard_vacancy(_request):
     data_set = [{"label": _("Openings"), "data": []}]
 
     for dep in department:
-        department_title = dep.department
-        label.append(department_title)
-
         vacancies_for_department = recruitment_obj.filter(
             job_position_id__department_id=dep
         )
+        for rec in vacancies_for_department:            
+            if rec.vacancy is not None:
+                label.append(dep.department)
 
         vacancies = [
             int(rec.vacancy) if rec.vacancy is not None else 0 for rec in vacancies_for_department
