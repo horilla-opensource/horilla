@@ -1,5 +1,31 @@
 {% load attendancefilters %} {% load basefilters %} {% load static %}
 {% load i18n %} {% include 'filter_tags.html' %}
+<!-- start of Quick filters  -->
+<div class="d-flex flex-row-reverse" style="height:3px;">
+	<span
+	  class="m-3 review_ongoing"
+	  onclick="$('[name=canceled]').val('true');$('[name=approved]').val('unknown');$('[name=canceled]').first().change();$('.filterButton').click()"
+	  style="cursor: pointer"
+	>
+	  <span
+		class="oh-dot oh-dot--small me-1"
+		style="background-color: red"
+	  ></span>
+	  {% trans "Rejected" %}
+	</span>
+	<span
+	  class="m-3 paid"
+	  onclick="$('[name=approved]').val('true');$('[name=canceled]').val('unknown');$('[name=approved]').first().change();$('.filterButton').click()"
+	  style="cursor: pointer"
+	>
+	  <span
+		class="oh-dot oh-dot--small me-1"
+		style="background-color: yellowgreen"
+	  ></span>
+	  {% trans "Approved" %}
+	</span>
+  </div>
+  <!-- end of quick filters  -->
 {% if perms.base.view_worktyperequest %}
 	<div
 	class="oh-checkpoint-badge text-success mb-2"
@@ -62,14 +88,13 @@ style="cursor: pointer; display: none"
 									</div>
 									<div class="oh-sticky-table__th">{% trans "Requested Work Type" %}</div>
 									<div class="oh-sticky-table__th">{% trans "Previous/Current Work Type" %}</div>
-									<div class="oh-sticky-table__th" hx-get="{% url 'work-type-request-search' %}?{{pd}}&orderby=requested_date" hx-target="#view-container">{% trans "Requested Date" %}</div>
-									<div class="oh-sticky-table__th" hx-get="{% url 'work-type-request-search' %}?{{pd}}&orderby=requested_till" hx-target="#view-container">{% trans "Requested Till" %}</div>
+									<div class="oh-sticky-table__th">{% trans "Requested Date" %}</div>
+									<div class="oh-sticky-table__th">{% trans "Requested Till" %}</div>
 									<div class="oh-sticky-table__th">{% trans "Description" %}</div>
 									<div class="oh-sticky-table__th">{% trans "Comment" %}</div>
 									<div class="oh-sticky-table__th">{% trans "Actions" %}</div>						  
 									{% if perms.base.change_worktyperequest or request.user|is_reportingmanager %}
-									<div class="oh-sticky-table__th"></div>
-									<div class="oh-sticky-table__th"></div>
+									<div class="oh-sticky-table__th">{% trans "Options" %}</div>
 									{% endif %}
 								</div>
 							</div>
@@ -82,7 +107,12 @@ style="cursor: pointer; display: none"
 									data-toggle='oh-modal-toggle' 
 									draggable="true"
 								>
-									<div class="oh-sticky-table__sd" onclick="event.stopPropagation()">
+									<div class="oh-sticky-table__sd
+										{% if work_type_request.approved %} row-status--yellow 
+										{% elif  work_type_request.canceled %} row-status--red
+										{% endif %}" 
+										onclick="event.stopPropagation()"
+									>
 										<div class="centered-div">
 											<input
 												type="checkbox"
@@ -104,10 +134,7 @@ style="cursor: pointer; display: none"
 									<div class="oh-sticky-table__td">{{work_type_request.previous_work_type_id}}</div>
 									<div class="oh-sticky-table__td dateformat_changer">{{work_type_request.requested_date}}</div>
 									<div class="oh-sticky-table__td dateformat_changer">{{work_type_request.requested_till}}</div>
-									<div class="oh-sticky-table__td">{{work_type_request.description}}</div>
-
-									
-          
+									<div class="oh-sticky-table__td">{{work_type_request.description|truncatechars:25}}</div>
 									<div class="oh-sticky-table__td" onclick="event.stopPropagation();">
             
 										<div class="oh-btn-group" >
@@ -125,9 +152,6 @@ style="cursor: pointer; display: none"
 									   </div>
 									  
 									</div>
-							
-
-									  
 									<div class="oh-sticky-table__td" onclick="event.stopPropagation();">
 										<div class="oh-btn-group">
 										{% if work_type_request.approved == False and not work_type_request.canceled  %}
@@ -147,18 +171,35 @@ style="cursor: pointer; display: none"
 									</div>
 									{% if perms.base.change_worktyperequest or request.user|is_reportingmanager %}
 									<div class="oh-sticky-table__td" onclick="event.stopPropagation();"> 
-										{% if work_type_request.approved == False and work_type_request.canceled == False %}
-										<a href="/work-type-request-approve/{{work_type_request.id}}/" onclick="return confirm('{% trans "Do you want to approve this request?" %}')" class='oh-btn oh-btn--info'>{% trans "Approve" %}</a></td>
-										{% else %}
-										<button class='oh-btn oh-btn--info w-100' disabled>{% trans "Approve" %}</button></td>
-										{% endif %}
-									</div>
-									<div class="oh-sticky-table__td" onclick="event.stopPropagation();"> 
-										{% if work_type_request.canceled == False %}
-										<a href="/work-type-request-cancel/{{work_type_request.id}}/" onclick="return confirm('{% trans "Do you want to cancel this request?" %}')" class='oh-btn oh-btn--primary'>{% trans "Cancel" %}</a></td>
-										{% else %}
-										<button disabled class='oh-btn oh-btn--primary w-100'>{% trans "Canceled" %}</button></td>
-										{% endif %}
+										<div class="oh-btn-group" >
+											{% if work_type_request.approved == False and work_type_request.canceled == False %}
+												<a href="/work-type-request-approve/{{work_type_request.id}}/" 
+													title="{% trans 'Approve' %}"
+													onclick="return confirm('{% trans "Do you want to approve this request?" %}')"
+													class="oh-btn oh-btn--success w-100">
+													<ion-icon class="me-1" name="checkmark-outline"></ion-icon>
+												</a>
+											{% else %}
+												<a type="submit" href="#" title="{% trans 'Approve' %}"
+													class="oh-btn oh-btn--success oh-btn--disabled w-100">
+													<ion-icon class="me-1" name="checkmark-outline"></ion-icon>
+												</a>
+											{% endif %}
+											{% if work_type_request.canceled == False %}
+												<a href="/work-type-request-cancel/{{work_type_request.id}}/" 
+													title="{% trans 'Reject' %}"
+													onclick="return confirm('{% trans "Do you want to reject this request?" %}')"
+													class="oh-btn oh-btn--danger w-100">
+													<ion-icon class="me-1" name="close-circle-outline"></ion-icon>
+												</a>
+											{% else %}
+												<a type="submit" href="#" title="{% trans 'Reject' %}"
+													class="oh-btn oh-btn--danger oh-btn--disabled
+													w-100" >
+													<ion-icon class="me-1" name="close-circle-outline"></ion-icon>
+												</a>
+											{% endif %}
+										</div>
 									</div>
 									{% endif %}									
 								</div>

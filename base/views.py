@@ -2441,10 +2441,10 @@ def work_type_request(request):
     This method is used to create request for work type  .
     """
     form = WorkTypeRequestForm()
-    "canceled"
+    employee = request.user.employee_get.id
     if request.GET.get("emp_id"):
         employee = request.GET.get("emp_id")
-        form = WorkTypeRequestForm(initial={"employee_id": employee})
+    form = WorkTypeRequestForm(initial={"employee_id": employee})
     form = choosesubordinates(
         request,
         form,

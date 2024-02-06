@@ -67,7 +67,7 @@ style="cursor: pointer; display: none"
 							  <div class="oh-sticky-table__th">{% trans "Current Work Type" %}</div>
 							  <div class="oh-sticky-table__th" hx-target="#view-container" hx-get="{% url 'rotating-work-type-assign-view' %}?{{pd}}&orderby=next_change_date">{% trans "Next Switch" %}</div>
 							  <div class="oh-sticky-table__th">{% trans "Next Work Type" %}</div>
-							  <div class="oh-sticky-table__th" style="width:250px">{% trans "Actions" %}</div>
+							  <div class="oh-sticky-table__th oh-sticky-table__right" style="width:250px">{% trans "Actions" %}</div>
 							</div>
 						  </div>
 						  <div class="oh-sticky-table__tbody">
@@ -122,7 +122,7 @@ style="cursor: pointer; display: none"
 							  <div class="oh-sticky-table__td">{{rwork_type.current_work_type}}</div>
 							  <div class="oh-sticky-table__td dateformat_changer">{{rwork_type.next_change_date}}</div>
 							  <div class="oh-sticky-table__td">{{rwork_type.next_work_type}}</div>
-							  <div class="oh-sticky-table__td">
+							  <div class="oh-sticky-table__td oh-sticky-table__right">
 								<div class="oh-btn-group" onclick="event.stopPropagation()">
 								  {% if perms.base.change_rotatingworktypeassign or request.user|is_reportingmanager  %}
 								  <a
@@ -136,6 +136,17 @@ style="cursor: pointer; display: none"
 								  >
 									<ion-icon name="create-outline"></ion-icon
 								  ></a>
+								  <a 
+									hx-get="{% url 'rotating-work-type-assign-duplicate' rwork_type.id %}"
+									hx-target="#rotatingWorkTypeAssignModalBody"
+									data-target="#rotating-work-type-modal"
+									data-toggle="oh-modal-toggle"
+									type="button"
+									class="oh-btn oh-btn--light-bkg w-50" 
+									title="{% trans 'Duplicate' %}"
+								>
+									<ion-icon name="copy-outline"></ion-icon>
+								</a>
 								  {% endif %}
 								  {% if perms.base.change_rotatingworktypeassign or request.user|is_reportingmanager  %}
 								  {% if rwork_type.is_active %}

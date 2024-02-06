@@ -1201,10 +1201,6 @@ class ShiftRequestForm(ModelForm):
                 self.instance.previous_shift_id = employee.employee_work_info.shift_id
                 if self.instance.is_permanent_shift:
                     self.instance.requested_till = None
-                # if not self.instance.requested_till:
-                #     self.instance.requested_till = (
-                #         employee.employee_work_info.contract_end_date
-                #     )
         return super().save(commit)
 
     # here set default filter for all the employees those have work information filled.
@@ -1254,10 +1250,8 @@ class WorkTypeRequestForm(ModelForm):
                 self.instance.previous_work_type_id = (
                     employee.employee_work_info.work_type_id
                 )
-                if not self.instance.requested_till:
-                    self.instance.requested_till = (
-                        employee.employee_work_info.contract_end_date
-                    )
+                if self.instance.is_permanent_work_type:
+                    self.instance.requested_till = None
         return super().save(commit)
 
 

@@ -102,7 +102,7 @@ style="cursor: pointer;"
             <div class="oh-sticky-table__th">{% trans "Comment" %}</div>
             <div class="oh-sticky-table__th">{% trans "Actions" %}</div>
             {% if perms.base.change_shiftrequest and shift_request.approved == False or request.user|is_reportingmanager %}
-              <div class="oh-sticky-table__th oh-sticky-table__right " data-cell-index="9" data-cell-title='{% trans "Date" %}'>{% trans "Options" %}</div>
+              <div class="oh-sticky-table__th oh-sticky-table__right ">{% trans "Options" %}</div>
             {% endif %}
           </div>
         </div>
@@ -142,7 +142,7 @@ style="cursor: pointer;"
                 <div class="oh-sticky-table__td" data-cell-index="3">{{shift_request.previous_shift_id}}</div>
                 <div class="oh-sticky-table__td dateformat_changer" data-cell-index="4">{{shift_request.requested_date}}</div>
                 <div class="oh-sticky-table__td dateformat_changer" data-cell-index="5">{{shift_request.requested_till}}</div>
-                <div class="oh-sticky-table__td" data-cell-index="6">{{shift_request.description}}</div>
+                <div class="oh-sticky-table__td" data-cell-index="6">{{shift_request.description|truncatechars:25}}</div>
                 
                 <div class="oh-sticky-table__td" onclick="event.stopPropagation();">
                   
@@ -225,8 +225,6 @@ style="cursor: pointer;"
     </div>
     <!-- end of sticky table -->
   </div>
-
-
   <!-- start of pagination -->
   <div class="oh-pagination">
     <span class="oh-pagination__page">
@@ -443,10 +441,9 @@ style="cursor: pointer;"
       exportShiftRequests();
     });
   });
-  // toggle colums //
+  // toggle columns //
   toggleColumns("shift-request-table","shiftRequestCells")
   localStorageShiftRequestCells = localStorage.getItem("shift_request_tab")
-  console.log('localStorageShiftRequestCells==',localStorageShiftRequestCells)
   if (!localStorageShiftRequestCells) {
     $("#shiftRequestCells").find("[type=checkbox]").prop("checked",true)
   }

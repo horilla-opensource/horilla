@@ -688,7 +688,7 @@ class WorkTypeRequest(models.Model):
             ("cancel_worktyperequest", "Cancel Work Type Request"),
         )
         ordering = [
-            "requested_date",
+            "-id",
         ]
 
     def is_any_work_type_request_exists(self):
@@ -741,6 +741,11 @@ class WorkTypeRequest(models.Model):
             raise ValidationError(
                 _("A work type request already exists during this time period.")
             )
+        if not self.is_permanent_work_type:
+            if not self.requested_till:
+                raise ValidationError(
+                    _("Requested till field is required.")
+                )
 
     def __str__(self) -> str:
         return f"{self.employee_id.employee_first_name} \
