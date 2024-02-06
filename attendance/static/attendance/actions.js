@@ -77,15 +77,30 @@ function makelatecomeListUnique(list) {
 }
 
 function getCurrentLanguageCode(callback) {
-  $.ajax({
-    type: "GET",
-    url: "/employee/get-language-code/",
-    success: function (response) {
-      var languageCode = response.language_code;
-      callback(languageCode); // Pass the language code to the callback function
-    },
-  });
+  var languageCode = $("#main-section-data").attr("data-lang");
+  var allowedLanguageCodes = ["ar", "de", "es", "en", "fr"];
+  if (allowedLanguageCodes.includes(languageCode)) {
+    callback(languageCode);
+  } else {
+    $.ajax({
+      type: "GET",
+      url: "/employee/get-language-code/",
+      success: function (response) {
+        var ajaxLanguageCode = response.language_code;
+        $("#main-section-data").attr("data-lang", ajaxLanguageCode);
+        callback(
+          allowedLanguageCodes.includes(ajaxLanguageCode)
+            ? ajaxLanguageCode
+            : "en"
+        );
+      },
+      error: function () {
+        callback("en");
+      },
+    });
+  }
 }
+
 $(".validate").change(function (e) {
   var is_checked = $(this).is(":checked");
   if (is_checked) {
@@ -245,8 +260,6 @@ function selectAllHourAcconts() {
       type: "GET",
       dataType: "json",
       success: function (response) {
-        console.log(response);
-
         var employeeIds = response.employee_ids;
 
         if (Array.isArray(employeeIds)) {
@@ -497,8 +510,6 @@ function selectAllActivity() {
       type: "GET",
       dataType: "json",
       success: function (response) {
-        console.log(response);
-
         var employeeIds = response.employee_ids;
 
         if (Array.isArray(employeeIds)) {
@@ -749,13 +760,15 @@ $(".all-latecome").change(function () {
 });
 
 $(".all-attendance-activity").change(function () {
-  $(".all-attendance-activity-row").prop("checked",false)
+  $(".all-attendance-activity-row")
+    .prop("checked", false)
     .closest(".oh-sticky-table__tr")
     .removeClass("highlight-selected");
   if ($(this).is(":checked")) {
-    $(".all-attendance-activity-row").prop("checked",true)
-    .closest(".oh-sticky-table__tr")
-    .addClass("highlight-selected");
+    $(".all-attendance-activity-row")
+      .prop("checked", true)
+      .closest(".oh-sticky-table__tr")
+      .addClass("highlight-selected");
   }
 });
 
@@ -1252,41 +1265,38 @@ $("#lateComeBulkDelete").click(function (e) {
 
 // Iterate through all elements with the 'dateformat_changer' class and format their content
 
-$('.dateformat_changer').each(function(index, element) {
+$(".dateformat_changer").each(function (index, element) {
   var currentDate = $(element).text();
   // Checking currentDate value is a date or None value.
   if (/[\.,\-\/]/.test(currentDate)) {
     var formattedDate = dateFormatter.getFormattedDate(currentDate);
-  }
-  else {
-    var formattedDate = 'None';
+  } else {
+    var formattedDate = "None";
   }
   $(element).text(formattedDate);
 });
 
 // Display the formatted date wherever needed
-var currentDate = $('.dateformat_changer').first().text();
+var currentDate = $(".dateformat_changer").first().text();
 var formattedDate = dateFormatter.getFormattedDate(currentDate);
-
 
 // ******************************************************************
 // *     THIS IS FOR SWITCHING THE TIME FORMAT IN THE ALL VIEWS     *
 // ******************************************************************
 
 // Iterate through all elements with the 'timeformat_changer' class and format their content
-$('.timeformat_changer').each(function(index, element) {
+$(".timeformat_changer").each(function (index, element) {
   var currentTime = $(element).text();
 
   // Checking currentTime value is a valid time.
   if (/[\.:]/.test(currentTime)) {
-      var formattedTime = timeFormatter.getFormattedTime(currentTime);
+    var formattedTime = timeFormatter.getFormattedTime(currentTime);
   } else {
-      var formattedTime = 'None';
+    var formattedTime = "None";
   }
   $(element).text(formattedTime);
-
 });
 
 // Display the formatted time wherever needed
-var currentTime = $('.timeformat_changer').first().text();
+var currentTime = $(".timeformat_changer").first().text();
 var formattedTime = timeFormatter.getFormattedTime(currentTime);
