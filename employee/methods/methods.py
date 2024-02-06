@@ -1,6 +1,8 @@
 """
 employee/methods.py
 """
+
+import re
 from employee.models import Employee
 from itertools import groupby
 from base.context_processors import get_intial_prefix
@@ -24,6 +26,10 @@ def get_ordered_badge_ids():
         .order_by("badge_id")
         .values_list("badge_id", flat=True)
     )
+    if not data.first():
+        data = [
+            f'{get_intial_prefix(None)["get_intial_prefix"]}0001',
+        ]
     # Separate pure number strings and convert them to integers
     pure_numbers = [int(item) for item in data if item.isdigit()]
 
