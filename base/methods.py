@@ -38,7 +38,7 @@ def filtersubordinates(request, queryset, perm=None, field=None):
     return queryset
 
 
-def filter_own_recodes(request, queryset, perm=None):
+def filter_own_records(request, queryset, perm=None):
     """
     This method is used to filter out subordinates queryset element.
     """
@@ -46,6 +46,17 @@ def filter_own_recodes(request, queryset, perm=None):
     if user.has_perm(perm):
         return queryset
     queryset = queryset.filter(employee_id=request.user.employee_get)
+    return queryset
+
+
+def filter_own_and_subordinate_recordes(request, queryset, perm=None):
+    """
+    This method is used to filter out subordinates queryset along with own queryset element.
+    """
+    user = request.user
+    if user.has_perm(perm):
+        return queryset
+    queryset = filter_own_records(request, queryset, perm) | filtersubordinates(request, queryset, perm)
     return queryset
 
 
@@ -296,7 +307,7 @@ def get_key_instances(model, data_dict):
 
     if "id" in data_dict:
         id = data_dict["id"][0]
-        object = model.objects.get(id=id)
+        object = model.objects.filter(id=id).first()
         object = str(object)
         del data_dict["id"]
         data_dict["Object"] = [object]
