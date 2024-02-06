@@ -41,14 +41,28 @@ function makeUserrequestsListUnique(list) {
 }
 
 function getCurrentLanguageCode(callback) {
-  $.ajax({
-    type: "GET",
-    url: "/employee/get-language-code/",
-    success: function (response) {
-      var languageCode = response.language_code;
-      callback(languageCode); // Pass the language code to the callback
-    },
-  });
+  var languageCode = $("#main-section-data").attr("data-lang");
+  var allowedLanguageCodes = ["ar", "de", "es", "en", "fr"];
+  if (allowedLanguageCodes.includes(languageCode)) {
+    callback(languageCode);
+  } else {
+    $.ajax({
+      type: "GET",
+      url: "/employee/get-language-code/",
+      success: function (response) {
+        var ajaxLanguageCode = response.language_code;
+        $("#main-section-data").attr("data-lang", ajaxLanguageCode);
+        callback(
+          allowedLanguageCodes.includes(ajaxLanguageCode)
+            ? ajaxLanguageCode
+            : "en"
+        );
+      },
+      error: function () {
+        callback("en");
+      },
+    });
+  }
 }
 
 // ---------------------------------------
@@ -187,7 +201,9 @@ function unselectAllLeaverequests() {
         $("#" + empId).prop("checked", false);
         $(".all-leave-requests").prop("checked", false);
       }
-      var ids = JSON.parse($("#selectedLeaverequests").attr("data-ids") || "[]");
+      var ids = JSON.parse(
+        $("#selectedLeaverequests").attr("data-ids") || "[]"
+      );
       uniqueIds = makeLeaverequestsListUnique(ids);
       toggleHighlight(uniqueIds);
       $("#selectedLeaverequests").attr("data-ids", JSON.stringify([]));

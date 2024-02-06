@@ -30,9 +30,9 @@ var downloadMessages = {
 };
 
 function createHolidayHxValue() {
-  var pd = $(".oh-pagination").attr('data-pd');
-  var hxValue = JSON.stringify(pd)
-  $("#holidayCreateButton").attr('hx-vals',`{"pd":${hxValue}}`);
+  var pd = $(".oh-pagination").attr("data-pd");
+  var hxValue = JSON.stringify(pd);
+  $("#holidayCreateButton").attr("hx-vals", `{"pd":${hxValue}}`);
 }
 
 tickHolidayCheckboxes();
@@ -41,14 +41,28 @@ function makeHolidayListUnique(list) {
 }
 
 function getCurrentLanguageCode(callback) {
-  $.ajax({
-    type: "GET",
-    url: "/employee/get-language-code/",
-    success: function (response) {
-      var languageCode = response.language_code;
-      callback(languageCode); // Pass the language code to the callback
-    },
-  });
+  var languageCode = $("#main-section-data").attr("data-lang");
+  var allowedLanguageCodes = ["ar", "de", "es", "en", "fr"];
+  if (allowedLanguageCodes.includes(languageCode)) {
+    callback(languageCode);
+  } else {
+    $.ajax({
+      type: "GET",
+      url: "/employee/get-language-code/",
+      success: function (response) {
+        var ajaxLanguageCode = response.language_code;
+        $("#main-section-data").attr("data-lang", ajaxLanguageCode);
+        callback(
+          allowedLanguageCodes.includes(ajaxLanguageCode)
+            ? ajaxLanguageCode
+            : "en"
+        );
+      },
+      error: function () {
+        callback("en");
+      },
+    });
+  }
 }
 
 function tickHolidayCheckboxes() {
@@ -93,7 +107,7 @@ function addingHolidayIds() {
   });
 
   ids = makeHolidayListUnique(ids);
-  toggleHighlight(ids)
+  toggleHighlight(ids);
   selectedCount = ids.length;
 
   getCurrentLanguageCode(function (code) {
@@ -203,7 +217,7 @@ function unselectAllHolidays() {
       }
       var ids = JSON.parse($("#selectedHolidays").attr("data-ids") || "[]");
       var uniqueIds = makeListUnique(ids);
-      toggleHighlight(uniqueIds)
+      toggleHighlight(uniqueIds);
       $("#selectedHolidays").attr("data-ids", JSON.stringify([]));
 
       count = [];
