@@ -494,9 +494,9 @@
               </div>
             {% endif %}
             {% include 'notification/notification.html' %}
-            <div class="oh-dropdown" x-data="{open: false}" @click="open = !open" title="Languages">
+            <div class="oh-dropdown" x-data="{open: false}" @click="open = !open">
               <div class="oh-navbar__action-icons">
-                  <a href="#" class="oh-navbar__action-icons-link">
+                  <a href="#" class="oh-navbar__action-icons-link"  title="Languages">
                       <ion-icon name="globe-outline" class="oh-navbar__icon"></ion-icon>
                   </a>
                   <div class="oh-dropdown__menu oh-dropdown__menu--right" x-show="open" @click.outside="open = false" style="display:none;">

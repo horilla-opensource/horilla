@@ -9,9 +9,8 @@
   x-data="{open: false}" 
   hx-get="{% url 'notifications' %}"
   hx-target="#notificationContainer"
-  title="Notifications"
 >
-    <a href="#" class="oh-navbar__notification-link" @click="open = !open">
+    <a href="#" class="oh-navbar__notification-link" @click="open = !open" title="Notifications">
       <ion-icon name="notifications-outline" class="oh-navbar__icon"></ion-icon>
       <span class="oh-navbar__notification-beacon">
         {% live_notify_badge %}
