@@ -6,37 +6,37 @@
               <div class="row">
                   <div class="col-sm-12 col-md-12 col-lg-6">
                       <div class="oh-input-group">
-                          <label class="oh-label">{% trans "Employee" %}</label>
+                          <label class="oh-label" for = "{{f.form.employee_id.id_for_label}}">{% trans "Employee" %}</label>
                           {{f.form.employee_id}}
                       </div>
                       <div class="oh-input-group">
-                          <label class="oh-label">{% trans "Department" %}</label>
+                          <label class="oh-label" for = "{{f.form.employee_id__employee_work_info__department_id.id_for_label}}">{% trans "Department" %}</label>
                           {{f.form.employee_id__employee_work_info__department_id}}
                       </div>
                       <div class="oh-input-group">
-                          <label class="oh-label">{% trans "Shift" %}</label>
+                          <label class="oh-label" for = "{{f.form.employee_id__employee_work_info__shift_id.id_for_label}}">{% trans "Shift" %}</label>
                           {{f.form.employee_id__employee_work_info__shift_id}}
                       </div>
                       <div class="oh-input-group">
-                          <label class="oh-label">{% trans "Reporting Manager" %}</label>
+                          <label class="oh-label" for = "{{f.form.employee_id__employee_work_info__reporting_manager_id.id_for_label}}">{% trans "Reporting Manager" %}</label>
                           {{f.form.employee_id__employee_work_info__reporting_manager_id}}
                       </div>
                   </div>
                   <div class="col-sm-12 col-md-12 col-lg-6">
                       <div class="oh-input-group">
-                          <label class="oh-label">{% trans "Company" %}</label>
+                          <label class="oh-label" for = "{{f.form.employee_id__employee_work_info__company_id.id_for_label}}">{% trans "Company" %}</label>
                           {{f.form.employee_id__employee_work_info__company_id}}
                       </div>
                       <div class="oh-input-group">
-                          <label class="oh-label">{% trans "Job Position" %}</label>
+                          <label class="oh-label" for = "{{f.form.employee_id__employee_work_info__job_position_id.id_for_label}}">{% trans "Job Position" %}</label>
                           {{f.form.employee_id__employee_work_info__job_position_id}}
                       </div>
                       <div class="oh-input-group">
-                          <label class="oh-label">{% trans "Work Type" %}</label>
+                          <label class="oh-label" for = "{{f.form.employee_id__employee_work_info__work_type_id.id_for_label}}">{% trans "Work Type" %}</label>
                           {{f.form.employee_id__employee_work_info__work_type_id}}
                       </div>
                       <div class="oh-input-group">
-                          <label class="oh-label">{% trans "Work Location" %}</label>
+                          <label class="oh-label" for = "{{f.form.employee_id__employee_work_info__location.id_for_label}}">{% trans "Work Location" %}</label>
                           {{f.form.employee_id__employee_work_info__location}}
                       </div>
                   </div>
@@ -49,21 +49,21 @@
               <div class="row">
                   <div class="col-sm-12 col-md-12 col-lg-6">
                       <div class="oh-input-group">
-                        <label class="oh-label">{% trans "Month" %}</label>
+                        <label class="oh-label" for = "{{f.form.month.id_for_label}}">{% trans "Month" %}</label>
                         {{f.form.month}}
                       </div>
                       <div class="oh-input-group">
-                        <label class="oh-label">{% trans "Overtime" %}</label>
+                        <label class="oh-label" for = "{{f.form.overtime.id_for_label}}">{% trans "Overtime" %}</label>
                         {{f.form.overtime}}
                       </div>
                   </div>
                   <div class="col-sm-12 col-md-12 col-lg-6">
                       <div class="oh-input-group">
-                        <label class="oh-label">{% trans "Year" %}</label>
+                        <label class="oh-label" for = "{{f.form.year.id_for_label}}">{% trans "Year" %}</label>
                         {{f.form.year}}
                       </div>
                       <div class="oh-input-group">
-                        <label class="oh-label">{% trans "Worked Hours" %}</label>
+                        <label class="oh-label" for = "{{f.form.worked_hours.id_for_label}}">{% trans "Worked Hours" %}</label>
                         {{f.form.worked_hours}}
                       </div>
                   </div>
@@ -76,19 +76,19 @@
           <div class="row">
               <div class="col-sm-12 col-md-12 col-lg-6">
                   <div class="oh-input-group">
-                      <label class="oh-label"
+                      <label class="oh-label" for = "{{f.form.worked_hours__gte.id_for_label}}"
                         >{% trans "Worked Hours Greater or Equal" %}</label
                       >
                       {{f.form.worked_hours__gte}}
                   </div>
                   <div class="oh-input-group">
-                    <label class="oh-label"
+                    <label class="oh-label" for = "{{f.form.pending_hours__gte.id_for_label}}"
                       >{% trans "Pending Hours Greater or Equal" %}</label
                     >
                     {{f.form.pending_hours__gte}}
                   </div>
                   <div class="oh-input-group">
-                      <label class="oh-label"
+                      <label class="oh-label" for = "{{f.form.overtime__gte.id_for_label}}"
                         >{% trans "OT Account Greater or Equal" %}</label
                       >
                       {{f.form.overtime__gte}}
@@ -96,19 +96,19 @@
               </div>
               <div class="col-sm-12 col-md-12 col-lg-6">
                   <div class="oh-input-group">
-                      <label class="oh-label"
+                      <label class="oh-label" for = "{{f.form.worked_hours__lte.id_for_label}}"
                         >{% trans "Worked Hours Less Than or Equal" %}</label
                       >
                       {{f.form.worked_hours__lte}}
                   </div>
                   <div class="oh-input-group">
-                    <label class="oh-label"
+                    <label class="oh-label" for = "{{f.form.pending_hours__lte.id_for_label}}"
                       >{% trans "Pending Hours Less Than or Equal" %}</label
                     >
                     {{f.form.pending_hours__lte}}
                   </div>
                   <div class="oh-input-group">
-                      <label class="oh-label"
+                      <label class="oh-label" for = "{{f.form.overtime__lte.id_for_label}}"
                         >{% trans "OT Account Less Than or Equal" %}</label
                       >
                       {{f.form.overtime__lte}}
