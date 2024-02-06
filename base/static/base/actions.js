@@ -102,15 +102,29 @@ function getCookie(name) {
   return cookieValue;
 }
 
-function getCurrentLanguageCode(callback) {
-  $.ajax({
-    type: "GET",
-    url: "/employee/get-language-code/",
-    success: function (response) {
-      var languageCode = response.language_code;
-      callback(languageCode); // Pass the language code to the callback
-    },
-  });
+function getCurrentLanguageCode(callback) {  
+  var languageCode = $("#main-section-data").attr("data-lang");
+  var allowedLanguageCodes = ["ar", "de", "es", "en", "fr"];
+  if (allowedLanguageCodes.includes(languageCode)) {
+    callback(languageCode);
+  } else {
+    $.ajax({
+      type: "GET",
+      url: "/employee/get-language-code/",
+      success: function (response) {
+        var ajaxLanguageCode = response.language_code;
+        $("#main-section-data").attr("data-lang", ajaxLanguageCode);
+        callback(
+          allowedLanguageCodes.includes(ajaxLanguageCode)
+            ? ajaxLanguageCode
+            : "en"
+        );
+      },
+      error: function () {
+        callback("en");
+      },
+    });
+  }
 }
 
 $(".all-rshift").change(function (e) {
