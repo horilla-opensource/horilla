@@ -21,7 +21,7 @@ from employee.models import Employee, EmployeeWorkInformation
 from horilla.decorators import login_required, owner_can_enter, permission_required
 from horilla.settings import EMAIL_HOST_USER
 from base.models import Company
-from base.methods import filter_own_recodes, get_key_instances, closest_numbers
+from base.methods import filter_own_records, get_key_instances, closest_numbers
 from leave.models import AvailableLeave
 import payroll.models.models
 from payroll.models.models import (
@@ -1121,7 +1121,7 @@ def view_reimbursement(request):
         filter_object = ReimbursementFilter(request.GET)
     else:
         filter_object = ReimbursementFilter({"status": "requested"})
-    requests = filter_own_recodes(
+    requests = filter_own_records(
         request, filter_object.qs, "payroll.view_reimbursement"
     )
     reimbursements = requests.filter(type = "reimbursement")
@@ -1172,7 +1172,7 @@ def search_reimbursement(request):
     This method is used to search/filter reimbursement
     """
     requests = ReimbursementFilter(request.GET).qs
-    requests = filter_own_recodes(request, requests, "payroll.view_reimbursement")
+    requests = filter_own_records(request, requests, "payroll.view_reimbursement")
     data_dict = parse_qs(request.GET.urlencode())    
     reimbursements = requests.filter(type = "reimbursement")
     leave_encashments = requests.filter(type = "leave_encashment")
