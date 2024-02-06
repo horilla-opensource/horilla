@@ -44,29 +44,33 @@ function makeObjectivesListUnique(list) {
 }
 
 $(".all-objects").change(function (e) {
-    var is_checked = $(this).is(":checked");
-    if (is_checked) {
-        $(".all-objects-row").prop("checked", true)
-        .closest(".oh-sticky-table__tr")
-        .addClass("highlight-selected");
-    } else {
-        $(".all-objects-row").prop("checked", false)
-        .closest(".oh-sticky-table__tr")
-        .removeClass("highlight-selected");
-    }
+  var is_checked = $(this).is(":checked");
+  if (is_checked) {
+    $(".all-objects-row")
+      .prop("checked", true)
+      .closest(".oh-sticky-table__tr")
+      .addClass("highlight-selected");
+  } else {
+    $(".all-objects-row")
+      .prop("checked", false)
+      .closest(".oh-sticky-table__tr")
+      .removeClass("highlight-selected");
+  }
 });
 
 $(".own-objects").change(function (e) {
-    var is_checked = $(this).is(":checked");
-    if (is_checked) {
-        $(".own-objects-row").prop("checked", true)
-        .closest(".oh-sticky-table__tr")
-        .addClass("highlight-selected");
-    } else {
-        $(".own-objects-row").prop("checked", false)
-        .closest(".oh-sticky-table__tr")
-        .removeClass("highlight-selected");
-    }
+  var is_checked = $(this).is(":checked");
+  if (is_checked) {
+    $(".own-objects-row")
+      .prop("checked", true)
+      .closest(".oh-sticky-table__tr")
+      .addClass("highlight-selected");
+  } else {
+    $(".own-objects-row")
+      .prop("checked", false)
+      .closest(".oh-sticky-table__tr")
+      .removeClass("highlight-selected");
+  }
 });
 
 function getCookie(name) {
@@ -86,16 +90,29 @@ function getCookie(name) {
 }
 
 function getCurrentLanguageCode(callback) {
-  $.ajax({
-    type: "GET",
-    url: "/employee/get-language-code/",
-    success: function (response) {
-      var languageCode = response.language_code;
-      callback(languageCode); // Pass the language code to the callback
-    },
-  });
+  var languageCode = $("#main-section-data").attr("data-lang");
+  var allowedLanguageCodes = ["ar", "de", "es", "en", "fr"];
+  if (allowedLanguageCodes.includes(languageCode)) {
+    callback(languageCode);
+  } else {
+    $.ajax({
+      type: "GET",
+      url: "/employee/get-language-code/",
+      success: function (response) {
+        var ajaxLanguageCode = response.language_code;
+        $("#main-section-data").attr("data-lang", ajaxLanguageCode);
+        callback(
+          allowedLanguageCodes.includes(ajaxLanguageCode)
+            ? ajaxLanguageCode
+            : "en"
+        );
+      },
+      error: function () {
+        callback("en");
+      },
+    });
+  }
 }
-
 
 function tickObjectivesCheckboxes() {
   var ids = JSON.parse($("#selectedObjectives").attr("data-ids") || "[]");
@@ -103,20 +120,21 @@ function tickObjectivesCheckboxes() {
   toggleHighlight(uniqueIds);
   click = $("#selectedObjectives").attr("data-clicked");
   if (click === "1") {
-    var tableName = localStorage.getItem('activeTabPms');
-    if (tableName === '#tab_1'){
-      tableName = 'self'
-      $('.own-objects').prop('checked',true)
-    }
-    else{
-      tableName = 'all'    
-      $('.all-objects').prop('checked',true)
-      $('.own-objects').prop('checked',true)
+    var tableName = localStorage.getItem("activeTabPms");
+    if (tableName === "#tab_1") {
+      tableName = "self";
+      $(".own-objects").prop("checked", true);
+    } else {
+      tableName = "all";
+      $(".all-objects").prop("checked", true);
+      $(".own-objects").prop("checked", true);
     }
   }
   uniqueIds.forEach(function (id) {
-    $("#" + id).prop("checked", true).closest(".oh-sticky-table__tr")
-    .addClass("highlight-selected");
+    $("#" + id)
+      .prop("checked", true)
+      .closest(".oh-sticky-table__tr")
+      .addClass("highlight-selected");
   });
   var selectedCount = uniqueIds.length;
   getCurrentLanguageCode(function (code) {
@@ -136,9 +154,9 @@ function tickObjectivesCheckboxes() {
 function addingObjectivesIds() {
   var ids = JSON.parse($("#selectedObjectives").attr("data-ids") || "[]");
   var selectedCount = 0;
-  var tableName = localStorage.getItem('activeTabPms');
-  if (tableName === '#tab_1'){
-    tableName = 'self'
+  var tableName = localStorage.getItem("activeTabPms");
+  if (tableName === "#tab_1") {
+    tableName = "self";
     $(".own-objects-row").each(function () {
       if ($(this).is(":checked")) {
         ids.push(this.id);
@@ -149,9 +167,8 @@ function addingObjectivesIds() {
         }
       }
     });
-  }
-  else{
-    tableName = 'all'  
+  } else {
+    tableName = "all";
     $(".all-objects-row").each(function () {
       if ($(this).is(":checked")) {
         ids.push(this.id);
@@ -161,7 +178,7 @@ function addingObjectivesIds() {
           ids.splice(index, 1);
         }
       }
-    });  
+    });
   }
 
   ids = makeObjectivesListUnique(ids);
@@ -186,21 +203,24 @@ function selectAllObjectives() {
   $("#selectedObjectives").attr("data-clicked", 1);
   $("#selectedShowObjectives").removeAttr("style");
   var savedFilters = JSON.parse(localStorage.getItem("savedFilters"));
-  var tableName = localStorage.getItem('activeTabPms');
-  if (tableName === '#tab_1'){
-    tableName = 'self'
-    $('.own-objects').prop('checked',true)
-  }
-  else{
-    tableName = 'all'    
-    $('.all-objects').prop('checked',true)
-    $('.own-objects').prop('checked',true)
+  var tableName = localStorage.getItem("activeTabPms");
+  if (tableName === "#tab_1") {
+    tableName = "self";
+    $(".own-objects").prop("checked", true);
+  } else {
+    tableName = "all";
+    $(".all-objects").prop("checked", true);
+    $(".own-objects").prop("checked", true);
   }
   if (savedFilters && savedFilters["filterData"] !== null) {
     var filter = savedFilters["filterData"];
     $.ajax({
       url: "/pms/objective-select-filter",
-      data: { page: "all", filter: JSON.stringify(filter), "tableName":tableName },
+      data: {
+        page: "all",
+        filter: JSON.stringify(filter),
+        tableName: tableName,
+      },
       type: "GET",
       dataType: "json",
       success: function (response) {
@@ -222,7 +242,7 @@ function selectAllObjectives() {
   } else {
     $.ajax({
       url: "/pms/objective-select",
-      data: { page: "all", "tableName": tableName },
+      data: { page: "all", tableName: tableName },
       type: "GET",
       dataType: "json",
       success: function (response) {
@@ -230,8 +250,10 @@ function selectAllObjectives() {
 
         for (var i = 0; i < employeeIds.length; i++) {
           var empId = employeeIds[i];
-          $("#" + empId).prop("checked", true).closest(".oh-sticky-table__tr")
-          .addClass("highlight-selected");
+          $("#" + empId)
+            .prop("checked", true)
+            .closest(".oh-sticky-table__tr")
+            .addClass("highlight-selected");
         }
         var previousIds = $("#selectedObjectives").attr("data-ids");
         $("#selectedObjectives").attr(
@@ -252,19 +274,18 @@ function selectAllObjectives() {
 
 function unselectAllObjectives() {
   $("#selectedObjectives").attr("data-clicked", 0);
-  var tableName = localStorage.getItem('activeTabPms');
-  if (tableName === '#tab_1'){
-    tableName = 'self'
-    $('.own-objects').prop('checked',false)
-  }
-  else{
-    tableName = 'all'
-    $('.all-objects').prop('checked',false)
-    $('.own-objects').prop('checked',false)
+  var tableName = localStorage.getItem("activeTabPms");
+  if (tableName === "#tab_1") {
+    tableName = "self";
+    $(".own-objects").prop("checked", false);
+  } else {
+    tableName = "all";
+    $(".all-objects").prop("checked", false);
+    $(".own-objects").prop("checked", false);
   }
   $.ajax({
     url: "/pms/objective-select",
-    data: { page: "all", filter: "{}", "tableName": tableName },
+    data: { page: "all", filter: "{}", tableName: tableName },
     type: "GET",
     dataType: "json",
     success: function (response) {
@@ -272,9 +293,10 @@ function unselectAllObjectives() {
 
       for (var i = 0; i < employeeIds.length; i++) {
         var empId = employeeIds[i];
-        $("#" + empId).prop("checked", false)
-        .closest(".oh-sticky-table__tr")
-        .removeClass("highlight-selected");
+        $("#" + empId)
+          .prop("checked", false)
+          .closest(".oh-sticky-table__tr")
+          .removeClass("highlight-selected");
       }
       var ids = JSON.parse($("#selectedObjectives").attr("data-ids") || "[]");
       var uniqueIds = makeObjectivesListUnique(ids);
@@ -291,160 +313,158 @@ function unselectAllObjectives() {
   });
 }
 
-
 $("#archiveObjectives").click(function (e) {
-    e.preventDefault();
+  e.preventDefault();
 
-    var languageCode = null;
-    getCurrentLanguageCode(function (code) {
-      languageCode = code;
-      var confirmMessage = archiveMessages[languageCode];
-      var textMessage = norowMessages[languageCode];
-      ids = [];
-      ids.push($("#selectedObjectives").attr("data-ids"));
-      ids = JSON.parse($("#selectedObjectives").attr("data-ids"));
-      if (ids.length === 0) {
-              Swal.fire({
-            text: textMessage,
-            icon: "warning",
-            confirmButtonText: "Close",
-            });
-        } else {
-          Swal.fire({
-            text: confirmMessage,
-            icon: "info",
-            showCancelButton: true,
-            confirmButtonColor: "#008000",
-            cancelButtonColor: "#d33",
-            confirmButtonText: "Confirm",
-          }).then(function (result) {
-          if (result.isConfirmed) {
-            e.preventDefault();
-            ids = [];
-            ids.push($("#selectedObjectives").attr("data-ids"));
-            ids = JSON.parse($("#selectedObjectives").attr("data-ids"));
-            $.ajax({
-                type: "POST",
-                url: "/pms/objective-bulk-archive?is_active=False",
-                data: {
-                    csrfmiddlewaretoken: getCookie("csrftoken"),
-                ids: JSON.stringify(ids),
-                },
-                success: function (response, textStatus, jqXHR) {
-                    if (jqXHR.status === 200) {
-                        location.reload(); // Reload the current page
-                    } else {
-                        // console.log("Unexpected HTTP status:", jqXHR.status);
-                    }
-                },
-            });
-           }
-        });
-      }
-    });
+  var languageCode = null;
+  getCurrentLanguageCode(function (code) {
+    languageCode = code;
+    var confirmMessage = archiveMessages[languageCode];
+    var textMessage = norowMessages[languageCode];
+    ids = [];
+    ids.push($("#selectedObjectives").attr("data-ids"));
+    ids = JSON.parse($("#selectedObjectives").attr("data-ids"));
+    if (ids.length === 0) {
+      Swal.fire({
+        text: textMessage,
+        icon: "warning",
+        confirmButtonText: "Close",
+      });
+    } else {
+      Swal.fire({
+        text: confirmMessage,
+        icon: "info",
+        showCancelButton: true,
+        confirmButtonColor: "#008000",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Confirm",
+      }).then(function (result) {
+        if (result.isConfirmed) {
+          e.preventDefault();
+          ids = [];
+          ids.push($("#selectedObjectives").attr("data-ids"));
+          ids = JSON.parse($("#selectedObjectives").attr("data-ids"));
+          $.ajax({
+            type: "POST",
+            url: "/pms/objective-bulk-archive?is_active=False",
+            data: {
+              csrfmiddlewaretoken: getCookie("csrftoken"),
+              ids: JSON.stringify(ids),
+            },
+            success: function (response, textStatus, jqXHR) {
+              if (jqXHR.status === 200) {
+                location.reload(); // Reload the current page
+              } else {
+                // console.log("Unexpected HTTP status:", jqXHR.status);
+              }
+            },
+          });
+        }
+      });
+    }
+  });
 });
 
 $("#unArchiveObjectives").click(function (e) {
-    e.preventDefault();
+  e.preventDefault();
 
-    var languageCode = null;
-    getCurrentLanguageCode(function (code) {
-      languageCode = code;
-      var confirmMessage = unarchiveMessages[languageCode];
-      var textMessage = norowMessages[languageCode];
-      ids = [];
-      ids.push($("#selectedObjectives").attr("data-ids"));
-      ids = JSON.parse($("#selectedObjectives").attr("data-ids"));
-      if (ids.length === 0) {
-            Swal.fire({
-            text: textMessage,
-            icon: "warning",
-            confirmButtonText: "Close",
-            });
-        } else {
-          Swal.fire({
-            text: confirmMessage,
-            icon: "info",
-            showCancelButton: true,
-            confirmButtonColor: "#008000",
-            cancelButtonColor: "#d33",
-            confirmButtonText: "Confirm",
-          }).then(function (result) {
-          if (result.isConfirmed) {
-                e.preventDefault();
-                ids = [];
-                ids.push($("#selectedObjectives").attr("data-ids"));
-                ids = JSON.parse($("#selectedObjectives").attr("data-ids"));
-                $.ajax({
-                    type: "POST",
-                    url: "/pms/objective-bulk-archive?is_active=True",
-                    data: {
-                        csrfmiddlewaretoken: getCookie("csrftoken"),
-                        ids: JSON.stringify(ids),
-                    },
-                    success: function (response, textStatus, jqXHR) {
-                        if (jqXHR.status === 200) {
-                            location.reload(); // Reload the current page
-                        } else {
-                            // console.log("Unexpected HTTP status:", jqXHR.status);
-                        }
-                    },
-                });
-            }
-        });
+  var languageCode = null;
+  getCurrentLanguageCode(function (code) {
+    languageCode = code;
+    var confirmMessage = unarchiveMessages[languageCode];
+    var textMessage = norowMessages[languageCode];
+    ids = [];
+    ids.push($("#selectedObjectives").attr("data-ids"));
+    ids = JSON.parse($("#selectedObjectives").attr("data-ids"));
+    if (ids.length === 0) {
+      Swal.fire({
+        text: textMessage,
+        icon: "warning",
+        confirmButtonText: "Close",
+      });
+    } else {
+      Swal.fire({
+        text: confirmMessage,
+        icon: "info",
+        showCancelButton: true,
+        confirmButtonColor: "#008000",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Confirm",
+      }).then(function (result) {
+        if (result.isConfirmed) {
+          e.preventDefault();
+          ids = [];
+          ids.push($("#selectedObjectives").attr("data-ids"));
+          ids = JSON.parse($("#selectedObjectives").attr("data-ids"));
+          $.ajax({
+            type: "POST",
+            url: "/pms/objective-bulk-archive?is_active=True",
+            data: {
+              csrfmiddlewaretoken: getCookie("csrftoken"),
+              ids: JSON.stringify(ids),
+            },
+            success: function (response, textStatus, jqXHR) {
+              if (jqXHR.status === 200) {
+                location.reload(); // Reload the current page
+              } else {
+                // console.log("Unexpected HTTP status:", jqXHR.status);
+              }
+            },
+          });
         }
-    });
+      });
+    }
+  });
 });
 
 $("#deleteObjectives").click(function (e) {
-    e.preventDefault();
+  e.preventDefault();
 
-    var languageCode = null;
-    getCurrentLanguageCode(function (code) {
-      languageCode = code;
-      var confirmMessage = deleteMessages[languageCode];
-      var textMessage = norowMessages[languageCode];
-      ids = [];
-      ids.push($("#selectedObjectives").attr("data-ids"));
-      ids = JSON.parse($("#selectedObjectives").attr("data-ids"));
-      if (ids.length === 0) {
-            Swal.fire({
-            text: textMessage,
-            icon: "warning",
-            confirmButtonText: "Close",
-            });
-        } else {
-          Swal.fire({
-            text: confirmMessage,
-            icon: "error",
-            showCancelButton: true,
-            confirmButtonColor: "#008000",
-            cancelButtonColor: "#d33",
-            confirmButtonText: "Confirm",
-            }).then(function (result) {
-            if (result.isConfirmed) {
-                e.preventDefault();
-                ids = [];
-                ids.push($("#selectedObjectives").attr("data-ids"));
-                ids = JSON.parse($("#selectedObjectives").attr("data-ids"));                
-                $.ajax({
-                    type: "POST",
-                    url: "/pms/objective-bulk-delete",
-                    data: {
-                    csrfmiddlewaretoken: getCookie("csrftoken"),
-                    ids: JSON.stringify(ids),
-                    },
-                    success: function (response, textStatus, jqXHR) {
-                        if (jqXHR.status === 200) {
-                            location.reload(); // Reload the current page
-                        } else {
-                            // console.log("Unexpected HTTP status:", jqXHR.status);
-                        }
-                    },
-                });
-
-            }
-        });
+  var languageCode = null;
+  getCurrentLanguageCode(function (code) {
+    languageCode = code;
+    var confirmMessage = deleteMessages[languageCode];
+    var textMessage = norowMessages[languageCode];
+    ids = [];
+    ids.push($("#selectedObjectives").attr("data-ids"));
+    ids = JSON.parse($("#selectedObjectives").attr("data-ids"));
+    if (ids.length === 0) {
+      Swal.fire({
+        text: textMessage,
+        icon: "warning",
+        confirmButtonText: "Close",
+      });
+    } else {
+      Swal.fire({
+        text: confirmMessage,
+        icon: "error",
+        showCancelButton: true,
+        confirmButtonColor: "#008000",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Confirm",
+      }).then(function (result) {
+        if (result.isConfirmed) {
+          e.preventDefault();
+          ids = [];
+          ids.push($("#selectedObjectives").attr("data-ids"));
+          ids = JSON.parse($("#selectedObjectives").attr("data-ids"));
+          $.ajax({
+            type: "POST",
+            url: "/pms/objective-bulk-delete",
+            data: {
+              csrfmiddlewaretoken: getCookie("csrftoken"),
+              ids: JSON.stringify(ids),
+            },
+            success: function (response, textStatus, jqXHR) {
+              if (jqXHR.status === 200) {
+                location.reload(); // Reload the current page
+              } else {
+                // console.log("Unexpected HTTP status:", jqXHR.status);
+              }
+            },
+          });
+        }
+      });
     }
-});
+  });
 });
