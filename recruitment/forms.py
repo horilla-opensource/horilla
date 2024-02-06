@@ -33,6 +33,8 @@ from employee.models import Employee
 from horilla_widgets.widgets.horilla_multi_select_field import HorillaMultiSelectField
 from horilla_widgets.widgets.select_widgets import HorillaMultiSelectWidget
 from recruitment.models import (
+    RejectReason,
+    RejectedCandidate,
     SkillZone,
     SkillZoneCandidate,
     Stage,
@@ -743,6 +745,7 @@ class SkillZoneCreateForm(ModelForm):
 
 class SkillZoneCandidateForm(ModelForm):
     verbose_name = "Skill Zone Candidate"
+
     class Meta:
         """
         Class Meta for additional options
@@ -753,7 +756,6 @@ class SkillZoneCandidateForm(ModelForm):
         exclude = [
             "added_on",
         ]
-
 
     def as_p(self, *args, **kwargs):
         """
@@ -766,7 +768,12 @@ class SkillZoneCandidateForm(ModelForm):
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         if self.instance.pk:
-            self.verbose_name = self.instance.candidate_id.name + " / "+ self.instance.skill_zone_id.title
+            self.verbose_name = (
+                self.instance.candidate_id.name
+                + " / "
+                + self.instance.skill_zone_id.title
+            )
+
 
 class ToSkillZoneForm(ModelForm):
     verbose_name = "Add To Skill Zone"
@@ -820,3 +827,47 @@ class ToSkillZoneForm(ModelForm):
         context = {"form": self}
         table_html = render_to_string("common_form.html", context)
         return table_html
+
+
+class RejectReasonForm(ModelForm):
+    """
+    RejectReasonForm
+    """
+
+    verbose_name = "Reject Reason"
+
+    class Meta:
+        model = RejectReason
+        fields = "__all__"
+
+    def as_p(self, *args, **kwargs):
+        """
+        Render the form fields as HTML table rows with Bootstrap styling.
+        """
+        context = {"form": self}
+        table_html = render_to_string("common_form.html", context)
+        return table_html
+
+
+class RejectedCandidateForm(ModelForm):
+    """
+    RejectedCandidateForm
+    """
+
+    verbose_name = "Rejected Candidate"
+
+    class Meta:
+        model = RejectedCandidate
+        fields = "__all__"
+
+    def as_p(self, *args, **kwargs):
+        """
+        Render the form fields as HTML table rows with Bootstrap styling.
+        """
+        context = {"form": self}
+        table_html = render_to_string("common_form.html", context)
+        return table_html
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["reject_reason_id"].empty_label = None

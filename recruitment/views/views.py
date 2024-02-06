@@ -46,6 +46,7 @@ from recruitment.models import (
     Recruitment,
     Candidate,
     RecruitmentGeneralSetting,
+    RejectReason,
     SkillZone,
     SkillZoneCandidate,
     Stage,
@@ -71,6 +72,7 @@ from recruitment.forms import (
     CandidateExportForm,
     RecruitmentCreationForm,
     CandidateCreationForm,
+    RejectReasonForm,
     SkillZoneCandidateForm,
     SkillZoneCreateForm,
     StageCreationForm,
@@ -1676,12 +1678,14 @@ def to_skill_zone(request, cand_id):
         if form.is_valid():
             skill_zones = form.cleaned_data["skill_zone_ids"]
             for zone in skill_zones:
-                if not SkillZoneCandidate.objects.filter(candidate_id=candidate,skill_zone_id=zone).exists():
+                if not SkillZoneCandidate.objects.filter(
+                    candidate_id=candidate, skill_zone_id=zone
+                ).exists():
                     zone_candidate = SkillZoneCandidate()
                     zone_candidate.candidate_id = candidate
                     zone_candidate.skill_zone_id = zone
                     zone.save()
-            messages.success(request,"Candidate ")
+            messages.success(request, "Candidate ")
             return HttpResponse("<script>window.location.reload()</script>")
     return render(request, template, {"form": form, "cand_id": cand_id})
 
@@ -1789,3 +1793,51 @@ def candidate_self_status_tracking(request):
             messages.info(request, "No matching record")
         return render(request, "candidate/self_login.html")
     return render(request, "404.html")
+
+
+@login_required
+@permission_required("recruitment.view_rejectreason")
+def candidate_reject_reasons(request):
+    """
+    This method is used to view all the reject reasons
+    """
+    reject_reasons = RejectReason.objects.all()
+    return render(
+        request, "settings/reject_reasons.html", {"reject_reasons": reject_reasons}
+    )
+
+
+@login_required
+@permission_required("recruitment.add_rejectreason")
+def create_reject_reason(request):
+    """
+    This method is used to create/update the reject reasons
+    """
+    instance_id = eval(str(request.GET.get("instance_id")))
+    instance = None
+    if instance_id:
+        instance = RejectReason.objects.get(id=instance_id)
+    form = RejectReasonForm(instance=instance)
+    if request.method == "POST":
+        form = RejectReasonForm(request.POST, instance=instance)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Reject reason saved")
+            return HttpResponse("<script>window.location.reload()</script>")
+    return render(request, "settings/reject_reason_form.html", {"form": form})
+
+
+@login_required
+@permission_required("recruitment.delete_rejectreason")
+def delete_reject_reason(request):
+    """
+    This method is used to delete the reject reasons
+    """
+    ids = request.GET.getlist("ids")
+    reasons = RejectReason.objects.filter(id__in = ids)        
+    for reason in reasons:
+        reasons.delete()
+        messages.success(request,f"{reason.title} is deleted.")
+    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+    
+    

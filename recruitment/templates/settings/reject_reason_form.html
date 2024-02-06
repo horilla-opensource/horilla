@@ -1,0 +1,8 @@
+<form hx-post="{% url 'create-reject-reason' %}?instance_id={{form.instance.pk}}">
+    {{form.as_p}}
+</form>
+
+<script>
+    console.log($(".col-md-6"));
+    $(".col-md-6").removeClass("col-md-6");
+</script>

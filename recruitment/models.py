@@ -4,6 +4,7 @@ models.py
 This module is used to register models for recruitment app
 
 """
+
 import re
 import os
 import json
@@ -225,6 +226,13 @@ class Candidate(models.Model):
     """
 
     choices = [("male", _("Male")), ("female", _("Female")), ("other", _("Other"))]
+    offer_letter_statuses = [
+        ("not_sent", "Not Sent"),
+        ("sent", "Sent"),
+        ("accepted", "Accepted"),
+        ("rejected", "Rejected"),
+        ("joined", "Joined"),
+    ]
     source_choices = [
         ("application", _("Application Form")),
         ("software", _("Inside software")),
@@ -328,11 +336,26 @@ class Candidate(models.Model):
         default="not_sent",
     )
     probation_end = models.DateField(null=True, editable=False)
+    offer_letter_status = models.CharField(
+        max_length=10,
+        choices=offer_letter_statuses,
+        default="not_sent",
+        editable=False,
+    )
     objects = HorillaCompanyManager(related_company_field="recruitment_id__company_id")
 
     def __str__(self):
         return f"{self.name}"
 
+    def is_offer_rejected(self):
+        """
+        Is offer rejected checking method
+        """
+        first = RejectedCandidate.objects.filter(candidate_id=self).first()
+        if first:
+            return first.reject_reason_id.count() > 0
+        return first
+    
     def get_full_name(self):
         """
         Method will return employee full name
@@ -420,6 +443,42 @@ class Candidate(models.Model):
             ("archive_candidate", "Archive Candidate"),
         )
         ordering = ["sequence"]
+
+
+class RejectReason(models.Model):
+    """
+    RejectReason
+    """
+
+    title = models.CharField(
+        max_length=20,
+    )
+    description = models.TextField(null=True, blank=True)
+    company_id = models.ForeignKey(
+        Company, on_delete=models.CASCADE, null=True, blank=True
+    )
+    objects = HorillaCompanyManager()
+
+    def __str__(self) -> str:
+        return self.title
+
+
+class RejectedCandidate(models.Model):
+    """
+    RejectedCandidate
+    """
+
+    candidate_id = models.OneToOneField(
+        Candidate, on_delete=models.PROTECT, verbose_name="Candidate",related_name="rejected_candidate"
+    )
+    reject_reason_id = models.ManyToManyField(
+        RejectReason, verbose_name="Reject reason",blank=True
+    )
+    description = models.TextField()
+    objects = HorillaCompanyManager(related_company_field="candidate_id__company_id")
+
+    def __str__(self) -> str:
+        return super().__str__()
 
 
 class StageFiles(models.Model):
@@ -635,4 +694,4 @@ class RecruitmentGeneralSetting(models.Model):
 
     candidate_self_tracking = models.BooleanField(default=False)
     show_overall_rating = models.BooleanField(default=False)
-    company_id = models.ForeignKey(Company, on_delete=models.CASCADE,null=True)
+    company_id = models.ForeignKey(Company, on_delete=models.CASCADE, null=True)

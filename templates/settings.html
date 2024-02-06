@@ -81,6 +81,16 @@
 							>
 						</li>
 						{% endif %}
+						{% if perms.recruitment.view_rejectreason %}
+						<li class="oh-inner-sidebar__item">
+							<a
+								id="jobRole"
+								href="{% url 'candidate-reject-reasons' %}"
+								class="oh-inner-sidebar__link oh-dropdown__link"
+								>{% trans "Candidate Reject Reason" %}</a
+							>
+						</li>
+						{% endif %}
 						{% if perms.base.view_worktype %}
 						<li class="oh-inner-sidebar__item">
 							<a

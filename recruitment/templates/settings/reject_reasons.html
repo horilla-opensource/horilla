@@ -1,0 +1,33 @@
+{% extends 'settings.html' %}
+{% block settings %}
+  {% load i18n static %}
+  <div class="oh-inner-sidebar-content">
+    <div class="oh-inner-sidebar-content__header d-flex justify-content-between align-items-center">
+      <h2 class="oh-inner-sidebar-content__title">{% trans 'Reject Reasons' %}</h2>
+      {% if perms.recruitment.add_rejectreason %}
+        <button class="oh-btn oh-btn--secondary oh-btn--shadow" data-toggle="oh-modal-toggle" data-target="#rejectReasonModal" hx-get="{% url 'create-reject-reason' %}" hx-target="#rejectReasonModalBody">
+          <ion-icon name="add-outline" class="me-1"></ion-icon>
+          {% trans 'Create' %}
+        </button>
+      {% endif %}
+    </div>
+    {% if reject_reasons|length %}
+      {% include 'settings/reject_reason_lines.html' %}
+    {% else %}
+      <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%;">
+        <img style="display: block; width: 15%; margin: 20px auto; filter: opacity(0.5);" src="{% static 'images/ui/connection.png' %}" class="" alt="Page not found. 404." />
+        <h5 class="oh-404__subtitle">{% trans 'There is no reject reasons at this moment.' %}</h5>
+      </div>
+    {% endif %}
+  </div>
+
+  <div class="oh-modal" id="rejectReasonModal" role="dialog" aria-hidden="true">
+    <div class="oh-modal__dialog" style="max-width: 550px">
+      <div class="oh-modal__dialog-header">
+        <button type="button" class="oh-modal__close" aria-label="Close"><ion-icon name="close-outline"></ion-icon></button>
+      </div>
+
+      <div class="oh-modal__dialog-body" id="rejectReasonModalBody"></div>
+    </div>
+  </div>
+{% endblock %}

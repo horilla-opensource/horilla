@@ -428,5 +428,22 @@ urlpatterns = [
         views.candidate_self_tracking_rating_option,
         name="candidate-self-tracking-rating-option",
     ),
-    path("candidate-self-status-tracking",views.candidate_self_status_tracking,name="candidate-self-status-tracking")
+    path(
+        "candidate-self-status-tracking",
+        views.candidate_self_status_tracking,
+        name="candidate-self-status-tracking",
+    ),
+    path(
+        "candidate-reject-reasons",
+        views.candidate_reject_reasons,
+        name="candidate-reject-reasons",
+    ),
+    path(
+        "create-reject-reason", views.create_reject_reason, name="create-reject-reason"
+    ),
+    path(
+        "delete-reject-reasons",
+        views.delete_reject_reason,
+        name="delete-reject-reasons",
+    ),
 ]
