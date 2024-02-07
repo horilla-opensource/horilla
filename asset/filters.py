@@ -230,3 +230,68 @@ class AssetAllocationReGroup:
         ("assigned_date", "Assigned Date"),
         ("return_date", "Return Date"),
     ]
+
+
+class AssetHistoryFilter(CustomFilterSet):
+    """
+    Custom filter set for AssetAssignment instances for filtering in asset history view.
+    """
+
+    search = django_filters.CharFilter(
+        field_name="asset_id__asset_name", lookup_expr="icontains"
+    )
+    returned_assets = django_filters.CharFilter(
+        field_name="return_status", method="exclude_none"
+    )
+    return_date_gte = django_filters.DateFilter(
+        field_name="return_date",
+        lookup_expr="gte",
+        widget=forms.DateInput(attrs={"type": "date"}),
+    )
+    return_date_lte = django_filters.DateFilter(
+        field_name="return_date",
+        lookup_expr="lte",
+        widget=forms.DateInput(attrs={"type": "date"}),
+    )
+    assigned_date_gte = django_filters.DateFilter(
+        field_name="assigned_date",
+        lookup_expr="gte",
+        widget=forms.DateInput(attrs={"type": "date"}),
+    )
+    assigned_date_lte = django_filters.DateFilter(
+        field_name="assigned_date",
+        lookup_expr="lte",
+        widget=forms.DateInput(attrs={"type": "date"}),
+    )
+
+    def exclude_none(self, queryset, name, value):
+        if value == "True":
+            queryset = queryset.filter(return_status__isnull=False)
+        return queryset
+
+    class Meta:
+        """
+        Specifies the model and fields to be used for filtering AssetAllocation instances.
+
+        Attributes:
+            model (class): The model class AssetAssignment to be filtered.
+            fields (str): A special value "__all__" to include all fields
+                          of the model in the filter.
+        """
+
+        model = AssetAssignment
+        fields = "__all__"
+
+
+class AssetHistoryReGroup:
+    """
+    Class to keep the field name for group by option
+    """
+
+    fields = [
+        ("", "Select"),
+        ("asset_id", "Asset"),
+        ("assigned_to_employee_id", "Employee"),
+        ("assigned_date", "Assigned Date"),
+        ("return_date", "Return Date"),
+    ]

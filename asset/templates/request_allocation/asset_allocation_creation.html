@@ -1,6 +1,6 @@
 {% load i18n %}
 <h5 >{% trans "Asset Allocation" %}</h5>
-<form hx-post="{%url 'asset-allocate-creation' %}" hx-target="#asset-request-allocation-modal-target">
+<form hx-post="{%url 'asset-allocate-creation' %}" hx-target="#asset-request-allocation-modal-target" hx-encoding="multipart/form-data" >
     {% csrf_token %}
     <div class=" m-3">
         <div class="oh-input__group ">
@@ -17,6 +17,11 @@
             <label class="oh-input__label" for="{{asset_allocation_form.assigned_by_employee_id.id_for_label}}">{% trans "Assigned By" %}</label>
             {{asset_allocation_form.assigned_by_employee_id}}
             {{asset_allocation_form.assigned_by_employee_id.errors}}
+        </div>
+        <div class="oh-input__group ">
+            <label class="oh-input__label" for="{{asset_allocation_form.assign_images.id_for_label}}">{% trans "Assign condition images" %}</label>
+            {{asset_allocation_form.assign_images}}
+            {{asset_allocation_form.assign_images.errors}}
         </div>
     </div>
     <div class="oh-modal__dialog-footer">

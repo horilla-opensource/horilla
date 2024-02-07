@@ -1,0 +1,272 @@
+{% load attendancefilters %} {% load basefilters %} {% load static %} 
+{% load i18n %} {% include 'filter_tags.html' %}
+<div class="oh-card">
+    {% for asset_history_list in asset_assignments %}
+    <div class="oh-accordion-meta">
+        <div class="oh-accordion-meta__item">
+            <div
+                class="oh-accordion-meta__header"
+                onclick='$(this).toggleClass("oh-accordion-meta__header--show");'
+            >
+                <span class="oh-accordion-meta__title pt-3 pb-3">
+                    <div class="oh-tabs__input-badge-container">
+                        <span
+                            class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round mr-1"
+                        >
+                            {{asset_history_list.list|length}}
+                        </span>
+                        {{asset_history_list.grouper}}
+                    </div>
+                </span>
+            </div>
+            <div class="oh-accordion-meta__body d-none">
+                <div class="oh-sticky-table oh-sticky-table--no-overflow mb-5">
+                    <div class="oh-sticky-table">
+                        <div class="oh-sticky-table__table">
+                            <div class="oh-sticky-table__thead">
+                                <div class="oh-sticky-table__tr">
+                                    <div
+                                        class="oh-sticky-table__th"
+                                        hx-get=""
+                                        hx-target="#historyTable"
+                                    >
+                                        {% trans "Asset" %}
+                                    </div>
+                                    <div
+                                        class="oh-sticky-table__th {% if request.sort_option.order == '-assigned_to_employee_id__employee_first_name' %}arrow-up {% elif request.sort_option.order == 'assigned_to_employee_id__employee_first_name' %}arrow-down {% else %}arrow-up-down {% endif %}"
+                                        hx-get=""
+                                        hx-target="#historyTable"
+                                    >
+                                        {% trans "Employee" %}
+                                    </div>
+                                    <div
+                                        class="oh-sticky-table__th"
+                                        hx-get=""
+                                        hx-target="#historyTable"
+                                    >
+                                        {% trans "Assigned Date" %}
+                                    </div>
+                                    <div
+                                        class="oh-sticky-table__th"
+                                        hx-get=""
+                                        hx-target="#historyTable"
+                                    >
+                                        {% trans "Returned Date" %}
+                                    </div>
+                                    <div
+                                        class="oh-sticky-table__th"
+                                        hx-get=""
+                                        hx-target="#historyTable"
+                                    >
+                                        {% trans "Return Status" %}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="oh-sticky-table__tbody">
+                                {% for asset_assignement in asset_history_list.list %}
+                                <div
+                                    class="oh-sticky-table__tr"
+                                    hx-get='{% url "asset-history-single-view" asset_assignement.id %}'
+                                    hx-target="#historySingleModalBody"
+                                    data-toggle="oh-modal-toggle"
+                                    ,
+                                    data-target="#historySingleModal"
+                                >
+                                    <div class="oh-sticky-table__sd">
+                                        <div class="oh-profile oh-profile--md">
+                                            <div
+                                                class="oh-profile__avatar mr-1"
+                                            >
+                                                <img
+                                                    src="https://ui-avatars.com/api/?name={{asset_assignement.asset_id.asset_name}}&background=random"
+                                                    class="oh-profile__image"
+                                                    alt=""
+                                                />
+                                            </div>
+                                            <span
+                                                class="oh-profile__name oh-text--dark"
+                                                >{{asset_assignement.asset_id}}</span
+                                            >
+                                        </div>
+                                    </div>
+                                    <div class="oh-sticky-table__td">
+                                        {{asset_assignement.assigned_to_employee_id}}
+                                    </div>
+                                    <div class="oh-sticky-table__td">
+                                        {{asset_assignement.assigned_date}}
+                                    </div>
+                                    <div class="oh-sticky-table__td">
+                                        {{asset_assignement.return_date}}
+                                    </div>
+                                    <div class="oh-sticky-table__td">
+                                        {{asset_assignement.return_status}}
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="oh-pagination">
+                    <span class="oh-pagination__page">
+                        {% trans "Page" %} {{ asset_history_list.list.number }} 
+                        {%trans "of" %} {{asset_history_list.list.paginator.num_pages }}.
+                    </span>
+                    <nav class="oh-pagination__nav">
+                        <div class="oh-pagination__input-container me-3">
+                            <span class="oh-pagination__label me-1"
+                                >{% trans "Page" %}</span
+                            >
+                            <input
+                                type="number"
+                                name="{{asset_history_list.dynamic_name}}"
+                                class="oh-pagination__input"
+                                value="{{asset_history_list.list.number}}"
+                                hx-get="{% url 'asset-history-search' %}?{{pd}}"
+                                hx-target="#historyTable"
+                                min="1"
+                            />
+                            <span class="oh-pagination__label"
+                                >{% trans "of" %}
+                                {{asset_history_list.list.paginator.num_pages}}</span
+                            >
+                        </div>
+                        <ul class="oh-pagination__items">
+                            {% if asset_history_list.list.has_previous %}
+                            <li
+                                class="oh-pagination__item oh-pagination__item--wide"
+                            >
+                                <a
+                                    hx-target="#historyTable"
+                                    hx-get="{% url 'asset-history-search' %}?{{pd}}&{{asset_history_list.dynamic_name}}=1"
+                                    class="oh-pagination__link"
+                                    >{% trans "First" %}</a
+                                >
+                            </li>
+                            <li
+                                class="oh-pagination__item oh-pagination__item--wide"
+                            >
+                                <a
+                                    hx-target="#historyTable"
+                                    hx-get="{% url 'asset-history-search' %}?{{pd}}&{{asset_history_list.dynamic_name}}={{ asset_history_list.list.previous_page_number }}"
+                                    class="oh-pagination__link"
+                                    >{% trans "Previous" %}</a
+                                >
+                            </li>
+                            {% endif %} {% if asset_history_list.list.has_next %}
+                            <li
+                                class="oh-pagination__item oh-pagination__item--wide"
+                            >
+                                <a
+                                    hx-target="#historyTable"
+                                    hx-get="{% url 'asset-history-search' %}?{{pd}}&{{asset_history_list.dynamic_name}}={{ asset_history_list.list.next_page_number }}"
+                                    class="oh-pagination__link"
+                                    >{% trans "Next" %}</a
+                                >
+                            </li>
+                            <li
+                                class="oh-pagination__item oh-pagination__item--wide"
+                            >
+                                <a
+                                    hx-target="#historyTable"
+                                    hx-get="{% url 'asset-history-search' %}?{{pd}}&{{asset_history_list.dynamic_name}}={{ asset_history_list.list.paginator.num_pages }}"
+                                    class="oh-pagination__link"
+                                    >{% trans "Last" %}</a
+                                >
+                            </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+    <div class="oh-pagination">
+        <span class="oh-pagination__page">
+            {% trans "Page" %} {{ asset_assignments.number }} {% trans "of" %}
+            {{ asset_assignments.paginator.num_pages }}.
+        </span>
+        <nav class="oh-pagination__nav">
+            <div class="oh-pagination__input-container me-3">
+                <span class="oh-pagination__label me-1"
+                    >{% trans "Page" %}</span
+                >
+                <input
+                    type="number"
+                    name="page"
+                    class="oh-pagination__input"
+                    value="{{asset_assignments.number}}"
+                    hx-get="{% url 'asset-history-search' %}?{{pd}}"
+                    hx-target="#historyTable"
+                    min="1"
+                />
+                <span class="oh-pagination__label"
+                    >{% trans "of" %}
+                    {{asset_assignments.paginator.num_pages}}</span
+                >
+            </div>
+            <ul class="oh-pagination__items">
+                {% if asset_assignments.has_previous %}
+                <li class="oh-pagination__item oh-pagination__item--wide">
+                    <a
+                        hx-target="#historyTable"
+                        hx-get="{% url 'asset-history-search' %}?{{pd}}&page=1"
+                        class="oh-pagination__link"
+                        >{% trans "First" %}</a
+                    >
+                </li>
+                <li class="oh-pagination__item oh-pagination__item--wide">
+                    <a
+                        hx-target="#historyTable"
+                        hx-get="{% url 'asset-history-search' %}?{{pd}}&page={{ asset_assignments.previous_page_number }}"
+                        class="oh-pagination__link"
+                        >{% trans "Previous" %}</a
+                    >
+                </li>
+                {% endif %} {% if asset_assignments.has_next %}
+                <li class="oh-pagination__item oh-pagination__item--wide">
+                    <a
+                        hx-target="#historyTable"
+                        hx-get="{% url 'asset-history-search' %}?{{pd}}&page={{ asset_assignments.next_page_number }}"
+                        class="oh-pagination__link"
+                        >{% trans "Next" %}</a
+                    >
+                </li>
+                <li class="oh-pagination__item oh-pagination__item--wide">
+                    <a
+                        hx-target="#historyTable"
+                        hx-get="{% url 'asset-history-search' %}?{{pd}}&page={{ asset_assignments.paginator.num_pages }}"
+                        class="oh-pagination__link"
+                        >{% trans "Last" %}</a
+                    >
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+</div>
+
+<div
+    class="oh-modal"
+    id="historySingleModal"
+    role="dialog"
+    aria-labelledby="historySingleModal"
+    aria-hidden="true"
+>
+    <div class="oh-modal__dialog">
+        <div class="oh-modal__dialog-header">
+            <h2 class="oh-modal__dialog-title" id="historySingleModalLabel">
+                {% trans "Asset Details" %}
+            </h2>
+            <button class="oh-modal__close" aria-label="Close">
+                <ion-icon name="close-outline"></ion-icon>
+            </button>
+            <div
+                class="oh-modal__dialog-body p-0 pt-2"
+                id="historySingleModalBody"
+            ></div>
+        </div>
+    </div>
+</div>

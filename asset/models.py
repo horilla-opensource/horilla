@@ -103,6 +103,9 @@ class AssetDocuments(models.Model):
         return f'document for {self.asset_report}'
     
 
+class ReturnImages(models.Model):
+    image = models.FileField(upload_to="asset/return_images/", blank=True, null=True)
+
 class AssetAssignment(models.Model):
     """
     Represents the allocation and return of assets to and from employees.
@@ -130,6 +133,11 @@ class AssetAssignment(models.Model):
     )
     return_request = models.BooleanField(default = False)
     objects = HorillaCompanyManager("asset_id__asset_lot_number_id__company_id")
+    return_images = models.ManyToManyField(ReturnImages,blank=True,related_name="return_images")
+    assign_images = models.ManyToManyField(ReturnImages,blank=True,related_name="assign_images")
+
+    def __str__(self):
+        return f"{self.assigned_to_employee_id} --- {self.asset_id} --- {self.return_status}"
 
 
 class AssetRequest(models.Model):

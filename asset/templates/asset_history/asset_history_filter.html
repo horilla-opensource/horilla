@@ -1,0 +1,115 @@
+{% load static %} {% load i18n %} {% load mathfilters %} {% load widget_tweaks %}
+<div class="oh-dropdown__filter-body">
+    <div class="oh-accordion">
+        <div class="oh-accordion-header">{% trans "Asset History" %}</div>
+        <div class="oh-accordion-body">
+            <div class="row">
+                <div class="col-sm-12 col-md-12 col-lg-6">
+                    <div class="oh-input-group">
+                        <label
+                            class="oh-label"
+                            for="{{f.form.assigned_to_employee_id.id_for_label}}"
+                            >{% trans "Allocated User" %}</label
+                        >
+                        {{f.form.assigned_to_employee_id}}
+                    </div>
+                    <div class="oh-input-group">
+                        <label
+                            class="oh-label"
+                            for="{{f.form.asset_id.id_for_label}}"
+                            >{% trans "Asset" %}</label
+                        >
+                        {{f.form.asset_id}}
+                    </div>
+                </div>
+                <div class="col-sm-12 col-md-12 col-lg-6">
+                    <div class="oh-input-group">
+                        <label
+                            class="oh-label"
+                            for="{{f.form.assigned_date.id_for_label}}"
+                            >{% trans "Asset Allocated Date" %}</label
+                        >
+                        {{ f.form.assigned_date |attr:"type:date" }}
+                    </div>
+                    <div class="oh-input-group">
+                        <label
+                            class="oh-label"
+                            for="{{f.form.return_status.id_for_label}}"
+                            >{% trans "Status" %}</label
+                        >
+                        {{f.form.return_status}}
+                    </div>
+                </div>
+                <div class="col-sm-12 col-md-12 col-lg-6">
+                    <div class="oh-input-group">
+                        <label
+                            class="oh-label"
+                            for="{{f.form.return_date.id_for_label}}"
+                            >{% trans "Return Date" %}</label
+                        >
+                        {{ f.form.return_date|attr:"type:date" }}
+                    </div>
+                </div>
+                <div class="col-sm-12 col-md-12 col-lg-6">
+                    <div class="oh-input-group">
+                        <label
+                            class="oh-label"
+                            for="{{f.form.assigned_by_employee_id.id_for_label}}"
+                            >{% trans "Allocated By" %}</label
+                        >
+                        {{f.form.assigned_by_employee_id}}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div><div class="oh-accordion">
+        <div class="oh-accordion-header">{% trans "Advanced" %}</div>
+        <div class="oh-accordion-body">
+            <div class="row">
+                <div class="col-sm-12 col-md-12 col-lg-6">
+                    <div class="oh-input-group">
+                        <label
+                            class="oh-label"
+                            for="{{f.form.return_date_gte.id_for_label}}"
+                            >{% trans "Return Date Greater Or Equal" %}</label
+                        >
+                        {{f.form.return_date_gte}}
+                    </div>
+                    <div class="oh-input-group">
+                        <label
+                            class="oh-label"
+                            for="{{f.form.return_date_lte.id_for_label}}"
+                            >{% trans "Assign Date Greater Or Equal" %}</label
+                        >
+                        {{f.form.assigned_date_gte}}
+                    </div>
+                </div>
+                
+                <div class="col-sm-12 col-md-12 col-lg-6">
+                    <div class="oh-input-group">
+                        <label
+                            class="oh-label"
+                            for="{{f.form.return_date_gte.id_for_label}}"
+                            >{% trans "Return Date lesser Or Equal" %}</label
+                        >
+                        {{f.form.return_date_lte}}
+                    </div>
+                    <div class="oh-input-group">
+                        <label
+                            class="oh-label"
+                            for="{{f.form.return_date_lte.id_for_label}}"
+                            >{% trans "Assign Date Lesser Or Equal" %}</label
+                        >
+                        {{f.form.assigned_date_lte}}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="oh-dropdown__filter-footer">
+    <button class="oh-btn oh-btn--secondary oh-btn--small w-100 filterButton">
+        {% trans "Filter" %}
+    </button>
+</div>
+<script src="{% static '/base/filter.js' %}"></script>

@@ -1,0 +1,141 @@
+{% load i18n %}
+{% load static %}
+{% load basefilters %}
+{% include 'filter_tags.html' %}
+<div class="oh-table_sticky--wrapper" id="historyTable">
+	<div class="oh-sticky-table">
+		<div class="oh-sticky-table__table">
+			<div class="oh-sticky-table__thead" >
+				<div class="oh-sticky-table__tr">
+					<div class="oh-sticky-table__th {% if request.sort_option.order == '-asset_id__asset_name' %}arrow-up {% elif request.sort_option.order == 'asset_id__asset_name' %}arrow-down {% else %}arrow-up-down {% endif %}"  hx-get="{% url 'asset-history-search' %}?{{pd}}&sortby=asset_id__asset_name" hx-target="#historyTable">{% trans "Asset" %}</div>
+					<div class="oh-sticky-table__th {% if request.sort_option.order == '-assigned_to_employee_id__employee_first_name' %}arrow-up {% elif request.sort_option.order == 'assigned_to_employee_id__employee_first_name' %}arrow-down {% else %}arrow-up-down {% endif %}" hx-get="{% url 'asset-history-search' %}?{{pd}}&sortby=assigned_to_employee_id__employee_first_name" hx-target="#historyTable">{% trans "Employee" %}</div>
+					<div class="oh-sticky-table__th {% if request.sort_option.order == '-assigned_date' %}arrow-up {% elif request.sort_option.order == 'assigned_date' %}arrow-down {% else %}arrow-up-down {% endif %}" hx-get="{% url 'asset-history-search' %}?{{pd}}&sortby=assigned_date" hx-target="#historyTable">{% trans "Assigned Date" %}</div>
+					<div class="oh-sticky-table__th {% if request.sort_option.order == '-return_date' %}arrow-up {% elif request.sort_option.order == 'return_date' %}arrow-down {% else %}arrow-up-down {% endif %}" hx-get="{% url 'asset-history-search' %}?{{pd}}&sortby=return_date" hx-target="#historyTable">{% trans "Returned Date" %}</div>
+					<div class="oh-sticky-table__th">{% trans "Return Status" %}</div>
+				</div>
+			</div>
+			<div class="oh-sticky-table__tbody">
+				{% for asset_assignement in asset_assignments %}
+					<div class="oh-sticky-table__tr" hx-get='{% url "asset-history-single-view" asset_assignement.id %}' hx-target="#historySingleModalBody" data-toggle="oh-modal-toggle", data-target= "#historySingleModal"  >
+						<div class="oh-sticky-table__sd">
+							<div class="oh-profile oh-profile--md">
+								<div class="oh-profile__avatar mr-1">
+									<img
+										src="https://ui-avatars.com/api/?name={{asset_assignement.asset_id.asset_name}}&background=random"
+										class="oh-profile__image"
+										alt=""
+									/>
+								</div>
+								<span class="oh-profile__name oh-text--dark">{{asset_assignement.asset_id}}</span>
+							</div>
+						</div>
+						<div class="oh-sticky-table__td">
+							{{asset_assignement.assigned_to_employee_id}}
+						</div>
+						<div class="oh-sticky-table__td">{{asset_assignement.assigned_date}} </div>
+						<div class="oh-sticky-table__td">{{asset_assignement.return_date}}</div>
+						<div class="oh-sticky-table__td">{{asset_assignement.return_status}}</div>
+						
+					</div>
+				{% endfor %}
+			</div>
+		</div>
+	</div>
+	<div class="oh-pagination">
+	  	<span class="oh-pagination__page">
+	  		{% trans "Page" %} {{ asset_assignments.number }} {% trans "of" %} {{ asset_assignments.paginator.num_pages }}.
+	  	</span> 
+	  	<nav class="oh-pagination__nav">
+	  	  	<div class="oh-pagination__input-container me-3">
+	  	  	  	<span class="oh-pagination__label me-1">{% trans "Page" %}</span>
+	  	  	  	<input
+	  	  	  	  type="number"
+	  	  	  	  name="page"
+	  	  	  	  class="oh-pagination__input"
+	  	  	  	  value="{{asset_assignments.number}}"
+	  	  	  	  hx-get="{% url 'asset-history-search' %}?{{pd}}"
+	  	  	  	  hx-target="#historyTable"
+	  	  	  	  min="1"
+	  	  	  	/>
+	  	  	  	<span class="oh-pagination__label">{% trans "of" %} {{asset_assignments.paginator.num_pages}}</span>
+	  	  	</div>
+	  	  	<ul class="oh-pagination__items">
+	  	  		{% if asset_assignments.has_previous %}
+	  	  			<li class="oh-pagination__item oh-pagination__item--wide">
+	  	  				<a hx-target='#historyTable' hx-get="{% url 'asset-history-search' %}?{{pd}}&page=1" class="oh-pagination__link" onclick="tickCheckboxes();">{% trans "First" %}</a>
+	  	  			</li>
+	  	  			<li class="oh-pagination__item oh-pagination__item--wide">
+	  	  				<a hx-target='#historyTable' hx-get="{% url 'asset-history-search' %}?{{pd}}&page={{ asset_assignments.previous_page_number }}" class="oh-pagination__link" onclick="tickCheckboxes();">{% trans "Previous" %}</a>
+	  	  			</li>
+	  	  		{% endif %}
+	  	  		{% if asset_assignments.has_next %}
+	  	  			<li class="oh-pagination__item oh-pagination__item--wide">
+	  	  				<a hx-target='#historyTable' hx-get="{% url 'asset-history-search' %}?{{pd}}&page={{ asset_assignments.next_page_number }}" class="oh-pagination__link" onclick="tickCheckboxes();">{% trans "Next" %}</a>
+	  	  			</li>
+	  	  			<li class="oh-pagination__item oh-pagination__item--wide">
+	  	  				<a hx-target='#historyTable' hx-get="{% url 'asset-history-search' %}?{{pd}}&page={{ asset_assignments.paginator.num_pages }}" class="oh-pagination__link" onclick="tickCheckboxes();">{% trans "Last" %}</a>
+	  	  			</li>
+	  	  		{% endif %}
+	  	  	</ul>
+	  	</nav>
+	</div>
+</div>
+
+<div
+	class="oh-modal"
+	id="historySingleModal"
+	role="dialog"
+	aria-labelledby="historySingleModal"
+	aria-hidden="true"
+	>
+	<div class="oh-modal__dialog">
+	  	<div class="oh-modal__dialog-header">
+	  	  	<h2 class="oh-modal__dialog-title" id="historySingleModalLabel">
+	  	  	  	{% trans "Asset Details" %}
+	  	  	</h2>
+	  	  	<button class="oh-modal__close" aria-label="Close" >
+	  	  	  	<ion-icon name="close-outline"></ion-icon>
+	  	  	</button>
+	  	  	<div class="oh-modal__dialog-body p-0 pt-2" id='historySingleModalBody'></div>
+	  	</div>
+	</div>
+</div>
+</div>
+
+<script>
+    // This lines is used to set default selected stage for exits lines
+  
+    function enlargeImage(src,$element) {
+        $("#enlargeImageContainer").empty()
+        var enlargeImageContainer = $("#enlargeImageContainer")
+        enlargeImageContainer.empty()
+        style = 'width:100%; height:90%; box-shadow: 0 10px 10px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.2); background:white'
+        var enlargedImage = $('<iframe>').attr({ src: src, style: style })
+        var name = $('<span>').text(src.split('/').pop().replace(/_/g, ' '))
+        enlargeImageContainer.append(enlargedImage)
+        enlargeImageContainer.append(name)
+        setTimeout(function () {
+            enlargeImageContainer.show()
+  
+            const iframe = document.querySelector('iframe').contentWindow
+            var iframe_document = iframe.document
+            iframe_image = iframe_document.getElementsByTagName('img')[0]
+            $(iframe_image).attr('style', 'width:100%; height:100%;')
+        }, 100)
+    }
+  
+    function hideEnlargeImage() {
+        var enlargeImageContainer = $('#enlargeImageContainer')
+        enlargeImageContainer.empty()
+    }
+  
+    $(document).on('click', function (event) {
+        if (!$(event.target).closest('#enlargeImageContainer').length) {
+            hideEnlargeImage()
+        }
+    })  
+    function submitForm(elem) {
+      $(elem).siblings(".add_more_submit").click();
+  }
+  </script>
+  

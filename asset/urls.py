@@ -152,4 +152,19 @@ urlpatterns = [
     path(
         "asset-category-chart/", views.asset_category_chart, name="asset-category-chart"
     ),
+    path(
+        "asset-history",
+        views.asset_history,
+        name="asset-history",
+    ),
+    path(
+        "asset-history-single-view/<int:asset_id>",
+        views.asset_history_single_view,
+        name="asset-history-single-view",
+    ),
+    path(
+        "asset-history-search",
+        views.asset_history_search,
+        name="asset-history-search",
+    ),
 ]

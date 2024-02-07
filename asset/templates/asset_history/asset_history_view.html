@@ -1,0 +1,13 @@
+{% extends 'index.html' %}{% block content %}
+{% load static %}{% load i18n %}
+{% include 'asset_history/asset_history_nav.html' %}
+
+<div class="oh-checkpoint-badge mb-2" id="selectedInstances" data-ids="[]" data-clicked="" style="display:none;" >
+  {% trans "Selected Assets" %}
+</div>
+
+<div class="oh-wrapper">
+  {% include 'asset_history/asset_history_list.html' %}
+</div>
+
+{% endblock %}

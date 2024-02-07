@@ -11,6 +11,7 @@ from django import forms
 from base.forms import ModelForm
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
+from employee.forms import MultipleFileField
 from employee.models import Employee
 from asset.models import Asset, AssetDocuments, AssetReport, AssetRequest, AssetAssignment, AssetCategory, AssetLot
 from base.methods import reload_queryset
@@ -255,6 +256,9 @@ class AssetAllocationForm(ModelForm):
         self.fields["asset_id"].queryset = Asset.objects.filter(
             asset_status="Available"
         )
+        
+        self.fields["assign_images"] = MultipleFileField()
+        self.fields["assign_images"].required = True
 
     class Meta:
         """
@@ -269,7 +273,7 @@ class AssetAllocationForm(ModelForm):
 
         model = AssetAssignment
         fields = "__all__"
-        exclude = ["return_date", "return_condition", "assigned_date"]
+        exclude = ["return_date", "return_condition", "assigned_date", "return_images"]
         widgets = {
             "asset_id": forms.Select(attrs={"class": "oh-select oh-select-2 "}),
             "assigned_to_employee_id": forms.Select(
@@ -300,7 +304,7 @@ class AssetReturnForm(ModelForm):
         """
 
         model = AssetAssignment
-        fields = ["return_date", "return_condition", "return_status"]
+        fields = ["return_date", "return_condition", "return_status", "return_images"]
         widgets = {
             "return_date": forms.DateInput(
                 attrs={"type": "date", "class": "oh-input w-100", "required": "true"}
@@ -324,6 +328,8 @@ class AssetReturnForm(ModelForm):
         super(AssetReturnForm, self).__init__(*args, **kwargs)
         self.fields["return_date"].initial = date.today()
 
+        self.fields["return_images"] = MultipleFileField(label="Images")
+        self.fields["return_images"].required = True
 
     def clean_return_date(self):
         return_date = self.cleaned_data.get("return_date")

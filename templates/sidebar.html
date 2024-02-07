@@ -857,6 +857,15 @@
                 >{% trans "Request and Allocation" %}</a
               >
             </li>
+            {% if perms.asset.view_assetcategory %}
+            <li class="oh-sidebar__submenu-item">
+              <a
+                href="{% url 'asset-history' %}"
+                class="oh-sidebar__submenu-link"
+                >{% trans "Asset History" %}</a
+              >
+            </li>
+            {% endif %}
           </ul>
         </div>
       </li>

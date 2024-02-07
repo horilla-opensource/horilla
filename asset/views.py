@@ -2,19 +2,22 @@
 asset.py
 
 This module is used to """
+
 from datetime import date, datetime
 import json
 from django.db.models import Q
 from urllib.parse import parse_qs
 import pandas as pd
 from django.db.models import ProtectedError
-from django.shortcuts import render, redirect
+from django.shortcuts import get_object_or_404, render, redirect
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.contrib import messages
 from django.core.paginator import Paginator
 from django.utils.translation import gettext_lazy as _
-from base.methods import closest_numbers, get_key_instances, get_pagination
+from attendance.methods.group_by import group_by_queryset
+from base.methods import closest_numbers, get_key_instances, get_pagination, sortby
 from base.models import Company
+from base.views import paginator_qry
 from employee.models import EmployeeWorkInformation
 from notifications.signals import notify
 from horilla.decorators import login_required, hx_request_required, manager_can_enter
@@ -26,6 +29,7 @@ from asset.models import (
     AssetAssignment,
     AssetCategory,
     AssetLot,
+    ReturnImages,
 )
 from asset.forms import (
     AssetBatchForm,
@@ -40,6 +44,8 @@ from asset.forms import (
 from asset.filters import (
     AssetAllocationFilter,
     AssetAllocationReGroup,
+    AssetHistoryFilter,
+    AssetHistoryReGroup,
     AssetRequestFilter,
     AssetRequestReGroup,
     CustomAssetFilter,
@@ -614,7 +620,9 @@ def asset_allocate_creation(request):
     - to allocated view.
     """
 
-    form = AssetAllocationForm()
+    form = AssetAllocationForm(
+        initial={"assigned_by_employee_id": request.user.employee_get}
+    )
     context = {"asset_allocation_form": form}
     if request.method == "POST":
         form = AssetAllocationForm(request.POST)
@@ -623,12 +631,22 @@ def asset_allocate_creation(request):
             asset = Asset.objects.filter(id=asset).first()
             asset.asset_status = "In use"
             asset.save()
-            form.save()
+            instance = form.save()
+            files = request.FILES.getlist("assign_images")
+            attachments = []
+            if request.FILES:
+                for file in files:
+                    attachment = ReturnImages()
+                    attachment.image = file
+                    attachment.save()
+                    attachments.append(attachment)
+                instance.assign_images.add(*attachments)
             messages.success(request, _("Asset allocated successfully!."))
             return HttpResponse("<script>window.location.reload()</script>")
         context["asset_allocation_form"] = form
 
     return render(request, "request_allocation/asset_allocation_creation.html", context)
+
 
 def asset_allocate_return_request(request, asset_id):
     asset_assign = AssetAssignment.objects.get(id=asset_id)
@@ -636,7 +654,8 @@ def asset_allocate_return_request(request, asset_id):
     asset_assign.save()
     message = _("Return request for {} initiated.").format(asset_assign.asset_id)
     messages.info(request, message)
-    return redirect('asset-request-allocation-view')
+    return redirect("asset-request-allocation-view")
+
 
 @login_required
 def asset_allocate_return(request, asset_id):
@@ -660,6 +679,8 @@ def asset_allocate_return(request, asset_id):
             asset_return_status = request.POST.get("return_status")
             asset_return_date = request.POST.get("return_date")
             asset_return_condition = request.POST.get("return_condition")
+            files = request.FILES.getlist("return_images")
+            attachments = []
             context = {"asset_return_form": asset_return_form, "asset_id": asset_id}
             response = render(request, "asset/asset_return_form.html", context)
             if asset_return_status == "Healthy":
@@ -671,6 +692,13 @@ def asset_allocate_return(request, asset_id):
                 asset_allocation.return_condition = asset_return_condition
                 asset_allocation.return_request = False
                 asset_allocation.save()
+                if request.FILES:
+                    for file in files:
+                        attachment = ReturnImages()
+                        attachment.image = file
+                        attachment.save()
+                        attachments.append(attachment)
+                    asset_allocation.return_images.add(*attachments)
                 asset.asset_status = "Available"
                 asset.save()
                 messages.info(request, _("Asset Return Successful !."))
@@ -687,6 +715,13 @@ def asset_allocate_return(request, asset_id):
             asset_allocation.return_status = asset_return_status
             asset_allocation.return_condition = asset_return_condition
             asset_allocation.save()
+            if request.FILES:
+                for file in files:
+                    attachment = ReturnImages()
+                    attachment.image = file
+                    attachment.save()
+                    attachments.append(attachment)
+                asset_allocation.return_images.add(*attachments)
             messages.info(request, _("Asset Return Successful!."))
             return HttpResponse(
                 response.content.decode("utf-8") + "<script>location.reload();</script>"
@@ -910,7 +945,10 @@ def asset_request_alloaction_view_search_filter(request):
 
 def asset_request_individual_view(request, id):
     asset_request = AssetRequest.objects.get(id=id)
-    context = {"asset_request": asset_request,'dashboard': request.GET.get('dashboard'),}
+    context = {
+        "asset_request": asset_request,
+        "dashboard": request.GET.get("dashboard"),
+    }
     requests_ids_json = request.GET.get("requests_ids")
     if requests_ids_json:
         requests_ids = json.loads(requests_ids_json)
@@ -1352,7 +1390,7 @@ def asset_available_chart(request):
         "labels": labels,
         "dataset": dataset,
         "message": _("Oops!! No Asset found..."),
-        "emptyImageSrc":"/static/images/ui/asset.png",
+        "emptyImageSrc": "/static/images/ui/asset.png",
     }
     return JsonResponse(response)
 
@@ -1382,6 +1420,58 @@ def asset_category_chart(request):
         "labels": labels,
         "dataset": dataset,
         "message": _("Oops!! No Asset found..."),
-        "emptyImageSrc":"/static/images/ui/asset.png",
+        "emptyImageSrc": "/static/images/ui/asset.png",
     }
     return JsonResponse(response)
+
+
+@login_required
+def asset_history(request):
+    previous_data = request.GET.urlencode() + "&returned_assets=True"
+    asset_assignments = AssetHistoryFilter({"returned_assets": "True"}).qs.order_by("-id")
+    data_dict = parse_qs(previous_data)
+    get_key_instances(AssetAssignment, data_dict)
+    asset_assignments= paginator_qry(asset_assignments,request.GET.get("page"))
+    context = {
+        "asset_assignments": asset_assignments,
+        "f": AssetHistoryFilter(),
+        "filter_dict": data_dict,
+        "gp_fields": AssetHistoryReGroup().fields,
+        "pd":previous_data,
+    }
+    return render(request, "asset_history/asset_history_view.html", context)
+
+
+@login_required
+def asset_history_single_view(request, asset_id):
+    asset_assignment = get_object_or_404(AssetAssignment, id=asset_id)
+    return render(
+        request,
+        "asset_history/asset_history_single_view.html",
+        {"asset_assignment": asset_assignment},
+    )
+
+@login_required
+def asset_history_search(request):
+    previous_data = request.GET.urlencode()
+    asset_assignments = AssetHistoryFilter(request.GET).qs.order_by("-id")
+    asset_assignments = sortby(request, asset_assignments, "sortby")
+    template = "asset_history/asset_history_list.html"
+    field = request.GET.get("field")
+    if field != "" and field is not None:
+        asset_assignments = group_by_queryset(asset_assignments, field, request.GET.get("page"), "page")
+        template = "asset_history/group_by.html"
+    asset_assignments= paginator_qry(asset_assignments,request.GET.get("page"))
+    data_dict = parse_qs(previous_data)
+    get_key_instances(AssetAssignment, data_dict)
+
+    return render(
+        request,
+        template,
+        {
+            "asset_assignments": asset_assignments,
+            "filter_dict": data_dict,
+            "field": field,
+            "pd":previous_data,
+        },
+    )
