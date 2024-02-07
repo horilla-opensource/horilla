@@ -16,166 +16,164 @@
       ></ion-icon>
     </a>
   </div>
-  <div class="oh-main__titlebar oh-main__titlebar--right">
-    {% if rwork_all %}
-      <div
-        class="oh-input-group oh-input__search-group"
-        :class="searchShow ? 'oh-input__search-group--show' : ''"
-      >
-        <ion-icon
-          name="search-outline"
-          class="oh-input-group__icon oh-input-group__icon--left"
-        ></ion-icon>
-        <input
-          type="text"
-          class="oh-input oh-input__icon"
-          hx-get="{% url 'rotating-work-type-assign-view' %}"
-          name="search"
-          hx-target="#view-container"
-          hx-trigger="keyup changed delay:.2s"
-          aria-label="Search Input"
-          placeholder="{% trans 'Search' %}"
-        />
-      </div>
-    {% endif %}
-    <div class="oh-main__titlebar-button-container">
+  <form
+    hx-get='{% url "rotating-work-type-assign-view" %}'
+    id="filterForm"
+    hx-target="#view-container"
+    class="d-flex"
+  >
+    <div class="oh-main__titlebar oh-main__titlebar--right">
       {% if rwork_all %}
-
-        <form
-        hx-get='{% url "rotating-work-type-assign-view" %}'
-        id="filterForm"
-        hx-target="#view-container"
-        class="d-flex"
+        <div
+          class="oh-input-group oh-input__search-group"
+          :class="searchShow ? 'oh-input__search-group--show' : ''"
         >
-        <div class="oh-dropdown" x-data="{open: false}">
-          <button class="oh-btn ml-2" @click="open = !open">
-            <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}
-            <div id="filterCount"></div>
-          </button>
-          <div
+          <ion-icon
+            name="search-outline"
+            class="oh-input-group__icon oh-input-group__icon--left"
+          ></ion-icon>
+          <input
+            type="text"
+            class="oh-input oh-input__icon"
+            name="search"
+            aria-label="Search Input"
+            placeholder="{% trans 'Search' %}"
+            onkeyup="$('.filterButton')[0].click()"
+          />
+        </div>
+      {% endif %}
+      <div class="oh-main__titlebar-button-container">
+        {% if rwork_all %}
+          <div class="oh-dropdown" x-data="{open: false}">
+            <button class="oh-btn ml-2" @click="open = !open">
+              <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}
+              <div id="filterCount"></div>
+            </button>
+            <div
+              class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4"
+              x-show="open"
+              @click.outside="open = false"
+              style="display: none"
+            >
+              {% include 'base/rotating_work_type/filters.html' %}
+            </div>
+          </div>
+          <div class="oh-dropdown" x-data="{open: false}">
+            <button class="oh-btn ml-2" @click="open = !open">
+              <ion-icon name="library-outline" class="mr-1"></ion-icon>{% trans "Group By" %}
+              <div id="filterCount"></div>
+            </button>
+            <div
             class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4"
             x-show="open"
             @click.outside="open = false"
             style="display: none"
-          >
-            {% include 'base/rotating_work_type/filters.html' %}
-          </div>
-        </div>
-        <div class="oh-dropdown" x-data="{open: false}">
-          <button class="oh-btn ml-2" @click="open = !open">
-            <ion-icon name="library-outline" class="mr-1"></ion-icon>{% trans "Group By" %}
-            <div id="filterCount"></div>
-          </button>
-          <div
-          class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4"
-          x-show="open"
-          @click.outside="open = false"
-          style="display: none"
-          >            
-          <div class="oh-accordion">
-            <label>{% trans "Group By" %}</label>
-              <div class="row">
-                <div class="col-sm-12 col-md-12 col-lg-6">
-                  <div class="oh-input-group">
-                    <label class="oh-label">{% trans "Field" %}</label>
+            >            
+            <div class="oh-accordion">
+              <label>{% trans "Group By" %}</label>
+                <div class="row">
+                  <div class="col-sm-12 col-md-12 col-lg-6">
+                    <div class="oh-input-group">
+                      <label class="oh-label">{% trans "Field" %}</label>
+                    </div>
                   </div>
-                </div>
-                <div class="col-sm-12 col-md-12 col-lg-6">
-                  <div class="oh-input-group">
-                    <select
-                      class="oh-select mt-1 w-100"
-                      id="id_field"
-                      name="field"
-                      class="select2-selection select2-selection--single"
-                    >
-                      {% for field in gp_fields %}
-                      <option value="{{ field.0 }}">{% trans field.1 %}</option>
-                      {% endfor %}
-                    </select>
+                  <div class="col-sm-12 col-md-12 col-lg-6">
+                    <div class="oh-input-group">
+                      <select
+                        class="oh-select mt-1 w-100"
+                        id="id_field"
+                        name="field"
+                        class="select2-selection select2-selection--single"
+                      >
+                        {% for field in gp_fields %}
+                        <option value="{{ field.0 }}">{% trans field.1 %}</option>
+                        {% endfor %}
+                      </select>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-        </form>
-        <div class="oh-dropdown" x-data="{open: false}">
-          <button
-            class="oh-btn oh-btn--dropdown oh-btn ml-2"
-            @click="open = !open"
-            @click.outside="open = false"
-          >
-            {% trans "Actions" %}
-          </button>
-          <div
-            class="oh-dropdown__menu oh-dropdown__menu--right"
-            x-show="open"
-            style="display: none"
-          >
-            <ul class="oh-dropdown__items">
-              {% if perms.base.change_rotatingworktypeassign %}
-                <li class="oh-dropdown__item">
-                  <a
-                    href="#"
-                    class="oh-dropdown__link"
-                    data-toggle="oh-modal-toggle"
-                    data-target="#rotatingWorkTypeAssignExport"
-                    >{% trans "Export" %}</a
-                  >
-                </li>
-              {% endif %}
-              {% if perms.base.change_rotatingworktypeassign or request.user|is_reportingmanager %}
-                <li class="oh-dropdown__item">
-                  <a
-                    href="#"
-                    class="oh-dropdown__link"
-                    id="archiveRotatingWorkTypeAssign"
-                    >{% trans "Archive" %}</a
-                  >
-                </li>
-              {% endif %} 
-              {% if perms.base.change_rotatingworktypeassign or request.user|is_reportingmanager %}
-                <li class="oh-dropdown__item">
-                  <a
-                    href="#"
-                    class="oh-dropdown__link"
-                    id="unArchiveRotatingWorkTypeAssign"
-                    >{% trans "Un-Archive" %}</a
-                  >
-                </li>
-              {% endif %} 
-              {% if request.user|is_reportingmanager %}
-                <li class="oh-dropdown__item">
-                  <a
-                    href="#"
-                    class="oh-dropdown__link oh-dropdown__link--danger"
-                    id="deleteRotatingWorkTypeAssign"
-                    >{% trans "Delete" %}</a
-                  >
-                </li>
-              {% endif %}
-            </ul>
-          </div>
-        </div>
-      {% endif %}
-      {% if perms.base.add_rotatingworktypeassign or request.user|is_reportingmanager %}
-        <div class="oh-btn-group ml-2">
           <div class="oh-dropdown" x-data="{open: false}">
             <button
-              class="oh-btn oh-btn--secondary oh-btn--shadow"
-              type="submit"
-              hx-get="{% url 'rotating-work-type-assign-add' %}"
-              hx-target="#rotatingWorkTypeAssignModalBody"
-              data-toggle="oh-modal-toggle"
-              data-target="#rotating-work-type-modal"
+              class="oh-btn oh-btn--dropdown oh-btn ml-2"
+              @click="open = !open"
+              @click.outside="open = false"
+              onclick="event.preventDefault()"
             >
-              {% trans "Assign" %}
+              {% trans "Actions" %}
             </button>
+            <div
+              class="oh-dropdown__menu oh-dropdown__menu--right"
+              x-show="open"
+              style="display: none"
+            >
+              <ul class="oh-dropdown__items">
+                {% if perms.base.change_rotatingworktypeassign %}
+                  <li class="oh-dropdown__item">
+                    <a
+                      href="#"
+                      class="oh-dropdown__link"
+                      data-toggle="oh-modal-toggle"
+                      data-target="#rotatingWorkTypeAssignExport"
+                      >{% trans "Export" %}</a
+                    >
+                  </li>
+                {% endif %}
+                {% if perms.base.change_rotatingworktypeassign or request.user|is_reportingmanager %}
+                  <li class="oh-dropdown__item">
+                    <a
+                      href="#"
+                      class="oh-dropdown__link"
+                      id="archiveRotatingWorkTypeAssign"
+                      >{% trans "Archive" %}</a
+                    >
+                  </li>
+                {% endif %} 
+                {% if perms.base.change_rotatingworktypeassign or request.user|is_reportingmanager %}
+                  <li class="oh-dropdown__item">
+                    <a
+                      href="#"
+                      class="oh-dropdown__link"
+                      id="unArchiveRotatingWorkTypeAssign"
+                      >{% trans "Un-Archive" %}</a
+                    >
+                  </li>
+                {% endif %} 
+                {% if request.user|is_reportingmanager %}
+                  <li class="oh-dropdown__item">
+                    <a
+                      href="#"
+                      class="oh-dropdown__link oh-dropdown__link--danger"
+                      id="deleteRotatingWorkTypeAssign"
+                      >{% trans "Delete" %}</a
+                    >
+                  </li>
+                {% endif %}
+              </ul>
+            </div>
           </div>
-        </div>
-      {% endif %}
+        {% endif %}
+        {% if perms.base.add_rotatingworktypeassign or request.user|is_reportingmanager %}
+          <div class="oh-btn-group ml-2">
+            <div class="oh-dropdown" x-data="{open: false}">
+              <button
+                class="oh-btn oh-btn--secondary oh-btn--shadow"
+                type="submit"
+                hx-get="{% url 'rotating-work-type-assign-add' %}"
+                hx-target="#rotatingWorkTypeAssignModalBody"
+                data-toggle="oh-modal-toggle"
+                data-target="#rotating-work-type-modal"
+              >
+                {% trans "Assign" %}
+              </button>
+            </div>
+          </div>
+        {% endif %}
+      </div>
     </div>
-  </div>
+  </form>
 </section>
 <div
   class="oh-modal"
