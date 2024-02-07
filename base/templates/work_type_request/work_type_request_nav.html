@@ -20,6 +20,7 @@ x-data="{searchShow: false}"
     ></ion-icon>
   </a>
 </div>
+<form hx-get="{% url 'work-type-request-search' %}" hx-target='#view-container' id='filterForm' class="d-flex">
 <div class="oh-main__titlebar oh-main__titlebar--right">
   {% if data %}
     <div
@@ -36,15 +37,12 @@ x-data="{searchShow: false}"
         aria-label="Search Input"
         placeholder="{% trans 'Search' %}"
         name="search"
-        hx-get="{% url 'work-type-request-search' %}"
-        hx-target = '#view-container'
-        hx-trigger = 'keyup changed delay:500ms, search'
+        onkeyup="$('.filterButton')[0].click()"
       />
     </div>
     {% endif %}
     <div class="oh-main__titlebar-button-container">
       {% if data %}
-    <form hx-get="{% url 'work-type-request-search' %}" hx-target='#view-container' id='filterForm' class="d-flex">
         <div class="oh-dropdown" x-data="{open: false}">
           <button class="oh-btn ml-2" @click="open = !open" onclick="event.preventDefault()">
             <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}<div id='filterCount'></div>
@@ -203,7 +201,6 @@ x-data="{searchShow: false}"
           </div>
         </div>
       </div>
-    </form>
       {% if 'employee' in perms or request.user|is_reportingmanager %}
       <div class="oh-btn-group ml-2">
         <div class="oh-dropdown" x-data="{open: false}">
@@ -211,6 +208,7 @@ x-data="{searchShow: false}"
             class="oh-btn oh-btn--dropdown "
             @click="open = !open"
             @click.outside="open = false"
+            onclick="event.preventDefault()"
           >
             {% trans "Actions" %}
           </button>
@@ -271,6 +269,7 @@ x-data="{searchShow: false}"
     </div>
   </div>
 </div>
+</form>
 </section>
 
 <div
