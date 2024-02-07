@@ -1,12 +1,25 @@
 {% extends 'settings.html' %} {% block settings %}{% load i18n %}
 
-
+{% if perms.recruitment.change_recruitmentgeneralsetting %}
 {% include "recruitment/settings/settings.html" %}
+{% endif %}
+{% if perms.offboarding.change_offboardinggeneralsetting %}
 {% include "offboarding/settings/settings.html" %}
+{% endif %}
+{% if perms.attendance.change_attendancegeneralsetting %}
 {% include "attendance/settings/settings.html" %}
+{% endif %}
+{% if perms.payroll.change_payrollgeneralsetting %}
 {% include "payroll/settings/settings.html" %}
+{% endif %}
+{% if perms.employee.change_employeegeneralsetting %}
 {% include "settings/settings.html" %}
+{% endif %}
+{% if perms.base.change_announcementexpire %}
 {% include "announcement/expiry_day.html" %}
+{% endif %}
+{% if perms.payroll.change_encashmentgeneralsetting %}
 {% include "settings/encashment_settings.html" %}
+{% endif %}
 
 {% endblock settings %}
