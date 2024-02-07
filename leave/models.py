@@ -275,6 +275,12 @@ class AvailableLeave(models.Model):
     objects = HorillaCompanyManager(
         related_company_field="employee_id__employee_work_info__company_id"
     )
+    history = HorillaAuditLog(
+        related_name="history_set",
+        bases=[
+            HorillaAuditInfo,
+        ],
+    )
 
     class Meta:
         unique_together = ("leave_type_id", "employee_id")
