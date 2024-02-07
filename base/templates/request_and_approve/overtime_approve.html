@@ -1,68 +1,130 @@
 {% load i18n %}
-{% if overtime_attendances %}
-<div class="oh-sticky-table h-100">
-    <div class="oh-sticky-table__table oh-table--sortable">
-        <div class="oh-sticky-table__thead">
-            <div class="oh-sticky-table__tr">
-                <div
-                  class="oh-sticky-table__th"
-                  >
-                  {% trans "Employee" %}
+
+<div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
+    {% if overtime_attendances.has_previous %}
+    <span
+        class="oh-card-dashboard__title"
+        id="department-previous"
+        style="cursor: pointer"
+        hx-target="#OTApproveTarget"
+        hx-get="{% url 'dashboard-overtime-approve' %}?{{pd}}&page={{ overtime_attendances.previous_page_number }}"
+        hx-trigger="click delay:0.3s"
+        title="Previous Page"
+    >
+        <ion-icon
+            name="caret-back-outline"
+            role="img"
+            class="md hydrated"
+            aria-label="caret back outline"
+        ></ion-icon>
+    </span>
+    {% endif %}
+
+    <span class="oh-card-dashboard__title"
+        >{% trans 'Overtime To Approve' %}
+    </span>
+
+    {% if overtime_attendances.has_next %}
+    <span
+        class="oh-card-dashboard__title float-end"
+        id="department-previous"
+        style="cursor: pointer"
+        hx-target="#OTApproveTarget"
+        hx-get="{% url 'dashboard-overtime-approve' %}?{{pd}}&page={{ overtime_attendances.next_page_number }}"
+        hx-trigger="click delay:0.3s"
+        title="Next Page"
+    >
+        <ion-icon
+            name="caret-forward-outline"
+            role="img"
+            class="md hydrated"
+            aria-label="caret back outline"
+        ></ion-icon>
+    </span>
+    {% endif %}
+</div>
+
+<div class="oh-card-dashboard__body" id="OTApproveBody" style="height: 80%">
+    {% if overtime_attendances %}
+    <div class="oh-sticky-table h-100">
+        <div class="oh-sticky-table__table oh-table--sortable">
+            <div class="oh-sticky-table__thead">
+                <div class="oh-sticky-table__tr">
+                    <div class="oh-sticky-table__th">
+                        {% trans "Employee" %}
+                    </div>
+                    <div class="oh-sticky-table__th">
+                        {% trans "Overtime" %}
+                    </div>
+                    <div class="oh-sticky-table__th"></div>
                 </div>
-                <div
-                  class="oh-sticky-table__th"
-                  >
-                  {% trans "Overtime" %}
-                </div>
-                <div class="oh-sticky-table__th"></div>
             </div>
-        </div>
-        {% for attendance in overtime_attendances %}
+            {% for attendance in overtime_attendances %}
             <div class="oh-sticky-table__tbody">
                 <div
-                  class="oh-sticky-table__tr"
-                  draggable="false"
-                  data-toggle="oh-modal-toggle"
-                  data-target="#bigModal"
-                  hx-target="#bigModalTarget"
-                  hx-get="{% url 'user-request-one-view' attendance.id %}?ot=true&instances_ids={{ot_attendances_ids}}&dashboard=true"
-                  >
+                    class="oh-sticky-table__tr"
+                    draggable="false"
+                    data-toggle="oh-modal-toggle"
+                    data-target="#bigModal"
+                    hx-target="#bigModalTarget"
+                    hx-get="{% url 'user-request-one-view' attendance.id %}?ot=true&instances_ids={{ot_attendances_ids}}&dashboard=true"
+                >
                     <div class="oh-sticky-table__sd">
                         <div class="oh-profile oh-profile--md">
                             <div class="oh-profile__avatar mr-1">
-                              <img
-                              src="{{attendance.employee_id.get_avatar}}"
-                                class="oh-profile__image"
-                                alt=""
-                              />
+                                <img
+                                    src="{{attendance.employee_id.get_avatar}}"
+                                    class="oh-profile__image"
+                                    alt=""
+                                />
                             </div>
                             <span class="oh-profile__name oh-text--dark"
-                              >{{attendance.employee_id}}</span
+                                >{{attendance.employee_id}}</span
                             >
                         </div>
                     </div>
                     <div class="oh-sticky-table__td">
-                      {{attendance.attendance_overtime}}
+                        {{attendance.attendance_overtime}}
                     </div>
                     <div class="oh-sticky-table__td">
                         <a
                             href="{% url 'approve-overtime' attendance.id %}"
-                            onclick="event.stopPropagation();return confirm('{% trans "Do you want to Approve this overtime?" %}')"
+                            onclick="event.stopPropagation();"
                             class="oh-btn oh-btn--info"
-                            >
+                        >
                             {% trans "Approve" %}
                         </a>
                     </div>
                 </div>
             </div>
-        {% endfor %}
+            {% endfor %}
+        </div>
     </div>
+    <span class="oh-pagination__page float-end mt-2 fw-bold">
+        {% trans "Page" %} {{ overtime_attendances.number }} {%trans "of" %}
+        {{overtime_attendances.paginator.num_pages }}.
+    </span>
+    {% else %}
+    <div
+        style="
+            height: 380px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        "
+        class=""
+    >
+        <div style="" class="">
+            <img
+                style="display: block; width: 70px; margin: 20px auto"
+                src="/static/images/ui/joiningchart.png"
+                class=""
+                alt=""
+            />
+            <h3 style="font-size: 16px" class="oh-404__subtitle">
+                {% trans "No data Found..." %}
+            </h3>
+        </div>
+    </div>
+    {% endif %}
 </div>
-{% else %}
-<div style="height: 380px; display:flex;align-items: center;justify-content: center;" class="">
-    <div style="" class="">
-        <img style="display: block;width: 70px;margin: 20px auto ;" src="/static/images/ui/joiningchart.png" class="" alt=""/>
-		<h3 style="font-size:16px" class="oh-404__subtitle">{% trans "No data Found..." %}</h3>
-	</div>
-</div>
-{% endif %}
