@@ -8,9 +8,37 @@
 >
     {% trans "Selected Worktypes" %}
 </div>
-<div id="view-container" class="oh-wrapper">
-    {% if data %} {% include 'work_type_request/htmx/requests.html' %} {% else %}
-	{% include 'work_type_request/htmx/empty_request.html' %} {% endif %}
+<div class="oh-wrapper">
+    <!-- start of Quick filters  -->
+    <div class="d-flex flex-row-reverse" style="height:3px;">
+        <span
+        class="m-3 review_ongoing"
+        onclick="$('[name=canceled]').val('true');$('[name=approved]').val('unknown');$('[name=canceled]').first().change();$('.filterButton').click()"
+        style="cursor: pointer"
+        >
+        <span
+            class="oh-dot oh-dot--small me-1"
+            style="background-color: red"
+        ></span>
+        {% trans "Rejected" %}
+        </span>
+        <span
+        class="m-3 paid"
+        onclick="$('[name=approved]').val('true');$('[name=canceled]').val('unknown');$('[name=approved]').first().change();$('.filterButton').click()"
+        style="cursor: pointer"
+        >
+        <span
+            class="oh-dot oh-dot--small me-1"
+            style="background-color: yellowgreen"
+        ></span>
+        {% trans "Approved" %}
+        </span>
+    </div>
+    <!-- end of quick filters  -->
+    <div id="view-container" >
+        {% if data %} {% include 'work_type_request/htmx/requests.html' %} {% else %}
+        {% include 'work_type_request/htmx/empty_request.html' %} {% endif %}
+    </div>
 </div>
 
 <div

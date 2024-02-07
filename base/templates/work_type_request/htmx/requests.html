@@ -3,32 +3,6 @@
 {% load static %}
 {% load i18n %}
 {% include 'filter_tags.html' %}
-<!-- start of Quick filters  -->
-<div class="d-flex flex-row-reverse" style="height:3px;">
-  <span
-    class="m-3 review_ongoing"
-    onclick="$('[name=canceled]').val('true');$('[name=approved]').val('unknown');$('[name=canceled]').first().change();$('.filterButton').click()"
-    style="cursor: pointer"
-  >
-    <span
-      class="oh-dot oh-dot--small me-1"
-      style="background-color: red"
-    ></span>
-    {% trans "Rejected" %}
-  </span>
-  <span
-    class="m-3 paid"
-    onclick="$('[name=approved]').val('true');$('[name=canceled]').val('unknown');$('[name=approved]').first().change();$('.filterButton').click()"
-    style="cursor: pointer"
-  >
-    <span
-      class="oh-dot oh-dot--small me-1"
-      style="background-color: yellowgreen"
-    ></span>
-    {% trans "Approved" %}
-  </span>
-</div>
-<!-- end of quick filters  -->
 <div
 class="oh-checkpoint-badge text-success mb-2"
 id="selectAllWorktypes"
