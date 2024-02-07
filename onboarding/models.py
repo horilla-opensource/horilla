@@ -57,8 +57,8 @@ def create_initial_stage(sender, instance, created, **kwargs):
         initial_stage = OnboardingStage()
         initial_stage.sequence = 0
         initial_stage.stage_title = "Initial"
+        initial_stage.recruitment_id =  instance
         initial_stage.save()
-        initial_stage.recruitment_id.set([instance])
 
 
 class OnboardingTask(models.Model):
