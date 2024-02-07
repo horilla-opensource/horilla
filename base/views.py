@@ -2710,8 +2710,8 @@ def work_type_request_delete(request, id):
     try:
         work_type_request = WorkTypeRequest.objects.get(id=id)
         employee = work_type_request.employee_id.employee_user_id
-        work_type_request.delete()
         messages.success(request, _("Work type request deleted."))
+        work_type_request.delete()
         notify.send(
             request.user.employee_get,
             recipient=employee,

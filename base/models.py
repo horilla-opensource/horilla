@@ -6,6 +6,7 @@ This module is used to register django models
 from collections.abc import Iterable
 from typing import Any
 import django
+from django.contrib import messages
 from base.thread_local_middleware import _thread_locals
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
@@ -32,6 +33,10 @@ def validate_time_format(value):
     except ValueError as e:
         raise ValidationError(_("Invalid format,  excepted HH:MM")) from e
 
+def clear_messages(request):
+    storage = messages.get_messages(request)
+    for message in storage:
+        pass
 
 class Company(models.Model):
     """
@@ -712,7 +717,14 @@ class WorkTypeRequest(models.Model):
         ordering = [
             "-id",
         ]
-
+    def delete(self,*args, **kwargs):
+        request = getattr(_thread_locals,"request",None)
+        if not self.approved:
+            super().delete(*args, **kwargs)
+        else:
+            if request:
+                clear_messages(request)
+                messages.warning(request,"The request entry cannot be deleted.")
     def is_any_work_type_request_exists(self):
         approved_work_type_requests_range = WorkTypeRequest.objects.filter(
             employee_id=self.employee_id,
@@ -928,6 +940,15 @@ class ShiftRequest(models.Model):
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
 
+    def delete(self,*args, **kwargs):
+        request = getattr(_thread_locals,"request",None)
+        if not self.approved:
+            super().delete(*args, **kwargs)
+        else:
+            if request:
+                clear_messages(request)
+                messages.warning(request,"The request entry cannot be deleted.")
+                
     def __str__(self) -> str:
         return f"{self.employee_id.employee_first_name} \
             {self.employee_id.employee_last_name} - {self.requested_date}"
