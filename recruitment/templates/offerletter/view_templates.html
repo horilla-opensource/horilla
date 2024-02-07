@@ -38,7 +38,7 @@
     {% for template in templates %}
       <div class="oh-faq-card">
         {% if perms.recruitment.delete_recruitmentmailtemplate %}
-          <h3 class="oh-faq-card__title d-flex justify-content-between"><span>{{ template.title }}</span>
+          <h3 class="oh-faq-card__title d-flex justify-content-between "><span>{{ template.title }}</span>
             <div>
             <a hx-get="{% url 'duplicate-mail-template' template.id %}" hx-target="#duplicateTemplateFormModal" data-toggle="oh-modal-toggle" 
               data-target="#duplicateTemplateModal" title="{% trans 'Duplicate' %}" style= "cursor: pointer;">
@@ -54,9 +54,9 @@
         {% if perms.recruitment.change_recruitmentmailtemplate %}
                        
             {% endif %} 
-          <p class="oh-faq-card__desc oh-card__footer--border-top">
+          <div class="oh-faq-card__desc" style="max-height: 500px; padding-top: 10px;">
           <div style="max-height: 350px;overflow: hidden;" class="truncated-text">{{ template.body|safe }}</div>
-        </p>
+          </div>
         {% if perms.recruitment.change_recruitmentmailtemplate %}
           <a hx-get="{% url 'view-mail-template' template.id %}" hx-target="#viewTemplateModalBody" data-toggle="oh-modal-toggle" data-target="#viewTemplateModal" class="oh-btn oh-btn--secondary oh-btn--block">{% trans "View Template" %}</a>
         {% endif %}
