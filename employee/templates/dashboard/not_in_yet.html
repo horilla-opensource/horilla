@@ -3,7 +3,7 @@
   <div class="oh-card-dashboard__header oh-card-dashboard__header--divider mb-0">
     {% if employees.has_previous %}
       <span class="oh-card-dashboard__title" id="employee-previous" style="cursor: pointer;" hx-target="#notInYetId"
-        hx-get="{% url 'not-in-yet' %}?{{pd}}&page={{ employees.previous_page_number }}">
+        hx-get="{% url 'not-in-yet' %}?{{pd}}&page={{ employees.previous_page_number }}" hx-trigger="click delay:0.3s" title="Previous Page">
         <ion-icon name="caret-back-outline" role="img" class="md hydrated" aria-label="caret back outline"></ion-icon>
       </span>
       {% endif %}
@@ -11,7 +11,7 @@
       {% if employees.has_next %}
       
       <span class="oh-card-dashboard__title float-end" id="employee-previous" style="cursor: pointer;" hx-target="#notInYetId"
-      hx-get="{% url 'not-in-yet' %}?{{pd}}&page={{ employees.next_page_number }}">
+      hx-get="{% url 'not-in-yet' %}?{{pd}}&page={{ employees.next_page_number }}" hx-trigger="click delay:0.3s" title="Next Page">
       <ion-icon name="caret-forward-outline" role="img" class="md hydrated" aria-label="caret back outline"></ion-icon>
       </span>
     {% endif %}
@@ -47,6 +47,10 @@
         </div>
       </div>
     </div>
+    <span class="oh-pagination__page float-end mt-2 fw-bold">
+      {% trans "Page" %} {{ employees.number }} 
+      {%trans "of" %} {{employees.paginator.num_pages }}.
+    </span>
   {% else %}
   <div style="height: 380px; display:flex;align-items: center;justify-content: center;" class="">
     <div style="" class="">
