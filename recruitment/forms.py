@@ -682,9 +682,12 @@ exclude_fields = ["id", "profile", "portfolio", "resume", "sequence"]
 class CandidateExportForm(forms.Form):
     model_fields = Candidate._meta.get_fields()
     field_choices = [
-        (field.name, field.verbose_name)
+        (field.name, field.verbose_name.capitalize())
         for field in model_fields
         if hasattr(field, "verbose_name") and field.name not in exclude_fields
+    ]
+    field_choices = field_choices + [
+        ("rejected_candidate__description", "Rejected Description"),
     ]
     selected_fields = forms.MultipleChoiceField(
         choices=field_choices,
@@ -871,3 +874,4 @@ class RejectedCandidateForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["reject_reason_id"].empty_label = None
+        self.fields["candidate_id"].widget = self.fields["candidate_id"].hidden_widget()
