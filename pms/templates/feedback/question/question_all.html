@@ -5,26 +5,23 @@
 <div class="row">
       <div class="col-12 col-sm-12 col-md-12 col-lg-12">
             <div class="oh-card p-4" x-data="{showQuestions: true}">
-                  <div class="oh-card__header mb-0">
+                  <div class="oh-card__header mb-0 ">
                         <a href="#" class="oh-link oh-link--secondary" x-show="showQuestions"
-                              @click="showQuestions = false">
+                              @click="showQuestions = false" style="margin-left: 19px;">
                               <ion-icon class="me-2" name="eye-off-outline"></ion-icon>
                               {% trans "Hide Questions" %}
                         </a>
                         <a href="#" class="oh-link oh-link--secondary" x-show="!showQuestions"
-                              @click="showQuestions = true">
+                              @click="showQuestions = true" style="margin-left: 19px;" >
                               <ion-icon class="me-2" name="eye-outline"></ion-icon>
                               {% trans "Show Questions" %}
                         </a>
                   </div>
 
-
                   <div class="oh-card__body" x-show="showQuestions">
                         <!--  start of all question formset  -->
-
                         <div class="row d-flex justify-content-between align-items-center">
                               {% for form in form_list %}
-
                               <form action="{% url 'question-update' temp_id=question_template.id q_id=form.instance.id %}"
                                     method="post">
                                     {% csrf_token %}
@@ -41,7 +38,7 @@
                                                 </div>
 
                                                 <div class="col-sm-12 col-md-12 col-lg-9">
-                                                      <label class="oh-label text-muted fw-bold">{% trans "Question" %}</label>
+                                                      <label class="oh-label text-muted fw-bold" for="id_question">{% trans "Question" %}</label>
                                                       {% render_field form.question disabled='disabled' %}
                                                 </div>
                                                 <div x-data="{showAnswers: true}" class="oh-link__expanded d-none">
@@ -59,25 +56,25 @@
                                                             <div class="row">
                                                                   <div class="col-12 col-sm-12 col-md-6 col-lg-3">
                                                                         <label
-                                                                              class="oh-label d-block text-muted fw-bold">{% trans "Option" %}
+                                                                              class="oh-label d-block text-muted fw-bold" for="id_option_a">{% trans "Option" %}
                                                                               1</label>
                                                                         {% render_field form.option_a disabled='disabled' %}
                                                                   </div>
                                                                   <div class="col-12 col-sm-12 col-md-6 col-lg-3">
                                                                         <label
-                                                                              class="oh-label d-block text-muted fw-bold">{% trans "Option" %}
+                                                                              class="oh-label d-block text-muted fw-bold" for="id_option_b">{% trans "Option" %}
                                                                               2</label>
                                                                         {% render_field form.option_b disabled='disabled' %}
                                                                   </div>
                                                                   <div class="col-12 col-sm-12 col-md-6 col-lg-3">
                                                                         <label
-                                                                              class="oh-label d-block text-muted fw-bold">{% trans "Option" %}
+                                                                              class="oh-label d-block text-muted fw-bold" for="id_option_c">{% trans "Option" %}
                                                                               3</label>
                                                                         {% render_field form.option_c disabled='disabled' %}
                                                                   </div>
                                                                   <div class="col-12 col-sm-12 col-md-6 col-lg-3">
                                                                         <label
-                                                                              class="oh-label d-block text-muted fw-bold">{% trans "Option" %}
+                                                                              class="oh-label d-block text-muted fw-bold" for="id_option_d">{% trans "Option" %}
                                                                               4</label>
                                                                         {% render_field form.option_d disabled='disabled' %}
                                                                   </div>

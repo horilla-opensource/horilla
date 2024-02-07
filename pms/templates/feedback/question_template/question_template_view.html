@@ -45,55 +45,11 @@
     </div>
   </section>
   <div class="oh-wrapper">
-    <div class="oh-sticky-table">
-      <div class="oh-sticky-table__table ">
-        <div class="oh-sticky-table__thead">
-          <div class="oh-sticky-table__tr">
-            <div class="oh-sticky-table__th">{% trans "Title" %}</div>
-            <div class="oh-sticky-table__th">{% trans "Total Question" %}</div>
-            {% if perms.pms.change_questiontemplate or perms.pms.delete_questiontemplate or request.user|filtersubordinates %}
-              <div class="oh-sticky-table__th"></div>
-            {% endif %}
-          </div>
-        </div>
-        <div class="oh-sticky-table__tbody">
-          {% for question_template in question_templates %}
-          <div class="oh-sticky-table__tr" draggable="true">
-            <a style="color: inherit;text-decoration: none;"
-              href="{% url 'question-template-detailed-view' template_id=question_template.id %}" class="oh-sticky-table__sd">
-              <div class="oh-profile oh-profile--md">
-                <div class="oh-profile__avatar mr-1">
-                  <img src="https://ui-avatars.com/api/?name={{question_template.question_template}}&background=random"
-                    class="oh-profile__image" alt="Mary Magdalene" />
-                </div>
-                <span class="oh-profile__name oh-text--dark">{{question_template.question_template}}</span>
-              </div>
-            </a>
-            <a style="color: inherit;text-decoration: none;"
-              href="{% url 'question-template-detailed-view' template_id=question_template.id %}"
-              class="oh-sticky-table__td">{{question_template.question.count}}</a>
-
-            {% if perms.pms.change_questiontemplate or perms.pms.delete_questiontemplate or request.user|filtersubordinates %}
-              <div class="oh-sticky-table__td">
-                <div class="oh-btn-group ">
-                  {% if perms.pms.change_questiontemplate or request.user|filtersubordinates %}
-                    <a class="oh-btn oh-btn--light-bkg w-100 " data-toggle="oh-modal-toggle" data-target="#questionTemplateUpdateModal"
-                      hx-get="{% url 'question-template-update'  template_id=question_template.id %}" title="{% trans 'Update' %}" hx-target="#questionTemplateUpdateModalTarget" > <ion-icon
-                      name="create-outline" role="img" class="md hydrated" aria-label="create outline"></ion-icon></a>
-                  {% endif %}
-                  {% if perms.pms.delete_questiontemplate or request.user|filtersubordinates %}
-                    <a class="oh-btn oh-btn--danger-outline  w-100" title="{% trans 'Delete' %}" onclick="return confirm('{% trans "Do you want to delete this question template?" %}')" href="{% url 'question-template-delete' template_id=question_template.id %}">
-                      <ion-icon name="trash-outline" role="img" class="md hydrated" aria-label="trash outline"></ion-icon>
-                    </a>
-                  {% endif %}
-                </div>
-              </div>
-            {% endif %}
-          </div>
-          {% endfor%}
-        </div>
-      </div>
+    <!-- question template table start -->
+    <div id="questionTemplateList">
+      {% include "feedback/question_template/question_template_list.html" %}
     </div>
+    <!-- question template table end -->
 
     <!-- question template create modal start -->
     <div class="oh-modal" id="questionTemplateModal" role="dialog" aria-labelledby="questionTemplateModal"
@@ -132,18 +88,17 @@
       aria-hidden="true">
       <div class="oh-modal__dialog " >
         <div class="oh-modal__dialog-header">
-          <span class="oh-modal__dialog-title" id="addEmployeeModalLabel">{% trans "Question Template" %}</span>
-          <button type="button" class="oh-modal__close" aria-label="Close">
+          <span class="oh-modal__dialog-title" id="questionTemplateUpdateModalLabel">{% trans "Question Template" %}</span>
+          <button type="button" class="oh-modal__close" aria-label="Close"
+                  hx-get="{% url 'question-template-hx-view' %}" hx-target="#questionTemplateList"
+            >
             <ion-icon name="close-outline"></ion-icon>
           </button>
         </div>
-        <div id="questionTemplateUpdateModalTarget">
-
-        </div>
-      
+        <div id="questionTemplateUpdateModalTarget"></div>
       </div>
     </div>
-    <!-- question template modal end -->
+  </div>  <!-- question template modal end -->
 </main>
 
 <script>

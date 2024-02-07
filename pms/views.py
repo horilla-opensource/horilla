@@ -1619,11 +1619,22 @@ def question_template_view(request):
     """
     question_templates = QuestionTemplate.objects.all()
     context = {"form": QuestionTemplateForm, "question_templates": question_templates}
-    if question_templates.exists():
-        template = "feedback/question_template/question_template_view.html"
-    else:
-        template = "feedback/question_template/question_template_empty.html"
-    return render(request, template, context)
+    return render(
+        request, "feedback/question_template/question_template_view.html", context
+    )
+
+
+@login_required
+@manager_can_enter(perm="pms.view_questiontemplate")
+def question_template_hx_view(request):
+    """
+    This view is used to  view  question template  object in htmx.
+    """
+    question_templates = QuestionTemplate.objects.all()
+    context = {"question_templates": question_templates}
+    return render(
+        request, "feedback/question_template/question_template_list.html", context
+    )
 
 
 @login_required
@@ -1638,8 +1649,11 @@ def question_template_detailed_view(request, template_id, **kwargs):
         it will redirect to  question_template_detailed_view.
     """
 
-    question_template = QuestionTemplate.objects.get(id=template_id)
-    questions = question_template.question.all()
+    question_template = QuestionTemplate.objects.filter(id=template_id).first()
+    if not question_template:
+        messages.error(request, _("Question template does not exist"))
+        return redirect(question_template_view)
+    questions = question_template.question.all().order_by("-id")
     question_types = ["text", "ratings", "boolean", "multi-choices", "likert"]
     options = QuestionOptions.objects.filter(question_id__in=questions)
 
@@ -1679,7 +1693,7 @@ def question_template_update(request, template_id):
         if form.is_valid():
             form.save()
             messages.info(request, _("Question template updated"))
-            return redirect(question_template_view)
+            # return redirect(question_template_view)
         context["question_update_form"] = form
     return render(
         request, "feedback/question_template/question_template_update.html", context
@@ -1700,14 +1714,16 @@ def question_template_delete(request, template_id):
         question_template = QuestionTemplate.objects.get(id=template_id)
         if Feedback.objects.filter(question_template_id=question_template):
             messages.info(request, _("This template is using in a feedback"))
-            return redirect(question_template_view)
-        question_template.delete()
-        messages.success(request, _("The question template is deleted successfully !."))
+        else:
+            question_template.delete()
+            messages.success(
+                request, _("The question template is deleted successfully !.")
+            )
     except QuestionTemplate.DoesNotExist:
         messages.error(request, _("question template not found."))
     except ProtectedError:
         messages.error(request, _("Related entries exists"))
-    return redirect(question_template_view)
+    return redirect("question-template-hx-view")
 
 
 @login_required

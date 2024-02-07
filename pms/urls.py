@@ -137,6 +137,11 @@ urlpatterns = [
         name="question-template-view",
     ),
     path(
+        "question-template-hx-view",
+        views.question_template_hx_view,
+        name="question-template-hx-view",
+    ),
+    path(
         "question-template-detailed-view/<int:template_id>",
         views.question_template_detailed_view,
         name="question-template-detailed-view",

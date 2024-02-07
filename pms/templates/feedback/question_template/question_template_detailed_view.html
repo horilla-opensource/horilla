@@ -5,18 +5,7 @@
 {% block content %}
 
 <!--start of messages -->
-{% if messages %}
 
-<div class="oh-wrapper">
-    {% for message in messages %}
-    <div class="oh-alert-container">
-        <div class="oh-alert oh-alert--animated {{message.tags}}">
-        {{ message }}
-        </div>
-    </div>
-    {% endfor %}
-</div>
-{% endif %}
 <!-- end of messages -->
 
 
@@ -133,7 +122,8 @@ $(document).ready(function () {
         this.submit();
     }
     });
-}); -->
-
+});
 </script>
+!-->
+
 {% endblock %}
