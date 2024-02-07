@@ -3,28 +3,30 @@
   class="d-flex flex-row-reverse oh-wrapper"
   style="padding-bottom: 10px; justify-content: right; align-items: center"
 >
-<span
-class="paid m-2"
-onclick="$('[name=sent_to_employee]').val('false'); $('[name=sent_to_employee]').first().change(); $('.filterButton').click()"
-style="cursor: pointer; margin-left: 5px"
->
-<span
-class="oh-dot oh-dot--small me-1"
-style="background-color: grey"
-></span>
-{% trans "Mail Not Sent" %}
-</span>
-<span
-    class="paid m-2"
-    onclick="$('[name=sent_to_employee]').val('true'); $('[name=sent_to_employee]').first().change(); $('.filterButton').click()"
-    style="cursor: pointer; margin-left: 5px"
-  >
+  {% if perms.payroll.add_payslip %}
     <span
-      class="oh-dot oh-dot--small me-1"
-      style="background-color: yellowgreen"
+    class="paid m-2"
+    onclick="$('[name=sent_to_employee]').val('false'); $('[name=sent_to_employee]').first().change(); $('.filterButton').click()"
+    style="cursor: pointer; margin-left: 5px"
+    >
+    <span
+    class="oh-dot oh-dot--small me-1"
+    style="background-color: grey"
     ></span>
-    {% trans "Mail Sent" %}
-  </span>
+    {% trans "Mail Not Sent" %}
+    </span>
+    <span
+      class="paid m-2"
+      onclick="$('[name=sent_to_employee]').val('true'); $('[name=sent_to_employee]').first().change(); $('.filterButton').click()"
+      style="cursor: pointer; margin-left: 5px"
+    >
+      <span
+        class="oh-dot oh-dot--small me-1"
+        style="background-color: yellowgreen"
+      ></span>
+      {% trans "Mail Sent" %}
+    </span>
+  {% endif %}
   <span
     class="draft m-2"
     onclick="$('[name=status]').val('draft'); $('[name=status]').first().change(); $('.filterButton').click();"

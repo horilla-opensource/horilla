@@ -739,6 +739,7 @@ def filter_payslip(request):
     if field == "card":
         template = "payroll/payslip/group_payslips.html"
         payslips = payslips.filter(group_name__isnull=False).order_by("-group_name")
+    payslips = sortby(request,payslips,"sortby")
     payslips = paginator_qry(payslips, request.GET.get("page"))
     data_dict = []
     if not request.GET.get("dashboard"):
@@ -1010,7 +1011,7 @@ def view_loans(request):
         "payroll/loan/view_loan.html",
         {
             "records": paginator_qry(records, request.GET.get("page")),
-            # "f": filter_instance,
+            "f": filter_instance,
         },
     )
 
