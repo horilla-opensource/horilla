@@ -65,7 +65,7 @@
                 {% if request.user.employee_get|is_any_stage_manager or perms.offboarding.change_offboarding or perms.offboarding.change_offboardingemployee %}
                 <div class="oh-sticky-table__th">{% trans "Stage" %}</div>
                 {% endif %}
-                <div class="oh-sticky-table__th">{% trans "Options" %}</div>
+                <div class="oh-sticky-table__th">{% trans "Actions" %}</div>
                 {% for task in stage.offboardingtask_set.all %}
                 <div class="oh-sticky-table__th" style="width: 200px;" hx-get="{% url "offboarding-add-task" %}?stage_id={{stage.id}}&instance_id={{task.id}}" hx-target="#offboardingModalBody" data-toggle="oh-modal-toggle" data-target="#offboardingModal">
                   <div class="d-flex justify-content-between">

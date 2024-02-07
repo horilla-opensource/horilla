@@ -346,8 +346,8 @@
                       >
                       {% trans "Overtime" %}
                     </div>
-                    <div class="oh-sticky-table__th oh-sticky-table__right">{% trans "Options" %}</div>
                     <div class="oh-sticky-table__th">{% trans "Actions" %}</div>
+                    <div class="oh-sticky-table__th oh-sticky-table__right">{% trans "Confirmation" %}</div>
                 </div>
             </div>
             {% for attendance in validate_attendances %}
@@ -408,19 +408,6 @@
                         <div data-cell-index="32" class="oh-sticky-table__td">
                           {{attendance.attendance_overtime}}
                         </div>
-                        <div class="oh-sticky-table__td  oh-sticky-table__right">
-                            {% if request.user|is_reportingmanager or perms.attendance.change_attendance %}
-                                <a
-                                  href='{% url "validate-this-attendance" attendance.id %}'
-                                  hx-target="#updateAttendanceBody"
-                                  data-req="/attendance/request-attendance-view/?id={{attendance.id}}"
-                                  onclick="event.stopPropagation(); {% if attendance.is_validate_request %}  event.preventDefault(); showSweetAlert($(this).data('req')); {% endif %}"
-                                  class="oh-btn oh-btn--info"
-                                  >
-                                  {% trans "Validate" %}
-                                </a>
-                            {% endif %}
-                        </div>
                         <div class="oh-sticky-table__td">
                             <div class="oh-btn-group">
                                 {% if perms.attendance.change_attendance or request.user|is_reportingmanager %}
@@ -452,6 +439,19 @@
                                     </form>
                                 {% endif %}
                             </div>
+                        </div>
+                        <div class="oh-sticky-table__td  oh-sticky-table__right">
+                            {% if request.user|is_reportingmanager or perms.attendance.change_attendance %}
+                                <a
+                                  href='{% url "validate-this-attendance" attendance.id %}'
+                                  hx-target="#updateAttendanceBody"
+                                  data-req="/attendance/request-attendance-view/?id={{attendance.id}}"
+                                  onclick="event.stopPropagation(); {% if attendance.is_validate_request %}  event.preventDefault(); showSweetAlert($(this).data('req')); {% endif %}"
+                                  class="oh-btn oh-btn--info"
+                                  >
+                                  {% trans "Validate" %}
+                                </a>
+                            {% endif %}
                         </div>
                     </div>
                 </div>
@@ -603,8 +603,8 @@
                       >
                       {% trans "Overtime" %}
                     </div>
-                    <div class="oh-sticky-table__th oh-sticky-table__right">{% trans "Options" %}</div>
                     <div class="oh-sticky-table__th">{% trans "Actions" %}</div>
+                    <div class="oh-sticky-table__th oh-sticky-table__right">{% trans "Confirmation" %}</div>
                 </div>
             </div>
             {% for attendance in overtime_attendances %}
@@ -665,24 +665,6 @@
                         <div data-cell-index="52" class="oh-sticky-table__td">
                           {{attendance.attendance_overtime}}
                         </div>
-                        <div class="oh-sticky-table__td  oh-sticky-table__right">
-                            {% if attendance.attendance_overtime_approve %}
-                                <a type="submit" href="#" title="{% trans 'Approved' %}"
-                                    class="oh-btn oh-btn--success oh-btn--disabled w-100"
-                                    onclick="event.stopPropagation()"
-                                  >
-                                    <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
-                                </a>
-                            {% else %}
-                                <a type="submit" href="{% url 'approve-overtime' attendance.id %}" 
-                                    title="{% trans 'Approve Overtime' %}"
-                                    class="oh-btn oh-btn--success w-100"
-                                    onclick="event.stopPropagation()"
-                                    >
-                                    <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
-                                </a>
-                            {% endif %}
-                        </div>
                         <div class="oh-sticky-table__td">
                             <div class="oh-btn-group">
                                 {% if perms.attendance.change_attendance or request.user|is_reportingmanager %}
@@ -714,6 +696,24 @@
                                     </form>
                                 {% endif %}
                             </div>
+                        </div>
+                        <div class="oh-sticky-table__td  oh-sticky-table__right">
+                            {% if attendance.attendance_overtime_approve %}
+                                <a type="submit" href="#" title="{% trans 'Approved' %}"
+                                    class="oh-btn oh-btn--success oh-btn--disabled w-100"
+                                    onclick="event.stopPropagation()"
+                                  >
+                                    <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
+                                </a>
+                            {% else %}
+                                <a type="submit" href="{% url 'approve-overtime' attendance.id %}" 
+                                    title="{% trans 'Approve Overtime' %}"
+                                    class="oh-btn oh-btn--success w-100"
+                                    onclick="event.stopPropagation()"
+                                    >
+                                    <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
+                                </a>
+                            {% endif %}
                         </div>
                     </div>
                 </div>

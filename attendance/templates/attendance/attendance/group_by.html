@@ -77,8 +77,8 @@
                   <div class="oh-sticky-table__th">{% trans "At Work" %}</div>
                   <div class="oh-sticky-table__th">{% trans "Pending Hours" %}</div>
                   <div class="oh-sticky-table__th">{% trans "Overtime" %}</div>
-                  <div class="oh-sticky-table__th oh-sticky-table__right">{% trans "Options" %}</div>
                   <div class="oh-sticky-table__th">{% trans "Actions" %}</div>
+                  <div class="oh-sticky-table__th oh-sticky-table__right">{% trans "Confirmation" %}</div>
                 </div>
               </div>
               <div class="oh-sticky-table__tbody">
@@ -134,24 +134,6 @@
                   <div class="oh-sticky-table__td">
                     {{attendance.attendance_overtime}}
                   </div>
-                  <div class="oh-sticky-table__td oh-sticky-table__right">
-                      {% if attendance.attendance_overtime_approve %}
-                          <a type="submit" href="#" title="{% trans 'Approved' %}"
-                            class="oh-btn oh-btn--success oh-btn--disabled w-100"
-                            onclick="event.stopPropagation()"
-                          >
-                            <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
-                        </a>
-                      {% else %}
-                          <a type="submit" href="{% url 'approve-overtime' attendance.id %}" 
-                              title="{% trans 'Approve' %}"
-                              class="oh-btn oh-btn--success w-100"
-                              onclick="event.stopPropagation()"
-                              >
-                              <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
-                          </a>
-                      {% endif %}
-                  </div>
                   <div class="oh-sticky-table__td">
                     <div class="oh-btn-group">
                       {% if perms.attendance.change_attendance or request.user|is_reportingmanager %}
@@ -175,6 +157,24 @@
                       </button>
                       {% endif %}
                     </div>
+                  </div>
+                  <div class="oh-sticky-table__td oh-sticky-table__right">
+                      {% if attendance.attendance_overtime_approve %}
+                          <a type="submit" href="#" title="{% trans 'Approved' %}"
+                            class="oh-btn oh-btn--success oh-btn--disabled w-100"
+                            onclick="event.stopPropagation()"
+                          >
+                            <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
+                        </a>
+                      {% else %}
+                          <a type="submit" href="{% url 'approve-overtime' attendance.id %}" 
+                              title="{% trans 'Approve' %}"
+                              class="oh-btn oh-btn--success w-100"
+                              onclick="event.stopPropagation()"
+                              >
+                              <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
+                          </a>
+                      {% endif %}
                   </div>
                 </div>
                 {% endfor %}
@@ -341,8 +341,8 @@
                   <div class="oh-sticky-table__th">{% trans "At Work" %}</div>
                   <div class="oh-sticky-table__th">{% trans "Pending Hours" %}</div>
                   <div class="oh-sticky-table__th">{% trans "Overtime" %}</div>
-                  <div class="oh-sticky-table__th oh-sticky-table__right">{% trans "Options" %}</div>
                   <div class="oh-sticky-table__th">{% trans "Actions" %}</div>
+                  <div class="oh-sticky-table__th oh-sticky-table__right">{% trans "Confirmation" %}</div>
                 </div>
               </div>
               <div class="oh-sticky-table__tbody">
@@ -398,19 +398,6 @@
                   <div class="oh-sticky-table__td">
                     {{attendance.attendance_overtime}}
                   </div>
-                  <div class="oh-sticky-table__td oh-sticky-table__right">
-                      {% if request.user|is_reportingmanager or perms.attendance.change_attendance %}
-                          <a
-                            href='{% url "validate-this-attendance" attendance.id %}?vpage={{validate_attendances.number}}&{{attendance_list.dynamic_name}}={{ attendance_list.list.number }}'
-                            hx-target="#updateAttendanceBody"
-                            data-req="/attendance/request-attendance-view/?id={{attendance.id}}"
-                            onclick="event.stopPropagation(); {% if attendance.is_validate_request %}  event.preventDefault(); showSweetAlert($(this).data('req')); {% endif %}"
-                            class="oh-btn oh-btn--info"
-                            >
-                            {% trans "Validate" %}
-                          </a>
-                      {% endif %}
-                  </div>
                   <div class="oh-sticky-table__td">
                     <div class="oh-btn-group">
                       {% if perms.attendance.change_attendance or request.user|is_reportingmanager %}
@@ -434,6 +421,19 @@
                       </button>
                       {% endif %}
                     </div>
+                  </div>
+                  <div class="oh-sticky-table__td oh-sticky-table__right">
+                      {% if request.user|is_reportingmanager or perms.attendance.change_attendance %}
+                          <a
+                            href='{% url "validate-this-attendance" attendance.id %}?vpage={{validate_attendances.number}}&{{attendance_list.dynamic_name}}={{ attendance_list.list.number }}'
+                            hx-target="#updateAttendanceBody"
+                            data-req="/attendance/request-attendance-view/?id={{attendance.id}}"
+                            onclick="event.stopPropagation(); {% if attendance.is_validate_request %}  event.preventDefault(); showSweetAlert($(this).data('req')); {% endif %}"
+                            class="oh-btn oh-btn--info"
+                            >
+                            {% trans "Validate" %}
+                          </a>
+                      {% endif %}
                   </div>
                 </div>
                 {% endfor %}
