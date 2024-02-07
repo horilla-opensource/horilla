@@ -209,9 +209,9 @@
   >
     {% trans "Selected Employees" %}
   </div>
-  <div class="d-flex flex-row-reverse oh-wrapper">
+  <div class="d-flex flex-row-reverse oh-wrapper mb-2">
     <span
-      class="m-3"
+      class="me-3"
       onclick="$('[name=contract_status]').val('terminated'); $('[name=contract_status]').first().change(); $('.filterButton').click()"
       style="cursor: pointer"
     >
@@ -222,7 +222,7 @@
       {% trans "Terminated" %}
     </span>
     <span
-      class="m-3"
+      class="me-3"
       onclick="$('[name=contract_status]').val('expired'); $('[name=contract_status]').first().change(); $('.filterButton').click()"
       style="cursor: pointer"
     >
@@ -233,7 +233,7 @@
       {% trans "Expired" %}
     </span>
     <span
-      class="m-3"
+      class="me-3"
       onclick="$('[name=contract_status]').val('draft'); $('[name=contract_status]').first().change(); $('.filterButton').click()"
       style="cursor: pointer"
     >
@@ -244,7 +244,7 @@
       {% trans "Draft" %}
     </span>
     <span
-      class="m-3"
+      class="me-3"
       onclick="$('[name=contract_status]').val('active'); $('[name=contract_status]').first().change(); $('.filterButton').click()"
       style="cursor: pointer"
     >

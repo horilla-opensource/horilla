@@ -17,9 +17,9 @@
     border-radius: 5px;
   }
 </style>
-<div class="d-flex flex-row-reverse">
+<div class="d-flex flex-row-reverse mb-2">
   <span
-    class="m-3"
+    class="me-3"
     style="cursor: pointer"
     hx-get='{% url "filter-own-attendance" %}?is_validate_request_approved=true'
     hx-swap="innerHTML"
@@ -32,7 +32,7 @@
     {% trans "Approved request" %}
   </span>
   <span
-    class="m-3"
+    class="me-3"
     style="cursor: pointer"
     hx-get='{% url "filter-own-attendance" %}?is_validate_request=true'
     hx-swap="innerHTML"
@@ -45,7 +45,7 @@
     {% trans "Requested" %}
   </span>
   <span
-    class="m-3"
+    class="me-3"
     style="cursor: pointer"
     hx-get='{% url "filter-own-attendance" %}?attendance_validated=false'
     hx-swap="innerHTML"
@@ -58,7 +58,7 @@
     {% trans "Not validated" %}
   </span>
   <span
-    class="m-3"
+    class="me-3"
     style="cursor: pointer"
     hx-get='{% url "filter-own-attendance" %}?attendance_validated=true'
     hx-swap="innerHTML"

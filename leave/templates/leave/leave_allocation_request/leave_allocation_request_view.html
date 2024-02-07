@@ -226,9 +226,9 @@
 <div class="oh-wrapper" id="userRequest">
 	{% if leave_allocation_requests or my_leave_allocation_requests %}
 	<!-- start of Quick filters  -->
-	<div class="d-flex flex-row-reverse">
+	<div class="d-flex flex-row-reverse mb-2">
 		<span
-			class="m-3 review_ongoing"
+			class="me-3 review_ongoing"
 			onclick="$('[name=status]').val('rejected');$('[name=status]').first().change();$('.filterButton').click()"
 			style="cursor: pointer"
 		>
@@ -239,7 +239,7 @@
 			{% trans "Rejected" %}
 		</span>
 		<span
-			class="m-3 confirmed"
+			class="me-3 confirmed"
 			onclick="$('[name=status]').val('requested');$('[name=status]').first().change();$('.filterButton').click()"
 			style="cursor: pointer"
 		>
@@ -250,7 +250,7 @@
 			{% trans "Requested" %}
 		</span>
 		<span
-			class="m-3 paid"
+			class="me-3 paid"
 			onclick="$('[name=status]').val('approved');$('[name=status]').first().change();$('.filterButton').click()"
 			style="cursor: pointer"
 		>

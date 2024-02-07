@@ -1,11 +1,11 @@
 {% load i18n %}
 <div
-  class="d-flex flex-row-reverse oh-wrapper"
+  class="d-flex flex-row-reverse oh-wrapper mb-2"
   style="padding-bottom: 10px; justify-content: right; align-items: center"
 >
   {% if perms.payroll.add_payslip %}
     <span
-    class="paid m-2"
+    class="paid me-3"
     onclick="$('[name=sent_to_employee]').val('false'); $('[name=sent_to_employee]').first().change(); $('.filterButton').click()"
     style="cursor: pointer; margin-left: 5px"
     >
@@ -16,7 +16,7 @@
     {% trans "Mail Not Sent" %}
     </span>
     <span
-      class="paid m-2"
+      class="paid me-3"
       onclick="$('[name=sent_to_employee]').val('true'); $('[name=sent_to_employee]').first().change(); $('.filterButton').click()"
       style="cursor: pointer; margin-left: 5px"
     >
@@ -28,7 +28,7 @@
     </span>
   {% endif %}
   <span
-    class="draft m-2"
+    class="draft me-3"
     onclick="$('[name=status]').val('draft'); $('[name=status]').first().change(); $('.filterButton').click();"
     style="cursor: pointer; margin-left: 5px"
   >
@@ -39,7 +39,7 @@
     {% trans "Draft" %}
   </span>
   <span
-    class="review_ongoing m-2"
+    class="review_ongoing me-3"
     onclick="$('[name=status]').val('review_ongoing'); $('[name=status]').first().change(); $('.filterButton').click()"
     style="cursor: pointer; margin-left: 5px"
   >
@@ -50,7 +50,7 @@
     {% trans "Review Ongoing" %}
   </span>
   <span
-    class="confirmed m-2"
+    class="confirmed me-3"
     onclick="$('[name=status]').val('confirmed'); $('[name=status]').first().change(); $('.filterButton').click()"
     style="cursor: pointer; margin-left: 5px"
   >
@@ -61,7 +61,7 @@
     {% trans "Confirmed" %}
   </span>
   <span
-    class="paid m-2"
+    class="paid me-3"
     onclick="$('[name=status]').val('paid'); $('[name=status]').first().change(); $('.filterButton').click()"
     style="cursor: pointer; margin-left: 5px"
   >

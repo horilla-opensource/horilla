@@ -4,20 +4,20 @@
 {% load attendancefilters %}
 {% include 'filter_tags.html' %}
 {% if not request.GET.dashboard %}
-<div class="d-flex flex-row-reverse">
-    <span class="m-3 review_ongoing" onclick="$('[name=status]').val('rejected');$('[name=status]').first().change();$('.filterButton').click()" style="cursor: pointer">
+<div class="d-flex flex-row-reverse mb-2">
+    <span class="me-3 review_ongoing" onclick="$('[name=status]').val('rejected');$('[name=status]').first().change();$('.filterButton').click()" style="cursor: pointer">
         <span class="oh-dot oh-dot--small me-1" style="background-color:red"></span>
         {% trans "Rejected" %}
     </span>
-    <span class="m-3 review_ongoing" onclick="$('[name=status]').val('cancelled');$('[name=status]').first().change();$('.filterButton').click()" style="cursor: pointer">
+    <span class="me-3 review_ongoing" onclick="$('[name=status]').val('cancelled');$('[name=status]').first().change();$('.filterButton').click()" style="cursor: pointer">
       <span class="oh-dot oh-dot--small me-1" style="background-color:grey"></span>
       {% trans "Cancelled" %}
     </span>
-    <span class="m-3 paid" onclick="$('[name=status]').val('approved');$('[name=status]').first().change();$('.filterButton').click()" style="cursor: pointer">
+    <span class="me-3 paid" onclick="$('[name=status]').val('approved');$('[name=status]').first().change();$('.filterButton').click()" style="cursor: pointer">
       <span class="oh-dot oh-dot--small me-1" style="background-color:yellowgreen"></span>
       {% trans "Approved" %}
     </span>
-    <span class="m-3 confirmed" onclick="$('[name=status]').val('requested');$('[name=status]').first().change();$('.filterButton').click()" style="cursor: pointer">
+    <span class="me-3 confirmed" onclick="$('[name=status]').val('requested');$('[name=status]').first().change();$('.filterButton').click()" style="cursor: pointer">
       <span class="oh-dot oh-dot--small me-1" style="background-color:orange"></span>
       {% trans "Requested" %}
     </span>

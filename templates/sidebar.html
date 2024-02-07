@@ -164,16 +164,6 @@
                 >{% trans "Recruitment Survey" %}</a
               >
             </li>
-            {% endif %} 
-            {% if perms.recruitment.view_recruitmentmailtemplate %}
-            <li class="oh-sidebar__submenu-item">
-              <a
-                class="oh-sidebar__submenu-link"
-                href="{% url 'view-mail-templates' %}"
-                class="oh-sidebar__submenu-link"
-                >{% trans "Mail Templates" %}</a
-              >
-            </li>
             {% endif %}
             {% if perms.recruitment.view_candidate %}
             <li class="oh-sidebar__submenu-item">
@@ -661,21 +651,6 @@
             </li>
             {% endif %} 
 
-            <li class="oh-sidebar__submenu-item">
-              <a
-                href="{% url 'holiday-view' %}"
-                class="oh-sidebar__submenu-link"
-                >{% trans "Holidays" %}</a
-              >
-            </li>
-
-            <li class="oh-sidebar__submenu-item">
-              <a
-                href="{% url 'company-leave-view' %}"
-                class="oh-sidebar__submenu-link"
-                >{% trans "Company Leaves" %}</a
-              >
-            </li>
 
           </ul>
         </div>
@@ -916,7 +891,6 @@
           </ul>
         </div>
       </li>
-      {% if perms.Leave.view_leaverequest %}
       <li
         class="oh-sidebar__menu-item"
         x-data="{ isOpen: getOpenState('configNav') }"
@@ -975,6 +949,7 @@
           style="display: none"
           >
           <ul class="oh-sidebar__submenu-items">
+            {% if perms.Leave.view_leaverequest %}
             <li class="oh-sidebar__submenu-item">
               <a
                 href="{% url 'multiple-approval-condition' %}"
@@ -982,10 +957,35 @@
                 >{% trans "Multiple Approvals " %}</a
               >
             </li>
+            {% endif %}
+            {% if perms.recruitment.view_recruitmentmailtemplate %}
+            <li class="oh-sidebar__submenu-item">
+              <a
+                class="oh-sidebar__submenu-link"
+                href="{% url 'view-mail-templates' %}"
+                class="oh-sidebar__submenu-link"
+                >{% trans "Mail Templates" %}</a
+              >
+            </li>
+            <li class="oh-sidebar__submenu-item">
+              <a
+                href="{% url 'holiday-view' %}"
+                class="oh-sidebar__submenu-link"
+                >{% trans "Holidays" %}</a
+              >
+            </li>
+
+            <li class="oh-sidebar__submenu-item">
+              <a
+                href="{% url 'company-leave-view' %}"
+                class="oh-sidebar__submenu-link"
+                >{% trans "Company Leaves" %}</a
+              >
+            </li>
+            {% endif %}
           </ul>
         </div>
       </li>
-      {% endif %}
     </ul>
   </div>
 </div>

@@ -11,7 +11,6 @@
   }
 </style>
 <section class="oh-wrapper oh-main__topbar" x-data="{searchShow: false}"
-  style="padding-bottom: 10px;"
 >
   <div class="oh-main__titlebar oh-main__titlebar--left">
     <h1 class="oh-main__titlebar-title fw-bold">{% trans "Allowances" %}</h1>
@@ -113,9 +112,9 @@
 </section>
 <div class="oh-wrapper">
 <!-- start of Quick filters  -->
-<div class="d-flex flex-row-reverse" style="height:50px;">
+<div class="d-flex flex-row-reverse mb-2">
   <span
-    class="m-3"
+    class="me-3"
     onclick="$('[name=is_taxable]').val('true');$('[name=is_fixed]').val('unknown');$('.filterButton').click()"
     style="cursor: pointer"
   >
@@ -126,7 +125,7 @@
     {% trans "Taxable" %}
   </span>
   <span
-    class="m-3"
+    class="me-3"
     style="cursor: pointer"
     onclick="$('[name=is_taxable]').val('false');$('[name=is_fixed]').val('unknown');$('.filterButton').click()"
   >
@@ -137,7 +136,7 @@
     {% trans "Non Taxable" %}
   </span>
   <span
-    class="m-3"
+    class="me-3"
     style="cursor: pointer"
     onclick="$('[name=is_fixed]').val('true');$('[name=is_taxable]').val('unknown');$('.filterButton').click()"
   >
@@ -148,7 +147,7 @@
     {% trans "Fixed" %}
   </span>
   <span
-    class="m-3"
+    class="me-3"
     style="cursor: pointer"
     onclick="$('[name=is_fixed]').val('false');$('[name=is_taxable]').val('unknown');$('.filterButton').click()"
   >
