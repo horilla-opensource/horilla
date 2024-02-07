@@ -6,7 +6,6 @@ This module is used to write methods related to the history
 from django.db import models
 from django.contrib.auth.models import User
 
-
 class Bot:
     def __init__(self) -> None:
         self.__str__()
@@ -53,6 +52,21 @@ def get_field_label(model_class, field_name):
     # Return None if the field does not exist
     return None
 
+
+def filter_history(histories,track_fields):
+    filtered_histories = []
+    for history in histories:
+        changes = history.get("changes", [])
+        filtered_changes = [
+            change
+            for change in changes
+            if change.get("field_name", "") in track_fields
+        ]
+        if filtered_changes:
+            history["changes"] = filtered_changes
+            filtered_histories.append(history)
+    histories = filtered_histories
+    return histories
 
 def get_diff(instance):
     """
@@ -117,4 +131,10 @@ def get_diff(instance):
                 "updated_by": updated_by,
             }
         )
+    from .models import HistoryTrackingFields
+    history_tracking_instance = HistoryTrackingFields.objects.first()
+    if history_tracking_instance:
+        track_fields = history_tracking_instance.tracking_fields["tracking_fields"]
+        if track_fields:
+           delta_changes = filter_history(delta_changes,track_fields)
     return delta_changes

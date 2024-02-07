@@ -7,19 +7,19 @@ var downloadMessages = {
 };
 
 var importSuccess = {
-  ar: "نجح الاستيراد",
-  de: "Import erfolgreich",
-  es: "Importado con éxito",
-  en: "Imported Successfully!",
-  fr: "Importation réussie",
+  ar: "نجح الاستيراد", // Arabic
+  de: "Import erfolgreich", // German
+  es: "Importado con éxito", // Spanish
+  en: "Imported Successfully!", // English
+  fr: "Importation réussie", // French
 };
 
 var uploadSuccess = {
-  ar: "تحميل كامل",
-  de: "Upload abgeschlossen",
-  es: "Carga completa",
-  en: "Upload Complete!",
-  fr: "Téléchargement terminé",
+  ar: "تحميل كامل", // Arabic
+  de: "Upload abgeschlossen", // German
+  es: "Carga completa", // Spanish
+  en: "Upload Complete!", // English
+  fr: "Téléchargement terminé", // French
 };
 
 var uploadingMessage = {
@@ -55,14 +55,28 @@ function getCookie(name) {
 }
 
 function getCurrentLanguageCode(callback) {
-  $.ajax({
-    type: "GET",
-    url: "/employee/get-language-code/",
-    success: function (response) {
-      var languageCode = response.language_code;
-      callback(languageCode); // Pass the language code to the callback
-    },
-  });
+  var languageCode = $("#main-section-data").attr("data-lang");
+  var allowedLanguageCodes = ["ar", "de", "es", "en", "fr"];
+  if (allowedLanguageCodes.includes(languageCode)) {
+    callback(languageCode);
+  } else {
+    $.ajax({
+      type: "GET",
+      url: "/employee/get-language-code/",
+      success: function (response) {
+        var ajaxLanguageCode = response.language_code;
+        $("#main-section-data").attr("data-lang", ajaxLanguageCode);
+        callback(
+          allowedLanguageCodes.includes(ajaxLanguageCode)
+            ? ajaxLanguageCode
+            : "en"
+        );
+      },
+      error: function () {
+        callback("en");
+      },
+    });
+  }
 }
 
 // Get the form element
@@ -112,55 +126,57 @@ form.addEventListener("submit", function (event) {
 $("#work-info-import").click(function (e) {
   e.preventDefault();
   var languageCode = null;
-  languageCode = $("#main-section-data").attr("data-lang");
-  var confirmMessage =
-    downloadMessages[languageCode] ||
-    ((languageCode = "en"), downloadMessages[languageCode]);
-  Swal.fire({
-    text: confirmMessage,
-    icon: "question",
-    showCancelButton: true,
-    confirmButtonColor: "#008000",
-    cancelButtonColor: "#d33",
-    confirmButtonText: "Confirm",
-  }).then(function (result) {
-    if (result.isConfirmed) {
-      $("#loading").show();
+  getCurrentLanguageCode(function (code) {
+    languageCode = code;
+    var confirmMessage = downloadMessages[languageCode];
+    Swal.fire({
+      text: confirmMessage,
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#008000",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Confirm",
+    }).then(function (result) {
+      if (result.isConfirmed) {
+        $("#loading").show();
 
-      var xhr = new XMLHttpRequest();
-      xhr.open("GET", "/employee/work-info-import", true);
-      xhr.responseType = "arraybuffer";
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", "/employee/work-info-import", true);
+        xhr.responseType = "arraybuffer";
 
-      xhr.upload.onprogress = function (e) {
-        if (e.lengthComputable) {
-          var percent = (e.loaded / e.total) * 100;
-          $(".progress-bar")
-            .width(percent + "%")
-            .attr("aria-valuenow", percent);
-          $("#progress-text").text("Uploading... " + percent.toFixed(2) + "%");
-        }
-      };
+        xhr.upload.onprogress = function (e) {
+          if (e.lengthComputable) {
+            var percent = (e.loaded / e.total) * 100;
+            $(".progress-bar")
+              .width(percent + "%")
+              .attr("aria-valuenow", percent);
+            $("#progress-text").text(
+              "Uploading... " + percent.toFixed(2) + "%"
+            );
+          }
+        };
 
-      xhr.onload = function (e) {
-        if (this.status == 200) {
-          const file = new Blob([this.response], {
-            type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-          });
-          const url = URL.createObjectURL(file);
-          const link = document.createElement("a");
-          link.href = url;
-          link.download = "work_info_template.xlsx";
-          document.body.appendChild(link);
-          link.click();
-        }
-      };
+        xhr.onload = function (e) {
+          if (this.status == 200) {
+            const file = new Blob([this.response], {
+              type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            });
+            const url = URL.createObjectURL(file);
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = "work_info_template.xlsx";
+            document.body.appendChild(link);
+            link.click();
+          }
+        };
 
-      xhr.onerror = function (e) {
-        console.error("Error downloading file:", e);
-      };
+        xhr.onerror = function (e) {
+          console.error("Error downloading file:", e);
+        };
 
-      xhr.send();
-    }
+        xhr.send();
+      }
+    });
   });
 });
 
@@ -173,78 +189,72 @@ $(document).ajaxStop(function () {
 });
 
 function simulateProgress() {
-  var languageCode = null;
-  languageCode = $("#main-section-data").attr("data-lang");
-  var importMessage =
-    importSuccess[languageCode] ||
-    ((languageCode = "en"), importSuccess[languageCode]);
-  var uploadMessage =
-    uploadSuccess[languageCode] ||
-    ((languageCode = "en"), uploadSuccess[languageCode]);
-  var uploadingMessage =
-    uploadingMessage[languageCode] ||
-    ((languageCode = "en"), uploadingMessage[languageCode]);
-  let progressBar = document.querySelector(".progress-bar");
-  let progressText = document.getElementById("progress-text");
+  getCurrentLanguageCode(function (code) {
+    languageCode = code;
+    var importMessage = importSuccess[languageCode];
+    var uploadMessage = uploadSuccess[languageCode];
+    let progressBar = document.querySelector(".progress-bar");
+    let progressText = document.getElementById("progress-text");
 
-  let width = 0;
-  let interval = setInterval(function () {
-    if (width >= 100) {
-      clearInterval(interval);
-      progressText.innerText = uploadMessage;
-      setTimeout(function () {
-        document.getElementById("loading").style.display = "none";
-      }, 3000);
-      Swal.fire({
-        text: importMessage,
-        icon: "success",
-        showConfirmButton: false,
-        timer: 2000,
-        timerProgressBar: true,
-      });
-      setTimeout(function () {
-        $("#workInfoImport").removeClass("oh-modal--show");
-        location.reload(true);
-      }, 2000);
-    } else {
-      width++;
-      progressBar.style.width = width + "%";
-      progressBar.setAttribute("aria-valuenow", width);
-      progressText.innerText = uploadingMessage + width + "%";
-    }
-  }, 20);
+    let width = 0;
+    let interval = setInterval(function () {
+      if (width >= 100) {
+        clearInterval(interval);
+        progressText.innerText = uploadMessage;
+        setTimeout(function () {
+          document.getElementById("loading").style.display = "none";
+        }, 3000);
+        Swal.fire({
+          text: importMessage,
+          icon: "success",
+          showConfirmButton: false,
+          timer: 2000,
+          timerProgressBar: true,
+        });
+        setTimeout(function () {
+          $("#workInfoImport").removeClass("oh-modal--show");
+          location.reload(true);
+        }, 2000);
+      } else {
+        width++;
+        progressBar.style.width = width + "%";
+        progressBar.setAttribute("aria-valuenow", width);
+        progressText.innerText = uploadingMessage[languageCode] + width + "%";
+      }
+    }, 20);
+  });
 }
 
 document
   .getElementById("workInfoImportForm")
   .addEventListener("submit", function (event) {
     event.preventDefault();
-    var languageCode = null;
-    languageCode = $("#main-section-data").attr("data-lang");
-    var errorMessage =
-      validationMessage[languageCode] ||
-      ((languageCode = "en"), validationMessage[languageCode]);
-    var fileInput = $("#workInfoImportFile").val();
-    var allowedExtensions = /(\.xlsx)$/i;
+    getCurrentLanguageCode(function (code) {
+      languageCode = code;
+      var errorMessage = validationMessage[languageCode];
 
-    if (!allowedExtensions.exec(fileInput)) {
-      var errorMessage = document.createElement("div");
-      errorMessage.classList.add("error-message");
+      var fileInput = $("#workInfoImportFile").val();
+      var allowedExtensions = /(\.xlsx)$/i;
 
-      errorMessage.textContent = errorMessage;
+      if (!allowedExtensions.exec(fileInput)) {
+        var errorMessage = document.createElement("div");
+        errorMessage.classList.add("error-message");
 
-      document.getElementById("error-container").appendChild(errorMessage);
+        errorMessage.textContent = errorMessage;
 
-      fileInput.value = "";
+        document.getElementById("error-container").appendChild(errorMessage);
 
-      setTimeout(function () {
-        errorMessage.remove();
-      }, 2000);
+        fileInput.value = "";
 
-      return false;
-    } else {
-      document.getElementById("loading").style.display = "block";
+        setTimeout(function () {
+          errorMessage.remove();
+        }, 2000);
 
-      simulateProgress();
-    }
+        return false;
+      } else {
+        document.getElementById("loading").style.display = "block";
+
+        simulateProgress();
+      }
+    });
   });

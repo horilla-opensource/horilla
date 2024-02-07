@@ -26,7 +26,8 @@ from attendance.models import AttendanceValidationCondition, GraceTime
 from django.views.decorators.csrf import csrf_exempt
 from employee.filters import EmployeeFilter
 from employee.forms import ActiontypeForm
-from horilla_audit.models import AuditTag
+from horilla_audit.forms import HistoryTrackingFieldsForm
+from horilla_audit.models import AuditTag, HistoryTrackingFields
 from notifications.models import Notification
 from notifications.base.models import AbstractNotification
 from notifications.signals import notify
@@ -3750,6 +3751,13 @@ def general_settings(request):
     form = AnnouncementExpireForm(instance=instance)
     encashment_instance = EncashmentGeneralSettings.objects.first()
     encashment_form = EncashmentGeneralSettingsForm(instance=encashment_instance)
+    history_tracking_instance = HistoryTrackingFields.objects.first()
+    history_fields_form_initial = {}
+    if history_tracking_instance:
+        history_fields_form_initial = {
+            "tracking_fields": history_tracking_instance.tracking_fields['tracking_fields']
+        }
+    history_fields_form = HistoryTrackingFieldsForm(initial = history_fields_form_initial)
     if request.method == "POST":
         form = AnnouncementExpireForm(request.POST, instance=instance)
         if form.is_valid():
@@ -3762,6 +3770,7 @@ def general_settings(request):
         {
             "form": form,
             "encashment_form": encashment_form,
+            "history_fields_form":history_fields_form,
         },
     )
 
@@ -3897,6 +3906,20 @@ def get_time_format(request):
         time_format = "hh:mm A"
     # Return the date format as JSON response
     return JsonResponse({"selected_format": time_format})
+
+@login_required
+def history_field_settings(request):
+    if request.method == "POST":
+        fields = request.POST.getlist("tracking_fields")
+        history_object, created = HistoryTrackingFields.objects.get_or_create(
+            pk=1, defaults={"tracking_fields": {"tracking_fields": fields}}
+        )
+
+        if not created:
+            history_object.tracking_fields = {"tracking_fields": fields}
+            history_object.save()
+
+    return redirect(general_settings)
 
 
 @login_required

@@ -1,0 +1,56 @@
+{% load i18n %}
+<style>
+  .select2-selection.select2-selection--multiple {
+    min-height: 48px;
+    overflow-y: auto;
+  }
+  button {
+    height: 48px;
+  }
+  div[style="display: flex"] {
+    flex-direction: row;
+  }
+  @media (max-width: 768px) {
+    div[style="display: flex"] {
+      flex-direction: column;
+    }
+    button {
+      margin-top: 10px;
+    }
+  }
+</style>
+
+<form
+  action="{% url 'history-field-settings' %}"
+  class="settings-label mb-1"
+  method="post"
+>
+  {% csrf_token %}
+  <div class="oh-inner-sidebar-content__header mt-4">
+    <h2 class="oh-inner-sidebar-content__title">
+      {% trans "Employee History Tracking" %}
+    </h2>
+  </div>
+  <div class="oh-label__info" for="defatul_expire">
+    <label class="oh-label" for="defatul_expire"
+      >{% trans "Tracking Fields" %}</label
+    >
+    <span class="oh-info mr-2" title="{% trans '' %}"></span>
+  </div>
+  <div style="display: flex">
+    <div style="min-width: 273px">
+      {{ history_fields_form.tracking_fields }}
+    </div>
+    {% if perms.payroll.change_payrollsettings %}
+    <button
+      style="display: inline; margin-left: 5px"
+      type="submit"
+      class="oh-btn oh-btn--secondary mr-0 oh-btn--w-100-resp"
+    >
+      {% trans "Save Changes" %}
+    </button>
+    {% endif %}
+  </div>
+
+  <div class="oh-inner-sidebar-content__footer"></div>
+</form>

@@ -434,10 +434,20 @@ class EmployeeWorkInformation(models.Model):
         null=True,
         verbose_name=_("Company"),
     )
-    tags = models.ManyToManyField(EmployeeTag, blank=True, verbose_name=_("tags"))
-    location = models.CharField(max_length=50, blank=True)
-    email = models.EmailField(max_length=254, blank=True, null=True)
-    mobile = models.CharField(max_length=254, blank=True, null=True)
+    tags = models.ManyToManyField(
+        EmployeeTag, blank=True, verbose_name=_("Employee tag")
+    )
+    location = models.CharField(
+        max_length=50, blank=True, verbose_name=_("Work Location")
+    )
+    email = models.EmailField(
+        max_length=254, blank=True, null=True, verbose_name=_("Email")
+    )
+    mobile = models.CharField(
+        max_length=254,
+        blank=True,
+        null=True,
+    )
     shift_id = models.ForeignKey(
         EmployeeShift,
         on_delete=models.DO_NOTHING,
@@ -445,10 +455,16 @@ class EmployeeWorkInformation(models.Model):
         blank=True,
         verbose_name=_("Shift"),
     )
-    date_joining = models.DateField(null=True, blank=True)
+    date_joining = models.DateField(
+        null=True, blank=True, verbose_name=_("Joining Date")
+    )
     contract_end_date = models.DateField(blank=True, null=True)
-    basic_salary = models.IntegerField(null=True, blank=True, default=0)
-    salary_hour = models.IntegerField(null=True, blank=True, default=0)
+    basic_salary = models.IntegerField(
+        null=True, blank=True, default=0, verbose_name=_("Basic Salary")
+    )
+    salary_hour = models.IntegerField(
+        null=True, blank=True, default=0, verbose_name=_("Salary Per Hour")
+    )
     additional_info = models.JSONField(null=True, blank=True)
     experience = models.FloatField(null=True, blank=True, default=0)
     history = HorillaAuditLog(
