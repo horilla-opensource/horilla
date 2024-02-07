@@ -344,6 +344,7 @@ class Candidate(models.Model):
         editable=False,
     )
     objects = HorillaCompanyManager(related_company_field="recruitment_id__company_id")
+    last_updated = models.DateField(null=True,auto_now=True)
 
     def __str__(self):
         return f"{self.name}"
@@ -477,6 +478,12 @@ class RejectedCandidate(models.Model):
     )
     description = models.TextField()
     objects = HorillaCompanyManager(related_company_field="candidate_id__company_id")
+    history = HorillaAuditLog(
+        related_name="history_set",
+        bases=[
+            HorillaAuditInfo,
+        ],
+    )
 
     def __str__(self) -> str:
         return super().__str__()
