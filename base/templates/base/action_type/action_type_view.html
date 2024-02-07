@@ -3,10 +3,10 @@
 	<div class="oh-sticky-table__table oh-table--sortable">
 		<div class="oh-sticky-table__thead">
 			<div class="oh-sticky-table__tr">
-				<div class="oh-sticky-table__th">{% trans "Actions" %}</div>
+				<div class="oh-sticky-table__th">{% trans "Title" %}</div>
 				<div class="oh-sticky-table__th">{% trans "Type" %}</div>
 				{% if perms.employee.change_actiontype or perms.employee.delete_actiontype %} 
-					<div class="oh-sticky-table__th">{% trans "Options" %}</div>
+					<div class="oh-sticky-table__th">{% trans "Actions" %}</div>
 				{% endif %}
 			</div>
 		</div>
