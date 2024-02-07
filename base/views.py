@@ -1817,7 +1817,6 @@ def rotating_shift_assign(request):
     """
     This method is used to assign rotating shift
     """
-
     form = RotatingShiftAssignForm()
     form = choosesubordinates(request, form, "base.add_rotatingshiftassign")
     filter = RotatingShiftAssignFilters(

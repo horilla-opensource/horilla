@@ -485,9 +485,15 @@ class RotatingWorkTypeAssignForm(ModelForm):
     RotatingWorkTypeAssign model's form
     """
 
-    employee_id = forms.ModelMultipleChoiceField(
-        label=_trans("Employee"),
+    employee_id = HorillaMultiSelectField(
         queryset=Employee.objects.filter(employee_work_info__isnull=False),
+        widget=HorillaMultiSelectWidget(
+            filter_route_name="employee-widget-filter",
+            filter_class=EmployeeFilter,
+            filter_instance_contex_name="f",
+            filter_template_path="employee_filters.html",
+        ),
+        label=_trans("Employees"),
     )
     based_on = forms.ChoiceField(
         choices=BASED_ON, initial="daily", label=_trans("Based on")
@@ -516,7 +522,7 @@ class RotatingWorkTypeAssignForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-
+        reload_queryset(self.fields)
         self.fields["rotate_every_weekend"].widget.attrs.update(
             {
                 "class": "w-100",
@@ -571,6 +577,15 @@ class RotatingWorkTypeAssignForm(ModelForm):
             return ValidationError(_("This field is required"))
 
     def clean(self):
+        super().clean()
+        self.instance.employee_id = Employee.objects.filter(
+            id=self.data.get("employee_id")
+        ).first()
+
+        self.errors.pop("employee_id", None)
+        if self.instance.employee_id is None:
+            raise ValidationError({"employee_id": _("This field is required")})
+        super().clean()
         cleaned_data = super().clean()
         if "rotate_after_day" in self.errors:
             del self.errors["rotate_after_day"]
@@ -901,9 +916,15 @@ class RotatingShiftAssignForm(forms.ModelForm):
     RotatingShiftAssign model's form
     """
 
-    employee_id = forms.ModelMultipleChoiceField(
-        label=_trans("Employee"),
+    employee_id = HorillaMultiSelectField(
         queryset=Employee.objects.filter(employee_work_info__isnull=False),
+        widget=HorillaMultiSelectWidget(
+            filter_route_name="employee-widget-filter",
+            filter_class=EmployeeFilter,
+            filter_instance_contex_name="f",
+            filter_template_path="employee_filters.html",
+        ),
+        label=_trans("Employees"),
     )
     based_on = forms.ChoiceField(
         choices=BASED_ON, initial="daily", label=_trans("Based on")
@@ -992,6 +1013,15 @@ class RotatingShiftAssignForm(forms.ModelForm):
             return ValidationError(_("This field is required"))
 
     def clean(self):
+        super().clean()
+        self.instance.employee_id = Employee.objects.filter(
+            id=self.data.get("employee_id")
+        ).first()
+
+        self.errors.pop("employee_id", None)
+        if self.instance.employee_id is None:
+            raise ValidationError({"employee_id": _("This field is required")})
+        super().clean()
         cleaned_data = super().clean()
         if "rotate_after_day" in self.errors:
             del self.errors["rotate_after_day"]
