@@ -15,51 +15,54 @@
     .todo-task{
         background-color: #8d8d8d2e !important;
     }
+	.tooltip {
+		position: absolute;
+		background-color: #000;
+		color: #fff;
+		padding: 5px;
+		border-radius: 5px;
+		display: block;
+		margin-top:80px;
+	}
+	
 </style>
 <div class="oh-wrapper">
 	<div class="oh-dashboard row">
 		<div class="oh-dashboard__left col-12 col-sm-12 col-md-12 col-lg-12">
 			<div class="oh-dashboard__cards row">
-				<div class="col-12 col-sm-12 col-md-6 col-lg-4">
-					<a href="/recruitment/recruitment-view" class="text-decoration-none">
-						<div class="oh-card-dashboard oh-card-dashboard--warning not_click">
+				<div class="col-12 col-sm-12 col-md-6 col-lg-2" style="cursor:default;">
+					<a href="#" class="text-decoration-none">
+						<div class="oh-card-dashboard oh-card-dashboard--warning">
 							<div class="oh-card-dashboard__header">
-								<span class="oh-card-dashboard__title">{% trans "Openings" %}</span>
+								<span class="oh-card-dashboard__title">{% trans "Total Vacancies" %}</span>
 							</div>
 							<div class="oh-card-dashboard__body">
 								<div class="oh-card-dashboard__counts">
-									<span class="oh-card-dashboard__sign"
-										><ion-icon name="people"></ion-icon></span>
 									<span class="oh-card-dashboard__count"
 										>{{total_vacancy}}</span
 									>
 									</div>
-								<span class="oh-badge oh-card-dashboard__badge">100%</span>
 							</div>
 						</div>
 					</a>
 				</div>
-				<div class="col-12 col-sm-12 col-md-6 col-lg-4  ">
-					<a href="/recruitment/candidate-view" class="text-decoration-none">
+				<div class="col-12 col-sm-12 col-md-6 col-lg-2  ">
+					<a href="/recruitment/recruitment-view?closed=false" class="text-decoration-none">
 						<div class="oh-card-dashboard oh-card-dashboard--danger">
 							<div class="oh-card-dashboard__header">
-								<span class="oh-card-dashboard__title">{% trans "Total Applicants" %}</span>
+								<span class="oh-card-dashboard__title">{% trans "Ongoing Recruitments" %}</span>
 							</div>
 							<div class="oh-card-dashboard__body">
 								<div class="oh-card-dashboard__counts">
-									<span class="oh-card-dashboard__sign"
-										><ion-icon name="accessibility"></ion-icon
-									></span>
 									<span class="oh-card-dashboard__count"
-										>{{total_candidates}}</span
+										>{{ongoing_recruitments}}</span
 									>
 								</div>
-								<span class="oh-badge oh-card-dashboard__badge">{{total_candidate_ratio}}%</span>
 							</div>
 						</div>
 					</a>
 				</div>
-				<div class="col-12 col-sm-12 col-md-6 col-lg-4  ">
+				<div class="col-12 col-sm-12 col-md-6 col-lg-2  ">
 					<a href="/recruitment/candidate-view?hired=true" class="text-decoration-none">
 						<div
 							class="oh-card-dashboard oh-card-dashboard oh-card-dashboard--success filter"
@@ -69,59 +72,85 @@
 							</div>
 							<div class="oh-card-dashboard__body">
 								<div class="oh-card-dashboard__counts">
-									<span class="oh-card-dashboard__sign"
-									><ion-icon name="caret-up-outline"></ion-icon
-									></span>
 									<span class="oh-card-dashboard__count"
 									>{{total_hired_candidates}}</span
 									>
 								</div>
-								<span class="oh-badge oh-card-dashboard__badge"
-									>{{hired_ratio}}%</span
-								>
 							</div>
 						</div>
 					</a> 
 				</div>
 
-			</div>
-
-				<div class="oh-dashboard__movable-cards row mt-4">
-					<div class="col-12 col-sm-12 col-md-6 col-lg-4">
-						<div>
-							<div class="oh-card-dashboard oh-card-dashboard--neutral" style="cursor:default; height:205px;">
-								<div class="oh-card-dashboard__header">
-									<span class="oh-card-dashboard__title">{% trans "Conversion Rate" %}</span>
-								</div>
-								<div class="oh-card-dashboard__body">
-									<div class="oh-card-dashboard__counts mt-4">
-										<span class="oh-card-dashboard__count">{{conversion_ratio}}%</span>
-									</div>
-									<span class="oh-badge oh-card-dashboard__badge mt-4"
-									>{{100|sub:conversion_ratio|floatformat:1}}%</span
-									>
-								</div>
-							</div>
+				<div class="col-12 col-sm-12 col-md-6 col-lg-2">
+					<div class="oh-card-dashboard oh-card-dashboard--neutral">
+						<div class="oh-card-dashboard__header" onmouseover="conversion_helptext()">
+							<span class="oh-card-dashboard__title">{% trans "Conversion Rate" %}</span>
+							<ion-icon name="help-circle-outline" id="offerhelptext"></ion-icon>
 						</div>
-
-						<div>
-							<div class="oh-card-dashboard oh-card-dashboard--success mt-4" style="cursor:default; height:205px;">
-								<div class="oh-card-dashboard__header">
-									<span class="oh-card-dashboard__title">{% trans "Offer Acceptance Rate (OAR)" %}</span>
-								</div>
-								<div class="oh-card-dashboard__body">
-									<div class="oh-card-dashboard__counts mt-4">
-										<span class="oh-card-dashboard__count">{{acceptance_ratio}}%</span>
-									</div>
-									<span class="oh-badge oh-card-dashboard__badge mt-4"
-									>{{100|sub:acceptance_ratio|floatformat:1}}%</span
-									>
-								</div>
+						<div class="oh-card-dashboard__body">
+							<div class="oh-card-dashboard__counts">
+								<span class="oh-card-dashboard__count">{{conversion_ratio}}%</span>
 							</div>
 						</div>
 					</div>
+				</div>
 
-					<div class="col-12 col-sm-12 col-md-12 col-lg-3 oh-card-dashboard--moveable" style="background-color: white;">
+				<div class="col-12 col-sm-12 col-md-6 col-lg-3">
+					<div class="oh-card-dashboard oh-card-dashboard--success">
+						<div class="oh-card-dashboard__header" onmouseover="acceptance_helptext()">
+							<span class="oh-card-dashboard__title">{% trans "Offer Acceptance Rate (OAR)" %}</span>
+							<ion-icon name="help-circle-outline" id="offerhelptext"></ion-icon>
+						</div>
+						<div class="oh-card-dashboard__body">
+							<div class="oh-card-dashboard__counts">
+								<span class="oh-card-dashboard__count">{{acceptance_ratio}}%</span>
+							</div>
+						</div>
+					</div>
+				</div>
+
+			</div>
+
+				<div class="oh-dashboard__movable-cards row mt-4">
+					<div class="col-12 col-sm-12 col-md-6 col-lg-4 oh-card me-4" style="border:0px solid white" >
+						<div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
+							<span class="oh-card-dashboard__title">{% trans "Skill Zone Status" %}</span>
+						</div>
+						<div class="oh-card-dashboard__body" style="height:325px; overflow-y:auto;">
+							{% if skill_zone %}
+								<ul class="oh-card-dashboard__user-list">
+									{% for skill in skill_zone %}
+									<li class="oh-card-dashboard__user-item">
+										<div class="oh-profile oh-profile--md">
+										<a href="/recruitment/skill-zone-view?title={{skill}}"><div class="oh-profile__avatar mr-1">
+											<img
+											src="https://ui-avatars.com/api/?name={{skill}}&background=random"
+											class="oh-profile__image"
+											alt="{{cand}}"
+											/>
+										</div></a>
+										<a href="/recruitment/skill-zone-view?title={{skill}}"><span class="oh-profile__name oh-text--dark">{{skill}}</span></a>
+										</div>
+										<p class="oh-profile__name float-end mt-1 me-3">
+											<ion-icon name="caret-forward" role="img" class="md hydrated" aria-label="caret forward"></ion-icon>
+											 &nbsp {{skill.skillzonecandidate_set.all|length}} &nbsp {% if skill.skillzonecandidate_set.all|length != 1  %} {% trans "Candidates" %} {% else %} {% trans "Candidate" %} {% endif %}</p>
+									</li>
+									{% endfor %}
+								</ul>
+							{% else %}
+								<div style="height: 240px; display:flex;align-items: center;justify-content: center;" class="">
+									<div style="" class="">
+										<img style="display: block;width: 100px;margin: 20px auto ;" src="{% static 'images/ui/no_candidate.png' %}" class=""/>
+										<h3 style="font-size:16px" class="oh-404__subtitle">{% trans "No skill zone available." %}</h3>
+									</div>
+								</div>
+							{% endif %}
+							
+						</div>
+					</div>
+
+
+					<div class="col-12 col-sm-12 col-md-6 col-lg-3  oh-card-dashboard--moveable me-4" style="background-color: white;">
 						<div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent ">
 							<div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
 								<span class="oh-card-dashboard__title">{% trans "Open Positions By Department" %}</span>
@@ -144,10 +173,10 @@
 						</div>
 					</div>
 
-					<div class="col-12 col-sm-12 col-md-12 col-lg-5 oh-card" style="border:0px solid white" >
+					<div class="col-12 col-sm-12 col-md-6 col-lg-4 oh-card" style="border:0px solid white" >
 						<div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
 							<span class="oh-card-dashboard__title">{% trans "Candidate on Onboard" %}</span>
-							{% if onboarding_count %}<span class="oh-card-dashboard__title float-end"><a href="{% url 'candidate-view' %}?start_onboard=true" style="text-decoration:none; color:orange;">{% trans "View all" %}</a></span>{% endif %}
+							{% if onboarding_count %}<span class="oh-card-dashboard__title float-end"><a href="{% url 'candidate-view' %}?start_onboard=true" style="text-decoration:none; color:orange;">{% trans "View" %}</a></span>{% endif %}
 						</div>
 						<div class="oh-card-dashboard__body" style="height:325px; overflow-y:auto;">
 							{% if onboarding_count %}
@@ -164,7 +193,9 @@
 										</div>
 										<span class="oh-profile__name oh-text--dark">{{cand}}</span>
 										</div>
-										<p class="oh-profile__name float-end mt-1 me-3">- {{cand.job_position_id}}</p>
+										<p class="oh-profile__name float-end mt-1 me-3">
+											<ion-icon name="caret-forward" role="img" class="md hydrated" aria-label="caret forward"></ion-icon>
+											&nbsp {{cand.job_position_id}}</p>
 									</li>
 									{% endfor %}
 								</ul>
@@ -176,80 +207,111 @@
 									</div>
 								</div>
 							{% endif %}
-							
 						</div>
 					</div>
-
 				</div>
 
 
-			<div class="oh-dashboard__movable-cards row mt-4">
-				{% if request.user|is_in_task_managers %}
-				<div
-                        class="col-12 col-sm-12 col-md-12 col-lg-6 oh-card-dashboard--moveable"
-						style="height: 420px;
-						background-color: white;
-						margin-bottom: 20px;"
-                        id="taskStatus"
-                        hx-get="{% url "task-report-onboarding" %}"
-                        hx-trigger="load"
-                        >
-				</div>
-				{% endif %}
-				<div
-				class="col-12 col-sm-12 col-md-12 col-lg-5 oh-card-dashboard--moveable"
-				>
+				<div class="oh-dashboard__movable-cards row mt-4">
+					{% if request.user|is_in_task_managers %}
 					<div
-						class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent"
+							class="col-12 col-sm-12 col-md-6 col-lg-7 oh-card-dashboard--moveable me-4 ms-1"
+							style="height: 438px;
+							background-color: white;"
+							id="taskStatus"
+							hx-get="{% url "task-report-onboarding" %}"
+							hx-trigger="load"
+							>
+					</div>
+					{% endif %}
+					<div
+					class="col-12 col-sm-12 col-md-6 col-lg-4 oh-card-dashboard--moveable"
 					>
 						<div
-						class="oh-card-dashboard__header oh-card-dashboard__header--divider"
+							class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent"
 						>
-							<span class="oh-card-dashboard__title">{% trans "Candidates Per Stage" %}</span>
-							<span class="oh-card-dashboard__title float-end" id="chart1"><ion-icon name="caret-forward"></ion-icon></span>
+							<div
+							class="oh-card-dashboard__header oh-card-dashboard__header--divider"
+							>
+								<span class="oh-card-dashboard__title">{% trans "Candidates Per Stage" %}</span>
+								<span class="oh-card-dashboard__title float-end" id="chart1"><ion-icon name="caret-forward"></ion-icon></span>
+							</div>
+							<div class="oh-card-dashboard__body">
+							{% if not stage_chart_count %}
+								<canvas id="recruitmentChart1" width="400" height="290"></canvas>
+							{% else %}
+								<div style="height: 334px; display:flex;align-items: center;justify-content: center;" class="">
+									<div style="" class="">
+										<img style="display: block;width: 120px;margin: 20px auto ;" src="{% static 'images/ui/interview.png' %}" class=""/>
+										<h3 style="font-size:16px" class="oh-404__subtitle">{% trans "No recruitment stages currently available." %}</h3>
+									</div>
+								</div>
+							{% endif %}
+							</div>
 						</div>
-						<div class="oh-card-dashboard__body">
-						{% if stage_chart_count %}
-							<canvas id="recruitmentChart1" width="400" height="290"></canvas>
-						{% else %}
+					</div>
+				</div>
+
+				<div class="oh-dashboard__movable-cards row mt-4">
+
+
+					<div
+					class="col-12 col-sm-12 col-md-6 col-lg-7 oh-card-dashboard--moveable"
+					>
+						<div
+							class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent"
+						>
+							<div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
+							
+								<span class="oh-card-dashboard__title">{% trans "Joinings Per Month" %}</span>
+								<span class="oh-card-dashboard__title float-end" id="chart2"><ion-icon name="caret-forward"></ion-icon></span>
+
+								<select class="oh-card-dashboard__body float-end me-3" id="year">
+								</select>
+
+							</div>
+							{% if joining %}
+								<canvas class="oh-card-dashboard__body" id="hiringChart"></div>
+							{% else %}
 							<div style="height: 430px; display:flex;align-items: center;justify-content: center;" class="">
 								<div style="" class="">
-									<img style="display: block;width: 120px;margin: 20px auto ;" src="{% static 'images/ui/interview.png' %}" class=""/>
-									<h3 style="font-size:16px" class="oh-404__subtitle">{% trans "No recruitment stages currently available." %}</h3>
+									<img style="display: block;width: 115px;margin: 20px auto ;" src="{% static 'images/ui/joiningchart.png' %}" class=""/>
+									<h3 style="font-size:16px" class="oh-404__subtitle">{% trans "No records were available." %}</h3>
 								</div>
 							</div>
-						{% endif %}
+							{% endif %}
 						</div>
-					</div>
-				</div>
 
-				<div
-				class="col-12 col-sm-12 col-md-12 col-lg-7 oh-card-dashboard--moveable"
-				>
-					<div
-						class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent"
-					>
-						<div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
+
+						<div class="col-12 col-sm-12 col-md-6 col-lg-4 ms-3  oh-card-dashboard--moveable me-4" style="background-color: white;">
+							<div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent ">
+								<div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
+									<span class="oh-card-dashboard__title">{% trans "Candidate Offer Letter Status" %}</span>
+
+								</div>
+								<div class="oh-card-dashboard__body" >
+									{% if total_candidates %}
+									<div >
+
+										<canvas id="candidateChart"></canvas>
+
+									</div>
+									{% else %}
+									<div style="display:flex;align-items: center;justify-content: center;">
+										<div style="height:282px; justify-content:center;align-items:center; margin-top: -59px;" class="d-flex">
+											<img style="height:125px;" src="{% static 'images/ui/no_vacancy.png' %}" class=""/>
+										</div>
+									</div>
+									<h3 style="font-size:16px; margin-bottom:69px;" class="oh-404__subtitle">{% trans "No Candidates available." %}</h3>
+									{% endif %}
 						
-							<span class="oh-card-dashboard__title">{% trans "Joinings Per Month" %}</span>
-							<span class="oh-card-dashboard__title float-end" id="chart2"><ion-icon name="caret-forward"></ion-icon></span>
-
-							<select class="oh-card-dashboard__body float-end me-3" id="year">
-							</select>
-
-						</div>
-						{% if joining %}
-							<canvas class="oh-card-dashboard__body" id="hiringChart"></div>
-						{% else %}
-						<div style="height: 430px; display:flex;align-items: center;justify-content: center;" class="">
-							<div style="" class="">
-								<img style="display: block;width: 115px;margin: 20px auto ;" src="{% static 'images/ui/joiningchart.png' %}" class=""/>
-								<h3 style="font-size:16px" class="oh-404__subtitle">{% trans "No records were available." %}</h3>
+								</div>
 							</div>
 						</div>
-						{% endif %}
 					</div>
+
 				</div>
+
 
 				<div class="oh-dashboard__movable-cards row mt-4 mb-5">
 
@@ -315,8 +377,6 @@
 					</div>
 				</div>
 					
-			</div>
-
 		</div>
 	</div>
 </div>
@@ -326,6 +386,7 @@
 <script src="{% static 'dashboard/recruitmentChart.js' %}"></script>
 <script src="{% static 'dashboard/joiningChart.js' %}"></script>
 <script src="{% static 'dashboard/vacancyChart.js' %}"></script>
+<script src="{% static 'dashboard/candidateChart.js' %}"></script>
 
 
 
@@ -344,6 +405,66 @@
     }
     selectyear.appendChild(option);
   }
+
+
+  document.addEventListener("DOMContentLoaded", function() {
+		const icon = document.getElementById('offerhelptext');
+		icon.addEventListener('click', function(event) {
+			acceptance_helptext(event); // Pass the event object to the acceptance_helptext function
+		});
+	});
+
+function acceptance_helptext(event) {
+    event = event || window.event;
+    const icon = event.target || event.srcElement;
+    const tooltip = document.createElement('div');
+    tooltip.className = 'tooltip';
+    tooltip.textContent = 'Offer Acceptance Rate = ( Onboarding candidates / Total Hired Candidates ) * 100'; // Help text
+
+    // Position the tooltip relative to the icon
+    const rect = icon.getBoundingClientRect();
+    tooltip.style.top = rect.top + icon.offsetHeight + 'px';
+    tooltip.style.left = rect.left + 'px';
+
+    // Append tooltip to the body
+    document.body.appendChild(tooltip);
+
+    // Remove tooltip when mouse is moved away from the icon
+    icon.addEventListener('mouseout', function () {
+        document.body.removeChild(tooltip);
+    });
+}
+
+
+document.addEventListener("DOMContentLoaded", function() {
+	const icon = document.getElementById('conversionhelptext');
+	icon.addEventListener('click', function(event) {
+		conversion_helptext(event); // Pass the event object to the conversion_helptext function
+	});
+});
+
+function conversion_helptext(event) {
+	event = event || window.event;
+	const icon = event.target || event.srcElement;
+	const tooltip = document.createElement('div');
+	tooltip.className = 'tooltip';
+	tooltip.textContent = 'Conversion Rate = ( Total Hired Candidates / Total Candidates ) * 100'; // Help text
+
+	// Position the tooltip relative to the icon
+	const rect = icon.getBoundingClientRect();
+	tooltip.style.top = rect.top + icon.offsetHeight + 'px';
+	tooltip.style.left = rect.left + 'px';
+
+	// Append tooltip to the body
+	document.body.appendChild(tooltip);
+
+	// Remove tooltip when mouse is moved away from the icon
+	icon.addEventListener('mouseout', function () {
+		document.body.removeChild(tooltip);
+	});
+}
+
+
 </script>
 
 {% endblock content %}

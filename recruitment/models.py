@@ -334,6 +334,7 @@ class Candidate(models.Model):
             ("rejected", "Rejected / Canceled"),
         ],
         default="not_sent",
+        editable = False,
     )
     probation_end = models.DateField(null=True, editable=False)
     offer_letter_status = models.CharField(

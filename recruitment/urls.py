@@ -258,6 +258,11 @@ urlpatterns = [
         name="dashboard-vacancy",
     ),
     path(
+        "candidate-status",
+        recruitment.views.dashboard.candidate_status,
+        name="candidate-status",
+    ),
+    path(
         "candidate-sequence-update",
         views.candidate_sequence_update,
         name="candidate-sequence-update",

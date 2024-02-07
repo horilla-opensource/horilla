@@ -11,7 +11,7 @@ from django.utils.translation import gettext_lazy as _
 from django.shortcuts import render
 from horilla.decorators import login_required
 from recruitment.decorators import manager_can_enter
-from recruitment.models import Candidate, Recruitment, Stage
+from recruitment.models import Candidate, Recruitment, SkillZone, Stage
 from base.models import Department, JobPosition
 from employee.models import EmployeeWorkInformation
 
@@ -86,6 +86,7 @@ def dashboard(request):
     job_data = list(zip(all_job, initial, test, interview, hired))
 
     recruitment_obj = Recruitment.objects.filter(closed=False)
+    ongoing_recruitments = len(recruitment_obj)
 
     for rec in recruitment_obj:
         data = [stage_type_candidate_count(rec, type[0]) for type in Stage.stage_types]
@@ -130,11 +131,13 @@ def dashboard(request):
         total_candidate_ratio = f"{((total_candidates / total_vacancy) * 100):.1f}"
     if total_hired_candidates != 0:
         acceptance_ratio = f"{((onboarding_count / total_hired_candidates) * 100):.1f}"
+
+    skill_zone = SkillZone.objects.all()
     return render(
         request,
         "dashboard/dashboard.html",
         {
-            "total_candidates": total_candidates,
+            "ongoing_recruitments": ongoing_recruitments,
             "total_candidate_ratio" : total_candidate_ratio,
             "total_hired_candidates": total_hired_candidates,
             "conversion_ratio": conversion_ratio,
@@ -148,6 +151,8 @@ def dashboard(request):
             "dep_vacancy" : dep_vacancy,
             "stage_chart_count" : stage_chart_count,
             "onboarding_count" : onboarding_count,
+            "total_candidates":total_candidates,
+            'skill_zone' : skill_zone
         },
     )
 
@@ -267,3 +272,43 @@ def get_open_position(request):
     job_info = serializers.serialize("json", queryset)
     rec_info = serializers.serialize("json", [recruitment_obj])
     return JsonResponse({"openPositions": job_info, "recruitmentInfo": rec_info})
+
+
+@login_required
+@manager_can_enter(perm="recruitment.view_recruitment")
+def candidate_status(_request):
+    """
+    This method is used to generate a CAndidate status chart for the dashboard
+    """
+        
+    not_sent_candidates = Candidate.objects.filter(offer_letter_status = 'not_sent').count()
+    sent_candidates = Candidate.objects.filter(offer_letter_status = 'sent').count()
+    accepted_candidates = Candidate.objects.filter(offer_letter_status = 'accepted').count()
+    rejected_candidates = Candidate.objects.filter(offer_letter_status = 'rejected').count()
+    joined_candidates = Candidate.objects.filter(offer_letter_status = 'joined').count()
+
+    data_set = []
+    labels = ['Not Sent', 'Sent', 'Accepted', 'Rejected', 'Joined']
+    data = [not_sent_candidates, sent_candidates, accepted_candidates, rejected_candidates, joined_candidates]
+
+    for i in range(len(data)):
+    
+        data_set.append(
+            {
+                "label": labels[i],
+                "data":data[i]
+            }
+        )
+    
+    # for i in range(len(data)):
+    #     if data[i] != 0:
+    #         data_set.append({
+    #             "label": labels[i],
+    #             "data": data[i]
+    #         })
+
+    # # Remove labels corresponding to data points with value 0
+    # labels = [label for label, d in zip(labels, data) if d != 0]
+
+
+    return JsonResponse({"dataSet": data_set, "labels": labels})
