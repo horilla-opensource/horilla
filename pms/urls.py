@@ -154,6 +154,7 @@ urlpatterns = [
     ),
     path("period-create", views.period_create, name="period-create"),
     path("period-view", views.period_view, name="period-view"),
+    path("period-hx-view", views.period_hx_view, name="period-hx-view"),
     path("period-delete/<int:period_id>", views.period_delete, name="period-delete"),
     path("period-update/<int:period_id>", views.period_update, name="period-update"),
     path("period-change", views.period_change, name="period-change"),

@@ -776,9 +776,7 @@ def key_result_update(request, id):
     context = {"key_result_form": key_result_form, "key_result_id": key_result.id}
     if request.method == "POST":
         key_result_form = KeyResultForm(request.POST, instance=key_result)
-        key_result_form.initial[
-            "employee_objective_id"
-        ] = (
+        key_result_form.initial["employee_objective_id"] = (
             key_result.employee_objective_id
         )  # adding intial objective value to the form
         if key_result_form.is_valid():
@@ -995,7 +993,9 @@ def filter_pagination_feedback(
     )
     anonymous_feedback = anonymous_feedback
     feedback_paginator_own = Paginator(feedback_filter_own.qs, get_pagination())
-    feedback_paginator_requested = Paginator(feedback_filter_requested.qs, get_pagination())
+    feedback_paginator_requested = Paginator(
+        feedback_filter_requested.qs, get_pagination()
+    )
     feedback_paginator_all = Paginator(feedback_filter_all.qs, get_pagination())
     page_number = request.GET.get("page")
 
@@ -1723,11 +1723,18 @@ def period_view(request):
     context = {
         "periods": periods,
     }
-    if periods.exists():
-        template = "period/period_view.html"
-    else:
-        template = "period/period_empty.html"
-    return render(request, template, context)
+    return render(request, "period/period_view.html", context)
+
+
+@login_required
+@manager_can_enter(perm="pms.view_period")
+@hx_request_required
+def period_hx_view(request):
+    periods = Period.objects.all()
+    context = {
+        "periods": periods,
+    }
+    return render(request, "period/period_list.html", context=context)
 
 
 @login_required
@@ -1745,10 +1752,6 @@ def period_create(request):
         if form.is_valid():
             form.save()
             messages.success(request, _("Period creation was Successful "))
-            response = render(request, "period/period_create.html", context)
-            return HttpResponse(
-                response.content.decode("utf-8") + "<script>location.reload();</script>"
-            )
         else:
             context["form"] = form
     return render(request, "period/period_create.html", context)
@@ -1773,10 +1776,6 @@ def period_update(request, period_id):
         if form.is_valid():
             form.save()
             messages.info(request, _("Period updated  Successfully. "))
-            response = render(request, "period/period_update.html", context)
-            return HttpResponse(
-                response.content.decode("utf-8") + "<script>location.reload();</script>"
-            )
         else:
             context["form"] = form
     return render(request, "period/period_update.html", context)
@@ -1800,7 +1799,7 @@ def period_delete(request, period_id):
         messages.error(request, _("Period not found."))
     except ProtectedError:
         messages.error(request, _("Related entries exists"))
-    return redirect(period_view)
+    return redirect("period-hx-view")
 
 
 @login_required
