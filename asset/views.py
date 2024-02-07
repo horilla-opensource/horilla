@@ -1426,24 +1426,47 @@ def asset_category_chart(request):
 
 
 @login_required
+@permission_required(perm="asset.view_assetassignment")
 def asset_history(request):
+    """
+    This function is responsible for loading the asset history view
+
+    Args:
+
+
+    Returns:
+        returns asset history view template
+    """
     previous_data = request.GET.urlencode() + "&returned_assets=True"
-    asset_assignments = AssetHistoryFilter({"returned_assets": "True"}).qs.order_by("-id")
+    asset_assignments = AssetHistoryFilter({"returned_assets": "True"}).qs.order_by(
+        "-id"
+    )
     data_dict = parse_qs(previous_data)
     get_key_instances(AssetAssignment, data_dict)
-    asset_assignments= paginator_qry(asset_assignments,request.GET.get("page"))
+    asset_assignments = paginator_qry(asset_assignments, request.GET.get("page"))
     context = {
         "asset_assignments": asset_assignments,
         "f": AssetHistoryFilter(),
         "filter_dict": data_dict,
         "gp_fields": AssetHistoryReGroup().fields,
-        "pd":previous_data,
+        "pd": previous_data,
     }
     return render(request, "asset_history/asset_history_view.html", context)
 
 
 @login_required
+@permission_required(perm="asset.view_assetassignment")
 def asset_history_single_view(request, asset_id):
+    """
+    this method is used to view details of individual asset assignments
+
+    Args:
+        request (HTTPrequest): http request
+        asset_id (int): ID of the asset assignment
+
+    Returns:
+        html: Returns asset history single view template
+    """
     asset_assignment = get_object_or_404(AssetAssignment, id=asset_id)
     return render(
         request,
@@ -1451,17 +1474,30 @@ def asset_history_single_view(request, asset_id):
         {"asset_assignment": asset_assignment},
     )
 
+
 @login_required
+@permission_required(perm="asset.view_assetassignment")
 def asset_history_search(request):
+    """
+    This method is used to filter the asset history view or to group by the datas.
+
+    Args:
+        request (HTTPrequest):http request
+
+    Returns:
+        returns asset history list or group by
+    """
     previous_data = request.GET.urlencode()
     asset_assignments = AssetHistoryFilter(request.GET).qs.order_by("-id")
     asset_assignments = sortby(request, asset_assignments, "sortby")
     template = "asset_history/asset_history_list.html"
     field = request.GET.get("field")
     if field != "" and field is not None:
-        asset_assignments = group_by_queryset(asset_assignments, field, request.GET.get("page"), "page")
+        asset_assignments = group_by_queryset(
+            asset_assignments, field, request.GET.get("page"), "page"
+        )
         template = "asset_history/group_by.html"
-    asset_assignments= paginator_qry(asset_assignments,request.GET.get("page"))
+    asset_assignments = paginator_qry(asset_assignments, request.GET.get("page"))
     data_dict = parse_qs(previous_data)
     get_key_instances(AssetAssignment, data_dict)
 
@@ -1472,6 +1508,6 @@ def asset_history_search(request):
             "asset_assignments": asset_assignments,
             "filter_dict": data_dict,
             "field": field,
-            "pd":previous_data,
+            "pd": previous_data,
         },
     )
