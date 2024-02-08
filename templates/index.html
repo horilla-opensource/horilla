@@ -337,6 +337,15 @@
   overflow: hidden;
   overflow-y: scroll;
 } 
+@media screen and (max-width: 767px) {
+  .at-work-seconds {
+    font-size: 10px;
+}
+#attendance-activity-container .oh-btn{
+  padding: 0.5rem 0.2rem;
+}
+
+}
 .oh-main__topbar {
   padding-bottom:1rem;
 }
@@ -482,7 +491,10 @@
                   run = 1
                   </script>
                 {% else %}
-                <button{% if enabled_timerunner %} onmouseenter="$(this).find('span').show();$(this).find('.at-work-seconds').hide();" onmouseleave="$(this).find('span').hide();$(this).find('.at-work-seconds').show();" {% endif %} class="oh-btn oh-btn--success-outline mr-2" hx-get="{% url 'clock-in' %}"  hx-target='#attendance-activity-container' hx-swap='innerHTML'><ion-icon class="oh-navbar__clock-icon mr-2 text-success" name="enter-outline"></ion-icon>
+                <button{% if enabled_timerunner %} onmouseenter="$(this).find('span').show();$(this).find('.at-work-seconds').hide();" onmouseleave="$(this).find('span').hide();$(this).find('.at-work-seconds').show();" {% endif %} 
+                        class="oh-btn oh-btn--success-outline mr-2" hx-get="{% url 'clock-in' %}"  hx-target='#attendance-activity-container' hx-swap='innerHTML'
+                        >
+                        <ion-icon class="oh-navbar__clock-icon mr-2 text-success" name="enter-outline"></ion-icon>
                   <span class="hr-Check-In-out-text" {% if enabled_timerunner %} style="display: none;" {% endif %}>{% trans "Check-In" %}</span>                
                   <div class="at-work-seconds"></div>
                 </button>
