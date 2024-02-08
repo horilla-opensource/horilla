@@ -93,6 +93,9 @@
   .editable-input:read-only:hover {
 	  border: 1px solid hsl(213,22%,84%);
   }
+  body {
+    background-color: #f9f9f9 !important;
+  }
 </style>
 
 <div id="enlargeImageContainer" class="enlarge-image-container"></div>
@@ -219,7 +222,7 @@
 								>{% trans "About" %}</a
 								>
 							</li>
-							{% if request.user == employee.employee_user_id or request.user|check_manager:employee %}
+							{% if request.user == employee.employee_user_id or request.user|check_manager:employee or perms.attendance.view_worktyperequest or perms.attendance.view_shiftrequest %}
 							<li data-cell-index="10" data-cell-title="{% trans 'Work Type & Shift' %}" class="oh-general__tab">
 								<a
 								hx-get={% url 'shift-tab' employee.id %}
