@@ -46,19 +46,19 @@
       <div class="oh-sticky-table__tbody">
         {% for model in perm.app_models %}
         <div class="oh-sticky-table__tr" draggable="true">
-          <div class="oh-sticky-table__sd">
+          <div class="oh-sticky-table__sd" >
             <div class="oh-profile oh-profile--md">
               <div class="oh-profile__avatar mr-1">
                 <img
                   src="https://ui-avatars.com/api/?name={{model.verbose_name}}&background=random"
                   class="oh-profile__image"
-                  alt="Mary Magdalene"
                 />
               </div>
               <span class="oh-profile__name oh-text--dark"
                 >{{model.verbose_name}}</span
               >
             </div>
+            <input type="checkbox" onchange="event.stopPropagation();$(this).closest('.oh-sticky-table__tr').find('[type=checkbox][name=permissions]').prop('checked',$(this).is(':checked')).change()">
           </div>
           <div class="oh-sticky-table__td">
             <div class="d-flex justify-content-center">
@@ -68,7 +68,9 @@
                   name="permissions"
                   value="add_{{model.model_name}}"
                   class="oh-switch__checkbox"
-                  onchange="updateBadge()"
+                  onchange="updateBadge($(this))"
+                  data-group-id="{{group.id}}"
+                  data-group-name="{{group.name}}"
                 />
               </div>
             </div>
@@ -81,7 +83,9 @@
                   name="permissions"
                   value="view_{{model.model_name}}"
                   class="oh-switch__checkbox"
-                  onchange="updateBadge()"
+                  onchange="updateBadge($(this))"
+                  data-group-id="{{group.id}}"
+                  data-group-name="{{group.name}}"
                 />
               </div>
             </div>
@@ -94,7 +98,9 @@
                   name="permissions"
                   value="change_{{model.model_name}}"
                   class="oh-switch__checkbox"
-                  onchange="updateBadge()"
+                  onchange="updateBadge($(this))"
+                  data-group-id="{{group.id}}"
+                  data-group-name="{{group.name}}"
                 />
               </div>
             </div>
@@ -107,7 +113,9 @@
                   name="permissions"
                   value="delete_{{model.model_name}}"
                   class="oh-switch__checkbox"
-                  onchange="updateBadge()"
+                  onchange="updateBadge($(this))"
+                  data-group-id="{{group.id}}"
+                  data-group-name="{{group.name}}"
                 />
               </div>
             </div>
