@@ -154,6 +154,12 @@ class Employee(models.Model):
         """
         return getattr(getattr(self, "employee_work_info", None), "shift_id", None)
 
+    def get_mail(self):
+        """
+        This method is used to return the shift of the employee
+        """
+        return getattr(getattr(self, "employee_work_info", None), "email", self.email)
+
     def get_work_type(self):
         """
         This method is used to return the work type of the employee
@@ -335,6 +341,18 @@ class Employee(models.Model):
         if next_birthday < today:
             next_birthday = date(today.year + 1, birthday.month, birthday.day)
         return (next_birthday - today).days
+
+    def get_last_sent_mail(self):
+        """
+        This method is used to get last send mail
+        """
+        from base.models import EmailLog
+        
+        return (
+            EmailLog.objects.filter(to__icontains=self.get_mail())
+            .order_by("-created_at")
+            .first()
+        )
 
     def save(self, *args, **kwargs):
         # your custom code here

@@ -47,6 +47,7 @@ from horilla.decorators import (
 )
 from base.models import (
     Department,
+    EmailLog,
     JobPosition,
     JobRole,
     RotatingShiftAssign,
@@ -2931,3 +2932,17 @@ def first_last_badge(request):
         "employee_personal_info/first_last_badge.html",
         {"badge_ids": badge_ids},
     )
+
+@login_required
+@manager_can_enter("employee.view_employee")
+def employee_get_mail_log(request):
+    """
+    This method is used to track mails sent along with the status
+    """
+    employee_id = request.GET["emp_id"]
+    employee = Employee.objects.get(id=employee_id)
+    tracked_mails = EmailLog.objects.filter(to__icontains=employee.email).order_by(
+        "-created_at"
+    )
+    return render(request, "tabs/mail_log.html", {"tracked_mails": tracked_mails})
+

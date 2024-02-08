@@ -1,0 +1,55 @@
+{% load i18n %} {% if tracked_mails %}
+<div class="oh-sticky-table">
+    <div class="oh-sticky-table__table oh-table--sortable">
+        <div class="oh-sticky-table__thead">
+            <div class="oh-sticky-table__tr">
+                <div class="oh-sticky-table__th">{% trans 'Subject' %}</div>
+                <div class="oh-sticky-table__th" align="center">{% trans 'Status' %}</div>
+            </div>
+        </div>
+        <div class="oh-sticky-table__tbody">
+            {% for log in tracked_mails %}
+            <div class="oh-sticky-table__tr" data-toggle="oh-modal-toggle"
+				data-target="#mailBodymodal{{log.id}}">
+                <div class="oh-sticky-table__td">
+                    <strong>{{forloop.counter}}. {{log.subject}} </strong>
+                </div>
+                <div align="center" class="oh-sticky-table__td">
+                    {% if log.status == 'sent' %}
+                    <div
+                        style="width: 25%; border-radius: 10px"
+                        class="oh-btn oh-btn--success oh-btn--disabled"
+                    >
+                        {{log.get_status_display}}
+                    </div>
+                    {% else %}
+                    <div
+                        style="width: 25%; border-radius: 10px"
+                        class="oh-btn oh-btn--danger oh-btn--disabled"
+                    >
+                        {{log.get_status_display}}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+			
+			<div class="oh-modal" id="mailBodymodal{{log.id}}" role="dialog" aria-labelledby="mailBodymodal{{log.id}}" aria-hidden="true">
+				<div class="oh-modal__dialog">
+				<div class="oh-modal__dialog-header">
+					<button class="oh-modal__close" aria-label="Close"><ion-icon name="close-outline"></ion-icon></button>
+				</div>
+				<div class="oh-modal__dialog-body" id="mailBodymodal{{log.id}}Target">{{log.body|safe}}</div>
+				</div>
+			</div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% else %}
+<div
+    class="d-flex justify-content-center align-items-center"
+    style="height: 40vh"
+>
+    <h5 class="oh-404__subtitle">{% trans "No Mail have been send." %}</h5>
+</div>
+{% endif %}

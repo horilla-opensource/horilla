@@ -366,6 +366,16 @@
 								>
 							</li>
 							{% endif %}
+							<li class="oh-general__tab" data-cell-index="22" data-cell-title="{% trans 'Mail Log' %}">
+							  <a
+							  hx-get="{% url 'employee-get-mail-log' %}?emp_id={{employee.id}}"
+							  hx-target="#maillog"
+							  class="oh-general__tab-link"
+							  data-action="general-tab"
+							  data-target="#maillog"
+							  >{% trans "Mail Log" %}</a
+							  >
+							</li>
 							{% if perms.employee.view_employeenote or request.user|check_manager:employee %}
 							<li data-cell-index="21" data-cell-title="{% trans 'Bonus' %}" class="oh-general__tab">
 								<a
@@ -404,6 +414,12 @@
 						id="note_target"
 						>
 						{% include "tabs/note_tab.html" %}
+						</div>
+
+						<div
+						  class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
+						  id="maillog"
+						>
 						</div>
 
 						<div
