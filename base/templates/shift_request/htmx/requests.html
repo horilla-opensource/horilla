@@ -97,7 +97,7 @@
                     <div class="oh-sticky-table__td" data-cell-index="3">{{shift_request.previous_shift_id}}</div>
                     <div class="oh-sticky-table__td dateformat_changer" data-cell-index="4">{{shift_request.requested_date}}</div>
                     <div class="oh-sticky-table__td dateformat_changer" data-cell-index="5">{{shift_request.requested_till}}</div>
-                    <div class="oh-sticky-table__td" data-cell-index="6">{{shift_request.description}}</div>
+                    <div class="oh-sticky-table__td" data-cell-index="6">{{shift_request.description|truncatechars:17}}</div>
                     
                     <div class="oh-sticky-table__td" onclick="event.stopPropagation();">
                       
