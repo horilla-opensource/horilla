@@ -178,10 +178,12 @@ class ModelForm(forms.ModelForm):
                     {"class": "oh-input w-100", "placeholder": label}
                 )
             elif isinstance(widget, (forms.Select,)):
-                label = ""
-                if field.label is not None:
-                    label = _(field.label)
-                field.empty_label = _("---Choose {label}---").format(label=label)
+                field.empty_label = None
+                if not isinstance(field,forms.ModelMultipleChoiceField):
+                    label = ""
+                    if field.label is not None:
+                        label = _(field.label)
+                    field.empty_label = _("---Choose {label}---").format(label=label)
                 field.widget.attrs.update(
                     {"class": "oh-select oh-select-2 select2-hidden-accessible"}
                 )
