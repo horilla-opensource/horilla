@@ -40,7 +40,14 @@ $(document).ready(function () {
     var formDataArray = filterForm.serializeArray();
     var filterData = {};
     formDataArray.forEach(function (item) {
-      filterData[item.name] = item.value;
+      if (filterData.hasOwnProperty(item.name)) {
+        if (!Array.isArray(filterData[item.name])) {
+          filterData[item.name] = [filterData[item.name]];
+        }
+        filterData[item.name].push(item.value);
+      } else {
+        filterData[item.name] = item.value;
+      }
     });
     var filterDetails = {
       currentPath: currentPath,

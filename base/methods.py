@@ -453,9 +453,8 @@ def export_data(request, model, form_class, filter_class, file_name):
                             employee_company = data.company_id
                         company_name = Company.objects.filter(id=employee_company.id)
                         emp_company = company_name.first()
-
                         # Access the date_format attribute directly
-                        time_format = emp_company.time_format
+                        time_format = emp_company.time_format if emp_company else "hh:mm A"
                     else:
                         time_format = "hh:mm A"
 
@@ -486,7 +485,7 @@ def export_data(request, model, form_class, filter_class, file_name):
                         emp_company = company_name.first()
 
                         # Access the date_format attribute directly
-                        date_format = emp_company.date_format
+                        date_format = emp_company.date_format if emp_company else "MMM. D, YYYY"
                     else:
                         date_format = "MMM. D, YYYY"
                     # Define date formats

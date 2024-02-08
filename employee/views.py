@@ -489,7 +489,7 @@ def shift_tab(request, emp_id):
 
     Returns: return shift-tab template
     """
-
+    employee = Employee.objects.get(id=emp_id)
     work_type_requests = WorkTypeRequest.objects.filter(employee_id=emp_id)
     rshift_assign = RotatingShiftAssign.objects.filter(
         is_active=True, employee_id=emp_id
@@ -502,7 +502,8 @@ def shift_tab(request, emp_id):
         "rshift_assign": rshift_assign,
         "rwork_type_assign": rwork_type_assign,
         "shift_data": shift_requests,
-        "employee": emp_id,
+        "emp_id": emp_id,
+        "employee": employee,
     }
     return render(request, "tabs/shift-tab.html", context=context)
 

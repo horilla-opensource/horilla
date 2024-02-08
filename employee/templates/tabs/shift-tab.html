@@ -4,8 +4,8 @@
 
 
 <div class="oh-wrapper mt-4">
-	<span class="fw-bold" style="font-size:17px;"> {% trans "Current Shift" %} &nbsp : &nbsp {{shift_data.0.employee_id.employee_work_info.shift_id}}.</span>
-
+	{% if employee.employee_work_info.shift_id or shift_data%}
+	<span class="fw-bold" style="font-size:17px;"> {% if employee.employee_work_info.shift_id %} {% trans "Current Shift" %} &nbsp : &nbsp {{employee.employee_work_info.shift_id}} {% endif %}</span>
 	<button style="display:inline-block;"
 			class="oh-btn oh-btn--secondary ms-3"
 			data-toggle="oh-modal-toggle"
@@ -15,7 +15,7 @@
 		>
 		<ion-icon name="add-sharp" class="mr-1 md hydrated" role="img" aria-label="add sharp"></ion-icon>{% trans "Reallocate Shift." %}
 	</button>
-
+	{% endif %}
 
   <div class="oh-tabs mt-3">
     <ul class="oh-tabs__tablist">
@@ -31,7 +31,7 @@
         <button
           class="oh-btn oh-btn--secondary-outline oh-stop-prop oh-accordion-meta__btn p-2"
           title="Add"
-          hx-get="{% url 'work-type-request' %}?emp_id={{employee}}"
+          hx-get="{% url 'work-type-request' %}?emp_id={{emp_id}}"
           hx-target="#formBody"
           data-target="#workTypeRequestModal"
           data-toggle="oh-modal-toggle"
@@ -57,7 +57,7 @@
         	<button
         	  class="oh-btn oh-btn--secondary-outline oh-stop-prop oh-accordion-meta__btn p-2"
         	  title="Add"
-        	  hx-get="{% url 'rotating-work-type-assign-add' %}?emp_id={{employee}}"
+        	  hx-get="{% url 'rotating-work-type-assign-add' %}?emp_id={{emp_id}}"
         	  hx-target="#rotatingWorkTypeAssignModalBody"
         	  data-target="#rotating-work-type-modal"
         	  data-toggle="oh-modal-toggle"
@@ -83,7 +83,7 @@
         <button
           class="oh-btn oh-btn--secondary-outline oh-stop-prop oh-accordion-meta__btn p-2"
           title="Add"
-          hx-get="{% url 'shift-request' %}?emp_id={{employee}}"
+          hx-get="{% url 'shift-request' %}?emp_id={{emp_id}}"
           hx-target="#shiftRequestTargetModal"
           data-target="#shiftRequestModal"
           data-toggle="oh-modal-toggle"
@@ -109,7 +109,7 @@
         	<button
         	  class="oh-btn oh-btn--secondary-outline oh-stop-prop oh-accordion-meta__btn p-2"
         	  title="Add"
-        	  hx-get="{% url 'rotating-shift-assign-add' %}?emp_id={{employee}}"
+        	  hx-get="{% url 'rotating-shift-assign-add' %}?emp_id={{emp_id}}"
         	  hx-target="#rotatingShiftAssignModalBody"
         	  data-target="#rotating-shift-modal"
         	  data-toggle="oh-modal-toggle"
