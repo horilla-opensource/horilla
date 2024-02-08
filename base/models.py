@@ -882,7 +882,7 @@ class ShiftRequest(models.Model):
         ]
 
     def clean(self):
-        if self.requested_date < django.utils.timezone.now().date():
+        if not self.pk and self.requested_date < django.utils.timezone.now().date():
             raise ValidationError(_("Date must be greater than or equal to today"))
         if self.requested_till and self.requested_till < self.requested_date:
             raise ValidationError(

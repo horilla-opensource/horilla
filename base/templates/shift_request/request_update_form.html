@@ -7,21 +7,19 @@
     {% comment %} </div> {% endcomment %}
 </form>
 <script>
-  function toggleFunctionShiftRequestForm(){
-    if ($('#id_is_permanent_shift').is(":checked")){
-      $("[for=id_requested_till]").hide();
-      $("#id_requested_till").hide();
+  function toggleFunctionShiftRequestForm(element){
+    if (element.is(":checked")){
+      $("[id=id_requested_till]").parent().hide();
     } else {
-      $("[for=id_requested_till]").show();
-      $("#id_requested_till").show();
+      $("[id=id_requested_till]").parent().show();
     }
   }
 
     $(document).ready(function(){
         $("[type=checkbox]").change(function (e) {
         e.preventDefault();
-        toggleFunctionShiftRequestForm();
+        toggleFunctionShiftRequestForm($(this));
         });
     })
-    toggleFunctionShiftRequestForm();
+    toggleFunctionShiftRequestForm($("#shiftRequestModalUpdateBody #id_is_permanent_shift"));
 </script>
