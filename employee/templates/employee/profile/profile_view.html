@@ -318,17 +318,6 @@
 								>
 							</li>
 							{% endif %}
-							<li class="oh-general__tab">
-							  <a
-							  hx-get="{% url 'employee-get-mail-log' %}?emp_id={{employee.id}}"
-							  hx-target="#maillog"
-							  class="oh-general__tab-link"
-							  data-action="general-tab"
-							  data-target="#maillog"
-							  >{% trans "Mail Log" %}</a
-							  >
-							</li>
-
 						</ul>
 
 						<div
@@ -360,11 +349,6 @@
 						 >
 							{% include "tabs/resignation.html" %}
 							<div id="resignation_hx_target"></div>
-						</div>
-						<div
-						  class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
-						  id="maillog"
-						>
 						</div>
 						<div
 							class="oh-general__tab-target oh-profile__info-tab mb-4 d-none"
