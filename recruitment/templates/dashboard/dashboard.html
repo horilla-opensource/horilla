@@ -1,5 +1,8 @@
 {% extends 'index.html' %} {% block content %} {% load mathfilters static recruitmentfilters i18n %}
 <style>
+	.oh-card-dashboard{
+		height: 100%;
+	}
     .done-task{
         background-color: #9acd322e !important;
     }
@@ -81,7 +84,7 @@
 					</a> 
 				</div>
 
-				<div class="col-12 col-sm-12 col-md-6 col-lg-2">
+				<div class="col-12 col-sm-12 col-md-6 col-lg-3">
 					<div class="oh-card-dashboard oh-card-dashboard--neutral">
 						<div class="oh-card-dashboard__header" onmouseover="conversion_helptext()">
 							<span class="oh-card-dashboard__title">{% trans "Conversion Rate" %}</span>
