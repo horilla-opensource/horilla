@@ -93,11 +93,53 @@
   </div>
   
   <script>
-    function updateBadge() {
+    function updateBadge(element=false) {
       var panels = $(".panel");
       $.each(panels, function (indexInArray, valueOfElement) {
         var check = $(valueOfElement).find("[name=permissions]:checked").length;
         $(valueOfElement).prev().find(".oh-badge.permission-badge").html(check);
       });
+      if (element) {
+        var groupId = element.attr("data-group-id");
+        var name = element.attr("data-group-name")
+        var permissions = [];
+        var panel = element.closest(".oh-general__tab-target.oh-profile-section")
+        panel.find("[type=checkbox][name=permissions]").each(function () {
+          if ($(this).is(":checked")) {
+            var permissionValue = $(this).val();
+            permissions.push(permissionValue);
+          }
+        });
+        $.ajax({
+        type: "post",
+        url: '{% url "update-group-permission" %}',
+        traditional: true,
+        data: {
+          csrfmiddlewaretoken: getCookie("csrftoken"),
+          permissions: permissions,
+          id: groupId,
+          name:name,
+        },
+        success: function (response) {
+          $("#messages").html(
+            $(`
+            <div class="oh-alert oh-alert--animated oh-alert--${response.type}">
+              ${response.message}.
+            </div>
+          `)
+          );
+        },
+        error: function (response) {
+          $("#messages").html(
+            $(`
+            <div class="oh-alert oh-alert--animated oh-alert--danger">
+              Sever error.
+            </div>
+          `)
+          );
+        },
+      });
+
+      }
     }
   </script>

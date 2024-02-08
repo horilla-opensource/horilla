@@ -516,7 +516,6 @@ def update_group_permission(
         return JsonResponse(
             {"message": "At least 4 characters required", "type": "success"}
         )
-
     perms = form.cleaned_data.get("permissions")
     if not perms:
         instance.permissions.clear()
@@ -2270,6 +2269,9 @@ def update_permission(
     """
     This method is used to remove user permission.
     """
+    print("++++++++++++++++++")
+    print(request.POST)
+    print("++++++++++++++++++")
     form = AssignPermission(request.POST)
     if form.is_valid():
         form.save()
