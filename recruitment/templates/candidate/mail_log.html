@@ -4,13 +4,18 @@
         <div class="oh-sticky-table__thead">
             <div class="oh-sticky-table__tr">
                 <div class="oh-sticky-table__th">{% trans 'Subject' %}</div>
-                <div class="oh-sticky-table__th" align="center">{% trans 'Status' %}</div>
+                <div class="oh-sticky-table__th" align="center">
+                    {% trans 'Status' %}
+                </div>
             </div>
         </div>
         <div class="oh-sticky-table__tbody">
             {% for log in tracked_mails %}
-            <div class="oh-sticky-table__tr" data-toggle="oh-modal-toggle"
-				data-target="#mailBodymodal{{log.id}}">
+            <div
+                class="oh-sticky-table__tr"
+                data-toggle="oh-modal-toggle"
+                data-target="#mailBodymodal{{log.id}}"
+            >
                 <div class="oh-sticky-table__td">
                     <strong>{{forloop.counter}}. {{log.subject}} </strong>
                 </div>
@@ -32,15 +37,27 @@
                     {% endif %}
                 </div>
             </div>
-			
-			<div class="oh-modal" id="mailBodymodal{{log.id}}" role="dialog" aria-labelledby="mailBodymodal{{log.id}}" aria-hidden="true">
-				<div class="oh-modal__dialog">
-				<div class="oh-modal__dialog-header">
-					<button class="oh-modal__close" aria-label="Close"><ion-icon name="close-outline"></ion-icon></button>
-				</div>
-				<div class="oh-modal__dialog-body" id="mailBodymodal{{log.id}}Target">{{log.body|safe}}</div>
-				</div>
-			</div>
+
+            <div
+                class="oh-modal"
+                id="mailBodymodal{{log.id}}"
+                role="dialog"
+                aria-labelledby="mailBodymodal{{log.id}}"
+                aria-hidden="true"
+            >
+                <div class="oh-modal__dialog">
+                    <div class="oh-modal__dialog-header">
+                        <button class="oh-modal__close" aria-label="Close">
+                            <ion-icon name="close-outline"></ion-icon>
+                        </button>
+                    </div>
+                    <div
+                        class="oh-modal__dialog-body"
+                    >
+                        {{log.body|safe}}
+                    </div>
+                </div>
+            </div>
             {% endfor %}
         </div>
     </div>

@@ -58,6 +58,9 @@ $(document).on('click', function (event) {
   .ul {
     margin:0;
   }
+  body {
+    background-color: #f9f9f9 !important;
+  }
 </style>
 
 <div id="showImageContainer" class="enlarge-image-container"></div>
@@ -220,6 +223,7 @@ $(document).on('click', function (event) {
             <a
             hx-get="{% url 'get-mail-log-rec' %}?candidate_id={{candidate.id}}"
             hx-target="#maillog"
+            hx-trigger="load"
             class="oh-general__tab-link"
             data-action="general-tab"
             data-target="#maillog"
