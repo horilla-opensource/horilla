@@ -103,13 +103,14 @@
           {% if perms.recruitment.change_candidate %}
           <div class="oh-btn-group">
             {% if cand.email in emp_list %}
-            <button class="oh-btn oh-btn--light-bkg w-50"  title='{% trans "Converted " %}' style="opacity: 30%;">
+            <button class="oh-btn oh-btn--light-bkg w-50"  title='{% trans "Converted " %}' style="opacity: 30%; padding:0.8rem 1rem">
               <ion-icon name="person-circle-outline"></ion-icon>            </button>                
           {% else %}
             <a href="{% url 'candidate-conversion' cand.id %}"
               onsubmit="return confirm('{% trans "Are you sure you want to convert this candidate into an employee?" %}')"
               class="oh-btn oh-btn--light-bkg w-50"
               title='{% trans "To employee " %}'
+              style="padding:0.8rem 1rem"
             >
               <ion-icon name="person-circle-outline"></ion-icon>            </a>
           {% endif %}
@@ -118,8 +119,22 @@
               data-target="#createModal"
               hx-get="{% url 'to-skill-zone' cand.id %}"
               hx-target="#createTarget"
+              style="padding:0.8rem 1rem"
             >
             <ion-icon name="heart-circle-outline"></ion-icon>            
+          </button>
+          <button
+            type="button"
+            hx-get='{% url "send-mail" cand.id %}'
+            title="{% trans "Send Mail" %}"
+            hx-target="#mail-content"
+            hx-swap="innerHTML"
+            class="oh-btn oh-btn--light-bkg w-50"
+            data-toggle="oh-modal-toggle"
+            data-target="#sendMailModal"
+            style="padding:0.8rem 1rem"
+          >
+            <ion-icon name="mail-open-outline"></ion-icon>
           </button>
           </div>
         {% endif %}
@@ -209,6 +224,21 @@
   </nav>
 </div>
 
+<div class="oh-modal" id="sendMailModal" role="dialog" aria-labelledby="sendMailModal" aria-hidden="true">
+  <div class="oh-modal__dialog">
+    <div class="oh-modal__dialog-header">
+      <span class="oh-modal__dialog-title" id="sendMailModalLabel">
+        <h5>{% trans "Send Mail" %}</h5>
+      </span>
+      <button class="oh-modal__close" aria-label="Close">
+        <ion-icon name="close-outline"></ion-icon>
+      </button>
+    </div>
+    <div class="oh-modal__dialog-body" id='mail-content'>
+
+    </div>
+  </div>
+</div>
 
 
 
