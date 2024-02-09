@@ -233,7 +233,7 @@ def contract_filter(request):
         field_copy = field.replace(".", "__")
         contracts = contracts.order_by(field_copy)
         template = "payroll/contract/group_by.html"
-    contracts = sortby(request,contracts,"orderby")
+    contracts = sortby(request, contracts, "orderby")
     contracts = paginator_qry(contracts, request.GET.get("page"))
     contract_ids_json = json.dumps([instance.id for instance in contracts.object_list])
     data_dict = parse_qs(query_string)
@@ -341,7 +341,29 @@ def settings(request):
 
 @login_required
 @permission_required("payroll.change_payslip")
-def update_payslip_status(request, payslip_id=None):
+def update_payslip_status(request, payslip_id):
+    """
+    This method is used to update the payslip confirmation status
+    """
+    status = request.POST.get("status")
+    payslip = Payslip.objects.filter(id=payslip_id).first()
+    if payslip:
+        payslip.status = status
+        payslip.save()
+        messages.success(request, _("Payslip status updated"))
+    else:
+        messages.error(request, _("Payslip not found"))
+    data = payslip.pay_head_data
+    data["employee"] = payslip.employee_id
+    data["payslip"] = payslip
+    data["json_data"] = data.copy()
+    data["json_data"]["employee"] = payslip.employee_id.id
+    data["json_data"]["payslip"] = payslip.id
+    data["instance"] = payslip
+    return render(request, "payroll/payslip/individual_payslip_summery.html", data)
+
+
+def update_payslip_status_no_id(request):
     """
     This method is used to update the payslip confirmation status
     """
@@ -356,13 +378,6 @@ def update_payslip_status(request, payslip_id=None):
             "type": "success",
             "message": f"{slips.count()} Payslips status updated.",
         }
-        return JsonResponse(message)
-    try:
-        payslip = Payslip.objects.get(id=payslip_id)
-        payslip.status = request.GET["status"]
-        payslip.save()
-    except Payslip.DoesNotExist:
-        message = {"type": "error", "message": "Payslip not found."}
     return JsonResponse(message)
 
 
@@ -749,7 +764,7 @@ def payslip_export(request):
             emp_company = company_name.first()
 
             # Access the date_format attribute directly
-            date_format = emp_company.date_format
+            date_format = emp_company.date_format if emp_company else "MMM. D, YYYY"
         else:
             date_format = "MMM. D, YYYY"
         # Define date formats
@@ -1111,7 +1126,7 @@ def payslip_pdf(request, id):
             emp_company = company_name.first()
 
             # Access the date_format attribute directly
-            date_format = emp_company.date_format
+            date_format = emp_company.date_format if emp_company else "MMM. D, YYYY"
         else:
             date_format = "MMM. D, YYYY"
 

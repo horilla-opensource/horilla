@@ -43,5 +43,6 @@
   </div>
 </div>
 <script>
-  $("#personal").closest(".oh-modal--show").find("button.oh-modal__close").attr("style","top: 33px; right: 20px;");
+  $("#personal").closest(".oh-modal--show").find("button[aria-label='Close']").attr("style","top: 33px; right: 20px;");
+  console.log($("#personal").closest(".oh-modal--show").find("button[aria-label='Close']"))
 </script>

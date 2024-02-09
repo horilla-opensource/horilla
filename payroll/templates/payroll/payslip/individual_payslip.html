@@ -12,30 +12,30 @@
 </style>
 <div class="oh-payslip">
   {% if perms.payroll.change_payslip %}
-  <div class="oh-payslip__header">
-    <div class="oh-payslip__header-left">
-      <div class="oh-payslip__title oh-payslip__title--h2">
-        <select name="status" class="oh-select" id="id_status">
-          {% if instance %}
-          <option value="{{instance.status}}" selected>
-            {{instance.get_status_display }}
-          </option>
-          {% else %}
-          <option value="draft" selected>{% trans "Draft" %}</option>
-          {% endif %}
-          <option value="review_ongoing">{% trans "Review Ongoing" %}</option>
-          <option value="confirmed">{% trans "Confirmed" %}</option>
-          <option value="paid">{% trans "paid" %}</option>
-        </select>
+    <div class="oh-payslip__header">
+      <div class="oh-payslip__header-left"  style="min-width: 170px; height: 35px; border: 1px solid hsl(213,22%,84%); display:flex;">
+        <a href="{% url 'payslip-pdf' instance.id %}" type="button" title="{% trans 'Download' %}" class="oh-btn oh-btn--gray-bkg w-100" style="background-color: #dadada;"> <ion-icon name="download"></ion-icon></a>
+        {% if perms.payroll.add_payslip %}
+          <a href="{% url "send-slip" %}?id={{instance.id}}" type="button" onclick="return confirm('Do you want to sent the payslip by mail?')" title="{% trans 'Send via mail' %}" {% if payslip.sent_to_employee %}class="oh-btn sent-to-employee w-100"{% else %}class="oh-btn oh-btn--light-bkg w-100"{% endif %}> <ion-icon name="mail-outline"></ion-icon></a>
+        {% endif %}
+      </div>
+      <div class="oh-payslip__header-left">
+        <div class="oh-payslip__title oh-payslip__title--h2">
+          <select name="status" class="oh-select" id="id_status" hx-trigger="change" hx-post="{% url 'payslip-status-update' instance.id %}" hx-target="#payslipBody" >
+            {% if instance %}
+            <option value="{{instance.status}}" selected>
+              {{instance.get_status_display }}
+            </option>
+            {% else %}
+            <option value="draft" selected>{% trans "Draft" %}</option>
+            {% endif %}
+            <option value="review_ongoing">{% trans "Review Ongoing" %}</option>
+            <option value="confirmed">{% trans "Confirmed" %}</option>
+            <option value="paid">{% trans "Paid" %}</option>
+          </select>
+        </div>
       </div>
     </div>
-    <div class="oh-payslip__net-payable-right" style="min-width: 20px; height: 35px; border: 1px solid hsl(213,22%,84%);">
-      <a href="{% url 'payslip-pdf' instance.id %}" type="button" title="{% trans 'Download' %}" class="oh-btn oh-btn--gray-bkg" style="height: 9px;"> <ion-icon name="download"></ion-icon></a>
-      {% if perms.payroll.add_payslip %}
-      <a href="{% url "send-slip" %}?id={{instance.id}}" type="button" onclick="return confirm('Do you want to sent the payslip by mail?')"  style="height: 9px;" title="{% trans 'Send via mail' %}" {% if payslip.sent_to_employee %}class="oh-btn sent-to-employee w-50"{% else %}class="oh-btn oh-btn--light-bkg w-50"{% endif %}> <ion-icon name="mail-outline"></ion-icon></a>
-      {% endif %}
-    </div>
-  </div>
   {% endif %}
   <div class="oh-payslip__header">
     <div class="oh-payslip__header-left">
@@ -53,234 +53,9 @@
       />
     </div>
   </div>
-  <div class="oh-payslip__body">
+  <div class="oh-payslip__body" id="payslipBody">
     <!-- Payslip Summary -->
-    <div class="oh-payslip__summary">
-      <div class="oh-payslip__user-detail">
-        <h3 class="oh-payslip__employee-title">
-          {% trans "Employee Details" %}
-        </h3>
-        <ul class="oh-payslip__employee-details">
-          <li class="oh-payslip__employee-detail">
-            <span class="oh-payslip__employee-detail-title"
-              >{% trans "Employee ID" %}</span
-            >
-            <span class="oh-payslip__employee-detail-value"
-              >{{employee.badge_id}}</span
-            >
-          </li>
-          <li class="oh-payslip__employee-detail">
-            <span class="oh-payslip__employee-detail-title"
-              >{% trans "Employee Name" %}</span
-            >
-            <span class="oh-payslip__employee-detail-value">{{employee}}</span>
-          </li>
-          <li class="oh-payslip__employee-detail">
-            <span class="oh-payslip__employee-detail-title"
-              >{% trans "Department" %}</span
-            >
-            <span class="oh-payslip__employee-detail-value"
-              >{{employee.employee_work_info.department_id.department}}</span
-            >
-          </li>
-          <li class="oh-payslip__employee-detail">
-            <span class="oh-payslip__employee-detail-title"
-              >{% trans "Bank Acc./Cheque No." %}</span
-            >
-            <span class="oh-payslip__employee-detail-value"
-              >{{employee.employee_bank_details.account_number}}</span
-            >
-          </li>
-        </ul>
-      </div>
-
-      <div class="oh-payslip__netpay" style="text-align:left; border-radius: 15px; border: 1px solid hsl(213,22%,84%);">
-        <div style="border-radius: 15px; background-color: #d2f8d7; padding: 10px; border-left: 3px solid #00cc66;">
-            <span class="oh-payslip__netpay-amount">{{ currency }}{{ net_pay|floatformat:2 }}</span>
-            <span class="oh-payslip__netpay-title">{% trans "Employee Net Pay" %}</span>
-        </div>
-        <div class="payslip__netpay__summary">
-            <span class="oh-payslip__netpay-title">{% trans "Actual Basic Pay" %} <small style="margin-left:36px; font-weight:bold;">: {{currency}} {{instance.contract_wage}}</small></span>
-            <span class="oh-payslip__netpay-title">{% trans "Paid Days" %} <small style="margin-left:86px;font-weight:bold;">: {{paid_days}}</small> </span>
-            <span class="oh-payslip__netpay-title">{% trans "LOP Days" %} <small style="margin-left:93px ;font-weight:bold;">: {{unpaid_days}}</small> </span>
-            <span class="oh-payslip__netpay-title">
-                {% trans "Updated Basic Pay" %}
-                <small style="margin-left:20px;font-weight:bold;">: {{currency}} {{basic_pay|floatformat:2}}
-                  
-                  <br><i style="font-style: italic; margin-left: 10px; font-weight: normal;"><ion-icon name="information-circle-outline" style="color:blue;"></ion-icon>{% trans "The payslip is calculated based on the updated basic pay" %}</i>
-                    
-                </small>
-            </span>
-        </div>
-      </div>    
-    </div>
-    <!-- End of Payslip Table -->
-
-    <!-- Payslip Table -->
-    <div class="oh-payslip__table-container" style="margin-top:0.5rem">
-      <table class="oh-payslip__table">
-        <thead class="oh-payslip__table-thead">
-          <tr class="oh-payslip__table-row">
-            <th class="oh-payslip__table-th">{% trans "Allowances" %}</th>
-            <th class="oh-payslip__table-th">{% trans "Amount" %}</th>
-            <th class="oh-payslip__table-th">
-              {% if perms.payroll.add_allowance %}
-                  <button title="{% trans 'Add Allowance' %}" class="oh-btn oh-btn--secondary-outline oh-stop-prop oh-accordion-meta__btn p-2" 
-                          hx-get="{% url "add-bonus" %}?employee_id={{employee.id}}&payslip_id={{instance.id}}" hx-target="#addBonusModalBody" 
-                          data-target="#addBonusModal" data-toggle="oh-modal-toggle"
-                          >
-                      <ion-icon class="md hydrated" name="add-outline" role="img" aria-label="add outline"></ion-icon>
-                  </button>
-              {% endif %}
-            </th>   
-          </tr>
-        </thead>
-        <tbody class="oh-payslip__table-tbody">
-          <tr class="oh-payslip__table-tr">
-            <td
-              class="oh-payslip__table-td"
-              title="{% trans 'Some deductions will update basic pay before payslip calculation starts, eg: LOP is Deduducted from basic pay if `Deduct leave from basic pay` field is enabled on the contract, and also with the update compensation deduction through' %}"
-            >
-              {% trans "Basic Pay" %}
-            </td>
-            <td class="oh-payslip__table-td" colspan="2">
-              {{currency}}{{instance.contract_wage|floatformat:2}}
-            </td>
-          </tr>
-          {% for allowance in allowances %}
-          <tr>
-            <td class="oh-payslip__table-td">{{allowance.title}}</td>
-            <td class="oh-payslip__table-td">
-              {{currency}}{{allowance.amount|floatformat:2}}
-            </td>
-          </tr>
-          {% endfor %}
-        </tbody>
-        <tfoot class="oh-payslip__table-tfoot">
-          <tr class="oh-payslip__table-tr">
-            <th
-              class="oh-payslip__table-tf"
-              title="{% trans 'Some Deduction will update the total gross pay using the deductions that are enabled update compensation' %}"
-            >
-              {% trans "Total Gross Pay" %}
-            </th>
-            <th class="oh-payslip__table-tf">
-              {{currency}}{{gross_pay|floatformat:2}}
-            </th>
-          </tr>
-        </tfoot>
-      </table>
-
-      <table class="oh-payslip__table">
-        <thead class="oh-payslip__table-thead">
-          <tr class="oh-payslip__table-row">
-            <th class="oh-payslip__table-th">{% trans "Deductions" %}</th>
-            <th class="oh-payslip__table-th">{% trans "Amount" %}</th>
-            <th class="oh-payslip__table-th">
-              {% if perms.payroll.add_deduction %}
-                  <button title="{% trans 'Add Deduction' %}" class="oh-btn oh-btn--secondary-outline oh-stop-prop oh-accordion-meta__btn p-2" 
-                          hx-get="{% url "add-payslip-deduction" %}?employee_id={{employee.id}}&payslip_id={{instance.id}}" hx-target="#addDeductionFormModal" 
-                          data-target="#addDeductionModal" data-toggle="oh-modal-toggle"
-                          >
-                      <ion-icon class="md hydrated" name="add-outline" role="img" aria-label="add outline"></ion-icon>
-                  </button>
-              {% endif %}
-            </th> 
-          </tr>
-        </thead>
-        <tbody class="oh-payslip__table-tbody">
-          <tr class="oh-payslip__table-tr">
-            <td class="oh-payslip__table-td">{% trans "Loss of Pay" %}</td>
-            <td class="oh-payslip__table-td">
-              {{currency}}{{loss_of_pay|floatformat:2}}
-            </td>
-          </tr>
-          {% for deduction in basic_pay_deductions %}
-          <tr class="oh-payslip__table-tr">
-            <td class="oh-payslip__table-td">{{deduction.title}}</td>
-            <td class="oh-payslip__table-td">
-              {{currency}}{{deduction.amount|floatformat:2}}
-            </td>
-          </tr>
-          {% endfor %} {% for deduction in gross_pay_deductions %}
-          <tr class="oh-payslip__table-tr">
-            <td class="oh-payslip__table-td">{{deduction.title}}</td>
-            <td class="oh-payslip__table-td">
-              {{currency}}{{deduction.amount|floatformat:2}}
-            </td>
-          </tr>
-          {% endfor %} {% for deduction in pretax_deductions %}
-          <tr class="oh-payslip__table-tr">
-            <td class="oh-payslip__table-td">{{deduction.title}}</td>
-            <td class="oh-payslip__table-td">
-              {{currency}}{{deduction.amount|floatformat:2}}
-            </td>
-          </tr>
-          {% endfor %} {% for deduction in post_tax_deductions %}
-          <tr class="oh-payslip__table-tr">
-            <td class="oh-payslip__table-td">{{deduction.title}}</td>
-            <td class="oh-payslip__table-td">
-              {{currency}}{{deduction.amount|floatformat:2}}
-            </td>
-          </tr>
-          {% endfor %}
-
-          <tr class="oh-payslip__table-tr">
-            <td class="oh-payslip__table-td">{% trans "Federal Tax" %}</td>
-            <td class="oh-payslip__table-td">
-              {{currency}}{{federal_tax|floatformat:2}}
-            </td>
-          </tr>
-
-          {% for deduction in tax_deductions %}
-          <tr class="oh-payslip__table-tr">
-            <td class="oh-payslip__table-td">{{deduction.title}}</td>
-            <td class="oh-payslip__table-td">
-              {{currency}}{{deduction.amount|floatformat:2}}
-            </td>
-          </tr>
-          {% endfor %} {% for deduction in net_deductions %}
-          <tr class="oh-payslip__table-tr">
-            <td class="oh-payslip__table-td">{{deduction.title}}</td>
-            <td class="oh-payslip__table-td">
-              {{currency}}{{deduction.amount|floatformat:2}}
-            </td>
-          </tr>
-          {% endfor %}
-        </tbody>
-        <tfoot class="oh-payslip__table-tfoot">
-          <tr class="oh-payslip__table-tr">
-            <th
-              class="oh-payslip__table-tf"
-              title="{% trans 'Some deductions are not calculated to total deductions because they are deduducted before the calculation starts they deducted from basic pay, gross pay and some deduct after calculating the net pay' %}"
-            >
-              {% trans "Total Deductions" %}
-            </th>
-            <th class="oh-payslip__table-tf">
-              {{currency}}{{total_deductions|floatformat:2}}
-            </th>
-          </tr>
-        </tfoot>
-      </table>
-    </div>
-    <!-- End of Payslip Table -->
-
-    <!-- Payslip Payable -->
-    <div class="oh-payslip__net-payable">
-      <div class="oh-payslip__net-payable-left">
-        <h2 class="oh-payslip__net-payable-title">
-          {% trans "Total Net Payable" %}
-        </h2>
-        <p class="oh-payslip__net-payable-subtext">
-          {% trans "Gross Earnings - Total Deductions" %}
-        </p>
-      </div>
-      <div class="oh-payslip__net-payable-right">
-        <span class="oh-payslip__net-payable-amount"
-          >{{currency}}{{net_pay|floatformat:2}}</span
-        >
-      </div>
-    </div>
+    {% include "payroll/payslip/individual_payslip_summery.html" %}
     <!-- End of Payslip Payable -->
   </div>
 </div>
@@ -319,20 +94,7 @@
 
 <div id="messageContainer"></div>
 
-<div class="oh-modal" id="addBonusModal" role="dialog" aria-labelledby="addBonusModalLabel" aria-hidden="true">
-  <div class="oh-modal__dialog" id="addBonusModalBody"> </div>
-</div>
-
-<div class="oh-modal" id="addDeductionModal" aria-labelledby="addDeductionModalLabel" role="dialog" aria-hidden="true">
-  <div class="oh-modal__dialog" style="max-width: 550px">
-    <div class="oh-modal__dialog-header">
-      <button type="button" class="oh-modal__close" aria-label="Close" style="margin-top: 34px;margin-right: 34px;"><ion-icon name="close-outline"></ion-icon></button>
-    </div>
-    <div class="oh-modal__dialog-body" id="addDeductionFormModal"></div>
-  </div>
-</div>
-
-<script>
+{% comment %} <script>
   $("#id_status").change(function (e) {
     var endDate = "{{instance.end_date|date:'Y-m-d'}}"
     var startDate = "{{instance.start_date|date:'Y-m-d'}}"
@@ -355,5 +117,5 @@
       }
     });
   });
-</script>
+</script> {% endcomment %}
 {% endblock content %}

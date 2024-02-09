@@ -56,8 +56,8 @@ urlpatterns = [
         name="payslip-status-update",
     ),
     path(
-        "payslip-status-update",
-        views.update_payslip_status,
+        "payslip-status-update-no-id",
+        views.update_payslip_status_no_id,
         name="payslip-status-update-no-id",
     ),
     path(

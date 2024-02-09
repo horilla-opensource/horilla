@@ -33,7 +33,7 @@ def update_compensation_deduction(
             employer_contribution_amount = (amount * deduction.employer_rate) / 100
         deductions.append(
             {
-                "deduction_id": deductions.id,
+                "deduction_id": deduction.id,
                 "title": deduction.title,
                 "amount": amount,
                 "employer_contribution_rate": deduction.employer_rate,

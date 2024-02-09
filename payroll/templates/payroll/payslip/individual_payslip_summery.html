@@ -1,0 +1,251 @@
+{% load i18n %}
+{% if messages %}
+<div class="oh-wrapper">
+  {% for message in messages %}
+  <div class="oh-alert-container">
+    <div class="oh-alert oh-alert--animated {{message.tags}}">
+      {{ message }}
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+<div class="oh-payslip__summary">
+    <div class="oh-payslip__user-detail">
+      <h3 class="oh-payslip__employee-title">
+        {% trans "Employee Details" %}
+      </h3>
+      <ul class="oh-payslip__employee-details">
+        <li class="oh-payslip__employee-detail">
+          <span class="oh-payslip__employee-detail-title"
+            >{% trans "Employee ID" %}</span
+          >
+          <span class="oh-payslip__employee-detail-value"
+            >{{employee.badge_id}}</span
+          >
+        </li>
+        <li class="oh-payslip__employee-detail">
+          <span class="oh-payslip__employee-detail-title"
+            >{% trans "Employee Name" %}</span
+          >
+          <span class="oh-payslip__employee-detail-value">{{employee}}</span>
+        </li>
+        <li class="oh-payslip__employee-detail">
+          <span class="oh-payslip__employee-detail-title"
+            >{% trans "Department" %}</span
+          >
+          <span class="oh-payslip__employee-detail-value"
+            >{{employee.employee_work_info.department_id.department}}</span
+          >
+        </li>
+        <li class="oh-payslip__employee-detail">
+          <span class="oh-payslip__employee-detail-title"
+            >{% trans "Bank Acc./Cheque No." %}</span
+          >
+          <span class="oh-payslip__employee-detail-value"
+            >{{employee.employee_bank_details.account_number}}</span
+          >
+        </li>
+      </ul>
+    </div>
+
+    <div class="oh-payslip__netpay" style="text-align:left; border-radius: 15px; border: 1px solid hsl(213,22%,84%);">
+      <div style="border-radius: 15px; background-color: #d2f8d7; padding: 10px; border-left: 3px solid #00cc66;">
+          <span class="oh-payslip__netpay-amount">{{ currency }}{{ net_pay|floatformat:2 }}</span>
+          <span class="oh-payslip__netpay-title">{% trans "Employee Net Pay" %}</span>
+      </div>
+      <div class="payslip__netpay__summary">
+          <span class="oh-payslip__netpay-title">{% trans "Actual Basic Pay" %} <small style="margin-left:36px; font-weight:bold;">: {{currency}} {{instance.contract_wage}}</small></span>
+          <span class="oh-payslip__netpay-title">{% trans "Paid Days" %} <small style="margin-left:86px;font-weight:bold;">: {{paid_days}}</small> </span>
+          <span class="oh-payslip__netpay-title">{% trans "LOP Days" %} <small style="margin-left:93px ;font-weight:bold;">: {{unpaid_days}}</small> </span>
+          <span class="oh-payslip__netpay-title">
+              {% trans "Updated Basic Pay" %}
+              <small style="margin-left:20px;font-weight:bold;">: {{currency}} {{basic_pay|floatformat:2}}
+                
+                <br><i style="font-style: italic; margin-left: 10px; font-weight: normal;"><ion-icon name="information-circle-outline" style="color:blue;"></ion-icon>{% trans "The payslip is calculated based on the updated basic pay" %}</i>
+                  
+              </small>
+          </span>
+      </div>
+    </div>    
+  </div>
+  <!-- End of Payslip Table -->
+
+  <!-- Payslip Table -->
+  <div class="oh-payslip__table-container" style="margin-top:0.5rem">
+    <table class="oh-payslip__table">
+      <thead class="oh-payslip__table-thead">
+        <tr class="oh-payslip__table-row">
+          <th class="oh-payslip__table-th">{% trans "Allowances" %}</th>
+          <th class="oh-payslip__table-th">{% trans "Amount" %}</th>
+          <th class="oh-payslip__table-th">
+            {% if perms.payroll.add_allowance and instance.status != "paid"  %}
+                <button title="{% trans 'Add Allowance' %}" class="oh-btn oh-btn--secondary-outline oh-stop-prop oh-accordion-meta__btn p-2" 
+                        hx-get="{% url "add-bonus" %}?employee_id={{employee.id}}&payslip_id={{instance.id}}" hx-target="#addBonusModalBody" 
+                        data-target="#addBonusModal" data-toggle="oh-modal-toggle"
+                        >
+                    <ion-icon class="md hydrated" name="add-outline" role="img" aria-label="add outline"></ion-icon>
+                </button>
+            {% endif %}
+          </th>   
+        </tr>
+      </thead>
+      <tbody class="oh-payslip__table-tbody">
+        <tr class="oh-payslip__table-tr">
+          <td
+            class="oh-payslip__table-td"
+            title="{% trans 'Some deductions will update basic pay before payslip calculation starts, eg: LOP is Deduducted from basic pay if `Deduct leave from basic pay` field is enabled on the contract, and also with the update compensation deduction through' %}"
+          >
+            {% trans "Basic Pay" %}
+          </td>
+          <td class="oh-payslip__table-td" colspan="2">
+            {{currency}}{{instance.contract_wage|floatformat:2}}
+          </td>
+        </tr>
+        {% for allowance in allowances %}
+        <tr>
+          <td class="oh-payslip__table-td">{{allowance.title}}</td>
+          <td class="oh-payslip__table-td">
+            {{currency}}{{allowance.amount|floatformat:2}}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+      <tfoot class="oh-payslip__table-tfoot">
+        <tr class="oh-payslip__table-tr">
+          <th
+            class="oh-payslip__table-tf"
+            title="{% trans 'Some Deduction will update the total gross pay using the deductions that are enabled update compensation' %}"
+          >
+            {% trans "Total Gross Pay" %}
+          </th>
+          <th class="oh-payslip__table-tf">
+            {{currency}}{{gross_pay|floatformat:2}}
+          </th>
+        </tr>
+      </tfoot>
+    </table>
+
+    <table class="oh-payslip__table">
+      <thead class="oh-payslip__table-thead">
+        <tr class="oh-payslip__table-row">
+          <th class="oh-payslip__table-th">{% trans "Deductions" %}</th>
+          <th class="oh-payslip__table-th">{% trans "Amount" %}</th>
+          <th class="oh-payslip__table-th">
+            {% if perms.payroll.add_deduction and instance.status != "paid" %}
+                <button title="{% trans 'Add Deduction' %}" class="oh-btn oh-btn--secondary-outline oh-stop-prop oh-accordion-meta__btn p-2" 
+                        hx-get="{% url "add-payslip-deduction" %}?employee_id={{employee.id}}&payslip_id={{instance.id}}" hx-target="#addDeductionFormModal" 
+                        data-target="#addDeductionModal" data-toggle="oh-modal-toggle"
+                        >
+                    <ion-icon class="md hydrated" name="add-outline" role="img" aria-label="add outline"></ion-icon>
+                </button>
+            {% endif %}
+          </th> 
+        </tr>
+      </thead>
+      <tbody class="oh-payslip__table-tbody">
+        <tr class="oh-payslip__table-tr">
+          <td class="oh-payslip__table-td">{% trans "Loss of Pay" %}</td>
+          <td class="oh-payslip__table-td">
+            {{currency}}{{loss_of_pay|floatformat:2}}
+          </td>
+        </tr>
+        {% for deduction in basic_pay_deductions %}
+        <tr class="oh-payslip__table-tr">
+          <td class="oh-payslip__table-td">{{deduction.title}}</td>
+          <td class="oh-payslip__table-td">
+            {{currency}}{{deduction.amount|floatformat:2}}
+          </td>
+        </tr>
+        {% endfor %} {% for deduction in gross_pay_deductions %}
+        <tr class="oh-payslip__table-tr">
+          <td class="oh-payslip__table-td">{{deduction.title}}</td>
+          <td class="oh-payslip__table-td">
+            {{currency}}{{deduction.amount|floatformat:2}}
+          </td>
+        </tr>
+        {% endfor %} {% for deduction in pretax_deductions %}
+        <tr class="oh-payslip__table-tr">
+          <td class="oh-payslip__table-td">{{deduction.title}}</td>
+          <td class="oh-payslip__table-td">
+            {{currency}}{{deduction.amount|floatformat:2}}
+          </td>
+        </tr>
+        {% endfor %} {% for deduction in post_tax_deductions %}
+        <tr class="oh-payslip__table-tr">
+          <td class="oh-payslip__table-td">{{deduction.title}}</td>
+          <td class="oh-payslip__table-td">
+            {{currency}}{{deduction.amount|floatformat:2}}
+          </td>
+        </tr>
+        {% endfor %}
+
+        <tr class="oh-payslip__table-tr">
+          <td class="oh-payslip__table-td">{% trans "Federal Tax" %}</td>
+          <td class="oh-payslip__table-td">
+            {{currency}}{{federal_tax|floatformat:2}}
+          </td>
+        </tr>
+
+        {% for deduction in tax_deductions %}
+        <tr class="oh-payslip__table-tr">
+          <td class="oh-payslip__table-td">{{deduction.title}}</td>
+          <td class="oh-payslip__table-td">
+            {{currency}}{{deduction.amount|floatformat:2}}
+          </td>
+        </tr>
+        {% endfor %} {% for deduction in net_deductions %}
+        <tr class="oh-payslip__table-tr">
+          <td class="oh-payslip__table-td">{{deduction.title}}</td>
+          <td class="oh-payslip__table-td">
+            {{currency}}{{deduction.amount|floatformat:2}}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+      <tfoot class="oh-payslip__table-tfoot">
+        <tr class="oh-payslip__table-tr">
+          <th
+            class="oh-payslip__table-tf"
+            title="{% trans 'Some deductions are not calculated to total deductions because they are deduducted before the calculation starts they deducted from basic pay, gross pay and some deduct after calculating the net pay' %}"
+          >
+            {% trans "Total Deductions" %}
+          </th>
+          <th class="oh-payslip__table-tf">
+            {{currency}}{{total_deductions|floatformat:2}}
+          </th>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+  <!-- End of Payslip Table -->
+
+  <!-- Payslip Payable -->
+  <div class="oh-payslip__net-payable">
+    <div class="oh-payslip__net-payable-left">
+      <h2 class="oh-payslip__net-payable-title">
+        {% trans "Total Net Payable" %}
+      </h2>
+      <p class="oh-payslip__net-payable-subtext">
+        {% trans "Gross Earnings - Total Deductions" %}
+      </p>
+    </div>
+    <div class="oh-payslip__net-payable-right">
+      <span class="oh-payslip__net-payable-amount"
+        >{{currency}}{{net_pay|floatformat:2}}</span
+      >
+    </div>
+  </div>
+</div>
+<div class="oh-modal" id="addBonusModal" role="dialog" aria-labelledby="addBonusModalLabel" aria-hidden="true">
+    <div class="oh-modal__dialog" id="addBonusModalBody"> </div>
+  </div>
+  
+  <div class="oh-modal" id="addDeductionModal" aria-labelledby="addDeductionModalLabel" role="dialog" aria-hidden="true">
+    <div class="oh-modal__dialog" style="max-width: 550px">
+      <div class="oh-modal__dialog-header">
+        <button type="button" class="oh-modal__close" aria-label="Close" style="margin-top: 34px;margin-right: 34px;"><ion-icon name="close-outline"></ion-icon></button>
+      </div>
+      <div class="oh-modal__dialog-body" id="addDeductionFormModal"></div>
+    </div>
+</div>

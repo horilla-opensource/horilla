@@ -448,7 +448,7 @@ class PayslipDeductionForm(ModelForm):
             "one_time_date": forms.HiddenInput(),
         }
 
-    employee_id = forms.IntegerField(label="Employee", widget=forms.HiddenInput())
+    # employee_id = forms.IntegerField(label="Employee", widget=forms.HiddenInput())
 
     def as_p(self):
         """

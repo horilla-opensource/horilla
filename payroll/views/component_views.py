@@ -3,6 +3,7 @@ component_views.py
 
 This module is used to write methods to the component_urls patterns respectively
 """
+
 from collections import defaultdict
 from itertools import groupby
 import json
@@ -300,7 +301,7 @@ def filter_allowance(request):
     template = card_view
     if request.GET.get("view") == "list":
         template = list_view
-    allowances = sortby(request,allowances,'sortby')
+    allowances = sortby(request, allowances, "sortby")
     allowances = paginator_qry(allowances, request.GET.get("page"))
     allowance_ids = json.dumps([instance.id for instance in allowances.object_list])
     data_dict = parse_qs(query_string)
@@ -433,7 +434,7 @@ def filter_deduction(request):
     template = card_view
     if request.GET.get("view") == "list":
         template = list_view
-    deductions = sortby(request,deductions,"sortby")
+    deductions = sortby(request, deductions, "sortby")
     deductions = paginator_qry(deductions, request.GET.get("page"))
     deduction_ids = json.dumps([instance.id for instance in deductions.object_list])
     data_dict = parse_qs(query_string)
@@ -602,6 +603,7 @@ def create_payslip(request, new_post_data=None):
                 payslip_data["instance"] = save_payslip(**data)
                 form = forms.PayslipForm()
                 messages.success(request, _("Payslip Saved"))
+                payslip = payslip_data["instance"]
                 notify.send(
                     request.user.employee_get,
                     recipient=employee.employee_user_id,
@@ -610,7 +612,7 @@ def create_payslip(request, new_post_data=None):
                     verb_de="Gehaltsabrechnung wurde für Sie erstellt.",
                     verb_es="Se ha generado la nómina para usted.",
                     verb_fr="La fiche de paie a été générée pour vous.",
-                    redirect=f"/payroll/view-payslip/{payslip.id}",
+                    redirect=f"/payroll/view-payslip/{payslip.pk}",
                     icon="close",
                 )
                 return render(
@@ -739,7 +741,7 @@ def filter_payslip(request):
     if field == "card":
         template = "payroll/payslip/group_payslips.html"
         payslips = payslips.filter(group_name__isnull=False).order_by("-group_name")
-    payslips = sortby(request,payslips,"sortby")
+    payslips = sortby(request, payslips, "sortby")
     payslips = paginator_qry(payslips, request.GET.get("page"))
     data_dict = []
     if not request.GET.get("dashboard"):
@@ -819,7 +821,7 @@ def payslip_export(request):
                     emp_company = company_name.first()
 
                     # Access the date_format attribute directly
-                    date_format = emp_company.date_format
+                    date_format = emp_company.date_format if emp_company else "MMM. D, YYYY"
                 else:
                     date_format = "MMM. D, YYYY"
                 # Define date formats
@@ -1127,9 +1129,9 @@ def view_reimbursement(request):
     requests = filter_own_records(
         request, filter_object.qs, "payroll.view_reimbursement"
     )
-    reimbursements = requests.filter(type = "reimbursement")
-    leave_encashments = requests.filter(type = "leave_encashment")
-    bonus_encashment = requests.filter(type = "bonus_encashment")
+    reimbursements = requests.filter(type="reimbursement")
+    leave_encashments = requests.filter(type="leave_encashment")
+    bonus_encashment = requests.filter(type="bonus_encashment")
     data_dict = {"status": ["requested"]}
     view = request.GET.get("view")
     template = "payroll/reimbursement/view_reimbursement.html"
@@ -1139,9 +1141,13 @@ def view_reimbursement(request):
         template,
         {
             "requests": paginator_qry(requests, request.GET.get("page")),
-            "reimbursements":paginator_qry(reimbursements, request.GET.get("rpage")),
-            "leave_encashments":paginator_qry(leave_encashments, request.GET.get("lpage")),
-            "bonus_encashments":paginator_qry(bonus_encashment, request.GET.get("bpage")),
+            "reimbursements": paginator_qry(reimbursements, request.GET.get("rpage")),
+            "leave_encashments": paginator_qry(
+                leave_encashments, request.GET.get("lpage")
+            ),
+            "bonus_encashments": paginator_qry(
+                bonus_encashment, request.GET.get("bpage")
+            ),
             "f": filter_object,
             "pd": request.GET.urlencode(),
             "filter_dict": data_dict,
@@ -1176,24 +1182,28 @@ def search_reimbursement(request):
     """
     requests = ReimbursementFilter(request.GET).qs
     requests = filter_own_records(request, requests, "payroll.view_reimbursement")
-    data_dict = parse_qs(request.GET.urlencode())    
-    reimbursements = requests.filter(type = "reimbursement")
-    leave_encashments = requests.filter(type = "leave_encashment")
-    bonus_encashment = requests.filter(type = "bonus_encashment")    
+    data_dict = parse_qs(request.GET.urlencode())
+    reimbursements = requests.filter(type="reimbursement")
+    leave_encashments = requests.filter(type="leave_encashment")
+    bonus_encashment = requests.filter(type="bonus_encashment")
     view = request.GET.get("view")
     template = "payroll/reimbursement/request_cards.html"
     if view == "list":
         template = "payroll/reimbursement/reimbursement_list.html"
     print(data_dict)
-    data_dict.pop("view",None)
+    data_dict.pop("view", None)
     return render(
         request,
         template,
         {
             "requests": paginator_qry(requests, request.GET.get("page")),
-            "reimbursements":paginator_qry(reimbursements, request.GET.get("rpage")),
-            "leave_encashments":paginator_qry(leave_encashments, request.GET.get("lpage")),
-            "bonus_encashments":paginator_qry(bonus_encashment, request.GET.get("bpage")),
+            "reimbursements": paginator_qry(reimbursements, request.GET.get("rpage")),
+            "leave_encashments": paginator_qry(
+                leave_encashments, request.GET.get("lpage")
+            ),
+            "bonus_encashments": paginator_qry(
+                bonus_encashment, request.GET.get("bpage")
+            ),
             "filter_dict": data_dict,
             "pd": request.GET.urlencode(),
         },
@@ -1239,7 +1249,8 @@ def approve_reimbursements(request):
             reimbursement.save()
             if reimbursement.get_status_display() != "Requested":
                 messages.success(
-                    request, f"Request {reimbursement.get_status_display()} successfully"
+                    request,
+                    f"Request {reimbursement.get_status_display()} successfully",
                 )
         if status == "canceled":
             notify.send(
