@@ -18,7 +18,7 @@
     }
   </style>
   <div id="reimbursementContainer">
-    {% if requests %}
+    {% if reimbursement_exists %}
     {% if view == "list" %}
     {% include 'payroll/reimbursement/reimbursement_list.html' %}
     {% else %}
@@ -55,6 +55,30 @@
     </div>
   </div>
   <script>
+    function reimbursementConfirm(params, target, approve = false) {
+      Swal.fire({
+          text: params,
+          icon: "question",
+          showCancelButton: true,
+          confirmButtonColor: "#008000",
+          cancelButtonColor: "#d33",
+          confirmButtonText: "Confirm",
+          cancelButtonText: "Close",
+      }).then((result) => {
+          if (result.isConfirmed) {
+              if (approve) {
+                  $(`${target} [name=amount]`).attr("required", true);
+              }
+              $(target + "Button").click();
+              if (event.target.tagName.toLowerCase() === "form") {
+                  event.target.submit();
+              } else if (event.target.tagName.toLowerCase() === "a") {
+                  window.location.href = event.target.href;
+              }
+          } else {
+          }
+      });
+  }
     function toggleReimbursmentType(element) {
         if (element.val() == 'reimbursement') {
           $('#reimbursementModalBody [name=attachment]').parent().show()

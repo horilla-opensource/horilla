@@ -1540,7 +1540,7 @@ class Reimbursement(models.Model):
     status_types = [
         ("requested", "Requested"),
         ("approved", "Approved"),
-        ("canceled", "Canceled"),
+        ("rejected", "Rejected"),
     ]
     title = models.CharField(max_length=50)
     type = models.CharField(
@@ -1676,7 +1676,7 @@ class Reimbursement(models.Model):
                 else:
                     self.status = "requested"
                 super().save(*args, **kwargs)
-            elif self.status == "canceled" and self.allowance_id is not None:
+            elif self.status == "rejected" and self.allowance_id is not None:
                 cfd_days = self.cfd_to_encash
                 available_days = self.ad_to_encash
                 if self.type == "leave encashment":
@@ -1694,6 +1694,10 @@ class Reimbursement(models.Model):
         if self.allowance_id:
             self.allowance_id.delete()
         return super().delete(*args, **kwargs)
+    
+# changing sattus canceled to reject for existing reimbursement
+if Reimbursement.objects.filter(status="canceled").exists():
+    Reimbursement.objects.filter(status="canceled").update(status="rejected")
 
 
 class ReimbursementrequestComment(models.Model):

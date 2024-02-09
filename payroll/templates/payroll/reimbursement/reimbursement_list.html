@@ -1,15 +1,15 @@
-{% load i18n %} {% include "filter_tags.html" %}
+{% load i18n %} {% load static %}{% include "filter_tags.html" %}
 <div class="d-flex flex-row-reverse oh-wrapper mb-2">
     <span
         class="me-3"
-        onclick="$('[name=status]').val('canceled').change();  $('.filterButton').click()"
+        onclick="$('[name=status]').val('rejected').change();  $('.filterButton').click()"
         style="cursor: pointer; margin-right: 15px"
     >
         <span
             class="oh-dot oh-dot--small me-1"
             style="background-color: red"
         ></span>
-        {% trans "Canceled" %}
+        {% trans "Rejected" %}
     </span>
     <span
         class="me-3"
@@ -49,50 +49,50 @@
             {% trans "Bonus Encashments" %}
         </li>
     </ul>
-    <div>
-        <div class="oh-tabs__contents">
-            <!-- Reimbursement-->
-            <div class="oh-tabs__content" id="reimbursement_tab">
+    <!-- start of tabs -->
+    <div class="oh-tabs__contents">
+        <!--start of Reimbursement tab-->
+        <div class="oh-tabs__content" id="reimbursement_tab">
+            {% if reimbursements %}
+                <!-- start of sticky table -->
                 <div class="oh-sticky-table">
                     <div class="oh-sticky-table__table oh-table--sortable">
                         <div class="oh-sticky-table__thead">
                             <div class="oh-sticky-table__tr">
                                 {% comment %} <div class="oh-sticky-table__th" style="width: 20px">
                                     <input
-                                      type="checkbox"
-                                      title='{% trans "Select All" %}'
-                                      class="oh-input oh-input__checkbox mt-1 mr-2 all-attendances"
-                                      style="margin-left: -5px"
+                                    type="checkbox"
+                                    title='{% trans "Select All" %}'
+                                    class="oh-input oh-input__checkbox mt-1 mr-2 all-attendances"
+                                    style="margin-left: -5px"
                                     />
                                 </div> {% endcomment %}
                                 <div
-                                  class="oh-sticky-table__th"
-                                  hx-get=""
-                                  hx-target="#tab_contents"
-                                  >
-                                  {% trans "Employee" %}
+                                class="oh-sticky-table__th"
+                                hx-get=""
+                                hx-target="#tab_contents"
+                                >
+                                {% trans "Employee" %}
                                 </div>
                                 <div
-                                  class="oh-sticky-table__th "
-                                  hx-get=""
-                                  hx-target="#tab_contents"
-                                  >
-                                  {% trans "Date" %}
+                                class="oh-sticky-table__th "
+                                hx-get=""
+                                hx-target="#tab_contents"
+                                >
+                                {% trans "Date" %}
                                 </div>
                                 <div class="oh-sticky-table__th">{% trans "title" %}</div>
                                 <div class="oh-sticky-table__th">{% trans "Amount" %}</div>
                                 <div class="oh-sticky-table__th">{% trans "Status" %}</div>
                                 <div
-                                  class="oh-sticky-table__th" style="width:200px"
-                                  hx-get=""
-                                  hx-target="#tab_contents"
-                                  >
-                                  {% trans "description" %}
+                                    class="oh-sticky-table__th" style="width:200px"
+                                    hx-get=""
+                                    hx-target="#tab_contents"
+                                >
+                                    {% trans "Description" %}
                                 </div>
-                                
-                                <div class="oh-sticky-table__th"></div>
-                                <div class="oh-sticky-table__th"></div>
                                 <div class="oh-sticky-table__th"> {% trans "Actions" %} </div>
+                                <div class="oh-sticky-table__th oh-sticky-table__right">{% trans "Confirmation" %}</div>
                             </div>
                         </div>
                         <div class="oh-sticky-table__tbody">
@@ -103,20 +103,20 @@
                                     id="requestCard{{ req.id }}"
                                 >
                                     {% comment %} <div class="oh-sticky-table__sd" onclick="event.stopPropagation();">
-                                      <input
+                                    <input
                                         type="checkbox"
                                         id="{{attendance.id}}"
                                         class="oh-input attendance-checkbox oh-input__checkbox mt-2 mr-2 all-attendance-row"
-                                      />
+                                    />
                                     </div> {% endcomment %}
                                     <div class="oh-sticky-table__sd">
                                         <div class="d-flex">
                                             <div class="oh-profile oh-profile--md">
                                                 <div class="oh-profile__avatar mr-1">
                                                     <img
-                                                      src="{{req.employee_id.get_avatar}}"
-                                                      class="oh-profile__image"
-                                                      alt=""
+                                                    src="{{req.employee_id.get_avatar}}"
+                                                    class="oh-profile__image"
+                                                    alt=""
                                                     />
                                                 </div>
                                                 <span class="oh-profile__name oh-text--dark">{{req.employee_id}}</span>
@@ -125,64 +125,17 @@
                                     </div>
                                     <div class="oh-sticky-table__td dateformat_changer">{{req.created_at|date:"F j, Y"}}</div>
                                     <div class="oh-sticky-table__td">
-                                      {{req.title|truncatechars:20 }}
+                                    {{req.title|truncatechars:20 }}
                                     </div>
                                     <div class="oh-sticky-table__td">
-                                      {{req.amount}}
+                                    {{req.amount}}
                                     </div>
                                     <div class="oh-sticky-table__td">
-                                      {{req.status}}
+                                    {{req.get_status_display}}
                                     </div>
                                     <div class="oh-sticky-table__td">
-                                      {{req.description}}
+                                    {{req.description}}
                                     </div>  
-                                    <div class="oh-sticky-table__td">            
-                                        <button
-                                            type="button"
-                                            onclick="$('#requestCard{{ req.id }} [name=amount]').attr('required',false);reimbursementConfirm('Do You really want to cancel the request?','#requestCard{{ req.id }}');$('#requestCard{{ req.id }} [name=status]').val('canceled')"
-                                            class="oh-btn oh-btn--primary oh-btn--block w-100"
-                                        >
-                                            <ion-icon name="close" class="mr-1"></ion-icon>
-                                            {% trans 'Cancel' %}
-                                        </button> 
-                                    </div>   
-
-                                    <div class="oh-sticky-table__td">
-                                        <input type="hidden" name="ids" value="{{ req.id }}" />
-                                        <input type="hidden" name="status" />
-                                        <div class="oh-btn-group">
-                                            
-                                            {% if req.status != "approved" %}
-                                            <button
-                                                type="button"
-                                                onclick="reimbursementConfirm('Do You really want to approve the request?','#requestCard{{ req.id }}',true);$('#requestCard{{ req.id }} [name=status]').val('approved')"
-                                                class="oh-btn oh-btn--secondary oh-btn--block w-100"
-                                            >
-                                                <ion-icon
-                                                    name="checkmark"
-                                                    class="mr-1"
-                                                ></ion-icon>
-                                                {% trans 'Approve' %}
-                                            </button>
-                                            {% else %}
-                                            <button
-                                                type="button"
-                                                class="oh-btn oh-btn--secondary oh-btn--disabled oh-btn--block w-100"
-                                            >
-                                                <ion-icon
-                                                    name="checkmark"
-                                                    class="mr-1"
-                                                ></ion-icon>
-                                                {% trans 'Approved' %}
-                                            </button>
-                                            {% endif %}
-                                        </div>
-                                        <input
-                                            type="submit"
-                                            hidden
-                                            id="requestCard{{ req.id }}Button"
-                                        />
-                                    </div>
                                     <div class="oh-sticky-table__td">
                                         <div class="oh-btn-group">
                                             {% if perms.attendance.change_attendance or request.user %}
@@ -194,27 +147,64 @@
                                                     data-target="#reimbursementModal"
                                                     class="oh-btn oh-btn--light-bkg w-50"
                                                     title="{% trans 'Edit' %}"
-                                                  >
-                                                  <ion-icon name="create-outline"></ion-icon>
+                                                >
+                                                <ion-icon name="create-outline"></ion-icon>
                                                 </a>
                                             {% endif %} 
                                             {% if perms.attendance.delete_attendance %}
                                                 <a href="{% url "delete-reimbursement" %}?ids={{req.id}}" onclick="return confirm('Do you want to delete this record?')" 
-                                                     class='w-50 oh-btn oh-btn--danger-outline oh-btn--light-bkg'> 
+                                                    class='w-50 oh-btn oh-btn--danger-outline oh-btn--light-bkg'> 
                                                     
                                                     <ion-icon name="trash-outline"></ion-icon>
                                                 </a>
                                             {% endif %}
                                         </div>
                                     </div> 
+
+                                    <div class="oh-sticky-table__td oh-sticky-table__right">
+                                        <input type="hidden" name="ids" value="{{ req.id }}" />
+                                        <input type="hidden" name="status" />
+                                        <div class="oh-btn-group">
+                                            
+                                            {% if req.status != "approved" and req.status != 'rejected'%}
+                                                <button
+                                                    type="button"
+                                                    onclick="reimbursementConfirm('Do You really want to approve the request?','#requestCard{{ req.id }}',true);$('#requestCard{{ req.id }} [name=status]').val('approved')"
+                                                    class='oh-btn oh-btn--success w-100'
+                                                    title="{% trans 'Approve' %}"
+                                                >
+                                                    <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
+                                                </button>
+                                            {% else %}
+                                                <button class='oh-btn oh-btn--success w-100' disabled>
+                                                    <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
+                                                </button>
+                                            {% endif %}
+                                            <button
+                                                type="button"
+                                                onclick="$('#requestCard{{ req.id }} [name=amount]').attr('required',false);reimbursementConfirm('Do You really want to reject the request?','#requestCard{{ req.id }}');$('#requestCard{{ req.id }} [name=status]').val('canceled')"
+                                                class="oh-btn oh-btn--danger w-100"
+                                                title="{% trans 'Reject' %}"
+                                            >
+                                                <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
+                                            </button>
+                                        </div>
+                                        
+                                        <input
+                                            type="submit"
+                                            hidden
+                                            id="requestCard{{ req.id }}Button"
+                                        />
+                                         
+                                    </div>
+                                    
                                 </form>
                             {% endfor %}
                         </div>
                     </div>
                 </div>
-
-
-
+                <!-- end of sticky table -->
+                <!-- start of pagination -->
                 <div class="oh-wrapper w-100">
                     <div class="oh-pagination">
                         <span
@@ -292,38 +282,53 @@
                         </nav>
                     </div>
                 </div>
-            </div>
+                <!-- end of pagination -->
+            {% else %}
+                <!-- start of empty page -->
+                <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%;" >
+                    <img
+                    style="width: 150px; height: 150px"
+                    src="{% static 'images/ui/no-results.png' %}"
+                    class="oh-404__image mb-4"
+                    />
+                    <h5 class="oh-404__subtitle">
+                    {% trans "No search result found!" %}
+                    </h5>
+                </div>
+                <!-- end of empty page -->
+            {% endif %}
         </div>
+        <!--end of Reimbursement tab-->
 
-        
-        <div class="oh-tabs__contents">
-            <!--  Leave Encashments-->
-            <div class="oh-tabs__content" id="leave_encashment_tab">
+        <!-- start of Leave Encashments-->
+        <div class="oh-tabs__content" id="leave_encashment_tab">
+            {% if leave_encashments %}
+                <!-- start of sticky table -->
                 <div class="oh-sticky-table">
                     <div class="oh-sticky-table__table oh-table--sortable">
                         <div class="oh-sticky-table__thead">
                             <div class="oh-sticky-table__tr">
                                 {% comment %} <div class="oh-sticky-table__th" style="width: 20px">
                                     <input
-                                      type="checkbox"
-                                      title='{% trans "Select All" %}'
-                                      class="oh-input oh-input__checkbox mt-1 mr-2 all-attendances"
-                                      style="margin-left: -5px"
+                                        type="checkbox"
+                                        title='{% trans "Select All" %}'
+                                        class="oh-input oh-input__checkbox mt-1 mr-2 all-attendances"
+                                        style="margin-left: -5px"
                                     />
                                 </div> {% endcomment %}
                                 <div
-                                  class="oh-sticky-table__th"
-                                  hx-get=""
-                                  hx-target="#tab_contents"
-                                  >
-                                  {% trans "Employee" %}
+                                    class="oh-sticky-table__th"
+                                    hx-get=""
+                                    hx-target="#tab_contents"
+                                    >
+                                    {% trans "Employee" %}
                                 </div>
                                 <div
-                                  class="oh-sticky-table__th "
-                                  hx-get=""
-                                  hx-target="#tab_contents"
-                                  >
-                                  {% trans "Date" %}
+                                    class="oh-sticky-table__th "
+                                    hx-get=""
+                                    hx-target="#tab_contents"
+                                    >
+                                    {% trans "Date" %}
                                 </div>
                                 <div class="oh-sticky-table__th">{% trans "title" %}</div>
                                 <div class="oh-sticky-table__th">{% trans "Amount" %}</div>
@@ -332,477 +337,490 @@
                                 <div class="oh-sticky-table__th">{% trans "carryforward to encash" %}</div>
                                 <div class="oh-sticky-table__th">{% trans "Status" %}</div>
                                 <div
-                                  class="oh-sticky-table__th" style="width:200px"
-                                  hx-get=""
-                                  hx-target="#tab_contents"
-                                  >
-                                  {% trans "description" %}
+                                    class="oh-sticky-table__th" style="width:200px"
+                                    hx-get=""
+                                    hx-target="#tab_contents"
+                                    >
+                                    {% trans "Description" %}
                                 </div>
-                                
-                                <div class="oh-sticky-table__th"></div>
-                                <div class="oh-sticky-table__th"></div>
                                 <div class="oh-sticky-table__th"> {% trans "Actions" %} </div>
+                                <div class="oh-sticky-table__th oh-sticky-table__right">{% trans "Confirmation" %}</div>
                             </div>
                         </div>
                         <div class="oh-sticky-table__tbody"> 
-                        {% for req in leave_encashments %}
-                        <form
-                            action="{% url 'approve-reimbursements' %}"
-                            class="oh-sticky-table__tr"
-                            id="requestCard{{ req.id }}"
-                        >
-                            {% comment %} <div class="oh-sticky-table__sd" onclick="event.stopPropagation();">
-                                <input
-                                type="checkbox"
-                                id="{{attendance.id}}"
-                                class="oh-input attendance-checkbox oh-input__checkbox mt-2 mr-2 all-attendance-row"
-                                />
-                            </div> {% endcomment %}
-                            <div class="oh-sticky-table__sd">
-                                <div class="d-flex">
-                                    <div class="oh-profile oh-profile--md">
-                                        <div class="oh-profile__avatar mr-1">
-                                            <img
-                                                src="{{req.employee_id.get_avatar}}"
-                                                class="oh-profile__image"
-                                                alt=""
-                                            />
-                                        </div>
-                                        <span class="oh-profile__name oh-text--dark">{{req.employee_id}}</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="oh-sticky-table__td dateformat_changer">{{req.created_at|date:"F j, Y"}}</div>
-                            <div class="oh-sticky-table__td">
-                                {{req.title|truncatechars:20 }}
-                            </div>
-                            <div class="oh-sticky-table__td">
-                                <input type="number" required
-                                default="0" min="0" placeholder="Amount"
-                                name="amount" class="w-50"{% if req.status == "approved" %}disabled{% endif %} {% if req.amount %}
-                                value="{{req.amount}}"{% endif %} />
-                            </div>
-                            <div class="oh-sticky-table__td">
-                                {{req.leave_type_id}}
-                            </div>
-                            <div class="oh-sticky-table__td">
-                                {{req.ad_to_encash}}
-                            </div>
-                            <div class="oh-sticky-table__td">
-                                {{req.cfd_to_encash}}
-                            </div>
-                            <div class="oh-sticky-table__td">
-                                {{req.status}}
-                            </div>
-                            <div class="oh-sticky-table__td">
-                                {{req.description}}
-                            </div>  
-                            <div class="oh-sticky-table__td">            
-                                <button
-                                    type="button"
-                                    onclick="$('#requestCard{{ req.id }} [name=amount]').attr('required',false);reimbursementConfirm('Do You really want to cancel the request?','#requestCard{{ req.id }}');$('#requestCard{{ req.id }} [name=status]').val('canceled')"
-                                    class="oh-btn oh-btn--primary oh-btn--block w-100"
+                            {% for req in leave_encashments %}
+                                <form
+                                    action="{% url 'approve-reimbursements' %}"
+                                    class="oh-sticky-table__tr"
+                                    id="requestCard{{ req.id }}"
                                 >
-                                    <ion-icon name="close" class="mr-1"></ion-icon>
-                                    {% trans 'Cancel' %}
-                                </button> 
-                            </div>   
-
-                            <div class="oh-sticky-table__td">
-                                <input type="hidden" name="ids" value="{{ req.id }}" />
-                                <input type="hidden" name="status" />
-                                <div class="oh-btn-group">
-                                    
-                                    {% if req.status != "approved" %}
-                                    <button
-                                        type="button"
-                                        onclick="reimbursementConfirm('Do You really want to approve the request?','#requestCard{{ req.id }}',true);$('#requestCard{{ req.id }} [name=status]').val('approved')"
-                                        class="oh-btn oh-btn--secondary oh-btn--block w-100"
-                                    >
-                                        <ion-icon
-                                            name="checkmark"
-                                            class="mr-1"
-                                        ></ion-icon>
-                                        {% trans 'Approve' %}
-                                    </button>
-                                    {% else %}
-                                    <button
-                                        type="button"
-                                        class="oh-btn oh-btn--secondary oh-btn--disabled oh-btn--block w-100"
-                                    >
-                                        <ion-icon
-                                            name="checkmark"
-                                            class="mr-1"
-                                        ></ion-icon>
-                                        {% trans 'Approved' %}
-                                    </button>
-                                    {% endif %}
-                                </div>
-                                <input
-                                    type="submit"
-                                    hidden
-                                    id="requestCard{{ req.id }}Button"
-                                />
-                            </div>
-                            <div class="oh-sticky-table__td">
-                                <div class="oh-btn-group">
-                                    {% if perms.attendance.change_attendance or request.user %}
-                                        <a
-                                            onclick="event.stopPropagation()"
-                                            hx-get="{% url 'create-reimbursement' %}?instance_id={{ req.id }}"
-                                            hx-target="#reimbursementModalBody"
-                                            data-toggle="oh-modal-toggle"
-                                            data-target="#reimbursementModal"
-                                            class="oh-btn oh-btn--light-bkg w-50"
-                                            title="{% trans 'Edit' %}"
-                                            >
-                                            <ion-icon name="create-outline"></ion-icon>
-                                        </a>
-                                    {% endif %} 
-                                    {% if perms.attendance.delete_attendance %}
-                                        <a href="{% url "delete-reimbursement" %}?ids={{req.id}}" onclick="return confirm('Do you want to delete this record?')" 
-                                        class='w-50 oh-btn oh-btn--danger-outline oh-btn--light-bkg'> 
-                                            
-                                            <ion-icon name="trash-outline"></ion-icon>
-                                        </a>
-                                    {% endif %}
-                                </div>
-                            </div> 
-                        </form>
-                    {% endfor %}
+                                    {% comment %} <div class="oh-sticky-table__sd" onclick="event.stopPropagation();">
+                                        <input
+                                        type="checkbox"
+                                        id="{{attendance.id}}"
+                                        class="oh-input attendance-checkbox oh-input__checkbox mt-2 mr-2 all-attendance-row"
+                                        />
+                                    </div> {% endcomment %}
+                                    <div class="oh-sticky-table__sd">
+                                        <div class="d-flex">
+                                            <div class="oh-profile oh-profile--md">
+                                                <div class="oh-profile__avatar mr-1">
+                                                    <img
+                                                        src="{{req.employee_id.get_avatar}}"
+                                                        class="oh-profile__image"
+                                                        alt=""
+                                                    />
+                                                </div>
+                                                <span class="oh-profile__name oh-text--dark">{{req.employee_id}}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="oh-sticky-table__td dateformat_changer">{{req.created_at|date:"F j, Y"}}</div>
+                                    <div class="oh-sticky-table__td">
+                                        {{req.title|truncatechars:20 }}
+                                    </div>
+                                    <div class="oh-sticky-table__td">
+                                        <input type="number" required
+                                        default="0" min="0" placeholder="Amount"
+                                        name="amount" class="w-50"{% if req.status == "approved" %}disabled{% endif %} {% if req.amount %}
+                                        value="{{req.amount}}"{% endif %} />
+                                    </div>
+                                    <div class="oh-sticky-table__td">
+                                        {{req.leave_type_id}}
+                                    </div>
+                                    <div class="oh-sticky-table__td">
+                                        {{req.ad_to_encash}}
+                                    </div>
+                                    <div class="oh-sticky-table__td">
+                                        {{req.cfd_to_encash}}
+                                    </div>
+                                    <div class="oh-sticky-table__td">
+                                        {{req.get_status_display}}
+                                    </div>
+                                    <div class="oh-sticky-table__td">
+                                        {{req.description}}
+                                    </div> 
+                                    <div class="oh-sticky-table__td">
+                                        <div class="oh-btn-group">
+                                            {% if perms.attendance.change_attendance or request.user %}
+                                                <a
+                                                    onclick="event.stopPropagation()"
+                                                    hx-get="{% url 'create-reimbursement' %}?instance_id={{ req.id }}"
+                                                    hx-target="#reimbursementModalBody"
+                                                    data-toggle="oh-modal-toggle"
+                                                    data-target="#reimbursementModal"
+                                                    class="oh-btn oh-btn--light-bkg w-50"
+                                                    title="{% trans 'Edit' %}"
+                                                    >
+                                                    <ion-icon name="create-outline"></ion-icon>
+                                                </a>
+                                            {% endif %} 
+                                            {% if perms.attendance.delete_attendance %}
+                                                <a href="{% url "delete-reimbursement" %}?ids={{req.id}}" onclick="return confirm('Do you want to delete this record?')" 
+                                                class='w-50 oh-btn oh-btn--danger-outline oh-btn--light-bkg'> 
+                                                    
+                                                    <ion-icon name="trash-outline"></ion-icon>
+                                                </a>
+                                            {% endif %}
+                                        </div>
+                                    </div> 
+                                    <div class="oh-sticky-table__td oh-sticky-table__right">
+                                        <input type="hidden" name="ids" value="{{ req.id }}" />
+                                        <input type="hidden" name="status" />
+                                        <div class="oh-btn-group">
+                                            {% if req.status != "approved" and req.status != "rejected" %}
+                                                <button
+                                                    type="button"
+                                                    title="{% trans 'Approve' %}"
+                                                    onclick="reimbursementConfirm('Do You really want to approve the request?','#requestCard{{ req.id }}',true);$('#requestCard{{ req.id }} [name=status]').val('approved')"
+                                                    class="oh-btn oh-btn--success w-100"
+                                                >
+                                                    <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
+                                                </button>
+                                            {% else %}
+                                                <button
+                                                    type="button"
+                                                    title="{% trans 'Approve' %}"
+                                                    class="oh-btn oh-btn--success oh-btn--disabled w-100"
+                                                >
+                                                    <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
+                                                </button>
+                                            {% endif %}
+                                                <button
+                                                    type="button"
+                                                    title="{% trans 'Reject' %}"
+                                                    onclick="$('#requestCard{{ req.id }} [name=amount]').attr('required',false);reimbursementConfirm('Do You really want to reject the request?','#requestCard{{ req.id }}');$('#requestCard{{ req.id }} [name=status]').val('canceled')"
+                                                    class="oh-btn oh-btn--danger w-100"
+                                                >
+                                                    <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
+                                                </button> 
+                                        </div>
+                                        <input
+                                            type="submit"
+                                            hidden
+                                            id="requestCard{{ req.id }}Button"
+                                        />
+                                    </div>
+                                </form>
+                            {% endfor %}
+                        </div>
                     </div>
                 </div>
-            </div>
+                <!-- end of sticky table -->
+                <!-- start of pagination -->
+                <div class="oh-wrapper w-100">
+                    <div class="oh-pagination">
+                        <span
+                            class="oh-pagination__page"
+                            data-toggle="modal"
+                            data-target="#addEmployeeModal"
+                            >{% trans 'Page' %} {{ requests.number }} {% trans 'of' %} 
+                            {{ requests.paginator.num_pages }}.</span
+                        >
 
-
-            <div class="oh-wrapper w-100">
-                <div class="oh-pagination">
-                    <span
-                        class="oh-pagination__page"
-                        data-toggle="modal"
-                        data-target="#addEmployeeModal"
-                        >{% trans 'Page' %} {{ requests.number }} {% trans 'of' %} 
-                        {{ requests.paginator.num_pages }}.</span
-                    >
-
-                    <nav class="oh-pagination__nav">
-                        <div class="oh-pagination__input-container me-3">
-                            <span class="oh-pagination__label me-1"
-                                >{% trans 'Page' %}</span
-                            >
-
-                            <input
-                                type="number"
-                                name="page"
-                                class="oh-pagination__input"
-                                value="{{ requests.number }}"
-                                hx-get="{% url 'search-reimbursement' %}?{{ pd }}"
-                                hx-target="#reimbursementContainer"
-                                min="1"
-                            />
-                            <span class="oh-pagination__label"
-                                >{% trans 'of' %} {{ requests.paginator.num_pages }}</span
-                            >
-                        </div>
-
-                        <ul class="oh-pagination__items">
-                            {% if requests.has_previous %}
-                            <li
-                                class="oh-pagination__item oh-pagination__item--wide"
-                            >
-                                <a
-                                    hx-target="#reimbursementContainer"
-                                    hx-get="{% url 'search-reimbursement' %}?{{ pd }}&page=1"
-                                    class="oh-pagination__link"
-                                    >{% trans 'First' %}</a
+                        <nav class="oh-pagination__nav">
+                            <div class="oh-pagination__input-container me-3">
+                                <span class="oh-pagination__label me-1"
+                                    >{% trans 'Page' %}</span
                                 >
-                            </li>
-                            <li
-                                class="oh-pagination__item oh-pagination__item--wide"
-                            >
-                                <a
+
+                                <input
+                                    type="number"
+                                    name="page"
+                                    class="oh-pagination__input"
+                                    value="{{ requests.number }}"
+                                    hx-get="{% url 'search-reimbursement' %}?{{ pd }}"
                                     hx-target="#reimbursementContainer"
-                                    hx-get="{% url 'search-reimbursement' %}?{{ pd }}&lpage={{ requests.previous_page_number }}"
-                                    class="oh-pagination__link"
-                                    >{% trans 'Previous' %}</a
+                                    min="1"
+                                />
+                                <span class="oh-pagination__label"
+                                    >{% trans 'of' %} {{ requests.paginator.num_pages }}</span
                                 >
-                            </li>
-                            {% endif %} {% if requests.has_next %}
-                            <li
-                                class="oh-pagination__item oh-pagination__item--wide"
-                            >
-                                <a
-                                    hx-target="#reimbursementContainer"
-                                    hx-get="{% url 'search-reimbursement' %}?{{ pd }}&lpage={{ requests.next_page_number }}"
-                                    class="oh-pagination__link"
-                                    >{% trans 'Next' %}</a
+                            </div>
+
+                            <ul class="oh-pagination__items">
+                                {% if requests.has_previous %}
+                                <li
+                                    class="oh-pagination__item oh-pagination__item--wide"
                                 >
-                            </li>
-                            <li
-                                class="oh-pagination__item oh-pagination__item--wide"
-                            >
-                                <a
-                                    hx-target="#reimbursementContainer"
-                                    hx-get="{% url 'search-reimbursement' %}?{{ pd }}&page={{ requests.paginator.num_pages }}"
-                                    class="oh-pagination__link"
-                                    >{% trans 'Last' %}</a
+                                    <a
+                                        hx-target="#reimbursementContainer"
+                                        hx-get="{% url 'search-reimbursement' %}?{{ pd }}&page=1"
+                                        class="oh-pagination__link"
+                                        >{% trans 'First' %}</a
+                                    >
+                                </li>
+                                <li
+                                    class="oh-pagination__item oh-pagination__item--wide"
                                 >
-                            </li>
-                            {% endif %}
-                        </ul>
-                    </nav>
+                                    <a
+                                        hx-target="#reimbursementContainer"
+                                        hx-get="{% url 'search-reimbursement' %}?{{ pd }}&lpage={{ requests.previous_page_number }}"
+                                        class="oh-pagination__link"
+                                        >{% trans 'Previous' %}</a
+                                    >
+                                </li>
+                                {% endif %} {% if requests.has_next %}
+                                <li
+                                    class="oh-pagination__item oh-pagination__item--wide"
+                                >
+                                    <a
+                                        hx-target="#reimbursementContainer"
+                                        hx-get="{% url 'search-reimbursement' %}?{{ pd }}&lpage={{ requests.next_page_number }}"
+                                        class="oh-pagination__link"
+                                        >{% trans 'Next' %}</a
+                                    >
+                                </li>
+                                <li
+                                    class="oh-pagination__item oh-pagination__item--wide"
+                                >
+                                    <a
+                                        hx-target="#reimbursementContainer"
+                                        hx-get="{% url 'search-reimbursement' %}?{{ pd }}&page={{ requests.paginator.num_pages }}"
+                                        class="oh-pagination__link"
+                                        >{% trans 'Last' %}</a
+                                    >
+                                </li>
+                                {% endif %}
+                            </ul>
+                        </nav>
+                    </div>
                 </div>
-            </div>
+                <!-- end of pagination -->
+            {% else %}
+                <!-- start of empty page -->
+                <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%;" >
+                    <img
+                    style="width: 150px; height: 150px"
+                    src="{% static 'images/ui/no-results.png' %}"
+                    class="oh-404__image mb-4"
+                    />
+                    <h5 class="oh-404__subtitle">
+                    {% trans "No search result found!" %}
+                    </h5>
+                </div>
+                <!-- end of empty page -->
+            {% endif %}
         </div>
+        <!-- end of Leave Encashments-->
 
-        
-        <div class="oh-tabs__contents">
-            <!-- Bonus Encashments-->
-            <div class="oh-tabs__content" id="bonus_encashment_tab">
+        <!-- start of Bonus Encashments-->
+        <div class="oh-tabs__content" id="bonus_encashment_tab">
+            {% if bonus_encashments %}
+                <!-- start of sticky table -->
                 <div class="oh-sticky-table">
                     <div class="oh-sticky-table__table oh-table--sortable">
                         <div class="oh-sticky-table__thead">
                             <div class="oh-sticky-table__tr">
                                 {% comment %} <div class="oh-sticky-table__th" style="width: 20px">
                                     <input
-                                      type="checkbox"
-                                      title='{% trans "Select All" %}'
-                                      class="oh-input oh-input__checkbox mt-1 mr-2 all-attendances"
-                                      style="margin-left: -5px"
+                                        type="checkbox"
+                                        title='{% trans "Select All" %}'
+                                        class="oh-input oh-input__checkbox mt-1 mr-2 all-attendances"
+                                        style="margin-left: -5px"
                                     />
                                 </div> {% endcomment %}
                                 <div
-                                  class="oh-sticky-table__th"
-                                  hx-get=""
-                                  hx-target="#tab_contents"
-                                  >
-                                  {% trans "Employee" %}
+                                    class="oh-sticky-table__th"
+                                    hx-get=""
+                                    hx-target="#tab_contents"
+                                    >
+                                    {% trans "Employee" %}
                                 </div>
                                 <div
-                                  class="oh-sticky-table__th "
-                                  hx-get=""
-                                  hx-target="#tab_contents"
-                                  >
-                                  {% trans "Date" %}
+                                    class="oh-sticky-table__th "
+                                    hx-get=""
+                                    hx-target="#tab_contents"
+                                    >
+                                    {% trans "Date" %}
                                 </div>
                                 <div class="oh-sticky-table__th">{% trans "title" %}</div>
                                 <div class="oh-sticky-table__th">{% trans "Amount" %}</div>
                                 <div class="oh-sticky-table__th">{% trans "Bonus to encash" %}</div>
                                 <div class="oh-sticky-table__th">{% trans "Status" %}</div>
                                 <div
-                                  class="oh-sticky-table__th" style="width:200px"
-                                  hx-get=""
-                                  hx-target="#tab_contents"
-                                  >
-                                  {% trans "description" %}
+                                    class="oh-sticky-table__th" style="width:200px"
+                                    hx-get=""
+                                    hx-target="#tab_contents"
+                                    >
+                                    {% trans "Description" %}
                                 </div>
-                                
-                                <div class="oh-sticky-table__th"></div>
-                                <div class="oh-sticky-table__th"></div>
                                 <div class="oh-sticky-table__th"> {% trans "Actions" %} </div>
+                                <div class="oh-sticky-table__th oh-sticky-table__right"> {% trans "Confirmation" %} </div>
                             </div>
                         </div>
                         <div class="oh-sticky-table__tbody">
-                        {% for req in bonus_encashments %}
-                            <form
-                                action="{% url 'approve-reimbursements' %}"
-                                class="oh-sticky-table__tr"
-                                id="requestCard{{ req.id }}"
-                            >
-                                {% comment %} <div class="oh-sticky-table__sd" onclick="event.stopPropagation();">
-                                    <input
-                                    type="checkbox"
-                                    id="{{attendance.id}}"
-                                    class="oh-input attendance-checkbox oh-input__checkbox mt-2 mr-2 all-attendance-row"
-                                    />
-                                </div> {% endcomment %}
-                                <div class="oh-sticky-table__sd">
-                                    <div class="d-flex">
-                                        <div class="oh-profile oh-profile--md">
-                                            <div class="oh-profile__avatar mr-1">
-                                                <img
-                                                    src="{{req.employee_id.get_avatar}}"
-                                                    class="oh-profile__image"
-                                                    alt=""
-                                                />
+                            {% for req in bonus_encashments %}
+                                <form
+                                    action="{% url 'approve-reimbursements' %}"
+                                    class="oh-sticky-table__tr"
+                                    id="requestCard{{ req.id }}"
+                                >
+                                    {% comment %} <div class="oh-sticky-table__sd" onclick="event.stopPropagation();">
+                                        <input
+                                        type="checkbox"
+                                        id="{{attendance.id}}"
+                                        class="oh-input attendance-checkbox oh-input__checkbox mt-2 mr-2 all-attendance-row"
+                                        />
+                                    </div> {% endcomment %}
+                                    <div class="oh-sticky-table__sd">
+                                        <div class="d-flex">
+                                            <div class="oh-profile oh-profile--md">
+                                                <div class="oh-profile__avatar mr-1">
+                                                    <img
+                                                        src="{{req.employee_id.get_avatar}}"
+                                                        class="oh-profile__image"
+                                                        alt=""
+                                                    />
+                                                </div>
+                                                <span class="oh-profile__name oh-text--dark">{{req.employee_id}}</span>
                                             </div>
-                                            <span class="oh-profile__name oh-text--dark">{{req.employee_id}}</span>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="oh-sticky-table__td dateformat_changer">{{req.created_at|date:"F j, Y"}}</div>
-                                <div class="oh-sticky-table__td">
-                                    {{req.title|truncatechars:20 }}
-                                </div>
-                                <div class="oh-sticky-table__td">
-                                    <input type="number" required
-                                    default="0" min="0" placeholder="Amount"
-                                    name="amount" class="w-50"{% if req.status == "approved" %}disabled{% endif %} {% if req.amount %}
-                                    value="{{req.amount}}"{% endif %} />
-                                </div>
-                                <div class="oh-sticky-table__td">
-                                    {{req.bonus_to_encash}}
-                                </div>
-                                <div class="oh-sticky-table__td">
-                                    {{req.status}}
-                                </div>
-                                <div class="oh-sticky-table__td">
-                                    {{req.description}}
-                                </div>  
-                                <div class="oh-sticky-table__td">            
-                                    <button
-                                        type="button"
-                                        onclick="$('#requestCard{{ req.id }} [name=amount]').attr('required',false);reimbursementConfirm('Do You really want to cancel the request?','#requestCard{{ req.id }}');$('#requestCard{{ req.id }} [name=status]').val('canceled')"
-                                        class="oh-btn oh-btn--primary oh-btn--block w-100"
-                                    >
-                                        <ion-icon name="close" class="mr-1"></ion-icon>
-                                        {% trans 'Cancel' %}
-                                    </button> 
-                                </div>   
-
-                                <div class="oh-sticky-table__td">
-                                    <input type="hidden" name="ids" value="{{ req.id }}" />
-                                    <input type="hidden" name="status" />
-                                    <div class="oh-btn-group">
-                                        
-                                        {% if req.status != "approved" %}
-                                        <button
-                                            type="button"
-                                            onclick="reimbursementConfirm('Do You really want to approve the request?','#requestCard{{ req.id }}',true);$('#requestCard{{ req.id }} [name=status]').val('approved')"
-                                            class="oh-btn oh-btn--secondary oh-btn--block w-100"
-                                        >
-                                            <ion-icon
-                                                name="checkmark"
-                                                class="mr-1"
-                                            ></ion-icon>
-                                            {% trans 'Approve' %}
-                                        </button>
-                                        {% else %}
-                                        <button
-                                            type="button"
-                                            class="oh-btn oh-btn--secondary oh-btn--disabled oh-btn--block w-100"
-                                        >
-                                            <ion-icon
-                                                name="checkmark"
-                                                class="mr-1"
-                                            ></ion-icon>
-                                            {% trans 'Approved' %}
-                                        </button>
-                                        {% endif %}
+                                    <div class="oh-sticky-table__td dateformat_changer">{{req.created_at|date:"F j, Y"}}</div>
+                                    <div class="oh-sticky-table__td">
+                                        {{req.title|truncatechars:20 }}
                                     </div>
-                                    <input
-                                        type="submit"
-                                        hidden
-                                        id="requestCard{{ req.id }}Button"
-                                    />
-                                </div>
-                                <div class="oh-sticky-table__td">
-                                    <div class="oh-btn-group">
-                                        {% if perms.attendance.change_attendance or request.user %}
-                                            <a
-                                                hx-get="{% url 'create-reimbursement' %}?instance_id={{ req.id }}"
-                                                hx-target="#reimbursementModalBody"
-                                                data-toggle="oh-modal-toggle"
-                                                data-target="#reimbursementModal"
-                                                class="oh-btn oh-btn--light-bkg w-50"
-                                                title="{% trans 'Edit' %}"
+                                    <div class="oh-sticky-table__td">
+                                        <input type="number" required
+                                        default="0" min="0" placeholder="Amount"
+                                        name="amount" class="w-50"{% if req.status == "approved" %}disabled{% endif %} {% if req.amount %}
+                                        value="{{req.amount}}"{% endif %} />
+                                    </div>
+                                    <div class="oh-sticky-table__td">
+                                        {{req.bonus_to_encash}}
+                                    </div>
+                                    <div class="oh-sticky-table__td">
+                                        {{req.get_status_display}}
+                                    </div>
+                                    <div class="oh-sticky-table__td">
+                                        {{req.description}}
+                                    </div> 
+                                    <div class="oh-sticky-table__td">
+                                        <div class="oh-btn-group">
+                                            {% if perms.attendance.change_attendance or request.user %}
+                                                <a
+                                                    hx-get="{% url 'create-reimbursement' %}?instance_id={{ req.id }}"
+                                                    hx-target="#reimbursementModalBody"
+                                                    data-toggle="oh-modal-toggle"
+                                                    data-target="#reimbursementModal"
+                                                    class="oh-btn oh-btn--light-bkg w-50"
+                                                    title="{% trans 'Edit' %}"
+                                                    >
+                                                    <ion-icon name="create-outline"></ion-icon>
+                                                </a>
+                                            {% endif %} 
+                                            {% if perms.attendance.delete_attendance %}
+                                                <a href="{% url "delete-reimbursement" %}?ids={{req.id}}" onclick="return confirm('Do you want to delete this record?')" 
+                                                class='w-50 oh-btn oh-btn--danger-outline oh-btn--light-bkg'> 
+                                                    <ion-icon name="trash-outline"></ion-icon>
+                                                </a>
+                                            {% endif %}
+                                        </div>
+                                    </div> 
+                                    <div class="oh-sticky-table__td oh-sticky-table__right">
+                                        <input type="hidden" name="ids" value="{{ req.id }}" />
+                                        <input type="hidden" name="status" />
+                                        <div class="oh-btn-group">
+                                            {% if req.status != "approved" and req.status != "rejected" %}
+                                            <button
+                                                type="button"
+                                                title="{% trans 'Approve' %}"
+                                                onclick="reimbursementConfirm('Do You really want to approve the request?','#requestCard{{ req.id }}',true);$('#requestCard{{ req.id }} [name=status]').val('approved')"
+                                                class="oh-btn oh-btn--success w-100"
+                                            >
+                                                <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
+                                            </button>
+                                            {% else %}
+                                                <button
+                                                    title="{% trans 'Approve' %}"
+                                                    type="button"
+                                                    class="oh-btn oh-btn--success oh-btn--disabled w-100"
                                                 >
-                                                <ion-icon name="create-outline"></ion-icon>
-                                            </a>
-                                        {% endif %} 
-                                        {% if perms.attendance.delete_attendance %}
-                                            <a href="{% url "delete-reimbursement" %}?ids={{req.id}}" onclick="return confirm('Do you want to delete this record?')" 
-                                            class='w-50 oh-btn oh-btn--danger-outline oh-btn--light-bkg'> 
-                                                <ion-icon name="trash-outline"></ion-icon>
-                                            </a>
-                                        {% endif %}
+                                                    <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
+                                                </button>
+                                            {% endif %}
+                                                <button
+                                                    type="button"
+                                                    onclick="$('#requestCard{{ req.id }} [name=amount]').attr('required',false);reimbursementConfirm('Do You really want to reject the request?','#requestCard{{ req.id }}');$('#requestCard{{ req.id }} [name=status]').val('canceled')"
+                                                    class="oh-btn oh-btn--danger w-100"
+                                                >
+                                                <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
+
+                                                </button> 
+                                        </div>
+                                        <input
+                                            type="submit"
+                                            hidden
+                                            id="requestCard{{ req.id }}Button"
+                                        />
                                     </div>
-                                </div> 
-                            </form>
-                        {% endfor %}
+                                    
+                                </form>
+                            {% endfor %}
                         </div>
+                    </div>
                 </div>
-            </div>
+                <!-- end of sticky table -->
+                <!-- start of pagination -->
+                <div class="oh-wrapper w-100">
+                    <div class="oh-pagination">
+                        <span
+                            class="oh-pagination__page"
+                            data-toggle="modal"
+                            data-target="#addEmployeeModal"
+                            >{% trans 'Page' %} {{ requests.number }} {% trans 'of' %} {{ requests.paginator.num_pages }}.</span
+                        >
 
-            <div class="oh-wrapper w-100">
-                <div class="oh-pagination">
-                    <span
-                        class="oh-pagination__page"
-                        data-toggle="modal"
-                        data-target="#addEmployeeModal"
-                        >{% trans 'Page' %} {{ requests.number }} {% trans 'of' %} {{ requests.paginator.num_pages }}.</span
-                    >
+                        <nav class="oh-pagination__nav">
+                            <div class="oh-pagination__input-container me-3">
+                                <span class="oh-pagination__label me-1"
+                                    >{% trans 'Page' %}</span
+                                >
 
-                    <nav class="oh-pagination__nav">
-                        <div class="oh-pagination__input-container me-3">
-                            <span class="oh-pagination__label me-1"
-                                >{% trans 'Page' %}</span
-                            >
+                                <input
+                                    type="number"
+                                    name="page"
+                                    class="oh-pagination__input"
+                                    value="{{ requests.number }}"
+                                    hx-get="{% url 'search-reimbursement' %}?{{ pd }}"
+                                    hx-target="#reimbursementContainer"
+                                    min="1"
+                                />
+                                <span class="oh-pagination__label"
+                                    >{% trans 'of' %} {{ requests.paginator.num_pages }}</span
+                                >
+                            </div>
 
-                            <input
-                                type="number"
-                                name="page"
-                                class="oh-pagination__input"
-                                value="{{ requests.number }}"
-                                hx-get="{% url 'search-reimbursement' %}?{{ pd }}"
-                                hx-target="#reimbursementContainer"
-                                min="1"
-                            />
-                            <span class="oh-pagination__label"
-                                >{% trans 'of' %} {{ requests.paginator.num_pages }}</span
-                            >
-                        </div>
-
-                        <ul class="oh-pagination__items">
-                            {% if requests.has_previous %}
-                            <li
-                                class="oh-pagination__item oh-pagination__item--wide"
-                            >
-                                <a
-                                    hx-target="#reimbursementContainer"
-                                    hx-get="{% url 'search-reimbursement' %}?{{ pd }}&page=1"
-                                    class="oh-pagination__link"
-                                    >{% trans 'First' %}</a
+                            <ul class="oh-pagination__items">
+                                {% if requests.has_previous %}
+                                <li
+                                    class="oh-pagination__item oh-pagination__item--wide"
                                 >
-                            </li>
-                            <li
-                                class="oh-pagination__item oh-pagination__item--wide"
-                            >
-                                <a
-                                    hx-target="#reimbursementContainer"
-                                    hx-get="{% url 'search-reimbursement' %}?{{ pd }}&page={{ requests.previous_page_number }}"
-                                    class="oh-pagination__link"
-                                    >{% trans 'Previous' %}</a
+                                    <a
+                                        hx-target="#reimbursementContainer"
+                                        hx-get="{% url 'search-reimbursement' %}?{{ pd }}&page=1"
+                                        class="oh-pagination__link"
+                                        >{% trans 'First' %}</a
+                                    >
+                                </li>
+                                <li
+                                    class="oh-pagination__item oh-pagination__item--wide"
                                 >
-                            </li>
-                            {% endif %} {% if requests.has_next %}
-                            <li
-                                class="oh-pagination__item oh-pagination__item--wide"
-                            >
-                                <a
-                                    hx-target="#reimbursementContainer"
-                                    hx-get="{% url 'search-reimbursement' %}?{{ pd }}&bpage={{ requests.next_page_number }}"
-                                    class="oh-pagination__link"
-                                    >{% trans 'Next' %}</a
+                                    <a
+                                        hx-target="#reimbursementContainer"
+                                        hx-get="{% url 'search-reimbursement' %}?{{ pd }}&page={{ requests.previous_page_number }}"
+                                        class="oh-pagination__link"
+                                        >{% trans 'Previous' %}</a
+                                    >
+                                </li>
+                                {% endif %} {% if requests.has_next %}
+                                <li
+                                    class="oh-pagination__item oh-pagination__item--wide"
                                 >
-                            </li>
-                            <li
-                                class="oh-pagination__item oh-pagination__item--wide"
-                            >
-                                <a
-                                    hx-target="#reimbursementContainer"
-                                    hx-get="{% url 'search-reimbursement' %}?{{ pd }}&bpage={{ requests.paginator.num_pages }}"
-                                    class="oh-pagination__link"
-                                    >{% trans 'Last' %}</a
+                                    <a
+                                        hx-target="#reimbursementContainer"
+                                        hx-get="{% url 'search-reimbursement' %}?{{ pd }}&bpage={{ requests.next_page_number }}"
+                                        class="oh-pagination__link"
+                                        >{% trans 'Next' %}</a
+                                    >
+                                </li>
+                                <li
+                                    class="oh-pagination__item oh-pagination__item--wide"
                                 >
-                            </li>
-                            {% endif %}
-                        </ul>
-                    </nav>
+                                    <a
+                                        hx-target="#reimbursementContainer"
+                                        hx-get="{% url 'search-reimbursement' %}?{{ pd }}&bpage={{ requests.paginator.num_pages }}"
+                                        class="oh-pagination__link"
+                                        >{% trans 'Last' %}</a
+                                    >
+                                </li>
+                                {% endif %}
+                            </ul>
+                        </nav>
+                    </div>
                 </div>
-            </div>
+                <!-- end of pagination -->
+            {% else %}
+                <!-- start of empty page -->
+                <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%;" >
+                    <img
+                    style="width: 150px; height: 150px"
+                    src="{% static 'images/ui/no-results.png' %}"
+                    class="oh-404__image mb-4"
+                    />
+                    <h5 class="oh-404__subtitle">
+                    {% trans "No search result found!" %}
+                    </h5>
+                </div>
+                <!-- end of empty page -->
+            {% endif %}
         </div>
+        <!-- end of Bonus Encashments-->
+
     </div>
+    <!-- end of tabs -->
+
 
     <!-- start of comment modal -->
     <div

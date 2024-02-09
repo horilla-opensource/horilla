@@ -1122,6 +1122,9 @@ def view_reimbursement(request):
     """
     This method is used to render template to view reimbursements
     """
+    reimbursement_exists = False
+    if Reimbursement.objects.exists():
+        reimbursement_exists = True
     if request.GET:
         filter_object = ReimbursementFilter(request.GET)
     else:
@@ -1152,6 +1155,7 @@ def view_reimbursement(request):
             "pd": request.GET.urlencode(),
             "filter_dict": data_dict,
             "view": view,
+            'reimbursement_exists':reimbursement_exists
         },
     )
 
@@ -1190,8 +1194,7 @@ def search_reimbursement(request):
     template = "payroll/reimbursement/request_cards.html"
     if view == "list":
         template = "payroll/reimbursement/reimbursement_list.html"
-    print(data_dict)
-    data_dict.pop("view", None)
+    data_dict.pop("view",None)
     return render(
         request,
         template,
@@ -1247,20 +1250,18 @@ def approve_reimbursements(request):
             emp = reimbursement.employee_id
             reimbursement.status = status
             reimbursement.save()
-            if reimbursement.get_status_display() != "Requested":
-                messages.success(
-                    request,
-                    f"Request {reimbursement.get_status_display()} successfully",
-                )
-        if status == "canceled":
+            messages.success(
+                request, f"Request {reimbursement.get_status_display()} successfully"
+            )
+        if status == "rejected":
             notify.send(
                 request.user.employee_get,
                 recipient=emp.employee_user_id,
-                verb="Your reimbursement request has been cancelled.",
-                verb_ar="تم إلغاء طلب استرداد نفقاتك.",
-                verb_de="Ihr Rückerstattungsantrag wurde storniert.",
-                verb_es="Se ha cancelado tu solicitud de reembolso.",
-                verb_fr="Votre demande de remboursement a été annulée.",
+                verb="Your reimbursement request has been rejected.",
+                verb_ar="تم رفض طلب استرداد النفقات الخاص بك.",
+                verb_de= "Ihr Erstattungsantrag wurde abgelehnt.",
+                verb_es="Su solicitud de reembolso ha sido rechazada.",
+                verb_fr="Votre demande de remboursement a été rejetée.",
                 redirect=f"/payroll/view-reimbursement?id={reimbursement.id}",
                 icon="checkmark",
             )
