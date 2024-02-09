@@ -49,6 +49,7 @@ class DocumentForm(ModelForm):
 class DocumentUpdateForm(ModelForm):
     """ form to Update a Document"""
     verbose_name = "Document"
+    expiry_date = forms.DateField(widget=forms.DateInput(attrs={"type": "date"}),required=False,)
 
     class Meta:
         model = Document

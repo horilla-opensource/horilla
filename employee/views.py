@@ -34,6 +34,7 @@ from django.http import HttpResponse, HttpResponseRedirect, JsonResponse, QueryD
 from django.forms import CharField, ChoiceField, DateInput, Select
 from asset.models import AssetAssignment, AssetRequest
 from django.utils.translation import gettext_lazy as _
+from attendance.methods.group_by import group_by_queryset
 from attendance.models import Attendance, AttendanceOverTime
 from employee.methods.methods import get_ordered_badge_ids
 from leave.models import LeaveRequest
@@ -519,20 +520,27 @@ def document_request_view(request):
 
     Returns: return document_request template
     """
+    previous_data = request.GET.urlencode()
     f = DocumentRequestFilter()
     document_requests = DocumentRequest.objects.all()
-    documents = Document.objects.filter(document_request_id__isnull=False).order_by(
-        "-document_request_id"
-    )
+    documents = Document.objects.filter(document_request_id__isnull=False)
     documents = filtersubordinates(
         request=request,
         perm="attendance.view_attendance",
         queryset=documents,
     )
+    documents = group_by_queryset(
+        documents, "document_request_id", request.GET.get("page"), "page"
+    )
+    # documents = paginator_qry(documents,request.GET.get("page"))
+    data_dict = parse_qs(previous_data)
+    get_key_instances(Document, data_dict)
     context = {
         "document_requests": document_requests,
         "documents": documents,
         "f": f,
+        "pd": previous_data,
+        "filter_dict": data_dict,
     }
     return render(request, "documents/document_requests.html", context=context)
 
@@ -549,6 +557,10 @@ def document_filter_view(request):
     documents = documents.exclude(document_request_id__isnull=True).order_by(
         "-document_request_id"
     )
+    documents = group_by_queryset(
+        documents, "document_request_id", request.GET.get("page"), "page"
+    )
+    # documents = paginator_qry(documents,request.GET.get("page"))
     data_dict = parse_qs(previous_data)
     get_key_instances(Document, data_dict)
 
@@ -584,7 +596,20 @@ def document_request_create(request):
             request, form, "horilla_documents.add_documentrequest"
         )
         if form.is_valid():
-            form.save()
+            form = form.save()
+            employees = [user.employee_user_id for user in form.employee_id.all()]
+            
+            notify.send(
+                request.user.employee_get,
+                recipient=employees,
+                verb=f"{request.user.employee_get} requested a document.",
+                verb_ar=f"طلب {request.user.employee_get} مستنداً.",
+                verb_de=f"{request.user.employee_get} hat ein Dokument angefordert.",
+                verb_es=f"{request.user.employee_get} solicitó un documento.",
+                verb_fr=f"{request.user.employee_get} a demandé un document.",
+                redirect="/employee/employee-profile",
+                icon="chatbox-ellipses",
+            )
             return HttpResponse("<script>window.location.reload();</script>")
 
     context = {
@@ -735,6 +760,17 @@ def file_upload(request, id):
         form = DocumentUpdateForm(request.POST, request.FILES, instance=document_item)
         if form.is_valid():
             form.save()
+            notify.send(
+                request.user.employee_get,
+                recipient=request.user.employee_get.get_reporting_manager().employee_user_id,
+                verb=f"{request.user.employee_get} uploaded a document",
+                verb_ar=f"قام {request.user.employee_get} بتحميل مستند",
+                verb_de=f"{request.user.employee_get} hat ein Dokument hochgeladen",
+                verb_es=f"{request.user.employee_get} subió un documento",
+                verb_fr=f"{request.user.employee_get} a téléchargé un document",
+                redirect=f"/employee/employee-view/{request.user.employee_get.id}/",
+                icon="chatbox-ellipses",
+            )
             return HttpResponse("<script>window.location.reload();</script>")
 
     context = {"form": form, "document": document_item}
