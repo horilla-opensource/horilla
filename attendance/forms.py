@@ -31,6 +31,7 @@ from django.template.loader import render_to_string
 from django.utils.translation import gettext_lazy as _
 from django.core.exceptions import ValidationError
 from django.forms import DateTimeInput
+from base.forms import MultipleFileField
 from horilla_widgets.widgets.horilla_multi_select_field import HorillaMultiSelectField
 from horilla_widgets.widgets.select_widgets import HorillaMultiSelectWidget
 from employee.models import Employee
@@ -44,6 +45,7 @@ from attendance.models import (
     AttendanceLateComeEarlyOut,
     AttendanceValidationCondition,
     AttendancerequestComment,
+    AttendancerequestFile,
     GraceTime,
     PenaltyAccount,
     strtime_seconds,
@@ -799,3 +801,45 @@ class AttendancerequestCommentForm(ModelForm):
 
         model = AttendancerequestComment
         fields = ("comment",)
+
+
+class AttendanceCommentForm(ModelForm):
+    """
+    Leave request comment model form
+    """
+
+    verbose_name = "Add Comment"
+
+    class Meta:
+        model = AttendancerequestComment
+        fields = "__all__"
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["files"] = MultipleFileField(label="files")
+        self.fields["files"].required = False
+
+    def as_p(self):
+        """
+        Render the form fields as HTML table rows with Bootstrap styling.
+        """
+        context = {"form": self}
+        table_html = render_to_string("common_form.html", context)
+        return table_html
+
+    def save(self, commit: bool = ...) -> Any:
+        multiple_files_ids = []
+        files = None
+        if self.files.getlist("files"):
+            files = self.files.getlist("files")
+            self.instance.attachemnt = files[0]
+            multiple_files_ids = []
+            for attachemnt in files:
+                file_instance = AttendancerequestFile()
+                file_instance.file = attachemnt
+                file_instance.save()
+                multiple_files_ids.append(file_instance.pk)
+        instance = super().save(commit)
+        if commit:
+            instance.files.add(*multiple_files_ids)
+        return instance, files

@@ -18,7 +18,7 @@
           <div class='oh-sticky-table__th'>{% trans "Check In" %}</div>
           <div class='oh-sticky-table__th'>{% trans "Check Out" %}</div>
           <div class="oh-sticky-table__th {% if request.sort_option.order == '-clock_out_date' %}arrow-up {% elif request.sort_option.order == 'clock_out_date' %}arrow-down {% else %}arrow-up-down {% endif %}" hx-target='#activity-table' hx-get="{% url 'attendance-activity-search' %}?{{pd}}&orderby=clock_out_date">{% trans "Out Date" %}</div>
-          <div class='oh-sticky-table__th' scope="col" style="width: 80px;"></div>
+          <div class='oh-sticky-table__th' scope="col" style="width: 80px;">{% trans "Action" %}</div>
         </div> 
       </div>
       <div class="oh-sticky-table__tbody">

@@ -580,6 +580,10 @@ class Attendance(models.Model):
                 )
 
 
+class AttendancerequestFile(models.Model):
+    file = models.FileField(upload_to="attendance/request_files")
+
+
 class AttendancerequestComment(models.Model):
     """
     AttendancerequestComment Model
@@ -587,6 +591,7 @@ class AttendancerequestComment(models.Model):
 
     request_id = models.ForeignKey(Attendance, on_delete=models.CASCADE)
     employee_id = models.ForeignKey(Employee, on_delete=models.CASCADE)
+    files = models.ManyToManyField(AttendancerequestFile, blank=True)
     comment = models.TextField(null=True, verbose_name=_("Comment"))
     created_at = models.DateTimeField(
         auto_now_add=True,

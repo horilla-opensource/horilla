@@ -69,6 +69,7 @@ from attendance.models import (
     AttendanceLateComeEarlyOut,
     AttendanceValidationCondition,
     AttendancerequestComment,
+    AttendancerequestFile,
     GraceTime,
 )
 from attendance.filters import (
@@ -1646,6 +1647,7 @@ def create_attendancerequest_comment(request, attendance_id):
     form = AttendancerequestCommentForm(
         initial={"employee_id": emp.id, "request_id": attendance_id}
     )
+    
 
     if request.method == "POST":
         form = AttendancerequestCommentForm(request.POST)
@@ -1653,6 +1655,12 @@ def create_attendancerequest_comment(request, attendance_id):
             form.instance.employee_id = emp
             form.instance.request_id = attendance
             form.save()
+            comments = AttendancerequestComment.objects.filter(
+                request_id=attendance_id
+            ).order_by("-created_at")
+            no_comments = False
+            if not comments.exists():
+                no_comments = True
             form = AttendancerequestCommentForm(
                 initial={"employee_id": emp.id, "request_id": attendance_id}
             )
@@ -1704,9 +1712,14 @@ def create_attendancerequest_comment(request, attendance_id):
                     redirect=f"/attendance/request-attendance-view?id={attendance.id}",
                     icon="chatbox-ellipses",
                 )
+            return render(
+                request,
+                "requests/attendance/attendance_comment.html",
+                {"comments": comments, "no_comments": no_comments, "request_id" : attendance_id},
+            )
     return render(
         request,
-        "requests/attendance/attendance_request_comment_form.html",
+        "requests/attendance/attendance_comment.html",
         {
             "form": form,
             "request_id": attendance_id,
@@ -1727,10 +1740,22 @@ def view_attendancerequest_comment(request, attendance_id):
     if not comments.exists():
         no_comments = True
 
+    if request.FILES:
+        files = request.FILES.getlist("files")
+        comment_id = request.GET["comment_id"]
+        comment = AttendancerequestComment.objects.get(id=comment_id)
+        attachments = []
+        for file in files:
+            file_instance = AttendancerequestFile()
+            file_instance.file = file
+            file_instance.save()
+            attachments.append(file_instance)
+        comment.files.add(*attachments)
+
     return render(
         request,
-        "requests/attendance/comment_view.html",
-        {"comments": comments, "no_comments": no_comments},
+        "requests/attendance/attendance_comment.html",
+        {"comments": comments, "no_comments": no_comments, "request_id" : attendance_id},
     )
 
 
@@ -1739,11 +1764,31 @@ def delete_attendancerequest_comment(request, comment_id):
     """
     This method is used to delete Attendance request comments
     """
+
     comment = AttendancerequestComment.objects.get(id=comment_id)
     attendance_id = comment.request_id.id
     comment.delete()
     messages.success(request, _("Comment deleted successfully!"))
     return redirect("attendance-request-view-comment", attendance_id=attendance_id)
+
+
+@login_required
+def delete_comment_file(request):
+    """
+    Used to delete attachment
+    """
+    ids = request.GET.getlist("ids")
+    AttendancerequestFile.objects.filter(id__in=ids).delete()
+    leave_id = request.GET["leave_id"]
+    comments = AttendancerequestComment.objects.filter(request_id = leave_id).order_by("-created_at")
+    return render(
+        request,
+        "requests/attendance/attendance_comment.html",
+        {
+            "comments": comments,
+            "request_id": leave_id,
+        },
+    )
 
 
 @login_required
