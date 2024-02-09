@@ -57,14 +57,7 @@ class EmployeeFilter(FilterSet):
         field_name="employee_work_info__department_id__department",
         lookup_expr="icontains",
     )
-    # gender = django_filters.ChoiceFilter(field_name="gender",lookup_expr="iexact")
 
-    user_permissions = django_filters.ModelMultipleChoiceFilter(
-        queryset=Permission.objects.all(),
-    )
-    groups = django_filters.ModelMultipleChoiceFilter(
-        queryset=Group.objects.all(),
-    )
     is_active = django_filters.ChoiceFilter(
         field_name="is_active",
         label="Is Active",
@@ -111,6 +104,8 @@ class EmployeeFilter(FilterSet):
             "employee_work_info__company_id",
             "employee_work_info__shift_id",
             "employee_work_info__tags",
+            "employee_user_id__groups",
+            "employee_user_id__user_permissions",
         ]
 
     def not_in_yet_func(self, queryset, _, value):
@@ -254,22 +249,19 @@ class EmployeeFilter(FilterSet):
                 ("not_set", _("Not Set")),
             ]
             choices.extend([(obj.id, str(obj)) for obj in queryset])
-            if (
-                model_choice_filter.field_name != "user_permissions"
-                and model_choice_filter.field_name != "groups"
-            ):
-                self.form.fields[
-                    model_choice_filter.field_name
-                ] = forms.MultipleChoiceField(
-                    choices=choices,
-                    required=False,
-                    widget=forms.SelectMultiple(
-                        attrs={
-                            "class": "oh-select oh-select-2 select2-hidden-accessible",
-                            "id": uuid.uuid4(),
-                        }
-                    ),
-                )
+
+            self.form.fields[
+                model_choice_filter.field_name
+            ] = forms.MultipleChoiceField(
+                choices=choices,
+                required=False,
+                widget=forms.SelectMultiple(
+                    attrs={
+                        "class": "oh-select oh-select-2 select2-hidden-accessible",
+                        "id": uuid.uuid4(),
+                    }
+                ),
+            )
 
 
 class EmployeeReGroup:
