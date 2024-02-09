@@ -2300,7 +2300,7 @@ def work_info_export(request):
                     emp_company = company_name.first()
 
                     # Access the date_format attribute directly
-                    date_format = emp_company.date_format
+                    date_format = emp_company.date_format if emp_company else "MMM. D, YYYY"
                 else:
                     date_format = "MMM. D, YYYY"
                 # Define date formats

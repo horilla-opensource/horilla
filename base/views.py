@@ -2269,9 +2269,6 @@ def update_permission(
     """
     This method is used to remove user permission.
     """
-    print("++++++++++++++++++")
-    print(request.POST)
-    print("++++++++++++++++++")
     form = AssignPermission(request.POST)
     if form.is_valid():
         form.save()
@@ -3839,7 +3836,7 @@ def get_date_format(request):
         emp_company = company_name.first()
         if emp_company:
             # Access the date_format attribute directly
-            date_format = emp_company.date_format
+            date_format = emp_company.date_format if emp_company else "MMM. D, YYYY"
         else:
             date_format = "MMM. D, YYYY"
     else:
