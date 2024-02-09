@@ -25,9 +25,9 @@
 	<div class="oh-activity-sidebar__header">
 		<a
 		style="cursor: pointer;"
-		onclick="$('.oh-activity-sidebar--show').removeClass('oh-activity-sidebar--show');">
+		onclick=window.location.reload()>
 		<ion-icon
-		name="chevron-back-outline"
+		name="chevron-forward-outline"
 		class="oh-activity-sidebar__header-icon me-2 oh-activity-sidebar__close"
 		data-target="#activitySidebar"
 		></ion-icon>
@@ -36,7 +36,7 @@
 	</div>
 
 	<form method="post"
-		hx-target="#activitySidebar" 
+		hx-target="#commentContainer" 
 		hx-post="{% url 'attendance-request-add-comment' request_id %}?{{pd}}" id="commentForm">
 		{% csrf_token %}
 
@@ -56,11 +56,7 @@
 		{% for comment in comments %}
 			<li class="oh-activity-sidebar__qa-item">
 				<span class="oh-activity-sidebar__q">{{ comment.comment }}
-					{% comment %} <a hx-get='{% url "attendance-request-delete-comment" comment.id %}'
-						 title="{% trans 'Delete Comment' %}"
-						> 
-						<ion-icon name="close-circle-outline" class="text-danger ms-3 mt-1" aria-label="close outline"></ion-icon></a> {% endcomment %}
-						<span class="float-end" title="Delete" hx-get='{% url "attendance-request-delete-comment" comment.id %}' data-target="#activitySidebar" hx-swap="innerHTML" hx-target="#activitySidebar">
+						<span class="float-end" title="Delete" hx-get='{% url "attendance-request-delete-comment" comment.id %}' data-target="#activitySidebar" hx-swap="innerHTML" hx-target="#commentContainer">
 							<ion-icon name="close-outline" style="font-size: 24px" role="img" class="md hydrated" aria-label="close outline"></ion-icon></span>
 				</span>
 
@@ -78,17 +74,16 @@
 								src="{% static 'images/ui/minus-icon.png' %}"
 								style="display: block; width: 50%; height: 50%"
 								hx-get="{% url 'delete-comment-file' %}?ids={{ file.id }}&leave_id={{ request_id }}"
-								hx-target="#activitySidebar"
+								hx-target="#commentContainer"
 								onclick="event.stopPropagation();event.preventDefault()" /></span
 					></a>
 					{% endfor %}
 
 					<form
 						hx-post="{% url 'attendance-request-view-comment' comment.request_id.id %}?comment_id={{ comment.id }}"
-						{% comment %} hx-target="#commentContainer" {% endcomment %}
 						class="add-files-form"
 						hx-encoding="multipart/form-data"
-						data-target="#activitySidebar" hx-swap="innerHTML" hx-target="#activitySidebar"
+						data-target="#activitySidebar" hx-swap="innerHTML" hx-target="#commentContainer"
 
 					>
 						{% csrf_token %}
