@@ -1544,12 +1544,12 @@ def task_report(request):
     """
     This method is used to show the task report.
     """
-    stage_id = request.GET.get("stage_id")
     employee_id = request.GET.get("employee_id")
     if not employee_id:
         employee_id = request.user.employee_get.id
     my_tasks = OnboardingTask.objects.filter(
         employee_id__id=employee_id,
+        candidates__is_active = True,
         candidates__recruitment_id__closed=False,
     ).distinct()
     tasks = []

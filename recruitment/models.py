@@ -325,17 +325,7 @@ class Candidate(models.Model):
         ],
     )
     sequence = models.IntegerField(null=True, default=0)
-    offerletter_status = models.CharField(
-        max_length=20,
-        choices=[
-            ("not_sent", "Not sent"),
-            ("waiting", "Waiting Confirmation"),
-            ("accepted", "Accepted / Confirmed"),
-            ("rejected", "Rejected / Canceled"),
-        ],
-        default="not_sent",
-        editable = False,
-    )
+
     probation_end = models.DateField(null=True, editable=False)
     offer_letter_status = models.CharField(
         max_length=10,
