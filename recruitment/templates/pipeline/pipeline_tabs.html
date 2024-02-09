@@ -4,7 +4,7 @@
     {% for rec in recruitment %}
     {% if request.user|stage_manages:rec or perms.recruitment.view_recruitment %}
 
-    <li class="oh-tabs__tab" style="padding-right: 0;{% if request.user|recruitment_manages:rec %} background-color: hsl(109.8deg 100% 50% / 20%); {% endif %}" data-target="#tab_rec_{{rec.id}}">
+    <li class="oh-tabs__tab" style="padding-right: 0;{% if request.user|recruitment_manages:rec %} background-color: hsl(38.08deg 100% 50% / 8%); {% endif %}" data-target="#tab_rec_{{rec.id}}">
       {{rec}}
       <div class="d-flex">
       <div class="oh-tabs__input-badge-container">
