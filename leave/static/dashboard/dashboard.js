@@ -118,7 +118,7 @@ $(document).ready(function () {
 			options: {
 				scales: {
 					x: {
-						//   stacked: true,
+						  stacked: true,
 						title: {
 							display: true,
 							text: "Employees",
@@ -129,7 +129,7 @@ $(document).ready(function () {
 						},
 					},
 					y: {
-						//   stacked: true,
+						  stacked: true,
 						title: {
 							display: true,
 							text: "Number of days",
