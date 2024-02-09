@@ -17,7 +17,7 @@
 
 <div class="oh-accordion-meta" >
     <div class="oh-accordion-meta__item" id="onboarding_stage{{stage.id}}">
-        <div class="oh-accordion-meta__header oh-accordion-meta__header--show" {% if request.user.employee_get in stage.employee_id.all %} style="background-color: hsl(109.8deg 100% 50% / 20%);" {% endif %}>
+        <div class="oh-accordion-meta__header oh-accordion-meta__header--show" {% if request.user.employee_get in stage.employee_id.all %} style="background-color: hsl(38.08deg 100% 50% / 8%);" {% endif %}>
             <div style="display: -webkit-inline-box;"
             >
                 <span class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round ms-2 mr-2 stage_count" title="{{stage.candidate.count}} {% trans 'Candidate' %}">{{stage.candidate.count}}</span>
