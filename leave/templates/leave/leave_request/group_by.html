@@ -57,7 +57,7 @@
                                     <div class="oh-sticky-table__th" hx-get="{% url 'request-filter' %}?{{pd}}&sortby=requested_days" hx-target="#leaveRequest">{% trans "Requested Days" %}</div>
                                     <div class="oh-sticky-table__th" hx-get="{% url 'request-filter' %}?{{pd}}&sortby=status" hx-target="#leaveRequest">{% trans "Status" %}</div>
                                     {% if  not dashboard %}
-                                        <div class="oh-sticky-table__th">{% trans "Comment" %}</div>
+                                        <div class="oh-sticky-table__th" style="width:115px;">{% trans "Comment" %}</div>
                                         {% if request.user|is_reportingmanager or perms.leave.chanage_leaverequest or perms.leave.delete_leaverequest or request.user|is_leave_approval_manager %}
                                         <div class="oh-sticky-table__th">{% trans "Actions" %}</div>
                                         <div class="oh-sticky-table__th" >{% trans "Penalties" %}</div>
@@ -106,18 +106,12 @@
                                     {% if  not dashboard %}
 
                                     <div class="oh-sticky-table__td" onclick="event.stopPropagation();">
-                                        <div class="oh-btn-group" >
-                                          <button type="button" hx-get="{% url 'leave-request-add-comment' leave_request.id %}?{{pd}}&target=leaveRequest" title="{% trans 'Add Comment' %}" hx-target="#requestCommentFormModal"
-                                                 hx-swap="innerHTML" class="oh-btn oh-btn--light" data-toggle="oh-modal-toggle" data-target="#requestcommentModal" 
-                                                 style="flex: 1 0 auto; width:20px;height: 40.68px; padding: 0;">
-                                            <ion-icon name="newspaper-outline" role="img" class="md hydrated" aria-label="newspaper outline"></ion-icon>
-                                          </button>
-                        
-                                          <button type="button" hx-get="{% url 'leave-request-view-comment' leave_request.id %}?{{pd}}&target=leaveRequest" hx-target="#commentContainer"
-                                            data-target = '#activitySidebar' title="View Comment"  class="oh-btn oh-btn--light oh-activity-sidebar__open" style="flex: 1 0 auto; width:20px;height: 40.68px; padding: 0;" onclick="event.stopPropagation()">
-                                            <ion-icon name="eye-outline" role="img" class="md hydrated" aria-label="eye outline"></ion-icon>
-                                          </button>
-                                       </div>
+
+                                        <button type="button" hx-get="{% url 'leave-request-view-comment' leave_request.id %}?{{pd}}&target=leaveRequest" hx-target="#commentContainer"
+                                          data-target = '#leaveactivitySidebar' title='{% trans "Add / View Comment" %}'  class="oh-btn oh-btn--light oh-activity-sidebar__open w-100" style="flex: 1 0 auto; width:20px;height: 40.68px; padding: 0;" onclick="event.stopPropagation()">
+                                          <ion-icon name="newspaper-outline" role="img" class="md hydrated" aria-label="newspaper outline"></ion-icon>
+                                        </button>
+                
                                     </div>
                                     <div class="oh-sticky-table__td" onclick="event.stopPropagation()">
                                         <div class="oh-btn-group">

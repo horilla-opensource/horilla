@@ -3301,6 +3301,12 @@ def create_leaverequest_comment(request, leave_id):
             form.instance.employee_id = emp
             form.instance.request_id = leave
             form.save()
+            comments = LeaverequestComment.objects.filter(request_id=leave_id).order_by(
+                "-created_at"
+            )
+            no_comments = False
+            if not comments.exists():
+                no_comments = True
             form = LeaverequestcommentForm(
                 initial={"employee_id": emp.id, "request_id": leave_id}
             )
@@ -3353,10 +3359,14 @@ def create_leaverequest_comment(request, leave_id):
                     redirect=f"/leave/request-view?id={leave.id}",
                     icon="chatbox-ellipses",
                 )
-            return HttpResponse("<script>window.location.reload()</script>")
+            return render(
+                request,
+                "leave/leave_request/leave_comment.html",
+                {"comments": comments, "no_comments": no_comments, 'request_id': leave_id },
+            )
     return render(
         request,
-        "leave/leave_request/leave_request_comment_form.html",
+        "leave/leave_request/leave_comment.html",
         {
             "form": form,
             "request_id": leave_id,
@@ -3446,6 +3456,12 @@ def create_allocationrequest_comment(request, leave_id):
             form.instance.employee_id = emp
             form.instance.request_id = leave
             form.save()
+            comments = LeaveallocationrequestComment.objects.filter(
+                request_id=leave_id
+            ).order_by("-created_at")
+            no_comments = False
+            if not comments.exists():
+                no_comments = True
             form = LeaveallocationrequestcommentForm(
                 initial={"employee_id": emp.id, "request_id": leave_id}
             )
@@ -3498,10 +3514,14 @@ def create_allocationrequest_comment(request, leave_id):
                     redirect=f"/leave/leave-allocation-request-view?id={leave.id}",
                     icon="chatbox-ellipses",
                 )
-            return HttpResponse("<script>window.location.reload()</script>")
+            return render(
+                request,
+                "leave/leave_allocation_request/leave_allocation_comment.html",
+                {"comments": comments, "no_comments": no_comments, 'request_id': leave_id },
+            )
     return render(
         request,
-        "leave/leave_allocation_request/allocation_request_comment_form.html",
+        "leave/leave_allocation_request/leave_allocation_comment.html",
         {"form": form, "request_id": leave_id, "pd": previous_data},
     )
 

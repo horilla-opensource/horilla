@@ -321,9 +321,9 @@ urlpatterns = [
         name="leave-request-delete-comment",
     ),
     path(
-        "delete-comment-file/",
+        "delete-leave-comment-file/",
         views.delete_comment_file,
-        name="delete-comment-file",
+        name="delete-leave-comment-file",
     ),
     path(
         "allocation-request-add-comment/<int:leave_id>/",
