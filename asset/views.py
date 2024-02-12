@@ -445,6 +445,7 @@ def filter_pagination_asset_category(request):
         "asset_filter_form": asset_filter_form.form,
         "pg": previous_data,
         "filter_dict": data_dict,
+        "dashboard":request.GET.get("dashboard"),
     }
 
 
@@ -461,6 +462,8 @@ def asset_category_view(request):
     Raises:
         None
     """
+    
+    
     queryset = AssetCategory.objects.all()
     if queryset.exists():
         template = "category/asset_category_view.html"

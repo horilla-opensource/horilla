@@ -40,7 +40,7 @@
                     </div>
                     <div class="col-12 col-sm-12 col-md-6 col-lg-4 filter">
                         <div class="oh-card-dashboard oh-card-dashboard--warning"
-                            hx-get=""
+                            hx-get="{% url 'asset-request-allocation-view-search-filter' %}?asset_request_status=Requested"
                             hx-target="#dashboard"
                             id="candidate_view"
                             >
@@ -54,7 +54,7 @@
                     </div>
                     <div class="col-12 col-sm-12 col-md-6 col-lg-4 filter">
                         <div class="oh-card-dashboard oh-card-dashboard--success"
-                            hx-get=""
+                            onclick=" window.location.href = `{%url 'asset-category-view' %}?dashboard=true`"
                             hx-target="#dashboard"
                             id="hired_candidate"
                             >
@@ -86,7 +86,7 @@
                 <div class="col-12 col-sm-12 col-md-12 col-lg-9">
                     <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent">
                         <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
-                            <span class="oh-card-dashboard__title">{% trans "Asset requests to approve" %}</span>
+                            <span class="oh-card-dashboard__title">{% trans "Asset Requests to approve" %}</span>
                         </div>
                         <div class="oh-card-dashboard__body" id="leaveRequest" style="height:330px;overflow-y:auto">
                             {% if asset_requests %}
@@ -104,7 +104,7 @@
                 <div class="col-12 col-sm-12 col-md-12 col-lg-6 mt-3">
                     <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent">
                         <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
-                            <span class="oh-card-dashboard__title" >{% trans "Asset Chart" %}</span>
+                            <span class="oh-card-dashboard__title" >{% trans "Assets In Use" %}</span>
                         </div>
                         <div class="oh-card-dashboard__body" id="assetCategoryChartContainer">
                             <canvas id="assetCategoryChart" ></canvas>

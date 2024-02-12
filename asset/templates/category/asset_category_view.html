@@ -254,7 +254,7 @@
                             data-target="#AssetCategoryModal" 
                             hx-get="{%url 'asset-category-creation' %}"
                             hx-target="#AssetModal"> 
-                            <ion-icon class="me-2" name="add-outline"></ion-icon>
+                            <ion-icon name="add-outline"></ion-icon>
                             {% trans "Create" %}
                             </a>
                         </div>
@@ -271,7 +271,14 @@
 </div>
 </main>
 
-
+{% if dashboard == 'true' %}
+<script>
+    $(document).ready(function() {
+        $("[name='asset_list']").find("[name=asset_status]").val("In use")
+        $("[name='asset_list']").find(".filterButton").click()
+    });
+</script>
+{% endif %}
 
 <div class="oh-modal" id="AssetCategoryModal" role="dialog" aria-labelledby="AssetCategoryModal" aria-hidden="true">
     <div class="oh-modal__dialog" id="AssetModal">
