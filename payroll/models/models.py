@@ -5,7 +5,6 @@ Used to register models
 import calendar
 from collections.abc import Iterable
 from datetime import date, datetime, timedelta
-import threading
 from typing import Any
 from django import forms
 from django.db import models
@@ -414,17 +413,6 @@ class WorkRecord(models.Model):
         )
 
 
-class WorkRecordThread(threading.Thread):
-    def run(self):
-        work_records = WorkRecord.objects.filter(last_update__isnull=True)
-        for work_record in work_records:
-            work_record.save()
-
-
-try:
-    WorkRecordThread().start()
-except:
-    pass
 
 
 class OverrideAttendance(Attendance):
@@ -1696,8 +1684,11 @@ class Reimbursement(models.Model):
         return super().delete(*args, **kwargs)
     
 # changing sattus canceled to reject for existing reimbursement
-if Reimbursement.objects.filter(status="canceled").exists():
-    Reimbursement.objects.filter(status="canceled").update(status="rejected")
+try:
+    if Reimbursement.objects.filter(status="canceled").exists():
+        Reimbursement.objects.filter(status="canceled").update(status="rejected")
+except:
+    pass
 
 
 class ReimbursementrequestComment(models.Model):
