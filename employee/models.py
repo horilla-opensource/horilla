@@ -7,9 +7,6 @@ This module is used to register models for employee app
 
 import datetime as dtime
 from datetime import date, datetime, timedelta
-import json
-import threading
-import time
 from typing import Any
 from django.conf import settings
 from django.db import models
@@ -680,23 +677,6 @@ class BonusPoint(models.Model):
         if not BonusPoint.objects.filter(employee_id__id=instance.id).exists():
             BonusPoint.objects.create(employee_id=instance)
 
-
-class BonusPointThreading(threading.Thread):
-    def run(self):
-        time.sleep(5)
-        employees = Employee.objects.all()
-        try:
-            for employee in employees:
-                if not BonusPoint.objects.filter(employee_id__id=employee.id).exists():
-                    BonusPoint.objects.create(employee_id=employee)
-        except:
-            pass
-
-
-try:
-    BonusPointThreading().start()
-except:
-    pass
 
 
 class Actiontype(models.Model):
