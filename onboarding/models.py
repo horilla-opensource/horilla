@@ -5,7 +5,6 @@ This module is used to register models for onboarding app
 
 """
 from datetime import datetime
-import threading
 import time
 from typing import Any
 from django.db import models
@@ -190,45 +189,3 @@ class OnboardingPortal(models.Model):
     def __str__(self):
         return f"{self.candidate_id} | {self.token}"
 
-
-class OnboardingStageThread(threading.Thread):
-    def run(self):
-        time.sleep(2)
-        cand = CandidateStage.objects.all()
-        for c in cand:
-            recruitment = c.candidate_id.recruitment_id
-            stage = c.onboarding_stage_id
-            if stage.recruitment_id is None:
-                stage.recruitment_id = recruitment
-                stage.save()
-            cand_task = CandidateTask.objects.filter(candidate_id=c.candidate_id)
-            for c_task in cand_task:
-                if c_task.stage_id is None:
-                    c_task.stage_id = stage
-                    c_task.save()
-
-                if c_task.onboarding_task_id.stage_id is None:
-                    onboarding_task = c_task.onboarding_task_id
-                    onboarding_task.stage_id = stage
-                    onboarding_task.save
-
-        cand_task = CandidateTask.objects.all()
-        for c_task in cand_task:
-            cand = c_task.candidate_id
-            onboarding_task = c_task.onboarding_task_id
-            if cand not in onboarding_task.candidates.all():
-                onboarding_task.candidates.add(cand)
-        for c_task in CandidateTask.objects.all():
-            if c_task.stage_id != None and c_task.onboarding_task_id.stage_id == None:
-                ob_task = c_task.onboarding_task_id
-                ob_task.stage_id = c_task.stage_id
-                ob_task.save()
-            if c_task.stage_id == None and c_task.onboarding_task_id.stage_id != None:
-                c_task.stage_id = c_task.onboarding_task_id.stage_id
-                c_task.save()
-
-
-try:
-    OnboardingStageThread().start()
-except:
-    pass
