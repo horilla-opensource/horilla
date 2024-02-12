@@ -19,63 +19,62 @@
     </div>
     <div class="oh-main__titlebar oh-main__titlebar--right">
       {% if status %}
-        <div
-          class="oh-input-group oh-input__search-group"
-          :class="searchShow ? 'oh-input__search-group--show' : ''"
-         >
-          <ion-icon
-            name="search-outline"
-            class="oh-input-group__icon oh-input-group__icon--left"
-          ></ion-icon>
-          <input
-            name="search"
-            type="text"
-            class="oh-input oh-input__icon"
-            aria-label="Search Input"
-            placeholder="{% trans 'Search' %}"
-            hx-get="{% url 'filing-status-search' %}"
-            hx-target="#FilingStatusList"
-            hx-trigger="keyup delay:500ms"
-          />
-        </div>
-      {% endif %}
-      {% if perms.payroll.add_filingstatus %}
-        <div class="oh-main__titlebar-button-container">
-          <div class="oh-btn-group ml-2">
-            <div>
-              <a
-                class="oh-btn oh-btn--secondary oh-btn--shadow"
-                data-toggle="oh-modal-toggle"
-                data-target="#FilingStatusModal"
-                hx-get="{% url 'create-filing-status' %}"
-                hx-target="#FilingStatusFormTarget"
-              >
-                <ion-icon class="me-2" name="add-outline"></ion-icon>
-                {% trans "Create" %}
-              </a>
-            </div>
+      <div
+        class="oh-input-group oh-input__search-group"
+        :class="searchShow ? 'oh-input__search-group--show' : ''"
+      >
+        <ion-icon
+          name="search-outline"
+          class="oh-input-group__icon oh-input-group__icon--left"
+        ></ion-icon>
+        <input
+          name="search"
+          type="text"
+          class="oh-input oh-input__icon"
+          aria-label="Search Input"
+          placeholder="{% trans 'Search' %}"
+          hx-get="{% url 'filing-status-search' %}"
+          hx-target="#FilingStatusList"
+          hx-trigger="keyup delay:500ms"
+        />
+      </div>
+      {% endif %} {% if perms.payroll.add_filingstatus %}
+      <div class="oh-main__titlebar-button-container">
+        <div class="oh-btn-group ml-2">
+          <div>
+            <a
+              class="oh-btn oh-btn--secondary oh-btn--shadow"
+              data-toggle="oh-modal-toggle"
+              data-target="#FilingStatusModal"
+              hx-get="{% url 'create-filing-status' %}"
+              hx-target="#FilingStatusFormTarget"
+            >
+              <ion-icon name="add-outline"></ion-icon>
+              {% trans "Create" %}
+            </a>
           </div>
         </div>
+      </div>
       {% endif %}
     </div>
   </section>
   <div id="FilingStatusList" class="oh-wrapper">
     {% if status %} 
-        {% include 'payroll/tax/filing_status_list.html' %} 
+      {% include 'payroll/tax/filing_status_list.html' %} 
     {% else %}
-        <div class="oh-wrapper">
-          <div class="oh-404">
-            <img
-              style="width: 190px; height: 190px"
-              src="{% static 'images/ui/tax.png' %}"
-              class="oh-404__image mb-4"
-              alt="Page not found. 404."
-            />
-            <h5 class="oh-404__subtitle">
-              {% trans "No tax filing status has been recorded." %}
-            </h5>
-          </div>
-        </div>
+    <div class="oh-wrapper">
+      <div class="oh-404">
+        <img
+          style="width: 190px; height: 190px"
+          src="{% static 'images/ui/tax.png' %}"
+          class="oh-404__image mb-4"
+          alt="Page not found. 404."
+        />
+        <h5 class="oh-404__subtitle">
+          {% trans "No tax filing status has been recorded." %}
+        </h5>
+      </div>
+    </div>
     {% endif %}
   </div>
 </main>
