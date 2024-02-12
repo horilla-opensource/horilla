@@ -310,6 +310,7 @@ class AvailableLeave(models.Model):
         self.available_days = self.leave_type_id.total_days
 
     # Setting the reset date for carryforward leaves
+    
     def set_reset_date(self, assigned_date, available_leave):
         if available_leave.leave_type_id.reset_based == "monthly":
             reset_day = available_leave.leave_type_id.reset_day
@@ -397,17 +398,11 @@ class AvailableLeave(models.Model):
                 )
                 self.expired_date = expired_date
 
-        self.update_carryforward()
         self.total_leave_days = max(self.available_days + self.carryforward_days, 0)
         self.carryforward_days = max(self.carryforward_days, 0)
         super().save(*args, **kwargs)
 
-try:
-    available_leaves = AvailableLeave.objects.all()
-    for available_leave in available_leaves:
-        available_leave.save()
-except:
-    pass
+
 class LeaveRequest(models.Model):
     employee_id = models.ForeignKey(
         Employee, on_delete=models.CASCADE, verbose_name=_("Employee")
