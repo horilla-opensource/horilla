@@ -110,8 +110,12 @@ WSGI_APPLICATION = 'horilla.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'TestDB_Horilla.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': "attendancetemp",
+        'USER': os.environ.get('DB_USER'),
+        'PASSWORD': os.environ.get('DB_PASSWORD'),
+        'HOST': 'attendance-prod-temp.cgoo19o9oo4o.ap-south-1.rds.amazonaws.com',
+        'PORT': "5432",
     }
 }
 
@@ -184,11 +188,12 @@ CSRF_TRUSTED_ORIGINS = [
 LOGIN_URL = '/login'
 
 
-EMAIL_USE_TLS = True  
-EMAIL_HOST = 'smtp.gmail.com'  
-EMAIL_PORT = 587  
-EMAIL_HOST_USER = '<email_address'  
-EMAIL_HOST_PASSWORD = '<password>'  
+EMAIL_USE_TLS = False
+EMAIL_USE_SSL = True  
+EMAIL_HOST = 'smtp.hostinger.com'  
+EMAIL_PORT = 465  
+EMAIL_HOST_USER = 'admin@thinofit.org'  
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_PASSWORD') 
 SIMPLE_HISTORY_REVERT_DISABLED=True
 
 
