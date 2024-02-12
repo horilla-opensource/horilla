@@ -304,7 +304,6 @@ def profile_asset_tab(request, emp_id):
     Returns: return profile-asset-tab template
 
     """
-    print("HEREEEEEEEEEEEEEEEEEEEEEEEEE")
     assets = AssetAssignment.objects.filter(assigned_to_employee_id=emp_id)
     context = {
         "assets": assets,
@@ -471,6 +470,7 @@ def allowances_deductions_tab(request, emp_id):
                     employee_deductions.remove(deduction)
     context = {
         "active_contracts": active_contracts,
+        "basic_pay": basic_pay,
         "allowances": employee_allowances if employee_allowances else None,
         "deductions": employee_deductions if employee_deductions else None,
         "employee": employee,
@@ -598,7 +598,7 @@ def document_request_create(request):
         if form.is_valid():
             form = form.save()
             employees = [user.employee_user_id for user in form.employee_id.all()]
-            
+
             notify.send(
                 request.user.employee_get,
                 recipient=employees,
@@ -638,7 +638,7 @@ def document_request_update(request, id):
         form = DocumentRequestForm(request.POST, instance=document_request)
         if form.is_valid():
             form = form.save()
-            documents.exclude(employee_id__in =form.employee_id.all()).delete()
+            documents.exclude(employee_id__in=form.employee_id.all()).delete()
             return HttpResponse("<script>window.location.reload();</script>")
 
     context = {
@@ -2300,7 +2300,9 @@ def work_info_export(request):
                     emp_company = company_name.first()
 
                     # Access the date_format attribute directly
-                    date_format = emp_company.date_format if emp_company else "MMM. D, YYYY"
+                    date_format = (
+                        emp_company.date_format if emp_company else "MMM. D, YYYY"
+                    )
                 else:
                     date_format = "MMM. D, YYYY"
                 # Define date formats
@@ -2954,21 +2956,20 @@ def initial_prefix(request):
     return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 
 
-
-
 @login_required
 @manager_can_enter("employee.view_employee")
 def first_last_badge(request):
     """
     This method is used to return the first last badge ids in grouped and ordere
     """
-    badge_ids =get_ordered_badge_ids()
+    badge_ids = get_ordered_badge_ids()
 
     return render(
         request,
         "employee_personal_info/first_last_badge.html",
         {"badge_ids": badge_ids},
     )
+
 
 @login_required
 @manager_can_enter("employee.view_employee")
@@ -2982,4 +2983,3 @@ def employee_get_mail_log(request):
         "-created_at"
     )
     return render(request, "tabs/mail_log.html", {"tracked_mails": tracked_mails})
-

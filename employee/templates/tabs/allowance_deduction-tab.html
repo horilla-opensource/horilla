@@ -106,9 +106,11 @@
                           
                           <a
                             class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
-                            href="{% url 'delete-allowance' allowance.id %}"
-                            onclick = "event.preventDefault();event.stopPropagation(); confirm(`{% trans 'Do you want to delete this Allowance?' %}`)"
-                            title='{% trans "Delete" %}'  
+                            onclick = "event.preventDefault();event.stopPropagation();"
+                            hx-confirm="{% trans 'Do you want to delete this Allowance?' %}"
+                            hx-post="{% url 'delete-employee-allowance' allowance.id %}"
+                            hx-target="#AllowanceAndDeduction"
+                            title="{% trans 'Delete' %}" 
                           >
                             <ion-icon
                               name="trash-outline"
@@ -128,7 +130,11 @@
 			{% else %}
 			    <div class="d-flex justify-content-center align-items-center" style="height:40vh">
                     {% if active_contracts %}
+                      {% if basic_pay <= 0 %}
+                        <h5 class="oh-404__subtitle">{% trans "Basic pay not added . Please update in the active contract." %}</h5>
+                      {% else %}
                         <h5 class="oh-404__subtitle">{% trans "This employee is not eligible for any allowances." %}</h5>
+                      {% endif %}
                     {% else %}
                         <h5 class="oh-404__subtitle">{% trans "This employee doesn't have an active contract. Please check the employee's contract" %}</h5>
                     {% endif %}

@@ -9,6 +9,7 @@ utilize the Django framework and make use of the render and redirect functions f
 django.shortcuts module.
 
 """
+
 import math
 from urllib.parse import parse_qs
 from django.http import HttpResponse, HttpResponseRedirect
@@ -118,9 +119,9 @@ def filing_status_delete(request, filing_status_id):
         filing_status.delete()
         messages.info(request, _("Filing status successfully deleted."))
     except:
-        messages.error(request, _("This filing status assigned to employees"))
+        messages.error(request, _("This filing status not found"))
 
-    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+    return redirect(filing_status_view)
 
 
 @login_required
@@ -247,4 +248,3 @@ def delete_tax_bracket(request, tax_bracket_id):
     tax_bracket.delete()
     messages.info(request, _("Tax bracket successfully deleted."))
     return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
-
