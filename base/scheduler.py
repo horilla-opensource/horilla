@@ -385,37 +385,61 @@ scheduler = BackgroundScheduler()
 start_time = datetime.now()
 
 # Add jobs with next_run_time set to the end of the previous job
-scheduler.add_job(
-    rotate_shift, "interval", seconds=10, id="job1" )
-scheduler.add_job(
-    rotate_work_type,
-    "interval",
-    seconds=10,
-    id="job2",
-)
-scheduler.add_job(
-    undo_shift,
-    "interval",
-    seconds=15,
-    id="job3",
-)
-scheduler.add_job(
-    switch_shift,
-    "interval",
-    seconds=20,
-    id="job4",
-)
-scheduler.add_job(
-    undo_work_type,
-    "interval",
-    seconds=25,
-    id="job6",
-)
-scheduler.add_job(
-    switch_work_type,
-    "interval",
-    seconds=30,
-    id="job5",
-)
+try:
+    scheduler.add_job(
+        rotate_shift, "interval", minutes=5, id="job1" )
+except:
+    pass
+
+try:
+    scheduler.add_job(
+        rotate_work_type,
+        "interval",
+        minutes=5,
+        id="job2",
+    )
+except:
+    pass
+
+try:
+    scheduler.add_job(
+        undo_shift,
+        "interval",
+        minutes=5,
+        id="job3",
+    )
+except:
+    pass
+
+try:
+    scheduler.add_job(
+        switch_shift,
+        "interval",
+        minutes=5,
+        id="job4",
+    )
+except:
+    pass
+
+try:
+    scheduler.add_job(
+        undo_work_type,
+        "interval",
+        minutes=5,
+        id="job6",
+    )
+except:
+    pass
+
+try:
+    scheduler.add_job(
+        switch_work_type,
+        "interval",
+        minutes=5,
+        id="job5",
+    )
+except:
+    pass
+
 
 scheduler.start()
