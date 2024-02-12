@@ -31,7 +31,7 @@
       <div class="oh-sticky-table__table">
         <div class="oh-sticky-table__thead">
           <div class="oh-sticky-table__tr">
-            <div class="oh-sticky-table__th" style="width:10px;">
+            <div class="oh-sticky-table__th" style="width: 10px; @media (max-width: 575.98px) { position: sticky; }">
               <div class="centered-div">
                 <input
                       type="checkbox"
@@ -94,8 +94,12 @@
             </div>
             <div data-cell-index="5" class="oh-sticky-table__td">{{ contract.wage}}</div>
             <div data-cell-index="6" class="oh-sticky-table__td">{{ contract.filing_status}}</div>
-            <div data-cell-index="7" class="oh-sticky-table__td">
-              {{ contract.get_contract_status_display}}
+            <div data-cell-index="7" class="oh-sticky-table__td" onclick="event.stopPropagation();">
+              <select name="status" hx-trigger="change" hx-post="{% url 'update-contract-status' contract.id %}" hx-target="#payroll-contract-container" hx-vals='{"view":"table"}' class="w-100">
+                {% for option in contract.CONTRACT_STATUS_CHOICES %}
+                <option value="{{option.0}}"{% if option.0 == contract.contract_status %}selected{% endif %}>{{option.1}}</option>
+                {% endfor %}
+              </select>
             </div>
             <div class="oh-sticky-table__td oh-sticky-table__right">
               <div class="oh-btn-group">
