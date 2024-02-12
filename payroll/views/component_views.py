@@ -344,10 +344,14 @@ def delete_allowance(request, allowance_id):
     This method is used to delete the allowance instance
     """
     try:
-        payroll.models.models.Allowance.objects.get(id=allowance_id).delete()
-        messages.success(request, _("Allowance deleted successfully"))
-    except ObjectDoesNotExist(Exception):
-        messages.error(request, _("Allowance not found"))
+        allowance = payroll.models.models.Allowance.objects.filter(
+            id=allowance_id
+        ).first()
+        if allowance:
+            allowance.delete()
+            messages.success(request, _("Allowance deleted successfully"))
+        else:
+            messages.error(request, _("Allowance not found"))
     except ValidationError as validation_error:
         messages.error(
             request, _("Validation error occurred while deleting the allowance")
@@ -356,7 +360,9 @@ def delete_allowance(request, allowance_id):
     except Exception as exception:
         messages.error(request, _("An error occurred while deleting the allowance"))
         messages.error(request, str(exception))
-    return redirect(view_allowance)
+    if request.path.split("/")[2] == "delete-employee-allowance":
+        return HttpResponse("<script>window.location.reload();</script>")
+    return redirect(filter_allowance)
 
 
 @login_required
@@ -476,8 +482,12 @@ def delete_deduction(request, deduction_id):
     Args:
         id : deduction instance id
     """
-    payroll.models.models.Deduction.objects.get(id=deduction_id).delete()
-    messages.success(request, _("Deduction deleted successfully"))
+    deduction = payroll.models.models.Deduction.objects.filter(id=deduction_id)
+    if deduction:
+        deduction.delete()
+        messages.success(request, _("Deduction deleted successfully"))
+    else:
+        messages.error(request, _("Deduction not found"))
     return redirect(view_deduction)
 
 
@@ -821,7 +831,9 @@ def payslip_export(request):
                     emp_company = company_name.first()
 
                     # Access the date_format attribute directly
-                    date_format = emp_company.date_format if emp_company else "MMM. D, YYYY"
+                    date_format = (
+                        emp_company.date_format if emp_company else "MMM. D, YYYY"
+                    )
                 else:
                     date_format = "MMM. D, YYYY"
                 # Define date formats
@@ -884,21 +896,21 @@ def send_slip(request):
     if not len(EMAIL_HOST_USER):
         messages.error(request, "Email server is not configured")
         return redirect(view_payslip)
-    pasylip_ids = request.GET.getlist("id")
-    payslips = Payslip.objects.filter(id__in=pasylip_ids)
+    payslip_ids = request.GET.getlist("id")
+    payslips = Payslip.objects.filter(id__in=payslip_ids)
     result_dict = defaultdict(
         lambda: {"employee_id": None, "instances": [], "count": 0}
     )
 
-    for pasylip in payslips:
-        employee_id = pasylip.employee_id
+    for payslip in payslips:
+        employee_id = payslip.employee_id
         result_dict[employee_id]["employee_id"] = employee_id
-        result_dict[employee_id]["instances"].append(pasylip)
+        result_dict[employee_id]["instances"].append(payslip)
         result_dict[employee_id]["count"] += 1
-    mail_thread = MailSendThread(request, result_dict=result_dict, ids=pasylip_ids)
+    mail_thread = MailSendThread(request, result_dict=result_dict, ids=payslip_ids)
     mail_thread.start()
     messages.info(request, "Mail processing")
-    return redirect(view_payslip)
+    return redirect(filter_payslip)
 
 
 @login_required
@@ -906,7 +918,7 @@ def send_slip(request):
 def add_bonus(request):
     employee_id = request.GET["employee_id"]
     payslip_id = request.GET.get("payslip_id")
-    if payslip_id:
+    if payslip_id != "None" and payslip_id:
         instance = Payslip.objects.get(id=payslip_id)
         form = forms.PayslipAllowanceForm(
             initial={"employee_id": employee_id, "date": instance.start_date}
@@ -918,7 +930,7 @@ def add_bonus(request):
         if form.is_valid():
             form.save()
             messages.success(request, _("Bonus Added"))
-            if payslip_id:
+            if payslip_id != "None" and payslip_id:
                 new_post_data = QueryDict(mutable=True)
                 new_post_data.update(
                     {
@@ -1078,6 +1090,7 @@ def search_loan(request):
     """
     records = LoanAccountFilter(request.GET).qs
     data_dict = parse_qs(request.GET.urlencode())
+    get_key_instances(LoanAccount,data_dict)
     return render(
         request,
         "payroll/loan/records.html",
@@ -1155,7 +1168,7 @@ def view_reimbursement(request):
             "pd": request.GET.urlencode(),
             "filter_dict": data_dict,
             "view": view,
-            'reimbursement_exists':reimbursement_exists
+            "reimbursement_exists": reimbursement_exists,
         },
     )
 
@@ -1194,7 +1207,7 @@ def search_reimbursement(request):
     template = "payroll/reimbursement/request_cards.html"
     if view == "list":
         template = "payroll/reimbursement/reimbursement_list.html"
-    data_dict.pop("view",None)
+    get_key_instances(Reimbursement, data_dict)
     return render(
         request,
         template,
@@ -1259,7 +1272,7 @@ def approve_reimbursements(request):
                 recipient=emp.employee_user_id,
                 verb="Your reimbursement request has been rejected.",
                 verb_ar="تم رفض طلب استرداد النفقات الخاص بك.",
-                verb_de= "Ihr Erstattungsantrag wurde abgelehnt.",
+                verb_de="Ihr Erstattungsantrag wurde abgelehnt.",
                 verb_es="Su solicitud de reembolso ha sido rechazada.",
                 verb_fr="Votre demande de remboursement a été rejetée.",
                 redirect=f"/payroll/view-reimbursement?id={reimbursement.id}",

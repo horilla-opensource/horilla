@@ -30,7 +30,6 @@ function getCookie(name) {
   return cookieValue;
 }
 
-
 var originalConfirm = window.confirm;
 // Override the default confirm function with SweetAlert
 window.confirm = function (message) {
@@ -72,6 +71,15 @@ window.confirm = function (message) {
           } else {
             htmx.ajax("GET", path, hxTarget);
           }
+        }
+      } else {
+        var path = event.target["htmx-internal-data"].path;
+        var verb = event.target["htmx-internal-data"].verb;
+        var hxTarget = $(event.target).attr("hx-target");
+        if (verb === "post") {
+          htmx.ajax("POST", path, hxTarget);
+        } else {
+          htmx.ajax("GET", path, hxTarget);
         }
       }
     } else {

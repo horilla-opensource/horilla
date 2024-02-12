@@ -56,7 +56,9 @@ def filter_own_and_subordinate_recordes(request, queryset, perm=None):
     user = request.user
     if user.has_perm(perm):
         return queryset
-    queryset = filter_own_records(request, queryset, perm) | filtersubordinates(request, queryset, perm)
+    queryset = filter_own_records(request, queryset, perm) | filtersubordinates(
+        request, queryset, perm
+    )
     return queryset
 
 
@@ -146,7 +148,7 @@ def sortby(request, queryset, key):
         orderingList = [item for item in orderingList if item["id"] != id]
         orderingList.append(ordering)
     order = f'{ordering["ordering"]}{sortby}'
-    setattr(request, 'sort_option', {})
+    setattr(request, "sort_option", {})
     request.sort_option["order"] = order
     return queryset
 
@@ -454,7 +456,9 @@ def export_data(request, model, form_class, filter_class, file_name):
                         company_name = Company.objects.filter(id=employee_company.id)
                         emp_company = company_name.first()
                         # Access the date_format attribute directly
-                        time_format = emp_company.time_format if emp_company else "hh:mm A"
+                        time_format = (
+                            emp_company.time_format if emp_company else "hh:mm A"
+                        )
                     else:
                         time_format = "hh:mm A"
 
@@ -485,7 +489,9 @@ def export_data(request, model, form_class, filter_class, file_name):
                         emp_company = company_name.first()
 
                         # Access the date_format attribute directly
-                        date_format = emp_company.date_format if emp_company else "MMM. D, YYYY"
+                        date_format = (
+                            emp_company.date_format if emp_company else "MMM. D, YYYY"
+                        )
                     else:
                         date_format = "MMM. D, YYYY"
                     # Define date formats

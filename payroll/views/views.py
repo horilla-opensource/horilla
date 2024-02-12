@@ -89,7 +89,10 @@ def contract_update(request, contract_id, **kwargs):
         Otherwise, renders the contract update form.
 
     """
-    contract = Contract.objects.get(id=contract_id)
+    contract = Contract.objects.filter(id=contract_id).first()
+    if not contract:
+        messages.info(request,_("The contract could not be found."))
+        return redirect(contract_view)
     contract_form = ContractForm(instance=contract)
     if request.method == "POST":
         contract_form = ContractForm(request.POST, request.FILES, instance=contract)
@@ -109,6 +112,11 @@ def contract_update(request, contract_id, **kwargs):
 def contract_status_update(request, contract_id):
     if request.method == "POST":
         contract = Contract.objects.get(id=contract_id)
+        if request.POST.get("view"):
+            contract.contract_status = request.POST.get("status")
+            contract.save()
+            messages.success(request,_("The contract status has been updated successfully."))
+            return redirect(contract_filter)
         contract_form = ContractForm(request.POST, request.FILES, instance=contract)
         if contract_form.is_valid():
             contract_form.save()
@@ -346,6 +354,7 @@ def update_payslip_status(request, payslip_id):
     This method is used to update the payslip confirmation status
     """
     status = request.POST.get("status")
+    view = request.POST.get("view")
     payslip = Payslip.objects.filter(id=payslip_id).first()
     if payslip:
         payslip.status = status
@@ -353,6 +362,10 @@ def update_payslip_status(request, payslip_id):
         messages.success(request, _("Payslip status updated"))
     else:
         messages.error(request, _("Payslip not found"))
+    if view:
+        from .component_views import filter_payslip
+
+        return redirect(filter_payslip)
     data = payslip.pay_head_data
     data["employee"] = payslip.employee_id
     data["payslip"] = payslip
@@ -451,6 +464,8 @@ def delete_payslip(request, payslip_id):
     Args:
         payslip_id (int): Payslip model instance id
     """
+    from .component_views import filter_payslip
+
     try:
         Payslip.objects.get(id=payslip_id).delete()
         messages.success(request, _("Payslip deleted"))
@@ -458,7 +473,7 @@ def delete_payslip(request, payslip_id):
         messages.error(request, _("Payslip not found."))
     except ProtectedError:
         messages.error(request, _("Something went wrong"))
-    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+    return redirect(filter_payslip)
 
 
 @login_required
