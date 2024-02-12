@@ -64,7 +64,7 @@
                                     </div>
                                     <div class="loan-type" 
                                         style="display: inline;
-                                        {% if req.status == "approved" %}background:#9acd3245; {% elif req.status == "canceled" %} 
+                                        {% if req.status == "approved" %}background:#9acd3245; {% elif req.status == "rejected" %} 
                                         background:#ff45002e;{% endif %}">
                                         {{ req.get_status_display }}
                                     </div>
@@ -360,7 +360,7 @@
                                     </div>
                                     <div class="loan-type" 
                                         style="display: inline;
-                                        {% if req.status == "approved" %}background:#9acd3245; {% elif req.status == "canceled" %} 
+                                        {% if req.status == "approved" %}background:#9acd3245; {% elif req.status == "rejected" %} 
                                         background:#ff45002e;{% endif %}">
                                         {{ req.get_status_display }}
                                     </div>
@@ -653,7 +653,7 @@
                                     </div>
                                     <div class="loan-type" 
                                         style="display: inline;
-                                        {% if req.status == "approved" %}background:#9acd3245; {% elif req.status == "canceled" %} 
+                                        {% if req.status == "approved" %}background:#9acd3245; {% elif req.status == "rejected" %} 
                                         background:#ff45002e;{% endif %}">
                                         {{ req.get_status_display }}
                                     </div>

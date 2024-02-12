@@ -1,18 +1,18 @@
-{% extends 'index.html' %} {% block content %} {% load i18n %} {% load yes_no %} {% load static %}
+{% extends 'index.html' %} {% block content %} {% load i18n %} {% load yes_no %}
+{% load static %}
 <style>
-  .oh-sticky-table__right{
+  .oh-sticky-table__right {
     position: sticky;
     right: 0;
     background-color: #fff;
-  }  
-  .oh-sticky-table__top{
+  }
+  .oh-sticky-table__top {
     z-index: 12 !important;
     top: 0;
   }
 </style>
 
-<section class="oh-wrapper oh-main__topbar" x-data="{searchShow: false}"
->
+<section class="oh-wrapper oh-main__topbar" x-data="{searchShow: false}">
   <div class="oh-main__titlebar oh-main__titlebar--left">
     <h1 class="oh-main__titlebar-title fw-bold">{% trans "Deductions" %}</h1>
     <a
@@ -55,28 +55,40 @@
         />
       </div>
       <div class="oh-main__titlebar-button-container">
-        <ul class="oh-view-types ml-2" style="margin-bottom: 0;">
+        <ul class="oh-view-types ml-2" style="margin-bottom: 0">
           <li class="oh-view-type deduction-view-type" data-view="list">
-          <a class="oh-btn oh-btn--view {% if request.GET.view == 'list' %} oh-btn--view-active {% endif %}" 
-            title='{% trans "List" %}'
-            onclick="$('[name=view]').val('list');$('.filterButton')[0].click();"
-          >
-            <ion-icon name="list-outline" role="img" class="md hydrated" aria-label="list outline"></ion-icon>
-          </a>
+            <a
+              class="oh-btn oh-btn--view {% if request.GET.view == 'list' %} oh-btn--view-active {% endif %}"
+              title='{% trans "List" %}'
+              onclick="$('[name=view]').val('list');$('.filterButton')[0].click();"
+            >
+              <ion-icon
+                name="list-outline"
+                role="img"
+                class="md hydrated"
+                aria-label="list outline"
+              ></ion-icon>
+            </a>
           </li>
           <li class="oh-view-type deduction-view-type" data-view="card">
-          <a
-           class="oh-btn oh-btn--view {% if request.GET.view != 'list' %} oh-btn--view-active {% endif %}" 
-           title='{% trans "Card" %}'
-           onclick="$('[name=view]').val('card');$('.filterButton')[0].click();"
-          >
-            <ion-icon name="grid-outline" role="img" class="md hydrated" aria-label="grid outline"></ion-icon>
-          </a>
+            <a
+              class="oh-btn oh-btn--view {% if request.GET.view != 'list' %} oh-btn--view-active {% endif %}"
+              title='{% trans "Card" %}'
+              onclick="$('[name=view]').val('card');$('.filterButton')[0].click();"
+            >
+              <ion-icon
+                name="grid-outline"
+                role="img"
+                class="md hydrated"
+                aria-label="grid outline"
+              ></ion-icon>
+            </a>
           </li>
         </ul>
         <div class="oh-dropdown" x-data="{open: false}">
           <button class="oh-btn ml-2" @click="open = !open">
-            <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}<div id="filterCount"></div>
+            <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}
+            <div id="filterCount"></div>
           </button>
           <div
             class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4"
@@ -96,7 +108,7 @@
               href="{% url 'create-deduction' %}"
             >
               <ion-icon
-                class="me-2 md hydrated"
+                class="md hydrated"
                 name="add-outline"
                 role="img"
                 aria-label="add outline"
@@ -111,7 +123,7 @@
 </section>
 <div class="oh-wrapper">
   <!-- start of Quick filters  -->
-  <div class="d-flex flex-row-reverse mb-2" >
+  <div class="d-flex flex-row-reverse mb-2">
     <span
       class="me-3"
       onclick="$('[name=is_pretax]').val('true');$('[name=is_fixed]').val('unknown');$('.filterButton').click()"
@@ -123,7 +135,8 @@
       ></span>
       {% trans "Pretax" %}
     </span>
-    {% comment %} <span
+    {% comment %}
+    <span
       class="me-3"
       style="cursor: pointer"
       onclick="$('[name=is_pretax]').val('false');$('[name=is_fixed]').val('unknown');$('.filterButton').click()"
@@ -133,7 +146,8 @@
         style="background-color: grey"
       ></span>
       {% trans "No Pretax" %}
-    </span> {% endcomment %}
+    </span>
+    {% endcomment %}
     <span
       class="me-3"
       style="cursor: pointer"
@@ -159,81 +173,92 @@
   </div>
   <!-- end of quick filters  -->
   <div id="payroll-deduction-container">
-    {% if deductions %}
-      {% if request.GET.view == "list" %}
-      {% include 'payroll/deduction/list_deduction.html' %}
-      {% else %}
-      {% include 'payroll/deduction/card_deduction.html' %}
-      {% endif %}
-    {% else %}
-      <main :class="sidebarOpen ? 'oh-main__sidebar-visible' : ''"> 
-        <div class="oh-wrapper">
-          <div class="oh-404">
-              <img style="    width: 150px;height: 150px;" src="{% static 'images/ui/deduction_icon.png' %}" class="oh-404__image mb-4" alt="Page not found. 404."/>
-              <h5 class="oh-404__subtitle">{% trans "There are currently no deductions to consider." %}</h5>
-          </div>
+    {% if deductions %} {% if request.GET.view == "list" %} {% include
+    'payroll/deduction/list_deduction.html' %} {% else %} {% include
+    'payroll/deduction/card_deduction.html' %} {% endif %} {% else %}
+    <main :class="sidebarOpen ? 'oh-main__sidebar-visible' : ''">
+      <div class="oh-wrapper">
+        <div class="oh-404">
+          <img
+            style="width: 150px; height: 150px"
+            src="{% static 'images/ui/deduction_icon.png' %}"
+            class="oh-404__image mb-4"
+            alt="Page not found. 404."
+          />
+          <h5 class="oh-404__subtitle">
+            {% trans "There are currently no deductions to consider." %}
+          </h5>
         </div>
-      </main>
+      </div>
+    </main>
     {% endif %}
-    
   </div>
 </div>
-<div class="oh-modal" id="DeductionModal" role="dialog" aria-labelledby="DeductionModal" aria-hidden="true">
-  <div class="oh-modal__dialog oh-modal__dialog-relative" style="max-width: 600px" id="OneDeductionTarget"></div>
+<div
+  class="oh-modal"
+  id="DeductionModal"
+  role="dialog"
+  aria-labelledby="DeductionModal"
+  aria-hidden="true"
+>
+  <div
+    class="oh-modal__dialog oh-modal__dialog-relative"
+    style="max-width: 600px"
+    id="OneDeductionTarget"
+  ></div>
 </div>
 <script>
   $(document).ready(function () {
-    $(".deduction-view-type").click(function (e) { 
+    $(".deduction-view-type").click(function (e) {
       e.preventDefault();
-      var view = $(this).attr("data-view")
+      var view = $(this).attr("data-view");
       $("#filter-deduction").attr("hx-vals", `{"view":"${view}"}`);
       $("#filterView").val(view);
-      var currentURL = window.location.href;     
-      if (/\?view=[^&]+/.test(currentURL)) {          
-        newURL = currentURL.replace(/\?view=[^&]+/, "?view="+view);      
-      }        
-      else {          
-        var separator = currentURL.includes('?') ? '&' : '?';  
-        newURL = currentURL + separator + "view="+view;        
-      }       
+      var currentURL = window.location.href;
+      if (/\?view=[^&]+/.test(currentURL)) {
+        newURL = currentURL.replace(/\?view=[^&]+/, "?view=" + view);
+      } else {
+        var separator = currentURL.includes("?") ? "&" : "?";
+        newURL = currentURL + separator + "view=" + view;
+      }
       history.pushState({}, "", newURL);
-      $(".oh-btn--view-active").removeClass("oh-btn--view-active")
-      $(this).children("a").addClass("oh-btn--view-active")
+      $(".oh-btn--view-active").removeClass("oh-btn--view-active");
+      $(this).children("a").addClass("oh-btn--view-active");
     });
     $("#filter-deduction").focusout(function (e) {
       $("#filterSearch").val($(this).val());
       const formData = $("#filterForm").serializeArray();
       const jsonObject = {};
-      
-      $.each(formData, function() {
-          jsonObject[this.name] = this.value;
+
+      $.each(formData, function () {
+        jsonObject[this.name] = this.value;
       });
-      delete jsonObject.view
-      var hxVals = JSON.stringify(jsonObject)
-      $(".deduction-view-type a").attr("hx-vals", hxVals);      
+      delete jsonObject.view;
+      var hxVals = JSON.stringify(jsonObject);
+      $(".deduction-view-type a").attr("hx-vals", hxVals);
     });
 
-    $("#filter-deduction").keyup(function (e) { 
+    $("#filter-deduction").keyup(function (e) {
       const formData = $("#filterForm").serializeArray();
       const jsonObject = {};
-      
-      $.each(formData, function() {
-          jsonObject[this.name] = this.value;
+
+      $.each(formData, function () {
+        jsonObject[this.name] = this.value;
       });
-      delete jsonObject.search
-      var hxVals = JSON.stringify(jsonObject)
-      $(this).attr("hx-vals", hxVals);   
+      delete jsonObject.search;
+      var hxVals = JSON.stringify(jsonObject);
+      $(this).attr("hx-vals", hxVals);
     });
-    $("#filterSubmit").click(function (e) { 
+    $("#filterSubmit").click(function (e) {
       const formData = $("#filterForm").serializeArray();
       const jsonObject = {};
-      
-      $.each(formData, function() {
-          jsonObject[this.name] = this.value;
+
+      $.each(formData, function () {
+        jsonObject[this.name] = this.value;
       });
-      delete jsonObject.view
-      var hxVals = JSON.stringify(jsonObject)
-      $(".deduction-view-type").attr("hx-vals", hxVals);   
+      delete jsonObject.view;
+      var hxVals = JSON.stringify(jsonObject);
+      $(".deduction-view-type").attr("hx-vals", hxVals);
     });
   });
 </script>

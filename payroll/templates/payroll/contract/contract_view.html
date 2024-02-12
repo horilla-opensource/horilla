@@ -24,7 +24,8 @@
           onsubmit="event.stopPropagation();$(this).parents().find('.oh-modal--show').last().toggleClass('oh-modal--show');"
           id="hxContractExportForm"
         >
-          {% csrf_token %} {% include 'payroll/contract/contract_export_filter.html' %}
+          {% csrf_token %} {% include
+          'payroll/contract/contract_export_filter.html' %}
           <div class="oh-dropdown__filter-footer">
             <button class="oh-btn oh-btn--secondary oh-btn--small w-100">
               {% trans "Export" %}
@@ -52,7 +53,6 @@
       </a>
     </div>
     <div class="oh-main__titlebar oh-main__titlebar--right">
-
       <form
         hx-get='{% url "contract-filter" %}'
         id="filterForm"
@@ -60,28 +60,34 @@
         hx-target="#payroll-contract-container"
         class="d-flex"
       >
-      <div
-        class="oh-input-group oh-input__search-group"
-        :class="searchShow ? 'oh-input__search-group--show' : ''"
-      >
-        <ion-icon
-          name="search-outline"
-          class="oh-input-group__icon oh-input-group__icon--left"
-        ></ion-icon>
-        <input
-          type="text"
-          class="oh-input oh-input__icon"
-          aria-label="Search Input"
-          id="contract-filter"
-          name="search"
-          placeholder="{% trans 'Search' %}"
-          onkeyup="$('.filterButton')[0].click()"
-          {% comment %} hx-get="{% url 'contract-filter' %}"
-          hx-trigger="keyup changed delay:500ms, search"
-          hx-target="#payroll-contract-container"
-          hx-swap="innerHTML" {% endcomment %}
-        />
-      </div>
+        <div
+          class="oh-input-group oh-input__search-group"
+          :class="searchShow ? 'oh-input__search-group--show' : ''"
+        >
+          <ion-icon
+            name="search-outline"
+            class="oh-input-group__icon oh-input-group__icon--left"
+          ></ion-icon>
+          <input
+            type="text"
+            class="oh-input oh-input__icon"
+            aria-label="Search Input"
+            id="contract-filter"
+            name="search"
+            placeholder="{% trans 'Search' %}"
+            onkeyup="$('.filterButton')[0].click()"
+            {%
+            comment
+            %}
+            hx-get="{% url 'contract-filter' %}"
+            hx-trigger="keyup changed delay:500ms, search"
+            hx-target="#payroll-contract-container"
+            hx-swap="innerHTML"
+            {%
+            endcomment
+            %}
+          />
+        </div>
         <div class="oh-dropdown" x-data="{open: false}">
           <button
             class="oh-btn ml-2"
@@ -192,7 +198,7 @@
               class="oh-btn oh-btn--secondary oh-btn--shadow"
               href="{% url 'contract-create' %}"
             >
-              <ion-icon class="me-2" name="add-outline"></ion-icon>
+              <ion-icon name="add-outline"></ion-icon>
               {% trans "Create" %}
             </a>
           </div>
@@ -280,14 +286,11 @@
       </div>
       <div class="oh-checkpoint-badge text-danger mb-2" id="selectedShow"></div>
       <div class="oh-tabs__contents">
-        <div
-          id="payroll-contract-container"
-        >
+        <div id="payroll-contract-container">
           <!-- including contract list -->
           {% include 'payroll/contract/contract_list.html' %}
         </div>
       </div>
-
     </div>
   </div>
 
@@ -314,6 +317,3 @@
 </script>
 <script src="{% static 'payroll/action.js' %}"></script>
 {% endblock content %}
-
-
-
