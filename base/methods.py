@@ -314,6 +314,9 @@ def get_key_instances(model, data_dict):
         del data_dict["id"]
         data_dict["Object"] = [object]
 
+    if "sortby" in data_dict:
+        del data_dict["sortby"]
+
     keys_to_remove = [
         key
         for key, value in data_dict.items()
