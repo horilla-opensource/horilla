@@ -70,7 +70,7 @@ class Recruitment(models.Model):
     description = models.TextField(null=True)
     is_event_based = models.BooleanField(
         default=False,
-        help_text=_("To start bulk recruitment form multiple job positions"),
+        help_text=_("To start recruitment for multiple job positions"),
     )
     closed = models.BooleanField(
         default=False,
@@ -78,7 +78,13 @@ class Recruitment(models.Model):
             "To close the recruitment, If closed then not visible on pipeline view."
         ),
     )
-    is_published = models.BooleanField(default=True)
+    is_published = models.BooleanField(
+        default=True,
+        help_text=_(
+            "To publish a recruitment in website, if false then it \
+            will not appear on open recruitment page."
+        ),
+    )
     is_active = models.BooleanField(
         default=True,
         help_text=_(
@@ -125,6 +131,13 @@ class Recruitment(models.Model):
             ("job_position_id", "start_date", "company_id"),
         ]
         permissions = (("archive_recruitment", "Archive Recruitment"),)
+
+    def total_hires(self):
+        """
+        This method is used to get the count of
+        hired candidates
+        """
+        return self.candidate.filter(hired=True).count()
 
     def __str__(self):
         title = (
@@ -180,6 +193,7 @@ class Stage(models.Model):
         ("initial", _("Initial")),
         ("test", _("Test")),
         ("interview", _("Interview")),
+        ("cancelled", _("Cancelled")),
         ("hired", _("Hired")),
     ]
     recruitment_id = models.ForeignKey(
@@ -334,7 +348,7 @@ class Candidate(models.Model):
         editable=False,
     )
     objects = HorillaCompanyManager(related_company_field="recruitment_id__company_id")
-    last_updated = models.DateField(null=True,auto_now=True)
+    last_updated = models.DateField(null=True, auto_now=True)
 
     def __str__(self):
         return f"{self.name}"
@@ -347,7 +361,7 @@ class Candidate(models.Model):
         if first:
             return first.reject_reason_id.count() > 0
         return first
-    
+
     def get_full_name(self):
         """
         Method will return employee full name
@@ -419,6 +433,20 @@ class Candidate(models.Model):
             raise ValidationError({"job_position_id": _("Choose valid choice")})
         if self.recruitment_id.is_event_based and self.job_position_id is None:
             raise ValidationError({"job_position_id": _("This field is required.")})
+        if self.stage_id.stage_type == "cancelled":
+            self.canceled = True
+        if self.canceled:
+            cancelled_stage = Stage.objects.filter(
+                recruitment_id=self.recruitment_id, stage_type="cancelled"
+            ).first()
+            if not cancelled_stage:
+                cancelled_stage = Stage.objects.create(
+                    recruitment_id=self.recruitment_id,
+                    stage="Cancelled Candidates",
+                    stage_type="cancelled",
+                    sequence=50,
+                )
+            self.stage_id = cancelled_stage
         super().save(*args, **kwargs)
 
     class Meta:
@@ -461,10 +489,13 @@ class RejectedCandidate(models.Model):
     """
 
     candidate_id = models.OneToOneField(
-        Candidate, on_delete=models.PROTECT, verbose_name="Candidate",related_name="rejected_candidate"
+        Candidate,
+        on_delete=models.PROTECT,
+        verbose_name="Candidate",
+        related_name="rejected_candidate",
     )
     reject_reason_id = models.ManyToManyField(
-        RejectReason, verbose_name="Reject reason",blank=True
+        RejectReason, verbose_name="Reject reason", blank=True
     )
     description = models.TextField()
     objects = HorillaCompanyManager(related_company_field="candidate_id__company_id")
