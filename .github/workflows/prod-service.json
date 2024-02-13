@@ -81,7 +81,7 @@
         "EC2"
     ],
     "cpu": "256",
-    "memory": "512",
+    "memory": "256",
     "runtimePlatform": {
         "cpuArchitecture": "X86_64",
         "operatingSystemFamily": "LINUX"
