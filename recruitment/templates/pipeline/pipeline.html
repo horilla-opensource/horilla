@@ -123,7 +123,6 @@
 
   <div id="ohMessages"></div>
   {% include 'pipeline/nav.html' %}
-
   <div class="oh-tabs oh-wrapper">
     {% include 'pipeline/pipeline_tabs.html' %}
 
@@ -138,40 +137,40 @@
         </button>
         {% endif %}
 
-        {% for stage in rec.stage_set.all|dictsort:"sequence" %}
+        {% for stage in rec.stages %}
         <!-- Movable #{{forloop.counter}} -->
         <div
           class="oh-tabs__movable ui-sortable stage"
-          data-stage-sequence="{{stage.sequence}}"
-          data-stage-id="{{stage.id}}"
+          data-stage-sequence="{{stage.grouper.sequence}}"
+          data-stage-id="{{stage.grouper.id}}"
           data-recruitment-id="{{rec.id}}"
         >
-          <div class="pipeline-header" {% if request.user.employee_get in stage.stage_managers.all %} style=" background-color: hsl(38.08deg 100% 50% / 8%);" {% endif %}>
-            <div class="pipeline-toggle w-75" data-stage-id="{{stage.id}}">
+          <div class="pipeline-header" {% if request.user.employee_get in stage.grouper.stage_managers.all %} style=" background-color: hsl(38.08deg 100% 50% / 8%);" {% endif %}>
+            <div class="pipeline-toggle w-75" data-stage-id="{{stage.grouper.id}}">
               <div class="oh-tabs__input-badge-container">
                 <span
                   class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round ms-2 mr-2 stage_count"
                   data-rec-stage-badge="{{rec.id}}"
-                  title="{{stage.active_candidates.all|length}} {% trans 'candidates' %}"
-                  id="stageCount{{stage.id}}"
-                  >{{stage.active_candidates.all|length}}</span
+                  title="{{stage.list|length}} {% trans 'candidates' %}"
+                  id="stageCount{{stage.grouper.id}}"
+                  >{{stage.list|length}}</span
                 >
                 <input
                   class="oh-tabs__movable-title oh-table__editable-input"
-                  value="{{stage}}"
+                  value="{{stage.grouper}}"
                   {% if perms.recruitment.change_stage or request.user|recruitment_manages:rec %}
-                  hx-post="{% url 'stage-title-update' stage.id %}"
+                  hx-post="{% url 'stage-title-update' stage.grouper.id %}"
                   name='stage'
                   {% endif %}
                   hx-target = "#ohMessages"
-                  style="width: 160px;"
+                  style="min-width: 160px;"
                   readonly=""
                 />
               </div>
             </div>
             <div class="d-flex justify-content-between custom-scroll">
               <div class="avatars" id="avatarsContainer">
-                {% for manager in stage.stage_managers.all %}
+                {% for manager in stage.grouper.stage_managers.all %}
                   <a href="#" class="avatars__item" title="{{manager}}"><img class="avatar" src="{{manager.get_avatar}}" alt=""></a>
                 {% endfor %}
               </div>
@@ -197,7 +196,7 @@
                     {% if perms.recruitment.change_stage or request.user|recruitment_manages:rec %}
                     <li class="oh-dropdown__item">
                       <a
-                        hx-get='{% url "stage-update-pipeline" stage.id %}'
+                        hx-get='{% url "stage-update-pipeline" stage.grouper.id %}'
                         hx-target="#stageUpdate"
                         data-toggle="oh-modal-toggle"
                         data-target="#updateStageModal"
@@ -211,7 +210,7 @@
                       <form
                         onsubmit="return confirm('{% trans "Are you sure you want to delete this stage?" %}');"
                         method="post"
-                        action="{% url 'rec-stage-delete' stage.id %}"
+                        action="{% url 'rec-stage-delete' stage.grouper.id %}"
                       >
                         {% csrf_token %}
                         <button
@@ -229,20 +228,20 @@
             </div>
           </div>
           <div
-            class="oh-tabs__movable-body position-relative pipeline_items recruitment_items"
-            data-stage-toggle-id="{{stage.id}}"
+            class="oh-tabs__movable-body position-relative pipeline_items recruitment_items {% if stage.grouper.stage_type == 'cancelled' %}d-none{% endif %}"
+            data-stage-toggle-id="{{stage.grouper.id}}"
           >
             <div
               class="oh-sticky-table oh-table--configurable candidate-table"
-              id="candidateTable{{stage.id}}"
-              data-stage-id="{{stage.id}}"
+              id="candidateTable{{stage.grouper.id}}"
+              data-stage-id="{{stage.grouper.id}}"
             >
               <div class="oh-sticky-table__table oh-table__movable">
                 <div class="oh-sticky-table__thead">
                   <div class="oh-sticky-table__tr oh-table-config__tr">
                     <div class="oh-sticky-table__th" style="width: 50px">
                       <div class="centered-div">
-                        <input type="checkbox" class="oh-input oh-input__checkbox stage-candidates" data-stage-id="{{stage.id}}" title="Select All" id="tick">
+                        <input type="checkbox" class="oh-input oh-input__checkbox stage-candidates" data-stage-id="{{stage.grouper.id}}" title="Select All" id="tick">
                       </div>
                     </div>
                     <div class="oh-sticky-table__th oh-table-config__th" style="width: 200px;">
@@ -264,11 +263,11 @@
                     </div>
                     {% endif %}
                     <div class="oh-sticky-table__th oh-table-config__th">{% trans "Stage" %}</div>
-                    <div class="oh-sticky-table__th oh-table-config__th" style="width: 200px;" >
-                      <select name="bulk_stage" class="oh-select w-100" data-stage-id="{{stage.id}}">
+                    <div class="oh-sticky-table__th oh-table-config__th" style="width: 230px;" >
+                      <select name="bulk_stage" class="oh-select w-100" data-stage-id="{{stage.grouper.id}}">
                         <option value="" style="color: gray !important;" selected>Stage bulk update</option>
                         {% for stage in rec.stage_set.all|dictsort:"sequence" %}
-                        <option value="{{stage.id}}">{{stage}}</option>
+                        <option value="{{stage.grouper.id}}">{{stage.grouper}}</option>
                         {% endfor %}
                       </select>
                     </div>
@@ -278,11 +277,11 @@
                   class="oh-sticky-table__tbody oh-table--inter-sortable ui-sortable candidate-container"
                   data-container="candidate"
                   data-container-list = "candidate"
-                  data-stage-id="{{stage.id}}"
+                  data-stage-id="{{stage.grouper.id}}"
                   data-recruitment-id="{{rec.id}}"
-                  id="candidateContainer{{stage.id}}"
+                  id="candidateContainer{{stage.grouper.id}}"
                 >
-                  {% for cand in stage.active_candidates.all%} {% if cand.is_active %}
+                  {% for cand in stage.list%} 
                   
                   <div
                     class="oh-sticky-table__tr oh-table-config__tr candidate ui-droppable ui-sortable-handle cand change-cand "
@@ -294,7 +293,7 @@
                     data-job-position ="{{cand.job_position_id}}"
                     
                   >
-                    <div class="oh-sticky-table__sd">
+                    <div class="oh-sticky-table__sd" style="z-index: 11 !important;">
                       <div class="centered-div">
                         <input type="checkbox" id="65" class="oh-input candidate-checkbox oh-input__checkbox stage-candidate-row" onchange="highlightRow($(this))">
                       </div>
@@ -375,9 +374,9 @@
                         id="stageChange{{cand.id}}"
                         class="oh-select w-100 stage-change"
                         data-candidate-id="{{cand.id}}"
-                        data-stage-id="{{stage.id}}"
+                        data-stage-id="{{stage.grouper.id}}"
                       >
-                        {% for sg in rec.stage_set.all %} {% if stage.id == sg.id %}
+                        {% for sg in rec.stage_set.all %} {% if stage.grouper.id == sg.id %}
                         <option value="{{sg.id}}" selected>{{sg}}</option>
                         {% else %}
                         <option value="{{sg.id}}">{{sg}}</option>
@@ -401,16 +400,24 @@
                         </button>
                         <button
                           type="button"
-                          hx-get='{% url "add-note" cand.id %}'
-                          title="{% trans "Add Note" %}"
-                          hx-target="#remark-content"
+                          hx-target="#rejectModalBody"
                           hx-swap="innerHTML"
                           class="oh-btn oh-btn--light"
                           data-toggle="oh-modal-toggle"
-                          data-target="#addNoteModal"
+                          data-target="#rejectModal"
+                          {% if cand.is_offer_rejected %} 
+                          style="flex: 1 0 auto;background: #ff4500a3;width:20px;height: 40.68px; padding: 0;color: white;" 
+                          {% else %}
                           style="flex: 1 0 auto; width:20px;height: 40.68px; padding: 0;"
+                          {% endif %}
+                          hx-get="{% url 'add-to-rejected-candidates' %}?candidate_id={{cand.id}}"
+                          {% if cand.is_offer_rejected %}
+                          title="{% trans "Added In Rejected Candidates" %}"
+                          {% else %}
+                          title="{% trans "Add To Rejected Candidates" %}"
+                          {% endif %}
                         >
-                          <ion-icon name="newspaper-outline"></ion-icon>
+                        <ion-icon name="thumbs-down-outline"></ion-icon>
                         </button>
                         <button
                           type="button"
@@ -423,8 +430,8 @@
                           class="oh-btn oh-btn--light oh-activity-sidebar__open"
                           style="flex: 1 0 auto; width:20px;height: 40.68px; padding: 0;"
                         >
-                          <ion-icon name="eye-outline"></ion-icon>
-                        </button>
+                        <ion-icon name="newspaper-outline"></ion-icon>
+                      </button>
                         <a
                           style="text-decoration: none"
                           class="oh-btn oh-btn--light"
@@ -438,11 +445,68 @@
                       </div>
                     </div>
                   </div>
-                  {% endif %} {% endfor %}
+                  {% endfor %}
                 </div>
               </div>
             </div>
+            {% if stage.list.number %}
+            <div class="oh-pagination">
+              <span class="oh-pagination__page">
+                {% trans "Page" %} {{ stage.list.number }} {% trans "of" %} {{ stage.list.paginator.num_pages }}.
+              </span>
+              <nav class="oh-pagination__nav">
+                <div class="oh-pagination__input-container me-3">
+                <span class="oh-pagination__label me-1">{% trans "Page" %}</span>
+                <input
+                  type="number"
+                  name="{{stage.dynamic_name}}"
+                  class="oh-pagination__input"
+                  value="{{stage.list.number}}"
+                  href="?{{pd}}"
+                  min="1"
+                />
+                <span class="oh-pagination__label"
+                  >{% trans "of" %} {{stage.list.paginator.num_pages}}</span
+                >
+                </div>
+                <ul class="oh-pagination__items">
+                {% if stage.list.has_previous %}
+                <li class="oh-pagination__item oh-pagination__item--wide">
+                  <a
+                  href="?{{pd}}&{{stage.dynamic_name}}=1"
+                  class="oh-pagination__link"
+                  >{% trans "First" %}</a
+                  >
+                </li>
+                <li class="oh-pagination__item oh-pagination__item--wide">
+                  <a
+                  href="?{{pd}}&{{stage.dynamic_name}}={{ stage.list.previous_page_number }}"
+                  class="oh-pagination__link"
+                  >{% trans "Previous" %}</a
+                  >
+                </li>
+                {% endif %} {% if stage.list.has_next %}
+                <li class="oh-pagination__item oh-pagination__item--wide">
+                  <a
+                  href="?{{pd}}&{{stage.dynamic_name}}={{ stage.list.next_page_number }}"
+                  class="oh-pagination__link"
+                  >{% trans "Next" %}</a
+                  >
+                </li>
+                <li class="oh-pagination__item oh-pagination__item--wide">
+                  <a
+                  href="?{{pd}}&{{stage.dynamic_name}}={{ stage.list.paginator.num_pages }}"
+                  class="oh-pagination__link"
+                  >{% trans "Last" %}</a
+                  >
+                </li>
+                {% endif %}
+                </ul>
+              </nav>
+              </div>
+              {% endif %}
           </div>
+          
         </div>
         <!-- End of Movable #{{forloop.counter}} -->
         {% endfor %}
@@ -474,7 +538,7 @@
         name="page"
         class="oh-pagination__input"
         value="{{recruitment.number}}"
-        hx-get="{% url 'recruitment-search' %}?{{pd}}" hx-target="#tab_rec_{{rec.id}}"
+        href="{% url 'recruitment-search' %}?{{pd}}" hx-target="#tab_rec_{{rec.id}}"
         min="1"
         />
         <span class="oh-pagination__label">{% trans "of" %} {{recruitment.paginator.num_pages}}</span>

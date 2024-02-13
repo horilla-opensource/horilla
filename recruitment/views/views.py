@@ -42,6 +42,7 @@ from horilla.decorators import (
 )
 from base.methods import export_data, generate_pdf, get_key_instances
 from recruitment.views.paginator_qry import paginator_qry
+from recruitment.pipeline_grouper import group_by_queryset
 from recruitment.models import (
     Recruitment,
     Candidate,
@@ -258,7 +259,11 @@ def recruitment_pipeline(request):
     This method is used to filter out candidate through pipeline structure
     """
     view = request.GET.get("view")
-    job_position = JobPosition.objects.all()
+
+    filter_obj = RecruitmentFilter(request.GET)
+    # is active filteration not providing on pipeline
+    recruitments = filter_obj.qs.filter(is_active=True)
+    
     if request.GET.get("closed") == "closed":
         rec = Recruitment.objects.filter(closed=True)
         if rec.exists() and view == "card":
@@ -278,13 +283,10 @@ def recruitment_pipeline(request):
     recruitment_form = RecruitmentCreationForm()
     stage_form = StageDropDownForm()
     candidate_form = CandidateDropDownForm()
-    recruitment_obj = Recruitment.objects.filter(is_active=True, closed=False)
-    status = "closed"
-    if request.GET.get("closed") == status:
-        recruitment_obj = Recruitment.objects.filter(closed=True)
-        status = "closed"
-    else:
-        status = ""
+    
+    status = request.GET.get("closed")
+    if not status:
+        recruitments = recruitments.filter(closed=False)
     if request.method == "POST":
         if request.FILES.get("resume") is not None:
             if request.user.has_perm("add_candidate") or is_stagemanager(
@@ -348,20 +350,66 @@ def recruitment_pipeline(request):
                     return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
                 messages.info(request, _("You dont have access"))
     previous_data = request.GET.urlencode()
-    filter_obj = RecruitmentFilter(request.GET, queryset=recruitment_obj)
-    paginator = Paginator(filter_obj.qs, 4)
+    paginator = Paginator(recruitments, 4)
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
+    groups = []
+    for rec in page_obj:
+        stages = StageFilter(request.GET, queryset=rec.stage_set.all()).qs
+        all_stages_grouper = []
+        for stage_in_all in stages.order_by("sequence"):
+            all_stages_grouper.append({"grouper": stage_in_all, "list": []})
+        data = {"recruitment": rec, "stages": []}
+        for stage in stages.order_by("sequence"):
+            stage_candidates = CandidateFilter(
+                request.GET,
+                stage.candidate_set.order_by("sequence").filter(
+                    is_active=True,
+                ),
+            ).qs
 
+            page_name = "page" + stage.stage + str(rec.id)
+            grouper = group_by_queryset(
+                stage_candidates,
+                "stage_id",
+                request.GET.get(page_name),
+                page_name,
+            ).object_list
+            data["stages"] = data["stages"] + grouper
+        existing_grouper_ids = {item["grouper"].id for item in data["stages"]}
+        for item in all_stages_grouper:
+            if item["grouper"].id not in existing_grouper_ids:
+                data["stages"].append(
+                    {
+                        "grouper": item["grouper"],
+                        "list": [],
+                        "dynamic_name": f'dynamic_page_page{item["grouper"].id}',
+                    }
+                )
+
+        groups.append(data)
+
+    for item in groups:
+        setattr(item["recruitment"], "stages", item["stages"])
+    filter_dict = parse_qs(request.GET.urlencode())
+    if not request.GET.get("closed"):
+        filter_obj.form.initial["closed"] = False
+        filter_dict["closed"] = ["false"]
+    for key, val in filter_dict.copy().items():
+        if val[0] == "unknown" or key == "view":
+            del filter_dict[key]
     return render(
         request,
         template,
         {
             "recruitment": page_obj,
+            "rec_filter_obj": filter_obj,
+            "stage_filter_obj": StageFilter(request.GET),
+            "candidate_filter_obj": CandidateFilter(request.GET),
+            "filter_dict": filter_dict,
             "form": recruitment_form,
             "stage_form": stage_form,
             "candidate_form": candidate_form,
-            "job_positions": job_position,
             "status": status,
             "view": view,
             "pd": previous_data,
@@ -1834,10 +1882,8 @@ def delete_reject_reason(request):
     This method is used to delete the reject reasons
     """
     ids = request.GET.getlist("ids")
-    reasons = RejectReason.objects.filter(id__in = ids)        
+    reasons = RejectReason.objects.filter(id__in=ids)
     for reason in reasons:
         reasons.delete()
-        messages.success(request,f"{reason.title} is deleted.")
+        messages.success(request, f"{reason.title} is deleted.")
     return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
-    
-    
