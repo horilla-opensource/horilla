@@ -361,6 +361,11 @@
 .hydrated{
   margin-right:4px;
 }
+.required-star::after {
+  content: "*";
+  padding-left: 5px;
+  color: red;
+}
   </style>
 </head>
 
@@ -678,6 +683,11 @@
   <script src="{% static '/build/js/sweetAlert.js' %}"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script>
+    // Clear all query parameters from the URL
+    function clearQueryParameters() {
+      var urlWithoutQuery = window.location.origin + window.location.pathname;
+      window.history.replaceState({}, document.title, urlWithoutQuery);
+    }
     $(document).ready(function () {
       $('body').on('click', '.select2-search__field', function(e) {
       e.stopPropagation();
