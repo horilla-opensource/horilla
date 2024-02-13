@@ -4,14 +4,14 @@
     {% for rec in recruitment %}
     {% if request.user|stage_manages:rec or perms.recruitment.view_recruitment %}
 
-    <li class="oh-tabs__tab" style="padding-right: 0;{% if request.user|recruitment_manages:rec %} background-color: hsl(38.08deg 100% 50% / 8%); {% endif %}" data-target="#tab_rec_{{rec.id}}">
+    <li class="oh-tabs__tab" style="{% if rec.closed %}text-decoration: line-through{% endif %};padding-right: 0;{% if request.user|recruitment_manages:rec %} background-color: hsl(38.08deg 100% 50% / 8%); {% endif %}" data-target="#tab_rec_{{rec.id}}">
       {{rec}}
       <div class="d-flex">
       <div class="oh-tabs__input-badge-container">
         <span
-          class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round ms-2 mr-2" id="recruitmentCandidateCount{{rec.id}}" title="{{rec.stage_set.all|length}} {% trans "Stages" %}"
+          class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round ms-2 mr-2" id="recruitmentCandidateCount{{rec.id}}" title="{{rec.stages|length}} {% trans "Stages" %}"
           onclick="event.stopPropagation()">
-          {{rec.stage_set.all|length}}
+          {{rec.stages|length}}
           </span
         >
       </div>
@@ -39,7 +39,7 @@
               >
             </li>
             {% endif %}
-            {% if  status == "" %}
+            {% if not rec.closed %}
               {% if perms.recruitment.change_recruitment or request.user|recruitment_manages:rec %}
                 <li class="oh-dropdown__item">
                   <a href="{% url 'recruitment-close-pipeline' rec.id %}" class="oh-dropdown__link"

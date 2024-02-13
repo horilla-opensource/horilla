@@ -70,7 +70,7 @@ x-data="{searchShow: false}"
 <div class="oh-main__titlebar oh-main__titlebar--left">
   <div class="oh-main__titlebar-title fw-bold mb-0 text-dark"  style="cursor:pointer;">{% trans "Recruitments" %}</div>
 </div>
-
+<form href="" id="filterForm">
 <div class="oh-main__titlebar oh-main__titlebar--right">
   
   
@@ -84,26 +84,25 @@ x-data="{searchShow: false}"
 		></ion-icon>
 		<input
 		type="text"
-		id = "pipelineSearch" 
 		placeholder="{% trans 'Search' %}" 
-		name='search'
+		name='candidate_name'
+    value="{{request.GET.candidate_name}}"
+    onkeyup="$(this).closest('form').submit()"
 		class="oh-input oh-input__icon"
 		aria-label="Search Input"
 		/>
   	</div>
 
-  <div class="oh-switch ms-3" style="width: 30px;">
-      <input type="checkbox" name="is_closed" data-widget="style-widget" class="style-widget oh-switch__checkbox" {% if request.GET.closed %} checked title="{% trans 'Switch to Ongoing Recruitments' %}" {% else %} title="{% trans 'Switch to Closed Recruitments' %}" {% endif %} id="is_closed" > 
-  </div>
 
 	<ul class="oh-view-types ml-2" style="margin-bottom: 0;">
-		<li class="oh-view-type candidate-view-type" data-view='list'>
-		<a href="{% url 'pipeline' %}?closed={{status}}"  hx-target='#section' class="oh-btn oh-btn--view {% if request.GET.view != 'card' %} oh-btn--view-active {% endif %}"
+    <input type="hidden" name="view" value="list">
+		<li class="oh-view-type candidate-view-type" >
+		<div onclick="$(this).closest('ul').find('[name=view]').val('list');$(this).closest('form').submit()" class="oh-btn oh-btn--view {% if request.GET.view != 'card' %} oh-btn--view-active {% endif %}"
 			title={% trans 'List' %}><ion-icon name="list-outline"></ion-icon
 		></a>
 		</li>
-		<li class="oh-view-type candidate-view-type" data-view='card'>
-		<a href="{% url 'pipeline' %}?view=card&closed={{status}}" hx-target='#section' class="oh-btn oh-btn--view {% if request.GET.view == 'card' %} oh-btn--view-active {% endif %}"
+		<li class="oh-view-type candidate-view-type" \>
+		<div  onclick="$(this).closest('ul').find('[name=view]').val('card');$(this).closest('form').submit()" class="oh-btn oh-btn--view {% if request.GET.view == 'card' %} oh-btn--view-active {% endif %}"
     title={% trans 'Card' %}><ion-icon name="grid-outline"></ion-icon
 		></a>
 		</li>
@@ -112,27 +111,11 @@ x-data="{searchShow: false}"
     <div class="oh-main__titlebar-button-container">
 
         <div class="oh-dropdown" x-data="{open: false}">
-          <button class="oh-btn ml-2" @click="open = !open">
+          <button type="button" class="oh-btn ml-2" @click="open = !open">
             <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}<div id="filterCount"></div>
           </button>
             <div class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4" x-show="open" @click.outside="open = false" style="display: none;" @click.>
-                
-                <div class="mb-3 mt-3">
-                    <label for="job_pos_id" class="oh-label">{% trans "Job position" %}</label>
-                    <select class="" name="job_pos_id" id="job_pos_id">
-                        <option value="">------------------</option>
-                        {% for job_position in job_positions %}
-                            <option value="{{job_position}}">{{job_position}}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                
-                <div class="oh-tabs__action-bar mt-2" id="filter_item" x-on:click="open = false" >
-                    <button class="oh-btn oh-btn--small oh-btn--secondary oh-tabs__action-new-table w-100" >
-                        <ion-icon class="me-1 md hydrated" name="add-outline" role="img"aria-label="add outline"></ion-icon>
-                        {% trans "Filter" %}
-                    </button>
-                </div>
+              {% include "pipeline/filters.html" %}
             </div>
     </div>
 	<div class="oh-main__titlebar-button-container">
@@ -147,6 +130,7 @@ x-data="{searchShow: false}"
 		
 	</div>
 </div>
+</form>
 </section>
 
 <div
@@ -217,3 +201,14 @@ $(document).ready(function(){
 })
 	
 </script>
+{% include "filter_tags.html" %}
+<div class="d-flex flex-row-reverse oh-wrapper">
+  <span  onclick="$('[name=closed]').val('True'); $('[name=closed]').first().change(); $('.filterButton').click()" style="cursor: pointer;margin-left: 10px;margin-right: 10px;">
+    <span class="oh-dot oh-dot--small me-1" style="background-color:orangered"></span>
+    {% trans "Closed" %}
+  </span>
+  <span  onclick="$('[name=closed]').val('');$('[name=closed]').first().change(); $('.filterButton').click()" style="cursor: pointer;margin-left: 10px;margin-right: 10px;">
+    <span class="oh-dot oh-dot--small me-1" style="background-color: yellowgreen"></span>
+    {% trans "Open" %}
+  </span>
+</div>
