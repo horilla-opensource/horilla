@@ -12,11 +12,20 @@ from attendance.models import Attendance, AttendanceValidationCondition
 from attendance.views.views import strtime_seconds
 from base.methods import filtersubordinates
 from base.models import ShiftRequest, WorkTypeRequest
-from employee.not_in_out_dashboard import paginator_qry
 from horilla.decorators import login_required
 from leave.models import LeaveAllocationRequest, LeaveRequest
 from pms.models import Feedback
 from django.db.models import Q
+from django.core.paginator import Paginator
+
+
+def paginator_qry(qryset, page_number):
+    """
+    This method is used to paginate query set
+    """
+    paginator = Paginator(qryset, 10)
+    qryset = paginator.get_page(page_number)
+    return qryset
 
 
 @login_required

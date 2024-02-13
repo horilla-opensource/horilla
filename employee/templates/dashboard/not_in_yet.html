@@ -1,20 +1,28 @@
 {% load i18n %}
 <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent" style="min-height: 423px;">
   <div class="oh-card-dashboard__header oh-card-dashboard__header--divider mb-0">
-    {% if employees.has_previous %}
+    
+      <span class="oh-card-dashboard__title">{% trans 'Offline Employees' %} </span>
+      <div class=" float-end mb-2">
+        {% if employees.has_previous %}
       <span class="oh-card-dashboard__title" id="employee-previous" style="cursor: pointer;" hx-target="#notInYetId"
         hx-get="{% url 'not-in-yet' %}?{{pd}}&page={{ employees.previous_page_number }}" hx-trigger="click delay:0.3s" title="Previous Page">
         <ion-icon name="caret-back-outline" role="img" class="md hydrated" aria-label="caret back outline"></ion-icon>
       </span>
       {% endif %}
-      <span class="oh-card-dashboard__title">{% trans 'Offline Employees' %} </span>
-      {% if employees.has_next %}
-      
-      <span class="oh-card-dashboard__title float-end" id="employee-previous" style="cursor: pointer;" hx-target="#notInYetId"
-      hx-get="{% url 'not-in-yet' %}?{{pd}}&page={{ employees.next_page_number }}" hx-trigger="click delay:0.3s" title="Next Page">
-      <ion-icon name="caret-forward-outline" role="img" class="md hydrated" aria-label="caret back outline"></ion-icon>
+        {% if employees.has_next %}      
+        <span class="oh-card-dashboard__title ms-2 float-end" id="employee-previous" style="cursor: pointer;" hx-target="#notInYetId"
+        hx-get="{% url 'not-in-yet' %}?{{pd}}&page={{ employees.next_page_number }}" hx-trigger="click delay:0.3s" title="Next Page">
+        <ion-icon name="caret-forward-outline" role="img" class="md hydrated" aria-label="caret back outline"></ion-icon>
+        </span>
+      {% endif %}
+      {% if employees.has_previous or employees.has_next %}
+      <span class="oh-pagination__page mt-1 fw-bold">
+        {% trans "Page" %} {{ employees.number }} 
+        {%trans "of" %} {{employees.paginator.num_pages }}
       </span>
-    {% endif %}
+      {% endif %}
+    </div>
   </div>
   {% if employees %}
     <div class="oh-card-dashboard__body">
@@ -47,10 +55,6 @@
         </div>
       </div>
     </div>
-    <span class="oh-pagination__page float-end mt-2 fw-bold">
-      {% trans "Page" %} {{ employees.number }} 
-      {%trans "of" %} {{employees.paginator.num_pages }}.
-    </span>
   {% else %}
   <div style="height: 380px; display:flex;align-items: center;justify-content: center;" class="">
     <div style="" class="">

@@ -5,16 +5,15 @@
             <div class="oh-sticky-table__thead">
                 <div class="oh-sticky-table__tr">
                     <div class="oh-sticky-table__th">{% trans "Employee" %}</div>
-                    <div class="oh-sticky-table__th">{% trans "Start Date" %}</div>
-                    <div class="oh-sticky-table__th">{% trans "End Date" %}</div>
-                    <div class="oh-sticky-table__th">{% trans "Actions" %}</div>
+                    <div class="oh-sticky-table__th">{% trans "period" %}</div>
+                    <div class="oh-sticky-table__th"></div>
                 </div>
             </div>
             <div class="oh-sticky-table__tbody">
                 {% for leave_request in leave_requests %}
                 <div class="oh-sticky-table__tr" draggable="true" data-toggle="oh-modal-toggle" data-target="#bigModal"
                 hx-get="{% url 'one-request-view' leave_request.id %}?instances_ids={{requests_ids}}&dashboard=true" hx-target="#bigModalTarget">
-                    <div class="oh-sticky-table__td">
+                    <div class="oh-sticky-table__sd">
                         <div class="oh-profile oh-profile--md">
                             <div class="oh-profile__avatar mr-1">
                                 <img src="{{leave_request.employee_id.get_avatar}}" class="oh-profile__image"
@@ -23,8 +22,7 @@
                             <span class="oh-profile__name oh-text--dark">{{leave_request.employee_id}}</span>
                         </div>
                     </div>
-                    <div class="oh-sticky-table__td dateformat_changer">{{leave_request.start_date}}</div>
-                    <div class="oh-sticky-table__td dateformat_changer">{{leave_request.end_date}}</div>
+                    <div class="oh-sticky-table__td"><span class="dateformat_changer">{{leave_request.start_date}}</span> {% trans "to" %} <span class="dateformat_changer">{{leave_request.end_date}}</span></div>
                     <div class="oh-sticky-table__td" onclick="event.stopPropagation()">
                         <div class="oh-btn-group" >                        
                             <a type="submit" href="{% url 'request-approve' leave_request.id %}" title="{% trans 'Approve' %}"

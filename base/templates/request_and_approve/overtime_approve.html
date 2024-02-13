@@ -1,47 +1,55 @@
 {% load i18n %}
 
 <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
-    {% if overtime_attendances.has_previous %}
-    <span
-        class="oh-card-dashboard__title"
-        id="department-previous"
-        style="cursor: pointer"
-        hx-target="#OTApproveTarget"
-        hx-get="{% url 'dashboard-overtime-approve' %}?{{pd}}&page={{ overtime_attendances.previous_page_number }}"
-        hx-trigger="click delay:0.3s"
-        title="Previous Page"
-    >
-        <ion-icon
-            name="caret-back-outline"
-            role="img"
-            class="md hydrated"
-            aria-label="caret back outline"
-        ></ion-icon>
-    </span>
-    {% endif %}
+    
 
     <span class="oh-card-dashboard__title"
         >{% trans 'Overtime To Approve' %}
     </span>
-
-    {% if overtime_attendances.has_next %}
-    <span
-        class="oh-card-dashboard__title float-end"
-        id="department-previous"
-        style="cursor: pointer"
-        hx-target="#OTApproveTarget"
-        hx-get="{% url 'dashboard-overtime-approve' %}?{{pd}}&page={{ overtime_attendances.next_page_number }}"
-        hx-trigger="click delay:0.3s"
-        title="Next Page"
-    >
-        <ion-icon
-            name="caret-forward-outline"
-            role="img"
-            class="md hydrated"
-            aria-label="caret back outline"
-        ></ion-icon>
-    </span>
-    {% endif %}
+    <div class=" float-end mb-2">
+        {% if overtime_attendances.has_previous %}
+        <span
+            class="oh-card-dashboard__title"
+            id="department-previous"
+            style="cursor: pointer"
+            hx-target="#OTApproveTarget"
+            hx-get="{% url 'dashboard-overtime-approve' %}?{{pd}}&page={{ overtime_attendances.previous_page_number }}"
+            hx-trigger="click delay:0.3s"
+            title="Previous Page"
+        >
+            <ion-icon
+                name="caret-back-outline"
+                role="img"
+                class="md hydrated"
+                aria-label="caret back outline"
+            ></ion-icon>
+        </span>
+        {% endif %}
+        {% if overtime_attendances.has_next %}
+        <span
+            class="oh-card-dashboard__title float-end ms-2 "
+            id="department-previous"
+            style="cursor: pointer"
+            hx-target="#OTApproveTarget"
+            hx-get="{% url 'dashboard-overtime-approve' %}?{{pd}}&page={{ overtime_attendances.next_page_number }}"
+            hx-trigger="click delay:0.3s"
+            title="Next Page"
+        >
+            <ion-icon
+                name="caret-forward-outline"
+                role="img"
+                class="md hydrated"
+                aria-label="caret back outline"
+            ></ion-icon>
+        </span>
+        {% endif %}
+        {% if overtime_attendances.has_next or overtime_attendances.has_previous %}
+        <span class="oh-pagination__page float-end fw-bold">
+            {% trans "Page" %} {{ overtime_attendances.number }} {%trans "of" %}
+            {{overtime_attendances.paginator.num_pages }}
+        </span>
+        {% endif %}
+    </div>
 </div>
 
 <div class="oh-card-dashboard__body" id="OTApproveBody" style="height: 80%">
@@ -100,10 +108,6 @@
             {% endfor %}
         </div>
     </div>
-    <span class="oh-pagination__page float-end mt-2 fw-bold">
-        {% trans "Page" %} {{ overtime_attendances.number }} {%trans "of" %}
-        {{overtime_attendances.paginator.num_pages }}.
-    </span>
     {% else %}
     <div
         style="
