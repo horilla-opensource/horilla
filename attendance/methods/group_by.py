@@ -1,7 +1,7 @@
 """
 group_by.py
 
-This module is used to make queryset by grups
+This module is used to make queryset by groups
 """
 from datetime import datetime
 from django.db.models.fields.related_descriptors import ForwardManyToOneDescriptor
