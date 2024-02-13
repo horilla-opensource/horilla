@@ -43,7 +43,7 @@
         </li>
         <!-- normal user can't view all objective  -->
         <li class="oh-tabs__tab" data-target="#leave_encashment_tab">
-            {% trans "Leave encashments" %}
+            {% trans "Leave Encashments" %}
         </li>
         <li class="oh-tabs__tab" data-target="#bonus_encashment_tab">
             {% trans "Bonus Encashments" %}
@@ -83,17 +83,27 @@
                                         />
                                     </div> {% endcomment %}
                                     <div
-                                    class="oh-sticky-table__th"
+                                        class="oh-sticky-table__th {% if request.sort_option.order == '-employee_id' %}arrow-up {% elif request.sort_option.order == 'employee_id' %}arrow-down {% else %}arrow-up-down {% endif %}"
+                                        hx-get="{% url 'search-reimbursement' %}?{{pd}}&sortby=employee_id" 
+                                        hx-target="#reimbursementContainer"
                                     >
                                         {% trans "Employee" %}
                                     </div>
-                                    <div data-cell-index="1" data-cell-title='{% trans "Date" %}' class="oh-sticky-table__th "
+                                    <div data-cell-index="1" data-cell-title='{% trans "Date" %}' 
+                                        class="oh-sticky-table__th {% if request.sort_option.order == '-created_at' %}arrow-up {% elif request.sort_option.order == 'created_at' %}arrow-down {% else %}arrow-up-down {% endif %}"
+                                        hx-get="{% url 'search-reimbursement' %}?{{pd}}&sortby=created_at" 
+                                        hx-target="#reimbursementContainer"
                                         
                                     >
                                         {% trans "Date" %}
                                     </div>
                                     <div data-cell-index="2" data-cell-title='{% trans "Title" %}' class="oh-sticky-table__th">{% trans "Title" %}</div>
-                                    <div data-cell-index="3" data-cell-title='{% trans "Amount" %}' class="oh-sticky-table__th">{% trans "Amount" %}</div>
+                                    <div data-cell-index="3" data-cell-title='{% trans "Amount" %}' 
+                                        class="oh-sticky-table__th {% if request.sort_option.order == '-amount' %}arrow-up {% elif request.sort_option.order == 'amount' %}arrow-down {% else %}arrow-up-down {% endif %}"
+                                        hx-get="{% url 'search-reimbursement' %}?{{pd}}&sortby=amount" 
+                                        hx-target="#reimbursementContainer"
+                                    >{% trans "Amount" %}
+                                    </div>
                                     <div data-cell-index="4" data-cell-title='{% trans "Status" %}' class="oh-sticky-table__th">{% trans "Status" %}</div>
                                     <div
                                         data-cell-index="5" data-cell-title='{% trans "Description" %}' class="oh-sticky-table__th" style="width:200px"
@@ -347,21 +357,37 @@
                                         />
                                     </div> {% endcomment %}
                                     <div
-                                        class="oh-sticky-table__th"
+                                        class="oh-sticky-table__th {% if request.sort_option.order == '-employee_id' %}arrow-up {% elif request.sort_option.order == 'employee_id' %}arrow-down {% else %}arrow-up-down {% endif %}"
+                                        hx-get="{% url 'search-reimbursement' %}?{{pd}}&sortby=employee_id" 
+                                        hx-target="#reimbursementContainer"
                                         >
                                         {% trans "Employee" %}
                                     </div>
                                     <div
-                                        data-cell-index="11" data-cell-title='{% trans "Date" %}' class="oh-sticky-table__th "
-                                        
-                                        >
+                                        data-cell-index="11" data-cell-title='{% trans "Date" %}' 
+                                        class="oh-sticky-table__th {% if request.sort_option.order == '-created_at' %}arrow-up {% elif request.sort_option.order == 'created_at' %}arrow-down {% else %}arrow-up-down {% endif %}"
+                                        hx-get="{% url 'search-reimbursement' %}?{{pd}}&sortby=created_at" 
+                                        hx-target="#reimbursementContainer"
+                                    >
                                         {% trans "Date" %}
                                     </div>
                                     <div data-cell-index="12" data-cell-title='{% trans "Title" %}' class="oh-sticky-table__th">{% trans "Title" %}</div>
-                                    <div data-cell-index="13" data-cell-title='{% trans "Amount" %}' class="oh-sticky-table__th">{% trans "Amount" %}</div>
+                                    <div data-cell-index="13" data-cell-title='{% trans "Amount" %}' 
+                                        class="oh-sticky-table__th {% if request.sort_option.order == '-amount' %}arrow-up {% elif request.sort_option.order == 'amount' %}arrow-down {% else %}arrow-up-down {% endif %}"
+                                        hx-get="{% url 'search-reimbursement' %}?{{pd}}&sortby=amount" 
+                                        hx-target="#reimbursementContainer"
+                                    >{% trans "Amount" %}</div>
                                     <div data-cell-index="14" data-cell-title='{% trans "Leave type" %}' class="oh-sticky-table__th">{% trans "Leave type" %}</div>
-                                    <div data-cell-index="15" data-cell-title='{% trans "Available days to encash" %}' class="oh-sticky-table__th">{% trans "Available days to encash" %}</div>
-                                    <div data-cell-index="16" data-cell-title='{% trans "carryforward to encash" %}' class="oh-sticky-table__th">{% trans "carryforward to encash" %}</div>
+                                    <div data-cell-index="15" data-cell-title='{% trans "Available days to encash" %}' 
+                                        class="oh-sticky-table__th {% if request.sort_option.order == '-ad_to_encash' %}arrow-up {% elif request.sort_option.order == 'ad_to_encash' %}arrow-down {% else %}arrow-up-down {% endif %}"
+                                        hx-get="{% url 'search-reimbursement' %}?{{pd}}&sortby=ad_to_encash" 
+                                        hx-target="#reimbursementContainer"
+                                    >{% trans "Available days to encash" %}</div>
+                                    <div data-cell-index="16" data-cell-title='{% trans "carryforward to encash" %}' 
+                                        class="oh-sticky-table__th {% if request.sort_option.order == '-cfd_to_encash' %}arrow-up {% elif request.sort_option.order == 'cfd_to_encash' %}arrow-down {% else %}arrow-up-down {% endif %}"
+                                        hx-get="{% url 'search-reimbursement' %}?{{pd}}&sortby=cfd_to_encash" 
+                                        hx-target="#reimbursementContainer"
+                                    >{% trans "carryforward to encash" %}</div>
                                     <div data-cell-index="17" data-cell-title='{% trans "Status" %}' class="oh-sticky-table__th">{% trans "Status" %}</div>
                                     <div
                                         data-cell-index="18" data-cell-title='{% trans "Description" %}' class="oh-sticky-table__th" style="width:200px"
@@ -627,18 +653,31 @@
                                         />
                                     </div> {% endcomment %}
                                     <div
-                                        class="oh-sticky-table__th"
+                                        class="oh-sticky-table__th {% if request.sort_option.order == '-employee_id' %}arrow-up {% elif request.sort_option.order == 'employee_id' %}arrow-down {% else %}arrow-up-down {% endif %}"
+                                        hx-get="{% url 'search-reimbursement' %}?{{pd}}&sortby=employee_id" 
+                                        hx-target="#reimbursementContainer"
                                         >
                                         {% trans "Employee" %}
                                     </div>
                                     <div
-                                        data-cell-index="21" data-cell-title='{% trans "Date" %}' class="oh-sticky-table__th "
+                                        data-cell-index="21" data-cell-title='{% trans "Date" %}' 
+                                        class="oh-sticky-table__th {% if request.sort_option.order == '-created_at' %}arrow-up {% elif request.sort_option.order == 'created_at' %}arrow-down {% else %}arrow-up-down {% endif %}"
+                                        hx-get="{% url 'search-reimbursement' %}?{{pd}}&sortby=created_at" 
+                                        hx-target="#reimbursementContainer"
                                         >
                                         {% trans "Date" %}
                                     </div>
                                     <div data-cell-index="22" data-cell-title='{% trans "Title" %}' class="oh-sticky-table__th">{% trans "Title" %}</div>
-                                    <div data-cell-index="23" data-cell-title='{% trans "Amount" %}' class="oh-sticky-table__th">{% trans "Amount" %}</div>
-                                    <div data-cell-index="24" data-cell-title='{% trans "Bonus to encash" %}' class="oh-sticky-table__th">{% trans "Bonus to encash" %}</div>
+                                    <div data-cell-index="23" data-cell-title='{% trans "Amount" %}' 
+                                        class="oh-sticky-table__th {% if request.sort_option.order == '-amount' %}arrow-up {% elif request.sort_option.order == 'amount' %}arrow-down {% else %}arrow-up-down {% endif %}"
+                                        hx-get="{% url 'search-reimbursement' %}?{{pd}}&sortby=amount" 
+                                        hx-target="#reimbursementContainer"
+                                    >{% trans "Amount" %}</div>
+                                    <div data-cell-index="24" data-cell-title='{% trans "Bonus to encash" %}' 
+                                        class="oh-sticky-table__th {% if request.sort_option.order == '-bonus_to_encash' %}arrow-up {% elif request.sort_option.order == 'bonus_to_encash' %}arrow-down {% else %}arrow-up-down {% endif %}"
+                                        hx-get="{% url 'search-reimbursement' %}?{{pd}}&sortby=bonus_to_encash" 
+                                        hx-target="#reimbursementContainer"
+                                    >{% trans "Bonus to encash" %}</div>
                                     <div data-cell-index="25" data-cell-title='{% trans "Status" %}' class="oh-sticky-table__th">{% trans "Status" %}</div>
                                     <div
                                         data-cell-index="26" data-cell-title='{% trans "Description" %}' class="oh-sticky-table__th" style="width:200px"
