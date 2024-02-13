@@ -62,3 +62,4 @@ Whoosh==2.7.4
 xhtml2pdf==0.2.13
 XlsxWriter==3.1.9
 psycopg2-binary
+gunicorn

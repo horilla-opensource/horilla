@@ -114,7 +114,7 @@ DATABASES = {
         'NAME': "attendancetemp",
         'USER': os.environ.get('DB_USER'),
         'PASSWORD': os.environ.get('DB_PASSWORD'),
-        'HOST': 'attendance-prod-temp.cgoo19o9oo4o.ap-south-1.rds.amazonaws.com',
+        'HOST': 'intranet-prod.cgoo19o9oo4o.ap-south-1.rds.amazonaws.com',
         'PORT': "5432",
     }
 }
