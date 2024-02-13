@@ -30,6 +30,8 @@ class CandidateFilter(FilterSet):
     """
 
     name = django_filters.CharFilter(field_name="name", lookup_expr="icontains")
+    # for pipeline use
+    candidate_name = django_filters.CharFilter(field_name="name", lookup_expr="icontains")
     start_date = django_filters.DateFilter(
         field_name="recruitment_id__start_date",
         widget=forms.DateInput(attrs={"type": "date"}),
@@ -118,6 +120,7 @@ class CandidateFilter(FilterSet):
             "joining_set",
             "rejected_candidate__reject_reason_id",
             "offer_letter_status",
+            "candidate_rating__rating",
         ]
 
     def __init__(self, *args, **kwargs):
@@ -166,6 +169,14 @@ class RecruitmentFilter(FilterSet):
         widget=forms.DateInput(attrs={"type": "date"}),
     )
     search = django_filters.CharFilter(method="filter_by_name")
+    closed = django_filters.ChoiceFilter(
+        choices=[
+            (True, "Yes"),
+            (None, "No"),
+        ],
+        initial="no",
+        empty_label="No",
+    )
 
     class Meta:
         """
@@ -182,6 +193,7 @@ class RecruitmentFilter(FilterSet):
             "end_date",
             "closed",
             "is_active",
+            "is_published",
             "job_position_id",
         ]
 
