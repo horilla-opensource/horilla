@@ -1203,6 +1203,9 @@ def search_reimbursement(request):
     reimbursements = requests.filter(type="reimbursement")
     leave_encashments = requests.filter(type="leave_encashment")
     bonus_encashment = requests.filter(type="bonus_encashment")
+    reimbursements = sortby(request,reimbursements,'sortby')
+    leave_encashments = sortby(request,leave_encashments,'sortby')
+    bonus_encashment = sortby(request,bonus_encashment,'sortby')
     view = request.GET.get("view")
     template = "payroll/reimbursement/request_cards.html"
     if view == "list":
