@@ -244,7 +244,11 @@ def delete_tax_bracket(request, tax_bracket_id):
 
     :param tax_bracket_id: The ID of the tax bracket to delete.
     """
-    tax_bracket = TaxBracket.objects.get(id=tax_bracket_id)
-    tax_bracket.delete()
-    messages.info(request, _("Tax bracket successfully deleted."))
-    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+    try:
+        tax_bracket = TaxBracket.objects.get(id=tax_bracket_id)
+        filing_status_id = tax_bracket.filing_status_id.id
+        tax_bracket.delete()
+        messages.success(request, _("Tax bracket successfully deleted."))
+    except:
+        messages.error(request, _("Tax bracket not found"))
+    return redirect(tax_bracket_list, filing_status_id=filing_status_id)
