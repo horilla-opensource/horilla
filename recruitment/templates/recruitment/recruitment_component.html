@@ -53,6 +53,7 @@
                           <div class="oh-sticky-table__th" >{% trans "Managers" %}</div>
                           <div class="oh-sticky-table__th" >{% trans "Open Jobs" %}</div>
                           <div class="oh-sticky-table__th {% if request.sort_option.order == '-vacancy' %}arrow-up {% elif request.sort_option.order == 'vacancy' %}arrow-down {% else %} arrow-up-down {% endif %}" hx-get="{% url 'recruitment-search' %}?{{pd}}&orderby=vacancy" hx-target="#recruitment-container">{% trans "Vacancy" %}</div>
+                          <div class="oh-sticky-table__th" >{% trans "Total Hires" %}</div>
                           <div class="oh-sticky-table__th {% if request.sort_option.order == '-start_date' %}arrow-up {% elif request.sort_option.order == 'start_date' %}arrow-down {% else %} arrow-up-down {% endif %}" hx-get="{% url 'recruitment-search' %}?{{pd}}&orderby=start_date" hx-target="#recruitment-container">{% trans "Start Date" %}</div>
                           <div class="oh-sticky-table__th {% if request.sort_option.order == '-end_date' %}arrow-up {% elif request.sort_option.order == 'end_date' %}arrow-down {% else %} arrow-up-down {% endif %}" hx-get="{% url 'recruitment-search' %}?{{pd}}&orderby=end_date" hx-target="#recruitment-container">{% trans "End Date" %}</div>
                           <div class="oh-sticky-table__th">{% trans "Status" %}</div>
@@ -117,6 +118,9 @@
                           </div>
                           <div class="oh-sticky-table__td">
                             {{rec.vacancy}}
+                          </div>
+                          <div class="oh-sticky-table__td">
+                            {{rec.total_hires}} {% trans "Hired" %} <span style="font-size: 12px; color: gray;">{% trans "of" %} {{rec.candidate.all|length}} {% trans "Candidates" %}</span>
                           </div>
                           <div class="oh-sticky-table__td dateformat_changer">
                             {{rec.start_date}}

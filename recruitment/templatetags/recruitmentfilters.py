@@ -4,6 +4,7 @@ recruitmentfilters.py
 This module is used to write custom template filters.
 
 """
+
 import uuid
 from django.template.defaultfilters import register
 from django import template
@@ -101,29 +102,32 @@ def generate_id(element, label=""):
     return element
 
 
-@register.filter(name='has_candidate_rating')
+@register.filter(name="has_candidate_rating")
 def has_candidate_rating(candidate_ratings, cand):
     candidate_rating = candidate_ratings.filter(candidate_id=cand.id).first()
     return candidate_rating
 
-@register.filter(name='rating')
-def rating(candidate_ratings,cand):
+
+@register.filter(name="rating")
+def rating(candidate_ratings, cand):
     rating = candidate_ratings.filter(candidate_id=cand.id).first().rating
     return str(rating)
 
-@register.filter(name='avg_rating')
-def avg_rating(candidate_ratings,cand):
+
+@register.filter(name="avg_rating")
+def avg_rating(candidate_ratings, cand):
     ratings = CandidateRating.objects.filter(candidate_id=cand.id)
     rating_list = []
     avg_rate = 0
     for rating in ratings:
         rating_list.append(rating.rating)
     if len(rating_list) != 0:
-        avg_rate = round(sum(rating_list) / len(rating_list))    
+        avg_rate = round(sum(rating_list) / len(rating_list))
 
     return str(avg_rate)
 
-@register.filter(name='percentage')
+
+@register.filter(name="percentage")
 def percentage(value, total):
     if total == 0 or not total:
         return 0
@@ -136,3 +140,14 @@ def is_in_task_managers(user):
     This method is used to check the user in the task manager or not
     """
     return OnboardingTask.objects.filter(employee_id__employee_user_id=user).exists()
+
+
+@register.filter(name="pipeline_grouper")
+def pipeline_grouper(grouper: dict = {}):
+    """
+    This method is used itemize the dictionary
+    """
+    print("+++++++++++++++++++++++++++")
+    print(grouper)
+    print("+++++++++++++++++++++++++++")
+    return grouper["title"], grouper["stages"]
