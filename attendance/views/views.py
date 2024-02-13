@@ -11,7 +11,6 @@ This module is part of the recruitment project and is intended to
 provide the main entry points for interacting with the application's functionality.
 """
 
-
 import calendar
 import json
 import contextlib
@@ -1086,8 +1085,8 @@ def validate_bulk_attendance(request):
     """
     ids = request.POST["ids"]
     ids = json.loads(ids)
-    for attendance_id in ids:
-        attendance = Attendance.objects.get(id=attendance_id)
+    attendances = Attendance.objects.filter(id__in=ids)
+    for attendance in attendances:
         attendance.attendance_validated = True
         attendance.save()
         messages.success(request, _("Attendance validated."))
@@ -1536,7 +1535,7 @@ def create_grace_time(request):
     GET : return grace time form template
     """
     is_default = eval(request.GET.get("default"))
-    form = GraceTimeForm(initial={'is_default':is_default})
+    form = GraceTimeForm(initial={"is_default": is_default})
 
     if request.method == "POST":
         form = GraceTimeForm(request.POST)
@@ -1648,6 +1647,9 @@ def create_attendancerequest_comment(request, attendance_id):
         initial={"employee_id": emp.id, "request_id": attendance_id}
     )
     
+    
+
+
 
     if request.method == "POST":
         form = AttendancerequestCommentForm(request.POST)
@@ -1715,7 +1717,11 @@ def create_attendancerequest_comment(request, attendance_id):
             return render(
                 request,
                 "requests/attendance/attendance_comment.html",
-                {"comments": comments, "no_comments": no_comments, "request_id" : attendance_id},
+                {
+                    "comments": comments,
+                    "no_comments": no_comments,
+                    "request_id": attendance_id,
+                },
             )
     return render(
         request,
@@ -1755,7 +1761,7 @@ def view_attendancerequest_comment(request, attendance_id):
     return render(
         request,
         "requests/attendance/attendance_comment.html",
-        {"comments": comments, "no_comments": no_comments, "request_id" : attendance_id},
+        {"comments": comments, "no_comments": no_comments, "request_id": attendance_id},
     )
 
 
@@ -1780,7 +1786,9 @@ def delete_comment_file(request):
     ids = request.GET.getlist("ids")
     AttendancerequestFile.objects.filter(id__in=ids).delete()
     leave_id = request.GET["leave_id"]
-    comments = AttendancerequestComment.objects.filter(request_id = leave_id).order_by("-created_at")
+    comments = AttendancerequestComment.objects.filter(request_id=leave_id).order_by(
+        "-created_at"
+    )
     return render(
         request,
         "requests/attendance/attendance_comment.html",

@@ -327,20 +327,6 @@
                 >
               </li>
             {% endif %} 
-            {% if perms.attendance.change_attendance or request.user|is_reportingmanager %}
-              <li class="oh-dropdown__item">
-                <a href="#" id="validateAttendances" class="oh-dropdown__link"
-                  >{% trans "Validate" %}</a
-                >
-              </li>
-            {% endif %} 
-            {% if perms.attendance.change_attendance or request.user|is_reportingmanager %}
-              <li class="oh-dropdown__item">
-                <a href="#" id="approveOt" class="oh-dropdown__link"
-                  >{% trans "Approve OT" %}</a
-                >
-              </li>
-            {% endif %} 
             {% if perms.attendance.delete_attendance %}
               <li class="oh-dropdown__item">
                 <a

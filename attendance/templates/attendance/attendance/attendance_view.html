@@ -1,24 +1,69 @@
-{% extends 'index.html' %} 
-{% block content %}
-{% load static %}
-{% load i18n %}
-{% include 'attendance/attendance/attendance_nav.html' %}
-<div class="oh-wrapper" id='attendance-container'>
+{% extends 'index.html' %} {% block content %} {% load static %} {% load i18n %}
+{% load basefilters %} {% include 'attendance/attendance/attendance_nav.html' %}
+<div class="oh-wrapper" id="attendance-container">
   <div class="oh-tabs">
     <ul class="oh-tabs__tablist">
       <li class="oh-tabs__tab" data-target="#tab_1">
         {% trans "Validate Attendances" %}
-
+        <div class="oh-dropdown float-end" x-data="{open: false}">
+          <button
+            class="oh-btn oh-stop-prop oh-btn--transparent oh-accordion-meta__btn"
+            @click="open = !open"
+            @click.outside="open = false"
+            title='{% trans "Actions" %}'
+          >
+            <ion-icon name="ellipsis-vertical"></ion-icon>
+          </button>
+          <div
+            class="oh-dropdown__menu oh-dropdown__menu--right"
+            x-show="open"
+            style="display: none"
+          >
+            <ul class="oh-dropdown__items">
+              {% if perms.attendance.change_attendance or request.user|is_reportingmanager %}
+                <li class="oh-dropdown__item">
+                  <a href="#" id="validateAttendances" class="oh-dropdown__link"
+                    >{% trans "Validate" %}</a
+                  >
+                </li>
+              {% endif %} 
+            </ul>
+          </div>
+        </div>
       </li>
       <li class="oh-tabs__tab oh-tabs__tab" data-target="#tab_3">
         {% trans "OT Attendances" %}
-
+        <div class="oh-dropdown float-end" x-data="{open: false}">
+          <button
+            class="oh-btn oh-stop-prop oh-btn--transparent oh-accordion-meta__btn"
+            @click="open = !open"
+            @click.outside="open = false"
+            title='{% trans "Actions" %}'
+          >
+            <ion-icon name="ellipsis-vertical"></ion-icon>
+          </button>
+          <div
+            class="oh-dropdown__menu oh-dropdown__menu--right"
+            x-show="open"
+            style="display: none"
+          >
+            <ul class="oh-dropdown__items">
+              {% if perms.attendance.change_attendance or request.user|is_reportingmanager %}
+                <li class="oh-dropdown__item">
+                  <a href="#" id="approveOt" class="oh-dropdown__link"
+                    >{% trans "Approve OT" %}</a
+                  >
+                </li>
+              {% endif %} 
+            </ul>
+          </div>
+        </div>
       </li>
       <li class="oh-tabs__tab" data-target="#tab_2">
         {% trans "Validated Attendances" %}
       </li>
     </ul>
-    <div class="oh-tabs__contents" id='tab_contents'>
+    <div class="oh-tabs__contents" id="tab_contents">
       {% include 'attendance/attendance/tab_content.html' %}
     </div>
   </div>
@@ -26,52 +71,62 @@
 
 <script>
   function shiftChange(selectElement) {
-    var shiftId =selectElement.val()
-    let parentForm = selectElement.parents().closest("form")
-    var attendanceDate = parentForm.find("[name=attendance_date]").first().val()
+    var shiftId = selectElement.val();
+    let parentForm = selectElement.parents().closest("form");
+    var attendanceDate = parentForm
+      .find("[name=attendance_date]")
+      .first()
+      .val();
     $.ajax({
       type: "post",
       url: "{% url 'update-shift-details' %}",
       data: {
         csrfmiddlewaretoken: getCookie("csrftoken"),
-        "shift_id":shiftId,
-        "attendance_date":attendanceDate
-
+        shift_id: shiftId,
+        attendance_date: attendanceDate,
       },
       success: function (response) {
-        parentForm.find("[name=attendance_clock_in]").val(response.shift_start_time)
-        parentForm.find("[name=attendance_clock_out]").val(response.shift_end_time)
-        parentForm.find("[name=attendance_worked_hour]").val(response.worked_hour)
-        parentForm.find("[name=minimum_hour]").val(response.minimum_hour)
-        parentForm.find("[name=attendance_clock_out_date]").val(response.checkout_date)
-        parentForm.find("[name=attendance_clock_in_date]").val(response.checkin_date)
+        parentForm
+          .find("[name=attendance_clock_in]")
+          .val(response.shift_start_time);
+        parentForm
+          .find("[name=attendance_clock_out]")
+          .val(response.shift_end_time);
+        parentForm
+          .find("[name=attendance_worked_hour]")
+          .val(response.worked_hour);
+        parentForm.find("[name=minimum_hour]").val(response.minimum_hour);
+        parentForm
+          .find("[name=attendance_clock_out_date]")
+          .val(response.checkout_date);
+        parentForm
+          .find("[name=attendance_clock_in_date]")
+          .val(response.checkin_date);
         if (parentForm.find("[name=attendance_date]").val().length == 0) {
-          parentForm.find("[name=attendance_date]").val(response.checkin_date)
+          parentForm.find("[name=attendance_date]").val(response.checkin_date);
         }
-      }
+      },
     });
   }
 
   function dateChange(selectElement) {
-    var selectedDate =selectElement.val()
-    let parentForm = selectElement.parents().closest("form")
-    var shiftId = parentForm.find("[name=shift_id]").val()
+    var selectedDate = selectElement.val();
+    let parentForm = selectElement.parents().closest("form");
+    var shiftId = parentForm.find("[name=shift_id]").val();
 
     $.ajax({
       type: "post",
       url: "{% url 'update-date-details' %}",
       data: {
         csrfmiddlewaretoken: getCookie("csrftoken"),
-        "attendance_date":selectedDate,
-        "shift_id":shiftId
+        attendance_date: selectedDate,
+        shift_id: shiftId,
       },
       success: function (response) {
-        parentForm.find("[name=minimum_hour]").val(response.minimum_hour)
-
-      }
+        parentForm.find("[name=minimum_hour]").val(response.minimum_hour);
+      },
     });
   }
-
 </script>
 
 {% endblock content %}

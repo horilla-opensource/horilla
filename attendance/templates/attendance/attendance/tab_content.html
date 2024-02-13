@@ -883,7 +883,6 @@
   localStorageValidateCells = localStorage.getItem("validate_attendances_tab")
   localStorageOtCells = localStorage.getItem("ot_attendances_tab")
   localStorageValidatedCells = localStorage.getItem("validated_attendances_tab")
-  console.log(localStorageValidateCells, localStorageValidateCells,localStorageOtCells)
   if (!localStorageValidateCells) {
     $("#fieldContainerTableValidate").find("[type=checkbox]").prop("checked",true)
   }
