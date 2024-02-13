@@ -44,8 +44,8 @@ def dashboard(request):
     employee_info = EmployeeWorkInformation.objects.all()
     joining_list = []
     for rec in employee_info:
-        if rec.date_joining != None :
-            joining_list.append('OK')
+        if rec.date_joining != None:
+            joining_list.append("OK")
     if joining_list != []:
         joining = 1
     else:
@@ -82,8 +82,14 @@ def dashboard(request):
             job_position_id=job, stage_id__stage_type="hired"
         )
         hired.append(hire.count())
+    cancelled = []
+    for job in jobs:
+        cancelled_candidates = Candidate.objects.filter(
+            job_position_id=job, stage_id__stage_type="cancelled"
+        )
+        cancelled.append(cancelled_candidates.count())
 
-    job_data = list(zip(all_job, initial, test, interview, hired))
+    job_data = list(zip(all_job, initial, test, interview, hired, cancelled))
 
     recruitment_obj = Recruitment.objects.filter(closed=False)
     ongoing_recruitments = len(recruitment_obj)
@@ -95,7 +101,7 @@ def dashboard(request):
         if i > 1:
             stage_chart_count = 1
 
-    onboarding_count = Candidate.objects.filter(start_onboard = True)
+    onboarding_count = Candidate.objects.filter(start_onboard=True)
     onboarding_count = onboarding_count.count()
 
     recruitment_manager_mapping = {}
@@ -138,7 +144,7 @@ def dashboard(request):
         "dashboard/dashboard.html",
         {
             "ongoing_recruitments": ongoing_recruitments,
-            "total_candidate_ratio" : total_candidate_ratio,
+            "total_candidate_ratio": total_candidate_ratio,
             "total_hired_candidates": total_hired_candidates,
             "conversion_ratio": conversion_ratio,
             "acceptance_ratio": acceptance_ratio,
@@ -147,12 +153,12 @@ def dashboard(request):
             "total_vacancy": total_vacancy,
             "recruitment_manager_mapping": recruitment_manager_mapping,
             "hired_ratio": hired_ratio,
-            'joining' : joining,
-            "dep_vacancy" : dep_vacancy,
-            "stage_chart_count" : stage_chart_count,
-            "onboarding_count" : onboarding_count,
-            "total_candidates":total_candidates,
-            'skill_zone' : skill_zone
+            "joining": joining,
+            "dep_vacancy": dep_vacancy,
+            "stage_chart_count": stage_chart_count,
+            "onboarding_count": onboarding_count,
+            "total_candidates": total_candidates,
+            "skill_zone": skill_zone,
         },
     )
 
@@ -170,14 +176,18 @@ def dashboard_pipeline(request):
         data = [stage_type_candidate_count(rec, type[0]) for type in Stage.stage_types]
         data_set.append(
             {
-                "label": rec.title
-                         if rec.title is not None
-                         else f"""{rec.job_position_id}
-                 {rec.start_date}""",
+                "label": (
+                    rec.title
+                    if rec.title is not None
+                    else f"""{rec.job_position_id}
+                 {rec.start_date}"""
+                ),
                 "data": data,
             }
         )
-    return JsonResponse({"dataSet": data_set, "labels": labels,"message":_("No data Found...")})
+    return JsonResponse(
+        {"dataSet": data_set, "labels": labels, "message": _("No data Found...")}
+    )
 
 
 @login_required
@@ -246,13 +256,14 @@ def dashboard_vacancy(_request):
         vacancies_for_department = recruitment_obj.filter(
             job_position_id__department_id=dep
         )
-        for rec in vacancies_for_department:            
+        for rec in vacancies_for_department:
             if rec.vacancy is not None:
                 label.append(dep.department)
 
         vacancies = [
-            int(rec.vacancy) if rec.vacancy is not None else 0 for rec in vacancies_for_department
-            ]
+            int(rec.vacancy) if rec.vacancy is not None else 0
+            for rec in vacancies_for_department
+        ]
 
         data_set[0]["data"].append([sum(vacancies)])
 
@@ -280,26 +291,33 @@ def candidate_status(_request):
     """
     This method is used to generate a CAndidate status chart for the dashboard
     """
-        
-    not_sent_candidates = Candidate.objects.filter(offer_letter_status = 'not_sent').count()
-    sent_candidates = Candidate.objects.filter(offer_letter_status = 'sent').count()
-    accepted_candidates = Candidate.objects.filter(offer_letter_status = 'accepted').count()
-    rejected_candidates = Candidate.objects.filter(offer_letter_status = 'rejected').count()
-    joined_candidates = Candidate.objects.filter(offer_letter_status = 'joined').count()
+
+    not_sent_candidates = Candidate.objects.filter(
+        offer_letter_status="not_sent"
+    ).count()
+    sent_candidates = Candidate.objects.filter(offer_letter_status="sent").count()
+    accepted_candidates = Candidate.objects.filter(
+        offer_letter_status="accepted"
+    ).count()
+    rejected_candidates = Candidate.objects.filter(
+        offer_letter_status="rejected"
+    ).count()
+    joined_candidates = Candidate.objects.filter(offer_letter_status="joined").count()
 
     data_set = []
-    labels = ['Not Sent', 'Sent', 'Accepted', 'Rejected', 'Joined']
-    data = [not_sent_candidates, sent_candidates, accepted_candidates, rejected_candidates, joined_candidates]
+    labels = ["Not Sent", "Sent", "Accepted", "Rejected", "Joined"]
+    data = [
+        not_sent_candidates,
+        sent_candidates,
+        accepted_candidates,
+        rejected_candidates,
+        joined_candidates,
+    ]
 
     for i in range(len(data)):
-    
-        data_set.append(
-            {
-                "label": labels[i],
-                "data":data[i]
-            }
-        )
-    
+
+        data_set.append({"label": labels[i], "data": data[i]})
+
     # for i in range(len(data)):
     #     if data[i] != 0:
     #         data_set.append({
@@ -309,6 +327,5 @@ def candidate_status(_request):
 
     # # Remove labels corresponding to data points with value 0
     # labels = [label for label, d in zip(labels, data) if d != 0]
-
 
     return JsonResponse({"dataSet": data_set, "labels": labels})
