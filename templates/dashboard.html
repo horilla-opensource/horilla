@@ -100,19 +100,11 @@
                 </div>
                 <div class="oh-card-dashboard__body">
                   <div class="oh-card-dashboard__counts">
-                    <span class="oh-card-dashboard__sign"
-                      ><ion-icon name="caret-up-outline"></ion-icon
-                    ></span>
                     <span
                       class="oh-card-dashboard__count"
                       id="newbieToday"
                     ></span>
                   </div>
-                  <span
-                    class="oh-badge oh-card-dashboard__badge"
-                    id="newbieTodayPerc"
-                    >0%</span
-                  >
                 </div>
               </a>
             </div>
@@ -132,16 +124,8 @@
                 </div>
                 <div class="oh-card-dashboard__body">
                   <div class="oh-card-dashboard__counts">
-                    <span class="oh-card-dashboard__sign"
-                      ><ion-icon name="caret-up-outline"></ion-icon
-                    ></span>
-                    <span class="oh-card-dashboard__count" id="newbie">12</span>
+                    <span class="oh-card-dashboard__count" id="newbie"></span>
                   </div>
-                  <span
-                    class="oh-badge oh-card-dashboard__badge"
-                    id="newbiePerc"
-                    >0%</span
-                  >
                 </div>
               </a>
             </div>
@@ -159,14 +143,9 @@
                     <span
                       class="oh-card-dashboard__count"
                       id="totalEmployeesCount"
-                      >100%</span
+                      ></span
                     >
                   </div>
-                  <span
-                    class="oh-badge oh-card-dashboard__badge"
-                    id="totalEmployeesCountPerc"
-                    >100%</span
-                  >
                 </div>
               </div>
             </a>
@@ -679,13 +658,20 @@
         </div>
 
         <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent mb-3">
-          <div style="display: inline-block;">
-              <span class="oh-card-dashboard__title">{% trans "Announcements." %}</span>
+          <div style="display: flex;align-items:center">
+              <span class="oh-card-dashboard__title">{% trans "Announcements" %}</span>
               {% if perms.base.add_announcement %}
                 <span>
-                    <button style="display: inline-block;font-size: 16px; padding:3px; margin-top:-8px;" class="oh-btn oh-btn--secondary-outline float-end ms-2" hx-get='{% url "create-announcement" %}' 
-                            hx-target="#createannouncementForm" hx-swap="innerHTML" data-toggle="oh-modal-toggle" data-target="#anouncementModal" title='{% trans "Create Announcement." %}'>
-                        <ion-icon name="add-outline"></ion-icon>
+                    <button style="display: inline-block;padding: 0px;
+                        border-radius: 6px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        width: 50px;
+                        height: 28px;" 
+                        class="oh-btn oh-btn--secondary-outline float-end ms-3" hx-get='{% url "create-announcement" %}' 
+                        hx-target="#createannouncementForm" hx-swap="innerHTML" data-toggle="oh-modal-toggle" data-target="#anouncementModal" title='{% trans "Create Announcement." %}'>
+                        <ion-icon name="add-outline" class="m-0"></ion-icon>
                     </button>
                 </span>
               {% endif %}
