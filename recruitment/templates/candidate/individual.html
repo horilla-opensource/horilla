@@ -135,9 +135,9 @@ $(document).on('click', function (event) {
         {% with request.user.employee_get.candidate_rating.all as candidate_ratings  %}
             <form >
               <div class="d-block mb-0">                           
-                <div class="oh-rate" onmouseenter="event.stopPropagation()">
+                <div class="oh-rate" style="pointer-events:none;">
                   {% for i in "54321" %}
-                  <input type="radio" id="star{{i}}{{cand.id}}" name="rating" class="rating-radio" value="{{i}}" disabled {% if cand.candidate_rating.all|avg_rating:cand == i %} checked {% endif %} />
+                  <input type="radio" id="star{{i}}{{cand.id}}" name="rating" class="rating-radio" value="{{i}}" disabled {% if candidate.candidate_rating.all|avg_rating:candidate == i %} checked {% endif %} />
                   <label for="star{{i}}{{cand.id}}" >5 {% trans "Stars" %}</label>
                   {% endfor %}
                 </div>
@@ -659,12 +659,47 @@ $(document).on('click', function (event) {
             border-left: solid 4px rgb(0, 255, 255);
             background-color: rgb(0, 255, 255,0.133);
           }
+          .oh-sticky-table__tr:hover {
+            background-color: #fff
+          }
         </style>
-        {% for task in candidate.candidate_task.all %}
-        <div class="onboarding-task-status onboarding-task-status--{{task.status}}">
-          {{task.onboarding_task_id.task_title}} ---- {{task.status|capfirst}}<br>
+        <div class="oh-sticky-table">
+          <div class="oh-sticky-table__table oh-table--sortable">
+            <div class="oh-sticky-table__thead">
+                <div class="oh-sticky-table__tr">
+                    <div class="oh-sticky-table__th"></div>
+                </div>
+            </div>
+            <div class="oh-sticky-table__tbody">
+              {% for task in candidate.candidate_task.all %}
+                <div class="oh-sticky-table__tr">
+                  <div class="oh-sticky-table__td">
+                    <div class="oh-sticky-table__sd d-flex justify-content-between" style="width: 500px;overflow: hidden;">
+                      <div class="oh-profile oh-profile--md">
+                        <span class="oh-profile__name oh-text--dark">{{ task.onboarding_task_id.task_title }}</span>
+                      </div>
+                      <span class="oh-recuritment_tag  {% if task.status == 'done' %} done-task {% elif task.status == 'scheduled' %} scheduled-task{% elif task.status == 'ongoing' %} ongoing-task{% elif task.status == 'stuck' %} dd stuck-task {% elif task.status == 'todo' %} todo-task{% endif %}">
+                        <select hx-swap="none" hx-get="{% url 'change-task-status' %}?task_id={{task.id}}"
+                        name="status" 
+                        style="width: 150px;"
+                        id="task_status{{task.id}}">
+                            {% for status in task.choice %}
+                            <option value="{{status.0}}"
+                            {% if status.0 == task.status %}
+                            selected
+                            {% endif %}
+                            >{{status.1}}</option>
+                            {% endfor %}
+                        </select>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              {% endfor %}
+            </div>
+           </div>
         </div>
-        {% endfor %}
+
         </div>
       </div>
     </div>
