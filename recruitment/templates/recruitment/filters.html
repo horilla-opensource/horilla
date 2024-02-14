@@ -1,5 +1,4 @@
 {% load i18n %}{% load static %}
-<form hx-get='{% url "recruitment-search" %}' hx-target='#recruitment-container' id="filterForm">
   <div class="oh-dropdown__filter-body">
     <div class="oh-accordion">
     <div class="oh-accordion-header">{% trans "Recruitment" %}</div>
@@ -16,7 +15,7 @@
           </div>
           
         </div>
-
+        <div hidden>{{f.form.closed}}</div>
         <div class="col-sm-12 col-md-12 col-lg-6">
           <div class="oh-input-group">
             <label class="oh-label">{% trans "Company" %}</label>

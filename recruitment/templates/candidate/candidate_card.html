@@ -35,7 +35,7 @@
   <!-- start of sticky table -->
   <div class="oh-layout--grid-3">
     {% for cand in data %}
-    <div {% if cand.recruitment_id.closed %} style="background: #8080800f;" {% endif %}  class="oh-kanban-card candidate {% if cand.canceled == True %} row-status--red {% elif cand.hired == True %} row-status--yellow {% endif %}" style="color: inherit;text-decoration: none;">
+    <div {% if cand.recruitment_id.closed %} style="background: #8080800f;" {% endif %}  class="oh-kanban-card candidate {% if cand.canceled == True %} row-status--red {% elif cand.hired == True %} row-status--yellow {% elif cand.hired == False %} row-status--purple {% endif %}" style="color: inherit;text-decoration: none;">
       <a href="{% url 'candidate-view-individual' cand.id %}" style="color: inherit;text-decoration: none; display: flex;">
       <div class="oh-kanban-card__avatar">
           <div class="oh-kanban-card__profile-container">

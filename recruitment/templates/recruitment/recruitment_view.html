@@ -1,6 +1,20 @@
-{% extends 'index.html' %} {% block content %}
+{% extends 'index.html' %} {% block content %}{% load i18n %}
 <div class="oh-wrapper">
 	{% include 'recruitment/nav.html' %}
+  	<!-- start of quick filters -->
+	<div class="d-flex flex-row-reverse">
+		
+		<span class="m-3" onclick="$('[name=closed]').val('false'); $('[name=closed]').first().change(); $('.filterButton').click()" style="cursor: pointer">
+		  <span class="oh-dot oh-dot--small me-1" style="background-color:red"></span>
+		  {% trans "Open" %}
+		</span>
+		<span class="m-3" onclick="$('[name=closed]').val('true'); $('[name=closed]').first().change(); $('.filterButton').click()" style="cursor: pointer">
+		  <span class="oh-dot oh-dot--small me-1" style="background-color:yellowgreen"></span>
+		  {% trans "Closed" %}
+		</span>
+	</div>
+  	<!-- end of quick filters -->
+
 	<div id="recruitment-container">
 		{% include 'recruitment/recruitment_component.html' %}
 	</div>
