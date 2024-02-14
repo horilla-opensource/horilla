@@ -111,7 +111,7 @@ WSGI_APPLICATION = 'horilla.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': "attendancetemp",
+        'NAME': "intranetprod",
         'USER': os.environ.get('DB_USER'),
         'PASSWORD': os.environ.get('DB_PASSWORD'),
         'HOST': 'intranet-prod.cgoo19o9oo4o.ap-south-1.rds.amazonaws.com',
