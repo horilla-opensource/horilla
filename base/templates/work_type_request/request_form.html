@@ -9,12 +9,10 @@
 </form>
 <script>
 function toggleFunctionWorkTypeRequestForm(){
-  if ($('#id_is_permanent_work_type').is(":checked")){
-    $("[for=id_requested_till]").hide();
-    $("#id_requested_till").hide();
+  if ($("#id_is_permanent_work_type").is(":checked")) {
+    $("#id_requested_till").parent().hide();
   } else {
-    $("[for=id_requested_till]").show();
-    $("#id_requested_till").show();
+    $("#id_requested_till").parent().show();
   }
 }
 

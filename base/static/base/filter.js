@@ -4,9 +4,11 @@ function filterFormSubmit(formId) {
   formData.split("&").forEach(function (field) {
     var parts = field.split("=");
     var value = parts[1];
-    if (value && value !== "unknown" && parts[0] != 'field') {
-      count++;
-    }
+    if (parts[0] !== "view"){
+      if (value && value !== "unknown") {
+        count++;
+      }
+    } 
   });
   $("#filterCount").empty();
   if (count > 0) {

@@ -4562,6 +4562,10 @@ def create_shiftrequest_comment(request, shift_id):
             form.instance.employee_id = emp
             form.instance.request_id = shift
             form.save()
+            comments = ShiftrequestComment.objects.filter(request_id=shift_id).order_by("-created_at")
+            no_comments = False
+            if not comments.exists():
+                no_comments = True
             form = ShiftrequestcommentForm(
                 initial={"employee_id": emp.id, "request_id": shift_id}
             )
@@ -4614,10 +4618,18 @@ def create_shiftrequest_comment(request, shift_id):
                     redirect=f"/employee/shift-request-view?id={shift.id}",
                     icon="chatbox-ellipses",
                 )
-            return HttpResponse("<script>window.location.reload()</script>")
+            return render(
+                    request,
+                    "shift_request/htmx/shift_comment.html",
+                    {
+                        "comments": comments,
+                        "no_comments": no_comments,
+                        "request_id": shift_id,
+                    },
+                )
     return render(
         request,
-        "shift_request/htmx/shift_request_comment_form.html",
+        "shift_request/htmx/shift_comment.html",
         {"form": form, "request_id": shift_id},
     )
 
@@ -4627,7 +4639,10 @@ def view_shift_comment(request, shift_id):
     """
     This method is used to render all the notes of the employee
     """
-    comments = ShiftrequestComment.objects.filter(request_id=shift_id)
+    comments = ShiftrequestComment.objects.filter(request_id=shift_id).order_by("-created_at")
+    no_comments = False
+    if not comments.exists():
+        no_comments = True
     if request.FILES:
         files = request.FILES.getlist("files")
         comment_id = request.GET["comment_id"]
@@ -4644,6 +4659,7 @@ def view_shift_comment(request, shift_id):
         "shift_request/htmx/shift_comment.html",
         {
             "comments": comments,
+            "no_comments": no_comments,
             "request_id": shift_id,
         },
     )
@@ -4658,7 +4674,7 @@ def delete_shift_comment_file(request):
     ids = request.GET.getlist("ids")
     BaserequestFile.objects.filter(id__in=ids).delete()
     shift_id = request.GET["shift_id"]
-    comments = ShiftrequestComment.objects.filter(request_id=shift_id)
+    comments = ShiftrequestComment.objects.filter(request_id=shift_id).order_by("-created_at")
     return render(
         request,
         "shift_request/htmx/shift_comment.html",
@@ -4674,7 +4690,12 @@ def view_work_type_comment(request, work_type_id):
     """
     This method is used to render all the notes of the employee
     """
-    comments = WorktyperequestComment.objects.filter(request_id=work_type_id)
+    comments = WorktyperequestComment.objects.filter(request_id=work_type_id).order_by(
+            "-created_at"
+        )
+    no_comments = False
+    if not comments.exists():
+        no_comments = True
     if request.FILES:
         files = request.FILES.getlist("files")
         comment_id = request.GET["comment_id"]
@@ -4691,6 +4712,7 @@ def view_work_type_comment(request, work_type_id):
         "work_type_request/htmx/work_type_comment.html",
         {
             "comments": comments,
+            "no_comments": no_comments,
             "request_id": work_type_id,
         },
     )
@@ -4717,33 +4739,15 @@ def delete_work_type_comment_file(request):
 
 
 @login_required
-def view_shiftrequest_comment(request, shift_id):
-    """
-    This method is used to show shift request comments
-    """
-    comments = ShiftrequestComment.objects.filter(request_id=shift_id).order_by(
-        "-created_at"
-    )
-    no_comments = False
-    if not comments.exists():
-        no_comments = True
-
-    return render(
-        request,
-        "shift_request/htmx/comment_view.html",
-        {"comments": comments, "no_comments": no_comments},
-    )
-
-
-@login_required
 def delete_shiftrequest_comment(request, comment_id):
     """
     This method is used to delete shift request comments
     """
-    ShiftrequestComment.objects.get(id=comment_id).delete()
-
+    comment = ShiftrequestComment.objects.get(id=comment_id)
+    shift_id = comment.request_id.id
+    comment.delete()
     messages.success(request, _("Comment deleted successfully!"))
-    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+    return redirect("view-shift-comment", shift_id=shift_id)
 
 
 @login_required
@@ -4763,6 +4767,12 @@ def create_worktyperequest_comment(request, worktype_id):
             form.instance.employee_id = emp
             form.instance.request_id = work_type
             form.save()
+            comments = WorktyperequestComment.objects.filter(request_id=worktype_id).order_by(
+                "-created_at"
+            )
+            no_comments = False
+            if not comments.exists():
+                no_comments = True
             form = WorktyperequestcommentForm(
                 initial={"employee_id": emp.id, "request_id": worktype_id}
             )
@@ -4815,30 +4825,15 @@ def create_worktyperequest_comment(request, worktype_id):
                     redirect=f"/employee/work-type-request-view?id={work_type.id}",
                     icon="chatbox-ellipses",
                 )
-            return HttpResponse("<script>window.location.reload()</script>")
+            return render(
+                request,
+                "work_type_request/htmx/work_type_comment.html",
+                {"comments": comments, "no_comments": no_comments, "request_id": worktype_id },
+            )
     return render(
         request,
-        "work_type_request/htmx/worktype_request_comment_form.html",
+        "work_type_request/htmx/work_type_comment.html",
         {"form": form, "request_id": worktype_id},
-    )
-
-
-@login_required
-def view_worktyperequest_comment(request, worktype_id):
-    """
-    This method is used to show Work type request comments
-    """
-    comments = WorktyperequestComment.objects.filter(request_id=worktype_id).order_by(
-        "-created_at"
-    )
-    no_comments = False
-    if not comments.exists():
-        no_comments = True
-
-    return render(
-        request,
-        "work_type_request/htmx/comment_view.html",
-        {"comments": comments, "no_comments": no_comments},
     )
 
 
@@ -4847,11 +4842,11 @@ def delete_worktyperequest_comment(request, comment_id):
     """
     This method is used to delete Work type request comments
     """
-    WorktyperequestComment.objects.get(id=comment_id).delete()
-
+    comment = WorktyperequestComment.objects.get(id=comment_id)
+    worktype_id = comment.request_id.id
+    comment.delete()
     messages.success(request, _("Comment deleted successfully!"))
-    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
-
+    return redirect("view-work-type-comment", work_type_id=worktype_id)
 
 @login_required
 def pagination_settings_view(request):

@@ -684,11 +684,6 @@ urlpatterns = [
         name="shift-request-add-comment",
     ),
     path(
-        "shift-request-view-comment/<int:shift_id>/",
-        views.view_shiftrequest_comment,
-        name="shift-request-view-comment",
-    ),
-    path(
         "view-shift-comment/<int:shift_id>/",
         views.view_shift_comment,
         name="view-shift-comment",
@@ -717,11 +712,6 @@ urlpatterns = [
         "worktype-request-add-comment/<int:worktype_id>/",
         views.create_worktyperequest_comment,
         name="worktype-request-add-comment",
-    ),
-    path(
-        "worktype-request-view-comment/<int:worktype_id>/",
-        views.view_worktyperequest_comment,
-        name="worktype-request-view-comment",
     ),
     path(
         "worktype-request-delete-comment/<int:comment_id>/",

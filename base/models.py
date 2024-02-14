@@ -45,7 +45,7 @@ class Company(models.Model):
 
     company = models.CharField(max_length=50)
     hq = models.BooleanField(default=False)
-    address = models.TextField()
+    address = models.TextField(max_length=255)
     country = models.CharField(max_length=50)
     state = models.CharField(max_length=50)
     city = models.CharField(max_length=50)
@@ -686,10 +686,10 @@ class WorkTypeRequest(models.Model):
     requested_till = models.DateField(
         null=True, blank=True, verbose_name=_("Requested Till")
     )
+    description = models.TextField(null=True, verbose_name=_("Description"))
     is_permanent_work_type = models.BooleanField(
         default=True, verbose_name=_("Permanent Request")
     )
-    description = models.TextField(null=True, verbose_name=_("Description"))
     approved = models.BooleanField(default=False, verbose_name=_("Approved"))
     canceled = models.BooleanField(default=False, verbose_name=_("Canceled"))
     work_type_changed = models.BooleanField(default=False)
@@ -1274,7 +1274,7 @@ class Announcement(models.Model):
     from employee.models import Employee
 
     title = models.CharField(max_length=30)
-    description = models.TextField(null=True)
+    description = models.TextField(null=True,max_length=255)
     attachments = models.ManyToManyField(
         Attachment, related_name="announcement_attachments", blank=True
     )
@@ -1303,7 +1303,7 @@ class AnnouncementComment(models.Model):
 
     announcement_id = models.ForeignKey(Announcement, on_delete=models.CASCADE)
     employee_id = models.ForeignKey(Employee, on_delete=models.CASCADE)
-    comment = models.TextField(null=True, verbose_name=_("Comment"))
+    comment = models.TextField(null=True, verbose_name=_("Comment"),max_length=255)
     created_at = models.DateTimeField(
         auto_now_add=True,
         verbose_name=_("Created At"),
@@ -1328,7 +1328,7 @@ class EmailLog(models.Model):
 
     statuses = [("sent", "Sent"), ("failed", "Failed")]
     subject = models.CharField(max_length=255)
-    body = models.TextField()
+    body = models.TextField(max_length=255)
     from_email = models.EmailField()
     to = models.EmailField()
     status = models.CharField(max_length=6, choices=statuses)

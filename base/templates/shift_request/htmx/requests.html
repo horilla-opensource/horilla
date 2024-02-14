@@ -54,7 +54,7 @@
                   hx-target="#view-container"
                 >{% trans "Requested Till" %}</div>
                 <div data-cell-index="6" data-cell-title='{% trans "Description" %}' class="oh-sticky-table__th">{% trans "Description" %}</div>
-                <div class="oh-sticky-table__th">{% trans "Comment" %}</div>
+                <div class="oh-sticky-table__th" style="width:115px;">{% trans "Comment" %}</div>
                 <div class="oh-sticky-table__th">{% trans "Actions" %}</div>
                 {% if perms.base.change_shiftrequest and shift_request.approved == False or request.user|is_reportingmanager %}
                   <div class="oh-sticky-table__th oh-sticky-table__right " style="width:180px;">{% trans "Confirmation" %}</div>
@@ -101,18 +101,10 @@
                     
                     <div class="oh-sticky-table__td" onclick="event.stopPropagation();">
                       
-                      <div class="oh-btn-group" >
-                        <button type="button" hx-get="{% url 'shift-request-add-comment' shift_request.id %}" title="Add Comment" hx-target="#shiftRequestCommentForm"
-                              hx-swap="innerHTML" class="oh-btn oh-btn--light" data-toggle="oh-modal-toggle" data-target="#shiftcommentModal" 
-                              style="flex: 1 0 auto; width:20px;height: 40.68px; padding: 0;">
-                          <ion-icon name="newspaper-outline" role="img" class="md hydrated" aria-label="newspaper outline"></ion-icon>
-                        </button>
-    
                         <button type="button" hx-get="{% url 'view-shift-comment' shift_request.id %}" hx-target="#commentContainer"
-                                data-target = '#activitySidebar' title="View Comment"  class="oh-btn oh-btn--light oh-activity-sidebar__open" style="flex: 1 0 auto; width:20px;height: 40.68px; padding: 0;" onclick="event.stopPropagation()">
-                          <ion-icon name="eye-outline" role="img" class="md hydrated" aria-label="eye outline"></ion-icon>
+                                data-target = '#activitySidebar' title="View Comment"  class="oh-btn oh-btn--light oh-activity-sidebar__open w-100" style="flex: 1 0 auto; width:20px;height: 40.68px; padding: 0;" onclick="event.stopPropagation()">
+                                <ion-icon name="newspaper-outline" role="img" class="md hydrated" aria-label="newspaper outline"></ion-icon>
                         </button>
-                    </div>
                     
                     </div>
     
@@ -293,7 +285,7 @@
                   hx-target="#view-container"
                 >{% trans "Requested Till" %}</div>
                 <div data-cell-index="16" data-cell-title='{% trans "Description" %}' class="oh-sticky-table__th">{% trans "Description" %}</div>
-                <div class="oh-sticky-table__th">{% trans "Comment" %}</div>
+                <div class="oh-sticky-table__th" style="width:115px;">{% trans "Comment" %}</div>
                 {% if perms.base.change_shiftrequest and shift_request.approved == False or request.user|is_reportingmanager %}
                   <div class="oh-sticky-table__th">{% trans "Actions" %}</div>
                 {% endif %}
@@ -362,19 +354,11 @@
                     <div class="oh-sticky-table__td" data-cell-index="16">{{shift_request.description}}</div>
                     
                     <div class="oh-sticky-table__td" onclick="event.stopPropagation();">
-                      
-                      <div class="oh-btn-group" >
-                        <button type="button" hx-get="{% url 'shift-request-add-comment' shift_request.id %}" title="Add Comment" hx-target="#shiftRequestCommentForm"
-                              hx-swap="innerHTML" class="oh-btn oh-btn--light" data-toggle="oh-modal-toggle" data-target="#shiftcommentModal" 
-                              style="flex: 1 0 auto; width:20px;height: 40.68px; padding: 0;">
-                          <ion-icon name="newspaper-outline" role="img" class="md hydrated" aria-label="newspaper outline"></ion-icon>
-                        </button>
     
                         <button type="button" hx-get="{% url 'view-shift-comment' shift_request.id %}" hx-target="#commentContainer"
-                                data-target = '#activitySidebar' title="View Comment"  class="oh-btn oh-btn--light oh-activity-sidebar__open" style="flex: 1 0 auto; width:20px;height: 40.68px; padding: 0;" onclick="event.stopPropagation()">
-                          <ion-icon name="eye-outline" role="img" class="md hydrated" aria-label="eye outline"></ion-icon>
+                                data-target = '#activitySidebar' title="View Comment"  class="oh-btn oh-btn--light oh-activity-sidebar__open w-100" style="flex: 1 0 auto; width:20px;height: 40.68px; padding: 0;" onclick="event.stopPropagation()">
+                                <ion-icon name="newspaper-outline" role="img" class="md hydrated" aria-label="newspaper outline"></ion-icon>
                         </button>
-                    </div>
                     
                     </div>
     
