@@ -325,7 +325,7 @@ class CandidateReGroup:
 
 class SkillZoneFilter(FilterSet):
     """
-    Skillzone FIlter
+    Skillzone Filter
     """
 
     search = django_filters.CharFilter(field_name="title", lookup_expr="icontains")
@@ -336,11 +336,13 @@ class SkillZoneFilter(FilterSet):
         """
 
         model = SkillZone
-        fields = "__all__"
-        exclude = [
-            "objects",
-            "company_id",
-            "description",
+        fields = [
+            "is_active",
+            "skillzonecandidate_set__candidate_id",
+            "skillzonecandidate_set__candidate_id__recruitment_id",
+            "skillzonecandidate_set__candidate_id__job_position_id",
+            "skillzonecandidate_set__candidate_id__stage_id__stage_type",
+            
         ]
 
 

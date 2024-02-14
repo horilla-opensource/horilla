@@ -639,7 +639,7 @@ class SkillZone(models.Model):
 
     title = models.CharField(max_length=50, verbose_name="Skill Zone")
     description = models.TextField(verbose_name=_("Description"),max_length=255)
-    created_on = models.DateField(default=django.utils.timezone.now)
+    created_on = models.DateField(auto_now_add=True)
     is_active = models.BooleanField(default=True, verbose_name=_("Is Active"))
     objects = HorillaCompanyManager(related_company_field="recruitment_id__company_id")
 
@@ -678,10 +678,7 @@ class SkillZoneCandidate(models.Model):
     # )
 
     reason = models.CharField(max_length=200, verbose_name=_("Reason"))
-    added_on = models.DateField(
-        default=django.utils.timezone.now,
-        editable=False,
-    )
+    added_on = models.DateField(auto_now_add=True)
     is_active = models.BooleanField(default=True, verbose_name=_("Is Active"))
     objects = HorillaCompanyManager(related_company_field="skill_zone__company_id")
 

@@ -1,5 +1,5 @@
 {% load i18n %}
-<section class="oh-main__topbar" x-data="{searchShow: false}">
+<section class="oh-wrapper oh-main__topbar" x-data="{searchShow: false}">
     <div class="oh-main__titlebar oh-main__titlebar--left">
       <h1 class="oh-main__titlebar-title fw-bold mb-0">
         {% trans "Skill Zone" %}
@@ -65,24 +65,51 @@
                 <button class="oh-btn ml-2" @click="open = !open" onclick="event.preventDefault()">
                   <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}<div id="filterCount"></div>
                 </button>
-                <div
+                {% comment %}<div
                   class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4"
                   x-show="open"
                   @click.outside="open = false"
                   style="display: none;"
-                > 
-                  <div class="oh-input-group">
-                    <label class="oh-label">{% trans "Is Active" %}?</label>
-                    {{f.form.is_active}}
+                 > 
+                  <div class="oh-dropdown__filter-body">
+                    <div class="oh-accordion">
+                        <div class="row">
+                          <div class="col-sm-12 col-md-12 col-lg-6">
+                            <div class="oh-input-group">
+                              <label class="oh-label">{% trans "Candidate" %}</label>
+                              {{f.form.skillzonecandidate_set__candidate_id}}
+                            </div>
+                            <div class="oh-input-group">
+                              <label class="oh-label">{% trans "Recruitment" %}</label>
+                              {{f.form.skillzonecandidate_set__candidate_id__recruitment_id}}
+                            </div>
+                            <div class="oh-input-group">
+                              <label class="oh-label">{% trans "Job Position" %}</label>
+                              {{f.form.skillzonecandidate_set__candidate_id__job_position_id}}
+                            </div>
+                          </div>
+                          <div class="col-sm-12 col-md-12 col-lg-6">
+                            <div class="oh-input-group">
+                              <label class="oh-label">{% trans "Stage" %}</label>
+                              {{f.form.skillzonecandidate_set__candidate_id__stage_id__stage_type}}
+                            </div>
+                            <div class="oh-input-group">
+                              <label class="oh-label">{% trans "Is Active" %}</label>
+                              {{f.form.is_active}}
+                            </div>
+                          </div>
+                        </div>
+                    </div>
                   </div>
                   <div class="oh-dropdown__filter-footer">
                     <button type="submit" class="oh-btn oh-btn--secondary oh-btn--small w-100 filterButton" id="">{% trans "Filter" %}</button>
                   </div>
-                </div>
+                </div> {% endcomment %}
               </div>
               <div class="oh-btn-group ml-2">
                 <div class="oh-dropdown" x-data="{open: false}">
                   <button
+                    type="button"
                     class="oh-btn oh-btn--dropdown oh-btn oh-btn--shadow"
                     @click="open = !open"
                     @click.outside="open = false"

@@ -1,7 +1,7 @@
-{% load i18n %}
+{% load i18n %} {% load static %}
+{% include 'filter_tags.html' %}
+{% if skill_zones %}
 <div class="oh-card">
-    {% include 'filter_tags.html' %}
-
     {% for skill_zone in skill_zones %}
         <div class="oh-accordion-meta">
             <div class="oh-accordion-meta__item">
@@ -266,5 +266,15 @@
       </ul>
     </nav>
 </div> 
-
-
+{% else %}
+<div class="oh-404">
+  <img
+    style="width: 150px; height: 150px"
+    src="{% static 'images/ui/no-results.png' %}"
+    class="oh-404__image mb-4"
+  />
+  <h5 class="oh-404__subtitle">
+    {% trans "No search result found!" %}
+  </h5>
+</div>
+{% endif %}

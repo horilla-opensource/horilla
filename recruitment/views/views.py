@@ -1505,9 +1505,9 @@ def skill_zone_filter(request):
     """
     This method is used to filter and show Skill zone view.
     """
-    template = "skill_zone/skill_zone_card.html"
-    if request.GET.get("view") == "list":
-        template = "skill_zone/skill_zone_list.html"
+    template = "skill_zone/skill_zone_list.html"
+    if request.GET.get("view") == "card":
+        template = "skill_zone/skill_zone_card.html"
     skill_zone_filter = SkillZoneFilter(request.GET).qs.filter(is_active=True)
     if request.GET.get("is_active") == "false":
         skill_zone_filter = SkillZoneFilter(request.GET).qs.filter(is_active=False)
@@ -1732,8 +1732,8 @@ def to_skill_zone(request, cand_id):
                     zone_candidate = SkillZoneCandidate()
                     zone_candidate.candidate_id = candidate
                     zone_candidate.skill_zone_id = zone
-                    zone.save()
-            messages.success(request, "Candidate ")
+                    zone_candidate.save()
+            messages.success(request, "Candidate Added to skill zone successfullu")
             return HttpResponse("<script>window.location.reload()</script>")
     return render(request, template, {"form": form, "cand_id": cand_id})
 

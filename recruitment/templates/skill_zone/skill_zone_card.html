@@ -1,5 +1,6 @@
-{% load i18n %} {% load yes_no %}
+{% load i18n %} {% load yes_no %} {% load static %}
 {% include 'filter_tags.html' %}
+{% if skill_zones %}
 <div class="oh-layout--grid-3">
     {% for skill_zone in skill_zones %}
     <div 
@@ -128,3 +129,16 @@
       </ul>
     </nav>
 </div> 
+
+{% else %}
+<div class="oh-404">
+  <img
+    style="width: 150px; height: 150px"
+    src="{% static 'images/ui/no-results.png' %}"
+    class="oh-404__image mb-4"
+  />
+  <h5 class="oh-404__subtitle">
+    {% trans "No search result found!" %}
+  </h5>
+</div>
+{% endif %}

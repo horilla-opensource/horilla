@@ -1,4 +1,4 @@
-{% load static %} {% load audit_filters %} {% load i18n %}
+{% load static %} {% load audit_filters %} {% load i18n %} {% if candidate.candidate_rating.all %}
 <div class="row p-4">
   {% for rate in candidate.candidate_rating.all %}
   <div class="oh-history__container pb-2">
@@ -14,7 +14,7 @@
         <div class="oh-history_user-details">
             <span class="oh-history__username">{{rate.employee_id}}</span>
             <ul class="ul ps-0">
-                <div class="oh-rate">
+                <div class="oh-rate" style="pointer-events:none;">
                     <input type="radio" id="star5" value="5" disabled {% if rate.rating == 5 %} checked {% endif %} />
                     <label for="star5" title="5 Stars" class="star">5 {% trans "Stars" %}</label>
                     <input type="radio" id="star4" value="4" disabled  {% if rate.rating == 4 %} checked {% endif %} />
@@ -38,3 +38,11 @@
   </div>
   {% endfor %}
 </div>
+{% else %}
+<div
+    class="d-flex justify-content-center align-items-center"
+    style="height: 40vh"
+>
+    <h5 class="oh-404__subtitle">{% trans " There are no ratings to display at the moment." %}</h5>
+</div>
+{% endif %}
