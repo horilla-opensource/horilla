@@ -3,6 +3,7 @@
     <div class="oh-sticky-table__table oh-table--sortable">
         <div class="oh-sticky-table__thead">
             <div class="oh-sticky-table__tr">
+                <div class="oh-sticky-table__th" style="width:10px">{% trans 'Sl.No' %}</div>
                 <div class="oh-sticky-table__th">{% trans 'Subject' %}</div>
                 <div class="oh-sticky-table__th" align="center">
                     {% trans 'Status' %}
@@ -17,7 +18,10 @@
                 data-target="#mailBodymodal{{log.id}}"
             >
                 <div class="oh-sticky-table__td">
-                    <strong>{{forloop.counter}}. {{log.subject}} </strong>
+                    <strong>{{forloop.counter}}</strong>
+                </div>
+                <div class="oh-sticky-table__td">
+                    <strong>{{log.subject}} </strong>
                 </div>
                 <div align="center" class="oh-sticky-table__td">
                     {% if log.status == 'sent' %}
