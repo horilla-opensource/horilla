@@ -43,7 +43,7 @@ class DocumentRequest(models.Model):
     employee_id = models.ManyToManyField(Employee)
     format = models.CharField(choices=FORMATS, max_length=10)
     max_size = models.IntegerField(blank=True, null=True)
-    description = models.TextField(blank=True, null=True)
+    description = models.TextField(blank=True, null=True,max_length=255)
     objects = HorillaCompanyManager()
     is_active = models.BooleanField(default=True)
 
@@ -73,7 +73,7 @@ class Document(models.Model):
     )
     document = models.FileField(upload_to="employee/documents", null=True)
     status = models.CharField(choices=STATUS, max_length=10, default="requested")
-    reject_reason = models.TextField(blank=True, null=True)
+    reject_reason = models.TextField(blank=True, null=True,max_length=255)
     is_active = models.BooleanField(default=True)
     expiry_date = models.DateField(null=True,blank=True)
     notify_before = models.IntegerField(default=1,null=True)

@@ -250,7 +250,7 @@ class Attendance(models.Model):
     is_validate_request_approved = models.BooleanField(
         default=False, verbose_name=_("Is validate request approved")
     )
-    request_description = models.TextField(null=True)
+    request_description = models.TextField(null=True,max_length=255)
     request_type = models.CharField(
         max_length=18, null=True, choices=status, default="update_request"
     )
@@ -592,7 +592,7 @@ class AttendancerequestComment(models.Model):
     request_id = models.ForeignKey(Attendance, on_delete=models.CASCADE)
     employee_id = models.ForeignKey(Employee, on_delete=models.CASCADE)
     files = models.ManyToManyField(AttendancerequestFile, blank=True)
-    comment = models.TextField(null=True, verbose_name=_("Comment"))
+    comment = models.TextField(null=True, verbose_name=_("Comment"),max_length=255)
     created_at = models.DateTimeField(
         auto_now_add=True,
         verbose_name=_("Created At"),

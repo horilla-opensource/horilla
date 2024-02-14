@@ -89,7 +89,7 @@ class Ticket(models.Model):
         on_delete=models.PROTECT,
         verbose_name="Ticket Type",
     )
-    description = models.TextField()
+    description = models.TextField(max_length=255)
     priority = models.CharField(choices = PRIORITY, max_length=100, default= "low")
     created_date = models.DateField(auto_now_add=True)
     resolved_date = models.DateField(blank=True, null=True)
@@ -146,7 +146,7 @@ class Ticket(models.Model):
     
 
 class Comment(models.Model):
-    comment = models.TextField(null=True, blank=True)
+    comment = models.TextField(null=True, blank=True,max_length=255)
     ticket = models.ForeignKey(Ticket, on_delete=models.CASCADE, related_name="comment")
     employee_id = models.ForeignKey(Employee, on_delete=models.DO_NOTHING, related_name="employee_comment")
     date = models.DateTimeField(auto_now_add=True)
@@ -194,7 +194,7 @@ class Attachment(models.Model):
 
 class FAQCategory(models.Model):
     title = models.CharField(max_length=30)
-    description = models.TextField(blank=True, null=True)
+    description = models.TextField(blank=True, null=True,max_length=255)
 
     def __str__(self):
         return self.title
@@ -202,7 +202,7 @@ class FAQCategory(models.Model):
 
 class FAQ(models.Model):
     question = models.CharField(max_length=255)
-    answer=models.TextField()
+    answer=models.TextField(max_length=255)
     tags = models.ManyToManyField(Tags)
     category = models.ForeignKey(FAQCategory,on_delete=models.PROTECT)
     is_active = models.BooleanField(default=True)

@@ -21,7 +21,7 @@ class Offboarding(models.Model):
 
     statuses = [("ongoing", "Ongoing"), ("completed", "Completed")]
     title = models.CharField(max_length=20)
-    description = models.TextField()
+    description = models.TextField(max_length=255)
     managers = models.ManyToManyField(Employee)
     created_at = models.DateTimeField(auto_now_add=True)
     status = models.CharField(max_length=10, default="ongoing", choices=statuses)
@@ -145,6 +145,7 @@ class ResignationLetter(models.Model):
     title = models.CharField(max_length=30, null=True)
     description = models.TextField(
         null=True,
+        max_length=255
     )
     planned_to_leave_on = models.DateField()
     status = models.CharField(max_length=10, choices=statuses, default="requested")
@@ -245,7 +246,7 @@ class EmployeeTask(models.Model):
     )
     status = models.CharField(max_length=10, choices=statuses, default="todo")
     task_id = models.ForeignKey(OffboardingTask, on_delete=models.CASCADE)
-    description = models.TextField(null=True, editable=False)
+    description = models.TextField(null=True, editable=False,max_length=255)
     history = HorillaAuditLog(
         related_name="history_set",
         bases=[
@@ -279,7 +280,7 @@ class ExitReason(models.Model):
     """
 
     title = models.CharField(max_length=50)
-    description = models.TextField()
+    description = models.TextField(max_length=255)
     offboarding_employee_id = models.ForeignKey(
         OffboardingEmployee, on_delete=models.PROTECT
     )
@@ -295,7 +296,7 @@ class OffboardingNote(models.Model):
         OffboardingStageMultipleFile, blank=True, editable=False
     )
     title = models.CharField(max_length=20, null=True)
-    description = models.TextField(null=True, blank=True)
+    description = models.TextField(null=True, blank=True,max_length=255)
     note_by = models.ForeignKey(
         Employee, on_delete=models.SET_NULL, null=True, editable=False
     )

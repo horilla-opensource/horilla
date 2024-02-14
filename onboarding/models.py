@@ -31,7 +31,7 @@ class OnboardingStage(models.Model):
         related_name="onboarding_stage",
         on_delete=models.CASCADE,
     )
-    employee_id = models.ManyToManyField(Employee)
+    employee_id = models.ManyToManyField(Employee, verbose_name="Stage managers")
     sequence = models.IntegerField(null=True)
     is_final_stage = models.BooleanField(default=False)
     objects = HorillaCompanyManager("recruitment_id__company_id")

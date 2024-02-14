@@ -99,6 +99,7 @@ class FilingStatus(models.Model):
     description = models.TextField(
         blank=True,
         verbose_name=_("Description"),
+        max_length=255,
     )
     company_id = models.ForeignKey(
         Company, null=True, editable=False, on_delete=models.PROTECT
@@ -238,7 +239,7 @@ class Contract(models.Model):
         validators=[min_zero],
     )
 
-    note = models.TextField(null=True, blank=True)
+    note = models.TextField(null=True, blank=True,max_length=255)
     created_at = models.DateTimeField(auto_now_add=True, null=True)
     history = HorillaAuditLog(
         related_name="history_set",
@@ -387,7 +388,7 @@ class WorkRecord(models.Model):
     )
     at_work_second = models.IntegerField(null=True, blank=True, default=0)
     min_hour_second = models.IntegerField(null=True, blank=True, default=0)
-    note = models.TextField()
+    note = models.TextField(max_length=255)
     message = models.CharField(max_length=30, null=True, blank=True)
     is_attendance_record = models.BooleanField(default=False)
     is_leave_record = models.BooleanField(default=False)
@@ -1396,7 +1397,7 @@ class LoanAccount(models.Model):
     allowance_id = models.ForeignKey(
         Allowance, on_delete=models.SET_NULL, editable=False, null=True
     )
-    description = models.TextField(null=True)
+    description = models.TextField(null=True,max_length=255)
     deduction_ids = models.ManyToManyField(Deduction, editable=False)
     is_fixed = models.BooleanField(default=True, editable=False)
     rate = models.FloatField(default=0, editable=False)
@@ -1569,7 +1570,7 @@ class Reimbursement(models.Model):
         related_name="approved_by",
         editable=False,
     )
-    description = models.TextField(null=True)
+    description = models.TextField(null=True,max_length=255)
     allowance_id = models.ForeignKey(
         Allowance, on_delete=models.SET_NULL, null=True, editable=False
     )
@@ -1698,7 +1699,7 @@ class ReimbursementrequestComment(models.Model):
 
     request_id = models.ForeignKey(Reimbursement, on_delete=models.CASCADE)
     employee_id = models.ForeignKey(Employee, on_delete=models.CASCADE)
-    comment = models.TextField(null=True, verbose_name=_("Comment"))
+    comment = models.TextField(null=True, verbose_name=_("Comment"),max_length=255)
     created_at = models.DateTimeField(
         auto_now_add=True,
         verbose_name=_("Created At"),

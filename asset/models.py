@@ -18,7 +18,7 @@ class AssetCategory(models.Model):
     """
 
     asset_category_name = models.CharField(max_length=255, unique=True)
-    asset_category_description = models.TextField()
+    asset_category_description = models.TextField(max_length=255)
     objects = models.Manager()
     company_id = models.ManyToManyField(Company,blank=True, verbose_name=_("Company"))
 
@@ -32,7 +32,7 @@ class AssetLot(models.Model):
     """
 
     lot_number = models.CharField(max_length=30, null=False, blank=False, unique=True)
-    lot_description = models.TextField(null=True, blank=True)
+    lot_description = models.TextField(null=True, blank=True,max_length=255)
     company_id = models.ManyToManyField(Company,blank=True, verbose_name=_("Company"))
     objects = HorillaCompanyManager()
 
@@ -52,7 +52,7 @@ class Asset(models.Model):
     ]
     asset_name = models.CharField(max_length=255)
     owner = models.ForeignKey(Employee,on_delete=models.PROTECT,null=True,blank=True)
-    asset_description = models.TextField(null=True, blank=True)
+    asset_description = models.TextField(null=True, blank=True,max_length=255)
     asset_tracking_id = models.CharField(max_length=30, null=False, unique=True)
     asset_purchase_date = models.DateField()
     asset_purchase_cost = models.DecimalField(max_digits=10, decimal_places=2)
@@ -127,7 +127,7 @@ class AssetAssignment(models.Model):
         Employee, on_delete=models.PROTECT, related_name="assigned_by"
     )
     return_date = models.DateField(null=True, blank=True)
-    return_condition = models.TextField(null=True, blank=True)
+    return_condition = models.TextField(null=True, blank=True,max_length=255)
     return_status = models.CharField(
         choices=STATUS, max_length=30, null=True, blank=True
     )
@@ -159,7 +159,7 @@ class AssetRequest(models.Model):
     )
     asset_category_id = models.ForeignKey(AssetCategory, on_delete=models.PROTECT)
     asset_request_date = models.DateField(auto_now_add=True)
-    description = models.TextField(null=True, blank=True)
+    description = models.TextField(null=True, blank=True,max_length=255)
     asset_request_status = models.CharField(
         max_length=30, choices=STATUS, default="Requested", null=True, blank=True
     )

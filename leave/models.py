@@ -427,7 +427,7 @@ class LeaveRequest(models.Model):
     requested_days = models.FloatField(
         blank=True, null=True, verbose_name=_("Requested Days")
     )
-    description = models.TextField(verbose_name=_("Description"))
+    description = models.TextField(verbose_name=_("Description"),max_length=255)
     attachment = models.FileField(
         null=True,
         blank=True,
@@ -454,7 +454,7 @@ class LeaveRequest(models.Model):
     approved_available_days = models.FloatField(default=0)
     approved_carryforward_days = models.FloatField(default=0)
     created_at = models.DateTimeField(auto_now_add="True")
-    reject_reason = models.TextField(blank=True, verbose_name=_("Reject Reason"))
+    reject_reason = models.TextField(blank=True, verbose_name=_("Reject Reason"),max_length=255)
     history = HorillaAuditLog(
         related_name="history_set",
         bases=[
@@ -690,7 +690,7 @@ class LeaverequestComment(models.Model):
     request_id = models.ForeignKey(LeaveRequest, on_delete=models.CASCADE)
     employee_id = models.ForeignKey(Employee, on_delete=models.CASCADE)
     files = models.ManyToManyField(LeaverequestFile, blank=True)
-    comment = models.TextField(null=True, verbose_name=_("Comment"))
+    comment = models.TextField(null=True, verbose_name=_("Comment"),max_length=255)
     created_at = models.DateTimeField(
         auto_now_add=True,
         verbose_name=_("Created At"),
@@ -717,7 +717,7 @@ class LeaveAllocationRequest(models.Model):
         null=True,
         related_name="leave_allocation_request_created",
     )
-    description = models.TextField()
+    description = models.TextField(max_length=255)
     attachment = models.FileField(
         null=True, blank=True, upload_to="leave/leave_attachment"
     )
@@ -725,7 +725,7 @@ class LeaveAllocationRequest(models.Model):
         max_length=30, choices=LEAVE_ALLOCATION_STATUS, default="requested"
     )
     created_at = models.DateTimeField(auto_now="True")
-    reject_reason = models.TextField(blank=True)
+    reject_reason = models.TextField(blank=True,max_length=255)
     history = HorillaAuditLog(
         related_name="history_set",
         bases=[
@@ -773,7 +773,7 @@ class LeaveallocationrequestComment(models.Model):
     request_id = models.ForeignKey(LeaveAllocationRequest, on_delete=models.CASCADE)
     employee_id = models.ForeignKey(Employee, on_delete=models.CASCADE)
     files = models.ManyToManyField(LeaverequestFile, blank=True)
-    comment = models.TextField(null=True, verbose_name=_("Comment"))
+    comment = models.TextField(null=True, verbose_name=_("Comment"),max_length=255)
     created_at = models.DateTimeField(
         auto_now_add=True,
         verbose_name=_("Created At"),

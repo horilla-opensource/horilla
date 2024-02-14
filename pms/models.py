@@ -37,7 +37,7 @@ class EmployeeObjective(models.Model):
         ("Not Started", _("Not Started")),
     )
     objective = models.CharField(null=False, blank=False, max_length=100)
-    objective_description = models.TextField(blank=False, null=False)
+    objective_description = models.TextField(blank=False, null=False,max_length=255)
     created_at = models.DateField(auto_now_add=True)
     employee_id = models.ForeignKey(
         Employee,
@@ -107,7 +107,7 @@ class EmployeeKeyResult(models.Model):
     )
 
     key_result = models.CharField(max_length=60, null=True, blank=False)
-    key_result_description = models.TextField(blank=False, null=True)
+    key_result_description = models.TextField(blank=False, null=True,max_length=255)
     employee_objective_id = models.ForeignKey(
         EmployeeObjective, on_delete=models.CASCADE, related_name="emp_obj_id"
     )
@@ -318,7 +318,7 @@ class AnonymousFeedback(models.Model):
     anonymous_feedback_id = models.CharField(
         max_length=10, null=True, blank=False, editable=False
     )
-    feedback_description = models.TextField(null=True, blank=True)
+    feedback_description = models.TextField(null=True, blank=True,max_length=255)
 
     def __str__(self) -> str:
         return f"Feedback based on a {self.based_on}"

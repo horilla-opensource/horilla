@@ -549,7 +549,7 @@ class EmployeeBankDetails(models.Model):
         default="",
     )
     branch = models.CharField(max_length=50)
-    address = models.TextField(max_length=300)
+    address = models.TextField(max_length=255)
     country = models.CharField(max_length=50, blank=True, null=True)
     state = models.CharField(max_length=50, blank=True)
     city = models.CharField(max_length=50, blank=True)
@@ -591,7 +591,7 @@ class EmployeeNote(models.Model):
         related_name="employee_name",
     )
     title = models.CharField(max_length=50, null=True, verbose_name=_("Title"))
-    description = models.TextField(verbose_name=_("Description"))
+    description = models.TextField(verbose_name=_("Description"),max_length=255)
     created_at = models.DateTimeField(
         auto_now_add=True,
         verbose_name=_("Created At"),
@@ -620,7 +620,7 @@ class Policy(models.Model):
     """
 
     title = models.CharField(max_length=50)
-    body = models.TextField()
+    body = models.TextField(max_length=255)
     is_visible_to_all = models.BooleanField(default=True)
     specific_employees = models.ManyToManyField(Employee, blank=True, editable=False)
     attachments = models.ManyToManyField(PolicyMultipleFile, blank=True)
@@ -655,7 +655,7 @@ class BonusPoint(models.Model):
         max_length=100, choices=CONDITIONS, blank=True, null=True
     )
     redeeming_points = models.IntegerField(blank=True, null=True)
-    reason = models.TextField(blank=True, null=True)
+    reason = models.TextField(blank=True, null=True,max_length=255)
     history = HorillaAuditLog(
         related_name="history_set",
         bases=[
@@ -704,7 +704,7 @@ class DisciplinaryAction(models.Model):
 
     employee_id = models.ManyToManyField(Employee)
     action = models.ForeignKey(Actiontype, on_delete=models.CASCADE)
-    description = models.TextField()
+    description = models.TextField(max_length=255)
     days = models.IntegerField(null=True, blank=True)
     start_date = models.DateField(null=True)
     attachment = models.FileField(
