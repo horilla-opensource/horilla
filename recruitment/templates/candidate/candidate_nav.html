@@ -40,7 +40,9 @@ class="oh-wrapper oh-main__topbar"
 x-data="{searchShow: false}"
 >
 <div class="oh-main__titlebar oh-main__titlebar--left">
-  <div hx-get="{% url 'candidate-view-card' %}" class="oh-main__titlebar-title fw-bold mb-0 text-dark" hx-target="#section" style="cursor:pointer;">{% trans "Candidates" %}</div>
+  <h1 class="oh-main__titlebar-title fw-bold">
+    {% trans "Candidates" %}
+  </h1>
   <a
     class="oh-main__titlebar-search-toggle "
     role="button"
@@ -53,180 +55,180 @@ x-data="{searchShow: false}"
     ></ion-icon>
   </a>
 </div>
-
-<div class="oh-main__titlebar oh-main__titlebar--right">
-  
-  <div
-    class="oh-input-group oh-input__search-group"
-    :class="searchShow ? 'oh-input__search-group--show' : ''"
+<form
+    hx-get='{% url "search-candidate" %}'
+    id="filterForm"
+    hx-target="#section"
+    class="d-flex"
   >
-    <ion-icon
-      name="search-outline"
-      class="oh-input-group__icon oh-input-group__icon--left"
-    ></ion-icon>
-    <input
-      type="text"
-      hx-get="{% url 'search-candidate' %}" 
-      placeholder="{% trans 'Search' %}" 
-      id="candidate-search"
-      name='search'
-      hx-trigger="keyup changed delay:.2s"
-      hx-target="#section"
-      class="oh-input oh-input__icon"
-      hx-vals = '{"view":"{{request.GET.view}}"}'
-      aria-label="Search Input"
-    />
-  </div>
-  <ul class="oh-view-types ml-2" style="margin-bottom: 0;" id="view-type">
-    <li class="oh-view-type candidate-view-type " data-view='list' >
-      <a
-        id = 'list' 
-        hx-get="{% url 'search-candidate' %}?view=list"  
-        hx-target='#section' 
-        class="oh-btn oh-btn--view {% if request.GET.view == 'list' %} oh-btn--view-active {% endif %}"
-        title = {% trans "List" %}
-        ><ion-icon name="list-outline"></ion-icon
-      ></a>
-    </li>
-    <li class="oh-view-type candidate-view-type" data-view='card'>
-      <a 
-        id="card"
-        hx-get="{% url 'search-candidate' %}?view=card" 
-        hx-target='#section' 
-        class="oh-btn oh-btn--view {% if request.GET.view != 'list' %} oh-btn--view-active {% endif %}"
-        title = {% trans "Card" %}
-        ><ion-icon name="grid-outline"></ion-icon
-      ></a>
-    </li>
-  </ul>
 
-  <div class="oh-main__titlebar-button-container">
-    <form hx-get='{% url "search-candidate" %}' id="filterForm" hx-target='#section' class="d-flex">
-
-    <div class="oh-dropdown" x-data="{open: false}">
-      <button class="oh-btn ml-2" @click="open = !open" onclick="event.preventDefault()">
-        <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}<div id="filterCount"></div>
-      </button>
-      <div
+  <div class="oh-main__titlebar oh-main__titlebar--right">
+    
+    <div
+      class="oh-input-group oh-input__search-group"
+      :class="searchShow ? 'oh-input__search-group--show' : ''"
+    >
+      <ion-icon
+        name="search-outline"
+        class="oh-input-group__icon oh-input-group__icon--left"
+      ></ion-icon>
+      <input
+        type="text"
+        placeholder="{% trans 'Search' %}" 
+        id="candidate-search"
+        name='name'
+        class="oh-input oh-input__icon"
+        aria-label="Search Input"
+        onkeyup="$('.filterButton')[0].click();"
+      />
+    </div>
+    <ul class="oh-view-types ml-2" style="margin-bottom: 0;" id="view-type">
+      <li class="oh-view-type candidate-view-type " data-view='list' >
+        <a
+          id = 'list'  
+          class="oh-btn oh-btn--view {% if request.GET.view == 'list' %} oh-btn--view-active {% endif %}"
+          title ='{% trans "List" %}'
+          onclick="$('[name=view]').val('list');$('.filterButton')[0].click();"
+          ><ion-icon name="list-outline"></ion-icon
+        ></a>
+      </li>
+      <li class="oh-view-type candidate-view-type" data-view='card'>
+        <a 
+          id="card"
+          class="oh-btn oh-btn--view {% if request.GET.view != 'list' %} oh-btn--view-active {% endif %}"
+          title = '{% trans "Card" %}'
+          onclick="$('[name=view]').val('card');$('.filterButton')[0].click();"
+          ><ion-icon name="grid-outline"></ion-icon
+        ></a>
+      </li>
+    </ul>
+    <input type="hidden" name="view" id="filterView" value="">
+    <div class="oh-main__titlebar-button-container">
+      <div class="oh-dropdown" x-data="{open: false}">
+        <button class="oh-btn ml-2" @click="open = !open" onclick="event.preventDefault()">
+          <ion-icon name="filter" class="mr-1"></$('[name=canceled]').val('unknown');ion-icon>{% trans "Filter" %}<div id="filterCount"></div>
+        </button>
+        <div
+          class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4"
+          x-show="open"
+          @click.outside="open = fals
+        style="display: none;"
+        >
+        {% include 'candidate/filters.html' %}
+        </div>
+      </div>
+      
+      <div class="oh-dropdown" x-data="{open: false}">
+        <button class="oh-btn ml-2" @click="open = !open" onclick="event.preventDefault()">
+          <ion-icon name="library-outline" class="mr-1"></ion-icon>{% trans "Group By" %}
+          <div id="filterCount"></div>
+        </button>
+        <div
         class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4"
         x-show="open"
         @click.outside="open = false"
-      style="display: none;"
-      >
-      {% include 'candidate/filters.html' %}
-      </div>
-    </div>
-    
-    <div class="oh-dropdown" x-data="{open: false}">
-      <button class="oh-btn ml-2" @click="open = !open" onclick="event.preventDefault()">
-        <ion-icon name="library-outline" class="mr-1"></ion-icon>{% trans "Group By" %}
-        <div id="filterCount"></div>
-      </button>
-      <div
-      class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4"
-      x-show="open"
-      @click.outside="open = false"
-      style="display: none"
-      >            
-      <div class="oh-accordion">
-        <label>{% trans "Group By" %}</label>
-          <div class="row">
-            <div class="col-sm-12 col-md-12 col-lg-6">
-              <div class="oh-input-group">
-                <label class="oh-label">{% trans "Field" %}</label>
+        style="display: none"
+        >            
+        <div class="oh-accordion">
+          <label>{% trans "Group By" %}</label>
+            <div class="row">
+              <div class="col-sm-12 col-md-12 col-lg-6">
+                <div class="oh-input-group">
+                  <label class="oh-label">{% trans "Field" %}</label>
+                </div>
               </div>
-            </div>
-            <div class="col-sm-12 col-md-12 col-lg-6">
-              <div class="oh-input-group">
-                <select
-                  class="oh-select mt-1 w-100"
-                  id="id_field"
-                  name="field"
-                  class="select2-selection select2-selection--single"
-                >
-                  {% for field in gp_fields %}
-                  <option value="{{ field.0 }}">{% trans field.1 %}</option>
-                  {% endfor %}
-                </select>
+              <div class="col-sm-12 col-md-12 col-lg-6">
+                <div class="oh-input-group">
+                  <select
+                    class="oh-select mt-1 w-100"
+                    id="id_field"
+                    name="field"
+                    class="select2-selection select2-selection--single"
+                  >
+                    {% for field in gp_fields %}
+                    <option value="{{ field.0 }}">{% trans field.1 %}</option>
+                    {% endfor %}
+                  </select>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
-    </form>
-    <div class="oh-btn-group ml-2">
-      <div class="oh-dropdown" x-data="{open: false}">
-        <button
-          class="oh-btn oh-btn--dropdown oh-btn oh-btn--shadow"
-          @click="open = !open"
-          @click.outside="open = false"
+      </form>
+      <div class="oh-btn-group ml-2">
+        <div class="oh-dropdown" x-data="{open: false}">
+          <button
+            class="oh-btn oh-btn--dropdown oh-btn oh-btn--shadow"
+            @click="open = !open"
+            @click.outside="open = false"
+          >
+            {% trans "Actions" %}
+          </button>
+          <div class="oh-dropdown__menu oh-dropdown__menu--right" x-show="open" 
+          style="display: none;"
         >
-          {% trans "Actions" %}
-        </button>
-        <div class="oh-dropdown__menu oh-dropdown__menu--right" x-show="open" 
-        style="display: none;"
-      >
-          <ul class="oh-dropdown__items">
-            <li class="oh-dropdown__item">
+            <ul class="oh-dropdown__items">
+              <li class="oh-dropdown__item">
+                {% if perms.delete_candidates %}
+                <a
+                  href="#"
+                  class="oh-dropdown__link"
+                  id="candidate-info-export"
+                  data-toggle="oh-modal-toggle"
+                  data-target="#candidateExport"
+                  >{% trans "Export" %}</a
+                >
+                {% endif %}
+              </li>
               {% if perms.delete_candidates %}
-              <a
-                href="#"
-                class="oh-dropdown__link"
-                id="candidate-info-export"
-                data-toggle="oh-modal-toggle"
-                data-target="#candidateExport"
-                >{% trans "Export" %}</a
-              >
+              <li class="oh-dropdown__item">
+                <a href="#" class="oh-dropdown__link " id="archiveCandidates"
+
+                  >{% trans "Archive" %}</a
+                >
+              </li>
+              {% endif %} 
+
+              {% if perms.delete_candidates %}
+              <li class="oh-dropdown__item">
+                <a href="#" class="oh-dropdown__link "
+
+                id="unArchiveCandidates"
+                  >{% trans "Un-Archive" %}</a
+                >
+              </li>
+              {% endif %} 
+
+              {% if perms.delete_candidates %}
+              <li class="oh-dropdown__item">
+                <a
+                  href="#"
+                  class="oh-dropdown__link oh-dropdown__link--danger"
+                  id="deleteCandidates"
+                  >{% trans "Delete" %}</a
+                >
+              </li>
               {% endif %}
-            </li>
-            {% if perms.delete_candidates %}
-            <li class="oh-dropdown__item">
-              <a href="#" class="oh-dropdown__link " id="archiveCandidates"
 
-                >{% trans "Archive" %}</a
-              >
-            </li>
-            {% endif %} 
-
-            {% if perms.delete_candidates %}
-            <li class="oh-dropdown__item">
-              <a href="#" class="oh-dropdown__link "
-
-               id="unArchiveCandidates"
-                >{% trans "Un-Archive" %}</a
-              >
-            </li>
-            {% endif %} 
-
-            {% if perms.delete_candidates %}
-            <li class="oh-dropdown__item">
-              <a
-                href="#"
-                class="oh-dropdown__link oh-dropdown__link--danger"
-                id="deleteCandidates"
-                >{% trans "Delete" %}</a
-              >
-            </li>
-            {% endif %}
-
-          </ul>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="oh-btn-group ml-2">
+        <div class="oh-dropdown" >
+          {% if perms.recruitment.add_candidate %}
+          <a href="{% url 'candidate-create' %}"
+          class='oh-btn oh-btn--secondary'
+          >
+          <ion-icon name="add-sharp" class="mr-1"></ion-icon>{% trans "Create" %}
+        </a>
+        {% endif %}
         </div>
       </div>
     </div>
-    <div class="oh-btn-group ml-2">
-      <div class="oh-dropdown" >
-        {% if perms.recruitment.add_candidate %}
-        <a href="{% url 'candidate-create' %}"
-        class='oh-btn oh-btn--secondary'
-        >
-        <ion-icon name="add-sharp" class="mr-1"></ion-icon>{% trans "Create" %}
-      </a>
-      {% endif %}
-      </div>
-    </div>
   </div>
-</div>
+</form>
 </section>
 <script>
   $(document).ready(function () {

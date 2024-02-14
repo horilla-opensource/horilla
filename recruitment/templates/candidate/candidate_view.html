@@ -19,15 +19,15 @@
   </div>
   
   <div class="d-flex flex-row-reverse">
-    <span class="m-3" onclick="$('[name=canceled]').val('true');$('[name=canceled]').first().change(); $('.filterButton').click()" style="cursor: pointer">
+    <span class="m-3" onclick="$('[name=canceled]').val('true');$('[name=hired]').val('unknown');$('[name=canceled]').first().change(); $('.filterButton').click()" style="cursor: pointer">
       <span class="oh-dot oh-dot--small me-1" style="background-color:red"></span>
       {% trans "Canceled" %}
     </span>
-    <span class="m-3" onclick="$('[name=hired]').val('false'); $('[name=hired]').first().change(); $('.filterButton').click()" style="cursor: pointer">
+    <span class="m-3" onclick="$('[name=hired]').val('false');$('[name=canceled]').val('unknown'); $('[name=hired]').first().change(); $('.filterButton').click()" style="cursor: pointer">
       <span class="oh-dot oh-dot--small me-1" style="background-color:rgba(128, 128, 128, 0.482)"></span>
       {% trans "Not-Hired" %}
     </span>
-    <span class="m-3" onclick="$('[name=hired]').val('true'); $('[name=hired]').first().change(); $('.filterButton').click()" style="cursor: pointer">
+    <span class="m-3" onclick="$('[name=hired]').val('true');$('[name=canceled]').val('unknown'); $('[name=hired]').first().change(); $('.filterButton').click()" style="cursor: pointer">
       <span class="oh-dot oh-dot--small me-1" style="background-color:yellowgreen"></span>
       {% trans "Hired" %}
     </span>
@@ -54,9 +54,9 @@
 
 <script>
   $(document).ready(function () {
-    $("#candidate-search").keyup(function (e) { 
+    {% comment %} $("#candidate-search").keyup(function (e) { 
       $("#filterSearch").val($(this).val());
-    });
+    }); {% endcomment %}
     $(".filterButton").click(function (e) { 
       const formData = $("#filterForm").serializeArray();
       const jsonObject = {};
@@ -65,14 +65,14 @@
           jsonObject[this.name] = this.value;
       });
       var hxVals = JSON.stringify(jsonObject)
-      $(".candidate-view-type").attr("hx-vals", hxVals);
+      {% comment %} $(".candidate-view-type").attr("hx-vals", hxVals);
       const { search, ...newObj } = jsonObject;
-      $("#candidate-search").attr("hx-vals", JSON.stringify(newObj));
+      $("#candidate-search").attr("hx-vals", JSON.stringify(newObj)); {% endcomment %}
     });
 
-    $("#candidate-search").focusout(function (e) { 
+    {% comment %} $("#candidate-search").focusout(function (e) { 
       const formData = $("#filterForm").serializeArray();
-      const jsonObject = {};
+      const jsonObject = {}; {% endcomment %}
       
       $.each(formData, function() {
           jsonObject[this.name] = this.value;
