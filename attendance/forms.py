@@ -31,6 +31,7 @@ from django.template.loader import render_to_string
 from django.utils.translation import gettext_lazy as _
 from django.core.exceptions import ValidationError
 from django.forms import DateTimeInput
+from base import thread_local_middleware
 from base.forms import MultipleFileField
 from horilla_widgets.widgets.horilla_multi_select_field import HorillaMultiSelectField
 from horilla_widgets.widgets.select_widgets import HorillaMultiSelectWidget
@@ -61,8 +62,13 @@ class ModelForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         reload_queryset(self.fields)
+        request = getattr(thread_local_middleware._thread_locals, "request", None)
+
         for field_name, field in self.fields.items():
             widget = field.widget
+            if isinstance(widget, (forms.DateInput)):
+                field.initial = datetime.date.today()
+                
             if isinstance(
                 widget, (forms.NumberInput, forms.EmailInput, forms.TextInput)
             ):
@@ -109,6 +115,17 @@ class ModelForm(forms.ModelForm):
                 field.widget = forms.DateInput(
                     attrs={"type": "time", "class": "oh-input w-100"}
                 )
+
+            try:            
+                self.fields["employee_id"].initial = request.user.employee_get 
+            except:
+                pass
+
+            try:            
+                self.fields["company_id"].initial = request.user.employee_get.get_company
+            except:
+                pass
+
 
 
 class AttendanceUpdateForm(ModelForm):

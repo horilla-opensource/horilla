@@ -8,7 +8,7 @@ import os
 from typing import Any
 import uuid
 import datetime
-from datetime import timedelta
+from datetime import date, timedelta
 from django.contrib.auth import authenticate
 from django import forms
 from django.contrib.auth.models import Group, Permission, User
@@ -17,6 +17,7 @@ from django.core.exceptions import ValidationError
 from django.utils.translation import gettext as _
 from django.utils.translation import gettext_lazy as _trans
 from django.template.loader import render_to_string
+from base import thread_local_middleware
 from employee.filters import EmployeeFilter
 from employee.models import Employee, EmployeeTag
 from base.models import (
@@ -165,8 +166,12 @@ class ModelForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         reload_queryset(self.fields)
+        request = getattr(thread_local_middleware._thread_locals, "request", None)
         for field_name, field in self.fields.items():
             widget = field.widget
+            if isinstance(widget, (forms.DateInput)):
+                field.initial = date.today()
+                
             if isinstance(
                 widget,
                 (forms.NumberInput, forms.EmailInput, forms.TextInput, forms.FileInput),
@@ -205,6 +210,15 @@ class ModelForm(forms.ModelForm):
             ):
                 field.widget.attrs.update({"class": "oh-switch__checkbox"})
 
+            try:            
+                self.fields["employee_id"].initial = request.user.employee_get 
+            except:
+                pass
+
+            try:            
+                self.fields["company_id"].initial = request.user.employee_get.get_company
+            except:
+                pass
 
 class Form(forms.Form):
     """

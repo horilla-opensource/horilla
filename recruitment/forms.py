@@ -22,12 +22,14 @@ class YourForm(forms.Form):
 """
 
 from ast import Dict
+from datetime import date
 from typing import Any
 import uuid
 from django import forms
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 from django.template.loader import render_to_string
+from base import thread_local_middleware
 from employee.filters import EmployeeFilter
 from employee.models import Employee
 from horilla_widgets.widgets.horilla_multi_select_field import HorillaMultiSelectField
@@ -58,9 +60,13 @@ class ModelForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        request = getattr(thread_local_middleware._thread_locals, "request", None)
         reload_queryset(self.fields)
         for field_name, field in self.fields.items():
             widget = field.widget
+            if isinstance(widget, (forms.DateInput)):
+                field.initial = date.today()
+
             if isinstance(
                 widget,
                 (forms.NumberInput, forms.EmailInput, forms.TextInput, forms.FileInput),
@@ -102,6 +108,16 @@ class ModelForm(forms.ModelForm):
                 ),
             ):
                 field.widget.attrs.update({"class": "oh-switch__checkbox "})
+
+            try:            
+                self.fields["employee_id"].initial = request.user.employee_get 
+            except:
+                pass
+
+            try:            
+                self.fields["company_id"].initial = request.user.employee_get.get_company
+            except:
+                pass
 
 
 class RegistrationForm(forms.ModelForm):

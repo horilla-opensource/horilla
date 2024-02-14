@@ -20,6 +20,7 @@ class YourForm(forms.Form):
         # Custom validation logic goes here
         pass
 """
+from datetime import date
 from typing import Any
 import uuid
 from django import forms
@@ -27,6 +28,7 @@ from django.forms import DateInput, ValidationError
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm as UserForm
 from django.utils.translation import gettext_lazy as _
+from base import thread_local_middleware
 from employee.models import Employee, EmployeeBankDetails
 from recruitment.models import Candidate
 from onboarding.models import CandidateTask, OnboardingStage, OnboardingTask
@@ -40,9 +42,13 @@ class ModelForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        request = getattr(thread_local_middleware._thread_locals, "request", None)
         reload_queryset(self.fields)
         for _, field in self.fields.items():
             widget = field.widget
+
+            if isinstance(widget, (forms.DateInput)):
+                field.initial = date.today()
 
             if isinstance(widget, (forms.DateInput)):
                 field.widget.attrs.update({"class": "oh-input  w-100"})
@@ -73,6 +79,15 @@ class ModelForm(forms.ModelForm):
                 ),
             ):
                 field.widget.attrs.update({"class": "oh-switch__checkbox"})
+            try:            
+                self.fields["employee_id"].initial = request.user.employee_get 
+            except:
+                pass
+
+            try:            
+                self.fields["company_id"].initial = request.user.employee_get.get_company
+            except:
+                pass
 
 
 class UserCreationFormCustom(UserForm):

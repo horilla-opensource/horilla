@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import date, datetime
 import re
 from typing import Any
 import uuid
@@ -8,6 +8,7 @@ from django.forms.widgets import TextInput
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 from django.template.loader import render_to_string
+from base import thread_local_middleware
 from employee.filters import EmployeeFilter
 from employee.forms import MultipleFileField
 from employee.models import Employee
@@ -40,12 +41,14 @@ CHOICES = [("yes", _("Yes")), ("no", _("No"))]
 class ModelForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        request = getattr(thread_local_middleware._thread_locals, "request", None)
         reload_queryset(self.fields)
         for field_name, field in self.fields.items():
             widget = field.widget
 
             if isinstance(widget, (forms.DateInput)):
                 field.widget.attrs.update({"class": "oh-input oh-calendar-input w-100"})
+                field.initial = date.today()
             elif isinstance(
                 widget, (forms.NumberInput, forms.EmailInput, forms.TextInput)
             ):
@@ -73,11 +76,21 @@ class ModelForm(forms.ModelForm):
                 ),
             ):
                 field.widget.attrs.update({"class": "oh-switch__checkbox"})
+        try:            
+            self.fields["employee_id"].initial = request.user.employee_get 
+        except:
+            pass
+
+        try:            
+            self.fields["company_id"].initial = request.user.employee_get.get_company
+        except:
+            pass
 
 
 class ConditionForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        request = getattr(thread_local_middleware._thread_locals, "request", None)
         reload_queryset(self.fields)
         for field_name, field in self.fields.items():
             widget = field.widget
@@ -87,6 +100,8 @@ class ConditionForm(forms.ModelForm):
                 ] = "width:100%; height:50px;border: 1px solid hsl(213deg,22%,84%);border-radius: 0rem;padding: 0.8rem 1.25rem;"
             elif isinstance(widget, (forms.DateInput)):
                 field.widget.attrs.update({"class": "oh-input oh-calendar-input w-100"})
+                field.initial = date.today()
+
             elif isinstance(
                 widget, (forms.NumberInput, forms.EmailInput, forms.TextInput)
             ):
@@ -110,7 +125,15 @@ class ConditionForm(forms.ModelForm):
                 ),
             ):
                 field.widget.attrs.update({"class": "oh-switch__checkbox"})
+        try:            
+            self.fields["employee_id"].initial = request.user.employee_get 
+        except:
+            pass
 
+        try:            
+            self.fields["company_id"].initial = request.user.employee_get.get_company
+        except:
+            pass
 
 class LeaveTypeForm(ConditionForm):
     require_approval = forms.CharField(
