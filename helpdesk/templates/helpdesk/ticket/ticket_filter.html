@@ -1,12 +1,12 @@
 {% load i18n %}
 <!-- start of filter  -->
 <form
-    method="post"
-    hx-get="{% url 'ticket-filter' %}?view={{view}}"
-    hx-target="#ticket_list"
+    method="get"
+    action=""
     id="filterForm"
     class="d-flex"
 >
+    {% csrf_token %}
     <div
         class="oh-input-group oh-input__search-group"
         :class="searchShow ? 'oh-input__search-group--show' : ''"

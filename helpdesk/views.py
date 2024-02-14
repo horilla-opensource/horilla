@@ -341,7 +341,11 @@ def ticket_view(request):
     Parameters:
         request (HttpRequest): The HTTP request object.
     """
-    tickets =Ticket.objects.filter(is_active=True)    
+    tickets =Ticket.objects.filter(is_active=True)
+    
+    previous_data = request.GET.urlencode()
+    if request.method =='GET':
+        tickets = TicketFilter(request.GET).qs
     my_page_number = request.GET.get("my_page")
     all_page_number = request.GET.get("all_page")
     allocated_page_number = request.GET.get("allocated_page")
@@ -354,7 +358,7 @@ def ticket_view(request):
 
 
     allocated_tickets=[]
-    ticket_list = Ticket.objects.filter(is_active=True)
+    ticket_list = tickets.filter(is_active=True)
     user = request.user.employee_get
     if hasattr(user, 'employee_work_info'):
         department = user.employee_work_info.department_id
@@ -368,7 +372,9 @@ def ticket_view(request):
             
     tickets_items = ticket_list.filter(raised_on = user.id,assigning_type = "individual" )
     allocated_tickets += tickets_items
-
+    
+    data_dict = parse_qs(previous_data)
+    get_key_instances(Ticket, data_dict) 
     template = "helpdesk/ticket/ticket_view.html"
     context = {
         "my_tickets": paginator_qry(my_tickets, my_page_number),
@@ -379,6 +385,7 @@ def ticket_view(request):
         "ticket_status":TICKET_STATUS,
         "view": request.GET.get('view'),
         "today": datetime.today().date(),
+        "filter_dict": data_dict,
     }
 
     return render(request, template, context=context)
@@ -692,6 +699,7 @@ def ticket_filter(request):
         "field":field,
         "today": datetime.today().date(),
     }
+    
     return render(request, template, context)
 
 @login_required
