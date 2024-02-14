@@ -6,6 +6,7 @@ import django_filters
 from django import forms
 from django.db import models
 from base.methods import reload_queryset
+from django.core.paginator import Page, Paginator
 from django_filters.filterset import FILTER_FOR_DBFIELD_DEFAULTS
 
 
@@ -37,13 +38,51 @@ class FilterSet(django_filters.FilterSet):
         for field_name, field in self.form.fields.items():
             filter_widget = self.filters[field_name]
             widget = filter_widget.field.widget
-            if isinstance(widget, (forms.NumberInput, forms.EmailInput,forms.TextInput)):
-                field.widget.attrs.update({'class': 'oh-input w-100'})
-            elif isinstance(widget,(forms.Select,)):
-                field.widget.attrs.update({'class': 'oh-select oh-select-2 select2-hidden-accessible','id':uuid.uuid4()})
-            elif isinstance(widget,(forms.Textarea)):
-                field.widget.attrs.update({'class': 'oh-input w-100'})
-            elif isinstance(widget, (forms.CheckboxInput,forms.CheckboxSelectMultiple,)):
-                field.widget.attrs.update({'class': 'oh-switch__checkbox'})
-            elif isinstance(widget,(forms.ModelChoiceField)):
-                field.widget.attrs.update({'class': 'oh-select oh-select-2 select2-hidden-accessible',})
+            if isinstance(
+                widget, (forms.NumberInput, forms.EmailInput, forms.TextInput)
+            ):
+                field.widget.attrs.update({"class": "oh-input w-100"})
+            elif isinstance(widget, (forms.Select,)):
+                field.widget.attrs.update(
+                    {
+                        "class": "oh-select oh-select-2 select2-hidden-accessible",
+                        "id": uuid.uuid4(),
+                    }
+                )
+            elif isinstance(widget, (forms.Textarea)):
+                field.widget.attrs.update({"class": "oh-input w-100"})
+            elif isinstance(
+                widget,
+                (
+                    forms.CheckboxInput,
+                    forms.CheckboxSelectMultiple,
+                ),
+            ):
+                field.widget.attrs.update({"class": "oh-switch__checkbox"})
+            elif isinstance(widget, (forms.ModelChoiceField)):
+                field.widget.attrs.update(
+                    {
+                        "class": "oh-select oh-select-2 select2-hidden-accessible",
+                    }
+                )
+
+
+class HorillaPaginator(Paginator):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.start_count = 0
+        self.end_count = 0
+
+    def get_page(self, number):
+        self.page = super().get_page(number)
+        self.page.start_count = (
+            1
+            if number == 1 or number is None
+            else max((int(number) - 1) * self.per_page + 1, 1)
+        )
+        self.page.end_count = (
+            min(int(number) * self.per_page, self.count)
+            if number and int(number) > 1
+            else self.per_page
+        )
+        return self.page
