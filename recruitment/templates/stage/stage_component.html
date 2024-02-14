@@ -18,178 +18,177 @@
       span = $(this).parent().find(".count-span").toggle();
     });
   });
+
 </script>
-{% comment %} <div class="oh-wrapper"> {% endcomment %}
+
   {% include 'filter_tags.html' %}
   <div class="row">
     <div class="col-12 col-sm-12 col-md-12 col-lg-12">
       <div class="oh-card p-4">
         <div class="oh-card__body">
-          <div class="oh-sticky-table oh-sticky-table--no-highlight">
-            <div class="oh-sticky-table__table">
-              <div class="oh-sticky-table__thead">
-                <div class="oh-sticky-table__tr">
-                  <div
-                    class="oh-sticky-table__th {% if request.sort_option.order == '-stage' %}arrow-up {% elif request.sort_option.order == 'stage' %}arrow-down {% else %} arrow-up-down {% endif %}"
-                    hx-get="{% url 'stage-search' %}?{{pd}}&orderby=stage"
-                    hx-target="#stage-container"
-                  >
-                    {% trans "Title" %}
-                  </div>
-                  <div
-                    class="oh-sticky-table__th {% if request.sort_option.order == '-stage_managers' %}arrow-up {% elif request.sort_option.order == 'stage_managers' %}arrow-down {% else %} arrow-up-down {% endif %}"
-                    hx-get="{% url 'stage-search' %}?{{pd}}&orderby=stage_managers"
-                    hx-target="#stage-container"
-                  >
-                    {% trans "Managers" %}
-                  </div>
-                  <div
-                    class="oh-sticky-table__th {% if request.sort_option.order == '-stage_type' %}arrow-up {% elif request.sort_option.order == 'stage_type' %}arrow-down {% else %} arrow-up-down {% endif %}"
-                    hx-get="{% url 'stage-search' %}?{{pd}}&orderby=stage_type"
-                    hx-target="#stage-container"
-                  >
-                    {% trans "Type" %}
-                  </div>
-                  <div
-                    class="oh-sticky-table__th {% if request.sort_option.order == '-recruitment_id__start_date' %}arrow-up {% elif request.sort_option.order == 'recruitment_id__start_date' %}arrow-down {% else %} arrow-up-down {% endif %}"
-                    hx-get="{% url 'stage-search' %}?{{pd}}&orderby=recruitment_id__start_date"
-                    hx-target="#stage-container"
-                  >
-                    {% trans "Recruitment" %}
-                  </div>
-                  <div class="oh-sticky-table__th">{% trans "Actions" %}</div>
-                </div>
-              </div>
-              <div class="oh-sticky-table__tbody">
-                {% for stage in data %}
-                <div
-                  class="oh-sticky-table__tr oh-permission-table__tr oh-permission-table--collapsed"
-                 >
-                  <div
-                    class="oh-sticky-table__sd oh-permission-table--toggle"
-                    data-toggle-count
-                   >
-                    <div class="d-flex align-items-center">
-                      <button class="oh-permission-table__collapse me-2">
-                        <span title="{% trans "Reveal" %}">
-                          <ion-icon class="oh-permission-table__collapse-down" name="chevron-down-outline" ></ion-icon>
-                        </span>
-                        <span title="{% trans "Collapse" %}">
-                          <ion-icon class="oh-permission-table__collapse-up" name="chevron-up-outline"></ion-icon>
-                        </span>
-                      </button>
-                      <span class="oh-permission-table__user">{{stage}}</span>
+          <!-- start of column toggle button-->
+          <div class="oh-table_sticky--wrapper">
+            <div class="oh-sticky-dropdown--header">
+                <div class="oh-dropdown" x-data="{open: false}">
+                    <button class="oh-sticky-dropdown_btn " @click="open = !open"><ion-icon name="ellipsis-vertical-sharp"
+                        role="img" class="md hydrated" aria-label="ellipsis vertical sharp"></ion-icon></button>
+                    <div class="oh-dropdown__menu oh-sticky-table_dropdown" x-show="open" @click.outside="open = false">
+                        <ul class="oh-dropdown__items" id="StageCells">
+                        </ul>
                     </div>
-                  </div>
-                  <div class="oh-sticky-table__td">
-                    {% for manager in stage.stage_managers.all %}
-                    <span
-                      class="oh-user-panel oh-collapse-panel"
-                      data-type="user"
-                     >
-                      <div class="oh-profile oh-profile--md">
-                        <div class="oh-profile__avatar mr-1">
-                          <img
-                            src="https://ui-avatars.com/api/?name={{manager.get_full_name}}&background=random"
-                            class="oh-profile__image"
-                            alt="Baby C."
-                          />
-                        </div>
-                        <span class="oh-profile__name oh-text--dark" title="{{manager}}">
-                          {{manager.employee_first_name|truncatechars:6}}.
-                        </span>
-                      </div>
-                      <button hx-post="{% url 'rec-remove-stage-manager' manager.id stage.id %}?{{pd}}&page={{data.number}}"
-                              hx-target='#stage-container' class="oh-user-panel__remove"
-                              title="{% trans "Remove" %}">
-                        <ion-icon name="close-outline"></ion-icon>
-                      </button>
-                    </span>
-                    {% endfor %}
-                    <span class="count-span">
-                      {{stage.stage_managers.all|length}} {% trans "Managers"%}
-                    </span>
-                  </div>
-                  <div class="oh-sticky-table__td">
-                    {{stage.get_stage_type_display}}
-                  </div>
-                  <div class="oh-sticky-table__td">
-                    {{stage.recruitment_id}}
-                  </div>
-                  <div class="oh-sticky-table__td">
-                    <div class="oh-btn-group">
-                      {% if perms.recruitment.change_stage %}
-                        <a
-                          hx-get="{% url 'rec-stage-update' stage.id %}"
-                          hx-target="#stageUpdate"
-                          data-toggle="oh-modal-toggle"
-                          data-target="#updateStageModal"
-                          class="oh-btn oh-btn--light-bkg w-50"
-                          title="{% trans 'Edit' %}"
-                         >
-                          <ion-icon name="create-outline"></ion-icon>
-                        </a>
-                      {% endif %} 
-                      {% if perms.recruitment.change_stage %}
-                        <a
-                          hx-get="{% url 'rec-stage-duplicate' stage.id %}"
-                          hx-target="#addStageModalBody"
-                          data-toggle="oh-modal-toggle"
-                          data-target="#addStageModal"
-                          class="oh-btn oh-btn--light-bkg w-50"
-                          title="{% trans 'Duplicate' %}"
-                         >
-                          <ion-icon name="copy-outline"></ion-icon>
-                        </a>
-                      {% endif %} 
-                      {% if perms.recruitment.delete_stage %} 
-                      <form action="{% url 'rec-stage-delete' stage.id %}"
-                        onsubmit="return confirm('{% trans "Are you sure you want to delete this stage?" %}');" method='post' class="w-50"
-                        >
-                        {% csrf_token %}
-                        <button
-                          type="submit"
-                          class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
-                          title="Remove"
-                        >
-                          <ion-icon name="trash-outline"></ion-icon>
-                        </button>
-                      </form>
-                      {% endif %}
-                    </div>
-                  </div>
                 </div>
-                {% endfor %}
-              </div>
             </div>
           </div>
+          <!-- end of column toggle button-->
+          <div id="stage-table" data-table-name="stage_table">
+            <div class="oh-sticky-table oh-sticky-table--no-highlight">
+              <!-- start of sticky table -->
+              <div class="oh-sticky-table__table">
+                <div class="oh-sticky-table__thead">
+                  <div class="oh-sticky-table__tr">
+                    <div
+                      class="oh-sticky-table__th {% if request.sort_option.order == '-stage' %}arrow-up {% elif request.sort_option.order == 'stage' %}arrow-down {% else %} arrow-up-down {% endif %}"
+                      hx-get="{% url 'stage-search' %}?{{pd}}&orderby=stage"
+                      hx-target="#stage-container"
+                    >
+                      {% trans "Title" %}
+                    </div>
+                    <div
+                      data-cell-index="1" data-cell-title='{% trans "Managers" %}' 
+                      class="oh-sticky-table__th {% if request.sort_option.order == '-stage_managers' %}arrow-up {% elif request.sort_option.order == 'stage_managers' %}arrow-down {% else %} arrow-up-down {% endif %}"
+                      hx-get="{% url 'stage-search' %}?{{pd}}&orderby=stage_managers"
+                      hx-target="#stage-container"
+                    >
+                      {% trans "Managers" %}
+                    </div>
+                    <div
+                      data-cell-index="2" data-cell-title='{% trans "Type" %}' 
+                      class="oh-sticky-table__th {% if request.sort_option.order == '-stage_type' %}arrow-up {% elif request.sort_option.order == 'stage_type' %}arrow-down {% else %} arrow-up-down {% endif %}"
+                      hx-get="{% url 'stage-search' %}?{{pd}}&orderby=stage_type"
+                      hx-target="#stage-container"
+                    >
+                      {% trans "Type" %}
+                    </div>
+                    <div
+                      data-cell-index="3" data-cell-title='{% trans "Recruitment" %}' 
+                      class="oh-sticky-table__th {% if request.sort_option.order == '-recruitment_id__start_date' %}arrow-up {% elif request.sort_option.order == 'recruitment_id__start_date' %}arrow-down {% else %} arrow-up-down {% endif %}"
+                      hx-get="{% url 'stage-search' %}?{{pd}}&orderby=recruitment_id__start_date"
+                      hx-target="#stage-container"
+                    >
+                      {% trans "Recruitment" %}
+                    </div>
+                    <div class="oh-sticky-table__th">{% trans "Actions" %}</div>
+                  </div>
+                </div>
+                <div class="oh-sticky-table__tbody">
+                  {% for stage in data %}
+                  <div
+                    class="oh-sticky-table__tr oh-permission-table__tr oh-permission-table--collapsed"
+                  >
+                    <div
+                      class="oh-sticky-table__sd oh-permission-table--toggle"
+                      data-toggle-count
+                    >
+                      <div class="d-flex align-items-center">
+                        <button class="oh-permission-table__collapse me-2">
+                          <span title="{% trans "Reveal" %}">
+                            <ion-icon class="oh-permission-table__collapse-down" name="chevron-down-outline" ></ion-icon>
+                          </span>
+                          <span title="{% trans "Collapse" %}">
+                            <ion-icon class="oh-permission-table__collapse-up" name="chevron-up-outline"></ion-icon>
+                          </span>
+                        </button>
+                        <span class="oh-permission-table__user">{{stage}}</span>
+                      </div>
+                    </div>
+                    <div  data-cell-index="1" class="oh-sticky-table__td">
+                      {% for manager in stage.stage_managers.all %}
+                      <span
+                        class="oh-user-panel oh-collapse-panel"
+                        data-type="user"
+                      >
+                        <div class="oh-profile oh-profile--md">
+                          <div class="oh-profile__avatar mr-1">
+                            <img
+                              src="https://ui-avatars.com/api/?name={{manager.get_full_name}}&background=random"
+                              class="oh-profile__image"
+                              alt="Baby C."
+                            />
+                          </div>
+                          <span class="oh-profile__name oh-text--dark" title="{{manager}}">
+                            {{manager.employee_first_name|truncatechars:6}}.
+                          </span>
+                        </div>
+                        <button hx-post="{% url 'rec-remove-stage-manager' manager.id stage.id %}?{{pd}}&page={{data.number}}"
+                                hx-target='#stage-container' class="oh-user-panel__remove"
+                                title="{% trans "Remove" %}">
+                          <ion-icon name="close-outline"></ion-icon>
+                        </button>
+                      </span>
+                      {% endfor %}
+                      <span class="count-span">
+                        {{stage.stage_managers.all|length}} {% trans "Managers"%}
+                      </span>
+                    </div>
+                    <div data-cell-index="2" class="oh-sticky-table__td">
+                      {{stage.get_stage_type_display}}
+                    </div>
+                    <div data-cell-index="3" class="oh-sticky-table__td">
+                      {{stage.recruitment_id}}
+                    </div>
+                    <div class="oh-sticky-table__td">
+                      <div class="oh-btn-group">
+                        {% if perms.recruitment.change_stage %}
+                          <a
+                            hx-get="{% url 'rec-stage-update' stage.id %}"
+                            hx-target="#stageUpdate"
+                            data-toggle="oh-modal-toggle"
+                            data-target="#updateStageModal"
+                            class="oh-btn oh-btn--light-bkg w-50"
+                            title="{% trans 'Edit' %}"
+                          >
+                            <ion-icon name="create-outline"></ion-icon>
+                          </a>
+                        {% endif %} 
+                        {% if perms.recruitment.change_stage %}
+                          <a
+                            hx-get="{% url 'rec-stage-duplicate' stage.id %}"
+                            hx-target="#addStageModalBody"
+                            data-toggle="oh-modal-toggle"
+                            data-target="#addStageModal"
+                            class="oh-btn oh-btn--light-bkg w-50"
+                            title="{% trans 'Duplicate' %}"
+                          >
+                            <ion-icon name="copy-outline"></ion-icon>
+                          </a>
+                        {% endif %} 
+                        {% if perms.recruitment.delete_stage %} 
+                        <form action="{% url 'rec-stage-delete' stage.id %}"
+                          onsubmit="return confirm('{% trans "Are you sure you want to delete this stage?" %}');" method='post' class="w-50"
+                          >
+                          {% csrf_token %}
+                          <button
+                            type="submit"
+                            class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+                            title="Remove"
+                          >
+                            <ion-icon name="trash-outline"></ion-icon>
+                          </button>
+                        </form>
+                        {% endif %}
+                      </div>
+                    </div>
+                  </div>
+                  {% endfor %}
+                </div>
+              </div>
+              <!-- end of sticky table -->
+            </div>
         </div>
       </div>
     </div>
   </div>
-
-  <div 
-      class="oh-modal"
-      id="updateStageModal"
-      role="dialog"
-      aria-labelledby="updateStageModal"
-      aria-hidden="true"
-    >
-    <div class="oh-modal__dialog">
-      <div class="oh-modal__dialog-header">
-        <h5 class="oh-modal__dialog-title" id="updateStageModalLabel"
-          >{% trans "Edit Stage" %}</span
-        >
-        <button class="oh-modal__close" aria-label="Close" title="Close" >
-          <ion-icon name="close-outline"></ion-icon>
-        </button>
-      </div>
-      <div class="oh-modal__dialog-body" id='stageUpdate'>
-        
-      </div>
-    </div>
-  </div>
- 
+  <!-- start of pagination -->
   <div class="oh-pagination">
     <span
       class="oh-pagination__page"
@@ -255,5 +254,36 @@
       </ul>
     </nav>
   </div>
-{% comment %} </div> {% endcomment %}
+  <!-- end of pagination -->
+
+  <div 
+      class="oh-modal"
+      id="updateStageModal"
+      role="dialog"
+      aria-labelledby="updateStageModal"
+      aria-hidden="true"
+    >
+    <div class="oh-modal__dialog">
+      <div class="oh-modal__dialog-header">
+        <h5 class="oh-modal__dialog-title" id="updateStageModalLabel"
+          >{% trans "Edit Stage" %}</span
+        >
+        <button class="oh-modal__close" aria-label="Close" title="Close" >
+          <ion-icon name="close-outline"></ion-icon>
+        </button>
+      </div>
+      <div class="oh-modal__dialog-body" id='stageUpdate'>
+        
+      </div>
+    </div>
+  </div>
  
+<script>
+    // toggle colums //
+    toggleColumns("stage-table","StageCells")
+    localStorageStageCells = localStorage.getItem("stage_table")
+    if (!localStorageStageCells) {
+        $("#StageCells").find("[type=checkbox]").prop("checked",true)
+    }
+    $("[type=checkbox]").change()
+</script>
