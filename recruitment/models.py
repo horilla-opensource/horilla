@@ -103,6 +103,7 @@ class Recruitment(models.Model):
         db_constraint=False,
         related_name="recruitment",
         verbose_name=_("Job Position"),
+        editable=False,
     )
     vacancy = models.IntegerField(default=0, null=True)
     recruitment_managers = models.ManyToManyField(Employee)
@@ -160,8 +161,8 @@ class Recruitment(models.Model):
             raise ValidationError(
                 {"end_date": _("End date cannot be less than start date.")}
             )
-        if not self.is_event_based and self.job_position_id is None:
-            raise ValidationError({"job_position_id": _("This field is required")})
+        # if not self.is_event_based and self.job_position_id is None:
+        #     raise ValidationError({"job_position_id": _("This field is required")})
         return super().clean()
 
     def save(self, *args, **kwargs):
@@ -301,7 +302,7 @@ class Candidate(models.Model):
         related_name="candidate_referral",
         verbose_name=_("Referral"),
     )
-    address = models.TextField(null=True, blank=True, verbose_name=_("Address"))
+    address = models.TextField(null=True, blank=True, verbose_name=_("Address"),max_length=255)
     country = models.CharField(
         max_length=30, null=True, blank=True, verbose_name=_("Country")
     )
@@ -473,7 +474,7 @@ class RejectReason(models.Model):
     title = models.CharField(
         max_length=20,
     )
-    description = models.TextField(null=True, blank=True)
+    description = models.TextField(null=True, blank=True,max_length=255)
     company_id = models.ForeignKey(
         Company, on_delete=models.CASCADE, null=True, blank=True
     )
@@ -497,7 +498,7 @@ class RejectedCandidate(models.Model):
     reject_reason_id = models.ManyToManyField(
         RejectReason, verbose_name="Reject reason", blank=True
     )
-    description = models.TextField()
+    description = models.TextField(max_length=255)
     objects = HorillaCompanyManager(related_company_field="candidate_id__company_id")
     history = HorillaAuditLog(
         related_name="history_set",
@@ -524,7 +525,7 @@ class StageNote(models.Model):
 
     candidate_id = models.ForeignKey(Candidate, on_delete=models.CASCADE)
     title = models.CharField(max_length=50, null=True, verbose_name=_("Title"))
-    description = models.TextField(verbose_name=_("Description"))
+    description = models.TextField(verbose_name=_("Description"),max_length=255)
     stage_id = models.ForeignKey(Stage, on_delete=models.CASCADE)
     updated_by = models.ForeignKey(Employee, on_delete=models.CASCADE)
     stage_files = models.ManyToManyField(StageFiles, blank=True)
@@ -554,7 +555,7 @@ class RecruitmentSurvey(models.Model):
         ("file", _("File Upload")),
         ("rating", _("Rating")),
     ]
-    question = models.TextField(null=False)
+    question = models.TextField(null=False,max_length=255)
     recruitment_ids = models.ManyToManyField(
         Recruitment,
         verbose_name=_("Recruitment"),
@@ -569,7 +570,7 @@ class RecruitmentSurvey(models.Model):
         choices=question_types,
     )
     options = models.TextField(
-        null=True, default="", help_text=_("Separate choices by ',  '")
+        null=True, default="", help_text=_("Separate choices by ',  '"),max_length=255
     )
     is_mandatory = models.BooleanField(default=False)
     objects = HorillaCompanyManager(related_company_field="recruitment_ids__company_id")
@@ -637,7 +638,7 @@ class SkillZone(models.Model):
     """
 
     title = models.CharField(max_length=50, verbose_name="Skill Zone")
-    description = models.TextField(verbose_name=_("Description"))
+    description = models.TextField(verbose_name=_("Description"),max_length=255)
     created_on = models.DateField(default=django.utils.timezone.now)
     is_active = models.BooleanField(default=True, verbose_name=_("Is Active"))
     objects = HorillaCompanyManager(related_company_field="recruitment_id__company_id")
