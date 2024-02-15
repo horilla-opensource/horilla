@@ -1,8 +1,21 @@
 {% load attendancefilters %} {% load basefilters %} {% load static %}
 {% load i18n %} {% include 'filter_tags.html' %} 
+
+<script>
+	function highlightRow(checkbox) {
+		checkbox.closest(".oh-sticky-table__tr").removeClass("highlight-selected");
+		if (checkbox.is(":checked")) {
+		  checkbox.closest(".oh-sticky-table__tr").addClass("highlight-selected");
+		}
+	}
+	$(document).ready(function(){
+		$(".oh-accordion-meta__header").first().click()
+
+	})
+
+</script>
 <div class="oh-card">
-    {% dynamic_regroup available_leaves by field as assigned_grouper %}
-    {% for assigned_leaves in assigned_grouper %}
+    {% for assigned_leaves in available_leaves %}
     <div class="oh-accordion-meta">
         <div class="oh-accordion-meta__item">
             <div class="oh-accordion-meta__header" onclick='$(this).toggleClass("oh-accordion-meta__header--show");'>
@@ -24,7 +37,12 @@
                             <div class="oh-sticky-table__thead">
                                 <div class="oh-sticky-table__tr">
                                     <div class="oh-sticky-table__th" style="width: 10px">
-                                        <input type="checkbox" title="{% trans 'Select All' %}" class="oh-input oh-input__checkbox mr-2 all-assigned-leaves" />
+                                        <input type="checkbox" title="{% trans 'Select All' %}" onchange="if ($(this).is(':checked')) {
+                                            $(this).closest('.oh-sticky-table').find('.assigned-leaves-checkbox').prop('checked',true).change()                                            
+                                        }else{
+                                            $(this).closest('.oh-sticky-table').find('.assigned-leaves-checkbox').prop('checked',false).change()                                            
+
+                                        }" class="oh-input oh-input__checkbox mr-2 all-assigned-leaves" />
                                     </div>
                                     <div class="oh-sticky-table__th">{% trans "Employee" %}</div>
                                     <div class="oh-sticky-table__th">{% trans "Leave Type" %}</div>
@@ -41,7 +59,7 @@
                                 {% for available_leave in assigned_leaves.list %}
                                 <div class="oh-sticky-table__tr" draggable="true">
                                     <div class="oh-sticky-table__sd">
-                                        <input type="checkbox" id="{{available_leave.id}}" class="oh-input assigned-leaves-checkbox oh-input__checkbox mt-2 mr-2 all-assigned-leaves-row" />
+                                        <input type="checkbox" id="{{available_leave.id}}" onchange="highlightRow($(this))" class="oh-input assigned-leaves-checkbox oh-input__checkbox mt-2 mr-2 all-assigned-leaves-row" />
                                     </div>
                                     <div class="oh-sticky-table__td">
                                         
@@ -81,6 +99,67 @@
                         </div>
                     </div>
                 </div>
+                {% if  assigned_leaves.list.paginator.num_pages %}
+                <div class="oh-pagination">
+                    <span class="oh-pagination__page">
+                      {% trans "Page" %} {{ assigned_leaves.list.number }} {% trans "of" %} {{ assigned_leaves.list.paginator.num_pages }}.
+                    </span>
+                    <nav class="oh-pagination__nav">
+                      <div class="oh-pagination__input-container me-3">
+                      <span class="oh-pagination__label me-1">{% trans "Page" %}</span>
+                      <input
+                        type="number"
+                        name="{{assigned_leaves.dynamic_name}}"
+                        class="oh-pagination__input"
+                        value="{{assigned_leaves.list.number}}"
+                        hx-get="{% url 'assign-filter' %}?{{pd}}"
+                        hx-target="#ot-table"
+                        min="1"
+                      />
+                      <span class="oh-pagination__label"
+                        >{% trans "of" %} {{assigned_leaves.list.paginator.num_pages}}</span
+                      >
+                      </div>
+                      <ul class="oh-pagination__items">
+                      {% if assigned_leaves.list.has_previous %}
+                      <li class="oh-pagination__item oh-pagination__item--wide">
+                        <a
+                        hx-target="#ot-table"
+                        hx-get="{% url 'assign-filter' %}?{{pd}}&{{assigned_leaves.dynamic_name}}=1"
+                        class="oh-pagination__link"
+                        >{% trans "First" %}</a
+                        >
+                      </li>
+                      <li class="oh-pagination__item oh-pagination__item--wide">
+                        <a
+                        hx-target="#ot-table"
+                        hx-get="{% url 'assign-filter' %}?{{pd}}&{{assigned_leaves.dynamic_name}}={{ assigned_leaves.list.previous_page_number }}"
+                        class="oh-pagination__link"
+                        >{% trans "Previous" %}</a
+                        >
+                      </li>
+                      {% endif %} {% if assigned_leaves.list.has_next %}
+                      <li class="oh-pagination__item oh-pagination__item--wide">
+                        <a
+                        hx-target="#ot-table"
+                        hx-get="{% url 'assign-filter' %}?{{pd}}&{{assigned_leaves.dynamic_name}}={{ assigned_leaves.list.next_page_number }}"
+                        class="oh-pagination__link"
+                        >{% trans "Next" %}</a
+                        >
+                      </li>
+                      <li class="oh-pagination__item oh-pagination__item--wide">
+                        <a
+                        hx-target="#ot-table"
+                        hx-get="{% url 'assign-filter' %}?{{pd}}&{{assigned_leaves.dynamic_name}}={{ assigned_leaves.list.paginator.num_pages }}"
+                        class="oh-pagination__link"
+                        >{% trans "Last" %}</a
+                        >
+                      </li>
+                      {% endif %}
+                      </ul>
+                    </nav>
+                </div>
+                {% endif %}
             </div>
         </div>
     </div>

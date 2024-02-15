@@ -186,7 +186,7 @@
 								class="select2-selection select2-selection--single"
 							  >
 								{% for field in gp_fields %}
-								<option value="{{ field.0 }}">{% trans field.1 %}</option>
+								<option value="{{ field.0 }}" {% if field.0 == "leave_type_id" %}selected{% endif %}>{% trans field.1 %}</option>
 								{% endfor %}
 							  </select>
 							</div>
@@ -306,7 +306,12 @@
 
 <div class="oh-wrapper" id="assignedLeaves">
 	{% if available_leaves %} 
-	{% include 'leave/leave_assign/assigned_leave.html'%} {% else %}
+	{% if not request.GET.field %}
+	{% include 'leave/leave_assign/assigned_leave.html'%} 
+	{% else %}
+	{% include "leave/leave_assign/group_by.html" %}
+	{% endif %}
+	{% else %} 
 	<div
 		style="
 			height: 70vh;

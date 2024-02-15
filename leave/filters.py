@@ -491,6 +491,11 @@ class LeaveAssignReGroup:
         ("carryforward_days", "Carry Forward Days"),
         ("total_leave_days", "Total Leave Days Days"),
         ("assigned_date", "Assigned Date"),
+        ("employee_id__employee_work_info__reporting_manager_id", "Reporting Manager"),
+        ("employee_id__employee_work_info__department_id", "Department"),
+        ("employee_id__employee_work_info__job_position_id", "Job Position"),
+        ("employee_id__employee_work_info__employee_type_id", "Employment Type"),
+        ("employee_id__employee_work_info__company_id", "Company"),
     ]
 
 
