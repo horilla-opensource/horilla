@@ -372,6 +372,16 @@
   padding-left: 5px;
   color: red;
 }
+.oh-badge--small {
+   margin-top: 0px !important; 
+  width: 20px !important;
+  height: 20px !important;
+  display: flex !important;
+  font-size: 0.7rem !important;
+  align-items: center !important;
+  /* line-height: 0; */ 
+  justify-content: center !important;
+}
   </style>
 </head>
 
@@ -455,7 +465,7 @@
         {% include "notification/all_notifications.html" %}
       </div>
     </div>
-      <nav class="oh-navbar">
+      <nav class="oh-navbar" style="width: -webkit-fill-available;;">
         <div class="oh-wrapper oh-navbar__wrapper">
           {% comment %} <div class="oh-navbar__toggle-container">
             <a href="#" class="oh-navbar__toggle-link oh-link__unstyled" @click="sidebarOpen = !sidebarOpen">
