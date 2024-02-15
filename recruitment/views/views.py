@@ -199,7 +199,6 @@ def recruitment_view(request):
 
     filter_dict = parse_qs(request.GET.urlencode())
     if not request.GET.get("is_active"):
-        print("]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]")
         filter_obj.form.initial["is_active"] = True
         filter_dict["is_active"] = ["true"]
         for key, val in filter_dict.copy().items():
@@ -1016,8 +1015,11 @@ def candidate(request):
             if request.GET.get("onboarding") == "True":
                 candidate_obj.hired = True
                 path = "/onboarding/candidates-view"
-            candidate_obj.save()
-            messages.success(request, _("Candidate added."))
+            if form.data.get("job_position_id"):
+                candidate_obj.save()
+                messages.success(request, _("Candidate added."))
+            else:
+                messages.error(request,"Job position field is required")
             return redirect(path)
 
     return render(

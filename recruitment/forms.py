@@ -371,9 +371,10 @@ class CandidateCreationForm(ModelForm):
                 candidate.start_onboard = True
         candidate.recruitment_id = recruitment
         candidate.stage_id = stage
-        job_id = self.data["job_position_id"]
-        job_position = JobPosition.objects.get(id=job_id)
-        self.instance.job_position_id = job_position
+        job_id = self.data.get("job_position_id")
+        if job_id:
+            job_position = JobPosition.objects.get(id=job_id)
+            self.instance.job_position_id = job_position
         return super().save(commit)
 
     def clean(self):
@@ -381,7 +382,7 @@ class CandidateCreationForm(ModelForm):
             self.errors.pop("job_position_id", None)
             if (
                 self.instance.job_position_id is None
-                or self.data["job_position_id"] == ""
+                or self.data.get("job_position_id") == ""
             ):
                 raise forms.ValidationError(
                     {"job_position_id": "This field is required"}
