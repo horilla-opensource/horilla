@@ -18,6 +18,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from horilla_audit.models import HorillaAuditLog, HorillaAuditInfo
 from horilla_audit.methods import get_diff
+from horilla.decorators import logger
 from employee.models import Employee
 from base.models import EmailLog, JobPosition, Company
 from django.core.files.storage import default_storage
@@ -524,7 +525,6 @@ class StageNote(models.Model):
     """
 
     candidate_id = models.ForeignKey(Candidate, on_delete=models.CASCADE)
-    title = models.CharField(max_length=50, null=True, verbose_name=_("Title"))
     description = models.TextField(verbose_name=_("Description"),max_length=255)
     stage_id = models.ForeignKey(Stage, on_delete=models.CASCADE)
     updated_by = models.ForeignKey(Employee, on_delete=models.CASCADE)
@@ -536,6 +536,33 @@ class StageNote(models.Model):
 
     def __str__(self) -> str:
         return f"{self.description}"
+
+
+class SurveyTemplate(models.Model):
+    """
+    SurveyTemplate Model
+    """
+
+    title = models.CharField(max_length=30,unique=True)
+    description = models.TextField(null=True, blank=True)
+    is_general_template = models.BooleanField(default=False, editable=False)
+    company_id = models.ForeignKey(
+        Company, on_delete=models.CASCADE, null=True, blank=True
+    )
+
+    def __str__(self) -> str:
+        return self.title
+
+
+try:
+    first = SurveyTemplate.objects.first()
+    if not first:
+        first = SurveyTemplate.objects.create(
+            title="General Questions", is_general_template=True
+        )
+except Exception as e:
+    logger.error(e)
+    logger.error("Restart the server after the migrations")
 
 
 class RecruitmentSurvey(models.Model):
@@ -556,13 +583,16 @@ class RecruitmentSurvey(models.Model):
         ("rating", _("Rating")),
     ]
     question = models.TextField(null=False,max_length=255)
+    template_id = models.ManyToManyField(
+        SurveyTemplate, verbose_name="Template", blank=True
+    )
+    question = models.TextField(null=False)
     recruitment_ids = models.ManyToManyField(
         Recruitment,
         verbose_name=_("Recruitment"),
     )
     job_position_ids = models.ManyToManyField(
-        JobPosition,
-        verbose_name=_("Job Positions"),
+        JobPosition, verbose_name=_("Job Positions"), editable=False
     )
     sequence = models.IntegerField(null=True, default=0)
     type = models.CharField(
@@ -583,6 +613,30 @@ class RecruitmentSurvey(models.Model):
         Used to split the choices
         """
         return self.options.split(", ")
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        if self.template_id is None:
+            general_template = SurveyTemplate.objects.filter(
+                is_general_template=True
+            ).first()
+            if general_template:
+                self.template_id.add(general_template)
+                super().save(*args, **kwargs)
+                
+    class Meta:
+        ordering = ["sequence",]
+
+
+class QuestionOrdering(models.Model):
+    """
+    SurveryTemplate model
+    """
+
+    question_id = models.ForeignKey(RecruitmentSurvey, on_delete=models.CASCADE)
+    recruitment_id = models.ForeignKey(Recruitment, on_delete=models.CASCADE)
+    sequence = models.IntegerField(default=0)
+    objects = HorillaCompanyManager(related_company_field="recruitment_ids__company_id")
 
 
 class RecruitmentSurveyAnswer(models.Model):

@@ -1,156 +1,174 @@
-{% load i18n %} {% load static %} {% if messages %}
+{% load i18n static %}
+<style>
+    #enlargeImageContainer {
+        position: absolute;
+        left: -300px;
+        top: 100px;
+        height: 200px;
+        width: 400px;
+    }
+</style>
 
-<div class="oh-wrapper">
-    {% for message in messages %}
+{% if messages %}
     <div class="oh-alert-container">
-        <div class="oh-alert oh-alert--animated {{message.tags}}">
-            {{ message }}
-        </div>
+      {% for message in messages %}
+      <div class="oh-alert oh-alert--animated {{message.tags}}">{{ message }}</div>
+      {% endfor %}
     </div>
-    {% endfor %}
-</div>
+<script>
+    setTimeout(() => {
+        $(".oh-modal__close").click();
+    }, 1000);
+</script>
 {% endif %}
-<span
-    class="oh-activity-sidebar__header float-left"
-    style="display: flex; justify-content: space-between"
->
-    <span id="closenote" style="cursor: pointer" title="{% trans 'Close' %}">
-        <ion-icon
-            name="chevron-back-outline"
-            class="oh-activity-sidebar__header-icon me-2 oh-activity-sidebar__close"
-            data-target="#activitySidebar"
-            style="font-size: 24px"
-        ></ion-icon>
-    </span>
-    <span id="addnote" style="cursor: pointer">
-        <button
-            type="button"
-            hx-get='{% url "create-note" cand.id %}'
-            hx-target="#remark-content"
-			title="{% trans "Add Note" %}"
-            hx-swap="innerHTML"
-            data-toggle="oh-modal-toggle"
-            data-target="#addNoteModal"
-            style="
-                width: 30px;
-                height: 30.68px;
-                padding: 0;
-                color: hsl(0deg 0% 0%);
-                border: 1px solid hsl(0deg 0% 100%);
-                background-color: transparent;
-                font-weight: bold;
-                font-size: 24px;
-            "
-        >
-            <ion-icon
-                class=""
-                name="add-outline"
-                style="font-size: 24px"
-            ></ion-icon>
-        </button>
-    </span>
-</span>
 
-<span class="oh-activity-sidebar__title">{{cand}}'s {% trans "Notes" %} </span>
-<div class="oh-activity-sidebar__body">
-	<div id="enlargeImageContainer"></div>
-    {% if notes %}
-    <ol class="oh-activity-sidebar__qa-list" role="list">
-        {% for note in notes %}
-        <li class="oh-activity-sidebar__qa-item">
-            <div class="d-flex justify-content-between">
-                <span
-                    class="oh-activity-sidebar__q"
-                    data-toggle="oh-modal-toggle"
-                    data-target="#updateNoteModal"
-                    hx-get="{% url 'note-update' note.id %}"
-                    hx-target="#modalContent"
-                    >{{forloop.counter}}. {{note.title}}</span
-                >
+	<div class="oh-activity-sidebar__header mt-5">
+		<a
+		style="cursor: pointer;"
+		onclick="$('.oh-activity-sidebar--show').removeClass('oh-activity-sidebar--show');">
+		<ion-icon
+		name="chevron-forward-outline"
+		class="oh-activity-sidebar__header-icon me-2 oh-activity-sidebar__close"
+		data-target="#activitySidebar"
+		></ion-icon>
+		</a>
+		<span class="oh-activity-sidebar__title">{{cand}}'s {% trans "Notes" %}</span>
+	</div>
 
-                <span
-                    title="{% trans 'Delete' %}"
-                    hx-get="{% url 'note-delete' note.id %}"
-                    data-target="#activitySidebar"
-                    hx-swap="innerHTML"
-                    hx-target="#activitySidebar"
-                >
-                    <ion-icon
-                        name="close-outline"
-                        style="font-size: 24px"
-                    ></ion-icon
-                ></span>
-            </div>
-            <span
-                data-toggle="oh-modal-toggle"
-                data-target="#updateNoteModal"
-                hx-get="{% url 'note-update' note.id %}"
-                hx-target="#modalContent"
-                >{{note.description}}</span
-            >
-            <span class="oh-activity-sidebar__a">
-                {% trans "by" %}
-                <img
-                    src="https://ui-avatars.com/api/?name={{note.updated_by.get_full_name}}&amp;background=random"
-                    style="width: 1.5em; border-radius: 100%"
-                    alt="User"
-                />
-                {{note.updated_by}} @{{note.stage_id}}
-            </span>
-            <div class="d-flex mt-2 mb-2">
-                {% if note.stage_files.all %}
-                {% for doc in note.stage_files.all %}
-                    <a
-                        href="{{doc.files.url}}"
-                        rel="noopener noreferrer"
-                        target="_blank"
-                        ><span
-                            class="oh-file-icon oh-file-icon--pdf"
-                            onmouseover="enlargeImage('{{doc.files.url}}')"
-                            style="width:40px;height:40px"
-                        ><img src="{% static 'images/ui/minus-icon.png' %}" style="display:block;width:50%;height:50%" hx-get='{% url "delete-stage-note-file" doc.id %}' hx-target="#activitySidebar" onclick="event.stopPropagation();event.preventDefault()" /></span
-                    ></a>
-                {% endfor %}
-                {% endif %}
-                <form hx-post="{% url 'add-more-files' note.id %}" hx-target="#activitySidebar" class="add-files-form" method="post" hx-encoding="multipart/form-data">
-                    {% csrf_token %}
-                    <label for="addFile_{{note.id}}" title="Add Files">
-                        <ion-icon
-                            name="add-outline"
-                            style="font-size: 24px"
-                        ></ion-icon
-                        >
-                    </label>
-                    <input type="file" name="files" class="d-none" multiple='true' id="addFile_{{note.id}}" onchange="submitForm(this)" />
-                    <input type="submit" class='d-none add_more_submit' value="save" >
-                </form>
-            </div>
-        </li>
-        {% endfor %}
-    </ol>
-    {% else %}
-    <div class="oh-404">
-        <img
-            style="width: 150px; height: 150px"
-            src="{% static 'images/ui/no_notes.png' %}"
-            class="oh-404__image"
-            alt="Page not found. 404."
-        />
-        <h5 class="oh-404__subtitle">
-            {% trans "No notes have been added for this candidate" %}
-        </h5>
-    </div>
-    {% endif %}
+	<form method="post"
+		hx-target="#activitySidebar" 
+		hx-post="{% url 'create-note' cand.id %}" id="commentForm">
+		{% csrf_token %}
+
+		<div>
+			<input type="text" name="description" id="commentInput" class="oh-input w-100" placeholder="Add notes">
+			<button type="submit" id="commentButton" class="oh-btn oh-btn--secondary mt-2 mr-0 oh-btn--w-100-resp" style="display: none;">
+				{% trans "Add" %}
+			</button>
+		</div>
+
+		<div class="oh-inner-sidebar-content__footer"></div>
+	</form>
+
+{% if notes %}
+	<ol class="oh-activity-sidebar__qa-list" role="list">
+		{% for note in notes %}
+			<li class="oh-activity-sidebar__qa-item">
+				<span class="oh-activity-sidebar__q">{{ note.description }}
+						<span class="float-end" title="Delete" hx-get="{% url 'note-delete' note.id %}" data-target="#activitySidebar" hx-swap="innerHTML" hx-target="#activitySidebar">
+							<ion-icon name="close-outline" style="font-size: 24px" role="img" class="md hydrated" aria-label="close outline"></ion-icon></span>
+				</span>
+
+				<div class="d-flex mt-2 mb-2">
+					{% for file in note.stage_files.all %}
+					<a
+						href="{{ file.files.url }}"
+						rel="noopener noreferrer"
+						target="_blank"
+						><span
+							class="oh-file-icon oh-file-icon--pdf"
+							onmouseover="enlargeImage('{{ file.files.url }}',$(this))"
+							style="width: 40px; height: 40px"
+							><img
+								src="{% static 'images/ui/minus-icon.png' %}"
+								style="display: block; width: 50%; height: 50%"
+								hx-get='{% url "delete-stage-note-file" file.id %}'
+								hx-target="#activitySidebar"
+								onclick="event.stopPropagation();event.preventDefault()" /></span
+					></a>
+					{% endfor %}
+
+					<form
+						hx-post="{% url 'add-more-files' note.id %}"
+						class="add-files-form"
+						hx-encoding="multipart/form-data"
+						data-target="#activitySidebar" hx-swap="innerHTML" hx-target="#activitySidebar"
+
+					>
+						{% csrf_token %}
+						<label for="addFile_{{note.id}}" title="Add Files"
+							><ion-icon
+								name="add-outline"
+								style="font-size: 24px"
+								role="img"
+								class="md hydrated"
+								aria-label="add outline"
+							></ion-icon
+						></label>
+						<input
+							type="file"
+							name="files"
+							class="d-none"
+							multiple="true"
+							id="addFile_{{note.id}}"
+							onchange="submitForm(this)"
+						/>
+						<input
+							type="submit"
+							class="d-none add_more_submit"
+							value="save"
+						/>
+					</form>
+				</div>
+				<span class="oh-activity-sidebar__a">
+					{% trans 'by' %}
+					<img
+						src="{{ note.note_by.get_avatar }}"
+						style="width: 1.5em; border-radius: 100%"
+					/>
+					{{ note.updated_by }} @ {{note.stage_id }}
+					{% trans "stage" %}
+				</span>
+				<div style="width: 50%">
+					<div id="enlargeImageContainer" class="enlargeImageContainer"></div>
+				</div>
+			</li>
+			
+		{% endfor %}
+	</ol>
+{% else %}
+	<div class="oh-timeoff-modal__profile-content">
+		<div class="oh-404">
+			<div class="">
+				<span class="oh-timeoff-title fw-bold" style="display: block"
+					>{% trans "No notes have been added for this candidate" %}</span
+				>
+				<img
+					style="display: block; width: 100px; margin: 20px auto"
+					src="/static/images/ui/no_notes.png"
+					class=""
+				/>
+			</div>
+		</div>
+	</div>
+{% endif %}
+
+<!-- start of comment modal -->
+<div
+	class="oh-modal"
+	id="shiftcommentModal"
+	role="dialog"
+	aria-labelledby="emptagModal"
+	aria-hidden="true"
+ >
+	<div class="oh-modal__dialog" id="shiftRequestCommentForm">
+	</div>
 </div>
+<!-- end of comment modal -->
+
 
 <script>
-    $(document).ready(function () {
-        $("#close").attr(
-            "class",
-            "oh-activity-sidebar__header-icon me-2 oh-activity-sidebar__close md hydrated"
-        );
-    });
-    $("#closenote").click(function (e) {
-        $("#activitySidebar").removeClass("oh-activity-sidebar--show");
+    // Get references to the input field and comment button
+    const commentInput = document.getElementById('commentInput');
+    const commentButton = document.getElementById('commentButton');
+
+    // Add event listener to the input field
+    commentInput.addEventListener('input', function() {
+        // Show the comment button if the input field is not empty, hide it otherwise
+        if (commentInput.value.trim() !== '') {
+            commentButton.style.display = 'inline';
+        } else {
+            commentButton.style.display = 'none';
+        }
     });
 </script>

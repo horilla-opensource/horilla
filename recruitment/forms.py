@@ -47,9 +47,11 @@ from recruitment.models import (
     JobPosition,
     RecruitmentSurvey,
     RecruitmentMailTemplate,
+    SurveyTemplate,
 )
 from recruitment import widgets
 from base.methods import reload_queryset
+from base.forms import Form
 from django.core.exceptions import NON_FIELD_ERRORS
 
 
@@ -214,6 +216,14 @@ class RecruitmentCreationForm(ModelForm):
     """
     Form for Recruitment model
     """
+
+
+    survey_templates = forms.ModelMultipleChoiceField(
+        queryset=SurveyTemplate.objects.all(),
+        widget=forms.SelectMultiple(),
+        label=_("Survey Templates"),
+        required=False,
+    )
 
     class Meta:
         """
@@ -554,16 +564,16 @@ class StageNoteForm(ModelForm):
         """
 
         model = StageNote
-        exclude = (
-            "updated_by",
-            "stage_id",
-        )
-        fields = "__all__"
+        # exclude = (
+        #     "updated_by",
+        #     "stage_id",
+        # )
+        fields = ("description",)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        field = self.fields["candidate_id"]
-        field.widget = field.hidden_widget()
+        # field = self.fields["candidate_id"]
+        # field.widget = field.hidden_widget()
         self.fields["stage_files"] = MultipleFileField(label="files")
         self.fields["stage_files"].required = False
 
@@ -613,9 +623,9 @@ class QuestionForm(ModelForm):
         required=False,
         label=_("Recruitment"),
     )
-    job_positions = forms.ModelMultipleChoiceField(
-        queryset=JobPosition.objects.all(), required=False, label=_("Job Positions")
-    )
+    # job_positions = forms.ModelMultipleChoiceField(
+    #     queryset=JobPosition.objects.all(), required=False, label=_("Job Positions")
+    # )
 
     class Meta:
         """
@@ -649,15 +659,15 @@ class QuestionForm(ModelForm):
     def clean(self):
         super().clean()
         recruitment = self.cleaned_data["recruitment"]
-        jobs = self.cleaned_data["job_positions"]
+        # jobs = self.cleaned_data["job_positions"]
         qtype = self.cleaned_data["type"]
         options = self.cleaned_data["options"]
-        if not (recruitment.exists() or jobs.exists()):
+        if not recruitment.exists():  # or jobs.exists()):
             raise ValidationError(
                 "Choose any recruitment or job positions to apply this question"
             )
         self.recruitment = recruitment
-        self.job_positions = jobs
+        # self.job_positions = jobs
 
         if qtype in ["options", "multiple"] and (options is None or options == ""):
             raise ValidationError({"options": "Options field is required"})
@@ -669,7 +679,7 @@ class QuestionForm(ModelForm):
         instance = kwargs.get("instance", None)
         if instance:
             self.fields["recruitment"].initial = instance.recruitment_ids.all()
-            self.fields["job_positions"].initial = instance.job_position_ids.all()
+            # self.fields["job_positions"].initial = instance.job_position_ids.all()
         self.fields["type"].widget.attrs.update(
             {"class": " w-100", "style": "border:solid 1px #6c757d52;height:50px;"}
         )
@@ -690,6 +700,54 @@ class SurveyForm(forms.Form):
         return
         # for question in questions:
         # self
+
+
+class TemplateForm(ModelForm):
+    """
+    TemplateForm
+    """
+
+    verbose_name = "Template"
+
+    class Meta:
+        model = SurveyTemplate
+        fields = "__all__"
+
+    def as_p(self, *args, **kwargs):
+        """
+        Render the form fields as HTML table rows with Bootstrap styling.
+        """
+        context = {"form": self}
+        table_html = render_to_string("common_form.html", context)
+        return table_html
+
+
+class AddQuestionForm(Form):
+    """
+    AddQuestionForm
+    """
+    verbose_name = "Add Question"
+    question_ids = forms.ModelMultipleChoiceField(
+        queryset=RecruitmentSurvey.objects.all(), label="Questions"
+    )
+    template_ids = forms.ModelMultipleChoiceField(
+        queryset=SurveyTemplate.objects.all(), label="Templates"
+    )
+
+    def save(self):
+        """
+        Manual save/adding of questions to the templates
+        """
+        for question in self.cleaned_data["question_ids"]:
+            question.template_id.add(*self.data["template_ids"])
+
+    def as_p(self, *args, **kwargs):
+        """
+        Render the form fields as HTML table rows with Bootstrap styling.
+        """
+        context = {"form": self}
+        table_html = render_to_string("common_form.html", context)
+        return table_html
 
 
 exclude_fields = ["id", "profile", "portfolio", "resume", "sequence"]

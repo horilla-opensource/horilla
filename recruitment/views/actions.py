@@ -126,11 +126,10 @@ def note_delete_individual(request, note_id):
     """
     This method is used to delete the stage note
     """
-    note = StageNote.objects.get(id=note_id)
-    cand_id = note.candidate_id.id
+    note = StageNote.objects.get(id = note_id)
+    cand_id = note.candidate_id
     note.delete()
     messages.success(request, _("Note deleted."))
-    # return redirect("view-note", cand_id=cand_id)
     return HttpResponse("<script>window.location.reload()</script>")
 
 
