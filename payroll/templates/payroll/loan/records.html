@@ -15,9 +15,9 @@
 </div>
 {% include 'filter_tags.html' %}
 {% if records %}
-  <div class="oh-wrapper oh-faq-cards">
+  <div class="oh-wrapper oh-faq-cards" style="gap: 41px;grid-template-columns: repeat(auto-fill,minmax(300px,0fr));">
       {% for record in records %}
-        <div class="oh-faq-card">
+        <div class="oh-faq-card" style="width: 330px;">
           <div class="d-flex justify-content-between">
             <div class="loan-type">{{ record.get_type_display }}</div>
             <div>
