@@ -92,8 +92,7 @@
           onsubmit="event.stopPropagation();$(this).parents().find('.oh-modal--show').last().toggleClass('oh-modal--show');"
           id="payslipExportForm"
         >
-          {% csrf_token %} {% include
-          'payroll/payslip/payslip_export_filter.html' %}
+          {% csrf_token %} {% include 'payroll/payslip/payslip_export_filter.html' %}
           <div class="oh-dropdown__filter-footer">
             <button class="oh-btn oh-btn--secondary oh-btn--small w-100">
               {% trans "Export" %}
@@ -129,6 +128,7 @@
       id="filterForm"
       hx-swap="innerHTML"
       hx-target="#payslips-table"
+      onsubmit="event.preventDefault()"
     >
       {% if perms.payroll.view_payslip %}
       <div

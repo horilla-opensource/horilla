@@ -81,23 +81,23 @@
               hx-get="{% url 'filter-payslip' %}?{{pd}}&sortby=end_date" 
               hx-target="#payslips-table"
             >{% trans "End Date" %}</div>
-            <div data-cell-index="3" data-cell-title='{% trans "Status" %}' class="oh-sticky-table__th">{% trans "Status" %}</div>
             <div data-cell-index="4" data-cell-title='{% trans "Batch" %}' class="oh-sticky-table__th">{% trans "Batch" %}</div>
             <div data-cell-index="5" data-cell-title='{% trans "Gross Pay" %}' 
-              class="oh-sticky-table__th {% if request.sort_option.order == '-gross_pay' %}arrow-up {% elif request.sort_option.order == 'gross_pay' %}arrow-down {% else %}arrow-up-down {% endif %}"
-              hx-get="{% url 'filter-payslip' %}?{{pd}}&sortby=gross_pay" 
-              hx-target="#payslips-table"
+            class="oh-sticky-table__th {% if request.sort_option.order == '-gross_pay' %}arrow-up {% elif request.sort_option.order == 'gross_pay' %}arrow-down {% else %}arrow-up-down {% endif %}"
+            hx-get="{% url 'filter-payslip' %}?{{pd}}&sortby=gross_pay" 
+            hx-target="#payslips-table"
             >{% trans "Gross Pay" %}</div>
             <div data-cell-index="6" data-cell-title='{% trans "Deduction" %}' 
-              class="oh-sticky-table__th {% if request.sort_option.order == '-deduction' %}arrow-up {% elif request.sort_option.order == 'deduction' %}arrow-down {% else %}arrow-up-down {% endif %}"
-              hx-get="{% url 'filter-payslip' %}?{{pd}}&sortby=deduction" 
-              hx-target="#payslips-table"
+            class="oh-sticky-table__th {% if request.sort_option.order == '-deduction' %}arrow-up {% elif request.sort_option.order == 'deduction' %}arrow-down {% else %}arrow-up-down {% endif %}"
+            hx-get="{% url 'filter-payslip' %}?{{pd}}&sortby=deduction" 
+            hx-target="#payslips-table"
             >{% trans "Deduction" %}</div>
             <div data-cell-index="7" data-cell-title='{% trans "Net Pay" %}' 
-              class="oh-sticky-table__th {% if request.sort_option.order == '-net_pay' %}arrow-up {% elif request.sort_option.order == 'net_pay' %}arrow-down {% else %}arrow-up-down {% endif %}"
-              hx-get="{% url 'filter-payslip' %}?{{pd}}&sortby=net_pay" 
-              hx-target="#payslips-table"
+            class="oh-sticky-table__th {% if request.sort_option.order == '-net_pay' %}arrow-up {% elif request.sort_option.order == 'net_pay' %}arrow-down {% else %}arrow-up-down {% endif %}"
+            hx-get="{% url 'filter-payslip' %}?{{pd}}&sortby=net_pay" 
+            hx-target="#payslips-table"
             >{% trans "Net Pay" %}</div>
+            <div data-cell-index="3" data-cell-title='{% trans "Status" %}' class="oh-sticky-table__th">{% trans "Status" %}</div>
             <div class="oh-sticky-table__th oh-sticky-table__right" style="width: 251px !important;">{% trans "Actions" %}</div>
           </div>
         </div>
@@ -133,15 +133,6 @@
           <div data-cell-index="2" class="oh-sticky-table__td dateformat_changer">
             {{payslip.end_date}}
           </div>
-          <div data-cell-index="3" class="oh-sticky-table__td" onclick="event.preventDefault();">
-            <select name="status" data-instance-id="{{payslip.id}}" hx-trigger="change" hx-post="{% url 'payslip-status-update' payslip.id %}" 
-                    hx-target="#payslips-table" hx-vals='{"view":"table"}' 
-                    style="color: hsl(0,0%,11%); background-color: transparent; border: none; height: 100%; border: 1px solid transparent;">
-              {% for opt in payslip.status_choices %}
-              <option value="{{opt.0}}"{% if opt.0 == payslip.status %}selected{% endif %}>{{opt.1}}</option>
-              {% endfor %}
-            </select>
-          </div>
           <div data-cell-index="4" class="oh-sticky-table__td">
             {{payslip.group_name}}
           </div>
@@ -153,6 +144,15 @@
           </div>
           <div data-cell-index="7" class="oh-sticky-table__td">
             {{currency}} {{payslip.net_pay|floatformat:2}}
+          </div>
+          <div data-cell-index="3" class="oh-sticky-table__td" onclick="event.preventDefault();">
+            <select name="status" data-instance-id="{{payslip.id}}" hx-trigger="change" hx-post="{% url 'payslip-status-update' payslip.id %}" 
+                    hx-target="#payslips-table" hx-vals='{"view":"table"}' 
+                    style="color: hsl(0,0%,11%); background-color: transparent; border: none; height: 100%; border: 1px solid transparent;">
+              {% for opt in payslip.status_choices %}
+              <option value="{{opt.0}}"{% if opt.0 == payslip.status %}selected{% endif %}>{{opt.1}}</option>
+              {% endfor %}
+            </select>
           </div>
           <div class="oh-sticky-table__td oh-sticky-table__right"style="width: 251px !important;">
             <div class="oh-btn-group">
