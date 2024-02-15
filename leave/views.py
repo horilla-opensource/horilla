@@ -41,6 +41,7 @@ from leave.forms import *
 from leave.decorators import *
 from leave.filters import *
 from employee.models import Employee
+from attendance.methods.group_by import group_by_queryset
 from .methods import (
     calculate_requested_days,
     leave_requested_dates,
@@ -865,6 +866,15 @@ def leave_assign_view(request):
     export_filter = AssignedLeaveFilter()
     export_column = AvailableLeaveColumnExportForm()
     assign_form = AssignLeaveForm()
+    
+    # default group by configuration
+    data_dict = {"field":["leave_type_id"]}
+
+    # to check condition on the template
+    setattr(request.GET,"field",True)
+    
+    page_obj = group_by_queryset(queryset.order_by("-id"),"leave_type_id",page_number)
+
     return render(
         request,
         "leave/leave_assign/assign_view.html",
@@ -874,6 +884,7 @@ def leave_assign_view(request):
             "export_filter": export_filter,
             "export_column": export_column,
             "pd": previous_data,
+            "filter_dict":data_dict,
             "gp_fields": LeaveAssignReGroup.fields,
             "assign_form": assign_form,
         },
@@ -901,12 +912,15 @@ def leave_assign_filter(request):
     field = request.GET.get("field")
     page_number = request.GET.get("page")
     template = ("leave/leave_assign/assigned_leave.html",)
+    available_leaves = assigned_leave_filter.order_by("-id")
+    if request.GET.get("sortby"):
+        available_leaves = sortby(request,available_leaves,"sortby")
     if field != "" and field is not None:
-        field_copy = field.replace(".", "__")
-        assigned_leave_filter = assigned_leave_filter.order_by(field_copy)
+        page_obj = group_by_queryset(available_leaves,field,page_number)
         template = "leave/leave_assign/group_by.html"
+    else:
+        page_obj = paginator_qry(available_leaves, page_number)
 
-    page_obj = paginator_qry(assigned_leave_filter.order_by("-id"), page_number)
     data_dict = parse_qs(previous_data)
     get_key_instances(AvailableLeave, data_dict)
     return render(
@@ -2104,8 +2118,8 @@ def dashboard(request):
     today = date.today()
     leave_requests = LeaveRequest.objects.filter(start_date__month=today.month)
     requested = LeaveRequest.objects.filter(status="requested")
-    approved = LeaveRequest.objects.filter(status="approved")
-    rejected = LeaveRequest.objects.filter(status="rejected")
+    approved = LeaveRequest.objects.filter(status="approved",start_date__month=today.month)
+    rejected = LeaveRequest.objects.filter(status="rejected",start_date__month=today.month)
     holidays = Holiday.objects.filter(start_date__gte=today)
     next_holiday = (
         holidays.order_by("start_date").first() if holidays.exists() else None
@@ -2132,6 +2146,8 @@ def dashboard(request):
         "holidays": holidays,
         "leave_today_employees": leave_today,
         "dashboard": "dashboard",
+        "first_day":today.replace(day=1).strftime("%Y-%m-%d"),
+        "last_day":date(today.year, today.month, calendar.monthrange(today.year, today.month)[1]).strftime("%Y-%m-%d"),
     }
     return render(request, "leave/dashboard.html", context)
 
@@ -2214,12 +2230,13 @@ def available_leave_chart(request):
     GET : return Json response of labels, dataset, message.
     """
     user = Employee.objects.get(employee_user_id=request.user)
-    available_leaves = AvailableLeave.objects.filter(employee_id=user)
+    available_leaves = AvailableLeave.objects.filter(employee_id=user).exclude(available_days=0)
     leave_count = []
+    labels = []
     for leave in available_leaves:
         leave_count.append(leave.available_days + leave.carryforward_days)
 
-    labels = [available.leave_type_id.name for available in available_leaves]
+        labels.append(leave.leave_type_id.name)
     dataset = [
         {
             "label": _("Total leaves available"),
@@ -2245,14 +2262,22 @@ def employee_leave_chart(request):
     Returns:
     GET : return Json response of labels, dataset, message.
     """
-    leave_requests = LeaveRequest.objects.filter(
-        employee_id__is_active=True, status="approved"
-    )
-    leave_types = LeaveType.objects.all()
+
     day = date.today()
     if request.GET.get("date"):
         day = request.GET.get("date")
         day = datetime.strptime(day, "%Y-%m")
+
+    leave_requests = LeaveRequest.objects.filter(
+        employee_id__is_active=True, status="approved"
+    )
+    leave_requests=leave_requests.filter(
+        start_date__month=day.month, start_date__year=day.year
+    )
+    # leave_types = LeaveType.objects.filter(leaverequest__in=leave_requests.filter(
+    #     start_date__month=day.month, start_date__year=day.year
+    # )).distinct()
+    leave_types = leave_requests.values_list('leave_type_id__name', flat=True).distinct()
 
     labels = []
     dataset = []
@@ -2264,7 +2289,7 @@ def employee_leave_chart(request):
     for leave_type in leave_types:
         dataset.append(
             {
-                "label": leave_type.name,
+                "label": leave_type,
                 "data": [],
             }
         )
@@ -2316,7 +2341,7 @@ def department_leave_chart(request):
     department_counts = {dep.department: 0 for dep in departments}
     leave_request = LeaveRequest.objects.filter(status="approved")
     leave_dates = []
-
+    labels=[]
     for leave in leave_request:
         for leave_date in leave.requested_dates():
             leave_dates.append(leave_date.strftime("%Y-%m-%d"))
@@ -2325,12 +2350,16 @@ def department_leave_chart(request):
             for dep in departments:
                 if dep == leave.employee_id.employee_work_info.department_id:
                     department_counts[dep.department] += 1
-
-    labels = [department.department for department in departments]
+                        
+    for department, count in department_counts.items():
+        if count != 0:
+            labels.append(department)
+    values = list(department_counts.values())
+    values = [value for value in values if value != 0]    
     dataset = [
         {
             "label": _(""),
-            "data": list(department_counts.values()),
+            "data": values,
         },
     ]
     response = {
@@ -2359,13 +2388,19 @@ def leave_type_chart(request):
             if lev == leave.leave_type_id:
                 leave_type_count[lev.name] += leave.requested_days
 
-    labels = [leave_type.name for leave_type in leave_types]
-
+    # labels = [leave_type.name for leave_type in leave_types]
+    labels = []
+    for leave_type, count in leave_type_count.items():
+        if count != 0:
+            labels.append(leave_type)
+    values = list(leave_type_count.values())
+    values = [value for value in values if value != 0] 
+    
     response = {
         "labels": labels,
         "dataset": [
             {
-                "data": list(leave_type_count.values()),
+                "data": values,
             },
         ],
     }

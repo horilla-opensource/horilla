@@ -383,7 +383,4 @@ $(document).ready(function () {
 		});
 	});
 
-	$(".filter").on("click", function () {
-		$("#back_button").removeClass("d-none");
-	});
 });

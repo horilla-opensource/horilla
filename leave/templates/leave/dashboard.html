@@ -34,9 +34,9 @@
         <div class="oh-dashboard__left col-12 col-sm-12 col-md-12 col-lg-9">
             <div class="oh-dashboard__cards row">
                 <div class="col-12 col-sm-12 col-md-6 col-lg-4">
-                    <div class="oh-card-dashboard oh-card-dashboard oh-card-dashboard--neutral filter pointer dash-card" hx-get="{% url "request-filter" %}?status=requested&dashboard=card" hx-target="#dashboard" >
+                    <div class="oh-card-dashboard oh-card-dashboard oh-card-dashboard--neutral filter pointer dash-card" id="requestedLeaves" >
                         <div class="oh-card-dashboard__header">
-                            <span class="oh-card-dashboard__title">{% trans "New Requests" %}</span>
+                            <span class="oh-card-dashboard__title">{% trans "Requests to Approve" %}</span>
                         </div>
                         <div class="oh-card-dashboard__body">
                             <div class="oh-card-dashboard__counts">
@@ -46,9 +46,9 @@
                     </div>
                 </div>
                 <div class="col-12 col-sm-12 col-md-6 col-lg-4">
-                    <div class="oh-card-dashboard oh-card-dashboard--success filter pointer dash-card" hx-get="{% url "request-filter" %}?status=approved&dashboard=card" hx-target="#dashboard">
+                    <div class="oh-card-dashboard oh-card-dashboard--success filter pointer dash-card" id="approvedLeaves">
                         <div class="oh-card-dashboard__header">
-                            <span class="oh-card-dashboard__title">{% trans "Approved Requests" %}</span>
+                            <span class="oh-card-dashboard__title">{% trans "Approved Leaves In This Month" %}</span>
                         </div>
                         <div class="oh-card-dashboard__body">
                             <div class="oh-card-dashboard__counts">
@@ -58,9 +58,9 @@
                     </div>
                 </div>
                 <div class="col-12 col-sm-12 col-md-6 col-lg-4">
-                    <div class="oh-card-dashboard oh-card-dashboard--danger filter pointer dash-card" hx-get="{% url "request-filter" %}?status=rejected&dashboard=card" hx-target="#dashboard">
+                    <div class="oh-card-dashboard oh-card-dashboard--danger filter pointer dash-card" id="rejectedLeaves">
                         <div class="oh-card-dashboard__header">
-                            <span class="oh-card-dashboard__title">{% trans "Rejected Requests" %}</span>
+                            <span class="oh-card-dashboard__title">{% trans "Rejected Leaves In This Month" %}</span>
                         </div>
                         <div class="oh-card-dashboard__body">
                             <div class="oh-card-dashboard__counts">
@@ -259,5 +259,18 @@
 </div>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="{% static "dashboard/dashboard.js" %}"></script>
+<script>
+$(document).ready(function() {
+    $("#requestedLeaves").on("click", function(){
+        window.location.href='{% url "request-view" %}?status=requested'
+    })
+    $("#approvedLeaves").on("click", function(){
+        window.location.href='{% url "request-view" %}?status=approved&from_date={{first_day}}&to_date={{last_day}}'
+    })
+    $("#rejectedLeaves").on("click", function(){
+        window.location.href='{% url "request-view" %}?status=rejected&from_date={{first_day}}&to_date={{last_day}}'
+    })
+})
 
+</script>
 {% endblock %}
