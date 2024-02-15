@@ -218,9 +218,6 @@
             {% elif leave_request.status == "cancelled" %} row-status--gray 
             {% elif leave_request.status == "rejected" %} row-status--red
             {% elif leave_request.status == "approved" %} row-status--yellow{% endif %}"
-            data-toggle="oh-modal-toggle" 
-            data-target="#tableTimeOff" hx-get="{% url 'user-request-one' leave_request.id %}"
-            hx-target="#userRequestView"
            >
           <div class="oh-profile oh-profile--md">
             <div class="oh-profile__avatar mr-1">
