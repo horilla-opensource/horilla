@@ -76,16 +76,6 @@
             name="search"
             placeholder="{% trans 'Search' %}"
             onkeyup="$('.filterButton')[0].click()"
-            {%
-            comment
-            %}
-            hx-get="{% url 'contract-filter' %}"
-            hx-trigger="keyup changed delay:500ms, search"
-            hx-target="#payroll-contract-container"
-            hx-swap="innerHTML"
-            {%
-            endcomment
-            %}
           />
         </div>
         <div class="oh-dropdown" x-data="{open: false}">
