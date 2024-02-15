@@ -52,7 +52,7 @@ urlpatterns = [
         kwargs={
             "model": Recruitment,
             "form": RecruitmentCreationForm,
-            "template": "recruitment/recruitment_duplicate_form.html",
+            "template": "recruitment/recruitment_form.html",
         },
     ),
     path(
@@ -94,6 +94,7 @@ urlpatterns = [
     ),
     path("stage-create", views.stage, name="rec-stage-create"),
     path("stage-view", views.stage_view, name="rec-stage-view"),
+    path("stage-data/<int:rec_id>/",views.stage_data,name="stage-data"),
     path("stage-search", recruitment.views.search.stage_search, name="stage-search"),
     path("stage-update/<int:stage_id>/", views.stage_update, name="rec-stage-update"),
     path(
@@ -182,7 +183,7 @@ urlpatterns = [
         "candidate-view/<int:cand_id>/",
         views.candidate_view_individual,
         name="candidate-view-individual",
-        kwargs={"model": Candidate},
+        # kwargs={"model": Candidate},
     ),
     path(
         "candidate-update/<int:cand_id>/",
@@ -322,6 +323,21 @@ urlpatterns = [
         recruitment.views.surveys.single_survey,
         name="single-survey-view",
     ),
+    path(
+        "survey-template-create",
+        recruitment.views.surveys.create_template,
+        name="survey-template-create",
+    ),
+    path(
+        "survey-template-delete",
+        recruitment.views.surveys.delete_template,
+        name="survey-template-delete",
+    ),
+    path(
+        "survey-template-question-add",
+        recruitment.views.surveys.question_add,
+        name="survey-template-question-add",
+    ),
     path("candidate-select/", views.candidate_select, name="candidate-select"),
     path(
         "candidate-select-filter/",
@@ -418,9 +434,19 @@ urlpatterns = [
         name="add-more-files",
     ),
     path(
+        "add-more-files-individual/<int:id>/",
+        views.add_more_individual_files,
+        name="add-more-files-individual",
+    ),
+    path(
         "delete-stage-note-file/<int:id>/",
         views.delete_stage_note_file,
         name="delete-stage-note-file",
+    ),
+    path(
+        "delete-individual-note-file/<int:id>/",
+        views.delete_individual_note_file,
+        name="delete-individual-note-file",
     ),
     path("get-mail-log-rec", views.get_mail_log, name="get-mail-log-rec"),
     path(

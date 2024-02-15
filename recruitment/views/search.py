@@ -17,8 +17,10 @@ from recruitment.filters import (
     RecruitmentFilter,
     StageFilter,
     SurveyFilter,
+    SurveyTemplateFilter,
 )
-from recruitment.models import Candidate, Recruitment, Stage, RecruitmentSurvey
+from recruitment.models import Candidate, Recruitment, Stage, RecruitmentSurvey, SurveyTemplate
+from attendance.methods.group_by import group_by_queryset
 from recruitment.views.paginator_qry import paginator_qry
 
 
@@ -51,16 +53,20 @@ def stage_search(request):
     """
     This method is used to search stage
     """
+
     stages = StageFilter(request.GET).qs
     previous_data = request.GET.urlencode()
     stages = sortby(request, stages, "orderby")
     data_dict = parse_qs(previous_data)
     get_key_instances(Stage, data_dict)
+    recruitments = group_by_queryset(stages,"recruitment_id",request.GET.get("rpage"),"rpage")
+
     return render(
         request,
-        "stage/stage_component.html",
+        "stage/stage_group.html",
         {
             "data": paginator_qry(stages, request.GET.get("page")),
+            "recruitments":recruitments,
             "pd": previous_data,
             "filter_dict": data_dict,
         },
@@ -160,6 +166,15 @@ def filter_survey(request):
     previous_data = request.GET.urlencode()
     filter_obj = SurveyFilter(request.GET)
     questions = filter_obj.qs
+    templates = group_by_queryset(
+        questions.filter(template_id__isnull=False).distinct(),
+        "template_id__title",
+        page=request.GET.get("page"),
+        page_name="template_page",
+        records_per_page=50,
+    )
+    survey_templates = SurveyTemplateFilter(request.GET).qs
+    survey_templates = paginator_qry(survey_templates,request.GET.get("survey_template_page"))
     requests_ids = json.dumps([instance.id for instance in paginator_qry(questions, request.GET.get("page")).object_list])
     data_dict = parse_qs(previous_data)
     get_key_instances(RecruitmentSurvey, data_dict)
@@ -168,6 +183,8 @@ def filter_survey(request):
         "survey/survey_card.html",
         {
             "questions": paginator_qry(questions, request.GET.get("page")),
+            "templates":templates,
+            "survey_templates":survey_templates,
             "pd": previous_data,
             "filter_dict": data_dict,
             "requests_ids":requests_ids,

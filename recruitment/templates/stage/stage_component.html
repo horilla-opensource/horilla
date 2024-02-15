@@ -1,4 +1,4 @@
-{% load i18n %} {% load basefilters %}
+{% load i18n %} {% load basefilters %}{% load static %}
 <style>
   .count-span {
     width: 100%;
@@ -21,12 +21,13 @@
 
 </script>
 
-  {% include 'filter_tags.html' %}
+{% include 'filter_tags.html' %}
+{% if data %}
   <div class="row">
     <div class="col-12 col-sm-12 col-md-12 col-lg-12">
       <div class="oh-card p-4">
         <div class="oh-card__body">
-          <!-- start of column toggle button-->
+          {% comment %} <!-- start of column toggle button-->
           <div class="oh-table_sticky--wrapper">
             <div class="oh-sticky-dropdown--header">
                 <div class="oh-dropdown" x-data="{open: false}">
@@ -40,44 +41,40 @@
             </div>
           </div>
           <!-- end of column toggle button-->
-          <div id="stage-table" data-table-name="stage_table">
+          <div id="stage-table" data-table-name="stage_table"> {% endcomment %}
+
+
             <div class="oh-sticky-table oh-sticky-table--no-highlight">
               <!-- start of sticky table -->
               <div class="oh-sticky-table__table">
                 <div class="oh-sticky-table__thead">
                   <div class="oh-sticky-table__tr">
                     <div
-                      class="oh-sticky-table__th {% if request.sort_option.order == '-stage' %}arrow-up {% elif request.sort_option.order == 'stage' %}arrow-down {% else %} arrow-up-down {% endif %}"
-                      hx-get="{% url 'stage-search' %}?{{pd}}&orderby=stage"
-                      hx-target="#stage-container"
+                      class="oh-sticky-table__th "
                     >
                       {% trans "Title" %}
                     </div>
                     <div
                       data-cell-index="1" data-cell-title='{% trans "Managers" %}' 
-                      class="oh-sticky-table__th {% if request.sort_option.order == '-stage_managers' %}arrow-up {% elif request.sort_option.order == 'stage_managers' %}arrow-down {% else %} arrow-up-down {% endif %}"
-                      hx-get="{% url 'stage-search' %}?{{pd}}&orderby=stage_managers"
-                      hx-target="#stage-container"
+                      class="oh-sticky-table__th "
                     >
                       {% trans "Managers" %}
                     </div>
                     <div
                       data-cell-index="2" data-cell-title='{% trans "Type" %}' 
-                      class="oh-sticky-table__th {% if request.sort_option.order == '-stage_type' %}arrow-up {% elif request.sort_option.order == 'stage_type' %}arrow-down {% else %} arrow-up-down {% endif %}"
-                      hx-get="{% url 'stage-search' %}?{{pd}}&orderby=stage_type"
-                      hx-target="#stage-container"
+                      class="oh-sticky-table__th"
                     >
                       {% trans "Type" %}
                     </div>
-                    <div
+                    {% comment %} <div
                       data-cell-index="3" data-cell-title='{% trans "Recruitment" %}' 
                       class="oh-sticky-table__th {% if request.sort_option.order == '-recruitment_id__start_date' %}arrow-up {% elif request.sort_option.order == 'recruitment_id__start_date' %}arrow-down {% else %} arrow-up-down {% endif %}"
                       hx-get="{% url 'stage-search' %}?{{pd}}&orderby=recruitment_id__start_date"
                       hx-target="#stage-container"
                     >
                       {% trans "Recruitment" %}
-                    </div>
-                    <div class="oh-sticky-table__th">{% trans "Actions" %}</div>
+                    </div> {% endcomment %}
+                    <div class="oh-sticky-table__th oh-sticky-table__right" s>{% trans "Actions" %}</div>
                   </div>
                 </div>
                 <div class="oh-sticky-table__tbody">
@@ -86,7 +83,12 @@
                     class="oh-sticky-table__tr oh-permission-table__tr oh-permission-table--collapsed"
                   >
                     <div
-                      class="oh-sticky-table__sd oh-permission-table--toggle"
+                      class="oh-sticky-table__sd oh-permission-table--toggle {% if stage.stage_type == 'cancelled' %} row-status--red
+                      {% elif stage.stage_type == 'hired'  %} row-status--yellow
+                      {% elif stage.stage_type == 'interview'  %} row-status--orange  
+                      {% elif stage.stage_type == 'test'  %} row-status--blue  
+                      {% elif stage.stage_type == 'initial'  %} row-status--cyan  
+                      {% endif %}" 
                       data-toggle-count
                     >
                       <div class="d-flex align-items-center">
@@ -133,10 +135,10 @@
                     <div data-cell-index="2" class="oh-sticky-table__td">
                       {{stage.get_stage_type_display}}
                     </div>
-                    <div data-cell-index="3" class="oh-sticky-table__td">
+                    {% comment %} <div data-cell-index="3" class="oh-sticky-table__td">
                       {{stage.recruitment_id}}
-                    </div>
-                    <div class="oh-sticky-table__td">
+                    </div> {% endcomment %}
+                    <div class="oh-sticky-table__td oh-sticky-table__right">
                       <div class="oh-btn-group">
                         {% if perms.recruitment.change_stage %}
                           <a
@@ -255,7 +257,20 @@
     </nav>
   </div>
   <!-- end of pagination -->
-
+{% else %}
+  <!-- start of empty page -->
+  <div class="oh-404">
+    <img
+      style="width: 150px; height: 150px"
+      src="{% static 'images/ui/no-results.png' %}"
+      class="oh-404__image mb-4"
+    />
+    <h5 class="oh-404__subtitle">
+      {% trans "No search result found!" %}
+    </h5>
+  </div>
+  <!-- end of empty page -->
+{% endif %}
   <div 
       class="oh-modal"
       id="updateStageModal"
