@@ -3,7 +3,10 @@ import re
 from typing import Any
 import uuid
 from django import forms
+from django.core.files.base import File
+from django.db.models.base import Model
 from django.forms import ModelForm
+from django.forms.utils import ErrorList
 from django.forms.widgets import TextInput
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
@@ -13,7 +16,7 @@ from employee.filters import EmployeeFilter
 from employee.forms import MultipleFileField
 from employee.models import Employee
 from base.methods import reload_queryset
-from horilla_widgets.forms import HorillaForm
+from horilla_widgets.forms import HorillaForm, HorillaModelForm
 from horilla_widgets.widgets.horilla_multi_select_field import HorillaMultiSelectField
 from horilla_widgets.widgets.select_widgets import HorillaMultiSelectWidget
 from .models import (
@@ -503,16 +506,26 @@ class HolidayForm(ModelForm):
         self.fields['name'].widget.attrs['autocomplete'] = 'name'
 
 
-class LeaveOneAssignForm(ModelForm):
-    employee_id = forms.ModelChoiceField(
+class LeaveOneAssignForm(HorillaModelForm):
+    employee_id = HorillaMultiSelectField(
         queryset=Employee.objects.all(),
-        widget=forms.SelectMultiple,
-        empty_label=None,
+        widget=HorillaMultiSelectWidget(
+            filter_route_name="employee-widget-filter",
+            filter_class=EmployeeFilter,
+            filter_instance_contex_name="f",
+            filter_template_path="employee_filters.html",
+            required=True,
+        ),
+        label="Employee",
     )
 
     class Meta:
         model = AvailableLeave
         fields = ["employee_id"]
+    
+    def __init__(self,*args, **kwargs):
+        super().__init__(*args, **kwargs)
+        reload_queryset(self.fields)
 
 
 class AvailableLeaveUpdateForm(ModelForm):
@@ -576,7 +589,11 @@ class UserLeaveRequestForm(ModelForm):
         return cleaned_data
 
     def __init__(self, *args, employee=None, **kwargs):
+        leave_type = kwargs.pop('initial', None)
         super(UserLeaveRequestForm, self).__init__(*args, **kwargs)
+        self.fields['leave_type_id'].queryset = LeaveType.objects.filter(id=leave_type["leave_type_id"].id)
+        self.fields['leave_type_id'].initial= leave_type["leave_type_id"].id
+        self.fields['leave_type_id'].empty_label= None
 
     def as_p(self, *args, **kwargs):
         """
@@ -600,7 +617,6 @@ class UserLeaveRequestForm(ModelForm):
         ]
         widgets = {
             "employee_id": forms.HiddenInput(),
-            'leave_type_id': forms.HiddenInput()     
         }
 
 
