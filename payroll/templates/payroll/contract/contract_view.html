@@ -24,8 +24,8 @@
           onsubmit="event.stopPropagation();$(this).parents().find('.oh-modal--show').last().toggleClass('oh-modal--show');"
           id="hxContractExportForm"
         >
-          {% csrf_token %} {% include
-          'payroll/contract/contract_export_filter.html' %}
+          {% csrf_token %} 
+          {% include 'payroll/contract/contract_export_filter.html' %}
           <div class="oh-dropdown__filter-footer">
             <button class="oh-btn oh-btn--secondary oh-btn--small w-100">
               {% trans "Export" %}
@@ -54,7 +54,7 @@
     </div>
     <div class="oh-main__titlebar oh-main__titlebar--right">
       <form
-        hx-get='{% url "contract-filter" %}'
+        hx-get="{% url 'contract-filter' %}"
         id="filterForm"
         hx-swap="innerHTML"
         hx-target="#payroll-contract-container"

@@ -6,9 +6,11 @@ Each filter set class corresponds to a specific model and contains filter fields
 to customize the filtering behavior.
 
 """
+
 import uuid
 import django_filters
 from django import forms
+from django.utils.translation import gettext_lazy as _
 from employee.models import Employee
 from horilla.filters import filter_by_name
 from base.filters import FilterSet
@@ -132,7 +134,7 @@ class AllowanceFilter(FilterSet):
             "is_condition_based",
             "is_fixed",
             "based_on",
-            'amount'
+            "amount",
         ]
 
     def filter_by_employee(self, queryset, _, value):
@@ -181,7 +183,7 @@ class DeductionFilter(FilterSet):
             "is_condition_based",
             "is_fixed",
             "based_on",
-            'amount'
+            "amount",
         ]
 
     def filter_by_employee(self, queryset, _, value):
@@ -350,14 +352,35 @@ class ContractReGroup:
     """
 
     fields = [
-        ("", "select"),
-        ("employee_id", "Employee"),
-        ("employee_id.employee_work_info.job_position_id", "Job Position"),
-        ("employee_id.employee_work_info.department_id", "Department"),
-        ("contract_status", "Status"),
-        ("employee_id.employee_work_info.shift_id", "Shift"),
-        ("employee_id.employee_work_info.work_type_id", "Work Type"),
-        ("employee_id.employee_work_info.job_role_id", "Job Role"),
-        ("employee_id.employee_work_info.reporting_manager_id", "Reporting Manager"),
-        ("employee_id.employee_work_info.company_id", "Company"),
+        ("", _("Select")),
+        ("employee_id", _("Employee")),
+        ("employee_id.employee_work_info.job_position_id", _("Job Position")),
+        ("employee_id.employee_work_info.department_id", _("Department")),
+        ("contract_status", _("Status")),
+        ("employee_id.employee_work_info.shift_id", _("Shift")),
+        ("employee_id.employee_work_info.work_type_id", _("Work Type")),
+        ("employee_id.employee_work_info.job_role_id", _("Job Role")),
+        ("employee_id.employee_work_info.reporting_manager_id", _("Reporting Manager")),
+        ("employee_id.employee_work_info.company_id", _("Company")),
+    ]
+
+
+class PayslipReGroup:
+    """
+    Class to keep the field name for group by option
+    """
+
+    fields = [
+        ("", _("Select")),
+        ("employee_id", _("Employee")),
+        ("start_date", _("Start Date")),
+        ("end_date", _("End Date")),
+        ("basic_pay", _("Basic Pay")),
+        ("gross_pay", _("Gross Pay")),
+        ("net_pay", _("Net Pay")),
+        ("status", _("Status")),
+        ("employee_id__employee_work_info__department_id", _("Department")),
+        ("employee_id__employee_work_info__job_position_id", _("Job Position")),
+        ("employee_id__employee_work_info__job_role_id", _("Job Role")),
+        ("employee_id__employee_work_info__company_id", _("Company")),
     ]

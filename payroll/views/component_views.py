@@ -15,6 +15,7 @@ from django.http import HttpResponse, JsonResponse, QueryDict
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.utils.translation import gettext_lazy as _
+from attendance.methods.group_by import group_by_queryset
 from notifications.signals import notify
 import pandas as pd
 from asset.models import Asset
@@ -48,6 +49,7 @@ from payroll.filters import (
     DeductionFilter,
     LoanAccountFilter,
     PayslipFilter,
+    PayslipReGroup,
     ReimbursementFilter,
 )
 from payroll.forms import component_forms as forms
@@ -728,6 +730,7 @@ def view_payslip(request):
             "individual_form": individual_form,
             "bulk_form": bulk_form,
             "filter_dict": data_dict,
+            "gp_fields": PayslipReGroup.fields,
         },
     )
 
@@ -747,12 +750,11 @@ def filter_payslip(request):
         emp_request["employee_id"] = str(employee_id)
         payslips = PayslipFilter(emp_request).qs
     template = "payroll/payslip/payslip_table.html"
-    field = request.GET.get("view")
-    if field == "card":
+    view = request.GET.get("view")
+    if view == "card":
         template = "payroll/payslip/group_payslips.html"
         payslips = payslips.filter(group_name__isnull=False).order_by("-group_name")
-    payslips = sortby(request, payslips, "sortby")
-    payslips = paginator_qry(payslips, request.GET.get("page"))
+    payslips = sortby(request, payslips, "sortby") 
     data_dict = []
     if not request.GET.get("dashboard"):
         data_dict = parse_qs(query_string)
@@ -761,7 +763,12 @@ def filter_payslip(request):
         status_list = data_dict["status"]
         if len(status_list) > 1:
             data_dict["status"] = [status_list[-1]]
-
+    field = request.GET.get("field")
+    if field != "" and field is not None:
+        payslips = group_by_queryset(payslips, field, request.GET.get("page"), "page")
+        template = "payroll/payslip/group_by.html"
+    else:
+        payslips = paginator_qry(payslips, request.GET.get("page"))
     return render(
         request,
         template,
