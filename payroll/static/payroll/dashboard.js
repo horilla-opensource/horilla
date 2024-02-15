@@ -235,13 +235,17 @@ $(document).ready(function () {
         department_total = response.department_total;
         if (department_total.length != 0) {
           $("#department_total").html("");
+          $("#department_total").show()
+          $("#department_total_empty").hide()
           $.each(department_total, function (key, value) {
             $("#department_total").append(
               `<li class='m-3 department' style = 'cursor: pointer;''><span class='department_item'>${value["department"]}</span>: <span> ${value["amount"]}</span></li>`
             );
           });
         } else {
-          $("#department_total").html(
+          $("#department_total").hide()
+          $("#department_total_empty").show() 
+          $("#department_total_empty").html(
             `<div style="display:flex;align-items: center;justify-content: center; padding-top:50px" class="">
                         <div style="" class="">
                         <img style="display: block;width: 70px;margin: 10px auto ;" src="/static/images/ui/money.png" class="" alt=""/>

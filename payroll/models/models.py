@@ -139,7 +139,7 @@ class Contract(models.Model):
     )
 
     contract_name = models.CharField(
-        max_length=250, help_text=_("Contract Title"), verbose_name=_("Contract")
+        max_length=250, help_text=_("Contract Title."), verbose_name=_("Contract")
     )
     employee_id = models.ForeignKey(
         Employee,
@@ -221,22 +221,22 @@ class Contract(models.Model):
     )
     contract_document = models.FileField(upload_to="uploads/", null=True, blank=True)
     is_active = models.BooleanField(default=True)
+    deduct_leave_from_basic_pay = models.BooleanField(
+        default=True, verbose_name=_("Deduct From Basic Pay"), help_text=_("Take all the deduction from basic pay.")
+    )
+    notice_period_in_month = models.IntegerField(
+        default=3,
+        help_text="Notice period in total months.",
+        validators=[min_zero],
+    )
     calculate_daily_leave_amount = models.BooleanField(
-        default=True, verbose_name=_("Calculate Daily Leave Amount")
+        default=True, verbose_name=_("Calculate Daily Leave Amount"), help_text=_("Leave amount will be calculated by dividing the basic pay by number of working days.")
     )
     deduction_for_one_leave_amount = models.FloatField(
         null=True,
         blank=True,
         default=0,
         verbose_name=_("Deduction For One Leave Amount"),
-    )
-    deduct_leave_from_basic_pay = models.BooleanField(
-        default=True, verbose_name=_("Deduct From Basic Pay")
-    )
-    notice_period_in_month = models.IntegerField(
-        default=3,
-        help_text="Notice period in total months",
-        validators=[min_zero],
     )
 
     note = models.TextField(null=True, blank=True,max_length=255)
