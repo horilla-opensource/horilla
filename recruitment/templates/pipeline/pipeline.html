@@ -263,9 +263,9 @@
                     </div>
                     {% endif %}
                     <div class="oh-sticky-table__th oh-table-config__th">{% trans "Stage" %}</div>
-                    <div class="oh-sticky-table__th oh-table-config__th" style="width: 230px;" >
+                    <div class="oh-sticky-table__th oh-table-config__th" style="width: 225px;" >
                       <select name="bulk_stage" class="oh-select w-100" data-stage-id="{{stage.grouper.id}}">
-                        <option value="" style="color: gray !important;" selected>Stage bulk update</option>
+                        <option value="" style="color: gray !important;" selected>{% trans "Stage bulk update" %}</option>
                         {% for stage in rec.stage_set.all|dictsort:"sequence" %}
                         <option value="{{stage.grouper.id}}">{{stage.grouper}}</option>
                         {% endfor %}
@@ -397,6 +397,16 @@
                           style="flex: 1 0 auto; width:20px;height: 40.68px; padding: 0;"
                         >
                           <ion-icon name="mail-open-outline"></ion-icon>
+                        </button>
+                        <button class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'To Skill zone' %}"
+                            data-toggle="oh-modal-toggle"
+                            data-target="#createModal"
+                            hx-get="{% url 'to-skill-zone' cand.id %}"
+                            hx-target="#createTarget"
+                            style="flex: 1 0 auto; width:25px !important;height: 40.68px; padding: 0;color: orangered;"
+
+                          >
+                          <ion-icon name="heart-circle-outline"></ion-icon>            
                         </button>
                         <button
                           type="button"

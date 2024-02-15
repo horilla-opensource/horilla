@@ -248,7 +248,19 @@
                       >
                     </li>
                     {% endif %}
-                    {% if perms.recruitment.add_stagenote or request.user|is_stagemanager %}
+                    {% if perms.recruitment.add_skillzonecandidate or request.user|is_stagemanager %}
+                    <li class="oh-dropdown__item">
+                      <a
+                        class="oh-dropdown__link oh-dropdown__link--secondary oh-activity-sidebar__open"
+                        data-toggle="oh-modal-toggle"
+                        data-target="#createModal"
+                        hx-get="{% url 'to-skill-zone' cand.id %}"
+                        hx-target="#createTarget"
+                        >{% trans "Add to Sill Zone" %}</a
+                      >
+                    </li>
+                    {% endif %}
+                    {% if perms.recruitment.add_rejectedcandidate or request.user|is_stagemanager %}
                     <li class="oh-dropdown__item">
                       <a
                         class="oh-dropdown__link oh-dropdown__link--secondary"

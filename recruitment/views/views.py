@@ -25,6 +25,7 @@ from django.db.models import ProtectedError
 from django.shortcuts import render, redirect
 from django.core import serializers
 from django.core.paginator import Paginator
+from attendance.methods.group_by import group_by_queryset
 from base.context_processors import check_candidate_self_tracking
 from base.models import EmailLog, JobPosition
 from django.contrib import messages
@@ -42,7 +43,6 @@ from horilla.decorators import (
 )
 from base.methods import export_data, generate_pdf, get_key_instances
 from recruitment.views.paginator_qry import paginator_qry
-from recruitment.pipeline_grouper import group_by_queryset
 from recruitment.models import (
     Recruitment,
     Candidate,
@@ -263,7 +263,7 @@ def recruitment_pipeline(request):
     filter_obj = RecruitmentFilter(request.GET)
     # is active filteration not providing on pipeline
     recruitments = filter_obj.qs.filter(is_active=True)
-    
+
     if request.GET.get("closed") == "closed":
         rec = Recruitment.objects.filter(closed=True)
         if rec.exists() and view == "card":
@@ -283,7 +283,7 @@ def recruitment_pipeline(request):
     recruitment_form = RecruitmentCreationForm()
     stage_form = StageDropDownForm()
     candidate_form = CandidateDropDownForm()
-    
+
     status = request.GET.get("closed")
     if not status:
         recruitments = recruitments.filter(closed=False)
@@ -638,21 +638,22 @@ def add_note(request, cand_id=None):
         )
         if form.is_valid():
             note, attachment_ids = form.save(commit=False)
-            note.stage_id = note.candidate_id.stage_id
+            candidate = Candidate.objects.get(id = cand_id)
+            note.candidate_id = candidate
+            note.stage_id = candidate.stage_id
             note.updated_by = request.user.employee_get
             note.save()
             note.stage_files.set(attachment_ids)
             messages.success(request, _("Note added successfully.."))
-            response = render(
-                request, "pipeline/pipeline_components/add_note.html", {"form": form}
-            )
-            return HttpResponse(
-                response.content.decode("utf-8") + "<script>location.reload();</script>"
-            )
+            
+            return HttpResponse("<script>window.location.reload()</script>")
+
+    candidate_obj = Candidate.objects.get(id = cand_id)
     return render(
         request,
-        "pipeline/pipeline_components/add_note.html",
+        "candidate/individual.html",
         {
+            "candidate": candidate_obj,
             "note_form": form,
         },
     )
@@ -669,22 +670,21 @@ def create_note(request, cand_id=None):
     if request.method == "POST":
         form = StageNoteForm(request.POST, request.FILES)
         if form.is_valid():
-            candidate = form.cleaned_data.get("candidate_id")
-            cand_id = candidate.id
             note, attachment_ids = form.save(commit=False)
-            note.stage_id = note.candidate_id.stage_id
+            candidate = Candidate.objects.get(id = cand_id)
+            note.candidate_id = candidate
+            note.stage_id = candidate.stage_id
             note.updated_by = request.user.employee_get
             note.save()
             note.stage_files.set(attachment_ids)
             messages.success(request, _("Note added successfully.."))
             return redirect("view-note", cand_id=cand_id)
-
+    candidate_obj = Candidate.objects.get(id=cand_id)
+    notes = candidate_obj.stagenote_set.all().order_by("-id")
     return render(
         request,
-        "pipeline/pipeline_components/create_note.html",
-        {
-            "note_form": form,
-        },
+        "pipeline/pipeline_components/view_note.html",
+        {"note_form": form, "cand": candidate_obj, "notes": notes},
     )
 
 
@@ -764,6 +764,28 @@ def add_more_files(request, id):
 
 
 @login_required
+@hx_request_required
+def add_more_individual_files(request, id):
+    """
+    This method is used to Add more files to the stage candidate note.
+    Args:
+        id : stage note instance id
+    """
+    note = StageNote.objects.get(id=id)
+    if request.method == "POST":
+        files = request.FILES.getlist("files")
+        files_ids = []
+        for file in files:
+            instance = StageFiles.objects.create(files=file)
+            files_ids.append(instance.id)
+
+            note.stage_files.add(instance.id)
+    # return redirect("candidate-view-individual", cand_id = note.candidate_id.id)
+    return HttpResponse("<script>window.location.reload()</script>")
+
+
+
+@login_required
 def delete_stage_note_file(request, id):
     """
     This method is used to delete the stage note file
@@ -774,6 +796,19 @@ def delete_stage_note_file(request, id):
     cand_id = file.stagenote_set.all().first().candidate_id.id
     file.delete()
     return redirect("view-note", cand_id=cand_id)
+
+
+@login_required
+def delete_individual_note_file(request, id):
+    """
+    This method is used to delete the stage note file
+    Args:
+        id : stage file instance id
+    """
+    file = StageFiles.objects.get(id=id)
+    cand_id = file.stagenote_set.all().first().candidate_id.id
+    file.delete()
+    return HttpResponse("<script>window.location.reload()</script>")
 
 
 @login_required
@@ -849,7 +884,8 @@ def stage_view(request):
     """
     This method is used to render all stages to a template
     """
-    stages = Stage.objects.filter()
+    stages = Stage.objects.all()
+    recruitments = group_by_queryset(stages,"recruitment_id", request.GET.get("rpage"),)
     filter_obj = StageFilter()
     form = StageCreationForm()
     if stages.exists():
@@ -863,10 +899,25 @@ def stage_view(request):
             "data": paginator_qry(stages, request.GET.get("page")),
             "form": form,
             "f": filter_obj,
+            'recruitments':recruitments
         },
     )
+def stage_data(request,rec_id):
+    stages = StageFilter(request.GET).qs.filter(recruitment_id__id=rec_id)
+    previous_data = request.GET.urlencode()
+    data_dict = parse_qs(previous_data)
+    get_key_instances(Stage, data_dict)
+    
+    return render(
+        request,
+        'stage/stage_component.html',
+        {
+            "data":paginator_qry(stages, request.GET.get("page")),
+            "filter_dict": data_dict,
+            'pd':request.GET.urlencode(),
+        }
 
-
+    )
 @login_required
 @manager_can_enter(perm="recruitment.change_stage")
 @hx_request_required
@@ -1057,12 +1108,13 @@ def candidate_view_card(request):
 
 
 @login_required
-@permission_required(perm="recruitment.view_candidate")
-def candidate_view_individual(request, cand_id, **kwargs):
+@manager_can_enter(perm="recruitment.view_candidate")
+def candidate_view_individual(request, cand_id):
     """
     This method is used to view profile of candidate.
     """
     candidate_obj = Candidate.objects.get(id=cand_id)
+    
 
     mails = list(Candidate.objects.values_list("email", flat=True))
     # Query the User model to check if any email is present
@@ -1708,10 +1760,8 @@ def skill_zone_cand_delete(request, sz_cand_id):
     return redirect(skill_zone_view)
 
 
-login_required
-manager_can_enter(perm="recruitment.change_candidate")
-
-
+@login_required
+@manager_can_enter(perm="recruitment.change_candidate")
 def to_skill_zone(request, cand_id):
     """
     This method is used to Add candidate into skill zone
@@ -1720,7 +1770,14 @@ def to_skill_zone(request, cand_id):
     """
     candidate = Candidate.objects.get(id=cand_id)
     template = "skill_zone_cand/to_skill_zone_form.html"
-    form = ToSkillZoneForm(initial={"candidate_id": candidate})
+    form = ToSkillZoneForm(
+        initial={
+            "candidate_id": candidate,
+            "skill_zone_ids": SkillZoneCandidate.objects.filter(
+                candidate_id=candidate
+            ).values_list("skill_zone_id", flat=True),
+        }
+    )
     if request.method == "POST":
         form = ToSkillZoneForm(request.POST)
         if form.is_valid():
@@ -1732,6 +1789,7 @@ def to_skill_zone(request, cand_id):
                     zone_candidate = SkillZoneCandidate()
                     zone_candidate.candidate_id = candidate
                     zone_candidate.skill_zone_id = zone
+                    zone_candidate.reason = form.cleaned_data["reason"]
                     zone_candidate.save()
             messages.success(request, "Candidate Added to skill zone successfullu")
             return HttpResponse("<script>window.location.reload()</script>")
