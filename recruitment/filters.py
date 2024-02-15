@@ -15,6 +15,7 @@ from recruitment.models import (
     SkillZoneCandidate,
     Stage,
     RecruitmentSurvey,
+    SurveyTemplate,
 )
 from base.filters import FilterSet
 
@@ -31,7 +32,9 @@ class CandidateFilter(FilterSet):
 
     name = django_filters.CharFilter(field_name="name", lookup_expr="icontains")
     # for pipeline use
-    candidate_name = django_filters.CharFilter(field_name="name", lookup_expr="icontains")
+    candidate_name = django_filters.CharFilter(
+        field_name="name", lookup_expr="icontains"
+    )
     start_date = django_filters.DateFilter(
         field_name="recruitment_id__start_date",
         widget=forms.DateInput(attrs={"type": "date"}),
@@ -151,6 +154,12 @@ class RecruitmentFilter(FilterSet):
         FilterSet (class): custom filter set class to apply styling
     """
 
+    candidate_name = django_filters.CharFilter(
+        field_name="title", method="pipeline_search"
+    )
+    search_onboarding = django_filters.CharFilter(
+        field_name="title", method="onboarding_search"
+    )
     description = django_filters.CharFilter(lookup_expr="icontains")
     start_date = django_filters.DateFilter(
         field_name="start_date", widget=forms.DateInput(attrs={"type": "date"})
@@ -226,6 +235,30 @@ class RecruitmentFilter(FilterSet):
         queryset = queryset | job_queryset
         return queryset.distinct()
 
+    def pipeline_search(self, queryset, _, value):
+        """
+        This method is used to search recruitment
+        """
+        queryset = (
+            queryset.filter(title__icontains=value)
+            | queryset.filter(stage_set__stage__icontains=value)
+            | queryset.filter(candidate__name__icontains=value)
+        )
+        return queryset.distinct()
+
+    def onboarding_search(self, queryset, _, value):
+        """
+        This method is used to search recruitment
+        """
+        queryset = (
+            queryset.filter(title__icontains=value)
+            | queryset.filter(onboarding_stage__stage_title__icontains=value)
+            | queryset.filter(
+                candidate__onboarding_stage__candidate_id__name__icontains=value
+            )
+        )
+        return queryset.distinct()
+
 
 class StageFilter(FilterSet):
     """
@@ -236,6 +269,7 @@ class StageFilter(FilterSet):
     """
 
     search = django_filters.CharFilter(method="filter_by_name")
+    candidate_name = django_filters.CharFilter(method="pipeline_search")
 
     class Meta:
         """
@@ -261,7 +295,7 @@ class StageFilter(FilterSet):
         parts = value.split()
         first_name = parts[0]
         last_name = " ".join(parts[1:]) if len(parts) > 1 else ""
-
+        recruitment_query = queryset.filter(recruitment_id__title__icontains=value)
         # Filter the queryset by first name and last name
         stage_queryset = queryset.filter(stage__icontains=value)
         if first_name and last_name:
@@ -278,7 +312,17 @@ class StageFilter(FilterSet):
                 stage_managers__employee_last_name__icontains=last_name
             )
 
-        return queryset | stage_queryset
+        queryset = queryset | stage_queryset | recruitment_query
+        return queryset
+
+    def pipeline_search(self, queryset, _, value):
+        """
+        This method is used to search recruitment
+        """
+        queryset = queryset.filter(stage__icontains=value) | queryset.filter(
+            candidate__name__icontains=value
+        )
+        return queryset.distinct()
 
 
 class SurveyFilter(FilterSet):
@@ -308,6 +352,20 @@ class SurveyFilter(FilterSet):
         exclude = [
             "sequence",
         ]
+
+
+class SurveyTemplateFilter(django_filters.FilterSet):
+    """
+    SurveyTemplateFilter
+    """
+    question = django_filters.CharFilter(
+        lookup_expr="icontains",
+        label="Title",
+        field_name="title",
+    )
+    class Meta:
+        model = SurveyTemplate
+        fields = "__all__"
 
 
 class CandidateReGroup:
@@ -342,7 +400,6 @@ class SkillZoneFilter(FilterSet):
             "skillzonecandidate_set__candidate_id__recruitment_id",
             "skillzonecandidate_set__candidate_id__job_position_id",
             "skillzonecandidate_set__candidate_id__stage_id__stage_type",
-            
         ]
 
 

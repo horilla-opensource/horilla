@@ -1,371 +1,406 @@
 {% load onboardingfilters %} {% load i18n %} {% load static %}
-
 <style>
-    .oh-accordion-meta__body .oh-sticky-table--no-overflow {
-        height:300px;
-    }
-    .select2-container .select2-selection.select2-selection--multiple{
-        padding: 5px !important;
-        max-height: 70px !important;
-        overflow: hidden;
-        overflow-y: scroll;
-      } 
+   .oh-accordion-meta__body .oh-sticky-table--no-overflow {
+   height:300px;
+   }
+   .select2-container .select2-selection.select2-selection--multiple{
+   padding: 5px !important;
+   max-height: 70px !important;
+   overflow: hidden;
+   overflow-y: scroll;
+   } 
 </style>
 <script src="{% static 'htmx/htmx.min.js' %}"></script>
-
-{% for stage in recruitment.onboarding_stage.all %}
-
+{% for stage in recruitment.stages %}
 <div class="oh-accordion-meta" >
-    <div class="oh-accordion-meta__item" id="onboarding_stage{{stage.id}}">
-        <div class="oh-accordion-meta__header oh-accordion-meta__header--show" {% if request.user.employee_get in stage.employee_id.all %} style="background-color: hsl(38.08deg 100% 50% / 8%);" {% endif %}>
-            <div style="display: -webkit-inline-box;"
+ <div class="oh-accordion-meta__item" id="onboarding_stage{{stage.grouper.id}}">
+    {% comment %} fixed {% endcomment %}
+    <div class="oh-accordion-meta__header oh-accordion-meta__header--show" 
+    {% if request.user.employee_get in stage.grouper.employee_id.all %} 
+    style="background-color: hsl(38.08deg 100% 50% / 8%);" 
+    {% endif %}>
+        <div style="display: -webkit-inline-box;"
+        >
+            <span class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round ms-2 mr-2 stage_count" title="{{stage.list|length}} {% trans 'Candidate' %}">{{stage.list|length}}</span>
+            <span class="oh-accordion-meta__title">{{stage.grouper}}</span>
+        </div>
+        {% if request.user|stage_manages:stage or perms.onboarding.change_onboardingstage or  perms.onboarding.delete_onboardingstage %}
+        <div class="oh-btn-group" style="margin-left:70%">
+            {% if request.user|stage_manages:stage or perms.onboarding.change_onboardingstage %}
+            <a
+                onclick="event.stopPropagation();"
+                hx-get="{% url 'stage-update' stage.grouper.id recruitment.id %}" 
+                hx-target="#updateStage"
+                data-toggle="oh-modal-toggle"
+                data-target="#editModal3"
+                class="oh-btn oh-btn--light-bkg w-100"
+                title="{% trans 'Edit' %}"
+                >
+                <ion-icon name="create-outline"></ion-icon
+                    >
+            </a>
+            {% else %}
+            <a
+                onclick="event.stopPropagation();"
+                data-toggle="oh-modal-toggle"
+                data-target="#editModal3"
+                class="oh-btn oh-btn--light-bkg w-100 oh-btn--disabled"
+                title="{% trans 'Edit' %}"
+                >
+                <ion-icon name="create-outline"></ion-icon
+                    >
+            </a>
+            {% endif %}
+            {% if request.user|stage_manages:stage or perms.onboarding.delete_onboardingstage %}
+            <form action="{% url 'stage-delete' stage.grouper.id %}"
+            onsubmit="return confirm('{% trans "Do you want to delete this stage?" %}')"
+            class="oh-dropdown__link oh-dropdown__link--danger"
             >
-                <span class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round ms-2 mr-2 stage_count" title="{{stage.candidate.count}} {% trans 'Candidate' %}">{{stage.candidate.count}}</span>
-                <span class="oh-accordion-meta__title">{{stage}}</span>
-            </div>
-            {% if request.user|stage_manages:stage or perms.onboarding.change_onboardingstage or  perms.onboarding.delete_onboardingstage %}
-                <div class="oh-btn-group" style="margin-left:70%">
-                    {% if request.user|stage_manages:stage or perms.onboarding.change_onboardingstage %}
-                        <a
-                            onclick="event.stopPropagation();"
-                            hx-get="{% url 'stage-update' stage.id recruitment.id %}" 
-                            hx-target="#updateStage"
-                            data-toggle="oh-modal-toggle"
-                            data-target="#editModal3"
-                            class="oh-btn oh-btn--light-bkg w-100"
-                            title="{% trans 'Edit' %}"
-                            ><ion-icon name="create-outline"></ion-icon
-                        ></a>
-                    {% else %}
-                        <a
-                            onclick="event.stopPropagation();"
-                            data-toggle="oh-modal-toggle"
-                            data-target="#editModal3"
-                            class="oh-btn oh-btn--light-bkg w-100 oh-btn--disabled"
-                            title="{% trans 'Edit' %}"
-                            ><ion-icon name="create-outline"></ion-icon
-                        ></a>
-                    {% endif %}
-                    {% if request.user|stage_manages:stage or perms.onboarding.delete_onboardingstage %}
-                        <form action="{% url 'stage-delete' stage.id %}"
-                            onsubmit="return confirm('{% trans "Do you want to delete this stage?" %}')"
-                            class="oh-dropdown__link oh-dropdown__link--danger"
-                        >
-                            <button
-                                onclick="event.stopPropagation();"
-                                type="submit"
-                                class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
-                                title="{% trans 'Remove' %}"
-                                >
-                                <ion-icon name="trash-outline"></ion-icon>
-                            </button>
-                        </form>
-                    {% else %}
-                        <button
-                            onclick="event.stopPropagation();"
-                            type="submit"
-                            class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100 oh-btn--disabled "
-                            title="{% trans 'Remove' %}"
-                            >
-                            <ion-icon name="trash-outline"></ion-icon>
-                        </button>
-                    {% endif %}
-                </div>
-                {% comment %} <div class="oh-accordion-meta__actions" onclick="event.stopPropagation()">
-                    <div class="oh-dropdown" x-data="{open: false}">
-                        <button class="oh-btn oh-stop-prop oh-accordion-meta__btn" @click="open = !open"
-                            @click.outside="open = false"
-                            title="{% trans "Action" %}">
-                            {% trans "Actions" %}
-                            <ion-icon class="ms-2 oh-accordion-meta__btn-icon" name="caret-down-outline"></ion-icon>
-                        </button>
-                        <div class="oh-dropdown__menu oh-dropdown__menu--right" x-show="open">
-                            <ul class="oh-dropdown__items">
-                                {% if request.user|stage_manages:stage or perms.onboarding.change_onboardingstage %}
-                                    <li class="oh-dropdown__item">
-                                        <a class="oh-dropdown__link" data-toggle="oh-modal-toggle" data-target="#editModal3"
-                                            hx-get="{% url 'stage-update' stage.id recruitment.id %}"
-                                            hx-target="#updateStage">{% trans "Edit" %}</a>
-                                    </li>
-                                {% endif %} {% endcomment %}
-                                {% if request.user|stage_manages:stage or perms.onboarding.change_onboardingstage %}
-                                    {% comment %} <li class="oh-dropdown__item">
-                                        <a class="oh-dropdown__link mb-2">{% trans "Bulk Change Stage" %}</a> {% endcomment %}
-                                            <select id="" 
-                                                    class="w-100 bulkStageChange" 
-                                                    style="border: 1px solid hsl(213deg,22%,84%);
-                                                           padding: 0.3rem 0.8rem 0.3rem 0.3rem;
-                                                           border-radius: 0rem;" name="stage"
-                                                    data-stage = "#onboarding_stage{{stage.id}}"
-                                                    data-recruitment = {{recruitment.id}}
-                                                    title = "Bulk stage change"
-                                                    onchange = "bulkStageChange(this)">
-                                                {% for on_stage in recruitment.onboarding_stage.all %}
-                                                    {% if on_stage == stage %}
-                                                        <option value="{{on_stage.id}}" selected>{{on_stage}}</option>
-                                                    {% else %}
-                                                        <option value="{{on_stage.id}}">{{on_stage}}</option>
-                                                    {% endif %}
-                                                {% endfor %}
-                                            </select>
-                                    {% comment %} </li> {% endcomment %}
-                                {% endif %}
-                                {% comment %} {% if request.user|stage_manages:stage or perms.onboarding.delete_onboardingstage %}
-                                    <li class="oh-dropdown__item">
-                                        <a href="{% url 'stage-delete' stage.id %}"
-                                            onclick="return confirm('{% trans "Do you want to delete this stage?" %}')"
-                                            class="oh-dropdown__link oh-dropdown__link--danger">{% trans "Delete" %}
-                                        </a>
-                                    </li>
-                                {% endif %}
-                            </ul>
-                        </div>
-                    </div>
-                </div> {% endcomment %}
+            <button
+                onclick="event.stopPropagation();"
+                type="submit"
+                class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+                title="{% trans 'Remove' %}"
+                >
+                <ion-icon name="trash-outline"></ion-icon>
+            </button>
+            </form>
+            {% else %}
+            <button
+                onclick="event.stopPropagation();"
+                type="submit"
+                class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100 oh-btn--disabled "
+                title="{% trans 'Remove' %}"
+                >
+                <ion-icon name="trash-outline"></ion-icon>
+            </button>
+            {% endif %}
+            {% if request.user|stage_manages:stage or perms.onboarding.change_onboardingstage %}
+            <select id="" 
+            class="w-100 bulkStageChange" 
+            style="border: 1px solid hsl(213deg,22%,84%);
+            padding: 0.3rem 0.8rem 0.3rem 0.3rem;
+            border-radius: 0rem;" name="stage"
+            data-stage = "#onboarding_stage{{stage.grouper.id}}"
+            data-recruitment = {{recruitment.id}}
+            title = "Bulk stage change"
+            onclick="event.stopPropagation();"
+            onchange = "bulkStageChange(this);">
+                {% for on_stage in recruitment.onboarding_stage.all %}
+                {% if on_stage == stage %}
+                <option value="{{on_stage.id}}" selected>{{on_stage}}</option>
+                {% else %}
+                <option value="{{on_stage.id}}">{{on_stage}}</option>
+                {% endif %}
+                {% endfor %}
+            </select>
             {% endif %}
         </div>
-        <div class="oh-accordion-meta__body onboarding_items">    
-            <div class="oh-sticky-table oh-sticky-table--no-overflow mb-5">
-                <div class="oh-sticky-table__table">
-                    <div class="oh-sticky-table__thead">
-                        <div class="oh-sticky-table__tr">
-                            <div class="oh-sticky-table__th" style="width:10px;">
-                                <div class="centered-div">
-                                    <input
-                                      type="checkbox"
-                                      class="oh-input payslip-checkbox oh-input__checkbox select-all"
-                                      data-stage="#onboarding_stage{{stage.id}}"
-                                      onclick="event.stopPropagation()"
-                                      onchange="select_all(this)"
-                                        />
-                                    </div>
-                            </div>
-                            <div class="oh-sticky-table__th">{% trans "Candidate" %}</div>
-                            <div class="oh-sticky-table__th">{% trans "Email" %}</div>
-                            <div class="oh-sticky-table__th">{% trans "Job Position" %}</div>
-                            <div class="oh-sticky-table__th">{% trans "Mobile" %}</div>
-                            <div class="oh-sticky-table__th">{% trans "Joining Date" %}</div>
-                            <div class="oh-sticky-table__th">{% trans "Portal Status" %}</div>
-                            <div class="oh-sticky-table__th">{% trans "Task Status" %}</div>
-                            <div class="oh-sticky-table__th">{% trans "Stage" %}</div>
-                            <div class="oh-sticky-table__th">{% trans "Options" %}</div>
-                            {% for task in stage.onboarding_task.all %}
-                                <div class="oh-sticky-table__th" style="width: 250px;">
-                                    <div class="d-flex align-items-center justify-content-between">
-                                        <span title="{{task}}">{{task|truncatechars:20}}</span>
-                                        {% if request.user|stage_manages:stage or perms.onboarding.change_onboardingtask or perms.onboarding.delete_onboardingtask %}
-                                            <div class="oh-dropdown" x-data="{open: false}">
-                                                <button class="oh-btn oh-stop-prop oh-btn--transparent oh-accordion-meta__btn"
-                                                    @click="open = !open" @click.outside="open = false"
-                                                    title="{% trans "Actions" %}">
-                                                    <ion-icon name="ellipsis-vertical"></ion-icon>
-                                                </button>
-                                                <div class="oh-dropdown__menu oh-dropdown__menu--right" x-show="open" style="text-align:left !important">
-                                                    <ul class="oh-dropdown__items">
-                                                        {% if request.user|stage_manages:stage or perms.onboarding.change_onboardingtask %}
-                                                            <li class="oh-dropdown__item">
-                                                                <a class="oh-dropdown__link" data-toggle="oh-modal-toggle"
-                                                                    data-target="#editModal4"
-                                                                    hx-get="{% url 'task-update' task.id %}"
-                                                                    hx-target="#updateTask">{% trans "Edit" %}
-                                                                </a>
-                                                            </li>
-                                                        {% endif %}
-                                                        {% if request.user|stage_manages:stage or perms.onboarding.change_onboardingstage %}
-                                                            <li class="oh-dropdown__item">
-                                                                <a class="oh-dropdown__link mb-2">{% trans "Bulk Change Task" %}</a>
-                                                                    <select id="" class="w-100 bulkTaskChange" style="
-                                                                    border: 1px solid hsl(213deg,22%,84%);
-                                                                    padding: 0.3rem 0.8rem 0.3rem 0.3rem;
-                                                                    border-radius: 0rem;" name="stage"
-                                                                    data-task = "{{task.id}}" onchange = "bulkTaskChange(this)">
-                                                                    {% for choice in choices %}
-                                                                    <option value="{{choice.0}}">{{choice.1}}</option>
-                                                                    {% endfor %}
-                                                                </select>
-                                                            </li>
-                                                        {% endif %}
-                                                        {% if request.user|stage_manages:stage or perms.onboarding.delete_onboardingtask %}
-                                                            <li class="oh-dropdown__item">
-                                                                <a class="oh-dropdown__link oh-dropdown__link--danger"
-                                                                    href="{% url 'task-delete' task.id  %}"
-                                                                    onclick="return confirm('Do you want to delete this task?')">{% trans "Delete" %}</a>
-                                                            </li>
-                                                        {% endif %}
-                                                    </ul>
-                                                </div>
-                                            </div>
-                                        {% endif %}
-                                    </div>
-                                </div>
-                            {% endfor %}
-                            {% if request.user|stage_manages:stage or perms.onboarding.add_onboardingtask %}
-                                <div class="oh-sticky-table__th">
-                                    <button class="oh-btn oh-btn--small oh-btn--secondary oh-tabs__action-new-table"
-                                        data-toggle="oh-modal-toggle" data-target="#editModal2"
-                                        hx-get="{% url 'task-creation' %}?stage_id={{stage.id}}" hx-target="#taskForm">
-                                        <ion-icon class="me-1 md hydrated" name="add-outline" role="img"
-                                            aria-label="add outline"></ion-icon>{% trans "Task" %}
-                                    </button>
-                                </div>
-                            {% endif %}
-                        </div>
-                    </div>
-                    <div class="oh-sticky-table__tbody candidate-container">
-                        {% for candidate in stage.candidate.all %}
-                            {% if candidate.candidate_id.recruitment_id == recruitment %}
-                                <div class="oh-sticky-table__tr oh-multiple-table-sort__movable change-cand"
-                                    data-candidate-id="{{candidate.candidate_id}}" data-drop="candidate" 
-                                    data-change-cand-id="{{candidate.candidate_id}}" 
-                                    data-candidate="{{candidate.candidate_id}}" 
-                                    data-job-position = "{{candidate.candidate_id.job_position_id}}"
-                                    data-join-date="{{candidate.candidate_id.joining_date}}"
-                                    data-portal-count="{{candidate.candidate_id.onboarding_portal.count}}"
-                                    data-toggle="oh-modal-toggle" data-target="#tableTimeOff"
-                                    hx-get="{% url 'candidate-single-view' candidate.candidate_id.id %}" hx-target="#singleView"
-                                    >
-                                    <div class="oh-sticky-table__sd" onclick="event.stopPropagation()">
-                                        <div class="oh-profile oh-profile--md">
-                                            <div class="centered-div">
-                                                <input
-                                                  type="checkbox"
-                                                  id="{{candidate.candidate_id.id}}"
-                                                  value="{{candidate.candidate_id.id}}"
-                                                  class="oh-input payslip-checkbox oh-input__checkbox checkbox-row"
-                                                  onchange="$(this).closest('.oh-sticky-table__tr').toggleClass('highlight-selected', $(this).is(':checked'))"
-                                                />
-                                              </div>
-                                        </div>
-                                    </div>
-                                    <div class="oh-sticky-table__td">
-                                        <div class="oh-profile oh-profile--md">
-                                            <div class="oh-profile__avatar mr-1">
-                                                    <img src="{{candidate.candidate_id.get_avatar}}"
-                                                        class="oh-profile__image" alt="" />
-                                            </div>
-                                            <span class="oh-profile__name oh-text--dark">{{candidate.candidate_id}}</span>
-                                        </div>
-                                    </div>
-                                    <div class="oh-sticky-table__td">{{candidate.candidate_id.email}}</div>
-                                    <div class="oh-sticky-table__td">{{candidate.candidate_id.job_position_id}}</div>
-                                    <div class="oh-sticky-table__td">{{candidate.candidate_id.mobile}}</div>
-                                    <div class="oh-sticky-table__td dateformat_changer">{{candidate.candidate_id.joining_date}}</div>
-                                    <div class="oh-sticky-table__td">
-                                        <div class="oh-checkpoint-badge oh-checkpoint-badge--secondary" >
-                                            {% if candidate.candidate_id.onboarding_portal.count %}
-                                            {{candidate.candidate_id.onboarding_portal.count}} / 4
-                                            {% else %}
-                                            0 / 4
-                                            {% endif %}
-                                        </div>
-                                    </div>
-                                    <div class="oh-sticky-table__td">
-                                        <div class="oh-checkpoint-badge oh-checkpoint-badge--primary" >
-                                            {{candidate.task_completion_ratio}} 
-                                        </div>
-                                    </div>
-                                    <div class="oh-sticky-table__td" onclick="event.stopPropagation()">
-                                        {% if request.user|stage_manages:stage or perms.onboarding.change_candidatestage %}
-                                            <select id="" class="w-100" style="
-                                                border: 1px solid hsl(213deg,22%,84%);
-                                                padding: 0.3rem 0.8rem 0.3rem 0.3rem;
-                                                border-radius: 0rem;" name="stage"
-                                                hx-post="{% url 'candidate-stage-update' candidate.candidate_id.id recruitment.id %}"
-                                                hx-trigger="change" hx-target="#onboardingTable{{recruitment.id}}">
-                                                {% for stage in recruitment.onboarding_stage.all %}
-                                                    {% if candidate.onboarding_stage_id == stage %}
-                                                        <option value="{{stage.id}}" selected>{{stage}}</option>
-                                                    {% else %}
-                                                        <option value="{{stage.id}}">{{stage}}</option>
-                                                    {% endif %}
-                                                {% endfor %}
-                                            </select>
-                                        {% else %}
-                                            {% for stage in recruitment.onboarding_stage.all %}
-                                                {% if candidate.onboarding_stage_id == stage %}
-                                                    {{stage}}
-                                                {% endif %}
-                                            {% endfor %}
-                                        {% endif %}
-                                    </div>
-                                    <div class="oh-sticky-table__td" onclick="event.stopPropagation()">
-                                        <button class="oh-checkpoint-badge text-success" data-toggle="oh-modal-toggle" data-target="#sendMailModal" hx-get="{% url 'send-mail' candidate.candidate_id.id %}" hx-target="#sendMailModalBody">
-                                            {% trans "Send mail" %}
-                                        </button>
-                                    </div>
-                                    {% for task in stage.onboarding_task.all %}
-                                    <div class="oh-sticky-table__td" onclick="event.stopPropagation()" id="task{{task.id}}{{candidate.candidate_id.id}}">
-                                        {% if request.user|task_manager:task or perms.onboarding.change_candidatetask %}
-                                            {% include 'onboarding/candidate_task.html' %}
-                                        {% else %}
-                                            {% for choice in choices %}
-                                                {% if choice.0 == task.status %}
-                                                    {{choice.1}}
-                                                {% endif %}
-                                            {% endfor %}
-                                        {% endif %}
-                                    </div>
-                                    {% endfor %}
-                                </div> 
-                            {% endif %}
-                        {% endfor %} 
-                    </div>
-                </div>
-            </div>
-        </div>
+        {% endif %}
     </div>
-</div><br>
+    {% comment %} fixed {% endcomment %}
+
+   <div class="oh-accordion-meta__body onboarding_items">
+      {% comment %} fixed {% endcomment %}
+      <div class="oh-sticky-table oh-sticky-table--no-overflow mb-5">
+         <div class="oh-sticky-table__table">
+            <div class="oh-sticky-table__thead">
+               <div class="oh-sticky-table__tr">
+                  <div class="oh-sticky-table__th" style="width:10px;">
+                     <div class="centered-div">
+                        <input
+                           type="checkbox"
+                           class="oh-input payslip-checkbox oh-input__checkbox select-all"
+                           data-stage="#onboarding_stage{{stage.grouper.id}}"
+                           onclick="event.stopPropagation()"
+                           onchange="select_all(this)"
+                           />
+                     </div>
+                  </div>
+                  <div class="oh-sticky-table__th">{% trans "Candidate" %}</div>
+                  <div class="oh-sticky-table__th">{% trans "Email" %}</div>
+                  <div class="oh-sticky-table__th">{% trans "Job Position" %}</div>
+                  <div class="oh-sticky-table__th">{% trans "Mobile" %}</div>
+                  <div class="oh-sticky-table__th">{% trans "Joining Date" %}</div>
+                  <div class="oh-sticky-table__th">{% trans "Portal Status" %}</div>
+                  <div class="oh-sticky-table__th">{% trans "Task Status" %}</div>
+                  <div class="oh-sticky-table__th">{% trans "Stage" %}</div>
+                  <div class="oh-sticky-table__th">{% trans "Options" %}</div>
+                  {% for task in stage.grouper.onboarding_task.all %}
+                  <div class="oh-sticky-table__th" style="width: 250px;">
+                     <div class="d-flex align-items-center justify-content-between">
+                        <span title="{{task}}">{{task|truncatechars:20}}</span>
+                        {% if request.user|stage_manages:stage or perms.onboarding.change_onboardingtask or perms.onboarding.delete_onboardingtask %}
+                        <div class="oh-dropdown" x-data="{open: false}">
+                           <button class="oh-btn oh-stop-prop oh-btn--transparent oh-accordion-meta__btn"
+                           @click="open = !open" @click.outside="open = false"
+                           title="{% trans "Actions" %}">
+                           <ion-icon name="ellipsis-vertical"></ion-icon>
+                           </button>
+                           <div class="oh-dropdown__menu oh-dropdown__menu--right" x-show="open" style="text-align:left !important">
+                              <ul class="oh-dropdown__items">
+                                 {% if request.user|stage_manages:stage or perms.onboarding.change_onboardingtask %}
+                                 <li class="oh-dropdown__item">
+                                    <a class="oh-dropdown__link" data-toggle="oh-modal-toggle"
+                                       data-target="#editModal4"
+                                       hx-get="{% url 'task-update' task.id %}"
+                                       hx-target="#updateTask">{% trans "Edit" %}
+                                    </a>
+                                 </li>
+                                 {% endif %}
+                                 {% if request.user|stage_manages:stage or perms.onboarding.change_onboardingstage %}
+                                 <li class="oh-dropdown__item">
+                                    <a class="oh-dropdown__link mb-2">{% trans "Bulk Change Task" %}</a>
+                                    <select id="" class="w-100 bulkTaskChange" style="
+                                       border: 1px solid hsl(213deg,22%,84%);
+                                       padding: 0.3rem 0.8rem 0.3rem 0.3rem;
+                                       border-radius: 0rem;" name="stage"
+                                       data-task = "{{task.id}}" onchange = "bulkTaskChange(this)">
+                                       {% for choice in choices %}
+                                       <option value="{{choice.0}}">{{choice.1}}</option>
+                                       {% endfor %}
+                                    </select>
+                                 </li>
+                                 {% endif %}
+                                 {% if request.user|stage_manages:stage or perms.onboarding.delete_onboardingtask %}
+                                 <li class="oh-dropdown__item">
+                                    <a class="oh-dropdown__link oh-dropdown__link--danger"
+                                       href="{% url 'task-delete' task.id  %}"
+                                       onclick="return confirm('Do you want to delete this task?')">{% trans "Delete" %}</a>
+                                 </li>
+                                 {% endif %}
+                              </ul>
+                           </div>
+                        </div>
+                        {% endif %}
+                     </div>
+                  </div>
+                  {% endfor %}
+                  {% if request.user|stage_manages:stage or perms.onboarding.add_onboardingtask %}
+                  <div class="oh-sticky-table__th">
+                     <button class="oh-btn oh-btn--small oh-btn--secondary oh-tabs__action-new-table"
+                        data-toggle="oh-modal-toggle" data-target="#editModal2"
+                        hx-get="{% url 'task-creation' %}?stage_id={{stage.grouper.id}}" hx-target="#taskForm">
+                        <ion-icon class="me-1 md hydrated" name="add-outline" role="img"
+                           aria-label="add outline"></ion-icon>
+                        {% trans "Task" %}
+                     </button>
+                  </div>
+                  {% endif %}
+               </div>
+            </div>
+            <div class="oh-sticky-table__tbody candidate-container">
+               {% for candidate in stage.list %}
+               {% if candidate.candidate_id.recruitment_id == recruitment %}
+               <div class="oh-sticky-table__tr oh-multiple-table-sort__movable change-cand"
+                  data-candidate-id="{{candidate.candidate_id}}" data-drop="candidate" 
+                  data-change-cand-id="{{candidate.candidate_id}}" 
+                  data-candidate="{{candidate.candidate_id}}" 
+                  data-job-position = "{{candidate.candidate_id.job_position_id}}"
+                  data-join-date="{{candidate.candidate_id.joining_date}}"
+                  data-portal-count="{{candidate.candidate_id.onboarding_portal.count}}"
+                  data-toggle="oh-modal-toggle" data-target="#tableTimeOff"
+                  hx-get="{% url 'candidate-single-view' candidate.candidate_id.id %}" hx-target="#singleView"
+                  >
+                  <div class="oh-sticky-table__sd" onclick="event.stopPropagation()">
+                     <div class="oh-profile oh-profile--md">
+                        <div class="centered-div">
+                           <input
+                              type="checkbox"
+                              id="{{candidate.candidate_id.id}}"
+                              value="{{candidate.candidate_id.id}}"
+                              class="oh-input payslip-checkbox oh-input__checkbox checkbox-row"
+                              onchange="$(this).closest('.oh-sticky-table__tr').toggleClass('highlight-selected', $(this).is(':checked'))"
+                              />
+                        </div>
+                     </div>
+                  </div>
+                  <div class="oh-sticky-table__td">
+                     <div class="oh-profile oh-profile--md">
+                        <div class="oh-profile__avatar mr-1">
+                           <img src="{{candidate.candidate_id.get_avatar}}"
+                              class="oh-profile__image" alt="" />
+                        </div>
+                        <span class="oh-profile__name oh-text--dark">{{candidate.candidate_id}}</span>
+                     </div>
+                  </div>
+                  <div class="oh-sticky-table__td">{{candidate.candidate_id.email}}</div>
+                  <div class="oh-sticky-table__td">{{candidate.candidate_id.job_position_id}}</div>
+                  <div class="oh-sticky-table__td">{{candidate.candidate_id.mobile}}</div>
+                  <div class="oh-sticky-table__td dateformat_changer">{{candidate.candidate_id.joining_date}}</div>
+                  <div class="oh-sticky-table__td">
+                     <div class="oh-checkpoint-badge oh-checkpoint-badge--secondary" >
+                        {% if candidate.candidate_id.onboarding_portal.count %}
+                        {{candidate.candidate_id.onboarding_portal.count}} / 4
+                        {% else %}
+                        0 / 4
+                        {% endif %}
+                     </div>
+                  </div>
+                  <div class="oh-sticky-table__td">
+                     <div class="oh-checkpoint-badge oh-checkpoint-badge--primary" >
+                        {{candidate.task_completion_ratio}} 
+                     </div>
+                  </div>
+                  <div class="oh-sticky-table__td" onclick="event.stopPropagation()">
+                     {% if request.user|stage_manages:stage or perms.onboarding.change_candidatestage %}
+                     <select id="" class="w-100" style="
+                        border: 1px solid hsl(213deg,22%,84%);
+                        padding: 0.3rem 0.8rem 0.3rem 0.3rem;
+                        border-radius: 0rem;" name="stage"
+                        hx-post="{% url 'candidate-stage-update' candidate.candidate_id.id recruitment.id %}"
+                        hx-trigger="change" hx-target="#onboardingTable{{recruitment.id}}">
+                        {% for stage in recruitment.onboarding_stage.all %}
+                        {% if candidate.onboarding_stage_id == stage %}
+                        <option value="{{stage.id}}" selected>{{stage}}</option>
+                        {% else %}
+                        <option value="{{stage.id}}">{{stage}}</option>
+                        {% endif %}
+                        {% endfor %}
+                     </select>
+                     {% else %}
+                     {% for stage in recruitment.onboarding_stage.all %}
+                     {% if candidate.onboarding_stage_id == stage %}
+                     {{stage}}
+                     {% endif %}
+                     {% endfor %}
+                     {% endif %}
+                  </div>
+                  <div class="oh-sticky-table__td" onclick="event.stopPropagation()">
+                     <button class="oh-checkpoint-badge text-success" data-toggle="oh-modal-toggle" data-target="#sendMailModal" hx-get="{% url 'send-mail' candidate.candidate_id.id %}" hx-target="#sendMailModalBody">
+                     {% trans "Send mail" %}
+                     </button>
+                  </div>
+                  {% for task in stage.grouper.onboarding_task.all %}
+                  <div class="oh-sticky-table__td" onclick="event.stopPropagation()" id="task{{task.id}}{{candidate.candidate_id.id}}">
+                     {% if request.user|task_manager:task or perms.onboarding.change_candidatetask %}
+                     {% include 'onboarding/candidate_task.html' %}
+                     {% else %}
+                     {% for choice in choices %}
+                     {% if choice.0 == task.status %}
+                     {{choice.1}}
+                     {% endif %}
+                     {% endfor %}
+                     {% endif %}
+                  </div>
+                  {% endfor %}
+               </div>
+               {% endif %}
+               {% endfor %} 
+            </div>
+         </div>
+      </div>
+      {% comment  %}till heree{% endcomment %}
+
+      <div class="oh-pagination">
+        {% if stage.list.paginator.num_pages %}
+         <span class="oh-pagination__page">
+         {% trans "Page" %} {{ stage.list.number }} {% trans "of" %} {{ stage.list.paginator.num_pages }}.
+         </span>
+         <nav class="oh-pagination__nav">
+            <div class="oh-pagination__input-container me-3">
+               <span class="oh-pagination__label me-1">{% trans "Page" %}</span>
+               <input
+                  type="number"
+                  name="{{stage.dynamic_name}}"
+                  class="oh-pagination__input"
+                  value="{{stage.list.number}}"
+                  href="?{{pd}}"
+                  min="1"
+                  />
+               <span class="oh-pagination__label"
+                  >{% trans "of" %} {{stage.list.paginator.num_pages}}</span
+                  >
+            </div>
+            <ul class="oh-pagination__items">
+               {% if stage.list.has_previous %}
+               <li class="oh-pagination__item oh-pagination__item--wide">
+                  <a
+                     href="?{{pd}}&{{stage.dynamic_name}}=1"
+                     class="oh-pagination__link"
+                     >{% trans "First" %}</a
+                     >
+               </li>
+               <li class="oh-pagination__item oh-pagination__item--wide">
+                  <a
+                     href="?{{pd}}&{{stage.dynamic_name}}={{ stage.list.previous_page_number }}"
+                     class="oh-pagination__link"
+                     >{% trans "Previous" %}</a
+                     >
+               </li>
+               {% endif %} 
+               {% if stage.list.has_next %}
+               <li class="oh-pagination__item oh-pagination__item--wide">
+                  <a
+                     href="?{{pd}}&{{stage.dynamic_name}}={{ stage.list.next_page_number }}"
+                     class="oh-pagination__link"
+                     >{% trans "Next" %}</a
+                     >
+               </li>
+               <li class="oh-pagination__item oh-pagination__item--wide">
+                  <a
+                     href="?{{pd}}&{{stage.dynamic_name}}={{ stage.list.paginator.num_pages }}"
+                     class="oh-pagination__link"
+                     >{% trans "Last" %}</a
+                     >
+               </li>
+               {% endif %}
+            </ul>
+         </nav>
+         {% endif %}
+      </div>
+
+   </div>
+</div>
+</div>
 {% endfor %}
-
 <script>
-    
-    function bulkTaskChange(element){
-        let NewStatus = $(element).val();
-        let Task = $(element).data("task");
-        let checkbox = $("input[type='checkbox']:checked")
-        let ids =[] 
-        checkbox.each(function(index){
-            ids.push(parseInt($(this).val()))
-        })
-        
-        ids=ids.filter(value => !isNaN(value))
-        $.ajax({
-            type: "POST",
-            url: '/onboarding/candidate-task-bulk-update',
-            data: { 
-                "ids": JSON.stringify(ids),
-                "task": Task,
-                "status": NewStatus,
-                csrfmiddlewaretoken: getCookie("csrftoken"),
-
-             },
-            success: function (response) {
-                for (let i of ids) {
-                    var tasks = $(`[data-onboarding-task-id=${Task}][data-candidate-id=${i}]`);
-                    tasks.val(NewStatus);
-                }
-                var alertContainer = $('<div class="oh-alert-container">');
-                var message = "{% trans 'Candidates stage updated successfully...' %}"
-                var alertDiv = $('<div class="oh-alert oh-alert--animated oh-alert--info">').text(`${ids.length} ${message}`);
-                alertContainer.append(alertDiv);
-                $(".messages").html(alertContainer);
+   function bulkTaskChange(element){
+       let NewStatus = $(element).val();
+       let Task = $(element).data("task");
+       let checkbox = $("input[type='checkbox']:checked")
+       let ids =[] 
+       checkbox.each(function(index){
+           ids.push(parseInt($(this).val()))
+       })
+       
+       ids=ids.filter(value => !isNaN(value))
+       $.ajax({
+           type: "POST",
+           url: '/onboarding/candidate-task-bulk-update',
+           data: { 
+               "ids": JSON.stringify(ids),
+               "task": Task,
+               "status": NewStatus,
+               csrfmiddlewaretoken: getCookie("csrftoken"),
+   
             },
-            error: () => {
-                console.log("error")
-            }
-              
-        })
-    }
-    $(document).ready(function() {
-        
-
-        $("select[name='stage']").on("htmx:afterRequest", function(event, xhr, data) {
-            var alertContainer = $('<div class="oh-alert-container">');
-            var alertDiv = $('<div class="oh-alert oh-alert--animated oh-alert--info">').text("{% trans 'Candidate task stage updated successfully..' %}")
-            
-            alertContainer.append(alertDiv);
-            $(".messages").html(alertContainer);
-        });
-    });
-    </script>
-
+           success: function (response) {
+               for (let i of ids) {
+                   var tasks = $(`[data-onboarding-task-id=${Task}][data-candidate-id=${i}]`);
+                   tasks.val(NewStatus);
+               }
+               var alertContainer = $('<div class="oh-alert-container">');
+               var message = "{% trans 'Candidates stage updated successfully...' %}"
+               var alertDiv = $('<div class="oh-alert oh-alert--animated oh-alert--info">').text(`${ids.length} ${message}`);
+               alertContainer.append(alertDiv);
+               $(".messages").html(alertContainer);
+           },
+           error: () => {
+               console.log("error")
+           }
+             
+       })
+   }
+   $(document).ready(function() {
+       
+   
+       $("select[name='stage']").on("htmx:afterRequest", function(event, xhr, data) {
+           var alertContainer = $('<div class="oh-alert-container">');
+           var alertDiv = $('<div class="oh-alert oh-alert--animated oh-alert--info">').text("{% trans 'Candidate task stage updated successfully..' %}")
+           
+           alertContainer.append(alertDiv);
+           $(".messages").html(alertContainer);
+       });
+   });
+</script>

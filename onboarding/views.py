@@ -32,6 +32,7 @@ from horilla import settings
 from horilla.decorators import login_required, hx_request_required
 from horilla.decorators import permission_required
 from base.methods import generate_pdf, get_key_instances, get_pagination, sortby
+from onboarding.filters import OnboardingCandidateFilter, OnboardingStageFilter
 from recruitment.forms import RejectedCandidateForm
 from recruitment.models import Candidate, Recruitment, RecruitmentMailTemplate, RejectedCandidate
 from recruitment.filters import CandidateFilter, RecruitmentFilter
@@ -58,6 +59,7 @@ from onboarding.decorators import (
     stage_manager_can_enter,
     recruitment_manager_can_enter,
 )
+from recruitment.pipeline_grouper import group_by_queryset
 
 
 @login_required
@@ -677,6 +679,47 @@ def email_send(request):
 
     return HttpResponse("<script>window.location.reload()</script>")
 
+def onboarding_query_grouper(request,queryset):
+    """
+    This method is used to make group of the onboarding records
+    """
+    groups = []
+    for rec in queryset:
+        stages = OnboardingStageFilter(request.GET, queryset=rec.onboarding_stage.all()).qs
+        all_stages_grouper = []
+        for stage_in_all in stages.order_by("sequence"):
+            all_stages_grouper.append({"grouper": stage_in_all, "list": []})
+        data = {"recruitment": rec, "stages": []}
+        for stage in stages.order_by("sequence"):
+            stage_candidates = OnboardingCandidateFilter(
+                request.GET,
+                stage.candidate.order_by("sequence").filter(
+                    candidate_id__is_active=True,
+                ),
+            ).qs
+
+            page_name = "page" + stage.stage_title + str(rec.id)
+            grouper = group_by_queryset(
+                stage_candidates,
+                "onboarding_stage_id",
+                request.GET.get(page_name),
+                page_name,
+            ).object_list
+            data["stages"] = data["stages"] + grouper
+        existing_grouper_ids = {item["grouper"].id for item in data["stages"]}
+        for item in all_stages_grouper:
+            if item["grouper"].id not in existing_grouper_ids:
+                data["stages"].append(
+                    {
+                        "grouper": item["grouper"],
+                        "list": [],
+                        "dynamic_name": f'dynamic_page_page{item["grouper"].id}',
+                    }
+                )
+
+        groups.append(data)
+    return groups
+
 
 @login_required
 @all_manager_can_enter("onboarding.view_candidatestage")
@@ -690,59 +733,39 @@ def onboarding_view(request):
     Returns:
     GET : return onboarding view template
     """
-    candidates = Candidate.objects.filter(hired=True, start_onboard=True)
-    job_positions = JobPosition.objects.all()
-    # for candidate in candidates:
-    #     recruitment =candidate.recruitment_id
-    #     if not CandidateStage.objects.filter(candidate_id=candidate).exists():
-    #         try:
-    #             onboarding_stage = OnboardingStage.objects.filter(
-    #                 recruitment_id=candidate.recruitment_id
-    #             ).order_by("sequence")[0]
-    #             CandidateStage(
-    #                 candidate_id=candidate, onboarding_stage_id=onboarding_stage
-    #             ).save()
-    #         except Exception:
-    #             messages.error(
-    #                 request,
-    #                 _("%(recruitment)s has no stage..")
-    #                 % {"recruitment": candidate.recruitment_id},
-    #             )
-    #     if tasks := OnboardingTask.objects.filter(
-    #         recruitment_id=candidate.recruitment_id
-    #     ):
-    #         for task in tasks:
-    #             if not CandidateTask.objects.filter(
-    #                 candidate_id=candidate, onboarding_task_id=task
-    #             ).exists():
-    #                 CandidateTask(
-    #                     candidate_id=candidate, onboarding_task_id=task
-    #                 ).save()
-
-    recruitments = Recruitment.objects.filter(closed=False)
-    status = "closed"
-    if request.GET.get("closed") == "closed":
-        recruitments = Recruitment.objects.filter(closed=True)
-        status = "closed"
-    else:
-        status = ""
+    filter_obj = RecruitmentFilter(request.GET)
+    # is active filteration not providing on pipeline
+    recruitments = filter_obj.qs.filter(is_active=True)
+    
+    status = request.GET.get("closed")
+    if not status:
+        recruitments = recruitments.filter(closed=False)
 
     onboarding_stages = OnboardingStage.objects.all()
     choices = CandidateTask.choice
     previous_data = request.GET.urlencode()
-    filter_obj = RecruitmentFilter(request.GET, queryset=recruitments)
-    paginator = Paginator(filter_obj.qs, 4)
+    paginator = Paginator(recruitments, 4)
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
-
+    groups = onboarding_query_grouper(request,page_obj)
+    for item in groups:
+        setattr(item["recruitment"], "stages", item["stages"])
+    filter_dict = parse_qs(request.GET.urlencode())
+    if not request.GET.get("closed"):
+        filter_obj.form.initial["closed"] = False
+        filter_dict["closed"] = ["false"]
+    for key, val in filter_dict.copy().items():
+        if val[0] == "unknown" or key == "view":
+            del filter_dict[key]
     return render(
         request,
         "onboarding/onboarding_view.html",
         {
             "recruitments": page_obj,
+            "rec_filter_obj": filter_obj,
             "onboarding_stages": onboarding_stages,
             "choices": choices,
-            "job_positions": job_positions,
+            "filter_dict": filter_dict,
             "status": status,
             "pd": previous_data,
         },
@@ -752,42 +775,13 @@ def onboarding_view(request):
 @login_required
 @all_manager_can_enter("onboarding.view_candidatestage")
 def kanban_view(request):
-    candidates = Candidate.objects.filter(hired=True, start_onboard=True)
-    job_positions = JobPosition.objects.all()
-    # for candidate in candidates:
-    #     if not CandidateStage.objects.filter(candidate_id=candidate).exists():
-    #         try:
-    #             onboarding_stage = OnboardingStage.objects.filter(
-    #                 recruitment_id=candidate.recruitment_id
-    #             ).order_by("sequence")[0]
-    #             CandidateStage(
-    #                 candidate_id=candidate, onboarding_stage_id=onboarding_stage
-    #             ).save()
-    #         except Exception:
-    #             messages.error(
-    #                 request,
-    #                 _("%(recruitment)s has no stage..")
-    #                 % {"recruitment": candidate.recruitment_id},
-    #             )
-    #     if tasks := OnboardingTask.objects.filter(
-    #         recruitment_id=candidate.recruitment_id
-    #     ):
-    #         for task in tasks:
-    #             if not CandidateTask.objects.filter(
-    #                 candidate_id=candidate, onboarding_task_id=task
-    #             ).exists():
-    # pass
-    # CandidateTask(
-    #     candidate_id=candidate, onboarding_task_id=task
-    # ).save()
-
-    recruitments = Recruitment.objects.filter(closed=False)
-    status = "closed"
-    if request.GET.get("closed") == "closed":
-        recruitments = Recruitment.objects.filter(closed=True)
-        status = "closed"
-    else:
-        status = ""
+    filter_obj = RecruitmentFilter(request.GET)
+    # is active filteration not providing on pipeline
+    recruitments = filter_obj.qs.filter(is_active=True)
+    
+    status = request.GET.get("closed")
+    if not status:
+        recruitments = recruitments.filter(closed=False)
     onboarding_stages = OnboardingStage.objects.all()
     choices = CandidateTask.choice
     stage_form = OnboardingViewStageForm()
@@ -795,22 +789,37 @@ def kanban_view(request):
     previous_data = request.GET.urlencode()
 
     filter_obj = RecruitmentFilter(request.GET, queryset=recruitments)
-    paginator = Paginator(filter_obj.qs, 4)
+    paginator = Paginator(recruitments, 4)
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
+    groups = onboarding_query_grouper(request,page_obj)
+    
+    for item in groups:
+        setattr(item["recruitment"], "stages", item["stages"])
+    filter_dict = parse_qs(request.GET.urlencode())
+    if not request.GET.get("closed"):
+        filter_obj.form.initial["closed"] = False
+        filter_dict["closed"] = ["false"]
+    for key, val in filter_dict.copy().items():
+        if val[0] == "unknown" or key == "view":
+            del filter_dict[key]
+    
 
     return render(
         request,
         "onboarding/kanban/kanban.html",
         {
             "recruitments": page_obj,
+            "rec_filter_obj": filter_obj,
             "onboarding_stages": onboarding_stages,
             "choices": choices,
-            "job_positions": job_positions,
+            "filter_dict": filter_dict,
             "stage_form": stage_form,
             "status": status,
             "choices": choices,
             "pd": previous_data,
+            "card": True,
+            
         },
     )
 
@@ -1195,7 +1204,10 @@ def candidate_stage_update(request, candidate_id, recruitment_id):
     POST : return candidate task template
     """
     stage_id = request.POST.get("stage")
-    recruitment = Recruitment.objects.get(id=recruitment_id)
+    recruitments = Recruitment.objects.filter(id=recruitment_id)
+    groups = onboarding_query_grouper(request,recruitments)
+    for item in groups:
+        setattr(item["recruitment"], "stages", item["stages"])
     stage = OnboardingStage.objects.get(id=stage_id)
     candidate = Candidate.objects.get(id=candidate_id)
     candidate_stage = CandidateStage.objects.get(candidate_id=candidate)
@@ -1224,7 +1236,7 @@ def candidate_stage_update(request, candidate_id, recruitment_id):
             request,
             "onboarding/onboarding_table.html",
             {
-                "recruitment": recruitment,
+                "recruitment": groups[0]["recruitment"],
                 "onboarding_stages": onboarding_stages,
                 "choices": choices,
             },

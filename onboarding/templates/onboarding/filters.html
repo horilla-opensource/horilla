@@ -1,0 +1,59 @@
+{% load i18n %}
+{% load static %}
+<div class="oh-dropdown__filter-body">
+  <div class="oh-accordion">
+    <div class="oh-accordion-header">
+      {% trans 'Recruitment' %}
+    </div>
+    <div class="oh-accordion-body">
+      <div class="row">
+        <div class="col-sm-12 col-md-12 col-lg-6">
+          <div class="oh-input-group">
+            <label class="oh-label">{% trans 'Managers' %}</label>
+            {{ rec_filter_obj.form.recruitment_managers }}
+          </div>
+          <div class="oh-input-group">
+            <label class="oh-label">{% trans 'Start Date' %}</label>
+            {{ rec_filter_obj.form.start_date }}
+          </div>
+        </div>
+
+        <div class="col-sm-12 col-md-12 col-lg-6">
+          <div class="oh-input-group">
+            <label class="oh-label">{% trans 'Company' %}</label>
+            {{ rec_filter_obj.form.company_id }}
+          </div>
+          <div class="oh-input-group">
+            <label class="oh-label">{% trans 'End Date' %}</label>
+            {{ rec_filter_obj.form.end_date }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="oh-accordion">
+    <div class="oh-accordion-header">
+      {% trans 'Advanced' %}
+    </div>
+    <div class="oh-accordion-body">
+      <div class="row">
+        <div class="col-sm-12 col-md-12 col-lg-6">
+          <div class="oh-input-group">
+            <label class="oh-label">{% trans 'Start Date From' %}</label>
+            {{ rec_filter_obj.form.start_from }}
+          </div>
+        </div>
+        <div class="col-sm-12 col-md-12 col-lg-6">
+          <div class="oh-input-group">
+            <label class="oh-label">{% trans 'Till End Date' %}</label>
+            {{ rec_filter_obj.form.end_till }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="oh-dropdown__filter-footer">
+  <button class="oh-btn oh-btn--secondary oh-btn--small w-100 filterButton" id="">{% trans 'Filter' %}</button>
+</div>

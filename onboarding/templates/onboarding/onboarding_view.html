@@ -43,126 +43,16 @@
 <div class="oh-alert-container messages" >
         
 </div>
-<section class="oh-wrapper oh-main__topbar" x-data="{searchShow: false}">
-    <div class="oh-main__titlebar oh-main__titlebar--left">
-        <h1 class="oh-main__titlebar-title fw-bold">{% trans "Onboarding" %}</h1>
-        <a class="oh-main__titlebar-search-toggle" role="button" aria-label="Toggle Search"
-            @click="searchShow = !searchShow">
-            <ion-icon name="search-outline" class="oh-main__titlebar-serach-icon"></ion-icon>
-        </a>
-    </div>
-    <div class="oh-main__titlebar oh-main__titlebar--right">
-        {% if recruitments %}
-        <div class="oh-input-group oh-input__search-group" :class="searchShow ? 'oh-input__search-group--show' : ''">
-            <ion-icon name="search-outline" class="oh-input-group__icon oh-input-group__icon--left"></ion-icon>
-            <input type="text" id="search" name='search' class="oh-input oh-input__icon" aria-label="Search Input" placeholder="{% trans 'Search' %}" />
-        </div>
-        {% endif %}
-
-        <div class="oh-switch ms-3" style="width: 30px;">
-            <input type="checkbox" name="is_closed" data-widget="style-widget" class="style-widget oh-switch__checkbox" {% if request.GET.closed %} checked title="{% trans 'Switch to Ongoing Recruitments' %}" {% else %} title="{% trans 'Switch to Closed Recruitments' %}" {% endif %} id="is_closed" > 
-        </div>
-
-        {% if recruitments %}
-        <ul class="oh-view-types ml-2" style="margin-bottom: 0;">
-            <li class="oh-view-type candidate-view-type" data-view="list" title="{% trans "List" %}">
-                <a href="{% url 'onboarding-view' %}?closed={{status}}" hx-target="#section" class="oh-btn oh-btn--view oh-btn--view-active"><ion-icon
-                        name="list-outline" role="img" class="md hydrated" aria-label="list outline"></ion-icon></a>
-            </li>
-            <li class="oh-view-type candidate-view-type" data-view="card" title="{% trans "Card" %}">
-                <a href="{% url 'kanban-view' %}?closed={{status}}" hx-target="#section" class="oh-btn oh-btn--view"><ion-icon
-                        name="grid-outline" role="img" class="md hydrated" aria-label="grid outline"></ion-icon></a>
-            </li>
-        </ul>
-        <div class="oh-main__titlebar-button-container">
-
-            <div class="oh-dropdown" x-data="{open: false}">
-              <button class="oh-btn ml-2" @click="open = !open">
-                <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}
-              </button>
-                <div class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4" x-show="open" @click.outside="open = false" style="display: none;" @click.>
-                    
-                    <div class="mb-3 mt-3">
-                        <label for="job_position_id" class="oh-label">{% trans "Job position" %}</label>
-                        <select class="" name="job_position_id" id="job_position_id">
-                            <option value="">------------------</option>
-                            {% for job_position in job_positions %}
-                                <option value="{{job_position}}">{{job_position}}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    <div class="row">
-                        <div class="col-sm-12 col-md-12 col-lg-6">
-                            <label class ="mb-2" for="join_date">{% trans "Join Date" %}</label>
-                            <input type="date" name="join_date" id="join_date" class="oh-input w-100">
-                        </div>
-                        <div class="col-sm-12 col-md-12 col-lg-6">
-                            <label class ="mb-2" for="portal_stage">{% trans "Portal Stage" %}</label>
-                            <select class="" name="portal_stage" id="portal_stage">
-                                <option value="">------------------</option>
-                                <option value="0">0</option>
-                                <option value="1">1</option>
-                                <option value="2">2</option>
-                                <option value="3">3</option>
-                                <option value="4">4</option>                                
-                            </select>
-                        </div>
-                    </div>
-                    <div class="oh-accordion">
-                        <div class="oh-accordion-header">{% trans "Advanced" %}</div>
-                            <div class="oh-accordion-body">
-                                <div class="row">
-                                    <div class="col-sm-12 col-md-12 col-lg-6">
-                                        <div class="oh-input-group">
-                                            <label class ="mb-2" for="join_date">{% trans "Join Date From" %}</label>
-                                        <input type="date" name="join_date" id="join_date_start" class="oh-input w-100">
-                                        </div>
-                                    </div>
-                                    <div class="col-sm-12 col-md-12 col-lg-6">
-                                        <div class="oh-input-group">
-                                            <label class ="mb-2" for="join_date">{% trans "Join Date To" %}</label>
-                                            <input type="date" name="join_date" id="join_date_end" class="oh-input w-100">
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    <div class="oh-tabs__action-bar mt-2" id="filter_item" x-on:click="open = false" >
-                        <button class="oh-btn oh-btn--small oh-btn--secondary oh-tabs__action-new-table w-100" >
-                            <ion-icon class="me-1 md hydrated" name="add-outline" role="img"aria-label="add outline"></ion-icon>
-                            {% trans "Filter" %}
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        {% endif %}
-
-    </div>
-</section>
+{% include "onboarding/onboarding_view_nav.html" %}
 <div class="oh-wrapper oh-filter-tag-container filter-value"></div>
 <div class="oh-wrapper">
     {% if recruitments %}
-
     <div class="oh-tabs">
-        <ul class="oh-tabs__tablist">
-                {% for recruitment in recruitments %}
-                    {% if request.user|task_manages:recruitment or perms.onboarding.view_candidatestage %}
-                    <li class="oh-tabs__tab" {% if request.user|recruitment_manages:recruitment %} style="background-color: hsl(38.08deg 100% 50% / 8%);" {% endif %} data-target="#tab_{{recruitment.id}}">
-                        {{recruitment}}
-                        <span
-                            class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round ms-2 mr-2" title="{{recruitment.onboarding_stage.all|length}} {% trans 'Stage' %}" style="padding-right: 0;" onclick="event.stopPropagation()">{{recruitment.onboarding_stage.all|length}}</span>
-                    </li>
-                    {% endif %}
-                {% endfor %}
-        </ul>
+        {% include "onboarding/tabs.html" %}
         <div class="oh-tabs__contents">
             {% for recruitment in recruitments %}
-            {% if request.user|task_manages:recruitment or perms.onboarding.view_candidatestage %}
-
+            {% if request.user|task_manages:recruitment or perms.onboarding.view_candidatestage %} 
             <div class="oh-tabs__content" id="tab_{{recruitment.id}}">
-
-                <!-- End of Sticky Table -->
                 <div class="oh-card">
                     {% if request.user|task_manages:recruitment or perms.onboarding.add_onboardingstage %}
                     <div class="oh-tabs__action-bar">
@@ -174,11 +64,10 @@
                         </button>
                     </div>
                     {% endif %}
-                    <div id="onboardingTable{{recruitment.id}}" class="demo">
+                    <div id="onboardingTable{{recruitment.id}}" class="demo dd">
                         {% include 'onboarding/onboarding_table.html' %}
                     </div>
                 </div>
-
             </div>
             {% endif %}
             {% endfor %}

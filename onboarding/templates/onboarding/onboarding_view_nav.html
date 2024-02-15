@@ -1,0 +1,50 @@
+{% load i18n %}
+<section class="oh-wrapper oh-main__topbar" x-data="{searchShow: false}">
+    <div class="oh-main__titlebar oh-main__titlebar--left">
+        <h1 class="oh-main__titlebar-title fw-bold">{% trans "Onboarding" %}</h1>
+        <a class="oh-main__titlebar-search-toggle" role="button" aria-label="Toggle Search"
+            @click="searchShow = !searchShow">
+            <ion-icon name="search-outline" class="oh-main__titlebar-serach-icon"></ion-icon>
+        </a>
+    </div>
+    <form action="" class="oh-main__titlebar oh-main__titlebar--right">
+        <div class="oh-input-group oh-input__search-group" :class="searchShow ? 'oh-input__search-group--show' : ''">
+            <ion-icon name="search-outline" class="oh-input-group__icon oh-input-group__icon--left"></ion-icon>
+            <input type="text" value="{{request.GET.search_onboarding}}" onkeyup="setTimeout(() => {
+                $(this).closest('form').submit()
+            }, 1000);" name='search_onboarding' class="oh-input oh-input__icon" aria-label="Search Input" placeholder="{% trans 'Search' %}" />
+        </div>
+        <ul class="oh-view-types ml-2" style="margin-bottom: 0;">
+            <li class="oh-view-type candidate-view-type" data-view="list" title="{% trans "List" %}">
+                <a href="{% url 'onboarding-view' %}?{{request.GET.urlencode}}" hx-target="#section" class="oh-btn oh-btn--view {% if not card %}oh-btn--view-active{% endif %} "><ion-icon
+                        name="list-outline" role="img" class="md hydrated" aria-label="list outline"></ion-icon></a>
+            </li>
+            <li class="oh-view-type candidate-view-type" data-view="card" title="{% trans "Card" %}">
+                <a href="{% url 'kanban-view' %}?{{request.GET.urlencode}}" hx-target="#section" class="oh-btn oh-btn--view {% if card %}oh-btn--view-active{% endif %}"><ion-icon
+                        name="grid-outline" role="img" class="md hydrated" aria-label="grid outline"></ion-icon></a>
+            </li>
+        </ul>
+        <div class="oh-main__titlebar-button-container">
+
+            <div class="oh-dropdown" x-data="{open: false}">
+              <button type="button" class="oh-btn ml-2" @click="open = !open">
+                <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}
+              </button>
+              <div class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4" x-show="open" @click.outside="open = false">
+                {% include "onboarding/filters.html" %}
+              </div>
+            </div>
+        </div>
+    </form>
+</section>
+{% include "filter_tags.html" %}
+<div class="d-flex flex-row-reverse oh-wrapper">
+    <span onclick="$('[name=closed]').val('True'); $('[name=closed]').first().change(); $('.filterButton').click()" style="cursor: pointer;margin-left: 10px;margin-right: 10px;">
+      <span class="oh-dot oh-dot--small me-1" style="background-color:orangered"></span>
+      {% trans "Closed" %}
+    </span>
+    <span onclick="$('[name=closed]').val('');$('[name=closed]').first().change(); $('.filterButton').click()" style="cursor: pointer;margin-left: 10px;margin-right: 10px;">
+      <span class="oh-dot oh-dot--small me-1" style="background-color: yellowgreen"></span>
+      {% trans "Open" %}
+    </span>
+  </div>
