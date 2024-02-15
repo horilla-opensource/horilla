@@ -37,6 +37,7 @@ from django.utils.translation import gettext_lazy as _
 from attendance.methods.group_by import group_by_queryset
 from attendance.models import Attendance, AttendanceOverTime
 from employee.methods.methods import get_ordered_badge_ids
+from horilla.filters import HorillaPaginator
 from leave.models import LeaveRequest
 from notifications.signals import notify
 from horilla.decorators import (
@@ -985,7 +986,7 @@ def paginator_qry(qryset, page_number):
     """
     This method is used to paginate query set
     """
-    paginator = Paginator(qryset, get_pagination())
+    paginator = HorillaPaginator(qryset, get_pagination())
     qryset = paginator.get_page(page_number)
     return qryset
 

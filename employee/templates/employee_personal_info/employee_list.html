@@ -17,6 +17,10 @@
     <span class="oh-dot oh-dot--small me-1" style="background-color:yellowgreen"></span>
     {% trans "Online" %}
   </span>
+  <span class="me-3" style="cursor: pointer;">
+    <span class="oh-dot oh-dot--small me-1" style="background-color:black"></span>
+    {{data.start_count}}-{{data.end_count}} / {{data.paginator.count}}
+  </span>
 </div>
 <div id="relatedModel"></div>
 {% if perms.employee.view_employee or request.user|is_reportingmanager %}
