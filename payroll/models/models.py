@@ -2,6 +2,7 @@
 models.py
 Used to register models
 """
+
 import calendar
 from collections.abc import Iterable
 from datetime import date, datetime, timedelta
@@ -137,6 +138,9 @@ class Contract(models.Model):
         ("expired", _("Expired")),
         ("terminated", _("Terminated")),
     )
+    FILING_STATUS_CHOICES = [("", _("None"))] + list(
+        FilingStatus.objects.values_list("id", "filing_status")
+    )
 
     contract_name = models.CharField(
         max_length=250, help_text=_("Contract Title."), verbose_name=_("Contract")
@@ -222,7 +226,9 @@ class Contract(models.Model):
     contract_document = models.FileField(upload_to="uploads/", null=True, blank=True)
     is_active = models.BooleanField(default=True)
     deduct_leave_from_basic_pay = models.BooleanField(
-        default=True, verbose_name=_("Deduct From Basic Pay"), help_text=_("Take all the deduction from basic pay.")
+        default=True,
+        verbose_name=_("Deduct From Basic Pay"),
+        help_text=_("Take all the deduction from basic pay."),
     )
     notice_period_in_month = models.IntegerField(
         default=3,
@@ -230,7 +236,11 @@ class Contract(models.Model):
         validators=[min_zero],
     )
     calculate_daily_leave_amount = models.BooleanField(
-        default=True, verbose_name=_("Calculate Daily Leave Amount"), help_text=_("Leave amount will be calculated by dividing the basic pay by number of working days.")
+        default=True,
+        verbose_name=_("Calculate Daily Leave Amount"),
+        help_text=_(
+            "Leave amount will be calculated by dividing the basic pay by number of working days."
+        ),
     )
     deduction_for_one_leave_amount = models.FloatField(
         null=True,
@@ -239,7 +249,7 @@ class Contract(models.Model):
         verbose_name=_("Deduction For One Leave Amount"),
     )
 
-    note = models.TextField(null=True, blank=True,max_length=255)
+    note = models.TextField(null=True, blank=True, max_length=255)
     created_at = models.DateTimeField(auto_now_add=True, null=True)
     history = HorillaAuditLog(
         related_name="history_set",
@@ -412,8 +422,6 @@ class WorkRecord(models.Model):
             if self.record_name is not None
             else f"{self.work_record_type}-{self.date}"
         )
-
-
 
 
 class OverrideAttendance(Attendance):
@@ -1397,7 +1405,7 @@ class LoanAccount(models.Model):
     allowance_id = models.ForeignKey(
         Allowance, on_delete=models.SET_NULL, editable=False, null=True
     )
-    description = models.TextField(null=True,max_length=255)
+    description = models.TextField(null=True, max_length=255)
     deduction_ids = models.ManyToManyField(Deduction, editable=False)
     is_fixed = models.BooleanField(default=True, editable=False)
     rate = models.FloatField(default=0, editable=False)
@@ -1570,7 +1578,7 @@ class Reimbursement(models.Model):
         related_name="approved_by",
         editable=False,
     )
-    description = models.TextField(null=True,max_length=255)
+    description = models.TextField(null=True, max_length=255)
     allowance_id = models.ForeignKey(
         Allowance, on_delete=models.SET_NULL, null=True, editable=False
     )
@@ -1580,7 +1588,11 @@ class Reimbursement(models.Model):
 
     def save(self, *args, **kwargs) -> None:
         request = getattr(thread_local_middleware._thread_locals, "request", None)
-        amount_for_leave = EncashmentGeneralSettings.objects.first().leave_amount if EncashmentGeneralSettings.objects.first() else 1
+        amount_for_leave = (
+            EncashmentGeneralSettings.objects.first().leave_amount
+            if EncashmentGeneralSettings.objects.first()
+            else 1
+        )
 
         # Setting the created use if the used dont have the permission
         has_perm = request.user.has_perm("payroll.add_reimbursement")
@@ -1592,7 +1604,9 @@ class Reimbursement(models.Model):
             raise ValidationError({"leave_type_id": "This field is required"})
         if self.type == "leave_encashment":
             if self.status == "requested":
-                self.amount = (self.cfd_to_encash + self.ad_to_encash) * amount_for_leave
+                self.amount = (
+                    self.cfd_to_encash + self.ad_to_encash
+                ) * amount_for_leave
             self.cfd_to_encash = max((round(self.cfd_to_encash * 2) / 2), 0)
             self.ad_to_encash = max((round(self.ad_to_encash * 2) / 2), 0)
             assigned_leave = self.leave_type_id.employee_available_leave.filter(
@@ -1647,7 +1661,6 @@ class Reimbursement(models.Model):
                                     "The employee don't have that much leaves to encash in CFD / Available days",
                                 )
 
-
                 if proceed:
                     reimbursement = Allowance()
                     reimbursement.one_time_date = self.allowance_on
@@ -1683,7 +1696,8 @@ class Reimbursement(models.Model):
         if self.allowance_id:
             self.allowance_id.delete()
         return super().delete(*args, **kwargs)
-    
+
+
 # changing sattus canceled to reject for existing reimbursement
 try:
     if Reimbursement.objects.filter(status="canceled").exists():
@@ -1699,7 +1713,7 @@ class ReimbursementrequestComment(models.Model):
 
     request_id = models.ForeignKey(Reimbursement, on_delete=models.CASCADE)
     employee_id = models.ForeignKey(Employee, on_delete=models.CASCADE)
-    comment = models.TextField(null=True, verbose_name=_("Comment"),max_length=255)
+    comment = models.TextField(null=True, verbose_name=_("Comment"), max_length=255)
     created_at = models.DateTimeField(
         auto_now_add=True,
         verbose_name=_("Created At"),
@@ -1720,13 +1734,13 @@ class PayrollGeneralSetting(models.Model):
         validators=[min_zero],
         default=3,
     )
-    company_id = models.ForeignKey(Company,on_delete=models.CASCADE,null=True)
+    company_id = models.ForeignKey(Company, on_delete=models.CASCADE, null=True)
 
 
 class EncashmentGeneralSettings(models.Model):
     """
     BonusPointGeneralSettings model
     """
-    bonus_amount = models.IntegerField(default = 1)
-    leave_amount = models.IntegerField(blank = True, null = True, verbose_name = "Amount")
 
+    bonus_amount = models.IntegerField(default=1)
+    leave_amount = models.IntegerField(blank=True, null=True, verbose_name="Amount")

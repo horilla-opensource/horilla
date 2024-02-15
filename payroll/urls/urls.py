@@ -25,6 +25,11 @@ urlpatterns = [
         name="update-contract-status",
     ),
     path(
+        "update-contract-filing-status/<int:contract_id>",
+        views.update_contract_filing_status,
+        name="update-contract-filing-status",
+    ),
+    path(
         "delete-contract/<int:contract_id>",
         views.contract_delete,
         name="delete-contract",

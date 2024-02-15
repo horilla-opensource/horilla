@@ -10,7 +10,7 @@ import pandas as pd
 import json
 from datetime import date, datetime, timedelta
 from django.utils import timezone
-from django.shortcuts import render, redirect
+from django.shortcuts import get_object_or_404, render, redirect
 from django.http import HttpResponse, JsonResponse, HttpResponseRedirect
 from django.contrib import messages
 from django.db.models import Q, ProtectedError
@@ -22,6 +22,7 @@ from employee.models import Employee, EmployeeWorkInformation
 from base.methods import closest_numbers
 from base.methods import generate_pdf
 from payroll.models.models import (
+    FilingStatus,
     PayrollGeneralSetting,
     Payslip,
     Reimbursement,
@@ -91,7 +92,7 @@ def contract_update(request, contract_id, **kwargs):
     """
     contract = Contract.objects.filter(id=contract_id).first()
     if not contract:
-        messages.info(request,_("The contract could not be found."))
+        messages.info(request, _("The contract could not be found."))
         return redirect(contract_view)
     contract_form = ContractForm(instance=contract)
     if request.method == "POST":
@@ -109,13 +110,23 @@ def contract_update(request, contract_id, **kwargs):
     )
 
 
+@login_required
+@permission_required("payroll.change_contract")
 def contract_status_update(request, contract_id):
     if request.method == "POST":
         contract = Contract.objects.get(id=contract_id)
         if request.POST.get("view"):
-            contract.contract_status = request.POST.get("status")
-            contract.save()
-            messages.success(request,_("The contract status has been updated successfully."))
+            status = request.POST.get("status")
+            if status in dict(contract.CONTRACT_STATUS_CHOICES).keys():
+                contract.contract_status = request.POST.get("status")
+                contract.save()
+                messages.success(
+                    request, _("The contract status has been updated successfully.")
+                )
+            else:
+                messages.warning(
+                    request, _("You selected the wrong option for contract status.")
+                )
             return redirect(contract_filter)
         contract_form = ContractForm(request.POST, request.FILES, instance=contract)
         if contract_form.is_valid():
@@ -126,6 +137,30 @@ def contract_status_update(request, contract_id):
                 for error in errors:
                     messages.error(request, error)
         return HttpResponse("<script>window.location.reload()</script>")
+
+
+@login_required
+@permission_required("payroll.change_contract")
+def update_contract_filing_status(request, contract_id):
+    if request.method == "POST":
+        contract = get_object_or_404(Contract, id=contract_id)
+        filing_status_id = request.POST.get("filing_status")
+        try:
+            filing_status = (
+                FilingStatus.objects.get(id=int(filing_status_id))
+                if filing_status_id
+                else None
+            )
+            contract.filing_status = filing_status
+            messages.success(
+                request, _("The employee filing status has been updated successfully.")
+            )
+        except (ValueError, OverflowError, FilingStatus.DoesNotExist):
+            messages.warning(
+                request, _("You selected the wrong option for filing status.")
+            )
+        contract.save()
+        return redirect(contract_filter)
 
 
 @login_required
