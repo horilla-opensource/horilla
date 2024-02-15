@@ -178,6 +178,13 @@
                               {% endif %}
                               <a hx-get="{% url 'recruitment-duplicate' rec.id %}" hx-target='#duplicateFormContainer' hx-swap='innerHTML' data-toggle='oh-modal-toggle' data-target='#duplicateRecruitmentModal'  class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Duplicate' %}"><ion-icon name="copy-outline"></ion-icon></a>
                               {% if perms.recruitment.delete_recruitment %}
+                                {% if rec.is_active %}
+                                  <a href="{% url 'recruitment-archive' rec.id %}" class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Archive' %}"><ion-icon name="archive"></ion-icon></a>
+                                  {% else %}
+                                  <a href="{% url 'recruitment-archive' rec.id %}" class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Unarchive' %}"><ion-icon name="archive"></ion-icon></a>
+                                {% endif %}
+                              {% endif %}
+                              {% if perms.recruitment.delete_recruitment %}
                               <form 
                                 action="{% url 'recruitment-delete' rec.id  %}"
                                 onsubmit="return confirm('{% trans "Are you sure to delete this recruitment?" %}')" 

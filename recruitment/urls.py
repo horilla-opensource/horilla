@@ -82,6 +82,7 @@ urlpatterns = [
     ),
     path("pipeline/", views.recruitment_pipeline, name="pipeline"),
     path("pipeline-card", views.recruitment_pipeline_card, name="pipeline-card"),
+    path("recruitment-archive/<int:rec_id>", views.recruitment_archive, name="recruitment-archive"),
     path(
         "pipeline-search-candidate",
         recruitment.views.search.pipeline_candidate_search,

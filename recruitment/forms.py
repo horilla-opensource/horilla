@@ -232,6 +232,7 @@ class RecruitmentCreationForm(ModelForm):
 
         model = Recruitment
         fields = "__all__"
+        exclude = ["is_active"]
         widgets = {
             "start_date": forms.DateInput(attrs={"type": "date"}),
             "end_date": forms.DateInput(attrs={"type": "date"}),

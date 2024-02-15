@@ -186,6 +186,14 @@ class RecruitmentFilter(FilterSet):
         initial="no",
         empty_label="No",
     )
+    is_active = django_filters.ChoiceFilter(
+        choices=[
+            (True, "Yes"),
+            (False, "No"),
+        ],
+        initial="Yes",
+        empty_label="Yes",
+    )
 
     class Meta:
         """

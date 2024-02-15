@@ -34,6 +34,18 @@ def recruitment_search(request):
     previous_data = request.GET.urlencode()
     recruitment_obj = sortby(request, filter_obj.qs, "orderby")
     data_dict = parse_qs(previous_data)
+    if not request.GET.get("is_active"):
+        filter_obj.form.initial["is_active"] = True
+        data_dict["is_active"] = request.GET.get("is_active")
+        recruitment_obj = recruitment_obj.filter(is_active=True)
+        
+        for key, val in data_dict.copy().items():
+            try:
+                if val[0] != "False" or key == "view":
+                    del data_dict[key]
+            except:
+                del data_dict[key]
+
     get_key_instances(Recruitment, data_dict)
 
     return render(

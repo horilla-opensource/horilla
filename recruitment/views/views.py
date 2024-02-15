@@ -194,7 +194,21 @@ def recruitment_view(request):
         template = "recruitment/recruitment_view.html"
     else:
         template = "recruitment/recruitment_empty.html"
+    
     filter_obj = RecruitmentFilter(request.GET, queryset)
+
+    filter_dict = parse_qs(request.GET.urlencode())
+    if not request.GET.get("is_active"):
+        print("]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]")
+        filter_obj.form.initial["is_active"] = True
+        filter_dict["is_active"] = ["true"]
+        for key, val in filter_dict.copy().items():
+            try:
+                if val[0] != "false" or key == "view":
+                    del filter_dict[key]
+            except:
+                del filter_dict[key]
+    
     return render(
         request,
         template,
@@ -202,6 +216,7 @@ def recruitment_view(request):
             "data": paginator_qry(filter_obj.qs, request.GET.get("page")),
             "f": filter_obj,
             "form": form,
+            "filter_dict":filter_dict,
         },
     )
 
@@ -433,6 +448,24 @@ def recruitment_pipeline_card(request):
         "pipeline/pipeline_components/pipeline_card_view.html",
         {"recruitment": recruitment_obj, "candidates": candidates, "stages": stages},
     )
+
+@login_required
+@permission_required(perm="recruitment.delete_recruitment")
+def recruitment_archive(request,rec_id):
+    """
+    This method is used to archive and unarchive the recruitment
+    args:
+        rec_id: The id of the Recruitment
+    """
+
+    recruitment = Recruitment.objects.get(id=rec_id)
+    if recruitment.is_active:
+        recruitment.is_active = False
+    else:
+        recruitment.is_active = True
+    recruitment.save()
+
+    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 
 
 @login_required
