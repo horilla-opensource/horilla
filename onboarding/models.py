@@ -79,7 +79,7 @@ class OnboardingTask(models.Model):
         blank=True,
         related_name="cand_onboarding_task",
     )
-    employee_id = models.ManyToManyField(Employee, related_name="onboarding_task")
+    employee_id = models.ManyToManyField(Employee, related_name="onboarding_task",verbose_name="Task Assignee")
 
     objects = HorillaCompanyManager("recruitment_id__company_id")
 
