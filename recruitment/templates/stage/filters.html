@@ -1,5 +1,4 @@
 {% load i18n %}{% load static %}
-<form hx-get='{% url "stage-search" %}' hx-target='#stage-container' id="filterForm">
   <div class="oh-dropdown__filter-body">
     <div class="oh-accordion">
     <div class="oh-accordion-header">{% trans "Stage" %}</div>
@@ -44,13 +43,9 @@
       </div>
     </div>
   </div>
-  
-  
-  
 </div>
 <div class="oh-dropdown__filter-footer">
   <button class="oh-btn oh-btn--secondary oh-btn--small w-100 filterButton" id="">{% trans "Filter" %}</button>
 </div>
-</form>
 <script src="{% static '/base/filter.js' %}"></script>
 

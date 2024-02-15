@@ -1,0 +1,143 @@
+{% load i18n %} {% load static %} {% if survey_templates %}
+<div class="oh-sticky-table">
+  <div class="oh-sticky-table__table oh-table--sortable">
+    <div class="oh-sticky-table__thead">
+      <div class="oh-sticky-table__tr">
+        <div class="oh-sticky-table__th">{% trans 'Template' %}</div>
+        <div class="oh-sticky-table__th">{% trans 'Description' %}</div>
+        <div class="oh-sticky-table__th" style="width: 90px">
+          {% trans 'Actions' %}
+        </div>
+      </div>
+    </div>
+    <div class="oh-sticky-table__tbody">
+      {% for template in survey_templates %}
+      <div class="oh-sticky-table__tr" draggable="true">
+        <div class="oh-sticky-table__sd">
+          <div class="oh-profile oh-profile--md">
+            <div class="oh-profile__avatar mr-1">
+              <img
+                src="https://ui-avatars.com/api/?name={{template.title}}&background=random"
+                class="oh-profile__image"
+              />
+            </div>
+            <span class="oh-profile__name oh-text--dark"
+              >{{template.title}}</span
+            >
+          </div>
+        </div>
+        <div class="oh-sticky-table__td">{{template.description}}</div>
+        <div class="oh-sticky-table__td" onclick="event.stopPropagation()">
+          <div class="oh-btn-group">
+            <button
+              hx-get="{% url 'survey-template-question-add' %}?title={{template.title}}"
+              hx-target="#templateModalBody"
+              data-toggle="oh-modal-toggle"
+              data-target="#templateModal"
+              class="oh-btn oh-btn--light-bkg w-100 tex-danger"
+              title="{% trans 'Add Questions' %}"
+            >
+              <ion-icon name="add-circle-outline"></ion-icon>
+            </button>
+            <button
+              hx-get="{% url 'survey-template-create' %}?title={{template.title}}"
+              hx-target="#templateModalBody"
+              data-toggle="oh-modal-toggle"
+              data-target="#templateModal"
+              class="oh-btn oh-btn--light-bkg w-100 tex-danger"
+              title="{% trans 'Edit' %}"
+            >
+              <ion-icon name="create-outline"></ion-icon>
+            </button>
+            <a
+              href="{% url 'survey-template-delete' %}?title={{template.title}}"
+              onclick="return confirm('Do you want to delete this record?')"
+              data-toggle="oh-modal-toggle"
+              class="oh-btn oh-btn--light-bkg w-100 tex-danger"
+              style="color: hsl(8, 77%, 56%)"
+              title="{% trans 'Delete' %}"
+            >
+              <ion-icon name="trash-outline"></ion-icon>
+            </a>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+<div class="oh-pagination">
+  <span class="oh-pagination__page">
+    {% trans "Page" %} {{ survey_templates.number }} {% trans "of" %} {{ survey_templates.paginator.num_pages }}.
+  </span>
+  <nav class="oh-pagination__nav">
+    <div class="oh-pagination__input-container me-3">
+      <span class="oh-pagination__label me-1">{% trans "Page" %}</span>
+
+      <input
+        type="number"
+        name="survey_template_page"
+        class="oh-pagination__input"
+        value="{{survey_templates.number}}"
+        hx-get="{% url 'rec-filter-survey' %}?{{pd}}"
+        hx-target="#view-container"
+        min="1"
+      />
+      <span class="oh-pagination__label"
+        >{% trans "of" %} {{survey_templates.paginator.num_pages}}</span
+      >
+    </div>
+
+    <ul class="oh-pagination__items">
+      {% if survey_templates.has_previous %}
+      <li class="oh-pagination__item oh-pagination__item--wide">
+        <a
+          hx-target="#view-container"
+          hx-get="{% url 'rec-filter-survey' %}?{{pd}}&survey_template_page=1"
+          class="oh-pagination__link"
+          >{% trans "First" %}</a
+        >
+      </li>
+      <li class="oh-pagination__item oh-pagination__item--wide">
+        <a
+          hx-target="#view-container"
+          hx-get="{% url 'rec-filter-survey' %}?{{pd}}&survey_template_page={{ survey_templates.previous_page_number }}"
+          class="oh-pagination__link"
+          >{% trans "Previous" %}</a
+        >
+      </li>
+      {% endif %} {% if survey_templates.has_next %}
+      <li class="oh-pagination__item oh-pagination__item--wide">
+        <a
+          hx-target="#view-container"
+          hx-get="{% url 'rec-filter-survey' %}?{{pd}}&survey_template_page={{ survey_templates.next_page_number }}"
+          class="oh-pagination__link"
+          >{% trans "Next" %}</a
+        >
+      </li>
+      <li class="oh-pagination__item oh-pagination__item--wide">
+        <a
+          hx-target="#view-container"
+          hx-get="{% url 'rec-filter-survey' %}?{{pd}}&survey_template_page={{ survey_templates.paginator.num_pages }}"
+          class="oh-pagination__link"
+          >{% trans "Last" %}</a
+        >
+      </li>
+      {% endif %}
+    </ul>
+  </nav>
+</div>
+{% else %}
+<div class="oh-wrapper">
+  <img
+    style="width: 150px; height: 150px; display: block; margin: 0 auto"
+    src="{% static 'images/ui/editor.png' %}"
+    class="oh-404__image mb-4"
+    alt="Page not found. 404."
+  />
+  <h5 class="oh-404__subtitle">
+    {% trans "No template have been established yet." %}
+  </h5>
+</div>
+{% endif %}

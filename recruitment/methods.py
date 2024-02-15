@@ -5,6 +5,8 @@ This page is used to write reusable methods.
 
 """
 
+from recruitment.models import Recruitment, RecruitmentSurvey
+
 
 def is_stagemanager(request):
     """
@@ -52,3 +54,19 @@ def recruitment_manages(request, recruitment):
         return recruitment.recruitment_managers.filter(id=employee.id).exists()
     except Exception:
         return False
+
+
+def update_rec_template_grp(upt_template_ids, template_groups, rec_id):
+    recruitment_obj = Recruitment.objects.get(id=rec_id)
+    if list(upt_template_ids) != list(template_groups):
+        recruitment_surveys = RecruitmentSurvey.objects.filter(recruitment_ids=rec_id)
+        if recruitment_surveys:
+            for survey in recruitment_surveys:
+                survey.recruitment_ids.remove(rec_id)
+                survey.save()
+        if upt_template_ids:
+            rec_surveys_templates = RecruitmentSurvey.objects.filter(
+                template_id__in=upt_template_ids
+            )
+            for survey in rec_surveys_templates:
+                survey.recruitment_ids.add(recruitment_obj)

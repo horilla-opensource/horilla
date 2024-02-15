@@ -3,6 +3,7 @@ surveys.py
 
 This module is used to write views related to the survey features
 """
+
 import json
 from datetime import datetime
 from django.core.files.storage import default_storage
@@ -10,12 +11,18 @@ from django.core import serializers
 from django.db.models import ProtectedError
 from django.shortcuts import render, redirect
 from django.contrib import messages
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.utils.translation import gettext_lazy as _
 from base.methods import closest_numbers
 from horilla.decorators import login_required, permission_required
-from recruitment.models import Recruitment
-from recruitment.forms import ApplicationForm, SurveyForm, QuestionForm
+from recruitment.models import Recruitment, SurveyTemplate
+from recruitment.forms import (
+    AddQuestionForm,
+    ApplicationForm,
+    SurveyForm,
+    QuestionForm,
+    TemplateForm,
+)
 from recruitment.models import (
     RecruitmentSurvey,
     Candidate,
@@ -24,6 +31,7 @@ from recruitment.models import (
     RecruitmentSurveyAnswer,
 )
 from recruitment.filters import SurveyFilter
+from recruitment.pipeline_grouper import group_by_queryset
 from recruitment.views.paginator_qry import paginator_qry
 
 
@@ -125,6 +133,17 @@ def view_question_template(request):
     This method is used to view the question template
     """
     questions = RecruitmentSurvey.objects.all()
+    templates = group_by_queryset(
+        questions.filter(template_id__isnull=False).distinct(),
+        "template_id__title",
+        page="template_page",
+        records_per_page=50,
+    )
+    templates = paginator_qry(templates, request.GET.get("template_page"))
+    survey_templates = SurveyTemplate.objects.all()
+    survey_templates = paginator_qry(
+        survey_templates, request.GET.get("survey_template_page")
+    )
     filter_obj = SurveyFilter()
     requests_ids = json.dumps(
         [
@@ -134,15 +153,13 @@ def view_question_template(request):
             ).object_list
         ]
     )
-    if questions.exists():
-        template = "survey/view_question_templates.html"
-    else:
-        template = "survey/survey_empty_view.html"
     return render(
         request,
-        template,
+        "survey/view_question_templates.html",
         {
             "questions": paginator_qry(questions, request.GET.get("page")),
+            "templates": templates,
+            "survey_templates": survey_templates,
             "f": filter_obj,
             "requests_ids": requests_ids,
         },
@@ -164,8 +181,9 @@ def update_question_template(request, survey_id):
         if form.is_valid():
             instance = form.save(commit=False)
             instance.save()
+            instance.template_id.set(form.cleaned_data["template_id"])
             instance.recruitment_ids.set(form.recruitment)
-            instance.job_position_ids.set(form.job_positions)
+            # instance.job_position_ids.set(form.job_positions)
             messages.success(request, _("New survey question updated."))
             return HttpResponse(
                 render(
@@ -189,7 +207,8 @@ def create_question_template(request):
             instance = form.save(commit=False)
             instance.save()
             instance.recruitment_ids.set(form.recruitment)
-            instance.job_position_ids.set(form.job_positions)
+            instance.template_id.set(form.cleaned_data["template_id"])
+            # instance.job_position_ids.set(form.job_positions)
             messages.success(request, _("New survey question created."))
             return HttpResponse(
                 render(
@@ -260,9 +279,9 @@ def application_form(request):
                 "json", [candidate_obj]
             )
             return redirect(candidate_survey)
-        form.fields[
-            "job_position_id"
-        ].queryset = form.instance.recruitment_id.open_positions.all()
+        form.fields["job_position_id"].queryset = (
+            form.instance.recruitment_id.open_positions.all()
+        )
     return render(
         request,
         "candidate/application_form.html",
@@ -286,3 +305,60 @@ def single_survey(request, survey_id):
         context["next"] = next_id
         context["requests_ids"] = requests_ids_json
     return render(request, "survey/view_single_template.html", context)
+
+
+@login_required
+@permission_required("recruitment.add_surveytemplate")
+def create_template(request):
+    """
+    Create question template views
+    """
+    title = request.GET.get("title")
+    instance = None
+    if title:
+        instance = SurveyTemplate.objects.filter(title=title).first()
+    form = TemplateForm(instance=instance)
+    if request.method == "POST":
+        form = TemplateForm(request.POST, instance=instance)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Template saved")
+            return HttpResponse("<script>window.location.reload()</script>")
+    return render(request, "survey/main_form.html", {"form": form})
+
+
+@login_required
+@permission_required("recruitment.delete_surveytemplate")
+def delete_template(request):
+    """
+    This method is used to delete the survey template group
+    """
+    title = request.GET.get("title")
+    SurveyTemplate.objects.filter(title=str(title)).delete()
+    if title == "None":
+        messages.info(request, "This template group cannot be deleted")
+    else:
+        messages.success(request, "Template group deleted")
+
+    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+
+
+@login_required
+@permission_required("recruitment.change_surveytemplate")
+def question_add(request):
+    """
+    This method is used to add survey question to the templates
+    """
+    template = None
+    title = request.GET.get("title")
+    if title:
+        template = SurveyTemplate.objects.filter(title=title)
+
+    form = AddQuestionForm(initial={"template_ids": template})
+    if request.method == "POST":
+        form = AddQuestionForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Question added")
+            return HttpResponse("<script>window.location.reload()</script>")
+    return render(request, "survey/add_form.html", {"form": form})

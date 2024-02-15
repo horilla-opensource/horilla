@@ -1,0 +1,6 @@
+<form method="post" hx-post="{% url 'survey-template-create' %}?title={{form.instance.title}}" hx-target="#templateModalBody">
+    {{form.as_p}}
+</form>
+<script>
+    $('[hx-target="#templateModalBody"]').find(".col-md-6").removeClass("col-md-6");
+</script>
