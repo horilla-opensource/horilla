@@ -1,8 +1,8 @@
 {% load i18n %}{% load static %}
 {% if templates %}
-{% for grouper in templates %}
 <div class="oh-card">
-  <div class="oh-accordion-meta">
+  {% for grouper in templates %}
+  <div class="oh-accordion-meta mb-1">
     <div class="oh-accordion-meta__item">
       <div class="oh-accordion-meta__header">
         <span class="oh-accordion-meta__title d-flex"
@@ -170,8 +170,8 @@
       </div>
     </div>
   </div>
+  {% endfor %}
 </div>
-{% endfor %}
 
 <div class="oh-pagination">
   <span class="oh-pagination__page">
