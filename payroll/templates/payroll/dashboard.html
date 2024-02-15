@@ -6,26 +6,11 @@
 <!-- End of Navigation -->
 <main :class="sidebarOpen ? 'oh-main__sidebar-visible' : ''">
     <div class="oh-wrapper">
-        <div class="d-none mt-5" id="back_button" style="width:10%">
-            <a href={% url 'view-payroll-dashboard' %}
-              class="oh-btn oh-btn--secondary oh-btn--shadow ms-3"
-            >
-              <ion-icon
-                class="me-2 md hydrated"
-                name="arrow-back-outline"
-                role="img"
-                aria-label="arrow-back-outline"
-              ></ion-icon
-              >{% trans "Back" %}</a
-            >
-        </div>
         <div class="oh-dashboard row" id="dashboard">
             <div class="oh-dashboard__left col-12 col-sm-12 col-md-12 col-lg-12">
                 <div class="oh-dashboard__cards row">
-                    <div class="col-12 col-sm-12 col-md-6 col-lg-3 filter">
-                        <div class="oh-card-dashboard oh-card-dashboard oh-card-dashboard--success" 
-                            hx-get="{% url 'filter-payslip' %}?dashboard=true&status=paid"
-                            hx-target="#dashboard">
+                    <div class="col-12 col-sm-12 col-md-6 col-lg-3 filter" id="paidPayslip">
+                        <div class="oh-card-dashboard oh-card-dashboard oh-card-dashboard--success" >
                             <div class="oh-card-dashboard__header">
                                 <span class="oh-card-dashboard__title">{% trans "Paid" %}</span>
                             </div>
@@ -34,10 +19,9 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-12 col-sm-12 col-md-6 col-lg-3 filter">
+                    <div class="col-12 col-sm-12 col-md-6 col-lg-3 filter" id="confirmedPayslip">
                         <div class="oh-card-dashboard oh-card-dashboard--neutral"
-                            hx-get="{% url 'filter-payslip' %}?dashboard=true&status=confirmed"
-                            hx-target="#dashboard"
+                            
                         >
                             <div class="oh-card-dashboard__header">
                                 <span class="oh-card-dashboard__title">{% trans "Confirmed" %}</span>
@@ -47,10 +31,8 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-12 col-sm-12 col-md-6 col-lg-3 filter">
+                    <div class="col-12 col-sm-12 col-md-6 col-lg-3 filter" id="reviewPayslip">
                         <div class="oh-card-dashboard oh-card-dashboard--warning"
-                            hx-get="{% url 'filter-payslip' %}?dashboard=true&status=review_ongoing"
-                            hx-target="#dashboard"
                         >
                             <div style="text-decoration: none;" class="oh-card-dashboard__header">
                                 <span class="oh-card-dashboard__title">{% trans "Review Ongoing" %}</span>
@@ -62,10 +44,8 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-12 col-sm-12 col-md-6 col-lg-3 filter">
+                    <div class="col-12 col-sm-12 col-md-6 col-lg-3 filter" id="draftPayslip">
                         <div class="oh-card-dashboard oh-card-dashboard--danger"
-                            hx-get="{% url 'filter-payslip' %}?dashboard=true&status=draft"
-                            hx-target="#dashboard"
                         >
                             <div style="text-decoration: none;" class="oh-card-dashboard__header">
                                 <span class="oh-card-dashboard__title">{% trans "Draft" %}</span>
@@ -237,4 +217,21 @@
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="{% static 'payroll/dashboard.js' %}"></script>
+<script>
+    $(document).ready(function() {
+        $("#paidPayslip").on("click", function(){
+            window.location.href='{% url "view-payslip" %}?status=paid'
+        })
+        $("#confirmedPayslip").on("click", function(){
+            window.location.href='{% url "view-payslip" %}?status=confirmed'
+        })
+        $("#reviewPayslip").on("click", function(){
+            window.location.href='{% url "view-payslip" %}?status=review_ongoing'
+        })
+        $("#draftPayslip").on("click", function(){
+            window.location.href='{% url "view-payslip" %}?status=draft'
+        })
+    })
+    
+</script>
 {% endblock content %}

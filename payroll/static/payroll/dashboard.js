@@ -214,26 +214,7 @@ $(document).ready(function () {
         if (activeBars.length > 0) {
           var clickedBarIndex = activeBars[0].index;
           var clickedLabel = departmentChartData.labels[clickedBarIndex];
-
-          $.ajax({
-            url:
-              "/payroll/filter-payslip?dashboard=true&start_date=" +
-              $("#monthYearField").val() +
-              "-01&department=" +
-              clickedLabel,
-            type: "GET",
-            dataType: "html",
-            headers: {
-              "X-Requested-With": "XMLHttpRequest",
-            },
-            success: (response) => {
-              $("#back_button").removeClass("d-none");
-              $("#dashboard").html(response);
-            },
-            error: (error) => {
-              console.log("Error", error);
-            },
-          });
+          window.location.href = `/payroll/view-payslip?start_date=${$("#monthYearField").val()}-01&department=${clickedLabel}`
         }
       });
     }
@@ -490,24 +471,6 @@ $(document).ready(function () {
 
   $("#department_total").on("click", ".department", function () {
     department = $(this).children(".department_item").text();
-    $.ajax({
-      url:
-        "/payroll/filter-payslip?dashboard=true&start_date=" +
-        $("#monthYearField").val() +
-        "-01&department=" +
-        department,
-      type: "GET",
-      dataType: "html",
-      headers: {
-        "X-Requested-With": "XMLHttpRequest",
-      },
-      success: (response) => {
-        $("#back_button").removeClass("d-none");
-        $("#dashboard").html(response);
-      },
-      error: (error) => {
-        console.log("Error", error);
-      },
-    });
+    window.location.href = `/payroll/view-payslip?start_date=${$("#monthYearField").val()}-01&department=${department}`
   });
 });
