@@ -5,15 +5,14 @@
   <div class="oh-accordion-meta">
     <div class="oh-accordion-meta__item">
       <div class="oh-accordion-meta__header">
-        <span class="oh-accordion-meta__title"
+        <span class="oh-accordion-meta__title d-flex"
           >
-          {% if grouper.grouper %}
           {{grouper.grouper}}
-          {% else %}
-          <i style="color: gray;">
-            {% trans "Un-Allocated" %}
-          </i>
-          {% endif %}
+          <div class="oh-tabs__input-badge-container">
+            <span class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round ms-2 mr-2" id="recruitmentCandidateCount1" title="{{grouper.list|length}} {% trans "Questions" %}" onclick="event.stopPropagation()">
+              {{grouper.list|length}}
+            </span>
+          </div>
           </span
         >
         <div class="oh-accordion-meta__actions" onclick="event.stopPropagation()">
@@ -107,6 +106,7 @@
             </div>
           </div>
         </div>
+        {% if grouper.list %}
         <div class="oh-pagination">
           <span class="oh-pagination__page">
             {% trans "Page" %} {{ grouper.list.number }} {% trans "of" %} {{ grouper.list.paginator.num_pages }}.
@@ -166,6 +166,7 @@
             </ul>
           </nav>
           </div>
+          {% endif %}
       </div>
     </div>
   </div>

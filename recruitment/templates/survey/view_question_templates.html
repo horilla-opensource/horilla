@@ -153,18 +153,6 @@
   <ul class="oh-tabs__tablist">
     <li class="oh-tabs__tab oh-tabs__tab--active" data-target="#templateTab">
       {% trans "Template Groups" %}
-    </li>
-    <li
-      class="oh-tabs__tab"
-      data-target="#questionTab"
-    >
-      {% trans "Questions" %}
-    </li>
-    <li
-      class="oh-tabs__tab"
-      data-target="#template"
-    >
-      {% trans "Templates" %}
       <button onclick="event.stopPropagation()" style="display: inline-block;padding: 0px;
           border-radius: 6px;
           display: flex;
@@ -181,6 +169,18 @@
            >
           <ion-icon name="add-outline" class="m-0 md hydrated" role="img" aria-label="add outline"></ion-icon>
       </button>
+    </li>
+    <li
+      class="oh-tabs__tab"
+      data-target="#questionTab"
+    >
+      {% trans "Questions" %}
+    </li>
+    <li
+      class="oh-tabs__tab"
+      data-target="#template"
+    >
+      {% trans "Templates" %}
     </li>
   </ul>
   <div class="oh-tabs__contents" id="view-container">

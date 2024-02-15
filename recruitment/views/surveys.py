@@ -136,11 +136,33 @@ def view_question_template(request):
     templates = group_by_queryset(
         questions.filter(template_id__isnull=False).distinct(),
         "template_id__title",
-        page="template_page",
+        page=request.GET.get("template_page"),
+        page_name="template_page",
         records_per_page=50,
     )
-    templates = paginator_qry(templates, request.GET.get("template_page"))
+    all_template_object_list = []
+    for template in templates:
+        all_template_object_list.append(template)
+
     survey_templates = SurveyTemplate.objects.all()
+    all_templates = survey_templates.values_list("title", flat=True)
+    used_templates = questions.values_list("template_id__title", flat=True)
+
+    unused_templates = list(set(all_templates) - set(used_templates))
+    unused_groups = []
+    for template_name in unused_templates:
+        unused_groups.append(
+            {
+                "grouper": template_name,
+                "list": [],
+                "dynamic_name": "",
+            }
+        )
+    all_template_object_list = all_template_object_list + unused_groups
+
+    templates = paginator_qry(
+        all_template_object_list, request.GET.get("template_page")
+    )
     survey_templates = paginator_qry(
         survey_templates, request.GET.get("survey_template_page")
     )
