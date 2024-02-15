@@ -20,24 +20,25 @@
     <div class="oh-sticky-table__table oh-table--sortable">
       <div class="oh-sticky-table__thead">
         <div class="oh-sticky-table__tr">
+          <div class="oh-sticky-table__th" style="width: 50px;"></div>
           <div class="oh-sticky-table__th">{% trans "Actions" %}</div>
-          <div class="oh-sticky-table__th">
-            <div class="d-flex justify-content-center" title="Can add">
+          <div class="oh-sticky-table__th" style="width: 80px;">
+            <div class="d-flex justify-content-center" title="{% trans "Can create" %}">
               <ion-icon name="add-circle-outline"></ion-icon>
             </div>
           </div>
-          <div class="oh-sticky-table__th">
-            <div class="d-flex justify-content-center" title="Can view">
+          <div class="oh-sticky-table__th" style="width: 80px;">
+            <div class="d-flex justify-content-center" title="{% trans "Can view" %}">
               <ion-icon name="eye-outline"></ion-icon>
             </div>
           </div>
-          <div class="oh-sticky-table__th">
-            <div class="d-flex justify-content-center" title="Can create">
+          <div class="oh-sticky-table__th" style="width: 80px;">
+            <div class="d-flex justify-content-center" title="{% trans "Can edit" %}">
               <ion-icon name="create-outline"></ion-icon>
             </div>
           </div>
-          <div class="oh-sticky-table__th">
-            <div class="d-flex justify-content-center" title="Can delete">
+          <div class="oh-sticky-table__th" style="width: 80px;">
+            <div class="d-flex justify-content-center" title="{% trans "Can delete" %}">
               <ion-icon name="trash-outline"></ion-icon>
             </div>
           </div>
@@ -46,7 +47,13 @@
       <div class="oh-sticky-table__tbody">
         {% for model in perm.app_models %}
         <div class="oh-sticky-table__tr" draggable="true">
-          <div class="oh-sticky-table__sd" >
+          <div class="oh-sticky-table__sd" align="center" >
+            <input type="checkbox" class="row-permission" onchange="
+            event.stopPropagation();
+            $(this).closest('.oh-sticky-table__tr').find('[type=checkbox][name=permissions]').prop('checked',$(this).is(':checked')).change();
+            ">
+          </div>
+          <div class="oh-sticky-table__td" >
             <div class="oh-profile oh-profile--md">
               <div class="oh-profile__avatar mr-1">
                 <img
@@ -58,7 +65,6 @@
                 >{{model.verbose_name}}</span
               >
             </div>
-            <input type="checkbox" onchange="event.stopPropagation();$(this).closest('.oh-sticky-table__tr').find('[type=checkbox][name=permissions]').prop('checked',$(this).is(':checked')).change()">
           </div>
           <div class="oh-sticky-table__td">
             <div class="d-flex justify-content-center">
@@ -68,7 +74,12 @@
                   name="permissions"
                   value="add_{{model.model_name}}"
                   class="oh-switch__checkbox"
-                  onchange="updateBadge($(this))"
+                  onchange="
+                  updateBadge($(this));
+                  if (!$(this).is(':checked')) {
+                    $(this).closest('.oh-sticky-table__tr').find('.row-permission').prop('checked',false)
+                  }
+                  "
                   data-group-id="{{group.id}}"
                   data-group-name="{{group.name}}"
                 />
@@ -83,7 +94,12 @@
                   name="permissions"
                   value="view_{{model.model_name}}"
                   class="oh-switch__checkbox"
-                  onchange="updateBadge($(this))"
+                  onchange="
+                  updateBadge($(this));
+                  if (!$(this).is(':checked')) {
+                    $(this).closest('.oh-sticky-table__tr').find('.row-permission').prop('checked',false)
+                  }
+                  "
                   data-group-id="{{group.id}}"
                   data-group-name="{{group.name}}"
                 />
@@ -98,7 +114,12 @@
                   name="permissions"
                   value="change_{{model.model_name}}"
                   class="oh-switch__checkbox"
-                  onchange="updateBadge($(this))"
+                  onchange="
+                  updateBadge($(this));
+                  if (!$(this).is(':checked')) {
+                    $(this).closest('.oh-sticky-table__tr').find('.row-permission').prop('checked',false)
+                  }
+                  "
                   data-group-id="{{group.id}}"
                   data-group-name="{{group.name}}"
                 />
@@ -113,7 +134,12 @@
                   name="permissions"
                   value="delete_{{model.model_name}}"
                   class="oh-switch__checkbox"
-                  onchange="updateBadge($(this))"
+                  onchange="
+                  updateBadge($(this));
+                  if (!$(this).is(':checked')) {
+                    $(this).closest('.oh-sticky-table__tr').find('.row-permission').prop('checked',false)
+                  }
+                  "
                   data-group-id="{{group.id}}"
                   data-group-name="{{group.name}}"
                 />
