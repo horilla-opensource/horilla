@@ -3347,25 +3347,55 @@ def create_leaverequest_comment(request, leave_id):
             )
             messages.success(request, _("Comment added successfully!"))
 
-            if request.user.employee_get.id == leave.employee_id.id:
-                rec = (
-                    leave.employee_id.employee_work_info.reporting_manager_id.employee_user_id
-                )
-                notify.send(
-                    request.user.employee_get,
-                    recipient=rec,
-                    verb=f"{leave.employee_id}'s leave request has received a comment.",
-                    verb_ar=f"تلقت طلب إجازة {leave.employee_id} تعليقًا.",
-                    verb_de=f"{leave.employee_id}s Urlaubsantrag hat einen Kommentar erhalten.",
-                    verb_es=f"La solicitud de permiso de {leave.employee_id} ha recibido un comentario.",
-                    verb_fr=f"La demande de congé de {leave.employee_id} a reçu un commentaire.",
-                    redirect=f"/leave/request-view?id={leave.id}",
-                    icon="chatbox-ellipses",
-                )
-            elif (
-                request.user.employee_get.id
-                == leave.employee_id.employee_work_info.reporting_manager_id.id
-            ):
+            if leave.employee_id.employee_work_info.reporting_manager_id is not None:
+                if request.user.employee_get.id == leave.employee_id.id:
+                    rec = (
+                        leave.employee_id.employee_work_info.reporting_manager_id.employee_user_id
+                    )
+                    notify.send(
+                        request.user.employee_get,
+                        recipient=rec,
+                        verb=f"{leave.employee_id}'s leave request has received a comment.",
+                        verb_ar=f"تلقت طلب إجازة {leave.employee_id} تعليقًا.",
+                        verb_de=f"{leave.employee_id}s Urlaubsantrag hat einen Kommentar erhalten.",
+                        verb_es=f"La solicitud de permiso de {leave.employee_id} ha recibido un comentario.",
+                        verb_fr=f"La demande de congé de {leave.employee_id} a reçu un commentaire.",
+                        redirect=f"/leave/request-view?id={leave.id}",
+                        icon="chatbox-ellipses",
+                    )
+                elif (
+                    request.user.employee_get.id
+                    == leave.employee_id.employee_work_info.reporting_manager_id.id
+                ):
+                    rec = leave.employee_id.employee_user_id
+                    notify.send(
+                        request.user.employee_get,
+                        recipient=rec,
+                        verb="Your leave request has received a comment.",
+                        verb_ar="تلقى طلب إجازتك تعليقًا.",
+                        verb_de="Ihr Urlaubsantrag hat einen Kommentar erhalten.",
+                        verb_es="Tu solicitud de permiso ha recibido un comentario.",
+                        verb_fr="Votre demande de congé a reçu un commentaire.",
+                        redirect=f"/leave/user-request-view?id={leave.id}",
+                        icon="chatbox-ellipses",
+                    )
+                else:
+                    rec = [
+                        leave.employee_id.employee_user_id,
+                        leave.employee_id.employee_work_info.reporting_manager_id.employee_user_id,
+                    ]
+                    notify.send(
+                        request.user.employee_get,
+                        recipient=rec,
+                        verb=f"{leave.employee_id}'s leave request has received a comment.",
+                        verb_ar=f"تلقت طلب إجازة {leave.employee_id} تعليقًا.",
+                        verb_de=f"{leave.employee_id}s Urlaubsantrag hat einen Kommentar erhalten.",
+                        verb_es=f"La solicitud de permiso de {leave.employee_id} ha recibido un comentario.",
+                        verb_fr=f"La demande de congé de {leave.employee_id} a reçu un commentaire.",
+                        redirect=f"/leave/request-view?id={leave.id}",
+                        icon="chatbox-ellipses",
+                    )
+            else:
                 rec = leave.employee_id.employee_user_id
                 notify.send(
                     request.user.employee_get,
@@ -3376,22 +3406,6 @@ def create_leaverequest_comment(request, leave_id):
                     verb_es="Tu solicitud de permiso ha recibido un comentario.",
                     verb_fr="Votre demande de congé a reçu un commentaire.",
                     redirect=f"/leave/user-request-view?id={leave.id}",
-                    icon="chatbox-ellipses",
-                )
-            else:
-                rec = [
-                    leave.employee_id.employee_user_id,
-                    leave.employee_id.employee_work_info.reporting_manager_id.employee_user_id,
-                ]
-                notify.send(
-                    request.user.employee_get,
-                    recipient=rec,
-                    verb=f"{leave.employee_id}'s leave request has received a comment.",
-                    verb_ar=f"تلقت طلب إجازة {leave.employee_id} تعليقًا.",
-                    verb_de=f"{leave.employee_id}s Urlaubsantrag hat einen Kommentar erhalten.",
-                    verb_es=f"La solicitud de permiso de {leave.employee_id} ha recibido un comentario.",
-                    verb_fr=f"La demande de congé de {leave.employee_id} a reçu un commentaire.",
-                    redirect=f"/leave/request-view?id={leave.id}",
                     icon="chatbox-ellipses",
                 )
             return render(
@@ -3502,25 +3516,55 @@ def create_allocationrequest_comment(request, leave_id):
             )
             messages.success(request, _("Comment added successfully!"))
 
-            if request.user.employee_get.id == leave.employee_id.id:
-                rec = (
-                    leave.employee_id.employee_work_info.reporting_manager_id.employee_user_id
-                )
-                notify.send(
-                    request.user.employee_get,
-                    recipient=rec,
-                    verb=f"{leave.employee_id}'s leave allocation request has received a comment.",
-                    verb_ar=f"تلقت طلب تخصيص الإجازة لـ {leave.employee_id} تعليقًا.",
-                    verb_de=f"{leave.employee_id}s Anfrage zur Urlaubszuweisung hat einen Kommentar erhalten.",
-                    verb_es=f"La solicitud de asignación de permisos de {leave.employee_id} ha recibido un comentario.",
-                    verb_fr=f"La demande d'allocation de congé de {leave.employee_id} a reçu un commentaire.",
-                    redirect=f"/leave/leave-allocation-request-view?id={leave.id}",
-                    icon="chatbox-ellipses",
-                )
-            elif (
-                request.user.employee_get.id
-                == leave.employee_id.employee_work_info.reporting_manager_id.id
-            ):
+            if leave.employee_id.employee_work_info.reporting_manager_id is not None:
+                if request.user.employee_get.id == leave.employee_id.id:
+                    rec = (
+                        leave.employee_id.employee_work_info.reporting_manager_id.employee_user_id
+                    )
+                    notify.send(
+                        request.user.employee_get,
+                        recipient=rec,
+                        verb=f"{leave.employee_id}'s leave allocation request has received a comment.",
+                        verb_ar=f"تلقت طلب تخصيص الإجازة لـ {leave.employee_id} تعليقًا.",
+                        verb_de=f"{leave.employee_id}s Anfrage zur Urlaubszuweisung hat einen Kommentar erhalten.",
+                        verb_es=f"La solicitud de asignación de permisos de {leave.employee_id} ha recibido un comentario.",
+                        verb_fr=f"La demande d'allocation de congé de {leave.employee_id} a reçu un commentaire.",
+                        redirect=f"/leave/leave-allocation-request-view?id={leave.id}",
+                        icon="chatbox-ellipses",
+                    )
+                elif (
+                    request.user.employee_get.id
+                    == leave.employee_id.employee_work_info.reporting_manager_id.id
+                ):
+                    rec = leave.employee_id.employee_user_id
+                    notify.send(
+                        request.user.employee_get,
+                        recipient=rec,
+                        verb="Your leave allocation request has received a comment.",
+                        verb_ar="تلقى طلب تخصيص الإجازة الخاص بك تعليقًا.",
+                        verb_de="Ihr Antrag auf Urlaubszuweisung hat einen Kommentar erhalten.",
+                        verb_es="Tu solicitud de asignación de permisos ha recibido un comentario.",
+                        verb_fr="Votre demande d'allocation de congé a reçu un commentaire.",
+                        redirect=f"/leave/leave-allocation-request-view?id={leave.id}",
+                        icon="chatbox-ellipses",
+                    )
+                else:
+                    rec = [
+                        leave.employee_id.employee_user_id,
+                        leave.employee_id.employee_work_info.reporting_manager_id.employee_user_id,
+                    ]
+                    notify.send(
+                        request.user.employee_get,
+                        recipient=rec,
+                        verb=f"{leave.employee_id}'s leave allocation request has received a comment.",
+                        verb_ar=f"تلقت طلب تخصيص الإجازة لـ {leave.employee_id} تعليقًا.",
+                        verb_de=f"{leave.employee_id}s Anfrage zur Urlaubszuweisung hat einen Kommentar erhalten.",
+                        verb_es=f"La solicitud de asignación de permisos de {leave.employee_id} ha recibido un comentario.",
+                        verb_fr=f"La demande d'allocation de congé de {leave.employee_id} a reçu un commentaire.",
+                        redirect=f"/leave/leave-allocation-request-view?id={leave.id}",
+                        icon="chatbox-ellipses",
+                    )
+            else:
                 rec = leave.employee_id.employee_user_id
                 notify.send(
                     request.user.employee_get,
@@ -3530,22 +3574,6 @@ def create_allocationrequest_comment(request, leave_id):
                     verb_de="Ihr Antrag auf Urlaubszuweisung hat einen Kommentar erhalten.",
                     verb_es="Tu solicitud de asignación de permisos ha recibido un comentario.",
                     verb_fr="Votre demande d'allocation de congé a reçu un commentaire.",
-                    redirect=f"/leave/leave-allocation-request-view?id={leave.id}",
-                    icon="chatbox-ellipses",
-                )
-            else:
-                rec = [
-                    leave.employee_id.employee_user_id,
-                    leave.employee_id.employee_work_info.reporting_manager_id.employee_user_id,
-                ]
-                notify.send(
-                    request.user.employee_get,
-                    recipient=rec,
-                    verb=f"{leave.employee_id}'s leave allocation request has received a comment.",
-                    verb_ar=f"تلقت طلب تخصيص الإجازة لـ {leave.employee_id} تعليقًا.",
-                    verb_de=f"{leave.employee_id}s Anfrage zur Urlaubszuweisung hat einen Kommentar erhalten.",
-                    verb_es=f"La solicitud de asignación de permisos de {leave.employee_id} ha recibido un comentario.",
-                    verb_fr=f"La demande d'allocation de congé de {leave.employee_id} a reçu un commentaire.",
                     redirect=f"/leave/leave-allocation-request-view?id={leave.id}",
                     icon="chatbox-ellipses",
                 )
