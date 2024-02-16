@@ -22,16 +22,9 @@
       <div class="oh-payslip__header-left">
         <div class="oh-payslip__title oh-payslip__title--h2">
           <select name="status" class="oh-select" id="id_status" hx-trigger="change" hx-post="{% url 'payslip-status-update' instance.id %}" hx-target="#payslipBody" >
-            {% if instance %}
-            <option value="{{instance.status}}" selected>
-              {{instance.get_status_display }}
-            </option>
-            {% else %}
-            <option value="draft" selected>{% trans "Draft" %}</option>
-            {% endif %}
-            <option value="review_ongoing">{% trans "Review Ongoing" %}</option>
-            <option value="confirmed">{% trans "Confirmed" %}</option>
-            <option value="paid">{% trans "Paid" %}</option>
+            {% for choice in instance.status_choices %}
+            <option value="{{choice.0}}" {% if instance.status == choice.0  %} selected{% endif %}>{{choice.1}}</option>
+            {% endfor %}
           </select>
         </div>
       </div>
