@@ -1,6 +1,7 @@
 """
 views.py
 """
+
 import contextlib
 import json
 import pandas as pd
@@ -572,14 +573,14 @@ def leave_request_approve(request, id, emp_id=None):
                 leave_request.approved_available_days = leave_request.requested_days
             leave_request.status = "approved"
             if not leave_request.multiple_approvals():
-                super(AvailableLeave,available_leave).save()
+                super(AvailableLeave, available_leave).save()
                 leave_request.save()
             else:
                 if request.user.is_superuser:
                     LeaveRequestConditionApproval.objects.filter(
                         leave_request_id=leave_request
                     ).update(is_approved=True)
-                    super(AvailableLeave,available_leave).save()
+                    super(AvailableLeave, available_leave).save()
                     leave_request.save()
                 else:
                     conditional_requests = leave_request.multiple_approvals()
@@ -594,7 +595,7 @@ def leave_request_approve(request, id, emp_id=None):
                     condition_approval.is_approved = True
                     condition_approval.save()
                     if approver[0] == conditional_requests["managers"][-1]:
-                        super(AvailableLeave,available_leave).save()
+                        super(AvailableLeave, available_leave).save()
                         leave_request.save()
             messages.success(request, _("Leave request approved successfully.."))
             with contextlib.suppress(Exception):
@@ -623,6 +624,48 @@ def leave_request_approve(request, id, emp_id=None):
         employee_id = emp_id
         return redirect(f"/employee/employee-view/{employee_id}/")
     return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+
+
+@login_required
+@manager_can_enter("leave.change_leaverequest")
+def leave_request_bulk_approve(request):
+    if request.method == "POST":
+        request_ids = request.POST.getlist("ids")
+        for request_id in request_ids:
+            try:
+                leave_request = (
+                    LeaveRequest.objects.get(id=int(request_id)) if request_id else None
+                )
+                if (
+                    leave_request.status == "requested"
+                    and leave_request.start_date >= datetime.today().date()
+                ):
+                    leave_request_approve(request, leave_request.id)
+                else:
+                    if leave_request.status == "approved":
+                        messages.info(
+                            request,
+                            _("{} {} request already approved").format(
+                                leave_request.employee_id, leave_request.leave_type_id
+                            ),
+                        )
+                    elif leave_request.start_date < datetime.today().date():
+                        messages.warning(
+                            request,
+                            _("{} {} request date exceeded").format(
+                                leave_request.employee_id, leave_request.leave_type_id
+                            ),
+                        )
+                    else:
+                        messages.warning(
+                            request,
+                            _("{} {} can't approve.").format(
+                                leave_request.employee_id, leave_request.leave_type_id
+                            ),
+                        )
+            except (ValueError, OverflowError, LeaveRequest.DoesNotExist):
+                pass
+    return HttpResponse("<script>window.location.reload();</script>")
 
 
 @login_required
@@ -680,7 +723,7 @@ def leave_request_cancel(request, id, emp_id=None):
             comment.employee_id = request.user.employee_get
             comment.comment = leave_request.reject_reason
             comment.save()
-            
+
             messages.success(request, _("Leave request cancelled successfully.."))
             with contextlib.suppress(Exception):
                 notify.send(
@@ -866,14 +909,14 @@ def leave_assign_view(request):
     export_filter = AssignedLeaveFilter()
     export_column = AvailableLeaveColumnExportForm()
     assign_form = AssignLeaveForm()
-    
+
     # default group by configuration
-    data_dict = {"field":["leave_type_id"]}
+    data_dict = {"field": ["leave_type_id"]}
 
     # to check condition on the template
-    setattr(request.GET,"field",True)
-    
-    page_obj = group_by_queryset(queryset.order_by("-id"),"leave_type_id",page_number)
+    setattr(request.GET, "field", True)
+
+    page_obj = group_by_queryset(queryset.order_by("-id"), "leave_type_id", page_number)
 
     return render(
         request,
@@ -884,7 +927,7 @@ def leave_assign_view(request):
             "export_filter": export_filter,
             "export_column": export_column,
             "pd": previous_data,
-            "filter_dict":data_dict,
+            "filter_dict": data_dict,
             "gp_fields": LeaveAssignReGroup.fields,
             "assign_form": assign_form,
         },
@@ -914,9 +957,9 @@ def leave_assign_filter(request):
     template = ("leave/leave_assign/assigned_leave.html",)
     available_leaves = assigned_leave_filter.order_by("-id")
     if request.GET.get("sortby"):
-        available_leaves = sortby(request,available_leaves,"sortby")
+        available_leaves = sortby(request, available_leaves, "sortby")
     if field != "" and field is not None:
-        page_obj = group_by_queryset(available_leaves,field,page_number)
+        page_obj = group_by_queryset(available_leaves, field, page_number)
         template = "leave/leave_assign/group_by.html"
     else:
         page_obj = paginator_qry(available_leaves, page_number)
@@ -1108,9 +1151,9 @@ def assign_leave_type_excel(_request):
         ]
         data_frame = pd.DataFrame(columns=columns)
         response = HttpResponse(content_type="application/ms-excel")
-        response[
-            "Content-Disposition"
-        ] = 'attachment; filename="assign_leave_type_excel.xlsx"'
+        response["Content-Disposition"] = (
+            'attachment; filename="assign_leave_type_excel.xlsx"'
+        )
         data_frame.to_excel(response, index=False)
         return response
     except Exception as exception:
@@ -1205,10 +1248,10 @@ def holiday_creation(request):
     GET : return holiday creation form template
     POST : return holiday view template
     """
-    
+
     query_string = request.GET.urlencode()
     if query_string.startswith("pd="):
-        previous_data = unquote(query_string[len("pd="):])
+        previous_data = unquote(query_string[len("pd=") :])
     else:
         previous_data = unquote(query_string)
     form = HolidayForm()
@@ -1217,7 +1260,9 @@ def holiday_creation(request):
         if form.is_valid():
             form.save()
             messages.success(request, _("New holiday created successfully.."))
-    return render(request, "leave/holiday/holiday_form.html", {"form": form,"pd":previous_data})
+    return render(
+        request, "leave/holiday/holiday_form.html", {"form": form, "pd": previous_data}
+    )
 
 
 def holidays_excel_template(request):
@@ -1230,9 +1275,9 @@ def holidays_excel_template(request):
         ]
         data_frame = pd.DataFrame(columns=columns)
         response = HttpResponse(content_type="application/ms-excel")
-        response[
-            "Content-Disposition"
-        ] = 'attachment; filename="assign_leave_type_excel.xlsx"'
+        response["Content-Disposition"] = (
+            'attachment; filename="assign_leave_type_excel.xlsx"'
+        )
         data_frame.to_excel(response, index=False)
         return response
     except Exception as exception:
@@ -1387,7 +1432,7 @@ def holiday_update(request, id):
     """
     query_string = request.GET.urlencode()
     if query_string.startswith("pd="):
-        previous_data = unquote(query_string[len("pd="):])
+        previous_data = unquote(query_string[len("pd=") :])
     else:
         previous_data = unquote(query_string)
     holiday = Holiday.objects.get(id=id)
@@ -1398,7 +1443,9 @@ def holiday_update(request, id):
             form.save()
             messages.info(request, _("Holiday updated successfully.."))
     return render(
-        request, "leave/holiday/holiday_update_form.html", {"form": form, "id": id,"pd":previous_data}
+        request,
+        "leave/holiday/holiday_update_form.html",
+        {"form": form, "id": id, "pd": previous_data},
     )
 
 
@@ -2098,7 +2145,7 @@ def overall_leave(request):
             employee_id__employee_work_info__department_id=department
         ).count()
         if count:
-            labels.append(department.department)            
+            labels.append(department.department)
             data.append(count)
     return JsonResponse({"labels": labels, "data": data})
 
@@ -2118,8 +2165,12 @@ def dashboard(request):
     today = date.today()
     leave_requests = LeaveRequest.objects.filter(start_date__month=today.month)
     requested = LeaveRequest.objects.filter(status="requested")
-    approved = LeaveRequest.objects.filter(status="approved",start_date__month=today.month)
-    rejected = LeaveRequest.objects.filter(status="rejected",start_date__month=today.month)
+    approved = LeaveRequest.objects.filter(
+        status="approved", start_date__month=today.month
+    )
+    rejected = LeaveRequest.objects.filter(
+        status="rejected", start_date__month=today.month
+    )
     holidays = Holiday.objects.filter(start_date__gte=today)
     next_holiday = (
         holidays.order_by("start_date").first() if holidays.exists() else None
@@ -2146,8 +2197,10 @@ def dashboard(request):
         "holidays": holidays,
         "leave_today_employees": leave_today,
         "dashboard": "dashboard",
-        "first_day":today.replace(day=1).strftime("%Y-%m-%d"),
-        "last_day":date(today.year, today.month, calendar.monthrange(today.year, today.month)[1]).strftime("%Y-%m-%d"),
+        "first_day": today.replace(day=1).strftime("%Y-%m-%d"),
+        "last_day": date(
+            today.year, today.month, calendar.monthrange(today.year, today.month)[1]
+        ).strftime("%Y-%m-%d"),
     }
     return render(request, "leave/dashboard.html", context)
 
@@ -2230,7 +2283,9 @@ def available_leave_chart(request):
     GET : return Json response of labels, dataset, message.
     """
     user = Employee.objects.get(employee_user_id=request.user)
-    available_leaves = AvailableLeave.objects.filter(employee_id=user).exclude(available_days=0)
+    available_leaves = AvailableLeave.objects.filter(employee_id=user).exclude(
+        available_days=0
+    )
     leave_count = []
     labels = []
     for leave in available_leaves:
@@ -2271,13 +2326,15 @@ def employee_leave_chart(request):
     leave_requests = LeaveRequest.objects.filter(
         employee_id__is_active=True, status="approved"
     )
-    leave_requests=leave_requests.filter(
+    leave_requests = leave_requests.filter(
         start_date__month=day.month, start_date__year=day.year
     )
     # leave_types = LeaveType.objects.filter(leaverequest__in=leave_requests.filter(
     #     start_date__month=day.month, start_date__year=day.year
     # )).distinct()
-    leave_types = leave_requests.values_list('leave_type_id__name', flat=True).distinct()
+    leave_types = leave_requests.values_list(
+        "leave_type_id__name", flat=True
+    ).distinct()
 
     labels = []
     dataset = []
@@ -2341,7 +2398,7 @@ def department_leave_chart(request):
     department_counts = {dep.department: 0 for dep in departments}
     leave_request = LeaveRequest.objects.filter(status="approved")
     leave_dates = []
-    labels=[]
+    labels = []
     for leave in leave_request:
         for leave_date in leave.requested_dates():
             leave_dates.append(leave_date.strftime("%Y-%m-%d"))
@@ -2350,12 +2407,12 @@ def department_leave_chart(request):
             for dep in departments:
                 if dep == leave.employee_id.employee_work_info.department_id:
                     department_counts[dep.department] += 1
-                        
+
     for department, count in department_counts.items():
         if count != 0:
             labels.append(department)
     values = list(department_counts.values())
-    values = [value for value in values if value != 0]    
+    values = [value for value in values if value != 0]
     dataset = [
         {
             "label": _(""),
@@ -2394,8 +2451,8 @@ def leave_type_chart(request):
         if count != 0:
             labels.append(leave_type)
     values = list(leave_type_count.values())
-    values = [value for value in values if value != 0] 
-    
+    values = [value for value in values if value != 0]
+
     response = {
         "labels": labels,
         "dataset": [
@@ -2599,7 +2656,9 @@ def leave_allocation_request_view(request):
     my_leave_allocation_requests = LeaveAllocationRequest.objects.filter(
         employee_id=employee.id
     ).order_by("-id")
-    my_leave_allocation_requests = LeaveAllocationRequestFilter(request.GET, my_leave_allocation_requests).qs
+    my_leave_allocation_requests = LeaveAllocationRequestFilter(
+        request.GET, my_leave_allocation_requests
+    ).qs
     my_page_number = request.GET.get("m_page")
     my_leave_allocation_requests = paginator_qry(
         my_leave_allocation_requests, my_page_number
@@ -3247,7 +3306,7 @@ def employee_leave_details(request):
         employee = request.POST["employee_id"]
     else:
         employee = ""
-    date =  request.POST.get("date","")
+    date = request.POST.get("date", "")
     if request.POST["leave_type"] and request.POST["employee_id"]:
         leave_type_id = request.POST["leave_type"]
         leave_type = LeaveType.objects.filter(id=leave_type_id).first()
@@ -3261,8 +3320,7 @@ def employee_leave_details(request):
                 balance_count += balance.first().forcasted_leaves()[date[:7]]
             except:
                 pass
-                
-                
+
     return JsonResponse({"leave_count": balance_count, "employee": employee})
 
 
@@ -3411,7 +3469,11 @@ def create_leaverequest_comment(request, leave_id):
             return render(
                 request,
                 "leave/leave_request/leave_comment.html",
-                {"comments": comments, "no_comments": no_comments, 'request_id': leave_id },
+                {
+                    "comments": comments,
+                    "no_comments": no_comments,
+                    "request_id": leave_id,
+                },
             )
     return render(
         request,
@@ -3453,7 +3515,7 @@ def view_leaverequest_comment(request, leave_id):
     return render(
         request,
         "leave/leave_request/leave_comment.html",
-        {"comments": comments, "no_comments": no_comments, 'request_id': leave_id },
+        {"comments": comments, "no_comments": no_comments, "request_id": leave_id},
     )
 
 
@@ -3465,7 +3527,9 @@ def delete_comment_file(request):
     ids = request.GET.getlist("ids")
     LeaverequestFile.objects.filter(id__in=ids).delete()
     leave_id = request.GET["leave_id"]
-    comments = LeaverequestComment.objects.filter(request_id = leave_id).order_by("-created_at")
+    comments = LeaverequestComment.objects.filter(request_id=leave_id).order_by(
+        "-created_at"
+    )
     return render(
         request,
         "leave/leave_request/leave_comment.html",
@@ -3474,6 +3538,7 @@ def delete_comment_file(request):
             "request_id": leave_id,
         },
     )
+
 
 @login_required
 def delete_leaverequest_comment(request, comment_id):
@@ -3580,7 +3645,11 @@ def create_allocationrequest_comment(request, leave_id):
             return render(
                 request,
                 "leave/leave_allocation_request/leave_allocation_comment.html",
-                {"comments": comments, "no_comments": no_comments, 'request_id': leave_id },
+                {
+                    "comments": comments,
+                    "no_comments": no_comments,
+                    "request_id": leave_id,
+                },
             )
     return render(
         request,
@@ -3616,7 +3685,7 @@ def view_allocationrequest_comment(request, leave_id):
     return render(
         request,
         "leave/leave_allocation_request/leave_allocation_comment.html",
-        {"comments": comments, "no_comments": no_comments, 'request_id': leave_id },
+        {"comments": comments, "no_comments": no_comments, "request_id": leave_id},
     )
 
 
@@ -3640,7 +3709,9 @@ def delete_allocation_comment_file(request):
     ids = request.GET.getlist("ids")
     LeaverequestFile.objects.filter(id__in=ids).delete()
     leave_id = request.GET["leave_id"]
-    comments = LeaveallocationrequestComment.objects.filter(request_id = leave_id).order_by("-created_at")
+    comments = LeaveallocationrequestComment.objects.filter(
+        request_id=leave_id
+    ).order_by("-created_at")
     return render(
         request,
         "leave/leave_allocation_request/leave_allocation_comment.html",

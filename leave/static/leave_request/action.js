@@ -1,9 +1,33 @@
+var closeButtonText = {
+  ar: "إغلاق",
+  de: "Schließen",
+  es: "Cerrar",
+  en: "Close",
+  fr: "Fermer",
+};
+
+var confirmButtonText = {
+  ar: "تأكيد",
+  de: "Bestätigen",
+  es: "Confirmar",
+  en: "Confirm",
+  fr: "Confirmer",
+};
+
 var deleteLeaveRequestMessages = {
   ar: "هل تريد حقًا حذف جميع طلبات الإجازة المحددة؟",
   de: "Möchten Sie wirklich alle ausgewählten Urlaubsanfragen löschen?",
   es: "¿Realmente desea eliminar todas las solicitudes de permiso seleccionadas?",
   en: "Do you really want to delete all the selected leave requests?",
   fr: "Voulez-vous vraiment supprimer toutes les demandes de congé sélectionnées?",
+};
+
+var approveLeaveRequests = {
+  ar: "هل ترغب في الموافقة على طلبات الإجازة المحددة؟",
+  de: "Möchten Sie die ausgewählten Urlaubsanfragen genehmigen?",
+  es: "¿Quieres aprobar las solicitudes de licencia seleccionadas?",
+  en: "Do you want to approve the selected leave requests?",
+  fr: "Voulez-vous approuver les demandes de congé sélectionnées?",
 };
 
 var noRowMessages = {
@@ -262,6 +286,38 @@ function exportLeaverequests() {
     });
   });
 }
+
+$("#leaveRequestsBulkApprove").click(function (e) {
+  var languageCode = null;
+  getCurrentLanguageCode(function (code) {
+    languageCode = code;
+    var confirmMessage = approveLeaveRequests[languageCode];
+    var textMessage = noRowMessages[languageCode];
+    ids = JSON.parse($("#selectedLeaverequests").attr("data-ids"));
+    if (ids.length === 0) {
+      Swal.fire({
+        text: textMessage,
+        icon: "warning",
+        confirmButtonText: "Close",
+      });
+    } else {
+      Swal.fire({
+        text: confirmMessage,
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonColor: "#008000",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Confirm",
+      }).then(function (result) {
+        if (result.isConfirmed) {
+          var hxVals = JSON.stringify(ids);
+          $("#bulkApproveSpan").attr("hx-vals", `{"ids":${hxVals}}`);
+          $("#bulkApproveSpan").click();
+        }
+      });
+    }
+  });
+});
 
 $("#leaverequestbulkDelete").click(function (e) {
   e.preventDefault();
