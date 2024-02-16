@@ -110,6 +110,9 @@ def group_by_queryset(
             for index, item in enumerate(queryset.values_list(group_field, flat=True))
             if item not in queryset.values_list(group_field, flat=True)[:index]
         ]
+        # getting related queryset
+        related_model = queryset.model._meta.get_field(group_field).related_model
+        groupers = related_model.objects.filter(id__in=groupers)
         groups = generate_groups(
             request, groupers, queryset, page_name, group_field, is_fk_field=False
         )
