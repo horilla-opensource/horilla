@@ -111,13 +111,15 @@ class ModelForm(forms.ModelForm):
             ):
                 field.widget.attrs.update({"class": "oh-switch__checkbox "})
 
-            try:            
-                self.fields["employee_id"].initial = request.user.employee_get 
+            try:
+                self.fields["employee_id"].initial = request.user.employee_get
             except:
                 pass
 
-            try:            
-                self.fields["company_id"].initial = request.user.employee_get.get_company
+            try:
+                self.fields["company_id"].initial = (
+                    request.user.employee_get.get_company
+                )
             except:
                 pass
 
@@ -216,7 +218,6 @@ class RecruitmentCreationForm(ModelForm):
     """
     Form for Recruitment model
     """
-
 
     survey_templates = forms.ModelMultipleChoiceField(
         queryset=SurveyTemplate.objects.all(),
@@ -471,12 +472,12 @@ class RecruitmentDropDownForm(DropDownForm):
         field.widget = field.hidden_widget()
 
 
-class CandidateDropDownForm(DropDownForm):
+class AddCandidateForm(ModelForm):
     """
     Form for Candidate model
     """
 
-    profile = forms.FileField(required=False)
+    verbose_name = "Add Candidate"
 
     class Meta:
         """
@@ -485,26 +486,37 @@ class CandidateDropDownForm(DropDownForm):
 
         model = Candidate
         fields = [
+            "profile",
+            "resume",
             "name",
             "email",
             "mobile",
-            "resume",
+            "gender",
             "stage_id",
-            "recruitment_id",
             "job_position_id",
-            "profile",
         ]
-        labels = {
-            "name": _("Name"),
-            "email": _("Email"),
-            "mobile": _("Mobile"),
-            "job_position_id": _("Job Position"),
-        }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields["recruitment_id"].widget.attrs.update({"id": uuid.uuid4})
-        self.fields["stage_id"].widget.attrs.update({"id": uuid.uuid4})
+        initial = kwargs["initial"].get("stage_id")
+        if initial:
+            recruitment = Stage.objects.get(id=initial).recruitment_id
+            self.instance.recruitment_id = recruitment
+            self.fields["stage_id"].queryset = self.fields["stage_id"].queryset.filter(
+                recruitment_id=recruitment
+            )
+            self.fields["job_position_id"].queryset = recruitment.open_positions
+        self.fields["gender"].empty_label = None
+        self.fields["job_position_id"].empty_label = None
+        self.fields["stage_id"].empty_label = None
+
+    def as_p(self, *args, **kwargs):
+        """
+        Render the form fields as HTML table rows with Bootstrap styling.
+        """
+        context = {"form": self}
+        table_html = render_to_string("common_form.html", context)
+        return table_html
 
 
 class StageDropDownForm(DropDownForm):
@@ -728,6 +740,7 @@ class AddQuestionForm(Form):
     """
     AddQuestionForm
     """
+
     verbose_name = "Add Question"
     question_ids = forms.ModelMultipleChoiceField(
         queryset=RecruitmentSurvey.objects.all(), label="Questions"

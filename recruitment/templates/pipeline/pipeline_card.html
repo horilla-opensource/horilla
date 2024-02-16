@@ -86,59 +86,12 @@
             </div>
             {% if perms.recruitment.add_candidate or request.user|is_stagemanager %}
             <div class="oh-dropdown" x-data="{open: false}">
-              <a class="" @click="open = !open" title="Add Candidates">
+              <a class="" hx-get="{% url 'add-candidate-to-stage' %}?stage_id={{stage.grouper.id}}" 
+              hx-target="#createTarget" 
+              data-toggle="oh-modal-toggle" 
+              data-target="#createModal" @click="open = !open" title="Add Candidates">
                 <ion-icon name="add-sharp" role="img" class="md hydrated mt-1" aria-label="add sharp"></ion-icon>
               </a>
-              <div
-                class="oh-dropdown__menu oh-dropdown__menu--left w-25 oh-dropdown__filter p-4"
-                x-show="open"
-                @click.outside="open = false"
-              >
-                <form action="" class="" method="post" enctype="multipart/form-data">
-                  {% csrf_token %}
-                  <div class="oh-input-group">
-                    <label for="id_name"  class="oh-label">{% trans 'Name' %}</label>
-                    {{candidate_form.name}}
-                  </div>
-                  <div class="oh-input-group">
-                    <label for="id_email" class="oh-label">{% trans 'Email' %}</label>
-                    {{candidate_form.email}}
-                  </div>
-                  {% if rec.is_event_based %}
-                    <div class="oh-input-group">
-                      <label for="job-position" class="oh-label">{% trans 'Job Position' %}</label>
-                      <select name="job_position_id" id="id_job_position_id">
-                        {% for jp in rec.open_positions.all %}
-                        <option value="{{jp.id}}">{{jp}}</option>
-                        {% endfor %}
-                      </select>
-                    </div>
-                  {% endif %}
-                  <div class="oh-input-group">
-                    <label for="job-position" class="oh-label">{% trans 'Phone' %}</label>
-                    {{candidate_form.mobile}}
-                  </div>        
-                  <div class="row">
-                    <div class="col-12 col-sm-12 col-md-6 col-lg-6">
-                      <label for="job-position" class="oh-label">{% trans 'Profile' %}</label>
-                      {{candidate_form.profile}}
-                    </div>
-                    <div class="col-12 col-sm-12 col-md-6 col-lg-6">
-                      <label for="job-position" class="oh-label">{% trans 'Resume' %}</label>
-                      {{candidate_form.resume}}
-                    </div>
-                  </div>
-                  <input type="hidden" name="recruitment_id" id="" value="{{rec.id}}" />
-                  <input type="hidden" name="stage_id" id="" value="{{stage.grouper.id}}" />
-                  <button
-                    type="submit"
-                    class="oh-btn oh-d-hide oh-btn--small oh-btn--secondary oh-btn--add-advanced-tab w-100 mt-3 mb-2"
-                  >
-                    <ion-icon class="me-1" name="add-circle-outline"></ion-icon>
-                     {% trans "Candidate" %}
-                  </button>
-                </form>
-              </div>
             </div>
             {% endif %}
           </div>

@@ -82,7 +82,11 @@ urlpatterns = [
     ),
     path("pipeline/", views.recruitment_pipeline, name="pipeline"),
     path("pipeline-card", views.recruitment_pipeline_card, name="pipeline-card"),
-    path("recruitment-archive/<int:rec_id>", views.recruitment_archive, name="recruitment-archive"),
+    path(
+        "recruitment-archive/<int:rec_id>",
+        views.recruitment_archive,
+        name="recruitment-archive",
+    ),
     path(
         "pipeline-search-candidate",
         recruitment.views.search.pipeline_candidate_search,
@@ -95,7 +99,7 @@ urlpatterns = [
     ),
     path("stage-create", views.stage, name="rec-stage-create"),
     path("stage-view", views.stage_view, name="rec-stage-view"),
-    path("stage-data/<int:rec_id>/",views.stage_data,name="stage-data"),
+    path("stage-data/<int:rec_id>/", views.stage_data, name="stage-data"),
     path("stage-search", recruitment.views.search.stage_search, name="stage-search"),
     path("stage-update/<int:stage_id>/", views.stage_update, name="rec-stage-update"),
     path(
@@ -108,6 +112,7 @@ urlpatterns = [
             "template": "stage/stage_form.html",
         },
     ),
+    path("add-candidate-to-stage", views.add_candidate, name="add-candidate-to-stage"),
     path(
         "stage-update-pipeline/<int:stage_id>/",
         views.stage_update_pipeline,

@@ -70,6 +70,7 @@ from recruitment.filters import (
 from recruitment.methods import recruitment_manages
 from recruitment.decorators import manager_can_enter, recruitment_manager_can_enter
 from recruitment.forms import (
+    AddCandidateForm,
     CandidateExportForm,
     RecruitmentCreationForm,
     CandidateCreationForm,
@@ -77,8 +78,6 @@ from recruitment.forms import (
     SkillZoneCandidateForm,
     SkillZoneCreateForm,
     StageCreationForm,
-    StageDropDownForm,
-    CandidateDropDownForm,
     StageNoteForm,
     StageNoteUpdateForm,
     ToSkillZoneForm,
@@ -294,75 +293,29 @@ def recruitment_pipeline(request):
             template = "pipeline/pipeline_empty.html"
         if view == "card":
             template = "pipeline/pipeline_card.html"
-    recruitment_form = RecruitmentCreationForm()
-    stage_form = StageDropDownForm()
-    candidate_form = CandidateDropDownForm()
 
     status = request.GET.get("closed")
     if not status:
         recruitments = recruitments.filter(closed=False)
-    if request.method == "POST":
-        if request.FILES.get("resume") is not None:
-            if request.user.has_perm("add_candidate") or is_stagemanager(
-                request,
-            ):
-                candidate_form = CandidateDropDownForm(request.POST, request.FILES)
-                if candidate_form.is_valid():
-                    candidate_obj = candidate_form.save()
-                    candidate_form = CandidateDropDownForm()
-                    with contextlib.suppress(Exception):
-                        managers = candidate_obj.stage_id.stage_managers.select_related(
-                            "employee_user_id"
-                        )
-                        users = [employee.employee_user_id for employee in managers]
-                        notify.send(
-                            request.user.employee_get,
-                            recipient=users,
-                            verb=f"New candidate arrived on stage {candidate_obj.stage_id.stage}",
-                            verb_ar=f"وصل مرشح جديد إلى المرحلة {candidate_obj.stage_id.stage}",
-                            verb_de=f"Neuer Kandidat ist auf der Stufe\
-                                    {candidate_obj.stage_id.stage} angekommen",
-                            verb_es=f"Nuevo candidato llegó a la etapa {candidate_obj.stage_id.stage}",
-                            verb_fr=f"Nouveau candidat arrivé à l'étape {candidate_obj.stage_id.stage}",
-                            icon="person-add",
-                            redirect="/recruitment/pipeline",
-                        )
-
-                    messages.success(request, _("Candidate added."))
-                    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
-        elif request.POST.get("stage_managers") and request.user.has_perm("add_stage"):
-            stage_form = StageDropDownForm(request.POST)
-            if stage_form.is_valid():
-                if recruitment_manages(
-                    request, stage_form.instance.recruitment_id
-                ) or request.user.has_perm("recruitment.add_stage"):
-                    stage_obj = stage_form.save()
-                    stage_form = StageDropDownForm()
-                    messages.success(request, _("Stage added."))
-                    with contextlib.suppress(Exception):
-                        managers = stage_obj.stage_managers.select_related(
-                            "employee_user_id"
-                        )
-                        users = [employee.employee_user_id for employee in managers]
-                        notify.send(
-                            request.user.employee_get,
-                            recipient=users,
-                            verb=f"You are chosen as a stage manager on the stage\
-                                      {stage_obj.stage} in recruitment {stage_obj.recruitment_id}",
-                            verb_ar=f"لقد تم اختيارك كمدير مرحلة في المرحلة \
-                                    {stage_obj.stage} في التوظيف {stage_obj.recruitment_id}",
-                            verb_de=f"Sie wurden als Bühnenmanager für die Stufe{stage_obj.stage}\
-                                  in der Rekrutierung {stage_obj.recruitment_id} ausgewählt",
-                            verb_es=f"Has sido elegido/a como gerente de etapa en la etapa\
-                                      {stage_obj.stage} en la contratación {stage_obj.recruitment_id}",
-                            verb_fr=f"Vous avez été choisi(e) comme responsable de l'étape\
-                                      {stage_obj.stage} dans le recrutement {stage_obj.recruitment_id}",
-                            icon="people-circle",
-                            redirect="/recruitment/pipeline",
-                        )
-
-                    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
-                messages.info(request, _("You dont have access"))
+    # with contextlib.suppress(Exception):
+    #     managers = candidate_obj.stage_id.stage_managers.select_related(
+    #         "employee_user_id"
+    #     )
+    #     users = [employee.employee_user_id for employee in managers]
+    #     notify.send(
+    #         request.user.employee_get,
+    #         recipient=users,
+    #         verb=f"New candidate arrived on stage {candidate_obj.stage_id.stage}",
+    #         verb_ar=f"وصل مرشح جديد إلى المرحلة {candidate_obj.stage_id.stage}",
+    #         verb_de=f"Neuer Kandidat ist auf der Stufe\
+    #                 {candidate_obj.stage_id.stage} angekommen",
+    #         verb_es=f"Nuevo candidato llegó a la etapa {candidate_obj.stage_id.stage}",
+    #         verb_fr=f"Nouveau candidat arrivé à l'étape {candidate_obj.stage_id.stage}",
+    #         icon="person-add",
+    #         redirect="/recruitment/pipeline",
+    #     )
+    # messages.success(request, _("Candidate added."))
+    # return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
     previous_data = request.GET.urlencode()
     paginator = Paginator(recruitments, 4)
     page_number = request.GET.get("page")
@@ -421,9 +374,6 @@ def recruitment_pipeline(request):
             "stage_filter_obj": StageFilter(request.GET),
             "candidate_filter_obj": CandidateFilter(request.GET),
             "filter_dict": filter_dict,
-            "form": recruitment_form,
-            "stage_form": stage_form,
-            "candidate_form": candidate_form,
             "status": status,
             "view": view,
             "pd": previous_data,
@@ -985,6 +935,22 @@ def stage_update(request, stage_id):
 
 
 @login_required
+@manager_can_enter("recruitment.add_candidate")
+def add_candidate(request):
+    """
+    This method is used to add candidate directly to the stage
+    """
+    form = AddCandidateForm(initial={"stage_id": request.GET.get("stage_id")})
+    if request.POST:
+        form = AddCandidateForm(request.POST,request.FILES,initial={"stage_id": request.GET.get("stage_id")})
+        if form.is_valid():
+            form.save()
+            messages.success(request,"Candidate Added")
+            return HttpResponse("<script>window.location.reload()</script>")
+    return render(request, "pipeline/form/candidate_form.html", {"form": form})
+
+
+@login_required
 @require_http_methods(["POST"])
 @hx_request_required
 def stage_title_update(request, stage_id):
@@ -1477,9 +1443,7 @@ def skill_zone_view(request):
     """
     This method is used to show Skill zone view
     """
-    candidates = SkillZoneCandFilter(request.GET).qs.filter(
-        is_active=True
-    )
+    candidates = SkillZoneCandFilter(request.GET).qs.filter(is_active=True)
     skill_groups = group_by_queryset(
         candidates,
         "skill_zone_id",
@@ -1646,7 +1610,7 @@ def skill_zone_filter(request):
     all_zones = []
     for zone in skill_groups:
         all_zones.append(zone["grouper"])
-   
+
     all_zone_objects = list(skill_zone_filtered)
     unused_skill_zones = list(set(all_zone_objects) - set(all_zones))
 
