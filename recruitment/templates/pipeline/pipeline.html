@@ -177,7 +177,21 @@
             </div>
             <div class="d-flex">
               {% if perms.add_candidate or request.user|is_stagemanager %}
-              {% include 'pipeline/form/candidate_drop_down_form.html' %}
+              <button onclick="event.stopPropagation()" style="display: inline-block;padding: 0px;
+                  border-radius: 6px;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  width: 50px;
+                  height: 28px;" 
+                  class="oh-btn oh-btn--secondary-outline float-end ms-3" 
+                  hx-get="{% url 'add-candidate-to-stage' %}?stage_id={{stage.grouper.id}}" 
+                  hx-target="#createTarget" 
+                  data-toggle="oh-modal-toggle" 
+                  data-target="#createModal" 
+                  title="Add Candidate">
+                  <ion-icon name="add-outline" class="m-0 md hydrated" role="img" aria-label="add outline"></ion-icon>
+              </button>
               {% endif %}
               <div class="oh-dropdown" x-data="{open: false}">
                 <button
@@ -267,7 +281,7 @@
                       <select name="bulk_stage" class="oh-select w-100" data-stage-id="{{stage.grouper.id}}">
                         <option value="" style="color: gray !important;" selected>{% trans "Stage bulk update" %}</option>
                         {% for stage in rec.stage_set.all|dictsort:"sequence" %}
-                        <option value="{{stage.grouper.id}}">{{stage.grouper}}</option>
+                        <option value="{{stage.id}}">{{stage}}</option>
                         {% endfor %}
                       </select>
                     </div>
