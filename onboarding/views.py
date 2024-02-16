@@ -1109,7 +1109,7 @@ def candidate_task_update(request, taskId):
         redirect="/onboarding/onboarding-view",
     )
     return JsonResponse(
-        {"message": _("Candidate onboarding stage updated"), "type": "success"}
+        {"message": _("Candidate onboarding task updated"), "type": "success"}
     )
 
 
@@ -1255,18 +1255,26 @@ def candidate_stage_bulk_update(request):
     candidate_id_list = json.loads(candiate_ids)
     stage = request.POST["stage"]
     onboarding_stages = OnboardingStage.objects.all()
-    recruitment = Recruitment.objects.get(id=int(recrutment_id))
+    recruitments = Recruitment.objects.filter(id=int(recrutment_id))
+    groups = onboarding_query_grouper(request,recruitments)
+    for item in groups:
+        setattr(item["recruitment"], "stages", item["stages"])
+
     choices = CandidateTask.choice
 
-    count = CandidateStage.objects.filter(
+    CandidateStage.objects.filter(
         candidate_id__id__in=candidate_id_list
     ).update(onboarding_stage_id=stage)
-
+    type = "info"
+    message = "No candidates selected"
+    if candidate_id_list:
+        type = "success"
+        message = "Candidate stage updated successfully"
     response = render(
         request,
         "onboarding/onboarding_table.html",
         {
-            "recruitment": recruitment,
+            "recruitment": groups[0]["recruitment"],
             "onboarding_stages": onboarding_stages,
             "choices": choices,
         },
@@ -1274,7 +1282,7 @@ def candidate_stage_bulk_update(request):
 
     return HttpResponse(
         response.content.decode("utf-8")
-        + '<div><div class="oh-alert-container"><div class="oh-alert oh-alert--animated oh-alert--info">candidate stage updated successfully</div> </div></div>'
+        + f'<div><div class="oh-alert-container"><div class="oh-alert oh-alert--animated oh-alert--{type}">{message}</div> </div></div>'
     )
 
 
