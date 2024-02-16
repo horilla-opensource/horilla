@@ -239,6 +239,10 @@ class WorkTypeRequestReGroup:
         ("work_type_id", "Requested Work Type"),
         ("previous_work_type_id", "Current Work Type"),
         ("requested_date", "Requested Date"),
+        ("employee_id__employee_work_info__department_id", "Department"),
+        ("employee_id__employee_work_info__job_position_id", "Job Position"),
+        ("employee_id__employee_work_info__reporting_manager_id", "Reporting Manager"),
+
     ]
 
 
