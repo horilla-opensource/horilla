@@ -20,34 +20,32 @@
 				></ion-icon>
 			</a>
 		</div>
-			<div class="oh-main__titlebar oh-main__titlebar--right">
-				<div
-					class="oh-input-group oh-input__search-group"
-					:class="searchShow ? 'oh-input__search-group--show' : ''"
-				>
-					<ion-icon
-						name="search-outline"
-						class="oh-input-group__icon oh-input-group__icon--left"
-					></ion-icon>
-					<input
-						name="search"
-						hx-get="{% url 'objective-list-search' %}"
-						hx-target="#objective_list"
-						hx-trigger="keyup delay:500ms"
-						type="text"
-						class="oh-input oh-input__icon"
-						aria-label="Search Input"
-						placeholder="{% trans 'Search' %}"
-					/>
-				</div>
-
-				<form
-					hx-get="{% url 'objective-list-search' %}"
-					hx-target="#objective_list"
-					hx-swap="innerHTML"
-					method="get"
-					id="filterForm"
-				>
+			<form
+				hx-get="{% url 'objective-list-search' %}"
+				hx-target="#objective_list"
+				hx-swap="innerHTML"
+				method="get"
+				id="filterForm"
+				onsubmit="event.preventDefault()"
+			>
+				<div class="oh-main__titlebar oh-main__titlebar--right">
+					<div
+						class="oh-input-group oh-input__search-group"
+						:class="searchShow ? 'oh-input__search-group--show' : ''"
+					>
+						<ion-icon
+							name="search-outline"
+							class="oh-input-group__icon oh-input-group__icon--left"
+						></ion-icon>
+						<input
+							name="search"
+							type="text"
+							class="oh-input oh-input__icon"
+							aria-label="Search Input"
+							placeholder="{% trans 'Search' %}"
+							onkeyup="$('.filterButton').click()"
+						/>
+					</div>
 					<div class="oh-main__titlebar-button-container">
 						<div class="oh-dropdown" x-data="{open: false}">
 							<button
@@ -223,71 +221,71 @@
 								</div>
 							</div>
 						</div>
-					</form>
 
-					<div class="oh-btn-group ml-2">
-						<div class="oh-dropdown" x-data="{open: false}">
-							<button
-								class="oh-btn oh-btn--dropdown oh-btn oh-btn--shadow"
-								@click="open = !open"
-								@click.outside="open = false"
-								onclick="event.preventDefault()"
-							>
-								{% trans "Actions" %}
-							</button>
-							<div
-								class="oh-dropdown__menu oh-dropdown__menu--right"
-								x-show="open"
-								style="display: none"
-							>
-								<ul class="oh-dropdown__items">
-									<li class="oh-dropdown__item">
-										<a href="#" class="oh-dropdown__link" id="archiveObjectives"
-											>{% trans "Archive" %}</a
-										>
-									</li>
-
-									<li class="oh-dropdown__item">
-										<a
-											href="#"
-											class="oh-dropdown__link"
-											id="unArchiveObjectives"
-											>{% trans "Un-Archive" %}</a
-										>
-									</li>
-
-									{% if perms.pms.delete_employeeobjective %}
-									<li class="oh-dropdown__item">
-										<a
-											href="#"
-											class="oh-dropdown__link oh-dropdown__link--danger"
-											id="deleteObjectives"
-											>{% trans "Delete" %}</a
-										>
-									</li>
-									{% endif %}
-								</ul>
-							</div>
-						</div>
-					</div>
-
-					<!-- checking  user permission for objective creation -->
-					{% if perms.pms.add_employeeobjective or request.user|filtersubordinates %}
 						<div class="oh-btn-group ml-2">
-							<div>
-								<a
-									href="{%url 'objective-creation' %}"
-									class="oh-btn oh-btn--secondary oh-btn--shadow"
-									style="text-decoration: none"
+							<div class="oh-dropdown" x-data="{open: false}">
+								<button
+									class="oh-btn oh-btn--dropdown oh-btn oh-btn--shadow"
+									@click="open = !open"
+									@click.outside="open = false"
+									onclick="event.preventDefault()"
 								>
-									<ion-icon name="add-outline"></ion-icon>
-									{% trans "Create" %}
-								</a>
+									{% trans "Actions" %}
+								</button>
+								<div
+									class="oh-dropdown__menu oh-dropdown__menu--right"
+									x-show="open"
+									style="display: none"
+								>
+									<ul class="oh-dropdown__items">
+										<li class="oh-dropdown__item">
+											<a href="#" class="oh-dropdown__link" id="archiveObjectives"
+												>{% trans "Archive" %}</a
+											>
+										</li>
+
+										<li class="oh-dropdown__item">
+											<a
+												href="#"
+												class="oh-dropdown__link"
+												id="unArchiveObjectives"
+												>{% trans "Un-Archive" %}</a
+											>
+										</li>
+
+										{% if perms.pms.delete_employeeobjective %}
+										<li class="oh-dropdown__item">
+											<a
+												href="#"
+												class="oh-dropdown__link oh-dropdown__link--danger"
+												id="deleteObjectives"
+												>{% trans "Delete" %}</a
+											>
+										</li>
+										{% endif %}
+									</ul>
+								</div>
 							</div>
 						</div>
-					{% endif %}
+
+						<!-- checking  user permission for objective creation -->
+						{% if perms.pms.add_employeeobjective or request.user|filtersubordinates %}
+							<div class="oh-btn-group ml-2">
+								<div>
+									<a
+										href="{%url 'objective-creation' %}"
+										class="oh-btn oh-btn--secondary oh-btn--shadow"
+										style="text-decoration: none"
+									>
+										<ion-icon name="add-outline"></ion-icon>
+										{% trans "Create" %}
+									</a>
+								</div>
+							</div>
+						{% endif %}
+					</div>
 				</div>
-			</div>
+			</form>
 	</section>
 	<div class="oh-checkpoint-badge mb-2" id="selectedObjectives" data-ids="[]" data-clicked="" style="display:none;" >
 		{% trans "Selected Objectives" %}

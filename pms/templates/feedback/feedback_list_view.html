@@ -22,173 +22,176 @@
         <ion-icon name="search-outline" class="oh-main__titlebar-serach-icon"></ion-icon>
       </a>
     </div>
+
+    <form hx-get="{% url 'feedback-list-search' %}" hx-target="#feedback_list" hx-swap="innerHTML"
+                method="get" id="filterForm" onsubmit="event.preventDefault()">
  
-    <div class="oh-main__titlebar oh-main__titlebar--right">
-      <div class="oh-input-group oh-input__search-group" :class="searchShow ? 'oh-input__search-group--show' : ''">
-        <ion-icon name="search-outline" class="oh-input-group__icon oh-input-group__icon--left"></ion-icon>
-        <input name="search" hx-get="{% url 'feedback-list-search' %}" hx-target="#feedback_list" hx-trigger='keyup delay:500ms' type="text" class="oh-input oh-input__icon" aria-label="Search Input"
-        placeholder="{% trans 'Search' %}" />
-      </div>
-      <div class="oh-main__titlebar-button-container">
-        
-          <div class="oh-dropdown" x-data="{open: false}">
-            <button class="oh-btn ml-2" @click="open = !open">
-              <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}<div id="filterCount"></div>
-            </button>
-            <div class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4" x-show="open"
-              @click.outside="open = false" style="display: none;">
-              <form hx-get="{% url 'feedback-list-search' %}" hx-target="#feedback_list" hx-swap="innerHTML"
-                method="get" id="filterForm">
-  
-                <div class="oh-dropdown__filter-body">
-  
-                  <div class="oh-accordion">
-                    <div class="oh-accordion-header">{% trans "Feedback" %}</div>
-                    <div class="oh-accordion-body">
-                      <div class="row">
-                        <div class="col-sm-12 col-md-12 col-lg-6">
-                          <div class="oh-input-group">
-                            <label class="oh-label" for="{{feedback_filter_form.review_cycle.id_for_label}}">{% trans "Feedback Title" %}</label>
-                            {{feedback_filter_form.review_cycle}}
-                          </div>
-                          <div class="oh-input-group">
-                            <label class="oh-label" for="{{feedback_filter_form.status.id_for_label}}">{% trans "Status" %} </label>
-                            {{feedback_filter_form.status}}
-                          </div>
-                        </div>
-                        <div class="col-sm-12 col-md-12 col-lg-6">
-                          <div class="oh-input-group">
-                            <label class="oh-label" for="{{feedback_filter_form.employee_id.id_for_label}}">{% trans "Employee" %}</label>
-                            {{feedback_filter_form.employee_id}}
-                          </div>
-                          <div class="oh-input-group">
-                            <label class="oh-label" for="{{feedback_filter_form.manager_id.id_for_label}}">{% trans "Manager" %} </label>
-                            {{feedback_filter_form.manager_id}}
-                          </div>
-                        </div>
-                        <div class="col-sm-12 col-md-12 col-lg-6">
-                          <div class="oh-input-group">
-                            <label class="oh-label" for="{{feedback_filter_form.colleague_id.id_for_label}}">{% trans "Colleague" %} </label>
-                            {{feedback_filter_form.colleague_id}}
-                          </div>
-                          <div class="oh-input-group">
-                            <label class="oh-label" for="{{feedback_filter_form.start_date.id_for_label}}">{% trans "Start Date" %}</label>
-                            {{feedback_filter_form.start_date}}
-                          </div>
-                        </div>
-                        <div class="col-sm-12 col-md-12 col-lg-6">
-                          <div class="oh-input-group">
-                            <label class="oh-label" for="{{feedback_filter_form.subordinate_id.id_for_label}}">{% trans "Subordinate" %}</label>
-                            {{feedback_filter_form.subordinate_id}}
-                          </div>
-                          <div class="oh-input-group">
-                            <label class="oh-label" for="{{feedback_filter_form.end_date.id_for_label}}">{% trans "End Date" %}</label>
-                            {{feedback_filter_form.end_date}}
-                          </div>
-  
-                        </div>
-                        <div class="col-sm-12 col-md-12 col-lg-6">
-                          <div class="oh-input-group">
-                            <label class="oh-label" for="{{feedback_filter_form.archive.id_for_label}}">{% trans "Archive" %}</label>
-                            {{feedback_filter_form.archive}}
-                          </div>
-                        
-  
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="oh-accordion">
-                    <div class="oh-accordion-header">{% trans "Advanced" %}</div>
-                    <div class="oh-accordion-body">
-                      <div class="row">
-                        <div class="col-sm-12 col-md-12 col-lg-6">
-                          <div class="oh-input-group fil">
-                            <a hx-get="{%url 'feedback-list-search' %}?created_at_date_range=today"  hx-target="#feedback_list" class="oh-btn oh-btn--secondary oh-btn--small w-100">{% trans "Today" %}</a>
-                          </div>
-                        </div>
-                        <div class="col-sm-12 col-md-12 col-lg-6">
-                          <div class="oh-input-group fil">
-                            <a hx-get="{%url 'feedback-list-search' %}?created_at_date_range=yesterday" hx-target="#feedback_list" class="oh-btn oh-btn--secondary oh-btn--small w-100">{% trans "Yesterday" %}</a>
-                          </div>
-                        </div>
-                        <div class="col-sm-12 col-md-12 col-lg-6">
-                          <div class="oh-input-group fil">
-                            <a hx-get="{%url 'feedback-list-search' %}?created_at_date_range=week"  hx-target="#feedback_list" class="oh-btn oh-btn--secondary oh-btn--small w-100">{% trans "This Week" %}</a>
-                          </div>
-                        </div>
-                        <div class="col-sm-12 col-md-12 col-lg-6">
-                          <div class="oh-input-group fil">
-                            <a hx-get="{%url 'feedback-list-search' %}?created_at_date_range=month"  hx-target="#feedback_list" class="oh-btn oh-btn--secondary oh-btn--small w-100">{% trans "This Month" %}</a>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div class="oh-dropdown__filter-footer">
-                  <button class="oh-btn oh-btn--secondary oh-btn--small w-100 filterButton" id="feedback-filter-form-submit">{% trans "Filter" %}</button>
-                </div>
-              </form>
-            </div>
-          </div>
+      <div class="oh-main__titlebar oh-main__titlebar--right">
+        <div class="oh-input-group oh-input__search-group" :class="searchShow ? 'oh-input__search-group--show' : ''">
+          <ion-icon name="search-outline" class="oh-input-group__icon oh-input-group__icon--left"></ion-icon>
+          <input name="search" onkeyup="$('.filterButton').click()" type="text" class="oh-input oh-input__icon" aria-label="Search Input"
+          placeholder="{% trans 'Search' %}" />
+        </div>
+        <div class="oh-main__titlebar-button-container">
           
-          <div class="oh-btn-group ml-2">
             <div class="oh-dropdown" x-data="{open: false}">
-              <button
-                class="oh-btn oh-btn--dropdown oh-btn oh-btn--shadow"
-                @click="open = !open"
-                @click.outside="open = false"
-              >
-                {% trans "Actions" %}
+              <button class="oh-btn ml-2" @click="open = !open">
+                <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}<div id="filterCount"></div>
               </button>
-              <div class="oh-dropdown__menu oh-dropdown__menu--right" x-show="open" 
-              style="display: none;"
-            >
-                <ul class="oh-dropdown__items">
+              <div class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4" x-show="open"
+                @click.outside="open = false" style="display: none;">
+                
     
-                  <li class="oh-dropdown__item">
-                    <a href="#" class="oh-dropdown__link " id="archiveFeedback"
+                  <div class="oh-dropdown__filter-body">
     
-                      >{% trans "Archive" %}</a
-                    >
-                  </li>
+                    <div class="oh-accordion">
+                      <div class="oh-accordion-header">{% trans "Feedback" %}</div>
+                      <div class="oh-accordion-body">
+                        <div class="row">
+                          <div class="col-sm-12 col-md-12 col-lg-6">
+                            <div class="oh-input-group">
+                              <label class="oh-label" for="{{feedback_filter_form.review_cycle.id_for_label}}">{% trans "Feedback Title" %}</label>
+                              {{feedback_filter_form.review_cycle}}
+                            </div>
+                            <div class="oh-input-group">
+                              <label class="oh-label" for="{{feedback_filter_form.status.id_for_label}}">{% trans "Status" %} </label>
+                              {{feedback_filter_form.status}}
+                            </div>
+                          </div>
+                          <div class="col-sm-12 col-md-12 col-lg-6">
+                            <div class="oh-input-group">
+                              <label class="oh-label" for="{{feedback_filter_form.employee_id.id_for_label}}">{% trans "Employee" %}</label>
+                              {{feedback_filter_form.employee_id}}
+                            </div>
+                            <div class="oh-input-group">
+                              <label class="oh-label" for="{{feedback_filter_form.manager_id.id_for_label}}">{% trans "Manager" %} </label>
+                              {{feedback_filter_form.manager_id}}
+                            </div>
+                          </div>
+                          <div class="col-sm-12 col-md-12 col-lg-6">
+                            <div class="oh-input-group">
+                              <label class="oh-label" for="{{feedback_filter_form.colleague_id.id_for_label}}">{% trans "Colleague" %} </label>
+                              {{feedback_filter_form.colleague_id}}
+                            </div>
+                            <div class="oh-input-group">
+                              <label class="oh-label" for="{{feedback_filter_form.start_date.id_for_label}}">{% trans "Start Date" %}</label>
+                              {{feedback_filter_form.start_date}}
+                            </div>
+                          </div>
+                          <div class="col-sm-12 col-md-12 col-lg-6">
+                            <div class="oh-input-group">
+                              <label class="oh-label" for="{{feedback_filter_form.subordinate_id.id_for_label}}">{% trans "Subordinate" %}</label>
+                              {{feedback_filter_form.subordinate_id}}
+                            </div>
+                            <div class="oh-input-group">
+                              <label class="oh-label" for="{{feedback_filter_form.end_date.id_for_label}}">{% trans "End Date" %}</label>
+                              {{feedback_filter_form.end_date}}
+                            </div>
+    
+                          </div>
+                          <div class="col-sm-12 col-md-12 col-lg-6">
+                            <div class="oh-input-group">
+                              <label class="oh-label" for="{{feedback_filter_form.archive.id_for_label}}">{% trans "Archive" %}</label>
+                              {{feedback_filter_form.archive}}
+                            </div>
+                          
+    
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="oh-accordion">
+                      <div class="oh-accordion-header">{% trans "Advanced" %}</div>
+                      <div class="oh-accordion-body">
+                        <div class="row">
+                          <div class="col-sm-12 col-md-12 col-lg-6">
+                            <div class="oh-input-group fil">
+                              <a hx-get="{%url 'feedback-list-search' %}?created_at_date_range=today"  hx-target="#feedback_list" class="oh-btn oh-btn--secondary oh-btn--small w-100">{% trans "Today" %}</a>
+                            </div>
+                          </div>
+                          <div class="col-sm-12 col-md-12 col-lg-6">
+                            <div class="oh-input-group fil">
+                              <a hx-get="{%url 'feedback-list-search' %}?created_at_date_range=yesterday" hx-target="#feedback_list" class="oh-btn oh-btn--secondary oh-btn--small w-100">{% trans "Yesterday" %}</a>
+                            </div>
+                          </div>
+                          <div class="col-sm-12 col-md-12 col-lg-6">
+                            <div class="oh-input-group fil">
+                              <a hx-get="{%url 'feedback-list-search' %}?created_at_date_range=week"  hx-target="#feedback_list" class="oh-btn oh-btn--secondary oh-btn--small w-100">{% trans "This Week" %}</a>
+                            </div>
+                          </div>
+                          <div class="col-sm-12 col-md-12 col-lg-6">
+                            <div class="oh-input-group fil">
+                              <a hx-get="{%url 'feedback-list-search' %}?created_at_date_range=month"  hx-target="#feedback_list" class="oh-btn oh-btn--secondary oh-btn--small w-100">{% trans "This Month" %}</a>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="oh-dropdown__filter-footer">
+                    <button class="oh-btn oh-btn--secondary oh-btn--small w-100 filterButton" id="feedback-filter-form-submit">{% trans "Filter" %}</button>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="oh-btn-group ml-2">
+                <div class="oh-dropdown" x-data="{open: false}">
+                  <button
+                    onclick="event.preventDefault()"
+                    class="oh-btn oh-btn--dropdown oh-btn oh-btn--shadow"
+                    @click="open = !open"
+                    @click.outside="open = false"
+                  >
+                    {% trans "Actions" %}
+                  </button>
+                  <div class="oh-dropdown__menu oh-dropdown__menu--right" x-show="open" 
+                  style="display: none;"
+                >
+                    <ul class="oh-dropdown__items">
+        
+                      <li class="oh-dropdown__item">
+                        <a href="#" class="oh-dropdown__link " id="archiveFeedback"
+        
+                          >{% trans "Archive" %}</a
+                        >
+                      </li>
 
-                  <li class="oh-dropdown__item">
-                    <a href="#" class="oh-dropdown__link "
-                    id="unArchiveFeedback"
-                      >{% trans "Un-Archive" %}</a
-                    >
-                  </li>
+                      <li class="oh-dropdown__item">
+                        <a href="#" class="oh-dropdown__link "
+                        id="unArchiveFeedback"
+                          >{% trans "Un-Archive" %}</a
+                        >
+                      </li>
 
-                  {% if perms.pms.delete_feedback %}
-                  <li class="oh-dropdown__item">
-                    <a
-                      href="#"
-                      class="oh-dropdown__link oh-dropdown__link--danger"
-                      id="deleteFeedback"
-                      >{% trans "Delete" %}</a
-                    >
-                  </li>
-                  {% endif %}
-    
-                </ul>
+                      {% if perms.pms.delete_feedback %}
+                      <li class="oh-dropdown__item">
+                        <a
+                          href="#"
+                          class="oh-dropdown__link oh-dropdown__link--danger"
+                          id="deleteFeedback"
+                          >{% trans "Delete" %}</a
+                        >
+                      </li>
+                      {% endif %}
+        
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+            <!-- checking  user permission for objective creation -->
+          {% if perms.pms.add_feedback or request.user|filtersubordinates %}
+            <div class="oh-btn-group ml-2">
+              <div class="oh-dropdown" x-data="{open: false}">
+                  <a  href="{% url 'feedback-creation' %}" class="oh-btn oh-btn--secondary" role="button">
+                    <ion-icon class="md hydrated" name="add-outline" role="img" aria-label="add outline"></ion-icon>
+                    {% trans "Create" %}</a>
               </div>
             </div>
-          </div>
-
-        <!-- checking  user permission for objective creation -->
-      {% if perms.pms.add_feedback or request.user|filtersubordinates %}
-        <div class="oh-btn-group ml-2">
-          <div class="oh-dropdown" x-data="{open: false}">
-              <a  href="{% url 'feedback-creation' %}" class="oh-btn oh-btn--secondary" role="button">
-                <ion-icon class="md hydrated" name="add-outline" role="img" aria-label="add outline"></ion-icon>
-                {% trans "Create" %}</a>
+          {% endif %}
           </div>
         </div>
-      {% endif %}
-      </div>
-    </div>
+      </form>
   </section>
 
   <div class="oh-wrapper" id="feedback_list">
