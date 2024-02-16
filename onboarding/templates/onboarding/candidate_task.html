@@ -18,7 +18,7 @@
       {% endfor %}
   {% else %}
   <button class="oh-checkpoint-badge text-danger" data-toggle="oh-modal-toggle" 
-      hx-post="{% url 'assign-task' task.id  %}?cand_id={{candidate.id}}&cand_stage={{candidate.id}}&stage_id={{stage.id}}"
+      hx-post="{% url 'assign-task' task.id  %}?cand_id={{candidate.id}}&cand_stage={{candidate.id}}&stage_id={{stage.grouper.id}}"
       hx-target="#task{{task.id}}{{candidate.id}}"
   >
       {% trans "Assign" %}
@@ -51,7 +51,7 @@
       {% endfor %}
   {% else %}
       <button class="oh-checkpoint-badge text-danger" data-toggle="oh-modal-toggle" 
-          hx-post="{% url 'assign-task' task.id  %}?cand_id={{candidate.candidate_id.id}}&cand_stage={{candidate.id}}&stage_id={{stage.id}}"
+          hx-post="{% url 'assign-task' task.id  %}?cand_id={{candidate.candidate_id.id}}&cand_stage={{candidate.id}}&stage_id={{stage.grouper.id}}"
           hx-target="#task{{task.id}}{{candidate.candidate_id.id}}"
       >
           {% trans "Assign" %}
