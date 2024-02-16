@@ -1,27 +1,52 @@
 from django import forms
+from base.methods import reload_queryset
+from employee.filters import EmployeeFilter
+from employee.models import Employee
 from horilla_documents.models import Document, DocumentRequest
 from base.forms import ModelForm
 from django.template.loader import render_to_string
 
+from horilla_widgets.widgets.horilla_multi_select_field import HorillaMultiSelectField
+from horilla_widgets.widgets.select_widgets import HorillaMultiSelectWidget
 
 class DocumentRequestForm(ModelForm):
     """ form to create a new Document Request """
 
-    # employee_id = forms.ModelMultipleChoiceField(
-    #     queryset=DocumentRequest._meta.get_field('employee').remote_field.model.objects.all(),
-    #     required=False,
-    # )
     class Meta:
         model = DocumentRequest
         fields = '__all__'
 
-    # def save(self, commit=True):
-    #     instance = super().save(commit=False)
-    #     # Handle the new field name in cleaned_data
-    #     instance.employee.set(self.cleaned_data['employee_id'])
-    #     if commit:
-    #         instance.save()
-    #     return instance
+    def clean(self):
+        for field_name, field_instance in self.fields.items():
+            if isinstance(field_instance, HorillaMultiSelectField):
+                self.errors.pop(field_name, None)
+                if len(self.data.getlist(field_name)) < 1:
+                    raise forms.ValidationError({field_name: "Thif field is required"})
+                cleaned_data = super().clean()
+                employee_data = self.fields[field_name].queryset.filter(
+                    id__in=self.data.getlist(field_name)
+                )
+                cleaned_data[field_name] = employee_data
+        cleaned_data = super().clean()
+        return cleaned_data
+
+    def __init__(self,*args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.instance.pk is None:
+            self.fields["employee_id"] = employee_id = HorillaMultiSelectField(
+                queryset=Employee.objects.all(),
+                widget=HorillaMultiSelectWidget(
+                    filter_route_name="employee-widget-filter",
+                    filter_class=EmployeeFilter,
+                    filter_instance_contex_name="f",
+                    filter_template_path="employee_filters.html",
+                    required=True,
+                ),
+                label="Employee",
+            )
+        reload_queryset(self.fields)
+        
+    
 
 
 class DocumentForm(ModelForm):
