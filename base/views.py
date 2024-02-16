@@ -1239,7 +1239,7 @@ def rotating_work_type_assign(request):
         queryset=RotatingWorkTypeAssign.objects.filter(is_active=True)
     )
     rwork_all = RotatingWorkTypeAssign.objects.all()
-    rwork_type_assign = filter.qs
+    rwork_type_assign = filter.qs.order_by("-id")
     rwork_type_assign = filtersubordinates(
         request, rwork_type_assign, "base.view_rotatingworktypeassign"
     )
@@ -1326,7 +1326,7 @@ def rotating_work_type_assign_view(request):
     """
 
     previous_data = request.GET.urlencode()
-    rwork_type_assign = RotatingWorkTypeAssignFilter(request.GET).qs
+    rwork_type_assign = RotatingWorkTypeAssignFilter(request.GET).qs.order_by("-id")
     field = request.GET.get("field")
     rwork_type_assign = rwork_type_assign.filter(is_active=True)
     if request.GET.get("is_active") == "false":
@@ -1334,31 +1334,40 @@ def rotating_work_type_assign_view(request):
     rwork_type_assign = filtersubordinates(
         request, rwork_type_assign, "base.view_rotatingworktypeassign"
     )
+    if request.GET.get("orderby"):
+        rwork_type_assign = sortby(request, rwork_type_assign, "orderby")
     template = "base/rotating_work_type/rotating_work_type_assign_view.html"
     data_dict = parse_qs(previous_data)
     get_key_instances(RotatingWorkTypeAssign, data_dict)
+
     if field != "" and field is not None:
-        field_copy = field.replace(".", "__")
-        rwork_type_assign = rwork_type_assign.order_by(field_copy)
+        rwork_type_assign = group_by_queryset(
+            rwork_type_assign, field, request.GET.get("page"), "page"
+        )
+        list_values = [entry['list'] for entry in rwork_type_assign]
+        id_list = []
+        for value in list_values:
+            for instance in value.object_list:
+                id_list.append(instance.id)
+
+        assign_ids = json.dumps(list(id_list))
         template = "base/rotating_work_type/htmx/group_by.html"
 
-    rwork_type_assign = sortby(request, rwork_type_assign, "orderby")
-    assign_ids = json.dumps(
-        [
-            instance.id
-            for instance in paginator_qry(
-                rwork_type_assign, request.GET.get("page")
-            ).object_list
-        ]
-    )
+    else: 
+        rwork_type_assign =  paginator_qry(rwork_type_assign, request.GET.get("page"))
+        assign_ids = json.dumps(
+            [
+                instance.id
+                for instance in rwork_type_assign.object_list
+            ]
+        )
+
 
     return render(
         request,
         template,
         {
-            "rwork_type_assign": paginator_qry(
-                rwork_type_assign, request.GET.get("page")
-            ),
+            "rwork_type_assign":rwork_type_assign,
             "pd": previous_data,
             "filter_dict": data_dict,
             "assign_ids": assign_ids,
@@ -1911,7 +1920,7 @@ def rotating_shift_assign_view(request):
     This method renders all instance of rotating shift assign to a template
     """
     previous_data = request.GET.urlencode()
-    rshift_assign = RotatingShiftAssignFilters(request.GET).qs
+    rshift_assign = RotatingShiftAssignFilters(request.GET).qs.order_by("-id")
     field = request.GET.get("field")
     if (
         request.GET.get("is_active") is None
@@ -1921,27 +1930,37 @@ def rotating_shift_assign_view(request):
     rshift_assign = filtersubordinates(
         request, rshift_assign, "base.view_rotatingshiftassign"
     )
+    rshift_assign = sortby(request, rshift_assign, "orderby")
     data_dict = parse_qs(previous_data)
     get_key_instances(RotatingShiftAssign, data_dict)
     template = "base/rotating_shift/rotating_shift_assign_view.html"
+        
     if field != "" and field is not None:
-        field_copy = field.replace(".", "__")
-        rshift_assign = rshift_assign.order_by(field_copy)
+        rshift_assign = group_by_queryset(
+            rshift_assign, field, request.GET.get("page"), "page"
+        )
+        list_values = [entry['list'] for entry in rshift_assign]
+        id_list = []
+        for value in list_values:
+            for instance in value.object_list:
+                id_list.append(instance.id)
+
+        assign_ids = json.dumps(list(id_list))
         template = "base/rotating_shift/htmx/group_by.html"
-    rshift_assign = sortby(request, rshift_assign, "orderby")
-    assign_ids = json.dumps(
-        [
-            instance.id
-            for instance in paginator_qry(
-                rshift_assign, request.GET.get("page")
-            ).object_list
-        ]
-    )
+
+    else: 
+        rshift_assign =  paginator_qry(rshift_assign, request.GET.get("page"))
+        assign_ids = json.dumps(
+            [
+                instance.id
+                for instance in rshift_assign.object_list
+            ]
+        )
     return render(
         request,
         template,
         {
-            "rshift_assign": paginator_qry(rshift_assign, request.GET.get("page")),
+            "rshift_assign": rshift_assign,
             "pd": previous_data,
             "filter_dict": data_dict,
             "assign_ids": assign_ids,
@@ -2412,28 +2431,28 @@ def work_type_request_search(request):
         )
     work_typ_requests = sortby(request, work_typ_requests, "orderby")
     template = "work_type_request/htmx/requests.html"
-    if field != "" and field is not None:
-        field_copy = field.replace(".", "__")
-        work_typ_requests = work_typ_requests.order_by(f"-{field_copy}")
-        template = "work_type_request/htmx/group_by.html"
 
-    requests_ids = json.dumps(
-        [
-            instance.id
-            for instance in paginator_qry(
-                work_typ_requests, request.GET.get("page")
-            ).object_list
-        ]
-    )
     if field != "" and field is not None:
-        # field_copy = field.replace(".", "__")
-        # work_typ_requests = work_typ_requests.order_by(f"-{field_copy}")
         work_typ_requests = group_by_queryset(
             work_typ_requests, field, request.GET.get("page"), "page"
         )
+        list_values = [entry['list'] for entry in work_typ_requests]
+        id_list = []
+        for value in list_values:
+            for instance in value.object_list:
+                id_list.append(instance.id)
+
+        requests_ids = json.dumps(list(id_list))
         template = "work_type_request/htmx/group_by.html"
+
     else: 
         work_typ_requests =  paginator_qry(work_typ_requests, request.GET.get("page"))
+        requests_ids = json.dumps(
+            [
+                instance.id
+                for instance in work_typ_requests.object_list
+            ]
+        )
 
     data_dict = parse_qs(previous_data)
     get_key_instances(WorkTypeRequest, data_dict)
@@ -2448,6 +2467,7 @@ def work_type_request_search(request):
             "field": field,
         },
     )
+
 
 
 @login_required
@@ -3076,11 +3096,56 @@ def shift_request_search(request):
 
     data_dict = parse_qs(previous_data)
     template = "shift_request/htmx/requests.html"
+    # if field != "" and field is not None:
+    #     field_copy = field.replace(".", "__")
+    #     shift_requests = shift_requests.order_by(f"-{field_copy}")
+    #     allocated_shift_requests = allocated_shift_requests.order_by(f"-{field_copy}")
+    #     template = "shift_request/htmx/group_by.html"
+
     if field != "" and field is not None:
-        field_copy = field.replace(".", "__")
-        shift_requests = shift_requests.order_by(f"-{field_copy}")
-        allocated_shift_requests = allocated_shift_requests.order_by(f"-{field_copy}")
+        shift_requests = group_by_queryset(
+            shift_requests, field, request.GET.get("page"), "page"
+        )
+        allocated_shift_requests = group_by_queryset(
+            allocated_shift_requests, field, request.GET.get("page"), "page"
+        )
+        shift_list_values = [entry['list'] for entry in shift_requests]
+        allocated_list_values = [entry['list'] for entry in allocated_shift_requests]
+        shift_id_list = []
+        allocated_id_list = []
+        
+        for value in shift_list_values:
+            for instance in value.object_list:
+                shift_id_list.append(instance.id)
+                
+        for value in allocated_list_values:
+            for instance in value.object_list:
+                allocated_id_list.append(instance.id)
+
+        requests_ids = json.dumps(list(shift_id_list))
+        allocated_ids = json.dumps(list(allocated_id_list))
         template = "shift_request/htmx/group_by.html"
+
+    else: 
+        shift_requests =  paginator_qry(shift_requests, request.GET.get("page"))
+        allocated_shift_requests =  paginator_qry(allocated_shift_requests, request.GET.get("page"))
+        requests_ids = json.dumps(
+            [
+                instance.id
+                for instance in paginator_qry(
+                    shift_requests, request.GET.get("page")
+                ).object_list
+            ]
+        )
+
+        allocated_ids = json.dumps(
+            [
+                instance.id
+                for instance in paginator_qry(
+                    allocated_shift_requests, request.GET.get("page")
+                ).object_list
+            ]
+        )
 
 
     get_key_instances(ShiftRequest, data_dict)
@@ -3088,7 +3153,7 @@ def shift_request_search(request):
         request,
         template,
         {
-            "allocated_data": paginator_qry(allocated_shift_requests, request.GET.get("page")),
+            "allocated_data": allocated_shift_requests,
             "data": paginator_qry(shift_requests, request.GET.get("page")),
             "pd": previous_data,
             "filter_dict": data_dict,

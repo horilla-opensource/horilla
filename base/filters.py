@@ -257,9 +257,9 @@ class RotatingWorkTypeRequestReGroup:
         ("rotating_work_type_id", "Rotating Work Type"),
         ("current_work_type", "Current Work Type"),
         ("based_on", "Based On"),
-        ("employee_id.employee_work_info.department_id", "Department"),
-        ("employee_id.employee_work_info.job_role_id", "Job Role"),
-        ("employee_id.employee_work_info.reporting_manager_id", "Reporting Manager"),
+        ("employee_id__employee_work_info__department_id", "Department"),
+        ("employee_id__employee_work_info__job_role_id", "Job Role"),
+        ("employee_id__employee_work_info__reporting_manager_id", "Reporting Manager"),
     ]
 
 
@@ -273,7 +273,7 @@ class RotatingShiftRequestReGroup:
         ("employee_id", "Employee"),
         ("rotating_shift_id", "Rotating Shift"),
         ("based_on", "Based On"),
-        ("employee_id.employee_work_info.department_id", "Department"),
-        ("employee_id.employee_work_info.job_role_id", "Job Role"),
-        ("employee_id.employee_work_info.reporting_manager_id", "Reporting Manager"),
+        ("employee_id__employee_work_info__department_id", "Department"),
+        ("employee_id__employee_work_info__job_role_id", "Job Role"),
+        ("employee_id__employee_work_info__reporting_manager_id", "Reporting Manager"),
     ]

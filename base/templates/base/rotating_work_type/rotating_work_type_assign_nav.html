@@ -45,7 +45,7 @@
       <div class="oh-main__titlebar-button-container">
         {% if rwork_all %}
           <div class="oh-dropdown" x-data="{open: false}">
-            <button class="oh-btn ml-2" @click="open = !open">
+            <button class="oh-btn ml-2" @click="open = !open" type="button">
               <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}
               <div id="filterCount"></div>
             </button>
@@ -59,7 +59,7 @@
             </div>
           </div>
           <div class="oh-dropdown" x-data="{open: false}">
-            <button class="oh-btn ml-2" @click="open = !open">
+            <button class="oh-btn ml-2" type="button" @click="open = !open">
               <ion-icon name="library-outline" class="mr-1"></ion-icon>{% trans "Group By" %}
               <div id="filterCount"></div>
             </button>
