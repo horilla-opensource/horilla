@@ -112,7 +112,8 @@ def group_by_queryset(
         ]
         # getting related queryset
         related_model = queryset.model._meta.get_field(group_field).related_model
-        groupers = related_model.objects.filter(id__in=groupers)
+        if related_model:
+            groupers = related_model.objects.filter(id__in=groupers)
         groups = generate_groups(
             request, groupers, queryset, page_name, group_field, is_fk_field=False
         )
