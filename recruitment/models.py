@@ -429,9 +429,7 @@ class Candidate(models.Model):
             # Check if the stage type is 'hired'
             if self.stage_id.stage_type == "hired":
                 self.hired = True
-        print("+++++++++++++++++++++++++++++++++++")
-        print(self.recruitment_id.is_event_based)
-        print("+++++++++++++++++++++++++++++++++++")
+
         if not self.recruitment_id.is_event_based and self.job_position_id is None:
             self.job_position_id = self.recruitment_id.job_position_id
         if self.job_position_id not in self.recruitment_id.open_positions.all():

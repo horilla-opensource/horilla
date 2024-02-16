@@ -993,6 +993,11 @@ def candidate(request):
                 messages.success(request, _("Candidate added."))
             else:
                 messages.error(request, "Job position field is required")
+                return render(
+                    request,
+                    "candidate/candidate_create_form.html",
+                    {"form": form, "open_recruitment": open_recruitment},
+                )
             return redirect(path)
 
     return render(
