@@ -82,7 +82,7 @@
             </div>
             <div class="oh-sticky-table__tbody" id="leaveRequestTableBody">
                 {% for leave_request in leave_requests %}
-                <div class="oh-sticky-table__tr" draggable="true" data-toggle="oh-modal-toggle" data-target="#tableTimeOff"
+                <div class="oh-sticky-table__tr  {% if leave_request.status == 'cancelled' %} diff-cell{% endif %}" draggable="true" data-toggle="oh-modal-toggle" data-target="#tableTimeOff"
                 hx-get="{% url 'one-request-view' leave_request.id %}?instances_ids={{requests_ids}}" hx-target="#requestView">
                     {% if not request.GET.dashboard %}
                         <div class="oh-sticky-table__sd {% if leave_request.status == "requested" %} row-status--orange 
@@ -107,11 +107,11 @@
                             <span class="oh-profile__name oh-text--dark">{{leave_request.employee_id}}</span>
                         </div>
                     </div>
-                    <div class="oh-sticky-table__td {% if leave_request.status == 'cancelled' %} diff-cell{% endif %}">{{leave_request.leave_type_id}}</div>
-                    <div class="oh-sticky-table__td {% if leave_request.status == 'cancelled' %} diff-cell{% endif %} dateformat_changer">{{leave_request.start_date}}</div>
-                    <div class="oh-sticky-table__td {% if leave_request.status == 'cancelled' %} diff-cell{% endif %} dateformat_changer">{{leave_request.end_date}}</div>
-                    <div class="oh-sticky-table__td {% if leave_request.status == 'cancelled' %} diff-cell{% endif %}">{{leave_request.requested_days}}</div>
-                    <div class="oh-sticky-table__td {% if leave_request.status == 'cancelled' %} diff-cell{% endif %}">
+                    <div class="oh-sticky-table__td">{{leave_request.leave_type_id}}</div>
+                    <div class="oh-sticky-table__td dateformat_changer">{{leave_request.start_date}}</div>
+                    <div class="oh-sticky-table__td dateformat_changer">{{leave_request.end_date}}</div>
+                    <div class="oh-sticky-table__td">{{leave_request.requested_days}}</div>
+                    <div class="oh-sticky-table__td">
                       {% if leave_request.multiple_approvals and leave_request.status == "requested" %}
                         <div class="oh-checkpoint-badge oh-checkpoint-badge--secondary" title="{% for manager in leave_request.multiple_approvals.managers %}{{ manager }}{% if not forloop.last %} , {% endif %}{% endfor %}">
                           {{leave_request.multiple_approvals.approved|length}} / {{leave_request.multiple_approvals.managers|length}} {% trans "Approved" %}
@@ -167,7 +167,7 @@
                         {% if leave_request.end_date >= current_date %}
                         <a type="submit" data-toggle="oh-modal-toggle"
                             data-target="#rejectModal" hx-get="{% url 'request-cancel' leave_request.id %}" hx-target="#rejectForm"  title="{% trans 'Approve cancellation request' %}"
-                            class="oh-btn oh-btn--secondary w-100";>
+                            class="oh-btn oh-btn--warning w-100";>
                             <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
                         </a>
                         {% else %}
