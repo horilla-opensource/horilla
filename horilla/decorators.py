@@ -43,7 +43,7 @@ def permission_required(function, perm):
             previous_url = request.META.get("HTTP_REFERER", "/")
             key = "HTTP_HX_REQUEST"
             if key in request.META.keys():
-                return render(request,"decorator_404.html")
+                return render(request, "decorator_404.html")
             script = f'<script>window.location.href = "{previous_url}"</script>'
             return HttpResponse(script)
 
@@ -71,7 +71,7 @@ def delete_permission(function):
             previous_url = request.META.get("HTTP_REFERER", "/")
             key = "HTTP_HX_REQUEST"
             if key in request.META.keys():
-                return render(request,"decorator_404.html")
+                return render(request, "decorator_404.html")
             script = f'<script>window.location.href = "{previous_url}"</script>'
             return HttpResponse(script)
 
@@ -99,7 +99,7 @@ def manager_can_enter(function, perm):
             "leave.delete_leaverequest",
         ]
         user = request.user
-        employee = Employee.objects.filter(employee_user_id=user).first()
+        employee = user.employee_get
         if perm in leave_perm:
             is_approval_manager = MultipleApprovalManagers.objects.filter(
                 employee_id=employee.id
@@ -117,7 +117,7 @@ def manager_can_enter(function, perm):
             script = f'<script>window.location.href = "{previous_url}"</script>'
             key = "HTTP_HX_REQUEST"
             if key in request.META.keys():
-                return render(request,"decorator_404.html")
+                return render(request, "decorator_404.html")
             return HttpResponse(script)
 
     return _function
