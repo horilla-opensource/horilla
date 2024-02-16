@@ -747,8 +747,8 @@ class SkillZoneCandidate(models.Model):
         )
 
     def __str__(self) -> str:
-        return f" {self.candidate_id} | {self.skill_zone_id}"
-
+        return str(self.candidate_id.get_full_name()
+)
 
 class CandidateRating(models.Model):
     employee_id = models.ForeignKey(

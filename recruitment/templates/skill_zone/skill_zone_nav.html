@@ -17,9 +17,7 @@
       </a>
     </div>
     <div class="oh-main__titlebar oh-main__titlebar--right">
-      {% if skill_zones %}
         <form hx-get='{% url "skill-zone-filter" %}' id="filterForm" hx-target='#skill_zone_container' class="d-flex">
-
         <div
             class="oh-input-group oh-input__search-group"
             :class="searchShow ? 'oh-input__search-group--show' : ''"
@@ -40,122 +38,104 @@
             />
         </div>
         <div class="oh-main__titlebar-button-container">
-            <ul class="oh-view-types ml-2" style="margin-bottom: 0;">
-              <li class="oh-view-type skill-zone-view-type" data-view="list">
-                <a 
-                  onclick="$(this).parents().closest('ul').find('[name=view]').val('list');$('.filterButton').click();$(this).toggleClass('oh-btn--view-active');$('#card').removeClass('oh-btn--view-active')"
-                  class="oh-btn oh-btn--view {% if request.GET.view == 'list' %} oh-btn--view-active {% endif %}" 
-                  title='{% trans "List" %}'
-                  id="list">
-                  <ion-icon name="list-outline" role="img" class="md hydrated" aria-label="list outline"></ion-icon>
-                </a>
-              </li>
-              <li class="oh-view-type skill_zone-view-type" data-view="card">
-                <a 
-                onclick="$(this).parents().closest('ul').find('[name=view]').val('card');$('.filterButton').click();$(this).toggleClass('oh-btn--view-active');$('#list').removeClass('oh-btn--view-active')"
-                 class="oh-btn oh-btn--view {% if request.GET.view == 'card' %} oh-btn--view-active {% endif %}" 
-                  title='{% trans "Card" %}'
-                  id="card">
-                  <ion-icon name="grid-outline" role="img" class="md hydrated" aria-label="grid outline"></ion-icon>
-                </a>
-              </li>
-              <input type="hidden" name="view" value="{{request.GET.view}}">
-            </ul>
               <div class="oh-dropdown" x-data="{open: false}">
                 <button class="oh-btn ml-2" @click="open = !open" onclick="event.preventDefault()">
                   <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}<div id="filterCount"></div>
                 </button>
-                {% comment %}<div
+                <div
                   class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4"
                   x-show="open"
+                  style="display: none"
                   @click.outside="open = false"
-                  style="display: none;"
-                 > 
+                >
                   <div class="oh-dropdown__filter-body">
                     <div class="oh-accordion">
+                      <div class="oh-accordion-header">{% trans "Candidate Filter" %}</div>
+                      <div class="oh-accordion-body">
                         <div class="row">
-                          <div class="col-sm-12 col-md-12 col-lg-6">
-                            <div class="oh-input-group">
-                              <label class="oh-label">{% trans "Candidate" %}</label>
-                              {{f.form.skillzonecandidate_set__candidate_id}}
-                            </div>
+                          <div class="col-sm-12 col-md-12 col-lg-12">
                             <div class="oh-input-group">
                               <label class="oh-label">{% trans "Recruitment" %}</label>
-                              {{f.form.skillzonecandidate_set__candidate_id__recruitment_id}}
-                            </div>
-                            <div class="oh-input-group">
-                              <label class="oh-label">{% trans "Job Position" %}</label>
-                              {{f.form.skillzonecandidate_set__candidate_id__job_position_id}}
+                              {{f.form.candidate_id__recruitment_id}}
                             </div>
                           </div>
                           <div class="col-sm-12 col-md-12 col-lg-6">
                             <div class="oh-input-group">
-                              <label class="oh-label">{% trans "Stage" %}</label>
-                              {{f.form.skillzonecandidate_set__candidate_id__stage_id__stage_type}}
+                              <label class="oh-label">{% trans "Candidates" %}</label>
+                              {{f.form.candidate_id}}
                             </div>
+                          </div>
+                          <div class="col-sm-12 col-md-12 col-lg-6">
                             <div class="oh-input-group">
-                              <label class="oh-label">{% trans "Is Active" %}</label>
-                              {{f.form.is_active}}
+                              <label class="oh-label">{% trans "Job Position" %}</label>
+                              {{f.form.candidate_id__job_position_id}}
+                            </div>
+                          </div>
+                          <div class="col-sm-12 col-md-12 col-lg-6">
+                            <div class="oh-input-group">
+                              <label class="oh-label">{% trans "Joining From" %}</label>
+                              {{f.form.scheduled_from}}
+                            </div>
+                          </div>
+                          <div class="col-sm-12 col-md-12 col-lg-6">
+                            <div class="oh-input-group">
+                              <label class="oh-label">{% trans "Joining Till" %}</label>
+                              {{f.form.scheduled_till}}
+                            </div>
+                          </div>
+                          <div class="col-sm-12 col-md-12 col-lg-6">
+                            <div class="oh-input-group">
+                              <label class="oh-label">{% trans "Probation From" %}</label>
+                              {{f.form.probation_end_from}}
+                            </div>
+                          </div>
+                          <div class="col-sm-12 col-md-12 col-lg-6">
+                            <div class="oh-input-group">
+                              <label class="oh-label">{% trans "Probation Till" %}</label>
+                              {{f.form.probation_end_till}}
+                            </div>
+                          </div>
+                          <div class="col-sm-12 col-md-12 col-lg-6">
+                            <div class="oh-input-group">
+                              <label class="oh-label">{% trans "Portal Sent" %}</label>
+                              {{f.form.portal_sent}}
+                            </div>
+                          </div>
+                          <div class="col-sm-12 col-md-12 col-lg-6">
+                            <div class="oh-input-group">
+                              <label class="oh-label">{% trans "Joining Set" %}</label>
+                              {{f.form.joining_set}}
+                            </div>
+                          </div>
+                          <div class="col-sm-12 col-md-12 col-lg-6 mb-2">
+                            <div class="oh-input-group">
+                              <label class="oh-label">{% trans "Reject Reason" %}</label>
+                              {{f.form.rejected_candidate__reject_reason_id}}
+                            </div>
+                          </div>
+                          <div class="col-sm-12 col-md-12 col-lg-6 mb-2">
+                            <div class="oh-input-group">
+                              <label class="oh-label">{% trans "Offer Status" %}</label>
+                              {{f.form.offer_letter_status}}
                             </div>
                           </div>
                         </div>
+                      </div>
+                    </div>
+                    <div class="oh-dropdown__filter-footer">
+                      <button
+                        class="oh-btn oh-btn--secondary oh-btn--small w-100 filterButton"
+                        type="submit"
+                      >
+                        {% trans "Filter" %}
+                      </button>
                     </div>
                   </div>
-                  <div class="oh-dropdown__filter-footer">
-                    <button type="submit" class="oh-btn oh-btn--secondary oh-btn--small w-100 filterButton" id="">{% trans "Filter" %}</button>
-                  </div>
-                </div> {% endcomment %}
-              </div>
-              <div class="oh-btn-group ml-2">
-                <div class="oh-dropdown" x-data="{open: false}">
-                  <button
-                    type="button"
-                    class="oh-btn oh-btn--dropdown oh-btn oh-btn--shadow"
-                    @click="open = !open"
-                    @click.outside="open = false"
-                  >
-                    {% trans "Actions" %}
-                  </button>
-                  <div class="oh-dropdown__menu oh-dropdown__menu--right" x-show="open" 
-                  style="display: none;"
-                >
-                  <ul class="oh-dropdown__items">
-                    {% if perms.delete_skillzone %}
-                    <li class="oh-dropdown__item">
-                      <a href="#" class="oh-dropdown__link " id="archiveCandidates"
-        
-                        >{% trans "Archive" %}</a
-                      >
-                    </li>
-                    {% endif %} 
-        
-                    {% if perms.delete_skillzone %}
-                    <li class="oh-dropdown__item">
-                      <a href="#" class="oh-dropdown__link "
-                       id="unArchiveCandidates"
-                        >{% trans "Un-Archive" %}</a
-                      >
-                    </li>
-                    {% endif %} 
-        
-                    {% if perms.delete_skillzone %}
-                    <li class="oh-dropdown__item">
-                      <a
-                        href="#"
-                        class="oh-dropdown__link oh-dropdown__link--danger"
-                        id="deleteCandidates"
-                        >{% trans "Delete" %}</a
-                      >
-                    </li>
-                    {% endif %}
-        
-                  </ul>
                 </div>
               </div>
+              <div class="oh-btn-group ml-2">
             </div>
           </form>
-
-      {% endif %}
         <div class="oh-btn-group ml-2">
           <a
             class="oh-btn oh-btn--secondary oh-btn--shadow"

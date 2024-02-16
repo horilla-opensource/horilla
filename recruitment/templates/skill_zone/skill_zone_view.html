@@ -2,8 +2,8 @@
 {% block content %}
 {% load i18n %}{% load static %}{% load basefilters %}
 
+{% include 'skill_zone/skill_zone_nav.html' %}
 <div class="oh-wrapper">
-    {% include 'skill_zone/skill_zone_nav.html' %}
         <div id="skill_zone_container">
           {% if request.GET.get.view == 'card' %}
             {% include "skill_zone/skill_zone_card.html" %}

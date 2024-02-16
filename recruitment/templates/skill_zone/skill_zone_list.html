@@ -10,10 +10,11 @@
                         <div class="oh-tabs__input-badge-container">
                             <span
                                 class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round mr-1"
+                                title="{{skill_zone.list|length}} Candidate"
                             >
-                                {{skill_zone.get_active|length}}
+                                {{skill_zone.list|length}}
                             </span>
-                                {{skill_zone.title}}
+                                {{skill_zone.grouper.title}}
                         </div>
                     </span>
                     <div class="oh-btn-group">
@@ -22,7 +23,7 @@
 
                             data-toggle="oh-modal-toggle"
                             data-target="#editCandModal"
-                            hx-get="{% url 'skill-zone-cand-create' skill_zone.id %}"
+                            hx-get="{% url 'skill-zone-cand-create' skill_zone.grouper.id %}"
                             hx-target="#editCandTarget"
                         >
                               <ion-icon name="add-outline" class="me-1"></ion-icon>
@@ -30,7 +31,7 @@
                             </a>
                         <a
                           onclick="event.stopPropagation();"
-                          hx-get="{% url 'skill-zone-update' skill_zone.id %}"
+                          hx-get="{% url 'skill-zone-update' skill_zone.grouper.id %}"
                           hx-target="#createTarget"
                           data-toggle="oh-modal-toggle"
                           data-target="#createModal"
@@ -38,9 +39,9 @@
                           title="{% trans 'Edit' %}"
                           ><ion-icon name="create-outline"></ion-icon
                         ></a>
-                        {% if skill_zone.is_active %}
+                        {% if skill_zone.grouper.is_active %}
                         <form 
-                            action="{% url 'skill-zone-archive' skill_zone.id %}"  
+                            action="{% url 'skill-zone-archive' skill_zone.grouper.id %}"  
                             onsubmit="return confirm('{% trans "Do you want to archive this skill zone ?" %}')" method="post" > 
                           {% csrf_token %}
                           <button
@@ -55,7 +56,7 @@
                         </form>
                         {% else %}
                         <form 
-                        action="{% url 'skill-zone-archive' skill_zone.id %}"  
+                        action="{% url 'skill-zone-archive' skill_zone.grouper.id %}"  
                         onsubmit="return confirm('{% trans "Do you want to un archive this skill zone?" %}')" method="post" > 
                             {% csrf_token %}
                             <button
@@ -69,7 +70,7 @@
                           </form>
                         {% endif %} 
                         <form 
-                        action="{% url 'skill-zone-delete' skill_zone.id %}?view=list"  
+                        action="{% url 'skill-zone-delete' skill_zone.grouper.id %}?view=list"  
                         onsubmit="return confirm('{% trans "Are you sure want to delete this skill zone?" %}')" method="post" > {% csrf_token %}
                           <button
                             onclick="event.stopPropagation();"
@@ -97,10 +98,10 @@
                                         <div class="oh-sticky-table__th">{% trans "Actions" %}</div>
                                     </div>
                                 </div>
-                                {% for sz_candidate in skill_zone.skillzonecandidate_set.all %}
+                                {% for sz_candidate in skill_zone.list %}
                                     {% if sz_candidate.is_active  %}
                                         <div class="oh-sticky-table__tbody" 
-                                            onclick="window.location.href = `{% url 'candidate-view-individual' sz_candidate.candidate_id.id %}` "
+                                            {% comment %} onclick="window.location.href = `{% url 'candidate-view-individual' sz_candidate.candidate_id.id %}` " {% endcomment %}
                                         >
                                             <div class="oh-sticky-table__tr" draggable="true">
                                                 <div class="oh-sticky-table__sd" >
@@ -114,7 +115,7 @@
                                                                 class="oh-profile__image" alt="" />
                                                             {% endif %}
                                                         </div>
-                                                        <span class="oh-profile__name oh-text--dark">{{sz_candidate.candidate_id}}</span>
+                                                        <span class="oh-profile__name oh-text--dark">{{sz_candidate}}</span>
                                                     </div>
                                                 </div>
                                                 <div class="oh-sticky-table__td ">{{sz_candidate.reason}}</div>
@@ -186,29 +187,29 @@
                                 <div class="oh-pagination__input-container me-3">
                                     <span class="oh-pagination__label me-1">{% trans "Page" %}</span>
                                     <input type="number" name="m_page" class="oh-pagination__input" value="{{my_leave_allocation_requests.number}}"
-                                        hx-get="{% url 'leave-allocation-request-filter' %}?{{pd}}" hx-target="#view-container" min="1" />
+                                        hx-get="{% url 'leave-allocation-request-filter' %}?{{pd}}" hx-target="#skill_zone_container" min="1" />
                                     <span class="oh-pagination__label">{% trans "of" %} {{my_leave_allocation_requests.paginator.num_pages}}</span>
                                 </div>
                                 <ul class="oh-pagination__items">
                                     {% if my_leave_allocation_requests.has_previous %}
                                     <li class="oh-pagination__item oh-pagination__item--wide">
-                                        <a hx-target='#view-container' hx-get="{% url 'leave-allocation-request-filter' %}?{{pd}}&m_page=1"
+                                        <a hx-target='#skill_zone_container' hx-get="{% url 'leave-allocation-request-filter' %}?{{pd}}&m_page=1"
                                             class="oh-pagination__link">{% trans "First" %}</a>
                                     </li>
                                     <li class="oh-pagination__item oh-pagination__item--wide">
-                                        <a hx-target='#view-container'
+                                        <a hx-target='#skill_zone_container'
                                             hx-get="{% url 'leave-allocation-request-filter' %}?{{pd}}&m_page={{ my_leave_allocation_requests.previous_page_number }}"
                                             class="oh-pagination__link">{% trans "Previous" %}</a>
                                     </li>
                                     {% endif %}
                                     {% if my_leave_allocation_requests.has_next %}
                                     <li class="oh-pagination__item oh-pagination__item--wide">
-                                        <a hx-target='#view-container'
+                                        <a hx-target='#skill_zone_container'
                                             hx-get="{% url 'leave-allocation-request-filter' %}?{{pd}}&m_page={{ my_leave_allocation_requests.next_page_number }}"
                                             class="oh-pagination__link">{% trans "Next" %}</a>
                                     </li>
                                     <li class="oh-pagination__item oh-pagination__item--wide">
-                                        <a hx-target='#view-container'
+                                        <a hx-target='#skill_zone_container'
                                             hx-get="{% url 'leave-allocation-request-filter' %}?{{pd}}&m_page={{ my_leave_allocation_requests.paginator.num_pages }}"
                                             class="oh-pagination__link">{% trans "Last" %}</a>
                                     </li>
@@ -219,6 +220,67 @@
                         </div> {% endcomment %}
                         <!-- end of pagination  -->
                     </div>
+                    {% if skill_zone.list %}
+                    <div class="oh-pagination">
+                        <span class="oh-pagination__page">
+                            {% trans "Page" %} {{ skill_zone.list.number }} {% trans "of" %} {{ skill_zone.list.paginator.num_pages }}.
+                        </span>
+                        <nav class="oh-pagination__nav">
+                            <div class="oh-pagination__input-container me-3">
+                            <span class="oh-pagination__label me-1">{% trans "Page" %}</span>
+                            <input
+                            type="number"
+                            name="{{skill_zone.dynamic_name}}"
+                            class="oh-pagination__input"
+                            value="{{skill_zone.list.number}}"
+                            hx-get="{% url 'skill-zone-filter' %}?{{pd}}"
+                            hx-target="#skill_zone_container"
+                            min="1"
+                            />
+                            <span class="oh-pagination__label"
+                            >{% trans "of" %} {{skill_zone.list.paginator.num_pages}}</span
+                            >
+                            </div>
+                            <ul class="oh-pagination__items">
+                            {% if skill_zone.list.has_previous %}
+                            <li class="oh-pagination__item oh-pagination__item--wide">
+                            <a
+                            hx-target="#skill_zone_container"
+                            hx-get="{% url 'skill-zone-filter' %}?{{pd}}&{{skill_zone.dynamic_name}}=1"
+                            class="oh-pagination__link"
+                            >{% trans "First" %}</a
+                            >
+                            </li>
+                            <li class="oh-pagination__item oh-pagination__item--wide">
+                            <a
+                            hx-target="#skill_zone_container"
+                            hx-get="{% url 'skill-zone-filter' %}?{{pd}}&{{skill_zone.dynamic_name}}={{ skill_zone.list.previous_page_number }}"
+                            class="oh-pagination__link"
+                            >{% trans "Previous" %}</a
+                            >
+                            </li>
+                            {% endif %} {% if skill_zone.list.has_next %}
+                            <li class="oh-pagination__item oh-pagination__item--wide">
+                            <a
+                            hx-target="#skill_zone_container"
+                            hx-get="{% url 'skill-zone-filter' %}?{{pd}}&{{skill_zone.dynamic_name}}={{ skill_zone.list.next_page_number }}"
+                            class="oh-pagination__link"
+                            >{% trans "Next" %}</a
+                            >
+                            </li>
+                            <li class="oh-pagination__item oh-pagination__item--wide">
+                            <a
+                            hx-target="#skill_zone_container"
+                            hx-get="{% url 'skill-zone-filter' %}?{{pd}}&{{skill_zone.dynamic_name}}={{ skill_zone.list.paginator.num_pages }}"
+                            class="oh-pagination__link"
+                            >{% trans "Last" %}</a
+                            >
+                            </li>
+                            {% endif %}
+                            </ul>
+                        </nav>
+                    </div>
+                    {% endif %}
                 </div>
             </div> 
         </div>

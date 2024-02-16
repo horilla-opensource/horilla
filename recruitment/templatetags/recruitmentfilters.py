@@ -147,7 +147,4 @@ def pipeline_grouper(grouper: dict = {}):
     """
     This method is used itemize the dictionary
     """
-    print("+++++++++++++++++++++++++++")
-    print(grouper)
-    print("+++++++++++++++++++++++++++")
     return grouper["title"], grouper["stages"]

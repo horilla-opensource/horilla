@@ -194,7 +194,7 @@ def recruitment_view(request):
         template = "recruitment/recruitment_view.html"
     else:
         template = "recruitment/recruitment_empty.html"
-    
+
     filter_obj = RecruitmentFilter(request.GET, queryset)
 
     filter_dict = parse_qs(request.GET.urlencode())
@@ -207,7 +207,7 @@ def recruitment_view(request):
                     del filter_dict[key]
             except:
                 del filter_dict[key]
-    
+
     return render(
         request,
         template,
@@ -215,7 +215,7 @@ def recruitment_view(request):
             "data": paginator_qry(filter_obj.qs, request.GET.get("page")),
             "f": filter_obj,
             "form": form,
-            "filter_dict":filter_dict,
+            "filter_dict": filter_dict,
         },
     )
 
@@ -448,9 +448,10 @@ def recruitment_pipeline_card(request):
         {"recruitment": recruitment_obj, "candidates": candidates, "stages": stages},
     )
 
+
 @login_required
 @permission_required(perm="recruitment.delete_recruitment")
-def recruitment_archive(request,rec_id):
+def recruitment_archive(request, rec_id):
     """
     This method is used to archive and unarchive the recruitment
     args:
@@ -670,17 +671,17 @@ def add_note(request, cand_id=None):
         )
         if form.is_valid():
             note, attachment_ids = form.save(commit=False)
-            candidate = Candidate.objects.get(id = cand_id)
+            candidate = Candidate.objects.get(id=cand_id)
             note.candidate_id = candidate
             note.stage_id = candidate.stage_id
             note.updated_by = request.user.employee_get
             note.save()
             note.stage_files.set(attachment_ids)
             messages.success(request, _("Note added successfully.."))
-            
+
             return HttpResponse("<script>window.location.reload()</script>")
 
-    candidate_obj = Candidate.objects.get(id = cand_id)
+    candidate_obj = Candidate.objects.get(id=cand_id)
     return render(
         request,
         "candidate/individual.html",
@@ -703,7 +704,7 @@ def create_note(request, cand_id=None):
         form = StageNoteForm(request.POST, request.FILES)
         if form.is_valid():
             note, attachment_ids = form.save(commit=False)
-            candidate = Candidate.objects.get(id = cand_id)
+            candidate = Candidate.objects.get(id=cand_id)
             note.candidate_id = candidate
             note.stage_id = candidate.stage_id
             note.updated_by = request.user.employee_get
@@ -816,7 +817,6 @@ def add_more_individual_files(request, id):
     return HttpResponse("<script>window.location.reload()</script>")
 
 
-
 @login_required
 def delete_stage_note_file(request, id):
     """
@@ -917,7 +917,11 @@ def stage_view(request):
     This method is used to render all stages to a template
     """
     stages = Stage.objects.all()
-    recruitments = group_by_queryset(stages,"recruitment_id", request.GET.get("rpage"),)
+    recruitments = group_by_queryset(
+        stages,
+        "recruitment_id",
+        request.GET.get("rpage"),
+    )
     filter_obj = StageFilter()
     form = StageCreationForm()
     if stages.exists():
@@ -931,25 +935,28 @@ def stage_view(request):
             "data": paginator_qry(stages, request.GET.get("page")),
             "form": form,
             "f": filter_obj,
-            'recruitments':recruitments
+            "recruitments": recruitments,
         },
     )
-def stage_data(request,rec_id):
+
+
+def stage_data(request, rec_id):
     stages = StageFilter(request.GET).qs.filter(recruitment_id__id=rec_id)
     previous_data = request.GET.urlencode()
     data_dict = parse_qs(previous_data)
     get_key_instances(Stage, data_dict)
-    
+
     return render(
         request,
-        'stage/stage_component.html',
+        "stage/stage_component.html",
         {
-            "data":paginator_qry(stages, request.GET.get("page")),
+            "data": paginator_qry(stages, request.GET.get("page")),
             "filter_dict": data_dict,
-            'pd':request.GET.urlencode(),
-        }
-
+            "pd": request.GET.urlencode(),
+        },
     )
+
+
 @login_required
 @manager_can_enter(perm="recruitment.change_stage")
 @hx_request_required
@@ -1019,7 +1026,7 @@ def candidate(request):
                 candidate_obj.save()
                 messages.success(request, _("Candidate added."))
             else:
-                messages.error(request,"Job position field is required")
+                messages.error(request, "Job position field is required")
             return redirect(path)
 
     return render(
@@ -1149,7 +1156,6 @@ def candidate_view_individual(request, cand_id):
     This method is used to view profile of candidate.
     """
     candidate_obj = Candidate.objects.get(id=cand_id)
-    
 
     mails = list(Candidate.objects.values_list("email", flat=True))
     # Query the User model to check if any email is present
@@ -1471,21 +1477,48 @@ def skill_zone_view(request):
     """
     This method is used to show Skill zone view
     """
-    skill_zones = SkillZone.objects.filter(is_active=True)
-    skill_zones_filtered = SkillZoneFilter(request.GET, queryset=skill_zones).qs
+    candidates = SkillZoneCandFilter(request.GET).qs.filter(
+        is_active=True
+    )
+    skill_groups = group_by_queryset(
+        candidates,
+        "skill_zone_id",
+        request.GET.get("page"),
+        "page",
+    )
+
+    all_zones = []
+    for zone in skill_groups:
+        all_zones.append(zone["grouper"])
+
+    skill_zone_filtered = SkillZoneFilter(request.GET).qs
+    all_zone_objects = list(skill_zone_filtered)
+    unused_skill_zones = list(set(all_zone_objects) - set(all_zones))
+
+    unused_zones = []
+    for zone in unused_skill_zones:
+        unused_zones.append(
+            {
+                "grouper": zone,
+                "list": [],
+                "dynamic_name": "",
+            }
+        )
+    skill_groups = skill_groups.object_list + unused_zones
+    skill_groups = paginator_qry(skill_groups, request.GET.get("page"))
     previous_data = request.GET.urlencode()
     data_dict = parse_qs(previous_data)
     get_key_instances(SkillZone, data_dict)
-    if skill_zones.exists():
+    if candidates.exists():
         template = "skill_zone/skill_zone_view.html"
     else:
         template = "skill_zone/empty_skill_zone.html"
 
     context = {
-        "skill_zones": paginator_qry(skill_zones_filtered, request.GET.get("page")),
+        "skill_zones": skill_groups,
         "page": request.GET.get("page"),
         "pd": previous_data,
-        "f": SkillZoneFilter(),
+        "f": SkillZoneCandFilter(),
         "filter_dict": data_dict,
     }
     return render(request, template, context=context)
@@ -1595,14 +1628,44 @@ def skill_zone_filter(request):
     template = "skill_zone/skill_zone_list.html"
     if request.GET.get("view") == "card":
         template = "skill_zone/skill_zone_card.html"
-    skill_zone_filter = SkillZoneFilter(request.GET).qs.filter(is_active=True)
+
+    candidates = SkillZoneCandFilter(request.GET).qs
+    skill_zone_filtered = SkillZoneFilter(request.GET).qs
     if request.GET.get("is_active") == "false":
-        skill_zone_filter = SkillZoneFilter(request.GET).qs.filter(is_active=False)
+        skill_zone_filtered = SkillZoneFilter(request.GET).qs.filter(is_active=False)
+        candidates = candidates.filter(is_active=False)
+    else:
+        skill_zone_filtered = SkillZoneFilter(request.GET).qs.filter(is_active=True)
+        candidates = candidates.filter(is_active=True)
+    skill_groups = group_by_queryset(
+        candidates,
+        "skill_zone_id",
+        request.GET.get("page"),
+        "page",
+    )
+    all_zones = []
+    for zone in skill_groups:
+        all_zones.append(zone["grouper"])
+   
+    all_zone_objects = list(skill_zone_filtered)
+    unused_skill_zones = list(set(all_zone_objects) - set(all_zones))
+
+    unused_zones = []
+    for zone in unused_skill_zones:
+        unused_zones.append(
+            {
+                "grouper": zone,
+                "list": [],
+                "dynamic_name": "",
+            }
+        )
+    skill_groups = skill_groups.object_list + unused_zones
+    skill_groups = paginator_qry(skill_groups, request.GET.get("page"))
     previous_data = request.GET.urlencode()
     data_dict = parse_qs(previous_data)
     get_key_instances(SkillZone, data_dict)
     context = {
-        "skill_zones": paginator_qry(skill_zone_filter, request.GET.get("page")),
+        "skill_zones": skill_groups,
         "pd": previous_data,
         "filter_dict": data_dict,
     }
