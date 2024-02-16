@@ -20,6 +20,7 @@ class YourForm(forms.Form):
         # Custom validation logic goes here
         pass
 """
+
 from datetime import date
 from typing import Any
 import uuid
@@ -29,7 +30,10 @@ from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm as UserForm
 from django.utils.translation import gettext_lazy as _
 from base import thread_local_middleware
+from employee.filters import EmployeeFilter
 from employee.models import Employee, EmployeeBankDetails
+from horilla_widgets.widgets.horilla_multi_select_field import HorillaMultiSelectField
+from horilla_widgets.widgets.select_widgets import HorillaMultiSelectWidget
 from recruitment.models import Candidate
 from onboarding.models import CandidateTask, OnboardingStage, OnboardingTask
 from base.methods import reload_queryset
@@ -79,13 +83,15 @@ class ModelForm(forms.ModelForm):
                 ),
             ):
                 field.widget.attrs.update({"class": "oh-switch__checkbox"})
-            try:            
-                self.fields["employee_id"].initial = request.user.employee_get 
+            try:
+                self.fields["employee_id"].initial = request.user.employee_get
             except:
                 pass
 
-            try:            
-                self.fields["company_id"].initial = request.user.employee_get.get_company
+            try:
+                self.fields["company_id"].initial = (
+                    request.user.employee_get.get_company
+                )
             except:
                 pass
 
@@ -234,16 +240,19 @@ class OnboardingViewTaskForm(ModelForm):
     """
     Form for OnboardingTask model
     """
+
     candidates = forms.ModelMultipleChoiceField(
         queryset=Candidate.objects.all(),
-        # widget=forms.SelectMultiple(attrs={"class": "select2-hidden-accessible "}),      
-        required=False                                     
+        # widget=forms.SelectMultiple(attrs={"class": "select2-hidden-accessible "}),
+        required=False,
     )
     stage_id = forms.HiddenInput()
     task_title = forms.CharField(label=(_("Task title")))
-    managers = forms.ModelMultipleChoiceField(queryset=Employee.objects.all(),
+    managers = forms.ModelMultipleChoiceField(
+        queryset=Employee.objects.all(),
         # widget=forms.SelectMultiple(attrs={"class": "select2-hidden-accessible "})
     )
+
     class Meta:
         """
         Meta class for some additional options
@@ -251,19 +260,45 @@ class OnboardingViewTaskForm(ModelForm):
 
         model = CandidateTask
         fields = "__all__"
-        exclude = ("status","candidate_id","onboarding_task_id")
+        exclude = ("status", "candidate_id", "onboarding_task_id")
+
+    def clean(self):
+        for field_name, field_instance in self.fields.items():
+            if isinstance(field_instance, HorillaMultiSelectField):
+                self.errors.pop(field_name, None)
+                if len(self.data.getlist(field_name)) < 1:
+                    raise forms.ValidationError({field_name: "Thif field is required"})
+                cleaned_data = super().clean()
+                employee_data = self.fields[field_name].queryset.filter(
+                    id__in=self.data.getlist(field_name)
+                )
+                cleaned_data[field_name] = employee_data
+        cleaned_data = super().clean()
+        return cleaned_data
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        stage = self.initial.get('stage_id')
+        if self.instance.pk is None:
+            self.fields["managers"] = HorillaMultiSelectField(
+                queryset=Employee.objects.all(),
+                widget=HorillaMultiSelectWidget(
+                    filter_route_name="employee-widget-filter",
+                    filter_class=EmployeeFilter,
+                    filter_instance_contex_name="f",
+                    filter_template_path="employee_filters.html",
+                    required=True,
+                ),
+                label="Employee",
+            )
+        reload_queryset(self.fields)
+        stage = self.initial.get("stage_id")
         if stage:
             # Adjust the queryset based on the 'stage'
-            candidate_ids = stage.candidate.all().values_list('candidate_id', flat=True)
+            candidate_ids = stage.candidate.all().values_list("candidate_id", flat=True)
             cand_queryset = Candidate.objects.filter(id__in=candidate_ids)
-            self.fields['candidates'].queryset = cand_queryset
-            self.fields['candidates'].initial = cand_queryset
+            self.fields["candidates"].queryset = cand_queryset
+            self.fields["candidates"].initial = cand_queryset
 
-    
 
 class OnboardingTaskForm(ModelForm):
     """
@@ -277,26 +312,26 @@ class OnboardingTaskForm(ModelForm):
 
         model = OnboardingTask
         fields = "__all__"
-        exclude =('stage_id',)
+        exclude = ("stage_id",)
         widgets = {
             "candidates": forms.SelectMultiple(
                 attrs={"class": "oh-select oh-select-2 w-100 select2-hidden-accessible"}
             ),
         }
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        stage_id = self.initial.get('stage_id')
+        stage_id = self.initial.get("stage_id")
         if stage_id:
             stage = OnboardingStage.objects.get(id=stage_id)
             recruitment = stage.recruitment_id
 
             # Adjust the queryset based on the 'stage'
             stage_queryset = recruitment.onboarding_stage.all()
-            self.fields['stage_id'].queryset = stage_queryset
-            candidate_ids = stage.candidate.all().values_list('candidate_id', flat=True)
+            self.fields["stage_id"].queryset = stage_queryset
+            candidate_ids = stage.candidate.all().values_list("candidate_id", flat=True)
             cand_queryset = Candidate.objects.filter(id__in=candidate_ids)
-            self.fields['candidates'].queryset = cand_queryset
-
+            self.fields["candidates"].queryset = cand_queryset
 
 
 class OnboardingViewStageForm(ModelForm):
