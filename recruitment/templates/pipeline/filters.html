@@ -93,9 +93,7 @@
           </div>
           <div class="oh-input-group">
             <label class="oh-label">{% trans 'Department' %}</label>
-            {{
-            stage_filter_obj.form.recruitment_id__job_position_id__department_id
-            }}
+            {{stage_filter_obj.form.recruitment_id__job_position_id__department_id }}
           </div>
           <div class="oh-input-group">
             <label class="oh-label">{% trans 'Stage Type' %}</label>
@@ -139,8 +137,7 @@
           <div class="col-sm-12 col-md-12 col-lg-12 mb-2">
             <div class="oh-input-group">
               <label class="oh-label">{% trans 'Reject Reason' %}</label>
-              {{ candidate_filter_obj.form.rejected_candidate__reject_reason_id
-              }}
+              {{ candidate_filter_obj.form.rejected_candidate__reject_reason_id }}
             </div>
             <div class="oh-input-group">
               <label class="oh-label">{% trans 'Is Hired' %}?</label>
