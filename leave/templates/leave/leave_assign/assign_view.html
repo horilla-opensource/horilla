@@ -124,6 +124,7 @@
 		hx-target="#assignedLeaves"
 		id="filterForm"
 		class="d-flex"
+		onsubmit="event.preventDefault()"
 		>
 			{% if available_leaves %}
 			<div

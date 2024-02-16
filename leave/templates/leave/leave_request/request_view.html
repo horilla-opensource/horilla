@@ -42,6 +42,7 @@
         hx-target="#leaveRequest"
         id="filterForm"
         class="d-flex"
+        onsubmit = "event.preventDefault()"
        >
     <div
       class="oh-input-group oh-input__search-group"
@@ -150,6 +151,14 @@
               <a
                 href="#"
                 class="oh-dropdown__link"
+                id="leaveRequestsBulkApprove"
+                >{% trans "Bulk Approve" %}</a
+              >
+            </li>
+            <li class="oh-dropdown__item">
+              <a
+                href="#"
+                class="oh-dropdown__link"
                 data-toggle="oh-modal-toggle"
                 data-target="#leaveRequestsExport"
                 >{% trans "Export" %}</a
@@ -199,6 +208,7 @@
 >
   {% trans "Selected Requests" %}
 </div>
+<span id="bulkApproveSpan" hx-post="{% url 'leave-requests-bulk-approve' %}" hx-target="#leaveRequest"></span>
 
 <div class="oh-wrapper" id="leaveRequest">
   {% if leave_requests %} 

@@ -11,20 +11,20 @@
             <ion-icon name="search-outline" class="oh-main__titlebar-serach-icon"></ion-icon>
         </a>
     </div>
-    <div class="oh-main__titlebar oh-main__titlebar--right">
-        {% if company_leaves %}
-        <div class="oh-input-group oh-input__search-group" :class="searchShow ? 'oh-input__search-group--show' : ''">
-            <ion-icon name="search-outline" class="oh-input-group__icon oh-input-group__icon--left"></ion-icon>
-            <input type="text" class="oh-input oh-input__icon" aria-label="Search Input" 
-                   placeholder="{% trans 'Search' %}" name="search" hx-get="{% url 'company-leave-filter' %}"
-                   hx-trigger="keyup" hx-target="#companyLeave" id="search" />
-        </div>
-        <div class="oh-main__titlebar-button-container">
-            <div class="oh-dropdown" x-data="{open: false}">
-                <button class="oh-btn ml-2" @click="open = !open">
-                    <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}<div id="filterCount"></div>
-                </button>
-                <form  hx-get="{% url 'company-leave-filter' %}" hx-target="#companyLeave" id="filterForm">
+    <form  hx-get="{% url 'company-leave-filter' %}" hx-target="#companyLeave" id="filterForm" onsubmit="event.preventDefault()">
+        <div class="oh-main__titlebar oh-main__titlebar--right">
+            {% if company_leaves %}
+            <div class="oh-input-group oh-input__search-group" :class="searchShow ? 'oh-input__search-group--show' : ''">
+                <ion-icon name="search-outline" class="oh-input-group__icon oh-input-group__icon--left"></ion-icon>
+                <input type="text" class="oh-input oh-input__icon" aria-label="Search Input" 
+                    placeholder="{% trans 'Search' %}" name="search" onkeyup="$('.filterButton').click()" id="search" />
+            </div>
+            <div class="oh-main__titlebar-button-container">
+                <div class="oh-dropdown" x-data="{open: false}">
+                    <button class="oh-btn ml-2" @click="open = !open" onclick="event.preventDefault()">
+                        <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}<div id="filterCount"></div>
+                    </button>
+                
                     <div class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4" x-show="open"
                         @click.outside="open = false" style="display: none;">
                         <div class="oh-dropdown__filter-body">
@@ -48,30 +48,29 @@
                                 </div>
                             </div>
 
-
                         </div>
                         <div class="oh-dropdown__filter-footer">
                             <button class="oh-btn oh-btn--secondary oh-btn--small w-100 filterButton" type="submit">{% trans "Filter" %}</button>
                         </div>
                     </div>
-                </form>
-            </div>
-            {% endif %}
-            {% if perms.leave.add_companyleave %}
-                <div class="oh-btn-group ml-2">
-                    <div class="oh-dropdown" x-data="{open: false}">
-                        <button class="oh-btn oh-btn--secondary oh-btn--shadow" data-toggle="oh-modal-toggle"
-                            data-target="#editModal1" hx-get="{% url 'company-leave-creation' %}"
-                            hx-target="#companyLeaveForm">
-                            <ion-icon name="add-outline" class="me-1"></ion-icon>
-                            {% trans "Create" %}
-                        </button>
-                    </div>
                 </div>
-            {% endif %}
+                {% endif %}
+                {% if perms.leave.add_companyleave %}
+                    <div class="oh-btn-group ml-2">
+                        <div class="oh-dropdown" x-data="{open: false}">
+                            <button class="oh-btn oh-btn--secondary oh-btn--shadow" data-toggle="oh-modal-toggle"
+                                data-target="#editModal1" hx-get="{% url 'company-leave-creation' %}"
+                                hx-target="#companyLeaveForm">
+                                <ion-icon name="add-outline" class="me-1"></ion-icon>
+                                {% trans "Create" %}
+                            </button>
+                        </div>
+                    </div>
+                {% endif %}
 
+            </div>
         </div>
-    </div>
+    </form>
 </section>
 
 <div class="oh-wrapper" id="companyLeave">
