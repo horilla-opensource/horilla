@@ -477,11 +477,6 @@ class OverrideAttendance(Attendance):
             is_attendance_record=True,
             employee_id=instance.employee_id,
         )
-        if status == "HDP" and work_record.first().is_leave_record:
-            message = _("Half day leave")
-
-        if status == "FDP":
-            message = _("Present")
         work_record = (
             WorkRecord()
             if not WorkRecord.objects.filter(
@@ -507,6 +502,12 @@ class OverrideAttendance(Attendance):
                 1.00 if at_work_second > min_hour_second / 2 else 0.50
             )
         work_record.save()
+        
+        if status == "HDP" and work_record.first().is_leave_record:
+            message = _("Half day leave")
+
+        if status == "FDP":
+            message = _("Present")
 
     @receiver(post_save, sender=Attendance)
     def attendance_post_save(sender, instance, **_kwargs):

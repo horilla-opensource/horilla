@@ -354,14 +354,14 @@ class ContractReGroup:
     fields = [
         ("", _("Select")),
         ("employee_id", _("Employee")),
-        ("employee_id.employee_work_info.job_position_id", _("Job Position")),
-        ("employee_id.employee_work_info.department_id", _("Department")),
+        ("employee_id__employee_work_info__job_position_id", _("Job Position")),
+        ("employee_id__employee_work_info__department_id", _("Department")),
         ("contract_status", _("Status")),
-        ("employee_id.employee_work_info.shift_id", _("Shift")),
-        ("employee_id.employee_work_info.work_type_id", _("Work Type")),
-        ("employee_id.employee_work_info.job_role_id", _("Job Role")),
-        ("employee_id.employee_work_info.reporting_manager_id", _("Reporting Manager")),
-        ("employee_id.employee_work_info.company_id", _("Company")),
+        ("employee_id__employee_work_info__shift_id", _("Shift")),
+        ("employee_id__employee_work_info__work_type_id", _("Work Type")),
+        ("employee_id__employee_work_info__job_role_id", _("Job Role")),
+        ("employee_id__employee_work_info__reporting_manager_id", _("Reporting Manager")),
+        ("employee_id__employee_work_info__company_id", _("Company")),
     ]
 
 

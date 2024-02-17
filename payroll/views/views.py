@@ -14,6 +14,7 @@ from django.shortcuts import get_object_or_404, render, redirect
 from django.http import HttpResponse, JsonResponse, HttpResponseRedirect
 from django.contrib import messages
 from django.db.models import Q, ProtectedError
+from attendance.methods.group_by import group_by_queryset
 from notifications.signals import notify
 from base.models import Company
 from horilla.decorators import login_required, permission_required
@@ -272,13 +273,31 @@ def contract_filter(request):
     template = "payroll/contract/contract_list.html"
     contracts = contracts_filter.qs
     field = request.GET.get("field")
+
     if field != "" and field is not None:
-        field_copy = field.replace(".", "__")
-        contracts = contracts.order_by(field_copy)
+        contracts = group_by_queryset(
+            contracts, field, request.GET.get("page"), "page"
+        )
+        list_values = [entry['list'] for entry in contracts]
+        id_list = []
+        for value in list_values:
+            for instance in value.object_list:
+                id_list.append(instance.id)
+
+        contract_ids_json = json.dumps(list(id_list))
         template = "payroll/contract/group_by.html"
+
+    else: 
+        contracts =  paginator_qry(contracts, request.GET.get("page"))
+        contract_ids_json = json.dumps(
+            [
+                instance.id
+                for instance in contracts.object_list
+            ]
+        )
+
     contracts = sortby(request, contracts, "orderby")
     contracts = paginator_qry(contracts, request.GET.get("page"))
-    contract_ids_json = json.dumps([instance.id for instance in contracts.object_list])
     data_dict = parse_qs(query_string)
     get_key_instances(Contract, data_dict)
     keys_to_remove = [key for key, value in data_dict.items() if value == ["unknown"]]
