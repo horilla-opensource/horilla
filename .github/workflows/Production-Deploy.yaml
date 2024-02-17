@@ -45,8 +45,7 @@ jobs:
           image: ${{ steps.build-image.outputs.image }}
 
       - name: Stop All tasks on ECS Cluster
-        run: /
-          aws ecs stop-task --cluster "default" --task $(aws ecs list-tasks --cluster "default" --service "Primary-Server" --output text --query taskArns[0])
+        run: aws ecs stop-task --cluster "default" --task $(aws ecs list-tasks --cluster "default" --service "Primary-Server" --output text --query taskArns[0])
 
       - name: Deploy Amazon ECS task definition
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
