@@ -3,23 +3,23 @@
 
 <!-- filter items showing here -->
 <div class="d-flex flex-row-reverse">
-  <span class="m-3 review_ongoing" hx-get="{% url "objective-list-search" %}?{{pd}}&status=At Risk" hx-target="#objective_list" style="cursor: pointer">
+  <span class="m-3 review_ongoing" hx-get="{% url "objective-list-search" %}?{{pg}}&status=At Risk" hx-target="#objective_list" style="cursor: pointer">
       <span class="oh-dot oh-dot--small me-1" style="background-color:red"></span>
       {% trans "At Risk" %}
     </span>
-  <span class="m-3 review_ongoing" hx-get="{% url "objective-list-search" %}?{{pd}}&status=Not Started" hx-target="#objective_list" style="cursor: pointer">
+  <span class="m-3 review_ongoing" hx-get="{% url "objective-list-search" %}?{{pg}}&status=Not Started" hx-target="#objective_list" style="cursor: pointer">
     <span class="oh-dot oh-dot--small me-1" style="background-color:grey"></span>
     {% trans "Not Started" %}
   </span>
-  <span class="m-3 paid" hx-get="{% url "objective-list-search" %}?{{pd}}&status=Behind" hx-target="#objective_list" style="cursor: pointer">
+  <span class="m-3 paid" hx-get="{% url "objective-list-search" %}?{{pg}}&status=Behind" hx-target="#objective_list" style="cursor: pointer">
     <span class="oh-dot oh-dot--small me-1" style="background-color:orange"></span>
     {% trans "Behind" %}
   </span>
-  <span class="m-3 confirmed" hx-get="{% url "objective-list-search" %}?{{pd}}&status=Closed" hx-target="#objective_list" style="cursor: pointer">
+  <span class="m-3 confirmed" hx-get="{% url "objective-list-search" %}?{{pg}}&status=Closed" hx-target="#objective_list" style="cursor: pointer">
     <span class="oh-dot oh-dot--small me-1" style="background-color:rgb(103, 171, 238)"></span>
     {% trans "Closed" %}
   </span>
-  <span class="m-3 paid" hx-get="{% url "objective-list-search" %}?{{pd}}&status=On Track" hx-target="#objective_list" style="cursor: pointer">
+  <span class="m-3 paid" hx-get="{% url "objective-list-search" %}?{{pg}}&status=On Track" hx-target="#objective_list" style="cursor: pointer">
     <span class="oh-dot oh-dot--small me-1" style="background-color:yellowgreen"></span>
     {% trans "On Track" %}
   </span>
@@ -71,8 +71,7 @@
     <div class="oh-tabs__content" id="tab_1">
       {% if own_objectives.object_list %}
         <div class="oh-card">
-            {% dynamic_regroup own_objectives.object_list by field as okr_grouper %} 
-            {% for okr_list in okr_grouper %}
+            {% for okr_list in own_objectives.object_list %}
                 <div class="oh-accordion-meta">
                     <div class="oh-accordion-meta__item">
                         <div
@@ -91,7 +90,7 @@
                             </span>
                         </div>
                         <div class="oh-accordion-meta__body d-none">
-                            <div class="oh-sticky-table oh-sticky-table--no-overflow mb-5">
+                          <div class="oh-sticky-table oh-sticky-table--no-overflow mb-5">
             
                             <div class="oh-sticky-table">
                                 <div class="oh-sticky-table__table">
@@ -115,7 +114,7 @@
                                     </div>
                                 </div>
                                 <div class="oh-sticky-table__tbody">
-                                    {% for own_objective in own_objectives.object_list %}
+                                    {% for own_objective in okr_list.list %}
                                     <div class="oh-sticky-table__tr" draggable="true">
                                     <div class="oh-sticky-table__sd {% if own_objective.status == 'Closed' %}row-status--blue 
                                         {% elif own_objective.status == 'On Track' %}row-status--yellow {% elif own_objective.status == 'Not Started' %}row-status--gray 
@@ -239,6 +238,77 @@
                             </div>
                             </div>
                         </div>
+                        <div class="oh-pagination">
+                            <span class="oh-pagination__page">
+                                {% trans "Page" %} {{ okr_list.list.number }} 
+                                {%trans "of" %} {{okr_list.list.paginator.num_pages }}.
+                            </span>
+                            <nav class="oh-pagination__nav">
+                                <div class="oh-pagination__input-container me-3">
+                                    <span class="oh-pagination__label me-1"
+                                        >{% trans "Page" %}</span
+                                    >
+                                    <input
+                                        type="number"
+                                        name="{{okr_list.dynamic_name}}"
+                                        class="oh-pagination__input"
+                                        value="{{okr_list.list.number}}"
+                                        hx-get="{% url 'objective-list-search' %}?{{pg}}"
+                                        hx-target="#objective_list"
+                                        min="1"
+                                    />
+                                    <span class="oh-pagination__label"
+                                        >{% trans "of" %}
+                                        {{okr_list.list.paginator.num_pages}}</span
+                                    >
+                                </div>
+                                <ul class="oh-pagination__items">
+                                    {% if okr_list.list.has_previous %}
+                                    <li
+                                        class="oh-pagination__item oh-pagination__item--wide"
+                                    >
+                                        <a
+                                            hx-target="#objective_list"
+                                            hx-get="{% url 'objective-list-search' %}?{{pg}}&{{okr_list.dynamic_name}}=1"
+                                            class="oh-pagination__link"
+                                            >{% trans "First" %}</a
+                                        >
+                                    </li>
+                                    <li
+                                        class="oh-pagination__item oh-pagination__item--wide"
+                                    >
+                                        <a
+                                            hx-target="#objective_list"
+                                            hx-get="{% url 'objective-list-search' %}?{{pg}}&{{okr_list.dynamic_name}}={{ okr_list.list.previous_page_number }}"
+                                            class="oh-pagination__link"
+                                            >{% trans "Previous" %}</a
+                                        >
+                                    </li>
+                                    {% endif %} {% if okr_list.list.has_next %}
+                                    <li
+                                        class="oh-pagination__item oh-pagination__item--wide"
+                                    >
+                                        <a
+                                            hx-target="#objective_list"
+                                            hx-get="{% url 'objective-list-search' %}?{{pg}}&{{okr_list.dynamic_name}}={{ okr_list.list.next_page_number }}"
+                                            class="oh-pagination__link"
+                                            >{% trans "Next" %}</a
+                                        >
+                                    </li>
+                                    <li
+                                        class="oh-pagination__item oh-pagination__item--wide"
+                                    >
+                                        <a
+                                            hx-target="#objective_list"
+                                            hx-get="{% url 'objective-list-search' %}?{{pg}}&{{okr_list.dynamic_name}}={{ okr_list.list.paginator.num_pages }}"
+                                            class="oh-pagination__link"
+                                            >{% trans "Last" %}</a
+                                        >
+                                    </li>
+                                    {% endif %}
+                                </ul>
+                            </nav>
+                        </div>
                     </div>
                 </div>
             {% endfor %}
@@ -322,8 +392,7 @@
         <!-- all  objectives -->
         {% if all_objectives %}
             <div class="oh-card">
-                {% dynamic_regroup all_objectives.object_list by field as okr_grouper %} 
-                {% for okr_list in okr_grouper %}
+                {% for okr_list in all_objectives.object_list %}
                     <div class="oh-accordion-meta">
                         <div class="oh-accordion-meta__item">
                             <div
@@ -335,7 +404,7 @@
                                         <span
                                             class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round mr-1"
                                         >
-                                            {{okr_list.list|length}}
+                                            {{okr_list.list.paginator.count}}
                                         </span>
                                         {{okr_list.grouper}}
                                     </div>
@@ -491,6 +560,78 @@
                                     </div>
                                     
                                 </div>
+                                
+                                <div class="oh-pagination">
+                                  <span class="oh-pagination__page">
+                                      {% trans "Page" %} {{ okr_list.list.number }} 
+                                      {%trans "of" %} {{okr_list.list.paginator.num_pages }}.
+                                  </span>
+                                  <nav class="oh-pagination__nav">
+                                      <div class="oh-pagination__input-container me-3">
+                                          <span class="oh-pagination__label me-1"
+                                              >{% trans "Page" %}</span
+                                          >
+                                          <input
+                                              type="number"
+                                              name="{{okr_list.dynamic_name}}"
+                                              class="oh-pagination__input"
+                                              value="{{okr_list.list.number}}"
+                                              hx-get="{% url 'objective-list-search' %}?{{pg}}"
+                                              hx-target="#objective_list"
+                                              min="1"
+                                          />
+                                          <span class="oh-pagination__label"
+                                              >{% trans "of" %}
+                                              {{okr_list.list.paginator.num_pages}}</span
+                                          >
+                                      </div>
+                                      <ul class="oh-pagination__items">
+                                          {% if okr_list.list.has_previous %}
+                                          <li
+                                              class="oh-pagination__item oh-pagination__item--wide"
+                                          >
+                                              <a
+                                                  hx-target="#objective_list"
+                                                  hx-get="{% url 'objective-list-search' %}?{{pg}}&{{okr_list.dynamic_name}}=1"
+                                                  class="oh-pagination__link"
+                                                  >{% trans "First" %}</a
+                                              >
+                                          </li>
+                                          <li
+                                              class="oh-pagination__item oh-pagination__item--wide"
+                                          >
+                                              <a
+                                                  hx-target="#objective_list"
+                                                  hx-get="{% url 'objective-list-search' %}?{{pg}}&{{okr_list.dynamic_name}}={{ okr_list.list.previous_page_number }}"
+                                                  class="oh-pagination__link"
+                                                  >{% trans "Previous" %}</a
+                                              >
+                                          </li>
+                                          {% endif %} {% if okr_list.list.has_next %}
+                                          <li
+                                              class="oh-pagination__item oh-pagination__item--wide"
+                                          >
+                                              <a
+                                                  hx-target="#objective_list"
+                                                  hx-get="{% url 'objective-list-search' %}?{{pg}}&{{okr_list.dynamic_name}}={{ okr_list.list.next_page_number }}"
+                                                  class="oh-pagination__link"
+                                                  >{% trans "Next" %}</a
+                                              >
+                                          </li>
+                                          <li
+                                              class="oh-pagination__item oh-pagination__item--wide"
+                                          >
+                                              <a
+                                                  hx-target="#objective_list"
+                                                  hx-get="{% url 'objective-list-search' %}?{{pg}}&{{okr_list.dynamic_name}}={{ okr_list.list.paginator.num_pages }}"
+                                                  class="oh-pagination__link"
+                                                  >{% trans "Last" %}</a
+                                              >
+                                          </li>
+                                          {% endif %}
+                                      </ul>
+                                  </nav>
+                              </div>
                             </div>
                         </div>
                     </div>

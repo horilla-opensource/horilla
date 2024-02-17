@@ -11,6 +11,7 @@ from django.contrib.auth.models import User
 from django.core.paginator import Paginator
 from django.utils.translation import gettext_lazy as _
 from django.shortcuts import get_object_or_404, render, redirect
+from attendance.methods.group_by import group_by_queryset
 from horilla.decorators import manager_can_enter
 from horilla.decorators import login_required, hx_request_required
 from notifications.signals import notify
@@ -232,14 +233,20 @@ def objective_filter_pagination(request, objective_own, objective_all):
     objective_filter_own = ObjectiveFilter(
         request.GET or initial_data, queryset=objective_own
     )
+    objective_filer_form = objective_filter_own.form
+    objective_filter_own=objective_filter_own.qs
     objective_filter_all = ObjectiveFilter(
         request.GET or initial_data, queryset=objective_all
     ).qs
     if field != "" and field is not None:
-        field_copy = field.replace(".", "__")
-        objective_filter_all = objective_filter_all.order_by(field_copy)
+        objective_filter_own = group_by_queryset(
+            objective_filter_own, field, request.GET.get("page"), "page"
+        )
+        objective_filter_all = group_by_queryset(
+            objective_filter_all, field, request.GET.get("page"), "page"
+        )
 
-    objective_paginator_own = Paginator(objective_filter_own.qs, get_pagination())
+    objective_paginator_own = Paginator(objective_filter_own, get_pagination())
     objective_paginator_all = Paginator(objective_filter_all, get_pagination())
     page_number = request.GET.get("page")
     objectives_own = objective_paginator_own.get_page(page_number)
@@ -251,7 +258,7 @@ def objective_filter_pagination(request, objective_own, objective_all):
         "superuser": "true",
         "own_objectives": objectives_own,
         "all_objectives": objectives_all,
-        "objective_filer_form": objective_filter_own.form,
+        "objective_filer_form": objective_filer_form,
         "pg": previous_data,
         "current_date": now,
         "filter_dict": data_dict,
