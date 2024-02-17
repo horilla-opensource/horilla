@@ -4,7 +4,7 @@
     {% for attachment in policy.attachments.all %}
     <a href="{{ attachment.attachment.url }}" rel="noopener noreferrer" target="_blank"><span
         class="oh-file-icon oh-file-icon--pdf" onmouseover="enlargeImage('{{ attachment.attachment.url }}')"
-        style="width:40px;height:40px"><img src="{% static '/images/ui/minus-icon.png' %}"
+        style="width:40px;height:40px"><img src="{% static 'images/ui/minus-icon.png' %}"
             style="display:block;width:50%;height:50%"
             hx-get="{% url 'remove-attachment-policy' %}?ids={{ attachment.id }}&policy_id={{ policy.id }}"
             hx-target="#attachmentContainer" 
