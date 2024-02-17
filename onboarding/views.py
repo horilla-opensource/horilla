@@ -1320,7 +1320,7 @@ def hired_candidate_chart(request):
     data = []
     background_color = []
     border_color = []
-    recruitments = Recruitment.objects.all()
+    recruitments = Recruitment.objects.filter(closed=False, is_active=True)
     for recruitment in recruitments:
         red = random.randint(0, 255)
         green = random.randint(0, 255)
@@ -1356,7 +1356,7 @@ def onboard_candidate_chart(request):
     data = []
     background_color = []
     border_color = []
-    recruitments = Recruitment.objects.all()
+    recruitments = Recruitment.objects.filter(closed=False, is_active=True)
     for recruitment in recruitments:
         red = random.randint(0, 255)
         green = random.randint(0, 255)
@@ -1365,7 +1365,7 @@ def onboard_candidate_chart(request):
         border_color.append(f"rgb({red}, {green}, {blue})")
         labels.append(recruitment.title)
         data.append(
-            recruitment.candidate.filter(hired=True, start_onboard=True).count()
+            recruitment.candidate.filter(start_onboard=True).count()
         )
     return JsonResponse(
         {
