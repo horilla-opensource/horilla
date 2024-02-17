@@ -1039,159 +1039,177 @@ def view_employee_bulk_update(request):
         bulk_employee_ids_str = (
             json.dumps(bulk_employee_ids) if bulk_employee_ids else ""
         )
+        if bulk_employee_ids_str:
 
-        class EmployeeBulkUpdateForm(ModelForm):
-            class Meta:
-                model = Employee
-                fields = []
-                widgets = {}
-                labels = {}
-                for field in update_fields:
-                    try:
-                        field_obj = Employee._meta.get_field(field)
-                        if field_obj.name in ("country", "state"):
-                            if not "country" in update_fields:
-                                fields.append("country")
-                                widgets["country"] = Select(attrs={"required": True})
-                            fields.append(field)
-                            widgets[field] = Select(attrs={"required": True})
-                        else:
-                            fields.append(field)
-
-                        if isinstance(field_obj, models.DateField):
-                            widgets[field] = DateInput(
-                                attrs={
-                                    "type": "date",
-                                    "required": True,
-                                    "data-pp": False,
-                                }
-                            )
-                    except:
-                        continue
-
-            def __init__(self, *args, **kwargs):
-                super(EmployeeBulkUpdateForm, self).__init__(*args, **kwargs)
-                for field_name, field in self.fields.items():
-                    field.required = True
-
-        class WorkInfoBulkUpdateForm(ModelForm):
-            class Meta:
-                model = EmployeeWorkInformation
-                fields = []
-                widgets = {}
-                labels = {}
-                for field in update_fields:
-                    try:
-                        parts = str(field).split("__")
-                        if parts[-1]:
-                            if parts[0] == "employee_work_info":
-                                field_obj = EmployeeWorkInformation._meta.get_field(
-                                    parts[-1]
-                                )
-                                fields.append(parts[-1])
-                                if isinstance(field_obj, models.DateField):
-                                    widgets[parts[-1]] = DateInput(
-                                        attrs={"type": "date"}
-                                    )
-                                if parts[-1] in ("email", "mobile"):
-                                    labels[parts[-1]] = (
-                                        _("Work Email")
-                                        if field_obj.name == "email"
-                                        else _("Work Phone")
-                                    )
-                    except:
-                        continue
-
-            def __init__(self, *args, **kwargs):
-                super(WorkInfoBulkUpdateForm, self).__init__(*args, **kwargs)
-                for field_name, field in self.fields.items():
-                    field.required = True
-
-        class BankInfoBulkUpdateForm(ModelForm):
-            class Meta:
-                model = EmployeeBankDetails
-                fields = []
-                widgets = {}
-                labels = {}
-                for field in update_fields:
-                    try:
-                        parts = str(field).split("__")
-                        if parts[-1]:
-                            if parts[0] == "employee_bank_details":
-                                field_obj = EmployeeBankDetails._meta.get_field(
-                                    parts[-1]
-                                )
-                                fields.append(parts[-1])
-                                if isinstance(field_obj, models.DateField):
-                                    widgets[parts[-1]] = DateInput(
-                                        attrs={"type": "date"}
-                                    )
-
-                                if field_obj.name in ("country", "state"):
-                                    if not "country" in update_fields:
-                                        fields.append("country")
-                                        widgets["country"] = Select(
-                                            attrs={"required": True}
-                                        )
-                                    fields.append(parts[-1])
-                                    widgets[parts[-1]] = Select(
+            class EmployeeBulkUpdateForm(ModelForm):
+                class Meta:
+                    model = Employee
+                    fields = []
+                    widgets = {}
+                    labels = {}
+                    for field in update_fields:
+                        try:
+                            field_obj = Employee._meta.get_field(field)
+                            if field_obj.name in ("country", "state"):
+                                if not "country" in update_fields:
+                                    fields.append("country")
+                                    widgets["country"] = Select(
                                         attrs={"required": True}
                                     )
-                                    labels[parts[-1]] = (
-                                        _("Bank Country")
-                                        if field_obj.name == "country"
-                                        else _("Bank State")
+                                fields.append(field)
+                                widgets[field] = Select(attrs={"required": True})
+                            else:
+                                fields.append(field)
+
+                            if isinstance(field_obj, models.DateField):
+                                widgets[field] = DateInput(
+                                    attrs={
+                                        "type": "date",
+                                        "required": True,
+                                        "data-pp": False,
+                                    }
+                                )
+                        except:
+                            continue
+
+                def __init__(self, *args, **kwargs):
+                    super(EmployeeBulkUpdateForm, self).__init__(*args, **kwargs)
+                    for field_name, field in self.fields.items():
+                        field.required = True
+
+            class WorkInfoBulkUpdateForm(ModelForm):
+                class Meta:
+                    model = EmployeeWorkInformation
+                    fields = []
+                    widgets = {}
+                    labels = {}
+                    for field in update_fields:
+                        try:
+                            parts = str(field).split("__")
+                            if parts[-1]:
+                                if parts[0] == "employee_work_info":
+                                    field_obj = EmployeeWorkInformation._meta.get_field(
+                                        parts[-1]
                                     )
+                                    fields.append(parts[-1])
+                                    if isinstance(field_obj, models.DateField):
+                                        widgets[parts[-1]] = DateInput(
+                                            attrs={"type": "date"}
+                                        )
+                                    if parts[-1] in ("email", "mobile"):
+                                        labels[parts[-1]] = (
+                                            _("Work Email")
+                                            if field_obj.name == "email"
+                                            else _("Work Phone")
+                                        )
+                        except:
+                            continue
 
-                    except:
-                        continue
+                def __init__(self, *args, **kwargs):
+                    super(WorkInfoBulkUpdateForm, self).__init__(*args, **kwargs)
+                    for field_name, field in self.fields.items():
+                        field.required = True
 
-            def __init__(self, *args, **kwargs):
-                super(BankInfoBulkUpdateForm, self).__init__(*args, **kwargs)
-                for field_name, field in self.fields.items():
-                    field.required = True
+            class BankInfoBulkUpdateForm(ModelForm):
+                class Meta:
+                    model = EmployeeBankDetails
+                    fields = []
+                    widgets = {}
+                    labels = {}
+                    for field in update_fields:
+                        try:
+                            parts = str(field).split("__")
+                            if parts[-1]:
+                                if parts[0] == "employee_bank_details":
+                                    field_obj = EmployeeBankDetails._meta.get_field(
+                                        parts[-1]
+                                    )
+                                    fields.append(parts[-1])
+                                    if isinstance(field_obj, models.DateField):
+                                        widgets[parts[-1]] = DateInput(
+                                            attrs={"type": "date"}
+                                        )
 
-        form = EmployeeBulkUpdateForm()
-        form1 = WorkInfoBulkUpdateForm()
-        form2 = BankInfoBulkUpdateForm()
-        context = {
-            "form": form,
-            "form1": form1,
-            "form2": form2,
-            "update_fields": update_fields_str,
-            "bulk_employee_ids": bulk_employee_ids_str,
-        }
-        return render(
-            request,
-            "employee_personal_info/bulk_update.html",
-            context=context,
-        )
+                                    if field_obj.name in ("country", "state"):
+                                        if not "country" in update_fields:
+                                            fields.append("country")
+                                            widgets["country"] = Select(
+                                                attrs={"required": True}
+                                            )
+                                        fields.append(parts[-1])
+                                        widgets[parts[-1]] = Select(
+                                            attrs={"required": True}
+                                        )
+                                        labels[parts[-1]] = (
+                                            _("Bank Country")
+                                            if field_obj.name == "country"
+                                            else _("Bank State")
+                                        )
+
+                        except:
+                            continue
+
+                def __init__(self, *args, **kwargs):
+                    super(BankInfoBulkUpdateForm, self).__init__(*args, **kwargs)
+                    for field_name, field in self.fields.items():
+                        field.required = True
+
+            form = EmployeeBulkUpdateForm()
+            form1 = WorkInfoBulkUpdateForm()
+            form2 = BankInfoBulkUpdateForm()
+            context = {
+                "form": form,
+                "form1": form1,
+                "form2": form2,
+                "update_fields": update_fields_str,
+                "bulk_employee_ids": bulk_employee_ids_str,
+            }
+            return render(
+                request,
+                "employee_personal_info/bulk_update.html",
+                context=context,
+            )
+        else:
+            messages.warning(
+                request, _("There are no employees selected for bulk update.")
+            )
+            return redirect(employee_view)
 
 
 @login_required
 @permission_required("employee.change_employee")
 def save_employee_bulk_update(request):
     if request.method == "POST":
+        update_fields_str = request.POST.get("update_fields", "")
+        update_fields = json.loads(update_fields_str) if update_fields_str else []
+        dict_value = request.__dict__["_post"]
         bulk_employee_ids_str = request.POST.get("bulk_employee_ids", "")
         bulk_employee_ids = (
             json.loads(bulk_employee_ids_str) if bulk_employee_ids_str else []
         )
         employee_list = ast.literal_eval(bulk_employee_ids)
-        update_fields_str = request.POST.get("update_fields", "")
-        update_fields = json.loads(update_fields_str) if update_fields_str else []
-        dict_value = request.__dict__["_post"]
+        for id in employee_list:
+            try:
+                employee_instance = Employee.objects.get(id=int(id))
+                (
+                    employee_work_info,
+                    created,
+                ) = EmployeeWorkInformation.objects.get_or_create(
+                    employee_id=employee_instance
+                )
+                (
+                    employee_bank,
+                    created,
+                ) = EmployeeBankDetails.objects.get_or_create(
+                    employee_id=employee_instance
+                )
+            except (ValueError, OverflowError):
+                employee_list.remove(id)
+                pass
         for field in update_fields:
             parts = str(field).split("__")
             if parts[-1]:
                 if parts[0] == "employee_work_info":
-                    for id in employee_list:
-                        employee_instance = Employee.objects.get(id=int(id))
-                        (
-                            employee_bank,
-                            created,
-                        ) = EmployeeWorkInformation.objects.get_or_create(
-                            employee_id=employee_instance
-                        )
                     employee_queryset = EmployeeWorkInformation.objects.filter(
                         employee_id__in=employee_list
                     )
@@ -1199,23 +1217,49 @@ def save_employee_bulk_update(request):
                     employee_queryset.update(**{parts[-1]: value})
                 elif parts[0] == "employee_bank_details":
                     for id in employee_list:
-                        employee_instance = Employee.objects.get(id=int(id))
-                        (
-                            employee_bank,
-                            created,
-                        ) = EmployeeBankDetails.objects.get_or_create(
-                            employee_id=employee_instance
+
+                        employee_queryset = EmployeeBankDetails.objects.filter(
+                            employee_id__in=employee_list
                         )
-                    employee_queryset = EmployeeBankDetails.objects.filter(
-                        employee_id__in=employee_list
-                    )
-                    value = dict_value.get(parts[-1])
-                    employee_queryset.update(**{parts[-1]: value})
+                        value = dict_value.get(parts[-1])
+                        employee_queryset.update(**{parts[-1]: value})
                 else:
                     employee_queryset = Employee.objects.filter(id__in=employee_list)
                     value = dict_value.get(field)
                     employee_queryset.update(**{field: value})
+        if len(employee_list) > 0:
+            messages.success(
+                request,
+                _(
+                    "{} employees information updated successfully".format(
+                        len(employee_list)
+                    )
+                ),
+            )
     return redirect("/employee/employee-view/?view=list")
+
+
+@login_required
+@permission_required("employee.change_employee")
+def employee_account_block_unblock(request, emp_id):
+    employee = get_object_or_404(Employee, id=emp_id)
+    if not employee:
+        messages.info(request, _("Employee not found"))
+        return redirect(employee_view)
+    user = get_object_or_404(User, id=employee.employee_user_id.id)
+    if not user:
+        messages.info(request, _("Employee not found"))
+        return redirect(employee_view)
+    user.is_active = not user.is_active
+    action_message = _("blocked") if not user.is_active else _("unblocked")
+    user.save()
+    messages.success(
+        request,
+        _("{employee}'s account {action_message} successfully!").format(
+            employee=employee, action_message=action_message
+        ),
+    )
+    return redirect(employee_view_individual,obj_id=emp_id)
 
 
 @login_required

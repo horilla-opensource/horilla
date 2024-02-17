@@ -348,6 +348,7 @@ $("#employeeBulkUpdateId").click(function (e) {
     });
   } else {
     $("#id_bulk_employee_ids").val(JSON.stringify(ids));
+    $("#bulkUpdateModal").addClass("oh-modal--show");
   }
 });
 

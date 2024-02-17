@@ -26,14 +26,14 @@
     color: #333;
   }
 </style>
-
+{% if perms.employee.add_employee %}
 <div
   class="oh-modal"
   id="workInfoImport"
   role="dialog"
   aria-labelledby="workInfoImport"
   aria-hidden="true"
->
+  >
   <div class="oh-modal__dialog">
     <div class="oh-modal__dialog-header">
       <h2 class="oh-modal__dialog-title" id="workInfoImportLavel">
@@ -104,7 +104,7 @@
   role="dialog"
   aria-labelledby="employeeExport"
   aria-hidden="true"
->
+  >
   <div class="oh-modal__dialog" style="max-width: 750px">
     <div class="oh-modal__dialog-header">
       <h2 class="oh-modal__dialog-title" id="employeeExportLavel">
@@ -131,13 +131,15 @@
     </div>
   </div>
 </div>
+{% endif %}
+{% if perms.employee.change_employee %}
 <div
   class="oh-modal"
   id="bulkUpdateModal"
   role="dialog"
   aria-labelledby="bulkUpdateModal"
   aria-hidden="true"
->
+  >
   <div class="oh-modal__dialog" style="max-width: 750px">
     <div class="oh-modal__dialog-header">
       <h2 class="oh-modal__dialog-title" id="bulkUpdateModalLavel">
@@ -166,6 +168,7 @@
     </div>
   </div>
 </div>
+{% endif %}
 
 <section class="oh-wrapper oh-main__topbar pb-3" x-data="{searchShow: false}">
   <div class="oh-main__titlebar oh-main__titlebar--left">
@@ -360,6 +363,7 @@
           </div>
         </div>
         {% endif %}
+        {% if perms.employee.change_employee or perms.employee.add_employee or perms.employee.delete_employee %}
         <div class="oh-btn-group ml-2" onclick="event.preventDefault();">
           <div class="oh-dropdown" x-data="{open: false}">
             <button
@@ -375,67 +379,73 @@
               style="display: none"
             >
               <ul class="oh-dropdown__items">
-                <li class="oh-dropdown__item">
-                  <a
-                    href="#"
-                    class="oh-dropdown__link"
-                    id="work-info-import"
-                    data-toggle="oh-modal-toggle"
-                    data-target="#workInfoImport"
-                  >
-                    {% trans "Import" %}
-                  </a>
-                </li>
+                {% if perms.employee.add_employee %}
+                  <li class="oh-dropdown__item">
+                    <a
+                      href="#"
+                      class="oh-dropdown__link"
+                      id="work-info-import"
+                      data-toggle="oh-modal-toggle"
+                      data-target="#workInfoImport"
+                    >
+                      {% trans "Import" %}
+                    </a>
+                  </li>
+                {% endif %}
                 {% if emp %}
-                <li class="oh-dropdown__item">
-                  <a
-                    href="#"
-                    class="oh-dropdown__link"
-                    id="employee-info-export"
-                    data-toggle="oh-modal-toggle"
-                    data-target="#employeeExport"
-                  >
-                    {% trans "Export" %}
-                  </a>
-                </li>
-                <li class="oh-dropdown__item">
-                  <a href="#" class="oh-dropdown__link" id="archiveEmployees">
-                    {% trans "Archive" %}
-                  </a>
-                </li>
-                <li class="oh-dropdown__item">
-                  <a href="#" class="oh-dropdown__link" id="unArchiveEmployees">
-                    {% trans "Un-Archive" %}
-                  </a>
-                </li>
-                <li class="oh-dropdown__item">
-                  <a
-                    href="#"
-                    class="oh-dropdown__link"
-                    id="employeeBulkUpdateId"
-                    data-toggle="oh-modal-toggle"
-                    data-target="#bulkUpdateModal"
-                  >
-                    {% trans "Bulk Update" %}
-                  </a>
-                </li>
-                {% if perms.delete_employee %}
-                <li class="oh-dropdown__item">
-                  <a
-                    href="#"
-                    class="oh-dropdown__link oh-dropdown__link--danger"
-                    id="deleteEmployees"
-                  >
-                    {% trans "Delete" %}
-                  </a>
-                </li>
-                {% endif %} {% endif %}
+                  {% if perms.employee.add_employee %}
+                    <li class="oh-dropdown__item">
+                      <a
+                        href="#"
+                        class="oh-dropdown__link"
+                        id="employee-info-export"
+                        data-toggle="oh-modal-toggle"
+                        data-target="#employeeExport"
+                      >
+                        {% trans "Export" %}
+                      </a>
+                    </li>
+                  {% endif %}
+                  {% if perms.employee.change_employee %}
+                    <li class="oh-dropdown__item">
+                      <a href="#" class="oh-dropdown__link" id="archiveEmployees">
+                        {% trans "Archive" %}
+                      </a>
+                    </li>
+                    <li class="oh-dropdown__item">
+                      <a href="#" class="oh-dropdown__link" id="unArchiveEmployees">
+                        {% trans "Un-Archive" %}
+                      </a>
+                    </li>
+                    <li class="oh-dropdown__item">
+                      <a
+                        href="#"
+                        class="oh-dropdown__link"
+                        id="employeeBulkUpdateId"
+                      >
+                        {% trans "Bulk Update" %}
+                      </a>
+                    </li>
+                  {% endif %}
+                  {% if perms.employee.delete_employee %}
+                    <li class="oh-dropdown__item">
+                      <a
+                        href="#"
+                        class="oh-dropdown__link oh-dropdown__link--danger"
+                        id="deleteEmployees"
+                      >
+                        {% trans "Delete" %}
+                      </a>
+                    </li>
+                  {% endif %} 
+                {% endif %} 
               </ul>
             </div>
           </div>
         </div>
+        {% endif %}
+        {% if perms.employee.add_employee %}
         <div class="oh-btn-group ml-2">
-          {% if perms.employee.add_employee %}
           <div class="oh-dropdown">
             <a
               href='{% url "employee-view-new" %}'
@@ -445,8 +455,8 @@
               {% trans "Create" %}
             </a>
           </div>
-          {% endif %}
         </div>
+        {% endif %}
       </div>
     </form>
   </div>
