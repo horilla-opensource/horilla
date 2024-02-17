@@ -205,29 +205,29 @@
           success: function (response) {
 
               // Check if the response.action_type is "suspension"
-              $("#id_unit_in").change(function (e) { 
+              $("[id=id_unit_in]").change(function (e) { 
                 e.preventDefault();
                 if (this.value == "days") {
-                    parentForm.find('#id_days').parent().show();
-                    parentForm.find('#id_hours').parent().hide();
+                    parentForm.find('[id=id_days]').parent().show();
+                    parentForm.find('[id=id_hours]').parent().hide();
                     parentForm.find('[name=days]').prop('required', true);
                   }else{
-                    parentForm.find('#id_hours').parent().show();
-                    parentForm.find('#id_days').parent().hide();
+                    parentForm.find('[id=id_hours]').parent().show();
+                    parentForm.find('[id=id_days]').parent().hide();
                     parentForm.find('[name=days]').prop('required', false);
                   }
               });
               if (response.action_type === "suspension") {
                   // Show the 'days' field
-                  parentForm.find('#id_unit_in').parent().show();
-                  parentForm.find('#id_hours').parent().show();
-                  $("#id_unit_in").change()
+                  parentForm.find('[id=id_unit_in]').parent().show();
+                  parentForm.find('[id=id_hours]').parent().show();
+                  $("[id=id_unit_in]").change()
                 } else {
                   // Hide the 'days' field
-                  $("#id_unit_in").change()
-                  parentForm.find('#id_days').parent().hide();
-                  parentForm.find('#id_unit_in').parent().hide();
-                  parentForm.find('#id_hours').parent().hide();
+                  $("[id=id_unit_in]").change()
+                  parentForm.find('[id=id_days]').parent().hide();
+                  parentForm.find('[id=id_unit_in]').parent().hide();
+                  parentForm.find('[id=id_hours]').parent().hide();
                   parentForm.find('[name=days]').prop('required', false);
               }
                 
