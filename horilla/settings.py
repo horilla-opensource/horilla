@@ -213,7 +213,7 @@ MESSAGE_TAGS = {
     messages.ERROR: "oh-alert--danger",
 }
 
-
+# CORS
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:8000",
 ]
