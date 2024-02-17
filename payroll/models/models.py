@@ -138,9 +138,13 @@ class Contract(models.Model):
         ("expired", _("Expired")),
         ("terminated", _("Terminated")),
     )
-    FILING_STATUS_CHOICES = [("", _("None"))] + list(
-        FilingStatus.objects.values_list("id", "filing_status")
-    )
+    try:
+        # Here would be not filing status model at the initial/empty db
+        FILING_STATUS_CHOICES = [("", _("None"))] + list(
+            FilingStatus.objects.values_list("id", "filing_status")
+        )
+    except:
+        pass
 
     contract_name = models.CharField(
         max_length=250, help_text=_("Contract Title."), verbose_name=_("Contract")
