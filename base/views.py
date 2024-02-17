@@ -181,10 +181,17 @@ def login_user(request):
             del query_params["next"]
 
         params = f"{urlencode(query_params)}"
-
         user = authenticate(request, username=username, password=password)
         if user is None:
-            messages.error(request, _("Invalid username or password."))
+            user_object = User.objects.filter(username=username).first()
+            is_active = user_object.is_active if user_object else None
+            if is_active is True or is_active is None:
+                messages.error(request, _("Invalid username or password."))
+            else:
+                messages.warning(
+                    request,
+                    _("Access Denied: Your login credentials are currently blocked."),
+                )
             return redirect("/login")
         if user.employee_get.is_active == False:
             messages.error(
@@ -1344,7 +1351,7 @@ def rotating_work_type_assign_view(request):
         rwork_type_assign = group_by_queryset(
             rwork_type_assign, field, request.GET.get("page"), "page"
         )
-        list_values = [entry['list'] for entry in rwork_type_assign]
+        list_values = [entry["list"] for entry in rwork_type_assign]
         id_list = []
         for value in list_values:
             for instance in value.object_list:
@@ -1353,21 +1360,17 @@ def rotating_work_type_assign_view(request):
         assign_ids = json.dumps(list(id_list))
         template = "base/rotating_work_type/htmx/group_by.html"
 
-    else: 
-        rwork_type_assign =  paginator_qry(rwork_type_assign, request.GET.get("page"))
+    else:
+        rwork_type_assign = paginator_qry(rwork_type_assign, request.GET.get("page"))
         assign_ids = json.dumps(
-            [
-                instance.id
-                for instance in rwork_type_assign.object_list
-            ]
+            [instance.id for instance in rwork_type_assign.object_list]
         )
-
 
     return render(
         request,
         template,
         {
-            "rwork_type_assign":rwork_type_assign,
+            "rwork_type_assign": rwork_type_assign,
             "pd": previous_data,
             "filter_dict": data_dict,
             "assign_ids": assign_ids,
@@ -1934,12 +1937,12 @@ def rotating_shift_assign_view(request):
     data_dict = parse_qs(previous_data)
     get_key_instances(RotatingShiftAssign, data_dict)
     template = "base/rotating_shift/rotating_shift_assign_view.html"
-        
+
     if field != "" and field is not None:
         rshift_assign = group_by_queryset(
             rshift_assign, field, request.GET.get("page"), "page"
         )
-        list_values = [entry['list'] for entry in rshift_assign]
+        list_values = [entry["list"] for entry in rshift_assign]
         id_list = []
         for value in list_values:
             for instance in value.object_list:
@@ -1948,14 +1951,9 @@ def rotating_shift_assign_view(request):
         assign_ids = json.dumps(list(id_list))
         template = "base/rotating_shift/htmx/group_by.html"
 
-    else: 
-        rshift_assign =  paginator_qry(rshift_assign, request.GET.get("page"))
-        assign_ids = json.dumps(
-            [
-                instance.id
-                for instance in rshift_assign.object_list
-            ]
-        )
+    else:
+        rshift_assign = paginator_qry(rshift_assign, request.GET.get("page"))
+        assign_ids = json.dumps([instance.id for instance in rshift_assign.object_list])
     return render(
         request,
         template,
@@ -2436,7 +2434,7 @@ def work_type_request_search(request):
         work_typ_requests = group_by_queryset(
             work_typ_requests, field, request.GET.get("page"), "page"
         )
-        list_values = [entry['list'] for entry in work_typ_requests]
+        list_values = [entry["list"] for entry in work_typ_requests]
         id_list = []
         for value in list_values:
             for instance in value.object_list:
@@ -2445,13 +2443,10 @@ def work_type_request_search(request):
         requests_ids = json.dumps(list(id_list))
         template = "work_type_request/htmx/group_by.html"
 
-    else: 
-        work_typ_requests =  paginator_qry(work_typ_requests, request.GET.get("page"))
+    else:
+        work_typ_requests = paginator_qry(work_typ_requests, request.GET.get("page"))
         requests_ids = json.dumps(
-            [
-                instance.id
-                for instance in work_typ_requests.object_list
-            ]
+            [instance.id for instance in work_typ_requests.object_list]
         )
 
     data_dict = parse_qs(previous_data)
@@ -2460,14 +2455,13 @@ def work_type_request_search(request):
         request,
         template,
         {
-            "data":work_typ_requests,
+            "data": work_typ_requests,
             "pd": previous_data,
             "filter_dict": data_dict,
             "requests_ids": requests_ids,
             "field": field,
         },
     )
-
 
 
 @login_required
@@ -2879,7 +2873,9 @@ def shift_request(request):
             except Exception as e:
                 pass
             messages.success(request, _("Request Added"))
-            return HttpResponse(response.content.decode("utf-8")+ "<script>location.reload();</script>")
+            return HttpResponse(
+                response.content.decode("utf-8") + "<script>location.reload();</script>"
+            )
             # form = ShiftRequestForm()
             # if len(f.queryset) == 1:
             #     # Refresh the whole page to display the navbar otherwise refresh the requets container
@@ -2899,14 +2895,19 @@ def update_employee_allocation(request):
 
     shift = request.POST["shift_id"]
 
-    shift = EmployeeShift.objects.filter(
-        id=shift
-    ).first()
+    shift = EmployeeShift.objects.filter(id=shift).first()
 
     return JsonResponse(
         {
             "shift_name": shift.employee_shift,
-            "employee_data":list(shift.employeeworkinformation_set.values_list("employee_id","employee_id__employee_first_name","employee_id__employee_last_name","employee_id__badge_id"))
+            "employee_data": list(
+                shift.employeeworkinformation_set.values_list(
+                    "employee_id",
+                    "employee_id__employee_first_name",
+                    "employee_id__employee_last_name",
+                    "employee_id__badge_id",
+                )
+            ),
         }
     )
 
@@ -2938,7 +2939,7 @@ def shift_request_allocation(request):
         )
         if form.is_valid():
             instance = form.save()
-            reallocate_emp = form.cleaned_data['reallocate_to']
+            reallocate_emp = form.cleaned_data["reallocate_to"]
             try:
                 notify.send(
                     instance.employee_id,
@@ -2959,7 +2960,7 @@ def shift_request_allocation(request):
             try:
                 notify.send(
                     instance.employee_id,
-                    recipient= reallocate_emp,
+                    recipient=reallocate_emp,
                     verb=f"You have a new shift reallocation request from {instance.employee_id}.",
                     verb_ar=f"لديك طلب تخصيص جديد للورديات من {instance.employee_id}.",
                     verb_de=f"Sie haben eine neue Anfrage zur Verschiebung der Schichtzuteilung von {instance.employee_id}.",
@@ -2972,7 +2973,9 @@ def shift_request_allocation(request):
                 pass
 
             messages.success(request, _("Request Added"))
-            return HttpResponse(response.content.decode("utf-8")+ "<script>location.reload();</script>")
+            return HttpResponse(
+                response.content.decode("utf-8") + "<script>location.reload();</script>"
+            )
     return render(
         request,
         "shift_request/htmx/shift_allocation_form.html",
@@ -2988,17 +2991,23 @@ def shift_request_view(request):
     previous_data = request.GET.urlencode()
     employee = Employee.objects.filter(employee_user_id=request.user).first()
     shift_requests = filtersubordinates(
-        request, ShiftRequest.objects.filter(reallocate_to__isnull=True), "base.add_shiftrequest"
+        request,
+        ShiftRequest.objects.filter(reallocate_to__isnull=True),
+        "base.add_shiftrequest",
     )
     shift_requests = shift_requests | ShiftRequest.objects.filter(employee_id=employee)
     shift_requests = shift_requests.filter(employee_id__is_active=True)
 
     allocated_shift_requests = filtersubordinates(
-        request, ShiftRequest.objects.filter(reallocate_to__isnull=False), "base.add_shiftrequest"
+        request,
+        ShiftRequest.objects.filter(reallocate_to__isnull=False),
+        "base.add_shiftrequest",
     )
     allocated_requests = ShiftRequest.objects.filter(reallocate_to__isnull=False)
     if not request.user.has_perm("base.view_shiftrequest"):
-        allocated_requests = allocated_requests.filter(Q(reallocate_to=employee) | Q(employee_id=employee))
+        allocated_requests = allocated_requests.filter(
+            Q(reallocate_to=employee) | Q(employee_id=employee)
+        )
     allocated_shift_requests = allocated_shift_requests | allocated_requests
 
     requests_ids = json.dumps(
@@ -3033,7 +3042,9 @@ def shift_request_view(request):
         request,
         "shift_request/shift_request_view.html",
         {
-            "allocated_data": paginator_qry(allocated_shift_requests, request.GET.get("page")),
+            "allocated_data": paginator_qry(
+                allocated_shift_requests, request.GET.get("page")
+            ),
             "data": paginator_qry(f.qs, request.GET.get("page")),
             "f": f,
             "form": form,
@@ -3045,6 +3056,7 @@ def shift_request_view(request):
             "gp_fields": ShiftRequestReGroup.fields,
         },
     )
+
 
 @login_required
 @manager_can_enter("base.view_shiftrequest")
@@ -3069,12 +3081,20 @@ def shift_request_search(request):
     field = request.GET.get("field")
     f = ShiftRequestFilter(request.GET)
     f = sortby(request, f.qs, "sortby")
-    shift_requests = filtersubordinates(request,f.filter(reallocate_to__isnull=True), "base.add_shiftrequest")
-    shift_requests = shift_requests| f.filter(employee_id__employee_user_id=request.user)
+    shift_requests = filtersubordinates(
+        request, f.filter(reallocate_to__isnull=True), "base.add_shiftrequest"
+    )
+    shift_requests = shift_requests | f.filter(
+        employee_id__employee_user_id=request.user
+    )
 
-    allocated_shift_requests = filtersubordinates(request,f.filter(reallocate_to__isnull=False), "base.add_shiftrequest")
+    allocated_shift_requests = filtersubordinates(
+        request, f.filter(reallocate_to__isnull=False), "base.add_shiftrequest"
+    )
     if not request.user.has_perm("base.view_shiftrequest"):
-        allocated_shift_requests = allocated_shift_requests |f.filter(Q(reallocate_to=employee) | Q(employee_id=employee))
+        allocated_shift_requests = allocated_shift_requests | f.filter(
+            Q(reallocate_to=employee) | Q(employee_id=employee)
+        )
 
     requests_ids = json.dumps(
         [
@@ -3109,15 +3129,15 @@ def shift_request_search(request):
         allocated_shift_requests = group_by_queryset(
             allocated_shift_requests, field, request.GET.get("page"), "page"
         )
-        shift_list_values = [entry['list'] for entry in shift_requests]
-        allocated_list_values = [entry['list'] for entry in allocated_shift_requests]
+        shift_list_values = [entry["list"] for entry in shift_requests]
+        allocated_list_values = [entry["list"] for entry in allocated_shift_requests]
         shift_id_list = []
         allocated_id_list = []
-        
+
         for value in shift_list_values:
             for instance in value.object_list:
                 shift_id_list.append(instance.id)
-                
+
         for value in allocated_list_values:
             for instance in value.object_list:
                 allocated_id_list.append(instance.id)
@@ -3126,9 +3146,11 @@ def shift_request_search(request):
         allocated_ids = json.dumps(list(allocated_id_list))
         template = "shift_request/htmx/group_by.html"
 
-    else: 
-        shift_requests =  paginator_qry(shift_requests, request.GET.get("page"))
-        allocated_shift_requests =  paginator_qry(allocated_shift_requests, request.GET.get("page"))
+    else:
+        shift_requests = paginator_qry(shift_requests, request.GET.get("page"))
+        allocated_shift_requests = paginator_qry(
+            allocated_shift_requests, request.GET.get("page")
+        )
         requests_ids = json.dumps(
             [
                 instance.id
@@ -3147,7 +3169,6 @@ def shift_request_search(request):
             ]
         )
 
-
     get_key_instances(ShiftRequest, data_dict)
     return render(
         request,
@@ -3158,7 +3179,7 @@ def shift_request_search(request):
             "pd": previous_data,
             "filter_dict": data_dict,
             "requests_ids": requests_ids,
-            "allocated_ids":allocated_ids,
+            "allocated_ids": allocated_ids,
             "field": field,
         },
     )
@@ -3214,7 +3235,6 @@ def shift_allocation_request_details(request, id):
         "shift_request/htmx/allocation_details.html",
         context,
     )
-
 
 
 @login_required
@@ -3275,7 +3295,7 @@ def shift_allocation_request_update(request, shift_request_id):
         if form.is_valid():
             form.save()
             instance = form.save()
-            reallocate_emp = form.cleaned_data['reallocate_to']
+            reallocate_emp = form.cleaned_data["reallocate_to"]
             try:
                 notify.send(
                     instance.employee_id,
@@ -3296,7 +3316,7 @@ def shift_allocation_request_update(request, shift_request_id):
             try:
                 notify.send(
                     instance.employee_id,
-                    recipient= reallocate_emp,
+                    recipient=reallocate_emp,
                     verb=f"You have a new shift reallocation request from {instance.employee_id}.",
                     verb_ar=f"لديك طلب تخصيص جديد للورديات من {instance.employee_id}.",
                     verb_de=f"Sie haben eine neue Anfrage zur Verschiebung der Schichtzuteilung von {instance.employee_id}.",
@@ -3312,7 +3332,9 @@ def shift_allocation_request_update(request, shift_request_id):
                 response.content.decode("utf-8") + "<script>location.reload();</script>"
             )
 
-    return render(request, "shift_request/allocation_request_update_form.html", {"form": form})
+    return render(
+        request, "shift_request/allocation_request_update_form.html", {"form": form}
+    )
 
 
 @login_required
@@ -3338,7 +3360,9 @@ def shift_request_cancel(request, id):
         )
 
         if shift_request.reallocate_to:
-            shift_request.reallocate_to.employee_work_info.shift_id = shift_request.shift_id
+            shift_request.reallocate_to.employee_work_info.shift_id = (
+                shift_request.shift_id
+            )
             shift_request.reallocate_to.employee_work_info.save()
 
         shift_request.employee_id.employee_work_info.save()
@@ -3406,7 +3430,6 @@ def shift_allocation_request_cancel(request, id):
     return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 
 
-
 @login_required
 @manager_can_enter("base.change_shiftrequest")
 @require_http_methods(["POST"])
@@ -3432,7 +3455,9 @@ def shift_request_bulk_cancel(request):
             )
 
             if shift_request.reallocate_to:
-                shift_request.reallocate_to.employee_work_info.shift_id = shift_request.shift_id
+                shift_request.reallocate_to.employee_work_info.shift_id = (
+                    shift_request.shift_id
+                )
                 shift_request.reallocate_to.employee_work_info.save()
 
             shift_request.employee_id.employee_work_info.save()
@@ -3491,7 +3516,9 @@ def shift_request_approve(request, id):
             shift_request.canceled = False
 
             if shift_request.reallocate_to:
-                shift_request.reallocate_to.employee_work_info.shift_id = shift_request.previous_shift_id
+                shift_request.reallocate_to.employee_work_info.shift_id = (
+                    shift_request.previous_shift_id
+                )
                 shift_request.reallocate_to.employee_work_info.save()
 
             shift_request.save()
@@ -3526,7 +3553,6 @@ def shift_request_approve(request, id):
             )
             return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
     return HttpResponse("You Dont Have Permission")
-
 
 
 @login_required
@@ -3588,7 +3614,9 @@ def shift_request_bulk_approve(request):
             shift_request.canceled = False
 
             if shift_request.reallocate_to:
-                shift_request.reallocate_to.employee_work_info.shift_id = shift_request.previous_shift_id
+                shift_request.reallocate_to.employee_work_info.shift_id = (
+                    shift_request.previous_shift_id
+                )
                 shift_request.reallocate_to.employee_work_info.save()
 
             employee_work_info = shift_request.employee_id.employee_work_info
@@ -3830,9 +3858,11 @@ def general_settings(request):
     history_fields_form_initial = {}
     if history_tracking_instance:
         history_fields_form_initial = {
-            "tracking_fields": history_tracking_instance.tracking_fields['tracking_fields']
+            "tracking_fields": history_tracking_instance.tracking_fields[
+                "tracking_fields"
+            ]
         }
-    history_fields_form = HistoryTrackingFieldsForm(initial = history_fields_form_initial)
+    history_fields_form = HistoryTrackingFieldsForm(initial=history_fields_form_initial)
     if request.method == "POST":
         form = AnnouncementExpireForm(request.POST, instance=instance)
         if form.is_valid():
@@ -3845,7 +3875,7 @@ def general_settings(request):
         {
             "form": form,
             "encashment_form": encashment_form,
-            "history_fields_form":history_fields_form,
+            "history_fields_form": history_fields_form,
         },
     )
 
@@ -3981,6 +4011,7 @@ def get_time_format(request):
         time_format = "hh:mm A"
     # Return the date format as JSON response
     return JsonResponse({"selected_format": time_format})
+
 
 @login_required
 def history_field_settings(request):
@@ -4638,7 +4669,9 @@ def create_shiftrequest_comment(request, shift_id):
             form.instance.employee_id = emp
             form.instance.request_id = shift
             form.save()
-            comments = ShiftrequestComment.objects.filter(request_id=shift_id).order_by("-created_at")
+            comments = ShiftrequestComment.objects.filter(request_id=shift_id).order_by(
+                "-created_at"
+            )
             no_comments = False
             if not comments.exists():
                 no_comments = True
@@ -4709,14 +4742,14 @@ def create_shiftrequest_comment(request, shift_id):
                     icon="chatbox-ellipses",
                 )
             return render(
-                    request,
-                    "shift_request/htmx/shift_comment.html",
-                    {
-                        "comments": comments,
-                        "no_comments": no_comments,
-                        "request_id": shift_id,
-                    },
-                )
+                request,
+                "shift_request/htmx/shift_comment.html",
+                {
+                    "comments": comments,
+                    "no_comments": no_comments,
+                    "request_id": shift_id,
+                },
+            )
     return render(
         request,
         "shift_request/htmx/shift_comment.html",
@@ -4729,7 +4762,9 @@ def view_shift_comment(request, shift_id):
     """
     This method is used to render all the notes of the employee
     """
-    comments = ShiftrequestComment.objects.filter(request_id=shift_id).order_by("-created_at")
+    comments = ShiftrequestComment.objects.filter(request_id=shift_id).order_by(
+        "-created_at"
+    )
     no_comments = False
     if not comments.exists():
         no_comments = True
@@ -4764,7 +4799,9 @@ def delete_shift_comment_file(request):
     ids = request.GET.getlist("ids")
     BaserequestFile.objects.filter(id__in=ids).delete()
     shift_id = request.GET["shift_id"]
-    comments = ShiftrequestComment.objects.filter(request_id=shift_id).order_by("-created_at")
+    comments = ShiftrequestComment.objects.filter(request_id=shift_id).order_by(
+        "-created_at"
+    )
     return render(
         request,
         "shift_request/htmx/shift_comment.html",
@@ -4781,8 +4818,8 @@ def view_work_type_comment(request, work_type_id):
     This method is used to render all the notes of the employee
     """
     comments = WorktyperequestComment.objects.filter(request_id=work_type_id).order_by(
-            "-created_at"
-        )
+        "-created_at"
+    )
     no_comments = False
     if not comments.exists():
         no_comments = True
@@ -4857,9 +4894,9 @@ def create_worktyperequest_comment(request, worktype_id):
             form.instance.employee_id = emp
             form.instance.request_id = work_type
             form.save()
-            comments = WorktyperequestComment.objects.filter(request_id=worktype_id).order_by(
-                "-created_at"
-            )
+            comments = WorktyperequestComment.objects.filter(
+                request_id=worktype_id
+            ).order_by("-created_at")
             no_comments = False
             if not comments.exists():
                 no_comments = True
@@ -4868,7 +4905,10 @@ def create_worktyperequest_comment(request, worktype_id):
             )
             messages.success(request, _("Comment added successfully!"))
 
-            if work_type.employee_id.employee_work_info.reporting_manager_id is not None:
+            if (
+                work_type.employee_id.employee_work_info.reporting_manager_id
+                is not None
+            ):
                 if request.user.employee_get.id == work_type.employee_id.id:
                     rec = (
                         work_type.employee_id.employee_work_info.reporting_manager_id.employee_user_id
@@ -4932,7 +4972,11 @@ def create_worktyperequest_comment(request, worktype_id):
             return render(
                 request,
                 "work_type_request/htmx/work_type_comment.html",
-                {"comments": comments, "no_comments": no_comments, "request_id": worktype_id },
+                {
+                    "comments": comments,
+                    "no_comments": no_comments,
+                    "request_id": worktype_id,
+                },
             )
     return render(
         request,
@@ -4951,6 +4995,7 @@ def delete_worktyperequest_comment(request, comment_id):
     comment.delete()
     messages.success(request, _("Comment deleted successfully!"))
     return redirect("view-work-type-comment", work_type_id=worktype_id)
+
 
 @login_required
 def pagination_settings_view(request):

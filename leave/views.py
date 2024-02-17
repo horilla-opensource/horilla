@@ -664,6 +664,7 @@ def leave_request_bulk_approve(request):
                             ),
                         )
             except (ValueError, OverflowError, LeaveRequest.DoesNotExist):
+                messages.error(request, _("Leave request not found"))
                 pass
     return HttpResponse("<script>window.location.reload();</script>")
 
