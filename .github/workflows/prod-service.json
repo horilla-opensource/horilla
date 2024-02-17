@@ -1,0 +1,92 @@
+{
+    "taskDefinitionArn": "arn:aws:ecs:ap-south-1:020286832424:task-definition/Intranet-Prod:11",
+    "containerDefinitions": [
+        {
+            "name": "Primary-server",
+            "image": "020286832424.dkr.ecr.ap-south-1.amazonaws.com/intranet-prod:latestv6",
+            "cpu": 0,
+            "portMappings": [
+                {
+                    "name": "primary-server-8000-tcp",
+                    "containerPort": 8000,
+                    "hostPort": 8000,
+                    "protocol": "tcp",
+                    "appProtocol": "http"
+                }
+            ],
+            "essential": true,
+            "environment": [],
+            "mountPoints": [],
+            "volumesFrom": [],
+            "secrets": [
+                {
+                    "name": "DB_PASSWORD",
+                    "valueFrom": "arn:aws:secretsmanager:ap-south-1:020286832424:secret:prod/Intranet-SPkBDm:DB_PASSWORD::"
+                },
+                {
+                    "name": "DB_USER",
+                    "valueFrom": "arn:aws:secretsmanager:ap-south-1:020286832424:secret:prod/Intranet-SPkBDm:DB_USER::"
+                },
+                {
+                    "name": "EMAIL_PASSWORD",
+                    "valueFrom": "arn:aws:secretsmanager:ap-south-1:020286832424:secret:prod/Intranet-SPkBDm:EMAIL_PASSWORD::"
+                }
+            ],
+            "logConfiguration": {
+                "logDriver": "awslogs",
+                "options": {
+                    "awslogs-create-group": "true",
+                    "awslogs-group": "/ecs/Intranet-Prod",
+                    "awslogs-region": "ap-south-1",
+                    "awslogs-stream-prefix": "ecs"
+                },
+                "secretOptions": []
+            }
+        }
+    ],
+    "family": "Intranet-Prod",
+    "executionRoleArn": "arn:aws:iam::020286832424:role/ecsTaskExecutionRole",
+    "networkMode": "bridge",
+    "revision": 11,
+    "volumes": [],
+    "status": "ACTIVE",
+    "requiresAttributes": [
+        {
+            "name": "com.amazonaws.ecs.capability.logging-driver.awslogs"
+        },
+        {
+            "name": "ecs.capability.execution-role-awslogs"
+        },
+        {
+            "name": "com.amazonaws.ecs.capability.ecr-auth"
+        },
+        {
+            "name": "com.amazonaws.ecs.capability.docker-remote-api.1.19"
+        },
+        {
+            "name": "ecs.capability.secrets.asm.environment-variables"
+        },
+        {
+            "name": "ecs.capability.execution-role-ecr-pull"
+        },
+        {
+            "name": "com.amazonaws.ecs.capability.docker-remote-api.1.29"
+        }
+    ],
+    "placementConstraints": [],
+    "compatibilities": [
+        "EC2"
+    ],
+    "requiresCompatibilities": [
+        "EC2"
+    ],
+    "cpu": "256",
+    "memory": "256",
+    "runtimePlatform": {
+        "cpuArchitecture": "X86_64",
+        "operatingSystemFamily": "LINUX"
+    },
+    "registeredAt": "2024-02-13T17:18:38.917Z",
+    "registeredBy": "arn:aws:sts::020286832424:assumed-role/AWSReservedSSO_AdministratorAccess_abf53cbe70032506/Guhan_Devops",
+    "tags": []
+}

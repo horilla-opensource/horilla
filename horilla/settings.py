@@ -104,6 +104,7 @@ WSGI_APPLICATION = "horilla.wsgi.application"
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
 DATABASES = {
+<<<<<<< HEAD
     "default": {
         "ENGINE": "django.db.backends.postgresql",
         "NAME": "attendancetemp",
@@ -116,6 +117,16 @@ DATABASES = {
     #     "ENGINE": "django.db.backends.sqlite3",
     #     "NAME": BASE_DIR / "db.sqlite3",
     # },
+=======
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': "intranetprod",
+        'USER': os.environ.get('DB_USER'),
+        'PASSWORD': os.environ.get('DB_PASSWORD'),
+        'HOST': 'intranet-prod.cgoo19o9oo4o.ap-south-1.rds.amazonaws.com',
+        'PORT': "5432",
+    }
+>>>>>>> d452bc636acb533b7ef0bb5516777080752ac233
 }
 
 
