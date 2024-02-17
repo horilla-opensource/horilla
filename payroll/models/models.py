@@ -232,7 +232,7 @@ class Contract(models.Model):
     deduct_leave_from_basic_pay = models.BooleanField(
         default=True,
         verbose_name=_("Deduct From Basic Pay"),
-        help_text=_("Take all the deduction from basic pay."),
+        help_text=_("Deduct the leave amount from basic pay."),
     )
     notice_period_in_month = models.IntegerField(
         default=3,
