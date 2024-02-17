@@ -168,17 +168,18 @@ class LeaveType(models.Model):
         max_length=30, choices=TIME_PERIOD, null=True, blank=True
     )
     require_approval = models.CharField(
-        max_length=30, choices=CHOICES, null=True, blank=True
+        max_length=30, choices=CHOICES, null=True, blank=True,default="yes"
     )
     require_attachment = models.CharField(
         max_length=30,
         choices=CHOICES,
+        default="no",
         null=True,
         blank=True,
         verbose_name=_("Require Attachment"),
     )
-    exclude_company_leave = models.CharField(max_length=30, choices=CHOICES)
-    exclude_holiday = models.CharField(max_length=30, choices=CHOICES)
+    exclude_company_leave = models.CharField(max_length=30, choices=CHOICES,default="no")
+    exclude_holiday = models.CharField(max_length=30, choices=CHOICES,default="no")
     company_id = models.ForeignKey(
         Company, null=True, editable=False, on_delete=models.PROTECT
     )

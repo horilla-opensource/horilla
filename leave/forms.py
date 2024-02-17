@@ -139,18 +139,6 @@ class ConditionForm(forms.ModelForm):
             pass
 
 class LeaveTypeForm(ConditionForm):
-    require_approval = forms.CharField(
-        label="Require Approval", widget=forms.RadioSelect(choices=CHOICES)
-    )
-    require_attachment = forms.CharField(
-        label="Require Attachment", widget=forms.RadioSelect(choices=CHOICES)
-    )
-    exclude_company_leave = forms.CharField(
-        label="Exclude Company Leave", widget=forms.RadioSelect(choices=CHOICES)
-    )
-    exclude_holiday = forms.CharField(
-        label="Exclude Holiday", widget=forms.RadioSelect(choices=CHOICES)
-    )
 
     class Meta:
         model = LeaveType
@@ -177,18 +165,6 @@ class LeaveTypeForm(ConditionForm):
 
 
 class UpdateLeaveTypeForm(ConditionForm):
-    require_approval = forms.CharField(
-        label="Require Approval", widget=forms.RadioSelect(choices=CHOICES)
-    )
-    require_attachment = forms.CharField(
-        label="Require Attachment", widget=forms.RadioSelect(choices=CHOICES)
-    )
-    exclude_company_leave = forms.CharField(
-        label="Exclude Company Leave", widget=forms.RadioSelect(choices=CHOICES)
-    )
-    exclude_holiday = forms.CharField(
-        label="Exclude Holiday", widget=forms.RadioSelect(choices=CHOICES)
-    )
 
     def __init__(self, *args, **kwargs):
         super(UpdateLeaveTypeForm, self).__init__(*args, **kwargs)

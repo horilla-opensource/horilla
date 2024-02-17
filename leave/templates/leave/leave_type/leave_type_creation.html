@@ -36,7 +36,7 @@
                     </div>
                     <div class="col-sm-12 col-md-12 col-lg-6">
                         <div class="oh-input-group">
-                            <label for="" class="oh-label">{% trans "Icon" %}</label>
+                            <label for="" class="oh-label">{% trans "Icon" %}</label><br/>
                             {{form.icon}}
                             {{form.icon.errors}}
                         </div>
@@ -50,7 +50,7 @@
                     </div>
                     <div class="col-sm-12 col-md-12 col-lg-12">
                         <div class="oh-input-group">
-                            <label for="" class="oh-label">{% trans "Payment Method" %}</label>
+                            <label for="" class="oh-label">{% trans "Is Paid" %}</label>
                             {{form.payment}}   
                             {{form.payment.errors}}
                         </div>
@@ -79,7 +79,7 @@
                     <div class="col-sm-12 col-md-12 ">
                         <div class="oh-input-group oh-label__info">
                             <label for="id_reset" class="oh-label">{% trans "Reset" %}</label>
-                            <span class=" oh-info me-3" title="{% trans "Do you want to reset leaves based on conditions?" %}"></span>
+                            <span class=" oh-info me-3" title="{% trans "Do you need to reset leaves based on conditions?" %}"></span>
                             <div class="oh-switch p-3 ">
                                 {{form.reset}}
                                 {{form.reset.errors}}
@@ -87,10 +87,13 @@
                         </div>
                     </div>
                     <div class="col-sm-12 col-md-12 ">
-                        <div class="oh-input-group">
-                            <label for="id_reset_based" class="oh-label">{% trans "Reset Based" %}</label>
-                            {{form.reset_based}}
-                            {{form.reset_based.errors}}
+                        <div >
+                            <div class="oh-input-group oh-label__info">
+                                <label for="id_reset_based" class="oh-label">{% trans "Reset Period" %}</label>
+                                <span id="reset_based_id" class=" oh-info me-3"title="{% trans "The time period for the leave to reset." %}"></span>
+                            </div>
+                                    {{ form.reset_based }}
+                                    {{ form.reset_based.errors }}
                         </div>
                     </div>
                     <div class="col-sm-12 col-md-12 ">
@@ -115,62 +118,89 @@
                         </div>
                     </div>
                     <div class="col-sm-12 col-md-12 ">
-                        <div class="oh-input-group">
-                            <label for="" class="oh-label">{% trans "Carryforward Type" %}</label>
-                            {{form.carryforward_type}}
-                            {{form.carryforward_type.errors}}
+                        <div>
+                            <div class="oh-input-group oh-label__info">
+                                <label for="" class="oh-label">{% trans "Carryforward Type" %}</label>
+                                <span class=" oh-info me-3" title="{% trans 'The conditions for carrying forward the balance of leave.' %}"></span>
+                            </div>
+                                {{form.carryforward_type}}
+                                {{form.carryforward_type.errors}}
                         </div>
                     </div>
                     <div class="col-sm-12 col-md-12 ">
-                        <div class="oh-input-group">
-                            <label for="id_carryforward_max" class="oh-label">{% trans "Carryforward Max" %}</label>
-                            {{form.carryforward_max}}
-                            {{form.carryforward_max.errors}}
+                        <div>
+                            <div class="oh-input-group oh-label__info">
+                                <label for="id_carryforward_max" class="oh-label">{% trans "Carryforward Max" %}</label>
+                                <span class=" oh-info me-3" title="{% trans "The maximum number of leave that can be carried forward." %}"></span>
+                            </div>
+                                {{form.carryforward_max}}
+                                {{form.carryforward_max.errors}}
                         </div>
                     </div>
                     <div class="col-sm-12 col-md-12">
-                        <div class="oh-input-group">
-                            <label for="id_carryforward_expire_in" class="oh-label">{% trans "Carryforward Expire In" %}</label>
-                            {{form.carryforward_expire_in}}
-                            {{form.carryforward_expire_in.errors}}
-                        </div>
-                    </div>
-                    <div class="col-sm-12 col-md-12">
-                        <div class="oh-input-group">
-                            <label for="id_carryforward_expire_period" class="oh-label">{% trans "Carryforward Expire" %}
-                                Period</label>
+                        <div>
+                            <div class="oh-input-group oh-label__info">
+                                <label for="id_carryforward_expire_period" class="oh-label">{% trans "Carryforward Expire Period" %}</label>
+                                <span class=" oh-info me-3" title="{% trans 'The time period for the expiration of carryforward leave.' %}"></span>
+                            </div>
                             {{form.carryforward_expire_period}}
                             {{form.carryforward_expire_period.errors}}
                         </div>
                     </div>
-                    <div class="col-sm-12 col-md-12  col-lg-6">
-                        <div class="oh-input-group">
-                            <label for="" class="oh-label">{% trans "Require Approval" %}</label>
-                            {{form.require_approval}}
-                            {{form.require_approval.errors}}
+                    <div class="col-sm-12 col-md-12">
+                        <div>
+                            <div class="oh-input-group oh-label__info">
+                                <label for="id_carryforward_expire_in" class="oh-label">{% trans "Carryforward Expire In" %}</label>
+                                <span class=" oh-info me-3" title="{% trans 'The count of carryforward expire period' %}"></span>
+                            </div>
+                                {{form.carryforward_expire_in}}
+                                {{form.carryforward_expire_in.errors}}
                         </div>
                     </div>
                     <div class="col-sm-12 col-md-12  col-lg-6">
-                        <div class="oh-input-group">
+                        <div class="oh-input-group oh-label__info">
+                            <label for="" class="oh-label ">{% trans "Require Approval" %}</label>
+                            <span class=" oh-info me-3" title="{% trans "Do you need approval for leave from the authority?" %}"></span>
+                            <div class="oh-switch p-3 ">
+                                <input type="checkbox" class="oh-switch__checkbox yesOrNo" id="id_approval" checked>
+                                {{form.require_approval.errors}}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-12 col-md-12  col-lg-6">
+                        <div class="oh-input-group oh-label__info">
                             <label for="" class="oh-label">{% trans "Require Attachment" %}</label>
-                            {{form.require_attachment}}
-                            {{form.require_attachment.errors}}
+                            <span class=" oh-info me-3" title="{% trans "Do you need to attach a document for leave?" %}"></span>
+                            <div class="oh-switch p-3 ">
+                                <input type="checkbox" class="oh-switch__checkbox yesOrNo" id="id_attachment">
+                                {{form.require_attachment.errors}}
+                            </div>
                         </div>
                     </div>
                     <div class="col-sm-12 col-md-12 col-lg-6">
-                        <div class="oh-input-group">
-                            <label for="" class="oh-label">{% trans "Exclude Company Leaves" %}</label>
-                            {{form.exclude_company_leave}}
-                            {{form.exclude_company_leave.errors}}
+                        <div class="oh-input-group oh-label__info">
+                            <label for="" class="oh-label">{% trans "Exclude Company Holidays" %}</label>
+                            <span class=" oh-info me-3" title="{% trans "Do you need to exclude company holidays from the requested leave days?" %}"></span>
+                            <div class="oh-switch p-3 ">
+                                <input type="checkbox" class="oh-switch__checkbox yesOrNo" id="id_exclude_comp_leave">
+                                {{form.exclude_company_leave.errors}}
+                            </div>
                         </div>
                     </div>
                     <div class="col-sm-12 col-md-12 col-lg-6">
-                        <div class="oh-input-group">
+                        <div class="oh-input-group oh-label__info ">
                             <label for="" class="oh-label">{% trans "Exclude Holidays" %}</label>
-                            {{form.exclude_holiday}}
-                            {{form.exclude_holiday.errors}}
+                            <span class=" oh-info me-3" title="{% trans "Do you need to exclude public holidays from the requested leave days?" %}"></span>
+                            <div class="oh-switch p-3 ">
+                                <input type="checkbox" class="oh-switch__checkbox yesOrNo" id="id_exclude_public_leave">
+                                {{form.exclude_holiday.errors}}
+                            </div>
                         </div>
                     </div>
+                    <div hidden>{{form.require_approval}}</div>
+                    <div hidden>{{form.require_attachment}}</div>
+                    <div hidden>{{form.exclude_company_leave}}</div>
+                    <div hidden>{{form.exclude_holiday}}</div>
                 </div>
             </div>
 
@@ -180,7 +210,6 @@
                 {% trans "Create" %}
             </button>
         </form>
-
     </div>
 </div>
 
@@ -189,6 +218,7 @@
 
         var reset = $("#id_reset");
         var reset_based_label = $("label[for='id_reset_based']");
+        var reset_based_span = $("#reset_based_id");
         var reset_based = $("#id_reset_based");
         var reset_month_label = $("label[for='id_reset_month']");
         var reset_month = $("#id_reset_month");
@@ -209,6 +239,7 @@
         //Making all fields which are not needed first was hidden and not required
         reset_based_label.hide();
         reset_based.hide().prop('required', false);
+        reset_based_span.hide()
         reset_month_label.hide();
         reset_month.hide().prop('required', false);
         reset_day_label.hide();
@@ -225,8 +256,8 @@
 
         // Check value of reset change field and trigger action
         reset.change(function () {
-            (this.checked) ? (reset_based.show().prop('required', true), reset_based_label.show()) : (reset_based_label.hide(), reset_based.hide().prop('required', false), reset_based.val(''))
-            reset_based.is(':hidden') ? (reset_month_label.hide(), reset_month.hide().prop('required', false), reset_month.val(''), reset_day_label.hide(), reset_day.val(''), reset_day.hide().prop('required', false), reset_weekend_label.hide(), reset_weekend.hide().prop('required', false), reset_weekend.val('')) : ""
+            (this.checked) ? (reset_based.show().prop('required', true), reset_based_label.show()) : (reset_based_label.hide(), reset_based.hide().prop('required', false), reset_based.val('')),reset_based_span.show()
+            reset_based.is(':hidden') ? (reset_month_label.hide(), reset_month.hide().prop('required', false), reset_month.val(''), reset_day_label.hide(), reset_day.val(''), reset_day.hide().prop('required', false), reset_weekend_label.hide(),reset_based_span.hide(), reset_weekend.hide().prop('required', false), reset_weekend.val('')) : ""
         });
 
         // Check value of boolean change field and trigger action
@@ -302,6 +333,8 @@
 
        $("select,input[type=checkbox]").change(function (e) { 
         toggleFields()
+        //check the yes or no fields
+            
     });
     toggleFields()
 
@@ -326,6 +359,37 @@
         });
 
     });
+    function checkYesOrNoFields(){ 
+
+        if ($('#id_approval').is(":checked")) { 
+            $('#id_require_approval').val('yes');
+        }
+        else{
+            $('#id_require_approval').val('no') ;
+        }
+        if ($('#id_attachment').is(":checked")) { 
+            $('#id_require_attachment').val('yes');
+        }
+        else{
+            $('#id_require_attachment').val('no');
+        }
+        if ($('#id_exclude_comp_leave').is(":checked")) { 
+            $('#id_exclude_company_leave').val('yes');
+        }
+        else{
+            $('#id_exclude_company_leave').val('no')
+        }
+        if ($('#id_exclude_public_leave').is(":checked")) { 
+            $('#id_exclude_holiday').val('yes');
+        }
+        else{
+            $('#id_exclude_holiday').val('no');
+        }
+    }
+
+    $('.yesOrNo').change(function(){
+        checkYesOrNoFields()
+    })
 </script>
 
 {% endblock %}
