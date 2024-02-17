@@ -322,7 +322,9 @@ def get_key_instances(model, data_dict):
         for key, value in data_dict.items()
         if value == ["unknown"]
         or key in ["sortby", "orderby", "view", "page", "group_by", "target",'rpage']
+        or "dynamic_page" in key
     ]
+          
     for key in keys_to_remove:
         del data_dict[key]
 
