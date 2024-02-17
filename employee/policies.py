@@ -171,7 +171,7 @@ def create_actions(request):
     """
     Method is used to create Disciplinaryaction
     """
-    form = DisciplinaryActionForm(request.GET)
+    form = DisciplinaryActionForm(initial=request.GET)
     employees = []
     if request.method == "POST":
         form = DisciplinaryActionForm(request.POST, request.FILES)

@@ -53,13 +53,20 @@
                     </div>
                     {% if i.action.action_type == 'suspension' %}
                         <div data-cell-index="1" class="oh-sticky-table__td">{{ i.action }}
-                          <p class="fw-bold mt-2">{% trans "Suspended for" %} {{ i.days }} {% trans "days." %}</p>
+                          <p class="fw-bold mt-2">{% trans "Suspended for" %}
+                            {% if i.unit_in == "days" %}
+                             {{ i.days }} {% trans "days" %}.
+                             {% else %}
+                             {{ i.hours }} {% trans "hours" %}.
+                            {% endif %}
+                            </p>
+
                         </div>
                     {% else %}
                         <div data-cell-index="1" class="oh-sticky-table__td">{{ i.action }}</div>
                     {% endif %}
 
-                    {% if i.action.action_type == 'suspension' %}
+                    {% if i.action.action_type == 'suspension' and i.unit_in == "days" %}
                       <div data-cell-index="2" class="oh-sticky-table__td">
                         <span class="dateformat_changer">{{ i.start_date }}</span>
                         &nbsp to &nbsp<span class="dateformat_changer">{{ i.start_date | add_days:i.days }}</span>
@@ -187,7 +194,7 @@
   function actionTypeChange(selectElement) {
     var selectedActiontype = selectElement.val();
     var parentForm = selectElement.parents().closest("form");
-    if (selectedActiontype !== "create") {
+    if (selectedActiontype !== "create" && selectedActiontype) {
       $.ajax({
           type: "post",
           url: "{% url 'action-type-details' %}",
@@ -196,17 +203,34 @@
               "action_type": selectedActiontype,
           },
           success: function (response) {
-              console.log(response.action_type);
+
               // Check if the response.action_type is "suspension"
+              $("#id_unit_in").change(function (e) { 
+                e.preventDefault();
+                if (this.value == "days") {
+                    parentForm.find('#id_days').parent().show();
+                    parentForm.find('#id_hours').parent().hide();
+                    parentForm.find('[name=days]').prop('required', true);
+                  }else{
+                    parentForm.find('#id_hours').parent().show();
+                    parentForm.find('#id_days').parent().hide();
+                    parentForm.find('[name=days]').prop('required', false);
+                  }
+              });
               if (response.action_type === "suspension") {
                   // Show the 'days' field
-                  parentForm.find('#daysDiv').show();
-                  parentForm.find('[name=days]').prop('required', true);
-              } else {
+                  parentForm.find('#id_unit_in').parent().show();
+                  parentForm.find('#id_hours').parent().show();
+                  $("#id_unit_in").change()
+                } else {
                   // Hide the 'days' field
-                  parentForm.find('#daysDiv').hide();
+                  $("#id_unit_in").change()
+                  parentForm.find('#id_days').parent().hide();
+                  parentForm.find('#id_unit_in').parent().hide();
+                  parentForm.find('#id_hours').parent().hide();
                   parentForm.find('[name=days]').prop('required', false);
               }
+                
           },
       });
     }else{

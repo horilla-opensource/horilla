@@ -26,9 +26,10 @@ import re
 from django import forms
 from django.db.models import Q
 from django.contrib.auth.models import User
-from django.forms import DateInput, ModelChoiceField, TextInput
+from django.forms import DateInput, TextInput
 from django.utils.translation import gettext as _
 from django.utils.translation import gettext_lazy as trans
+from django.template.loader import render_to_string
 from base import thread_local_middleware
 from horilla.decorators import logger
 from employee.models import (
@@ -589,7 +590,16 @@ class DisciplinaryActionForm(ModelForm):
             self.fields["action"].queryset.values_list("id", "title")
         )
         self.fields["action"].choices = action_choices
-        self.fields["action"].choices += [("create", _("Create new action type "))]
+        if self.instance.pk is None:
+            self.fields["action"].choices += [("create", _("Create new action type "))]
+    
+    def as_p(self):
+        """
+        Render the form fields as HTML table rows with Bootstrap styling.
+        """
+        context = {"form": self}
+        table_html = render_to_string("common_form.html", context)
+        return table_html
 
 
 class ActiontypeForm(ModelForm):

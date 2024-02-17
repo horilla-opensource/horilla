@@ -7,7 +7,7 @@ This module is used to register models for employee app
 
 import datetime as dtime
 from datetime import date, datetime, timedelta
-from typing import Any
+from typing import Any, Iterable
 from django.conf import settings
 from django.db import models
 from django.contrib.auth.models import User, Permission
@@ -19,6 +19,7 @@ from django.core.exceptions import ValidationError
 from django.core.files.storage import default_storage
 from simple_history.models import HistoricalRecords
 from base import thread_local_middleware
+from base.models import validate_time_format
 from horilla_audit.models import HorillaAuditLog, HorillaAuditInfo
 from horilla_audit.methods import get_diff
 from base.models import (
@@ -344,7 +345,7 @@ class Employee(models.Model):
         This method is used to get last send mail
         """
         from base.models import EmailLog
-        
+
         return (
             EmailLog.objects.filter(to__icontains=self.get_mail())
             .order_by("-created_at")
@@ -591,7 +592,7 @@ class EmployeeNote(models.Model):
         related_name="employee_name",
     )
     title = models.CharField(max_length=50, null=True, verbose_name=_("Title"))
-    description = models.TextField(verbose_name=_("Description"),max_length=255)
+    description = models.TextField(verbose_name=_("Description"), max_length=255)
     created_at = models.DateTimeField(
         auto_now_add=True,
         verbose_name=_("Created At"),
@@ -655,7 +656,7 @@ class BonusPoint(models.Model):
         max_length=100, choices=CONDITIONS, blank=True, null=True
     )
     redeeming_points = models.IntegerField(blank=True, null=True)
-    reason = models.TextField(blank=True, null=True,max_length=255)
+    reason = models.TextField(blank=True, null=True, max_length=255)
     history = HorillaAuditLog(
         related_name="history_set",
         bases=[
@@ -676,7 +677,6 @@ class BonusPoint(models.Model):
     def bonus_post_save(sender, instance, **_kwargs):
         if not BonusPoint.objects.filter(employee_id__id=instance.id).exists():
             BonusPoint.objects.create(employee_id=instance)
-
 
 
 class Actiontype(models.Model):
@@ -702,10 +702,18 @@ class DisciplinaryAction(models.Model):
     Disciplinary model
     """
 
-    employee_id = models.ManyToManyField(Employee)
+    choices = [("days", "Days"), ("hours", "In Hours")]
+    employee_id = models.ManyToManyField(Employee, verbose_name="Employee")
     action = models.ForeignKey(Actiontype, on_delete=models.CASCADE)
     description = models.TextField(max_length=255)
-    days = models.IntegerField(null=True, blank=True)
+    unit_in = models.CharField(max_length=10, choices=choices,default="days")
+    days = models.IntegerField(null=True, default=2)
+    hours = models.CharField(
+        max_length=6,
+        default="00:00",
+        null=True,
+        validators=[validate_time_format],
+    )
     start_date = models.DateField(null=True)
     attachment = models.FileField(
         upload_to="employee/discipline", null=True, blank=True

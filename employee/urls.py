@@ -105,6 +105,11 @@ urlpatterns = [
         name="save-employee-bulk-update",
     ),
     path(
+        "employee-account-block-unblock/<int:emp_id>/",
+        views.employee_account_block_unblock,
+        name="employee-account-block-unblock",
+    ),
+    path(
         "employee-bulk-delete", views.employee_bulk_delete, name="employee-bulk-delete"
     ),
     path(
