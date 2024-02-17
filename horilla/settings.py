@@ -216,8 +216,8 @@ MESSAGE_TAGS = {
 # CORS
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:8000",
-    "https://intranet.thinofit.online",
-    "http://intranet.thinofit.online",
+    "https://intranet.thinkofit.online",
+    "http://intranet.thinkofit.online",
     "http://13.233.162.161:8000/",
 ]
 
