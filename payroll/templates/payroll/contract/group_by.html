@@ -11,7 +11,7 @@
 </div>
 {% endif %}
 <div class="oh-card">
-	{% dynamic_regroup contracts by field as contract_grouper %} {% for contract_list in contract_grouper %}
+ {% for contract_list in contracts %}
 
 	<div class="oh-accordion-meta">
 		<div class="oh-accordion-meta__item">
@@ -21,7 +21,7 @@
 						<span
 							class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round mr-1"
 						>
-							{{contract_list.list|length}}
+							{{contract_list.list.paginator.count}}
 						</span>
 						{{contract_list.grouper}}
 					</div>
@@ -124,6 +124,77 @@
 						</div>
 					  </div>
         		</div>
+				<div class="oh-pagination">
+                    <span class="oh-pagination__page">
+                        {% trans "Page" %} {{ contract_list.list.number }} 
+                        {%trans "of" %} {{contract_list.list.paginator.num_pages }}.
+                    </span>
+                    <nav class="oh-pagination__nav">
+                        <div class="oh-pagination__input-container me-3">
+                            <span class="oh-pagination__label me-1"
+                                >{% trans "Page" %}</span
+                            >
+                            <input
+                                type="number"
+                                name="{{contract_list.dynamic_name}}"
+                                class="oh-pagination__input"
+                                value="{{contract_list.list.number}}"
+                                hx-get="{% url 'contract-filter' %}?{{pd}}"
+                                hx-target="#payroll-contract-container"
+                                min="1"
+                            />
+                            <span class="oh-pagination__label"
+                                >{% trans "of" %}
+                                {{contract_list.list.paginator.num_pages}}</span
+                            >
+                        </div>
+                        <ul class="oh-pagination__items">
+                            {% if contract_list.list.has_previous %}
+                            <li
+                                class="oh-pagination__item oh-pagination__item--wide"
+                            >
+                                <a
+                                    hx-target="#payroll-contract-container"
+                                    hx-get="{% url 'contract-filter' %}?{{pd}}&{{contract_list.dynamic_name}}=1"
+                                    class="oh-pagination__link"
+                                    >{% trans "First" %}</a
+                                >
+                            </li>
+                            <li
+                                class="oh-pagination__item oh-pagination__item--wide"
+                            >
+                                <a
+                                    hx-target="#payroll-contract-container"
+                                    hx-get="{% url 'contract-filter' %}?{{pd}}&{{contract_list.dynamic_name}}={{ contract_list.list.previous_page_number }}"
+                                    class="oh-pagination__link"
+                                    >{% trans "Previous" %}</a
+                                >
+                            </li>
+                            {% endif %} {% if contract_list.list.has_next %}
+                            <li
+                                class="oh-pagination__item oh-pagination__item--wide"
+                            >
+                                <a
+                                    hx-target="#payroll-contract-container"
+                                    hx-get="{% url 'contract-filter' %}?{{pd}}&{{contract_list.dynamic_name}}={{ contract_list.list.next_page_number }}"
+                                    class="oh-pagination__link"
+                                    >{% trans "Next" %}</a
+                                >
+                            </li>
+                            <li
+                                class="oh-pagination__item oh-pagination__item--wide"
+                            >
+                                <a
+                                    hx-target="#payroll-contract-container"
+                                    hx-get="{% url 'contract-filter' %}?{{pd}}&{{contract_list.dynamic_name}}={{ contract_list.list.paginator.num_pages }}"
+                                    class="oh-pagination__link"
+                                    >{% trans "Last" %}</a
+                                >
+                            </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                </div>
 			</div>
 		</div>
 		{% endfor %}
