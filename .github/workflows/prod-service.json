@@ -1,9 +1,9 @@
 {
-    "taskDefinitionArn": "arn:aws:ecs:ap-south-1:020286832424:task-definition/Intranet-Prod:11",
+    "taskDefinitionArn": "arn:aws:ecs:ap-south-1:020286832424:task-definition/Intranet-Prod:21",
     "containerDefinitions": [
         {
             "name": "Primary-server",
-            "image": "020286832424.dkr.ecr.ap-south-1.amazonaws.com/intranet-prod:latestv6",
+            "image": "020286832424.dkr.ecr.ap-south-1.amazonaws.com/intranet-prod:9a9d839afe97228241d0c2974a4c26aafc4abf06",
             "cpu": 0,
             "portMappings": [
                 {
@@ -30,6 +30,14 @@
                 {
                     "name": "EMAIL_PASSWORD",
                     "valueFrom": "arn:aws:secretsmanager:ap-south-1:020286832424:secret:prod/Intranet-SPkBDm:EMAIL_PASSWORD::"
+                },
+                {
+                    "name": "AWS_ACCESS_KEY_ID",
+                    "valueFrom": "arn:aws:secretsmanager:ap-south-1:020286832424:secret:prod/Intranet-SPkBDm:AWS_ACCESS_KEY_ID::"
+                },
+                {
+                    "name": "AWS_SECRET_ACCESS_KEY",
+                    "valueFrom": "arn:aws:secretsmanager:ap-south-1:020286832424:secret:prod/Intranet-SPkBDm:AWS_SECRET_ACCESS_KEY::"
                 }
             ],
             "logConfiguration": {
@@ -47,7 +55,7 @@
     "family": "Intranet-Prod",
     "executionRoleArn": "arn:aws:iam::020286832424:role/ecsTaskExecutionRole",
     "networkMode": "bridge",
-    "revision": 11,
+    "revision": 21,
     "volumes": [],
     "status": "ACTIVE",
     "requiresAttributes": [
@@ -86,7 +94,7 @@
         "cpuArchitecture": "X86_64",
         "operatingSystemFamily": "LINUX"
     },
-    "registeredAt": "2024-02-13T17:18:38.917Z",
+    "registeredAt": "2024-02-17T19:17:15.116Z",
     "registeredBy": "arn:aws:sts::020286832424:assumed-role/AWSReservedSSO_AdministratorAccess_abf53cbe70032506/Guhan_Devops",
     "tags": []
 }
