@@ -27,8 +27,7 @@
 <!-- end of selection buttons -->
 
 <div class="oh-card">
-    {% dynamic_regroup leave_requests by field as leave_request_grouper %}
-    {% for leave_request_list in leave_request_grouper %}
+    {% for leave_request_list in leave_requests %}
     <div class="oh-accordion-meta">
         <div class="oh-accordion-meta__item">
             <div class="oh-accordion-meta__header" onclick='$(this).toggleClass("oh-accordion-meta__header--show");'>
@@ -37,7 +36,7 @@
                         <span
                             class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round mr-1"
                         >
-                            {{leave_request_list.list|length}}
+                            {{leave_request_list.list.paginator.count}}
                         </span>
                         {{leave_request_list.grouper}}
                     </div>
@@ -159,6 +158,77 @@
                             </div>
                         </div>
                     </div>
+                </div>
+                <div class="oh-pagination">
+                    <span class="oh-pagination__page">
+                        {% trans "Page" %} {{ leave_request_list.list.number }} 
+                        {%trans "of" %} {{leave_request_list.list.paginator.num_pages }}.
+                    </span>
+                    <nav class="oh-pagination__nav">
+                        <div class="oh-pagination__input-container me-3">
+                            <span class="oh-pagination__label me-1"
+                                >{% trans "Page" %}</span
+                            >
+                            <input
+                                type="number"
+                                name="{{leave_request_list.dynamic_name}}"
+                                class="oh-pagination__input"
+                                value="{{leave_request_list.list.number}}"
+                                hx-get="{% url 'user-request-filter' %}?{{pd}}"
+                                hx-target="#userRequest"
+                                min="1"
+                            />
+                            <span class="oh-pagination__label"
+                                >{% trans "of" %}
+                                {{leave_request_list.list.paginator.num_pages}}</span
+                            >
+                        </div>
+                        <ul class="oh-pagination__items">
+                            {% if leave_request_list.list.has_previous %}
+                            <li
+                                class="oh-pagination__item oh-pagination__item--wide"
+                            >
+                                <a
+                                    hx-target="#userRequest"
+                                    hx-get="{% url 'user-request-filter' %}?{{pd}}&{{leave_request_list.dynamic_name}}=1"
+                                    class="oh-pagination__link"
+                                    >{% trans "First" %}</a
+                                >
+                            </li>
+                            <li
+                                class="oh-pagination__item oh-pagination__item--wide"
+                            >
+                                <a
+                                    hx-target="#userRequest"
+                                    hx-get="{% url 'user-request-filter' %}?{{pd}}&{{leave_request_list.dynamic_name}}={{ leave_request_list.list.previous_page_number }}"
+                                    class="oh-pagination__link"
+                                    >{% trans "Previous" %}</a
+                                >
+                            </li>
+                            {% endif %} {% if leave_request_list.list.has_next %}
+                            <li
+                                class="oh-pagination__item oh-pagination__item--wide"
+                            >
+                                <a
+                                    hx-target="#userRequest"
+                                    hx-get="{% url 'user-request-filter' %}?{{pd}}&{{leave_request_list.dynamic_name}}={{ leave_request_list.list.next_page_number }}"
+                                    class="oh-pagination__link"
+                                    >{% trans "Next" %}</a
+                                >
+                            </li>
+                            <li
+                                class="oh-pagination__item oh-pagination__item--wide"
+                            >
+                                <a
+                                    hx-target="#userRequest"
+                                    hx-get="{% url 'user-request-filter' %}?{{pd}}&{{leave_request_list.dynamic_name}}={{ leave_request_list.list.paginator.num_pages }}"
+                                    class="oh-pagination__link"
+                                    >{% trans "Last" %}</a
+                                >
+                            </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
                 </div>
             </div>
         </div>

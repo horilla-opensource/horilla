@@ -424,13 +424,29 @@ def leave_request_filter(request):
     template = ("leave/leave_request/leave_requests.html",)
     if request.GET.get("sortby"):
         leave_request_filter = sortby(request, leave_request_filter, "sortby")
+ 
     if field != "" and field is not None:
-        field_copy = field.replace(".", "__")
-        leave_request_filter = leave_request_filter.order_by(field_copy)
+        leave_request_filter = group_by_queryset(
+            leave_request_filter, field, request.GET.get("page"), "page"
+        )
+        list_values = [entry['list'] for entry in leave_request_filter]
+        id_list = []
+        for value in list_values:
+            for instance in value.object_list:
+                id_list.append(instance.id)
+
+        requests_ids = json.dumps(list(id_list))
         template = "leave/leave_request/group_by.html"
 
-    page_obj = paginator_qry(leave_request_filter, page_number)
-    requests_ids = json.dumps(list(page_obj.object_list.values_list("id", flat=True)))
+    else: 
+        leave_request_filter =  paginator_qry(leave_request_filter, request.GET.get("page"))
+        requests_ids = json.dumps(
+            [
+                instance.id
+                for instance in leave_request_filter.object_list
+            ]
+        )
+
     data_dict = []
 
     if not request.GET.get("dashboard"):
@@ -445,7 +461,7 @@ def leave_request_filter(request):
         request,
         template,
         {
-            "leave_requests": page_obj,
+            "leave_requests": leave_request_filter,
             "pd": previous_data,
             "filter_dict": data_dict,
             "field": field,
@@ -2034,15 +2050,30 @@ def user_request_filter(request):
         queryset = sortby(request, queryset, "sortby")
         user_request_filter = UserLeaveRequestFilter(request.GET, queryset).qs
         template = ("leave/user_leave/user_requests.html",)
+
         if field != "" and field is not None:
-            field_copy = field.replace(".", "__")
-            user_request_filter = user_request_filter.order_by(field_copy)
+            user_request_filter = group_by_queryset(
+                user_request_filter, field, request.GET.get("page"), "page"
+            )
+            list_values = [entry['list'] for entry in user_request_filter]
+            id_list = []
+            for value in list_values:
+                for instance in value.object_list:
+                    id_list.append(instance.id)
+
+            requests_ids = json.dumps(list(id_list))
             template = "leave/user_leave/group_by.html"
 
-        page_obj = paginator_qry(user_request_filter, page_number)
-        request_ids = json.dumps(
-            list(page_obj.object_list.values_list("id", flat=True))
-        )
+        else: 
+            user_request_filter =  paginator_qry(user_request_filter, request.GET.get("page"))
+            requests_ids = json.dumps(
+                [
+                    instance.id
+                    for instance in user_request_filter.object_list
+                ]
+            )
+
+        
         data_dict = parse_qs(previous_data)
         get_key_instances(LeaveRequest, data_dict)
         if "status" in data_dict:
@@ -2053,12 +2084,12 @@ def user_request_filter(request):
         user_leave = AvailableLeave.objects.filter(employee_id=user.id)
 
         context = {
-            "leave_requests": page_obj,
+            "leave_requests": user_request_filter,
             "pd": previous_data,
             "filter_dict": data_dict,
             "field": field,
             "current_date": date.today(),
-            "request_ids": request_ids,
+            "request_ids": requests_ids,
             "user_leaves": user_leave,
         }
         return render(request, template, context=context)
