@@ -2279,7 +2279,10 @@ def work_info_import(request):
                     employee_work_info.contract_end_date = contract_end_date
                     employee_work_info.basic_salary = basic_salary
                     employee_work_info.save()
-            except Exception:
+            except Exception as e:
+                print("++++++++++++++++++++++++++++++++++++")
+                print(e)
+                print("++++++++++++++++++++++++++++++++++++")
                 error_lists.append(work_info)
         if error_lists:
             res = defaultdict(list)
@@ -2292,6 +2295,7 @@ def work_info_import(request):
             response = HttpResponse(content_type="application/ms-excel")
             response["Content-Disposition"] = 'attachment; filename="ImportError.xlsx"'
             data_frame.to_excel(response, index=False)
+            print("HEREEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE")
             return response
         return HttpResponse("Imported successfully")
     return response
