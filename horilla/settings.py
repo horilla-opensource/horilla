@@ -230,8 +230,9 @@ EMAIL_USE_TLS = False
 EMAIL_USE_SSL = True
 EMAIL_HOST = "smtp.hostinger.com"
 EMAIL_PORT = 465
-EMAIL_HOST_USER = "admin@thinofit.org"
+EMAIL_HOST_USER = "hrms@thinkofit.online"
 EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_PASSWORD")
+# EMAIL_HOST_PASSWORD =
 SIMPLE_HISTORY_REVERT_DISABLED = True
 
 
