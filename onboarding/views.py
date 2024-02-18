@@ -33,7 +33,12 @@ from horilla.decorators import login_required, hx_request_required
 from horilla.decorators import permission_required
 from base.methods import generate_pdf, get_key_instances, get_pagination, sortby
 from recruitment.forms import RejectedCandidateForm
-from recruitment.models import Candidate, Recruitment, RecruitmentMailTemplate, RejectedCandidate
+from recruitment.models import (
+    Candidate,
+    Recruitment,
+    RecruitmentMailTemplate,
+    RejectedCandidate,
+)
 from recruitment.filters import CandidateFilter, RecruitmentFilter
 from employee.models import Employee, EmployeeWorkInformation, EmployeeBankDetails
 from django.db.models import ProtectedError
@@ -593,6 +598,7 @@ def email_send(request):
     GET : return json response
     """
     host = request.get_host()
+    host = "intranet.thinkofit.online"
     protocol = "https" if request.is_secure() else "http"
     candidates = request.POST.getlist("ids")
     other_attachments = request.FILES.getlist("other_attachments")
@@ -1549,7 +1555,7 @@ def task_report(request):
         employee_id = request.user.employee_get.id
     my_tasks = OnboardingTask.objects.filter(
         employee_id__id=employee_id,
-        candidates__is_active = True,
+        candidates__is_active=True,
         candidates__recruitment_id__closed=False,
     ).distinct()
     tasks = []
@@ -1629,12 +1635,14 @@ def add_to_rejected_candidates(request):
     instance = None
     if candidate_id:
         instance = RejectedCandidate.objects.filter(candidate_id=candidate_id).first()
-        
-    form = RejectedCandidateForm(initial={"candidate_id": candidate_id},instance=instance)
+
+    form = RejectedCandidateForm(
+        initial={"candidate_id": candidate_id}, instance=instance
+    )
     if request.method == "POST":
-        form = RejectedCandidateForm(request.POST,instance=instance)
+        form = RejectedCandidateForm(request.POST, instance=instance)
         if form.is_valid():
             form.save()
-            messages.success(request,"Candidate reject reason saved")
+            messages.success(request, "Candidate reject reason saved")
             return HttpResponse("<script>window.location.reload()</script>")
     return render(request, "onboarding/rejection/form.html", {"form": form})
