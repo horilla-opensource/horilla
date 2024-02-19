@@ -38,6 +38,7 @@ from attendance.methods.group_by import group_by_queryset
 from attendance.models import Attendance, AttendanceOverTime
 from employee.methods.methods import get_ordered_badge_ids
 from horilla.filters import HorillaPaginator
+from horilla_audit.models import AccountBlockUnblock
 from leave.models import LeaveRequest
 from notifications.signals import notify
 from horilla.decorators import (
@@ -46,6 +47,7 @@ from horilla.decorators import (
     login_required,
     hx_request_required,
     manager_can_enter,
+    logger,
 )
 from base.models import (
     Department,
@@ -236,7 +238,10 @@ def employee_view_individual(request, obj_id, **kwargs):
     instances = LeaveRequest.objects.filter(employee_id=employee)
     leave_request_ids = json.dumps([instance.id for instance in instances])
     employee_leaves = employee.available_leave.all()
-
+    enabled_block_unblock = (
+        AccountBlockUnblock.objects.exists()
+        and AccountBlockUnblock.objects.first().is_enabled
+    )
     return render(
         request,
         "employee/view/individual.html",
@@ -244,6 +249,7 @@ def employee_view_individual(request, obj_id, **kwargs):
             "employee": employee,
             "employee_leaves": employee_leaves,
             "leave_request_ids": leave_request_ids,
+            "enabled_block_unblock":enabled_block_unblock,
         },
     )
 
@@ -1615,16 +1621,16 @@ def employee_filter_view(request):
     if view == "list":
         template = "employee_personal_info/employee_list.html"
     if field != "" and field is not None:
-        field_copy = field.replace(".", "__")
-        employees = employees.order_by(field_copy)
-        employees = employees.exclude(employee_work_info__isnull=True)
+        employees = group_by_queryset(employees,field,page_number,"page")
         template = "employee_personal_info/group_by.html"
-    employees = sortby(request, employees, "orderby")
+    else:
+        employees = sortby(request, employees, "orderby")
+        employees = paginator_qry(employees, page_number)
     return render(
         request,
         template,
         {
-            "data": paginator_qry(employees, page_number),
+            "data": employees,
             "f": EmployeeFilter(request.GET),
             "pd": previous_data,
             "field": field,
@@ -1844,7 +1850,7 @@ def employee_archive(request, obj_id):
     if save:
         employee.save()
         messages.success(request, message)
-        return HttpResponse("<script>window.location.reload();</script>")
+        return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
     else:
         return render(
             request,
@@ -2280,9 +2286,7 @@ def work_info_import(request):
                     employee_work_info.basic_salary = basic_salary
                     employee_work_info.save()
             except Exception as e:
-                print("++++++++++++++++++++++++++++++++++++")
-                print(e)
-                print("++++++++++++++++++++++++++++++++++++")
+                logger.error(e)
                 error_lists.append(work_info)
         if error_lists:
             res = defaultdict(list)
@@ -2295,7 +2299,6 @@ def work_info_import(request):
             response = HttpResponse(content_type="application/ms-excel")
             response["Content-Disposition"] = 'attachment; filename="ImportError.xlsx"'
             data_frame.to_excel(response, index=False)
-            print("HEREEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE")
             return response
         return HttpResponse("Imported successfully")
     return response
