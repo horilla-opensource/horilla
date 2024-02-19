@@ -275,10 +275,8 @@ def contract_filter(request):
     field = request.GET.get("field")
 
     if field != "" and field is not None:
-        contracts = group_by_queryset(
-            contracts, field, request.GET.get("page"), "page"
-        )
-        list_values = [entry['list'] for entry in contracts]
+        contracts = group_by_queryset(contracts, field, request.GET.get("page"), "page")
+        list_values = [entry["list"] for entry in contracts]
         id_list = []
         for value in list_values:
             for instance in value.object_list:
@@ -287,13 +285,10 @@ def contract_filter(request):
         contract_ids_json = json.dumps(list(id_list))
         template = "payroll/contract/group_by.html"
 
-    else: 
-        contracts =  paginator_qry(contracts, request.GET.get("page"))
+    else:
+        contracts = paginator_qry(contracts, request.GET.get("page"))
         contract_ids_json = json.dumps(
-            [
-                instance.id
-                for instance in contracts.object_list
-            ]
+            [instance.id for instance in contracts.object_list]
         )
 
     contracts = sortby(request, contracts, "orderby")
@@ -1195,7 +1190,11 @@ def payslip_pdf(request, id):
             emp_company = company_name.first()
 
             # Access the date_format attribute directly
-            date_format = emp_company.date_format if emp_company else "MMM. D, YYYY"
+            date_format = (
+                emp_company.date_format
+                if emp_company and emp_company.date_format
+                else "MMM. D, YYYY"
+            )
         else:
             date_format = "MMM. D, YYYY"
 

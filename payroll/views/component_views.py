@@ -64,6 +64,7 @@ from payroll.methods.methods import (
 )
 from payroll.methods.deductions import update_compensation_deduction
 from payroll.threadings.mail import MailSendThread
+from payroll.views.views import view_created_payslip
 
 operator_mapping = {
     "equal": operator.eq,
@@ -754,7 +755,7 @@ def filter_payslip(request):
     if view == "card":
         template = "payroll/payslip/group_payslips.html"
         payslips = payslips.filter(group_name__isnull=False).order_by("-group_name")
-    payslips = sortby(request, payslips, "sortby") 
+    payslips = sortby(request, payslips, "sortby")
     data_dict = []
     if not request.GET.get("dashboard"):
         data_dict = parse_qs(query_string)
@@ -898,12 +899,13 @@ def hx_create_allowance(request):
 @permission_required("payroll.add_payslip")
 def send_slip(request):
     """
-    Send paylip method
+    Send payslip method
     """
     if not len(EMAIL_HOST_USER):
         messages.error(request, "Email server is not configured")
         return redirect(view_payslip)
     payslip_ids = request.GET.getlist("id")
+    view = request.GET.get("view")
     payslips = Payslip.objects.filter(id__in=payslip_ids)
     result_dict = defaultdict(
         lambda: {"employee_id": None, "instances": [], "count": 0}
@@ -917,6 +919,10 @@ def send_slip(request):
     mail_thread = MailSendThread(request, result_dict=result_dict, ids=payslip_ids)
     mail_thread.start()
     messages.info(request, "Mail processing")
+    if view:
+        return redirect(
+            f"view-payslip/{payslips[0].id}/",
+        )
     return redirect(filter_payslip)
 
 
@@ -934,28 +940,41 @@ def add_bonus(request):
         form = forms.BonusForm(initial={"employee_id": employee_id})
     if request.method == "POST":
         form = forms.BonusForm(request.POST, initial={"employee_id": employee_id})
+        contract = payroll.models.models.Contract.objects.filter(
+            employee_id=employee_id, contract_status="active"
+        ).first()
+        employee = Employee.objects.filter(id=employee_id).first()
         if form.is_valid():
             form.save()
             messages.success(request, _("Bonus Added"))
             if payslip_id != "None" and payslip_id:
-                new_post_data = QueryDict(mutable=True)
-                new_post_data.update(
-                    {
-                        "employee_id": instance.employee_id,
-                        "start_date": instance.start_date,
-                        "end_date": instance.end_date,
-                    }
-                )
-                instance.delete()
-                create_payslip(request, new_post_data)
-                payslip = Payslip.objects.filter(
-                    employee_id=instance.employee_id,
-                    start_date=instance.start_date,
-                    end_date=instance.end_date,
-                ).first()
-                return HttpResponse(
-                    f"<script>window.location.href='/payroll/view-payslip/{payslip.id}'</script>"
-                )
+                if contract and contract.contract_start_date <= instance.start_date:
+
+                    new_post_data = QueryDict(mutable=True)
+                    new_post_data.update(
+                        {
+                            "employee_id": instance.employee_id,
+                            "start_date": instance.start_date,
+                            "end_date": instance.end_date,
+                        }
+                    )
+                    instance.delete()
+                    create_payslip(request, new_post_data)
+                    payslip = Payslip.objects.filter(
+                        employee_id=instance.employee_id,
+                        start_date=instance.start_date,
+                        end_date=instance.end_date,
+                    ).first()
+                    return HttpResponse(
+                        f"<script>window.location.href='/payroll/view-payslip/{payslip.id}'</script>"
+                    )
+                else:
+                    messages.warning(
+                        request,
+                        _(
+                            "No active contract found for  {} during this payslip period"
+                        ).format(employee),
+                    )
             return HttpResponse("<script>window.location.reload()</script>")
     return render(
         request,
@@ -1097,7 +1116,7 @@ def search_loan(request):
     """
     records = LoanAccountFilter(request.GET).qs
     data_dict = parse_qs(request.GET.urlencode())
-    get_key_instances(LoanAccount,data_dict)
+    get_key_instances(LoanAccount, data_dict)
     return render(
         request,
         "payroll/loan/records.html",
@@ -1210,9 +1229,9 @@ def search_reimbursement(request):
     reimbursements = requests.filter(type="reimbursement")
     leave_encashments = requests.filter(type="leave_encashment")
     bonus_encashment = requests.filter(type="bonus_encashment")
-    reimbursements = sortby(request,reimbursements,'sortby')
-    leave_encashments = sortby(request,leave_encashments,'sortby')
-    bonus_encashment = sortby(request,bonus_encashment,'sortby')
+    reimbursements = sortby(request, reimbursements, "sortby")
+    leave_encashments = sortby(request, leave_encashments, "sortby")
+    bonus_encashment = sortby(request, bonus_encashment, "sortby")
     view = request.GET.get("view")
     template = "payroll/reimbursement/request_cards.html"
     if view == "list":
