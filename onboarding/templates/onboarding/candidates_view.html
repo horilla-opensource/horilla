@@ -14,60 +14,62 @@
       <ion-icon name="search-outline" class="oh-main__titlebar-serach-icon"></ion-icon>
     </a>
   </div>
-  <div class="oh-main__titlebar oh-main__titlebar--right">
-    {% if candidates %}
-    <div class="oh-input-group oh-input__search-group" :class="searchShow ? 'oh-input__search-group--show' : ''">
-      <ion-icon name="search-outline" class="oh-input-group__icon oh-input-group__icon--left"></ion-icon>
-      <input type="text" class="oh-input oh-input__icon" aria-label="Search Input" placeholder="{% trans 'Search' %}"
-        name="name" hx-get="{% url 'candidate-filter' %}" hx-trigger="keyup" hx-target="#candidates" />
-    </div>
-    <div class="oh-main__titlebar-button-container">
-      <div class="oh-dropdown" x-data="{open: false}">
-        <button class="oh-btn ml-2" @click="open = !open">
-          <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}<div id="filterCount"></div>
-        </button>
-        {% include 'onboarding/candidate_filter.html' %}
+  <form hx-get="{% url 'candidate-filter' %}" hx-target="#candidates" id="filterForm">
+    <div class="oh-main__titlebar oh-main__titlebar--right">
+      {% if candidates %}
+      <div class="oh-input-group oh-input__search-group" :class="searchShow ? 'oh-input__search-group--show' : ''">
+        <ion-icon name="search-outline" class="oh-input-group__icon oh-input-group__icon--left"></ion-icon>
+        <input type="text" class="oh-input oh-input__icon" aria-label="Search Input" placeholder="{% trans 'Search' %}"
+          name="name" onkeyup="$('.filterButton').click()"/>
       </div>
+      <div class="oh-main__titlebar-button-container">
+        <div class="oh-dropdown" x-data="{open: false}">
+          <button class="oh-btn ml-2" @click="open = !open">
+            <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}<div id="filterCount"></div>
+          </button>
+          {% include 'onboarding/candidate_filter.html' %}
+        </div>
+      
 
-      <div class="oh-btn-group ml-2">
-        <button class="oh-btn oh-btn--info oh-btn--shadow" data-target="#addAttachments" data-toggle="oh-modal-toggle">
-          {% trans "Send Portal" %}
-        </button>
-        <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}" />
-      </div>
-      {% endif %}
-      <div class="oh-btn-group ml-2">
-        <a href="{% url 'candidate-create' %}?onboarding=True" class="oh-btn oh-btn--secondary oh-btn--shadow"
-          method="get">
-          <ion-icon name="add-outline" class="me-1"></ion-icon>
-          {% trans "Create" %}
-        </a>
+        <div class="oh-btn-group ml-2">
+          <button class="oh-btn oh-btn--info oh-btn--shadow" data-target="#addAttachments" data-toggle="oh-modal-toggle">
+            {% trans "Send Portal" %}
+          </button>
+        </div>
+        {% endif %}
+        <div class="oh-btn-group ml-2">
+          <a href="{% url 'candidate-create' %}?onboarding=True" class="oh-btn oh-btn--secondary oh-btn--shadow"
+            method="get">
+            <ion-icon name="add-outline" class="me-1"></ion-icon>
+            {% trans "Create" %}
+          </a>
+        </div>
       </div>
     </div>
-  </div>
+  </form>
 </section>
 {% if candidates %}
 <div class="d-flex flex-row-reverse oh-wrapper">
   <span class="m-3"
-    onclick="$('[name=joining_set]').val('true'); $('[name=joining_set]').first().change(); $('.filterButton').click()"
+    onclick="$('[name=joining_set]').val('true'); $('[name=portal_sent]').val('');$('[name=joining_set]').first().change(); $('.filterButton').click()"
     style="cursor: pointer">
     <span class="oh-dot oh-dot--small me-1" style="background-color:yellow"></span>
     {% trans "Joining Set" %}
   </span>
   <span class="m-3"
-    onclick="$('[name=joining_set]').val('false'); $('[name=joining_set]').first().change(); $('.filterButton').click()"
+    onclick="$('[name=joining_set]').val('false'); $('[name=portal_sent]').val(''); $('[name=joining_set]').first().change(); $('.filterButton').click()"
     style="cursor: pointer">
     <span class="oh-dot oh-dot--small me-1" style="background-color:burlywood"></span>
     {% trans "Joining Not-Set" %}
   </span>
   <span class="m-3"
-    onclick="$('[name=portal_sent]').val('false'); $('[name=portal_sent]').first().change(); $('.filterButton').click()"
+    onclick="$('[name=portal_sent]').val('false');$('[name=joining_set]').val(''); $('[name=portal_sent]').first().change(); $('.filterButton').click()"
     style="cursor: pointer">
     <span class="oh-dot oh-dot--small me-1" style="background-color:rgba(128, 128, 128, 0.482)"></span>
     {% trans "Portal Not-Sent" %}
   </span>
   <span class="m-3"
-    onclick="$('[name=portal_sent]').val('true'); $('[name=portal_sent]').first().change(); $('.filterButton').click()"
+    onclick="$('[name=portal_sent]').val('true');$('[name=joining_set]').val('');  $('[name=portal_sent]').first().change(); $('.filterButton').click()"
     style="cursor: pointer">
     <span class="oh-dot oh-dot--small me-1" style="background-color:yellowgreen"></span>
     {% trans "Portal Sent" %}
