@@ -14,7 +14,12 @@ from offboarding.decorators import (
     offboarding_manager_can_enter,
     offboarding_or_stage_manager_can_enter,
 )
-from offboarding.filters import LetterFilter
+from offboarding.filters import (
+    LetterFilter,
+    PipelineEmployeeFilter,
+    PipelineFilter,
+    PipelineStageFilter,
+)
 from offboarding.forms import (
     NoteForm,
     OffboardingEmployeeForm,
@@ -37,11 +42,51 @@ from offboarding.models import (
 )
 from notifications.signals import notify
 from django.utils.translation import gettext_lazy as _
+from onboarding.filters import OnboardingStageFilter
 
 from payroll.models.models import Contract
+from recruitment.pipeline_grouper import group_by_queryset
 
 
 # Create your views here.
+
+
+def pipeline_grouper(filters={}, offboardings=[]):
+    groups = []
+    for offboarding in offboardings:
+        stages = PipelineStageFilter(
+            filters, queryset=offboarding.offboardingstage_set.all()
+        ).qs.order_by("id")
+        all_stages_grouper = []
+        data = {"offboarding": offboarding, "stages": []}
+        for stage in stages:
+            all_stages_grouper.append({"grouper": stage, "list": []})
+            stage_employees = PipelineEmployeeFilter(
+                filters,
+                OffboardingEmployee.objects.filter(stage_id=stage).order_by("-id"),
+            ).qs
+            page_name = "page" + stage.title + str(offboarding.id)
+            grouper = group_by_queryset(
+                stage_employees,
+                "stage_id",
+                filters.get(page_name),
+                page_name,
+            ).object_list
+            data["stages"] = data["stages"] + grouper
+
+        existing_grouper_ids = list({item["grouper"].id for item in data["stages"]})
+        for item in all_stages_grouper:
+            if item["grouper"].id not in existing_grouper_ids:
+                data["stages"].append(
+                    {
+                        "grouper": item["grouper"],
+                        "list": [],
+                        "dynamic_name": f'dynamic_page_page{item["grouper"].id}',
+                    }
+                )
+
+        groups.append(data)
+    return groups
 
 
 @login_required
@@ -52,14 +97,49 @@ def pipeline(request):
     """
     Offboarding pipleine view
     """
-    offboardings = Offboarding.objects.all()
+    offboardings = PipelineFilter().qs
+    groups = pipeline_grouper({}, offboardings)
+    for item in groups:
+        setattr(item["offboarding"], "stages", item["stages"])
+    stage_forms = {}
+    for offboarding in offboardings:
+        stage_forms[str(offboarding.id)] = StageSelectForm(offboarding=offboarding)
+    filter_dict = parse_qs(request.GET.urlencode())
+    return render(
+        request,
+        "offboarding/pipeline/pipeline.html",
+        {
+            "offboardings": groups,
+            "employee_filter": PipelineEmployeeFilter(),
+            "pipeline_filter": PipelineFilter(),
+            "stage_filter": PipelineStageFilter(),
+            "stage_forms": stage_forms,
+            "filter_dict": filter_dict,
+        },
+    )
+
+
+@login_required
+@permission_required("offboarding_view_offboardingemployee")
+def filter_pipeline(request):
+    """
+    This method is used filter offboarding process
+    """
+    offboardings = PipelineFilter(request.GET).qs
+    groups = pipeline_grouper(request.GET, offboardings)
+    for item in groups:
+        setattr(item["offboarding"], "stages", item["stages"])
     stage_forms = {}
     for offboarding in offboardings:
         stage_forms[str(offboarding.id)] = StageSelectForm(offboarding=offboarding)
     return render(
         request,
-        "offboarding/pipeline/pipeline.html",
-        {"offboardings": offboardings, "stage_forms": stage_forms},
+        "offboarding/pipeline/offboardings.html",
+        {
+            "offboardings": groups,
+            "stage_forms": stage_forms,
+            "filter_dict": parse_qs(request.GET.urlencode()),
+        },
     )
 
 
@@ -239,11 +319,14 @@ def change_stage(request):
         redirect="offboarding/offboarding-pipeline",
         icon="information",
     )
+    groups = pipeline_grouper({}, [stage.offboarding_id])
+    for item in groups:
+        setattr(item["offboarding"], "stages", item["stages"])
     return render(
         request,
         "offboarding/stage/offboarding_body.html",
         {
-            "offboarding": stage.offboarding_id,
+            "offboarding": groups[0],
             "stage_forms": stage_forms,
             "response_message": _("stage changed successfully."),
         },
@@ -406,11 +489,14 @@ def update_task_status(request, *args, **kwargs):
     stage_forms[str(stage.offboarding_id.id)] = StageSelectForm(
         offboarding=stage.offboarding_id
     )
+    groups = pipeline_grouper({}, [stage.offboarding_id])
+    for item in groups:
+        setattr(item["offboarding"], "stages", item["stages"])
     return render(
         request,
         "offboarding/stage/offboarding_body.html",
         {
-            "offboarding": stage.offboarding_id,
+            "offboarding": groups[0],
             "stage_forms": stage_forms,
             "response_message": _("Task status changed successfully."),
         },

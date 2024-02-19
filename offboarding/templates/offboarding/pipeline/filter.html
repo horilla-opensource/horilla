@@ -1,0 +1,115 @@
+{% load i18n %}<div class="oh-dropdown" x-data="{open: false}">
+    <button type="button" class="oh-btn ml-2" @click="open = !open">
+      <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}
+    </button>
+    <div
+      class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4"
+      x-show="open"
+      @click.outside="open = false"
+    >
+    <div class="oh-dropdown__filter-body">
+      <div class="oh-accordion">
+        <div class="oh-accordion-header">
+          {% trans 'Employee' %}
+        </div>
+        <div class="oh-accordion-body">
+          <div class="row">
+            <div class="col-sm-12 col-md-12 col-lg-6 mb-1">
+              <div class="oh-input-group">
+                <label class="oh-label">{% trans 'Notice Period Starts' %} (>=)</label>
+                {{employee_filter.form.notice_period_starts}}
+              </div>
+            </div>
+            <div class="col-sm-12 col-md-12 col-lg-6 mb-1">
+              <div class="oh-input-group">
+                <label class="oh-label">{% trans 'Notice Period Ends' %} (<=)</label>
+                {{employee_filter.form.notice_period_ends}}
+              </div>
+            </div>
+            <div class="col-sm-12 col-md-12 col-lg-6 mb-1">
+              <div class="oh-input-group">
+                <label class="oh-label">{% trans 'Department' %}</label>
+                {{employee_filter.form.employee_id__employee_work_info__department_id}}
+              </div>
+            </div>
+            <div class="col-sm-12 col-md-12 col-lg-6 mb-1">
+              <div class="oh-input-group">
+                <label class="oh-label">{% trans 'Job Position' %}</label>
+                {{employee_filter.form.employee_id__employee_work_info__job_position_id}}
+              </div>
+            </div>
+            <div class="col-sm-12 col-md-12 col-lg-6 mb-1">
+              <div class="oh-input-group">
+                <label class="oh-label">{% trans 'Job Role' %}</label>
+                {{employee_filter.form.employee_id__employee_work_info__job_role_id}}
+              </div>
+            </div>
+            <div class="col-sm-12 col-md-12 col-lg-6 mb-1">
+              <div class="oh-input-group">
+                <label class="oh-label">{% trans 'Employee Type' %}</label>
+                {{employee_filter.form.employee_id__employee_work_info__employee_type_id}}
+              </div>
+            </div>
+            <div class="col-sm-12 col-md-12 col-lg-6 mb-1">
+              <div class="oh-input-group">
+                <label class="oh-label">{% trans 'Shift' %}</label>
+                {{employee_filter.form.employee_id__employee_work_info__shift_id}}
+              </div>
+            </div>
+            <div class="col-sm-12 col-md-12 col-lg-6 mb-1">
+              <div class="oh-input-group">
+                <label class="oh-label">{% trans 'Work Type' %}</label>
+                {{employee_filter.form.employee_id__employee_work_info__work_type_id}}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="oh-accordion">
+        <div class="oh-accordion-header">
+          {% trans 'Offboarding' %}
+        </div>
+        <div class="oh-accordion-body">
+          <div class="row">
+            <div class="col-sm-12 col-md-12 col-lg-6 mb-1">
+              <div class="oh-input-group">
+                <label class="oh-label">{% trans 'Managers' %}</label>
+                {{pipeline_filter.form.managers}}
+              </div>
+            </div>
+            <div class="col-sm-12 col-md-12 col-lg-6 mb-1">
+              <div class="oh-input-group">
+                <label class="oh-label">{% trans 'Status' %}</label>
+                {{pipeline_filter.form.status}}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="oh-accordion">
+        <div class="oh-accordion-header">
+          {% trans 'Stage' %}
+        </div>
+        <div class="oh-accordion-body">
+          <div class="row">
+            <div class="col-sm-12 col-md-12 col-lg-6 mb-1">
+              <div class="oh-input-group">
+                <label class="oh-label">{% trans 'Offboarding' %}</label>
+                {{stage_filter.form.offboarding_id}}
+              </div>
+            </div>
+            <div class="col-sm-12 col-md-12 col-lg-6 mb-1">
+              <div class="oh-input-group">
+                <label class="oh-label">{% trans 'Status' %}</label>
+                {{stage_filter.form.type}}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="oh-dropdown__filter-footer">
+      <button class="oh-btn oh-btn--secondary oh-btn--small w-100 filterButton">{% trans 'Filter' %}</button>
+    </div>
+  </div>
+</div>

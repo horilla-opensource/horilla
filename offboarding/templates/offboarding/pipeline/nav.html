@@ -4,11 +4,12 @@
     <h1 class="oh-main__titlebar-title fw-bold">{% trans 'Offboarding' %}</h1>
   </div>
 
-  <div class="oh-main__titlebar oh-main__titlebar--right oh-d-flex-column--resp oh-mb-3--small">
+  <form onsubmit="event.preventDefault()" hx-target="#offboardingContainer" hx-get="{% url 'offboarding-pipeline-filter' %}"  class="oh-main__titlebar oh-main__titlebar--right oh-d-flex-column--resp oh-mb-3--small" >
     <div class="oh-input-group oh-input__search-group mr-4">
-      <ion-icon name="search-outline" class="oh-input-group__icon oh-input-group__icon--left md hydrated" role="img" aria-label="search outline"></ion-icon>
-      <input name="search" id="pipelineSearch" hx-target="#offboardingContainer" type="text" placeholder="Search" style="margin-right:10px" class="oh-input oh-input__icon mr-3" autocomplete="false" aria-label="Search Input" />
+      <ion-icon name="search-outline" class="oh-input-group__icon oh-input-group__icon--left md hydrated"  role="img" aria-label="search outline"></ion-icon>
+      <input name="search" onkeyup="$('#hiddenSubmit').click()" id="pipelineSearch" type="text" placeholder="Search"  style="margin-right:10px" class="oh-input oh-input__icon mr-3" autocomplete="false" aria-label="Search Input" />
     </div>
+    <input type="submit" id="hiddenSubmit" hidden>
     {% include 'offboarding/pipeline/filter.html' %}
     {% if perms.offboarding.add_offboarding %}
       <div class="oh-main__titlebar-button-container">
@@ -20,7 +21,7 @@
         </div>
       </div>
     {% endif %}
-  </div>
+  </form>
 </section>
 
 <div class="oh-modal" id="offboardingModal" role="dialog" aria-hidden="true">

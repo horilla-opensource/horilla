@@ -3,6 +3,7 @@ offboarding/urls.py
 
 This module is used to register url mappings to functions
 """
+
 from django.urls import path
 from offboarding import views
 
@@ -66,4 +67,5 @@ urlpatterns = [
         name="enable-resignation-request",
     ),
     path("get-notice-period", views.get_notice_period, name="get-notice-period"),
+    path("offboarding-pipeline-filter",views.filter_pipeline,name="offboarding-pipeline-filter")
 ]

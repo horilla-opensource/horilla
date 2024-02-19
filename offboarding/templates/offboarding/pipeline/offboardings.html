@@ -19,18 +19,55 @@
   }
 
 </style>
+{% include "filter_tags.html" %}
+<script>
+  function switchTab(e) {
+    let parentContainerEl = e.target.closest(".oh-tabs");
+    let tabElement = e.target.closest(".oh-tabs__tab");
+    
+
+    let targetSelector = e.target.dataset.target;
+    let targetEl = parentContainerEl
+        ? parentContainerEl.querySelector(targetSelector)
+        : null;
+
+    // Highlight active tabs
+    if (tabElement && !tabElement.classList.contains("oh-tabs__tab--active")) {
+        parentContainerEl
+            .querySelectorAll(".oh-tabs__tab--active")
+            .forEach(function (item) {
+                item.classList.remove("oh-tabs__tab--active");
+            });
+
+        if (!tabElement.classList.contains("oh-tabs__new-tab")) {
+            tabElement.classList.add("oh-tabs__tab--active");
+        }
+    }
+
+    // Switch tabs
+    if (targetEl && !targetEl.classList.contains("oh-tabs__content--active")) {
+        parentContainerEl
+            .querySelectorAll(".oh-tabs__content--active")
+            .forEach(function (item) {
+                item.classList.remove("oh-tabs__content--active");
+            });
+        targetEl.classList.add("oh-tabs__content--active");
+    }
+}
+
+</script>
 <div id="messages" class="oh-alert-container"></div>
 <div class="oh-wrapper">
-  <div class="oh-tabs">
+  <div class="oh-tabs" onclick="switchTab(event)">
     <ul class="oh-tabs__tablist">
       {% for offboarding in offboardings %}
         {% if perms.offboarding.view_offboarding or request.user.employee_get|is_in_offboarding:offboarding %}
-          <li class="oh-tabs__tab" onclick="localStorage.setItem('activeTabOffboarding',$(this).attr('data-target'));" data-target="#Offboarding{{ offboarding.id }}">
-            {{ offboarding.title }}
+          <li class="oh-tabs__tab" onclick="localStorage.setItem('activeTabOffboarding',$(this).attr('data-target'));" data-target="#Offboarding{{ offboarding.offboarding.id }}">
+            {{ offboarding.offboarding.title }}
             <div class="d-flex">
               <div class="oh-tabs__input-badge-container">
-                <span class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round ms-2 mr-2" id="recruitmentCandidateCount1" title="{{ offboarding.offboardingstage_set.all|length }} Stages" onclick="event.stopPropagation()">
-                  {{ offboarding.offboardingstage_set.all|length }}
+                <span class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round ms-2 mr-2" id="recruitmentCandidateCount1" title="{{ offboarding.offboarding.stages|length }} Stages" onclick="event.stopPropagation()">
+                  {{ offboarding.offboarding.stages|length }}
                   </span>
               </div>
               <div class="oh-dropdown" x-data="{open: false}">
@@ -41,12 +78,12 @@
                   <ul class="oh-dropdown__items">
                     {% if perms.offboarding.change_offboarding or request.user.employee_get|is_offboarding_manager %}
                     <li class="oh-dropdown__item">
-                      <a hx-get="{% url "create-offboarding" %}?instance_id={{offboarding.id}}" hx-target="#offboardingModalBody" data-toggle="oh-modal-toggle" data-target="#offboardingModal" class="oh-dropdown__link">{% trans "Edit" %}</a>
+                      <a hx-get="{% url "create-offboarding" %}?instance_id={{offboarding.offboarding.id}}" hx-target="#offboardingModalBody" data-toggle="oh-modal-toggle" data-target="#offboardingModal" class="oh-dropdown__link">{% trans "Edit" %}</a>
                     </li>
                     {% endif %}
                     {% if perms.offboarding.delete_offboarding %}
                     <li class="oh-dropdown__item">
-                      <form action="{% url "delete-offboarding" %}?id={{offboarding.id}}" onsubmit="return confirm('Are you sure you want to delete this offboarding?');" method="post">
+                      <form action="{% url "delete-offboarding" %}?id={{offboarding.offboarding.id}}" onsubmit="return confirm('Are you sure you want to delete this offboarding?');" method="post">
                         {% csrf_token %}
                         <button type="submit" class="oh-dropdown__link oh-dropdown__link--danger">
                           {% trans "Delete" %}
@@ -65,9 +102,9 @@
     <div class="oh-tabs__contents">
       {% for offboarding in offboardings %}
         {% if perms.offboarding.view_offboarding or request.user.employee_get|is_in_offboarding:offboarding %}
-          <div class="oh-tabs__content" id="Offboarding{{ offboarding.id }}">
+          <div class="oh-tabs__content" id="Offboarding{{ offboarding.offboarding.id }}">
               {% if perms.offboarding.add_offboardingstage or request.user.employee_get|any_manager %}
-                <a hx-get="{% url 'create-offboarding-stage' %}?offboarding_id={{offboarding.id}}" style="width: 100px;" hx-target="#offboardingModalBody" data-toggle="oh-modal-toggle" data-target="#offboardingModal" class="mb-3 oh-btn oh-btn--secondary">
+                <a hx-get="{% url 'create-offboarding-stage' %}?offboarding_id={{offboarding.offboarding.id}}" style="width: 100px;" hx-target="#offboardingModalBody" data-toggle="oh-modal-toggle" data-target="#offboardingModal" class="mb-3 oh-btn oh-btn--secondary">
                   <ion-icon name="add-outline"></ion-icon>
                   {% trans 'Stage' %}
                 </a>

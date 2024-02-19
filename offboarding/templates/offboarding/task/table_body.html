@@ -4,8 +4,8 @@
         {{response_message}}
     </div>
 </div>
-{% endif %} {% for employee in stage.offboardingemployee_set.all %}
-{% if perms.offboarding.view_offboarding or request.user.employee_get|is_in_managers:offboarding or request.user.employee_get|is_in_managers:stage or request.user.employee_get|is_in_managers:employee %}
+{% endif %} {% for employee in stage.list %}
+{% if perms.offboarding.view_offboarding or request.user.employee_get|is_in_managers:offboarding.offboarding or request.user.employee_get|is_in_managers:stage.grouper or request.user.employee_get|is_in_managers:employee %}
 <div
     class="oh-sticky-table__tr oh-multiple-table-sort__movable"
     data-employee="{{employee.employee_id.get_full_name}}"
@@ -36,8 +36,8 @@
 	{% if request.user.employee_get|is_any_stage_manager or perms.offboarding.change_offboarding or	perms.offboarding.change_offboardingemployee %}
     <div class="oh-sticky-table__td" onclick="event.stopPropagation()">
         <form hx-get="{% url "offboarding-change-stage" %}?employee_ids={{employee.id}}"
-			hx-target="#offboardingBody{{offboarding.id}}">
-            {{ stage_forms|stages:stage }}
+			hx-target="#offboardingBody{{offboarding.offboarding.id}}">
+            {{ stage_forms|stages:employee.stage_id }}
             <input type="submit" hidden />
         </form>
     </div>
@@ -82,7 +82,7 @@
             {% else %}
             <a
                 type="button"
-				hx-get="{% url "add-employee" %}?instance_id={{employee.id}}&stage_id={{stage.id}}"
+				hx-get="{% url "add-employee" %}?instance_id={{employee.id}}&stage_id={{stage.grouper.id}}"
                 hx-target="#offboardingModalBody"
                 data-toggle="oh-modal-toggle"
                 data-target="#offboardingModal"
@@ -105,13 +105,13 @@
             {% endif %}
         </div>
     </div>
-    {% for task in stage.offboardingtask_set.all %}
+    {% for task in stage.grouper.offboardingtask_set.all %}
     <div class="oh-sticky-table__td">
         {% if task|have_task:employee %} 
 		{% for assinged_tasks in employee|get_assigned_task:task %}
         <select
-			hx-get="{% url "update-task-status" %}?stage_id={{stage.id}}&employee_ids={{employee.id}}&task_id={{assinged_tasks.task_id.id}}"
-            hx-target="#offboardingBody{{offboarding.id}}"
+			hx-get="{% url "update-task-status" %}?stage_id={{stage.grouper.id}}&employee_ids={{employee.id}}&task_id={{assinged_tasks.task_id.id}}"
+            hx-target="#offboardingBody{{offboarding.offboarding.id}}"
             name="task_status"
             id="task_status{{assinged_tasks.id}}"
             class="oh-select-custom w-100"

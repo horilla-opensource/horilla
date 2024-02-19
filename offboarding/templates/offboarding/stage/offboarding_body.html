@@ -1,16 +1,16 @@
 {% load i18n offboarding_filter %}
-{% for stage in offboarding.offboardingstage_set.all %}
+{% for stage in offboarding.offboarding.stages %}
 <div class="oh-accordion-meta" id="accordion{{stage.id}}">
     <div class="oh-accordion-meta__item">
-      <div class="oh-accordion-meta__header oh-accordion-meta__header--show">
+      <div class="oh-accordion-meta__header {% if stage.grouper.type != "archived" or not stage.list|length %} oh-accordion-meta__header--show" {% endif %}>
         <span class="oh-accordion-meta__title" data-offboarding-id="{{offboarding.id}}">
           <span class="d-flex" onclick="event.stopPropagation()">
             <span class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round ms-2 mr-2"
-              id="offboardingBadge{{offboarding.id}}_{{forloop.counter}}" title="{{stage.offboardingemployee_set.all|length}} {% trans "Employees" %}" onclick="event.stopPropagation()">
-              {{ stage.offboardingemployee_set.all|length }}
+              id="offboardingBadge{{offboarding.id}}_{{forloop.counter}}" title="{{stage.list|length}} {% trans "Employees" %}" onclick="event.stopPropagation()">
+              {{ stage.list|length }}
             </span>
-            {{stage.title}}
-            {% if stage.is_archived_stage %}
+            {{stage.grouper.title}}
+            {% if stage.grouper.is_archived_stage %}
             <div class="oh-switch ml-2">
               <input type="checkbox" class="show-archived oh-switch__checkbox" title="{% trans "Toggle Archived" %}"  onchange="showArchived($(this))">
             </div>
@@ -28,7 +28,7 @@
               <ul class="oh-dropdown__items">
                 {% if perms.offboarding.add_offboardingemployee or request.user.employee_get|any_manager %}
                 <li class="oh-dropdown__item">
-                  <a hx-get="{% url "add-employee" %}?stage_id={{stage.id}}" data-target="#offboardingModal"
+                  <a hx-get="{% url "add-employee" %}?stage_id={{stage.grouper.id}}" data-target="#offboardingModal"
                   data-toggle="oh-modal-toggle" hx-target="#offboardingModalBody" class="oh-dropdown__link">
                   {% trans "Add Employee" %}</a>
                 </li>
@@ -36,14 +36,14 @@
                 {% if perms.offboarding.change_offboardingstage or request.user.employee_get|is_offboarding_manager %}
                   <li class="oh-dropdown__item">
                     <a 
-                      hx-get="{% url "create-offboarding-stage" %}?offboarding_id={{offboarding.id}}&instance_id={{stage.id}}"
+                      hx-get="{% url "create-offboarding-stage" %}?offboarding_id={{offboarding.offboarding.id}}&instance_id={{stage.grouper.id}}"
                       data-target="#offboardingModal"
                       data-toggle="oh-modal-toggle" hx-target="#offboardingModalBody" class="oh-dropdown__link">{% trans "Edit" %}</a>
                   </li>
                 {% endif %}
                 {% if perms.offboarding.delete_offboarding %}
                   <li class="oh-dropdown__item">
-                    <a href="{% url "delete-offboarding-stage" %}?ids={{stage.id}}"
+                    <a href="{% url "delete-offboarding-stage" %}?ids={{stage.grouper.id}}"
                     onclick="return confirm('Are you sure want to delete this stage?')"
                     class="oh-dropdown__link oh-dropdown__link--danger">{% trans "Delete" %}</a>
                   </li>
@@ -53,7 +53,7 @@
           </div>
         </div>
       </div>
-      <div class="oh-accordion-meta__body">
+      <div class="oh-accordion-meta__body {% if stage.grouper.type == "archived" or not stage.list|length %} d-none {% endif %}">
         <div class="oh-sticky-table oh-sticky-table--no-overflow mb-5">
           <div class="oh-sticky-table__table">
             <div class="oh-sticky-table__thead">
@@ -66,8 +66,8 @@
                 <div class="oh-sticky-table__th">{% trans "Stage" %}</div>
                 {% endif %}
                 <div class="oh-sticky-table__th">{% trans "Actions" %}</div>
-                {% for task in stage.offboardingtask_set.all %}
-                <div class="oh-sticky-table__th" style="width: 200px;" hx-get="{% url "offboarding-add-task" %}?stage_id={{stage.id}}&instance_id={{task.id}}" hx-target="#offboardingModalBody" data-toggle="oh-modal-toggle" data-target="#offboardingModal">
+                {% for task in stage.grouper.offboardingtask_set.all %}
+                <div class="oh-sticky-table__th" style="width: 200px;" hx-get="{% url "offboarding-add-task" %}?stage_id={{stage.grouper.id}}&instance_id={{task.id}}" hx-target="#offboardingModalBody" data-toggle="oh-modal-toggle" data-target="#offboardingModal">
                   <div class="d-flex justify-content-between">
                     <span title="Click to edit">
                       {{task.title}}
@@ -80,14 +80,14 @@
                 {% endfor %}
                 <div class="oh-sticky-table__th" style="width: 120px;">
                   {% if perms.offboarding.add_offboardingtask or request.user.employee_get|any_manager %}
-                    <button class="oh-checkpoint-badge text-success" data-toggle="oh-modal-toggle" data-target="#offboardingModal" hx-get="{% url "offboarding-add-task" %}?stage_id={{stage.id}}" hx-target="#offboardingModalBody">
+                    <button class="oh-checkpoint-badge text-success" data-toggle="oh-modal-toggle" data-target="#offboardingModal" hx-get="{% url "offboarding-add-task" %}?stage_id={{stage.grouper.id}}" hx-target="#offboardingModalBody">
                       {% trans "Add Task" %}
                     </button>
                   {% endif %}
                 </div>
               </div>
             </div>
-            <div class="oh-sticky-table__tbody" id="tableBody{{stage.id}}" data-stage-id="{{stage.id}}" data-archive-stage="{{stage.is_archived_stage|lower}}" data-offboarding-id="{{offboarding.id}}">
+            <div class="oh-sticky-table__tbody" id="tableBody{{stage.grouper.id}}" data-stage-id="{{stage.grouper.id}}" data-archive-stage="{{stage.grouper.is_archived_stage|lower}}" data-offboarding-id="{{offboarding.offboarding.id}}">
               {% include "offboarding/task/table_body.html" %}
             </div>
           </div>
