@@ -132,3 +132,7 @@ class HistoryTrackingFields(models.Model):
 #     employee_id = models.ForeignKey("Employee", on_delete=models.PROTECT)
 #     history_id = models.ForeignKey(HorillaAuditLog, on_delete=models.PROTECT)
 #     message = models.TextField()
+
+
+class AccountBlockUnblock(models.Model):
+    is_enabled = models.BooleanField(default=False, null=True, blank=True)

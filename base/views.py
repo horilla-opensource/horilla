@@ -28,7 +28,7 @@ from django.views.decorators.csrf import csrf_exempt
 from employee.filters import EmployeeFilter
 from employee.forms import ActiontypeForm
 from horilla_audit.forms import HistoryTrackingFieldsForm
-from horilla_audit.models import AuditTag, HistoryTrackingFields
+from horilla_audit.models import AccountBlockUnblock, AuditTag, HistoryTrackingFields
 from notifications.models import Notification
 from notifications.base.models import AbstractNotification
 from notifications.signals import notify
@@ -409,9 +409,9 @@ def home(request):
                 "completed_field_count": "0",
             },
         )
-    announcements = Announcement.objects.all().order_by('-created_on')
+    announcements = Announcement.objects.all().order_by("-created_on")
     announcement_list = announcements.filter(employees=request.user.employee_get)
-    announcement_list =announcement_list | announcements.filter(employees__isnull=True)
+    announcement_list = announcement_list | announcements.filter(employees__isnull=True)
     if request.user.has_perm("base.view_announcement"):
         announcement_list = announcements
     general_expire = AnnouncementExpire.objects.all().first()
@@ -3853,6 +3853,10 @@ def general_settings(request):
     instance = AnnouncementExpire.objects.first()
     form = AnnouncementExpireForm(instance=instance)
     encashment_instance = EncashmentGeneralSettings.objects.first()
+    enabled_block_unblock = (
+        AccountBlockUnblock.objects.exists()
+        and AccountBlockUnblock.objects.first().is_enabled
+    )
     encashment_form = EncashmentGeneralSettingsForm(instance=encashment_instance)
     history_tracking_instance = HistoryTrackingFields.objects.first()
     history_fields_form_initial = {}
@@ -3876,6 +3880,7 @@ def general_settings(request):
             "form": form,
             "encashment_form": encashment_form,
             "history_fields_form": history_fields_form,
+            "enabled_block_unblock": enabled_block_unblock,
         },
     )
 
@@ -4026,6 +4031,22 @@ def history_field_settings(request):
             history_object.save()
 
     return redirect(general_settings)
+
+
+def enable_account_block_unblock(request):
+    if request.method == "POST":
+        enabled = request.POST.get("enable_block_account")
+        if enabled == "on":
+            enabled = True
+        else:
+            enabled = False
+        if AccountBlockUnblock.objects.exists():
+            instance = AccountBlockUnblock.objects.first()
+            instance.is_enabled = enabled
+            instance.save()
+        else:
+            AccountBlockUnblock.objects.create(is_enabled=enabled)
+        return redirect(general_settings)
 
 
 @login_required
