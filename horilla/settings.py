@@ -267,3 +267,16 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
+
+import sentry_sdk
+
+sentry_sdk.init(
+    dsn="https://29cb01c9fd5e8a605010764dbe489d32@o4505789842194432.ingest.sentry.io/4506771776995328",
+    # Set traces_sample_rate to 1.0 to capture 100%
+    # of transactions for performance monitoring.
+    traces_sample_rate=0.2,
+    # Set profiles_sample_rate to 1.0 to profile 100%
+    # of sampled transactions.
+    # We recommend adjusting this value in production.
+    profiles_sample_rate=0.2,
+)
