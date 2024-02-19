@@ -5,21 +5,17 @@ This module is used to register models for employee app
 
 """
 
-import datetime as dtime
 from datetime import date, datetime, timedelta
-from typing import Any, Iterable
 from django.conf import settings
 from django.db import models
 from django.contrib.auth.models import User, Permission
 from django.dispatch import receiver
-from django.db.models.signals import post_save, pre_delete
+from django.db.models.signals import post_save
 from django.utils.translation import gettext_lazy as trans
 from django.utils.translation import gettext as _
 from django.core.exceptions import ValidationError
 from django.core.files.storage import default_storage
-from simple_history.models import HistoricalRecords
 from base import thread_local_middleware
-from base.models import validate_time_format
 from horilla_audit.models import HorillaAuditLog, HorillaAuditInfo
 from horilla_audit.methods import get_diff
 from base.models import (
@@ -30,11 +26,10 @@ from base.models import (
     JobRole,
     Department,
     EmployeeShift,
+    validate_time_format,
 )
 from base.horilla_company_manager import HorillaCompanyManager
 from employee.methods.duration_methods import strtime_seconds, format_time
-from horilla_audit.models import HorillaAuditLog, HorillaAuditInfo
-from horilla_audit.methods import get_diff
 
 # create your model
 
@@ -245,6 +240,21 @@ class Employee(models.Model):
         ).first()
 
     def get_archive_condition(self):
+        """
+        Determine whether an employee is eligible for archiving based on their
+        involvement in various processes.
+
+        Returns:
+            dict or bool: A dictionary containing a list of related models
+                        if the employee is not eligible for archiving,
+                        otherwise, False.
+
+        This method checks the employee's association with different models,
+        such as reporting manager, recruitment stage, onboarding stage, onboarding task,
+        and recruitment manager. If the employee is not associated with any of these,
+        they are considered eligible for archiving. If they are associated,
+        a dictionary is returned with a list of related models of that employee.
+        """
         from onboarding.models import OnboardingStage, OnboardingTask
         from recruitment.models import Stage, Recruitment
 
@@ -306,7 +316,7 @@ class Employee(models.Model):
             ).values_list("employee_id", flat=True)
             setattr(request, "working_employees", working_employees)
         working_employees = request.working_employees
-        return self.id in working_employees
+        return self.pk in working_employees
 
     class Meta:
         """
@@ -635,6 +645,9 @@ class Policy(models.Model):
 
 
 class BonusPoint(models.Model):
+    """
+    Model representing bonus points for employees with associated conditions.
+    """
     CONDITIONS = [
         ("==", _("equals")),
         (">", _("grater than")),
@@ -663,6 +676,7 @@ class BonusPoint(models.Model):
             HorillaAuditInfo,
         ],
     )
+    objects = HorillaCompanyManager()
 
     def __str__(self):
         return f"{self.employee_id} - {self.points} Points"
@@ -675,6 +689,15 @@ class BonusPoint(models.Model):
 
     @receiver(post_save, sender=Employee)
     def bonus_post_save(sender, instance, **_kwargs):
+        """
+            Creates a BonusPoint instance for a newly created Employee if one doesn't already exist.
+
+            Args:
+                sender (Employee): The model class (Employee) sending the signal.
+                instance (Employee): The instance of the Employee model triggering the 
+                                    post-save signal.
+                **_kwargs: Additional keyword arguments passed by the signal.
+        """
         if not BonusPoint.objects.filter(employee_id__id=instance.id).exists():
             BonusPoint.objects.create(employee_id=instance)
 
@@ -706,7 +729,7 @@ class DisciplinaryAction(models.Model):
     employee_id = models.ManyToManyField(Employee, verbose_name="Employee")
     action = models.ForeignKey(Actiontype, on_delete=models.CASCADE)
     description = models.TextField(max_length=255)
-    unit_in = models.CharField(max_length=10, choices=choices,default="days")
+    unit_in = models.CharField(max_length=10, choices=choices, default="days")
     days = models.IntegerField(null=True, default=2)
     hours = models.CharField(
         max_length=6,
