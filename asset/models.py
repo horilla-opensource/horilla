@@ -117,7 +117,7 @@ class AssetAssignment(models.Model):
         ("Healthy", _("Healthy")),
     ]
     asset_id = models.ForeignKey(
-        Asset, on_delete=models.PROTECT,
+        Asset, on_delete=models.PROTECT,verbose_name=_("asset")
     )
     assigned_to_employee_id = models.ForeignKey(
         Employee, on_delete=models.PROTECT, related_name="allocated_employeee"
