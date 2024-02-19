@@ -445,7 +445,7 @@ def filter_pagination_asset_category(request):
         "asset_filter_form": asset_filter_form.form,
         "pg": previous_data,
         "filter_dict": data_dict,
-        "dashboard":request.GET.get("dashboard"),
+        "dashboard": request.GET.get("dashboard"),
     }
 
 
@@ -462,8 +462,7 @@ def asset_category_view(request):
     Raises:
         None
     """
-    
-    
+
     queryset = AssetCategory.objects.all()
     if queryset.exists():
         template = "category/asset_category_view.html"
@@ -851,17 +850,49 @@ def filter_pagination_asset_request_allocation(request):
         request.GET, queryset=asset_requests_queryset
     ).qs
     if request_field != "" and request_field is not None:
-        request_field_copy = request_field.replace(".", "__")
-        asset_request_filtered = asset_request_filtered.order_by(request_field_copy)
+        asset_request_filtered = group_by_queryset(
+            asset_request_filtered, request_field, request.GET.get("page"), "page"
+        )
+        list_values = [entry['list'] for entry in asset_request_filtered]
+        id_list = []
+        for value in list_values:
+            for instance in value.object_list:
+                id_list.append(instance.id)
+
+        requests_ids = json.dumps(list(id_list))
+
+    else: 
+        asset_request_filtered =  paginator_qry(asset_request_filtered, request.GET.get("page"))
+        requests_ids = json.dumps(
+            [
+                instance.id
+                for instance in asset_request_filtered.object_list
+            ]
+        )
 
     asset_allocation_filtered = AssetAllocationFilter(
         request.GET, queryset=asset_allocations_queryset
     ).qs
 
     if allocation_field != "" and allocation_field is not None:
-        allocation_field_copy = allocation_field.replace(".", "__")
-        asset_allocation_filtered = asset_allocation_filtered.order_by(
-            allocation_field_copy
+        asset_allocation_filtered = group_by_queryset(
+            asset_allocation_filtered, allocation_field, request.GET.get("page"), "page"
+        )
+        list_values = [entry['list'] for entry in asset_allocation_filtered]
+        id_list = []
+        for value in list_values:
+            for instance in value.object_list:
+                id_list.append(instance.id)
+
+        allocations_ids = json.dumps(list(id_list))
+
+    else: 
+        asset_allocation_filtered =  paginator_qry(asset_allocation_filtered, request.GET.get("page"))
+        allocations_ids = json.dumps(
+            [
+                instance.id
+                for instance in asset_allocation_filtered.object_list
+            ]
         )
 
     asset_paginator = Paginator(assets_filtered.qs, get_pagination())
@@ -871,10 +902,10 @@ def filter_pagination_asset_request_allocation(request):
     assets = asset_paginator.get_page(page_number)
     asset_requests = asset_request_paginator.get_page(page_number)
     asset_allocations = asset_allocation_paginator.get_page(page_number)
-    requests_ids = json.dumps([instance.id for instance in asset_requests.object_list])
-    allocations_ids = json.dumps(
-        [instance.id for instance in asset_allocations.object_list]
-    )
+    # requests_ids = json.dumps([instance.id for instance in asset_requests.object_list])
+    # allocations_ids = json.dumps(
+    #     [instance.id for instance in asset_allocations.object_list]
+    # )
 
     data_dict = parse_qs(previous_data)
     get_key_instances(AssetRequest, data_dict)
@@ -1113,7 +1144,9 @@ def asset_export_excel(request):
                     emp_company = company_name.first()
 
                     # Access the date_format attribute directly
-                    date_format = emp_company.date_format if emp_company else "MMM. D, YYYY"
+                    date_format = (
+                        emp_company.date_format if emp_company else "MMM. D, YYYY"
+                    )
                 else:
                     date_format = "MMM. D, YYYY"
                 # Define date formats
