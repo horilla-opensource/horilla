@@ -99,33 +99,33 @@
         {% endif %}
         <div class="oh-timeoff-modal__stats ">
             <div class="oh-timeoff-modal__stat">
-                <span class="oh-timeoff-modal__stat-title">{% trans "Payment Type" %}</span>
+                <span class="oh-timeoff-modal__stat-title">{% trans "Is Paid" %}</span>
                 <div class="oh-timeoff-modal__stat-count">{{leave_type.get_payment_display}}</div>
             </div>
         </div>
         <div class="oh-timeoff-modal__stats ">
             <div class="oh-timeoff-modal__stat">
                 <span class="oh-timeoff-modal__stat-title">{% trans "Require Approval" %}</span>
-                <div class="oh-timeoff-modal__stat-count">{{leave_type.require_approval|yes_no}}</div>
+                <div class="oh-timeoff-modal__stat-count">{{leave_type.get_require_approval_display}}</div>
             </div>
         </div>
         <div class="oh-timeoff-modal__stats">
             <div class="oh-timeoff-modal__stat">
                 <span class="oh-timeoff-modal__stat-title">{% trans "Require Attachment" %}</span>
-                <div class="oh-timeoff-modal__stat-description">{{leave_type.require_attachment|yes_no }}</div>
+                <div class="oh-timeoff-modal__stat-description">{{leave_type.get_require_attachment_display }}</div>
             </div>
         </div>
         
         <div class="oh-timeoff-modal__stats ">
             <div class="oh-timeoff-modal__stat">
                 <span class="oh-timeoff-modal__stat-title">{% trans "Exclude company Leaves" %}</span>
-                <div class="oh-timeoff-modal__stat-count">{{leave_type.exclude_company_leave|yes_no}}</div>
+                <div class="oh-timeoff-modal__stat-count">{{leave_type.get_exclude_company_leave_display}}</div>
             </div>
         </div>
         <div class="oh-timeoff-modal__stats ">
             <div class="oh-timeoff-modal__stat">
                 <span class="oh-timeoff-modal__stat-title">{% trans "Exclude Holidays" %}</span>
-                <div class="oh-timeoff-modal__stat-count">{{leave_type.exclude_holiday|yes_no}}</div>
+                <div class="oh-timeoff-modal__stat-count">{{leave_type.get_exclude_holiday_display}}</div>
             </div>
         </div>
         
