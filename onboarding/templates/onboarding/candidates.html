@@ -1,156 +1,190 @@
-{% load i18n %}
+{% load i18n %}{% load static %}
 {% include 'filter_tags.html' %}
 <style>
   .rejected-candidate{
     
   }
 </style>
-<div class="oh-sticky-table">
-  <div class="oh-sticky-table__table">
-    <div class="oh-sticky-table__thead">
-      <div class="oh-sticky-table__tr">
-        <div class="oh-sticky-table__th" style="width:10px;">
-          <div class="centered-div">
-              <input
-                type="checkbox"
-                class="oh-input oh-input__checkbox all-employee"
-                id="selectAll"
-                title="{% trans "Select All" %}"
-                onchange="checkRow(this)"
-              />
-            </div>
-          </div>
-        <div class="oh-sticky-table__th {% if request.sort_option.order == '-name' %}arrow-up {% elif request.sort_option.order == 'name' %}arrow-down {% else %} arrow-up-down {% endif %}" hx-target="#candidates" hx-get="{% url 'candidate-filter' %}?{{pd}}&orderby=name">{% trans "Candidate" %}</div>
-        <div class="oh-sticky-table__th">{% trans "Email" %}</div>
-        <div class="oh-sticky-table__th {% if request.sort_option.order == '-joining_date' %}arrow-up {% elif request.sort_option.order == 'joining_date' %}arrow-down {% else %} arrow-up-down {% endif %}" hx-target="#candidates" hx-get="{% url 'candidate-filter' %}?{{pd}}&orderby=joining_date">{% trans "Date of joining" %}</div>
-        <div class="oh-sticky-table__th {% if request.sort_option.order == '-probation_end' %}arrow-up {% elif request.sort_option.order == 'probation_end' %}arrow-down {% else %} arrow-up-down {% endif %}" hx-target="#candidates" hx-get="{% url 'candidate-filter' %}?{{pd}}&orderby=probation_end">{% trans "Probation ends" %}</div>
-        <div class="oh-sticky-table__th">{% trans "Job position" %}</div>
-        <div class="oh-sticky-table__th">{% trans "Recruitment" %}</div>
-        <div class="oh-sticky-table__th">{% trans "Offer letter" %}</div>
-        <div class="oh-sticky-table__th" style="width: 290px;">{% trans "Actions" %}</div>
+{% if candidates %}
+<!-- start of column toggle -->
+<div class="oh-table_sticky--wrapper">
+  <div class="oh-sticky-dropdown--header">
+    <div class="oh-dropdown" x-data="{open: false}">
+      <button class="oh-sticky-dropdown_btn " @click="open = !open"><ion-icon name="ellipsis-vertical-sharp"
+        role="img" class="md hydrated" aria-label="ellipsis vertical sharp"></ion-icon></button>
+      <div class="oh-dropdown__menu oh-sticky-table_dropdown" x-show="open" @click.outside="open = false">
+      <ul class="oh-dropdown__items" id="CandidateViewCells">
+      </ul>
       </div>
     </div>
-    {% for candidate in candidates %}
-    <div class="oh-sticky-table__tbody">
-      <div class="oh-sticky-table__tr">
-        <div class="oh-sticky-table__sd">
-            <div class="centered-div">
-              <input
-                type="checkbox"
-                class="oh-input employee-checkbox oh-input__checkbox checkboxAll"
-                id="{{candidate.id}}"
-                onchange="$(this).closest('.oh-sticky-table__tr').toggleClass('highlight-selected', $(this).is(':checked'))"
-              />
-            </div>
-        </div>
-        <div class="oh-sticky-table__td">
-          <div class="oh-profile oh-profile--md">
-              <div class="oh-profile__avatar mr-1">
-                <img src="{{candidate.get_avatar}}"
-                    class="oh-profile__image" alt="" />
-              </div>
-              <span class="oh-profile__name oh-text--dark">{{candidate.name}}</span>
-          </div>
-        </div>
-        <a style="color: inherit; text-decoration: none" class="oh-sticky-table__td">
-          {{candidate.email|truncatechars:10}}
-          {% if candidate.get_last_sent_mail %}
-            <span title="{{candidate.get_last_sent_mail.subject}} | {{candidate.get_last_sent_mail.get_status_display}}" class="oh-dot oh-dot--small me-1" style="background-color:{% if candidate.get_last_sent_mail.status == "sent" %}yellowgreen{% else %}red{% endif %}"></span>
-          {% endif %}
-        </a>
-        <a style="color: inherit; text-decoration: none" class="oh-sticky-table__td">
-          <input type="date" class="oh-input joining-date" style="width: 150px;" value={{candidate.joining_date|date:"Y-m-d"}}
-            name="joining_date" data-candidate-id="{{candidate.id}}">
-        </a>
-        <a style="color: inherit; text-decoration: none" class="oh-sticky-table__td">
-          <input type="date" class="oh-input" style="width: 150px;" value={{candidate.probation_end|date:"Y-m-d"}}
-            name="probation_end" onchange="probotionEnd($(this))" data-candidate-id="{{candidate.id}}">
-        </a>
-        <a style="color: inherit; text-decoration: none" class="oh-sticky-table__td">{{candidate.job_position_id}}</a>
-        <a style="color: inherit; text-decoration: none" class="oh-sticky-table__td">{{candidate.recruitment_id}}</a>
-        <a style="color: inherit; text-decoration: none" class="oh-sticky-table__td" onload="event.stopPropagation()">
-          <select hx-get="{% url 'update-offer-letter-status' %}?candidate_id={{candidate.id}}" hx-swap="none"  name="status" id="id_offeletter_status_{{candidate.id}}" class="w-100" style="height: 40px;border:solid 1px rgba(128, 128, 128, 0.32);">
-            {% for status in candidate.offer_letter_statuses %}
-            {{candidate.offer_letter_status }} {{status.0}}
-            <option value="{{status.0}}" {% if candidate.offer_letter_status == status.0 %} selected{% endif %}>{{status.1}}</option>
-            {% endfor %}
-          </select>
-        </a>
-        <div style="color: inherit; text-decoration: none" class="oh-sticky-table__td">
-          <div class="oh-btn-group">
-            <a class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Edit' %}"
-              href="{% url 'rec-candidate-update' candidate.id %}?onboarding=True"><ion-icon
-                name="create-outline"></ion-icon></a>
-            {% if perms.recruitment.change_candidate %}
-            <button type="button" hx-get="{% url 'send-mail' candidate.id %}" title="{% trans "Send Mail" %}" hx-target="#mail-content" hx-swap="innerHTML" class="oh-btn oh-btn--light" data-toggle="oh-modal-toggle" data-target="#sendMailModal" >
-              <ion-icon name="mail-open-outline" role="img" class="md hydrated" aria-label="mail open outline"></ion-icon>
-            </button>
-            {% endif %}
-            {% if perms.recruitment.change_candidate %}
-            <button {% if candidate.is_offer_rejected %} style="background: #ff4500a3;
-            color: white;" {% endif %} type="button" hx-get="{% url 'add-to-rejected-candidates' %}?candidate_id={{candidate.id}}" {% if candidate.is_offer_rejected %} title="{% trans "Added In Rejected Candidates" %}" {% else %} title="{% trans "Add To Rejected Candidates" %}" {% endif %} hx-target="#rejectReasonModalBody" hx-swap="innerHTML" class="oh-btn oh-btn--light" data-toggle="oh-modal-toggle" data-target="#rejectReasonModal" >
-              <ion-icon name="thumbs-down-outline"></ion-icon>            </button>
-            {% endif %}
-            {% if candidate.onboarding_portal %}
-            <a href="#" class="oh-btn w-100" style="background-color: yellowgreen;color: white;"
-              title="{% trans 'Send Portal / Start Onboarding' %}" onclick="$('select[name=ids]').val('{{candidate.id}}');"
-              data-target="#addAttachments" data-toggle="oh-modal-toggle"
-              href="{% url 'email-send' %}?ids={{candidate.id}}"><ion-icon name="link-outline"></ion-icon></a>
-            {% else %}
-            <a href="#" class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Send Portal  / Start onboarding' %}"
-              onclick="$('select[name=ids]').val('{{candidate.id}}');" data-target="#addAttachments"
-              data-toggle="oh-modal-toggle" href="{% url 'email-send' %}?ids={{candidate.id}}"><ion-icon
-                name="link-outline"></ion-icon></a>
-            {% endif %}
-            <a class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100" id="delete-link"
-              href="{% url 'candidate-delete' candidate.id %}" title="{% trans 'Delete' %}"><ion-icon
-                name="trash-outline"></ion-icon></a>
-          </div>
-        </div>
-      </div>
-    </div>
-    {% endfor %}
   </div>
 </div>
-
-<div class="oh-pagination">
-  <span class="oh-pagination__page">
-    {% trans "Page" %} {{ candidates.number }} {% trans "of" %} {{ candidates.paginator.num_pages }}.
-  </span>
-  <nav class="oh-pagination__nav">
-    <div class="oh-pagination__input-container me-3">
-      <span class="oh-pagination__label me-1">{% trans "Page" %}</span>
-      <input type="number" name="page" class="oh-pagination__input" value="{{candidates.number}}"
-        hx-get="{% url 'candidate-filter' %}?{{pd}}" hx-target="#candidates" min="1" />
-      <span class="oh-pagination__label">{% trans "of" %} {{candidates.paginator.num_pages}}</span>
+<!-- start of column toggle -->
+<div id="candidate-view-table" data-table-name="candidate_view_tab">
+  <!-- start of sticky table -->
+  <div class="oh-sticky-table">
+    <div class="oh-sticky-table__table">
+      <div class="oh-sticky-table__thead">
+        <div class="oh-sticky-table__tr">
+          <div class="oh-sticky-table__th" style="width:10px;">
+            <div class="centered-div">
+                <input
+                  type="checkbox"
+                  class="oh-input oh-input__checkbox all-employee"
+                  id="selectAll"
+                  title="{% trans "Select All" %}"
+                  onchange="checkRow(this)"
+                />
+              </div>
+            </div>
+          <div class="oh-sticky-table__th {% if request.sort_option.order == '-name' %}arrow-up {% elif request.sort_option.order == 'name' %}arrow-down {% else %} arrow-up-down {% endif %}" hx-target="#candidates" hx-get="{% url 'candidate-filter' %}?{{pd}}&orderby=name">{% trans "Candidate" %}</div>
+          <div data-cell-index="1" data-cell-title='{% trans "Email" %}' class="oh-sticky-table__th">{% trans "Email" %}</div>
+          <div data-cell-index="2" data-cell-title='{% trans "Date of joining" %}' class="oh-sticky-table__th {% if request.sort_option.order == '-joining_date' %}arrow-up {% elif request.sort_option.order == 'joining_date' %}arrow-down {% else %} arrow-up-down {% endif %}" hx-target="#candidates" hx-get="{% url 'candidate-filter' %}?{{pd}}&orderby=joining_date">{% trans "Date of joining" %}</div>
+          <div data-cell-index="3" data-cell-title='{% trans "Probation ends" %}' class="oh-sticky-table__th {% if request.sort_option.order == '-probation_end' %}arrow-up {% elif request.sort_option.order == 'probation_end' %}arrow-down {% else %} arrow-up-down {% endif %}" hx-target="#candidates" hx-get="{% url 'candidate-filter' %}?{{pd}}&orderby=probation_end">{% trans "Probation ends" %}</div>
+          <div data-cell-index="4" data-cell-title='{% trans "Job position" %}' class="oh-sticky-table__th">{% trans "Job position" %}</div>
+          <div data-cell-index="5" data-cell-title='{% trans "Recruitment" %}' class="oh-sticky-table__th">{% trans "Recruitment" %}</div>
+          <div data-cell-index="6" data-cell-title='{% trans "Offer letter" %}' class="oh-sticky-table__th">{% trans "Offer letter" %}</div>
+          <div class="oh-sticky-table__th oh-sticky-table__right" style="width: 290px;">{% trans "Actions" %}</div>
+        </div>
+      </div>
+      {% for candidate in candidates %}
+      <div class="oh-sticky-table__tbody">
+        <div class="oh-sticky-table__tr">
+          <div class="oh-sticky-table__sd">
+              <div class="centered-div">
+                <input
+                  type="checkbox"
+                  class="oh-input employee-checkbox oh-input__checkbox checkboxAll"
+                  id="{{candidate.id}}"
+                  onchange="$(this).closest('.oh-sticky-table__tr').toggleClass('highlight-selected', $(this).is(':checked'))"
+                />
+              </div>
+          </div>
+          <div class="oh-sticky-table__td">
+            <div class="oh-profile oh-profile--md">
+                <div class="oh-profile__avatar mr-1">
+                  <img src="{{candidate.get_avatar}}"
+                      class="oh-profile__image" alt="" />
+                </div>
+                <span class="oh-profile__name oh-text--dark">{{candidate.name}}</span>
+            </div>
+          </div>
+          <a data-cell-index="1" style="color: inherit; text-decoration: none" class="oh-sticky-table__td">
+            {{candidate.email|truncatechars:10}}
+            {% if candidate.get_last_sent_mail %}
+              <span title="{{candidate.get_last_sent_mail.subject}} | {{candidate.get_last_sent_mail.get_status_display}}" class="oh-dot oh-dot--small me-1" style="background-color:{% if candidate.get_last_sent_mail.status == "sent" %}yellowgreen{% else %}red{% endif %}"></span>
+            {% endif %}
+          </a>
+          <a data-cell-index="2" style="color: inherit; text-decoration: none" class="oh-sticky-table__td">
+            <input type="date" class="oh-input joining-date" style="width: 150px;" value={{candidate.joining_date|date:"Y-m-d"}}
+              name="joining_date" data-candidate-id="{{candidate.id}}">
+          </a>
+          <a data-cell-index="3" style="color: inherit; text-decoration: none" class="oh-sticky-table__td">
+            <input type="date" class="oh-input" style="width: 150px;" value={{candidate.probation_end|date:"Y-m-d"}}
+              name="probation_end" onchange="probotionEnd($(this))" data-candidate-id="{{candidate.id}}">
+          </a>
+          <a data-cell-index="4" style="color: inherit; text-decoration: none" class="oh-sticky-table__td">{{candidate.job_position_id}}</a>
+          <a data-cell-index="5" style="color: inherit; text-decoration: none" class="oh-sticky-table__td">{{candidate.recruitment_id}}</a>
+          <a data-cell-index="6" style="color: inherit; text-decoration: none" class="oh-sticky-table__td" onload="event.stopPropagation()">
+            <select hx-get="{% url 'update-offer-letter-status' %}?candidate_id={{candidate.id}}" hx-swap="none"  name="status" id="id_offeletter_status_{{candidate.id}}" class="w-100" style="height: 40px;border:solid 1px rgba(128, 128, 128, 0.32);">
+              {% for status in candidate.offer_letter_statuses %}
+              {{candidate.offer_letter_status }} {{status.0}}
+              <option value="{{status.0}}" {% if candidate.offer_letter_status == status.0 %} selected{% endif %}>{{status.1}}</option>
+              {% endfor %}
+            </select>
+          </a>
+          <div style="color: inherit; text-decoration: none" class="oh-sticky-table__td oh-sticky-table__right">
+            <div class="oh-btn-group">
+              <a class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Edit' %}"
+                href="{% url 'rec-candidate-update' candidate.id %}?onboarding=True"><ion-icon
+                  name="create-outline"></ion-icon></a>
+              {% if perms.recruitment.change_candidate %}
+              <button type="button" hx-get="{% url 'send-mail' candidate.id %}" title="{% trans "Send Mail" %}" hx-target="#mail-content" hx-swap="innerHTML" class="oh-btn oh-btn--light w-100" data-toggle="oh-modal-toggle" data-target="#sendMailModal" >
+                <ion-icon name="mail-open-outline" role="img" class="md hydrated" aria-label="mail open outline"></ion-icon>
+              </button>
+              {% endif %}
+              {% if perms.recruitment.change_candidate %}
+              <button {% if candidate.is_offer_rejected %} style="background: #ff4500a3;
+              color: white;" {% endif %} type="button" hx-get="{% url 'add-to-rejected-candidates' %}?candidate_id={{candidate.id}}" {% if candidate.is_offer_rejected %} title="{% trans "Added In Rejected Candidates" %}" {% else %} title="{% trans "Add To Rejected Candidates" %}" {% endif %} hx-target="#rejectReasonModalBody" hx-swap="innerHTML" class="oh-btn oh-btn--light w-100" data-toggle="oh-modal-toggle" data-target="#rejectReasonModal" >
+                <ion-icon name="thumbs-down-outline"></ion-icon>            </button>
+              {% endif %}
+              {% if candidate.onboarding_portal %}
+              <a href="#" class="oh-btn w-100" style="background-color: yellowgreen;color: white;"
+                title="{% trans 'Send Portal / Start Onboarding' %}" onclick="$('select[name=ids]').val('{{candidate.id}}');"
+                data-target="#addAttachments" data-toggle="oh-modal-toggle"
+                href="{% url 'email-send' %}?ids={{candidate.id}}"><ion-icon name="link-outline"></ion-icon></a>
+              {% else %}
+              <a href="#" class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Send Portal  / Start onboarding' %}"
+                onclick="$('select[name=ids]').val('{{candidate.id}}');" data-target="#addAttachments"
+                data-toggle="oh-modal-toggle" href="{% url 'email-send' %}?ids={{candidate.id}}"><ion-icon
+                  name="link-outline"></ion-icon></a>
+              {% endif %}
+              <a class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100" id="delete-link"
+                href="{% url 'candidate-delete' candidate.id %}" title="{% trans 'Delete' %}"><ion-icon
+                  name="trash-outline"></ion-icon></a>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
     </div>
-    <ul class="oh-pagination__items">
-      {% if candidates.has_previous %}
-      <li class="oh-pagination__item oh-pagination__item--wide">
-        <a hx-target="#candidates" hx-get="{% url 'candidate-filter' %}?{{pd}}&page=1" class="oh-pagination__link">{%
-          trans "First" %}</a>
-      </li>
-      <li class="oh-pagination__item oh-pagination__item--wide">
-        <a hx-target="#candidates"
-          hx-get="{% url 'candidate-filter' %}?{{pd}}&page={{ candidates.previous_page_number }}"
-          class="oh-pagination__link">{% trans "Previous" %}</a>
-      </li>
-      {% endif %} {% if candidates.has_next %}
-      <li class="oh-pagination__item oh-pagination__item--wide">
-        <a hx-target="#candidates" hx-get="{% url 'candidate-filter' %}?{{pd}}&page={{ candidates.next_page_number }}"
-          class="oh-pagination__link">{% trans "Next" %}</a>
-      </li>
-      <li class="oh-pagination__item oh-pagination__item--wide">
-        <a hx-target="#candidates"
-          hx-get="{% url 'candidate-filter' %}?{{pd}}&page={{ candidates.paginator.num_pages }}"
-          class="oh-pagination__link">{% trans "Last" %}</a>
-      </li>
-      {% endif %}
-    </ul>
-  </nav>
-</div>
-<div id="ohMessages">
+  </div>
+  <!-- start of sticky table -->
 
+  <!-- start of pagination -->
+  <div class="oh-pagination">
+    <span class="oh-pagination__page">
+      {% trans "Page" %} {{ candidates.number }} {% trans "of" %} {{ candidates.paginator.num_pages }}.
+    </span>
+    <nav class="oh-pagination__nav">
+      <div class="oh-pagination__input-container me-3">
+        <span class="oh-pagination__label me-1">{% trans "Page" %}</span>
+        <input type="number" name="page" class="oh-pagination__input" value="{{candidates.number}}"
+          hx-get="{% url 'candidate-filter' %}?{{pd}}" hx-target="#candidates" min="1" />
+        <span class="oh-pagination__label">{% trans "of" %} {{candidates.paginator.num_pages}}</span>
+      </div>
+      <ul class="oh-pagination__items">
+        {% if candidates.has_previous %}
+        <li class="oh-pagination__item oh-pagination__item--wide">
+          <a hx-target="#candidates" hx-get="{% url 'candidate-filter' %}?{{pd}}&page=1" class="oh-pagination__link">{%
+            trans "First" %}</a>
+        </li>
+        <li class="oh-pagination__item oh-pagination__item--wide">
+          <a hx-target="#candidates"
+            hx-get="{% url 'candidate-filter' %}?{{pd}}&page={{ candidates.previous_page_number }}"
+            class="oh-pagination__link">{% trans "Previous" %}</a>
+        </li>
+        {% endif %} {% if candidates.has_next %}
+        <li class="oh-pagination__item oh-pagination__item--wide">
+          <a hx-target="#candidates" hx-get="{% url 'candidate-filter' %}?{{pd}}&page={{ candidates.next_page_number }}"
+            class="oh-pagination__link">{% trans "Next" %}</a>
+        </li>
+        <li class="oh-pagination__item oh-pagination__item--wide">
+          <a hx-target="#candidates"
+            hx-get="{% url 'candidate-filter' %}?{{pd}}&page={{ candidates.paginator.num_pages }}"
+            class="oh-pagination__link">{% trans "Last" %}</a>
+        </li>
+        {% endif %}
+      </ul>
+    </nav>
+  </div>
+  <!-- end of pagination -->
+</div>
+{% else %}
+  <!-- start of empty page -->
+  <div class="oh-404">
+    <img
+      style="width: 150px; height: 150px"
+      src="{% static 'images/ui/no-results.png' %}"
+      class="oh-404__image mb-4"
+    />
+    <h5 class="oh-404__subtitle">
+      {% trans "No search result found!" %}
+    </h5>
+  </div>
+<!-- end of empty page -->
+{% endif %}
+<div id="ohMessages">
 </div>
 <script>
   function probotionEnd($element){
@@ -210,6 +244,14 @@
 
     });
   });
+  // toggle columns //
+  toggleColumns("candidate-view-table","CandidateViewCells")
+  localStorageCandidateViewCells = localStorage.getItem("candidate_view_tab")
+  if (!localStorageCandidateViewCells) {
+    $("#CandidateViewCells").find("[type=checkbox]").prop("checked",true)
+  }
+  $("[type=checkbox]").change() 
+  // end of toggle column//
 </script>
 <div class="oh-modal" id="sendMailModal" role="dialog" aria-labelledby="sendMailModal" aria-hidden="true">
   <div class="oh-modal__dialog">
