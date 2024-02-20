@@ -138,6 +138,53 @@ def is_recruitmentmanager(request, rec_id=False):
     )
 
 
+def pipeline_grouper(request, recruitments):
+    groups = []
+    for rec in recruitments:
+        stages = StageFilter(request.GET, queryset=rec.stage_set.all()).qs.order_by(
+            "sequence"
+        )
+        all_stages_grouper = []
+        data = {"recruitment": rec, "stages": []}
+        for stage in stages.order_by("sequence"):
+            all_stages_grouper.append({"grouper": stage, "list": []})
+            stage_candidates = CandidateFilter(
+                request.GET,
+                stage.candidate_set.filter(
+                    is_active=True,
+                ),
+            ).qs.order_by("sequence")
+
+            page_name = "page" + stage.stage + str(rec.id)
+            grouper = group_by_queryset(
+                stage_candidates,
+                "stage_id",
+                request.GET.get(page_name),
+                page_name,
+            ).object_list
+            data["stages"] = data["stages"] + grouper
+            
+        ordered_data = []
+        
+        # combining un used groups in to the grouper
+        groupers = data["stages"]
+        for stage in stages:
+            found = False
+            for grouper in groupers:
+                if grouper["grouper"] == stage:
+                    ordered_data.append(grouper)
+                    found = True
+                    break 
+            if not found:
+                ordered_data.append({"grouper": stage})
+        data = {
+            "recruitment": rec,
+            "stages": ordered_data,
+        }
+        groups.append(data)
+    return groups
+
+
 @login_required
 @permission_required(perm="recruitment.add_recruitment")
 def recruitment(request):
@@ -297,64 +344,12 @@ def recruitment_pipeline(request):
     status = request.GET.get("closed")
     if not status:
         recruitments = recruitments.filter(closed=False)
-    # with contextlib.suppress(Exception):
-    #     managers = candidate_obj.stage_id.stage_managers.select_related(
-    #         "employee_user_id"
-    #     )
-    #     users = [employee.employee_user_id for employee in managers]
-    #     notify.send(
-    #         request.user.employee_get,
-    #         recipient=users,
-    #         verb=f"New candidate arrived on stage {candidate_obj.stage_id.stage}",
-    #         verb_ar=f"وصل مرشح جديد إلى المرحلة {candidate_obj.stage_id.stage}",
-    #         verb_de=f"Neuer Kandidat ist auf der Stufe\
-    #                 {candidate_obj.stage_id.stage} angekommen",
-    #         verb_es=f"Nuevo candidato llegó a la etapa {candidate_obj.stage_id.stage}",
-    #         verb_fr=f"Nouveau candidat arrivé à l'étape {candidate_obj.stage_id.stage}",
-    #         icon="person-add",
-    #         redirect="/recruitment/pipeline",
-    #     )
-    # messages.success(request, _("Candidate added."))
-    # return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+
     previous_data = request.GET.urlencode()
     paginator = Paginator(recruitments, 4)
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
-    groups = []
-    for rec in page_obj:
-        stages = StageFilter(request.GET, queryset=rec.stage_set.all()).qs
-        all_stages_grouper = []
-        for stage_in_all in stages.order_by("sequence"):
-            all_stages_grouper.append({"grouper": stage_in_all, "list": []})
-        data = {"recruitment": rec, "stages": []}
-        for stage in stages.order_by("sequence"):
-            stage_candidates = CandidateFilter(
-                request.GET,
-                stage.candidate_set.order_by("sequence").filter(
-                    is_active=True,
-                ),
-            ).qs
-
-            page_name = "page" + stage.stage + str(rec.id)
-            grouper = group_by_queryset(
-                stage_candidates,
-                "stage_id",
-                request.GET.get(page_name),
-                page_name,
-            ).object_list
-            data["stages"] = data["stages"] + grouper
-        existing_grouper_ids = {item["grouper"].id for item in data["stages"]}
-        for item in all_stages_grouper:
-            if item["grouper"].id not in existing_grouper_ids:
-                data["stages"].append(
-                    {
-                        "grouper": item["grouper"],
-                        "list": [],
-                        "dynamic_name": f'dynamic_page_page{item["grouper"].id}',
-                    }
-                )
-
-        groups.append(data)
+    groups = pipeline_grouper(request, page_obj)
 
     for item in groups:
         setattr(item["recruitment"], "stages", item["stages"])
@@ -539,8 +534,7 @@ def candidate_stage_update(request, cand_id):
     candidate_obj = Candidate.objects.get(id=cand_id)
     history_queryset = candidate_obj.history_set.all().first()
     stage_obj = Stage.objects.get(id=stage_id)
-    previous_stage = history_queryset.stage_id
-    if previous_stage == stage_obj:
+    if candidate_obj.stage_id == stage_obj:
         return JsonResponse({"type": "noChange", "message": _("No change detected.")})
     # Here set the last updated schedule date on this stage if schedule exists in history
     history_queryset = candidate_obj.history_set.filter(stage_id=stage_obj)
@@ -560,8 +554,8 @@ def candidate_stage_update(request, cand_id):
         or is_recruitmentmanager(rec_id=stage_obj.recruitment_id.id)[0]
     ):
         candidate_obj.stage_id = stage_obj
-        candidate_obj.schedule_date = None
         candidate_obj.hired = stage_obj.stage_type == "hired"
+        candidate_obj.canceled = stage_obj.stage_type == "cancelled"
         candidate_obj.schedule_date = schedule_date
         candidate_obj.start_onboard = False
         candidate_obj.save()
@@ -942,10 +936,14 @@ def add_candidate(request):
     """
     form = AddCandidateForm(initial={"stage_id": request.GET.get("stage_id")})
     if request.POST:
-        form = AddCandidateForm(request.POST,request.FILES,initial={"stage_id": request.GET.get("stage_id")})
+        form = AddCandidateForm(
+            request.POST,
+            request.FILES,
+            initial={"stage_id": request.GET.get("stage_id")},
+        )
         if form.is_valid():
             form.save()
-            messages.success(request,"Candidate Added")
+            messages.success(request, "Candidate Added")
             return HttpResponse("<script>window.location.reload()</script>")
     return render(request, "pipeline/form/candidate_form.html", {"form": form})
 

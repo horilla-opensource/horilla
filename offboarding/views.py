@@ -77,23 +77,24 @@ def pipeline_grouper(filters={}, offboardings=[]):
             data["stages"] = data["stages"] + employee_grouper
 
         ordered_data = []
-        existing_grouper_ids = list({item["grouper"].id for item in data["stages"]})
-        if set(existing_grouper_ids) != set(stages.values_list("id", flat=True)):
-            for sg in stages:
-                for grouper in data["stages"]:
-                    if sg != grouper["grouper"]:
-                        ordered_data.append(
-                            {"grouper": sg, "list": [], "dynamic_name": ""}
-                        )
-                    else:
-                        ordered_data.append(grouper)
-        else:
-            ordered_data = data["stages"]
+
+        # combining un used groups in to the grouper
+        groupers = data["stages"]
+        for stage in stages:
+            found = False
+            for grouper in groupers:
+                if grouper["grouper"] == stage:
+                    ordered_data.append(grouper)
+                    found = True
+                    break
+            if not found:
+                ordered_data.append({"grouper": stage})
         data = {
             "offboarding": offboarding,
             "stages": ordered_data,
         }
         groups.append(data)
+
     return groups
 
 
@@ -688,13 +689,19 @@ def update_status(request):
         offboarding = Offboarding.objects.get(id=offboarding_id)
         notice_period_starts = request.GET.get("notice_period_starts")
         notice_period_ends = request.GET.get("notice_period_ends")
-        if (notice_period_starts and notice_period_ends) is not None:
+        if notice_period_starts:
             notice_period_starts = datetime.datetime.strptime(
                 notice_period_starts, "%Y-%m-%d"
             ).date()
+        today = datetime.datetime.today()
+        if notice_period_ends:
             notice_period_ends = datetime.datetime.strptime(
                 notice_period_ends, "%Y-%m-%d"
             ).date()
+        else:
+            notice_period_ends = None
+        if not notice_period_starts:
+            notice_period_starts = today
 
     letters = ResignationLetter.objects.filter(id__in=ids)
     # if use update method instead of save then save method will not trigger

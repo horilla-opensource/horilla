@@ -34,7 +34,12 @@ from horilla.decorators import permission_required
 from base.methods import generate_pdf, get_key_instances, get_pagination, sortby
 from onboarding.filters import OnboardingCandidateFilter, OnboardingStageFilter
 from recruitment.forms import RejectedCandidateForm
-from recruitment.models import Candidate, Recruitment, RecruitmentMailTemplate, RejectedCandidate
+from recruitment.models import (
+    Candidate,
+    Recruitment,
+    RecruitmentMailTemplate,
+    RejectedCandidate,
+)
 from recruitment.filters import CandidateFilter, RecruitmentFilter
 from employee.models import Employee, EmployeeWorkInformation, EmployeeBankDetails
 from django.db.models import ProtectedError
@@ -679,24 +684,26 @@ def email_send(request):
 
     return HttpResponse("<script>window.location.reload()</script>")
 
-def onboarding_query_grouper(request,queryset):
+
+def onboarding_query_grouper(request, queryset):
     """
     This method is used to make group of the onboarding records
     """
     groups = []
     for rec in queryset:
-        stages = OnboardingStageFilter(request.GET, queryset=rec.onboarding_stage.all()).qs
+        stages = OnboardingStageFilter(
+            request.GET, queryset=rec.onboarding_stage.all()
+        ).qs.order_by("sequence")
         all_stages_grouper = []
-        for stage_in_all in stages.order_by("sequence"):
-            all_stages_grouper.append({"grouper": stage_in_all, "list": []})
         data = {"recruitment": rec, "stages": []}
-        for stage in stages.order_by("sequence"):
+        for stage in stages:
+            all_stages_grouper.append({"grouper": stage, "list": []})
             stage_candidates = OnboardingCandidateFilter(
                 request.GET,
-                stage.candidate.order_by("sequence").filter(
+                stage.candidate.filter(
                     candidate_id__is_active=True,
                 ),
-            ).qs
+            ).qs.order_by("sequence")
 
             page_name = "page" + stage.stage_title + str(rec.id)
             grouper = group_by_queryset(
@@ -706,17 +713,22 @@ def onboarding_query_grouper(request,queryset):
                 page_name,
             ).object_list
             data["stages"] = data["stages"] + grouper
-        existing_grouper_ids = {item["grouper"].id for item in data["stages"]}
-        for item in all_stages_grouper:
-            if item["grouper"].id not in existing_grouper_ids:
-                data["stages"].append(
-                    {
-                        "grouper": item["grouper"],
-                        "list": [],
-                        "dynamic_name": f'dynamic_page_page{item["grouper"].id}',
-                    }
-                )
-
+        ordered_data = []
+        # combining un used groups in to the grouper
+        groupers = data["stages"]
+        for stage in stages:
+            found = False
+            for grouper in groupers:
+                if grouper["grouper"] == stage:
+                    ordered_data.append(grouper)
+                    found = True
+                    break 
+            if not found:
+                ordered_data.append({"grouper": stage})
+        data = {
+            "recruitment": rec,
+            "stages": ordered_data,
+        }
         groups.append(data)
     return groups
 
@@ -736,7 +748,7 @@ def onboarding_view(request):
     filter_obj = RecruitmentFilter(request.GET)
     # is active filteration not providing on pipeline
     recruitments = filter_obj.qs.filter(is_active=True)
-    
+
     status = request.GET.get("closed")
     if not status:
         recruitments = recruitments.filter(closed=False)
@@ -744,10 +756,10 @@ def onboarding_view(request):
     onboarding_stages = OnboardingStage.objects.all()
     choices = CandidateTask.choice
     previous_data = request.GET.urlencode()
-    paginator = Paginator(recruitments, 4)
+    paginator = Paginator(recruitments.order_by("id"), 4)
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
-    groups = onboarding_query_grouper(request,page_obj)
+    groups = onboarding_query_grouper(request, page_obj)
     for item in groups:
         setattr(item["recruitment"], "stages", item["stages"])
     filter_dict = parse_qs(request.GET.urlencode())
@@ -778,7 +790,7 @@ def kanban_view(request):
     filter_obj = RecruitmentFilter(request.GET)
     # is active filteration not providing on pipeline
     recruitments = filter_obj.qs.filter(is_active=True)
-    
+
     status = request.GET.get("closed")
     if not status:
         recruitments = recruitments.filter(closed=False)
@@ -792,8 +804,8 @@ def kanban_view(request):
     paginator = Paginator(recruitments, 4)
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
-    groups = onboarding_query_grouper(request,page_obj)
-    
+    groups = onboarding_query_grouper(request, page_obj)
+
     for item in groups:
         setattr(item["recruitment"], "stages", item["stages"])
     filter_dict = parse_qs(request.GET.urlencode())
@@ -803,7 +815,6 @@ def kanban_view(request):
     for key, val in filter_dict.copy().items():
         if val[0] == "unknown" or key == "view":
             del filter_dict[key]
-    
 
     return render(
         request,
@@ -819,7 +830,6 @@ def kanban_view(request):
             "choices": choices,
             "pd": previous_data,
             "card": True,
-            
         },
     )
 
@@ -1205,7 +1215,7 @@ def candidate_stage_update(request, candidate_id, recruitment_id):
     """
     stage_id = request.POST.get("stage")
     recruitments = Recruitment.objects.filter(id=recruitment_id)
-    groups = onboarding_query_grouper(request,recruitments)
+    groups = onboarding_query_grouper(request, recruitments)
     for item in groups:
         setattr(item["recruitment"], "stages", item["stages"])
     stage = OnboardingStage.objects.get(id=stage_id)
@@ -1256,15 +1266,15 @@ def candidate_stage_bulk_update(request):
     stage = request.POST["stage"]
     onboarding_stages = OnboardingStage.objects.all()
     recruitments = Recruitment.objects.filter(id=int(recrutment_id))
-    groups = onboarding_query_grouper(request,recruitments)
+    groups = onboarding_query_grouper(request, recruitments)
     for item in groups:
         setattr(item["recruitment"], "stages", item["stages"])
 
     choices = CandidateTask.choice
 
-    CandidateStage.objects.filter(
-        candidate_id__id__in=candidate_id_list
-    ).update(onboarding_stage_id=stage)
+    CandidateStage.objects.filter(candidate_id__id__in=candidate_id_list).update(
+        onboarding_stage_id=stage
+    )
     type = "info"
     message = "No candidates selected"
     if candidate_id_list:
@@ -1364,9 +1374,7 @@ def onboard_candidate_chart(request):
         background_color.append(f"rgba({red}, {green}, {blue}, 0.2")
         border_color.append(f"rgb({red}, {green}, {blue})")
         labels.append(recruitment.title)
-        data.append(
-            recruitment.candidate.filter(start_onboard=True).count()
-        )
+        data.append(recruitment.candidate.filter(start_onboard=True).count())
     return JsonResponse(
         {
             "labels": labels,
@@ -1569,7 +1577,7 @@ def task_report(request):
         employee_id = request.user.employee_get.id
     my_tasks = OnboardingTask.objects.filter(
         employee_id__id=employee_id,
-        candidates__is_active = True,
+        candidates__is_active=True,
         candidates__recruitment_id__closed=False,
     ).distinct()
     tasks = []
@@ -1649,12 +1657,14 @@ def add_to_rejected_candidates(request):
     instance = None
     if candidate_id:
         instance = RejectedCandidate.objects.filter(candidate_id=candidate_id).first()
-        
-    form = RejectedCandidateForm(initial={"candidate_id": candidate_id},instance=instance)
+
+    form = RejectedCandidateForm(
+        initial={"candidate_id": candidate_id}, instance=instance
+    )
     if request.method == "POST":
-        form = RejectedCandidateForm(request.POST,instance=instance)
+        form = RejectedCandidateForm(request.POST, instance=instance)
         if form.is_valid():
             form.save()
-            messages.success(request,"Candidate reject reason saved")
+            messages.success(request, "Candidate reject reason saved")
             return HttpResponse("<script>window.location.reload()</script>")
     return render(request, "onboarding/rejection/form.html", {"form": form})
