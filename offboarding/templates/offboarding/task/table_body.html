@@ -31,8 +31,8 @@
     <div class="oh-sticky-table__td">
         {% trans 'In' %} {{ employee.notice_period }} {{ employee.get_unit_display }}
     </div>
-    <div class="oh-sticky-table__td">{{ employee.notice_period_starts }}</div>
-    <div class="oh-sticky-table__td">{{ employee.notice_period_ends }}</div>
+    <div class="oh-sticky-table__td dateformat_changer">{{ employee.notice_period_starts }}</div>
+    <div class="oh-sticky-table__td dateformat_changer">{{ employee.notice_period_ends }}</div>
 	{% if request.user.employee_get|is_any_stage_manager or perms.offboarding.change_offboarding or	perms.offboarding.change_offboardingemployee %}
     <div class="oh-sticky-table__td" onclick="event.stopPropagation()">
         <form hx-get="{% url "offboarding-change-stage" %}?employee_ids={{employee.id}}"
@@ -62,7 +62,7 @@
                 title="{% trans 'Notes' %}"
                 class="oh-btn oh-btn--light oh-activity-sidebar__open"
                 data-target="#activitySidebar"
-                hx-get="{% url 'view-offboarding-note' %}?employee_id={{ employee.id }}"
+                hx-get="{% url 'view-offboarding-note' employee.id %}"
                 hx-target="#noteContainer"
                 style="flex: 1 0 auto; width: 20px; height: 40.68px; padding: 0"
 				onclick="event.stopPropagation()"
@@ -129,7 +129,7 @@
         {% endfor %} {% else %}
         <button
 			hx-get="{% url "offboarding-assign-task" %}?employee_ids={{employee.id}}&task_id={{task.id}}"
-            hx-target="#offboardingBody{{offboarding.id}}"
+            hx-target="#offboardingBody{{offboarding.offboarding.id}}"
             class="oh-checkpoint-badge text-info"
             data-toggle="oh-modal-toggle"
 			onclick="event.stopPropagation()"
@@ -143,9 +143,6 @@
 </div>
 {% endif %} {% endfor %}
 <script>
-    $("[data-archive-stage=true]")
-        .find(".oh-sticky-table__tr[data-employee-id]")
-        .hide();
     function showArchived($element) {
         let checked = $element.is(":checked");
         if (checked) {

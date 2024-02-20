@@ -6,7 +6,7 @@ from django.contrib import messages
 from django.contrib.auth.models import User
 from base.context_processors import intial_notice_period
 from employee.models import Employee
-from horilla.decorators import login_required, permission_required
+from horilla.decorators import login_required, manager_can_enter, permission_required
 from base.views import paginator_qry
 from offboarding.decorators import (
     any_manager_can_enter,
@@ -53,6 +53,7 @@ from recruitment.pipeline_grouper import group_by_queryset
 
 def pipeline_grouper(filters={}, offboardings=[]):
     groups = []
+
     for offboarding in offboardings:
         stages = PipelineStageFilter(
             filters, queryset=offboarding.offboardingstage_set.all()
@@ -63,28 +64,35 @@ def pipeline_grouper(filters={}, offboardings=[]):
             all_stages_grouper.append({"grouper": stage, "list": []})
             stage_employees = PipelineEmployeeFilter(
                 filters,
-                OffboardingEmployee.objects.filter(stage_id=stage).order_by("-id"),
-            ).qs
+                OffboardingEmployee.objects.filter(stage_id=stage),
+            ).qs.order_by("stage_id__id")
             page_name = "page" + stage.title + str(offboarding.id)
-            grouper = group_by_queryset(
+            employee_grouper = group_by_queryset(
                 stage_employees,
                 "stage_id",
                 filters.get(page_name),
                 page_name,
             ).object_list
-            data["stages"] = data["stages"] + grouper
 
+            data["stages"] = data["stages"] + employee_grouper
+
+        ordered_data = []
         existing_grouper_ids = list({item["grouper"].id for item in data["stages"]})
-        for item in all_stages_grouper:
-            if item["grouper"].id not in existing_grouper_ids:
-                data["stages"].append(
-                    {
-                        "grouper": item["grouper"],
-                        "list": [],
-                        "dynamic_name": f'dynamic_page_page{item["grouper"].id}',
-                    }
-                )
-
+        if set(existing_grouper_ids) != set(stages.values_list("id", flat=True)):
+            for sg in stages:
+                for grouper in data["stages"]:
+                    if sg != grouper["grouper"]:
+                        ordered_data.append(
+                            {"grouper": sg, "list": [], "dynamic_name": ""}
+                        )
+                    else:
+                        ordered_data.append(grouper)
+        else:
+            ordered_data = data["stages"]
+        data = {
+            "offboarding": offboarding,
+            "stages": ordered_data,
+        }
         groups.append(data)
     return groups
 
@@ -337,7 +345,7 @@ def change_stage(request):
 @any_manager_can_enter(
     "offboarding.view_offboardingnote", offboarding_employee_can_enter=True
 )
-def view_notes(request):
+def view_notes(request, employee_id=None):
     """
     This method is used to render all the notes of the employee
     """
@@ -352,8 +360,9 @@ def view_notes(request):
             attachment.save()
             attachments.append(attachment)
         note.attachments.add(*attachments)
-    offboarding_employee_id = request.GET["employee_id"]
+    offboarding_employee_id = employee_id
     employee = OffboardingEmployee.objects.get(id=offboarding_employee_id)
+
     return render(
         request,
         "offboarding/note/view_notes.html",
@@ -377,21 +386,33 @@ def add_note(request):
         form.instance.employee_id = employee
         if form.is_valid():
             form.save()
-            return HttpResponse(
-                f"""
-                    <div id="asfdoiioe09092u09un320" hx-get="/offboarding/view-offboarding-note?employee_id={employee.pk}"
-                        hx-target="#noteContainer" 
-                    >
-                    </div>
-                    <script>
-                        $("#asfdoiioe09092u09un320").click()
-                        $(".oh-modal--show").removeClass("oh-modal--show")
-                    </script>
-                """
-            )
+            messages.success(request, _("Note added successfully"))
+            return redirect("view-offboarding-note", employee_id=employee.id)
     return render(
-        request, "offboarding/note/form.html", {"form": form, "employee": employee}
+        request,
+        "offboarding/note/view_notes.html",
+        {
+            "form": form,
+            "employee": employee,
+        },
     )
+
+
+@login_required
+@manager_can_enter(perm="offboarding.delete_offboardingNote")
+def offboarding_note_delete(request, note_id):
+    """
+    This method is used to delete the offboarding note
+    """
+    try:
+        note = OffboardingNote.objects.get(id=note_id)
+        employee = note.employee_id.id
+        note.delete()
+        messages.success(request, _("Note deleted"))
+    except OffboardingNote.DoesNotExist:
+        messages.error(request, _("Note not found."))
+
+    return redirect("view-offboarding-note", employee_id=employee)
 
 
 @login_required
@@ -521,10 +542,17 @@ def task_assign(request):
     offboarding = employees.first().stage_id.offboarding_id
     stage_forms = {}
     stage_forms[str(offboarding.id)] = StageSelectForm(offboarding=offboarding)
+    groups = pipeline_grouper({}, [task.stage_id.offboarding_id])
+    for item in groups:
+        setattr(item["offboarding"], "stages", item["stages"])
     return render(
         request,
         "offboarding/stage/offboarding_body.html",
-        {"offboarding": offboarding, "stage_forms": stage_forms},
+        {
+            "offboarding": groups[0],
+            "stage_forms": stage_forms,
+            "response_message": _("Task Assigned"),
+        },
     )
 
 

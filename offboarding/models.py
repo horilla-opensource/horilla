@@ -295,7 +295,6 @@ class OffboardingNote(models.Model):
     attachments = models.ManyToManyField(
         OffboardingStageMultipleFile, blank=True, editable=False
     )
-    title = models.CharField(max_length=20, null=True)
     description = models.TextField(null=True, blank=True,max_length=255)
     note_by = models.ForeignKey(
         Employee, on_delete=models.SET_NULL, null=True, editable=False

@@ -21,7 +21,7 @@ urlpatterns = [
     path(
         "offboarding-change-stage", views.change_stage, name="offboarding-change-stage"
     ),
-    path("view-offboarding-note", views.view_notes, name="view-offboarding-note"),
+    path("view-offboarding-note/<int:employee_id>/", views.view_notes, name="view-offboarding-note"),
     path("add-offboarding-note", views.add_note, name="add-offboarding-note"),
     path(
         "delete-note-attachment", views.delete_attachment, name="delete-note-attachment"
@@ -39,6 +39,11 @@ urlpatterns = [
         "offboarding-individual-view/<int:emp_id>/",
         views.offboarding_individual_view,
         name="offboarding-individual-view",
+    ),
+    path(
+        "offboarding-note-delete/<int:note_id>/",
+        views.offboarding_note_delete,
+        name="offboarding-note-delete",
     ),
     path(
         "resignation-requests-view/",
