@@ -1,4 +1,4 @@
-<form hx-post="{% url "offboarding-add-task" %}?instance_id={{form.instance.pk}}" hx-target="#offboardingModalBody">
+<form hx-post="{% url "offboarding-add-task" %}?instance_id={{form.instance.pk}}&stage_id={{form.initial.stage_id}}" hx-target="#offboardingModalBody">
 {{form.as_p}}
 </form>
 
