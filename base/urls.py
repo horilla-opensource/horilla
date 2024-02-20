@@ -106,7 +106,7 @@ urlpatterns = [
         "company-delete/<int:id>/",
         views.object_delete,
         name="company-delete",
-        kwargs={"model": Company, "redirect": "/company-view"},
+        kwargs={"model": Company, "redirect": "/settings/company-view"},
     ),
     path("settings/department-view/", views.department_view, name="department-view"),
     path(
@@ -468,8 +468,16 @@ urlpatterns = [
         name="work-type-request-bulk-delete",
     ),
     path("shift-request", views.shift_request, name="shift-request"),
-    path("shift-request-reallocate", views.shift_request_allocation, name="shift-request-reallocate"),
-    path("update-employee-allocation", views.update_employee_allocation, name="update-employee-allocation"),
+    path(
+        "shift-request-reallocate",
+        views.shift_request_allocation,
+        name="shift-request-reallocate",
+    ),
+    path(
+        "update-employee-allocation",
+        views.update_employee_allocation,
+        name="update-employee-allocation",
+    ),
     path(
         "employee/shift-request-view",
         views.shift_request_view,
@@ -551,7 +559,11 @@ urlpatterns = [
         name="delete-all-notifications",
     ),
     path("read-notifications", views.read_notifications, name="read-notifications"),
-    path("mark-as-read-notification/<int:notification_id>", views.mark_as_read_notification, name="mark-as-read-notification"),
+    path(
+        "mark-as-read-notification/<int:notification_id>",
+        views.mark_as_read_notification,
+        name="mark-as-read-notification",
+    ),
     path(
         "mark-as-read-notification-json/",
         views.mark_as_read_notification_json,
@@ -570,8 +582,16 @@ urlpatterns = [
     path("settings/get-date-format/", views.get_date_format, name="get-date-format"),
     path("settings/save-time/", views.save_time_format, name="save_time_format"),
     path("settings/get-time-format/", views.get_time_format, name="get-time-format"),
-    path("history-field-settings",views.history_field_settings,name="history-field-settings"),
-    path("enable-account-block-unblock",views.enable_account_block_unblock,name="enable-account-block-unblock"),
+    path(
+        "history-field-settings",
+        views.history_field_settings,
+        name="history-field-settings",
+    ),
+    path(
+        "enable-account-block-unblock",
+        views.enable_account_block_unblock,
+        name="enable-account-block-unblock",
+    ),
     path(
         "settings/attendance-settings-view/",
         views.validation_condition_view,
@@ -812,5 +832,7 @@ urlpatterns = [
         announcement.announcement_single_view,
         name="announcement-single-view",
     ),
-    path("announcement-viewed-by",announcement.viewed_by,name="announcement-viewed-by")
+    path(
+        "announcement-viewed-by", announcement.viewed_by, name="announcement-viewed-by"
+    ),
 ]
