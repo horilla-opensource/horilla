@@ -30,8 +30,8 @@
       <div>
         <div class="oh-btn-group">
           {% if perms.offboarding.change_resignationletter %}
-          <button type="button" hx-get="{% url 'send-mail-employee' record.employee_id.id %}" title="{% trans " Send
-            Mail" %}" hx-target="#resignationModalBody" class="oh-btn oh-btn--light" data-toggle="oh-modal-toggle"
+          <button type="button" hx-get="{% url 'send-mail-employee' record.employee_id.id %}" 
+            title="{% trans " Send Mail" %}" hx-target="#resignationModalBody" class="oh-btn oh-btn--light" data-toggle="oh-modal-toggle"
             data-target="#resignationModal" style="flex: 1 0 auto; width: 40px; height: 40.68px; padding: 0"
             onclick="event.stopPropagation()"><ion-icon name="mail-open-outline" role="img" class="md hydrated"
               aria-label="mail open outline"></ion-icon>
@@ -73,27 +73,27 @@
       <div class="oh-btn-group">
         <button type="button"
           onclick="$(this).closest('form').find('input[name=status]').val('rejected');resignLetterConfirmation('{% trans 'Do You really want to reject the request?' %}',$(this).closest('form').find('[type=submit]'));"
-          class="oh-btn oh-btn--primary oh-btn--block w-100">
-          <ion-icon name="close" class="mr-1 md hydrated" role="img" aria-label="close"></ion-icon>
-          {% trans 'Reject' %}
+          class="oh-btn oh-btn--danger oh-btn--block w-100">
+          <ion-icon name="close-circle-outline" class="mr-1 md hydrated" role="img" aria-label="close"></ion-icon>
+          {% comment %} {% trans 'Reject' %} {% endcomment %}
         </button>
         {% if record.status != "approved" %}
         <button title="By approving the request employee will added to the offboarding pipeline" type="button"
           onclick="$(this).closest('form').find('input[name=status]').val('approved');resignLetterConfirmation('{% trans 'Do You really want to approve the request' %}?',$(this).closest('form').find('[type=submit]'),true);"
-          class="oh-btn oh-btn--secondary oh-btn--block w-100">
+          class="oh-btn oh-btn--success w-100 oh-btn--block w-100">
           <ion-icon name="checkmark" class="mr-1 md hydrated" role="img" aria-label="checkmark"></ion-icon>
-          {% trans 'Approve' %}
+          {% comment %} {% trans 'Approve' %} {% endcomment %}
         </button>
         {% else %}
-        <button type="button" class="oh-btn oh-btn--secondary oh-btn--disabled oh-btn--block w-100">
+        <button type="button" class="oh-btn oh-btn--success oh-btn--disabled oh-btn--block w-100">
           <ion-icon name="checkmark" class="mr-1 md hydrated" role="img" aria-label="checkmark"></ion-icon>
-          {% trans 'Approved' %}
+          {% comment %} {% trans 'Approved' %} {% endcomment %}
         </button>
         {% endif %}
         <input type="hidden" name="status">
         <input type="hidden" name="letter_ids" value="{{record.id}}">
         <input type="hidden" name="offboarding_id">
-        <input type="hidden" name="notice_period_starts" id="notice_period_starts{{record.id}}">
+        <input type="hidden" name="notice_period_starts" value="{% now "Y-m-d" %}" id="notice_period_starts{{record.id}}">
         <input type="hidden" name="notice_period_ends" id="notice_period_ends{{record.id}}">
         <button type="submit" hidden></button>
       </div>
@@ -146,23 +146,47 @@
     </nav>
   </div>
 </div>
-
+<style>
+  .swal2-html-container{
+    overflow-x: hidden !important;
+  }
+</style>
 <script>
   function resignLetterConfirmation(params, target, approve = false) {
     // Define the select box options
-    var selectOptions = '<select id="offboardingSelect" class="oh-select w-50" name="reason" title="{% trans "Add to offboarding" %}">' +
-     // {% for offboarding in offboardings %}
-  '<option value="{{offboarding.id}}">{{offboarding.title}}</option>' +
-    // {% endfor %}
-  '</select>';
+    var selectOptions = ``;
   var dateFields = '<label style="display:block;" for="notice_period_starts">Start Date:</label>' +
     `<input style="display:block;" onchange="$('#${target.siblings("input[name=notice_period_starts]").first().attr("id")}').val(this.value)" class="oh-input" type="date" id="notice_period_starts" name="notice_period_starts">` +
     '<label style="display:block;" for="notice_period_ends">End Date:</label>' +
     `<input style="display:block;" onchange="$('#${target.siblings("input[name=notice_period_ends]").first().attr("id")}').val(this.value)" class="oh-input" type="date" id="notice_period_ends" name="notice_period_ends">`;
 
-
   html = '<p>' + params + '</p>'
-  if (approve) { html = html + "<div align='center'>" + selectOptions + dateFields + "</div>" }
+  if (approve) { html = html + "<div >" + selectOptions + `
+    <div class='row' style='overflow-x:hidden;'>
+      <div class="col-12">
+        <div class="oh-label__info" for="offboardingSelect">
+          <label class="oh-label" for="offboardingSelect">Add to</label>
+        </div>
+          <select id="offboardingSelect" class="oh-select oh-select2 w-100" name="reason" title="{% trans "Add to offboarding" %}">
+            // {% for offboarding in offboardings %}
+              <option value="{{offboarding.id}}">{{offboarding.title}}</option>
+            // {% endfor %}
+        </select>      
+      </div>
+      <div class="col-6 col-md-6">
+        <div class="oh-label__info" for="notice_period_starts">
+          <label class="oh-label" for="notice_period_starts">Planned to leave on</label>
+        </div>
+          <input type="date" onchange="$('#${target.siblings("input[name=notice_period_starts]").first().attr("id")}').val(this.value);alert()" name="notice_period_starts" value="{% now "Y-m-d" %}"  class="oh-input w-100 form-control" required id="notice_period_starts">      
+      </div>
+      <div class="col-6 col-md-6">
+        <div class="oh-label__info" for="notice_period_ends">
+          <label class="oh-label" for="notice_period_ends">Notice period end</label>
+        </div>
+          <input type="date" onchange="$('#${target.siblings("input[name=notice_period_ends]").first().attr("id")}').val(this.value);alert()" name="notice_period_ends"  class="oh-input w-100 form-control" required id="notice_period_ends">      
+      </div>
+    </div>
+    ` + "</div>" }
   Swal.fire({
     html: html,
     icon: 'question',
