@@ -6,7 +6,7 @@ certifi==2023.11.17
 cffi==1.16.0
 charset-normalizer==3.3.2
 click==8.1.7
-cryptography==41.0.7
+cryptography==42.0.2
 cssselect2==0.7.0
 Django==4.2.7
 django-apscheduler==0.6.2
