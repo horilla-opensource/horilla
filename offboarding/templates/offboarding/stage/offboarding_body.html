@@ -2,7 +2,7 @@
 {% for stage in offboarding.offboarding.stages %}
 <div class="oh-accordion-meta" id="accordion{{stage.id}}">
     <div class="oh-accordion-meta__item">
-      <div class="oh-accordion-meta__header {% if stage.grouper.type != "archived" or not stage.list|length %} oh-accordion-meta__header--show" {% endif %}>
+      <div class="oh-accordion-meta__header {% if stage.list|length and stage.grouper.type != "archived"  %} oh-accordion-meta__header--show {% endif %}" >
         <span class="oh-accordion-meta__title" data-offboarding-id="{{offboarding.id}}">
           <span class="d-flex" onclick="event.stopPropagation()">
             <span class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round ms-2 mr-2"
@@ -10,11 +10,6 @@
               {{ stage.list|length }}
             </span>
             {{stage.grouper.title}}
-            {% if stage.grouper.is_archived_stage %}
-            <div class="oh-switch ml-2">
-              <input type="checkbox" class="show-archived oh-switch__checkbox" title="{% trans "Toggle Archived" %}"  onchange="showArchived($(this))">
-            </div>
-            {% endif %}
           </span>
         </span>
         <div class="oh-accordion-meta__actions" onclick="event.stopPropagation()">
@@ -54,8 +49,8 @@
         </div>
       </div>
       <div class="oh-accordion-meta__body {% if stage.grouper.type == "archived" or not stage.list|length %} d-none {% endif %}">
-        <div class="oh-sticky-table oh-sticky-table--no-overflow mb-5">
-          <div class="oh-sticky-table__table">
+        <div style="width: 100%;overflow-x: scroll; min-height: 200px;">
+          <div class="oh-sticky-table__table" style="border:1px solid hsl(213,22%,93%);">
             <div class="oh-sticky-table__thead">
               <div class="oh-sticky-table__tr">
                 <div class="oh-sticky-table__th">{% trans "Employee" %}</div>
@@ -67,13 +62,27 @@
                 {% endif %}
                 <div class="oh-sticky-table__th">{% trans "Actions" %}</div>
                 {% for task in stage.grouper.offboardingtask_set.all %}
-                <div class="oh-sticky-table__th" style="width: 200px;" hx-get="{% url "offboarding-add-task" %}?stage_id={{stage.grouper.id}}&instance_id={{task.id}}" hx-target="#offboardingModalBody" data-toggle="oh-modal-toggle" data-target="#offboardingModal">
-                  <div class="d-flex justify-content-between">
-                    <span title="Click to edit">
+                <div class="oh-sticky-table__th" style="width: 200px;" >
+                  <div class="d-flex justify-content-between align-items-center">
+                    <span>
                       {{task.title}}
                     </span>
                     {% if perms.offboarding.delete_offboardingtask %}
-                    <a class="text-danger" href="{% url 'delete-offboarding-task' %}?task_ids={{task.id}}" title="{% trans "Delete" %}" onclick="event.stopPropagation();return confirm('Do you want to delete task?')"><ion-icon  name="trash-outline"></ion-icon></a>
+                    <div class="oh-dropdown" x-data="{open: false}">
+                      <button class="oh-btn oh-stop-prop oh-btn--transparent oh-accordion-meta__btn" @click="open = !open" @click.outside="open = false" title="Actions">
+                      <ion-icon name="ellipsis-vertical" role="img" class="md hydrated" aria-label="ellipsis vertical"></ion-icon>
+                      </button>
+                      <div class="oh-dropdown__menu oh-dropdown__menu--right" x-show="open" style="text-align: left !important; display: none;">
+                         <ul class="oh-dropdown__items">
+                            <li class="oh-dropdown__item">
+                               <a class="oh-dropdown__link" hx-get="{% url "offboarding-add-task" %}?stage_id={{stage.grouper.id}}&instance_id={{task.id}}" hx-target="#offboardingModalBody" data-toggle="oh-modal-toggle" data-target="#offboardingModal">{% trans "Edit" %}
+                               </a>
+                            </li> <li class="oh-dropdown__item">
+                               <a class="oh-dropdown__link oh-dropdown__link--danger" href="{% url 'delete-offboarding-task' %}?task_ids={{task.id}}" title="{% trans "Delete" %}" onclick="event.stopPropagation();return confirm('Do you want to delete task?')">Delete</a>
+                            </li>
+                         </ul>
+                      </div>
+                   </div>
                     {% endif %}
                   </div>
                 </div>
@@ -92,6 +101,67 @@
             </div>
           </div>
         </div>
+        {% if stage.list.number %}
+        <div class="oh-pagination">
+          <span class="oh-pagination__page">
+            {% trans "Page" %} {{ stage.list.number }} {% trans "of" %} {{ stage.list.paginator.num_pages }}.
+          </span>
+          <nav class="oh-pagination__nav">
+            <div class="oh-pagination__input-container me-3">
+            <span class="oh-pagination__label me-1">{% trans "Page" %}</span>
+            <input
+              type="number"
+              name="{{stage.dynamic_name}}"
+              class="oh-pagination__input"
+              value="{{stage.list.number}}"
+              hx-get="{% url 'offboarding-pipeline-filter' %}?{{pd}}"
+              hx-target="#offboardingBody{{offboarding.offboarding.id}}"
+              min="1"
+            />
+            <span class="oh-pagination__label"
+              >{% trans "of" %} {{stage.list.paginator.num_pages}}</span
+            >
+            </div>
+            <ul class="oh-pagination__items">
+            {% if stage.list.has_previous %}
+            <li class="oh-pagination__item oh-pagination__item--wide">
+              <a
+              hx-target="#offboardingBody{{offboarding.offboarding.id}}"
+              hx-get="{% url 'offboarding-pipeline-filter' %}?{{pd}}&{{stage.dynamic_name}}=1"
+              class="oh-pagination__link"
+              >{% trans "First" %}</a
+              >
+            </li>
+            <li class="oh-pagination__item oh-pagination__item--wide">
+              <a
+              hx-target="#offboardingBody{{offboarding.offboarding.id}}"
+              hx-get="{% url 'offboarding-pipeline-filter' %}?{{pd}}&{{stage.dynamic_name}}={{ stage.list.previous_page_number }}"
+              class="oh-pagination__link"
+              >{% trans "Previous" %}</a
+              >
+            </li>
+            {% endif %} {% if stage.list.has_next %}
+            <li class="oh-pagination__item oh-pagination__item--wide">
+              <a
+              hx-target="#offboardingBody{{offboarding.offboarding.id}}"
+              hx-get="{% url 'offboarding-pipeline-filter' %}?{{pd}}&{{stage.dynamic_name}}={{ stage.list.next_page_number }}"
+              class="oh-pagination__link"
+              >{% trans "Next" %}</a
+              >
+            </li>
+            <li class="oh-pagination__item oh-pagination__item--wide">
+              <a
+              hx-target="#offboardingBody{{offboarding.offboarding.id}}"
+              hx-get="{% url 'offboarding-pipeline-filter' %}?{{pd}}&{{stage.dynamic_name}}={{ stage.list.paginator.num_pages }}"
+              class="oh-pagination__link"
+              >{% trans "Last" %}</a
+              >
+            </li>
+            {% endif %}
+            </ul>
+          </nav>
+        </div>
+        {% endif %}
       </div>
     </div>
   </div>
