@@ -37,12 +37,12 @@ var approveMessages = {
   en: "Do you really want to approve all the selected requests?",
   fr: "Voulez-vous vraiment approuver toutes les demandes sélectionnées?",
 };
-var cancelMessages = {
-  ar: "هل ترغب حقًا في إلغاء جميع الطلبات المحددة؟",
-  de: "Möchten Sie wirklich alle ausgewählten Anfragen stornieren?",
-  es: "Realmente quieres cancelar todas las solicitudes seleccionadas?",
-  en: "Do you really want to cancel all the selected requests?",
-  fr: "Voulez-vous vraiment annuler toutes les demandes sélectionnées?",
+var rejectMessages = {
+  ar: "هل تريد حقًا رفض جميع الطلبات المحددة؟",
+  de: "Möchten Sie wirklich alle ausgewählten Anfragen ablehnen?",
+  es: "¿Realmente deseas rechazar todas las solicitudes seleccionadas?",
+  en: "Do you really want to reject all the selected requests?",
+  fr: "Voulez-vous vraiment rejeter toutes les demandes sélectionnées?",
 };
 var requestDeleteMessages = {
   ar: "هل ترغب حقًا في حذف جميع الطلبات المحددة؟",
@@ -774,7 +774,7 @@ $("#cancelShiftRequest").click(function (e) {
   var languageCode = null;
   getCurrentLanguageCode(function (code) {
     languageCode = code;
-    var confirmMessage = cancelMessages[languageCode];
+    var confirmMessage = rejectMessages[languageCode];
     var textMessage = norowMessages[languageCode];
     ids = [];
     ids.push($("#selectedShifts").attr("data-ids"));
@@ -1023,7 +1023,7 @@ $("#cancelWorkTypeRequest").click(function (e) {
   var languageCode = null;
   getCurrentLanguageCode(function (code) {
     languageCode = code;
-    var confirmMessage = cancelMessages[languageCode];
+    var confirmMessage = rejectMessages[languageCode];
     var textMessage = norowMessages[languageCode];
     ids = [];
     ids.push($("#selectedWorktypes").attr("data-ids"));

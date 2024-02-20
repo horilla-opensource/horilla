@@ -4417,13 +4417,6 @@ def tag_update(request, tag_id):
 
 
 @login_required
-def tag_delete(request, tag_id):
-    Tags.objects.get(id=tag_id).delete()
-    messages.success(request, _("Tag has been deleted successfully!"))
-    return redirect(tag_view)
-
-
-@login_required
 def employee_tag_create(request):
     """
     This method renders form and template to create Ticket type
@@ -4467,13 +4460,6 @@ def employee_tag_update(request, tag_id):
 
 
 @login_required
-def employee_tag_delete(request, tag_id):
-    EmployeeTag.objects.get(id=tag_id).delete()
-    messages.success(request, _("Tag has been deleted successfully!"))
-    return redirect(tag_view)
-
-
-@login_required
 def audit_tag_create(request):
     """
     This method renders form and template to create Ticket type
@@ -4514,13 +4500,6 @@ def audit_tag_update(request, tag_id):
         "base/audit_tag/audit_tag_form.html",
         {"form": form, "tag_id": tag_id},
     )
-
-
-@login_required
-def audit_tag_delete(request, tag_id):
-    AuditTag.objects.get(id=tag_id).delete()
-    messages.success(request, _("Tag has been deleted successfully!"))
-    return redirect(tag_view)
 
 
 @login_required

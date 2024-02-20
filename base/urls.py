@@ -17,9 +17,13 @@ from base.models import (
     RotatingShiftAssign,
     RotatingWorkType,
     RotatingWorkTypeAssign,
+    Tags,
     WorkType,
 )
 from django.contrib.auth.models import Group
+
+from employee.models import EmployeeTag
+from horilla_audit.models import AuditTag
 
 urlpatterns = [
     path("", views.home, name="home-page"),
@@ -660,7 +664,12 @@ urlpatterns = [
     path("settings/tag-view/", views.tag_view, name="tag-view"),
     path("tag-create", views.tag_create, name="tag-create"),
     path("tag-update/<int:tag_id>", views.tag_update, name="tag-update"),
-    path("tag-delete/<int:tag_id>", views.tag_delete, name="tag-delete"),
+    path(
+        "tag-delete/<int:id>",
+        views.object_delete,
+        name="tag-delete",
+        kwargs={"model": Tags, "redirect": "/settings/tag-view/"},
+    ),
     path("employee-tag-create", views.employee_tag_create, name="employee-tag-create"),
     path(
         "employee-tag-update/<int:tag_id>",
@@ -668,16 +677,20 @@ urlpatterns = [
         name="employee-tag-update",
     ),
     path(
-        "employee-tag-delete/<int:tag_id>",
-        views.employee_tag_delete,
+        "employee-tag-delete/<int:id>/",
+        views.object_delete,
         name="employee-tag-delete",
+        kwargs={"model": EmployeeTag, "redirect": "/settings/tag-view/"},
     ),
     path("audit-tag-create", views.audit_tag_create, name="audit-tag-create"),
     path(
         "audit-tag-update/<int:tag_id>", views.audit_tag_update, name="audit-tag-update"
     ),
     path(
-        "audit-tag-delete/<int:tag_id>", views.audit_tag_delete, name="audit-tag-delete"
+        "audit-tag-delete/<int:id>",
+        views.object_delete,
+        name="audit-tag-delete",
+        kwargs={"model": AuditTag, "redirect": "/settings/tag-view/"},
     ),
     path(
         "configuration/multiple-approval-condition",
