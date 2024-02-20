@@ -125,7 +125,7 @@
                 <a
                   type="submit"
                   class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
-                  title="{% trans 'Re-validate Request' %}"
+                  title="{% trans 'Cancel / Reject' %}"
                   onclick="event.stopPropagation();return confirm('{% trans "Are you sure want to cancel the request?" %}');"
                   href="{% url 'cancel-validate-attendance-request' attendance.id %}"
                 >
