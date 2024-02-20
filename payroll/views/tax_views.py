@@ -121,7 +121,7 @@ def filing_status_delete(request, filing_status_id):
     except:
         messages.error(request, _("This filing status not found"))
 
-    return redirect(filing_status_view)
+    return redirect(filing_status_search)
 
 
 @login_required

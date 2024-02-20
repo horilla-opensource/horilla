@@ -1,5 +1,12 @@
 {% load i18n %}
 {% include 'filter_tags.html' %}
+{% for message in messages %}
+  <div class="oh-alert-container">
+    <div class="oh-alert oh-alert--animated {{message.tags}}">
+      {{ message }}
+    </div>
+  </div>
+  {% endfor %}
 <div class="oh-card" id="">
   <div class="oh-accordion-meta">
     <div class="">
@@ -67,9 +74,9 @@
                   {% if perms.payroll.delete_filingstatus %}
                   <li class="oh-dropdown__item">
                     <form 
-                      action="{% url 'filing-status-delete' filing_status_id=filing_status.id %}"
-                      onsubmit="return confirm('{% trans "Are you sure to delete this status ?" %}')" 
-                      method="post"
+                      hx-confirm="{% trans 'Are you sure to delete this status ?' %}"
+                      hx-post="{% url 'filing-status-delete' filing_status_id=filing_status.id %}" 
+                      hx-target="#FilingStatusList"
                       style="display: contents">
                       {% csrf_token %}
                       <button class="oh-dropdown__link oh-dropdown__link--danger">

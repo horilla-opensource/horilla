@@ -57,7 +57,18 @@ window.confirm = function (message) {
   }).then((result) => {
     if (result.isConfirmed) {
       if (event.target.tagName.toLowerCase() === "form") {
-        event.target.submit();
+        if (event.target["htmx-internal-data"]) {
+          var path = event.target["htmx-internal-data"].path;
+          var verb = event.target["htmx-internal-data"].verb;
+          var hxTarget = $(event.target).attr("hx-target");
+          if (verb === "post") {
+            htmx.ajax("POST", path, hxTarget);
+          } else {
+            htmx.ajax("GET", path, hxTarget);
+          }
+        } else {
+          event.target.submit();
+        }
       } else if (event.target.tagName.toLowerCase() === "a") {
         if (event.target.href) {
           window.location.href = event.target.href;
