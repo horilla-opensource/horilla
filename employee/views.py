@@ -249,7 +249,7 @@ def employee_view_individual(request, obj_id, **kwargs):
             "employee": employee,
             "employee_leaves": employee_leaves,
             "leave_request_ids": leave_request_ids,
-            "enabled_block_unblock":enabled_block_unblock,
+            "enabled_block_unblock": enabled_block_unblock,
         },
     )
 
@@ -1265,7 +1265,7 @@ def employee_account_block_unblock(request, emp_id):
             employee=employee, action_message=action_message
         ),
     )
-    return redirect(employee_view_individual,obj_id=emp_id)
+    return redirect(employee_view_individual, obj_id=emp_id)
 
 
 @login_required
@@ -1621,7 +1621,7 @@ def employee_filter_view(request):
     if view == "list":
         template = "employee_personal_info/employee_list.html"
     if field != "" and field is not None:
-        employees = group_by_queryset(employees,field,page_number,"page")
+        employees = group_by_queryset(employees, field, page_number, "page")
         template = "employee_personal_info/group_by.html"
     else:
         employees = sortby(request, employees, "orderby")
