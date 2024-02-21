@@ -3,7 +3,7 @@
   <div class="oh-sticky-table__thead">
     <div class="oh-sticky-table__tr">
       <div class="oh-sticky-table__th">{% trans "Leave Type" %}</div>
-      <div class="oh-sticky-table__th">{% trans "Minus Days" %}</div>
+      <div class="oh-sticky-table__th" style="width:110px;">{% trans "Minus Days" %}</div>
       <div class="oh-sticky-table__th">
         {% trans "Deducted From" %} <span title="{% trans 'Carry Forward Days' %}">{% trans "CFD" %}</span>
       </div>
@@ -23,7 +23,7 @@
             {% trans "No" %}
           {% endif %}
         </div>
-        <div class="oh-sticky-table__td">{{ acc.penalty_amount }}</div>
+        <div class="oh-sticky-table__td">{{currency}} {{ acc.penalty_amount }}</div>
         <div class="oh-sticky-table__td">{{ acc.created_at }}</div>
       </div>
     {% endfor %}
