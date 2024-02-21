@@ -24,80 +24,81 @@
             <span class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round ms-2 mr-2 stage_count" title="{{stage.list|length}} {% trans 'Candidate' %}">{{stage.list|length}}</span>
             <span class="oh-accordion-meta__title">{{stage.grouper}}</span>
         </div>
-        {% if request.user|stage_manages:stage or perms.onboarding.change_onboardingstage or  perms.onboarding.delete_onboardingstage %}
-        <div class="oh-btn-group" style="margin-left:70%">
-            {% if request.user|stage_manages:stage or perms.onboarding.change_onboardingstage %}
-            <a
-                onclick="event.stopPropagation();"
-                hx-get="{% url 'stage-update' stage.grouper.id recruitment.id %}" 
-                hx-target="#updateStage"
-                data-toggle="oh-modal-toggle"
-                data-target="#editModal3"
-                class="oh-btn oh-btn--light-bkg w-100"
-                title="{% trans 'Edit' %}"
-                >
-                <ion-icon name="create-outline"></ion-icon
-                    >
-            </a>
-            {% else %}
-            <a
-                onclick="event.stopPropagation();"
-                data-toggle="oh-modal-toggle"
-                data-target="#editModal3"
-                class="oh-btn oh-btn--light-bkg w-100 oh-btn--disabled"
-                title="{% trans 'Edit' %}"
-                >
-                <ion-icon name="create-outline"></ion-icon
-                    >
-            </a>
-            {% endif %}
-            {% if request.user|stage_manages:stage or perms.onboarding.delete_onboardingstage %}
-            <form action="{% url 'stage-delete' stage.grouper.id %}"
-            onsubmit="return confirm('{% trans "Do you want to delete this stage?" %}')"
-            class="oh-dropdown__link oh-dropdown__link--danger"
-            >
-            <button
-                onclick="event.stopPropagation();"
-                type="submit"
-                class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
-                title="{% trans 'Remove' %}"
-                >
-                <ion-icon name="trash-outline"></ion-icon>
-            </button>
-            </form>
-            {% else %}
-            <button
-                onclick="event.stopPropagation();"
-                type="submit"
-                class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100 oh-btn--disabled "
-                title="{% trans 'Remove' %}"
-                >
-                <ion-icon name="trash-outline"></ion-icon>
-            </button>
-            {% endif %}
-            {% if request.user|stage_manages:stage or perms.onboarding.change_onboardingstage %}
-            <select id="" 
-            class="w-100 bulkStageChange" 
-            style="border: 1px solid hsl(213deg,22%,84%);
-            padding: 0.3rem 0.8rem 0.3rem 0.3rem;
-            border-radius: 0rem;background-color:white;" name="stage"
-            data-stage = "#onboarding_stage{{stage.grouper.id}}"
-            data-recruitment = {{recruitment.id}}
-            title = "Bulk stage change"
-            onclick="event.stopPropagation();"
-            onchange = "bulkStageChange(this);">
-               <option style="color: #999;">{% trans "Bulk Stage Change" %}</option>
-                {% for on_stage in recruitment.onboarding_stage.all %}
-                {% comment %} {% if on_stage == stage %}
-                <option value="{{on_stage.id}}" selected>{{on_stage}}</option>
-                {% else %} {% endcomment %}
-                <option value="{{on_stage.id}}">{{on_stage}}</option>
-                {% comment %} {% endif %} {% endcomment %}
-                {% endfor %}
-            </select>
-            {% endif %}
-        </div>
-        {% endif %}
+        <div class="d-flex">
+         {% if request.user|stage_manages:stage or perms.onboarding.change_onboardingstage or  perms.onboarding.delete_onboardingstage %}
+         <div class="oh-btn-group" >
+               {% if request.user|stage_manages:stage or perms.onboarding.change_onboardingstage %}
+               <a
+                  onclick="event.stopPropagation();"
+                  hx-get="{% url 'stage-update' stage.grouper.id recruitment.id %}" 
+                  hx-target="#updateStage"
+                  data-toggle="oh-modal-toggle"
+                  data-target="#editModal3"
+                  class="oh-btn oh-btn--light-bkg w-100"
+                  title="{% trans 'Edit' %}"
+                  >
+                  <ion-icon name="create-outline"></ion-icon
+                     >
+               </a>
+               {% else %}
+               <a
+                  onclick="event.stopPropagation();"
+                  data-toggle="oh-modal-toggle"
+                  data-target="#editModal3"
+                  class="oh-btn oh-btn--light-bkg w-100 oh-btn--disabled w-100"
+                  title="{% trans 'Edit' %}"
+                  >
+                  <ion-icon name="create-outline"></ion-icon
+                     >
+               </a>
+               {% endif %}
+               {% if request.user|stage_manages:stage or perms.onboarding.delete_onboardingstage %}
+                  <form action="{% url 'stage-delete' stage.grouper.id %}"
+                     onsubmit="return confirm('{% trans "Do you want to delete this stage?" %}')"
+                     class="oh-dropdown__link oh-dropdown__link--danger w-100"
+                  >
+                     <button
+                        onclick="event.stopPropagation();"
+                        type="submit"
+                        class="oh-btn oh-btn--danger-outline oh-btn--light-bkg "
+                        title="{% trans 'Remove' %}"
+                        >
+                        <ion-icon name="trash-outline"></ion-icon>
+                     </button>
+                  </form>
+               {% else %}
+                  <button
+                     onclick="event.stopPropagation();"
+                     type="submit"
+                     class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100 oh-btn--disabled "
+                     title="{% trans 'Remove' %}"
+                     >
+                     <ion-icon name="trash-outline"></ion-icon>
+                  </button>
+               {% endif %}
+               
+         </div>
+         {% if request.user|stage_manages:stage or perms.onboarding.change_onboardingstage %}
+               <select id="" 
+                  class="bulkStageChange" 
+                  style="border: 1px solid hsl(213deg,22%,84%);
+                  padding: 0.3rem 0.8rem 0.3rem 0.3rem;
+                  height:40px;margin-left:5px;
+                  border-radius: 0rem;background-color:white;" name="stage"
+                  data-stage = "#onboarding_stage{{stage.grouper.id}}"
+                  data-recruitment = {{recruitment.id}}
+                  title = "Bulk stage change"
+                  onclick="event.stopPropagation();"
+                  onchange = "bulkStageChange(this);"
+               >
+                  <option style="color: #999;">{% trans "Bulk Stage Change" %}</option>
+                  {% for on_stage in recruitment.onboarding_stage.all %}
+                  <option value="{{on_stage.id}}">{{on_stage}}</option>
+                  {% endfor %}
+               </select>
+               {% endif %}
+         {% endif %}
+         </div>
     </div>
     {% comment %} fixed {% endcomment %}
 
