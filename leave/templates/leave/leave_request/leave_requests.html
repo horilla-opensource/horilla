@@ -73,7 +73,7 @@
                     {% if  not dashboard %}
                         <div class="oh-sticky-table__th" style="width:115px;">{% trans "Comment" %}</div>
                         {% if request.user|is_reportingmanager or perms.leave.chanage_leaverequest or perms.leave.delete_leaverequest or request.user|is_leave_approval_manager %}
-                        <div class="oh-sticky-table__th">{% trans "Actions" %}</div>
+                        <div class="oh-sticky-table__th" style="width:200px">{% trans "Actions" %}</div>
                         {% endif %}
                         <div class="oh-sticky-table__th" >{% trans "Penalties" %}</div>
                         <div class="oh-sticky-table__th oh-sticky-table__right">{% trans "Confirmation" %}</div>
