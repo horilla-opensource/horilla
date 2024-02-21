@@ -13,18 +13,18 @@ style="cursor: pointer"
 <div
 class="oh-checkpoint-badge text-secondary mb-2"
 id="unselectAllWorktypes"
-style="cursor: pointer"
+style="cursor: pointer;display: none;"
 >
   {% trans "Unselect All Worktypes" %}
 </div>
 <div
 class="oh-checkpoint-badge text-info mb-2"
 id="exportWorktypes"
-style="cursor: pointer; display: none"
+style="cursor: pointer; display: none;"
 >
   {% trans "Export Worktypes" %}
 </div>
-<div class="oh-checkpoint-badge text-danger mb-2" id="selectedShowWorktypes" style="display: none"></div>
+<div class="oh-checkpoint-badge text-danger mb-2" id="selectedShowWorktypes" style="display: none;"></div>
 
 {% if data %}
   <div class="oh-table_sticky--wrapper">
@@ -291,8 +291,10 @@ style="cursor: pointer; display: none"
       if (selectedCount === 0) {
         $("#selectedShowWorktypes").css("display", "none");
         $("#exportWorktypes").css("display", "none");
+        $("#unselectAllWorktypes").css("display", "none");
       } else {
         $("#exportWorktypes").css("display", "inline-flex");
+        $("#unselectAllWorktypes").css("display", "inline-flex");
         $("#selectedShowWorktypes").css("display", "inline-flex");
         $("#selectedShowWorktypes").text(selectedCount + " - " + message);
       }
@@ -301,6 +303,9 @@ style="cursor: pointer; display: none"
 
   $(document).ready(function () {
     $(".all-work-type-requests-row").change(function () {
+      if ($('.all-work-type-requests').is(":checked")) {
+        $(".all-work-type-requests").prop("checked", false);
+      }
       addingWorktypeIds();
     });
 

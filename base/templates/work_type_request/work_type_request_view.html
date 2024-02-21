@@ -36,8 +36,11 @@
     </div>
     <!-- end of quick filters  -->
     <div id="view-container" >
-        {% if data %} {% include 'work_type_request/htmx/requests.html' %} {% else %}
-        {% include 'work_type_request/htmx/empty_request.html' %} {% endif %}
+        {% if data %} 
+            {% include 'work_type_request/htmx/requests.html' %} 
+        {% else %}
+            {% include 'work_type_request/htmx/empty_request.html' %} 
+        {% endif %}
     </div>
 </div>
 
