@@ -465,7 +465,7 @@ class EmployeeWorkInformation(models.Model):
         EmployeeTag, blank=True, verbose_name=_("Employee tag")
     )
     location = models.CharField(
-        max_length=50, blank=True, verbose_name=_("Work Location")
+        max_length=50, null=True, blank=True, verbose_name=_("Work Location")
     )
     email = models.EmailField(
         max_length=254, blank=True, null=True, verbose_name=_("Email")

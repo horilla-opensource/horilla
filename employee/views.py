@@ -16,6 +16,7 @@ import ast
 import json
 import operator
 import calendar
+import re
 import pandas as pd
 from urllib.parse import parse_qs
 from collections import defaultdict
@@ -533,7 +534,7 @@ def document_request_view(request):
     documents = Document.objects.filter(document_request_id__isnull=False)
     documents = filtersubordinates(
         request=request,
-        perm="attendance.view_attendance",
+        perm="horilla_documents.view_documentrequests",
         queryset=documents,
     )
     documents = group_by_queryset(
@@ -2166,27 +2167,54 @@ def work_info_import(request):
     """
     data_frame = pd.DataFrame(
         columns=[
-            "badge_id",
-            "first_name",
-            "last_name",
-            "phone",
-            "email",
-            "gender",
-            "department",
-            "job_position",
-            "job_role",
-            "work_type",
-            "shift",
-            "employee_type",
-            "reporting_manager",
-            "company",
-            "location",
-            "date_joining",
-            "contract_end_date",
-            "basic_salary",
-            "salary_hour",
+            "Badge id",
+            "First Name",
+            "Last Name",
+            "Phone",
+            "Email",
+            "Gender",
+            "Department",
+            "Job Position",
+            "Job Role",
+            "Work Type",
+            "Shift",
+            "Employee Type",
+            "Reporting Manager",
+            "Company",
+            "Location",
+            "Date joining",
+            "Contract End Date",
+            "Basic Salary",
+            "Salary Hour",
         ]
     )
+    error_data={
+            "Badge id" : [],
+            "First Name" : [],
+            "Last Name" : [],
+            "Phone" : [],
+            "Email" : [],
+            "Gender" : [],
+            "Department" : [],
+            "Job Position" : [],
+            "Job Role" : [],
+            "Work Type" : [],
+            "Shift" : [],
+            "Employee Type" : [],
+            "Reporting Manager" : [],
+            "Company" : [],
+            "Location" : [],
+            "Date joining" : [],
+            "Contract End Date" : [],
+            "Basic Salary" : [],
+            "Salary Hour" : [],
+            "Email Error" : [],
+            "First Name error" : [],
+            "Phone error" : [],
+            "Joining Date Error" : [],
+            "Contract Error" : [],
+        }
+    
     # Export the DataFrame to an Excel file
     response = HttpResponse(content_type="application/ms-excel")
     response["Content-Disposition"] = 'attachment; filename="work_info_template.xlsx"'
@@ -2198,25 +2226,55 @@ def work_info_import(request):
         work_info_dicts = data_frame.to_dict("records")
         error_lists = []
         for work_info in work_info_dicts:
+            error = False
             try:
-                email = work_info["email"]
-                phone = work_info["phone"]
-                first_name = work_info["first_name"]
-                last_name = work_info["last_name"]
-                badge_id = convert_nan("badge_id", work_info)
-                department = convert_nan("department", work_info)
-                job_position = convert_nan("job_position", work_info)
-                job_role = convert_nan("job_role", work_info)
-                work_type = convert_nan("work_type", work_info)
-                employee_type = convert_nan("employee_type", work_info)
-                reporting_manager = convert_nan("reporting_manager", work_info)
-                company = convert_nan("company", work_info)
-                location = convert_nan("location", work_info)
-                shift = convert_nan("shift", work_info)
-                date_joining = convert_nan("date_joining", work_info)
-                contract_end_date = convert_nan("contract_end_date", work_info)
-                basic_salary = convert_nan("basic_salary", work_info)
-                gender = work_info.get("gender")
+                email = work_info["Email"]
+                phone = work_info["Phone"]                
+                first_name = convert_nan("First Name", work_info)
+                last_name = work_info["Last Name"]
+                badge_id = convert_nan("Badge id", work_info)
+                department = convert_nan("Department", work_info)
+                job_position = convert_nan("Job Position", work_info)
+                job_role = convert_nan("Job Role", work_info)
+                work_type = convert_nan("Work Type", work_info)
+                employee_type = convert_nan("Employee Type", work_info)
+                reporting_manager = convert_nan("Reporting Manager", work_info)
+                company = convert_nan("Company", work_info)
+                location = convert_nan("Location", work_info)
+                shift = convert_nan("Shift", work_info)
+                date_joining = work_info["Date joining"]
+                contract_end_date = work_info["Contract End Date"]                
+                basic_salary = convert_nan("Basic Salary", work_info)
+                salary_hour = convert_nan("Salary Hour", work_info)
+                gender = work_info.get("Gender")
+
+                pattern = r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
+                if re.match(pattern, email):
+                    pass
+                else:
+                    work_info["Email Error"] = f"Invalid Email address"
+                    error = True
+
+                if first_name is None:
+                    work_info["First Name error"] = f"First Name can't be empty"
+                    error = True
+
+                if pd.isna(phone):
+                    work_info["Phone error"] = f"Phone Number can't be empty"
+                    error = True
+
+                try:
+                    pd.to_datetime(date_joining).date()
+                except:
+                    work_info["Joining Date Error"] = f"Invalid Date format. Please use the format YYYY-MM-DD"
+                    error = True
+
+                try:
+                    pd.to_datetime(contract_end_date).date()
+                except:
+                    work_info["Contract Error"] = f"Invalid Date format. Please use the format YYYY-MM-DD"
+                    error = True
+
                 user = User.objects.filter(username=email).first()
                 if user is None:
                     user = User.objects.create_user(
@@ -2226,11 +2284,7 @@ def work_info_import(request):
                         is_superuser=False,
                     )
 
-                    employee_obj = Employee.objects.filter(
-                        employee_first_name=first_name, employee_last_name=last_name
-                    ).first()
-                    if employee_obj is None:
-                        employee_obj = Employee()
+                    employee_obj = Employee()
                     employee_obj.employee_user_id = user
                     employee_obj.badge_id = badge_id
                     employee_obj.employee_first_name = first_name
@@ -2238,11 +2292,11 @@ def work_info_import(request):
                     employee_obj.email = email
                     employee_obj.phone = phone
                     employee_obj.gender = gender.lower()
-                    employee_obj.save()
+
                     department_obj = Department.objects.filter(
                         department=department
                     ).first()
-                    if department_obj is None:
+                    if department_obj is None and department is not None:
                         department_obj = Department()
                         department_obj.department = department
                         department_obj.save()
@@ -2250,7 +2304,7 @@ def work_info_import(request):
                     job_position_obj = JobPosition.objects.filter(
                         department_id=department_obj, job_position=job_position
                     ).first()
-                    if job_position_obj is None:
+                    if job_position_obj is None  and job_position is not None:
                         job_position_obj = JobPosition()
                         job_position_obj.department_id = department_obj
                         job_position_obj.job_position = job_position
@@ -2259,32 +2313,33 @@ def work_info_import(request):
                     job_role_obj = JobRole.objects.filter(
                         job_role=job_role, job_position_id=job_position_obj
                     ).first()
-                    if job_role_obj is None:
+                    if job_role_obj is None and job_role is not None:
                         job_role_obj = JobRole()
                         job_role_obj.job_position_id = job_position_obj
                         job_role_obj.job_role = job_role
                         job_role_obj.save()
 
                     work_type_obj = WorkType.objects.filter(work_type=work_type).first()
-                    if work_type_obj is None:
+                    if work_type_obj is None and work_type is not None:
                         work_type_obj = WorkType()
                         work_type_obj.work_type = work_type
-                        work_type_obj.save()
 
                     shift_obj = EmployeeShift.objects.filter(
                         employee_shift=shift
                     ).first()
-                    if shift_obj is None:
+                    if shift_obj is None and shift is not None:
                         shift_obj = EmployeeShift()
                         shift_obj.employee_shift = shift
                         shift_obj.save()
+
                     employee_type_obj = EmployeeType.objects.filter(
                         employee_type=employee_type
                     ).first()
-                    if employee_type_obj is None:
+                    if employee_type_obj is None and employee_type is not None:
                         employee_type_obj = EmployeeType()
                         employee_type_obj.employee_type = employee_type
                         employee_type_obj.save()
+
                     manager_fname, manager_lname = "", ""
                     if isinstance(reporting_manager, str) and " " in reporting_manager:
                         manager_fname, manager_lname = reporting_manager.split(" ", 1)
@@ -2308,26 +2363,43 @@ def work_info_import(request):
                     employee_work_info.company_id = company_obj
                     employee_work_info.shift_id = shift_obj
                     employee_work_info.location = location
-                    employee_work_info.date_joining = date_joining
-                    employee_work_info.contract_end_date = contract_end_date
-                    employee_work_info.basic_salary = basic_salary
-                    employee_work_info.save()
+                    employee_work_info.date_joining = date_joining if date_joining == "nan" else datetime.today()
+                    employee_work_info.contract_end_date = contract_end_date if contract_end_date == "nan" else None
+                    employee_work_info.basic_salary = basic_salary if type(basic_salary) is int else 0
+                    employee_work_info.salary_hour = salary_hour if type(salary_hour) is int else 0
+
+                    if error:
+                        error_lists.append(work_info)
+                        user.delete()
+                    else:
+                        employee_obj.save()
+                        employee_work_info.save() 
             except Exception as e:
                 logger.error(e)
-                error_lists.append(work_info)
+
         if error_lists:
-            res = defaultdict(list)
-            for sub in error_lists:
-                for key in sub:
-                    res[key].append(sub[key])
-            # df = pd.DataFrame(res)
-            data_frame = pd.DataFrame(error_lists, columns=error_lists[0].keys())
+            for item in error_lists:
+                for key, value in error_data.items():
+                    if key in item:
+                        value.append(item[key])
+                    else:
+                        value.append(None)
+
+            keys_to_remove = [
+                key for key, value in error_data.items() if all(v is None for v in value)
+            ]
+
+            for key in keys_to_remove:
+                del error_data[key]
+            data_frame = pd.DataFrame(error_data, columns=error_data.keys())
+
             # Create an HTTP response object with the Excel file
             response = HttpResponse(content_type="application/ms-excel")
             response["Content-Disposition"] = 'attachment; filename="ImportError.xlsx"'
-            data_frame.to_excel(response, index=False)
+            data_frame.to_excel(response, index=False)            
             return response
-        return HttpResponse("Imported successfully")
+        return JsonResponse ({'error_key': 'No binary data available'})
+
     return response
 
 

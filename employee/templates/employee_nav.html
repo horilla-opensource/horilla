@@ -44,24 +44,19 @@
       </button>
       <div class="oh-modal__dialog-body p-0 pt-2" id="workInfoImportModalBody">
         <form
-          hx-post="{% url 'work-info-import' %}"
-          hx-swap="none"
-          target="_blank"
+          action="#"
           id="workInfoImportForm"
           enctype="multipart/form-data"
         >
-          <div id="loading" style="display: none">
-            <div id="progress">
-              <div
-                class="progress-bar"
-                role="progressbar"
-                style="width: 0%"
-                aria-valuenow="0"
-                aria-valuemin="0"
-                aria-valuemax="100"
-              ></div>
+          <div
+            class="oh-modal__dialog-body mr-5"
+            id="uploading"
+            style="display: none"
+          >
+            <div class="loader-container">
+              <div class="loader"></div>
+              <div class="loader-text">{% trans "Uploading..." %}</div>
             </div>
-            <p id="progress-text">{% trans "Uploading..." %}</p>
           </div>
 
           <div id="error-container" style="color: red"></div>

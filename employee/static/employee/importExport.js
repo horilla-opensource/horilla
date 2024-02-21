@@ -88,6 +88,8 @@ form.addEventListener("submit", function (event) {
   event.preventDefault();
 
   // Create a new form data object
+  $(".oh-dropdown__import-form").css("display", "none");
+  $("#uploading").css("display", "block");
   var formData = new FormData();
 
   // Append the file to the form data object
@@ -107,6 +109,9 @@ form.addEventListener("submit", function (event) {
       responseType: "blob",
     },
     success: function (response) {
+      if (typeof response === 'object' && response.type == 'application/json') {
+        return;
+      }
       const file = new Blob([response], {
         type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
       });
@@ -116,6 +121,7 @@ form.addEventListener("submit", function (event) {
       link.download = "ImportError.xlsx";
       document.body.appendChild(link);
       link.click();
+      window.location.reload();
     },
     error: function (xhr, textStatus, errorThrown) {
       console.error("Error downloading file:", errorThrown);
@@ -190,9 +196,6 @@ $(document).ajaxStop(function () {
 
 function simulateProgress() {
   getCurrentLanguageCode(function (code) {
-    languageCode = code;
-    var importMessage = importSuccess[languageCode];
-    var uploadMessage = uploadSuccess[languageCode];
     let progressBar = document.querySelector(".progress-bar");
     let progressText = document.getElementById("progress-text");
 
@@ -224,37 +227,3 @@ function simulateProgress() {
     }, 20);
   });
 }
-
-document
-  .getElementById("workInfoImportForm")
-  .addEventListener("submit", function (event) {
-    event.preventDefault();
-    getCurrentLanguageCode(function (code) {
-      languageCode = code;
-      var errorMessage = validationMessage[languageCode];
-
-      var fileInput = $("#workInfoImportFile").val();
-      var allowedExtensions = /(\.xlsx)$/i;
-
-      if (!allowedExtensions.exec(fileInput)) {
-        var errorMessage = document.createElement("div");
-        errorMessage.classList.add("error-message");
-
-        errorMessage.textContent = errorMessage;
-
-        document.getElementById("error-container").appendChild(errorMessage);
-
-        fileInput.value = "";
-
-        setTimeout(function () {
-          errorMessage.remove();
-        }, 2000);
-
-        return false;
-      } else {
-        document.getElementById("loading").style.display = "block";
-
-        simulateProgress();
-      }
-    });
-  });
