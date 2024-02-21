@@ -578,6 +578,7 @@ def view_my_attendance(request):
             "attendances": paginator_qry(employee_attendances, request.GET.get("page")),
             "attendances_ids": attendances_ids,
             "f": filter,
+            "gp_fields": AttendanceReGroup.fields,
         },
     )
 

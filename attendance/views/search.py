@@ -285,7 +285,9 @@ def filter_own_attendance(request):
     attendances = AttendanceFilters(request.GET, queryset=attendances).qs
     previous_data = request.GET.urlencode()
     data_dict = parse_qs(previous_data)
-
+    field = request.GET.get("field")
+    template = "attendance/own_attendance/attendances.html"
+    previous_data = request.GET.urlencode()
     keys_to_remove = [key for key, value in data_dict.items() if value == ["unknown"]]
     for key in keys_to_remove:
         data_dict.pop(key)
@@ -297,13 +299,21 @@ def filter_own_attendance(request):
             ).object_list
         ]
     )
+    if field != "" and field is not None:
+        attendances = group_by_queryset(
+            attendances, field, request.GET.get("page"), "page"
+        )
+        template = "attendance/own_attendance/group_by.html"
+        attendances_ids =[]
     return render(
         request,
-        "attendance/own_attendance/attendances.html",
+        template,
         {
             "attendances": paginator_qry(attendances, request.GET.get("page")),
             "filter_dict": data_dict,
             "attendances_ids": attendances_ids,
+            "pd": previous_data,
+            "field": field,
         },
     )
 

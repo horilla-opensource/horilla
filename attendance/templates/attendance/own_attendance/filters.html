@@ -9,12 +9,7 @@
     @click.outside="open = false"
     style="display: none;"
   >
-    <form
-      hx-get='{% url "filter-own-attendance" %}'
-      id="filterForm"
-      hx-swap="innerHTML"
-      hx-target="#attendance-container"
-    >
+    
       <div class="oh-dropdown__filter-body">
                 <div class="oh-accordion">
           <div class="oh-accordion-header">{% trans "Attendance" %}</div>

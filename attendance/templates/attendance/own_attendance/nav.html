@@ -6,18 +6,72 @@
         <ion-icon name="search-outline" class="oh-main__titlebar-serach-icon"></ion-icon>
       </a>
     </div>
-    <div class="oh-main__titlebar oh-main__titlebar--right">
-      {% comment %} <div class="oh-input-group oh-input__search-group"
-        :class="searchShow ? 'oh-input__search-group--show' : ''">
-        <ion-icon name="search-outline" class="oh-input-group__icon oh-input-group__icon--left"></ion-icon>
-        <input type="text" class="oh-input oh-input__icon" aria-label="Search Input" placeholder="{% trans 'Search' %}" />
-      </div> {% endcomment %}
-      <div class="oh-main__titlebar-button-container">
-    
-        <div class="oh-btn-group ml-2">
-            {% include 'attendance/own_attendance/filters.html' %}
+    <form
+      hx-get='{% url "filter-own-attendance" %}'
+      id="filterForm"
+      hx-swap="innerHTML"
+      hx-target="#attendance-container"
+    >
+      <div class="oh-main__titlebar oh-main__titlebar--right">
+      
+          {% comment %} <div class="oh-input-group oh-input__search-group"
+            :class="searchShow ? 'oh-input__search-group--show' : ''">
+            <ion-icon name="search-outline" class="oh-input-group__icon oh-input-group__icon--left"></ion-icon>
+            <input type="text" class="oh-input oh-input__icon" aria-label="Search Input" placeholder="{% trans 'Search' %}" />
+          </div> {% endcomment %}
+        
+          <div class="oh-main__titlebar-button-container">
+        
+            <div class="oh-btn-group ml-2">
+                {% include 'attendance/own_attendance/filters.html' %}
 
-        </div>
+            </div>
+          </div>
+          
+          {% comment %} <div class="oh-dropdown" x-data="{open: false}">
+            <button class="oh-btn ml-2" @click="open = !open" onclick="event.preventDefault()">
+              <ion-icon name="library-outline" class="mr-1"></ion-icon>{% trans "Group By" %}
+              <div id="filterCount"></div>
+            </button>
+            <div
+            class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4"
+            x-show="open"
+            @click.outside="open = false"
+            style="display: none"
+            >            
+            <div class="oh-accordion">
+              <label>{% trans "Group By" %}</label>
+                <div class="row">
+                  <div class="col-sm-12 col-md-12 col-lg-6">
+                    <div class="oh-input-group">
+                      <label class="oh-label">{% trans "Field" %}</label>
+                    </div>
+                  </div>
+                  <div class="col-sm-12 col-md-12 col-lg-6">
+                    <div class="oh-input-group">
+                      <select
+                        class="oh-select mt-1 w-100"
+                        id="id_field"
+                        name="field"
+                        class="select2-selection select2-selection--single"
+                      >
+                        {% for field in gp_fields %}
+                        <option value="{{ field.0 }}">{% trans field.1 %}</option>
+                        {% endfor %}
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div> {% endcomment %}
       </div>
-    </div>
+    </form>
   </section>
+  <script>
+    $(document).ready(function () {
+      $('#id_field').on('change',function(){
+        $('.filterButton')[0].click();
+      })
+    })
+  </script>
