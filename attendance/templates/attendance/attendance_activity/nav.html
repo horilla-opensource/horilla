@@ -54,128 +54,127 @@
       ></ion-icon>
     </a>
   </div>
-  <div class="oh-main__titlebar oh-main__titlebar--right">
-    <div
-      class="oh-input-group oh-input__search-group"
-      :class="searchShow ? 'oh-input__search-group--show' : ''"
-    >
-      <ion-icon
-        name="search-outline"
-        class="oh-input-group__icon oh-input-group__icon--left"
-      ></ion-icon>
-      <input
-        type="text"
-        class="oh-input oh-input__icon"
-        aria-label="Search Input"
-        id="attendance-search"
-        name='search'
-        placeholder="{% trans 'Search' %}"
-        hx-get="{% url 'attendance-activity-search' %}" 
-        hx-trigger="keyup changed delay:500ms, search" 
-        hx-target="#activity-table" 
-        hx-swap="innerHTML"
-      />
-    </div>
-    <form
+  <form
       hx-get='{% url "attendance-activity-search" %}'
       id="filterForm"
       hx-swap="innerHTML"
       hx-target="#activity-table"
       class="d-flex"
-    >
-    <div class="oh-main__titlebar-button-container">
-      <div class="oh-dropdown" x-data="{open: false}">
-        <button class="oh-btn ml-2" @click="open = !open" onclick="event.preventDefault()">
-          <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}<div id="filterCount"></div>
-        </button>
-        <div
-          class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4"
-          x-show="open"
-          @click.outside="open = false"
-          style="display: none;"
-        >
-          {% include 'attendance/attendance_activity/activity_filters.html' %}
+  >
+    <div class="oh-main__titlebar oh-main__titlebar--right">
+      <div
+        class="oh-input-group oh-input__search-group"
+        :class="searchShow ? 'oh-input__search-group--show' : ''"
+      >
+        <ion-icon
+          name="search-outline"
+          class="oh-input-group__icon oh-input-group__icon--left"
+        ></ion-icon>
+        <input
+          type="text"
+          class="oh-input oh-input__icon"
+          aria-label="Search Input"
+          id="attendance-search"
+          name='search'
+          placeholder="{% trans 'Search' %}"
+          onkeyup="$('.filterButton')[0].click()"
+        />
+      </div>
+      
+      <div class="oh-main__titlebar-button-container">
+        <div class="oh-dropdown" x-data="{open: false}">
+          <button class="oh-btn ml-2" @click="open = !open" onclick="event.preventDefault()">
+            <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}<div id="filterCount"></div>
+          </button>
+          <div
+            class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4"
+            x-show="open"
+            @click.outside="open = false"
+            style="display: none;"
+          >
+            {% include 'attendance/attendance_activity/activity_filters.html' %}
+          </div>
         </div>
       </div>
-    </div>
-    <div class="oh-dropdown" x-data="{open: false}">
-      <button class="oh-btn ml-2" @click="open = !open" onclick="event.preventDefault()">
-        <ion-icon name="library-outline" class="mr-1"></ion-icon>{% trans "Group By" %}
-        <div id="filterCount"></div>
-      </button>
-      <div
-      class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4"
-      x-show="open"
-      @click.outside="open = false"
-      style="display: none"
-      >            
-      <div class="oh-accordion">
-        <label>{% trans "Group By" %}</label>
-          <div class="row">
-            <div class="col-sm-12 col-md-12 col-lg-6">
-              <div class="oh-input-group">
-                <label class="oh-label">{% trans "Field" %}</label>
+      <div class="oh-dropdown" x-data="{open: false}">
+        <button class="oh-btn ml-2" @click="open = !open" onclick="event.preventDefault()">
+          <ion-icon name="library-outline" class="mr-1"></ion-icon>{% trans "Group By" %}
+          <div id="filterCount"></div>
+        </button>
+        <div
+        class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4"
+        x-show="open"
+        @click.outside="open = false"
+        style="display: none"
+        >            
+        <div class="oh-accordion">
+          <label>{% trans "Group By" %}</label>
+            <div class="row">
+              <div class="col-sm-12 col-md-12 col-lg-6">
+                <div class="oh-input-group">
+                  <label class="oh-label">{% trans "Field" %}</label>
+                </div>
               </div>
-            </div>
-            <div class="col-sm-12 col-md-12 col-lg-6">
-              <div class="oh-input-group">
-                <select
-                  class="oh-select mt-1 w-100"
-                  id="id_field"
-                  name="field"
-                  class="select2-selection select2-selection--single"
-                >
-                  {% for field in gp_fields %}
-                  <option value="{{ field.0 }}">{% trans field.1 %}</option>
-                  {% endfor %}
-                </select>
+              <div class="col-sm-12 col-md-12 col-lg-6">
+                <div class="oh-input-group">
+                  <select
+                    class="oh-select mt-1 w-100"
+                    id="id_field"
+                    name="field"
+                    class="select2-selection select2-selection--single"
+                  >
+                    {% for field in gp_fields %}
+                    <option value="{{ field.0 }}">{% trans field.1 %}</option>
+                    {% endfor %}
+                  </select>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
-  </form>
-    <div class="oh-dropdown ml-2" x-data="{open: false}">
-      <button
-        class="oh-btn oh-btn--dropdown"
-        @click="open = !open"
-        @click.outside="open = false"
-      >
-        {% trans "Actions" %}
-      </button>
-      <div
-        class="oh-dropdown__menu oh-dropdown__menu--right"
-        x-show="open"
-        style="display: none"
-      >
-        <ul class="oh-dropdown__items">
-          {% if perms.attendance.change_attendancelatecomeearlyout or request.user|is_reportingmanager %}
-            <li class="oh-dropdown__item">
-              <a
-                href="#"
-                class="oh-dropdown__link"
-                id="attendance-info-export"
-                data-toggle="oh-modal-toggle"
-                data-target="#attendanceExport"
-                >{% trans "Export" %}</a
-              >
-            </li> 
-          {% endif %} 
-          {% if perms.attendance.delete_attendancelatecomeearlyout %}
-            <li class="oh-dropdown__item">
-              <a
-                href="#"
-                id="attendanceActivityDelete"
-                class="oh-dropdown__link oh-dropdown__link--danger"
-                >{% trans "Delete" %}</a
-              >
-            </li>
-          {% endif %}
-        </ul>
+    
+      <div class="oh-dropdown ml-2" x-data="{open: false}">
+        <button
+          class="oh-btn oh-btn--dropdown"
+          @click="open = !open"
+          @click.outside="open = false"
+        >
+          {% trans "Actions" %}
+        </button>
+        <div
+          class="oh-dropdown__menu oh-dropdown__menu--right"
+          x-show="open"
+          style="display: none"
+        >
+          <ul class="oh-dropdown__items">
+            {% if perms.attendance.change_attendancelatecomeearlyout or request.user|is_reportingmanager %}
+              <li class="oh-dropdown__item">
+                <a
+                  href="#"
+                  class="oh-dropdown__link"
+                  id="attendance-info-export"
+                  data-toggle="oh-modal-toggle"
+                  data-target="#attendanceExport"
+                  >{% trans "Export" %}</a
+                >
+              </li> 
+            {% endif %} 
+            {% if perms.attendance.delete_attendancelatecomeearlyout %}
+              <li class="oh-dropdown__item">
+                <a
+                  href="#"
+                  id="attendanceActivityDelete"
+                  class="oh-dropdown__link oh-dropdown__link--danger"
+                  >{% trans "Delete" %}</a
+                >
+              </li>
+            {% endif %}
+          </ul>
+        </div>
       </div>
     </div>
-  </div>
+  </form>
   <script>
     $('#attendance-search').keydown(function (e) { 
       var val = $(this).val();
