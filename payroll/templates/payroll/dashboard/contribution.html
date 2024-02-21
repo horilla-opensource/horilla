@@ -25,8 +25,8 @@
               <span class="oh-profile__name oh-text--dark">{{ deduction.title }}</span>
             </div>
           </div>
-          <div class="oh-sticky-table__td">{{ currency }} {{ deduction.employee_contribution }}</div>
-          <div class="oh-sticky-table__td">{{ currency }} {{ deduction.employer_contribution }}</div>
+          <div class="oh-sticky-table__td">{{ currency }} {{ deduction.employee_contribution|floatformat:2 }}</div>
+          <div class="oh-sticky-table__td">{{ currency }} {{ deduction.employer_contribution|floatformat:2 }}</div>
         </div>
       {% endfor %}
       {% if not contribution_deductions %}

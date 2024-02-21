@@ -1420,16 +1420,16 @@ def get_contribution_report(request):
             item["employer_contribution_amount"] for item in group
         )
         total_contribution = employee_contribution + employer_contribution
-
-        contribution_deductions.append(
-            {
-                "deduction_id": deduction_id,
-                "title": title,
-                "employee_contribution": employee_contribution,
-                "employer_contribution": employer_contribution,
-                "total_contribution": total_contribution,
-            }
-        )
+        if employer_contribution > 0:
+            contribution_deductions.append(
+                {
+                    "deduction_id": deduction_id,
+                    "title": title,
+                    "employee_contribution": employee_contribution,
+                    "employer_contribution": employer_contribution,
+                    "total_contribution": total_contribution,
+                }
+            )
 
     return render(
         request,
