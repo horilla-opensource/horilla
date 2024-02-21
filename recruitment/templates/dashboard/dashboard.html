@@ -132,7 +132,7 @@
 											alt="{{cand}}"
 											/>
 										</div></a>
-										<a href="/recruitment/skill-zone-view?title={{skill}}"><span class="oh-profile__name oh-text--dark">{{skill}}</span></a>
+										<a href="/recruitment/skill-zone-view?search={{skill}}"><span class="oh-profile__name oh-text--dark">{{skill}}</span></a>
 										</div>
 										<p class="oh-profile__name float-end mt-1 me-3">
 											 &nbsp {{skill.skillzonecandidate_set.all|length}} &nbsp {% if skill.skillzonecandidate_set.all|length != 1  %} {% trans "Candidates" %} {% else %} {% trans "Candidate" %} {% endif %}</p>
