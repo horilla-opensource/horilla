@@ -308,7 +308,7 @@
 							{% if enabled_resignation_request %}
 							<li data-cell-index="09" data-cell-title="{% trans "Resignation" %}" class="oh-general__tab">
 								<a
-								hx-get={% url 'search-resignation-request' %}
+								hx-get="{% url 'search-resignation-request' %}?employee_id={{employee.id}}"
 								hx-target="#resignation_hx_target"
 								data-action="general-tab"
 								data-target="#resignation_target"
