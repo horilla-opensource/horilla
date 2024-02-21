@@ -373,6 +373,7 @@ class PayslipReGroup:
     fields = [
         ("", _("Select")),
         ("employee_id", _("Employee")),
+        ("group_name", _("Payslip Batch")),
         ("start_date", _("Start Date")),
         ("end_date", _("End Date")),
         ("basic_pay", _("Basic Pay")),
