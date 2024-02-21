@@ -8,8 +8,7 @@
     <div class="oh-tabs__content oh-tabs__content--active" id="tab_1">
         {% if my_tickets %}
             <div class="oh-card">
-                {% dynamic_regroup my_tickets by field as my_ticket_grouper %}
-                {% for my_ticket_list in my_ticket_grouper %}
+                {% for my_ticket_list in my_tickets %}
                     <div class="oh-accordion-meta">
                         <div class="oh-accordion-meta__item">
                             <div class="oh-accordion-meta__header" onclick='$(this).toggleClass("oh-accordion-meta__header--show");'>
@@ -18,7 +17,7 @@
                                         <span
                                             class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round mr-1"
                                         >
-                                            {{my_ticket_list.list|length}}
+                                            {{my_ticket_list.list.paginator.count}}
                                         </span>
                                             {{my_ticket_list.grouper}}
                                     </div>
@@ -147,73 +146,144 @@
                                         </div>
                                     </div>
                                 </div>
-                                 <!-- end of sticky table -->
                                 
-                                <!-- start of pagination  --> 
                                 <div class="oh-pagination">
                                     <span class="oh-pagination__page">
-                                    {% trans "Page" %} {{ my_tickets.number }} {% trans "of" %} {{ my_tickets.paginator.num_pages }}.
+                                        {% trans "Page" %} {{ my_ticket_list.list.number }} 
+                                        {%trans "of" %} {{my_ticket_list.list.paginator.num_pages }}.
                                     </span>
                                     <nav class="oh-pagination__nav">
-                                    <div class="oh-pagination__input-container me-3">
-                                        <span class="oh-pagination__label me-1">{% trans "Page" %}</span>
-                                        <input
-                                        type="number"
-                                        name="my_page"
-                                        class="oh-pagination__input"
-                                        value="{{my_tickets.number}}"
-                                        hx-get="{% url 'ticket-filter' %}?{{pd}}"
-                                        hx-target="#view-container"
-                                        min="1"
-                                        />
-                                        <span class="oh-pagination__label"
-                                        >{% trans "of" %} {{my_tickets.paginator.num_pages}}</span
-                                        >
-                                    </div>
-                                    <ul class="oh-pagination__items">
-                                        {% if my_tickets.has_previous %}
-                                        <li class="oh-pagination__item oh-pagination__item--wide">
-                                        <a
-                                            hx-target="#view-container"
-                                            hx-get="{% url 'ticket-filter' %}?{{pd}}&my_page=1"
-                                            class="oh-pagination__link"
-                                            >{% trans "First" %}</a
-                                        >
-                                        </li>
-                                        <li class="oh-pagination__item oh-pagination__item--wide">
-                                        <a
-                                            hx-target="#view-container"
-                                            hx-get="{% url 'ticket-filter' %}?{{pd}}&my_page={{ my_tickets.previous_page_number }}"
-                                            class="oh-pagination__link"
-                                            >{% trans "Previous" %}</a
-                                        >
-                                        </li>
-                                        {% endif %} {% if my_tickets.has_next %}
-                                        <li class="oh-pagination__item oh-pagination__item--wide">
-                                        <a
-                                            hx-target="#view-container"
-                                            hx-get="{% url 'ticket-filter' %}?{{pd}}&my_page={{ my_tickets.next_page_number }}"
-                                            class="oh-pagination__link"
-                                            >{% trans "Next" %}</a
-                                        >
-                                        </li>
-                                        <li class="oh-pagination__item oh-pagination__item--wide">
-                                        <a
-                                            hx-target="#view-container"
-                                            hx-get="{% url 'ticket-filter' %}?{{pd}}&my_page={{ my_tickets.paginator.num_pages }}"
-                                            class="oh-pagination__link"
-                                            >{% trans "Last" %}</a
-                                        >
-                                        </li>
-                                        {% endif %}
-                                    </ul>
+                                        <div class="oh-pagination__input-container me-3">
+                                            <span class="oh-pagination__label me-1"
+                                                >{% trans "Page" %}</span
+                                            >
+                                            <input
+                                                type="number"
+                                                name="{{my_ticket_list.dynamic_name}}"
+                                                class="oh-pagination__input"
+                                                value="{{my_ticket_list.list.number}}"
+                                                hx-get="{% url 'ticket-filter' %}?{{pd}}"
+                                                hx-target="#view-container"
+                                                min="1"
+                                            />
+                                            <span class="oh-pagination__label"
+                                                >{% trans "of" %}
+                                                {{my_ticket_list.list.paginator.num_pages}}</span
+                                            >
+                                        </div>
+                                        <ul class="oh-pagination__items">
+                                            {% if my_ticket_list.list.has_previous %}
+                                            <li
+                                                class="oh-pagination__item oh-pagination__item--wide"
+                                            >
+                                                <a
+                                                    hx-target="#view-container"
+                                                    hx-get="{% url 'ticket-filter' %}?{{pd}}&{{my_ticket_list.dynamic_name}}=1"
+                                                    class="oh-pagination__link"
+                                                    >{% trans "First" %}</a
+                                                >
+                                            </li>
+                                            <li
+                                                class="oh-pagination__item oh-pagination__item--wide"
+                                            >
+                                                <a
+                                                    hx-target="#view-container"
+                                                    hx-get="{% url 'ticket-filter' %}?{{pd}}&{{my_ticket_list.dynamic_name}}={{ my_ticket_list.list.previous_page_number }}"
+                                                    class="oh-pagination__link"
+                                                    >{% trans "Previous" %}</a
+                                                >
+                                            </li>
+                                            {% endif %} {% if my_ticket_list.list.has_next %}
+                                            <li
+                                                class="oh-pagination__item oh-pagination__item--wide"
+                                            >
+                                                <a
+                                                    hx-target="#view-container"
+                                                    hx-get="{% url 'ticket-filter' %}?{{pd}}&{{my_ticket_list.dynamic_name}}={{ my_ticket_list.list.next_page_number }}"
+                                                    class="oh-pagination__link"
+                                                    >{% trans "Next" %}</a
+                                                >
+                                            </li>
+                                            <li
+                                                class="oh-pagination__item oh-pagination__item--wide"
+                                            >
+                                                <a
+                                                    hx-target="#view-container"
+                                                    hx-get="{% url 'ticket-filter' %}?{{pd}}&{{my_ticket_list.dynamic_name}}={{ my_ticket_list.list.paginator.num_pages }}"
+                                                    class="oh-pagination__link"
+                                                    >{% trans "Last" %}</a
+                                                >
+                                            </li>
+                                            {% endif %}
+                                        </ul>
                                     </nav>
-                                </div>  
-                                <!-- end of pagination  -->    
+                                </div>
                             </div> 
                         </div>
                     </div>
                 {% endfor %}
+            </div>
+
+            <div class="oh-pagination">
+                <span
+                  class="oh-pagination__page"
+                  data-toggle="modal"
+                  data-target="#addEmployeeModal"
+                ></span>
+                <nav class="oh-pagination__nav">
+                    <div class="oh-pagination__input-container me-3">
+                        <span class="oh-pagination__label me-1">{% trans "Page" %}</span>
+                        <input
+                        type="number"
+                        name="page"
+                        class="oh-pagination__input"
+                        value="{{my_tickets.number }}"
+                        min="1"
+                        hx-get="{% url 'ticket-filter' %}?{{pd}}"
+                        hx-target="#view-container"
+                        />
+                        <span class="oh-pagination__label"
+                        >{% trans "of" %} {{ my_tickets.paginator.num_pages }}</span
+                        >
+                    </div>
+                    <ul class="oh-pagination__items">
+                        {% if my_tickets.has_previous %}
+                        <li class="oh-pagination__item oh-pagination__item--wide">
+                            <a
+                                hx-get="{% url 'ticket-filter' %}?{{pd}}&my_page=1"
+                                class="oh-pagination__link"
+                                hx-target="#view-container"
+                                >{% trans "First" %}</a
+                            >
+                        </li>
+                        <li class="oh-pagination__item oh-pagination__item--wide">
+                            <a
+                                hx-get="{% url 'ticket-filter' %}?{{pd}}&my_page={{ my_tickets.previous_page_number }}"
+                                class="oh-pagination__link"
+                                hx-target="#view-container"
+                                >{% trans "Previous" %}</a
+                            >
+                        </li>
+                        {%endif %} {% if my_tickets.has_next %}
+                        <li class="oh-pagination__item oh-pagination__item--wide">
+                            <a
+                                hx-get="{% url 'ticket-filter' %}?{{pd}}&my_page={{ my_tickets.next_page_number }}"
+                                class="btn btn-outline-secondary"
+                                hx-target="#view-container"
+                                >{% trans "Next" %}</a
+                            >
+                        </li>
+                        <li class="oh-pagination__item oh-pagination__item--wide">
+                            <a
+                                hx-get="{% url 'ticket-filter' %}?{{pd}}&my_page={{ my_tickets.paginator.num_pages }}"
+                                hx-target="#view-container"
+                                class="oh-pagination__link"
+                                >{% trans "Last" %}</a
+                            >
+                        </li>
+                        {% endif %}
+                    </ul>
+                </nav>
             </div>
         {% else %}
             <!-- start of empty page-->  
@@ -228,8 +298,7 @@
     <div class="oh-tabs__content" id="tab_2">
         {% if allocated_tickets %}
             <div class="oh-card">
-                {% dynamic_regroup allocated_tickets by field as allocated_tickets_grouper %}
-                {% for allocated_tickets_list in allocated_tickets_grouper %}
+                {% for allocated_tickets_list in allocated_tickets %}
                     <div class="oh-accordion-meta">
                         <div class="oh-accordion-meta__item">
                             <div class="oh-accordion-meta__header" onclick='$(this).toggleClass("oh-accordion-meta__header--show");'>
@@ -238,7 +307,7 @@
                                         <span
                                             class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round mr-1"
                                         >
-                                            {{allocated_tickets_list.list|length}}
+                                            {{allocated_tickets_list.list.paginator.count}}
                                         </span>
                                             {{allocated_tickets_list.grouper}}
                                     </div>
@@ -369,71 +438,142 @@
                                 </div>
                                 <!-- end of sticky table -->
 
-                                <!-- start of pagination  -->
                                 <div class="oh-pagination">
                                     <span class="oh-pagination__page">
-                                    {% trans "Page" %} {{ allocated_tickets.number }} {% trans "of" %} {{ allocated_tickets.paginator.num_pages }}.
+                                        {% trans "Page" %} {{ allocated_tickets_list.list.number }} 
+                                        {%trans "of" %} {{allocated_tickets_list.list.paginator.num_pages }}.
                                     </span>
                                     <nav class="oh-pagination__nav">
-                                    <div class="oh-pagination__input-container me-3">
-                                        <span class="oh-pagination__label me-1">{% trans "Page" %}</span>
-                                        <input
-                                        type="number"
-                                        name="allocated_page"
-                                        class="oh-pagination__input"
-                                        value="{{allocated_tickets.number}}"
-                                        hx-get="{% url 'ticket-filter' %}?{{pd}}"
-                                        hx-target="#view-container"
-                                        min="1"
-                                        />
-                                        <span class="oh-pagination__label"
-                                        >{% trans "of" %} {{allocated_tickets.paginator.num_pages}}</span
-                                        >
-                                    </div>
-                                    <ul class="oh-pagination__items">
-                                        {% if allocated_tickets.has_previous %}
-                                        <li class="oh-pagination__item oh-pagination__item--wide">
-                                        <a
-                                            hx-target="#view-container"
-                                            hx-get="{% url 'ticket-filter' %}?{{pd}}&allocated_page=1"
-                                            class="oh-pagination__link"
-                                            >{% trans "First" %}</a
-                                        >
-                                        </li>
-                                        <li class="oh-pagination__item oh-pagination__item--wide">
-                                        <a
-                                            hx-target="#view-container"
-                                            hx-get="{% url 'ticket-filter' %}?{{pd}}&allocated_page={{ allocated_tickets.previous_page_number }}"
-                                            class="oh-pagination__link"
-                                            >{% trans "Previous" %}</a
-                                        >
-                                        </li>
-                                        {% endif %} {% if allocated_tickets.has_next %}
-                                        <li class="oh-pagination__item oh-pagination__item--wide">
-                                        <a
-                                            hx-target="#view-container"
-                                            hx-get="{% url 'ticket-filter' %}?{{pd}}&allocated_page={{ allocated_tickets.next_page_number }}"
-                                            class="oh-pagination__link"
-                                            >{% trans "Next" %}</a
-                                        >
-                                        </li>
-                                        <li class="oh-pagination__item oh-pagination__item--wide">
-                                        <a
-                                            hx-target="#view-container"
-                                            hx-get="{% url 'ticket-filter' %}?{{pd}}&allocated_page={{ allocated_tickets.paginator.num_pages }}"
-                                            class="oh-pagination__link"
-                                            >{% trans "Last" %}</a
-                                        >
-                                        </li>
-                                        {% endif %}
-                                    </ul>
+                                        <div class="oh-pagination__input-container me-3">
+                                            <span class="oh-pagination__label me-1"
+                                                >{% trans "Page" %}</span
+                                            >
+                                            <input
+                                                type="number"
+                                                name="{{allocated_tickets_list.dynamic_name}}"
+                                                class="oh-pagination__input"
+                                                value="{{allocated_tickets_list.list.number}}"
+                                                hx-get="{% url 'ticket-filter' %}?{{pd}}"
+                                                hx-target="#view-container"
+                                                min="1"
+                                            />
+                                            <span class="oh-pagination__label"
+                                                >{% trans "of" %}
+                                                {{allocated_tickets_list.list.paginator.num_pages}}</span
+                                            >
+                                        </div>
+                                        <ul class="oh-pagination__items">
+                                            {% if allocated_tickets_list.list.has_previous %}
+                                            <li
+                                                class="oh-pagination__item oh-pagination__item--wide"
+                                            >
+                                                <a
+                                                    hx-target="#view-container"
+                                                    hx-get="{% url 'ticket-filter' %}?{{pd}}&{{allocated_tickets_list.dynamic_name}}=1"
+                                                    class="oh-pagination__link"
+                                                    >{% trans "First" %}</a
+                                                >
+                                            </li>
+                                            <li
+                                                class="oh-pagination__item oh-pagination__item--wide"
+                                            >
+                                                <a
+                                                    hx-target="#view-container"
+                                                    hx-get="{% url 'ticket-filter' %}?{{pd}}&{{allocated_tickets_list.dynamic_name}}={{ allocated_tickets_list.list.previous_page_number }}"
+                                                    class="oh-pagination__link"
+                                                    >{% trans "Previous" %}</a
+                                                >
+                                            </li>
+                                            {% endif %} {% if allocated_tickets_list.list.has_next %}
+                                            <li
+                                                class="oh-pagination__item oh-pagination__item--wide"
+                                            >
+                                                <a
+                                                    hx-target="#view-container"
+                                                    hx-get="{% url 'ticket-filter' %}?{{pd}}&{{allocated_tickets_list.dynamic_name}}={{ allocated_tickets_list.list.next_page_number }}"
+                                                    class="oh-pagination__link"
+                                                    >{% trans "Next" %}</a
+                                                >
+                                            </li>
+                                            <li
+                                                class="oh-pagination__item oh-pagination__item--wide"
+                                            >
+                                                <a
+                                                    hx-target="#view-container"
+                                                    hx-get="{% url 'ticket-filter' %}?{{pd}}&{{allocated_tickets_list.dynamic_name}}={{ allocated_tickets_list.list.paginator.num_pages }}"
+                                                    class="oh-pagination__link"
+                                                    >{% trans "Last" %}</a
+                                                >
+                                            </li>
+                                            {% endif %}
+                                        </ul>
                                     </nav>
                                 </div>
-                                <!-- end of pagination  -->
                             </div>
                         </div>
                     </div>
                 {% endfor %}
+            </div>
+            <div class="oh-pagination">
+                <span
+                  class="oh-pagination__page"
+                  data-toggle="modal"
+                  data-target="#addEmployeeModal"
+                ></span>
+                <nav class="oh-pagination__nav">
+                    <div class="oh-pagination__input-container me-3">
+                        <span class="oh-pagination__label me-1">{% trans "Page" %}</span>
+                        <input
+                        type="number"
+                        name="page"
+                        class="oh-pagination__input"
+                        value="{{allocated_tickets.number }}"
+                        min="1"
+                        hx-get="{% url 'ticket-filter' %}?{{pd}}"
+                        hx-target="#view-container"
+                        />
+                        <span class="oh-pagination__label"
+                        >{% trans "of" %} {{ allocated_tickets.paginator.num_pages }}</span
+                        >
+                    </div>
+                    <ul class="oh-pagination__items">
+                        {% if allocated_tickets.has_previous %}
+                        <li class="oh-pagination__item oh-pagination__item--wide">
+                            <a
+                                hx-get="{% url 'ticket-filter' %}?{{pd}}&allocated_page=1"
+                                class="oh-pagination__link"
+                                hx-target="#view-container"
+                                >{% trans "First" %}</a
+                            >
+                        </li>
+                        <li class="oh-pagination__item oh-pagination__item--wide">
+                            <a
+                                hx-get="{% url 'ticket-filter' %}?{{pd}}&allocated_page={{ allocated_tickets.previous_page_number }}"
+                                class="oh-pagination__link"
+                                hx-target="#view-container"
+                                >{% trans "Previous" %}</a
+                            >
+                        </li>
+                        {%endif %} {% if allocated_tickets.has_next %}
+                        <li class="oh-pagination__item oh-pagination__item--wide">
+                            <a
+                                hx-get="{% url 'ticket-filter' %}?{{pd}}&allocated_page={{ allocated_tickets.next_page_number }}"
+                                class="btn btn-outline-secondary"
+                                hx-target="#view-container"
+                                >{% trans "Next" %}</a
+                            >
+                        </li>
+                        <li class="oh-pagination__item oh-pagination__item--wide">
+                            <a
+                                hx-get="{% url 'ticket-filter' %}?{{pd}}&allocated_page={{ allocated_tickets.paginator.num_pages }}"
+                                hx-target="#view-container"
+                                class="oh-pagination__link"
+                                >{% trans "Last" %}</a
+                            >
+                        </li>
+                        {% endif %}
+                    </ul>
+                </nav>
             </div>
         {% else %}
             <!-- start of empty page-->  
@@ -447,8 +587,7 @@
     <div class="oh-tabs__content" id="tab_3">
         {% if all_tickets %}
             <div class="oh-card">
-                {% dynamic_regroup all_tickets by field as all_tickets_grouper %}
-                {% for all_tickets_list in all_tickets_grouper %}
+                {% for all_tickets_list in all_tickets %}
                     <div class="oh-accordion-meta">
                         <div class="oh-accordion-meta__item">
                             <div class="oh-accordion-meta__header" onclick='$(this).toggleClass("oh-accordion-meta__header--show");'>
@@ -457,7 +596,7 @@
                                         <span
                                             class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round mr-1"
                                         >
-                                            {{all_tickets_list.list|length}}
+                                            {{all_tickets_list.list.paginator.count}}
                                         </span>
                                             {{all_tickets_list.grouper}}
                                     </div>
@@ -586,73 +725,146 @@
                                         </div>
                                     </div>
                                 </div>
-                                <!-- end of sticky table -->
-
-                                <!-- start of pagination  -->
+                            
                                 <div class="oh-pagination">
                                     <span class="oh-pagination__page">
-                                    {% trans "Page" %} {{ all_tickets.number }} {% trans "of" %} {{ all_tickets.paginator.num_pages }}.
+                                        {% trans "Page" %} {{ all_tickets_list.list.number }} 
+                                        {%trans "of" %} {{all_tickets_list.list.paginator.num_pages }}.
                                     </span>
                                     <nav class="oh-pagination__nav">
-                                    <div class="oh-pagination__input-container me-3">
-                                        <span class="oh-pagination__label me-1">{% trans "Page" %}</span>
-                                        <input
-                                        type="number"
-                                        name="all_page"
-                                        class="oh-pagination__input"
-                                        value="{{all_tickets.number}}"
-                                        hx-get="{% url 'ticket-filter' %}?{{pd}}"
-                                        hx-target="#view-container"
-                                        min="1"
-                                        />
-                                        <span class="oh-pagination__label"
-                                        >{% trans "of" %} {{all_tickets.paginator.num_pages}}</span
-                                        >
-                                    </div>
-                                    <ul class="oh-pagination__items">
-                                        {% if all_tickets.has_previous %}
-                                        <li class="oh-pagination__item oh-pagination__item--wide">
-                                        <a
-                                            hx-target="#view-container"
-                                            hx-get="{% url 'ticket-filter' %}?{{pd}}&all_page=1"
-                                            class="oh-pagination__link"
-                                            >{% trans "First" %}</a
-                                        >
-                                        </li>
-                                        <li class="oh-pagination__item oh-pagination__item--wide">
-                                        <a
-                                            hx-target="#view-container"
-                                            hx-get="{% url 'ticket-filter' %}?{{pd}}&all_page={{ all_tickets.previous_page_number }}"
-                                            class="oh-pagination__link"
-                                            >{% trans "Previous" %}</a
-                                        >
-                                        </li>
-                                        {% endif %} {% if all_tickets.has_next %}
-                                        <li class="oh-pagination__item oh-pagination__item--wide">
-                                        <a
-                                            hx-target="#view-container"
-                                            hx-get="{% url 'ticket-filter' %}?{{pd}}&all_page={{ all_tickets.next_page_number }}"
-                                            class="oh-pagination__link"
-                                            >{% trans "Next" %}</a
-                                        >
-                                        </li>
-                                        <li class="oh-pagination__item oh-pagination__item--wide">
-                                        <a
-                                            hx-target="#view-container"
-                                            hx-get="{% url 'ticket-filter' %}?{{pd}}&all_page={{ all_tickets.paginator.num_pages }}"
-                                            class="oh-pagination__link"
-                                            >{% trans "Last" %}</a
-                                        >
-                                        </li>
-                                        {% endif %}
-                                    </ul>
+                                        <div class="oh-pagination__input-container me-3">
+                                            <span class="oh-pagination__label me-1"
+                                                >{% trans "Page" %}</span
+                                            >
+                                            <input
+                                                type="number"
+                                                name="{{all_tickets_list.dynamic_name}}"
+                                                class="oh-pagination__input"
+                                                value="{{all_tickets_list.list.number}}"
+                                                hx-get="{% url 'ticket-filter' %}?{{pd}}"
+                                                hx-target="#view-container"
+                                                min="1"
+                                            />
+                                            <span class="oh-pagination__label"
+                                                >{% trans "of" %}
+                                                {{all_tickets_list.list.paginator.num_pages}}</span
+                                            >
+                                        </div>
+                                        <ul class="oh-pagination__items">
+                                            {% if all_tickets_list.list.has_previous %}
+                                            <li
+                                                class="oh-pagination__item oh-pagination__item--wide"
+                                            >
+                                                <a
+                                                    hx-target="#view-container"
+                                                    hx-get="{% url 'ticket-filter' %}?{{pd}}&{{all_tickets_list.dynamic_name}}=1"
+                                                    class="oh-pagination__link"
+                                                    >{% trans "First" %}</a
+                                                >
+                                            </li>
+                                            <li
+                                                class="oh-pagination__item oh-pagination__item--wide"
+                                            >
+                                                <a
+                                                    hx-target="#view-container"
+                                                    hx-get="{% url 'ticket-filter' %}?{{pd}}&{{all_tickets_list.dynamic_name}}={{ all_tickets_list.list.previous_page_number }}"
+                                                    class="oh-pagination__link"
+                                                    >{% trans "Previous" %}</a
+                                                >
+                                            </li>
+                                            {% endif %} {% if all_tickets_list.list.has_next %}
+                                            <li
+                                                class="oh-pagination__item oh-pagination__item--wide"
+                                            >
+                                                <a
+                                                    hx-target="#view-container"
+                                                    hx-get="{% url 'ticket-filter' %}?{{pd}}&{{all_tickets_list.dynamic_name}}={{ all_tickets_list.list.next_page_number }}"
+                                                    class="oh-pagination__link"
+                                                    >{% trans "Next" %}</a
+                                                >
+                                            </li>
+                                            <li
+                                                class="oh-pagination__item oh-pagination__item--wide"
+                                            >
+                                                <a
+                                                    hx-target="#view-container"
+                                                    hx-get="{% url 'ticket-filter' %}?{{pd}}&{{all_tickets_list.dynamic_name}}={{ all_tickets_list.list.paginator.num_pages }}"
+                                                    class="oh-pagination__link"
+                                                    >{% trans "Last" %}</a
+                                                >
+                                            </li>
+                                            {% endif %}
+                                        </ul>
                                     </nav>
                                 </div>
-                                <!-- end of pagination  -->
+                                <!-- end of sticky table -->
+
                             </div>
                         </div>
                     </div>
                 {% endfor %}
+            </div>
+            
+            <div class="oh-pagination">
+                <span
+                  class="oh-pagination__page"
+                  data-toggle="modal"
+                  data-target="#addEmployeeModal"
+                ></span>
+                <nav class="oh-pagination__nav">
+                    <div class="oh-pagination__input-container me-3">
+                        <span class="oh-pagination__label me-1">{% trans "Page" %}</span>
+                        <input
+                        type="number"
+                        name="page"
+                        class="oh-pagination__input"
+                        value="{{all_tickets.number }}"
+                        min="1"
+                        hx-get="{% url 'ticket-filter' %}?{{pd}}"
+                        hx-target="#view-container"
+                        />
+                        <span class="oh-pagination__label"
+                        >{% trans "of" %} {{ all_tickets.paginator.num_pages }}</span
+                        >
+                    </div>
+                    <ul class="oh-pagination__items">
+                        {% if all_tickets.has_previous %}
+                        <li class="oh-pagination__item oh-pagination__item--wide">
+                            <a
+                                hx-get="{% url 'ticket-filter' %}?{{pd}}&allocated_page=1"
+                                class="oh-pagination__link"
+                                hx-target="#view-container"
+                                >{% trans "First" %}</a
+                            >
+                        </li>
+                        <li class="oh-pagination__item oh-pagination__item--wide">
+                            <a
+                                hx-get="{% url 'ticket-filter' %}?{{pd}}&allocated_page={{ all_tickets.previous_page_number }}"
+                                class="oh-pagination__link"
+                                hx-target="#view-container"
+                                >{% trans "Previous" %}</a
+                            >
+                        </li>
+                        {%endif %} {% if all_tickets.has_next %}
+                        <li class="oh-pagination__item oh-pagination__item--wide">
+                            <a
+                                hx-get="{% url 'ticket-filter' %}?{{pd}}&allocated_page={{ all_tickets.next_page_number }}"
+                                class="btn btn-outline-secondary"
+                                hx-target="#view-container"
+                                >{% trans "Next" %}</a
+                            >
+                        </li>
+                        <li class="oh-pagination__item oh-pagination__item--wide">
+                            <a
+                                hx-get="{% url 'ticket-filter' %}?{{pd}}&allocated_page={{ all_tickets.paginator.num_pages }}"
+                                hx-target="#view-container"
+                                class="oh-pagination__link"
+                                >{% trans "Last" %}</a
+                            >
+                        </li>
+                        {% endif %}
+                    </ul>
+                </nav>
             </div>
         {% else %}
             <!-- start of empty page-->  

@@ -1,8 +1,14 @@
 {% load i18n %}
 <!-- start of filter  -->
 <form
+    {% if request.GET.view == 'card' %}
     method="get"
     action=""
+    {% else %}
+    method="post"
+    hx-get="{% url 'ticket-filter' %}?view={{view}}"
+    hx-target="#ticket_list"
+    {% endif %}
     id="filterForm"
     class="d-flex"
 >
