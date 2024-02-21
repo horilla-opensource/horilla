@@ -27,9 +27,8 @@ def is_taskmanager(user):
     try:
         employee = user.employee_get
         return (
-            employee.onboardingtask_set.all().exists()
-            or employee.onboardingstage_set.all().exists()
-            or employee.recruitment_set.exists()
+            employee.onboardingstage_set.all().exists()
+            or employee.onboarding_task.all().exists()
         )
     except Exception:
         return False
