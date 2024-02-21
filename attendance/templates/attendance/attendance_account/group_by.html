@@ -222,19 +222,23 @@ aria-hidden="true"
 <script>
   $(document).ready(function () {
     $("#selectAllInstances").show();
-    $("#unselectAllInstances").show();
 
     $(".all-hour-account-row").change(function () {
+      if ($('.all-hour-account').is(":checked")) {
+        $(".all-hour-account").prop("checked", false);
+      }
       addingHourAccountsIds();
-      $("#selectedShow").show();
+      $("#unselectAllInstances").show();
       $("#exportAccounts").show();
+      $("#selectedShow").show();
     });
 
     $(".all-hour-account").change(function () {
       addingHourAccountsIds();
 
-      $("#selectedShow").show();
+      $("#unselectAllInstances").show();
       $("#exportAccounts").show();
+      $("#selectedShow").show();
     });
 
     $("#selectAllInstances").click(function () {

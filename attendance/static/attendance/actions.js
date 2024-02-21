@@ -149,12 +149,14 @@ function tickCheckboxes() {
     languageCode = code;
     var message = rowMessages[languageCode];
     if (selectedCount > 0) {
+      $("#unselectAllInstances").css("display", "inline-flex");
       $("#exportAccounts").css("display", "inline-flex");
       $("#selectedShow").css("display", "inline-flex");
       $("#selectedShow").text(selectedCount + " -" + message);
     } else {
-      $("#selectedShow").css("display", "none");
+      $("#unselectAllInstances").css("display", "none");
       $("#exportAccounts").css("display", "none");
+      $("#selectedShow").css("display", "none");
     }
   });
 }
@@ -176,12 +178,14 @@ function tickactivityCheckboxes() {
     languageCode = code;
     var message = rowMessages[languageCode];
     if (selectedCount > 0) {
+      $("#unselectAllActivity").css("display", "inline-flex");
       $("#exportActivity").css("display", "inline-flex");
       $("#selectedShowActivity").css("display", "inline-flex");
       $("#selectedShowActivity").text(selectedCount + " -" + message);
     } else {
-      $("#selectedShowActivity").css("display", "none");
+      $("#unselectAllActivity").css("display", "none");
       $("#exportActivity").css("display", "none");
+      $("#selectedShowActivity").css("display", "none");
     }
   });
 }
@@ -214,8 +218,9 @@ function ticklatecomeCheckboxes() {
 }
 
 function selectAllHourAcconts() {
-  $("#selectedShow").show();
+  $("#unselectAllInstances").show();
   $("#exportAccounts").show();
+  $("#selectedShow").show();
 
   $("#selectedInstances").attr("data-clicked", 1);
   $("#selectedShow").removeAttr("style");
@@ -316,9 +321,11 @@ function addingHourAccountsIds() {
     $("#selectedInstances").attr("data-ids", JSON.stringify(ids));
 
     if (selectedCount === 0) {
-      $("#selectedShow").css("display", "none");
+      $("#unselectAllInstances").css("display", "none");
       $("#exportAccounts").css("display", "none");
+      $("#selectedShow").css("display", "none");
     } else {
+      $("#unselectAllInstances").css("display", "inline-flex");
       $("#exportAccounts").css("display", "inline-flex");
       $("#selectedShow").css("display", "inline-flex");
       $("#selectedShow").text(selectedCount + " - " + message);
@@ -355,6 +362,8 @@ function unselectAllHourAcconts() {
       $("#selectedInstances").attr("data-ids", JSON.stringify([]));
 
       count = [];
+      $("#unselectAllInstances").hide();
+      $("#exportAccounts").hide();
       tickCheckboxes(count);
     },
     error: function (xhr, status, error) {
@@ -422,9 +431,11 @@ function addingActivityIds() {
     $("#selectedActivity").attr("data-ids", JSON.stringify(ids));
 
     if (selectedCount === 0) {
-      $("#selectedShowActivity").css("display", "none");
+      $("#unselectAllActivity").css("display", "none");
       $("#exportActivity").css("display", "none");
+      $("#selectedShowActivity").css("display", "none");
     } else {
+      $("#unselectAllActivity").css("display", "inline-flex");
       $("#exportActivity").css("display", "inline-flex");
       $("#selectedShowActivity").css("display", "inline-flex");
       $("#selectedShowActivity").text(selectedCount + " - " + message);

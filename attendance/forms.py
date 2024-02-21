@@ -68,7 +68,7 @@ class ModelForm(forms.ModelForm):
             widget = field.widget
             if isinstance(widget, (forms.DateInput)):
                 field.initial = datetime.date.today()
-                
+
             if isinstance(
                 widget, (forms.NumberInput, forms.EmailInput, forms.TextInput)
             ):
@@ -116,16 +116,17 @@ class ModelForm(forms.ModelForm):
                     attrs={"type": "time", "class": "oh-input w-100"}
                 )
 
-            try:            
-                self.fields["employee_id"].initial = request.user.employee_get 
+            try:
+                self.fields["employee_id"].initial = request.user.employee_get
             except:
                 pass
 
-            try:            
-                self.fields["company_id"].initial = request.user.employee_get.get_company
+            try:
+                self.fields["company_id"].initial = (
+                    request.user.employee_get.get_company
+                )
             except:
                 pass
-
 
 
 class AttendanceUpdateForm(ModelForm):
@@ -670,6 +671,8 @@ class NewRequestForm(AttendanceRequestForm):
 excluded_fields = [
     "id",
     "attendance_id__employee_id",
+    "in_datetime",
+    "out_datetime",
     "requested_data",
     "at_work_second",
     "approved_overtime_second",
