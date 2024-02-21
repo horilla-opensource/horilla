@@ -152,7 +152,7 @@
 <div class="oh-tabs oh-wrapper">
   <ul class="oh-tabs__tablist">
     <li class="oh-tabs__tab oh-tabs__tab--active" data-target="#templateTab">
-      {% trans "Template Groups" %}
+      {% trans "Templates" %}
       {% if perms.recruitment.add_recruitmentsurvey %}
       <button onclick="event.stopPropagation()" style="display: inline-block;padding: 0px;
           border-radius: 6px;
@@ -196,7 +196,7 @@
         </button>
       {% endif %}
     </li>
-    <li
+    {% comment %} <li
       class="oh-tabs__tab"
       data-target="#template"
     >
@@ -219,7 +219,7 @@
           <ion-icon name="add-outline" class="m-0 md hydrated" role="img" aria-label="add outline"></ion-icon>
       </button>
       {% endif %}
-    </li>
+    </li> {% endcomment %}
   </ul>
   <div class="oh-tabs__contents" id="view-container">
     {% include "survey/survey_card.html" %}

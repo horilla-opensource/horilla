@@ -9,9 +9,9 @@
 <div class="oh-tabs__content oh-tabs__content--active" id="templateTab">
   {% include "survey/template_accordion.html" %}
 </div>
-<div class="oh-tabs__content" id="template">
+{% comment %} <div class="oh-tabs__content" id="template">
   {% include "survey/templates.html" %}
-</div>
+</div> {% endcomment %}
 <div class="oh-tabs__content" id="questionTab">
   {% if questions %}
     <div>
