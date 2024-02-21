@@ -411,17 +411,17 @@ def cancel_attendance_request(request, attendance_id):
             attendance.delete()
             messages.success(request, _("The requested attendance is removed."))
         else:
-            messages.success(request, _("Attendance request has been cancelled"))
+            messages.success(request, _("Attendance request has been rejected"))
         employee = attendance.employee_id
         notify.send(
             request.user,
             recipient=employee.employee_user_id,
-            verb=f"Your attendance request for {attendance.attendance_date} is cancelled",
-            verb_ar=f"تم إلغاء طلب حضورك في تاريخ {attendance.attendance_date}",
-            verb_de=f"Ihr Antrag auf Teilnahme am {attendance.attendance_date} wurde storniert",
-            verb_es=f"Se ha cancelado su solicitud de asistencia para el {attendance.attendance_date}",
-            verb_fr=f"Votre demande de participation pour le {attendance.attendance_date} a été annulée",
-            redirect=f"/attendance/request-attendance-view?id={attendance.id}",
+            verb=f"Your attendance request for {attendance.attendance_date} is rejected",
+            verb_ar=f"تم رفض طلبك للحضور في تاريخ {attendance.attendance_date}",
+            verb_de=f"Ihre Anwesenheitsanfrage für {attendance.attendance_date} wurde abgelehnt",
+            verb_es=f"Tu solicitud de asistencia para el {attendance.attendance_date} ha sido rechazada",
+            verb_fr=f"Votre demande de présence pour le {attendance.attendance_date} est rejetée",
+
             icon="close-circle-outline",
         )
     return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))

@@ -26,20 +26,6 @@
     ></ion-icon>
   </button>
 </div>
-<div class="oh-modal__button-container text-center">
-  <div class="d-flex flex-row-reverse">
-    {% if request.user|is_reportingmanager or request.user.has_perm.attendance.change_attendance %}
-    <a
-      href="{% url 'approve-validate-attendance-request' attendance.id %}"
-      class="oh-btn oh-btn--success"
-      style="width: 20%"
-    >
-      <ion-icon name="checkmark-outline"></ion-icon>
-      {% trans "Approve" %}
-    </a>
-    {% endif %}
-  </div>
-</div>
 <a class="oh-timeoff-modal__profile-content pt-4" style="text-decoration:none;" 
   href ="{% url 'employee-view-individual' attendance.employee_id.id %}">
   <div class="oh-profile mb-2">
@@ -128,20 +114,27 @@
     <a
       href="{% url 'cancel-validate-attendance-request' attendance.id %}"
       data-toggle="oh-modal-toggle"
-      class="oh-btn oh-btn--secondary"
-      style="width: 50%"
+      class="oh-btn oh-btn--secondary w-100"
     >
       <ion-icon name="close-circle-outline"></ion-icon>
-      {% trans "Cancel" %}
+      {% trans "Reject" %}
     </a>
+    {% if request.user|is_reportingmanager or request.user.has_perm.attendance.change_attendance %}
+    <a
+      href="{% url 'approve-validate-attendance-request' attendance.id %}"
+      class="oh-btn oh-btn--success w-100"
+    >
+      <ion-icon name="checkmark-outline"></ion-icon>
+      {% trans "Approve" %}
+    </a>
+    {% endif %}
     {% if request.user|is_reportingmanager or request.user.has_perm.attendance.change_attendance %}
     <a
       hx-get="{% url 'edit-validate-attendance' attendance.id %}"
       hx-target="#editValidateAttendanceRequestModalBody"
       data-target="#editValidateAttendanceRequest"
       data-toggle="oh-modal-toggle"
-      class="oh-btn oh-btn--info"
-      style="width: 50%"
+      class="oh-btn oh-btn--info w-100"
     >
       <ion-icon name="create-outline"></ion-icon>
       {% trans "Edit" %}
