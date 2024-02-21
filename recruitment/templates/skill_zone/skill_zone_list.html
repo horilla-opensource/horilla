@@ -18,16 +18,16 @@
                         </div>
                     </span>
                     <div class="oh-btn-group">
-                        <a    class="oh-btn oh-btn--secondary oh-btn--shadow"
+                        <a                              
+                            class="oh-btn oh-btn--light-bkg w-100"
                             onclick="event.stopPropagation();"
-
                             data-toggle="oh-modal-toggle"
                             data-target="#editCandModal"
                             hx-get="{% url 'skill-zone-cand-create' skill_zone.grouper.id %}"
                             hx-target="#editCandTarget"
+                            title="Add candidate"
                         >
-                              <ion-icon name="add-outline" class="me-1"></ion-icon>
-                              {% trans "Add" %}
+                            <ion-icon name="person-add-outline"></ion-icon>
                             </a>
                         <a
                           onclick="event.stopPropagation();"
