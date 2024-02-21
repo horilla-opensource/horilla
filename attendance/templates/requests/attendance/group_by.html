@@ -14,7 +14,7 @@
 								<span
 									class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round mr-1"
 								>
-									{{request_list.list|length}}
+									{{request_list.list.paginator.count}}
 								</span>
 								{{request_list.grouper}}
 							</div>
@@ -65,7 +65,13 @@
 								</div>
 								{% for attendance in request_list.list %}
 								<div class="oh-sticky-table__tbody">
-									<div class="oh-sticky-table__tr" draggable="true">
+									<div class="oh-sticky-table__tr" draggable="true"
+										data-toggle="oh-modal-toggle"
+										data-target="#validateAttendanceRequest"
+										data-attendance-id="{{attendance.id}}"
+										hx-get = "{% url 'validate-attendance-request' attendance.id %}?requests_ids={{requests_ids}}"
+										hx-target="#validateAttendanceRequestModalBody"
+									>
 										<div
 											class="oh-sticky-table__sd {% if attendance.attendance_validated %}row-status--yellow {% else %}row-status--purple{% endif %}"
 										>
