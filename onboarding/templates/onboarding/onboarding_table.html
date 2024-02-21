@@ -80,18 +80,19 @@
             class="w-100 bulkStageChange" 
             style="border: 1px solid hsl(213deg,22%,84%);
             padding: 0.3rem 0.8rem 0.3rem 0.3rem;
-            border-radius: 0rem;" name="stage"
+            border-radius: 0rem;background-color:white;" name="stage"
             data-stage = "#onboarding_stage{{stage.grouper.id}}"
             data-recruitment = {{recruitment.id}}
             title = "Bulk stage change"
             onclick="event.stopPropagation();"
             onchange = "bulkStageChange(this);">
+               <option style="color: #999;">{% trans "Bulk Stage Change" %}</option>
                 {% for on_stage in recruitment.onboarding_stage.all %}
-                {% if on_stage == stage %}
+                {% comment %} {% if on_stage == stage %}
                 <option value="{{on_stage.id}}" selected>{{on_stage}}</option>
-                {% else %}
+                {% else %} {% endcomment %}
                 <option value="{{on_stage.id}}">{{on_stage}}</option>
-                {% endif %}
+                {% comment %} {% endif %} {% endcomment %}
                 {% endfor %}
             </select>
             {% endif %}
