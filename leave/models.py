@@ -10,7 +10,7 @@ from django.core.exceptions import ValidationError
 from dateutil.relativedelta import relativedelta
 from django.utils.translation import gettext_lazy as _
 from base import thread_local_middleware
-from base.models import Company, MultipleApprovalCondition
+from base.models import Company, MultipleApprovalCondition, clear_messages
 from base.horilla_company_manager import HorillaCompanyManager
 from employee.models import Employee
 from horilla_audit.models import HorillaAuditInfo, HorillaAuditLog
@@ -18,7 +18,7 @@ from .methods import calculate_requested_days
 from django.core.files.storage import default_storage
 from django.conf import settings
 from horilla_audit.methods import get_diff
-
+from django.contrib import messages
 
 operator_mapping = {
     "equal": operator.eq,
@@ -677,6 +677,15 @@ class LeaveRequest(models.Model):
                 return not condition_approval.is_approved
             else:
                 return True
+    def delete(self,*args, **kwargs):
+        request = getattr(thread_local_middleware._thread_locals,"request",None)
+        if self.status== 'requested':
+            super().delete(*args, **kwargs)
+        else:
+            if request:
+                clear_messages(request)
+                messages.warning(request,"The leave request cannot be deleted.")
+
 
 
 class LeaverequestFile(models.Model):

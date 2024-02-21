@@ -539,8 +539,8 @@ def leave_request_delete(request, id):
     GET : return leave request view template
     """
     try:
-        LeaveRequest.objects.get(id=id).delete()
         messages.success(request, _("Leave request deleted successfully.."))
+        LeaveRequest.objects.get(id=id).delete()
     except LeaveRequest.DoesNotExist:
         messages.error(request, _("Leave request not found."))
     except ProtectedError:
@@ -741,16 +741,15 @@ def leave_request_cancel(request, id, emp_id=None):
             comment.comment = leave_request.reject_reason
             comment.save()
 
-            messages.success(request, _("Leave request cancelled successfully.."))
+            messages.success(request, _("Leave request rejected successfully.."))
             with contextlib.suppress(Exception):
                 notify.send(
                     request.user.employee_get,
                     recipient=leave_request.employee_id.employee_user_id,
-                    verb="Your Leave request has been cancelled",
-                    verb_ar="تم إلغاء طلب الإجازة الخاص بك",
-                    verb_de="Ihr Urlaubsantrag wurde storniert",
-                    verb_es="Se ha cancelado su solicitud de permiso",
-                    verb_fr="Votre demande de congé a été annulée",
+                    verb_ar="تم رفض طلب الإجازة الخاص بك",
+                    verb_de="Ihr Urlaubsantrag wurde abgelehnt",
+                    verb_es="Tu solicitud de permiso ha sido rechazada",
+                    verb_fr="Votre demande de congé a été rejetée",
                     icon="people-circle",
                     redirect=f"/leave/user-request-view?id={leave_request.id}",
                 )
