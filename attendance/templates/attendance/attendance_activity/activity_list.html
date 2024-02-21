@@ -142,7 +142,11 @@
 
 <script>
   $(document).ready(function () {
+    tickactivityCheckboxes();
     $(".all-attendance-activity-row").change(function () {
+      if ($('.all-attendance-activity').is(":checked")) {
+        $(".all-attendance-activity").prop("checked", false);
+      }
       addingActivityIds();
     });
 
