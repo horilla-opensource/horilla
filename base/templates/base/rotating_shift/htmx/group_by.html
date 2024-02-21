@@ -13,7 +13,7 @@
     <div
     class="oh-checkpoint-badge text-secondary mb-2"
     id="unselectAllRShifts"
-    style="cursor: pointer"
+    style="cursor: pointer; display: none;"
     >
     {% trans "Unselect All Shifts" %}
     </div>
@@ -21,7 +21,7 @@
   <div
   class="oh-checkpoint-badge text-info mb-2"
   id="exportRShifts"
-  style="cursor: pointer; display: none"
+  style="cursor: pointer; display: none;"
   >
   {% trans "Export Shifts" %}
   </div>
@@ -353,8 +353,10 @@
 			if (selectedCount === 0) {
 			$("#selectedShowRShifts").css("display", "none");
 			$("#exportRShifts").css("display", "none");
+			$("#unselectAllRShifts").css("display", "none");
 			} else {
 			$("#exportRShifts").css("display", "inline-flex");
+			$("#unselectAllRShifts").css("display", "inline-flex");
 			$("#selectedShowRShifts").css("display", "inline-flex");
 			$("#selectedShowRShifts").text(selectedCount + " - " + message);
 			}
@@ -364,6 +366,9 @@
 	$(document).ready(function() {
 		
 		$(".all-rshift-row").change(function () {
+      if ($('.all-rshift').is(":checked")) {
+        $(".all-rshift").prop("checked", false);
+      }
 			addingRShiftIds();
 		});
 
