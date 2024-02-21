@@ -31,16 +31,16 @@
           </div>
           <div class="oh-sticky-table__tbody">
             {% for task in tasks %}
-              <div class="oh-sticky-table__tr" draggable="true" data-toggle="oh-modal-toggle" data-target="#taskModal" hx-get="{% url 'candidate-tasks-status' %}?task_id={{ task.task.id }}" hx-target="#taskModalBody">
+              <div class="oh-sticky-table__tr" draggable="true" data-toggle="oh-modal-toggle" data-target="#taskModal" hx-get="{% url 'candidate-tasks-status' %}?task_id={{ task.task.id }}" hx-target="#taskModalBody" align="center">
                 <div class="oh-sticky-table__sd">
                   {{ task.task }}
                   <span title="Total ({{ task.total_candidates }}) candidates in this task">({{ task.total_candidates }})</span>
                 </div>
-                <div class="oh-sticky-table__td">{{ task.todo }}</div>
-                <div class="oh-sticky-table__td">{{ task.scheduled }}</div>
-                <div class="oh-sticky-table__td">{{ task.ongoing }}</div>
-                <div class="oh-sticky-table__td">{{ task.stuck }}</div>
-                <div class="oh-sticky-table__td oh-sticky-table__right" title="{% trans 'Send Mail' %}">{{ task.done }}</div>
+                <div class="oh-sticky-table__td" align="center">{{ task.todo }}</div>
+                <div class="oh-sticky-table__td" align="center">{{ task.scheduled }}</div>
+                <div class="oh-sticky-table__td" align="center">{{ task.ongoing }}</div>
+                <div class="oh-sticky-table__td" align="center">{{ task.stuck }}</div>
+                <div class="oh-sticky-table__td oh-sticky-table__right" title="{% trans 'Send Mail' %}" align="center">{{ task.done }}</div>
               </div>
             {% endfor %}
           </div>
