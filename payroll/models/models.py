@@ -1315,6 +1315,12 @@ class Payslip(models.Model):
     objects = HorillaCompanyManager("employee_id__employee_work_info__company_id")
     installment_ids = models.ManyToManyField(Deduction, editable=False)
     created_at = models.DateTimeField(auto_now_add=True, null=True)
+    history = HorillaAuditLog(
+        related_name="history_set",
+        bases=[
+            HorillaAuditInfo,
+        ],
+    )
 
     def __str__(self) -> str:
         return f"Payslip for {self.employee_id} - Period: {self.start_date} to {self.end_date}"
