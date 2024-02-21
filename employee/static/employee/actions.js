@@ -67,21 +67,6 @@ function getCookie(name) {
   return cookieValue;
 }
 
-// function getCurrentLanguageCode(callback) {
-//   var language_code = $("#main-section-data").attr("data-lang");
-//   console.log("[[[[[[[[[[[[[[[[]]]]]]]]]]]]]]]]]]]]]]]]]");
-//   console.log(language_code);
-//   console.log("[[[[[[[[[[[[[[[[]]]]]]]]]]]]]]]]]]]]]]]]]");
-//   $.ajax({
-//     type: "GET",
-//     url: "/employee/get-language-code/",
-//     success: function (response) {
-//       var languageCode = response.language_code;
-//       callback(languageCode); // Pass the language code to the callback
-//     },
-//   });
-// }
-
 $(".all-employee").change(function (e) {
   var is_checked = $(this).is(":checked");
   var closest = $(this)
@@ -106,6 +91,10 @@ $(".all-employee").change(function (e) {
 });
 
 $(".all-employee-row").change(function () {
+  if ($(".all-employee").is(":checked")) {
+    $(".all-employee").prop("checked", false);
+  }
+
   addingIds();
 });
 
@@ -132,10 +121,12 @@ function addingIds() {
     ((languageCode = "en"), rowMessages[languageCode]);
   $("#selectedInstances").attr("data-ids", JSON.stringify(ids));
   if (selectedCount === 0) {
+    $("#unselectAllEmployees").css("display", "none");
+    $("#exportEmployees").css("display", "none");
     $("#selectedShow").css("display", "none");
-    $("#exportInstances").css("display", "none");
   } else {
-    $("#exportInstances").css("display", "inline-flex");
+    $("#unselectAllEmployees").css("display", "inline-flex");
+    $("#exportEmployees").css("display", "inline-flex");
     $("#selectedShow").css("display", "inline-flex");
     $("#selectedShow").text(selectedCount + " - " + message);
   }
@@ -159,16 +150,18 @@ function tickCheckboxes() {
     rowMessages[languageCode] ||
     ((languageCode = "en"), rowMessages[languageCode]);
   if (selectedCount > 0) {
-    $("#exportInstances").css("display", "inline-flex");
+    $("#unselectAllEmployees").css("display", "inline-flex");
+    $("#exportEmployees").css("display", "inline-flex");
     $("#selectedShow").css("display", "inline-flex");
     $("#selectedShow").text(selectedCount + " -" + message);
   } else {
+    $("#unselectAllEmployees").css("display", "none");
+    $("#exportEmployees").css("display", "none");
     $("#selectedShow").css("display", "none");
-    $("#exportInstances").css("display", "none");
   }
 }
 
-function selectAllInstances() {
+function selectAllEmployees() {
   var allEmployeeCount = 0;
   $("#selectedInstances").attr("data-clicked", 1);
   $("#selectedShow").removeAttr("style");
@@ -200,6 +193,8 @@ function selectAllInstances() {
         $("#selectedInstances").attr("data-ids", JSON.stringify(employeeIds));
 
         count = makeListUnique(employeeIds);
+        $("#unselectAllEmployees").css("display", "inline-flex");
+        $("#exportEmployees").css("display", "inline-flex");
         tickCheckboxes(count);
       },
       error: function (xhr, status, error) {
@@ -236,6 +231,8 @@ function selectAllInstances() {
         );
 
         count = makeListUnique(employeeIds);
+        $("#unselectAllEmployees").css("display", "inline-flex");
+        $("#exportEmployees").css("display", "inline-flex");
         tickCheckboxes(count);
       },
       error: function (xhr, status, error) {
@@ -245,7 +242,7 @@ function selectAllInstances() {
   }
 }
 
-function unselectAllInstances() {
+function unselectAllEmployees() {
   $("#selectedInstances").attr("data-clicked", 0);
 
   $.ajax({
@@ -274,6 +271,8 @@ function unselectAllInstances() {
       $("#selectedInstances").attr("data-ids", JSON.stringify([]));
 
       count = [];
+      $("#unselectAllEmployees").css("display", "none");
+      $("#exportEmployees").css("display", "none");
       tickCheckboxes(count);
     },
     error: function (xhr, status, error) {
@@ -282,7 +281,7 @@ function unselectAllInstances() {
   });
 }
 
-$("#exportInstances").click(function (e) {
+$("#exportEmployees").click(function (e) {
   var currentDate = new Date().toISOString().slice(0, 10);
   var languageCode = null;
   languageCode = $("#main-section-data").attr("data-lang");

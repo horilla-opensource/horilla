@@ -2,22 +2,22 @@
 {% load i18n %} {% include 'filter_tags.html' %}
 <div
   class="oh-checkpoint-badge text-success mb-2"
-  id="selectAllInstances"
+  id="selectAllEmployees"
   style="cursor: pointer"
 >
   {% trans "Select All Employees" %}
 </div>
 <div
   class="oh-checkpoint-badge text-secondary mb-2"
-  id="unselectAllInstances"
-  style="cursor: pointer"
+  id="unselectAllEmployees"
+  style="cursor: pointer;display: none;"
 >
   {% trans "Unselect All Employees" %}
 </div>
 <div
   class="oh-checkpoint-badge text-info mb-2"
-  id="exportInstances"
-  style="cursor: pointer"
+  id="exportEmployees"
+  style="cursor: pointer;display: none;"
 >
   {% trans "Export Employees" %}
 </div>
@@ -32,7 +32,7 @@
               <span
                 class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round mr-1"
               >
-                {{employee_list.list|length}}
+                {{employee_list.list.paginator.count}}
               </span>
               {{employee_list.grouper}}
             </div>
@@ -363,12 +363,12 @@
   <script>
     $(document).ready(function () {
       tickCheckboxes();
-      $("#selectAllInstances").click(function () {
-        selectAllInstances();
+      $("#selectAllEmployees").click(function () {
+        selectAllEmployees();
       });
   
-      $("#unselectAllInstances").click(function () {
-        unselectAllInstances();
+      $("#unselectAllEmployees").click(function () {
+        unselectAllEmployees();
       });
     });
   </script>
