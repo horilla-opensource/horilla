@@ -166,11 +166,13 @@ function tickRShiftCheckboxes() {
     var message = rowMessages[languageCode];
     if (selectedCount > 0) {
       $("#exportRShifts").css("display", "inline-flex");
+      $("#unselectAllRShifts").css("display", "inline-flex");
       $("#selectedShowRShifts").css("display", "inline-flex");
       $("#selectedShowRShifts").text(selectedCount + " -" + message);
     } else {
       $("#selectedShowRShifts").css("display", "none");
       $("#exportRShifts").css("display", "none");
+      $("#unselectAllRShifts").css("display", "none");
     }
   });
 }
@@ -415,11 +417,13 @@ function tickRWorktypeCheckboxes() {
     var message = rowMessages[languageCode];
     if (selectedCount > 0) {
       $("#exportRWorktypes").css("display", "inline-flex");
+      $("#unselectAllRWorktypes").css("display", "inline-flex");
       $("#selectedShowRWorktypes").css("display", "inline-flex");
       $("#selectedShowRWorktypes").text(selectedCount + " -" + message);
     } else {
       $("#selectedShowRWorktypes").css("display", "none");
       $("#exportRWorktypes").css("display", "none");
+      $("#unselectAllRWorktypes").css("display", "none");
     }
   });
 }
@@ -661,11 +665,13 @@ function tickShiftCheckboxes() {
     var message = rowMessages[languageCode];
     if (selectedCount > 0) {
       $("#exportShifts").css("display", "inline-flex");
+      $("#unselectAllShifts").css("display", "inline-flex");
       $("#selectedShowShifts").css("display", "inline-flex");
       $("#selectedShowShifts").text(selectedCount + " -" + message);
     } else {
       $("#selectedShowShifts").css("display", "none");
       $("#exportShifts").css("display", "none");
+      $("#unselectAllShifts").css("display", "none");
     }
   });
 }
@@ -909,11 +915,13 @@ function tickWorktypeCheckboxes() {
     var message = rowMessages[languageCode];
     if (selectedCount > 0) {
       $("#exportWorktypes").css("display", "inline-flex");
+      $("#unselectAllWorktypes").css("display", "inline-flex");
       $("#selectedShowWorktypes").css("display", "inline-flex");
       $("#selectedShowWorktypes").text(selectedCount + " -" + message);
     } else {
       $("#selectedShowWorktypes").css("display", "none");
       $("#exportWorktypes").css("display", "none");
+      $("#unselectAllWorktypes").css("display", "none");
     }
   });
 }

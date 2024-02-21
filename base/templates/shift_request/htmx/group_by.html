@@ -675,8 +675,11 @@
       if (selectedCount === 0) {
         $("#selectedShowShifts").css("display", "none");
         $("#exportShifts").css("display", "none");
+        $("#unselectAllShifts").css("display", "none");
+		
       } else {
         $("#exportShifts").css("display", "inline-flex");
+        $("#unselectAllShifts").css("display", "inline-flex");
         $("#selectedShowShifts").css("display", "inline-flex");
         $("#selectedShowShifts").text(selectedCount + " - " + message);
       }
@@ -685,7 +688,10 @@
 
   $(document).ready(function () {
     $(".all-shift-requests-row").change(function () {
-      addingShiftIds();
+	if ($('.all-shift-requests').is(":checked")) {
+	  	$(".all-shift-requests").prop("checked", false);
+	}
+	addingShiftIds();
     });
 
     $(".all-shift-requests").change(function () {
