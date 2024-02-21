@@ -3,6 +3,7 @@ urls.py
 
 This module is used to map url path with view methods.
 """
+
 from django.urls import path
 from base.views import object_delete
 from employee import not_in_out_dashboard, policies, views
@@ -352,7 +353,20 @@ urlpatterns = [
         views.encashment_condition_create,
         name="encashment-condition-create",
     ),
-    path("initial-prefix",views.initial_prefix,name="initial-prefix"),
-    path("get-first-last-badge-id",views.first_last_badge,name="get-first-last-badge-id"),
-    path("employee-get-mail-log",views.employee_get_mail_log,name="employee-get-mail-log"),
+    path("initial-prefix", views.initial_prefix, name="initial-prefix"),
+    path(
+        "get-first-last-badge-id",
+        views.first_last_badge,
+        name="get-first-last-badge-id",
+    ),
+    path(
+        "employee-get-mail-log",
+        views.employee_get_mail_log,
+        name="employee-get-mail-log",
+    ),
+    path(
+        "get-manage-in",
+        views.get_manager_in,
+        name="get-manager-in",
+    ),
 ]

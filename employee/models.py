@@ -382,6 +382,7 @@ class Employee(models.Model):
             user.user_permissions.add(view_ownprofile)
             user.user_permissions.add(change_ownprofile)
             return self.save()
+        
         return self
 
 

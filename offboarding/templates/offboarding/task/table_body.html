@@ -69,11 +69,12 @@
             >
                 <ion-icon name="newspaper-outline"></ion-icon>
             </button>
-            {% if not employee.employee_id.is_active %}
+            {% if stage.grouper.type == "archived" %}
             <a
                 type="button"
-                href="{% url 'employee-archive' employee.employee_id.id %}"
-                title="{% trans 'Un Archive' %}"
+                hx-get="{% url 'employee-archive' employee.employee_id.id %}"
+                hx-target="#managerIn"
+                title="{% if not employee.employee_id.is_active %}{% trans 'Un Archive' %} {% else %} {% trans 'Archive' %}{% endif %}"
                 class="oh-btn oh-btn--light tex-primary"
                 style="flex: 1 0 auto; width: 20px; height: 40.68px; padding: 0"
 				onclick="event.stopPropagation()"
@@ -92,7 +93,20 @@
 				onclick="event.stopPropagation()"
                 ><ion-icon name="create-outline"></ion-icon
             ></a>
-            {% endif %} {% if perms.offboarding.delete_offboardingemployee %}
+            {% endif %}
+            {% if employee.employee_id.get_archive_condition %}
+            <a
+                type="button"
+                title="{% trans 'Show managing records' %}"
+                hx-get="{% url 'get-manager-in' %}?employee_id={{employee.employee_id.id}}"
+                hx-target="#managerIn"
+                class="oh-btn oh-btn--light tex-primary"
+                style="flex: 1 0 auto; width: 20px; height: 40.68px; padding: 0"
+				onclick="event.stopPropagation()"
+                ><ion-icon name="people-outline"></ion-icon
+            ></a>
+            {% endif %}
+            {% if perms.offboarding.delete_offboardingemployee %}
             <a
                 type="button"
                 style="flex: 1 0 auto; width: 20px; height: 40.68px; padding: 0"

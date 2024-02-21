@@ -1850,13 +1850,40 @@ def employee_archive(request, obj_id):
     if save:
         employee.save()
         messages.success(request, message)
-        return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+        key = "HTTP_HX_REQUEST"
+        if key not in request.META.keys():
+            return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+        else:
+            return HttpResponse("<script>window.location.reload()</script>")
     else:
         return render(
             request,
             "related_models.html",
-            {"employee": employee, "related_models": result.get("related_models")},
+            {
+                "employee": employee,
+                "related_models": result.get("related_models"),
+                "title": _("Cant't Archive"),
+            },
         )
+
+
+@login_required
+@permission_required("employee.view_employee")
+def get_manager_in(request):
+    """
+    This method is used to get the manager in records model
+    """
+    employee_id = request.GET.get("employee_id")
+    employee = Employee.objects.filter(id=employee_id).first()
+    return render(
+        request,
+        "related_models.html",
+        {
+            "employee": employee,
+            "related_models": employee.get_archive_condition().get("related_models"),
+            "title": _("Assigned In"),
+        },
+    )
 
 
 @login_required
