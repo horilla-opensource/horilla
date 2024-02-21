@@ -12,7 +12,7 @@
 <div
   class="oh-checkpoint-badge text-secondary mb-2"
   id="unselectAllRWorktypes"
-  style="cursor: pointer"
+  style="cursor: pointer;display: none;"
 >
   {% trans "Unselect All Worktypes" %}
 </div>
@@ -300,8 +300,10 @@
 			if (selectedCount === 0) {
 			$("#selectedShowRWorktypes").css("display", "none");
 			$("#exportRWorktypes").css("display", "none");
+			$("#unselectAllRWorktypes").css("display", "none");
 			} else {
 			$("#exportRWorktypes").css("display", "inline-flex");
+			$("#unselectAllRWorktypes").css("display", "inline-flex");
 			$("#selectedShowRWorktypes").css("display", "inline-flex");
 			$("#selectedShowRWorktypes").text(selectedCount + " - " + message);
 			}
@@ -311,6 +313,9 @@
 	$(document).ready(function() {
 		
 		$(".all-rwork-type-row").change(function () {
+      if ($('.all-rwork-type').is(":checked")) {
+        $(".all-rwork-type").prop("checked", false);
+      }
 			addingRWorktypeIds();
 		});
 
