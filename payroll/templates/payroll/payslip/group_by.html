@@ -23,14 +23,14 @@
     <div
       class="oh-checkpoint-badge text-secondary mb-2"
       id="unselectAllPayslip"
-      style="cursor: pointer"
+      style="cursor: pointer;display:none;"
     >
       {% trans "Unselect All Payslips" %}
     </div>
     <div
       class="oh-checkpoint-badge text-info mb-2"
       id="exportPayslips"
-      style="cursor: pointer"
+      style="cursor: pointer;display:none;"
     >
       {% trans "Export Payslips" %}
     </div>
@@ -47,9 +47,17 @@
 						<span
 							class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round mr-1"
 						>
-                        {{payslip_list.list.paginator.count}}
+              {{payslip_list.list.paginator.count}}
 						</span>
+            {% if request.GET.field == "group_name" and payslip_list.grouper %}
+            <span onclick="event.stopPropagation()">
+              <input style="font-size: 13px;
+              font-weight: bold;
+              border: none;" type="text" class="oh-tabs__movable-title  oh-table__editable-input--batch" value="{{payslip_list.grouper}}" name="" id="{{payslip_list.grouper}}Grouper" data-previous-name="{{payslip_list.grouper}}">
+            </span>
+            {% else %}
 						{{payslip_list.grouper}}
+            {% endif %}
 					</div>
 				</span>
 			</div>
@@ -64,6 +72,7 @@
 										<input
 											type="checkbox"
 											class="all-payslip oh-input oh-input__checkbox Allpayslip"
+                      onchange="$(this).closest('.oh-sticky-table').find('.payslip-checkbox').prop('checked',$(this).is(':checked')).change()"
 											id = ""
 											title='{% trans "Select All" %}'
 										/>
@@ -286,7 +295,42 @@
       let $element = $(this);
       updatePayStatus($element);
     }); {% endcomment %}
-  
+    $(".oh-table__editable-input--batch").focusout(function (e) { 
+      e.preventDefault();
+      var grouper = $(this)
+      var previousName = grouper.attr("data-previous-name");
+      var newName = grouper.val();
+      if (newName && newName != previousName) {
+        $.ajax({
+        type: "post",
+        url: "{% url 'update-batch-group-name' %}",
+        data: {
+          csrfmiddlewaretoken: getCookie("csrftoken"),
+          newName: newName,
+          previousName:previousName
+        },
+        success: function (response) {
+          grouper.attr("data-previous-name", response.new_name);
+          $("#messageContainer").html($($(`
+              <div class="oh-alert-container">
+                <div class="oh-alert oh-alert--animated  oh-alert--${response.type}">
+                  ${response.message}
+                </div>
+              </div>`)
+              ))
+        },error:()=>{
+          $("#messageContainer").html($($(`
+            <div class="oh-alert-container">
+              <div class="oh-alert oh-alert--animated  oh-alert--danger">
+                Batch not updated.
+              </div>
+            </div>`
+            )
+          ))
+          }
+      }); 
+      }
+    });
     $("[name=update_selected]").change(function (e) {
       updateBulkStatus($(this));
       e.preventDefault();
@@ -305,6 +349,9 @@
     });
   
     $(".all-payslip-row").change(function () {
+      if ($(".all-payslip").is(":checked")) {
+        $(".all-payslip").prop("checked", false);
+      }
       addingPayslipIds();
     });
   

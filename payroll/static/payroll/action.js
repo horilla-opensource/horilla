@@ -44,8 +44,6 @@ function makeEmpListUnique(list) {
   return Array.from(new Set(list));
 }
 
-tickPayslipCheckboxes();
-
 function makePayslipListUnique(list) {
   return Array.from(new Set(list));
 }
@@ -95,10 +93,6 @@ function getCurrentLanguageCode(callback) {
 //        PAYSLIP SECTION
 // -------------------------------
 
-$(".all-payslip-row").change(function () {
-  addingPayslipIds();
-});
-
 $("#select-all-fields").change(function () {
   const isChecked = $(this).prop("checked");
   $('[name="selected_fields"]').prop("checked", isChecked);
@@ -129,17 +123,24 @@ function addingPayslipIds() {
     $("#selectedPayslip").attr("data-ids", JSON.stringify(ids));
 
     if (selectedCount === 0) {
-      $("#unselectAllContracts").css("display", "none");
-      $("#exportContracts").css("display", "none");
+      $("#unselectAllPayslip").css("display", "none");
+      $("#exportPayslips").css("display", "none");
       $("#selectedSlipShow").css("display", "none");
     } else {
-      $("#unselectAllContracts").css("display", "inline-flex");
+      $("#unselectAllPayslip").css("display", "inline-flex");
       $("#exportPayslips").css("display", "inline-flex");
       $("#selectedSlipShow").css("display", "inline-flex");
       $("#selectedSlipShow").text(selectedCount + " - " + message);
     }
   });
 }
+
+$(".all-payslip-row").change(function () {
+  if ($(".all-payslip").is(":checked")) {
+    $(".all-payslip").prop("checked", false);
+  }
+  addingPayslipIds();
+});
 
 function tickPayslipCheckboxes() {
   var ids = JSON.parse($("#selectedPayslip").attr("data-ids") || "[]");
@@ -159,12 +160,14 @@ function tickPayslipCheckboxes() {
     languageCode = code;
     var message = rowMessages[languageCode];
     if (selectedCount > 0) {
+      $("#unselectAllPayslip").css("display", "inline-flex");
       $("#exportPayslips").css("display", "inline-flex");
       $("#selectedSlipShow").css("display", "inline-flex");
       $("#selectedSlipShow").text(selectedCount + " -" + message);
     } else {
-      $("#selectedSlipShow").css("display", "none");
+      $("#unselectAllPayslip").css("display", "none");
       $("#exportPayslips").css("display", "none");
+      $("#selectedSlipShow").css("display", "none");
     }
   });
 }
@@ -279,7 +282,7 @@ function unselectAllPayslip() {
     },
   });
 }
-$("#exportPayslips").click(function (e) {
+function exportPayslips() {
   var currentDate = new Date().toISOString().slice(0, 10);
   var languageCode = null;
   ids = [];
@@ -334,7 +337,7 @@ $("#exportPayslips").click(function (e) {
       });
     }
   });
-});
+}
 
 $("#deletePayslipBulk").click(function (e) {
   e.preventDefault();
@@ -348,7 +351,7 @@ $("#deletePayslipBulk").click(function (e) {
     ids = [];
     ids.push($("#selectedPayslip").attr("data-ids"));
     ids = JSON.parse($("#selectedPayslip").attr("data-ids"));
-    if (ids.length === 0 & checkedRows.length === 0) {
+    if ((ids.length === 0) & (checkedRows.length === 0)) {
       Swal.fire({
         text: textMessage,
         icon: "warning",
@@ -366,11 +369,11 @@ $("#deletePayslipBulk").click(function (e) {
         if (result.isConfirmed) {
           if (ids.length === 0) {
             e.preventDefault();
-              ids=[]
-              checkedRows.each(function(){
+            ids = [];
+            checkedRows.each(function () {
               ids.push($(this).attr("id"));
-            })
-          } else if(checkedRows.length === 0) {
+            });
+          } else if (checkedRows.length === 0) {
             e.preventDefault();
             ids = [];
             ids.push($("#selectedPayslip").attr("data-ids"));

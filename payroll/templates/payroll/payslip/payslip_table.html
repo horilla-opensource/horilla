@@ -23,14 +23,14 @@
     <div
       class="oh-checkpoint-badge text-secondary mb-2"
       id="unselectAllPayslip"
-      style="cursor: pointer"
+      style="cursor: pointer;display:none;"
     >
       {% trans "Unselect All Payslips" %}
     </div>
     <div
       class="oh-checkpoint-badge text-info mb-2"
       id="exportPayslips"
-      style="cursor: pointer"
+      style="cursor: pointer;display:none;"
     >
       {% trans "Export Payslips" %}
     </div>
@@ -236,12 +236,8 @@
   </div>
   <!-- end of empty page -->
 {% endif %}
+<script src="{% static 'payroll/action.js' %}"></script>
 <script>
-  {% comment %} $("[name=pay_status]").change(function (e) {
-    let $element = $(this);
-    updatePayStatus($element);
-  }); {% endcomment %}
-
   $("[name=update_selected]").change(function (e) {
     updateBulkStatus($(this));
     e.preventDefault();
@@ -259,21 +255,24 @@
     addingPayslipIds();
   });
 
-  $(".all-payslip-row").change(function () {
-    addingPayslipIds();
-  });
-
   $(document).ready(function () {
     tickPayslipCheckboxes();
-  });
-
-  $(document).ready(function () {
     $("#selectAllPayslip").click(function () {
       selectAllPayslip();
     });
 
     $("#unselectAllPayslip").click(function () {
       unselectAllPayslip();
+    });
+
+    $("#exportPayslips").click(function (e) {
+      exportPayslips();
+    });
+    $(".all-payslip-row").change(function () {
+      if ($(".all-payslip").is(":checked")) {
+        $(".all-payslip").prop("checked", false);
+      }
+      addingPayslipIds();
     });
   });
   // toggle columns //
@@ -284,4 +283,3 @@
   }
   $("[type=checkbox]").change()
 </script>
-<script src="{% static 'payroll/action.js' %}"></script>
