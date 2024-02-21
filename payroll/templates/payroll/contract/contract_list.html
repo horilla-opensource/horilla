@@ -222,14 +222,18 @@
   });
 
   $(".all-contract-row").change(function () {
+    if ($('.all-contract').is(":checked")) {
+      $(".all-contract").prop("checked", false);
+    }
     addingContractIds();
   });
 
   $(document).ready(function () {
     var ids = JSON.parse($("#selectedInstances").attr("data-ids") || "[]");
     if (ids.length === 0) {
-      $("#selectedShow").css("display", "none");
+      $("#unselectAllContracts").css("display", "none");
       $("#exportContracts").css("display", "none");
+      $("#selectedShow").css("display", "none");
     }
     tickContractCheckboxes();
     $("#selectAllContracts").click(function () {

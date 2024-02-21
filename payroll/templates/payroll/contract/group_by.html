@@ -262,6 +262,9 @@
 		  });
 		
 		  $(".all-contract-row").change(function () {
+			if ($('.all-contract').is(":checked")) {
+				$(".all-contract").prop("checked", false);
+			  }
 			addingContractIds();
 		  });
 	})

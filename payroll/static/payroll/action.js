@@ -129,9 +129,11 @@ function addingPayslipIds() {
     $("#selectedPayslip").attr("data-ids", JSON.stringify(ids));
 
     if (selectedCount === 0) {
-      $("#selectedSlipShow").css("display", "none");
+      $("#unselectAllContracts").css("display", "none");
       $("#exportContracts").css("display", "none");
+      $("#selectedSlipShow").css("display", "none");
     } else {
+      $("#unselectAllContracts").css("display", "inline-flex");
       $("#exportPayslips").css("display", "inline-flex");
       $("#selectedSlipShow").css("display", "inline-flex");
       $("#selectedSlipShow").text(selectedCount + " - " + message);
@@ -424,9 +426,11 @@ function addingContractIds() {
     $("#selectedInstances").attr("data-ids", JSON.stringify(ids));
 
     if (selectedCount === 0) {
-      $("#selectedShow").css("display", "none");
+      $("#unselectAllContracts").css("display", "none");
       $("#exportContracts").css("display", "none");
+      $("#selectedShow").css("display", "none");
     } else {
+      $("#unselectAllContracts").css("display", "inline-flex");
       $("#exportContracts").css("display", "inline-flex");
       $("#selectedShow").css("display", "inline-flex");
       $("#selectedShow").text(selectedCount + " - " + message);
@@ -451,12 +455,14 @@ function tickContractCheckboxes() {
     languageCode = code;
     var message = rowMessages[languageCode];
     if (selectedCount > 0) {
+      $("#unselectAllContracts").css("display", "inline-flex");
       $("#exportContracts").css("display", "inline-flex");
       $("#selectedShow").css("display", "inline-flex");
       $("#selectedShow").text(selectedCount + " -" + message);
     } else {
-      $("#selectedShow").css("display", "none");
+      $("#unselectAllContracts").css("display", "none");
       $("#exportContracts").css("display", "none");
+      $("#selectedShow").css("display", "none");
     }
   });
 }
