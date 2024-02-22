@@ -198,7 +198,6 @@ function ticklatecomeCheckboxes() {
   if (click === "1") {
     $(".all-latecome").prop("checked", true);
   }
-
   uniqueIds.forEach(function (id) {
     $("#" + id).prop("checked", true);
   });
@@ -207,12 +206,14 @@ function ticklatecomeCheckboxes() {
     languageCode = code;
     var message = rowMessages[languageCode];
     if (selectedCount > 0) {
+      $("#unselectAllLatecome").css("display", "inline-flex");
       $("#exportLatecome").css("display", "inline-flex");
       $("#selectedShowLatecome").css("display", "inline-flex");
       $("#selectedShowLatecome").text(selectedCount + " -" + message);
     } else {
       $("#selectedShowLatecome").css("display", "none");
       $("#exportLatecome").css("display", "none");
+      $("#unselectAllLatecome").css("display", "none");
     }
   });
 }
@@ -470,8 +471,10 @@ function addinglatecomeIds() {
     if (selectedCount === 0) {
       $("#selectedShowLatecome").css("display", "none");
       $("#exportLatecome").css("display", "none");
+      $("#unselectAllLatecome").css("display", "none");
     } else {
       $("#exportLatecome").css("display", "inline-flex");
+      $("#unselectAllLatecome").css("display", "inline-flex");
       $("#selectedShowLatecome").css("display", "inline-flex");
       $("#selectedShowLatecome").text(selectedCount + " - " + message);
     }
@@ -631,6 +634,9 @@ $("#attendance-info-import").click(function (e) {
 });
 
 $(".all-latecome-row").change(function () {
+  if ($(".all-latecome").is(":checked")) {
+    $(".all-latecome").prop("checked", false);
+  }
   addinglatecomeIds();
 });
 

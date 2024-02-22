@@ -10,10 +10,10 @@
     <div class="oh-checkpoint-badge text-success mb-2" id="selectAllLatecome" style="cursor: pointer;">
       {% trans 'Select All Attendance' %}
     </div>
-    <div class="oh-checkpoint-badge text-secondary mb-2" id="unselectAllLatecome" style="cursor: pointer;">
+    <div class="oh-checkpoint-badge text-secondary mb-2" id="unselectAllLatecome" style="cursor: pointer;display: none;">
       {% trans 'Unselect All Attendance' %}
     </div>
-    <div class="oh-checkpoint-badge text-info mb-2" id="exportLatecome" style="cursor: pointer;">
+    <div class="oh-checkpoint-badge text-info mb-2" id="exportLatecome" style="cursor: pointer; display: none;">
       {% trans 'Export Attendance' %}
     </div>
     <div class="oh-checkpoint-badge text-danger mb-2" id="selectedShowLatecome"></div>
@@ -35,4 +35,5 @@
       <div class="oh-modal__dialog-body" id="penaltyViewModalBody"></div>
     </div>
   </div>
+  
 {% endblock %}
