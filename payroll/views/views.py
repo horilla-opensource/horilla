@@ -387,13 +387,17 @@ def settings(request):
     This method is used to render settings template
     """
     instance = PayrollSettings.objects.first()
-    form = PayrollSettingsForm(instance=instance)
+    currency_form = PayrollSettingsForm(instance=instance)
     if request.method == "POST":
-        form = PayrollSettingsForm(request.POST, instance=instance)
-        if form.is_valid():
-            form.save()
+
+        currency_form = PayrollSettingsForm(request.POST, instance=instance)
+        if currency_form.is_valid():
+
+            currency_form.save()
             messages.success(request, _("Payroll settings updated."))
-    return render(request, "payroll/settings/payroll_settings.html", {"form": form})
+    # return render(request, "payroll/settings/payroll_settings.html", {"currency_form": currency_form})
+    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+
 
 
 @login_required

@@ -1,19 +1,22 @@
-{% extends 'settings.html' %} {% block settings %}{% load i18n %}
+{% load i18n %}
 
 <form action="{% url 'payroll-settings' %}" class='settings-label mb-1' method="post">
   {% csrf_token %}
   <div class="oh-inner-sidebar-content__header mt-4">
     <h2 class="oh-inner-sidebar-content__title">{% trans "Currency" %}</h2>
   </div>
-   {{form}}
+  <div class="oh-label__info" for="currency_symbol">
+    <label class="oh-label" for="currency_symbol">{% trans "Currency Symbol" %}</label> 
+  </div>
+  <input type="text" name="currency_symbol" value="{{currency_form.instance.currency_symbol}}" maxlength="5" class="oh-input w-25" placeholder="Currency Symbol" required="" id="id_currency_symbol">
   {% if perms.payroll.change_payrollsettings %}
     <button
+      style="display: inline;margin-left: 10px;"
       type="submit"
       class="oh-btn oh-btn--secondary mt-2 mr-0 oh-btn--w-100-resp"
-    >
+      >
       {% trans "Save Changes" %}
     </button>
   {% endif %}
   <div class="oh-inner-sidebar-content__footer"></div>
 </form>
-{% endblock settings %}
