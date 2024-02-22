@@ -3830,22 +3830,6 @@ def all_notifications(request):
 
 
 @login_required
-@permission_required("payroll.view_payrollsettings")
-def settings(request):
-    """
-    This method is used to render settings template
-    """
-    instance = PayrollSettings.objects.first()
-    form = PayrollSettingsForm(instance=instance)
-    if request.method == "POST":
-        form = PayrollSettingsForm(request.POST, instance=instance)
-        if form.is_valid():
-            form.save()
-            messages.success(request, _("Payroll settings updated."))
-    return render(request, "payroll/settings/payroll_settings.html", {"form": form})
-
-
-@login_required
 def general_settings(request):
     """
     This method is used to render settings template
@@ -3867,6 +3851,13 @@ def general_settings(request):
             ]
         }
     history_fields_form = HistoryTrackingFieldsForm(initial=history_fields_form_initial)
+    currency_instance = PayrollSettings.objects.first()
+    currency_form = PayrollSettingsForm(instance=currency_instance)
+    if DynamicPagination.objects.filter(user_id=request.user).exists():
+        pagination = DynamicPagination.objects.filter(user_id=request.user).first()
+        pagination_form = DynamicPaginationForm(instance=pagination)
+    else:
+        pagination_form = DynamicPaginationForm()
     if request.method == "POST":
         form = AnnouncementExpireForm(request.POST, instance=instance)
         if form.is_valid():
@@ -3878,6 +3869,8 @@ def general_settings(request):
         "base/general_settings.html",
         {
             "form": form,
+            "currency_form": currency_form,
+            "pagination_form":pagination_form,
             "encashment_form": encashment_form,
             "history_fields_form": history_fields_form,
             "enabled_block_unblock": enabled_block_unblock,
@@ -4372,7 +4365,7 @@ def ticket_type_update(request, t_type_id):
 def ticket_type_delete(request, t_type_id):
     TicketType.objects.get(id=t_type_id).delete()
     messages.success(request, _("Ticket type has been deleted successfully!"))
-    return HttpResponse("<script>window.location.reload()</script>")
+    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 
 
 @login_required
@@ -5042,24 +5035,22 @@ def delete_worktyperequest_comment(request, comment_id):
 def pagination_settings_view(request):
     if DynamicPagination.objects.filter(user_id=request.user).exists():
         pagination = DynamicPagination.objects.filter(user_id=request.user).first()
-        form = DynamicPaginationForm(instance=pagination)
+        pagination_form = DynamicPaginationForm(instance=pagination)
         if request.method == "POST":
-            form = DynamicPaginationForm(request.POST, instance=pagination)
-            if form.is_valid():
-                form.save()
+            pagination_form = DynamicPaginationForm(request.POST, instance=pagination)
+            if pagination_form.is_valid():
+                pagination_form.save()
                 messages.success(request, _("Default pagination updated."))
     else:
-        form = DynamicPaginationForm()
+        pagination_form = DynamicPaginationForm()
         if request.method == "POST":
-            form = DynamicPaginationForm(
+            pagination_form = DynamicPaginationForm(
                 request.POST,
             )
-            if form.is_valid():
-                form.save()
+            if pagination_form.is_valid():
+                pagination_form.save()
                 messages.success(request, _("Default pagination updated."))
-    return render(
-        request, "base/dynamic_pagination/pagination_settings.html", {"form": form}
-    )
+    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 
 
 @login_required

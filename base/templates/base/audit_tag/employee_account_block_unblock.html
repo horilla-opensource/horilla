@@ -6,7 +6,7 @@
 <form action="{% url 'enable-account-block-unblock' %}" method="post">
     {% csrf_token %}
   <div class="oh-label__info" for="enable_block_unblock">
-    <label class="oh-label" for="enable_block_unblock">{% trans "Restric Login Account" %}</label> 
+    <label class="oh-label" for="enable_block_unblock">{% trans "Restrict Login Account" %}</label> 
     <span class="oh-info mr-2" title="{% trans "By enabling this feature, you can block or unblock an employee's account." %}">
     </span> 
   </div>
