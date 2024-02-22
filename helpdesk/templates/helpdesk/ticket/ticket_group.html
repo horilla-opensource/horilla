@@ -53,9 +53,12 @@
                                         <div class="oh-sticky-table__tbody">
                                             {% for ticket in my_ticket_list.list %}
                                                 <div class="oh-sticky-table__tr" onclick="window.location.href = `{% url 'ticket-detail' ticket.id %}`">	
-                                                    <div class="oh-sticky-table__sd {% if ticket.priority == 'high' %}row-status--red 
-                                                                                    {% elif ticket.priority == 'medium' %}row-status--orange 
-                                                                                    {% elif ticket.priority == 'low' %}row-status--blue{% endif %}"
+                                                    <div class="oh-sticky-table__sd 
+                                                        {% if ticket.priority == 'high' %}row-status--red 
+                                                        {% elif ticket.priority == 'medium' %}row-status--orange 
+                                                        {% elif ticket.priority == 'low' %}row-status--blue{% endif %}"
+									                    onclick="event.stopPropagation()"
+                                                                         
                                                     >
                                                         <div class="centered-div">
                                                             <input
@@ -343,9 +346,11 @@
                                         <div class="oh-sticky-table__tbody">
                                             {% for ticket in allocated_tickets_list.list %}
                                                 <div class="oh-sticky-table__tr" onclick="window.location.href = `{% url 'ticket-detail' ticket.id %}`">	
-                                                    <div class="oh-sticky-table__sd {% if ticket.priority == 'high' %}row-status--red 
-                                                                                    {% elif ticket.priority == 'medium' %}row-status--orange 
-                                                                                    {% elif ticket.priority == 'low' %}row-status--blue{% endif %}"
+                                                    <div class="oh-sticky-table__sd 
+                                                        {% if ticket.priority == 'high' %}row-status--red 
+                                                        {% elif ticket.priority == 'medium' %}row-status--orange 
+                                                        {% elif ticket.priority == 'low' %}row-status--blue{% endif %}"
+                                                        onclick="event.stopPropagation()"
                                                     >
                                                         <div class="centered-div">
                                                             <input
@@ -632,9 +637,11 @@
                                         <div class="oh-sticky-table__tbody">
                                             {% for ticket in all_tickets_list.list %}
                                                 <div class="oh-sticky-table__tr" onclick="window.location.href = `{% url 'ticket-detail' ticket.id %}`" >	
-                                                    <div class="oh-sticky-table__sd {% if ticket.priority == 'high' %}row-status--red 
-                                                                                    {% elif ticket.priority == 'medium' %}row-status--orange 
-                                                                                    {% elif ticket.priority == 'low' %}row-status--blue{% endif %}"
+                                                    <div class="oh-sticky-table__sd 
+                                                        {% if ticket.priority == 'high' %}row-status--red 
+                                                        {% elif ticket.priority == 'medium' %}row-status--orange 
+                                                        {% elif ticket.priority == 'low' %}row-status--blue{% endif %}"
+                                                        onclick="event.stopPropagation()"
                                                     >
                                                         <div class="centered-div">
                                                             <input
@@ -933,6 +940,9 @@ $(".allTicketsAll").change(function (e) {
         });
         tickTicketsCheckboxes();
 		$(".my-tickets-row").change(function () {
+            if ($('.myTicketsAll').is(":checked")) {
+				$('.myTicketsAll').prop("checked", false);
+			  }
 			addingTicketsIds();
 		});
 		$(".myTicketsAll").change(function () {
@@ -940,13 +950,19 @@ $(".allTicketsAll").change(function (e) {
 		});
 
 		$(".allocated-tickets-row").change(function () {
-			addingTicketsIds();
+			if ($('.allocatedTicketsAll').is(":checked")) {
+				$('.allocatedTicketsAll').prop("checked", false);
+			  }
+            addingTicketsIds();
 		});
 		$(".allocatedTicketsAll").change(function () {
 			addingTicketsIds();
 		});
 		$(".all-tickets-row").change(function () {
-		  	addingTicketsIds();
+            if ($('.allTicketsAll').is(":checked")) {
+				$('.allTicketsAll').prop("checked", false);
+			  }
+            addingTicketsIds();
 		});
 		$(".allTicketsAll").change(function () {
 		  	addingTicketsIds();

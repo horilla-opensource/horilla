@@ -187,9 +187,11 @@ function tickTicketsCheckboxes() {
       $("#exportTickets").css("display", "inline-flex");
       $("#selectedShowTickets").css("display", "inline-flex");
       $("#selectedShowTickets").text(selectedCount + " -" + message);
+      $('#unselectAllTickets').removeClass('d-none')
     } else {
       $("#selectedShowTickets").css("display", "none");
       $("#exportTickets").css("display", "none");
+      $('#unselectAllTickets').addClass('d-none')
     }
   });
 }
@@ -246,10 +248,12 @@ function addingTicketsIds() {
     if (selectedCount === 0) {
       $("#selectedShowTickets").css("display", "none");
       $("#exportTickets").css("display", "none");
+      $('#unselectAllTickets').addClass('d-none')
     } else {
       $("#exportTickets").css("display", "inline-flex");
       $("#selectedShowTickets").css("display", "inline-flex");
       $("#selectedShowTickets").text(selectedCount + " - " + message);
+      $('#unselectAllTickets').removeClass('d-none')
     }
   });
 }
