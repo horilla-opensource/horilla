@@ -49,10 +49,9 @@
 						<li class="oh-inner-sidebar__item">
 							<div class="oh-accordion ms-2">
 								<div class="oh-accordion-header" style="font-size:16px;">
-
-									
-									
-									{% trans "General" %}</div>
+									<ion-icon name="settings-outline" class="me-2"></ion-icon>
+									{% trans "General" %}
+									</div>
 									<div class="oh-accordion-body">
 										<div class="row">
 										<div class="col-sm-12 col-md-12 col-lg-12">
@@ -114,24 +113,6 @@
 													>
 												{% endif %}
 											</div>
-											<div class="oh-input-group">
-												{% if perms.payroll.view_payrollsettings %}
-													<a
-														id="currency"
-														href="{% url 'currency-settings' %}"
-														class="oh-inner-sidebar__link oh-dropdown__link"
-														>{% trans "Currency" %}</a
-													>
-												{% endif %}
-											</div>
-											<div class="oh-input-group">
-												<a
-													id="pagination"
-													href="{% url 'pagination-settings-view' %}"
-													class="oh-inner-sidebar__link oh-dropdown__link"
-													>{% trans "Records per page" %}</a
-												>
-											</div>
 
 										</div>
 									</div>
@@ -142,7 +123,10 @@
 
 						<li class="oh-inner-sidebar__item">
 							<div class="oh-accordion ms-2">
-								<div class="oh-accordion-header" style="font-size:16px;">{% trans "Base" %}</div>
+								<div class="oh-accordion-header" style="font-size:16px;">
+									<ion-icon name="apps" class="me-2"></ion-icon>
+									{% trans "Base" %}
+								</div>
 									<div class="oh-accordion-body">
 										<div class="row">
 										<div class="col-sm-12 col-md-12 col-lg-12">
@@ -206,7 +190,10 @@
 
 						<li class="oh-inner-sidebar__item">
 							<div class="oh-accordion ms-2">
-								<div class="oh-accordion-header" style="font-size:16px;">{% trans "Recruitment" %}</div>
+								<div class="oh-accordion-header" style="font-size:16px;">
+									<ion-icon name="clipboard-outline" class="me-2"></ion-icon>
+									{% trans "Recruitment" %}
+								</div>
 									<div class="oh-accordion-body">
 										<div class="row">
 										<div class="col-sm-12 col-md-12 col-lg-12">
@@ -230,7 +217,10 @@
 
 						<li class="oh-inner-sidebar__item">
 							<div class="oh-accordion ms-2">
-								<div class="oh-accordion-header" style="font-size:16px;">{% trans "Employee" %}</div>
+								<div class="oh-accordion-header" style="font-size:16px;">
+									<ion-icon name="people" class="me-2"></ion-icon>
+									{% trans "Employee" %}
+								</div>
 									<div class="oh-accordion-body">
 										<div class="row">
 										<div class="col-sm-12 col-md-12 col-lg-12">
@@ -322,7 +312,10 @@
 
 						<li class="oh-inner-sidebar__item">
 							<div class="oh-accordion ms-2">
-								<div class="oh-accordion-header" style="font-size:16px;">{% trans "Attendance" %}</div>
+								<div class="oh-accordion-header" style="font-size:16px;">
+									<ion-icon name="checkmark-done-circle-outline" class="me-2"></ion-icon>
+									{% trans "Attendance" %}
+								</div>
 									<div class="oh-accordion-body">
 										<div class="row">
 										<div class="col-sm-12 col-md-12 col-lg-12">
@@ -356,7 +349,10 @@
 
 						<li class="oh-inner-sidebar__item">
 							<div class="oh-accordion ms-2">
-								<div class="oh-accordion-header" style="font-size:16px;">{% trans "Help Desk" %}</div>
+								<div class="oh-accordion-header" style="font-size:16px;">
+									<ion-icon name="headset" class="me-2"></ion-icon>
+									{% trans "Help Desk" %}
+								</div>
 									<div class="oh-accordion-body">
 										<div class="row">
 										<div class="col-sm-12 col-md-12 col-lg-12">
@@ -398,19 +394,25 @@
 	</div>
 </div>
 <script>
-	$(document).ready(function () {
-		var path = location.pathname;
-		var menu = $(`a[href="${path}"].oh-inner-sidebar__link.oh-dropdown__link`);
-		if (menu.length == 0) {
-			var path = localStorage.getItem("lastActiveTab");
-			menu = $(`a[href="${path}"].oh-inner-sidebar__link.oh-dropdown__link`);
-		}
-		menu.addClass("oh-inner-sidebar__link--active");
-		menu.attr("style", "border:1px solid #FF820D ; border-radius:10px;");
-		menu[0].scrollIntoView({ behavior: "smooth", block: "center" });
-		if (menu.length != undefined) {
-			localStorage.setItem("lastActiveTab", path);
-		}
-	});
+    $(document).ready(function () {
+        var path = location.pathname;
+        var menu = $(`a[href="${path}"].oh-inner-sidebar__link.oh-dropdown__link`);
+        if (menu.length == 0) {
+            var path = localStorage.getItem("lastActiveTab");
+            menu = $(`a[href="${path}"].oh-inner-sidebar__link.oh-dropdown__link`);
+        }
+        menu.addClass("oh-inner-sidebar__link--active");
+        menu.attr("style", "border:2px solid #FF820D ; border-radius:15px;");
+
+        // Find the parent accordion element and show it
+        var parentAccordion = menu.closest('.oh-accordion');
+        parentAccordion.addClass('oh-accordion--show');
+
+        menu[0].scrollIntoView({ behavior: "smooth", block: "center" });
+        if (menu.length != undefined) {
+            localStorage.setItem("lastActiveTab", path);
+        }
+    });
 </script>
+
 {% endblock content %}
