@@ -38,7 +38,7 @@
     });
   }
 </script>
-{% include 'filter_tags.html' %}
+{% include "filter_tags.html" %}
 {% if data %}
   <div class="row">
       <div class="col-12 col-sm-12 col-md-12 col-lg-12">
@@ -86,7 +86,7 @@
                           <div data-cell-index="7" data-cell-title='{% trans "Status" %}' 
                             class="oh-sticky-table__th"
                           >{% trans "Status" %}</div>
-                          <div class="oh-sticky-table__th oh-sticky-table__right" style="width: 250px;">{% trans "Actions" %}</div>
+                          <div class="oh-sticky-table__th oh-sticky-table__right" style="width: 315px;">{% trans "Actions" %}</div>
                         </div>
                       </div>
                       <div class="oh-sticky-table__tbody">
@@ -185,16 +185,18 @@
                                 {% endif %}
                               {% endif %}
                               {% if perms.recruitment.delete_recruitment %}
-                              <form 
+                              <span>
+                                <form 
                                 action="{% url 'recruitment-delete' rec.id  %}"
                                 onsubmit="return confirm('{% trans "Are you sure to delete this recruitment?" %}')" 
                                 method="post"
                                 style="display: contents">
                                 {% csrf_token %}
-                                <button class="oh-btn oh-btn--danger-outline  w-100" title="{% trans 'Delete' %}">
+                                <button class="oh-btn oh-btn--light-bkg oh-btn--danger-outline  w-100" title="{% trans 'Delete' %}">
                                   <ion-icon name="trash-outline" role="img" class="md hydrated" aria-label="trash outline"></ion-icon>
                                 </button>
                               </form>
+                              </span>
                               {% endif %}
                             </div>
                           </div>
