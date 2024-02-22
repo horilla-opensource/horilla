@@ -3,7 +3,20 @@
 <div class="oh-wrapper">
   <div class="oh-alert-container" id="message"></div>
 </div>
-
+<div id="selectedInstances" data-ids="[]" data-clicked=""></div>
+<script>
+  function checkRow(element) {
+    if (element.checked) {
+      $(".checkboxAll").each(function () {
+        $(".checkboxAll").prop("checked", true);
+      });
+    } else {
+      $(".checkboxAll").each(function () {
+        $(".checkboxAll").prop("checked", false);
+      });
+    }
+  }
+</script>
 <section class="oh-wrapper oh-main__topbar" x-data="{searchShow: false}">
   <div class="oh-main__titlebar oh-main__titlebar--left">
     <h1 class="oh-main__titlebar-title fw-bold mb-0">
@@ -24,7 +37,7 @@
       </div>
       <div class="oh-main__titlebar-button-container">
         <div class="oh-dropdown" x-data="{open: false}">
-          <button class="oh-btn ml-2" @click="open = !open">
+          <button type="button" class="oh-btn ml-2" @click="open = !open">
             <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}<div id="filterCount"></div>
           </button>
           {% include 'onboarding/candidate_filter.html' %}
@@ -32,7 +45,7 @@
       
 
         <div class="oh-btn-group ml-2">
-          <button class="oh-btn oh-btn--info oh-btn--shadow" data-target="#addAttachments" data-toggle="oh-modal-toggle">
+          <button type="button" class="oh-btn oh-btn--info oh-btn--shadow" data-target="#addAttachments" data-toggle="oh-modal-toggle">
             {% trans "Send Portal" %}
           </button>
         </div>
@@ -50,27 +63,27 @@
 </section>
 {% if candidates %}
 <div class="d-flex flex-row-reverse oh-wrapper">
-  <span class="m-3"
+  <span class="m-1"
     onclick="$('[name=joining_set]').val('true'); $('[name=portal_sent]').val('');$('[name=joining_set]').first().change(); $('.filterButton').click()"
-    style="cursor: pointer">
+    style="cursor: pointer;margin-left: 15px;">
     <span class="oh-dot oh-dot--small me-1" style="background-color:yellow"></span>
     {% trans "Joining Set" %}
   </span>
-  <span class="m-3"
+  <span class="m-1"
     onclick="$('[name=joining_set]').val('false'); $('[name=portal_sent]').val(''); $('[name=joining_set]').first().change(); $('.filterButton').click()"
-    style="cursor: pointer">
+    style="cursor: pointer;margin-left: 15px;">
     <span class="oh-dot oh-dot--small me-1" style="background-color:burlywood"></span>
     {% trans "Joining Not-Set" %}
   </span>
-  <span class="m-3"
+  <span class="m-1"
     onclick="$('[name=portal_sent]').val('false');$('[name=joining_set]').val(''); $('[name=portal_sent]').first().change(); $('.filterButton').click()"
-    style="cursor: pointer">
+    style="cursor: pointer;margin-left: 15px;">
     <span class="oh-dot oh-dot--small me-1" style="background-color:rgba(128, 128, 128, 0.482)"></span>
     {% trans "Portal Not-Sent" %}
   </span>
-  <span class="m-3"
+  <span class="m-1"
     onclick="$('[name=portal_sent]').val('true');$('[name=joining_set]').val('');  $('[name=portal_sent]').first().change(); $('.filterButton').click()"
-    style="cursor: pointer">
+    style="cursor: pointer;margin-left: 15px;">
     <span class="oh-dot oh-dot--small me-1" style="background-color:yellowgreen"></span>
     {% trans "Portal Sent" %}
   </span>
@@ -133,7 +146,7 @@
         </section>
       </div>
       <div class="oh-modal__dialog-footer">
-        <button type="submit" onclick="$('.oh-modal#addAttachments').removeClass('oh-modal--show');$(`#messages`).html(
+        <button type="button" onclick="$('.oh-modal#addAttachments').removeClass('oh-modal--show');$(`#messages`).html(
           $(`
           <div class='oh-alert oh-alert--animated oh-alert--info'>
             Processing...
@@ -148,23 +161,9 @@
   </div>
 </div>
 <script>
-  function checkRow(element) {
-    if (element.checked) {
-      $(".checkboxAll").each(function () {
-        $(".checkboxAll").prop("checked", true);
-      });
-    } else {
-      $(".checkboxAll").each(function () {
-        $(".checkboxAll").prop("checked", false);
-      });
-    }
-  }
   $("#selectAll").click("click", function () {
     checkRow(this)
-    var checkedIds = []
-    $.each($(".checkboxAll:checked"), function (indexInArray, valueOfElement) {
-      checkedIds.push($(valueOfElement).attr("id"))
-    });
+    var checkedIds = $("#selectedInstances").attr("data-ids");
     $("#hired_candidates[name=ids]").val(checkedIds);
     $("select[name=ids]").change()
   });

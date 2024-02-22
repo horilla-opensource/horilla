@@ -722,7 +722,7 @@ def onboarding_query_grouper(request, queryset):
                 if grouper["grouper"] == stage:
                     ordered_data.append(grouper)
                     found = True
-                    break 
+                    break
             if not found:
                 ordered_data.append({"grouper": stage})
         data = {
@@ -1659,3 +1659,56 @@ def add_to_rejected_candidates(request):
             messages.success(request, "Candidate reject reason saved")
             return HttpResponse("<script>window.location.reload()</script>")
     return render(request, "onboarding/rejection/form.html", {"form": form})
+
+
+@login_required
+def candidate_select(request):
+    """
+    This method is used for select all in candidate
+    """
+    page_number = request.GET.get("page")
+
+    employees = queryset=Candidate.objects.filter(
+            hired=True,
+            recruitment_id__closed=False,
+            is_active=True,
+            
+        )
+
+    employee_ids = [str(emp.id) for emp in employees]
+    total_count = employees.count()
+
+    context = {"employee_ids": employee_ids, "total_count": total_count}
+
+    return JsonResponse(context, safe=False)
+
+
+@login_required
+@permission_required("recruitment.view_candidate")
+def candidate_select_filter(request):
+    """
+    This method is used to select all filtered candidates
+    """
+    page_number = request.GET.get("page")
+    filtered = request.GET.get("filter")
+    filters = json.loads(filtered) if filtered else {}
+
+    if page_number == "all":
+        candidate_filter = CandidateFilter(
+            filters,
+            queryset=Candidate.objects.filter(
+                hired=True,
+                recruitment_id__closed=False,
+                is_active=True,
+            ),
+        )
+
+        # Get the filtered queryset
+        filtered_candidates = candidate_filter.qs
+
+        employee_ids = [str(emp.id) for emp in filtered_candidates]
+        total_count = filtered_candidates.count()
+
+        context = {"employee_ids": employee_ids, "total_count": total_count}
+
+        return JsonResponse(context)
