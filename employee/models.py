@@ -636,7 +636,7 @@ class Policy(models.Model):
     is_visible_to_all = models.BooleanField(default=True)
     specific_employees = models.ManyToManyField(Employee, blank=True, editable=False)
     attachments = models.ManyToManyField(PolicyMultipleFile, blank=True)
-    company_id = models.ManyToManyField(Company, blank=True)
+    company_id = models.ManyToManyField(Company, blank=True,verbose_name=_("Company"))
 
     objects = HorillaCompanyManager()
 
