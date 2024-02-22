@@ -740,9 +740,15 @@ def filter_pagination_asset_request_allocation(request):
     if asset_request_alloaction_search is None:
         asset_request_alloaction_search = ""
     employee = request.user.employee_get
+    asset_asignment = AssetAssignment.objects.all()
+    asset_request = AssetRequest.objects.all()
+    if request.GET.get("assign_sortby"):
+        asset_asignment = sortby(request, asset_asignment, "assign_sortby")
+    if request.GET.get("request_sortby"):
+        asset_request = sortby(request, asset_request, "request_sortby")
 
     assets = (
-        AssetAssignment.objects.filter(assigned_to_employee_id=employee)
+        asset_asignment.filter(assigned_to_employee_id=employee)
         .exclude(return_status__isnull=False)
         .filter(asset_id__asset_name__icontains=asset_request_alloaction_search)
     )
@@ -750,7 +756,7 @@ def filter_pagination_asset_request_allocation(request):
     search_term = asset_request_alloaction_search.strip()
 
     if request.user.has_perm(("asset.view_assetrequest", "asset.view_assetassignment")):
-        asset_allocations_queryset = AssetAssignment.objects.all().filter(
+        asset_allocations_queryset = asset_asignment.filter(
             Q(assigned_to_employee_id__employee_first_name__icontains=search_term)
             | Q(assigned_to_employee_id__employee_last_name__icontains=search_term)
             | (
@@ -772,7 +778,7 @@ def filter_pagination_asset_request_allocation(request):
                 else Q()
             )
         )
-        asset_requests_queryset = AssetRequest.objects.all().filter(
+        asset_requests_queryset = asset_request.filter(
             Q(requested_employee_id__employee_first_name__icontains=search_term)
             | Q(requested_employee_id__employee_last_name__icontains=search_term)
             | (
@@ -853,7 +859,7 @@ def filter_pagination_asset_request_allocation(request):
         asset_request_filtered = group_by_queryset(
             asset_request_filtered, request_field, request.GET.get("page"), "page"
         )
-        list_values = [entry['list'] for entry in asset_request_filtered]
+        list_values = [entry["list"] for entry in asset_request_filtered]
         id_list = []
         for value in list_values:
             for instance in value.object_list:
@@ -861,13 +867,12 @@ def filter_pagination_asset_request_allocation(request):
 
         requests_ids = json.dumps(list(id_list))
 
-    else: 
-        asset_request_filtered =  paginator_qry(asset_request_filtered, request.GET.get("page"))
+    else:
+        asset_request_filtered = paginator_qry(
+            asset_request_filtered, request.GET.get("page")
+        )
         requests_ids = json.dumps(
-            [
-                instance.id
-                for instance in asset_request_filtered.object_list
-            ]
+            [instance.id for instance in asset_request_filtered.object_list]
         )
 
     asset_allocation_filtered = AssetAllocationFilter(
@@ -878,7 +883,7 @@ def filter_pagination_asset_request_allocation(request):
         asset_allocation_filtered = group_by_queryset(
             asset_allocation_filtered, allocation_field, request.GET.get("page"), "page"
         )
-        list_values = [entry['list'] for entry in asset_allocation_filtered]
+        list_values = [entry["list"] for entry in asset_allocation_filtered]
         id_list = []
         for value in list_values:
             for instance in value.object_list:
@@ -886,13 +891,12 @@ def filter_pagination_asset_request_allocation(request):
 
         allocations_ids = json.dumps(list(id_list))
 
-    else: 
-        asset_allocation_filtered =  paginator_qry(asset_allocation_filtered, request.GET.get("page"))
+    else:
+        asset_allocation_filtered = paginator_qry(
+            asset_allocation_filtered, request.GET.get("page")
+        )
         allocations_ids = json.dumps(
-            [
-                instance.id
-                for instance in asset_allocation_filtered.object_list
-            ]
+            [instance.id for instance in asset_allocation_filtered.object_list]
         )
 
     asset_paginator = Paginator(assets_filtered.qs, get_pagination())
