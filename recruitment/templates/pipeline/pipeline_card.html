@@ -356,9 +356,12 @@
 
     
     {% if perms.recruitment.add_stage or request.user|recruitment_manages:rec %}
-    <div>
-      {% include 'pipeline/form/stage_drop_down_form.html' %}
-    </div>
+    <div class="oh-kanban__add-container">
+      <button class="oh-btn oh-btn--x-small oh-kanban__add-section"data-target="#addStageModal" data-toggle="oh-modal-toggle" hx-get="{% url "rec-stage-create" %}?recruitment_id={{rec.id}}" hx-target="#addStageModalBody">
+          <ion-icon class="me-1 md hydrated" name="add-outline" role="img" aria-label="add outline"></ion-icon>
+          {% trans "Stage" %}
+      </button>                        
+  </div>
     {% endif %}
 
   </div>
