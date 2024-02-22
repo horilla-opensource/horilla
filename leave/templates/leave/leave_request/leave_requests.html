@@ -33,7 +33,7 @@
     <div
     class="oh-checkpoint-badge text-secondary mb-2"
     id="unselectAllLeaverequests"
-    style="cursor: pointer"
+    style="cursor: pointer;display:none;"
     >
       {% trans "Unselect All Requests" %}
     </div>
@@ -342,6 +342,9 @@
       $("#requestCreateButton").attr('hx-vals',`{"pd":${hxVals}}`);
       tickLeaverequestsCheckboxes();
       $(".all-leave-requests-row").change(function () {
+        if ($('.all-leave-requests').is(":checked")) {
+          $(".all-leave-requests").prop("checked", false);
+        }
         addingLeaverequestsIds();
       });
   

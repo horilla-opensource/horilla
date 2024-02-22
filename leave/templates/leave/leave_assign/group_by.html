@@ -211,18 +211,19 @@
 <script>
     $(document).ready(function () {
         tickLeaveCheckboxes();
-    
-    
         $(".all-assigned-leaves-row").change(function () {
-        addingAssignedLeaveIds();
+            if ($('.all-assigned-leaves').is(":checked")) {
+                $(".all-assigned-leaves").prop("checked", false);
+            }   
+            addingAssignedLeaveIds();
         });
     
         $(".all-assigned-leaves").change(function () {
-        $(this).closest(".oh-sticky-table__tr").removeClass("highlight-selected");
-		if ($(this).is(":checked")) {
-		  $(this).closest(".oh-sticky-table__tr").addClass("highlight-selected");
-		}
-        addingAssignedLeaveIds();
+            $(this).closest(".oh-sticky-table__tr").removeClass("highlight-selected");
+		    if ($(this).is(":checked")) {
+		      $(this).closest(".oh-sticky-table__tr").addClass("highlight-selected");
+		    }
+            addingAssignedLeaveIds();
         });
     });
 </script>

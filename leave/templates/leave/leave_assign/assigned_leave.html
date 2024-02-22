@@ -127,6 +127,9 @@ $(document).ready(function () {
 
 
     $(".all-assigned-leaves-row").change(function () {
+    if ($('.all-assigned-leaves').is(":checked")) {
+        $(".all-assigned-leaves").prop("checked", false);
+    }    
     addingAssignedLeaveIds();
     });
 

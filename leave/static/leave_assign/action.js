@@ -84,12 +84,14 @@ function tickLeaveCheckboxes() {
     languageCode = code;
     var message = rowMessages[languageCode];
     if (selectedCount > 0) {
+      $("#unselectAllLeaves").css("display", "inline-flex");
       $("#exportAssignedLeaves").css("display", "inline-flex");
       $("#selectedShowLeaves").css("display", "inline-flex");
       $("#selectedShowLeaves").text(selectedCount + " -" + message);
     } else {
       $("#selectedShowLeaves").css("display", "none");
       $("#exportAssignedLeaves").css("display", "none");
+      $("#unselectAllLeaves").css("display", "none");
     }
   });
 }
@@ -121,7 +123,9 @@ function addingAssignedLeaveIds() {
     if (selectedCount === 0) {
       $("#selectedShowLeaves").css("display", "none");
       $("#exportAssignedLeaves").css("display", "none");
+      $("#unselectAllLeaves").css("display", "none");
     } else {
+      $("#unselectAllLeaves").css("display", "inline-flex");
       $("#exportAssignedLeaves").css("display", "inline-flex");
       $("#selectedShowLeaves").css("display", "inline-flex");
       $("#selectedShowLeaves").text(selectedCount + " - " + message);

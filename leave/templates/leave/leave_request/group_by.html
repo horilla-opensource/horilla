@@ -11,9 +11,16 @@
     <div
     class="oh-checkpoint-badge text-secondary mb-2"
     id="unselectAllLeaverequests"
-    style="cursor: pointer"
+    style="cursor: pointer;display:none;"
     >
       {% trans "Unselect All Requests" %}
+    </div>
+    <div
+    class="oh-checkpoint-badge text-info mb-2"
+    id="exportLeaverequests"
+    style="cursor: pointer; display: none"
+    >
+      {% trans "Export Requests" %}
     </div>
 <div class="oh-checkpoint-badge text-danger mb-2" id="selectedShowLeaverequests" style="display: none"></div>
 <!-- end of selection buttons -->
@@ -366,6 +373,9 @@
         })
         tickLeaverequestsCheckboxes();
         $(".all-leave-requests-row").change(function () {
+          if ($('.all-leave-requests').is(":checked")) {
+              $(".all-leave-requests").prop("checked", false);
+          }
           addingLeaverequestsIds();
         });
 
