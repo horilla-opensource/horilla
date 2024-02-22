@@ -123,10 +123,12 @@ function addingCandidateIds() {
     $("#selectedInstances").attr("data-ids", JSON.stringify(ids));
     if (selectedCount > 0) {
       $("#exportCandidates").css("display", "inline-flex");
+      $("#unselectAllInstances").css("display", "inline-flex");
       $("#selectedCandidate").text(selectedCount + " -" + message);
       $("#selectedCandidate").css("display", "inline-flex");
     } else {
       $("#exportCandidates").css("display", "none");
+      $("#unselectAllInstances").css("display", "none");
       $("#selectedCandidate").css("display", "none");
     }
   });
@@ -151,10 +153,12 @@ function tickCandidateCheckboxes() {
     languageCode = code;
     if (selectedCount > 0) {
       $("#exportCandidates").css("display", "inline-flex");
+      $("#unselectAllInstances").css("display", "inline-flex");
       $("#selectedCandidate").text(selectedCount + " -" + message);
       $("#selectedCandidate").css("display", "inline-flex");
     } else {
       $("#exportCandidates").css("display", "none");
+      $("#unselectAllInstances").css("display", "none");
       $("#selectedCandidate").css("display", "none");
     }
   });

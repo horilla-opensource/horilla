@@ -13,21 +13,21 @@
     color: #ccc
   }
 </style>
+{% include 'candidate/candidate_nav.html' %}
 <div class="oh-wrapper">
-  {% include 'candidate/candidate_nav.html' %}
   <div class="oh-checkpoint-badge mb-2" id="selectedInstances" data-ids="[]" data-clicked="" style="display:none;" >
   </div>
   
   <div class="d-flex flex-row-reverse">
-    <span class="m-3" onclick="$('[name=canceled]').val('true');$('[name=hired]').val('unknown');$('[name=canceled]').first().change(); $('.filterButton').click()" style="cursor: pointer">
+    <span class="m-1" onclick="$('[name=canceled]').val('true');$('[name=hired]').val('unknown');$('[name=canceled]').first().change(); $('.filterButton').click()" style="cursor: pointer;margin-left: 5px;">
       <span class="oh-dot oh-dot--small me-1" style="background-color:red"></span>
       {% trans "Canceled" %}
     </span>
-    <span class="m-3" onclick="$('[name=hired]').val('false');$('[name=canceled]').val('unknown'); $('[name=hired]').first().change(); $('.filterButton').click()" style="cursor: pointer">
+    <span class="m-1" onclick="$('[name=hired]').val('false');$('[name=canceled]').val('unknown'); $('[name=hired]').first().change(); $('.filterButton').click()" style="cursor: pointer;margin-left: 5px;">
       <span class="oh-dot oh-dot--small me-1" style="background-color:rgba(128, 128, 128, 0.482)"></span>
       {% trans "Not-Hired" %}
     </span>
-    <span class="m-3" onclick="$('[name=hired]').val('true');$('[name=canceled]').val('unknown'); $('[name=hired]').first().change(); $('.filterButton').click()" style="cursor: pointer">
+    <span class="m-1" onclick="$('[name=hired]').val('true');$('[name=canceled]').val('unknown'); $('[name=hired]').first().change(); $('.filterButton').click()" style="cursor: pointer;margin-left: 5px;">
       <span class="oh-dot oh-dot--small me-1" style="background-color:yellowgreen"></span>
       {% trans "Hired" %}
     </span>

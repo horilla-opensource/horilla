@@ -50,8 +50,10 @@
         <div class="oh-sticky-table__thead">
           <div class="oh-sticky-table__tr">
             <div class="oh-sticky-table__th" style="width:10px;">
-              <div class="centered-div">
-                <input type="checkbox" class="oh-input oh-input__checkbox all-candidate" title="Select All"  id = "allCandidate"/>
+              <div class="centered-div" align="center">
+                <input type="checkbox" class="oh-input oh-input__checkbox group-select"
+                onchange="$(this).closest('.oh-sticky-table').find('.candidate-checkbox').prop('checked',$(this).is(':checked')).change();"
+                 title="Select All"  />
               </div>
             </div>
             <div class="oh-sticky-table__th {% if request.sort_option.order == '-name' %}arrow-up {% elif request.sort_option.order == 'name' %}arrow-down {% else %} arrow-up-down {% endif %}"  hx-target='#section' hx-get="{% url 'search-candidate' %}?{{pd}}&orderby=name&view=list">{% trans "Candidates" %}</div>
@@ -76,7 +78,10 @@
                 <input
                   type="checkbox"
                   id="{{cand.id}}"
-                  onchange="highlightRow($(this))"
+                  onchange="highlightRow($(this));
+                  if (!$(this).is(':checked')) {
+                    $(this).closest('.oh-sticky-table').find('.group-select').prop('checked',false)
+                  }"
                   class="oh-input candidate-checkbox oh-input__checkbox all-candidate-row"
                 />
               </div>
@@ -311,10 +316,15 @@
     var message1 = rowMessages[languageCode];
     if (selectedCount > 0) {
       $("#exportCandidates").css("display", "inline-flex");
+      $("#unselectAllInstances").css("display", "inline-flex");
+      $("#unselectAllInstances").css("display", "inline-flex");
       $("#selectedCandidate").text(selectedCount + " -" + message1);
       $("#selectedCandidate").css("display", "inline-flex");
     } else {
       $("#exportCandidates").css("display", "none");
+      $("#selectedCandidate").css("display", "none");
+      $("#unselectAllInstances").css("display", "none");
+
       $("#selectedCandidate").css("display", "none");
     }
     $("#selectAllInstances").click(function () {
