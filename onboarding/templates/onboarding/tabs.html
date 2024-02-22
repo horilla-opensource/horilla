@@ -6,7 +6,7 @@
     {% for rec in recruitments %}
     
         {% if request.user|task_manages:rec or perms.onboarding.view_candidatestage %}
-            <li class="oh-tabs__tab" data-target="#tab_{{rec.id}}" data-recruitment-id="{{rec.id}}" {% if request.user|recruitment_manages:rec %} style="background-color: hsl(38.08deg 100% 50% / 8%);" {% endif %}>
+            <li class="oh-tabs__tab"  {% if rec.closed %} style="text-decoration: line-through;" {% endif %} data-target="#tab_{{rec.id}}" data-recruitment-id="{{rec.id}}" {% if request.user|recruitment_manages:rec %} style="background-color: hsl(38.08deg 100% 50% / 8%);" {% endif %}>
                 {{rec.title}}
                 <span
                     class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round ms-2 mr-2" title="{{rec.stages|length}} {% trans 'Stages' %}" onclick="event.stopPropagation()">

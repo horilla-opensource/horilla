@@ -750,8 +750,6 @@ def onboarding_view(request):
     recruitments = filter_obj.qs.filter(is_active=True)
 
     status = request.GET.get("closed")
-    if not status:
-        recruitments = recruitments.filter(closed=False)
 
     onboarding_stages = OnboardingStage.objects.all()
     choices = CandidateTask.choice
@@ -763,9 +761,6 @@ def onboarding_view(request):
     for item in groups:
         setattr(item["recruitment"], "stages", item["stages"])
     filter_dict = parse_qs(request.GET.urlencode())
-    if not request.GET.get("closed"):
-        filter_obj.form.initial["closed"] = False
-        filter_dict["closed"] = ["false"]
     for key, val in filter_dict.copy().items():
         if val[0] == "unknown" or key == "view":
             del filter_dict[key]
@@ -792,8 +787,7 @@ def kanban_view(request):
     recruitments = filter_obj.qs.filter(is_active=True)
 
     status = request.GET.get("closed")
-    if not status:
-        recruitments = recruitments.filter(closed=False)
+
     onboarding_stages = OnboardingStage.objects.all()
     choices = CandidateTask.choice
     stage_form = OnboardingViewStageForm()
@@ -809,9 +803,6 @@ def kanban_view(request):
     for item in groups:
         setattr(item["recruitment"], "stages", item["stages"])
     filter_dict = parse_qs(request.GET.urlencode())
-    if not request.GET.get("closed"):
-        filter_obj.form.initial["closed"] = False
-        filter_dict["closed"] = ["false"]
     for key, val in filter_dict.copy().items():
         if val[0] == "unknown" or key == "view":
             del filter_dict[key]

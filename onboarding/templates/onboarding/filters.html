@@ -16,6 +16,10 @@
             <label class="oh-label">{% trans 'Start Date' %}</label>
             {{ rec_filter_obj.form.start_date }}
           </div>
+          <div class="oh-input-group">
+            <label class="oh-label">{% trans 'Is Published' %}</label>
+            {{ rec_filter_obj.form.is_published }}
+          </div>
         </div>
 
         <div class="col-sm-12 col-md-12 col-lg-6">
@@ -26,6 +30,10 @@
           <div class="oh-input-group">
             <label class="oh-label">{% trans 'End Date' %}</label>
             {{ rec_filter_obj.form.end_date }}
+          </div>
+          <div class="oh-input-group">
+            <label class="oh-label">{% trans 'Is closed' %}</label>
+            {{ rec_filter_obj.form.closed }}
           </div>
         </div>
       </div>
