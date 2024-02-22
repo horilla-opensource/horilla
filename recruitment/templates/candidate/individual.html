@@ -221,14 +221,15 @@ $(document).on('click', function (event) {
           </li>
           {% endif %}
           <li class="oh-general__tab">
-            <a
+            <span
             hx-get="{% url 'get-mail-log-rec' %}?candidate_id={{candidate.id}}"
             hx-target="#maillog"
             hx-trigger="load"
             class="oh-general__tab-link"
             data-action="general-tab"
             data-target="#maillog"
-            >{% trans "Mail Log" %}</a
+            style="cursor: pointer;"
+            >{% trans "Mail Log" %}</spa
             >
           </li>
         </ul>

@@ -52,39 +52,8 @@
   </div>
 </div>
 
-<script>
-  $(document).ready(function () {
-    {% comment %} $("#candidate-search").keyup(function (e) { 
-      $("#filterSearch").val($(this).val());
-    }); {% endcomment %}
-    $(".filterButton").click(function (e) { 
-      const formData = $("#filterForm").serializeArray();
-      const jsonObject = {};
-      
-      $.each(formData, function() {
-          jsonObject[this.name] = this.value;
-      });
-      var hxVals = JSON.stringify(jsonObject)
-      {% comment %} $(".candidate-view-type").attr("hx-vals", hxVals);
-      const { search, ...newObj } = jsonObject;
-      $("#candidate-search").attr("hx-vals", JSON.stringify(newObj)); {% endcomment %}
-    });
 
-    {% comment %} $("#candidate-search").focusout(function (e) { 
-      const formData = $("#filterForm").serializeArray();
-      const jsonObject = {}; {% endcomment %}
-      
-      $.each(formData, function() {
-          jsonObject[this.name] = this.value;
-      });
-      var hxVals = JSON.stringify(jsonObject)
-      $(".candidate-view-type").attr("hx-vals", hxVals);
-      
-    });
     
-  });
-
-</script>
 <script src="{% static '/candidate/bulk.js' %}"></script>
 
 
