@@ -323,12 +323,7 @@ def recruitment_pipeline(request):
     filter_obj = RecruitmentFilter(request.GET)
     # is active filteration not providing on pipeline
     recruitments = filter_obj.qs.filter(is_active=True)
-    closed = request.GET.get("closed")
     rec = Recruitment.objects.all()
-    if closed and closed == "true":
-        rec = rec.filter(closed=True)
-    elif closed:
-        rec.filter(closed=False)
     if rec.exists() and view == "card":
         template = "pipeline/pipeline_card.html"
     elif rec.exists():
@@ -336,9 +331,7 @@ def recruitment_pipeline(request):
     else:
         template = "pipeline/pipeline_empty.html"
 
-    status = request.GET.get("closed")
-    if not status:
-        recruitments = recruitments.filter(closed=False)
+    closed = request.GET.get("closed")
 
     previous_data = request.GET.urlencode()
     paginator = Paginator(recruitments, 4)
@@ -361,7 +354,7 @@ def recruitment_pipeline(request):
             "stage_filter_obj": StageFilter(request.GET),
             "candidate_filter_obj": CandidateFilter(request.GET),
             "filter_dict": filter_dict,
-            "status": status,
+            "status": closed,
             "view": view,
             "pd": previous_data,
         },
