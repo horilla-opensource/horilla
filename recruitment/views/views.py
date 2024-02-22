@@ -163,9 +163,9 @@ def pipeline_grouper(request, recruitments):
                 page_name,
             ).object_list
             data["stages"] = data["stages"] + grouper
-            
+
         ordered_data = []
-        
+
         # combining un used groups in to the grouper
         groupers = data["stages"]
         for stage in stages:
@@ -174,7 +174,7 @@ def pipeline_grouper(request, recruitments):
                 if grouper["grouper"] == stage:
                     ordered_data.append(grouper)
                     found = True
-                    break 
+                    break
             if not found:
                 ordered_data.append({"grouper": stage})
         data = {
@@ -240,19 +240,18 @@ def recruitment_view(request):
         template = "recruitment/recruitment_view.html"
     else:
         template = "recruitment/recruitment_empty.html"
+    initial_tag = {}
+    if request.GET.get("closed") == "false":
+        queryset = queryset.filter(closed=True)
+        initial_tag["closed"] = ["true"]
+    else:
+        queryset = queryset.filter(closed=False)
+        initial_tag["closed"] = ["false"]
 
     filter_obj = RecruitmentFilter(request.GET, queryset)
-
-    filter_dict = parse_qs(request.GET.urlencode())
-    if not request.GET.get("is_active"):
-        filter_obj.form.initial["is_active"] = True
-        filter_dict["is_active"] = ["true"]
-        for key, val in filter_dict.copy().items():
-            try:
-                if val[0] != "false" or key == "view":
-                    del filter_dict[key]
-            except:
-                del filter_dict[key]
+    filter_dict = request.GET.copy()
+    for key, value in initial_tag.items():
+        filter_dict[key] = value
 
     return render(
         request,
@@ -262,6 +261,7 @@ def recruitment_view(request):
             "f": filter_obj,
             "form": form,
             "filter_dict": filter_dict,
+            "pd": request.GET.urlencode() + "&closed=false",
         },
     )
 
@@ -323,23 +323,18 @@ def recruitment_pipeline(request):
     filter_obj = RecruitmentFilter(request.GET)
     # is active filteration not providing on pipeline
     recruitments = filter_obj.qs.filter(is_active=True)
-
-    if request.GET.get("closed") == "closed":
-        rec = Recruitment.objects.filter(closed=True)
-        if rec.exists() and view == "card":
-            template = "pipeline/pipeline_card.html"
-        elif rec.exists():
-            template = "pipeline/pipeline.html"
-        else:
-            template = "pipeline/pipeline_empty.html"
+    closed = request.GET.get("closed")
+    rec = Recruitment.objects.all()
+    if closed and closed == "true":
+        rec = rec.filter(closed=True)
+    elif closed:
+        rec.filter(closed=False)
+    if rec.exists() and view == "card":
+        template = "pipeline/pipeline_card.html"
+    elif rec.exists():
+        template = "pipeline/pipeline.html"
     else:
-        rec = Recruitment.objects.filter(closed=False)
-        if rec.exists():
-            template = "pipeline/pipeline.html"
-        else:
-            template = "pipeline/pipeline_empty.html"
-        if view == "card":
-            template = "pipeline/pipeline_card.html"
+        template = "pipeline/pipeline_empty.html"
 
     status = request.GET.get("closed")
     if not status:
@@ -354,9 +349,6 @@ def recruitment_pipeline(request):
     for item in groups:
         setattr(item["recruitment"], "stages", item["stages"])
     filter_dict = parse_qs(request.GET.urlencode())
-    if not request.GET.get("closed"):
-        filter_obj.form.initial["closed"] = False
-        filter_dict["closed"] = ["false"]
     for key, val in filter_dict.copy().items():
         if val[0] == "unknown" or key == "view":
             del filter_dict[key]
