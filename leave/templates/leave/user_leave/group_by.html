@@ -12,7 +12,7 @@
 <div
     class="oh-checkpoint-badge text-secondary mb-2"
     id="unselectAllUserrequests"
-    style="cursor: pointer"
+    style="cursor: pointer;display: none;"
 >
     {% trans "Unselect All Requests" %}
 </div>
@@ -325,6 +325,9 @@
         $("#requestCreateButton").attr('hx-vals',`{"pd":${hxVals}}`);
         tickUserrequestsCheckboxes();
         $(".all-user-requests-row").change(function () {
+          if ($('.all-user-requests').is(":checked")) {
+              $(".all-user-requests").prop("checked", false);
+            }
           addingUserrequestsIds();
         });
 

@@ -109,12 +109,14 @@ function tickLeaverequestsCheckboxes() {
     languageCode = code;
     var message = rowMessages[languageCode];
     if (selectedCount > 0) {
+      $("#unselectAllLeaverequests").css("display", "inline-flex");
       $("#exportLeaverequests").css("display", "inline-flex");
       $("#selectedShowLeaverequests").css("display", "inline-flex");
       $("#selectedShowLeaverequests").text(selectedCount + " -" + message);
     } else {
       $("#selectedShowLeaverequests").css("display", "none");
       $("#exportLeaverequests").css("display", "none");
+      $("#unselectAllLeaverequests").css("display", "none");
     }
   });
 }
@@ -144,7 +146,9 @@ function addingLeaverequestsIds() {
     if (selectedCount === 0) {
       $("#selectedShowLeaverequests").css("display", "none");
       $("#exportLeaverequests").css("display", "none");
+      $("#unselectAllLeaverequests").css("display", "none");
     } else {
+      $("#unselectAllLeaverequests").css("display", "inline-flex");
       $("#exportLeaverequests").css("display", "inline-flex");
       $("#selectedShowLeaverequests").css("display", "inline-flex");
       $("#selectedShowLeaverequests").text(selectedCount + " - " + message);
@@ -389,12 +393,14 @@ function tickUserrequestsCheckboxes() {
     languageCode = code;
     var message = rowMessages[languageCode];
     if (selectedCount > 0) {
+      $("#unselectAllUserrequests").css("display", "inline-flex");
       $("#exportUserrequests").css("display", "inline-flex");
       $("#selectedShowUserrequests").css("display", "inline-flex");
       $("#selectedShowUserrequests").text(selectedCount + " -" + message);
     } else {
-      $("#selectedShowUserrequests").css("display", "none");
+      $("#unselectAllUserrequests").css("display", "none");
       $("#exportUserrequests").css("display", "none");
+      $("#selectedShowUserrequests").css("display", "none");
     }
   });
 }
@@ -422,10 +428,12 @@ function addingUserrequestsIds() {
     var message = rowMessages[languageCode];
     $("#selectedUserrequests").attr("data-ids", JSON.stringify(ids));
     if (selectedCount === 0) {
+      $("#unselectAllUserrequests").css("display", "none");
       $("#selectedShowUserrequests").css("display", "none");
       $("#exportUserrequests").css("display", "none");
     } else {
       $("#exportUserrequests").css("display", "inline-flex");
+      $("#unselectAllUserrequests").css("display", "inline-flex");
       $("#selectedShowUserrequests").css("display", "inline-flex");
       $("#selectedShowUserrequests").text(selectedCount + " - " + message);
     }
