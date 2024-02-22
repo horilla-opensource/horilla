@@ -751,10 +751,10 @@ def object_delete(request, id, **kwargs):
         instance = model.objects.get(id=id)
         instance.delete()
         messages.success(
-            request, _("The {} has been deleted successfully.").format(instance)
+            request, _("The tag {} has been deleted successfully.").format(instance)
         )
     except model.DoesNotExist:
-        messages.error(request, _("{} not found.").format(model._meta.verbose_name))
+        messages.error(request, _("Tag {} not found.").format(model._meta.verbose_name))
     except ProtectedError as e:
         model_verbose_names_set = set()
         for obj in e.protected_objects:
@@ -763,9 +763,9 @@ def object_delete(request, id, **kwargs):
         model_names_str = ", ".join(model_verbose_names_set)
         messages.error(
             request,
-            _("This {} is already in use for {}.").format(instance, model_names_str),
+            _("This tag {} is already in use for {}.").format(instance, model_names_str),
         ),
-    return redirect(redirect_path)
+    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 
 
 @login_required
@@ -4065,6 +4065,23 @@ def validation_condition_view(request):
 
 
 @login_required
+@permission_required("attendance.view_attendancevalidationcondition")
+def grace_time_view(request):
+    """
+    This method view attendance validation conditions.
+    """
+    condition = AttendanceValidationCondition.objects.first()
+    default_grace_time = GraceTime.objects.filter(is_default=True).first()
+    grace_times = GraceTime.objects.all().exclude(is_default=True)
+
+    return render(
+        request,
+        "attendance/grace_time/grace_time.html",
+        {"condition": condition, "default_grace_time": default_grace_time, "grace_times": grace_times},
+    )
+
+
+@login_required
 @permission_required("attendance.add_attendancevalidationcondition")
 def validation_condition_create(request):
     """
@@ -4361,15 +4378,39 @@ def ticket_type_delete(request, t_type_id):
 @login_required
 def tag_view(request):
     """
-    This method is used to show Ticket type
+    This method is used to show Audit tags
     """
-    tags = Tags.objects.all()
-    employeetags = EmployeeTag.objects.all()
     audittags = AuditTag.objects.all()
     return render(
         request,
         "base/tags/tags.html",
-        {"tags": tags, "employeetags": employeetags, "audittags": audittags},
+        {"audittags": audittags},
+    )
+
+
+@login_required
+def employee_tag_view(request):
+    """
+    This method is used to Employee tags
+    """
+    employeetags = EmployeeTag.objects.all()
+    return render(
+        request,
+        "base/tags/employee_tags.html",
+        {"employeetags": employeetags},
+    )
+
+
+@login_required
+def helpdesk_tag_view(request):
+    """
+    This method is used to show Help desk tags
+    """
+    tags = Tags.objects.all()
+    return render(
+        request,
+        "base/tags/helpdesk_tags.html",
+        {"tags": tags},
     )
 
 

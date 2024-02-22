@@ -1602,9 +1602,9 @@ def delete_grace_time(request, grace_id):
     except ProtectedError:
         messages.error(request, _("Related datas exists."))
     if request.GET.get("view") == "shift":
-        return redirect("/settings/employee-shift-view")
+        return redirect("/settings/grace-settings-view")
     else:
-        return redirect("/settings/attendance-settings-view")
+        return redirect("/settings/grace-settings-view")
 
 
 @login_required

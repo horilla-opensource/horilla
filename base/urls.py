@@ -602,6 +602,11 @@ urlpatterns = [
         name="attendance-settings-view",
     ),
     path(
+        "settings/grace-settings-view/",
+        views.grace_time_view,
+        name="grace-settings-view",
+    ),
+    path(
         "settings/attendance-settings-create/",
         views.validation_condition_create,
         name="attendance-settings-create",
@@ -662,6 +667,8 @@ urlpatterns = [
         name="ticket-type-delete",
     ),
     path("settings/tag-view/", views.tag_view, name="tag-view"),
+    path("settings/employee-tag-view/", views.employee_tag_view, name="employee-tag-view"),
+    path("settings/helpdesk-tag-view/", views.helpdesk_tag_view, name="helpdesk-tag-view"),
     path("tag-create", views.tag_create, name="tag-create"),
     path("tag-update/<int:tag_id>", views.tag_update, name="tag-update"),
     path(

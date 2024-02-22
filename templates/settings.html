@@ -42,247 +42,351 @@
 					style="font-weight: bold"
 					id="mobileMenu"
 				>
+
+
 					<ul class="oh-inner-sidebar__items">
-						<li class="oh-inner-sidebar__item">
-							<a
-								id="currency"
-								href="{% url 'general-settings' %}"
-								class="oh-inner-sidebar__link oh-dropdown__link"
-								>{% trans "General Settings" %}</a
-							>
-						</li>
-						{% if perms.base.view_department %}
-						<li class="oh-inner-sidebar__item">
-							<a
-								id="department"
-								href="{% url 'department-view' %}"
-								class="oh-inner-sidebar__link oh-dropdown__link"
-								>{% trans "Department" %}</a
-							>
-						</li>
-						{% endif %}
-						{% if perms.base.view_jobposition %}
-						<li class="oh-inner-sidebar__item">
-							<a
-								id="jobPosition"
-								href="{% url 'job-position-view' %}"
-								class="oh-inner-sidebar__link oh-dropdown__link"
-								>{% trans "Job Positions" %}</a
-							>
-						</li>
-						{% endif %}
-						{% if perms.base.view_jobrole %}
-						<li class="oh-inner-sidebar__item">
-							<a
-								id="jobRole"
-								href="{% url 'job-role-view' %}"
-								class="oh-inner-sidebar__link oh-dropdown__link"
-								>{% trans "Job Role" %}</a
-							>
-						</li>
-						{% endif %}
-						{% if perms.recruitment.view_rejectreason %}
-						<li class="oh-inner-sidebar__item">
-							<a
-								id="jobRole"
-								href="{% url 'candidate-reject-reasons' %}"
-								class="oh-inner-sidebar__link oh-dropdown__link"
-								>{% trans "Candidate Reject Reason" %}</a
-							>
-						</li>
-						{% endif %}
-						{% if perms.base.view_worktype %}
-						<li class="oh-inner-sidebar__item">
-							<a
-								id="workType"
-								href="{% url 'work-type-view' %}"
-								class="oh-inner-sidebar__link oh-dropdown__link"
-								>{% trans "Work Type" %}</a
-							>
-						</li>
-						{% endif %}
-						{% if perms.base.view_rotatingworktype %}
 
 						<li class="oh-inner-sidebar__item">
-							<a
-								id="rotatingWorkType"
-								href="{% url 'rotating-work-type-view' %}"
-								class="oh-inner-sidebar__link oh-dropdown__link"
-								>{% trans "Rotating Work Type" %}</a
-							>
+							<div class="oh-accordion ms-2">
+								<div class="oh-accordion-header" style="font-size:16px;">
+
+									
+									
+									{% trans "General" %}</div>
+									<div class="oh-accordion-body">
+										<div class="row">
+										<div class="col-sm-12 col-md-12 col-lg-12">
+											<div class="oh-input-group">
+												<a
+													id="currency"
+													href="{% url 'general-settings' %}"
+													class="oh-inner-sidebar__link oh-dropdown__link"
+													>{% trans "General Settings" %}
+												</a>
+											</div>
+											<div class="oh-input-group">
+												{% if perms.auth.view_permission %}
+													<a
+														id="employeePermission"
+														href="{% url 'employee-permission-assign' %}"
+														class="oh-inner-sidebar__link oh-dropdown__link"
+														>{% trans "Employee Permission" %}</a
+													>
+												{% endif %}
+											</div>
+											<div class="oh-input-group">
+												{% if perms.auth.view_group %}
+													<a
+														id="userGroup"
+														href="{% url 'user-group-view' %}"
+														class="oh-inner-sidebar__link oh-dropdown__link"
+														>{% trans "User Group" %}</a
+													>
+												{% endif %}
+											</div>
+											<div class="oh-input-group">
+												{% if perms.base.view_company %}
+													<a
+														id="date"
+														href="{% url 'date-settings' %}"
+														class="oh-inner-sidebar__link oh-dropdown__link"
+														>{% trans "Date & Time Format" %}</a
+													>
+												{% endif %}
+											</div>
+											<div class="oh-input-group">
+												{% if perms.base.view_tags or perms.employee.view_emplyeetag or perms.horilla_audit.view_audittag %}
+													<a
+														id="ticket_type"
+														href="{% url 'tag-view' %}"
+														class="oh-inner-sidebar__link oh-dropdown__link"
+														>{% trans "Audit Tags" %}</a
+													>
+												{% endif %}
+											</div>
+											<div class="oh-input-group">
+												{% if perms.base.view_dynamicemailconfiguration %}
+													<a
+														id="date"
+														href="{% url 'mail-server-conf' %}"
+														class="oh-inner-sidebar__link oh-dropdown__link"
+														>{% trans "Mail Server" %}</a
+													>
+												{% endif %}
+											</div>
+											<div class="oh-input-group">
+												{% if perms.payroll.view_payrollsettings %}
+													<a
+														id="currency"
+														href="{% url 'currency-settings' %}"
+														class="oh-inner-sidebar__link oh-dropdown__link"
+														>{% trans "Currency" %}</a
+													>
+												{% endif %}
+											</div>
+											<div class="oh-input-group">
+												<a
+													id="pagination"
+													href="{% url 'pagination-settings-view' %}"
+													class="oh-inner-sidebar__link oh-dropdown__link"
+													>{% trans "Records per page" %}</a
+												>
+											</div>
+
+										</div>
+									</div>
+								</div>
+							</div>
 						</li>
-						{% endif %}
-						{% if perms.base.view_employeetype %}
+						<hr>
 
 						<li class="oh-inner-sidebar__item">
-							<a
-								id="employeeType"
-								href="{% url 'employee-type-view' %}"
-								class="oh-inner-sidebar__link oh-dropdown__link"
-								>{% trans "Employee Type" %}</a
-							>
+							<div class="oh-accordion ms-2">
+								<div class="oh-accordion-header" style="font-size:16px;">{% trans "Base" %}</div>
+									<div class="oh-accordion-body">
+										<div class="row">
+										<div class="col-sm-12 col-md-12 col-lg-12">
+											<div class="oh-input-group">
+												{% if perms.base.view_department %}
+												<a
+													id="department"
+													href="{% url 'department-view' %}"
+													class="oh-inner-sidebar__link oh-dropdown__link"
+													>{% trans "Department" %}</a
+												>
+												{% endif %}
+											</div>
+											<div class="oh-input-group">
+												{% if perms.base.view_jobposition %}
+													<a
+														id="jobPosition"
+														href="{% url 'job-position-view' %}"
+														class="oh-inner-sidebar__link oh-dropdown__link"
+														>{% trans "Job Positions" %}</a
+													>
+												{% endif %}
+											</div>
+											<div class="oh-input-group">
+												{% if perms.base.view_jobrole %}
+													<a
+														id="jobRole"
+														href="{% url 'job-role-view' %}"
+														class="oh-inner-sidebar__link oh-dropdown__link"
+														>{% trans "Job Role" %}</a
+													>
+												{% endif %}
+											</div>
+											<div class="oh-input-group">
+												{% if perms.helpdesk.view_departmentmanager %}
+													<a
+														id="ticket_type"
+														href="{% url 'department-manager-view' %}"
+														class="oh-inner-sidebar__link oh-dropdown__link"
+														>{% trans "Department Managers" %}</a
+													>
+												{% endif %}
+											</div>
+											<div class="oh-input-group">
+												{% if perms.base.view_company %}
+													<a
+														id="company"
+														href="{% url 'company-view' %}"
+														class="oh-inner-sidebar__link oh-dropdown__link"
+														>{% trans "Company" %}</a
+													>
+												{% endif %}
+											</div>
+
+										</div>
+									</div>
+								</div>
+							</div>
 						</li>
-						{% endif %}
-						{% if perms.base.view_employeeshift %}
+						<hr>
 
 						<li class="oh-inner-sidebar__item">
-							<a
-								id="employeeShift"
-								href="{% url 'employee-shift-view' %}"
-								class="oh-inner-sidebar__link oh-dropdown__link"
-								>{% trans "Employee Shift" %}</a
-							>
+							<div class="oh-accordion ms-2">
+								<div class="oh-accordion-header" style="font-size:16px;">{% trans "Recruitment" %}</div>
+									<div class="oh-accordion-body">
+										<div class="row">
+										<div class="col-sm-12 col-md-12 col-lg-12">
+											<div class="oh-input-group">
+												{% if perms.recruitment.view_rejectreason %}
+													<a
+														id="jobRole"
+														href="{% url 'candidate-reject-reasons' %}"
+														class="oh-inner-sidebar__link oh-dropdown__link"
+														>{% trans "Candidate Reject Reason" %}</a
+													>
+												{% endif %}
+											</div>
+
+										</div>
+									</div>
+								</div>
+							</div>
 						</li>
-						{% endif %}
-						{% if perms.base.view_employeeshiftschedule %}
+						<hr>
 
 						<li class="oh-inner-sidebar__item">
-							<a
-								id="employeeShiftSchedule"
-								href="{% url 'employee-shift-schedule-view' %}"
-								class="oh-inner-sidebar__link oh-dropdown__link"
-								>{% trans "Employee Shift Schedule" %}</a
-							>
+							<div class="oh-accordion ms-2">
+								<div class="oh-accordion-header" style="font-size:16px;">{% trans "Employee" %}</div>
+									<div class="oh-accordion-body">
+										<div class="row">
+										<div class="col-sm-12 col-md-12 col-lg-12">
+											<div class="oh-input-group">
+												{% if perms.base.view_worktype %}
+													<a
+														id="workType"
+														href="{% url 'work-type-view' %}"
+														class="oh-inner-sidebar__link oh-dropdown__link"
+														>{% trans "Work Type" %}</a
+													>
+												{% endif %}
+											</div>
+											<div class="oh-input-group">
+												{% if perms.base.view_rotatingworktype %}
+													<a
+														id="rotatingWorkType"
+														href="{% url 'rotating-work-type-view' %}"
+														class="oh-inner-sidebar__link oh-dropdown__link"
+														>{% trans "Rotating Work Type" %}</a
+													>
+												{% endif %}
+											</div>
+											<div class="oh-input-group">
+												{% if perms.base.view_employeeshift %}
+													<a
+														id="employeeShift"
+														href="{% url 'employee-shift-view' %}"
+														class="oh-inner-sidebar__link oh-dropdown__link"
+														>{% trans "Employee Shift" %}</a
+													>
+												{% endif %}
+											</div>
+											<div class="oh-input-group">
+												{% if perms.base.view_rotatingshift %}
+													<a
+														id="rotatingShift"
+														href="{% url 'rotating-shift-view' %}"
+														class="oh-inner-sidebar__link oh-dropdown__link"
+														>{% trans "Rotating Shift" %}</a
+													>
+												{% endif %}
+											</div>
+											<div class="oh-input-group">
+												{% if perms.base.view_employeeshiftschedule %}
+													<a
+														id="employeeShiftSchedule"
+														href="{% url 'employee-shift-schedule-view' %}"
+														class="oh-inner-sidebar__link oh-dropdown__link"
+														>{% trans "Employee Shift Schedule" %}</a
+													>
+												{% endif %}
+											</div>
+											<div class="oh-input-group">
+												{% if perms.base.view_employeetype %}
+													<a
+														id="employeeType"
+														href="{% url 'employee-type-view' %}"
+														class="oh-inner-sidebar__link oh-dropdown__link"
+														>{% trans "Employee Type" %}</a
+													>
+												{% endif %}
+											</div>
+											<div class="oh-input-group">
+												<a
+													id="date"
+													href="{% url 'action-type' %}"
+													class="oh-inner-sidebar__link oh-dropdown__link"
+													>{% trans "Disciplinary Action Type" %}</a
+												>
+											</div>
+											<div class="oh-input-group">
+												{% if perms.employee.view_emplyeetag %}
+													<a
+														id="ticket_type"
+														href="{% url 'employee-tag-view' %}"
+														class="oh-inner-sidebar__link oh-dropdown__link"
+														>{% trans "Employee Tags" %}</a
+													>
+												{% endif %}
+											</div>
+
+										</div>
+									</div>
+								</div>
+							</div>
 						</li>
-						{% endif %}
-						{% if perms.base.view_rotatingshift %}
+						<hr>
 
 						<li class="oh-inner-sidebar__item">
-							<a
-								id="rotatingShift"
-								href="{% url 'rotating-shift-view' %}"
-								class="oh-inner-sidebar__link oh-dropdown__link"
-								>{% trans "Rotating Shift" %}</a
-							>
+							<div class="oh-accordion ms-2">
+								<div class="oh-accordion-header" style="font-size:16px;">{% trans "Attendance" %}</div>
+									<div class="oh-accordion-body">
+										<div class="row">
+										<div class="col-sm-12 col-md-12 col-lg-12">
+											<div class="oh-input-group">
+												{% if perms.attendance.view_attendancevalidationcondition %}
+													<a
+														id="condition"
+														href="{% url 'attendance-settings-view' %}"
+														class="oh-inner-sidebar__link oh-dropdown__link"
+														>{% trans "Attendance Break Point" %}</a
+													>
+												{% endif %}
+											</div>
+											<div class="oh-input-group">
+												{% if perms.attendance.view_attendancevalidationcondition %}
+													<a
+														id="condition"
+														href="{% url 'grace-settings-view' %}"
+														class="oh-inner-sidebar__link oh-dropdown__link"
+														>{% trans "Grace Time" %}</a
+													>
+												{% endif %}
+											</div>
+
+										</div>
+									</div>
+								</div>
+							</div>
 						</li>
-						{% endif %}
-						{% if perms.attendance.view_attendancevalidationcondition %}
+						<hr>
 
 						<li class="oh-inner-sidebar__item">
-							<a
-								id="condition"
-								href="{% url 'attendance-settings-view' %}"
-								class="oh-inner-sidebar__link oh-dropdown__link"
-								>{% trans "Attendance Break Point" %}</a
-							>
-						</li>
-						{% endif %}
-						{% if perms.helpdesk.view_tickettype %}
+							<div class="oh-accordion ms-2">
+								<div class="oh-accordion-header" style="font-size:16px;">{% trans "Help Desk" %}</div>
+									<div class="oh-accordion-body">
+										<div class="row">
+										<div class="col-sm-12 col-md-12 col-lg-12">
+											<div class="oh-input-group">
+												{% if perms.helpdesk.view_tickettype %}
+													<a
+														id="ticket_type"
+														href="{% url 'ticket-type-view' %}"
+														class="oh-inner-sidebar__link oh-dropdown__link"
+														>{% trans "Ticket Type" %}</a
+													>
+												{% endif %}
+											</div>
+											<div class="oh-input-group">
+												{% if perms.employee.view_emplyeetag %}
+													<a
+														id="ticket_type"
+														href="{% url 'helpdesk-tag-view' %}"
+														class="oh-inner-sidebar__link oh-dropdown__link"
+														>{% trans "Helpdesk Tags" %}</a
+													>
+												{% endif %}
+											</div>
 
-						<li class="oh-inner-sidebar__item">
-							<a
-								id="ticket_type"
-								href="{% url 'ticket-type-view' %}"
-								class="oh-inner-sidebar__link oh-dropdown__link"
-								>{% trans "Ticket Type" %}</a
-							>
+										</div>
+									</div>
+								</div>
+							</div>
 						</li>
-						{% endif %}
-						{% if perms.base.view_tags or perms.employee.view_emplyeetag or perms.horilla_audit.view_audittag %}
-
-						<li class="oh-inner-sidebar__item">
-							<a
-								id="ticket_type"
-								href="{% url 'tag-view' %}"
-								class="oh-inner-sidebar__link oh-dropdown__link"
-								>{% trans "Tags" %}</a
-							>
-						</li>
-						{% endif %}
-						{% if perms.helpdesk.view_departmentmanager %}
-
-						<li class="oh-inner-sidebar__item">
-							<a
-								id="ticket_type"
-								href="{% url 'department-manager-view' %}"
-								class="oh-inner-sidebar__link oh-dropdown__link"
-								>{% trans "Department Managers" %}</a
-							>
-						</li>
-						{% endif %}
-						{% if perms.auth.view_permission %}
-
-						<li class="oh-inner-sidebar__item">
-							<a
-								id="employeePermission"
-								href="{% url 'employee-permission-assign' %}"
-								class="oh-inner-sidebar__link oh-dropdown__link"
-								>{% trans "Employee Permission" %}</a
-							>
-						</li>
-						{% endif %}
-						{% if perms.auth.view_group %}
-
-						<li class="oh-inner-sidebar__item">
-							<a
-								id="userGroup"
-								href="{% url 'user-group-view' %}"
-								class="oh-inner-sidebar__link oh-dropdown__link"
-								>{% trans "User Group" %}</a
-							>
-						</li>
-						{% endif %}
-
-						<li class="oh-inner-sidebar__item">
-							<a
-								id="date"
-								href="{% url 'action-type' %}"
-								class="oh-inner-sidebar__link oh-dropdown__link"
-								>{% trans "Disciplinary Action Type" %}</a
-							>
-						</li>
-						{% if perms.base.view_company %}
-
-						<li class="oh-inner-sidebar__item">
-							<a
-								id="company"
-								href="{% url 'company-view' %}"
-								class="oh-inner-sidebar__link oh-dropdown__link"
-								>{% trans "Company" %}</a
-							>
-						</li>
-						{% endif %}
-						{% if perms.payroll.view_payrollsettings %}
-
-						<li class="oh-inner-sidebar__item">
-							<a
-								id="currency"
-								href="{% url 'currency-settings' %}"
-								class="oh-inner-sidebar__link oh-dropdown__link"
-								>{% trans "Currency" %}</a
-							>
-						</li>
-						{% endif %}
-						{% if perms.base.view_company %}
-
-						<li class="oh-inner-sidebar__item">
-							<a
-								id="date"
-								href="{% url 'date-settings' %}"
-								class="oh-inner-sidebar__link oh-dropdown__link"
-								>{% trans "Date & Time Format" %}</a
-							>
-						</li>
-						{% endif %}
-							<li class="oh-inner-sidebar__item">
-								<a
-									id="pagination"
-									href="{% url 'pagination-settings-view' %}"
-									class="oh-inner-sidebar__link oh-dropdown__link"
-									>{% trans "Records per page" %}</a
-								>
-							</li>
-						{% if perms.base.view_dynamicemailconfiguration %}
-
-						<li class="oh-inner-sidebar__item">
-							<a
-								id="date"
-								href="{% url 'mail-server-conf' %}"
-								class="oh-inner-sidebar__link oh-dropdown__link"
-								>{% trans "Mail Server" %}</a
-							>
-						</li>
-						{% endif %}
+						<hr>
 
 					</ul>
 				</div>
@@ -302,7 +406,7 @@
 			menu = $(`a[href="${path}"].oh-inner-sidebar__link.oh-dropdown__link`);
 		}
 		menu.addClass("oh-inner-sidebar__link--active");
-		menu.attr("style", "border:1px solid #FF820D ; border-radius:2px;");
+		menu.attr("style", "border:1px solid #FF820D ; border-radius:10px;");
 		menu[0].scrollIntoView({ behavior: "smooth", block: "center" });
 		if (menu.length != undefined) {
 			localStorage.setItem("lastActiveTab", path);

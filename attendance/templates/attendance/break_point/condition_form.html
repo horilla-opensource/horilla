@@ -20,11 +20,6 @@
 		{% endif %}
 		hx-target='#conditionModalTarget' method="post" class="settings-label mb-1">
 		{% csrf_token %}
-		<div class="oh-inner-sidebar-content__header">
-			<h2 class="oh-inner-sidebar-content__title">
-				{% trans "Attendance Condition" %}
-			</h2>
-		</div>
 		<div class="oh-inner-sidebar-content__body">
 			<div class="oh-input-group">{{form}}</div>
 		</div>
