@@ -6,7 +6,7 @@ from django.http import HttpResponse, JsonResponse, HttpResponseRedirect
 from django.shortcuts import redirect, render
 from attendance.methods.group_by import group_by_queryset
 from base.forms import TagsForm
-from base.methods import filtersubordinates, get_key_instances, get_pagination
+from base.methods import filtersubordinates, get_key_instances, get_pagination, sortby
 from base.models import Department, JobPosition, Tags
 from employee.models import Employee
 from helpdesk.filter import FAQCategoryFilter, FAQFilter, TicketFilter, TicketReGroup
@@ -726,6 +726,12 @@ def ticket_filter(request):
     allocated_tickets = (
         list(tickets_items1) + list(tickets_items2) + list(tickets_items3)
     )
+    if request.GET.get("sortby"):
+        all_tickets = sortby(request, all_tickets, "sortby")
+        my_tickets = sortby(request,my_tickets,"sortby")
+        allocated_tickets = tickets_items1 | tickets_items2 | tickets_items3
+        allocated_tickets = sortby(request,allocated_tickets,"sortby")
+
     field = request.GET.get("field")
     if field != "" and field is not None:
         my_tickets = group_by_queryset(
