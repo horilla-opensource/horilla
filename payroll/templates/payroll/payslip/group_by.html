@@ -71,8 +71,11 @@
 										<div class="centered-div">
 										<input
 											type="checkbox"
-											class="all-payslip oh-input oh-input__checkbox Allpayslip"
-                      onchange="$(this).closest('.oh-sticky-table').find('.payslip-checkbox').prop('checked',$(this).is(':checked')).change()"
+											class="group-select oh-input oh-input__checkbox"
+                      onchange="
+                      $(this).closest('.oh-sticky-table').find('.payslip-checkbox').prop('checked',$(this).is(':checked')).change();
+                      $(this).prop('checked',$(this).is(':checked'))
+                      "
 											id = ""
 											title='{% trans "Select All" %}'
 										/>
@@ -98,7 +101,12 @@
                                             type="checkbox"
                                             id="{{payslip.id}}"
                                             value="{{payslip.id}}"
-                                            onchange="highlightRow($(this))"
+                                            onchange="
+                                            highlightRow($(this));
+                                            if (!$(this).is(':checked')) {
+                                              $(this).closest('.oh-sticky-table').find('.group-select').prop('checked',false)
+                                            }
+                                            "
                                             class="oh-input payslip-checkbox oh-input__checkbox all-payslip-row"
                                           />
                                         </div>
