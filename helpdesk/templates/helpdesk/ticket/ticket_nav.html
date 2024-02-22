@@ -17,9 +17,7 @@
 		</a>
 	</div>
 	<div class="oh-main__titlebar oh-main__titlebar--right">
-		{% if my_tickets or allocated_tickets or all_tickets %}
             {% include "helpdesk/ticket/ticket_filter.html" %}
-		{% endif %}
 
 		<!-- start of action button  -->
 		{% if request.GET.view != 'card' %}

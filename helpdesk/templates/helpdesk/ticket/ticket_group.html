@@ -35,6 +35,7 @@
                                                         type="checkbox"
                                                         title='{% trans "Select All" %}'
                                                         class="oh-input oh-input__checkbox myTicketsAll"
+                                                        onchange="$(this).closest('.oh-sticky-table').find('.my-tickets-row').prop('checked',$(this).is(':checked')).change();addingTicketsIds()"
                                                         />
                                                     </div>
                                                 </div>
@@ -64,7 +65,10 @@
                                                             <input
                                                             type="checkbox"
                                                             id="{{ticket.id}}"
-                                                            onchange="highlightRow($(this))"
+                                                            onchange="highlightRow($(this));
+                                                                    if (!$(this).is(':checked')) {
+                                                                        $(this).closest('.oh-sticky-table').find('.myTicketsAll').prop('checked',false)
+                                                                    };addingTicketsIds()"
                                                             class="oh-input holiday-checkbox oh-input__checkbox my-tickets-row"
                                                             />
                                                         </div>
@@ -328,6 +332,7 @@
                                                         type="checkbox"
                                                         title='{% trans "Select All" %}'
                                                         class="oh-input oh-input__checkbox allocatedTicketsAll"
+                                                        onchange="$(this).closest('.oh-sticky-table').find('.allocated-tickets-row').prop('checked',$(this).is(':checked')).change();addingTicketsIds()" 
                                                         />
                                                     </div>
                                                 </div>
@@ -356,7 +361,10 @@
                                                             <input
                                                             type="checkbox"
                                                             id="{{ticket.id}}"
-                                                            onchange="highlightRow($(this))"
+                                                            onchange="highlightRow($(this));
+                                                                    if (!$(this).is(':checked')) {
+                                                                        $(this).closest('.oh-sticky-table').find('.allocatedTicketsAll').prop('checked',false)
+                                                                    };addingTicketsIds()"
                                                             class="oh-input holiday-checkbox oh-input__checkbox allocated-tickets-row"
                                                             />
                                                         </div>
@@ -619,6 +627,7 @@
                                                         type="checkbox"
                                                         title='{% trans "Select All" %}'
                                                         class="oh-input oh-input__checkbox allTicketsAll"
+                                                        onchange="$(this).closest('.oh-sticky-table').find('.all-tickets-row').prop('checked',$(this).is(':checked')).change();addingTicketsIds()"
                                                         />
                                                     </div>
                                                 </div>
@@ -647,8 +656,11 @@
                                                             <input
                                                             type="checkbox"
                                                             id="{{ticket.id}}"
-                                                            onchange="highlightRow($(this))"
-                                                            class="oh-input holiday-checkbox oh-input__checkbox my-tickets-row"
+                                                            onchange="highlightRow($(this));
+                                                                    if (!$(this).is(':checked')) {
+                                                                        $(this).closest('.oh-sticky-table').find('.allTicketsAll').prop('checked',false)
+                                                                    };addingTicketsIds()"
+                                                            class="oh-input holiday-checkbox oh-input__checkbox all-tickets-row"
                                                             />
                                                         </div>
                                                     </div>
@@ -914,18 +926,6 @@ $(".allTicketsAll").change(function (e) {
   });
   
   // TO toggle class for select all button in My tickets tab
-  $(".myTicketsAll").change(function (e) {
-    var is_checked = $(this).is(":checked");
-    if (is_checked) {
-      $(".my-tickets-row").prop("checked", true)
-      .closest(".oh-sticky-table__tr")
-      .addClass("highlight-selected");
-    } else {
-      $(".my-tickets-row").prop("checked", false)
-      .closest(".oh-sticky-table__tr")
-      .removeClass("highlight-selected");
-    }
-  });
     $(document).ready(function () {
         const activeTab = localStorage.getItem('activeTabTicket')
         if (activeTab!=null) {
@@ -939,35 +939,6 @@ $(".allTicketsAll").change(function (e) {
             localStorage.setItem("activeTabTicket",$(this).attr('data-target'))
         });
         tickTicketsCheckboxes();
-		$(".my-tickets-row").change(function () {
-            if ($('.myTicketsAll').is(":checked")) {
-				$('.myTicketsAll').prop("checked", false);
-			  }
-			addingTicketsIds();
-		});
-		$(".myTicketsAll").change(function () {
-			addingTicketsIds();
-		});
-
-		$(".allocated-tickets-row").change(function () {
-			if ($('.allocatedTicketsAll').is(":checked")) {
-				$('.allocatedTicketsAll').prop("checked", false);
-			  }
-            addingTicketsIds();
-		});
-		$(".allocatedTicketsAll").change(function () {
-			addingTicketsIds();
-		});
-		$(".all-tickets-row").change(function () {
-            if ($('.allTicketsAll').is(":checked")) {
-				$('.allTicketsAll').prop("checked", false);
-			  }
-            addingTicketsIds();
-		});
-		$(".allTicketsAll").change(function () {
-		  	addingTicketsIds();
-		});
-
 		$("#selectAllTickets").click(function () {
 		  selectAllTickets();
 		});
