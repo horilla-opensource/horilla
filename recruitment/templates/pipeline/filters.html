@@ -30,12 +30,13 @@
             {{ rec_filter_obj.form.start_from }}
           </div>
           <div class="oh-input-group">
-            <label
-              class="oh-label"
-              for="{{rec_filter_obj.form.closed.id_for_label}}"
-              >{% trans 'Is Closed' %}</label
-            >
-            {{ rec_filter_obj.form.closed }}
+            <label class="oh-label">{% trans "Is Closed" %}</label>
+            {% comment %} {{f.form.closed}} {% endcomment %}
+            <select name="closed" id="closed" class="oh-select oh-select-2 w-100">
+              <option value="unknown" selected>{% trans "Unknown" %}</option>
+              <option value="true">{% trans "True" %}</option>
+              <option value="false">{% trans "False" %}</option>
+            </select>
           </div>
         </div>
 
