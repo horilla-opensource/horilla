@@ -110,6 +110,7 @@ form.addEventListener("submit", function (event) {
     },
     success: function (response) {
       if (typeof response === 'object' && response.type == 'application/json') {
+        window.location.reload();
         return;
       }
       const file = new Blob([response], {

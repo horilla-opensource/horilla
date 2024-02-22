@@ -2398,7 +2398,7 @@ def work_info_import(request):
             response["Content-Disposition"] = 'attachment; filename="ImportError.xlsx"'
             data_frame.to_excel(response, index=False)            
             return response
-        return JsonResponse ({'error_key': 'No binary data available'})
+        return JsonResponse ({'Success': 'Employees Imported Succefully'})
 
     return response
 
