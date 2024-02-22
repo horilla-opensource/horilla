@@ -298,6 +298,7 @@
                   {% for cand in stage.list%} 
                   
                   <div
+                    onclick="window.location.href = '{% url 'candidate-view-individual' cand.id %}'"
                     class="oh-sticky-table__tr oh-table-config__tr candidate ui-droppable ui-sortable-handle cand change-cand "
                     data-candidate-id="{{cand.id}}"
                     data-drop="candidate"
@@ -312,10 +313,9 @@
                         <input type="checkbox" id="65" class="oh-input candidate-checkbox oh-input__checkbox stage-candidate-row" onchange="highlightRow($(this))">
                       </div>
                     </div>
-                    <a
+                    <div
                       class="oh-sticky-table__sd oh-table-config__td"
                       style="text-decoration: none;width: 400px !important;"
-                      href="{% url 'candidate-view-individual' cand.id %}"
                     >
                       <span title={% trans "Move" %}><ion-icon name="move"></ion-icon></span>
                       <div class="oh-profile oh-profile--md">
@@ -328,7 +328,7 @@
                         </div>
                         <span title="{{cand}}">{{cand|truncatechars:15}} </span>
                       </div>
-                    </a>
+                    </div>
 
                     <div class="oh-sticky-table__td oh-table-config__td" style="width: 200px">
                       <span title="{{cand.email}}">
@@ -348,7 +348,7 @@
                       {{cand.mobile}}
                     </div>
                     {% if request.user|stage_manages:rec or perms.recruitment.add_candidaterating %}
-                    <div class="oh-sticky-table__td oh-table-config__td" onclick="event.stopPropagation()">
+                    <div onclick="event.stopPropagation()" class="oh-sticky-table__td oh-table-config__td" onclick="event.stopPropagation()">
                       {% with request.user.employee_get.candidate_rating.all as candidate_ratings  %}
                         {% if candidate_ratings|has_candidate_rating:cand %} 
                         <form hx-swap="none" hx-post='{% url "update-candidate-rating" cand.id %}' method="post">
@@ -382,7 +382,7 @@
                       {% endwith %}
                     </div>
                     {% endif %}
-                    <div class="oh-sticky-table__td oh-table-config__td">
+                    <div onclick="event.stopPropagation()" class="oh-sticky-table__td oh-table-config__td">
                       <select
                         name=""
                         id="stageChange{{cand.id}}"
@@ -397,7 +397,7 @@
                         {% endif %} {% endfor %}
                       </select>
                     </div>
-                    <div class="oh-sticky-table__td oh-table-config__td" >
+                    <div onclick="event.stopPropagation()" class="oh-sticky-table__td oh-table-config__td" >
                       <div class="oh-btn-group" >
                         <button
                           type="button"
