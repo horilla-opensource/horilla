@@ -178,14 +178,6 @@ class RecruitmentFilter(FilterSet):
         widget=forms.DateInput(attrs={"type": "date"}),
     )
     search = django_filters.CharFilter(method="filter_by_name")
-    closed = django_filters.ChoiceFilter(
-        choices=[
-            (True, "Yes"),
-            (None, "No"),
-        ],
-        initial="no",
-        empty_label="No",
-    )
     is_active = django_filters.ChoiceFilter(
         choices=[
             (True, "Yes"),

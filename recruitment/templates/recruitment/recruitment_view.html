@@ -4,11 +4,11 @@
   	<!-- start of quick filters -->
 	<div class="d-flex flex-row-reverse">
 		
-		<span class="m-3" onclick="$('[name=closed]').val(''); $('[name=closed]').first().change(); $('.filterButton').click()" style="cursor: pointer">
-		  <span class="oh-dot oh-dot--small me-1" style="background-color:yellowgreen""></span>
+		<span class="m-1" style="margin-left: 15px;cursor: pointer;" onclick="$('[name=closed]').val('false'); $('[name=closed]').first().change(); $('.filterButton').click()" style="cursor: pointer">
+		  <span class="oh-dot oh-dot--small me-1" style="background-color:yellowgreen"></span>
 		  {% trans "Open" %}
 		</span>
-		<span class="m-3" onclick="$('[name=closed]').val('True'); $('[name=closed]').first().change(); $('.filterButton').click()" style="cursor: pointer">
+		<span class="m-1" style="margin-left: 15px;cursor: pointer;" onclick="$('[name=closed]').val('true'); $('[name=closed]').first().change(); $('.filterButton').click()" style="cursor: pointer">
 		  <span class="oh-dot oh-dot--small me-1" style="background-color:red" ></span>
 		  {% trans "Closed" %}
 		</span>

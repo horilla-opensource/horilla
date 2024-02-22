@@ -13,9 +13,16 @@
             <label class="oh-label">{% trans "Start Date" %}</label>
             {{f.form.start_date}}
           </div>
-          
+          <div class="oh-input-group">
+            <label class="oh-label">{% trans "Is Closed" %}</label>
+            {% comment %} {{f.form.closed}} {% endcomment %}
+            <select name="closed" id="closed" class="oh-select oh-select-2 w-100">
+              <option value="unknown">{% trans "Unknown" %}</option>
+              <option value="true">{% trans "True" %}</option>
+              <option value="false" selected>{% trans "False" %}</option>
+            </select>
+          </div>
         </div>
-        <div hidden>{{f.form.closed}}</div>
         <div class="col-sm-12 col-md-12 col-lg-6">
           <div class="oh-input-group">
             <label class="oh-label">{% trans "Company" %}</label>
@@ -25,8 +32,10 @@
             <label class="oh-label">{% trans "End Date" %}</label>
             {{f.form.end_date}}
           </div>
-        
-
+          <div class="oh-input-group">
+            <label class="oh-label">{% trans "Is Published" %}</label>
+            {{f.form.is_published}}
+          </div>
         </div>
       </div>
     </div>
