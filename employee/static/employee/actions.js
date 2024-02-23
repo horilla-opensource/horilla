@@ -93,6 +93,7 @@ $(".all-employee").change(function (e) {
 $(".all-employee-row").change(function () {
   if ($(".all-employee").is(":checked")) {
     $(".all-employee").prop("checked", false);
+    $("#selectedInstances").attr("data-clicked", 0);
   }
 
   addingIds();
