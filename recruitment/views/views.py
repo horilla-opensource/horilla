@@ -1461,7 +1461,7 @@ def skill_zone_view(request):
     previous_data = request.GET.urlencode()
     data_dict = parse_qs(previous_data)
     get_key_instances(SkillZone, data_dict)
-    if candidates.exists():
+    if skill_groups.object_list:
         template = "skill_zone/skill_zone_view.html"
     else:
         template = "skill_zone/empty_skill_zone.html"
