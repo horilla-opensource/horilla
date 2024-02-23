@@ -79,12 +79,12 @@ class ModelForm(forms.ModelForm):
                 ),
             ):
                 field.widget.attrs.update({"class": "oh-switch__checkbox"})
-        try:            
-            self.fields["employee_id"].initial = request.user.employee_get 
+        try:
+            self.fields["employee_id"].initial = request.user.employee_get
         except:
             pass
 
-        try:            
+        try:
             self.fields["company_id"].initial = request.user.employee_get.get_company
         except:
             pass
@@ -98,9 +98,9 @@ class ConditionForm(forms.ModelForm):
         for field_name, field in self.fields.items():
             widget = field.widget
             if isinstance(widget, (forms.Select,)):
-                field.widget.attrs[
-                    "style"
-                ] = "width:100%; height:50px;border: 1px solid hsl(213deg,22%,84%);border-radius: 0rem;padding: 0.8rem 1.25rem;"
+                field.widget.attrs["style"] = (
+                    "width:100%; height:50px;border: 1px solid hsl(213deg,22%,84%);border-radius: 0rem;padding: 0.8rem 1.25rem;"
+                )
             elif isinstance(widget, (forms.DateInput)):
                 field.widget.attrs.update({"class": "oh-input oh-calendar-input w-100"})
                 field.initial = date.today()
@@ -128,15 +128,16 @@ class ConditionForm(forms.ModelForm):
                 ),
             ):
                 field.widget.attrs.update({"class": "oh-switch__checkbox"})
-        try:            
-            self.fields["employee_id"].initial = request.user.employee_get 
+        try:
+            self.fields["employee_id"].initial = request.user.employee_get
         except:
             pass
 
-        try:            
+        try:
             self.fields["company_id"].initial = request.user.employee_get.get_company
         except:
             pass
+
 
 class LeaveTypeForm(ConditionForm):
 
@@ -179,9 +180,9 @@ class UpdateLeaveTypeForm(ConditionForm):
 
         for index, visible in enumerate(self.visible_fields()):
             if list(self.fields.keys())[index] in empty_fields:
-                visible.field.widget.attrs[
-                    "style"
-                ] = "display:none;width:100%; height:50px;border: 1px solid hsl(213deg,22%,84%);border-radius: 0rem;padding: 0.8rem 1.25rem;"
+                visible.field.widget.attrs["style"] = (
+                    "display:none;width:100%; height:50px;border: 1px solid hsl(213deg,22%,84%);border-radius: 0rem;padding: 0.8rem 1.25rem;"
+                )
                 visible.field.widget.attrs["data-hidden"] = True
 
     class Meta:
@@ -198,7 +199,8 @@ class UpdateLeaveTypeForm(ConditionForm):
             del self.errors["exceed_days"]
         return cleaned_data
 
-def cal_effective_requested_days(start_date,end_date,leave_type_id,requested_days):
+
+def cal_effective_requested_days(start_date, end_date, leave_type_id, requested_days):
     requested_dates = leave_requested_dates(start_date, end_date)
     holidays = Holiday.objects.all()
     holiday_dates = holiday_dates_list(holidays)
@@ -228,6 +230,7 @@ def cal_effective_requested_days(start_date,end_date,leave_type_id,requested_day
             requested_days = requested_days - company_leave_count
     return requested_days
 
+
 class LeaveRequestCreationForm(ModelForm):
     start_date = forms.DateField(widget=forms.DateInput(attrs={"type": "date"}))
     end_date = forms.DateField(widget=forms.DateInput(attrs={"type": "date"}))
@@ -243,6 +246,8 @@ class LeaveRequestCreationForm(ModelForm):
         attachment = cleaned_data.get("attachment")
         overlapping_requests = LeaveRequest.objects.filter(
             employee_id=employee_id, start_date__lte=end_date, end_date__gte=start_date
+        ).exclude(
+            id=self.instance.id,
         )
         if leave_type_id.require_attachment == "yes":
             if attachment is None:
@@ -256,14 +261,16 @@ class LeaveRequestCreationForm(ModelForm):
         if start_date == end_date:
             if start_date_breakdown != end_date_breakdown:
                 raise forms.ValidationError(
-                    _("There is a mismatch in the breakdown of the start date and end date.")
+                    _(
+                        "There is a mismatch in the breakdown of the start date and end date."
+                    )
                 )
         if not AvailableLeave.objects.filter(
             employee_id=employee_id, leave_type_id=leave_type_id
         ).exists():
             raise forms.ValidationError(_("Employee has no leave type.."))
 
-        if overlapping_requests.exists():
+        if overlapping_requests.exclude(status__in=['cancelled', 'rejected']).exists():
             raise forms.ValidationError(
                 _("Employee has already a leave request for this date range..")
             )
@@ -277,8 +284,13 @@ class LeaveRequestCreationForm(ModelForm):
         requested_days = calculate_requested_days(
             start_date, end_date, start_date_breakdown, end_date_breakdown
         )
-        effective_requested_days = cal_effective_requested_days(start_date=start_date,end_date=end_date,leave_type_id=leave_type_id,requested_days=requested_days)
-        leave_dates = leave_requested_dates(start_date,end_date)
+        effective_requested_days = cal_effective_requested_days(
+            start_date=start_date,
+            end_date=end_date,
+            leave_type_id=leave_type_id,
+            requested_days=requested_days,
+        )
+        leave_dates = leave_requested_dates(start_date, end_date)
         month_year = [f"{date.year}-{date.strftime('%m')}" for date in leave_dates]
         today = datetime.today()
         unique_dates = list(set(month_year))
@@ -311,7 +323,6 @@ class LeaveRequestCreationForm(ModelForm):
                 "onchange": "dateChange($(this))",
             }
         )
-
 
     def as_p(self, *args, **kwargs):
         """
@@ -357,13 +368,15 @@ class LeaveRequestUpdationForm(ModelForm):
         if start_date == end_date:
             if start_date_breakdown != end_date_breakdown:
                 raise forms.ValidationError(
-                    _("There is a mismatch in the breakdown of the start date and end date.")
+                    _(
+                        "There is a mismatch in the breakdown of the start date and end date."
+                    )
                 )
         if not AvailableLeave.objects.filter(
             employee_id=employee_id, leave_type_id=leave_type_id
         ).exists():
             raise forms.ValidationError(_("Employee has no leave type.."))
-        if overlapping_requests.exists():
+        if overlapping_requests.exclude(status__in=["cancelled", "rejected"]).exists():
             raise forms.ValidationError(
                 _("Employee has already a leave request for this date range..")
             )
@@ -376,8 +389,13 @@ class LeaveRequestUpdationForm(ModelForm):
         requested_days = calculate_requested_days(
             start_date, end_date, start_date_breakdown, end_date_breakdown
         )
-        effective_requested_days = cal_effective_requested_days(start_date=start_date,end_date=end_date,leave_type_id=leave_type_id,requested_days=requested_days)
-        leave_dates = leave_requested_dates(start_date,end_date)
+        effective_requested_days = cal_effective_requested_days(
+            start_date=start_date,
+            end_date=end_date,
+            leave_type_id=leave_type_id,
+            requested_days=requested_days,
+        )
+        leave_dates = leave_requested_dates(start_date, end_date)
         month_year = [f"{date.year}-{date.strftime('%m')}" for date in leave_dates]
         today = datetime.today()
         unique_dates = list(set(month_year))
@@ -391,7 +409,7 @@ class LeaveRequestUpdationForm(ModelForm):
             raise forms.ValidationError(_("Employee doesn't have enough leave days.."))
 
         return cleaned_data
-    
+
     def __init__(self, *args, **kwargs):
 
         super().__init__(*args, **kwargs)
@@ -430,7 +448,6 @@ class LeaveRequestUpdationForm(ModelForm):
             "end_date_breakdown",
             "description",
             "attachment",
-            "status",
         ]
 
 
@@ -476,10 +493,10 @@ class HolidayForm(ModelForm):
         labels = {
             "name": _("Name"),
         }
-    
+
     def __init__(self, *args, **kwargs):
         super(HolidayForm, self).__init__(*args, **kwargs)
-        self.fields['name'].widget.attrs['autocomplete'] = 'name'
+        self.fields["name"].widget.attrs["autocomplete"] = "name"
 
 
 class LeaveOneAssignForm(HorillaModelForm):
@@ -498,8 +515,8 @@ class LeaveOneAssignForm(HorillaModelForm):
     class Meta:
         model = AvailableLeave
         fields = ["employee_id"]
-    
-    def __init__(self,*args, **kwargs):
+
+    def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         reload_queryset(self.fields)
 
@@ -527,28 +544,25 @@ class UserLeaveRequestForm(ModelForm):
         end_date = cleaned_data.get("end_date")
         employee_id = cleaned_data.get("employee_id")
         start_date_breakdown = cleaned_data.get("start_date_breakdown")
-        end_date_breakdown = cleaned_data.get('end_date_breakdown')
+        end_date_breakdown = cleaned_data.get("end_date_breakdown")
         leave_type_id = cleaned_data.get("leave_type_id")
         overlapping_requests = LeaveRequest.objects.filter(
-            employee_id=employee_id,
-            start_date__lte=end_date,
-            end_date__gte=start_date
-        ).exclude(
-            id=self.instance.id,
-            status__in=['cancelled_and_rejected', 'rejected']
-        )
+            employee_id=employee_id, start_date__lte=end_date, end_date__gte=start_date
+        ).exclude(id=self.instance.id)
         if start_date == end_date:
             if start_date_breakdown != end_date_breakdown:
                 raise forms.ValidationError(
-                    _("There is a mismatch in the breakdown of the start date and end date.")
+                    _(
+                        "There is a mismatch in the breakdown of the start date and end date."
+                    )
                 )
         if not start_date <= end_date:
             raise forms.ValidationError(
                 _("End date should not be less than start date.")
             )
-        if overlapping_requests.exists():
+        if overlapping_requests.exclude(status__in=["cancelled", "rejected"]).exists():
             raise forms.ValidationError(
-                _("Employee has already a leave request for this date range..")
+                _("Employee has already a leave request for this date range.....")
             )
         requested_days = calculate_requested_days(
             start_date, end_date, start_date_breakdown, end_date_breakdown
@@ -559,17 +573,25 @@ class UserLeaveRequestForm(ModelForm):
         total_leave_days = (
             available_leave.available_days + available_leave.carryforward_days
         )
-        effective_requested_days = cal_effective_requested_days(start_date=start_date,end_date=end_date,leave_type_id=leave_type_id,requested_days=requested_days)
+        effective_requested_days = cal_effective_requested_days(
+            start_date=start_date,
+            end_date=end_date,
+            leave_type_id=leave_type_id,
+            requested_days=requested_days,
+        )
         if not effective_requested_days <= total_leave_days:
             raise forms.ValidationError(_("Employee doesn't have enough leave days.."))
         return cleaned_data
 
     def __init__(self, *args, employee=None, **kwargs):
-        leave_type = kwargs.pop('initial', None)
+        leave_type = kwargs.pop("initial", None)
         super(UserLeaveRequestForm, self).__init__(*args, **kwargs)
-        self.fields['leave_type_id'].queryset = LeaveType.objects.filter(id=leave_type["leave_type_id"].id)
-        self.fields['leave_type_id'].initial= leave_type["leave_type_id"].id
-        self.fields['leave_type_id'].empty_label= None
+        if leave_type:
+            self.fields["leave_type_id"].queryset = LeaveType.objects.filter(
+                id=leave_type["leave_type_id"].id
+            )
+            self.fields["leave_type_id"].initial = leave_type["leave_type_id"].id
+            self.fields["leave_type_id"].empty_label = None
 
     def as_p(self, *args, **kwargs):
         """
@@ -666,7 +688,7 @@ class UserLeaveRequestCreationForm(ModelForm):
         context = {"form": self}
         table_html = render_to_string("attendance_form.html", context)
         return table_html
-    
+
     def __init__(self, *args, **kwargs):
 
         super().__init__(*args, **kwargs)
@@ -675,7 +697,7 @@ class UserLeaveRequestCreationForm(ModelForm):
                 "onchange": "typeChange($(this))",
             }
         )
-    
+
     def clean(self):
         cleaned_data = super().clean()
         start_date = cleaned_data.get("start_date")
@@ -683,11 +705,10 @@ class UserLeaveRequestCreationForm(ModelForm):
         employee_id = cleaned_data.get("employee_id")
         leave_type_id = cleaned_data.get("leave_type_id")
         start_date_breakdown = cleaned_data.get("start_date_breakdown")
-        end_date_breakdown = cleaned_data.get('end_date_breakdown')
+        end_date_breakdown = cleaned_data.get("end_date_breakdown")
         overlapping_requests = LeaveRequest.objects.filter(
             employee_id=employee_id, start_date__lte=end_date, end_date__gte=start_date
-        )
-
+        ).exclude(id=self.instance.id)
         if not start_date <= end_date:
             raise forms.ValidationError(
                 _("End date should not be less than start date.")
@@ -695,14 +716,16 @@ class UserLeaveRequestCreationForm(ModelForm):
         if start_date == end_date:
             if start_date_breakdown != end_date_breakdown:
                 raise forms.ValidationError(
-                    _("There is a mismatch in the breakdown of the start date and end date.")
+                    _(
+                        "There is a mismatch in the breakdown of the start date and end date."
+                    )
                 )
         if not AvailableLeave.objects.filter(
             employee_id=employee_id, leave_type_id=leave_type_id
         ).exists():
             raise forms.ValidationError(_("Employee has no leave type.."))
 
-        if overlapping_requests.exists():
+        if overlapping_requests.exclude(status__in=['cancelled', 'rejected']).exists():
             raise forms.ValidationError(
                 _("Employee has already a leave request for this date range..")
             )
@@ -736,7 +759,7 @@ class UserLeaveRequestCreationForm(ModelForm):
         ]
         widgets = {
             "employee_id": forms.HiddenInput(),
-            'requested_days': forms.HiddenInput()     
+            "requested_days": forms.HiddenInput(),
         }
 
 
@@ -796,14 +819,16 @@ class LeaveRequestExportForm(forms.Form):
     )
 
 
-
 class AssignLeaveForm(HorillaForm):
     """
     Form for Payslip
     """
+
     leave_type_id = forms.ModelChoiceField(
         queryset=LeaveType.objects.all(),
-        widget=forms.SelectMultiple(attrs={"class": "oh-select oh-select-2 mb-2","required": True}),
+        widget=forms.SelectMultiple(
+            attrs={"class": "oh-select oh-select-2 mb-2", "required": True}
+        ),
         empty_label=None,
         label="Leave Type",
         required=False,
@@ -815,7 +840,7 @@ class AssignLeaveForm(HorillaForm):
             filter_class=EmployeeFilter,
             filter_instance_contex_name="f",
             filter_template_path="employee_filters.html",
-            required = True,
+            required=True,
         ),
         label="Employee",
     )
@@ -825,18 +850,10 @@ class AssignLeaveForm(HorillaForm):
         employee_id = cleaned_data.get("employee_id")
         leave_type_id = cleaned_data.get("leave_type_id")
 
-        if not employee_id :
-            raise forms.ValidationError(
-                {
-                    "employee_id": "This field is required"
-                }
-            )
-        if not leave_type_id :
-            raise forms.ValidationError(
-                {
-                    "leave_type_id": "This field is required"
-                }
-            )
+        if not employee_id:
+            raise forms.ValidationError({"employee_id": "This field is required"})
+        if not leave_type_id:
+            raise forms.ValidationError({"leave_type_id": "This field is required"})
         return cleaned_data
 
     def __init__(self, *args, **kwargs):
@@ -845,7 +862,7 @@ class AssignLeaveForm(HorillaForm):
         self.fields["employee_id"].widget.attrs.update(
             {"required": True, "id": uuid.uuid4()}
         ),
-        self.fields['leave_type_id'].label = "Leave Type"
+        self.fields["leave_type_id"].label = "Leave Type"
 
 
 class LeaverequestcommentForm(ModelForm):
@@ -859,8 +876,7 @@ class LeaverequestcommentForm(ModelForm):
         """
 
         model = LeaverequestComment
-        fields = ('comment',)
-
+        fields = ("comment",)
 
 
 class LeaveCommentForm(ModelForm):
@@ -916,7 +932,7 @@ class LeaveallocationrequestcommentForm(ModelForm):
         """
 
         model = LeaveallocationrequestComment
-        fields = ('comment',)
+        fields = ("comment",)
 
 
 class LeaveAllocationCommentForm(ModelForm):
@@ -959,4 +975,3 @@ class LeaveAllocationCommentForm(ModelForm):
         if commit:
             instance.files.add(*multiple_files_ids)
         return instance, files
-

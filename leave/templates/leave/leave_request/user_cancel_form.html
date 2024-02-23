@@ -1,22 +1,40 @@
-{% load i18n %}
-{% if form.errors %}
+{% load i18n %} {% if form.errors %}
 <!-- form errors  -->
-    <div class="oh-wrapper">
-        <div class="oh-alert-container">
-            {% for error in form.non_field_errors %}
-            <div class="oh-alert oh-alert--animated oh-alert--danger">
-                {{ error }}
-            </div>
-            {% endfor %}
-        </div>
-    </div>
+<div class="oh-wrapper">
+  <div class="oh-alert-container">
+    {% for error in form.non_field_errors %}
+    <div class="oh-alert oh-alert--animated oh-alert--danger">{{ error }}</div>
+    {% endfor %}
+  </div>
+</div>
 {% endif %}
-<form hx-post="{% url 'user-request-cancel' id %}" hx-encoding="multipart/form-data">
-    <div class="col-sm-12 col-md-12 col-lg-12">
+<div class="oh-modal__dialog-header">
+  <h2 class="oh-modal__dialog-title" id="editModal1ModalLabel">
+    {% trans "Cancel Request" %}
+  </h2>
+  <button class="oh-modal__close" aria-label="Close">
+    <ion-icon name="close-outline"></ion-icon>
+  </button>
+</div>
+<div class="oh-modal__dialog-body">
+  <form
+    hx-post="{% url 'user-request-cancel' id %}"
+    hx-encoding="multipart/form-data"
+    >
+    <div class="oh-general__tab-target oh-profile-section">
+      <div class="col-sm-12 col-md-12 col-lg-12">
         <label class="oh-label">{% trans "Cancellation Reason" %}</label>
-        
-        {{form.reason}}
-        {{form.errors}}
+
+        {{form.reason}} {{form.errors}}
+      </div>
+      <div class="d-flex flex-row-reverse">
+        <button
+          type="submit"
+          class="oh-btn oh-btn--secondary oh-btn--shadow mt-3"
+        >
+          {% trans "Save" %}
+        </button>
+      </div>
     </div>
-    <button type="submit" class="oh-btn oh-btn--secondary ">{% trans "Submit" %}</button>
-</form>
+  </form>
+</div>

@@ -110,79 +110,90 @@
                                       {% endif %}
                                     </div>
                                     {% if  not dashboard %}
-
-                                    <div class="oh-sticky-table__td" onclick="event.stopPropagation();">
-
+                                      <div class="oh-sticky-table__td" onclick="event.stopPropagation();">
                                         <button type="button" hx-get="{% url 'leave-request-view-comment' leave_request.id %}?{{pd}}&target=leaveRequest" hx-target="#commentContainer"
                                           data-target = '#leaveactivitySidebar' title='{% trans "Add / View Comment" %}'  class="oh-btn oh-btn--light oh-activity-sidebar__open w-100" style="flex: 1 0 auto; width:20px;height: 40.68px; padding: 0;" onclick="event.stopPropagation()">
                                           <ion-icon name="newspaper-outline" role="img" class="md hydrated" aria-label="newspaper outline"></ion-icon>
                                         </button>
-                
-                                    </div>
-                                    <div class="oh-sticky-table__td" onclick="event.stopPropagation()">
-                                        <div class="oh-btn-group">
-                                            {% if request.user|is_reportingmanager or perms.attendance.chanage_penaltyaccount or request.user|is_leave_approval_manager %}
-                                              <button 
-                                                  data-toggle="oh-modal-toggle"
-                                                  data-target="#penaltyModal"
-                                                  hx-target="#penaltyModalBody"
-                                                  hx-get="{% url "leave-cut-penalty" leave_request.id %}?{{pd}}"
-                                                  type='submit' 
-                                                  class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100" 
+                                      </div>
+                                      <div class="oh-sticky-table__td" onclick="event.stopPropagation()">
+                                          <div class="oh-btn-group">
+                                              {% if request.user|is_reportingmanager or perms.attendance.chanage_penaltyaccount or request.user|is_leave_approval_manager %}
+                                                <button  data-toggle="oh-modal-toggle" data-target="#penaltyModal"
+                                                  hx-target="#penaltyModalBody" hx-get="{% url "leave-cut-penalty" leave_request.id %}?{{pd}}" 
+                                                  type='submit' class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100" 
                                                   title="{% trans 'Penalty' %}">
                                                   <ion-icon name="information-circle-outline"></ion-icon>            
-                                              </button>
-                                            {% endif %}
-                                            <button  class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Edit' %}" data-toggle="oh-modal-toggle"
-                                                data-target="#editModal2" hx-get="{% url 'request-update' leave_request.id %}"
-                                                hx-target="#updateForm"><ion-icon name="create-outline"></ion-icon></button>
-                                            {% endif %}
-                                            {% if request.user|is_reportingmanager or perms.attendance.delete_leaverequest %}
-                                            <a class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100" id="delete-link"
-                                                href="{% url 'request-delete' leave_request.id %}" onclick="return confirm('{% trans "Are you sure you want to delete ?" %}');" title="{% trans 'Delete' %}"><ion-icon
-                                                    name="trash-outline">group_by</ion-icon></a>
-                
-                                        </div>
-                                    </div>
-                                    <div class="oh-sticky-table__td" onclick="event.stopPropagation()">
-                                      {% if leave_request.get_penalties_count %}
-                                          <div data-target="#penaltyViewModal" data-toggle="oh-modal-toggle" 
-                                              hx-get="{% url "view-penalties" %}?leave_request_id={{leave_request.id}}" 
-                                              hx-target="#penaltyViewModalBody" align="center" style="background-color: rgba(229, 79, 56, 0.036); border: 2px solid rgb(229, 79, 56); border-radius: 18px; padding: 10px; font-weight: bold; width: 85%;">
-                                              {% trans "Penalties" %} :{{leave_request.get_penalties_count}}
+                                                </button>
+                                              {% endif %}
+                                              <button  class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Edit' %}" data-toggle="oh-modal-toggle"
+                                                  data-target="#editModal2" hx-get="{% url 'request-update' leave_request.id %}"
+                                                  hx-target="#updateForm"><ion-icon name="create-outline"></ion-icon></button>
+                                              {% endif %}
+                                              {% if request.user|is_reportingmanager or perms.attendance.delete_leaverequest %}
+                                              <a class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100" id="delete-link"
+                                                  href="{% url 'request-delete' leave_request.id %}" onclick="return confirm('{% trans "Are you sure you want to delete ?" %}');" title="{% trans 'Delete' %}"><ion-icon
+                                                  name="trash-outline">group_by</ion-icon></a>
+                                              
                                           </div>
-                                      {% endif %}
-                                    </div>
-                                    <div class="oh-sticky-table__td oh-sticky-table__right" onclick="event.stopPropagation()">
-                                      <div class="oh-btn-group" >
-                                          {% if leave_request.status == 'requested' or leave_request.status == 'rejected' %}
-                                          <a type="submit" href="{% url 'request-approve' leave_request.id %}" title="{% trans 'Approve' %}"
-                                              class="oh-btn oh-btn--success w-100">
-                                              <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
-                                          </a>
-                                          {% else %}
-                                          <a type="submit" href="#" title="{% trans 'Approve' %}"
-                                              class="oh-btn oh-btn--success oh-btn--disabled
-                                              w-100">
-                                              <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
-                                          </a>
-                                          {% endif %}
-                                          {% if leave_request.status != 'rejected' %}
-                                          <a type="submit" data-toggle="oh-modal-toggle"
-                                              data-target="#rejectModal" hx-get="{% url 'request-cancel' leave_request.id %}" hx-target="#rejectForm" title="{% trans 'Reject' %}"
-                                              class="oh-btn oh-btn--danger w-100">
-                                              <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
-              
-                                          </a>
-                                          {% else %}
-                                          <a type="submit" href="#" title="{% trans 'Reject' %}"
-                                              class="oh-btn oh-btn--danger oh-btn--disabled
-                                              w-100" >
-                                              <ion-icon class="me-1" name="close-circle-outline"></ion-icon>            
-                                          </a>
-                                          {% endif %}
                                       </div>
-                                  </div>
+                                      <div class="oh-sticky-table__td" onclick="event.stopPropagation()">
+                                        {% if leave_request.get_penalties_count %}
+                                            <div data-target="#penaltyViewModal" data-toggle="oh-modal-toggle" 
+                                                hx-get="{% url "view-penalties" %}?leave_request_id={{leave_request.id}}" 
+                                                hx-target="#penaltyViewModalBody" align="center" style="background-color: rgba(229, 79, 56, 0.036); border: 2px solid rgb(229, 79, 56); border-radius: 18px; padding: 10px; font-weight: bold; width: 85%;">
+                                                {% trans "Penalties" %} :{{leave_request.get_penalties_count}}
+                                            </div>
+                                        {% endif %}
+                                      </div>
+                                      <div class="oh-sticky-table__td oh-sticky-table__right" onclick="event.stopPropagation()">
+                                        <div class="oh-btn-group" >
+                                          {% if leave_request.status == 'cancelled' %}
+                                            {% if leave_request.end_date >= current_date %}
+                                            <a type="submit" data-toggle="oh-modal-toggle"
+                                                data-target="#rejectModal" hx-get="{% url 'request-cancel' leave_request.id %}" hx-target="#rejectForm"  title="{% trans 'Approve cancellation request' %}"
+                                                class="oh-btn oh-btn--warning w-100";>
+                                                <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
+                                            </a>
+                                            {% else %}
+                                            <a type="submit" href="#" title="{% trans 'Approve cancellation request' %}"
+                                                class="oh-btn oh-btn--secondary oh-btn--disabled
+                                                w-100">
+                                                <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
+                                            </a>
+                                            {% endif %}
+                                          {% else %}
+                                            {% if leave_request.is_approved and leave_request.status == 'requested' and leave_request.end_date >= current_date %}
+                                            <a href="{% url 'request-approve' leave_request.id %}" title="{% trans 'Approve' %}"
+                                                class="oh-btn oh-btn--success w-100" {% if leave_request.end_date.month > current_date.month %} onclick = "leaveRequestConfirm('This leave request is for the month of {{leave_request.start_date|date:'F'}}. Approval depends on the {{leave_request.employee_id.get_full_name}} having available leave days for this month.',event);" {% else %}  onclick = "return confirm('Do You really want to Approve this request?')"; {% endif %}>
+                                                <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
+                                            </a>
+                                            {% else %}
+                                            <a type="submit" href="#" title="{% trans 'Approve' %}"
+                                                class="oh-btn oh-btn--success oh-btn--disabled
+                                                w-100">
+                                                <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
+                                            </a>
+                                            {% endif %}
+                                            {% if leave_request.status != 'rejected' and leave_request.end_date >= current_date %}
+                                            <a type="submit" data-toggle="oh-modal-toggle"
+                                                data-target="#rejectModal" hx-get="{% url 'request-cancel' leave_request.id %}" hx-target="#rejectForm" title="{% trans 'Reject' %}"
+                                                class="oh-btn oh-btn--danger w-100">
+                                                <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
+                    
+                                            </a>
+                                            {% else %}
+                                            <a type="submit" href="#" title="{% trans 'Reject' %}"
+                                                class="oh-btn oh-btn--danger oh-btn--disabled
+                                                w-100" >
+                                                <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
+                    
+                                            </a>
+                                            {% endif %}
+                    
+                                          {% endif %}
+                                        </div>
+                                      </div>
                                     {% endif %}
                                 </div>
                                 {% endfor %}

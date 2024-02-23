@@ -120,9 +120,9 @@
                     <div class="oh-sticky-table__td {% if leave_request.status == 'rejected' %} diff-cell{% endif %}" onclick="event.stopPropagation()">
                         {% if leave_request.status == 'approved' and leave_request.end_date >= current_date %}
                             <a type="submit" data-toggle="oh-modal-toggle"
-                                data-target="#rejectModal" 
+                                data-target="#cancelModal" 
                                 hx-get="{% url 'user-request-cancel' leave_request.id %}" 
-                                hx-target="#rejectForm" 
+                                hx-target="#cancelForm" 
                                 title="{% trans 'Cancel' %}"
                                 class="oh-btn oh-btn--primary w-100"> {% trans "Cancel" %}
                             </a>

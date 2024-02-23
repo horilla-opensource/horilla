@@ -1738,7 +1738,7 @@ def user_leave_request(request, id):
 
         overlapping_requests = LeaveRequest.objects.filter(
             employee_id=employee, start_date__lte=end_date, end_date__gte=start_date
-        ).exclude(status="cancelled")
+        ).exclude(status__in=["cancelled","rejected"])
         if overlapping_requests.exists():
             form.add_error(
                 None, _("There is already a leave request for this date range..")
