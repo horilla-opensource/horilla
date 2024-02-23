@@ -38,6 +38,8 @@
 										<input
 											type="checkbox"
 											class="all-contract oh-input oh-input__checkbox Allcontract"
+											onchange=" 
+											$(this).closest('.oh-sticky-table').find('.all-contract-row').prop('checked', $(this).is(':checked')).change();addingContractIds()"
 											id = ""
 											title='{% trans "Select All" %}'
 										/>
@@ -66,6 +68,10 @@
 										type="checkbox"
 										id="{{contract.id}}"
 										value="{{contract.id}}"
+										onchange="highlightRow($(this));
+										if (!$(this).is(':checked')) {
+											$(this).closest('.oh-sticky-table').find('.Allcontract').prop('checked', false)
+										}"
 										class="oh-input payslip-checkbox oh-input__checkbox all-contract-row"
 										/>
 									</div>
@@ -243,29 +249,3 @@
 		</div>
 	</div>
 </div>
-<script>
-	$(document).ready(function(){
-		
-		$(".Allcontract").click(function (e) {
-			var is_checked = $(this).is(":checked");
-			var closest = $(this)
-				.closest(".oh-sticky-table__thead")
-				.siblings(".oh-sticky-table__tbody");
-			$(closest)
-				.children()
-				.find(".all-contract-row")
-				.prop("checked", is_checked);
-			addingContractIds();
-		  });
-		  $("#exportContracts").click(function (e) {
-			exportContractRequest();
-		  });
-		
-		  $(".all-contract-row").change(function () {
-			if ($('.all-contract').is(":checked")) {
-				$(".all-contract").prop("checked", false);
-			  }
-			addingContractIds();
-		  });
-	})
-</script>
