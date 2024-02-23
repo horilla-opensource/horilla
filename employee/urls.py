@@ -123,6 +123,7 @@ urlpatterns = [
         views.employee_archive,
         name="employee-archive",
     ),
+    path("replace-employee/<int:emp_id>/",views.replace_employee,name="replace-employee"),
     path(
         "employee-user-group-assign-delete/<int:obj_id>/",
         views.employee_user_group_assign_delete,

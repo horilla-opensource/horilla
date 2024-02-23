@@ -6,28 +6,136 @@
   aria-labelledby="confirmModalLabel"
   aria-hidden="true"
 >
-  <div class="oh-modal__dialog oh-modal__dialog--confirm">
-    <div
-      class="oh-modal__dialog-header"
-      style="display: flex; justify-content: center"
+  <div
+    class="oh-modal__dialog oh-modal__dialog--confirm"
+    style="max-width: 510px"
+  >
+    <p class="swal2-close"></p>
+    <ul class="swal2-progress-steps" style="display: none"></ul>
+    <div class="swal2-icon swal2-warning swal2-icon-show" style="display: flex">
+      <div class="swal2-icon-content">!</div>
+    </div>
+    <h2 class="swal2-title" id="swal2-title">{{title}}</h2>
+    <form
+      action="{% url 'replace-employee' employee.id %}"
+      method="post"
+      id="replaceEmployeeForm"
+      data-id="{{employee.id}}"
     >
-      <span class="oh-modal__dialog-title" id="confirmModalLabel"
-        >{{title}}
-      </span>
-    </div>
-    <div class="oh-modal__dialog-body" id="confirmModalBody">
-      <p>{{employee}} {% trans "assigned as" %} :</p>
-      {% for related_model in related_models %}
-      <p style="margin-left: 24px">{{forloop.counter}}.{{related_model}}</p>
-      {% endfor %}
-    </div>
-    <div
-      class="oh-modal__dialog-footer"
-      style="display: flex; justify-content: center"
-    >
-      <button class="oh-btn oh-btn--info oh-modal__cancel" id="cancel">
-        {% trans "Close" %}
-      </button>
-    </div>
+      {% csrf_token %}
+      <div
+        class="swal2-html-container"
+        id="swal2-html-container"
+        style="display: block"
+      >
+        {{employee}} {% trans "assigned as" %}.
+        <p style="margin-left: 24px"></p>
+        <div class="oh-sticky-table">
+          <div class="oh-sticky-table__table oh-table--sortable">
+            <div class="oh-sticky-table__thead">
+              <div class="oh-sticky-table__tr">
+                <div class="oh-sticky-table__th">{% trans "Assigned As" %}</div>
+                <div class="oh-sticky-table__th">
+                  {% trans "Replace Employee" %}
+                </div>
+              </div>
+            </div>
+            <div class="oh-sticky-table__tbody">
+              {% for related_model in related_models %}
+                <div class="oh-sticky-table__tr">
+                  <div class="oh-sticky-table__td">
+                    {{related_model.verbose_name}}
+                  </div>
+                  <div class="oh-sticky-table__td">
+                    <select
+                      name="{{related_model.field_name}}"
+                      id="select{{forloop.counter}}"
+                      class="oh-table__editable-input w-100 oh-select oh-select-2 manager-select"
+                      data-error = "{{related_model.field_name}}_error"
+                      >
+                      {% for option in employee_choices %} 
+                        <option value="{{option.0}}" {% if option.0 == employee.id%}selected{% endif %}>{{option.1}}</option> 
+                      {% endfor %}
+                    </select>
+                  </div>
+                </div>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+        <div
+          class="swal2-validation-message"
+          id="reporting_manager_id_error"
+          style="display: none"
+          >
+          <p>Replace {{employee}} from Reporting manager</p>
+        </div>
+        <div
+          class="swal2-validation-message"
+          id="recruitment_managers_error"
+          style="display: none"
+          >
+          <p>Replace {{employee}} from Recruitment manager</p>
+        </div>
+        <div
+          class="swal2-validation-message"
+          id="recruitment_stage_managers_error"
+          style="display: none"
+          >
+          <p>Replace {{employee}} from Recruitment stage manager</p>
+        </div>
+        <div
+          class="swal2-validation-message"
+          id="onboarding_stage_manager_error"
+          style="display: none"
+          >
+          <p>Replace {{employee}} from Onboarding stage manager</p>
+        </div>
+        <div
+          class="swal2-validation-message"
+          id="onboarding_task_manager_error"
+          style="display: none"
+          >
+          <p>Replace {{employee}} from Onboarding task manager</p>
+        </div>
+        <div class="swal2-actions" style="display: flex">
+          <div class="swal2-loader"></div>
+          <button
+            type="button"
+            class="swal2-confirm swal2-styled oh-modal__cancel mb-4"
+            aria-label=""
+            style="display: inline-block"
+          >
+            {% trans "Cancel" %}
+          </button>
+          <button
+            type="submit"
+            class="swal2-deny swal2-styled mb-4"
+            aria-label=""
+            style="display: inline-block"
+          >
+            {% trans "Submit" %}
+          </button>
+        </div>
+      </div>
+    </form>
   </div>
 </div>
+<script>
+  $(document).ready(function (e) {
+    $("#replaceEmployeeForm").submit(function (e) {
+      var empId = $("#replaceEmployeeForm").attr("data-id");
+      $(".manager-select").each(function () {
+        var selectElement = $(this);
+        var managerId = selectElement.val();
+        var errorElementId = selectElement.data("error");
+        if (empId === managerId) {
+          $("#" + errorElementId).css("display", "inline-flex");
+          event.preventDefault();
+        } else {
+          $("#" + errorElementId).css("display", "none");
+        }
+      });
+    });
+  });
+</script>

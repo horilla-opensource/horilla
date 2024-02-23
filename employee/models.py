@@ -278,18 +278,58 @@ class Employee(models.Model):
             return False
         else:
             related_models = []
+            related_model_fields = []
             if reporting_manager_query.exists():
-                related_models.append("Reporting manager")
+                related_models.append(
+                    {
+                        "verbose_name": _("Reporting manager"),
+                        "field_name": "reporting_manager_id",
+                    }
+                )
             if recruitment_manager_query.exists():
-                related_models.append("Recruitment manager")
+                related_models.append(
+                    {
+                        "verbose_name": _("Recruitment manager"),
+                        "field_name": "recruitment_managers",
+                    }
+                )
             if recruitment_stage_query.exists():
-                related_models.append("Recruitment stage manager")
+                related_models.append(
+                    {
+                        "verbose_name": _("Recruitment stage manager"),
+                        "field_name": "recruitment_stage_managers",
+                    }
+                )
             if onboarding_stage_query.exists():
-                related_models.append("Onboarding stage manager")
+                related_models.append(
+                    {
+                        "verbose_name": _("Onboarding stage manager"),
+                        "field_name": "onboarding_stage_manager",
+                    }
+                )
             if onboarding_task_query.exists():
-                related_models.append("Onboarding task manager")
-
-            related_models_dict = {"related_models": related_models}
+                related_models.append(
+                    {
+                        "verbose_name": _("Onboarding task manager"),
+                        "field_name": "onboarding_task_manager",
+                    }
+                )
+            related_models_dict = {
+                "related_models": related_models,
+            }
+            try:
+                REPLACE_EMPLOYEE_CHOICES = [("", _("---Choose employee---"))] + [
+                    (
+                        employee_id,
+                        f"{first_name} {last_name}" if last_name else first_name,
+                    )
+                    for employee_id, first_name, last_name in Employee.objects.filter(
+                        is_active=True
+                    ).values_list("id", "employee_first_name", "employee_last_name")
+                ]
+                related_models_dict["employee_choices"] = REPLACE_EMPLOYEE_CHOICES
+            except:
+                pass
             return related_models_dict
 
     def __str__(self) -> str:
@@ -367,6 +407,10 @@ class Employee(models.Model):
         # ...
         # call the parent class's save method to save the object
         super().save(*args, **kwargs)
+        request = getattr(thread_local_middleware._thread_locals,"request",None)
+        if request and not self.is_active and self.get_archive_condition() is not False:
+            self.is_active = True
+            super().save(*args, **kwargs)
         employee = self
         if employee.employee_user_id is None:
             # Create user if no corresponding user exists
@@ -636,7 +680,7 @@ class Policy(models.Model):
     is_visible_to_all = models.BooleanField(default=True)
     specific_employees = models.ManyToManyField(Employee, blank=True, editable=False)
     attachments = models.ManyToManyField(PolicyMultipleFile, blank=True)
-    company_id = models.ManyToManyField(Company, blank=True,verbose_name=_("Company"))
+    company_id = models.ManyToManyField(Company, blank=True, verbose_name=_("Company"))
 
     objects = HorillaCompanyManager()
 
@@ -649,6 +693,7 @@ class BonusPoint(models.Model):
     """
     Model representing bonus points for employees with associated conditions.
     """
+
     CONDITIONS = [
         ("==", _("equals")),
         (">", _("grater than")),
@@ -691,13 +736,13 @@ class BonusPoint(models.Model):
     @receiver(post_save, sender=Employee)
     def bonus_post_save(sender, instance, **_kwargs):
         """
-            Creates a BonusPoint instance for a newly created Employee if one doesn't already exist.
+        Creates a BonusPoint instance for a newly created Employee if one doesn't already exist.
 
-            Args:
-                sender (Employee): The model class (Employee) sending the signal.
-                instance (Employee): The instance of the Employee model triggering the 
-                                    post-save signal.
-                **_kwargs: Additional keyword arguments passed by the signal.
+        Args:
+            sender (Employee): The model class (Employee) sending the signal.
+            instance (Employee): The instance of the Employee model triggering the
+                                post-save signal.
+            **_kwargs: Additional keyword arguments passed by the signal.
         """
         if not BonusPoint.objects.filter(employee_id__id=instance.id).exists():
             BonusPoint.objects.create(employee_id=instance)
