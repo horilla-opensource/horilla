@@ -103,6 +103,7 @@ from employee.models import (
     EmployeeWorkInformation,
     EmployeeBankDetails,
 )
+from onboarding.models import OnboardingStage, OnboardingTask
 from payroll.forms.forms import EncashmentGeneralSettingsForm
 from payroll.methods.payslip_calc import dynamic_attr
 from payroll.models.models import (
@@ -113,7 +114,7 @@ from payroll.models.models import (
     Reimbursement,
 )
 from pms.models import Feedback
-from recruitment.models import Candidate
+from recruitment.models import Candidate, Recruitment, Stage
 from horilla_documents.models import Document, DocumentRequest
 
 
@@ -249,6 +250,7 @@ def employee_view_individual(request, obj_id, **kwargs):
         {
             "employee": employee,
             "employee_leaves": employee_leaves,
+            "current_date": date.today(),
             "leave_request_ids": leave_request_ids,
             "enabled_block_unblock": enabled_block_unblock,
         },
@@ -1821,11 +1823,14 @@ def employee_bulk_archive(request):
         employee = Employee.objects.get(id=employee_id)
         employee.is_active = is_active
         employee.employee_user_id.is_active = is_active
-        employee.save()
-        message = _("archived")
-        if is_active:
-            message = _("un-archived")
-        messages.success(request, f"{employee} is {message}")
+        if employee.get_archive_condition() is False:
+            employee.save()
+            message = _("archived")
+            if is_active:
+                message = _("un-archived")
+            messages.success(request, f"{employee} is {message}")
+        else:
+            messages.warning(request,_("Related data found for {}.").format(employee))
     return JsonResponse({"message": "Success"})
 
 
@@ -1863,9 +1868,85 @@ def employee_archive(request, obj_id):
             {
                 "employee": employee,
                 "related_models": result.get("related_models"),
-                "title": _("Cant't Archive"),
+                "related_model_fields": result.get("related_model_fields"),
+                "employee_choices": result.get("employee_choices"),
+                "title": _("Can't Archive"),
             },
         )
+
+
+@login_required
+@permission_required("employee.change_employee")
+def replace_employee(request, emp_id):
+    employee = Employee.objects.filter(id=emp_id).first()
+    related_models = (
+        employee.get_archive_condition().get("related_models", "") if employee else None
+    )
+    if related_models and employee:
+        for models in related_models:
+            field_name = models.get("field_name", "")
+            if field_name:
+                replace_emp_id = request.POST.get(field_name)
+                replace_emp = Employee.objects.filter(id=replace_emp_id).first()
+                if (
+                    field_name == "reporting_manager_id"
+                    and str(emp_id) != replace_emp_id
+                ):
+                    reporting_manager = EmployeeWorkInformation.objects.filter(
+                        reporting_manager_id=emp_id
+                    ).update(reporting_manager_id=replace_emp)
+                elif (
+                    field_name == "recruitment_managers"
+                    and str(emp_id) != replace_emp_id
+                ):
+                    recruitment_query = Recruitment.objects.filter(
+                        recruitment_managers=emp_id
+                    )
+                    if recruitment_query:
+                        for recruitment in recruitment_query:
+                            recruitment.recruitment_managers.remove(emp_id)
+                            recruitment.recruitment_managers.add(replace_emp)
+                elif (
+                    field_name == "recruitment_stage_managers"
+                    and str(emp_id) != replace_emp_id
+                ):
+                    recruitment_stage_query = Stage.objects.filter(
+                        stage_managers=emp_id
+                    )
+                    if recruitment_stage_query:
+                        for stage in recruitment_stage_query:
+                            stage.stage_managers.remove(emp_id)
+                            stage.stage_managers.add(replace_emp)
+                elif (
+                    field_name == "onboarding_stage_manager"
+                    and str(emp_id) != replace_emp_id
+                ):
+                    onboarding_stage_query = OnboardingStage.objects.filter(
+                        employee_id=emp_id
+                    )
+                    if onboarding_stage_query:
+                        for stage in onboarding_stage_query:
+                            stage.employee_id.remove(emp_id)
+                            stage.employee_id.add(replace_emp)
+                elif (
+                    field_name == "onboarding_task_manager"
+                    and str(emp_id) != replace_emp_id
+                ):
+                    onboarding_task_query = OnboardingTask.objects.filter(
+                        employee_id=emp_id
+                    )
+                    if onboarding_task_query:
+                        for task in onboarding_task_query:
+                            task.employee_id.remove(emp_id)
+                            task.employee_id.add(replace_emp)
+                else:
+                    pass
+    related_models = employee.get_archive_condition()
+    if related_models is False:
+        employee.is_active = False
+        employee.save()
+        messages.success(request, _("{} archived successfully").format(employee))
+    return redirect(employee_view)
 
 
 @login_required
@@ -2188,33 +2269,33 @@ def work_info_import(request):
             "Salary Hour",
         ]
     )
-    error_data={
-            "Badge id" : [],
-            "First Name" : [],
-            "Last Name" : [],
-            "Phone" : [],
-            "Email" : [],
-            "Gender" : [],
-            "Department" : [],
-            "Job Position" : [],
-            "Job Role" : [],
-            "Work Type" : [],
-            "Shift" : [],
-            "Employee Type" : [],
-            "Reporting Manager" : [],
-            "Company" : [],
-            "Location" : [],
-            "Date joining" : [],
-            "Contract End Date" : [],
-            "Basic Salary" : [],
-            "Salary Hour" : [],
-            "Email Error" : [],
-            "First Name error" : [],
-            "Phone error" : [],
-            "Joining Date Error" : [],
-            "Contract Error" : [],
-        }
-    
+    error_data = {
+        "Badge id": [],
+        "First Name": [],
+        "Last Name": [],
+        "Phone": [],
+        "Email": [],
+        "Gender": [],
+        "Department": [],
+        "Job Position": [],
+        "Job Role": [],
+        "Work Type": [],
+        "Shift": [],
+        "Employee Type": [],
+        "Reporting Manager": [],
+        "Company": [],
+        "Location": [],
+        "Date joining": [],
+        "Contract End Date": [],
+        "Basic Salary": [],
+        "Salary Hour": [],
+        "Email Error": [],
+        "First Name error": [],
+        "Phone error": [],
+        "Joining Date Error": [],
+        "Contract Error": [],
+    }
+
     # Export the DataFrame to an Excel file
     response = HttpResponse(content_type="application/ms-excel")
     response["Content-Disposition"] = 'attachment; filename="work_info_template.xlsx"'
@@ -2229,7 +2310,7 @@ def work_info_import(request):
             error = False
             try:
                 email = work_info["Email"]
-                phone = work_info["Phone"]                
+                phone = work_info["Phone"]
                 first_name = convert_nan("First Name", work_info)
                 last_name = work_info["Last Name"]
                 badge_id = convert_nan("Badge id", work_info)
@@ -2243,12 +2324,12 @@ def work_info_import(request):
                 location = convert_nan("Location", work_info)
                 shift = convert_nan("Shift", work_info)
                 date_joining = work_info["Date joining"]
-                contract_end_date = work_info["Contract End Date"]                
+                contract_end_date = work_info["Contract End Date"]
                 basic_salary = convert_nan("Basic Salary", work_info)
                 salary_hour = convert_nan("Salary Hour", work_info)
                 gender = work_info.get("Gender")
 
-                pattern = r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
+                pattern = r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$"
                 if re.match(pattern, email):
                     pass
                 else:
@@ -2266,13 +2347,17 @@ def work_info_import(request):
                 try:
                     pd.to_datetime(date_joining).date()
                 except:
-                    work_info["Joining Date Error"] = f"Invalid Date format. Please use the format YYYY-MM-DD"
+                    work_info["Joining Date Error"] = (
+                        f"Invalid Date format. Please use the format YYYY-MM-DD"
+                    )
                     error = True
 
                 try:
                     pd.to_datetime(contract_end_date).date()
                 except:
-                    work_info["Contract Error"] = f"Invalid Date format. Please use the format YYYY-MM-DD"
+                    work_info["Contract Error"] = (
+                        f"Invalid Date format. Please use the format YYYY-MM-DD"
+                    )
                     error = True
 
                 user = User.objects.filter(username=email).first()
@@ -2304,7 +2389,7 @@ def work_info_import(request):
                     job_position_obj = JobPosition.objects.filter(
                         department_id=department_obj, job_position=job_position
                     ).first()
-                    if job_position_obj is None  and job_position is not None:
+                    if job_position_obj is None and job_position is not None:
                         job_position_obj = JobPosition()
                         job_position_obj.department_id = department_obj
                         job_position_obj.job_position = job_position
@@ -2363,17 +2448,25 @@ def work_info_import(request):
                     employee_work_info.company_id = company_obj
                     employee_work_info.shift_id = shift_obj
                     employee_work_info.location = location
-                    employee_work_info.date_joining = date_joining if date_joining == "nan" else datetime.today()
-                    employee_work_info.contract_end_date = contract_end_date if contract_end_date == "nan" else None
-                    employee_work_info.basic_salary = basic_salary if type(basic_salary) is int else 0
-                    employee_work_info.salary_hour = salary_hour if type(salary_hour) is int else 0
+                    employee_work_info.date_joining = (
+                        date_joining if date_joining == "nan" else datetime.today()
+                    )
+                    employee_work_info.contract_end_date = (
+                        contract_end_date if contract_end_date == "nan" else None
+                    )
+                    employee_work_info.basic_salary = (
+                        basic_salary if type(basic_salary) is int else 0
+                    )
+                    employee_work_info.salary_hour = (
+                        salary_hour if type(salary_hour) is int else 0
+                    )
 
                     if error:
                         error_lists.append(work_info)
                         user.delete()
                     else:
                         employee_obj.save()
-                        employee_work_info.save() 
+                        employee_work_info.save()
             except Exception as e:
                 logger.error(e)
 
@@ -2386,7 +2479,9 @@ def work_info_import(request):
                         value.append(None)
 
             keys_to_remove = [
-                key for key, value in error_data.items() if all(v is None for v in value)
+                key
+                for key, value in error_data.items()
+                if all(v is None for v in value)
             ]
 
             for key in keys_to_remove:
@@ -2396,7 +2491,7 @@ def work_info_import(request):
             # Create an HTTP response object with the Excel file
             response = HttpResponse(content_type="application/ms-excel")
             response["Content-Disposition"] = 'attachment; filename="ImportError.xlsx"'
-            data_frame.to_excel(response, index=False)            
+            data_frame.to_excel(response, index=False)
             return response
         return JsonResponse ({'Success': 'Employees Imported Succefully'})
 

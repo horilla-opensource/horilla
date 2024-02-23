@@ -194,7 +194,7 @@ def login_user(request):
                 )
             return redirect("/login")
         if user.employee_get.is_active == False:
-            messages.error(
+            messages.warning(
                 request,
                 _(
                     "This user is archived. Please contact the manager for more information."
