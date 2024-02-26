@@ -134,6 +134,17 @@ style="cursor: pointer; display: none;"
               {% else %}
                 <button class="oh-btn oh-btn--light-bkg w-50" disabled><ion-icon name="create-outline" ></ion-icon></button></td>
               {% endif %}
+              <a 
+                  class="oh-btn oh-btn--light-bkg w-100" 
+                  data-toggle="oh-modal-toggle"
+                  data-target="#workTypeRequestModal"
+                  hx-get="{% url 'work-type-request-duplicate' work_type_request.id %}?{{pg}}"
+                  title="{% trans 'Duplicate' %}"
+                  hx-target="#formBody"
+                  style= "cursor: pointer;"
+                >
+                  <ion-icon name="copy-outline"></ion-icon>
+                </a>
               {% if work_type_request.approved == False and work_type_request.canceled == False %}
                 <form action="{% url 'work-type-request-delete' work_type_request.id  %}" onsubmit="return confirm('{% trans "Are you sure you want to delete this work type request?" %}');" method='post' style="width: 87.01px; height: 40.78px;">
                   {% csrf_token %}
