@@ -1,6 +1,17 @@
 {% load i18n %}
 {% load attendancefilters %}
 {% include 'filter_tags.html' %}
+{% if messages %}
+<div class="oh-wrapper">
+  {% for message in messages %}
+  <div class="oh-alert-container">
+    <div class="oh-alert oh-alert--animated {{message.tags}}">
+      {{ message }}
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
 <div class="oh-card">
 {% for attendance_list in data %}
 <div class="oh-accordion-meta">
@@ -68,12 +79,14 @@
                     <div class="oh-sticky-table__td dateformat_changer">{{activity.clock_out_date}}</div>
                     <div class="oh-sticky-table__td oh-sticky-table__right">
                       {% if perms.attendance.delete_attendanceactivity %}
-                      <form action="{% url 'attendance-activity-delete' activity.id  %}"
-                        onclick="event.stopPropagation()" onsubmit="return confirm('{% trans "Are you sure want to delete this attendance?" %}')" 
-                        hx-target="#tab_contents" method='post'>
-                        {% csrf_token %}
-                        <button type='submit' class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100" title="{% trans 'Remove' %}"><ion-icon name="trash-outline"></ion-icon></button>
-                      </form>
+                        <form hx-confirm="{% trans 'Are you sure want to delete this attendance?' %}" 
+                          hx-post="{% url 'attendance-activity-delete' activity.id  %}?{{pd}}"
+                          onclick="event.stopPropagation()" hx-target="#activity-table">
+                          {% csrf_token %}
+                          <button type='submit' class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100" title="{% trans 'Remove' %}">
+                            <ion-icon name="trash-outline"></ion-icon>
+                          </button>
+                        </form>
                       {% endif %}
                 </div>      
               </div>

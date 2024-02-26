@@ -1,23 +1,45 @@
 {% extends 'index.html' %}{% block content %} {% load i18n %}{% load static %}
 
-<div >
-    {% include 'attendance/attendance_activity/nav.html' %}
-    <div class="oh-checkpoint-badge mb-2" id="selectedActivity" data-ids="[]" data-clicked="" style="display:none;" >
-        {% trans "Selected Attendance" %}
+<div>
+  {% include 'attendance/attendance_activity/nav.html' %}
+  <div
+    class="oh-checkpoint-badge mb-2"
+    id="selectedActivity"
+    data-ids="[]"
+    data-clicked=""
+    style="display: none"
+  >
+    {% trans "Selected Attendance" %}
+  </div>
+  <div class="oh-wrapper">
+    <div
+      class="oh-checkpoint-badge text-success mb-2"
+      id="selectAllActivity"
+      style="cursor: pointer"
+    >
+      {% trans "Select All Attendance" %}
     </div>
-    <div class="oh-wrapper">
-        <div class="oh-checkpoint-badge text-success mb-2" id="selectAllActivity" style="cursor: pointer;">
-            {% trans "Select All Attendance" %}
-        </div>
-        <div class="oh-checkpoint-badge text-secondary mb-2" id="unselectAllActivity" style="cursor: pointer;display: none;">
-          {% trans "Unselect All Attendance" %}
-        </div>
-        <div class="oh-checkpoint-badge text-info mb-2" id="exportActivity" style="cursor: pointer;display: none;">
-          {% trans "Export Attendance" %}
-        </div>
-        <div class="oh-checkpoint-badge text-danger mb-2" id="selectedShowActivity" >
-        </div>
-        {% include 'attendance/attendance_activity/activity_list.html' %}
+    <div
+      class="oh-checkpoint-badge text-secondary mb-2"
+      id="unselectAllActivity"
+      style="cursor: pointer; display: none"
+    >
+      {% trans "Unselect All Attendance" %}
     </div>
+    <div
+      class="oh-checkpoint-badge text-info mb-2"
+      id="exportActivity"
+      style="cursor: pointer; display: none"
+    >
+      {% trans "Export Attendance" %}
+    </div>
+    <div
+      class="oh-checkpoint-badge text-danger mb-2"
+      id="selectedShowActivity"
+    ></div>
+    <div id="activity-table">
+      {% include 'attendance/attendance_activity/activity_list.html' %}
+    </div>
+  </div>
 </div>
 {% endblock %}
