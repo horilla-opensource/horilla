@@ -380,6 +380,11 @@ class CandidateReGroup:
         ("recruitment_id", "Recruitment"),
         ("job_position_id", "Job Position"),
         ("hired", "Status"),
+        ("country", "Country"),
+        ("stage", "Stage"),
+        ("joining_date", "Date Joining"),
+        ("probation_end", "Probation End"),
+        ("offer_letter_status", "Offer Letter Status"),
     ]
 
 
