@@ -471,11 +471,6 @@ urlpatterns = [
         name="candidate-self-status-tracking",
     ),
     path(
-        "candidate-reject-reasons",
-        views.candidate_reject_reasons,
-        name="candidate-reject-reasons",
-    ),
-    path(
         "create-reject-reason", views.create_reject_reason, name="create-reject-reason"
     ),
     path(

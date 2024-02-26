@@ -1952,18 +1952,6 @@ def candidate_self_status_tracking(request):
 
 
 @login_required
-@permission_required("recruitment.view_rejectreason")
-def candidate_reject_reasons(request):
-    """
-    This method is used to view all the reject reasons
-    """
-    reject_reasons = RejectReason.objects.all()
-    return render(
-        request, "settings/reject_reasons.html", {"reject_reasons": reject_reasons}
-    )
-
-
-@login_required
 @permission_required("recruitment.add_rejectreason")
 def create_reject_reason(request):
     """
