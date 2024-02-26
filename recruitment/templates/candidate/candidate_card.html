@@ -1,5 +1,5 @@
 {% load i18n %}
-{% load basefilters %}
+{% load basefilters recruitmentfilters %}
 {% load static %}
 {{candidates}}
 
@@ -68,6 +68,31 @@
                   hx-get="{% url 'to-skill-zone' cand.id %}"
                   hx-target="#createTarget"
                 >{% trans "Add to Skill Zone" %}</a>
+              </li>
+              {% endif %}
+              {% if perms.recruitment.add_rejectedcandidate or request.user|is_stagemanager %}
+              <li class="oh-dropdown__item">
+                <a
+                        class="oh-dropdown__link oh-dropdown__link--secondary"
+                        hx-target="#createTarget"
+                          hx-swap="innerHTML"
+                          class="oh-btn oh-btn--light"
+                          data-toggle="oh-modal-toggle"
+                          data-target="#createModal"
+                          hx-get="{% url 'add-to-rejected-candidates' %}?candidate_id={{cand.id}}"
+                          {% if cand.is_offer_rejected %}
+                          title="{% trans "Added In Rejected Candidates" %}"
+                          {% else %}
+                          title="{% trans "Add To Rejected Candidates" %}"
+                          {% endif %}
+                        >
+                        {% if not cand.is_offer_rejected %}
+                        {% trans "Add to Rejected" %}
+                        {% else %}
+                        {% trans "Edit Rejected Candidate" %}
+                        {% endif %}
+                        </a
+                      >
               </li>
               {% endif %}
               {% if perms.recruitment.change_candidate %}
