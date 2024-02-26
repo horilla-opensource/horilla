@@ -1,0 +1,353 @@
+{% load attendancefilters %} {% load basefilters %} {% load static %}
+{% load i18n %} {% include 'filter_tags.html' %}
+{% comment %} {% if perms.base.view_worktyperequest %}
+	<div
+	class="oh-checkpoint-badge text-success mb-2"
+	id="selectAllWorktypes"
+	style="cursor: pointer"
+	>
+	{% trans "Select All Worktypes" %}
+	</div>
+	<div
+	class="oh-checkpoint-badge text-secondary mb-2"
+	id="unselectAllWorktypes"
+	style="cursor: pointer;display: none;"
+	>
+	{% trans "Unselect All Worktypes" %}
+	</div>
+{% endif %}
+<div
+class="oh-checkpoint-badge text-info mb-2"
+id="exportWorktypes"
+style="cursor: pointer; display: none"
+>
+  {% trans "Export Worktypes" %}
+</div>
+<div class="oh-checkpoint-badge text-danger mb-2" id="selectedShowWorktypes" style="display: none"></div> {% endcomment %}
+
+<div class="oh-card oh-wrapper">
+    {% for letter_list in letters %}
+    <div class="oh-accordion-meta">
+		<div class="oh-accordion-meta__item">
+			<div class="oh-accordion-meta__header" onclick='$(this).toggleClass("oh-accordion-meta__header--show");'>
+				<span class="oh-accordion-meta__title pt-3 pb-3">
+					<div class="oh-tabs__input-badge-container">
+						<span
+							class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round mr-1"
+						>
+							{{letter_list.list.paginator.count}}
+						</span>
+						{{letter_list.grouper}}
+					</div>
+				</span>
+			</div>
+			<div class="oh-accordion-meta__body d-none">
+				<div class="oh-sticky-table oh-sticky-table--no-overflow mb-5">	
+                    <div class="oh-sticky-table__table oh-table--sortable">
+                        <div class="oh-sticky-table__thead">
+                            <div class="oh-sticky-table__tr">
+                                <div
+                                    class="oh-sticky-table__th {% if request.sort_option.order == '-employee_id__employee_first_name' %}arrow-up {% elif request.sort_option.order == 'employee_id__employee_first_name' %}arrow-down {% else %}arrow-up-down {% endif %}"
+                                    hx-get="{% url 'search-resignation-request' %}?{{pd}}&sortby=employee_id__employee_first_name"
+                                    hx-target="#resignationLetterContianer"
+                                >
+                                    {% trans "Employee" %}
+                                </div>
+                                <div
+                                    data-cell-index="1"
+                                    data-cell-title="{% trans 'Title' %}"
+                                    class="oh-sticky-table__th {% if request.sort_option.order == '-title' %}arrow-up {% elif request.sort_option.order == 'title' %}arrow-down {% else %}arrow-up-down {% endif %}"
+                                    hx-get="{% url 'search-resignation-request' %}?{{pd}}&sortby=title"
+                                    hx-target="#resignationLetterContianer"
+                                >
+                                    {% trans "Title" %}
+                                </div>
+                                <div
+                                    data-cell-index="2"
+                                    data-cell-title="{% trans 'Planned To Leave' %}"
+                                    hx-get="{% url 'search-resignation-request' %}?{{pd}}&sortby=planned_to_leave_on"
+                                    hx-target="#resignationLetterContianer"
+                                    class="oh-sticky-table__th {% if request.sort_option.order == '-planned_to_leave_on' %}arrow-up {% elif request.sort_option.order == 'planned_to_leave_on' %}arrow-down {% else %}arrow-up-down {% endif %}"
+                                >
+                                    {% trans "Planned To Leave" %}
+                                </div>
+                                <div
+                                    data-cell-index="3"
+                                    data-cell-title="{% trans 'Status' %}"
+                                    class="oh-sticky-table__th {% if request.sort_option.order == '-status' %}arrow-up {% elif request.sort_option.order == 'status' %}arrow-down {% else %}arrow-up-down {% endif %}"
+                                    hx-get="{% url 'search-resignation-request' %}?{{pd}}&sortby=status"
+                                    hx-target="#resignationLetterContianer"
+                                >
+                                    {% trans "Status" %}
+                                </div>
+                                <div
+                                    data-cell-index="4"
+                                    data-cell-title="{% trans 'Description' %}"
+                                    class="oh-sticky-table__th"
+                                >
+                                    {% trans "Description" %}
+                                </div>
+                                <div class="oh-sticky-table__th oh-sticky-table__right">
+                                    {% trans "Actions" %}
+                                </div>
+                            </div>
+                        </div>
+                        {% for letter in letter_list.list %}
+                        <div
+                            class="oh-sticky-table__tbody ui-sortable"
+                            draggable="true"
+                            hx-get="{% url 'resignation-request-single-view' letter.id %}?requests_ids={{requests_ids}}"
+                            hx-target="#resignationModalBody"
+                            data-toggle="oh-modal-toggle"
+                            data-target="#resignationModal"
+                        >
+                            <div class="oh-sticky-table__tr ui-sortable-handle">
+                                <div class="oh-sticky-table__sd">
+                                    {{letter.employee_id}}
+                                </div>
+                                <div class="oh-sticky-table__td" data-cell-index="1">{{letter.title}}</div>
+                                <div data-cell-index="2" class="oh-sticky-table__td">
+                                    {{letter.planned_to_leave_on}}
+                                </div>
+                                <div data-cell-index="3" class="oh-sticky-table__td">
+                                    {{letter.status}}
+                                </div>
+                                <div data-cell-index="4" class="oh-sticky-table__td">
+                                    {{letter.description|safe|truncatechars:30}}
+                                </div>
+                                <div class="oh-sticky-table__td oh-sticky-table__right">
+                                    <form action="{% url 'update-letter-status' %}">
+                                        {% if perms.offboarding.change_resignationletter %}
+                                        <div class="oh-btn-group">
+                                            {% if letter.status != "approved" %}
+                                            <button
+                                                title="By approving the request employee will added to the offboarding pipeline"
+                                                type="button"
+                                                onclick="$(this).closest('form').find('input[name=status]').val('approved');resignLetterConfirmation('{% trans 'Do You really want to approve the request' %}?',$(this).closest('form').find('[type=submit]'),true);"
+                                                class="oh-btn oh-btn--success w-100 oh-btn--block w-100"
+                                            >
+                                                <ion-icon
+                                                    name="checkmark"
+                                                    class="mr-1 md hydrated"
+                                                    role="img"
+                                                    aria-label="checkmark"
+                                                ></ion-icon>
+                                            </button>
+                                            {% else %}
+                                            <button
+                                                type="button"
+                                                class="oh-btn oh-btn--success oh-btn--disabled oh-btn--block w-100"
+                                            >
+                                                <ion-icon
+                                                    name="checkmark"
+                                                    class="mr-1 md hydrated"
+                                                    role="img"
+                                                    aria-label="checkmark"
+                                                ></ion-icon>
+                                            </button>
+                                            {% endif %}
+                                            <button
+                                                type="button"
+                                                onclick="$(this).closest('form').find('input[name=status]').val('rejected');resignLetterConfirmation('{% trans 'Do You really want to reject the request?' %}',$(this).closest('form').find('[type=submit]'));"
+                                                class="oh-btn oh-btn--danger oh-btn--block w-100"
+                                            >
+                                                <ion-icon
+                                                    name="close-circle-outline"
+                                                    class="mr-1 md hydrated"
+                                                    role="img"
+                                                    aria-label="close"
+                                                ></ion-icon>
+                                            </button>
+                                            <input type="hidden" name="status" />
+                                            <input
+                                                type="hidden"
+                                                name="letter_ids"
+                                                value="{{letter.id}}"
+                                            />
+                                            <input type="hidden" name="offboarding_id" />
+                                            <input type="hidden" name="notice_period_starts"
+                                            value="{% now "Y-m-d" %}"
+                                            id="notice_period_starts{{letter.id}}">
+                                            <input
+                                                type="hidden"
+                                                name="notice_period_ends"
+                                                id="notice_period_ends{{letter.id}}"
+                                            />
+                                            <button type="submit" hidden></button>
+                                        </div>
+                                        {% endif %}
+                                        <input
+                                            type="submit"
+                                            hidden=""
+                                            id="requestCard1Button"
+                                        />
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+				</div>
+				<div class="oh-pagination">
+                    <span class="oh-pagination__page">
+                        {% trans "Page" %} {{ letter_list.list.number }} 
+                        {%trans "of" %} {{letter_list.list.paginator.num_pages }}.
+                    </span>
+                    <nav class="oh-pagination__nav">
+                        <div class="oh-pagination__input-container me-3">
+                            <span class="oh-pagination__label me-1"
+                                >{% trans "Page" %}</span
+                            >
+                            <input
+                                type="number"
+                                name="{{letter_list.dynamic_name}}"
+                                class="oh-pagination__input"
+                                value="{{letter_list.list.number}}"
+                                hx-get="{% url 'search-resignation-request' %}?{{pd}}"
+                                hx-target="#resignationLetterContianer"
+                                min="1"
+                            />
+                            <span class="oh-pagination__label"
+                                >{% trans "of" %}
+                                {{letter_list.list.paginator.num_pages}}</span
+                            >
+                        </div>
+                        <ul class="oh-pagination__items">
+                            {% if letter_list.list.has_previous %}
+                            <li
+                                class="oh-pagination__item oh-pagination__item--wide"
+                            >
+                                <a
+                                    hx-target="#resignationLetterContianer"
+                                    hx-get="{% url 'search-resignation-request' %}?{{pd}}&{{letter_list.dynamic_name}}=1"
+                                    class="oh-pagination__link"
+                                    >{% trans "First" %}</a
+                                >
+                            </li>
+                            <li
+                                class="oh-pagination__item oh-pagination__item--wide"
+                            >
+                                <a
+                                    hx-target="#resignationLetterContianer"
+                                    hx-get="{% url 'search-resignation-request' %}?{{pd}}&{{letter_list.dynamic_name}}={{ letter_list.list.previous_page_number }}"
+                                    class="oh-pagination__link"
+                                    >{% trans "Previous" %}</a
+                                >
+                            </li>
+                            {% endif %} {% if letter_list.list.has_next %}
+                            <li
+                                class="oh-pagination__item oh-pagination__item--wide"
+                            >
+                                <a
+                                    hx-target="#resignationLetterContianer"
+                                    hx-get="{% url 'search-resignation-request' %}?{{pd}}&{{letter_list.dynamic_name}}={{ letter_list.list.next_page_number }}"
+                                    class="oh-pagination__link"
+                                    >{% trans "Next" %}</a
+                                >
+                            </li>
+                            <li
+                                class="oh-pagination__item oh-pagination__item--wide"
+                            >
+                                <a
+                                    hx-target="#resignationLetterContianer"
+                                    hx-get="{% url 'search-resignation-request' %}?{{pd}}&{{letter_list.dynamic_name}}={{ letter_list.list.paginator.num_pages }}"
+                                    class="oh-pagination__link"
+                                    >{% trans "Last" %}</a
+                                >
+                            </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                </div>
+			</div>
+    	</div>
+	</div>
+    {% endfor %}      
+	<div class="oh-pagination">
+        <span class="oh-pagination__page">
+            {% trans "Page" %} {{ letters.number }} {% trans "of" %} 
+            {{letters.paginator.num_pages }}.
+        </span>
+        <nav class="oh-pagination__nav">
+            <div class="oh-pagination__input-container me-3">
+                <span class="oh-pagination__label me-1"
+                    >{% trans "Page" %}</span
+                >
+                <input
+                    type="number"
+                    name="page"
+                    class="oh-pagination__input"
+                    value="{{letters.number}}"
+                    hx-get="{% url 'search-resignation-request' %}?{{pd}}&view=list"
+                    hx-target="#resignationLetterContianer"
+                    min="1"
+                />
+                <span class="oh-pagination__label"
+                    >{% trans "of" %} {{letters.paginator.num_pages}}</span
+                >
+            </div>
+            <ul class="oh-pagination__items">
+                {% if letters.has_previous %}
+                <li class="oh-pagination__item oh-pagination__item--wide">
+                    <a
+                        hx-target="#resignationLetterContianer"
+                        hx-get="{% url 'search-resignation-request' %}?{{pd}}&view=list&page=1"
+                        class="oh-pagination__link"
+                        >{% trans "First" %}</a
+                    >
+                </li>
+                <li class="oh-pagination__item oh-pagination__item--wide">
+                    <a
+                        hx-target="#resignationLetterContianer"
+                        hx-get="{% url 'search-resignation-request' %}?{{pd}}&view=list&page={{ letters.previous_page_number }}"
+                        class="oh-pagination__link"
+                        >{% trans "Previous" %}</a
+                    >
+                </li>
+                {% endif %} {% if letters.has_next %}
+                <li class="oh-pagination__item oh-pagination__item--wide">
+                    <a
+                        hx-target="#resignationLetterContianer"
+                        hx-get="{% url 'search-resignation-request' %}?{{pd}}&view=list&page={{ letters.next_page_number }}"
+                        class="oh-pagination__link"
+                        >{% trans "Next" %}</a
+                    >
+                </li>
+                <li class="oh-pagination__item oh-pagination__item--wide">
+                    <a
+                        hx-target="#resignationLetterContianer"
+                        hx-get="{% url 'search-resignation-request' %}?{{pd}}&view=list&page={{ letters.paginator.num_pages }}"
+                        class="oh-pagination__link"
+                        >{% trans "Last" %}</a
+                    >
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+</div>
+
+{% comment %} 
+<!-- start of comment modal -->
+<div
+	class="oh-modal"
+	id="WorktypecommentModal"
+	role="dialog"
+	aria-labelledby="emptagModal"
+	aria-hidden="true"
+>
+	<div class="oh-modal__dialog">
+		<div class="oh-modal__dialog-header">
+			<h2 class="oh-modal__dialog-title" id="createModalTitle">
+				{% trans "Add Comment" %}
+			</h2>
+			<button class="oh-modal__close" aria-label="Close">
+				<ion-icon name="close-outline"></ion-icon>
+			</button>
+		</div>
+		<div class="oh-modal__dialog-body" id="WorktypeRequestCommentForm"></div>
+	</div>
+</div>
+<!-- end of comment modal -->
+
+ {% endcomment %}

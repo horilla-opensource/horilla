@@ -1,21 +1,24 @@
 import datetime
+import json
 from urllib.parse import parse_qs
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
 from django.contrib import messages
 from django.contrib.auth.models import User
 from base.context_processors import intial_notice_period
+from base.methods import closest_numbers, sortby
 from employee.models import Employee
 from horilla.decorators import login_required, manager_can_enter, permission_required
 from base.views import paginator_qry
 from offboarding.decorators import (
     any_manager_can_enter,
-    check_feature_endabled,
+    check_feature_enabled,
     offboarding_manager_can_enter,
     offboarding_or_stage_manager_can_enter,
 )
 from offboarding.filters import (
     LetterFilter,
+    LetterReGroup,
     PipelineEmployeeFilter,
     PipelineFilter,
     PipelineStageFilter,
@@ -45,6 +48,7 @@ from django.utils.translation import gettext_lazy as _
 from onboarding.filters import OnboardingStageFilter
 
 from payroll.models.models import Contract
+from attendance.methods.group_by import group_by_queryset as group_by
 from recruitment.pipeline_grouper import group_by_queryset
 
 
@@ -597,7 +601,7 @@ def offboarding_individual_view(request, emp_id):
 
 @login_required
 @permission_required("offboarding.view_resignationletter")
-@check_feature_endabled("resignation_request")
+@check_feature_enabled("resignation_request")
 def request_view(request):
     """
     This method is used to view the resignation request
@@ -614,12 +618,34 @@ def request_view(request):
             "f": filter_instance,
             "filter_dict": {"status": ["Requested"]},
             "offboardings": offboardings,
+            "gp_fields": LetterReGroup.fields,
         },
     )
 
 
 @login_required
-@check_feature_endabled("resignation_request")
+@permission_required("offboarding.view_resignationletter")
+def request_single_view(request, id):
+    letter = ResignationLetter.objects.get(id=id)
+    context = {
+        "letter": letter,
+    }
+    requests_ids_json = request.GET.get("requests_ids")
+    if requests_ids_json:
+        requests_ids = json.loads(requests_ids_json)
+        previous_id, next_id = closest_numbers(requests_ids, id)
+        context["requests_ids"] = requests_ids_json
+        context["previous"] = previous_id
+        context["next"] = next_id
+    return render(
+        request,
+        "offboarding/resignation/request_single_view.html",
+        context,
+    )
+
+
+@login_required
+@check_feature_enabled("resignation_request")
 def search_resignation_request(request):
     """
     This method is used to search/filter the letter
@@ -630,20 +656,50 @@ def search_resignation_request(request):
         letters = ResignationLetter.objects.filter(
             employee_id__employee_user_id=request.user
         )
+    field = request.GET.get("field")
     data_dict = parse_qs(request.GET.urlencode())
+    template = "offboarding/resignation/request_cards.html"
+    if request.GET.get("view") == "list":
+        template = "offboarding/resignation/request_list.html"
+
+    if request.GET.get("sortby"):
+        letters = sortby(request, letters, "sortby")
+        data_dict.pop("sortby")
+
+    if field != "" and field is not None:
+        letters = group_by(letters, field, request.GET.get("page"), "page")
+        list_values = [entry["list"] for entry in letters]
+        id_list = []
+        for value in list_values:
+            for instance in value.object_list:
+                id_list.append(instance.id)
+
+        requests_ids = json.dumps(list(id_list))
+        template = "offboarding/resignation/group_by.html"
+
+    else:
+        letters = paginator_qry(letters, request.GET.get("page"))
+        requests_ids = json.dumps([instance.id for instance in letters.object_list])
+
+    if request.GET.get("view"):
+        data_dict.pop("view")
+
+
     return render(
         request,
-        "offboarding/resignation/request_cards.html",
+        template,
         {
-            "letters": paginator_qry(letters, request.GET.get("page")),
+            "letters": letters,
             "filter_dict": data_dict,
             "pd": request.GET.urlencode(),
+            "requests_ids": requests_ids,
+            "field": field,
         },
     )
 
 
 @login_required
-@check_feature_endabled("resignation_request")
+@check_feature_enabled("resignation_request")
 @permission_required("offboarding.delete_resignationletter")
 def delete_resignation_request(request):
     """
@@ -656,7 +712,7 @@ def delete_resignation_request(request):
 
 
 @login_required
-@check_feature_endabled("resignation_request")
+@check_feature_enabled("resignation_request")
 def create_resignation_request(request):
     """
     This method is used to render form to create resignation requests
@@ -676,7 +732,7 @@ def create_resignation_request(request):
 
 
 @login_required
-@check_feature_endabled("resignation_request")
+@check_feature_enabled("resignation_request")
 @permission_required("offboarding.change_resignationletter")
 def update_status(request):
     """

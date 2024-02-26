@@ -1,7 +1,7 @@
 {% extends "index.html" %}
 {% block content %}
 <style>
-    .reisgn-status {
+    .resign-status {
         background: #73bbe12b;
         font-size: 0.8rem;
         padding: 4px 8px;
@@ -13,6 +13,10 @@
 </style>
 {% include "offboarding/resignation/nav.html" %}
 <div id="resignationLetterContianer">
-    {% include "offboarding/resignation/request_cards.html" %}
+    {% if request.GET.view == 'list' %}
+    {% include "offboarding/resignation/request_list.html" %}
+    {% else %}
+    {% include "offboarding/resignation/request_cards.html" %}    
+    {% endif %}
 </div>
 {% endblock content %}

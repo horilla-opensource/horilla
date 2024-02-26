@@ -1,0 +1,174 @@
+{% load i18n %}
+{% if request.GET.requests_ids %}
+<div class="oh-modal__dialog oh-modal__dialog--navigation m-0 p-0">
+    <button hx-get="{% url 'resignation-request-single-view' previous %}?requests_ids={{requests_ids}}" hx-target = "#resignationModalBody" class="oh-modal__diaglog-nav oh-modal__nav-prev">
+        <ion-icon name="chevron-back-outline" class="md hydrated" role="img"
+        aria-label="chevron back outline"></ion-icon>
+    </button>
+
+    <button hx-get="{% url 'resignation-request-single-view' next  %}?requests_ids={{requests_ids}}" hx-target = "#resignationModalBody" class="oh-modal__diaglog-nav oh-modal__nav-next">
+        <ion-icon name="chevron-forward-outline" class="md hydrated" role="img"
+        aria-label="chevron forward outline"></ion-icon>
+    </button>
+</div>
+{% endif %}
+<div class="mt-4" >
+    <div class="d-flex justify-content-between">
+        <div style="margin-bottom: 10px">
+            <div class="resign-status" style="display: inline">
+                {{ letter.status|capfirst }}
+            </div>
+        </div>
+        <div>
+            <div class="oh-btn-group">
+                {% if perms.offboarding.change_resignationletter %}
+                <button
+                    type="button"
+                    hx-get="{% url 'send-mail-employee' letter.employee_id.id %}"
+                    title="{% trans " Send Mail" %} "
+                    hx-target="#resignationEditModalBody"
+                    class="oh-btn oh-btn--light"
+                    data-toggle="oh-modal-toggle"
+                    data-target="#resignationEditModal"
+                    style="
+                        flex: 1 0 auto;
+                        width: 40px;
+                        height: 40.68px;
+                        padding: 0;
+                    "
+                    onclick="event.stopPropagation()"
+                >
+                    <ion-icon
+                        name="mail-open-outline"
+                        role="img"
+                        class="md hydrated"
+                        aria-label="mail open outline"
+                    ></ion-icon>
+                </button>
+                {% endif %}
+                <a
+                    hx-get="{% url 'create-resignation-request' %}?instance_id={{ letter.id }}"
+                    class="oh-btn oh-btn--light"
+                    title="{% trans "Edit" %}"
+                    data-toggle="oh-modal-toggle"
+                    hx-target="#resignationEditModalBody"
+                    data-target="#resignationEditModal"
+                    style="
+                        flex: 1 0 auto;
+                        width: 40px;
+                        height: 40.68px;
+                        padding: 0;
+                    "
+                    ><ion-icon
+                        class="text-dark md hydrated"
+                        name="create-outline"
+                        role="img"
+                        aria-label="create outline"
+                    ></ion-icon
+                ></a>
+                {% if perms.offboarding.delete_resignationletter %}
+                <a
+                    href="{% url 'delete-resignation-request' %}?letter_ids={{letter.id}}"
+                    class="oh-btn oh-btn--light"
+                    style="
+                        flex: 1 0 auto;
+                        width: 40px;
+                        height: 40.68px;
+                        padding: 0;
+                    "
+                    title = "{% trans "Delete" %}"
+                    onclick="return confirm('{% trans 'Do you want to delete this letter' %}?')"
+                    ><ion-icon
+                        class="text-danger md hydrated"
+                        name="trash-outline"
+                        role="img"
+                        aria-label="trash outline"
+                    ></ion-icon>
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="oh-timeoff-modal__profile-content">
+        <div class="oh-profile mb-2">
+            <div class="oh-profile__avatar">
+                <img
+                    src="{{ letter.employee_id.get_avatar }}"
+                    class="oh-profile__image me-2"
+                />
+            </div>
+            <div class="oh-timeoff-modal__profile-info">
+                <span class="oh-timeoff-modal__user m-0 fw-bold"
+                    >{{ letter.employee_id.get_full_name }}</span
+                >
+                <span
+                    class="oh-timeoff-modal__user m-0"
+                    style="font-size: 12px; color: #4d4a4a"
+                >
+                    {{ letter.employee_id.get_department }} / 
+                    {{letter.employee_id.get_job_position }}
+                </span>
+            </div>
+        </div>
+    </div>
+    <h3 class="oh-faq-card__title">{{ letter.title }}</h3>
+    <div class="oh-faq-card__desc">{{ letter.description|safe }}</div>
+    <form action="{% url 'update-letter-status' %}">
+        {% if perms.offboarding.change_resignationletter %}
+        <div class="oh-btn-group">
+            {% if letter.status != "approved" %}
+            <button
+                title="By approving the request employee will added to the offboarding pipeline"
+                type="button"
+                onclick="$(this).closest('form').find('input[name=status]').val('approved');resignLetterConfirmation('{% trans 'Do You really want to approve the request' %}?',$(this).closest('form').find('[type=submit]'),true);"
+                class="oh-btn oh-btn--success w-100 oh-btn--block w-100"
+            >
+                <ion-icon
+                    name="checkmark"
+                    class="mr-1 md hydrated"
+                    role="img"
+                    aria-label="checkmark"
+                ></ion-icon>
+            </button>
+            {% else %}
+            <button
+                type="button"
+                class="oh-btn oh-btn--success oh-btn--disabled oh-btn--block w-100"
+            >
+                <ion-icon
+                    name="checkmark"
+                    class="mr-1 md hydrated"
+                    role="img"
+                    aria-label="checkmark"
+                ></ion-icon>
+            </button>
+            {% endif %}
+            <button
+                type="button"
+                onclick="$(this).closest('form').find('input[name=status]').val('rejected');resignLetterConfirmation('{% trans 'Do You really want to reject the request?' %}',$(this).closest('form').find('[type=submit]'));"
+                class="oh-btn oh-btn--danger oh-btn--block w-100"
+            >
+                <ion-icon
+                    name="close-circle-outline"
+                    class="mr-1 md hydrated"
+                    role="img"
+                    aria-label="close"
+                ></ion-icon>
+            </button>
+            <input type="hidden" name="status" />
+            <input type="hidden" name="letter_ids" value="{{letter.id}}" />
+            <input type="hidden" name="offboarding_id" />
+            <input type="hidden" name="notice_period_starts" value="{% now
+            "Y-m-d" %}" id="notice_period_starts{{letter.id}}">
+            <input
+                type="hidden"
+                name="notice_period_ends"
+                id="notice_period_ends{{letter.id}}"
+            />
+            <button type="submit" hidden></button>
+        </div>
+        {% endif %}
+        <input type="submit" hidden="" id="requestCard1Button" />
+    </form>
+</div>
+

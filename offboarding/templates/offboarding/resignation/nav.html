@@ -5,13 +5,79 @@
   </div>
   <div class="oh-main__titlebar oh-main__titlebar--right oh-d-flex-column--resp oh-mb-3--small">
     <form class="oh-main__titlebar oh-main__titlebar--right oh-d-flex-column--resp oh-mb-3--small" hx-get="{% url 'search-resignation-request' %}" hx-target="#resignationLetterContianer">
-      <div class="oh-input-group oh-input__search-group"></div>
       <div class="oh-input-group oh-input__search-group">
         <ion-icon name="search-outline" class="oh-input-group__icon oh-input-group__icon--left md hydrated" role="img" aria-label="search outline"></ion-icon>
         <input onkeyup="$(this).closest('form').find('input[type=submit]').click()" name="search" id="pipelineSearch" hx-target="#offboardingContainer" type="text" placeholder="Search" style="margin-right:10px" class="oh-input oh-input__icon mr-3" aria-label="Search Input" />
       </div>
+      <div class="oh-input-group oh-input__search-group">
+        <ul class="oh-view-types ml-2" style="margin-bottom: 0">
+          <li class="oh-view-type view-type" data-view="list">
+            <a
+              class="oh-btn oh-btn--view {% if request.GET.view == 'list' %} oh-btn--view-active {% endif %}"
+              title='{% trans "List" %}'
+              onclick="$('[name=view]').val('list');$('.filterButton')[0].click();"
+            >
+              <ion-icon
+                name="list-outline"
+                role="img"
+                class="md hydrated"
+                aria-label="list outline"
+              ></ion-icon>
+            </a>
+          </li>
+          <li class="oh-view-type view-type" data-view="card">
+            <a
+              class="oh-btn oh-btn--view {% if request.GET.view != 'list' %} oh-btn--view-active {% endif %}"
+              title='{% trans "Card" %}'
+              onclick="$('[name=view]').val('card');$('.filterButton')[0].click();"
+            >
+              <ion-icon
+                name="grid-outline"
+                role="img"
+                class="md hydrated"
+                aria-label="grid outline"
+              ></ion-icon>
+            </a>
+          </li>
+        </ul>
+      </div>
       {% include 'offboarding/resignation/filter.html' %}
-      <input type="submit" hidden>
+      <input type="submit" hidden><div class="oh-dropdown" x-data="{open: false}">
+        <button class="oh-btn ml-2" @click="open = !open" onclick="event.preventDefault()">
+          <ion-icon name="library-outline" class="mr-1"></ion-icon>{% trans "Group By" %}
+        </button>
+        <div
+        class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4"
+        x-show="open"
+        @click.outside="open = false"
+        style="display: none"
+        >            
+        <div class="oh-accordion">
+          <label>{% trans "Group By" %}</label>
+            <div class="row">
+              <div class="col-sm-12 col-md-12 col-lg-6">
+                <div class="oh-input-group">
+                  <label class="oh-label">{% trans "Field" %}</label>
+                </div>
+              </div>
+              <div class="col-sm-12 col-md-12 col-lg-6">
+                <div class="oh-input-group">
+                  <select
+                    class="oh-select mt-1 w-100"
+                    id="id_field"
+                    name="field"
+                    class="select2-selection select2-selection--single"
+                  >
+                    {% for field in gp_fields %}
+                    <option value="{{ field.0 }}">{% trans field.1 %}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </form>
     <div class="oh-main__titlebar-button-container">
       <div class="oh-main__titlebar-button-container">
@@ -30,6 +96,37 @@
       <button type="button" class="oh-modal__close" aria-label="Close"><ion-icon name="close-outline"></ion-icon></button>
     </div>
 
-    <div class="oh-modal__dialog-body" id="resignationModalBody"></div>
+    <div class="oh-modal__dialog-body oh-modal__dialog-relative" id="resignationModalBody"></div>
   </div>
 </div>
+
+<div class="oh-modal" id="resignationEditModal" role="dialog" aria-hidden="true">
+  <div class="oh-modal__dialog" style="max-width: 550px">
+    <div class="oh-modal__dialog-header">
+      <button type="button" class="oh-modal__close--custom" aria-label="Close" onclick="$(this).parents().closest('.oh-modal--show').toggleClass('oh-modal--show')"><ion-icon name="close-outline"></ion-icon></button>
+    </div>
+
+    <div class="oh-modal__dialog-body" id="resignationEditModalBody"></div>
+  </div>
+</div>
+
+<script>
+  $(".view-type").on('click',function (e) {
+    var view = $(this).attr("data-view");
+    var currentURL = window.location.href;
+    if (/\?view=[^&]+/.test(currentURL)) {
+      newURL = currentURL.replace(/\?view=[^&]+/, "?view=" + view);
+    } else {
+      var separator = currentURL.includes("?") ? "&" : "?";
+      newURL = currentURL + separator + "view=" + view;
+    }
+    history.pushState({}, "", newURL);
+    $(".oh-btn--view-active").removeClass("oh-btn--view-active");
+    $(this).children("a").addClass("oh-btn--view-active");
+  });
+  $(document).ready(function () {
+    $("#id_field").on("change", function () {
+      $(".filterButton")[0].click();
+    });
+  });
+</script>

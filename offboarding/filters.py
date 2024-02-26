@@ -132,3 +132,19 @@ class PipelineEmployeeFilter(FilterSet):
             | queryset.filter(stage_id__title__icontains=value)
             | queryset.filter(stage_id__offboarding_id__title__icontains=value)
         ).distinct()
+
+
+class LetterReGroup(FilterSet):
+    """
+    Class to keep the field name for group by option
+    """
+
+    fields = [
+        ("", "Select"),
+        ("employee_id", "Employee"),
+        ("planned_to_leave_on", "Planned to leave date"),
+        ("status", "Status"),
+        ("employee_id__employee_work_info__department_id", "Department"),
+        ("employee_id__employee_work_info__job_position_id", "Job Position"),
+        ("employee_id__employee_work_info__reporting_manager_id", "Reporting Manager"),
+    ]
