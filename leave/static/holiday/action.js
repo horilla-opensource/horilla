@@ -81,10 +81,12 @@ function tickHolidayCheckboxes() {
     languageCode = code;
     var message = rowMessages[languageCode];
     if (selectedCount > 0) {
+      $("#unselectAllHolidays").css("display", "inline-flex");
       $("#exportHolidays").css("display", "inline-flex");
       $("#selectedShowHolidays").css("display", "inline-flex");
       $("#selectedShowHolidays").text(selectedCount + " -" + message);
     } else {
+      $("#unselectAllHolidays").css("display", "none  ");
       $("#selectedShowHolidays").css("display", "none");
       $("#exportHolidays").css("display", "none");
     }
@@ -102,6 +104,7 @@ function addingHolidayIds() {
       var index = ids.indexOf(this.id);
       if (index > -1) {
         ids.splice(index, 1);
+        $(".all-holidays").prop("checked", false);
       }
     }
   });
@@ -117,7 +120,9 @@ function addingHolidayIds() {
     if (selectedCount === 0) {
       $("#selectedShowHolidays").css("display", "none");
       $("#exportHolidays").css("display", "none");
+      $('#unselectAllHolidays').css("display", "none");
     } else {
+      $("#unselectAllHolidays").css("display", "inline-flex");
       $("#exportHolidays").css("display", "inline-flex");
       $("#selectedShowHolidays").css("display", "inline-flex");
       $("#selectedShowHolidays").text(selectedCount + " - " + message);

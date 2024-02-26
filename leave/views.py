@@ -1420,6 +1420,8 @@ def holiday_filter(request):
     queryset = Holiday.objects.all()
     previous_data = request.GET.urlencode()
     holiday_filter = HolidayFilter(request.GET, queryset).qs
+    if request.GET.get("sortby"):
+        holiday_filter = sortby(request, holiday_filter, "sortby")
     page_number = request.GET.get("page")
     page_obj = paginator_qry(holiday_filter[::-1], page_number)
     data_dict = parse_qs(previous_data)

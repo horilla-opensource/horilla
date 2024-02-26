@@ -11,7 +11,7 @@
     <div
       class="oh-checkpoint-badge text-secondary mb-2"
       id="unselectAllHolidays"
-      style="cursor: pointer"
+      style="cursor: pointer; display:none;"
     >
       {% trans "Unselect All Holidays" %}
     </div>
@@ -38,9 +38,9 @@
                         />
                     </div>
                     </div>
-                    <div class="oh-sticky-table__th">{% trans "Holiday Name" %}</div>
-                    <div class="oh-sticky-table__th">{% trans "Start Date" %}</div>
-                    <div class="oh-sticky-table__th">{% trans "End Date" %}</div>
+                    <div class="oh-sticky-table__th {% if request.sort_option.order == '-name' %}arrow-up {% elif request.sort_option.order == 'name' %}arrow-down {% else %}arrow-up-down {% endif %}" hx-get="{% url 'holiday-filter' %}?{{pd}}&sortby=name" hx-target="#holidays">{% trans "Holiday Name" %}</div>
+                    <div class="oh-sticky-table__th {% if request.sort_option.order == '-start_date' %}arrow-up {% elif request.sort_option.order == 'start_date' %}arrow-down {% else %}arrow-up-down {% endif %}" hx-get="{% url 'holiday-filter' %}?{{pd}}&sortby=start_date" hx-target="#holidays">{% trans "Start Date" %}</div>
+                    <div class="oh-sticky-table__th {% if request.sort_option.order == '-end_date' %}arrow-up {% elif request.sort_option.order == 'end_date' %}arrow-down {% else %}arrow-up-down {% endif %}" hx-get="{% url 'holiday-filter' %}?{{pd}}&sortby=end_date" hx-target="#holidays">{% trans "End Date" %}</div>
                     <div class="oh-sticky-table__th">{% trans "Recurring" %}</div>
                     {% if perms.leave.change_holiday or  perms.leave.delete_holiday %}
                       <div class="oh-sticky-table__th">{% trans "Actions" %}</div>

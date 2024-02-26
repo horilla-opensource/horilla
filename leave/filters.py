@@ -267,7 +267,7 @@ class HolidayFilter(FilterSet):
     This filter allows searching Holiday objects based on name and date range.
     """
 
-    name = filters.CharFilter(field_name="name", lookup_expr="icontains")
+    search = filters.CharFilter(field_name="name", lookup_expr="icontains")
     from_date = DateFilter(
         field_name="start_date",
         lookup_expr="gte",
