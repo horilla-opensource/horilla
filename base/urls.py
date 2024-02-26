@@ -4,6 +4,8 @@ from base.forms import (
     RotatingShiftAssignForm,
     RotatingWorkTypeAssignForm,
     RotatingWorkTypeForm,
+    ShiftRequestForm,
+    WorkTypeRequestForm,
 )
 from base.models import (
     Company,
@@ -17,8 +19,10 @@ from base.models import (
     RotatingShiftAssign,
     RotatingWorkType,
     RotatingWorkTypeAssign,
+    ShiftRequest,
     Tags,
     WorkType,
+    WorkTypeRequest,
 )
 from django.contrib.auth.models import Group
 
@@ -361,6 +365,16 @@ urlpatterns = [
         },
     ),
     path(
+        "settings/department-manager-view/",
+        views.view_department_managers,
+        name="department-manager-view",
+    ),
+    path(
+        "settings/candidate-reject-reasons/",
+        views.candidate_reject_reasons,
+        name="candidate-reject-reasons",
+    ),
+    path(
         "employee/rotating-shift-assign",
         views.rotating_shift_assign,
         name="rotating-shift-assign",
@@ -417,6 +431,16 @@ urlpatterns = [
     ),
     path("work-type-request", views.work_type_request, name="work-type-request"),
     path(
+        "work-type-request-duplicate/<int:obj_id>/",
+        views.object_duplicate,
+        name="work-type-request-duplicate",
+        kwargs={
+            "model": WorkTypeRequest,
+            "form": WorkTypeRequestForm,
+            "template": "work_type_request/request_form.html",
+        },
+    ),
+    path(
         "employee/work-type-request-view",
         views.work_type_request_view,
         name="work-type-request-view",
@@ -472,6 +496,16 @@ urlpatterns = [
         name="work-type-request-bulk-delete",
     ),
     path("shift-request", views.shift_request, name="shift-request"),
+    path(
+        "shift-request-duplicate/<int:obj_id>/",
+        views.object_duplicate,
+        name="shift-request-duplicate",
+        kwargs={
+            "model": ShiftRequest,
+            "form": ShiftRequestForm,
+            "template": "shift_request/htmx/shift_request_create_form.html",
+        },
+    ),
     path(
         "shift-request-reallocate",
         views.shift_request_allocation,
@@ -666,8 +700,12 @@ urlpatterns = [
         name="ticket-type-delete",
     ),
     path("settings/tag-view/", views.tag_view, name="tag-view"),
-    path("settings/employee-tag-view/", views.employee_tag_view, name="employee-tag-view"),
-    path("settings/helpdesk-tag-view/", views.helpdesk_tag_view, name="helpdesk-tag-view"),
+    path(
+        "settings/employee-tag-view/", views.employee_tag_view, name="employee-tag-view"
+    ),
+    path(
+        "settings/helpdesk-tag-view/", views.helpdesk_tag_view, name="helpdesk-tag-view"
+    ),
     path("tag-create", views.tag_create, name="tag-create"),
     path("tag-update/<int:tag_id>", views.tag_update, name="tag-update"),
     path(

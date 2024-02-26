@@ -131,8 +131,9 @@ from payroll.forms.forms import EncashmentGeneralSettingsForm
 from payroll.forms.component_forms import PayrollSettingsForm
 from payroll.models.models import EncashmentGeneralSettings
 from payroll.models.tax_models import PayrollSettings
-from helpdesk.models import TicketType
+from helpdesk.models import DepartmentManager, TicketType
 from helpdesk.forms import TicketTypeForm
+from recruitment.models import RejectReason
 
 
 def custom404(request):
@@ -449,6 +450,29 @@ def common_settings(request):
     This method is used to render setting page template
     """
     return render(request, "settings.html")
+
+
+@login_required
+def view_department_managers(request):
+    department_managers = DepartmentManager.objects.all()
+
+    context = {
+        "department_managers": department_managers,
+    }
+    return render(request, "department_managers/department_managers.html", context)
+
+
+@login_required
+@permission_required("recruitment.view_rejectreason")
+def candidate_reject_reasons(request):
+    """
+    This method is used to view all the reject reasons
+    """
+    reject_reasons = RejectReason.objects.all()
+    return render(
+        request, "settings/reject_reasons.html", {"reject_reasons": reject_reasons}
+    )
+
 
 
 @login_required
@@ -779,7 +803,10 @@ def object_duplicate(request, obj_id, **kwargs):
     if request.method == "GET":
         for field_name, field in form.fields.items():
             if isinstance(field, forms.CharField):
-                initial_value = f"{form.initial.get(field_name, '')} (copy)"
+                if field.initial:
+                    initial_value = field.initial
+                else:
+                    initial_value = f"{form.initial.get(field_name, '')} (copy)"
                 form.initial[field_name] = initial_value
                 form.fields[field_name].initial = initial_value
         if hasattr(form.instance, "id"):
@@ -1285,7 +1312,7 @@ def rotating_work_type_assign_add(request):
     form = RotatingWorkTypeAssignForm()
     if request.GET.get("emp_id"):
         employee = request.GET.get("emp_id")
-        form = RotatingWorkTypeAssignForm(initial={"employee_id": employee})
+        form = RotatingWorkTypeAssignUpdateForm(initial={"employee_id": employee})
     form = choosesubordinates(request, form, "base.add_rotatingworktypeassign")
     if request.method == "POST":
         form = RotatingWorkTypeAssignForm(request.POST)
@@ -1876,7 +1903,7 @@ def rotating_shift_assign_add(request):
     form = RotatingShiftAssignForm()
     if request.GET.get("emp_id"):
         employee = request.GET.get("emp_id")
-        form = RotatingShiftAssignForm(initial={"employee_id": employee})
+        form = RotatingShiftAssignUpdateForm(initial={"employee_id": employee})
     form = choosesubordinates(request, form, "base.add_rotatingshiftassign")
     if request.method == "POST":
         form = RotatingShiftAssignForm(request.POST)
@@ -2876,13 +2903,6 @@ def shift_request(request):
             return HttpResponse(
                 response.content.decode("utf-8") + "<script>location.reload();</script>"
             )
-            # form = ShiftRequestForm()
-            # if len(f.queryset) == 1:
-            #     # Refresh the whole page to display the navbar otherwise refresh the requets container
-            #     return HttpResponse(
-            #         response.content.decode("utf-8")
-            #         + "<script>location.reload();</script>"
-            #     )
     return render(
         request,
         "shift_request/htmx/shift_request_create_form.html",
