@@ -4,6 +4,7 @@ from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from base import thread_local_middleware
+from base.horilla_company_manager import HorillaCompanyManager
 from base.models import Company
 from employee.models import Employee
 from horilla_audit.models import HorillaAuditInfo, HorillaAuditLog
@@ -29,6 +30,7 @@ class Offboarding(models.Model):
     company_id = models.ForeignKey(
         Company, on_delete=models.CASCADE, null=True, editable=False
     )
+    objects = HorillaCompanyManager()
 
     def __str__(self):
         return self.title
@@ -124,7 +126,9 @@ class OffboardingEmployee(models.Model):
     notice_period_starts = models.DateField(null=True)
     notice_period_ends = models.DateField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
-
+    objects = HorillaCompanyManager(
+        related_company_field="employee_id__employee_work_info__company_id"
+    )
     def __str__(self) -> str:
         return self.employee_id.get_full_name()
 
@@ -154,6 +158,9 @@ class ResignationLetter(models.Model):
     )
     created_at = models.DateTimeField(auto_now_add=True)
     is_active = models.BooleanField(default=True)
+    objects = HorillaCompanyManager(
+        related_company_field="employee_id__employee_work_info__company_id"
+    )
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)

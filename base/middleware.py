@@ -64,6 +64,7 @@ class CompanyMiddleware:
                 "pms",
                 "base",
                 "helpdesk",
+                "offboarding",
             ]
             app_models = [
                 model
