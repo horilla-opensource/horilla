@@ -685,6 +685,13 @@
     })
 
       $(document).ready(function () {
+        $(document).keydown(function(event) {
+          if (event.keyCode === 27) {
+            $('.oh-modal--show').removeClass('oh-modal--show');
+            $('.oh-activity-sidebar--show').removeClass('oh-activity-sidebar--show')
+          }
+        });
+
         $("#close").attr(
           "class",
           "oh-activity-sidebar__header-icon me-2 oh-activity-sidebar__close md hydrated"
