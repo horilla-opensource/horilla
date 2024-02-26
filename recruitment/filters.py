@@ -379,12 +379,15 @@ class CandidateReGroup:
         ("", "select"),
         ("recruitment_id", "Recruitment"),
         ("job_position_id", "Job Position"),
-        ("hired", "Status"),
+        ("hired", "Hired"),
         ("country", "Country"),
-        ("stage", "Stage"),
+        ("stage_id", "Stage"),
         ("joining_date", "Date Joining"),
         ("probation_end", "Probation End"),
         ("offer_letter_status", "Offer Letter Status"),
+        ("offer_letter_status", "Offer Letter Status"),
+        ("rejected_candidate__reject_reason_id", "Reject Reason"),
+        ("skillzonecandidate_set__skill_zone_id", "Skill Zone"),
     ]
 
 

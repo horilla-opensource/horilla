@@ -1,0 +1,556 @@
+{% load attendancefilters recruitmentfilters %} {% load basefilters %} {% load static %}
+{% load i18n %} {% include 'filter_tags.html' %} 
+<div id="ohMessages"></div>
+<div class="oh-checkpoint-badge text-success mb-2" id="selectAllInstances" style="cursor: pointer;">
+    {% trans "Select All Candidates" %}
+  </div>
+  <div class="oh-checkpoint-badge text-secondary mb-2" id="unselectAllInstances" style="cursor: pointer;">
+    {% trans "Unselect All Candidates" %}
+  </div>
+  <div class="oh-checkpoint-badge text-info mb-2" id="exportCandidates" style="cursor: pointer;">
+      {% trans "Export Candidates" %}
+  </div>
+  <div class="oh-checkpoint-badge text-danger mb-2" id="selectedCandidate" >
+  </div>
+<div class="oh-card">
+    {% for candidate in candidates %}
+    <div class="oh-accordion-meta">
+		<div class="oh-accordion-meta__item">
+			<div class="oh-accordion-meta__header" onclick='$(this).toggleClass("oh-accordion-meta__header--show");'>
+				<span class="oh-accordion-meta__title pt-3 pb-3">
+					<div class="oh-tabs__input-badge-container">
+						<span
+							class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round mr-1"
+                            title="{{candidate.list.paginator.count}} {% trans "Candidates" %}"
+						>
+							{{candidate.list.paginator.count}}
+						</span>
+						{{candidate.grouper}}
+					</div>
+				</span>
+			</div>
+			<div class="oh-accordion-meta__body d-none">
+				<div class="oh-sticky-table oh-sticky-table--no-overflow mb-5">
+					<div class="oh-sticky-table">
+						<div class="oh-sticky-table__table oh-table--sortable">
+							<div class="oh-sticky-table__thead">
+								<div class="oh-sticky-table__tr">
+									<div class="oh-sticky-table__th" style="width:10px;">
+										<div class="centered-div" align="center">
+										<input type="checkbox" class="oh-input oh-input__checkbox group-select"
+										onchange="$(this).closest('.oh-sticky-table').find('.candidate-checkbox').prop('checked',$(this).is(':checked')).change();"
+										title="Select All"  />
+										</div>
+									</div>
+									<div class="oh-sticky-table__th">{% trans "Candidate" %}</div>
+          <div  class="oh-sticky-table__th">{% trans "Email" %}</div>
+          <div  class="oh-sticky-table__th">{% trans "Date of joining" %}</div>
+          <div  class="oh-sticky-table__th">{% trans "Probation ends" %}</div>
+          <div  class="oh-sticky-table__th">{% trans "Job position" %}</div>
+          <div  class="oh-sticky-table__th">{% trans "Recruitment" %}</div>
+          <div  class="oh-sticky-table__th">{% trans "Offer letter" %}</div>
+          <div class="oh-sticky-table__th oh-sticky-table__right" style="width: 290px;">{% trans "Actions" %}</div>
+								</div>
+							</div>
+							{% for candidate in candidate.list %}
+							<div class="oh-sticky-table__tbody">
+                                <div class="oh-sticky-table__tr">
+                                  <div class="oh-sticky-table__sd">
+                                      <div class="centered-div">
+                                        <input
+                                          type="checkbox"
+                                          class="oh-input candidate-checkbox oh-input__checkbox all-candidate-row"
+                                          id="{{candidate.id}}"
+                                          onchange="highlightRow($(this))"
+                                        />
+                                      </div>
+                                  </div>
+                                  <div class="oh-sticky-table__td">
+                                    <div class="oh-profile oh-profile--md">
+                                        <div class="oh-profile__avatar mr-1">
+                                          <img src="{{candidate.get_avatar}}"
+                                              class="oh-profile__image" alt="" />
+                                        </div>
+                                        <span class="oh-profile__name oh-text--dark">{{candidate.name}}</span>
+                                    </div>
+                                  </div>
+                                  <a data-cell-index="1" style="color: inherit; text-decoration: none" class="oh-sticky-table__td">
+                                    {{candidate.email|truncatechars:10}}
+                                    {% if candidate.get_last_sent_mail %}
+                                      <span title="{{candidate.get_last_sent_mail.subject}} | {{candidate.get_last_sent_mail.get_status_display}}" class="oh-dot oh-dot--small me-1" style="background-color:{% if candidate.get_last_sent_mail.status == "sent" %}yellowgreen{% else %}red{% endif %}"></span>
+                                    {% endif %}
+                                  </a>
+                                  <a data-cell-index="2" style="color: inherit; text-decoration: none" class="oh-sticky-table__td">
+                                    <input type="date" class="oh-input joining-date" style="width: 150px;" value={{candidate.joining_date|date:"Y-m-d"}}
+                                      name="joining_date" data-candidate-id="{{candidate.id}}">
+                                  </a>
+                                  <a data-cell-index="3" style="color: inherit; text-decoration: none" class="oh-sticky-table__td">
+                                    <input type="date" class="oh-input" style="width: 150px;" value={{candidate.probation_end|date:"Y-m-d"}}
+                                      name="probation_end" onchange="probotionEnd($(this))" data-candidate-id="{{candidate.id}}">
+                                  </a>
+                                  <a data-cell-index="4" style="color: inherit; text-decoration: none" class="oh-sticky-table__td">{{candidate.job_position_id}}</a>
+                                  <a data-cell-index="5" style="color: inherit; text-decoration: none" class="oh-sticky-table__td">{{candidate.recruitment_id}}</a>
+                                  <a data-cell-index="6" style="color: inherit; text-decoration: none" class="oh-sticky-table__td" onload="event.stopPropagation()">
+                                    <select hx-get="{% url 'update-offer-letter-status' %}?candidate_id={{candidate.id}}" hx-swap="none"  name="status" id="id_offeletter_status_{{candidate.id}}" class="w-100" style="height: 40px;border:solid 1px rgba(128, 128, 128, 0.32);">
+                                      {% for status in candidate.offer_letter_statuses %}
+                                      {{candidate.offer_letter_status }} {{status.0}}
+                                      <option value="{{status.0}}" {% if candidate.offer_letter_status == status.0 %} selected{% endif %}>{{status.1}}</option>
+                                      {% endfor %}
+                                    </select>
+                                  </a>
+                                  <div style="color: inherit; text-decoration: none" class="oh-sticky-table__td oh-sticky-table__right">
+                                    <div class="oh-btn-group">
+                                      <a class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Edit' %}"
+                                        href="{% url 'rec-candidate-update' candidate.id %}?onboarding=True"><ion-icon
+                                          name="create-outline"></ion-icon></a>
+                                      {% if perms.recruitment.change_candidate %}
+                                      <button type="button" hx-get="{% url 'send-mail' candidate.id %}" title="{% trans "Send Mail" %}" hx-target="#mail-content" hx-swap="innerHTML" class="oh-btn oh-btn--light w-100" data-toggle="oh-modal-toggle" data-target="#sendMailModal" >
+                                        <ion-icon name="mail-open-outline" role="img" class="md hydrated" aria-label="mail open outline"></ion-icon>
+                                      </button>
+                                      {% endif %}
+                                      {% if perms.recruitment.change_candidate %}
+                                      <button {% if candidate.is_offer_rejected %} style="background: #ff4500a3;
+                                      color: white;" {% endif %} type="button" hx-get="{% url 'add-to-rejected-candidates' %}?candidate_id={{candidate.id}}" {% if candidate.is_offer_rejected %} title="{% trans "Added In Rejected Candidates" %}" {% else %} title="{% trans "Add To Rejected Candidates" %}" {% endif %} hx-target="#rejectReasonModalBody" hx-swap="innerHTML" class="oh-btn oh-btn--light w-100" data-toggle="oh-modal-toggle" data-target="#rejectReasonModal" >
+                                        <ion-icon name="thumbs-down-outline"></ion-icon>            </button>
+                                      {% endif %}
+                                      {% if candidate.onboarding_portal %}
+                                      <a href="#" class="oh-btn w-100" style="background-color: yellowgreen;color: white;"
+                                        title="{% trans 'Send Portal / Start Onboarding' %}" onclick="$('select[name=ids]').val('{{candidate.id}}');"
+                                        data-target="#addAttachments" data-toggle="oh-modal-toggle"
+                                        href="{% url 'email-send' %}?ids={{candidate.id}}"><ion-icon name="link-outline"></ion-icon></a>
+                                      {% else %}
+                                      <a href="#" class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Send Portal  / Start onboarding' %}"
+                                        onclick="$('select[name=ids]').val('{{candidate.id}}');" data-target="#addAttachments"
+                                        data-toggle="oh-modal-toggle" href="{% url 'email-send' %}?ids={{candidate.id}}"><ion-icon
+                                          name="link-outline"></ion-icon></a>
+                                      {% endif %}
+                                      <a class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100" onclick="return confirm('{% trans "Do you want to delete this record" %}?')"  id="delete-link"
+                                        href="{% url 'candidate-delete' candidate.id %}" title="{% trans 'Delete' %}"><ion-icon
+                                          name="trash-outline"></ion-icon></a>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+							{% endfor %}
+						</div>
+					
+					</div>
+				</div>
+                <div class="oh-pagination">
+                    <span class="oh-pagination__page">
+                      {% trans "Page" %} {{ candidate.list.number }} {% trans "of" %} {{ candidate.list.paginator.num_pages }}.
+                    </span>
+                    <nav class="oh-pagination__nav">
+                      <div class="oh-pagination__input-container me-3">
+                      <span class="oh-pagination__label me-1">{% trans "Page" %}</span>
+                      <input
+                        type="number"
+                        name="{{candidate.dynamic_name}}"
+                        class="oh-pagination__input"
+                        value="{{candidate.list.number}}"
+                        hx-get="{% url 'candidate-filter' %}?{{pd}}" hx-target="#candidates"
+                        min="1"
+                      />
+                      <span class="oh-pagination__label"
+                        >{% trans "of" %} {{candidate.list.paginator.num_pages}}</span
+                      >
+                      </div>
+                      <ul class="oh-pagination__items">
+                      {% if candidate.list.has_previous %}
+                      <li class="oh-pagination__item oh-pagination__item--wide">
+                        <a
+                        hx-target="#candidates"
+                        hx-get="{% url 'candidate-filter' %}?{{pd}}&{{candidate.dynamic_name}}=1"
+                        class="oh-pagination__link"
+                        >{% trans "First" %}</a
+                        >
+                      </li>
+                      <li class="oh-pagination__item oh-pagination__item--wide">
+                        <a
+                        hx-target="#candidates"
+                        hx-get="{% url 'candidate-filter' %}?{{pd}}&{{candidate.dynamic_name}}={{ candidate.list.previous_page_number }}"
+                        class="oh-pagination__link"
+                        >{% trans "Previous" %}</a
+                        >
+                      </li>
+                      {% endif %} {% if candidate.list.has_next %}
+                      <li class="oh-pagination__item oh-pagination__item--wide">
+                        <a
+                        hx-target="#candidates"
+                        hx-get="{% url 'candidate-filter' %}?{{pd}}&{{candidate.dynamic_name}}={{ candidate.list.next_page_number }}"
+                        class="oh-pagination__link"
+                        >{% trans "Next" %}</a
+                        >
+                      </li>
+                      <li class="oh-pagination__item oh-pagination__item--wide">
+                        <a
+                        hx-target="#candidates"
+                        hx-get="{% url 'candidate-filter' %}?{{pd}}&{{candidate.dynamic_name}}={{ candidate.list.paginator.num_pages }}"
+                        class="oh-pagination__link"
+                        >{% trans "Last" %}</a
+                        >
+                      </li>
+                      {% endif %}
+                      </ul>
+                    </nav>
+                    </div>
+			</div>
+		</div>
+	</div>
+    {% endfor %}
+    
+	<div class="oh-pagination">
+        {% if data.number %}
+		<span class="oh-pagination__page" data-toggle="modal" data-target="#addEmployeeModal">
+		{% trans "Page" %} {{ data.number }} {% trans "of" %} {{ data.paginator.num_pages }}.
+		</span>
+		<nav class="oh-pagination__nav">
+			<div class="oh-pagination__input-container me-3">
+				<span class="oh-pagination__label me-1">{% trans "Page" %}</span>		
+				<input type="number" name="page" class="oh-pagination__input" value="{{data.number}}"
+				hx-get="{% url 'search-candidate' %}?{{pd}}&view=list" hx-target="#section" min="1" />
+				<span class="oh-pagination__label">{% trans "of" %} {{data.paginator.num_pages}}</span>
+			</div>		
+			<ul class="oh-pagination__items">
+				{% if data.has_previous %}
+				<li class="oh-pagination__item oh-pagination__item--wide">
+					<a hx-target='#section' hx-get="{% url 'search-candidate' %}?{{pd}}&page=1&view=list"
+						class="oh-pagination__link" onclick=tickCandidateCheckboxes()>{% trans "First" %}
+					</a>
+				</li>
+				<li class="oh-pagination__item oh-pagination__item--wide">
+					<a hx-target='#section'
+						hx-get="{% url 'search-candidate' %}?{{pd}}&page={{ data.previous_page_number }}&view=list"
+						class="oh-pagination__link" onclick=tickCandidateCheckboxes()>{% trans "Previous" %}
+					</a>
+				</li>
+				{% endif %}
+				{% if data.has_next %}
+				<li class="oh-pagination__item oh-pagination__item--wide">
+					<a hx-target='#section' hx-get="{% url 'search-candidate' %}?{{pd}}&page={{ data.next_page_number }}&view=list"
+						class="oh-pagination__link" onclick=tickCandidateCheckboxes()>{% trans "Next" %}
+					</a>
+				</li>
+				<li class="oh-pagination__item oh-pagination__item--wide">
+					<a hx-target='#section'
+						hx-get="{% url 'search-candidate' %}?{{pd}}&page={{ data.paginator.num_pages }}&view=list"
+						class="oh-pagination__link" onclick=tickCandidateCheckboxes()>{% trans "Last" %}
+					</a>
+				</li>
+				{% endif %}		
+			</ul>
+		</nav>
+        {% endif %}
+	</div>
+</div>
+
+
+<script>
+    var archive_CanMessages = {
+      ar: "هل ترغب حقًا في أرشفة جميع المرشحين المحددين؟",
+      de: "Möchten Sie wirklich alle ausgewählten Kandidaten archivieren?",
+      es: "¿Realmente deseas archivar a todos los candidatos seleccionados?",
+      en: "Do you really want to archive all the selected candidates?",
+      fr: "Voulez-vous vraiment archiver tous les candidats sélectionnés?",
+    };
+  
+    var unarchive_CanMessages = {
+      ar: "هل ترغب حقًا في إلغاء أرشفة جميع المرشحين المحددين؟",
+      de: "Möchten Sie wirklich alle ausgewählten Kandidaten aus der Archivierung nehmen?",
+      es: "¿Realmente deseas desarchivar a todos los candidatos seleccionados?",
+      en: "Do you really want to unarchive all the selected candidates?",
+      fr: "Voulez-vous vraiment désarchiver tous les candidats sélectionnés?",
+    };
+  
+    var delete_CanMessages = {
+      ar: "هل ترغب حقًا في حذف جميع المرشحين المحددين؟",
+      de: "Möchten Sie wirklich alle ausgewählten Kandidaten löschen?",
+      es: "¿Realmente deseas eliminar a todos los candidatos seleccionados?",
+      en: "Do you really want to delete all the selected candidates?",
+      fr: "Voulez-vous vraiment supprimer tous les candidats sélectionnés?",
+    };
+  
+    var noRowMessages = {
+      ar: "لم يتم تحديد أي صفوف.",
+      de: "Es wurden keine Zeilen ausgewählt.",
+      es: "No se han seleccionado filas.",
+      en: "No rows have been selected.",
+      fr: "Aucune ligne n'a été sélectionnée.",
+    };
+  
+    var rowMessages = {
+      ar: " تم الاختيار",
+      de: " Ausgewählt",
+      es: " Seleccionado",
+      en: " Selected",
+      fr: " Sélectionné",
+    };
+    function makeListUnique1(list) {
+      return Array.from(new Set(list));
+    }
+    function arrayDifference(arr1, arr2) {
+      return arr1.filter(element => !arr2.includes(element));
+    }
+  
+    function removeElementFromArray(array, elementToRemove) {
+      const indexToRemove = array.indexOf(elementToRemove);
+  
+      if (indexToRemove !== -1) {
+        array.splice(indexToRemove, 1);
+      }
+      return array
+    }
+    function addingCandidateIds() {
+      var ids = JSON.parse($("#selectedInstances").attr("data-ids") || "[]");
+      var domNotCheckedIds = []
+  
+      var selectedCount = 0;
+  
+      $(".all-candidate-row:checked").each(function () {
+        ids.push(this.id);
+      });
+  
+      $.each($(".candidate-checkbox:checked").not(), function (indexInArray, valueOfElement) {
+        domNotCheckedIds.push($(valueOfElement).attr("id"))
+      });
+  
+      ids = makeListUnique1(ids);
+      ids = arrayDifference(ids, domNotCheckedIds)
+      var selectedCount = ids.length;
+    }
+  
+    function tickCandidateCheckboxes() {
+      var ids = JSON.parse($("#selectedInstances").attr("data-ids") || "[]");
+      var uniqueIds = makeListUnique1(ids);
+      $.each(uniqueIds, function (indexInArray, valueOfElement) {
+        checkbox = $("#" + valueOfElement)
+        checkbox.prop("checked", true).change()
+      });
+  
+      addingCandidateIds()
+    }
+  
+    function updateCount() {
+      var ids = makeListUnique1(JSON.parse($("#selectedInstances").attr("data-ids") || "[]"));
+      $("#unselectAllInstances, #selectedCandidate, #exportCandidates").hide();
+      if (ids.length) {
+        $("#unselectAllInstances, #selectedCandidate, #exportCandidates").show();
+        $("#selectedCandidate").text("{% trans "Selected" %}" + " -" + ids.length);
+      }
+    }
+  
+    $(".all-candidate-row").change(function (e) {
+      var ids = JSON.parse($("#selectedInstances").attr("data-ids") || "[]");
+      if ($(this).is(":checked")) {
+        ids.push($(this).attr("id"))
+        $("#selectedInstances").attr("data-ids", JSON.stringify(makeListUnique1(ids)));
+      } else {
+        $(".group-select").prop("checked",false)
+        ids = makeListUnique1(removeElementFromArray(ids, this.id))
+        $("#selectedInstances").attr("data-ids", JSON.stringify(ids));
+      }
+      $("#hired_candidates").val(ids)
+      updateCount()
+    });
+  
+  
+    function getCurrentLanguageCode(callback) {
+      var languageCode = $("#main-section-data").attr("data-lang");
+      var allowedLanguageCodes = ["ar", "de", "es", "en", "fr"];
+      if (allowedLanguageCodes.includes(languageCode)) {
+        callback(languageCode);
+      } else {
+        $.ajax({
+          type: "GET",
+          url: "/employee/get-language-code/",
+          success: function (response) {
+            var ajaxLanguageCode = response.language_code;
+            $("#main-section-data").attr("data-lang", ajaxLanguageCode);
+            callback(
+              allowedLanguageCodes.includes(ajaxLanguageCode)
+                ? ajaxLanguageCode
+                : "en"
+            );
+          },
+          error: function () {
+            callback("en");
+          },
+        });
+      }
+    }
+  
+    $(document).ready(function () {
+      var excelMessages = {
+        ar: "هل ترغب في تنزيل ملف Excel؟",
+        de: "Möchten Sie die Excel-Datei herunterladen?",
+        es: "¿Desea descargar el archivo de Excel?",
+        en: "Do you want to download the excel file?",
+        fr: "Voulez-vous télécharger le fichier Excel?",
+      };
+      var ids = JSON.parse($("#selectedInstances").attr("data-ids") || "[]");
+      var uniqueIds = makeListUnique1(ids);
+      var selectedCount = uniqueIds.length;
+      var message1 = rowMessages[languageCode];
+      $("#selectAllInstances").click(function () {
+        $("#selectedInstances").attr("data-clicked", 1);
+        var savedFilters = JSON.parse(localStorage.getItem("savedFilters"));
+        if (savedFilters && savedFilters["filterData"] !== null) {
+          var filter = savedFilters["filterData"];
+          $.ajax({
+            url: '{% url "candidate-select-filter-onboarding" %}',
+            data: { page: "all", filter: JSON.stringify(filter) },
+            type: "GET",
+            dataType: "json",
+            success: function (response) {
+              var employeeIds = response.employee_ids;
+              var selectedCount = employeeIds.length;
+              var selectedCount = employeeIds.length;
+  
+              var selectedCount = employeeIds.length;
+  
+              for (var i = 0; i < employeeIds.length; i++) {
+                var empId = employeeIds[i];
+                $("#" + empId).prop("checked", true).change();
+              }
+              var previousIds = $("#selectedInstances").attr("data-ids")
+              $("#selectedInstances").attr("data-ids", JSON.stringify(Array.from(new Set([...employeeIds, ...JSON.parse(previousIds)]))));
+              tickCandidateCheckboxes();
+              
+            },
+            error: function (xhr, status, error) {
+              console.error("Error:", error);
+            },
+          });
+        } else {
+          $.ajax({
+            url: '{% url "candidate-select-onboarding" %}',
+            data: { page: "all" },
+            type: "GET",
+            dataType: "json",
+            success: function (response) {
+              var employeeIds = response.employee_ids;
+              var selectedCount = employeeIds.length;
+              for (var i = 0; i < employeeIds.length; i++) {
+                var empId = employeeIds[i];
+                $("#" + empId).prop("checked", true);
+              }
+              $("#selectedInstances").attr(
+                "data-ids",
+                JSON.stringify(employeeIds)
+              );
+              tickCandidateCheckboxes();
+            },
+            error: function (xhr, status, error) {
+              console.error("Error:", error);
+            },
+          });
+        }
+      });
+      $("#unselectAllInstances").click(function () {
+        $("#selectedInstances").attr("data-ids", "[]");
+        tickCandidateCheckboxes()
+        $(".all-candidate-row").prop("checked", false).change()
+      });
+      $("#exportCandidates").click(function (e) {
+        var currentDate = new Date().toISOString().slice(0, 10);
+        var languageCode = null;
+        ids = [];
+        ids.push($("#selectedInstances").attr("data-ids"));
+        ids = JSON.parse($("#selectedInstances").attr("data-ids"));
+        getCurrentLanguageCode(function (code) {
+          languageCode = code;
+          var confirmMessage = excelMessages[languageCode];
+          Swal.fire({
+            text: confirmMessage,
+            icon: "question",
+            showCancelButton: true,
+            confirmButtonColor: "#008000",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Confirm",
+          }).then(function (result) {
+            if (result.isConfirmed) {
+              $.ajax({
+                type: "GET",
+                url: "/recruitment/candidate-info-export",
+                data: {
+                  ids: JSON.stringify(ids),
+                },
+                dataType: "binary",
+                xhrFields: {
+                  responseType: "blob",
+                },
+                success: function (response) {
+                  const file = new Blob([response], {
+                    type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                  });
+                  const url = URL.createObjectURL(file);
+                  const link = document.createElement("a");
+                  link.href = url;
+                  link.download = "Candidate_file_" + currentDate + ".xlsx";
+                  document.body.appendChild(link);
+                  link.click();
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                  console.error("Error downloading file:", errorThrown);
+                },
+              });
+            }
+          });
+        });
+      });
+    });
+    // toggle columns //
+    toggleColumns("candidate-toggle-table", "CandidateCells")
+    localStorageCandidateCells = localStorage.getItem("candidate_toggle_tab")
+    if (!localStorageCandidateCells) {
+      $("#CandidateCells").find("[type=checkbox]").prop("checked", true)
+    }
+  
+    updateCount()
+    tickCandidateCheckboxes()
+
+    function probotionEnd($element){
+        candId = $element.attr("data-candidate-id");
+        dateVal = $element.val()
+        $.ajax({
+        type: "get",
+        url: "{% url 'update-probotion-end' %}",
+        data: {
+            "candidate_id":candId,
+            "probation_end":dateVal,
+        },
+        success: function (response) {
+            $("#ohMessages").append(`
+                <div class="oh-alert-container">
+                    <div class="oh-alert oh-alert--animated oh-alert--${response.type}">
+                        ${response.message}
+                </div>`);
+        }
+        });
+    }
+    $(document).ready(function () {
+        $(".joining-date").change(function (e) {
+        let candId = $(this).attr("data-candidate-id");
+        var value = $(this).val();
+        e.preventDefault();
+        $.ajax({
+            type: "POST",
+            url: `/onboarding/update-joining`,
+            data: {
+            csrfmiddlewaretoken: `{{ csrf_token }}`,
+            candId: candId,
+            date: value,
+            },
+            success: function (response) {
+            $("#ohMessages").append(`
+                <div class="oh-alert-container">
+                    <div class="oh-alert oh-alert--animated oh-alert--${response.type}">
+                        ${response.message}
+                </div>`);
+            },
+        });
+        });
+    
+    });
+  </script>
+  

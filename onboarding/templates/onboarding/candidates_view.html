@@ -27,7 +27,7 @@
       <ion-icon name="search-outline" class="oh-main__titlebar-serach-icon"></ion-icon>
     </a>
   </div>
-  <form hx-get="{% url 'candidate-filter' %}" hx-target="#candidates" id="filterForm">
+  <form hx-get="{% url 'candidate-filter' %}" onsubmit="event.preventDefault()" hx-target="#candidates" id="filterForm">
     <div class="oh-main__titlebar oh-main__titlebar--right">
       {% if candidates %}
       <div class="oh-input-group oh-input__search-group" :class="searchShow ? 'oh-input__search-group--show' : ''">
@@ -41,6 +41,44 @@
             <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}<div id="filterCount"></div>
           </button>
           {% include 'onboarding/candidate_filter.html' %}
+        </div>
+        <div class="oh-dropdown" x-data="{open: false}">
+          <button class="oh-btn ml-2" @click="open = !open" onclick="event.preventDefault()">
+            <ion-icon name="library-outline" class="mr-1"></ion-icon>{% trans "Group By" %}
+            <div id="filterCount"></div>
+          </button>
+          <div
+          class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4"
+          x-show="open"
+          @click.outside="open = false"
+          style="display: none"
+          >            
+          <div class="oh-accordion">
+            <label>{% trans "Group By" %}</label>
+              <div class="row">
+                <div class="col-sm-12 col-md-12 col-lg-6">
+                  <div class="oh-input-group">
+                    <label class="oh-label">{% trans "Field" %}</label>
+                  </div>
+                </div>
+                <div class="col-sm-12 col-md-12 col-lg-6">
+                  <div class="oh-input-group">
+                    <select
+                      class="oh-select mt-1 w-100"
+                      id="id_field"
+                      name="field"
+                      onchange="$(this).closest('form').find('.filterButton').click()"
+                      class="select2-selection select2-selection--single"
+                    >
+                      {% for field in gp_fields %}
+                      <option value="{{ field.0 }}">{% trans field.1 %}</option>
+                      {% endfor %}
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       
 

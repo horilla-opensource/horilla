@@ -32,6 +32,7 @@ from horilla import settings
 from horilla.decorators import login_required, hx_request_required, logger
 from horilla.decorators import permission_required
 from base.methods import generate_pdf, get_key_instances, get_pagination, sortby
+from attendance.methods.group_by import group_by_queryset as general_group_by
 from onboarding.filters import OnboardingCandidateFilter, OnboardingStageFilter
 from recruitment.forms import RejectedCandidateForm
 from recruitment.models import (
@@ -40,7 +41,7 @@ from recruitment.models import (
     RecruitmentMailTemplate,
     RejectedCandidate,
 )
-from recruitment.filters import CandidateFilter, RecruitmentFilter
+from recruitment.filters import CandidateFilter, CandidateReGroup, RecruitmentFilter
 from employee.models import Employee, EmployeeWorkInformation, EmployeeBankDetails
 from django.db.models import ProtectedError
 from onboarding.forms import (
@@ -530,6 +531,7 @@ def candidates_view(request):
             "candidates": page_obj,
             "form": candidate_filter_obj.form,
             "pd": previous_data,
+            "gp_fields":CandidateReGroup.fields,
             "mail_templates": mail_templates,
             "hired_candidates": queryset,
         },
@@ -579,10 +581,15 @@ def candidate_filter(request):
     data_dict = parse_qs(previous_data)
     get_key_instances(Candidate, data_dict)
     candidates = sortby(request, candidates, "orderby")
+    field = request.GET.get("field")
+    template = "onboarding/candidates.html"
+    if field != "" and field is not None:
+        template = "onboarding/group_by.html"
+        candidates = general_group_by(candidates,field,request.GET.get("page"),"page")
     page_obj = paginator_qry(candidates, page_number)
     return render(
         request,
-        "onboarding/candidates.html",
+        template,
         {"candidates": page_obj, "pd": previous_data, "filter_dict": data_dict},
     )
 
