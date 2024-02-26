@@ -20,13 +20,13 @@
   <div class="oh-checkpoint-badge text-success mb-2" id="selectAllInstances" style="cursor: pointer;">
     {% trans "Select All Candidates" %}
   </div>
-  <div class="oh-checkpoint-badge text-secondary mb-2" id="unselectAllInstances" style="cursor: pointer;">
+  <div class="oh-checkpoint-badge text-secondary mb-2" id="unselectAllInstances" style="cursor: pointer;display: none;">
     {% trans "Unselect All Candidates" %}
   </div>
-  <div class="oh-checkpoint-badge text-info mb-2" id="exportCandidates" style="cursor: pointer;">
+  <div class="oh-checkpoint-badge text-info mb-2" id="exportCandidates" style="cursor: pointer;display: none;">
       {% trans "Export Candidates" %}
   </div>
-  <div class="oh-checkpoint-badge text-danger mb-2" id="selectedCandidate" >
+  <div class="oh-checkpoint-badge text-danger mb-2" id="selectedCandidate" style="display: none">
   </div>
   <!-- start of select all -->
   <!-- start of column toggle button -->
@@ -63,7 +63,7 @@
             <div data-cell-index="4" data-cell-title='{% trans "Recruitment" %}' class="oh-sticky-table__th">{% trans "Recruitment" %}</div>
             <div data-cell-index="5" data-cell-title='{% trans "Job Position" %}' class="oh-sticky-table__th">{% trans "Job Position" %}</div>
             <div data-cell-index="6" data-cell-title='{% trans "Resume" %}' class="oh-sticky-table__th">{% trans "Resume" %}</div>
-            <div class="oh-sticky-table__th">{% trans "Options" %}</div>
+            <div class="oh-sticky-table__th" style="width: 230px;">{% trans "Options" %}</div>
             <div class="oh-sticky-table__th oh-sticky-table__right"  style="width: 190px;">{% trans "Actions" %}</div>
           </div>
         </div>
@@ -77,11 +77,8 @@
               <div class="centered-div">
                 <input
                   type="checkbox"
-                  id="{{cand.id}}"
-                  onchange="highlightRow($(this));
-                  if (!$(this).is(':checked')) {
-                    $(this).closest('.oh-sticky-table').find('.group-select').prop('checked',false)
-                  }"
+                  id="{{cand.id}}"  
+                  onchange="highlightRow($(this))"                
                   class="oh-input candidate-checkbox oh-input__checkbox all-candidate-row"
                 />
               </div>
@@ -131,7 +128,7 @@
                   <ion-icon name="person-circle-outline"></ion-icon>            </button>                
               {% else %}
                 <a href="{% url 'candidate-conversion' cand.id %}"
-                  onsubmit="return confirm('{% trans "Are you sure you want to convert this candidate into an employee?" %}')"
+                  onclick="return confirm('{% trans "Are you sure you want to convert this candidate into an employee?" %}')"
                   class="oh-btn oh-btn--light-bkg w-100"
                   title='{% trans "To employee " %}'
                   style="padding:0.8rem 1rem"
@@ -147,6 +144,23 @@
                 >
                 <ion-icon name="heart-circle-outline"></ion-icon>            
               </button>
+              {% if perms.recruitment.add_rejectedcandidate or request.user|is_stagemanager %}
+              <button
+                type="button"
+                class="oh-btn oh-btn--light-bkg w-100"
+                hx-get="{% url 'add-to-rejected-candidates' %}?candidate_id={{cand.id}}"
+                hx-target="#createTarget"
+                data-toggle="oh-modal-toggle"
+                data-target="#createModal"
+                {% if cand.is_offer_rejected %} 
+                style="background: #ff4500a3 !important; color: white;"
+                title="{% trans "Added In Rejected Candidates" %}"
+                {% else %}
+                title="{% trans "Add To Rejected Candidates" %}"
+                {% endif %}>
+              <ion-icon name="thumbs-down-outline"></ion-icon>
+              </button>
+              {% endif %}
               <button
                 type="button"
                 hx-get='{% url "send-mail" cand.id %}'
@@ -285,7 +299,6 @@
 
 
 
-
 <script>
   var archive_CanMessages = {
     ar: "هل ترغب حقًا في أرشفة جميع المرشحين المحددين؟",
@@ -294,7 +307,7 @@
     en: "Do you really want to archive all the selected candidates?",
     fr: "Voulez-vous vraiment archiver tous les candidats sélectionnés?",
   };
-  
+
   var unarchive_CanMessages = {
     ar: "هل ترغب حقًا في إلغاء أرشفة جميع المرشحين المحددين؟",
     de: "Möchten Sie wirklich alle ausgewählten Kandidaten aus der Archivierung nehmen?",
@@ -302,7 +315,7 @@
     en: "Do you really want to unarchive all the selected candidates?",
     fr: "Voulez-vous vraiment désarchiver tous les candidats sélectionnés?",
   };
-  
+
   var delete_CanMessages = {
     ar: "هل ترغب حقًا في حذف جميع المرشحين المحددين؟",
     de: "Möchten Sie wirklich alle ausgewählten Kandidaten löschen?",
@@ -310,7 +323,7 @@
     en: "Do you really want to delete all the selected candidates?",
     fr: "Voulez-vous vraiment supprimer tous les candidats sélectionnés?",
   };
-  
+
   var noRowMessages = {
     ar: "لم يتم تحديد أي صفوف.",
     de: "Es wurden keine Zeilen ausgewählt.",
@@ -318,7 +331,7 @@
     en: "No rows have been selected.",
     fr: "Aucune ligne n'a été sélectionnée.",
   };
-  
+
   var rowMessages = {
     ar: " تم الاختيار",
     de: " Ausgewählt",
@@ -326,40 +339,73 @@
     en: " Selected",
     fr: " Sélectionné",
   };
+  function makeListUnique1(list) {
+    return Array.from(new Set(list));
+  }
+  function arrayDifference(arr1, arr2) {
+    return arr1.filter(element => !arr2.includes(element));
+  }
+
+  function removeElementFromArray(array, elementToRemove) {
+    const indexToRemove = array.indexOf(elementToRemove);
+
+    if (indexToRemove !== -1) {
+      array.splice(indexToRemove, 1);
+    }
+    return array
+  }
+  function addingCandidateIds() {
+    var ids = JSON.parse($("#selectedInstances").attr("data-ids") || "[]");
+    var domNotCheckedIds = []
+
+    var selectedCount = 0;
+
+    $(".all-candidate-row:checked").each(function () {
+      ids.push(this.id);
+    });
+
+    $.each($(".candidate-checkbox:checked").not(), function (indexInArray, valueOfElement) {
+      domNotCheckedIds.push($(valueOfElement).attr("id"))
+    });
+
+    ids = makeListUnique1(ids);
+    ids = arrayDifference(ids, domNotCheckedIds)
+    var selectedCount = ids.length;
+  }
+
   function tickCandidateCheckboxes() {
     var ids = JSON.parse($("#selectedInstances").attr("data-ids") || "[]");
     var uniqueIds = makeListUnique1(ids);
-    toggleHighlight(uniqueIds);
-    var selectedCount = uniqueIds.length;
-    var message = rowMessages[languageCode];
-    click = $("#selectedInstances").attr("data-clicked");
-    if (click === "1") {
-      $(".all-candidate").prop("checked", true);
-      $("#allCandidate").prop("checked", true);
-    }
-    uniqueIds.forEach(function (id) {
-      $("#" + id).prop("checked", true);
+    $.each(uniqueIds, function (indexInArray, valueOfElement) {
+      checkbox = $("#" + valueOfElement)
+      checkbox.prop("checked", true).change()
     });
-  
-    getCurrentLanguageCode(function (code) {
-      languageCode = code;
-      if (selectedCount > 0) {
-        $("#exportCandidates").css("display", "inline-flex");
-        $("#unselectAllInstances").css("display", "inline-flex");
-        $("#selectedCandidate").text(selectedCount + " -" + message);
-        $("#selectedCandidate").css("display", "inline-flex");
-      } else {
-        $("#exportCandidates").css("display", "none");
-        $("#unselectAllInstances").css("display", "none");
-        $("#selectedCandidate").css("display", "none");
-      }
-    });
-    var ids = JSON.parse($("#selectedInstances").attr("data-ids") || "[]");
-    $("#selectedInstances").attr("data-ids", JSON.stringify(ids));
+
+    addingCandidateIds()
   }
-    
-  tickCandidateCheckboxes();
-  
+
+  function updateCount() {
+    var ids = makeListUnique1(JSON.parse($("#selectedInstances").attr("data-ids") || "[]"));
+    $("#unselectAllInstances, #selectedCandidate, #exportCandidates").hide();
+    if (ids.length) {
+      $("#unselectAllInstances, #selectedCandidate, #exportCandidates").show();
+      $("#selectedCandidate").text("{% trans "Selected" %}" + " -" + ids.length);
+    }
+  }
+
+  $(".all-candidate-row").change(function (e) {
+    var ids = JSON.parse($("#selectedInstances").attr("data-ids") || "[]");
+    if ($(this).is(":checked")) {
+      ids.push($(this).attr("id"))
+      $("#selectedInstances").attr("data-ids", JSON.stringify(makeListUnique1(ids)));
+    } else {
+      $(".group-select").prop("checked",false)
+      $("#selectedInstances").attr("data-ids", JSON.stringify(makeListUnique1(removeElementFromArray(ids, this.id))));
+    }
+    updateCount()
+  });
+
+
   function getCurrentLanguageCode(callback) {
     var languageCode = $("#main-section-data").attr("data-lang");
     var allowedLanguageCodes = ["ar", "de", "es", "en", "fr"];
@@ -384,220 +430,132 @@
       });
     }
   }
-  
-  
-    function makeListUnique1(list) {
-    return Array.from(new Set(list));
-  }
-  function addingCandidateIds() {
+
+  $(document).ready(function () {
+    var excelMessages = {
+      ar: "هل ترغب في تنزيل ملف Excel؟",
+      de: "Möchten Sie die Excel-Datei herunterladen?",
+      es: "¿Desea descargar el archivo de Excel?",
+      en: "Do you want to download the excel file?",
+      fr: "Voulez-vous télécharger le fichier Excel?",
+    };
     var ids = JSON.parse($("#selectedInstances").attr("data-ids") || "[]");
-    var selectedCount = 0;
-  
-    $(".all-candidate-row").each(function () {
-      if ($(this).is(":checked")) {
-        ids.push(this.id);
-      } else {
-        var index = ids.indexOf(this.id);
-        if (index > -1) {
-          ids.splice(index, 1);
-        }
-      }
-    });
-    var ids = makeListUnique1(ids);
-    var selectedCount = ids.length;
-    getCurrentLanguageCode(function (code) {
-      languageCode = code;
-      var message = rowMessages[languageCode];
-      var previousIds = $("#selectedInstances").attr("data-ids")
-      $("#selectedInstances").attr("data-ids", JSON.stringify(Array.from(new Set([...ids,...JSON.parse(previousIds)]))));
-      tickCandidateCheckboxes();
-  
-      if (selectedCount > 0) {
-        $("#exportCandidates").css("display", "inline-flex");
-        $("#unselectAllInstances").css("display", "inline-flex");
-        $("#selectedCandidate").text(selectedCount + " -" + message);
-        $("#selectedCandidate").css("display", "inline-flex");
-      } else {
-        $("#exportCandidates").css("display", "none");
-        $("#unselectAllInstances").css("display", "none");
-        $("#selectedCandidate").css("display", "none");
-      }
-    });
-  }
-    $("#allCandidate").click(function (e) {
-      var is_checked = $(this).is(":checked");
-      if (is_checked) {
-        $(".all-candidate-row").prop("checked", true);
-      } else {
-        $(".all-candidate-row").prop("checked", false);
-      }
-      addingCandidateIds();
-    });
-  
-    $(".all-candidate-row").change(function () {
-      addingCandidateIds();
-    });
-  
-    $(document).ready(function () {
-      var excelMessages = {
-        ar: "هل ترغب في تنزيل ملف Excel؟",
-        de: "Möchten Sie die Excel-Datei herunterladen?",
-        es: "¿Desea descargar el archivo de Excel?",
-        en: "Do you want to download the excel file?",
-        fr: "Voulez-vous télécharger le fichier Excel?",
-      };
-      var ids = JSON.parse($("#selectedInstances").attr("data-ids") || "[]");
-      var uniqueIds = makeListUnique1(ids);
-      var selectedCount = uniqueIds.length;
-      var message1 = rowMessages[languageCode];
-      if (selectedCount > 0) {
-        $("#exportCandidates").css("display", "inline-flex");
-        $("#unselectAllInstances").css("display", "inline-flex");
-        $("#unselectAllInstances").css("display", "inline-flex");
-        $("#selectedCandidate").text(selectedCount + " -" + message1);
-        $("#selectedCandidate").css("display", "inline-flex");
-      } else {
-        $("#exportCandidates").css("display", "none");
-        $("#selectedCandidate").css("display", "none");
-        $("#unselectAllInstances").css("display", "none");
-  
-        $("#selectedCandidate").css("display", "none");
-      }
-      $("#selectAllInstances").click(function () {
-        $("#selectedInstances").attr("data-clicked", 1);
-        var savedFilters = JSON.parse(localStorage.getItem("savedFilters"));
-        if (savedFilters && savedFilters["filterData"] !== null) {
-          var filter = savedFilters["filterData"];
-          $.ajax({
-            url: '{% url "candidate-select-filter-onboarding" %}',
-            data: { page: "all", filter: JSON.stringify(filter) },
-            type: "GET",
-            dataType: "json",
-            success: function (response) {
-              var employeeIds = response.employee_ids;
-                var selectedCount = employeeIds.length;              
-                var selectedCount = employeeIds.length;              
-                
-              var selectedCount = employeeIds.length;
-                
-              for (var i = 0; i < employeeIds.length; i++) {
-                var empId = employeeIds[i];
-                $("#" + empId).prop("checked", true);
-              }
-              var previousIds = $("#selectedInstances").attr("data-ids")
-              $("#selectedInstances").attr("data-ids", JSON.stringify(Array.from(new Set([...employeeIds,...JSON.parse(previousIds)]))));
-              count = makeListUnique1(employeeIds);
-              // tickCandidateCheckboxes(count);
-            },
-            error: function (xhr, status, error) {
-              console.error("Error:", error);
-            },
-          });
-        } else {
-          $.ajax({
-            url: '{% url "candidate-select-onboarding" %}',
-            data: { page: "all" },
-            type: "GET",
-            dataType: "json",
-            success: function (response) {
-              var employeeIds = response.employee_ids;
-              var selectedCount = employeeIds.length;
-              for (var i = 0; i < employeeIds.length; i++) {
-                var empId = employeeIds[i];
-                $("#" + empId).prop("checked", true);
-              }
-              $("#selectedInstances").attr(
-                "data-ids",
-                JSON.stringify(employeeIds)
-              );
-              count = makeListUnique1(employeeIds);
-              // tickCandidateCheckboxes(count);
-            },
-            error: function (xhr, status, error) {
-              console.error("Error:", error);
-            },
-          });
-        }
-      });
-      $("#unselectAllInstances").click(function () {
-        $("#selectedInstances").attr("data-clicked", 0);
+    var uniqueIds = makeListUnique1(ids);
+    var selectedCount = uniqueIds.length;
+    var message1 = rowMessages[languageCode];
+    $("#selectAllInstances").click(function () {
+      $("#selectedInstances").attr("data-clicked", 1);
+      var savedFilters = JSON.parse(localStorage.getItem("savedFilters"));
+      if (savedFilters && savedFilters["filterData"] !== null) {
+        var filter = savedFilters["filterData"];
         $.ajax({
-          url: '{% url "candidate-select-onboarding" %}',
-          data: { page: "unselect", filter: "{}" },
+          url: '{% url "candidate-select-filter" %}',
+          data: { page: "all", filter: JSON.stringify(filter) },
           type: "GET",
           dataType: "json",
           success: function (response) {
             var employeeIds = response.employee_ids;
+            var selectedCount = employeeIds.length;
+            var selectedCount = employeeIds.length;
+
+            var selectedCount = employeeIds.length;
+
             for (var i = 0; i < employeeIds.length; i++) {
               var empId = employeeIds[i];
-              $("#" + empId).prop("checked", false);
-              $("#allCandidate").prop("checked", false);
+              $("#" + empId).prop("checked", true).change();
             }
-            var ids = JSON.parse($("#selectedInstances").attr("data-ids") || "[]");
-            var uniqueIds = makeListUnique(ids);
-            toggleHighlight(uniqueIds);
-            $("#selectedInstances").attr("data-ids", JSON.stringify([]));
-            count = [];
-            // tickCandidateCheckboxes(count);
+            var previousIds = $("#selectedInstances").attr("data-ids")
+            $("#selectedInstances").attr("data-ids", JSON.stringify(Array.from(new Set([...employeeIds, ...JSON.parse(previousIds)]))));
+            tickCandidateCheckboxes();
           },
           error: function (xhr, status, error) {
             console.error("Error:", error);
           },
         });
-      });
-      $("#exportCandidates").click(function (e) {
-        var currentDate = new Date().toISOString().slice(0, 10);
-        var languageCode = null;
-        ids = [];
-        ids.push($("#selectedInstances").attr("data-ids"));
-        ids = JSON.parse($("#selectedInstances").attr("data-ids"));
-        getCurrentLanguageCode(function (code) {
-          languageCode = code;
-          var confirmMessage = excelMessages[languageCode];
-          Swal.fire({
-            text: confirmMessage,
-            icon: "question",
-            showCancelButton: true,
-            confirmButtonColor: "#008000",
-            cancelButtonColor: "#d33",
-            confirmButtonText: "Confirm",
-          }).then(function (result) {
-            if (result.isConfirmed) {
-              $.ajax({
-                type: "GET",
-                url: "/recruitment/candidate-info-export",
-                data: {
-                  ids: JSON.stringify(ids),
-                },
-                dataType: "binary",
-                xhrFields: {
-                  responseType: "blob",
-                },
-                success: function (response) {
-                  const file = new Blob([response], {
-                    type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                  });
-                  const url = URL.createObjectURL(file);
-                  const link = document.createElement("a");
-                  link.href = url;
-                  link.download = "Candidate_file_" + currentDate + ".xlsx";
-                  document.body.appendChild(link);
-                  link.click();
-                },
-                error: function (xhr, textStatus, errorThrown) {
-                  console.error("Error downloading file:", errorThrown);
-                },
-              });
+      } else {
+        $.ajax({
+          url: '{% url "candidate-select" %}',
+          data: { page: "all" },
+          type: "GET",
+          dataType: "json",
+          success: function (response) {
+            var employeeIds = response.employee_ids;
+            var selectedCount = employeeIds.length;
+            for (var i = 0; i < employeeIds.length; i++) {
+              var empId = employeeIds[i];
+              $("#" + empId).prop("checked", true);
             }
-          });
+            $("#selectedInstances").attr(
+              "data-ids",
+              JSON.stringify(employeeIds)
+            );
+          },
+          error: function (xhr, status, error) {
+            console.error("Error:", error);
+          },
+        });
+      }
+    });
+    $("#unselectAllInstances").click(function () {
+      $("#selectedInstances").attr("data-ids", "[]");
+      tickCandidateCheckboxes()
+      $(".all-candidate-row").prop("checked", false).change()
+    });
+    $("#exportCandidates").click(function (e) {
+      var currentDate = new Date().toISOString().slice(0, 10);
+      var languageCode = null;
+      ids = [];
+      ids.push($("#selectedInstances").attr("data-ids"));
+      ids = JSON.parse($("#selectedInstances").attr("data-ids"));
+      getCurrentLanguageCode(function (code) {
+        languageCode = code;
+        var confirmMessage = excelMessages[languageCode];
+        Swal.fire({
+          text: confirmMessage,
+          icon: "question",
+          showCancelButton: true,
+          confirmButtonColor: "#008000",
+          cancelButtonColor: "#d33",
+          confirmButtonText: "Confirm",
+        }).then(function (result) {
+          if (result.isConfirmed) {
+            $.ajax({
+              type: "GET",
+              url: "/recruitment/candidate-info-export",
+              data: {
+                ids: JSON.stringify(ids),
+              },
+              dataType: "binary",
+              xhrFields: {
+                responseType: "blob",
+              },
+              success: function (response) {
+                const file = new Blob([response], {
+                  type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                });
+                const url = URL.createObjectURL(file);
+                const link = document.createElement("a");
+                link.href = url;
+                link.download = "Candidate_file_" + currentDate + ".xlsx";
+                document.body.appendChild(link);
+                link.click();
+              },
+              error: function (xhr, textStatus, errorThrown) {
+                console.error("Error downloading file:", errorThrown);
+              },
+            });
+          }
         });
       });
     });
-    // toggle columns //
-    toggleColumns("candidate-toggle-table","CandidateCells")
-    localStorageCandidateCells = localStorage.getItem("candidate_toggle_tab")
-    if (!localStorageCandidateCells) {
-      $("#CandidateCells").find("[type=checkbox]").prop("checked",true)
-    }
-    $("[type=checkbox]").change()
+  });
+  // toggle columns //
+  toggleColumns("candidate-toggle-table", "CandidateCells")
+  localStorageCandidateCells = localStorage.getItem("candidate_toggle_tab")
+  if (!localStorageCandidateCells) {
+    $("#CandidateCells").find("[type=checkbox]").prop("checked", true)
+  }
+
+  updateCount()
+  tickCandidateCheckboxes()
 </script>
