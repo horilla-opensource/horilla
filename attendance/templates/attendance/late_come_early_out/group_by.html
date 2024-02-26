@@ -2,9 +2,19 @@
 {% load attendancefilters %}
 {% load basefilters %}
 {% include 'filter_tags.html' %}
+{% if messages %}
+<div class="oh-wrapper">
+  {% for message in messages %}
+  <div class="oh-alert-container">
+    <div class="oh-alert oh-alert--animated {{message.tags}}">
+      {{ message }}
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
 <div class="oh-card">
 {% for attendance_list in data %}
-
 <div class="oh-accordion-meta">
   <div class="oh-accordion-meta__item">
     <div class="oh-accordion-meta__header">
@@ -87,25 +97,29 @@
                 <div class="oh-sticky-table__td oh-sticky-table__right">
                   <div class="oh-btn-group">
                     {% if request.user|is_reportingmanager or perms.attendance.chanage_penaltyaccount %}
-                    <button 
-                      data-toggle="oh-modal-toggle"
-                      data-target="#penaltyModal"
-                      hx-target="#penaltyModalBody"
-                      hx-get="{% url "cut-penalty" late_in_early_out.id %}?{{pd}}"
-                      type='submit' 
-                      class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-50" 
-                      title="{% trans 'Penalty' %}">
-                      <ion-icon name="information-circle-outline"></ion-icon>            
-                    </button>
+                      <button 
+                        data-toggle="oh-modal-toggle"
+                        data-target="#penaltyModal"
+                        hx-target="#penaltyModalBody"
+                        hx-get="{% url "cut-penalty" late_in_early_out.id %}?{{pd}}"
+                        type='submit' 
+                        class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-50" 
+                        title="{% trans 'Penalty' %}">
+                        <ion-icon name="information-circle-outline"></ion-icon>            
+                      </button>
                     {% endif %}
                     {% if perms.attendance.delete_attendancelatecomeearlyout %}
-                    <form action="{% url 'late-come-early-out-delete' late_in_early_out.id  %}"
-                      onclick="event.stopPropagation()" onsubmit="return confirm('{% trans "Are you sure want to delete this attendance?" %}')" 
-                      hx-target="#tab_contents" method='post'
-                      class="w-50">
-                      {% csrf_token %}
-                      <button type='submit' class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100" title="{% trans 'Remove' %}"><ion-icon name="trash-outline"></ion-icon></button>
-                    </form>
+                      <form hx-confirm="{% trans 'Are you sure want to delete this attendance?' %}"
+                            hx-post="{% url 'late-come-early-out-delete' late_in_early_out.id  %}?{{pd}}"
+                            hx-target="#report-container"
+                            onclick="event.stopPropagation()"  
+                            class="w-50"
+                          >
+                        {% csrf_token %}
+                        <button type='submit' class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100" title="{% trans 'Remove' %}">
+                          <ion-icon name="trash-outline"></ion-icon>
+                        </button>
+                      </form>
                     {% endif %}
                   </div>
                 </div>

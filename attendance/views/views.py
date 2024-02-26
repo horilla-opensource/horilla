@@ -780,6 +780,7 @@ def attendance_activity_delete(request, obj_id):
     args:
         obj_id : attendance activity id
     """
+    pd = request.GET.urlencode()
     try:
         AttendanceActivity.objects.get(id=obj_id).delete()
         messages.success(request, _("Attendance activity deleted"))
@@ -787,7 +788,7 @@ def attendance_activity_delete(request, obj_id):
         messages.error(request, _("Attendance activity Does not exists.."))
     except ProtectedError:
         messages.error(request, _("You cannot delete this activity"))
-    return redirect("/attendance/attendance-activity-view")
+    return redirect(f"/attendance/attendance-activity-search?{pd}")
 
 
 @login_required
@@ -965,6 +966,7 @@ def late_come_early_out_delete(request, obj_id):
     args:
         obj_id : late come early out instance id
     """
+    pd = request.GET.urlencode()
     try:
         AttendanceLateComeEarlyOut.objects.get(id=obj_id).delete()
         messages.success(request, _("Late-in early-out deleted"))
@@ -973,7 +975,7 @@ def late_come_early_out_delete(request, obj_id):
     except ProtectedError:
         messages.error(request, _("You cannot delete this Late-in early-out"))
 
-    return redirect("/attendance/late-come-early-out-view")
+    return redirect(f"/attendance/late-come-early-out-search?{pd}")
 
 
 @login_required
