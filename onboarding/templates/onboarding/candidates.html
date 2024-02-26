@@ -5,18 +5,20 @@
     
   }
 </style>
+
+  
 {% if candidates %}
 
 <div class="oh-checkpoint-badge text-success mb-2" id="selectAllInstances" style="cursor: pointer;">
   {% trans "Select All Candidates" %}
 </div>
-<div class="oh-checkpoint-badge text-secondary mb-2" id="unselectAllInstances" style="cursor: pointer;">
+<div class="oh-checkpoint-badge text-secondary mb-2" id="unselectAllInstances" style="cursor: pointer;display: none">
   {% trans "Unselect All Candidates" %}
 </div>
-<div class="oh-checkpoint-badge text-info mb-2" id="exportCandidates" style="cursor: pointer;">
+<div class="oh-checkpoint-badge text-info mb-2" id="exportCandidates" style="cursor: pointer;display: none">
     {% trans "Export Candidates" %}
 </div>
-<div class="oh-checkpoint-badge text-danger mb-2" id="selectedCandidate" >
+<div class="oh-checkpoint-badge text-danger mb-2" id="selectedCandidate" style="display: none;" >
 </div>
 <!-- start of column toggle -->
 <div class="oh-table_sticky--wrapper">
@@ -42,11 +44,11 @@
             <div class="centered-div">
                 <input
                   type="checkbox"
-                  class="oh-input oh-input__checkbox"
+                  class="oh-input oh-input__checkbox group-select"
                   id="allCandidate"
                   title="{% trans 'Select All' %}"
-                  onchange="checkRow(this);$(this).closest('.oh-sticky-table').find('.all-candidate-row').prop('checked',$(this).is(':checked')).change();"
-                />
+                  onchange="$(this).closest('.oh-sticky-table').find('.candidate-checkbox').prop('checked',$(this).is(':checked')).change();"
+                  />
               </div>
             </div>
           <div class="oh-sticky-table__th {% if request.sort_option.order == '-name' %}arrow-up {% elif request.sort_option.order == 'name' %}arrow-down {% else %} arrow-up-down {% endif %}" hx-target="#candidates" hx-get="{% url 'candidate-filter' %}?{{pd}}&orderby=name">{% trans "Candidate" %}</div>
@@ -66,9 +68,9 @@
               <div class="centered-div">
                 <input
                   type="checkbox"
-                  class="oh-input employee-checkbox oh-input__checkbox all-candidate-row"
+                  class="oh-input candidate-checkbox oh-input__checkbox all-candidate-row"
                   id="{{candidate.id}}"
-                  onchange="$(this).closest('.oh-sticky-table__tr').toggleClass('highlight-selected', $(this).is(':checked'))"
+                  onchange="highlightRow($(this))"
                 />
               </div>
           </div>
@@ -131,7 +133,7 @@
                 data-toggle="oh-modal-toggle" href="{% url 'email-send' %}?ids={{candidate.id}}"><ion-icon
                   name="link-outline"></ion-icon></a>
               {% endif %}
-              <a class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100" id="delete-link"
+              <a class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100" onclick="return confirm('{% trans "Do you want to delete this record" %}?')"  id="delete-link"
                 href="{% url 'candidate-delete' candidate.id %}" title="{% trans 'Delete' %}"><ion-icon
                   name="trash-outline"></ion-icon></a>
             </div>
@@ -240,21 +242,7 @@
         },
       });
     });
-    $(".all-candidate-row").change(function (e) {
-      e.preventDefault();
-      ids = $("[name=ids]").val()
-      id = $(this).attr("id");
-      checked = $(this).is(":checked")
-      const index = ids.indexOf(id);
-      if (index !== -1) {
-        ids.splice(index, 1);
-      }
-      if (checked) {
-        ids.push(id)
-      }
-      $("[name=ids]").val(ids);
 
-    });
   });
   // toggle columns //
   toggleColumns("candidate-view-table","CandidateViewCells")
@@ -262,7 +250,7 @@
   if (!localStorageCandidateViewCells) {
     $("#CandidateViewCells").find("[type=checkbox]").prop("checked",true)
   }
-  $("[type=checkbox]").change() 
+  // $("[type=checkbox]").change() 
   // end of toggle column//
 </script>
 <div class="oh-modal" id="sendMailModal" role="dialog" aria-labelledby="sendMailModal" aria-hidden="true">
@@ -283,159 +271,141 @@
     <div class="oh-modal__dialog-body" id="rejectReasonModalBody"></div>
   </div>
 </div>
-<script src="{% static '/candidate/bulk.js' %}"></script>
-<script>  
-
-var archive_CanMessages = {
-  ar: "هل ترغب حقًا في أرشفة جميع المرشحين المحددين؟",
-  de: "Möchten Sie wirklich alle ausgewählten Kandidaten archivieren?",
-  es: "¿Realmente deseas archivar a todos los candidatos seleccionados?",
-  en: "Do you really want to archive all the selected candidates?",
-  fr: "Voulez-vous vraiment archiver tous les candidats sélectionnés?",
-};
-
-var unarchive_CanMessages = {
-  ar: "هل ترغب حقًا في إلغاء أرشفة جميع المرشحين المحددين؟",
-  de: "Möchten Sie wirklich alle ausgewählten Kandidaten aus der Archivierung nehmen?",
-  es: "¿Realmente deseas desarchivar a todos los candidatos seleccionados?",
-  en: "Do you really want to unarchive all the selected candidates?",
-  fr: "Voulez-vous vraiment désarchiver tous les candidats sélectionnés?",
-};
-
-var delete_CanMessages = {
-  ar: "هل ترغب حقًا في حذف جميع المرشحين المحددين؟",
-  de: "Möchten Sie wirklich alle ausgewählten Kandidaten löschen?",
-  es: "¿Realmente deseas eliminar a todos los candidatos seleccionados?",
-  en: "Do you really want to delete all the selected candidates?",
-  fr: "Voulez-vous vraiment supprimer tous les candidats sélectionnés?",
-};
-
-var noRowMessages = {
-  ar: "لم يتم تحديد أي صفوف.",
-  de: "Es wurden keine Zeilen ausgewählt.",
-  es: "No se han seleccionado filas.",
-  en: "No rows have been selected.",
-  fr: "Aucune ligne n'a été sélectionnée.",
-};
-
-var rowMessages = {
-  ar: " تم الاختيار",
-  de: " Ausgewählt",
-  es: " Seleccionado",
-  en: " Selected",
-  fr: " Sélectionné",
-};
-function tickCandidateCheckboxes() {
-  var ids = JSON.parse($("#selectedInstances").attr("data-ids") || "[]");
-  var uniqueIds = makeListUnique1(ids);
-  toggleHighlight(uniqueIds);
-  var selectedCount = uniqueIds.length;
-  var message = rowMessages[languageCode];
-  click = $("#selectedInstances").attr("data-clicked");
-  if (click === "1") {
-    $(".all-candidate").prop("checked", true);
-    $("#allCandidate").prop("checked", true);
-  }
-  uniqueIds.forEach(function (id) {
-    $("#" + id).prop("checked", true);
-  });
-
-  getCurrentLanguageCode(function (code) {
-    languageCode = code;
-    if (selectedCount > 0) {
-      $("#exportCandidates").css("display", "inline-flex");
-      $("#unselectAllInstances").css("display", "inline-flex");
-      $("#selectedCandidate").text(selectedCount + " -" + message);
-      $("#selectedCandidate").css("display", "inline-flex");
-    } else {
-      $("#exportCandidates").css("display", "none");
-      $("#unselectAllInstances").css("display", "none");
-      $("#selectedCandidate").css("display", "none");
-    }
-  });
-  var ids = JSON.parse($("#selectedInstances").attr("data-ids") || "[]");
-  $("#selectedInstances").attr("data-ids", JSON.stringify(ids));
-}
-  
-tickCandidateCheckboxes();
-
-function getCurrentLanguageCode(callback) {
-  var languageCode = $("#main-section-data").attr("data-lang");
-  var allowedLanguageCodes = ["ar", "de", "es", "en", "fr"];
-  if (allowedLanguageCodes.includes(languageCode)) {
-    callback(languageCode);
-  } else {
-    $.ajax({
-      type: "GET",
-      url: "/employee/get-language-code/",
-      success: function (response) {
-        var ajaxLanguageCode = response.language_code;
-        $("#main-section-data").attr("data-lang", ajaxLanguageCode);
-        callback(
-          allowedLanguageCodes.includes(ajaxLanguageCode)
-            ? ajaxLanguageCode
-            : "en"
-        );
-      },
-      error: function () {
-        callback("en");
-      },
-    });
-  }
-}
 
 
+<script>
+  var archive_CanMessages = {
+    ar: "هل ترغب حقًا في أرشفة جميع المرشحين المحددين؟",
+    de: "Möchten Sie wirklich alle ausgewählten Kandidaten archivieren?",
+    es: "¿Realmente deseas archivar a todos los candidatos seleccionados?",
+    en: "Do you really want to archive all the selected candidates?",
+    fr: "Voulez-vous vraiment archiver tous les candidats sélectionnés?",
+  };
+
+  var unarchive_CanMessages = {
+    ar: "هل ترغب حقًا في إلغاء أرشفة جميع المرشحين المحددين؟",
+    de: "Möchten Sie wirklich alle ausgewählten Kandidaten aus der Archivierung nehmen?",
+    es: "¿Realmente deseas desarchivar a todos los candidatos seleccionados?",
+    en: "Do you really want to unarchive all the selected candidates?",
+    fr: "Voulez-vous vraiment désarchiver tous les candidats sélectionnés?",
+  };
+
+  var delete_CanMessages = {
+    ar: "هل ترغب حقًا في حذف جميع المرشحين المحددين؟",
+    de: "Möchten Sie wirklich alle ausgewählten Kandidaten löschen?",
+    es: "¿Realmente deseas eliminar a todos los candidatos seleccionados?",
+    en: "Do you really want to delete all the selected candidates?",
+    fr: "Voulez-vous vraiment supprimer tous les candidats sélectionnés?",
+  };
+
+  var noRowMessages = {
+    ar: "لم يتم تحديد أي صفوف.",
+    de: "Es wurden keine Zeilen ausgewählt.",
+    es: "No se han seleccionado filas.",
+    en: "No rows have been selected.",
+    fr: "Aucune ligne n'a été sélectionnée.",
+  };
+
+  var rowMessages = {
+    ar: " تم الاختيار",
+    de: " Ausgewählt",
+    es: " Seleccionado",
+    en: " Selected",
+    fr: " Sélectionné",
+  };
   function makeListUnique1(list) {
-  return Array.from(new Set(list));
-}
-function addingCandidateIds() {
-  var ids = JSON.parse($("#selectedInstances").attr("data-ids") || "[]");
-  var selectedCount = 0;
+    return Array.from(new Set(list));
+  }
+  function arrayDifference(arr1, arr2) {
+    return arr1.filter(element => !arr2.includes(element));
+  }
 
-  $(".all-candidate-row").each(function () {
-    if ($(this).is(":checked")) {
+  function removeElementFromArray(array, elementToRemove) {
+    const indexToRemove = array.indexOf(elementToRemove);
+
+    if (indexToRemove !== -1) {
+      array.splice(indexToRemove, 1);
+    }
+    return array
+  }
+  function addingCandidateIds() {
+    var ids = JSON.parse($("#selectedInstances").attr("data-ids") || "[]");
+    var domNotCheckedIds = []
+
+    var selectedCount = 0;
+
+    $(".all-candidate-row:checked").each(function () {
       ids.push(this.id);
-    } else {
-      var index = ids.indexOf(this.id);
-      if (index > -1) {
-        ids.splice(index, 1);
-      }
-    }
-  });
-  var ids = makeListUnique1(ids);
-  var selectedCount = ids.length;
-  getCurrentLanguageCode(function (code) {
-    languageCode = code;
-    var message = rowMessages[languageCode];
-    var previousIds = $("#selectedInstances").attr("data-ids")
-    $("#selectedInstances").attr("data-ids", JSON.stringify(Array.from(new Set([...ids,...JSON.parse(previousIds)]))));
-    tickCandidateCheckboxes();
+    });
 
-    if (selectedCount > 0) {
-      $("#exportCandidates").css("display", "inline-flex");
-      $("#unselectAllInstances").css("display", "inline-flex");
-      $("#selectedCandidate").text(selectedCount + " -" + message);
-      $("#selectedCandidate").css("display", "inline-flex");
-    } else {
-      $("#exportCandidates").css("display", "none");
-      $("#unselectAllInstances").css("display", "none");
-      $("#selectedCandidate").css("display", "none");
+    $.each($(".candidate-checkbox:checked").not(), function (indexInArray, valueOfElement) {
+      domNotCheckedIds.push($(valueOfElement).attr("id"))
+    });
+
+    ids = makeListUnique1(ids);
+    ids = arrayDifference(ids, domNotCheckedIds)
+    var selectedCount = ids.length;
+  }
+
+  function tickCandidateCheckboxes() {
+    var ids = JSON.parse($("#selectedInstances").attr("data-ids") || "[]");
+    var uniqueIds = makeListUnique1(ids);
+    $.each(uniqueIds, function (indexInArray, valueOfElement) {
+      checkbox = $("#" + valueOfElement)
+      checkbox.prop("checked", true).change()
+    });
+
+    addingCandidateIds()
+  }
+
+  function updateCount() {
+    var ids = makeListUnique1(JSON.parse($("#selectedInstances").attr("data-ids") || "[]"));
+    $("#unselectAllInstances, #selectedCandidate, #exportCandidates").hide();
+    if (ids.length) {
+      $("#unselectAllInstances, #selectedCandidate, #exportCandidates").show();
+      $("#selectedCandidate").text("{% trans "Selected" %}" + " -" + ids.length);
     }
-  });
-}
-  $("#allCandidate").click(function (e) {
-    var is_checked = $(this).is(":checked");
-    if (is_checked) {
-      $(".all-candidate-row").prop("checked", true);
+  }
+
+  $(".all-candidate-row").change(function (e) {
+    var ids = JSON.parse($("#selectedInstances").attr("data-ids") || "[]");
+    if ($(this).is(":checked")) {
+      ids.push($(this).attr("id"))
+      $("#selectedInstances").attr("data-ids", JSON.stringify(makeListUnique1(ids)));
     } else {
-      $(".all-candidate-row").prop("checked", false);
+      $(".group-select").prop("checked",false)
+      ids = makeListUnique1(removeElementFromArray(ids, this.id))
+      $("#selectedInstances").attr("data-ids", JSON.stringify(ids));
     }
-    addingCandidateIds();
+    $("#hired_candidates").val(ids)
+    updateCount()
   });
 
-  $(".all-candidate-row").change(function () {
-    addingCandidateIds();
-  });
+
+  function getCurrentLanguageCode(callback) {
+    var languageCode = $("#main-section-data").attr("data-lang");
+    var allowedLanguageCodes = ["ar", "de", "es", "en", "fr"];
+    if (allowedLanguageCodes.includes(languageCode)) {
+      callback(languageCode);
+    } else {
+      $.ajax({
+        type: "GET",
+        url: "/employee/get-language-code/",
+        success: function (response) {
+          var ajaxLanguageCode = response.language_code;
+          $("#main-section-data").attr("data-lang", ajaxLanguageCode);
+          callback(
+            allowedLanguageCodes.includes(ajaxLanguageCode)
+              ? ajaxLanguageCode
+              : "en"
+          );
+        },
+        error: function () {
+          callback("en");
+        },
+      });
+    }
+  }
 
   $(document).ready(function () {
     var excelMessages = {
@@ -449,19 +419,6 @@ function addingCandidateIds() {
     var uniqueIds = makeListUnique1(ids);
     var selectedCount = uniqueIds.length;
     var message1 = rowMessages[languageCode];
-    if (selectedCount > 0) {
-      $("#exportCandidates").css("display", "inline-flex");
-      $("#unselectAllInstances").css("display", "inline-flex");
-      $("#unselectAllInstances").css("display", "inline-flex");
-      $("#selectedCandidate").text(selectedCount + " -" + message1);
-      $("#selectedCandidate").css("display", "inline-flex");
-    } else {
-      $("#exportCandidates").css("display", "none");
-      $("#selectedCandidate").css("display", "none");
-      $("#unselectAllInstances").css("display", "none");
-
-      $("#selectedCandidate").css("display", "none");
-    }
     $("#selectAllInstances").click(function () {
       $("#selectedInstances").attr("data-clicked", 1);
       var savedFilters = JSON.parse(localStorage.getItem("savedFilters"));
@@ -474,19 +431,19 @@ function addingCandidateIds() {
           dataType: "json",
           success: function (response) {
             var employeeIds = response.employee_ids;
-              var selectedCount = employeeIds.length;              
-              var selectedCount = employeeIds.length;              
-              
             var selectedCount = employeeIds.length;
-              
+            var selectedCount = employeeIds.length;
+
+            var selectedCount = employeeIds.length;
+
             for (var i = 0; i < employeeIds.length; i++) {
               var empId = employeeIds[i];
-              $("#" + empId).prop("checked", true);
+              $("#" + empId).prop("checked", true).change();
             }
             var previousIds = $("#selectedInstances").attr("data-ids")
-            $("#selectedInstances").attr("data-ids", JSON.stringify(Array.from(new Set([...employeeIds,...JSON.parse(previousIds)]))));
-            count = makeListUnique1(employeeIds);
-            // tickCandidateCheckboxes(count);
+            $("#selectedInstances").attr("data-ids", JSON.stringify(Array.from(new Set([...employeeIds, ...JSON.parse(previousIds)]))));
+            tickCandidateCheckboxes();
+            
           },
           error: function (xhr, status, error) {
             console.error("Error:", error);
@@ -509,8 +466,7 @@ function addingCandidateIds() {
               "data-ids",
               JSON.stringify(employeeIds)
             );
-            count = makeListUnique1(employeeIds);
-            // tickCandidateCheckboxes(count);
+            tickCandidateCheckboxes();
           },
           error: function (xhr, status, error) {
             console.error("Error:", error);
@@ -519,30 +475,9 @@ function addingCandidateIds() {
       }
     });
     $("#unselectAllInstances").click(function () {
-      $("#selectedInstances").attr("data-clicked", 0);
-      $.ajax({
-        url: '{% url "candidate-select-onboarding" %}',
-        data: { page: "unselect", filter: "{}" },
-        type: "GET",
-        dataType: "json",
-        success: function (response) {
-          var employeeIds = response.employee_ids;
-          for (var i = 0; i < employeeIds.length; i++) {
-            var empId = employeeIds[i];
-            $("#" + empId).prop("checked", false);
-            $("#allCandidate").prop("checked", false);
-          }
-          var ids = JSON.parse($("#selectedInstances").attr("data-ids") || "[]");
-          var uniqueIds = makeListUnique(ids);
-          toggleHighlight(uniqueIds);
-          $("#selectedInstances").attr("data-ids", JSON.stringify([]));
-          count = [];
-          // tickCandidateCheckboxes(count);
-        },
-        error: function (xhr, status, error) {
-          console.error("Error:", error);
-        },
-      });
+      $("#selectedInstances").attr("data-ids", "[]");
+      tickCandidateCheckboxes()
+      $(".all-candidate-row").prop("checked", false).change()
     });
     $("#exportCandidates").click(function (e) {
       var currentDate = new Date().toISOString().slice(0, 10);
@@ -593,10 +528,12 @@ function addingCandidateIds() {
     });
   });
   // toggle columns //
-  toggleColumns("candidate-toggle-table","CandidateCells")
+  toggleColumns("candidate-toggle-table", "CandidateCells")
   localStorageCandidateCells = localStorage.getItem("candidate_toggle_tab")
   if (!localStorageCandidateCells) {
-    $("#CandidateCells").find("[type=checkbox]").prop("checked",true)
+    $("#CandidateCells").find("[type=checkbox]").prop("checked", true)
   }
-  $("[type=checkbox]").change()
+
+  updateCount()
+  tickCandidateCheckboxes()
 </script>
