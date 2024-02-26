@@ -11,6 +11,7 @@ from django.core.paginator import Paginator
 from django.contrib.auth.models import User
 from horilla.decorators import login_required, permission_required
 from base.methods import sortby, get_key_instances
+from attendance.methods.group_by import group_by_queryset as general_group_by
 from recruitment.filters import (
     CandidateFilter,
     RecruitmentFilter,
@@ -104,8 +105,9 @@ def candidate_search(request):
 
     field = request.GET.get("field")
     if field != "" and field is not None:
-        field_copy = field.replace(".", "__")
-        candidates = candidates.order_by(field_copy)
+        candidates = general_group_by(
+            candidates, field, request.GET.get("page"), "page"
+        )
         template = "candidate/group_by.html"
 
     candidates = paginator_qry(candidates, request.GET.get("page"))

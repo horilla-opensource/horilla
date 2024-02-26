@@ -2,19 +2,18 @@
 {% load i18n %} {% include 'filter_tags.html' %} 
 
 <div class="oh-checkpoint-badge text-success mb-2" id="selectAllInstances" style="cursor: pointer;">
-    {% trans "Select All Candidates" %}
+    {% trans "Select All section" %}
   </div>
   <div class="oh-checkpoint-badge text-secondary mb-2" id="unselectAllInstances" style="cursor: pointer;">
-    {% trans "Unselect All Candidates" %}
+    {% trans "Unselect All section" %}
   </div>
-  <div class="oh-checkpoint-badge text-info mb-2" id="exportCandidates" style="cursor: pointer;">
-      {% trans "Export Candidates" %}
+  <div class="oh-checkpoint-badge text-info mb-2" id="exportsection" style="cursor: pointer;">
+      {% trans "Export section" %}
   </div>
   <div class="oh-checkpoint-badge text-danger mb-2" id="selectedCandidate" >
   </div>
 <div class="oh-card">
-    {% dynamic_regroup data by field as candidate_grouper %}
-    {% for candidate_list in candidate_grouper %}
+    {% for candidate_list in data %}
     <div class="oh-accordion-meta">
 		<div class="oh-accordion-meta__item">
 			<div class="oh-accordion-meta__header" onclick='$(this).toggleClass("oh-accordion-meta__header--show");'>
@@ -22,8 +21,9 @@
 					<div class="oh-tabs__input-badge-container">
 						<span
 							class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round mr-1"
+							title="{{candidate_list.list.paginator.count}} {% trans "Candidates" %}"
 						>
-							{{candidate_list.list|length}}
+						{{candidate_list.list.paginator.count}}
 						</span>
 						{{candidate_list.grouper}}
 					</div>
@@ -42,7 +42,7 @@
 										title="Select All"  />
 										</div>
 									</div>
-									<div class="oh-sticky-table__th" hx-target='#section' hx-get="{% url 'search-candidate' %}?{{pd}}&orderby=name&view=list">{% trans "Candidates" %}</div>
+									<div class="oh-sticky-table__th" hx-target='#section' hx-get="{% url 'search-candidate' %}?{{pd}}&orderby=name&view=list">{% trans "section" %}</div>
 									<div class="oh-sticky-table__th">{% trans "Email" %}</div>
 									<div class="oh-sticky-table__th">{% trans "Phone" %}</div>
 									<div class="oh-sticky-table__th">{% trans "Recruitment" %}</div>
@@ -128,9 +128,9 @@
 										  data-target="#createModal"
 										  {% if cand.is_offer_rejected %} 
 										  style="background: #ff4500a3 !important; color: white;"
-										  title="{% trans "Added In Rejected Candidates" %}"
+										  title="{% trans "Added In Rejected section" %}"
 										  {% else %}
-										  title="{% trans "Add To Rejected Candidates" %}"
+										  title="{% trans "Add To Rejected section" %}"
 										  {% endif %}>
 										<ion-icon name="thumbs-down-outline"></ion-icon>
 										</button>
@@ -186,13 +186,69 @@
 										</div>
 									  </div>
 								</div>
-						
 							</div>
 							{% endfor %}
 						</div>
-					
 					</div>
 				</div>
+				<div class="oh-pagination">
+                    <span class="oh-pagination__page">
+                      {% trans "Page" %} {{ candidate_list.list.number }} {% trans "of" %} {{ candidate_list.list.paginator.num_pages }}.
+                    </span>
+                    <nav class="oh-pagination__nav">
+                      <div class="oh-pagination__input-container me-3">
+                      <span class="oh-pagination__label me-1">{% trans "Page" %}</span>
+                      <input
+                        type="number"
+                        name="{{candidate_list.dynamic_name}}"
+                        class="oh-pagination__input"
+                        value="{{candidate_list.list.number}}"
+                        hx-get="{% url 'search-candidate' %}?{{pd}}" hx-target="#section"
+                        min="1"
+                      />
+                      <span class="oh-pagination__label"
+                        >{% trans "of" %} {{candidate_list.list.paginator.num_pages}}</span
+                      >
+                      </div>
+                      <ul class="oh-pagination__items">
+                      {% if candidate_list.list.has_previous %}
+                      <li class="oh-pagination__item oh-pagination__item--wide">
+                        <a
+                        hx-target="#section"
+                        hx-get="{% url 'search-candidate' %}?{{pd}}&{{candidate_list.dynamic_name}}=1"
+                        class="oh-pagination__link"
+                        >{% trans "First" %}</a
+                        >
+                      </li>
+                      <li class="oh-pagination__item oh-pagination__item--wide">
+                        <a
+                        hx-target="#section"
+                        hx-get="{% url 'search-candidate' %}?{{pd}}&{{candidate_list.dynamic_name}}={{ candidate_list.list.previous_page_number }}"
+                        class="oh-pagination__link"
+                        >{% trans "Previous" %}</a
+                        >
+                      </li>
+                      {% endif %} {% if candidate_list.list.has_next %}
+                      <li class="oh-pagination__item oh-pagination__item--wide">
+                        <a
+                        hx-target="#section"
+                        hx-get="{% url 'search-candidate' %}?{{pd}}&{{candidate_list.dynamic_name}}={{ candidate_list.list.next_page_number }}"
+                        class="oh-pagination__link"
+                        >{% trans "Next" %}</a
+                        >
+                      </li>
+                      <li class="oh-pagination__item oh-pagination__item--wide">
+                        <a
+                        hx-target="#section"
+                        hx-get="{% url 'search-candidate' %}?{{pd}}&{{candidate_list.dynamic_name}}={{ candidate_list.list.paginator.num_pages }}"
+                        class="oh-pagination__link"
+                        >{% trans "Last" %}</a
+                        >
+                      </li>
+                      {% endif %}
+                      </ul>
+                    </nav>
+                    </div>
 			</div>
 		</div>
 	</div>
@@ -246,7 +302,7 @@
 	  ar: "هل ترغب حقًا في أرشفة جميع المرشحين المحددين؟",
 	  de: "Möchten Sie wirklich alle ausgewählten Kandidaten archivieren?",
 	  es: "¿Realmente deseas archivar a todos los candidatos seleccionados?",
-	  en: "Do you really want to archive all the selected candidates?",
+	  en: "Do you really want to archive all the selected section?",
 	  fr: "Voulez-vous vraiment archiver tous les candidats sélectionnés?",
 	};
   
@@ -254,7 +310,7 @@
 	  ar: "هل ترغب حقًا في إلغاء أرشفة جميع المرشحين المحددين؟",
 	  de: "Möchten Sie wirklich alle ausgewählten Kandidaten aus der Archivierung nehmen?",
 	  es: "¿Realmente deseas desarchivar a todos los candidatos seleccionados?",
-	  en: "Do you really want to unarchive all the selected candidates?",
+	  en: "Do you really want to unarchive all the selected section?",
 	  fr: "Voulez-vous vraiment désarchiver tous les candidats sélectionnés?",
 	};
   
@@ -262,7 +318,7 @@
 	  ar: "هل ترغب حقًا في حذف جميع المرشحين المحددين؟",
 	  de: "Möchten Sie wirklich alle ausgewählten Kandidaten löschen?",
 	  es: "¿Realmente deseas eliminar a todos los candidatos seleccionados?",
-	  en: "Do you really want to delete all the selected candidates?",
+	  en: "Do you really want to delete all the selected section?",
 	  fr: "Voulez-vous vraiment supprimer tous les candidats sélectionnés?",
 	};
   
@@ -328,9 +384,9 @@
   
 	function updateCount() {
 	  var ids = makeListUnique1(JSON.parse($("#selectedInstances").attr("data-ids") || "[]"));
-	  $("#unselectAllInstances, #selectedCandidate, #exportCandidates").hide();
+	  $("#unselectAllInstances, #selectedCandidate, #exportsection").hide();
 	  if (ids.length) {
-		$("#unselectAllInstances, #selectedCandidate, #exportCandidates").show();
+		$("#unselectAllInstances, #selectedCandidate, #exportsection").show();
 		$("#selectedCandidate").text("{% trans "Selected" %}" + " -" + ids.length);
 	  }
 	}
@@ -443,7 +499,7 @@
 		tickCandidateCheckboxes()
 		$(".all-candidate-row").prop("checked", false).change()
 	  });
-	  $("#exportCandidates").click(function (e) {
+	  $("#exportsection").click(function (e) {
 		var currentDate = new Date().toISOString().slice(0, 10);
 		var languageCode = null;
 		ids = [];
