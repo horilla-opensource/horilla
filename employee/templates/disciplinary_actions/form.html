@@ -10,22 +10,34 @@
 </div>
 <script>
   setTimeout(function () {
-    $(".oh-modal__close--custom").click();
+    $(".oh-modal__close").click();
   }, 1000);
 </script>
 {% endif %}
-<form
-  hx-post="{% url 'create-actions' %}"
-  hx-target="#createannouncementForm"
-  method="post"
-  hx-encoding="multipart/form-data"
-  id="disciplinaryActionForm"
->
-  {% csrf_token %}
-
-  {{form.as_p}}
-
-</form>
+<div class="oh-modal__dialog-header">
+  <h2 class="oh-modal__dialog-title" id="createModalTitle">
+    {% trans "Take An Action." %}
+  </h2>
+  <button
+    class="oh-modal__close"
+    aria-label="Close"
+    hx-get="{% url 'disciplinary-filter-view' %}"
+    hx-target="#actionContainer"
+  >
+    <ion-icon name="close-outline"></ion-icon>
+  </button>
+</div>
+<div class="oh-modal__dialog-body">
+  <form
+    hx-post="{% url 'create-actions' %}"
+    hx-target="#actionCreateForm"
+    method="post"
+    hx-encoding="multipart/form-data"
+    id="disciplinaryActionForm"
+  >
+    {% csrf_token %} {{form.as_p}}
+  </form>
+</div>
 <script>
   $(document).ready(function () {
     var actionElement = $("#id_action");
@@ -36,8 +48,8 @@
       }
     }
   });
-  $('#id_days').parent().hide();
-  $('#id_unit_in').parent().hide();
-  $('#id_hours').parent().hide();
-  $('[name=days]').prop('required', false);
+  $("#id_days").parent().hide();
+  $("#id_unit_in").parent().hide();
+  $("#id_hours").parent().hide();
+  $("[name=days]").prop("required", false);
 </script>

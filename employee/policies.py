@@ -4,7 +4,6 @@ policies.py
 This module is used to write operation related to policies
 """
 
-
 import json
 from django.contrib import messages
 from django.http import HttpResponse, JsonResponse
@@ -20,7 +19,6 @@ from notifications.signals import notify
 from base.methods import (
     get_key_instances,
 )
-
 
 
 @login_required
@@ -91,6 +89,7 @@ def view_policy(request):
         },
     )
 
+
 @login_required
 @permission_required("employee.delete_policy")
 def delete_policies(request):
@@ -99,8 +98,9 @@ def delete_policies(request):
     """
     ids = request.GET.getlist("ids")
     Policy.objects.filter(id__in=ids).delete()
-    messages.success(request,"Policies deleted")
+    messages.success(request, "Policies deleted")
     return redirect(view_policies)
+
 
 @login_required
 @permission_required("employee.change_policy")
@@ -155,14 +155,16 @@ def disciplinary_actions(request):
     page_number = request.GET.get("page")
     page_obj = paginator_qry(queryset, page_number)
     previous_data = request.GET.urlencode()
-  
-    return render(request, 
-                  "disciplinary_actions/disciplinary_nav.html", 
-                  {
-                    "data": page_obj,
-                    "pd": previous_data,
-                    "f": form,
-                   })
+
+    return render(
+        request,
+        "disciplinary_actions/disciplinary_nav.html",
+        {
+            "data": page_obj,
+            "pd": previous_data,
+            "f": form,
+        },
+    )
 
 
 @login_required
@@ -171,16 +173,16 @@ def create_actions(request):
     """
     Method is used to create Disciplinaryaction
     """
-    form = DisciplinaryActionForm(initial=request.GET)
+    form = DisciplinaryActionForm()
     employees = []
     if request.method == "POST":
         form = DisciplinaryActionForm(request.POST, request.FILES)
         if form.is_valid():
-            emp = form.cleaned_data['employee_id']
+            employee_ids = form.cleaned_data["employee_id"]
 
-            for i in emp:
-                name = i.employee_user_id
-                employees.append(name)
+            for employee in employee_ids:
+                user = employee.employee_user_id
+                employees.append(user)
             form.save()
             messages.success(request, _("Disciplinary action taken."))
             notify.send(
@@ -195,13 +197,12 @@ def create_actions(request):
                 icon="chatbox-ellipses",
             )
 
-            return HttpResponse("<script>window.location.reload()</script>")
     return render(request, "disciplinary_actions/form.html", {"form": form})
 
 
 @login_required
 @permission_required("employee.change_disciplinaryaction")
-def update_actions(request, action_id ):
+def update_actions(request, action_id):
     """
     Method is used to update Disciplinaryaction
     """
@@ -211,9 +212,9 @@ def update_actions(request, action_id ):
     employees = []
     if request.method == "POST":
         form = DisciplinaryActionForm(request.POST, request.FILES, instance=action)
-        
+
         if form.is_valid():
-            emp = form.cleaned_data['employee_id']
+            emp = form.cleaned_data["employee_id"]
 
             for i in emp:
                 name = i.employee_user_id
@@ -233,8 +234,6 @@ def update_actions(request, action_id ):
                 redirect="/employee/disciplinary-actions/",
                 icon="chatbox-ellipses",
             )
-
-            return HttpResponse("<script>window.location.reload()</script>")
     return render(request, "disciplinary_actions/update_form.html", {"form": form})
 
 
@@ -245,9 +244,9 @@ def delete_actions(request, action_id):
     This method is used to delete Disciplinary action
     """
 
-    DisciplinaryAction.objects.filter(id = action_id).delete()
+    DisciplinaryAction.objects.filter(id=action_id).delete()
     messages.success(request, _("Disciplinary action deleted."))
-    return redirect(disciplinary_actions)
+    return redirect(disciplinary_filter_view)
 
 
 @login_required
@@ -269,7 +268,7 @@ def disciplinary_filter_view(request):
 
     previous_data = request.GET.urlencode()
     dis_filter = DisciplinaryActionFilter(request.GET).qs
-    page_number = request.GET.get("page")    
+    page_number = request.GET.get("page")
     page_obj = paginator_qry(dis_filter, page_number)
     data_dict = parse_qs(previous_data)
     get_key_instances(DisciplinaryAction, data_dict)

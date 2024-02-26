@@ -1,25 +1,52 @@
-{% load i18n %}
-{% if form.errors %}
-<!-- form errors  -->
-    <div class="oh-wrapper">
-        <div class="oh-alert-container">
-            {% for error in form.non_field_errors %}
-                <div class="oh-alert oh-alert--animated oh-alert--danger">
-                    {{ error }}
-                </div>
-            {% endfor %}
-        </div>
+{% load i18n %} {% if messages %}
+<div class="oh-wrapper">
+  {% for message in messages %}
+  <div class="oh-alert-container">
+    <div class="oh-alert oh-alert--animated {{message.tags}}">
+      {{ message }}
     </div>
+  </div>
+  {% endfor %}
+</div>
+<script>
+  setTimeout(function () {
+    $(".oh-modal__close").click();
+  }, 1000);
+</script>
+{% endif %} {% if form.errors %}
+<!-- form errors  -->
+<div class="oh-wrapper">
+  <div class="oh-alert-container">
+    {% for error in form.non_field_errors %}
+    <div class="oh-alert oh-alert--animated oh-alert--danger">{{ error }}</div>
+    {% endfor %}
+  </div>
+</div>
 {% endif %}
-<form  
+<div class="oh-modal__dialog-header">
+  <h5 class="oh-modal__dialog-title" id="actionUpdateModalLabel">
+    {% trans "Edit Action." %}
+  </h5>
+  <button
+    class="oh-modal__close"
+    aria-label="Close"
+    hx-get="{% url 'disciplinary-filter-view' %}"
+    hx-target="#actionContainer"
+  >
+    <ion-icon name="close-outline"></ion-icon>
+  </button>
+</div>
+<div class="oh-modal__dialog-body">
+  <form
     hx-post="{% url 'update-actions' form.instance.id %}"
-    hx-target="#announcementUpdate"
-    method="post" 
-    hx-encoding="multipart/form-data">
-    {% csrf_token %}
-    {{form.as_p}}
-</form>
+    hx-target="#actionUpdateForm"
+    method="post"
+    hx-encoding="multipart/form-data"
+  >
+    {% csrf_token %} {{form.as_p}}
+  </form>
+</div>
 
 <script>
-    $("#announcementUpdate #id_action").change()
+  $("#actionUpdateForm #id_action").change();
 </script>

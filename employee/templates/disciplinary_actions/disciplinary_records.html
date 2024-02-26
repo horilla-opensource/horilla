@@ -4,7 +4,17 @@
 {% load static %}
 {% load i18n %}
 {% include 'filter_tags.html' %}
-
+{% if messages %}
+<div class="oh-wrapper">
+  {% for message in messages %}
+  <div class="oh-alert-container">
+    <div class="oh-alert oh-alert--animated {{message.tags}}">
+      {{ message }}
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
 {% if data %}
 <!-- start of column toggle -->
 <div class="oh-table_sticky--wrapper">
@@ -39,75 +49,105 @@
             </div>
         </div>
         <div class="oh-sticky-table__tbody">
-            {% for i in data %}
-                <div class="oh-sticky-table__tr">
-                    <div class="oh-sticky-table__td">
-                        {% for emp in i.employee_id.all %}
-                          <div class="oh-profile oh-profile--md mt-2">
-                              <div class="oh-profile__avatar mr-1">
-                                  <img src="{{ emp.get_avatar }}" class="oh-profile__image" alt="{{ emp }}">
-                              </div>
-                              <span class="oh-profile__name oh-text--dark">{{ emp }}</span>
-                          </div><br>
-                        {% endfor %}
+          {% for i in data %}
+          <div class="oh-sticky-table__tr oh-permission-table__tr oh-permission-table--collapsed">
+            <div class="oh-sticky-table__sd oh-permission-table--toggle"  data-toggle-count>
+              <div class="d-flex align-items-center">
+                <button class="oh-permission-table__collapse me-2">
+                  <span  title="{% trans "Reveal" %}"><ion-icon class="oh-permission-table__collapse-down" name="chevron-down-outline"></ion-icon></span>
+                  <span  title="{% trans "Collapse" %}"><ion-icon class="oh-permission-table__collapse-up" name="chevron-up-outline"></ion-icon></span>
+                </button>
+                <span class="count-span" style="font-style:italic;color:hsl(0deg,0%,37%);">{{i.employee_id.all|length}} 
+                  {% if i.employee_id.all|length > 1 %}
+                    {% trans "Employees" %}
+                  {% else %}
+                    {% trans "Employee" %}
+                  {% endif %}
+                </span>
+              </div>
+              {% for emp in i.employee_id.all %}
+                <span class="oh-user-panel oh-collapse-panel" data-type="user">
+                  <div class="oh-profile oh-profile--md">
+                    <div class="oh-profile__avatar mr-1">
+                      <img
+                      src="https://ui-avatars.com/api/?name={{emp.get_full_name}}&background=random"
+                      class="oh-profile__image"
+                      alt="Baby C."
+                      />
                     </div>
-                    {% if i.action.action_type == 'suspension' %}
-                        <div data-cell-index="1" class="oh-sticky-table__td">{{ i.action }}
-                          <p class="fw-bold mt-2">{% trans "Suspended for" %}
-                            {% if i.unit_in == "days" %}
-                             {{ i.days }} {% trans "days" %}.
-                             {% else %}
-                             {{ i.hours }} {% trans "hours" %}.
-                            {% endif %}
-                            </p>
-
-                        </div>
-                    {% else %}
-                        <div data-cell-index="1" class="oh-sticky-table__td">{{ i.action }}</div>
-                    {% endif %}
-
-                    {% if i.action.action_type == 'suspension' and i.unit_in == "days" %}
-                      <div data-cell-index="2" class="oh-sticky-table__td">
-                        <span class="dateformat_changer">{{ i.start_date }}</span>
-                        &nbsp to &nbsp<span class="dateformat_changer">{{ i.start_date | add_days:i.days }}</span>
+                    <span class="oh-profile__name oh-text--dark" title="{{emp}}"
+                    >{{emp.employee_first_name|truncatechars:8}}</span
+                    >
+                  </div>
+                  <a title="{% trans "Remove" %}" hx-target="#recruitment-container"class="oh-user-panel__remove">
+                    <ion-icon name="close-outline"></ion-icon>
+                  </a>
+                </span>
+              {% endfor %}
+            </div>
+                {% if i.action.action_type == 'suspension' %}
+                    <div data-cell-index="1" class="oh-sticky-table__td">{{ i.action }}
+                      <p class="fw-bold mt-2">{% trans "Suspended for" %}
+                        {% if i.unit_in == "days" %}
+                         {{ i.days }} {% trans "days" %}.
+                         {% else %}
+                         {{ i.hours }} {% trans "hours" %}.
+                        {% endif %}
+                      </p>
+                    </div>
+                {% else %}
+                    <div data-cell-index="1" class="oh-sticky-table__td">{{ i.action }}</div>
+                {% endif %}
+                {% if i.action.action_type == 'suspension' and i.unit_in == "days" %}
+                  <div data-cell-index="2" class="oh-sticky-table__td">
+                    <span class="dateformat_changer">{{ i.start_date }}</span>
+                    &nbsp to &nbsp<span class="dateformat_changer">{{ i.start_date | add_days:i.days }}</span>
+                  </div>
+                {% else %}
+                    <div data-cell-index="2" class="oh-sticky-table__td dateformat_changer">{{ i.start_date }}</div>
+                {% endif %}
+                
+                {% if i.attachment %}
+                  <div data-cell-index="3" class="oh-sticky-table__td">
+                    <div class="oh-helpdesk_attached--content">
+                      <div class="oh-helpdesk__attachment-icon">
+                        <a href="{{ i.attachment.url }}" target="_blank"><span class="oh-file-icon oh-file-icon--pdf"></span></a>
                       </div>
-                    {% else %}
-                        <div data-cell-index="2" class="oh-sticky-table__td dateformat_changer">{{ i.start_date }}</div>
-                    {% endif %}
-                    
-                    {% if i.attachment %}
-                      <div data-cell-index="3" class="oh-sticky-table__td">
-                        <div class="oh-helpdesk_attached--content">
-                          <div class="oh-helpdesk__attachment-icon">
-                            <a href="{{ i.attachment.url }}" target="_blank"><span class="oh-file-icon oh-file-icon--pdf"></span></a>
-                          </div>
-                          <a href="{{ i.attachment.url }}" target="_blank"><span class="oh-helpdesk__filename">{% trans "View File" %}</span></a>
-                        </div>
-                      </div>
-                    {% else %}
-                      <div data-cell-index="3" class="oh-sticky-table__td">{% trans "No file has been uploaded." %}</div>
-                    {% endif %}
-
-                    <div data-cell-index="4" class="oh-sticky-table__td">{{ i.description|truncatechars:25}}</div>
-                    
-                    {% if perms.payroll.change_disciplinaryaction or perms.payroll.delete_disciplinaryaction %}
-                      <div class="oh-sticky-table__td">
-                        <div class="oh-btn-group" >
-                          {% if perms.payroll.change_disciplinaryaction %}
-                            <a hx-get="{% url 'update-actions' i.id %}" hx-target='#announcementUpdate' data-toggle='oh-modal-toggle' data-target="#announcementUpdateModal" class="oh-btn oh-btn--light-bkg w-50" title="{% trans 'Edit' %}">
-                            <ion-icon name="create-outline"></ion-icon></a>
-                          {% endif %}
-                          {% if perms.payroll.delete_disciplinaryaction %}
-                            <form action="{% url 'delete-actions' i.id %}" onsubmit="return confirm('{% trans "Are you sure you want to delete this disciplinary action?" %}');" method='post' class="w-50">
-                              {% csrf_token %}
-                              <button type='submit' class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100" title="{% trans 'Remove' %}"><ion-icon name="trash-outline"></ion-icon></button>
-                            </form>
-                          {% endif %}
-                        </div>
-                      </div>
-                    {% endif %}
-                </div>
-            {% endfor %}
+                      <a href="{{ i.attachment.url }}" target="_blank"><span class="oh-helpdesk__filename">{% trans "View File" %}</span></a>
+                    </div>
+                  </div>
+                {% else %}
+                  <div data-cell-index="3" class="oh-sticky-table__td">{% trans "No file has been uploaded." %}</div>
+                {% endif %}
+                <div data-cell-index="4" class="oh-sticky-table__td">{{ i.description|truncatechars:25}}</div>
+                
+                {% if perms.payroll.change_disciplinaryaction or perms.payroll.delete_disciplinaryaction %}
+                  <div class="oh-sticky-table__td">
+                    <div class="oh-btn-group" >
+                      {% if perms.payroll.change_disciplinaryaction %}
+                        <a hx-get="{% url 'update-actions' i.id %}" hx-target='#actionUpdateForm' data-toggle='oh-modal-toggle' data-target="#actionUpdateModal" class="oh-btn oh-btn--light-bkg w-50" title="{% trans 'Edit' %}">
+                        <ion-icon name="create-outline"></ion-icon></a>
+                      {% endif %}
+                      {% if perms.payroll.add_disciplinaryaction %}
+                      <a class="oh-btn oh-btn--light-bkg w-50" data-toggle="oh-modal-toggle"
+                        data-target="#actionCreateModal" hx-get="{% url 'duplicate-disciplinary-actions' i.id %}?{{pg}}"
+                        title="{% trans 'Duplicate' %}" hx-target="#actionCreateForm"
+                        style= "cursor: pointer;"
+                      >
+                        <ion-icon name="copy-outline"></ion-icon>
+                      </a>
+                      {% endif %}
+                      {% if perms.payroll.delete_disciplinaryaction %}
+                        <form hx-confirm="{% trans "Are you sure you want to delete this disciplinary action?" %}" hx-post="{% url 'delete-actions' i.id %}" hx-target="#actionContainer" class="w-50">
+                          {% csrf_token %}
+                          <button type='submit' class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100" title="{% trans 'Remove' %}"><ion-icon name="trash-outline"></ion-icon></button>
+                        </form>
+                      {% endif %}
+                    </div>
+                  </div>
+                {% endif %}
+            </div>
+          {% endfor %}
         </div>
     </div>
   </div>
@@ -247,4 +287,11 @@
     $("#displinaryActionCells").find("[type=checkbox]").prop("checked",true)
   }
   $("[type=checkbox]").change()
+  $(document).ready(function () {
+    $("[data-toggle-count]").click(function (e) { 
+      e.preventDefault();
+      span = $(this).parent().find(".count-span").toggle()
+    });
+
+  });
 </script>

@@ -5,9 +5,10 @@ This module is used to map url path with view methods.
 """
 
 from django.urls import path
-from base.views import object_delete
+from base.views import object_delete, object_duplicate
 from employee import not_in_out_dashboard, policies, views
-from employee.models import Employee
+from employee.forms import DisciplinaryActionForm
+from employee.models import DisciplinaryAction, Employee
 from horilla_documents.models import DocumentRequest
 
 urlpatterns = [
@@ -123,7 +124,11 @@ urlpatterns = [
         views.employee_archive,
         name="employee-archive",
     ),
-    path("replace-employee/<int:emp_id>/",views.replace_employee,name="replace-employee"),
+    path(
+        "replace-employee/<int:emp_id>/",
+        views.replace_employee,
+        name="replace-employee",
+    ),
     path(
         "employee-user-group-assign-delete/<int:obj_id>/",
         views.employee_user_group_assign_delete,
@@ -324,6 +329,16 @@ urlpatterns = [
         "disciplinary-actions/",
         policies.disciplinary_actions,
         name="disciplinary-actions",
+    ),
+    path(
+        "duplicate-disciplinary-actions/<int:obj_id>/",
+        object_duplicate,
+        name="duplicate-disciplinary-actions",
+        kwargs={
+            "model": DisciplinaryAction,
+            "form": DisciplinaryActionForm,
+            "template": "disciplinary_actions/form.html",
+        },
     ),
     path("create-actions", policies.create_actions, name="create-actions"),
     path(

@@ -8,7 +8,7 @@
   </div>
   <form
     hx-get="{% url 'disciplinary-filter-view' %}"
-    hx-target="#policyContainer"
+    hx-target="#actionContainer"
     id="filterForm"
     class="d-flex"
     onsubmit = "event.preventDefault()"
@@ -119,7 +119,7 @@
             </div>
           </div>
           <div class="oh-main__titlebar-button-container">
-            <a hx-get="{% url 'create-actions' %}" hx-target="#createannouncementForm" data-toggle="oh-modal-toggle" data-target="#anouncementModal" class="oh-btn oh-btn--secondary">
+            <a hx-get="{% url 'create-actions' %}" hx-target="#actionCreateForm" data-toggle="oh-modal-toggle" data-target="#actionCreateModal" class="oh-btn oh-btn--secondary">
               <ion-icon name="add-outline"></ion-icon>
               {% trans 'Take An Action' %}
             </a>
@@ -136,7 +136,7 @@
         hx-get="{% url 'action-type-create' %}?dynamic=employee" hx-target="#dynamicCreateModalBody">
   </span>
   {% if data  %}
-    <div class="oh-wrapper" id="policyContainer">
+    <div class="oh-wrapper" id="actionContainer">
       {% include 'disciplinary_actions/disciplinary_records.html' %}
     </div>
   {% else %}
@@ -196,47 +196,21 @@
 <!-- start of create modal -->
 <div
 	class="oh-modal"
-	id="anouncementModal"
+	id="actionCreateModal"
 	role="dialog"
 	aria-labelledby="emptagModal"
 	aria-hidden="true"
->
-	<div class="oh-modal__dialog">
-		<div class="oh-modal__dialog-header">
-			<h2 class="oh-modal__dialog-title" id="createModalTitle">
-				{% trans "Take An Action." %}
-			</h2>
-			<button class="oh-modal__close" aria-label="Close">
-				<ion-icon name="close-outline"></ion-icon>
-			</button>
-		</div>
-		<div class="oh-modal__dialog-body" id="createannouncementForm"></div>
-	</div>
+ >
+	<div class="oh-modal__dialog" id="actionCreateForm"> </div>
 </div>
 <!-- end of create modal -->
 
 
 <!-- start of update modal -->
-<div
-class="oh-modal"
-id="announcementUpdateModal"
-role="dialog"
-aria-labelledby="announcementUpdateModal"
-aria-hidden="true"
->
-<div class="oh-modal__dialog">
-  <div class="oh-modal__dialog-header">
-    <h5 class="oh-modal__dialog-title" id="announcementUpdateModalLabel"
-      >{% trans "Edit Action." %}</span
-    >
-    <button class="oh-modal__close" aria-label="Close" >
-      <ion-icon name="close-outline"></ion-icon>
-    </button>
-  </div>
-  <div class="oh-modal__dialog-body" id='announcementUpdate'>
-    
-  </div>
-</div>
+<div class="oh-modal" id="actionUpdateModal" 
+    role="dialog" aria-labelledby="actionUpdateModal"
+    aria-hidden="true">
+<div class="oh-modal__dialog" id='actionUpdateForm'> </div>
 </div>
 <!-- end of update modal -->
 

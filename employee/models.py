@@ -771,8 +771,8 @@ class DisciplinaryAction(models.Model):
     Disciplinary model
     """
 
-    choices = [("days", "Days"), ("hours", "Hours")]
-    employee_id = models.ManyToManyField(Employee, verbose_name="Employee")
+    choices = [("days", _("Days")), ("hours", _("Hours"))]
+    employee_id = models.ManyToManyField(Employee, verbose_name=_("Employees"))
     action = models.ForeignKey(Actiontype, on_delete=models.CASCADE)
     description = models.TextField(max_length=255)
     unit_in = models.CharField(max_length=10, choices=choices, default="days")
