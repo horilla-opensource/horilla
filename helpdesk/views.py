@@ -1202,16 +1202,6 @@ def update_department_manager(request, dep_id):
 
 
 @login_required
-def view_department_managers(request):
-    department_managers = DepartmentManager.objects.all()
-
-    context = {
-        "department_managers": department_managers,
-    }
-    return render(request, "department_managers/department_managers.html", context)
-
-
-@login_required
 def delete_department_manager(request, dep_id):
     department_manager = DepartmentManager.objects.get(id=dep_id)
     department_manager.delete()

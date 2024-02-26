@@ -53,7 +53,6 @@ urlpatterns = [
     path('tickets-select-filter',views.tickets_select_filter,name='tickets-select-filter'),
     path('tickets-bulk-archive',views.tickets_bulk_archive,name='tickets-bulk-archive'),
     path('tickets-bulk-delete',views.tickets_bulk_delete,name='tickets-bulk-delete'),
-    path('department-manager-view/',views.view_department_managers,name='department-manager-view'),
     path('department-manager-create/',views.create_department_manager,name='department-manager-create'),
     path('department-manager-update/<int:dep_id>',views.update_department_manager,name='department-manager-update'),
     path('department-manager-delete/<int:dep_id>',views.delete_department_manager,name='department-manager-delete'),
