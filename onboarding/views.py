@@ -29,7 +29,7 @@ from django.views.decorators.http import require_http_methods
 from base.models import JobPosition
 from notifications.signals import notify
 from horilla import settings
-from horilla.decorators import login_required, hx_request_required
+from horilla.decorators import login_required, hx_request_required, logger
 from horilla.decorators import permission_required
 from base.methods import generate_pdf, get_key_instances, get_pagination, sortby
 from onboarding.filters import OnboardingCandidateFilter, OnboardingStageFilter
@@ -668,7 +668,8 @@ def email_send(request):
             email.send()
             # to check ajax or not
             messages.success(request, "Portal link sent to the candidate")
-        except:
+        except Exception as e:
+            logger.error(e)
             messages.error(request, f"Mail not send to {candidate.name}")
         candidate.start_onboard = True
         candidate.save()
@@ -679,8 +680,8 @@ def email_send(request):
             )
             onboarding_candidate.candidate_id = candidate
             onboarding_candidate.save()
-        except:
-            messages.error(request, "Something went wrong.")
+        except Exception as e:
+            logger.error(e)
 
     return HttpResponse("<script>window.location.reload()</script>")
 

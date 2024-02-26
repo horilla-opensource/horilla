@@ -113,7 +113,9 @@
         <ion-icon name="close-outline"></ion-icon>
       </button>
     </div>
-    <form hx-post="{% url 'email-send' %}" hx-target="#addAttachmentsBody" hx-encoding="multipart/form-data">
+    <form hx-post="{% url 'email-send' %}" 
+    hx-target="#addAttachmentsBody" 
+    hx-encoding="multipart/form-data">
       <div class="oh-modal__dialog-body" id="addAttachmentsBody">
         <section>
           <div id="keyResultsContainer">
@@ -146,7 +148,7 @@
         </section>
       </div>
       <div class="oh-modal__dialog-footer">
-        <button type="button" onclick="$('.oh-modal#addAttachments').removeClass('oh-modal--show');$(`#messages`).html(
+        <button onclick="$('.oh-modal#addAttachments').removeClass('oh-modal--show');$(`#messages`).html(
           $(`
           <div class='oh-alert oh-alert--animated oh-alert--info'>
             Processing...
