@@ -170,7 +170,7 @@ urlpatterns = [
         "leave-request-create", views.leave_request_create, name="leave-request-create"
     ),
     path(
-        "leave-allocation-request-view",
+        "leave-allocation-request-view/",
         views.leave_allocation_request_view,
         name="leave-allocation-request-view",
     ),
@@ -210,7 +210,7 @@ urlpatterns = [
         name="leave-allocation-request-delete",
     ),
     path(
-        "leave-allocation-request-view",
+        "leave-allocation-request-view/",
         views.leave_allocation_request_view,
         name="leave-allocation-request-view",
     ),
