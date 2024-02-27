@@ -1957,15 +1957,36 @@ def get_manager_in(request):
     """
     employee_id = request.GET.get("employee_id")
     employee = Employee.objects.filter(id=employee_id).first()
-    return render(
-        request,
-        "related_models.html",
-        {
-            "employee": employee,
-            "related_models": employee.get_archive_condition().get("related_models"),
-            "title": _("Assigned In"),
-        },
-    )
+    employee.is_active = not employee.is_active
+    employee.employee_user_id.is_active = not employee.is_active
+    save = True
+    message = "Employee un-archived"
+    if not employee.is_active:
+        result = employee.get_archive_condition()
+        if result:
+            save = False
+        else:
+            message = _("Employee archived")
+    if save:
+        employee.save()
+        messages.success(request, message)
+        key = "HTTP_HX_REQUEST"
+        if key not in request.META.keys():
+            return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+        else:
+            return HttpResponse("<script>window.location.reload()</script>")
+    else:
+        return render(
+            request,
+            "related_models.html",
+            {
+                "employee": employee,
+                "related_models": result.get("related_models"),
+                "related_model_fields": result.get("related_model_fields"),
+                "employee_choices": result.get("employee_choices"),
+                "title": _("Can't Archive"),
+            },
+        )
 
 
 @login_required
