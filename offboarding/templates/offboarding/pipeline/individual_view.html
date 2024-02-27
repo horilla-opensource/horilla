@@ -1,5 +1,18 @@
-{% load i18n %} {% load offboarding_filter %} 
-<div class="oh-modal__dialog-body oh-timeoff-modal__body  pb-2">
+{% load i18n %} {% load offboarding_filter %}
+{% if request.GET.requests_ids %}
+<div class="oh-modal__dialog oh-modal__dialog--navigation m-0 p-0">
+    <button hx-get="{% url "offboarding-individual-view" previous %}?requests_ids={{requests_ids}}" hx-target = "#singleView" class="oh-modal__diaglog-nav oh-modal__nav-prev">
+        <ion-icon name="chevron-back-outline" class="md hydrated" role="img"
+        aria-label="chevron back outline"></ion-icon>
+    </button>
+
+    <button hx-get="{% url "offboarding-individual-view" next %}?requests_ids={{requests_ids}}" hx-target = "#singleView" class="oh-modal__diaglog-nav oh-modal__nav-next">
+        <ion-icon name="chevron-forward-outline" class="md hydrated" role="img"
+        aria-label="chevron forward outline"></ion-icon>
+    </button>
+</div>
+{% endif %}
+<div class="oh-modal__dialog-body oh-timeoff-modal__body">
     <div class="oh-timeoff-modal__profile-content">
         <div class="oh-profile">
             <div class="oh-profile-section__edit-photo me-3" style="width: 80px; height: 80px;" >
@@ -10,8 +23,8 @@
                 <a class="oh-timeoff-modal__profile-content" style="text-decoration:none;" 
                     href ="{% url 'employee-view-individual' employee.employee_id.id %}">
                     <div class="oh-timeoff-modal__profile-info mb-2">
-                        <span class="oh-timeoff-modal__user fw-bold">{{employee}}</span>
-                        <span class="oh-timeoff-modal__position">{{employee.employee_id.employee_work_info.department_id}}</span>
+                        <span class="oh-timeoff-modal__user fw-bold">{{employee.employee_id}}</span>
+                        <span class="oh-timeoff-modal__position">{{employee.employee_id.employee_work_info.department_id}} / {{employee.employee_id.employee_work_info.job_position_id}}</span>
                     </div>
                 </a>
             </div>
@@ -57,22 +70,23 @@
             </span>
         </div>
     </div>
-
-    <div class="oh-timeoff-modal__stats w-100 mt-3 mb-3">
+    {% if employee.employeetask_set.all %}
+    <div class="oh-timeoff-modal__stats w-100 mt-3">
         <div class="oh-timeoff-modal__stat">
             <span class="oh-timeoff-modal__stat-count">{% trans "Tasks" %}</span>
             <div class="row ms-2">
                 {% for task in employee.employeetask_set.all %}
                     <div class="col-6 ps-0 pb-1">
-                        <div class="oh-timeoff-modal__stat-title mb-1 "><span class="oh-dot oh-dot--small  me-1 oh-dot--color-{{task.status}}"></span>{{task.task_id.title}} </div>
+                        <div class="oh-timeoff-modal__stat-title mb-1 "><span class="oh-dot oh-dot--small me-1 oh-dot--color-{{task.status}}"></span>{{task.task_id.title}} </div>
                         <div class="" id="task{{task.id}}{{employee.id}}">
-                                {% include 'offboarding/pipeline/employee_task.html' %}
+                            {% include 'offboarding/pipeline/employee_task.html' %}
                         </div>
                     </div>
                 {% endfor %}
             </div>
         </div>
     </div>
+    {% endif %}
     
 </div>
 

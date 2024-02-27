@@ -52,18 +52,16 @@ from attendance.methods.group_by import group_by_queryset as group_by
 from recruitment.pipeline_grouper import group_by_queryset
 
 
-# Create your views here.
-
-
 def pipeline_grouper(filters={}, offboardings=[]):
     groups = []
 
     for offboarding in offboardings:
+        employees = []
         stages = PipelineStageFilter(
             filters, queryset=offboarding.offboardingstage_set.all()
         ).qs.order_by("id")
         all_stages_grouper = []
-        data = {"offboarding": offboarding, "stages": []}
+        data = {"offboarding": offboarding, "stages": [], "employees": []}
         for stage in stages:
             all_stages_grouper.append({"grouper": stage, "list": []})
             stage_employees = PipelineEmployeeFilter(
@@ -77,7 +75,9 @@ def pipeline_grouper(filters={}, offboardings=[]):
                 filters.get(page_name),
                 page_name,
             ).object_list
-
+            employees = employees + [
+                employee.id for employee in stage.offboardingemployee_set.all()
+            ]
             data["stages"] = data["stages"] + employee_grouper
 
         ordered_data = []
@@ -96,6 +96,7 @@ def pipeline_grouper(filters={}, offboardings=[]):
         data = {
             "offboarding": offboarding,
             "stages": ordered_data,
+            "employee_ids": employees,
         }
         groups.append(data)
 
@@ -110,6 +111,7 @@ def pipeline(request):
     """
     Offboarding pipleine view
     """
+    employees = []
     offboardings = PipelineFilter().qs
     groups = pipeline_grouper({}, offboardings)
     for item in groups:
@@ -117,7 +119,14 @@ def pipeline(request):
     stage_forms = {}
     for offboarding in offboardings:
         stage_forms[str(offboarding.id)] = StageSelectForm(offboarding=offboarding)
+        for stage in offboarding.offboardingstage_set.all():
+            employees = employees + [
+                employee for employee in stage.offboardingemployee_set.all()
+            ]
+
     filter_dict = parse_qs(request.GET.urlencode())
+    requests_ids = json.dumps([instance.id for instance in employees])
+
     return render(
         request,
         "offboarding/pipeline/pipeline.html",
@@ -128,6 +137,7 @@ def pipeline(request):
             "stage_filter": PipelineStageFilter(),
             "stage_forms": stage_forms,
             "filter_dict": filter_dict,
+            "requests_ids": requests_ids,
         },
     )
 
@@ -596,6 +606,14 @@ def offboarding_individual_view(request, emp_id):
         "offboarding_stages": offboarding_stages,
         "stage_forms": stage_forms,
     }
+
+    requests_ids_json = request.GET.get("requests_ids")
+    if requests_ids_json:
+        requests_ids = json.loads(requests_ids_json)
+        previous_id, next_id = closest_numbers(requests_ids, emp_id)
+        context["requests_ids"] = requests_ids_json
+        context["previous"] = previous_id
+        context["next"] = next_id
     return render(request, "offboarding/pipeline/individual_view.html", context)
 
 
@@ -683,7 +701,6 @@ def search_resignation_request(request):
 
     if request.GET.get("view"):
         data_dict.pop("view")
-
 
     return render(
         request,
