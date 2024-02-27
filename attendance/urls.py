@@ -4,6 +4,7 @@ urls.py
 This page is used to map request or url path with function
 
 """
+
 from django.urls import path
 import attendance.views.clock_in_out
 
@@ -77,6 +78,11 @@ urlpatterns = [
         "attendance-activity-view/",
         views.attendance_activity_view,
         name="attendance-activity-view",
+    ),
+    path(
+        "attendance-activity-single-view/<int:obj_id>/",
+        views.activity_single_view,
+        name="attendance-activity-single-view",
     ),
     path(
         "attendance-activity-search",
@@ -352,5 +358,5 @@ urlpatterns = [
         views.work_records_change_month,
         name="work-records-change-month",
     ),
-    path("enable-timerunner",views.enable_timerunner,name="enable-timerunner")
+    path("enable-timerunner", views.enable_timerunner, name="enable-timerunner"),
 ]

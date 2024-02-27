@@ -750,6 +750,9 @@ def attendance_activity_view(request):
     attendance_activities = attendance_activities | self_attendance_activities
     attendance_activities = attendance_activities.distinct()
     attendance_activities = attendance_activities.order_by("-pk")
+    activity_ids = json.dumps(
+        [instance.id for instance in paginator_qry(attendance_activities, None)]
+    )
     export_form = AttendanceActivityExportForm()
     if attendance_activities.exists():
         template = "attendance/attendance_activity/attendance_activity_view.html"
@@ -767,7 +770,28 @@ def attendance_activity_view(request):
             ),
             "gp_fields": AttendanceActivityReGroup.fields,
             "export_form": export_form,
+            "activity_ids":activity_ids,
         },
+    )
+
+
+def activity_single_view(request, obj_id):
+    activity = AttendanceActivity.objects.get(id=obj_id)
+    attendance = Attendance.objects.filter(attendance_date = activity.attendance_date).first()
+    instance_ids_json = request.GET["instances_ids"]
+    instance_ids = json.loads(instance_ids_json) if instance_ids_json else []
+    previous_instance, next_instance = closest_numbers(instance_ids, obj_id)
+    context = {
+        "activity": activity,
+        "attendance":attendance,
+        "previous_instance": previous_instance,
+        "next_instance": next_instance,
+        "instance_ids_json": instance_ids_json,
+    }
+    return render(
+        request,
+        "attendance/attendance_activity/single_attendance_activity.html",
+        context=context,
     )
 
 
@@ -1649,10 +1673,6 @@ def create_attendancerequest_comment(request, attendance_id):
     form = AttendancerequestCommentForm(
         initial={"employee_id": emp.id, "request_id": attendance_id}
     )
-    
-    
-
-
 
     if request.method == "POST":
         form = AttendancerequestCommentForm(request.POST)
@@ -1670,7 +1690,10 @@ def create_attendancerequest_comment(request, attendance_id):
                 initial={"employee_id": emp.id, "request_id": attendance_id}
             )
             messages.success(request, _("Comment added successfully!"))
-            if attendance.employee_id.employee_work_info.reporting_manager_id is not None:
+            if (
+                attendance.employee_id.employee_work_info.reporting_manager_id
+                is not None
+            ):
                 if request.user.employee_get.id == attendance.employee_id.id:
                     rec = (
                         attendance.employee_id.employee_work_info.reporting_manager_id.employee_user_id

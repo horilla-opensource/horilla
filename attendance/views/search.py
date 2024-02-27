@@ -3,6 +3,7 @@ search.py
 
 This is moduel is used to register end point related to the search filter functionalities
 """
+
 import json
 from datetime import datetime
 from urllib.parse import parse_qs
@@ -210,10 +211,16 @@ def attendance_activity_search(request):
         attendance_activities = group_by_queryset(
             attendance_activities, field, request.GET.get("page"), "page"
         )
+        activity_ids = json.dumps(
+            [instance.id for instance in paginator_qry(attendance_activities, None)]
+        )
         template = "attendance/attendance_activity/group_by.html"
     else:
         attendance_activities = paginator_qry(
             attendance_activities, request.GET.get("page")
+        )
+        activity_ids = json.dumps(
+            [instance.id for instance in paginator_qry(attendance_activities, None)]
         )
     data_dict = parse_qs(previous_data)
     get_key_instances(AttendanceActivity, data_dict)
@@ -228,6 +235,7 @@ def attendance_activity_search(request):
             "pd": previous_data,
             "field": field,
             "filter_dict": data_dict,
+            "activity_ids": activity_ids,
         },
     )
 
@@ -304,7 +312,7 @@ def filter_own_attendance(request):
             attendances, field, request.GET.get("page"), "page"
         )
         template = "attendance/own_attendance/group_by.html"
-        attendances_ids =[]
+        attendances_ids = []
     return render(
         request,
         template,
@@ -339,10 +347,10 @@ def own_attendance_sort(request):
 @login_required
 def search_attendance_requests(request):
     field = request.GET.get("field")
-    all_attendance = Attendance.objects.all()    
+    all_attendance = Attendance.objects.all()
     if request.GET.get("sortby"):
         all_attendance = sortby(request, all_attendance, "sortby")
-        
+
     requests = all_attendance.filter(
         is_validate_request=True, employee_id__is_active=True
     )
