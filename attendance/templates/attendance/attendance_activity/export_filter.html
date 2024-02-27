@@ -6,7 +6,7 @@
       <div class="row">
         <div class="col-sm-12 col-md-12 col-lg-6">
           <div class="oh-input-group">
-            <label class="oh-label">
+            <label class="oh-label" for="select-all-fields">
               <input type="checkbox" id="select-all-fields" /> {% trans "Select All" %}
             </label>
           </div>
@@ -16,7 +16,9 @@
         {% for field in export_form.selected_fields %}
         <div class="col-sm-4 col-md-4 col-lg-4">
           <div class="oh-input-group">
-            <label class="oh-label"> {{ field|capfirst }} </label>
+            <label class="oh-label" for="{{field.id_for_label}}">
+              {{ field|capfirst }}
+            </label>
           </div>
         </div>
         {% endfor %}
@@ -29,37 +31,69 @@
       <div class="row">
         <div class="col-sm-12 col-md-12 col-lg-6">
           <div class="oh-input-group">
-            <label class="oh-label">{% trans "Employee" %}</label>
+            <label
+              class="oh-label"
+              for="{{export.form.employee_id.id_for_label}}"
+              >{% trans "Employee" %}</label
+            >
             {{export.form.employee_id}}
           </div>
           <div class="oh-input-group">
-            <label class="oh-label">{% trans "Department" %}</label>
+            <label
+              class="oh-label"
+              for="{{export.form.employee_id__employee_work_info__department_id.id_for_label}}"
+              >{% trans "Department" %}</label
+            >
             {{export.form.employee_id__employee_work_info__department_id}}
           </div>
           <div class="oh-input-group">
-            <label class="oh-label">{% trans "Shift" %}</label>
+            <label
+              class="oh-label"
+              for="{{export.form.employee_id__employee_work_info__shift_id.id_for_label}}"
+              >{% trans "Shift" %}</label
+            >
             {{export.form.employee_id__employee_work_info__shift_id}}
           </div>
           <div class="oh-input-group">
-            <label class="oh-label">{% trans "Reporting Manager" %}</label>
+            <label
+              class="oh-label"
+              for="{{export.form.employee_id__employee_work_info__reporting_manager_id.id_for_label}}"
+              >{% trans "Reporting Manager" %}</label
+            >
             {{export.form.employee_id__employee_work_info__reporting_manager_id}}
           </div>
         </div>
         <div class="col-sm-12 col-md-12 col-lg-6">
           <div class="oh-input-group">
-            <label class="oh-label">{% trans "Company" %}</label>
+            <label
+              class="oh-label"
+              for="{{export.form.employee_id__employee_work_info__company_id.id_for_label}}"
+              >{% trans "Company" %}</label
+            >
             {{export.form.employee_id__employee_work_info__company_id}}
           </div>
           <div class="oh-input-group">
-            <label class="oh-label">{% trans "Job Position" %}</label>
+            <label
+              class="oh-label"
+              for="{{export.form.employee_id__employee_work_info__job_position_id.id_for_label}}"
+              >{% trans "Job Position" %}</label
+            >
             {{export.form.employee_id__employee_work_info__job_position_id}}
           </div>
           <div class="oh-input-group">
-            <label class="oh-label">{% trans "Work Type" %}</label>
+            <label
+              class="oh-label"
+              for="{{export.form.employee_id__employee_work_info__work_type_id.id_for_label}}"
+              >{% trans "Work Type" %}</label
+            >
             {{export.form.employee_id__employee_work_info__work_type_id}}
           </div>
           <div class="oh-input-group">
-            <label class="oh-label">{% trans "Work Location" %}</label>
+            <label
+              class="oh-label"
+              for="{{export.form.employee_id__employee_work_info__location.id_for_label}}"
+              >{% trans "Work Location" %}</label
+            >
             {{export.form.employee_id__employee_work_info__location}}
           </div>
         </div>
@@ -72,21 +106,35 @@
       <div class="row">
         <div class="col-sm-12 col-md-12 col-lg-6">
           <div class="oh-input-group">
-            <label class="oh-label">{% trans "Attendance Date" %}</label>
+            <label
+              class="oh-label"
+              for="{{export.form.attendance_date.id_for_label}}"
+              >{% trans "Attendance Date" %}</label
+            >
             {{export.form.attendance_date}}
           </div>
           <div class="oh-input-group">
-            <label class="oh-label">{% trans "Out Date" %}</label>
+            <label
+              class="oh-label"
+              for="{{export.form.clock_out_date.id_for_label}}"
+              >{% trans "Out Date" %}</label
+            >
             {{export.form.clock_out_date}}
           </div>
         </div>
         <div class="col-sm-12 col-md-12 col-lg-6">
           <div class="oh-input-group">
-            <label class="oh-label">{% trans "In Date" %}</label>
+            <label
+              class="oh-label"
+              for="{{export.form.clock_in_date.id_for_label}}"
+              >{% trans "In Date" %}</label
+            >
             {{export.form.clock_in_date}}
           </div>
           <div class="oh-input-group">
-            <label class="oh-label">{% trans "Shift Day" %}</label>
+            <label class="oh-label" for="{{export.form.shift_day.id_for_label}}"
+              >{% trans "Shift Day" %}</label
+            >
             {{export.form.shift_day}}
           </div>
         </div>
@@ -99,29 +147,45 @@
       <div class="row">
         <div class="col-sm-12 col-md-12 col-lg-6">
           <div class="oh-input-group">
-            <label class="oh-label">{% trans "Attendance From" %}</label>
+            <label
+              class="oh-label"
+              for="{{export.form.attendance_date_from.id_for_label}}"
+              >{% trans "Attendance From" %}</label
+            >
             {{export.form.attendance_date_from}}
           </div>
           <div class="oh-input-group">
-            <label class="oh-label">{% trans "In From" %}</label>
+            <label class="oh-label" for="{{export.form.in_from.id_for_label}}"
+              >{% trans "In From" %}</label
+            >
             {{export.form.in_from}}
           </div>
           <div class="oh-input-group">
-            <label class="oh-label">{% trans "Out From" %}</label>
+            <label class="oh-label" for="{{export.form.out_from.id_for_label}}"
+              >{% trans "Out From" %}</label
+            >
             {{export.form.out_from}}
           </div>
         </div>
         <div class="col-sm-12 col-md-12 col-lg-6">
           <div class="oh-input-group">
-            <label class="oh-label">{% trans "Attendance Till" %}</label>
+            <label
+              class="oh-label"
+              for="{{export.form.attendance_date_till.id_for_label}}"
+              >{% trans "Attendance Till" %}</label
+            >
             {{export.form.attendance_date_till}}
           </div>
           <div class="oh-input-group">
-            <label class="oh-label">{% trans "In Till" %}</label>
+            <label class="oh-label" for="{{export.form.in_till.id_for_label}}"
+              >{% trans "In Till" %}</label
+            >
             {{export.form.in_till}}
           </div>
           <div class="oh-input-group">
-            <label class="oh-label">{% trans "Out Till" %}</label>
+            <label class="oh-label" for="{{export.form.out_till.id_for_label}}"
+              >{% trans "Out Till" %}</label
+            >
             {{export.form.out_till}}
           </div>
         </div>
