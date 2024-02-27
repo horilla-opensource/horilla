@@ -71,12 +71,6 @@
     <form action="{% url 'update-letter-status' %}">
       {% if perms.offboarding.change_resignationletter %}
       <div class="oh-btn-group">
-        <button type="button"
-          onclick="$(this).closest('form').find('input[name=status]').val('rejected');resignLetterConfirmation('{% trans 'Do You really want to reject the request?' %}',$(this).closest('form').find('[type=submit]'));"
-          class="oh-btn oh-btn--danger oh-btn--block w-100">
-          <ion-icon name="close-circle-outline" class="mr-1 md hydrated" role="img" aria-label="close"></ion-icon>
-          {% comment %} {% trans 'Reject' %} {% endcomment %}
-        </button>
         {% if record.status != "approved" %}
         <button title="By approving the request employee will added to the offboarding pipeline" type="button"
           onclick="$(this).closest('form').find('input[name=status]').val('approved');resignLetterConfirmation('{% trans 'Do You really want to approve the request' %}?',$(this).closest('form').find('[type=submit]'),true);"
@@ -90,6 +84,12 @@
           {% comment %} {% trans 'Approved' %} {% endcomment %}
         </button>
         {% endif %}
+        <button type="button"
+          onclick="$(this).closest('form').find('input[name=status]').val('rejected');resignLetterConfirmation('{% trans 'Do You really want to reject the request?' %}',$(this).closest('form').find('[type=submit]'));"
+          class="oh-btn oh-btn--danger oh-btn--block w-100">
+          <ion-icon name="close-circle-outline" class="mr-1 md hydrated" role="img" aria-label="close"></ion-icon>
+          {% comment %} {% trans 'Reject' %} {% endcomment %}
+        </button>
         <input type="hidden" name="status">
         <input type="hidden" name="letter_ids" value="{{record.id}}">
         <input type="hidden" name="offboarding_id">
