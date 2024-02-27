@@ -10,7 +10,7 @@
     class="oh-sticky-table__tr oh-multiple-table-sort__movable"
     data-employee="{{employee.employee_id.get_full_name}}"
     data-employee-id="{{ employee.id }}"
-    hx-get='{% url "offboarding-individual-view" employee.id %}'
+    hx-get='{% url "offboarding-individual-view" employee.id %}?requests_ids={{offboarding.employee_ids}}'
 	hx-target='#singleView'
 	data-toggle = 'oh-modal-toggle'
 	data-target="#singleModal"
@@ -29,7 +29,9 @@
         </div>
     </div>
     <div class="oh-sticky-table__td">
-        {% trans 'In' %} {{ employee.notice_period }} {{ employee.get_unit_display }}
+        {% if employee.notice_period %}
+            {% trans 'In' %} {{ employee.notice_period }} {{ employee.get_unit_display }}
+        {% endif %}
     </div>
     <div class="oh-sticky-table__td dateformat_changer">{{ employee.notice_period_starts }}</div>
     <div class="oh-sticky-table__td dateformat_changer">{{ employee.notice_period_ends }}</div>
@@ -42,6 +44,11 @@
         </form>
     </div>
     {% endif %}
+    <div class="oh-sticky-table__td text-center">
+        <div class="oh-checkpoint-badge oh-checkpoint-badge--primary" title="Completed {{ employee.employeetask_set|completed_tasks }} of {{employee.employeetask_set.all|length}} tasks">
+            {{ employee.employeetask_set|completed_tasks }} / {{employee.employeetask_set.all|length}}
+        </div>
+    </div>
     <div class="oh-sticky-table__td">
         <div class="oh-btn-group">
             <button
