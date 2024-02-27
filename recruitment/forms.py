@@ -33,6 +33,7 @@ from base import thread_local_middleware
 from employee.filters import EmployeeFilter
 from employee.models import Employee
 from horilla_widgets.widgets.horilla_multi_select_field import HorillaMultiSelectField
+from horilla.decorators import logger
 from horilla_widgets.widgets.select_widgets import HorillaMultiSelectWidget
 from recruitment.models import (
     RejectReason,
@@ -837,6 +838,11 @@ class SkillZoneCreateForm(ModelForm):
 
 class SkillZoneCandidateForm(ModelForm):
     verbose_name = "Skill Zone Candidate"
+    candidate_id = forms.ModelMultipleChoiceField(
+        queryset=Candidate.objects.all(),
+        widget=forms.SelectMultiple,
+        label=_("Candidate"),
+    )
 
     class Meta:
         """
@@ -857,14 +863,46 @@ class SkillZoneCandidateForm(ModelForm):
         table_html = render_to_string("common_form.html", context)
         return table_html
 
+    def clean_candidate_id(self):
+        selected_candidates = self.cleaned_data["candidate_id"]
+
+        # Ensure all selected candidates are instances of the Candidate model
+        for candidate in selected_candidates:
+            if not isinstance(candidate, Candidate):
+                raise forms.ValidationError("Invalid candidate selected.")
+
+        return selected_candidates.first()
+
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
+        self.fields["candidate_id"].empty_label = None
         if self.instance.pk:
             self.verbose_name = (
                 self.instance.candidate_id.name
                 + " / "
                 + self.instance.skill_zone_id.title
             )
+
+    def save(self, commit: bool = ...) -> Any:
+        super().save(commit)
+        other_candidates = list(
+            set(self.data.getlist("candidate_id"))
+            - {
+                str(self.instance.candidate_id.id),
+            }
+        )
+        if commit:
+            cand = self.instance
+            for id in other_candidates:
+                cand.pk = None
+                cand.id = None
+                cand.candidate_id = Candidate.objects.get(id=id)
+                try:
+                    super(SkillZoneCandidate, cand).save()
+                except Exception as e:
+                    logger.error(e)
+
+        return other_candidates
 
 
 class ToSkillZoneForm(ModelForm):
