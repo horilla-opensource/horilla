@@ -21,6 +21,15 @@
       {% include 'attendance/late_come_early_out/report_list.html' %}
     </div>
   </div>
+  <div
+    class="oh-modal"
+    id="attendanceModal"
+    role="dialog"
+    aria-hidden="true"
+    aria-labelledby="attendanceModal"
+    >
+    <div class="oh-modal__dialog" id="attendanceModalTarget"></div>
+  </div>
 
   <div class="oh-modal" id="penaltyModal" role="dialog" aria-hidden="true">
     <div class="oh-modal__dialog" id="penaltyModalBody" style="max-width: 550px"></div>
@@ -29,9 +38,11 @@
   <div class="oh-modal" id="penaltyViewModal" role="dialog" aria-hidden="true">
     <div class="oh-modal__dialog" style="max-width: 1050px">
       <div class="oh-modal__dialog-header">
-        <button type="button" class="oh-modal__close" aria-label="Close"><ion-icon name="close-outline"></ion-icon></button>
+        <button type="button" class="oh-modal__close--custom"
+                aria-label="Close"  onclick="$('#penaltyViewModal').removeClass('oh-modal--show')">
+          <ion-icon name="close-outline"></ion-icon>
+        </button>
       </div>
-
       <div class="oh-modal__dialog-body" id="penaltyViewModalBody"></div>
     </div>
   </div>

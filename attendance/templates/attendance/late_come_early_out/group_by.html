@@ -55,7 +55,10 @@
             </div>
             <div class="oh-sticky-table__tbody">
               {% for late_in_early_out in attendance_list.list %}
-              <div class="oh-sticky-table__tr" draggable="true">
+              <div class="oh-sticky-table__tr" draggable="false"
+                data-toggle="oh-modal-toggle" data-target="#attendanceModal"
+                hx-target="#attendanceModalTarget"
+                hx-get="{% url 'late-in-early-out-single-view' late_in_early_out.id %}?{{pd}}&instances_ids={{late_in_early_out_ids}}">
                 <div class="oh-sticky-table__sd" onclick="event.stopPropagation();">
                   <div class="centered-div">
                     <input type="checkbox" id="{{late_in_early_out.id}}" class="oh-input attendance-checkbox oh-input__checkbox all-latecome-row" />

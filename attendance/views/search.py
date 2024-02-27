@@ -263,8 +263,18 @@ def late_come_early_out_search(request):
     if field != "" and field is not None:
         template = "attendance/late_come_early_out/group_by.html"
         reports = group_by_queryset(reports, field, request.GET.get("page"), "page")
+        list_values = [entry["list"] for entry in reports]
+        id_list = []
+        for value in list_values:
+            for instance in value.object_list:
+                id_list.append(instance.id)
+        late_in_early_out_ids = json.dumps(list(id_list))
     else:
         reports = paginator_qry(reports, request.GET.get("page"))
+        late_in_early_out_ids = json.dumps(
+            [instance.id for instance in reports.object_list]
+        )
+
     data_dict = parse_qs(previous_data)
     get_key_instances(AttendanceLateComeEarlyOut, data_dict)
     keys_to_remove = [key for key, value in data_dict.items() if value == ["unknown"]]
@@ -279,6 +289,7 @@ def late_come_early_out_search(request):
             "pd": previous_data,
             "field": field,
             "filter_dict": data_dict,
+            "late_in_early_out_ids": late_in_early_out_ids,
         },
     )
 

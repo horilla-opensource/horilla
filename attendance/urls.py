@@ -128,6 +128,11 @@ urlpatterns = [
         name="late-come-early-out-view",
     ),
     path(
+        "late-in-early-out-single-view/<int:obj_id>/",
+        views.late_in_early_out_single_view,
+        name="late-in-early-out-single-view",
+    ),
+    path(
         "late-come-early-out-search",
         attendance.views.search.late_come_early_out_search,
         name="late-come-early-out-search",

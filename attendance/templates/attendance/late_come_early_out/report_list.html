@@ -50,7 +50,10 @@
           </div>
           <div class="oh-sticky-table__tbody">
             {% for late_in_early_out in data %}
-            <div class="oh-sticky-table__tr" draggable="true">
+            <div class="oh-sticky-table__tr" draggable="false"
+              data-toggle="oh-modal-toggle" data-target="#attendanceModal"
+              hx-target="#attendanceModalTarget"
+              hx-get="{% url 'late-in-early-out-single-view' late_in_early_out.id %}?{{pd}}&instances_ids={{late_in_early_out_ids}}">
               <div class="oh-sticky-table__sd" onclick="event.stopPropagation();">
                 <div class="centered-div">
                   <input type="checkbox" onchange="highlightRow($(this))" id="{{late_in_early_out.id}}" class="oh-input attendance-checkbox oh-input__checkbox all-latecome-row" />
@@ -71,11 +74,7 @@
                 </div>
               </div>
               <div data-cell-index="1" class='oh-sticky-table__td'>
-                {% if late_in_early_out.type == 'late_come' %}
-                {% trans "Late Come" %}
-                {% else %}
-                {% trans "Early Out" %}
-                {% endif %}
+                {{late_in_early_out.get_type_display}}
               </div>
               <div data-cell-index="2" class='oh-sticky-table__td dateformat_changer'>{{late_in_early_out.attendance_id.attendance_date}}</div>
               <div data-cell-index="3" class='oh-sticky-table__td timeformat_changer'>{{late_in_early_out.attendance_id.attendance_clock_in}}</div>
@@ -84,7 +83,7 @@
               <div data-cell-index="6" class='oh-sticky-table__td dateformat_changer'>{{laXte_in_early_out.attendance_id.attendance_clock_out_date}}</div>
               <div data-cell-index="7" class='oh-sticky-table__td'>{{late_in_early_out.attendance_id.minimum_hour}}</div>
               <div data-cell-index="8" class='oh-sticky-table__td'>{{late_in_early_out.attendance_id.attendance_worked_hour}}</div>
-              <div data-cell-index="9" class='oh-sticky-table__td'>
+              <div data-cell-index="9" class='oh-sticky-table__td' onclick="event.stopPropagation();">
                 {% if late_in_early_out.get_penalties_count %}
                 <div class="" data-target="#penaltyViewModal" data-toggle="oh-modal-toggle" hx-get="{% url "view-penalties" %}?late_early_id={{late_in_early_out.id}}" hx-target="#penaltyViewModalBody" align="center" style="background-color: rgba(229, 79, 56, 0.036); border: 2px solid rgb(229, 79, 56); border-radius: 18px; padding: 10px; font-weight: bold; width: 85%;">Penalties :{{late_in_early_out.get_penalties_count}}</div>
                 {% endif %}
@@ -124,7 +123,7 @@
           </div>
         </div>
       </div>
-  `</div>
+  </div>
   </div>
 
   <div class="oh-pagination">

@@ -1,0 +1,234 @@
+{% load static %} {% load i18n %} {% load basefilters %} {% load yes_no %}
+{% if messages %}
+<div class="oh-wrapper">
+  {% for message in messages %}
+  <div class="oh-alert-container">
+    <div class="oh-alert oh-alert--animated {{message.tags}}">
+      {{ message }}
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+<div class="oh-modal__dialog-header">
+  <h2
+    class="oh-modal__dialog-title"
+    style="margin-left: 30px"
+    id="attendanceModalLabel"
+  >
+    {% trans "Details" %}
+  </h2>
+  <button class="oh-modal__close" aria-label="Close" hx-get="{% url 'late-come-early-out-search' %}?{{pd}}" 
+          hx-swap="innerHTML" hx-target="#report-container" >
+    <ion-icon name="close-outline"></ion-icon>
+  </button>
+</div>
+
+<div class="oh-modal__dialog-body oh-modal__dialog-relative">
+  <div class="oh-modal__dialog oh-modal__dialog--navigation m-0 p-0">
+    <button
+      hx-get="{% url 'late-in-early-out-single-view' previous_instance %}?{{pd}}&instances_ids={{instance_ids_json}}"
+      hx-target="#attendanceModalTarget"
+      class="oh-modal__diaglog-nav oh-modal__nav-prev"
+    >
+      <ion-icon
+        name="chevron-back-outline"
+        class="md hydrated"
+        role="img"
+        aria-label="chevron back outline"
+      ></ion-icon>
+    </button>
+
+    <button
+      hx-get="{% url 'late-in-early-out-single-view' next_instance %}?{{pd}}&instances_ids={{instance_ids_json}}"
+      hx-target="#attendanceModalTarget"
+      class="oh-modal__diaglog-nav oh-modal__nav-next"
+    >
+      <ion-icon
+        name="chevron-forward-outline"
+        class="md hydrated"
+        role="img"
+        aria-label="chevron forward outline"
+      ></ion-icon>
+    </button>
+  </div>
+  {% if late_in_early_out %}
+    <div class="oh-modal__dialog-header">
+      <a
+        class="oh-timeoff-modal__profile-content"
+        style="text-decoration: none"
+        href="{% url 'employee-view-individual' late_in_early_out.employee_id.id %}"
+      >
+        <div class="oh-profile mb-2">
+          <div class="oh-profile__avatar">
+            <img
+              src="{{late_in_early_out.employee_id.get_avatar}}"
+              class="oh-profile__image me-2"
+              alt="Mary Magdalene"
+            />
+          </div>
+          <div class="oh-timeoff-modal__profile-info">
+            <span class="oh-timeoff-modal__user fw-bold"
+              >{{late_in_early_out.employee_id}}</span
+            >
+            <span
+              class="oh-timeoff-modal__user m-0"
+              style="font-size: 18px; color: #4d4a4a"
+            >
+              {{late_in_early_out.employee_id.employee_work_info.department_id}} /
+              {{late_in_early_out.employee_id.employee_work_info.job_position_id}}</span
+            >
+          </div>
+        </div>
+      </a>
+
+      <div class="oh-timeoff-modal__stats-container mt-3 mb-3">
+        <div class="oh-timeoff-modal__stat">
+          <span class="oh-timeoff-modal__stat-title"
+            >{% trans "Type" %}</span
+          >
+          <span class="oh-timeoff-modal__stat-count"
+            >{{late_in_early_out.get_type_display}}</span
+          >
+        </div>
+        <div class="oh-timeoff-modal__stat" style="margin-left: 20px">
+          <span class="oh-timeoff-modal__stat-title">{% trans "Attendance Date" %}</span>
+          <span class="oh-timeoff-modal__stat-count dateformat_changer">{{late_in_early_out.attendance_id.attendance_date}}</span>
+        </div>
+      </div>
+
+      <div class="oh-timeoff-modal__stats-container mt-3 mb-3">
+        <div class="oh-timeoff-modal__stat">
+          <span class="oh-timeoff-modal__stat-title">{% trans "Check In" %}</span>
+          <span class="oh-timeoff-modal__stat-count timeformat_changer"
+            >{{late_in_early_out.attendance_id.attendance_clock_in}}</span
+          >
+        </div>
+        <div class="oh-timeoff-modal__stat" style="margin-left: 20px">
+          <span class="oh-timeoff-modal__stat-title"
+            >{% trans "Check In Date" %}</span
+          >
+          <span class="oh-timeoff-modal__stat-count dateformat_changer"
+            >{{late_in_early_out.attendance_id.attendance_clock_in_date}}</span
+          >
+        </div>
+      </div>
+
+      <div class="oh-timeoff-modal__stats-container mt-3 mb-3">
+        <div class="oh-timeoff-modal__stat">
+          <span class="oh-timeoff-modal__stat-title"
+            >{% trans "Check Out" %}</span
+          >
+          <span class="oh-timeoff-modal__stat-count timeformat_changer"
+            >{{late_in_early_out.attendance_id.attendance_clock_out}}</span
+          >
+        </div>
+        <div class="oh-timeoff-modal__stat" style="margin-left: 20px">
+          <span class="oh-timeoff-modal__stat-title"
+            >{% trans "Check Out Date" %}</span
+          >
+          <span class="oh-timeoff-modal__stat-count dateformat_changer"
+            >{{late_in_early_out.attendance_id.attendance_clock_out_date}}</span
+          >
+        </div>
+      </div>
+
+      <div class="oh-timeoff-modal__stats-container mt-3 mb-3">
+          <div class="oh-timeoff-modal__stat">
+            <span class="oh-timeoff-modal__stat-title">{% trans "Min Hour" %}</span>
+            <span class="oh-timeoff-modal__stat-count"
+              >{{late_in_early_out.attendance_id.minimum_hour}}</span
+            >
+          </div>
+          <div class="oh-timeoff-modal__stat" style="margin-left: 20px">
+            <span class="oh-timeoff-modal__stat-title"
+              >{% trans "At Work" %}</span
+            >
+            <span class="oh-timeoff-modal__stat-count"
+              >{{late_in_early_out.attendance_id.attendance_worked_hour}}</span
+            >
+          </div>
+        </div>
+
+      <div class="oh-timeoff-modal__stats-container mt-3 mb-3">
+        <div class="oh-timeoff-modal__stat">
+          <span class="oh-timeoff-modal__stat-title">{% trans "Shift" %}</span>
+          <span class="oh-timeoff-modal__stat-count"
+            >{{late_in_early_out.attendance_id.shift_id}}</span
+          >
+        </div>
+        <div class="oh-timeoff-modal__stat" style="margin-left: 20px">
+          <span class="oh-timeoff-modal__stat-title"
+            >{% trans "Work Type" %}</span
+          >
+          <span class="oh-timeoff-modal__stat-count"
+            >{{late_in_early_out.attendance_id.work_type_id}}</span
+          >
+        </div>
+      </div>
+      <div class="oh-timeoff-modal__stats-container mt-3 mb-3">
+          <div class="oh-timeoff-modal__stat">
+            <span class="oh-timeoff-modal__stat-title">{% trans "Attendance validated" %}</span>
+            <span class="oh-timeoff-modal__stat-count"
+              >{{late_in_early_out.attendance_id.attendance_validated|yes_no}}</span
+            >
+          </div>
+          <div class="oh-timeoff-modal__stat" style="margin-left: 20px">
+            <span class="oh-timeoff-modal__stat-title"
+              >{% trans "Penalties" %}</span
+            >
+              {% if late_in_early_out.get_penalties_count %}
+                  <div class="" data-target="#penaltyViewModal" data-toggle="oh-modal-toggle" hx-get="{% url "view-penalties" %}?late_early_id={{late_in_early_out.id}}" hx-target="#penaltyViewModalBody" align="center" style="background-color: rgba(229, 79, 56, 0.036); border: 2px solid rgb(229, 79, 56); border-radius: 18px; padding: 10px; font-weight: bold; width: 85%;cursor:pointer;">{% trans "Penalties " %} : {{late_in_early_out.get_penalties_count}}</div>
+              {% else %}
+              <span class="oh-timeoff-modal__stat-count"
+              >{% trans "No penalties found." %}</span
+            >
+
+              {% endif %} 
+          </div>
+      </div>
+      {% if request.user|is_reportingmanager or perms.attendance.chanage_penaltyaccount or perms.attendance.delete_attendancelatecomeearlyout %}
+          <div class="oh-modal__button-container text-center">
+              <div class="oh-btn-group">
+                  {% if request.user|is_reportingmanager or perms.attendance.chanage_penaltyaccount %}
+                      <a 
+                          class="oh-btn oh-btn--warning"
+                          data-toggle="oh-modal-toggle"
+                          data-target="#penaltyModal"
+                          hx-target="#penaltyModalBody"
+                          hx-get="{% url "cut-penalty" late_in_early_out.id %}?{{pd}}&instances_ids={{instance_ids_json}}"
+                          style="width: 50%;"
+                          >
+                          <ion-icon name="information-circle-outline" role="img" 
+                              class="md hydrated" aria-label="information circle outline">
+                          </ion-icon>{% trans "Penalty" %}
+                      </a>
+                  {% endif %}
+                  {% if perms.attendance.delete_attendancelatecomeearlyout %}
+                      <form hx-confirm="{% trans 'Are you sure want to delete this attendance?' %}"
+                          hx-post="{% url 'late-come-early-out-delete' late_in_early_out.id  %}?{{pd}}&instances_ids={{instance_ids_json}}"
+                          hx-target="#attendanceModalTarget"
+                          onclick="event.stopPropagation()"  
+                          class="w-50"
+                      >
+                      {% csrf_token %}
+                          <button type='submit' class="oh-btn oh-btn--danger w-100"><ion-icon
+                              name="trash-outline"
+                              role="img"
+                              class="md hydrated"
+                              aria-label="create outline"
+                              ></ion-icon>{% trans "Delete" %}</button>
+                      </form>
+                  {% endif %}
+              </div>
+          </div>
+      {% endif %}
+    </div>
+  {% else %}
+    <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%;">
+	    <img style="display: block; width: 15%; margin: 20px auto; filter: opacity(0.5);" src="{% static 'images/ui/employee_shift.png' %}" class="" alt="Page not found. 404." />
+	    <h5 class="oh-404__subtitle">{% trans "Attendance not found." %}</h5>
+	  </div>
+  {% endif %}
+</div>
+

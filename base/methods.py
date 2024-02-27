@@ -321,7 +321,7 @@ def get_key_instances(model, data_dict):
         key
         for key, value in data_dict.items()
         if value == ["unknown"]
-        or key in ["sortby", "orderby", "view", "page", "group_by", "target",'rpage']
+        or key in ["sortby", "orderby", "view", "page", "group_by", "target",'rpage',"instances_ids"]
         or "dynamic_page" in key
     ]
           

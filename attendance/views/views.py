@@ -770,20 +770,23 @@ def attendance_activity_view(request):
             ),
             "gp_fields": AttendanceActivityReGroup.fields,
             "export_form": export_form,
-            "activity_ids":activity_ids,
+            "activity_ids": activity_ids,
         },
     )
 
 
+@login_required
 def activity_single_view(request, obj_id):
     activity = AttendanceActivity.objects.get(id=obj_id)
-    attendance = Attendance.objects.filter(attendance_date = activity.attendance_date).first()
+    attendance = Attendance.objects.filter(
+        attendance_date=activity.attendance_date
+    ).first()
     instance_ids_json = request.GET["instances_ids"]
     instance_ids = json.loads(instance_ids_json) if instance_ids_json else []
     previous_instance, next_instance = closest_numbers(instance_ids, obj_id)
     context = {
         "activity": activity,
-        "attendance":attendance,
+        "attendance": attendance,
         "previous_instance": previous_instance,
         "next_instance": next_instance,
         "instance_ids_json": instance_ids_json,
@@ -961,6 +964,9 @@ def late_come_early_out_view(request):
 
     reports = reports | self_reports
     reports = reports.distinct()
+    late_in_early_out_ids = json.dumps(
+        [instance.id for instance in paginator_qry(reports, None)]
+    )
     previous_data = request.GET.urlencode()
     export_form = LateComeEarlyOutExportForm()
     data_dict = parse_qs(previous_data)
@@ -977,7 +983,26 @@ def late_come_early_out_view(request):
             ),
             "filter_dict": data_dict,
             "export_form": export_form,
+            "late_in_early_out_ids": late_in_early_out_ids,
         },
+    )
+
+
+def late_in_early_out_single_view(request, obj_id):
+    previous_data = request.GET.urlencode()
+    late_in_early_out = AttendanceLateComeEarlyOut.objects.filter(id=obj_id).first()
+    instance_ids_json = request.GET["instances_ids"]
+    instance_ids = json.loads(instance_ids_json) if instance_ids_json else []
+    previous_instance, next_instance = closest_numbers(instance_ids, obj_id)
+    context = {
+        "late_in_early_out": late_in_early_out,
+        "previous_instance": previous_instance,
+        "next_instance": next_instance,
+        "instance_ids_json": instance_ids_json,
+        "pd":previous_data,
+    }
+    return render(
+        request, "attendance/late_come_early_out/single_report.html", context=context
     )
 
 
@@ -995,11 +1020,22 @@ def late_come_early_out_delete(request, obj_id):
         AttendanceLateComeEarlyOut.objects.get(id=obj_id).delete()
         messages.success(request, _("Late-in early-out deleted"))
     except AttendanceLateComeEarlyOut.DoesNotExist:
-        messages.error(request, _("Late-in early-out Does not exists.."))
+        messages.error(request, _("Late-in early-out does not exists.."))
     except ProtectedError:
         messages.error(request, _("You cannot delete this Late-in early-out"))
-
-    return redirect(f"/attendance/late-come-early-out-search?{pd}")
+    if not request.GET.get("instances_ids"):
+        return redirect(f"/attendance/late-come-early-out-search?{pd}")
+    else:
+        instances_ids = request.GET.get("instances_ids")
+        instances_list = json.loads(instances_ids)
+        if obj_id in instances_list:
+            instances_list.remove(obj_id)
+        previous_instance, next_instance = closest_numbers(
+            json.loads(instances_ids), obj_id
+        )
+        return redirect(
+            f"/attendance/late-in-early-out-single-view/{next_instance}/?{pd}&instances_ids={instances_list}"
+        )
 
 
 @login_required
