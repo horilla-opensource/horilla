@@ -55,7 +55,7 @@
                 >{% trans "Requested Till" %}</div>
                 <div data-cell-index="6" data-cell-title='{% trans "Description" %}' class="oh-sticky-table__th">{% trans "Description" %}</div>
                 <div class="oh-sticky-table__th" style="width:115px;">{% trans "Comment" %}</div>
-                <div class="oh-sticky-table__th">{% trans "Actions" %}</div>
+                <div class="oh-sticky-table__th" style="width: 192px;">{% trans "Actions" %}</div>
                 {% if perms.base.change_shiftrequest and shift_request.approved == False or request.user|is_reportingmanager %}
                   <div class="oh-sticky-table__th oh-sticky-table__right " style="width:180px;">{% trans "Confirmation" %}</div>
                 {% endif %}
