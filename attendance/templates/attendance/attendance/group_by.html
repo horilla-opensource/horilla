@@ -85,6 +85,11 @@
                 {% for attendance in attendance_list.list %}
                 <div
                   class="oh-sticky-table__tr oh-multiple-table-sort__movable"
+                  draggable="false"
+                  data-toggle="oh-modal-toggle"
+                  data-target="#detailAttendance"
+                  hx-target="#detailAttendanceModalBody"
+                  hx-get="{% url 'user-request-one-view' attendance.id %}?ot=true&instances_ids={{ot_attendances_ids}}"
                 >
                   <div class="oh-sticky-table__sd">
                     <div class="oh-profile oh-profile--md">
@@ -349,6 +354,11 @@
                 {% for attendance in attendance_list.list %}
                 <div
                   class="oh-sticky-table__tr oh-multiple-table-sort__movable"
+                  draggable="false"
+                  data-toggle="oh-modal-toggle"
+                  data-target="#detailAttendance"
+                  hx-target="#detailAttendanceModalBody"
+                  hx-get="{% url 'user-request-one-view' attendance.id %}?validate=true&instances_ids={{validate_attendances_ids}}"
                 >
                   <div class="oh-sticky-table__sd">
                     <div class="oh-profile oh-profile--md">
@@ -606,6 +616,11 @@
                 {% for attendance in attendance_list.list %}
                 <div
                   class="oh-sticky-table__tr oh-multiple-table-sort__movable"
+                  draggable="false"
+                  data-toggle="oh-modal-toggle"
+                  data-target="#detailAttendance"
+                  hx-target="#detailAttendanceModalBody"
+                  hx-get="{% url 'user-request-one-view' attendance.id %}?instances_ids={{attendances_ids}}"
                 >
                   <div class="oh-sticky-table__sd">
                     <div class="oh-profile oh-profile--md">
@@ -807,6 +822,16 @@
       </nav>
     </div>
   </div>
+</div>
+
+<div
+  class="oh-modal"
+  id="detailAttendance"
+  role="dialog"
+  aria-labelledby="detailAttendance"
+  aria-hidden="true"
+  >
+    <div class="oh-modal__dialog" id="detailAttendanceModalBody"></div>
 </div>
 
 <script>

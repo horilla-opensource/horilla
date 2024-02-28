@@ -858,21 +858,7 @@
   aria-labelledby="detailAttendance"
   aria-hidden="true"
   >
-    <div class="oh-modal__dialog">
-        <div class="oh-modal__dialog-header">
-            <h2
-              class="oh-modal__dialog-title"
-              style="margin-left: 30px"
-              id="addEmployeeModalLabel"
-              >
-              {% trans "Details" %}
-            </h2>
-            <button class="oh-modal__close" aria-label="Close">
-                <ion-icon name="close-outline"></ion-icon>
-            </button>
-        </div>
-        <div class="oh-modal__dialog-body oh-modal__dialog-relative" id="detailAttendanceModalBody"></div>
-    </div>
+    <div class="oh-modal__dialog" id="detailAttendanceModalBody"></div>
 </div>
 
 {% if perms.attendance.change_attendance or request.user|is_reportingmanager %}
