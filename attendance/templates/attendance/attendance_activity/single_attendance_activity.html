@@ -1,4 +1,15 @@
 {% load i18n %} {% load basefilters %}
+{% if messages %}
+<div class="oh-wrapper">
+  {% for message in messages %}
+  <div class="oh-alert-container">
+    <div class="oh-alert oh-alert--animated {{message.tags}}">
+      {{ message }}
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
 <div class="oh-modal__dialog-header">
   <h2
     class="oh-modal__dialog-title"
@@ -7,7 +18,7 @@
   >
     {% trans "Details" %}
   </h2>
-  <button class="oh-modal__close" aria-label="Close">
+  <button class="oh-modal__close" aria-label="Close" hx-get="{% url 'attendance-activity-search' %}" hx-target="#activity-table">
     <ion-icon name="close-outline"></ion-icon>
   </button>
 </div>
@@ -135,5 +146,28 @@
         >
       </div>
     </div>
+    {% if perms.attendance.delete_attendanceactivity %}
+      <div class="oh-modal__button-container text-center w-50" style="position: inherit; left: 25%;">
+        <div class="oh-btn-group">
+          {% if perms.attendance.delete_attendancelatecomeearlyout %}
+            <form hx-confirm="{% trans 'Are you sure want to delete this attendance?' %}"
+                hx-post="{% url 'attendance-activity-delete' activity.id  %}?instances_ids={{instance_ids_json}}"
+                hx-target="#attendanceActivityModalTarget"
+                onclick="event.stopPropagation()"  
+                class="w-100"
+              >
+              {% csrf_token %}
+              <button type='submit' class="oh-btn oh-btn--danger w-100"><ion-icon
+                  name="trash-outline"
+                  role="img"
+                  class="md hydrated"
+                  aria-label="create outline"
+                  ></ion-icon>{% trans "Delete" %}
+              </button>
+            </form>
+          {% endif %}
+        </div>
+      </div>
+      {% endif %}
   </div>
 </div>

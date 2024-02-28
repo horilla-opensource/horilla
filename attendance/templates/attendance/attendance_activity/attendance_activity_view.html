@@ -40,6 +40,15 @@
     <div id="activity-table">
       {% include 'attendance/attendance_activity/activity_list.html' %}
     </div>
+    <div
+    class="oh-modal"
+    id="attendanceActivityModal"
+    role="dialog"
+    aria-hidden="true"
+    aria-labelledby="attendanceActivityModal"
+    >
+    <div class="oh-modal__dialog" id="attendanceActivityModalTarget"></div>
+  </div>
   </div>
 </div>
 {% endblock %}

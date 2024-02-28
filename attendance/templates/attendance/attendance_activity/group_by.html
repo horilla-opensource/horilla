@@ -51,7 +51,10 @@
             </div>
             <div class="oh-sticky-table__tbody">
               {% for activity in attendance_list.list %}
-                <div class="oh-sticky-table__tr" draggable="true">
+                <div class="oh-sticky-table__tr" draggable="false"
+                data-toggle="oh-modal-toggle" data-target="#attendanceActivityModal"
+                hx-target="#attendanceActivityModalTarget"
+                hx-get="{% url 'attendance-activity-single-view' activity.id %}?instances_ids={{activity_ids}}">
                   <div class="oh-sticky-table__sd" onclick="event.stopPropagation();">
                     <div class="centered-div">
                       <input type="checkbox" id="{{activity.id}}" 

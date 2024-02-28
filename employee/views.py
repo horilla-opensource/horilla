@@ -1481,7 +1481,7 @@ def remove_own_profile_image(request):
 @login_required
 @manager_can_enter("employee.change_employee")
 @require_http_methods(["POST"])
-def employee_update_personal_info(request, obj_id=None):
+def employee_create_update_personal_info(request, obj_id=None):
     """
     This method is used to update employee's personal info.
     """

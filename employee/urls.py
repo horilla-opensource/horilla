@@ -56,12 +56,12 @@ urlpatterns = [
     ),
     path(
         "employee-create-personal-info",
-        views.employee_update_personal_info,
+        views.employee_create_update_personal_info,
         name="employee-create-personal-info",
     ),
     path(
         "employee-update-personal-info/<int:obj_id>/",
-        views.employee_update_personal_info,
+        views.employee_create_update_personal_info,
         name="employee-update-personal-info",
     ),
     path(

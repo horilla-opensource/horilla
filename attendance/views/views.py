@@ -815,7 +815,19 @@ def attendance_activity_delete(request, obj_id):
         messages.error(request, _("Attendance activity Does not exists.."))
     except ProtectedError:
         messages.error(request, _("You cannot delete this activity"))
-    return redirect(f"/attendance/attendance-activity-search?{pd}")
+    if not request.GET.get("instances_ids"):
+        return redirect(f"/attendance/attendance-activity-search?{pd}")
+    else:
+        instances_ids = request.GET.get("instances_ids")
+        instances_list = json.loads(instances_ids)
+        if obj_id in instances_list:
+            instances_list.remove(obj_id)
+        previous_instance, next_instance = closest_numbers(
+            json.loads(instances_ids), obj_id
+        )
+        return redirect(
+            f"/attendance/attendance-activity-single-view/{next_instance}/?instances_ids={instances_list}"
+        )
 
 
 @login_required

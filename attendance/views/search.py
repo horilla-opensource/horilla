@@ -106,12 +106,33 @@ def attendance_search(request):
         attendances = group_by_queryset(
             attendances, field, request.GET.get("page"), "page"
         )
+        list_values = [entry["list"] for entry in attendances]
+        id_list = []
+        for value in list_values:
+            for instance in value.object_list:
+                id_list.append(instance.id)
+        attendances_ids = json.dumps(list(id_list))
+
         validate_attendances = group_by_queryset(
             validate_attendances, field, request.GET.get("vpage"), "vpage"
         )
+        list_values = [entry["list"] for entry in validate_attendances]
+        id_list = []
+        for value in list_values:
+            for instance in value.object_list:
+                id_list.append(instance.id)
+        validate_attendances_ids = json.dumps(list(id_list))
+
         ot_attendances = group_by_queryset(
             ot_attendances, field, request.GET.get("opage"), "opage"
         )
+        list_values = [entry["list"] for entry in ot_attendances]
+        id_list = []
+        for value in list_values:
+            for instance in value.object_list:
+                id_list.append(instance.id)
+        ot_attendances_ids = json.dumps(list(id_list))
+
         template = "attendance/attendance/group_by.html"
     else:
         validate_attendances = paginator_qry(
@@ -211,9 +232,12 @@ def attendance_activity_search(request):
         attendance_activities = group_by_queryset(
             attendance_activities, field, request.GET.get("page"), "page"
         )
-        activity_ids = json.dumps(
-            [instance.id for instance in paginator_qry(attendance_activities, None)]
-        )
+        list_values = [entry["list"] for entry in attendance_activities]
+        id_list = []
+        for value in list_values:
+            for instance in value.object_list:
+                id_list.append(instance.id)
+        activity_ids = json.dumps(list(id_list))
         template = "attendance/attendance_activity/group_by.html"
     else:
         attendance_activities = paginator_qry(
