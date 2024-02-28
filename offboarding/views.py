@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime, timedelta
 import json
 from urllib.parse import parse_qs
 from django.http import HttpResponse, JsonResponse
@@ -119,13 +119,9 @@ def pipeline(request):
     stage_forms = {}
     for offboarding in offboardings:
         stage_forms[str(offboarding.id)] = StageSelectForm(offboarding=offboarding)
-        for stage in offboarding.offboardingstage_set.all():
-            employees = employees + [
-                employee for employee in stage.offboardingemployee_set.all()
-            ]
+
 
     filter_dict = parse_qs(request.GET.urlencode())
-    requests_ids = json.dumps([instance.id for instance in employees])
 
     return render(
         request,
@@ -137,7 +133,7 @@ def pipeline(request):
             "stage_filter": PipelineStageFilter(),
             "stage_forms": stage_forms,
             "filter_dict": filter_dict,
-            "requests_ids": requests_ids,
+            "today" : datetime.today().date(),
         },
     )
 
@@ -237,13 +233,19 @@ def add_employee(request):
     """
     This method is used to add employee to the stage
     """
+    default_notice_period = (
+        intial_notice_period(request)["get_initial_notice_period"]
+        if intial_notice_period(request)["get_initial_notice_period"]
+        else 0
+    )
+    end_date = datetime.today() + timedelta(days=default_notice_period * 30)
     stage_id = request.GET["stage_id"]
     instance_id = eval(str(request.GET.get("instance_id")))
     instance = None
     if instance_id and isinstance(instance_id, int):
         instance = OffboardingEmployee.objects.get(id=instance_id)
     stage = OffboardingStage.objects.get(id=stage_id)
-    form = OffboardingEmployeeForm(initial={"stage_id": stage}, instance=instance)
+    form = OffboardingEmployeeForm(initial={"stage_id": stage,"notice_period_ends":end_date}, instance=instance)
     form.instance.stage_id = stage
     if request.method == "POST":
         form = OffboardingEmployeeForm(request.POST, instance=instance)
@@ -763,12 +765,12 @@ def update_status(request):
         notice_period_starts = request.GET.get("notice_period_starts")
         notice_period_ends = request.GET.get("notice_period_ends")
         if notice_period_starts:
-            notice_period_starts = datetime.datetime.strptime(
+            notice_period_starts = datetime.strptime(
                 notice_period_starts, "%Y-%m-%d"
             ).date()
-        today = datetime.datetime.today()
+        today = datetime.today()
         if notice_period_ends:
-            notice_period_ends = datetime.datetime.strptime(
+            notice_period_ends = datetime.strptime(
                 notice_period_ends, "%Y-%m-%d"
             ).date()
         else:
@@ -842,8 +844,19 @@ def get_notice_period(request):
     response = {
         "notice_period": intial_notice_period(request)["get_initial_notice_period"],
         "unit": "month",
-        "notice_period_starts": str(datetime.datetime.today().date()),
+        "notice_period_starts": str(datetime.today().date()),
     }
     if employee_contract:
         response["notice_period"] = employee_contract.notice_period_in_month
+    return JsonResponse(response)
+
+
+def get_notice_period_end_date(request):
+    start_date = request.GET.get("start_date")
+    start_date = datetime.strptime(start_date,"%Y-%m-%d").date()
+    notice_period = intial_notice_period(request)["get_initial_notice_period"]
+    end_date = start_date + timedelta(days = notice_period * 30)
+    response = {
+        "end_date": end_date,
+    }
     return JsonResponse(response)

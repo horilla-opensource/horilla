@@ -77,5 +77,6 @@ urlpatterns = [
         name="enable-resignation-request",
     ),
     path("get-notice-period", views.get_notice_period, name="get-notice-period"),
+    path("get-notice-period-end-date", views.get_notice_period_end_date, name="get-notice-period-end-date"),
     path("offboarding-pipeline-filter",views.filter_pipeline,name="offboarding-pipeline-filter")
 ]

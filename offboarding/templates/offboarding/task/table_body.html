@@ -1,4 +1,4 @@
-{% load i18n offboarding_filter %} {% if response_message %}
+{% load i18n offboarding_filter %} {% load mathfilters %} {% if response_message %}
 <div class="oh-alert-container">
     <div class="oh-alert oh-alert--animated oh-alert--success">
         {{response_message}}
@@ -29,9 +29,7 @@
         </div>
     </div>
     <div class="oh-sticky-table__td">
-        {% if employee.notice_period %}
-            {% trans 'In' %} {{ employee.notice_period }} {{ employee.get_unit_display }}
-        {% endif %}
+        {% if employee.notice_period_ends == today %} {% trans "today" %}{% elif employee.notice_period_ends < today %} {% trans "Notice period ended" %} {% else %}{% trans 'In' %} {{employee.notice_period_ends|sub:today}}{% endif %}
     </div>
     <div class="oh-sticky-table__td dateformat_changer">{{ employee.notice_period_starts }}</div>
     <div class="oh-sticky-table__td dateformat_changer">{{ employee.notice_period_ends }}</div>
