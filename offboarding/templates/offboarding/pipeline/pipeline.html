@@ -29,5 +29,17 @@
       }
     })
   }
+  function noticePeriodUpdate (elem) {
+    start_date = elem.val();
+    $.ajax({
+      type: 'get',
+      url: "{% url 'get-notice-period-end-date' %}",
+      data: { "start_date": start_date },
+      success: function (response) {
+        end_date = response.end_date;
+        $("#offboardingEmployeeForm [name=notice_period_ends]").val(end_date);
+      }
+    })
+  }
 </script>
 {% endblock %}

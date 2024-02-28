@@ -78,9 +78,10 @@ class OffboardingEmployeeForm(ModelForm):
     class Meta:
         model = OffboardingEmployee
         fields = "__all__"
+        exclude= ["notice_period", "unit"]
         widgets = {
-            "notice_period_starts": forms.DateTimeInput(attrs={"type": "date"}),
-            "notice_period_ends": forms.DateTimeInput(attrs={"type": "date"}),
+            "notice_period_starts": forms.DateInput(attrs={"type": "date"}),
+            "notice_period_ends": forms.DateInput(attrs={"type": "date"}),
         }
 
     def as_p(self):
@@ -96,6 +97,9 @@ class OffboardingEmployeeForm(ModelForm):
         attrs = self.fields["employee_id"].widget.attrs
         attrs["onchange"] = "intialNoticePeriod($(this))"
         self.fields["employee_id"].widget.attrs.update(attrs)
+        attrs = self.fields["notice_period_starts"].widget.attrs
+        attrs["onchange"] = "noticePeriodUpdate($(this))"
+        self.fields["notice_period_starts"].widget.attrs.update(attrs)
         if self.instance.pk:
             if self.instance.notice_period_starts:
                 self.initial[
