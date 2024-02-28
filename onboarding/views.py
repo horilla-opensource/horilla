@@ -1214,9 +1214,6 @@ def candidate_stage_update(request, candidate_id, recruitment_id):
     """
     stage_id = request.POST.get("stage")
     recruitments = Recruitment.objects.filter(id=recruitment_id)
-    groups = onboarding_query_grouper(request, recruitments)
-    for item in groups:
-        setattr(item["recruitment"], "stages", item["stages"])
     stage = OnboardingStage.objects.get(id=stage_id)
     candidate = Candidate.objects.get(id=candidate_id)
     candidate_stage = CandidateStage.objects.get(candidate_id=candidate)
@@ -1241,6 +1238,9 @@ def candidate_stage_update(request, candidate_id, recruitment_id):
             icon="people-circle",
             redirect="/onboarding/onboarding-view",
         )
+    groups = onboarding_query_grouper(request, recruitments)
+    for item in groups:
+        setattr(item["recruitment"], "stages", item["stages"])
         return render(
             request,
             "onboarding/onboarding_table.html",
@@ -1265,9 +1265,6 @@ def candidate_stage_bulk_update(request):
     stage = request.POST["stage"]
     onboarding_stages = OnboardingStage.objects.all()
     recruitments = Recruitment.objects.filter(id=int(recrutment_id))
-    groups = onboarding_query_grouper(request, recruitments)
-    for item in groups:
-        setattr(item["recruitment"], "stages", item["stages"])
 
     choices = CandidateTask.choice
 
@@ -1279,6 +1276,9 @@ def candidate_stage_bulk_update(request):
     if candidate_id_list:
         type = "success"
         message = "Candidate stage updated successfully"
+    groups = onboarding_query_grouper(request, recruitments)
+    for item in groups:
+        setattr(item["recruitment"], "stages", item["stages"])
     response = render(
         request,
         "onboarding/onboarding_table.html",
