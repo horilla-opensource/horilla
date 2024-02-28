@@ -1,34 +1,20 @@
 {% load static %} {% load i18n %}
-{% comment %} <div class="oh-modal__dialog oh-modal__dialog--navigation m-0 p-0">
-    <button
-      hx-get="{% url 'asset-allocation-individual-view' previous %}?allocations_ids={{allocations_ids}}"
-      hx-target="#singleAllocate"
-      class="oh-modal__diaglog-nav oh-modal__nav-prev"
-    >
-        <ion-icon
-            name="chevron-back-outline"
-            class="md hydrated"
-            role="img"
-            aria-label="chevron back outline"
-        ></ion-icon>
+{% if request.GET.requests_ids %}
+<div class="oh-modal__dialog oh-modal__dialog--navigation m-0 p-0">
+    <button hx-get="{% url "asset-history-single-view" previous %}?requests_ids={{requests_ids}}" hx-target = "#historySingleModalBody" style="left:-90px" class="oh-modal__diaglog-nav oh-modal__nav-prev">
+        <ion-icon name="chevron-back-outline" class="md hydrated" role="img"
+        aria-label="chevron back outline"></ion-icon>
     </button>
-  
-    <button
-      hx-get="{% url 'asset-allocation-individual-view' next %}?allocations_ids={{allocations_ids}}"
-      hx-target="#singleAllocate"
-      class="oh-modal__diaglog-nav oh-modal__nav-next"
-    >
-        <ion-icon
-            name="chevron-forward-outline"
-            class="md hydrated"
-            role="img"
-            aria-label="chevron forward outline"
-        ></ion-icon>
-    </button>
-</div> {% endcomment %}
 
-<a class="oh-timeoff-modal__profile-content pt-4" style="text-decoration:none;" 
-	href ="">
+    <button hx-get="{% url "asset-history-single-view" next %}?requests_ids={{requests_ids}}" hx-target = "#historySingleModalBody" style="right:-60px" class="oh-modal__diaglog-nav oh-modal__nav-next">
+        <ion-icon name="chevron-forward-outline" class="md hydrated" role="img"
+        aria-label="chevron forward outline"></ion-icon>
+    </button>
+</div>
+{% endif %}
+
+<div class="oh-timeoff-modal__profile-content pt-2"
+>
     <div class="oh-profile mb-2">
         <div class="oh-profile__avatar">
             <img
@@ -49,7 +35,7 @@
             >
         </div>
     </div>
-</a>
+</div>
 
 <div class="oh-timeoff-modal__stats-container">
 	<div class="oh-timeoff-modal__stat">

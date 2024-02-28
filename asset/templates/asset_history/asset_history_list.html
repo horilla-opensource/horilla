@@ -16,7 +16,7 @@
 			</div>
 			<div class="oh-sticky-table__tbody">
 				{% for asset_assignement in asset_assignments %}
-					<div class="oh-sticky-table__tr" hx-get='{% url "asset-history-single-view" asset_assignement.id %}' hx-target="#historySingleModalBody" data-toggle="oh-modal-toggle", data-target= "#historySingleModal"  >
+					<div class="oh-sticky-table__tr" hx-get='{% url "asset-history-single-view" asset_assignement.id %}?requests_ids={{requests_ids}}' hx-target="#historySingleModalBody" data-toggle="oh-modal-toggle", data-target= "#historySingleModal"  >
 						<div class="oh-sticky-table__sd">
 							<div class="oh-profile oh-profile--md">
 								<div class="oh-profile__avatar mr-1">
@@ -96,7 +96,7 @@
 	  	  	<button class="oh-modal__close" aria-label="Close" >
 	  	  	  	<ion-icon name="close-outline"></ion-icon>
 	  	  	</button>
-	  	  	<div class="oh-modal__dialog-body p-0 pt-2" id='historySingleModalBody'></div>
+	  	  	<div class="oh-modal__dialog-body oh-modal__dialog-relative p-0 pt-2" id='historySingleModalBody'></div>
 	  	</div>
 	</div>
 </div>
