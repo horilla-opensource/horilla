@@ -474,7 +474,6 @@ def candidate_reject_reasons(request):
     )
 
 
-
 @login_required
 @permission_required("auth.add_group")
 def user_group_table(request):
@@ -769,16 +768,16 @@ def user_group_update(request, id, **kwargs):
 @delete_permission()
 @require_http_methods(["POST", "DELETE"])
 def object_delete(request, id, **kwargs):
-    model = kwargs["model"]
-    redirect_path = kwargs["redirect"]
+    model = kwargs.get("model")
+    redirect_path = kwargs.get("redirect_path")
     try:
         instance = model.objects.get(id=id)
         instance.delete()
         messages.success(
-            request, _("The tag {} has been deleted successfully.").format(instance)
+            request, _("The {} has been deleted successfully.").format(instance)
         )
     except model.DoesNotExist:
-        messages.error(request, _("Tag {} not found.").format(model._meta.verbose_name))
+        messages.error(request, _("{} not found.").format(model._meta.verbose_name))
     except ProtectedError as e:
         model_verbose_names_set = set()
         for obj in e.protected_objects:
@@ -787,9 +786,12 @@ def object_delete(request, id, **kwargs):
         model_names_str = ", ".join(model_verbose_names_set)
         messages.error(
             request,
-            _("This tag {} is already in use for {}.").format(instance, model_names_str),
+            _("This {} is already in use for {}.").format(instance, model_names_str),
         ),
-    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+    if redirect_path:
+        return redirect(redirect_path)
+    else:
+        return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 
 
 @login_required
@@ -3890,7 +3892,7 @@ def general_settings(request):
         {
             "form": form,
             "currency_form": currency_form,
-            "pagination_form":pagination_form,
+            "pagination_form": pagination_form,
             "encashment_form": encashment_form,
             "history_fields_form": history_fields_form,
             "enabled_block_unblock": enabled_block_unblock,
@@ -4090,7 +4092,11 @@ def grace_time_view(request):
     return render(
         request,
         "attendance/grace_time/grace_time.html",
-        {"condition": condition, "default_grace_time": default_grace_time, "grace_times": grace_times},
+        {
+            "condition": condition,
+            "default_grace_time": default_grace_time,
+            "grace_times": grace_times,
+        },
     )
 
 
