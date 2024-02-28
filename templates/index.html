@@ -707,13 +707,17 @@
   <script src="{% static '/index/saveFilters.js' %}"></script>
   <script src="{% static 'build/js/htmxSelect2.js' %}" ></script>
   <script src="{% static 'build/js/summernote-lite.min.js' %}" ></script>
-  <script src="{% static '/base/date_formatting.js' %}"></script>
+  
+  <!-- This CDN is for date format change -->
+  <script src="{% static '/build/js/moment.js' %}"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment-with-locales.min.js"></script>
+
+  
   <script src="{% static '/base/date_settings.js' %}"></script>
   <script src="{% static '/base/time_formatting.js' %}"></script>
   <script src="{% static '/base/time_settings.js' %}"></script>
-
-  <!-- This CDN is for date format change -->
-  <script src="{% static '/build/js/moment.js' %}"></script>
+  <script src="{% static '/base/date_formatting.js' %}"></script>
   <script src="{% static 'attendance/actions.js' %}"></script>
   <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
   <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
