@@ -1,4 +1,19 @@
 {% load i18n %}
+
+{% if request.GET.requests_ids %}
+<div class="oh-modal__dialog oh-modal__dialog--navigation m-0 p-0">
+    <button hx-get="{% url 'asset-information' previous %}?requests_ids={{requests_ids}}&asset_info=true" hx-target = "#assetInfomation" class="oh-modal__diaglog-nav oh-modal__nav-prev">
+        <ion-icon name="chevron-back-outline" class="md hydrated" role="img"
+        aria-label="chevron back outline"></ion-icon>
+    </button>
+
+    <button hx-get="{% url 'asset-information' next %}?requests_ids={{requests_ids}}&asset_info=true" hx-target = "#assetInfomation" class="oh-modal__diaglog-nav oh-modal__nav-next">
+        <ion-icon name="chevron-forward-outline" class="md hydrated" role="img"
+        aria-label="chevron forward outline"></ion-icon>
+    </button>
+</div>
+{% endif %}
+
 <div class="oh-modal__section-head">{% trans "Asset Information" %}</div>
 <div class="row">
   <div class="col-12 col-md-12 col-lg-12">
@@ -79,5 +94,21 @@
         </div>                                    
     </div>
   {% endif %}
-
+  <div class="oh-modal__button-container text-center mt-3">
+       
+    <div class="oh-btn-group">
+      <a hx-get="{% url 'asset-update' asset_id=asset.id %}?asset_under=info&{{pg}}" 
+        data-toggle="oh-modal-toggle" 
+        data-target="#assetUpdate"
+        hx-target="#assetUpdateBody" 
+        class="oh-btn oh-btn--info" 
+        style="width: 50%;"
+      >
+        <ion-icon name="create-outline" role="img" class="md hydrated" aria-label="create outline"></ion-icon>{% trans "Edit" %}
+      </a>
+      <a href="{% url 'asset-delete' asset.id %}?asset_list=asset_filter&{{pg}}" onclick="event.preventDefault();event.stopPropagation(); confirm(`Do you want to delete this asset?`)" class="oh-btn oh-btn--danger" style="width: 50%;">
+        <ion-icon name="trash-outline" role="img" class="md hydrated" aria-label="create outline"></ion-icon>{% trans "Delete" %}
+        </a>
+    </div>
+  </div>
 </div>

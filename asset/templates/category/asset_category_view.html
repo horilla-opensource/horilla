@@ -398,14 +398,20 @@
     <div class="oh-modal__dialog">
         <div class="oh-modal__dialog-header">
             <span class="oh-modal__dialog-title" id="assetModalLabel">{{asset.asset_name}}</span>
-            <button class="oh-modal__close" aria-label="Close" >
+            <button class="oh-modal__close" aria-label="Close" style="top:17px" >
                 <ion-icon name="close-outline"></ion-icon>
             </button>
         </div>
-        <div class="oh-modal__dialog-body">
+        <div class="oh-modal__dialog-body oh-modal__dialog-relative">
             <section id="assetInfomation">
             </section>
         </div>
+    </div>
+</div>
+
+<div class="oh-modal" id="assetUpdate" role="dialog" aria-labelledby="assetModalLabel" aria-hidden="true">    
+    <div class="oh-modal__dialog" id="assetUpdateBody">
+        
     </div>
 </div>
 

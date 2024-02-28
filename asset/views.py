@@ -197,6 +197,13 @@ def asset_information(request, asset_id):
 
     asset = Asset.objects.get(id=asset_id)
     context = {"asset": asset}
+    requests_ids_json = request.GET.get("requests_ids")
+    if requests_ids_json:
+        requests_ids = json.loads(requests_ids_json)
+        previous_id, next_id = closest_numbers(requests_ids, asset_id)
+        context["requests_ids"] = requests_ids_json
+        context["previous"] = previous_id
+        context["next"] = next_id
     return render(request, "asset/asset_information.html", context)
 
 
@@ -289,6 +296,7 @@ def asset_list(request, cat_id):
         None
     """
     asset_list_filter = request.GET.get("asset_list")
+    asset_info = request.GET.get("asset_info")
     context = {}
     if asset_list_filter:
         # if the data is present means that it is for asset filtered list
@@ -298,6 +306,8 @@ def asset_list(request, cat_id):
             assets_in_category = Asset.objects.filter(asset_name__icontains=query)
         else:
             assets_in_category = Asset.objects.all()
+    elif asset_info:
+        pass
     else:
         # if the data is not present means that it is for asset category list
         asset_under = "asset_category"
@@ -311,6 +321,9 @@ def asset_list(request, cat_id):
     paginator = Paginator(asset_list, 20)
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
+    requests_ids = json.dumps(
+        [instance.id for instance in page_obj.object_list]
+    )
     data_dict = parse_qs(previous_data)
     get_key_instances(Asset, data_dict)
     context = {
@@ -320,6 +333,7 @@ def asset_list(request, cat_id):
         "asset_under": asset_under,
         "asset_count": len(assets_in_category) or None,
         "filter_dict": data_dict,
+        "requests_ids":requests_ids,
     }
     return render(request, "asset/asset_list.html", context)
 
@@ -1484,12 +1498,16 @@ def asset_history(request):
     data_dict = parse_qs(previous_data)
     get_key_instances(AssetAssignment, data_dict)
     asset_assignments = paginator_qry(asset_assignments, request.GET.get("page"))
+    requests_ids = json.dumps(
+        [instance.id for instance in asset_assignments.object_list]
+    )
     context = {
         "asset_assignments": asset_assignments,
         "f": AssetHistoryFilter(),
         "filter_dict": data_dict,
         "gp_fields": AssetHistoryReGroup().fields,
         "pd": previous_data,
+        "requests_ids":requests_ids,
     }
     return render(request, "asset_history/asset_history_view.html", context)
 
@@ -1508,10 +1526,18 @@ def asset_history_single_view(request, asset_id):
         html: Returns asset history single view template
     """
     asset_assignment = get_object_or_404(AssetAssignment, id=asset_id)
+    context = {"asset_assignment": asset_assignment}
+    requests_ids_json = request.GET.get("requests_ids")
+    if requests_ids_json:
+        requests_ids = json.loads(requests_ids_json)
+        previous_id, next_id = closest_numbers(requests_ids, asset_id)
+        context["requests_ids"] = requests_ids_json
+        context["previous"] = previous_id
+        context["next"] = next_id
     return render(
         request,
         "asset_history/asset_history_single_view.html",
-        {"asset_assignment": asset_assignment},
+        context,
     )
 
 
@@ -1537,7 +1563,19 @@ def asset_history_search(request):
             asset_assignments, field, request.GET.get("page"), "page"
         )
         template = "asset_history/group_by.html"
-    asset_assignments = paginator_qry(asset_assignments, request.GET.get("page"))
+        list_values = [entry["list"] for entry in asset_assignments]
+        id_list = []
+        for value in list_values:
+            for instance in value.object_list:
+                id_list.append(instance.id)
+
+        requests_ids = json.dumps(list(id_list))
+    else:
+        asset_assignments = paginator_qry(asset_assignments, request.GET.get("page"))
+        
+        requests_ids = json.dumps(
+            [instance.id for instance in asset_assignments.object_list]
+        )
     data_dict = parse_qs(previous_data)
     get_key_instances(AssetAssignment, data_dict)
 
@@ -1549,5 +1587,6 @@ def asset_history_search(request):
             "filter_dict": data_dict,
             "field": field,
             "pd": previous_data,
+            "requests_ids":requests_ids,
         },
     )
