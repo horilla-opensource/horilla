@@ -254,9 +254,9 @@
 				<button
 					class="oh-btn oh-btn--secondary oh-btn--shadow"
 					data-toggle="oh-modal-toggle"
-					data-target="#editModal2"
+					data-target="#assignLeaveModal"
 					hx-get="{% url 'assign' %}"
-					hx-target="#assignForm"
+					hx-target="#assignLeaveFormModal"
 				>
 					{% trans "Assign" %}
 				</button>
@@ -336,50 +336,43 @@
 	</div>
 	{% endif %}
 </div>
-<!-- update available leave -->
+
+<!-- view single available leave -->
 <div
-	class="oh-modal"
-	id="editModal1"
-	role="dialog"
-	aria-labelledby="editDialogModal"
-	aria-hidden="true"
->
-	<div class="oh-modal__dialog oh-modal__dialog--timeoff">
-		<div class="oh-modal__dialog-header">
-			<span class="oh-modal__dialog-title" id="editDialogDialog"
-				>{% trans "Update Available Leave" %}</span
-			>
-			<button class="oh-modal__close" aria-label="Close">
-				<ion-icon name="close-outline"></ion-icon>
-			</button>
-		</div>
-		<div id="leaveForm"></div>
-	</div>
+    class="oh-modal"
+    id="leaveAssignModal"
+    role="dialog"
+    aria-hidden="true"
+    aria-labelledby="leaveAssignModal"
+    >
+    <div class="oh-modal__dialog" id="leaveAssignModalTarget"></div>
+</div>
+
+<!-- update available leave -->
+
+<div
+  class="oh-modal"
+  id="assignLeaveUpdateModal"
+  role="dialog"
+  aria-labelledby="assignLeaveUpdateModalLabel"
+  aria-hidden="true"
+  >
+  <div class="oh-modal__dialog oh-modal__dialog--timeoff" 
+  	id="assignLeaveUpdateFormModal"> 
+  </div>
 </div>
 
 <!-- Assign leave -->
 <div
 	class="oh-modal"
-	id="editModal2"
+	id="assignLeaveModal"
 	role="dialog"
-	aria-labelledby="bulkPayslipModal"
+	aria-labelledby="assignLeaveModalLabel"
 	aria-hidden="true"
 >
-	<div class="oh-modal__dialog">
-		<div class="oh-modal__dialog-header">
-			<h1 class="oh-modal__dialog-title" id="addEmployeeModalLabel">
-				{% trans "Assign Leaves" %}
-				<div class="oh-payslip__header mt-3 mb-0"></div>
-			</h1>
-			<button class="oh-modal__close" aria-label="Close">
-				<ion-icon name="close-outline"></ion-icon>
-			</button>
-		</div>
-		<div class="oh-modal__dialog-body" id="assignForm">
-			
-		</div>
-	</div>
+	<div class="oh-modal__dialog" id="assignLeaveFormModal"> </div>
 </div>
+
 <script>
 	$(document).ready(function(){
 		$("#id_field").on("change", function () {

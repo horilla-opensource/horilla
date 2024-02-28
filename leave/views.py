@@ -424,12 +424,12 @@ def leave_request_filter(request):
     template = ("leave/leave_request/leave_requests.html",)
     if request.GET.get("sortby"):
         leave_request_filter = sortby(request, leave_request_filter, "sortby")
- 
+
     if field != "" and field is not None:
         leave_request_filter = group_by_queryset(
             leave_request_filter, field, request.GET.get("page"), "page"
         )
-        list_values = [entry['list'] for entry in leave_request_filter]
+        list_values = [entry["list"] for entry in leave_request_filter]
         id_list = []
         for value in list_values:
             for instance in value.object_list:
@@ -438,13 +438,12 @@ def leave_request_filter(request):
         requests_ids = json.dumps(list(id_list))
         template = "leave/leave_request/group_by.html"
 
-    else: 
-        leave_request_filter =  paginator_qry(leave_request_filter, request.GET.get("page"))
+    else:
+        leave_request_filter = paginator_qry(
+            leave_request_filter, request.GET.get("page")
+        )
         requests_ids = json.dumps(
-            [
-                instance.id
-                for instance in leave_request_filter.object_list
-            ]
+            [instance.id for instance in leave_request_filter.object_list]
         )
 
     data_dict = []
@@ -933,6 +932,12 @@ def leave_assign_view(request):
     setattr(request.GET, "field", True)
 
     page_obj = group_by_queryset(queryset.order_by("-id"), "leave_type_id", page_number)
+    list_values = [entry["list"] for entry in page_obj]
+    id_list = []
+    for value in list_values:
+        for instance in value.object_list:
+            id_list.append(instance.id)
+    available_leave_ids = json.dumps(list(id_list))
 
     return render(
         request,
@@ -946,7 +951,26 @@ def leave_assign_view(request):
             "filter_dict": data_dict,
             "gp_fields": LeaveAssignReGroup.fields,
             "assign_form": assign_form,
+            "available_leave_ids": available_leave_ids,
         },
+    )
+
+
+def available_leave_single_view(request, obj_id):
+    previous_data = request.GET.urlencode()
+    available_leave = AvailableLeave.objects.filter(id=obj_id).first()
+    instance_ids_json = request.GET["instances_ids"]
+    instance_ids = json.loads(instance_ids_json) if instance_ids_json else []
+    previous_instance, next_instance = closest_numbers(instance_ids, obj_id)
+    content = {
+        "available_leave": available_leave,
+        "previous_instance": previous_instance,
+        "next_instance": next_instance,
+        "instance_ids_json": instance_ids_json,
+        "pd": previous_data,
+    }
+    return render(
+        request, "leave/leave_assign/single_assign_view.html", context=content
     )
 
 
@@ -974,10 +998,22 @@ def leave_assign_filter(request):
     available_leaves = assigned_leave_filter.order_by("-id")
     if request.GET.get("sortby"):
         available_leaves = sortby(request, available_leaves, "sortby")
+        available_leave_ids = json.dumps(
+            [instance.id for instance in paginator_qry(available_leaves, None)]
+        )
     if field != "" and field is not None:
         page_obj = group_by_queryset(available_leaves, field, page_number)
+        list_values = [entry["list"] for entry in page_obj]
+        id_list = []
+        for value in list_values:
+            for instance in value.object_list:
+                id_list.append(instance.id)
+        available_leave_ids = json.dumps(list(id_list))
         template = "leave/leave_assign/group_by.html"
     else:
+        available_leave_ids = json.dumps(
+            [instance.id for instance in paginator_qry(available_leaves, None)]
+        )
         page_obj = paginator_qry(available_leaves, page_number)
 
     data_dict = parse_qs(previous_data)
@@ -991,6 +1027,7 @@ def leave_assign_filter(request):
             "filter_dict": data_dict,
             "field": field,
             "assign_form": assign_form,
+            "available_leave_ids": available_leave_ids,
         },
     )
 
@@ -1044,16 +1081,7 @@ def leave_assign(request):
                                 request,
                                 _("Leave type is already assigned to the employee.."),
                             )
-
-        response = render(
-            request,
-            "leave/leave_assign/leave_assign_form.html",
-            {"form": form, "id": id},
-        )
-        return HttpResponse(
-            response.content.decode("utf-8") + "<script>location.reload();</script>"
-        )
-
+        return HttpResponse("<script>window.location.reload()</script>")
     return render(
         request, "leave/leave_assign/leave_assign_form.html", {"assign_form": form}
     )
@@ -1076,6 +1104,7 @@ def available_leave_update(request, id):
     """
     leave_assign = AvailableLeave.objects.get(id=id)
     form = AvailableLeaveUpdateForm(instance=leave_assign)
+    previous_data = request.GET.urlencode()
     if request.method == "POST":
         form = AvailableLeaveUpdateForm(request.POST, instance=leave_assign)
         if form.is_valid():
@@ -1093,24 +1122,16 @@ def available_leave_update(request, id):
                     icon="people-circle",
                     redirect="/leave/user-request-view",
                 )
-        response = render(
-            request,
-            "leave/leave_assign/available_update_form.html",
-            {"form": form, "id": id},
-        )
-        return HttpResponse(
-            response.content.decode("utf-8") + "<script>location. reload();</script>"
-        )
     return render(
         request,
         "leave/leave_assign/available_update_form.html",
-        {"form": form, "id": id},
+        {"form": form, "id": id, "pd": previous_data},
     )
 
 
 @login_required
 @manager_can_enter("leave.delete_availableleave")
-def leave_assign_delete(request, id):
+def leave_assign_delete(request, obj_id):
     """
     function used to delete assign leave type of an employee.
 
@@ -1121,14 +1142,27 @@ def leave_assign_delete(request, id):
     Returns:
     GET : return leave type assigned view template
     """
+    pd = request.GET.urlencode()
     try:
-        AvailableLeave.objects.get(id=id).delete()
+        AvailableLeave.objects.get(id=obj_id).delete()
         messages.success(request, _("Assigned leave is successfully deleted."))
     except AvailableLeave.DoesNotExist:
         messages.error(request, _("Assigned leave not found."))
     except ProtectedError:
         messages.error(request, _("Related entries exists"))
-    return redirect(leave_assign_view)
+    if not request.GET.get("instances_ids"):
+        return redirect(f"/leave/assign-filter?{pd}")
+    else:
+        instances_ids = request.GET.get("instances_ids")
+        instances_list = json.loads(instances_ids)
+        if obj_id in instances_list:
+            instances_list.remove(obj_id)
+        previous_instance, next_instance = closest_numbers(
+            json.loads(instances_ids), obj_id
+        )
+        return redirect(
+            f"/leave/available-leave-single-view/{next_instance}/?instances_ids={instances_list}"
+        )
 
 
 @require_http_methods(["POST"])
@@ -1740,7 +1774,7 @@ def user_leave_request(request, id):
 
         overlapping_requests = LeaveRequest.objects.filter(
             employee_id=employee, start_date__lte=end_date, end_date__gte=start_date
-        ).exclude(status__in=["cancelled","rejected"])
+        ).exclude(status__in=["cancelled", "rejected"])
         if overlapping_requests.exists():
             form.add_error(
                 None, _("There is already a leave request for this date range..")
@@ -2056,7 +2090,7 @@ def user_request_filter(request):
             user_request_filter = group_by_queryset(
                 user_request_filter, field, request.GET.get("page"), "page"
             )
-            list_values = [entry['list'] for entry in user_request_filter]
+            list_values = [entry["list"] for entry in user_request_filter]
             id_list = []
             for value in list_values:
                 for instance in value.object_list:
@@ -2065,16 +2099,14 @@ def user_request_filter(request):
             requests_ids = json.dumps(list(id_list))
             template = "leave/user_leave/group_by.html"
 
-        else: 
-            user_request_filter =  paginator_qry(user_request_filter, request.GET.get("page"))
+        else:
+            user_request_filter = paginator_qry(
+                user_request_filter, request.GET.get("page")
+            )
             requests_ids = json.dumps(
-                [
-                    instance.id
-                    for instance in user_request_filter.object_list
-                ]
+                [instance.id for instance in user_request_filter.object_list]
             )
 
-        
         data_dict = parse_qs(previous_data)
         get_key_instances(LeaveRequest, data_dict)
         if "status" in data_dict:

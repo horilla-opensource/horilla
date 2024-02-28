@@ -57,13 +57,14 @@ urlpatterns = [
     path("request-filter", views.leave_request_filter, name="request-filter"),
     path("assign", views.leave_assign, name="assign"),
     path("assign-one/<int:id>", views.leave_assign_one, name="assign-one"),
-    path("assign-view", views.leave_assign_view, name="assign-view"),
+    path("assign-view/", views.leave_assign_view, name="assign-view"),
+    path("available-leave-single-view/<int:obj_id>/", views.available_leave_single_view, name="available-leave-single-view"),
     path(
         "available-leave-update/<int:id>",
         views.available_leave_update,
         name="available-leave-update",
     ),
-    path("assign-delete/<int:id>", views.leave_assign_delete, name="assign-delete"),
+    path("assign-delete/<int:obj_id>", views.leave_assign_delete, name="assign-delete"),
     path(
         "assigned-leave-bulk-delete",
         views.leave_assign_bulk_delete,

@@ -1,6 +1,17 @@
 {% load i18n %} {% load static %} {% load basefilters %}
 <!-- Sticky Table -->
 {% include 'filter_tags.html' %}
+{% if messages %}
+<div class="oh-wrapper">
+  {% for message in messages %}
+  <div class="oh-alert-container">
+    <div class="oh-alert oh-alert--animated {{message.tags}}">
+      {{ message }}
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
 <div class="oh-table_sticky--wrapper" id="ot-table">
 	<div class="oh-sticky-dropdown--header">
 		<div class="oh-dropdown" x-data="{open: false}">
@@ -36,7 +47,10 @@
         </div>
         <div class="oh-sticky-table__tbody">
         {% for available_leave in available_leaves %}
-        <div class="oh-sticky-table__tr" draggable="true">
+        <div class="oh-sticky-table__tr" draggable="false"
+            data-toggle="oh-modal-toggle" data-target="#leaveAssignModal"
+            hx-target="#leaveAssignModalTarget"
+            hx-get="{% url 'available-leave-single-view' available_leave.id %}?{{pd}}&instances_ids={{available_leave_ids}}">
             <div class="oh-sticky-table__sd">
                 <div class="centered-div">
                     <input type="checkbox" id="{{available_leave.id}}" onchange="highlightRow($(this))"
@@ -59,16 +73,16 @@
             <div data-cell-index="6" class="oh-sticky-table__td dateformat_changer">{{available_leave.assigned_date}}</div>
             {% if perms.leave.change_availableleave or perms.leave.delete_availableleave or request.user|is_reportingmanager %}
             <div class="oh-sticky-table__td">
-                <div class="oh-btn-group">
+                <div class="oh-btn-group" onclick="event.stopPropagation();">
                     {% if request.user|is_reportingmanager or perms.leave.change_availableleave %}
                         <button class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Edit' %}" data-toggle="oh-modal-toggle"
-                            data-target="#editModal1" hx-get="{% url 'available-leave-update' available_leave.id %}"
-                            hx-target="#leaveForm"><ion-icon name="create-outline"></ion-icon></button>
+                            data-target="#assignLeaveUpdateModal" hx-get="{% url 'available-leave-update' available_leave.id %}?{{pd}}"
+                            hx-target="#assignLeaveUpdateFormModal"><ion-icon name="create-outline"></ion-icon></button>
                     {% endif %}
                     {% if request.user|is_reportingmanager or perms.leave.delete_availableleave %}
-                    <a class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100" onclick="return confirm('{% trans "Are you sure you want to delete ?" %}');" id="delete-link"
-                        href="{% url 'assign-delete' available_leave.id %}" title="{% trans 'Delete' %}"><ion-icon
-                            name="trash-outline"></ion-icon></a>
+                    <a class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100" hx-confirm="{% trans 'Are you sure you want to delete ?' %}" 
+                        id="delete-link" hx-post="{% url 'assign-delete' available_leave.id %}?{{pd}}" hx-target="#assignedLeaves" title="{% trans 'Delete' %}">
+                        <ion-icon name="trash-outline"></ion-icon></a>
                     {% endif %}
                 </div>
             </div>
