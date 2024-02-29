@@ -1,5 +1,17 @@
 {% load basefilters %}
 {% load i18n %} {% load yes_no %}
+<div class="oh-modal__dialog-header">
+    <span
+      class="oh-modal__dialog-title"
+      id="workTypeRequestSingleViewModalLabel"
+    >
+      {% trans "Details" %}
+    </span>
+    <button class="oh-modal__close" aria-label="Close">
+      <ion-icon name="close-outline"></ion-icon>
+    </button>
+</div>
+<div class="oh-modal__dialog-body oh-modal__dialog-relative" >
 {% if request.GET.instances_ids %}
 
     <div class="oh-modal__dialog oh-modal__dialog--navigation m-0 p-0">
@@ -144,4 +156,5 @@
         {% endif %}
        </div>
     </div>
+</div>
 </div>

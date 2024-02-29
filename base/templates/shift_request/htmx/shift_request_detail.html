@@ -1,10 +1,22 @@
 {% load basefilters %}
 {% load i18n %} {% load yes_no %}
+<div class="oh-modal__dialog-header">
+    <span
+      class="oh-modal__dialog-title"
+      id="shiftRequestDetailModalLabel"
+    >
+      {% trans "Details" %}
+    </span>
+    <button class="oh-modal__close" aria-label="Close">
+      <ion-icon name="close-outline"></ion-icon>
+    </button>
+</div>
+<div class="oh-modal__dialog-body oh-modal__dialog-relative">
 {% if request.GET.instances_ids %}
 <div class="oh-modal__dialog oh-modal__dialog--navigation m-0 p-0">
     <button 
         hx-get="{% url 'shift-request-details' previous %}?instances_ids={{requests_ids}}&dashboard={{dashboard}}" 
-        hx-target="{% if dashboard == 'true' %}#smallModalTarget{% else %}#shiftRequestDetailTarget {% endif %}"  
+        hx-target="#shiftRequestDetailTarget"  
         class="oh-modal__diaglog-nav oh-modal__nav-prev">
         <ion-icon name="chevron-back-outline" class="md hydrated" role="img"
         aria-label="chevron back outline"></ion-icon>
@@ -12,7 +24,7 @@
 
     <button  
         hx-get="{% url 'shift-request-details' next %}?instances_ids={{requests_ids}}&dashboard={{dashboard}}" 
-        hx-target="{% if dashboard == 'true' %}#smallModalTarget{% else %}#shiftRequestDetailTarget {% endif %}"  
+        hx-target="#shiftRequestDetailTarget"  
         class="oh-modal__diaglog-nav oh-modal__nav-next">
         <ion-icon name="chevron-forward-outline" class="md hydrated" role="img"
         aria-label="chevron forward outline"></ion-icon>
@@ -121,4 +133,5 @@
         {% endif %}
        </div>
     </div>
+</div>
 </div>
