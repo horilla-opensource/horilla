@@ -1477,27 +1477,31 @@ def rotating_work_type_assign_archive(request, id):
     """
     This method is used to archive or un-archive rotating work type assigns
     """
-    rwork_type = RotatingWorkTypeAssign.objects.get(id=id)
-    employees_rwork_types = RotatingWorkTypeAssign.objects.filter(
-        is_active=True, employee_id=rwork_type.employee_id
-    )
-    flag = False
-    if len(employees_rwork_types) < 1:
-        rwork_type.is_active = True
-        flag = True
-
-    message = _("un-archived")
-    if request.GET.get("is_active") == "False":
-        rwork_type.is_active = False
-        message = _("archived")
-        flag = True
-    rwork_type.save()
-    if flag:
-        messages.success(
-            request, _("Rotating shift assign is {message}").format(message=message)
+    try:
+        rwork_type = RotatingWorkTypeAssign.objects.get(id=id)
+        employees_rwork_types = RotatingWorkTypeAssign.objects.filter(
+            is_active=True, employee_id=rwork_type.employee_id
         )
-    else:
-        messages.error(request, "Already on record is active")
+        flag = False
+        if len(employees_rwork_types) < 1:
+            rwork_type.is_active = True
+            flag = True
+
+        message = _("un-archived")
+        if request.GET.get("is_active") == "False":
+            rwork_type.is_active = False
+            message = _("archived")
+            flag = True
+        rwork_type.save()
+        if flag:
+            messages.success(
+                request, _("Rotating shift assign is {message}").format(message=message)
+            )
+        else:
+            messages.error(request, "Already on record is active")
+    except RotatingWorkTypeAssign.DoesNotExist:
+        messages.error(request, _("Rotating work type assign not found."))
+
     return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 
 
