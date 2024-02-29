@@ -13,8 +13,8 @@
 {% endif %}
 <form hx-post="{%url 'asset-request-creation' %}" hx-target="#asset-request-allocation-modal-target">
     {% csrf_token %}
-    <div class="oh-general__tab-target oh-profile-section">
-        <div class="oh-input__group ">
+    <div class="oh-general__tab-target oh-profile-section">        
+        <div class="oh-input__group {% if not perms.asset.add_assetrequest %}d-none {% endif %}">
             <label class="oh-input__label" for="{{asset_request_form.requested_employee_id.id_for_label}}">{% trans "Requesting User" %}</label>
             {{asset_request_form.requested_employee_id}}
             {{asset_request_form.requested_employee_id.errors}}

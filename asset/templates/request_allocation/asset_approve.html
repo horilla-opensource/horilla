@@ -3,21 +3,16 @@
 <form hx-post="{%url 'asset-request-approve' req_id=id %}">
     {% csrf_token %}
     <div class=" m-3">
-        <!-- <div class="oh-input__group ">
-            <label class="oh-input__label" for="objective">{% trans "Requesting User" %}</label>
-            {{asset_allocation_form.assigned_to_employee_id}}
-            {{asset_allocation_form.assigned_to_employee_id.errors}}
-        </div> -->
         <div class="oh-input__group ">
             <label class="oh-input__label" for="objective">{% trans "Asset" %}</label>
             {{asset_allocation_form.asset_id}}
             {{asset_allocation_form.asset_id.errors}}
         </div>
-        <!-- <div class="oh-input__group ">
-            <label class="oh-input__label" for="objective">{% trans "Assigned By" %}</label>
-            {{asset_allocation_form.assigned_by_employee_id}}
-            {{asset_allocation_form.assigned_by_employee_id.errors}}
-        </div> -->
+        <div class="oh-input__group ">
+            <label class="oh-input__label" for="objective">{% trans "Assign Condition Images" %}</label>
+            {{asset_allocation_form.assign_images}}
+            {{asset_allocation_form.assign_images.errors}}
+        </div>
     </div>
     <div class="oh-modal__dialog-footer">
         <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow">
