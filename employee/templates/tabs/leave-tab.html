@@ -209,9 +209,9 @@
         <div
           class="oh-sticky-table__tr"
           data-toggle="oh-modal-toggle"
-          data-target="#tableTimeOff"
+          data-target="#userRequestDetailModal"
           hx-get="{% url 'user-request-one' leave_request.id %}?instances_ids={{leave_request_ids}}"
-          hx-target="#userRequestView"
+          hx-target="#userRequestDetailTarget"
         >
           <div class="oh-sticky-table__sd 
             {% if leave_request.status == "requested" %}row-status--orange 
@@ -331,22 +331,12 @@
 {% endif %}
 <div
   class="oh-modal"
-  id="tableTimeOff"
+  id="userRequestDetailModal"
   role="dialog"
-  aria-labelledby="tableTimeOffModal"
+  aria-labelledby="userRequestDetailModalLabel"
   aria-hidden="true"
->
-  <div
-    class="oh-modal__dialog oh-modal__dialog--timeoff oh-modal__dialog-relative oh-timeoff-modal"
   >
-    <div class="oh-modal__dialog-header">
-      <button class="oh-modal__close" aria-label="Close">
-        <ion-icon name="close-outline"></ion-icon>
-      </button>
-    </div>
-
-    <div id="userRequestView"></div>
-  </div>
+  <div class="oh-modal__dialog w-25" id="userRequestDetailTarget"></div>
 </div>
 <div
 	class="oh-modal"

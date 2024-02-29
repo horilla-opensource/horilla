@@ -8,16 +8,15 @@
             <div class="oh-sticky-table__th">{% trans "Asset" %}</div>
             <div class="oh-sticky-table__th">{% trans "Status" %}</div>
             <div class="oh-sticky-table__th">{% trans "Assigned Date" %}</div>
-            <div class="oh-sticky-table__th">
-                <a class="link-danger oh-btn oh-btn--secondary-outline w-25 float-end" role="button" data-toggle="oh-modal-toggle"
+            <div class="oh-sticky-table__th" style="width: 10px;">
+              <a class="link-danger oh-btn oh-btn--secondary-outline" role="button" data-toggle="oh-modal-toggle"
                 data-target="#asset-request-allocation-modal" hx-get="{% url 'asset-request-creation' %}" hx-target="#asset-request-allocation-modal-target" title='{% trans "Create asset request" %}'>
                 <ion-icon name="add-outline" role="img" class="md hydrated" aria-label="add outline"></ion-icon>
-                </a>
+              </a>
             </div>
           </div>
         </div>
         <div class="oh-sticky-table__tbody">
-
           {% for asset in assets %}
           {% if asset.asset_id.asset_status == "In use" %}
           <!-- asset request looping -->
@@ -44,11 +43,21 @@
                 {{asset.assigned_date}}
                 </span>
                 </div>
+                <div class="oh-sticky-table__td"></div>
             </div>
           {% endif %}
           {% endfor %}
         </div>
       </div>
+    </div>
+    <div
+      class="oh-modal"
+      id="detailAssetAssignModal"
+      role="dialog"
+      aria-labelledby="detailAssetAssignModalLabel"
+      aria-hidden="true"
+      >
+      <div class="oh-modal__dialog" id="detailAssetAssignModalBody"></div>
     </div>
     {% else %}
     <div class="d-flex justify-content-center align-items-center" style="height:40vh">
@@ -58,18 +67,14 @@
     <!-- End of Sticky Table -->
 
     <div class="oh-modal" id="asset-request-allocation-modal" role="dialog" aria-labelledby="AssetRequestModal" aria-hidden="true">
-
-        <div class="oh-modal__dialog " style="max-width:550px">
-            <div class="oh-modal__dialog-header">
-                <button type="button" class="oh-modal__close" aria-label="Close">
-                    <ion-icon name="close-outline"></ion-icon>
-                </button>
-            </div>
-         
-            <!-- htmx form -->
-            <div class="oh-modal__dialog-body" id="asset-request-allocation-modal-target"> 
-                   
-            </div>
+      <div class="oh-modal__dialog " style="max-width:550px">
+        <div class="oh-modal__dialog-header">
+            <button type="button" class="oh-modal__close" aria-label="Close">
+              <ion-icon name="close-outline"></ion-icon>
+            </button>
         </div>
+        <!-- htmx form -->
+        <div class="oh-modal__dialog-body" id="asset-request-allocation-modal-target"></div>
+      </div>
     </div>
 

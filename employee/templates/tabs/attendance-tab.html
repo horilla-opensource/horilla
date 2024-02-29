@@ -64,7 +64,11 @@
 				</div>
 				{% for attendance in requests %}
 				<div class="oh-sticky-table__tbody">
-					<div class="oh-sticky-table__tr" draggable="true">
+					<div class="oh-sticky-table__tr" draggable="false"
+						hx-get="{% url 'user-request-one-view' attendance.id %}?instances_ids={{attendances_ids}}"
+						data-toggle="oh-modal-toggle" data-target="#detailAttendance"
+						hx-target="#detailAttendanceModalBody"
+						>
 					<div
 						class="oh-sticky-table__sd {% if attendance.attendance_validated %}row-status--yellow {% else %}row-status--purple{% endif %}"
 					>
@@ -115,7 +119,7 @@
 						{{attendance.attendance_overtime}}
 					</div>
 					{% if request.user|is_reportingmanager or perms.attendance.change_attendance %}
-					<div class="oh-sticky-table__td oh-sticky-table__right">
+					<div class="oh-sticky-table__td oh-sticky-table__right" onclick="event.stopPropagation();">
 						<div class="oh-btn-group">
 						<a
 						data-toggle="oh-modal-toggle"
@@ -193,7 +197,7 @@
 									<div class="oh-sticky-table__td">{{ot.worked_hours}}</div>
 									<div class="oh-sticky-table__td">{{ot.overtime}}</div>
 									{% if perms.recruitment.change_attendanceovertime or perms.recruitment.delete_attendanceovertime %}
-									<div class="oh-sticky-table__td">
+									<div class="oh-sticky-table__td" onclick="event.stopPropagation();">
 										<div class="oh-btn-group">
 											{% if perms.recruitment.change_attendanceovertime %}
 											<a hx-get="{% url 'attendance-overtime-update' ot.id %}" hx-target='#validateAttendanceRequestModalBody' data-toggle='oh-modal-toggle' data-target='#validateAttendanceRequest'  class="oh-btn oh-btn--light-bkg w-50" title="{% trans 'Edit' %}"><ion-icon name="create-outline"></ion-icon></a>
@@ -250,7 +254,11 @@
 					  {% for attendance in validate_attendances %}
 					  <div class="oh-sticky-table__tbody">
 						<div class="oh-sticky-table__tr" 
-						draggable="false">
+							draggable="false"
+                  			data-toggle="oh-modal-toggle"
+                  			data-target="#detailAttendance"
+                  			hx-target="#detailAttendanceModalBody"
+                  			hx-get="{% url 'user-request-one-view' attendance.id %}?validate=true&instances_ids={{validate_attendances_ids}}">
 						  <div class="oh-sticky-table__sd">
 							<div class="d-flex">
 								
@@ -300,7 +308,7 @@
 						  <div class="oh-sticky-table__td">
 							{{attendance.attendance_overtime}}
 						  </div>
-						  <div class="oh-sticky-table__td">
+						  <div class="oh-sticky-table__td" onclick="event.stopPropagation();">
 							<div class="oh-btn-group">
 							  {% if perms.attendance.change_attendance or request.user|is_reportingmanager %}
 							  <a hx-get="{% url 'attendance-update' attendance.id %}" hx-target='#updateAttendanceRequestModalBody' hx-swap='innerHTML' data-toggle='oh-modal-toggle' data-target='#updateAttendanceRequest'  class="oh-btn oh-btn--light-bkg w-50" title="{% trans 'Edit' %}"><ion-icon name="create-outline"></ion-icon></a>
@@ -313,7 +321,7 @@
 							  {% endif %}
 							</div>
 						</div>
-						  <div class="oh-sticky-table__td">
+						  <div class="oh-sticky-table__td" onclick="event.stopPropagation();">
 							  {% if request.user|is_reportingmanager or perms.attendance.change_attendance %}
 							  <a  
 							  href = '{% url "validate-this-attendance" attendance.id %}'
@@ -332,6 +340,41 @@
 		</div>
 	</div>
 </div>
+
+<div
+  class="oh-modal"
+  id="detailAttendance"
+  role="dialog"
+  aria-labelledby="detailAttendance"
+  aria-hidden="true"
+  >
+    <div class="oh-modal__dialog w-25" id="detailAttendanceModalBody"></div>
+</div>
+
+<div
+  class="oh-modal"
+  id="updateAttendanceModal"
+  role="dialog"
+  aria-labelledby="updateAttendanceModal"
+  aria-hidden="true"
+  >
+  <div class="oh-modal__dialog">
+	  <div class="oh-modal__dialog-header">
+	    <h2 class="oh-modal__dialog-title" id="updateAttendanceModalLabel">
+	      {% trans "Edit Attendance" %}
+	    </h2>
+	    <button
+	      class="oh-modal__close--custom"
+        onclick="$(this).parents().closest('.oh-modal--show').toggleClass('oh-modal--show')"
+	      aria-label="Close"
+	    >
+	      <ion-icon name="close-outline"></ion-icon>
+	    </button>
+	  </div>
+    <div id="updateAttendanceModalBody" class="p-4"></div>
+  </div>
+</div>
+
 <div
   class="oh-modal"
   id="validateAttendanceRequest"
@@ -376,7 +419,7 @@
     </div>
     <div
       class="oh-modal__dialog-body"
-      id="updateAttendanceOTModalBody"
+      id="editValidateAttendanceRequestModalBody"
     ></div>
   </div>
 </div>

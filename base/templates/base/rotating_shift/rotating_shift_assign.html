@@ -51,28 +51,12 @@
 
 <div
   class="oh-modal" style="z-index: 60;"
-  id="rotating-shift-detail-modal-detail-modal"
+  id="rotatingShiftAssignDetailModal"
   role="dialog"
   aria-labelledby="rotating-shift-detail-modal"
   aria-hidden="true"
 >
-  <div class="oh-modal__dialog">
-    <div class="oh-modal__dialog-header">
-      <h2
-        class="oh-modal__dialog-title"
-        id=""
-      >
-        {% trans "Details" %}
-      </h2>
-      <button class="oh-modal__close" aria-label="Close" >
-        <ion-icon name="close-outline"></ion-icon>
-      </button>
-    </div>
-    <div
-      class="oh-modal__dialog-body oh-modal__dialog-relative"
-      id="rotatingShiftAssignDetail"
-    ></div>
-  </div>
+  <div class="oh-modal__dialog" id="rotatingShiftAssignDetail"></div>
 </div>
 <div class="oh-checkpoint-badge mb-2" id="selectedRShifts" data-ids="[]" data-clicked="" style="display:none;" >
   {% trans "Selected Shifts" %}

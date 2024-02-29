@@ -1,4 +1,16 @@
 {% load i18n %}
+<div class="oh-modal__dialog-header">
+    <h2
+      class="oh-modal__dialog-title"
+      id=""
+    >
+      {% trans "Details" %}
+    </h2>
+    <button class="oh-modal__close" aria-label="Close" >
+      <ion-icon name="close-outline"></ion-icon>
+    </button>
+</div>
+<div class="oh-modal__dialog-body oh-modal__dialog-relative" >
 {% if request.GET.instances_ids %}
 <div class="oh-modal__dialog oh-modal__dialog--navigation m-0 p-0">
     <button hx-get="{% url 'rshift-individual-view' previous %}?instances_ids={{assign_ids}}" hx-target = "#rotatingShiftAssignDetail" class="oh-modal__diaglog-nav oh-modal__nav-prev">
@@ -12,7 +24,6 @@
     </button>
 </div>
 {% endif %}
-</div>
 
 <a class="oh-timeoff-modal__profile-content" style="text-decoration:none;" 
     href ="{% url 'employee-view-individual' instance.employee_id.id %}">
@@ -42,12 +53,12 @@
     <div class="oh-timeoff-modal__stats-container">
         <div class="oh-timeoff-modal__stat" >
             <span class="oh-timeoff-modal__stat-title">{% trans "Title" %}</span>
-            <span class="oh-timeoff-modal__stat-count">{{instance.get_based_on_display}}</span>
+            <span class="oh-timeoff-modal__stat-count">{{instance.rotating_shift_id}}</span>
         </div>
         <div class="oh-timeoff-modal__stat" >
             <span class="oh-timeoff-modal__stat-title">{% trans "Based On" %}</span>
             <span class="oh-timeoff-modal__stat-count">
-                {{instance.based_on}}
+                {{instance.get_based_on_display}}
             </span>
         </div>
     </div>
@@ -110,7 +121,7 @@
             
             <a class="oh-btn oh-btn--info" hx-get="{% url "rotating-shift-assign-update" instance.id %}" hx-target="#rotatingShiftAssignUpdateModalBody" data-toggle="oh-modal-toggle" data-target="#rotating-shift-update-modal" style="width: 50%;">
                 <ion-icon name="create-outline">
-                </ion-icon>Edit
+                </ion-icon>{% trans "Edit" %} 
             </a>
             <form  class="oh-btn oh-btn--primary" style="width: 50%;" onsubmit="return confirm('Do you Want to archive this rotating Shift assign?')"  action="{% url "rotating-shift-assign-archive" instance.id %}">
                 <input type="hidden" name="is_active" value="False" id="">
@@ -124,9 +135,9 @@
                     <ion-icon name="archive-outline">
                     </ion-icon>
                     {% if instance.is_active %}
-                    Archive
+                    {% trans "Archive" %} 
                     {% else %}
-                    Un-archive
+                    {% trans "Un-archive" %} 
                     {% endif %}
                 </button>
             </form>
@@ -140,9 +151,10 @@
                     cursor: pointer;
                     outline: inherit;">
                     <ion-icon name="trash-outline">
-                    </ion-icon>Delete
+                    </ion-icon>{% trans "Delete" %} 
                 </button>
             </form>               
         </div>
     </div>
+</div>
 </div>

@@ -1,4 +1,16 @@
 {% load i18n %}
+<div class="oh-modal__dialog-header">
+    <span
+      class="oh-modal__dialog-title"
+      id="rotatingWorkTypeDetailModalLabel"
+        >
+      {% trans "Details" %}
+    </span>
+    <button class="oh-modal__close" aria-label="Close">
+      <ion-icon name="close-outline"></ion-icon>
+    </button>
+</div>
+<div class="oh-modal__dialog-body oh-modal__dialog-relative">
 {% if request.GET.instances_ids %}
 <div class="oh-modal__dialog oh-modal__dialog--navigation m-0 p-0">
     <button hx-get="{% url 'rwork-individual-view' previous %}?instances_ids={{assign_ids}}" hx-target = "#rotatingWorkTypeAssignDetail" class="oh-modal__diaglog-nav oh-modal__nav-prev">
@@ -122,9 +134,9 @@
                     <ion-icon name="archive-outline">
                     </ion-icon>
                     {% if instance.is_active %}
-                    Archive
+                    {% trans "Archive" %}
                     {% else %}
-                    Un-archive
+                    {% trans "Un-archive" %}
                     {% endif %}
                 </button>
             </form>
@@ -138,9 +150,10 @@
                     cursor: pointer;
                     outline: inherit;">
                     <ion-icon name="trash-outline">
-                    </ion-icon>Delete
+                    </ion-icon>{% trans "Delete" %}
                 </button>
             </form>               
         </div>
     </div>
+</div>
 </div>
