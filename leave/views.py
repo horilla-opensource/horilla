@@ -215,7 +215,11 @@ def leave_type_update(request, id, **kwargs):
     GET : return leave type update template
     POST : return leave type view
     """
-    leave_type = LeaveType.objects.get(id=id)
+    try:
+        leave_type = LeaveType.objects.get(id=id)
+    except (LeaveType.DoesNotExist, OverflowError, ValueError):
+        messages.error(request, _("Leave type not found"))
+        return redirect(leave_type_view)
     form = UpdateLeaveTypeForm(instance=leave_type)
     if request.method == "POST":
         form_data = UpdateLeaveTypeForm(
@@ -244,7 +248,7 @@ def leave_type_delete(request, id):
     try:
         LeaveType.objects.get(id=id).delete()
         messages.success(request, _("Leave type deleted successfully.."))
-    except LeaveType.DoesNotExist:
+    except (LeaveType.DoesNotExist, OverflowError, ValueError):
         messages.error(request, _("Leave type not found."))
     except ProtectedError as e:
         models_verbose_name_sets = set()
@@ -538,9 +542,9 @@ def leave_request_delete(request, id):
     GET : return leave request view template
     """
     try:
-        messages.success(request, _("Leave request deleted successfully.."))
         LeaveRequest.objects.get(id=id).delete()
-    except LeaveRequest.DoesNotExist:
+        messages.success(request, _("Leave request deleted successfully.."))
+    except (LeaveRequest.DoesNotExist, OverflowError, ValueError):
         messages.error(request, _("Leave request not found."))
     except ProtectedError:
         messages.error(request, _("Related entries exists"))
@@ -3100,20 +3104,25 @@ def leave_allocation_request_delete(request, req_id):
     Returns:
     GET : return leave allocation request view template
     """
-    leave_allocation_request = LeaveAllocationRequest.objects.get(id=req_id)
-    if leave_allocation_request.status != "approved":
-        try:
+
+    try:
+        leave_allocation_request = LeaveAllocationRequest.objects.get(id=req_id)
+
+        if leave_allocation_request.status != "approved":
             leave_allocation_request.delete()
-            messages.success(
-                request, _("Leave allocation request deleted successfully..")
-            )
-        except LeaveRequest.DoesNotExist:
-            messages.error(request, _("Leave allocation request not found."))
-        except ProtectedError:
-            messages.error(request, _("Related entries exists"))
-        return redirect(leave_allocation_request_view)
-    messages.error(request, _("Approved request cant't delete."))
-    return HttpResponse("<script>location.reload();</script>")
+            messages.success(request, _("Leave allocation request deleted successfully.."))
+        else:
+            messages.error(request, _("Approved request can't be deleted."))
+    except LeaveAllocationRequest.DoesNotExist:
+        messages.error(request, _("Leave allocation request not found."))
+    except OverflowError:
+        messages.error(request, _("Leave allocation request not found."))
+        
+    except ProtectedError:
+        messages.error(request, _("Related entries exist"))
+
+    return redirect(leave_allocation_request_view)
+
 
 
 @login_required

@@ -3,7 +3,7 @@ decorator functions for leave
 """
 from django.contrib import messages
 from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 from.models import LeaveAllocationRequest
 from django.utils.translation import gettext_lazy as _
 
@@ -55,24 +55,27 @@ def leave_allocation_delete_permission(function=None, *args, **kwargs):
         """
         This method is used to check the employee can delete a leave allocation request or not
         """
-        leave_allocation_request = LeaveAllocationRequest.objects.get(id=req_id)
-        if (
-            request.user.has_perm('leave.delete_leaveallocationrequest')
-            or request.user.employee_get == leave_allocation_request.employee_id.employee_work_info.reporting_manager_id
-            or request.user.employee_get == leave_allocation_request.employee_id
-        ):
-            return function(request,*args,req_id=req_id,**kwargs)
-        messages.info(
-            request,
-            _("You dont have permission.")
-        )
-        previous_url = request.META.get("HTTP_REFERER", "/")
-        script = f'<script>window.location.href = "{previous_url}"</script>'
-        key = "HTTP_HX_REQUEST"
-        if key in request.META.keys():
-            return render(request,"decorator_404.html")
-        return HttpResponse(script)
-
+        try:
+            leave_allocation_request = LeaveAllocationRequest.objects.get(id=req_id)
+            if (
+                request.user.has_perm('leave.delete_leaveallocationrequest')
+                or request.user.employee_get == leave_allocation_request.employee_id.employee_work_info.reporting_manager_id
+                or request.user.employee_get == leave_allocation_request.employee_id
+            ):
+                return function(request,*args,req_id=req_id,**kwargs)
+            messages.info(
+                request,
+                _("You dont have permission.")
+            )
+            previous_url = request.META.get("HTTP_REFERER", "/")
+            script = f'<script>window.location.href = "{previous_url}"</script>'
+            key = "HTTP_HX_REQUEST"
+            if key in request.META.keys():
+                return render(request,"decorator_404.html")
+            return HttpResponse(script)
+        except (LeaveAllocationRequest.DoesNotExist,OverflowError,ValueError):
+            messages.error(request,_("Leave allocation request not found"))
+            return redirect("/leave/leave-allocation-request-view/")
     return check_permission
 
 
@@ -87,21 +90,24 @@ def leave_allocation_reject_permission(function=None, *args, **kwargs):
         """
         This method is used to check the employee can reject a leave allocation request or not
         """
-        leave_allocation_request = LeaveAllocationRequest.objects.get(id=req_id)
-        if (
-            request.user.has_perm('leave.delete_leaveallocationrequest')
-            or request.user.employee_get == leave_allocation_request.employee_id.employee_work_info.reporting_manager_id
-        ):
-            return function(request,*args,req_id=req_id,**kwargs)
-        messages.info(
-            request,
-            _("You dont have permission.")
-        )
-        previous_url = request.META.get("HTTP_REFERER", "/")
-        script = f'<script>window.location.href = "{previous_url}"</script>'
-        key = "HTTP_HX_REQUEST"
-        if key in request.META.keys():
-            return render(request,"decorator_404.html")
-        return HttpResponse(script)
-
+        try:
+            leave_allocation_request = LeaveAllocationRequest.objects.get(id=req_id)
+            if (
+                request.user.has_perm('leave.delete_leaveallocationrequest')
+                or request.user.employee_get == leave_allocation_request.employee_id.employee_work_info.reporting_manager_id
+            ):
+                return function(request,*args,req_id=req_id,**kwargs)
+            messages.info(
+                request,
+                _("You dont have permission.")
+            )
+            previous_url = request.META.get("HTTP_REFERER", "/")
+            script = f'<script>window.location.href = "{previous_url}"</script>'
+            key = "HTTP_HX_REQUEST"
+            if key in request.META.keys():
+                return render(request,"decorator_404.html")
+            return HttpResponse(script)
+        except (LeaveAllocationRequest.DoesNotExist,OverflowError,ValueError):
+            messages.error(request,_("Leave allocation request not found"))
+            return redirect("/leave/leave-allocation-request-view/")
     return check_permission
