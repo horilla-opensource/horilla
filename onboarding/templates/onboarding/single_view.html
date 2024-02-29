@@ -1,4 +1,18 @@
 {% load i18n %} {% load onboardingfilters %} 
+{% if request.GET.requests_ids %}
+<div class="oh-modal__dialog oh-modal__dialog--navigation m-0 p-0">
+    <button hx-get="{% url 'candidate-single-view' previous %}?requests_ids={{requests_ids}}" hx-target = "#singleView" class="oh-modal__diaglog-nav oh-modal__nav-prev">
+        <ion-icon name="chevron-back-outline" class="md hydrated" role="img"
+        aria-label="chevron back outline"></ion-icon>
+    </button>
+
+    <button hx-get="{% url 'candidate-single-view' next %}?requests_ids={{requests_ids}}" hx-target = "#singleView" class="oh-modal__diaglog-nav oh-modal__nav-next">
+        <ion-icon name="chevron-forward-outline" class="md hydrated" role="img"
+        aria-label="chevron forward outline"></ion-icon>
+    </button>
+</div>
+{% endif %}
+
 <div class="oh-modal__dialog-body oh-timeoff-modal__body  pb-2">
     <div class="oh-timeoff-modal__profile-content">
         <div class="oh-profile">

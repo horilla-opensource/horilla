@@ -31,7 +31,7 @@ from notifications.signals import notify
 from horilla import settings
 from horilla.decorators import login_required, hx_request_required, logger
 from horilla.decorators import permission_required
-from base.methods import generate_pdf, get_key_instances, get_pagination, sortby
+from base.methods import closest_numbers, generate_pdf, get_key_instances, get_pagination, sortby
 from attendance.methods.group_by import group_by_queryset as general_group_by
 from onboarding.filters import OnboardingCandidateFilter, OnboardingStageFilter
 from recruitment.forms import RejectedCandidateForm
@@ -487,6 +487,14 @@ def candidates_single_view(request, id, **kwargs):
         "candidate": candidate,
         "single_view": True,
     }
+
+    requests_ids_json = request.GET.get("requests_ids")
+    if requests_ids_json:
+        requests_ids = json.loads(requests_ids_json)
+        previous_id, next_id = closest_numbers(requests_ids, id)
+        context["requests_ids"] = requests_ids_json
+        context["previous"] = previous_id
+        context["next"] = next_id
     return render(
         request,
         "onboarding/single_view.html",
@@ -699,6 +707,7 @@ def onboarding_query_grouper(request, queryset):
     """
     groups = []
     for rec in queryset:
+        employees = []
         stages = OnboardingStageFilter(
             request.GET, queryset=rec.onboarding_stage.all()
         ).qs.order_by("sequence")
@@ -721,6 +730,9 @@ def onboarding_query_grouper(request, queryset):
                 page_name,
             ).object_list
             data["stages"] = data["stages"] + grouper
+            employees = employees + [
+                employee.candidate_id.id for employee in stage.candidate.all()
+            ]
         ordered_data = []
         # combining un used groups in to the grouper
         groupers = data["stages"]
@@ -736,6 +748,7 @@ def onboarding_query_grouper(request, queryset):
         data = {
             "recruitment": rec,
             "stages": ordered_data,
+            "employee_ids": employees,
         }
         groups.append(data)
     return groups
@@ -768,6 +781,7 @@ def onboarding_view(request):
     groups = onboarding_query_grouper(request, page_obj)
     for item in groups:
         setattr(item["recruitment"], "stages", item["stages"])
+        setattr(item["recruitment"], "employee_ids", item["employee_ids"])
     filter_dict = parse_qs(request.GET.urlencode())
     for key, val in filter_dict.copy().items():
         if val[0] == "unknown" or key == "view":

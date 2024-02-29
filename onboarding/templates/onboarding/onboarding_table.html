@@ -202,7 +202,7 @@
                   data-join-date="{{candidate.candidate_id.joining_date}}"
                   data-portal-count="{{candidate.candidate_id.onboarding_portal.count}}"
                   data-toggle="oh-modal-toggle" data-target="#tableTimeOff"
-                  hx-get="{% url 'candidate-single-view' candidate.candidate_id.id %}" hx-target="#singleView"
+                  hx-get="{% url 'candidate-single-view' candidate.candidate_id.id %}?requests_ids={{recruitment.employee_ids}}" hx-target="#singleView"
                   >
                   <div class="oh-sticky-table__sd" onclick="event.stopPropagation()">
                      <div class="oh-profile oh-profile--md">
