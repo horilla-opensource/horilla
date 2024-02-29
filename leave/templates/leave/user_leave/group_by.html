@@ -70,7 +70,7 @@
                             <div class="oh-sticky-table__tbody">
                                 {% for leave_request in leave_request_list.list %}
                                 <div class="oh-sticky-table__tr" data-toggle="oh-modal-toggle" data-target="#tableTimeOff"
-                                hx-get="{% url 'user-request-one' leave_request.id %}?instances_ids={{request_ids}}" hx-target="#userRequestView">
+                                hx-get="{% url 'user-request-one' leave_request.id %}?instances_ids={{request_ids}}" hx-target="#userRequestDetailTarget">
                                     <div class="oh-sticky-table__sd {% if leave_request.status == "requested" %}row-status--orange {% elif leave_request.status == "cancelled" %} row-status--gray 
                                         {% elif leave_request.status == "approved" %} row-status--yellow {% elif leave_request.status == "rejected" %} row-status--red{% endif %}" onclick="event.stopPropagation()">
                                         <div class="centered-div">

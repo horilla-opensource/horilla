@@ -1,36 +1,71 @@
 {% load i18n %}
-{% if instances_ids %}
-    <div class="oh-modal__dialog oh-modal__dialog--navigation m-0 p-0">
-        <button 
-            hx-get="{% url 'user-request-one' previous %}?instances_ids={{instances_ids}}" 
-            hx-target="#userRequestView"
-            class="oh-modal__diaglog-nav oh-modal__nav-prev">
-            <ion-icon name="chevron-back-outline" class="md hydrated" role="img"
-            aria-label="chevron back outline"></ion-icon>
-        </button>
-        <button  
-            hx-get="{% url 'user-request-one' next %}?instances_ids={{instances_ids}}"  
-            hx-target="#userRequestView"
-            class="oh-modal__diaglog-nav oh-modal__nav-next">
-            <ion-icon name="chevron-forward-outline" class="md hydrated" role="img"
-            aria-label="chevron forward outline"></ion-icon>
-        </button>
-    </div>
-{% endif %} 
-<div class="oh-modal__dialog-body oh-timeoff-modal__body  pb-5">
-    <div class="oh-timeoff-modal__profile-content">
-        <div class="oh-profile">
-            <div class="oh-profile__avatar mr-1">
-                <img src="{{leave_request.leave_type_id.get_avatar}}" class="oh-profile__image"
-                    alt="" />
-            </div>
+<div class="oh-modal__dialog-header">
+    <span
+      class="oh-modal__dialog-title"
+      id="rotatingWorkTypeDetailModalLabel"
+        >
+      {% trans "Details" %}
+    </span>
+    <button class="oh-modal__close" aria-label="Close">
+      <ion-icon name="close-outline"></ion-icon>
+    </button>
+</div>
+<div class="oh-modal__dialog-body oh-modal__dialog-relative">
+    {% if instances_ids %}
+        <div class="oh-modal__dialog oh-modal__dialog--navigation m-0 p-0">
+            <button 
+                hx-get="{% url 'user-request-one' previous %}?instances_ids={{instances_ids}}" 
+                hx-target="#userRequestDetailTarget"
+                class="oh-modal__diaglog-nav oh-modal__nav-prev">
+                <ion-icon name="chevron-back-outline" class="md hydrated" role="img"
+                aria-label="chevron back outline"></ion-icon>
+            </button>
+            <button  
+                hx-get="{% url 'user-request-one' next %}?instances_ids={{instances_ids}}"  
+                hx-target="#userRequestDetailTarget"
+                class="oh-modal__diaglog-nav oh-modal__nav-next">
+                <ion-icon name="chevron-forward-outline" class="md hydrated" role="img"
+                aria-label="chevron forward outline"></ion-icon>
+            </button>
         </div>
-        <div class="oh-timeoff-modal__profile-info">
-            <span class="oh-timeoff-modal__user fw-bold">{{leave_request.leave_type_id}}</span>
+    {% endif %} 
+    <a class="oh-timeoff-modal__profile-content" style="text-decoration:none;" 
+        href ="{% url 'employee-view-individual' leave_request.employee_id.id %}">
+        <div class="oh-profile mb-2">
+          <div class="oh-profile__avatar">
+            <img
+              src="{{leave_request.employee_id.get_avatar}}"
+              class="oh-profile__image me-2"
+              alt="Mary Magdalene"
+            />
+          </div>
+          <div class="oh-timeoff-modal__profile-info">
+            <span class="oh-timeoff-modal__user fw-bold"
+              >{{leave_request.employee_id}}</span
+            >
+            <span
+              class="oh-timeoff-modal__user m-0"
+              style="font-size: 18px; color: #4d4a4a"
+            >
+              {{leave_request.employee_id.employee_work_info.department_id}} /
+              {{leave_request.employee_id.employee_work_info.job_position_id}}</span
+            >
+          </div>
+        </div>
+    </a>
+<div class="oh-modal__dialog-header" style="padding-top: 5px;">
+    <div class="oh-timeoff-modal__stats-container">
+        <div class="oh-timeoff-modal__stat">
+            <span class="oh-timeoff-modal__stat-title">{% trans "Leave Type" %}</span>
+            <span class="oh-timeoff-modal__stat-count">{{leave_request.leave_type_id}}</span>
+        </div>
+        <div class="oh-timeoff-modal__stat">
+            <span class="oh-timeoff-modal__stat-title">{% trans "Days" %}</span>
+            <span class="oh-timeoff-modal__stat-count">{{leave_request.requested_days}}</span>
         </div>
     </div>
 
-    <div class="oh-timeoff-modal__stats-container">
+    <div class="oh-timeoff-modal__stats-container mt-3">
         <div class="oh-timeoff-modal__stat">
             <span class="oh-timeoff-modal__stat-title">{% trans "Start Date" %}</span>
             <span class="oh-timeoff-modal__stat-count dateformat_changer">{{leave_request.start_date}}</span>
@@ -40,15 +75,7 @@
             <span class="oh-timeoff-modal__stat-count dateformat_changer">{{leave_request.end_date}}</span>
         </div>
     </div>
-
-    <div class="oh-timeoff-modal__stats-container mt-3">
-        <div class="oh-timeoff-modal__stat">
-            <span class="oh-timeoff-modal__stat-title">{% trans "Days" %}</span>
-            <span class="oh-timeoff-modal__stat-count">{{leave_request.requested_days}}</span>
-        </div>
-       
-    </div>
-
+    
     <div class="oh-timeoff-modal__stats w-100 mt-3">
         <div class="oh-timeoff-modal__stat">
             <span class="oh-timeoff-modal__stat-title">{% trans "Description" %}</span>
@@ -80,4 +107,5 @@
     </a>
     {% endif %}
  
+</div>
 </div>
