@@ -2,82 +2,94 @@
 {% load static %}
 {% load basefilters %}
 {% include 'filter_tags.html' %}
+{% if asset_assignments  %}
 <div class="oh-table_sticky--wrapper" id="historyTable">
-	<div class="oh-sticky-table">
-		<div class="oh-sticky-table__table">
-			<div class="oh-sticky-table__thead" >
-				<div class="oh-sticky-table__tr">
-					<div class="oh-sticky-table__th {% if request.sort_option.order == '-asset_id__asset_name' %}arrow-up {% elif request.sort_option.order == 'asset_id__asset_name' %}arrow-down {% else %}arrow-up-down {% endif %}"  hx-get="{% url 'asset-history-search' %}?{{pd}}&sortby=asset_id__asset_name" hx-target="#historyTable">{% trans "Asset" %}</div>
-					<div class="oh-sticky-table__th {% if request.sort_option.order == '-assigned_to_employee_id__employee_first_name' %}arrow-up {% elif request.sort_option.order == 'assigned_to_employee_id__employee_first_name' %}arrow-down {% else %}arrow-up-down {% endif %}" hx-get="{% url 'asset-history-search' %}?{{pd}}&sortby=assigned_to_employee_id__employee_first_name" hx-target="#historyTable">{% trans "Employee" %}</div>
-					<div class="oh-sticky-table__th {% if request.sort_option.order == '-assigned_date' %}arrow-up {% elif request.sort_option.order == 'assigned_date' %}arrow-down {% else %}arrow-up-down {% endif %}" hx-get="{% url 'asset-history-search' %}?{{pd}}&sortby=assigned_date" hx-target="#historyTable">{% trans "Assigned Date" %}</div>
-					<div class="oh-sticky-table__th {% if request.sort_option.order == '-return_date' %}arrow-up {% elif request.sort_option.order == 'return_date' %}arrow-down {% else %}arrow-up-down {% endif %}" hx-get="{% url 'asset-history-search' %}?{{pd}}&sortby=return_date" hx-target="#historyTable">{% trans "Returned Date" %}</div>
-					<div class="oh-sticky-table__th">{% trans "Return Status" %}</div>
-				</div>
+	<div class="oh-sticky-dropdown--header">
+		<div class="oh-dropdown" x-data="{open: false}">
+			<button class="oh-sticky-dropdown_btn " @click="open = !open"><ion-icon name="ellipsis-vertical-sharp"
+			role="img" class="md hydrated" aria-label="ellipsis vertical sharp"></ion-icon></button>
+			<div class="oh-dropdown__menu oh-sticky-table_dropdown" x-show="open" @click.outside="open = false">
+				<ul class="oh-dropdown__items" id="asset_history_button">
+				</ul>
 			</div>
-			<div class="oh-sticky-table__tbody">
-				{% for asset_assignement in asset_assignments %}
-					<div class="oh-sticky-table__tr" hx-get='{% url "asset-history-single-view" asset_assignement.id %}?requests_ids={{requests_ids}}' hx-target="#historySingleModalBody" data-toggle="oh-modal-toggle", data-target= "#historySingleModal"  >
-						<div class="oh-sticky-table__sd">
-							<div class="oh-profile oh-profile--md">
-								<div class="oh-profile__avatar mr-1">
-									<img
-										src="https://ui-avatars.com/api/?name={{asset_assignement.asset_id.asset_name}}&background=random"
-										class="oh-profile__image"
-										alt=""
-									/>
-								</div>
-								<span class="oh-profile__name oh-text--dark">{{asset_assignement.asset_id}}</span>
-							</div>
-						</div>
-						<div class="oh-sticky-table__td">
-							{{asset_assignement.assigned_to_employee_id}}
-						</div>
-						<div class="oh-sticky-table__td">{{asset_assignement.assigned_date}} </div>
-						<div class="oh-sticky-table__td">{{asset_assignement.return_date}}</div>
-						<div class="oh-sticky-table__td">{{asset_assignement.return_status}}</div>
-						
+		</div>
+	</div>
+	<div id='asset-table' data-table-name="asset_history_table">
+		<div class="oh-sticky-table">
+			<div class="oh-sticky-table__table">
+				<div class="oh-sticky-table__thead" >
+					<div class="oh-sticky-table__tr">
+						<div data-cell-index="1" data-cell-title="{% trans "Asset" %}" class="oh-sticky-table__th {% if request.sort_option.order == '-asset_id__asset_name' %}arrow-up {% elif request.sort_option.order == 'asset_id__asset_name' %}arrow-down {% else %}arrow-up-down {% endif %}"  hx-get="{% url 'asset-history-search' %}?{{pd}}&sortby=asset_id__asset_name" hx-target="#historyTable">{% trans "Asset" %}</div>
+						<div class="oh-sticky-table__th {% if request.sort_option.order == '-assigned_to_employee_id__employee_first_name' %}arrow-up {% elif request.sort_option.order == 'assigned_to_employee_id__employee_first_name' %}arrow-down {% else %}arrow-up-down {% endif %}" hx-get="{% url 'asset-history-search' %}?{{pd}}&sortby=assigned_to_employee_id__employee_first_name" hx-target="#historyTable">{% trans "Employee" %}</div>
+						<div data-cell-index="2" data-cell-title="{% trans "Assigned Date" %}" class="oh-sticky-table__th {% if request.sort_option.order == '-assigned_date' %}arrow-up {% elif request.sort_option.order == 'assigned_date' %}arrow-down {% else %}arrow-up-down {% endif %}" hx-get="{% url 'asset-history-search' %}?{{pd}}&sortby=assigned_date" hx-target="#historyTable">{% trans "Assigned Date" %}</div>
+						<div data-cell-index="3" data-cell-title="{% trans "Hours to Validate" %}" class="oh-sticky-table__th {% if request.sort_option.order == '-return_date' %}arrow-up {% elif request.sort_option.order == 'return_date' %}arrow-down {% else %}arrow-up-down {% endif %}" hx-get="{% url 'asset-history-search' %}?{{pd}}&sortby=return_date" hx-target="#historyTable">{% trans "Returned Date" %}</div>
+						<div class="oh-sticky-table__th">{% trans "Return Status" %}</div>
 					</div>
-				{% endfor %}
+				</div>
+				<div class="oh-sticky-table__tbody">
+					{% for asset_assignement in asset_assignments %}
+						<div class="oh-sticky-table__tr" hx-get='{% url "asset-history-single-view" asset_assignement.id %}?requests_ids={{requests_ids}}' hx-target="#historySingleModalBody" data-toggle="oh-modal-toggle", data-target= "#historySingleModal"  >
+							<div class="oh-sticky-table__sd" data-cell-index="1">
+								<div class="oh-profile oh-profile--md">
+									<div class="oh-profile__avatar mr-1">
+										<img
+											src="https://ui-avatars.com/api/?name={{asset_assignement.asset_id.asset_name}}&background=random"
+											class="oh-profile__image"
+											alt=""
+										/>
+									</div>
+									<span class="oh-profile__name oh-text--dark">{{asset_assignement.asset_id}}</span>
+								</div>
+							</div>
+							<div class="oh-sticky-table__td">
+								{{asset_assignement.assigned_to_employee_id}}
+							</div>
+							<div class="oh-sticky-table__td" data-cell-index="2">{{asset_assignement.assigned_date}} </div>
+							<div class="oh-sticky-table__td" data-cell-index="3">{{asset_assignement.return_date}}</div>
+							<div class="oh-sticky-table__td">{{asset_assignement.return_status}}</div>							
+						</div>
+					{% endfor %}
+				</div>
 			</div>
 		</div>
 	</div>
 	<div class="oh-pagination">
-	  	<span class="oh-pagination__page">
-	  		{% trans "Page" %} {{ asset_assignments.number }} {% trans "of" %} {{ asset_assignments.paginator.num_pages }}.
-	  	</span> 
-	  	<nav class="oh-pagination__nav">
-	  	  	<div class="oh-pagination__input-container me-3">
-	  	  	  	<span class="oh-pagination__label me-1">{% trans "Page" %}</span>
-	  	  	  	<input
-	  	  	  	  type="number"
-	  	  	  	  name="page"
-	  	  	  	  class="oh-pagination__input"
-	  	  	  	  value="{{asset_assignments.number}}"
-	  	  	  	  hx-get="{% url 'asset-history-search' %}?{{pd}}"
-	  	  	  	  hx-target="#historyTable"
-	  	  	  	  min="1"
-	  	  	  	/>
-	  	  	  	<span class="oh-pagination__label">{% trans "of" %} {{asset_assignments.paginator.num_pages}}</span>
-	  	  	</div>
-	  	  	<ul class="oh-pagination__items">
-	  	  		{% if asset_assignments.has_previous %}
-	  	  			<li class="oh-pagination__item oh-pagination__item--wide">
-	  	  				<a hx-target='#historyTable' hx-get="{% url 'asset-history-search' %}?{{pd}}&page=1" class="oh-pagination__link" onclick="tickCheckboxes();">{% trans "First" %}</a>
-	  	  			</li>
-	  	  			<li class="oh-pagination__item oh-pagination__item--wide">
-	  	  				<a hx-target='#historyTable' hx-get="{% url 'asset-history-search' %}?{{pd}}&page={{ asset_assignments.previous_page_number }}" class="oh-pagination__link" onclick="tickCheckboxes();">{% trans "Previous" %}</a>
-	  	  			</li>
-	  	  		{% endif %}
-	  	  		{% if asset_assignments.has_next %}
-	  	  			<li class="oh-pagination__item oh-pagination__item--wide">
-	  	  				<a hx-target='#historyTable' hx-get="{% url 'asset-history-search' %}?{{pd}}&page={{ asset_assignments.next_page_number }}" class="oh-pagination__link" onclick="tickCheckboxes();">{% trans "Next" %}</a>
-	  	  			</li>
-	  	  			<li class="oh-pagination__item oh-pagination__item--wide">
-	  	  				<a hx-target='#historyTable' hx-get="{% url 'asset-history-search' %}?{{pd}}&page={{ asset_assignments.paginator.num_pages }}" class="oh-pagination__link" onclick="tickCheckboxes();">{% trans "Last" %}</a>
-	  	  			</li>
-	  	  		{% endif %}
-	  	  	</ul>
-	  	</nav>
+		<span class="oh-pagination__page">
+			{% trans "Page" %} {{ asset_assignments.number }} {% trans "of" %} {{ asset_assignments.paginator.num_pages }}.
+		</span> 
+		<nav class="oh-pagination__nav">
+			<div class="oh-pagination__input-container me-3">
+				<span class="oh-pagination__label me-1">{% trans "Page" %}</span>
+				<input
+				type="number"
+				name="page"
+				class="oh-pagination__input"
+				value="{{asset_assignments.number}}"
+				hx-get="{% url 'asset-history-search' %}?{{pd}}"
+				hx-target="#historyTable"
+				min="1"
+				/>
+				<span class="oh-pagination__label">{% trans "of" %} {{asset_assignments.paginator.num_pages}}</span>
+			</div>
+			<ul class="oh-pagination__items">
+				{% if asset_assignments.has_previous %}
+					<li class="oh-pagination__item oh-pagination__item--wide">
+						<a hx-target='#historyTable' hx-get="{% url 'asset-history-search' %}?{{pd}}&page=1" class="oh-pagination__link" onclick="tickCheckboxes();">{% trans "First" %}</a>
+					</li>
+					<li class="oh-pagination__item oh-pagination__item--wide">
+						<a hx-target='#historyTable' hx-get="{% url 'asset-history-search' %}?{{pd}}&page={{ asset_assignments.previous_page_number }}" class="oh-pagination__link" onclick="tickCheckboxes();">{% trans "Previous" %}</a>
+					</li>
+				{% endif %}
+				{% if asset_assignments.has_next %}
+					<li class="oh-pagination__item oh-pagination__item--wide">
+						<a hx-target='#historyTable' hx-get="{% url 'asset-history-search' %}?{{pd}}&page={{ asset_assignments.next_page_number }}" class="oh-pagination__link" onclick="tickCheckboxes();">{% trans "Next" %}</a>
+					</li>
+					<li class="oh-pagination__item oh-pagination__item--wide">
+						<a hx-target='#historyTable' hx-get="{% url 'asset-history-search' %}?{{pd}}&page={{ asset_assignments.paginator.num_pages }}" class="oh-pagination__link" onclick="tickCheckboxes();">{% trans "Last" %}</a>
+					</li>
+				{% endif %}
+			</ul>
+		</nav>
 	</div>
 </div>
 
@@ -100,7 +112,21 @@
 	  	</div>
 	</div>
 </div>
+
+{% else %}
+<!-- start of empty page -->
+<div style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%;" >
+	<img
+	style="width: 150px; height: 150px"
+	src="{% static 'images/ui/no-results.png' %}"
+	class="oh-404__image mb-4"
+	/>
+	<h5 class="oh-404__subtitle">
+	{% trans "No result found!" %}
+	</h5>
 </div>
+<!-- end of empty page -->
+{% endif %}
 
 <script>
     // This lines is used to set default selected stage for exits lines
@@ -136,6 +162,11 @@
     })  
     function submitForm(elem) {
       $(elem).siblings(".add_more_submit").click();
+  }
+
+  toggleColumns("asset-table","asset_history_button")
+  if (!localStorage.getItem("asset_history_table")) {
+	  $("#asset_history_button").find("[type=checkbox]").prop("checked",true).change()
   }
   </script>
   
