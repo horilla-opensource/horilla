@@ -394,36 +394,39 @@ def cancel_attendance_request(request, attendance_id):
     """
     This method is used to cancel attendance request
     """
-    attendance = Attendance.objects.get(id=attendance_id)
-    if (
-        attendance.employee_id.employee_user_id == request.user
-        or is_reportingmanager(request)
-        or request.user.has_perm("attendance.change_attendance")
-    ):
-        attendance.is_validate_request_approved = False
-        attendance.is_validate_request = False
-        attendance.request_description = None
-        attendance.requested_data = None
-        attendance.request_type = None
+    try:
+        attendance = Attendance.objects.get(id=attendance_id)
+        if (
+            attendance.employee_id.employee_user_id == request.user
+            or is_reportingmanager(request)
+            or request.user.has_perm("attendance.change_attendance")
+        ):
+            attendance.is_validate_request_approved = False
+            attendance.is_validate_request = False
+            attendance.request_description = None
+            attendance.requested_data = None
+            attendance.request_type = None
 
-        attendance.save()
-        if attendance.request_type == "create_request":
-            attendance.delete()
-            messages.success(request, _("The requested attendance is removed."))
-        else:
-            messages.success(request, _("Attendance request has been rejected"))
-        employee = attendance.employee_id
-        notify.send(
-            request.user,
-            recipient=employee.employee_user_id,
-            verb=f"Your attendance request for {attendance.attendance_date} is rejected",
-            verb_ar=f"تم رفض طلبك للحضور في تاريخ {attendance.attendance_date}",
-            verb_de=f"Ihre Anwesenheitsanfrage für {attendance.attendance_date} wurde abgelehnt",
-            verb_es=f"Tu solicitud de asistencia para el {attendance.attendance_date} ha sido rechazada",
-            verb_fr=f"Votre demande de présence pour le {attendance.attendance_date} est rejetée",
+            attendance.save()
+            if attendance.request_type == "create_request":
+                attendance.delete()
+                messages.success(request, _("The requested attendance is removed."))
+            else:
+                messages.success(request, _("Attendance request has been rejected"))
+            employee = attendance.employee_id
+            notify.send(
+                request.user,
+                recipient=employee.employee_user_id,
+                verb=f"Your attendance request for {attendance.attendance_date} is rejected",
+                verb_ar=f"تم رفض طلبك للحضور في تاريخ {attendance.attendance_date}",
+                verb_de=f"Ihre Anwesenheitsanfrage für {attendance.attendance_date} wurde abgelehnt",
+                verb_es=f"Tu solicitud de asistencia para el {attendance.attendance_date} ha sido rechazada",
+                verb_fr=f"Votre demande de présence pour le {attendance.attendance_date} est rejetée",
 
-            icon="close-circle-outline",
-        )
+                icon="close-circle-outline",
+            )
+    except (Attendance.DoesNotExist,OverflowError):
+        messages.error(request,_("Attendance request not found"))
     return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 
 

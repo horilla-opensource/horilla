@@ -60,7 +60,7 @@
       hx-swap="innerHTML"
       hx-target="#activity-table"
       class="d-flex"
-  >
+    >
     <div class="oh-main__titlebar oh-main__titlebar--right">
       <div
         class="oh-input-group oh-input__search-group"
@@ -134,7 +134,7 @@
         </div>
       </div>
     
-      <div class="oh-dropdown ml-2" x-data="{open: false}">
+      <div class="oh-dropdown ml-2" x-data="{open: false}" onclick="event.stopPropagation();event.preventDefault();">
         <button
           class="oh-btn oh-btn--dropdown"
           @click="open = !open"
