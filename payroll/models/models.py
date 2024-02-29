@@ -503,7 +503,7 @@ class OverrideAttendance(Attendance):
             )
         work_record.save()
         
-        if status == "HDP" and work_record.first().is_leave_record:
+        if status == "HDP" and work_record.is_leave_record:
             message = _("Half day leave")
 
         if status == "FDP":
@@ -1411,7 +1411,7 @@ class LoanAccount(models.Model):
     employee_id = models.ForeignKey(
         Employee, on_delete=models.PROTECT, verbose_name=_("Employee")
     )
-    loan_amount = models.FloatField(default=0)
+    loan_amount = models.FloatField(default=0, verbose_name=_("Amount"))
     provided_date = models.DateField()
     allowance_id = models.ForeignKey(
         Allowance, on_delete=models.SET_NULL, editable=False, null=True
