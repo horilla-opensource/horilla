@@ -488,7 +488,7 @@ def attendance_delete(request, obj_id):
                         )
                     ),
                 )
-    except Attendance.DoesNotExist:
+    except (Attendance.DoesNotExist, OverflowError):
         messages.error(request, _("Attendance Does not exists.."))
     return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 
@@ -697,11 +697,11 @@ def attendance_overtime_delete(request, obj_id):
     """
     try:
         AttendanceOverTime.objects.get(id=obj_id).delete()
-        messages.success(request, _("OT account deleted."))
-    except AttendanceOverTime.DoesNotExist:
-        messages.error(request, _("OT account Does not exists.."))
+        messages.success(request, _("Hour account deleted."))
+    except (AttendanceOverTime.DoesNotExist, OverflowError, ValueError):
+        messages.error(request, _("Hour account not found"))
     except ProtectedError:
-        messages.error(request, _("You cannot delete this attendance OT"))
+        messages.error(request, _("You cannot delete this hour account"))
     return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 
 
@@ -848,7 +848,7 @@ def attendance_activity_bulk_delete(request):
                 _("{employee} activity deleted.").format(employee=activity.employee_id),
             )
 
-        except AttendanceActivity.DoesNotExist:
+        except (AttendanceActivity.DoesNotExist,OverflowError,ValueError):
             messages.error(request, _("Attendance not found."))
     return JsonResponse({"message": "Success"})
 
@@ -1011,7 +1011,7 @@ def late_in_early_out_single_view(request, obj_id):
         "previous_instance": previous_instance,
         "next_instance": next_instance,
         "instance_ids_json": instance_ids_json,
-        "pd":previous_data,
+        "pd": previous_data,
     }
     return render(
         request, "attendance/late_come_early_out/single_report.html", context=context
@@ -1069,7 +1069,7 @@ def late_come_early_out_bulk_delete(request):
                     employee=late_come.employee_id
                 ),
             )
-        except AttendanceLateComeEarlyOut.DoesNotExist:
+        except (AttendanceLateComeEarlyOut.DoesNotExist,OverflowError,ValueError):
             messages.error(request, _("Attendance not found."))
     return JsonResponse({"message": "Success"})
 
@@ -1160,23 +1160,26 @@ def validate_bulk_attendance(request):
     """
     ids = request.POST["ids"]
     ids = json.loads(ids)
-    attendances = Attendance.objects.filter(id__in=ids)
-    for attendance in attendances:
-        attendance.attendance_validated = True
-        attendance.save()
-        messages.success(request, _("Attendance validated."))
-        notify.send(
-            request.user.employee_get,
-            recipient=attendance.employee_id.employee_user_id,
-            verb=f"Your attendance for the date {attendance.attendance_date} is validated",
-            verb_ar=f"تم التحقق من حضورك في تاريخ {attendance.attendance_date}",
-            verb_de=f"Ihre Anwesenheit für das Datum {attendance.attendance_date} wurde bestätigt",
-            verb_es=f"Se ha validado su asistencia para la fecha {attendance.attendance_date}",
-            verb_fr=f"Votre présence pour la date {attendance.attendance_date} est validée",
-            redirect=f"/attendance/view-my-attendance?id={attendance.id}",
-            icon="checkmark",
-        )
-    return JsonResponse({"message": f"{attendance.employee_id} success"})
+    for obj_id in ids:
+        try:
+            attendance = Attendance.objects.get(id=obj_id)
+            attendance.attendance_validated = True
+            attendance.save()
+            messages.success(request, _("Attendance validated."))
+            notify.send(
+                request.user.employee_get,
+                recipient=attendance.employee_id.employee_user_id,
+                verb=f"Your attendance for the date {attendance.attendance_date} is validated",
+                verb_ar=f"تم التحقق من حضورك في تاريخ {attendance.attendance_date}",
+                verb_de=f"Ihre Anwesenheit für das Datum {attendance.attendance_date} wurde bestätigt",
+                verb_es=f"Se ha validado su asistencia para la fecha {attendance.attendance_date}",
+                verb_fr=f"Votre présence pour la date {attendance.attendance_date} est validée",
+                redirect=f"/attendance/view-my-attendance?id={attendance.id}",
+                icon="checkmark",
+            )
+        except (Attendance.DoesNotExist, OverflowError, ValueError):
+            messages.error(request, _("Attendance not found"))
+    return JsonResponse({"message": "success"})
 
 
 @login_required
@@ -1187,29 +1190,33 @@ def validate_this_attendance(request, obj_id):
     args:
         id  : attendance id
     """
-    attendance = Attendance.objects.get(id=obj_id)
-    attendance.attendance_validated = True
-    attendance.save()
-    urlencode = request.GET.urlencode()
-    modified_url = f"/attendance/attendance-view/?{urlencode}"
-    messages.success(
-        request,
-        (
-            f"{attendance.employee_id} {attendance.attendance_date.strftime('%d %b %Y') }"
-            + _("Attendance validated.")
-        ),
-    )
-    notify.send(
-        request.user.employee_get,
-        recipient=attendance.employee_id.employee_user_id,
-        verb=f"Your attendance for the date {attendance.attendance_date} is validated",
-        verb_ar=f"تم تحقيق حضورك في تاريخ {attendance.attendance_date}",
-        verb_de=f"Deine Anwesenheit für das Datum {attendance.attendance_date} ist bestätigt.",
-        verb_es=f"Se valida tu asistencia para la fecha {attendance.attendance_date}.",
-        verb_fr=f"Votre présence pour la date {attendance.attendance_date} est validée.",
-        redirect=f"/attendance/view-my-attendance?id={attendance.id}",
-        icon="checkmark",
-    )
+    try:
+        attendance = Attendance.objects.get(id=obj_id)
+        attendance.attendance_validated = True
+        attendance.save()
+        urlencode = request.GET.urlencode()
+        modified_url = f"/attendance/attendance-view/?{urlencode}"
+        messages.success(
+            request,
+            (
+                f"{attendance.employee_id} {attendance.attendance_date.strftime('%d %b %Y') }"
+                + _("Attendance validated.")
+            ),
+        )
+        notify.send(
+            request.user.employee_get,
+            recipient=attendance.employee_id.employee_user_id,
+            verb=f"Your attendance for the date {attendance.attendance_date} is validated",
+            verb_ar=f"تم تحقيق حضورك في تاريخ {attendance.attendance_date}",
+            verb_de=f"Deine Anwesenheit für das Datum {attendance.attendance_date} ist bestätigt.",
+            verb_es=f"Se valida tu asistencia para la fecha {attendance.attendance_date}.",
+            verb_fr=f"Votre présence pour la date {attendance.attendance_date} est validée.",
+            redirect=f"/attendance/view-my-attendance?id={attendance.id}",
+            icon="checkmark",
+        )
+    except (Attendance.DoesNotExist, ValueError):
+        messages.error(request, _("Attendance not found"))
+
     return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 
 
@@ -1258,32 +1265,35 @@ def approve_overtime(request, obj_id):
     args:
         obj_id  : attendance id
     """
-    attendance = Attendance.objects.get(id=obj_id)
-    attendance.attendance_overtime_approve = True
-    attendance.save()
-    urlencode = request.GET.urlencode()
-    modified_url = f"/attendance/attendance-view/?{urlencode}"
-    messages.success(
-        request,
-        f"{attendance.employee_id}'s {attendance.attendance_date.strftime('%d %b %Y')} overtime approved",
-    )
-    with contextlib.suppress(Exception):
-        notify.send(
-            request.user.employee_get,
-            recipient=attendance.employee_id.employee_user_id,
-            verb=f"Your {attendance.attendance_date}'s attendance \
-                overtime approved.",
-            verb_ar=f"تمت الموافقة على إضافة ساعات العمل الإضافية لتاريخ \
-                {attendance.attendance_date}.",
-            verb_de=f"Die Überstunden für den {attendance.attendance_date}\
-                  wurden genehmigt.",
-            verb_es=f"Se ha aprobado el tiempo extra de asistencia para el \
-                {attendance.attendance_date}.",
-            verb_fr=f"Les heures supplémentaires pour la date\
-                  {attendance.attendance_date} ont été approuvées.",
-            redirect=f"/attendance/attendance-overtime-view?id={attendance.id}",
-            icon="checkmark",
+    try:
+        attendance = Attendance.objects.get(id=obj_id)
+        attendance.attendance_overtime_approve = True
+        attendance.save()
+        urlencode = request.GET.urlencode()
+        modified_url = f"/attendance/attendance-view/?{urlencode}"
+        messages.success(
+            request,
+            f"{attendance.employee_id}'s {attendance.attendance_date.strftime('%d %b %Y')} overtime approved",
         )
+        with contextlib.suppress(Exception):
+            notify.send(
+                request.user.employee_get,
+                recipient=attendance.employee_id.employee_user_id,
+                verb=f"Your {attendance.attendance_date}'s attendance \
+                    overtime approved.",
+                verb_ar=f"تمت الموافقة على إضافة ساعات العمل الإضافية لتاريخ \
+                    {attendance.attendance_date}.",
+                verb_de=f"Die Überstunden für den {attendance.attendance_date}\
+                      wurden genehmigt.",
+                verb_es=f"Se ha aprobado el tiempo extra de asistencia para el \
+                    {attendance.attendance_date}.",
+                verb_fr=f"Les heures supplémentaires pour la date\
+                      {attendance.attendance_date} ont été approuvées.",
+                redirect=f"/attendance/attendance-overtime-view?id={attendance.id}",
+                icon="checkmark",
+            )
+    except (Attendance.DoesNotExist, OverflowError):
+        messages.error(request, _("Attendance not found"))
     return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 
 
@@ -1296,27 +1306,29 @@ def approve_bulk_overtime(request):
     ids = request.POST["ids"]
     ids = json.loads(ids)
     for attendance_id in ids:
-        attendance = Attendance.objects.get(id=attendance_id)
-        attendance.attendance_overtime_approve = True
-        attendance.save()
-        messages.success(request, _("Overtime approved"))
-        notify.send(
-            request.user.employee_get,
-            recipient=attendance.employee_id.employee_user_id,
-            verb=f"Overtime approved for\
-                  {attendance.attendance_date}'s attendance",
-            verb_ar=f"تمت الموافقة على العمل الإضافي لحضور تاريخ \
-                {attendance.attendance_date}",
-            verb_de=f"Überstunden für die Anwesenheit am \
-                {attendance.attendance_date} genehmigt",
-            verb_es=f"Horas extra aprobadas para la asistencia del \
-                {attendance.attendance_date}",
-            verb_fr=f"Heures supplémentaires approuvées pour la présence du \
-                {attendance.attendance_date}",
-            redirect=f"/attendance/attendance-overtime-view?id={attendance.id}",
-            icon="checkmark",
-        )
-
+        try:
+            attendance = Attendance.objects.get(id=attendance_id)
+            attendance.attendance_overtime_approve = True
+            attendance.save()
+            messages.success(request, _("Overtime approved"))
+            notify.send(
+                request.user.employee_get,
+                recipient=attendance.employee_id.employee_user_id,
+                verb=f"Overtime approved for\
+                      {attendance.attendance_date}'s attendance",
+                verb_ar=f"تمت الموافقة على العمل الإضافي لحضور تاريخ \
+                    {attendance.attendance_date}",
+                verb_de=f"Überstunden für die Anwesenheit am \
+                    {attendance.attendance_date} genehmigt",
+                verb_es=f"Horas extra aprobadas para la asistencia del \
+                    {attendance.attendance_date}",
+                verb_fr=f"Heures supplémentaires approuvées pour la présence du \
+                    {attendance.attendance_date}",
+                redirect=f"/attendance/attendance-overtime-view?id={attendance.id}",
+                icon="checkmark",
+            )
+        except (Attendance.DoesNotExist, OverflowError, ValueError):
+            messages.error(request, _("Attendance not found"))
     return JsonResponse({"message": "Success"})
 
 
