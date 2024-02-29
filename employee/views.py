@@ -377,8 +377,10 @@ def profile_attendance_tab(request):
     user = request.user
     employee = user.employee_get
     employee_attendances = employee.employee_attendances.all()
+    attendances_ids = json.dumps([instance.id for instance in employee_attendances])
     context = {
         "attendances": employee_attendances,
+        "attendances_ids": attendances_ids,
     }
     return render(request, "tabs/profile-attendance-tab.html", context)
 
@@ -400,15 +402,21 @@ def attendance_tab(request, emp_id):
         is_validate_request=True,
         employee_id=emp_id,
     )
+    attendances_ids = json.dumps([instance.id for instance in requests])
     validate_attendances = Attendance.objects.filter(
         attendance_validated=False, employee_id=emp_id
     )
+    validate_attendances_ids = json.dumps([instance.id for instance in validate_attendances])
     accounts = AttendanceOverTime.objects.filter(employee_id=emp_id)
+    accounts_ids = json.dumps([instance.id for instance in accounts])
 
     context = {
         "requests": requests,
+        "attendances_ids": attendances_ids,
         "accounts": accounts,
+        "accounts_ids": accounts_ids,
         "validate_attendances": validate_attendances,
+        "validate_attendances_ids": validate_attendances_ids,
     }
     return render(request, "tabs/attendance-tab.html", context=context)
 
@@ -478,11 +486,23 @@ def allowances_deductions_tab(request, emp_id):
                     )
                 ) or employee_value is None:
                     employee_deductions.remove(deduction)
+    allowance_ids = (
+        json.dumps([instance.id for instance in employee_allowances])
+        if employee_allowances
+        else None
+    )
+    deduction_ids = (
+        json.dumps([instance.id for instance in employee_deductions])
+        if employee_deductions
+        else None
+    )
     context = {
         "active_contracts": active_contracts,
         "basic_pay": basic_pay,
         "allowances": employee_allowances if employee_allowances else None,
+        "allowance_ids": allowance_ids,
         "deductions": employee_deductions if employee_deductions else None,
+        "deduction_ids": deduction_ids,
         "employee": employee,
     }
     return render(request, "tabs/allowance_deduction-tab.html", context=context)
@@ -502,17 +522,27 @@ def shift_tab(request, emp_id):
     """
     employee = Employee.objects.get(id=emp_id)
     work_type_requests = WorkTypeRequest.objects.filter(employee_id=emp_id)
+    work_type_requests_ids = json.dumps(
+        [instance.id for instance in work_type_requests]
+    )
     rshift_assign = RotatingShiftAssign.objects.filter(
         is_active=True, employee_id=emp_id
     )
+    rshift_assign_ids = json.dumps([instance.id for instance in rshift_assign])
     rwork_type_assign = RotatingWorkTypeAssign.objects.filter(employee_id=emp_id)
+    rwork_type_assign_ids = json.dumps([instance.id for instance in rwork_type_assign])
     shift_requests = ShiftRequest.objects.filter(employee_id=emp_id)
+    shift_requests_ids = json.dumps([instance.id for instance in shift_requests])
 
     context = {
         "work_data": work_type_requests,
+        "work_type_requests_ids": work_type_requests_ids,
         "rshift_assign": rshift_assign,
+        "rshift_assign_ids": rshift_assign_ids,
         "rwork_type_assign": rwork_type_assign,
+        "rwork_type_assign_ids": rwork_type_assign_ids,
         "shift_data": shift_requests,
+        "shift_requests_ids": shift_requests_ids,
         "emp_id": emp_id,
         "employee": employee,
     }
@@ -1830,7 +1860,7 @@ def employee_bulk_archive(request):
                 message = _("un-archived")
             messages.success(request, f"{employee} is {message}")
         else:
-            messages.warning(request,_("Related data found for {}.").format(employee))
+            messages.warning(request, _("Related data found for {}.").format(employee))
     return JsonResponse({"message": "Success"})
 
 
@@ -2315,26 +2345,26 @@ def work_info_import(request):
         "Phone error": [],
         "Joining Date Error": [],
         "Contract Error": [],
-        "Badge ID Error":[],
-        "Basic Salary Error":[],
-        "Salary Hour Error":[],
-        "User ID Error":[],
+        "Badge ID Error": [],
+        "Basic Salary Error": [],
+        "Salary Hour Error": [],
+        "User ID Error": [],
     }
 
     # Export the DataFrame to an Excel file
     response = HttpResponse(content_type="application/ms-excel")
     response["Content-Disposition"] = 'attachment; filename="work_info_template.xlsx"'
     data_frame.to_excel(response, index=False)
-    create_work_info= False
-    if request.POST.get('create_work_info')== "true":
-        create_work_info= True
+    create_work_info = False
+    if request.POST.get("create_work_info") == "true":
+        create_work_info = True
 
     if request.method == "POST" and request.FILES.get("file") is not None:
         file = request.FILES["file"]
         data_frame = pd.read_excel(file)
         work_info_dicts = data_frame.to_dict("records")
         error_lists = []
-        success_lists=[]
+        success_lists = []
         total_count = 0
         for work_info in work_info_dicts:
             error = False
@@ -2360,7 +2390,7 @@ def work_info_import(request):
                 gender = work_info.get("Gender")
 
                 pattern = r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$"
-                
+
                 if pd.isna(email) or not re.match(pattern, email):
                     work_info["Email Error"] = f"Invalid Email address"
                     error = True
@@ -2408,19 +2438,23 @@ def work_info_import(request):
                     error = True
 
                 if Employee.objects.filter(badge_id=badge_id).exists():
-                    work_info["Badge ID Error"] = f"An Employee with the badge ID already exists"
+                    work_info["Badge ID Error"] = (
+                        f"An Employee with the badge ID already exists"
+                    )
                     error = True
 
                 user = User.objects.filter(username=email).first()
                 if user:
-                    work_info["User ID Error"] = f"User with the email ID already exists"
+                    work_info["User ID Error"] = (
+                        f"User with the email ID already exists"
+                    )
                     error = True
-                
+
                 if error:
                     error_lists.append(work_info)
                 else:
                     success_lists.append(work_info)
-                
+
             except Exception as e:
                 logger.error(e)
 
@@ -2445,7 +2479,6 @@ def work_info_import(request):
                 basic_salary = convert_nan("Basic Salary", work_info)
                 salary_hour = convert_nan("Salary Hour", work_info)
                 gender = work_info.get("Gender")
-
 
                 user = User.objects.create_user(
                     username=email,
@@ -2495,9 +2528,7 @@ def work_info_import(request):
                     work_type_obj = WorkType()
                     work_type_obj.work_type = work_type
 
-                shift_obj = EmployeeShift.objects.filter(
-                    employee_shift=shift
-                ).first()
+                shift_obj = EmployeeShift.objects.filter(employee_shift=shift).first()
                 if shift_obj is None and shift is not None:
                     shift_obj = EmployeeShift()
                     shift_obj.employee_shift = shift
@@ -2574,9 +2605,14 @@ def work_info_import(request):
             response = HttpResponse(content_type="application/ms-excel")
             response["Content-Disposition"] = 'attachment; filename="ImportError.xlsx"'
             data_frame.to_excel(response, index=False)
-            response['X-Error-Count'] = error_count
+            response["X-Error-Count"] = error_count
             return response
-        return JsonResponse ({'Success': 'Employees Imported Succefully', 'success_count':total_count,})
+        return JsonResponse(
+            {
+                "Success": "Employees Imported Succefully",
+                "success_count": total_count,
+            }
+        )
 
     return response
 

@@ -174,9 +174,9 @@
         	    	<div class="oh-sticky-table__tbody">
         	    	  <div
         	    	    class="oh-sticky-table__tr"
-        	    	    hx-get="{% url 'work-type-request-single-view' work_type_request.id %}"
-        	    	    hx-target="#singleViewTarget"
-        	    	    data-target="#singleViewModal"
+        	    	    hx-get="{% url 'work-type-request-single-view' work_type_request.id %}?instances_ids={{work_type_requests_ids}}"
+        	    	    hx-target="#workTypeRequestSingleViewTarget"
+        	    	    data-target="#workTypeRequestSingleViewModal"
         	    	    data-toggle="oh-modal-toggle"
         	    	    draggable="true"
         	    	  >
@@ -343,7 +343,7 @@
         	    </div>
         	    <div class="oh-sticky-table__tbody">
         	    	{% for rshift in rshift_assign %}
-        	    		<div class="oh-sticky-table__tr" draggable="true">
+        	    		<div class="oh-sticky-table__tr" draggable="true" data-toggle="oh-modal-toggle" data-target="#rotatingShiftAssignDetailModal" hx-get="{% url 'rshift-individual-view' rshift.id %}?instances_ids={{rshift_assign_ids}}" hx-target = "#rotatingShiftAssignDetail">
         	    			<div class="oh-sticky-table__sd">
         	    			  <div class="d-flex">
         	    			    <div class="oh-profile oh-profile--md">
@@ -487,7 +487,9 @@
         	    </div>
         	    <div class="oh-sticky-table__tbody">
         	    	{% for rwork_type in rwork_type_assign %}
-        	    		<div class="oh-sticky-table__tr" draggable="true">
+        	    		<div class="oh-sticky-table__tr" hx-get="{% url "rwork-individual-view" rwork_type.id %}?instances_ids={{rwork_type_assign_ids}}" 
+							        data-toggle="oh-modal-toggle" data-target="#rotatingWorkTypeAssignDetailModal" 
+							        hx-target="#rotatingWorkTypeAssignDetail" draggable="true">
         	    			<div class="oh-sticky-table__sd">
         	    				<div class="d-flex">
         	    				  <div class="oh-profile oh-profile--md">
@@ -636,14 +638,9 @@
     		    </div>
     		    {% for shift_request in shift_data %}
     		    	<div class="oh-sticky-table__tbody">
-    		    	  <div
-    		    	    class="oh-sticky-table__tr"
-    		    	    hx-get="{% url 'shift-request-details' shift_request.id %}"
-    		    	    hx-target="#singleViewTarget"
-    		    	    data-toggle="oh-modal-toggle"
-    		    	    data-target="#singleViewModal"
-    		    	    draggable="true"
-    		    	  >
+    		    	  <div draggable="true" class="oh-sticky-table__tr" data-toggle="oh-modal-toggle"
+						   data-target="#shiftRequestDetailModal" hx-get="{% url 'shift-request-details' shift_request.id %}?instances_ids={{shift_requests_ids}}" hx-target="#shiftRequestDetailTarget"
+    		    	  		>
     		    	    <div class="oh-sticky-table__sd">
     		    	      <div class="d-flex">
     		    	        <div class="oh-profile oh-profile--md">
@@ -783,16 +780,57 @@
 		  <ion-icon name="close-outline"></ion-icon>
 		</button>
 	</div>
-    <div class="oh-modal__dialog-body" id="singleViewTarget"></div>
+    <div class="oh-modal__dialog-body oh-modal__dialog-relative" id="singleViewTarget"></div>
   </div>
 </div>
+
+<div
+  class="oh-modal"
+  id="workTypeRequestSingleViewModal"
+  role="dialog"
+  aria-labelledby="workTypeRequestSingleViewModal"
+  aria-hidden="true"
+  >
+  <div class="oh-modal__dialog" id="workTypeRequestSingleViewTarget"> </div>
+</div>
+
+<div
+  class="oh-modal"
+  id="rotatingWorkTypeAssignDetailModal"
+  role="dialog"
+  aria-labelledby="rotatingWorkTypeAssignDetailModalLabel"
+  aria-hidden="true"
+  >
+  <div class="oh-modal__dialog" id="rotatingWorkTypeAssignDetail"> </div>
+</div>
+
+<div
+  class="oh-modal"
+  id="rotatingShiftAssignDetailModal"
+  role="dialog"
+  aria-labelledby="rotatingShiftAssignDetailModalLabel"
+  aria-hidden="true"
+  >
+  <div class="oh-modal__dialog" id="rotatingShiftAssignDetail"> </div>
+</div>
+
+<div
+  class="oh-modal"
+  id="shiftRequestDetailModal"
+  role="dialog"
+  aria-labelledby="shiftRequestDetailModalLabel"
+  aria-hidden="true"
+  >
+  <div class="oh-modal__dialog" id="shiftRequestDetailTarget"> </div>
+</div>
+
 <div
   class="oh-modal"
   id="workTypeRequestUpdateModal"
   role="dialog"
   aria-labelledby="workTypeRequestUpdateModal"
   aria-hidden="true"
->
+  >
   <div class="oh-modal__dialog">
     <div class="oh-modal__dialog-header">
       <h5 class="oh-modal__dialog-title" id="workTypeRequestUpdateModalLabel">
@@ -819,7 +857,7 @@
   role="dialog"
   aria-labelledby="rotating-work-type-modal"
   aria-hidden="true"
->
+  >
   <div class="oh-modal__dialog">
     <div class="oh-modal__dialog-header">
       <h2 class="oh-modal__dialog-title" id="rotatingWorkTypeAssignModalLabel">
@@ -842,7 +880,7 @@
   role="dialog"
   aria-labelledby="shiftRequestModalUpdate"
   aria-hidden="true"
->
+  >
   <div class="oh-modal__dialog">
     <div class="oh-modal__dialog-header">
       <h5 class="oh-modal__dialog-title" id="shiftRequestModalUpdateLabel">
@@ -863,7 +901,7 @@
   role="dialog"
   aria-labelledby="rotating-shift-update-modal"
   aria-hidden="true"
->
+  >
   <div class="oh-modal__dialog">
     <div class="oh-modal__dialog-header">
       <h2 class="oh-modal__dialog-title" id="">
@@ -887,7 +925,7 @@
   role="dialog"
   aria-labelledby="workTypeRequestModal"
   aria-hidden="true"
->
+  >
   <div class="oh-modal__dialog">
     <div class="oh-modal__dialog-header">
       <h5 class="oh-modal__dialog-title" id="workTypeRequestModalLabel">
@@ -908,7 +946,7 @@
   role="dialog"
   aria-labelledby="shiftRequestModal"
   aria-hidden="true"
->
+  >
   <div class="oh-modal__dialog">
     <div class="oh-modal__dialog-header">
       <h5 class="oh-modal__dialog-title" id="shiftRequestModalLabel">
@@ -931,7 +969,7 @@
   role="dialog"
   aria-labelledby="rotating-shift-modal"
   aria-hidden="true"
->
+  >
   <div class="oh-modal__dialog">
     <div class="oh-modal__dialog-header">
       <h2 class="oh-modal__dialog-title" id="rotatingShiftAssignModalLabel">
@@ -951,7 +989,7 @@
   role="dialog"
   aria-labelledby="rotating-work-type-update-modal"
   aria-hidden="true"
->
+  >
   <div class="oh-modal__dialog">
     <div class="oh-modal__dialog-header">
       <h2 class="oh-modal__dialog-title" id="">
