@@ -1045,12 +1045,25 @@ def view_loans(request):
     This method is used to render template to disply all the loan records
     """
     records = LoanAccount.objects.all()
+    loan = records.filter(type="loan")
+    adv_salary = records.filter(type="advanced_salary")
+    fine = records.filter(type="fine")
+    loan = sortby(request, loan, "sortby")
+    adv_salary = sortby(request, adv_salary, "sortby")
+    fine = sortby(request, fine, "sortby")
     filter_instance = LoanAccountFilter()
     return render(
         request,
         "payroll/loan/view_loan.html",
         {
             "records": paginator_qry(records, request.GET.get("page")),
+            "loan": paginator_qry(loan, request.GET.get("lpage")),
+            "adv_salary": paginator_qry(
+                adv_salary, request.GET.get("apage")
+            ),
+            "fine": paginator_qry(
+                fine, request.GET.get("fpage")
+            ),
             "f": filter_instance,
         },
     )
@@ -1115,13 +1128,32 @@ def search_loan(request):
     Search loan method
     """
     records = LoanAccountFilter(request.GET).qs
+    loan = records.filter(type="loan")
+    adv_salary = records.filter(type="advanced_salary")
+    fine = records.filter(type="fine")
+    
+    loan = sortby(request, loan, "sortby")
+    adv_salary = sortby(request, adv_salary, "sortby")
+    fine = sortby(request, fine, "sortby")
+    
     data_dict = parse_qs(request.GET.urlencode())
     get_key_instances(LoanAccount, data_dict)
+    view = request.GET.get("view")
+    template = "payroll/loan/records_card.html"
+    if view == "list":
+        template = "payroll/loan/records_list.html"
     return render(
         request,
-        "payroll/loan/records.html",
+        template,
         {
             "records": paginator_qry(records, request.GET.get("page")),
+            "loan": paginator_qry(loan, request.GET.get("lpage")),
+            "adv_salary": paginator_qry(
+                adv_salary, request.GET.get("apage")
+            ),
+            "fine": paginator_qry(
+                fine, request.GET.get("fpage")
+            ),
             "filter_dict": data_dict,
             "pd": request.GET.urlencode(),
         },

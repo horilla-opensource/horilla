@@ -162,7 +162,7 @@
                                         </div>  
                                         <div class="oh-sticky-table__td">
                                             <div class="oh-btn-group">
-                                                {% if perms.attendance.change_attendance or request.user %}
+                                                {% if perms.payroll.change_reimbursement or request.user %}
                                                     <a
                                                         onclick="event.stopPropagation()"
                                                         hx-get="{% url 'create-reimbursement' %}?instance_id={{ req.id }}"
@@ -175,9 +175,9 @@
                                                     <ion-icon name="create-outline"></ion-icon>
                                                     </a>
                                                 {% endif %} 
-                                                {% if perms.attendance.delete_attendance %}
+                                                {% if perms.payroll.delete_reimbursement %}
                                                     <a href="{% url "delete-reimbursement" %}?ids={{req.id}}" onclick="return confirm('Do you want to delete this record?')" 
-                                                        class='w-100 oh-btn oh-btn--danger-outline oh-btn--light-bkg'> 
+                                                        class='w-100 oh-btn oh-btn--danger-outline oh-btn--light-bkg' title='{% trans "Delete" %}'> 
                                                         
                                                         <ion-icon name="trash-outline"></ion-icon>
                                                     </a>
@@ -235,7 +235,7 @@
                                 class="oh-pagination__page"
                                 data-toggle="modal"
                                 data-target="#addEmployeeModal"
-                                >{% trans 'Page'  %} {{ requests.number }} {% trans 'of' %} {{ requests.paginator.num_pages }}.</span
+                                >{% trans 'Page'  %} {{ reimbursements.number }} {% trans 'of' %} {{ reimbursements.paginator.num_pages }}.</span
                             >
 
                             <nav class="oh-pagination__nav">
@@ -248,24 +248,24 @@
                                         type="number"
                                         name="page"
                                         class="oh-pagination__input"
-                                        value="{{ requests.number }}"
+                                        value="{{ reimbursements.number }}"
                                         hx-get="{% url 'search-reimbursement' %}?{{ pd }}"
                                         hx-target="#reimbursementContainer"
                                         min="1"
                                     />
                                     <span class="oh-pagination__label"
-                                        >{% trans 'of' %} {{ requests.paginator.num_pages }}</span
+                                        >{% trans 'of' %} {{ reimbursements.paginator.num_pages }}</span
                                     >
                                 </div>
 
                                 <ul class="oh-pagination__items">
-                                    {% if requests.has_previous %}
+                                    {% if reimbursements.has_previous %}
                                     <li
                                         class="oh-pagination__item oh-pagination__item--wide"
                                     >
                                         <a
                                             hx-target="#reimbursementContainer"
-                                            hx-get="{% url 'search-reimbursement' %}?{{ pd }}&page=1"
+                                            hx-get="{% url 'search-reimbursement' %}?{{ pd }}&rpage=1"
                                             class="oh-pagination__link"
                                             >{% trans 'First' %}</a
                                         >
@@ -275,18 +275,18 @@
                                     >
                                         <a
                                             hx-target="#reimbursementContainer"
-                                            hx-get="{% url 'search-reimbursement' %}?{{ pd }}&rpage={{ requests.previous_page_number }}"
+                                            hx-get="{% url 'search-reimbursement' %}?{{ pd }}&rpage={{ reimbursements.previous_page_number }}"
                                             class="oh-pagination__link"
                                             >{% trans 'Previous' %}</a
                                         >
                                     </li>
-                                    {% endif %} {% if requests.has_next %}
+                                    {% endif %} {% if reimbursements.has_next %}
                                     <li
                                         class="oh-pagination__item oh-pagination__item--wide"
                                     >
                                         <a
                                             hx-target="#reimbursementContainer"
-                                            hx-get="{% url 'search-reimbursement' %}?{{ pd }}&rpage={{ requests.next_page_number }}"
+                                            hx-get="{% url 'search-reimbursement' %}?{{ pd }}&rpage={{ reimbursements.next_page_number }}"
                                             class="oh-pagination__link"
                                             >{% trans 'Next' %}</a
                                         >
@@ -296,7 +296,7 @@
                                     >
                                         <a
                                             hx-target="#reimbursementContainer"
-                                            hx-get="{% url 'search-reimbursement' %}?{{ pd }}&page={{ requests.paginator.num_pages }}"
+                                            hx-get="{% url 'search-reimbursement' %}?{{ pd }}&rpage={{ reimbursements.paginator.num_pages }}"
                                             class="oh-pagination__link"
                                             >{% trans 'Last' %}</a
                                         >
@@ -458,22 +458,22 @@
                                         </div> 
                                         <div class="oh-sticky-table__td">
                                             <div class="oh-btn-group">
-                                                {% if perms.attendance.change_attendance or request.user %}
+                                                {% if perms.payroll.change_reimbursement or request.user %}
                                                     <a
                                                         onclick="event.stopPropagation()"
                                                         hx-get="{% url 'create-reimbursement' %}?instance_id={{ req.id }}"
                                                         hx-target="#reimbursementModalBody"
                                                         data-toggle="oh-modal-toggle"
                                                         data-target="#reimbursementModal"
-                                                        class="oh-btn oh-btn--light-bkg w-50"
+                                                        class="oh-btn oh-btn--light-bkg w-100"
                                                         title="{% trans 'Edit' %}"
-                                                        >
-                                                        <ion-icon name="create-outline"></ion-icon>
+                                                    >
+                                                    <ion-icon name="create-outline"></ion-icon>
                                                     </a>
                                                 {% endif %} 
-                                                {% if perms.attendance.delete_attendance %}
+                                                {% if perms.payroll.delete_reimbursement %}
                                                     <a href="{% url "delete-reimbursement" %}?ids={{req.id}}" onclick="return confirm('Do you want to delete this record?')" 
-                                                    class='w-50 oh-btn oh-btn--danger-outline oh-btn--light-bkg'> 
+                                                        class='w-100 oh-btn oh-btn--danger-outline oh-btn--light-bkg' title='{% trans "Delete" %}'> 
                                                         
                                                         <ion-icon name="trash-outline"></ion-icon>
                                                     </a>
@@ -530,8 +530,8 @@
                                 class="oh-pagination__page"
                                 data-toggle="modal"
                                 data-target="#addEmployeeModal"
-                                >{% trans 'Page' %} {{ requests.number }} {% trans 'of' %} 
-                                {{ requests.paginator.num_pages }}.</span
+                                >{% trans 'Page' %} {{ leave_encashments.number }} {% trans 'of' %} 
+                                {{ leave_encashments.paginator.num_pages }}.</span
                             >
 
                             <nav class="oh-pagination__nav">
@@ -544,24 +544,24 @@
                                         type="number"
                                         name="page"
                                         class="oh-pagination__input"
-                                        value="{{ requests.number }}"
+                                        value="{{ leave_encashments.number }}"
                                         hx-get="{% url 'search-reimbursement' %}?{{ pd }}"
                                         hx-target="#reimbursementContainer"
                                         min="1"
                                     />
                                     <span class="oh-pagination__label"
-                                        >{% trans 'of' %} {{ requests.paginator.num_pages }}</span
+                                        >{% trans 'of' %} {{ leave_encashments.paginator.num_pages }}</span
                                     >
                                 </div>
 
                                 <ul class="oh-pagination__items">
-                                    {% if requests.has_previous %}
+                                    {% if leave_encashments.has_previous %}
                                     <li
                                         class="oh-pagination__item oh-pagination__item--wide"
                                     >
                                         <a
                                             hx-target="#reimbursementContainer"
-                                            hx-get="{% url 'search-reimbursement' %}?{{ pd }}&page=1"
+                                            hx-get="{% url 'search-reimbursement' %}?{{ pd }}&lpage=1"
                                             class="oh-pagination__link"
                                             >{% trans 'First' %}</a
                                         >
@@ -571,18 +571,18 @@
                                     >
                                         <a
                                             hx-target="#reimbursementContainer"
-                                            hx-get="{% url 'search-reimbursement' %}?{{ pd }}&lpage={{ requests.previous_page_number }}"
+                                            hx-get="{% url 'search-reimbursement' %}?{{ pd }}&lpage={{ leave_encashments.previous_page_number }}"
                                             class="oh-pagination__link"
                                             >{% trans 'Previous' %}</a
                                         >
                                     </li>
-                                    {% endif %} {% if requests.has_next %}
+                                    {% endif %} {% if leave_encashments.has_next %}
                                     <li
                                         class="oh-pagination__item oh-pagination__item--wide"
                                     >
                                         <a
                                             hx-target="#reimbursementContainer"
-                                            hx-get="{% url 'search-reimbursement' %}?{{ pd }}&lpage={{ requests.next_page_number }}"
+                                            hx-get="{% url 'search-reimbursement' %}?{{ pd }}&lpage={{ leave_encashments.next_page_number }}"
                                             class="oh-pagination__link"
                                             >{% trans 'Next' %}</a
                                         >
@@ -592,7 +592,7 @@
                                     >
                                         <a
                                             hx-target="#reimbursementContainer"
-                                            hx-get="{% url 'search-reimbursement' %}?{{ pd }}&page={{ requests.paginator.num_pages }}"
+                                            hx-get="{% url 'search-reimbursement' %}?{{ pd }}&lpage={{ leave_encashments.paginator.num_pages }}"
                                             class="oh-pagination__link"
                                             >{% trans 'Last' %}</a
                                         >
@@ -742,21 +742,23 @@
                                         </div> 
                                         <div class="oh-sticky-table__td">
                                             <div class="oh-btn-group">
-                                                {% if perms.attendance.change_attendance or request.user %}
+                                                {% if perms.payroll.change_reimbursement or request.user %}
                                                     <a
+                                                        onclick="event.stopPropagation()"
                                                         hx-get="{% url 'create-reimbursement' %}?instance_id={{ req.id }}"
                                                         hx-target="#reimbursementModalBody"
                                                         data-toggle="oh-modal-toggle"
                                                         data-target="#reimbursementModal"
-                                                        class="oh-btn oh-btn--light-bkg w-50"
+                                                        class="oh-btn oh-btn--light-bkg w-100"
                                                         title="{% trans 'Edit' %}"
-                                                        >
-                                                        <ion-icon name="create-outline"></ion-icon>
+                                                    >
+                                                    <ion-icon name="create-outline"></ion-icon>
                                                     </a>
                                                 {% endif %} 
-                                                {% if perms.attendance.delete_attendance %}
+                                                {% if perms.payroll.delete_reimbursement %}
                                                     <a href="{% url "delete-reimbursement" %}?ids={{req.id}}" onclick="return confirm('Do you want to delete this record?')" 
-                                                    class='w-50 oh-btn oh-btn--danger-outline oh-btn--light-bkg'> 
+                                                        class='w-100 oh-btn oh-btn--danger-outline oh-btn--light-bkg' title='{% trans "Delete" %}'> 
+                                                        
                                                         <ion-icon name="trash-outline"></ion-icon>
                                                     </a>
                                                 {% endif %}
@@ -813,7 +815,7 @@
                                 class="oh-pagination__page"
                                 data-toggle="modal"
                                 data-target="#addEmployeeModal"
-                                >{% trans 'Page' %} {{ requests.number }} {% trans 'of' %} {{ requests.paginator.num_pages }}.</span
+                                >{% trans 'Page' %} {{ bonus_encashments.number }} {% trans 'of' %} {{ bonus_encashments.paginator.num_pages }}.</span
                             >
 
                             <nav class="oh-pagination__nav">
@@ -826,24 +828,24 @@
                                         type="number"
                                         name="page"
                                         class="oh-pagination__input"
-                                        value="{{ requests.number }}"
+                                        value="{{ bonus_encashments.number }}"
                                         hx-get="{% url 'search-reimbursement' %}?{{ pd }}"
                                         hx-target="#reimbursementContainer"
                                         min="1"
                                     />
                                     <span class="oh-pagination__label"
-                                        >{% trans 'of' %} {{ requests.paginator.num_pages }}</span
+                                        >{% trans 'of' %} {{ bonus_encashments.paginator.num_pages }}</span
                                     >
                                 </div>
 
                                 <ul class="oh-pagination__items">
-                                    {% if requests.has_previous %}
+                                    {% if bonus_encashments.has_previous %}
                                     <li
                                         class="oh-pagination__item oh-pagination__item--wide"
                                     >
                                         <a
                                             hx-target="#reimbursementContainer"
-                                            hx-get="{% url 'search-reimbursement' %}?{{ pd }}&page=1"
+                                            hx-get="{% url 'search-reimbursement' %}?{{ pd }}&bpage=1"
                                             class="oh-pagination__link"
                                             >{% trans 'First' %}</a
                                         >
@@ -853,18 +855,18 @@
                                     >
                                         <a
                                             hx-target="#reimbursementContainer"
-                                            hx-get="{% url 'search-reimbursement' %}?{{ pd }}&page={{ requests.previous_page_number }}"
+                                            hx-get="{% url 'search-reimbursement' %}?{{ pd }}&bpage={{ bonus_encashments.previous_page_number }}"
                                             class="oh-pagination__link"
                                             >{% trans 'Previous' %}</a
                                         >
                                     </li>
-                                    {% endif %} {% if requests.has_next %}
+                                    {% endif %} {% if bonus_encashments.has_next %}
                                     <li
                                         class="oh-pagination__item oh-pagination__item--wide"
                                     >
                                         <a
                                             hx-target="#reimbursementContainer"
-                                            hx-get="{% url 'search-reimbursement' %}?{{ pd }}&bpage={{ requests.next_page_number }}"
+                                            hx-get="{% url 'search-reimbursement' %}?{{ pd }}&bpage={{ bonus_encashments.next_page_number }}"
                                             class="oh-pagination__link"
                                             >{% trans 'Next' %}</a
                                         >
@@ -874,7 +876,7 @@
                                     >
                                         <a
                                             hx-target="#reimbursementContainer"
-                                            hx-get="{% url 'search-reimbursement' %}?{{ pd }}&bpage={{ requests.paginator.num_pages }}"
+                                            hx-get="{% url 'search-reimbursement' %}?{{ pd }}&bpage={{ bonus_encashments.paginator.num_pages }}"
                                             class="oh-pagination__link"
                                             >{% trans 'Last' %}</a
                                         >

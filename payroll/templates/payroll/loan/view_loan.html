@@ -15,7 +15,7 @@
   {% include 'payroll/loan/nav.html' %}
   <div id="loanContainer">
     {% if records %}
-      {% include 'payroll/loan/records.html' %}
+      {% include 'payroll/loan/records_card.html' %}
     {% else %}
       {% include 'filter_tags.html' %}
       <main :class="sidebarOpen ? 'oh-main__sidebar-visible' : ''">
