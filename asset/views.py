@@ -913,6 +913,12 @@ def filter_pagination_asset_request_allocation(request):
             [instance.id for instance in asset_allocation_filtered.object_list]
         )
 
+    assets_ids = paginator_qry(
+        assets_filtered.qs, request.GET.get("page")
+    )
+    assets_id = json.dumps(
+        [instance.id for instance in assets_ids.object_list]
+    )
     asset_paginator = Paginator(assets_filtered.qs, get_pagination())
     asset_request_paginator = Paginator(asset_request_filtered, get_pagination())
     asset_allocation_paginator = Paginator(asset_allocation_filtered, get_pagination())
@@ -948,6 +954,7 @@ def filter_pagination_asset_request_allocation(request):
         "allocation_field": allocation_field,
         "requests_ids": requests_ids,
         "allocations_ids": allocations_ids,
+        "asset_ids":assets_id,
     }
 
 
@@ -974,6 +981,7 @@ def asset_request_alloaction_view(request):
     return render(request, template, context)
 
 
+@login_required
 def asset_request_alloaction_view_search_filter(request):
     """
     This view handles the search and filter functionality for the asset request allocation list.
@@ -995,6 +1003,32 @@ def asset_request_alloaction_view_search_filter(request):
     return render(request, template, context)
 
 
+@login_required
+def own_asset_individual_view(request,id):
+    """
+    This function is responsible for view the individual own asset
+
+    Args:
+        request : HTTP request object
+        id (int): Id of the asset assignment
+    """
+    asset_assignment = AssetAssignment.objects.get(id=id)
+    asset = asset_assignment.asset_id
+    context = {
+        "asset": asset,
+        "asset_assignment": asset_assignment,
+    }
+    requests_ids_json = request.GET.get("assets_ids")
+    if requests_ids_json:
+        requests_ids = json.loads(requests_ids_json)
+        previous_id, next_id = closest_numbers(requests_ids, id)
+        context["assets_ids"] = requests_ids_json
+        context["previous"] = previous_id
+        context["next"] = next_id
+    return render(request, "request_allocation/individual_own.html", context)
+
+
+@login_required
 def asset_request_individual_view(request, id):
     asset_request = AssetRequest.objects.get(id=id)
     context = {
@@ -1011,6 +1045,7 @@ def asset_request_individual_view(request, id):
     return render(request, "request_allocation/individual_request.html", context)
 
 
+@login_required
 def asset_allocation_individual_view(request, id):
     asset_allocation = AssetAssignment.objects.get(id=id)
     context = {"asset_allocation": asset_allocation}

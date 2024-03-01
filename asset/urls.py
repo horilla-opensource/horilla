@@ -78,6 +78,11 @@ urlpatterns = [
         name="asset-request-individual-view",
     ),
     path(
+        "own-asset-individual-view/<int:id>",
+        views.own_asset_individual_view,
+        name="own-asset-individual-view",
+    ),
+    path(
         "asset-allocation-individual-view/<int:id>",
         views.asset_allocation_individual_view,
         name="asset-allocation-individual-view",

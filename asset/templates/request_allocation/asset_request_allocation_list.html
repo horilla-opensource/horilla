@@ -72,7 +72,7 @@
 							<div id="assetRequestAllocationTarget"></div>
 							{% for asset in assets %}
 							<!-- asset request looping -->
-							<div class="oh-sticky-table__tr" draggable="true">
+							<div class="oh-sticky-table__tr" draggable="true" data-toggle="oh-modal-toggle" data-target="#asset-request-allocation-modal" hx-get="{% url 'own-asset-individual-view' asset.id %}?assets_ids={{asset_ids}}" hx-target="#asset-request-allocation-modal-target">
 								<div class="oh-sticky-table__sd">
 									<div class="oh-profile oh-profile--md">
 										<div class="oh-profile__avatar mr-1">
