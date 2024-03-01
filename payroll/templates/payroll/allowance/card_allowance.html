@@ -14,7 +14,8 @@
 {% if allowances %}
   <div class="oh-layout--grid-3">
     {% for allowance in allowances %}
-    <div class="oh-kanban-card" data-toggle="oh-modal-toggle" data-target = "#AllowanceModal" hx-get="{% url 'single-allowance-view' allowance.id %}?instances_ids={{allowance_ids}}" hx-target = "#OneAllowanceTarget">
+    <div class="oh-kanban-card {% if allowance.is_fixed == True %} row-status--orange {% elif allowance.is_fixed == False %} row-status--yellow {% endif %}" 
+        data-toggle="oh-modal-toggle" data-target = "#AllowanceModal" hx-get="{% url 'single-allowance-view' allowance.id %}?instances_ids={{allowance_ids}}" hx-target = "#OneAllowanceTarget">
         <div class="oh-kanban-card__avatar">
         <div class="oh-kanban-card__profile-container">
             <img
@@ -25,7 +26,44 @@
         </div>
         </div>
         <div class="oh-kanban-card__details">
-        <span class="oh-kanban-card__title">{{allowance}}</span>
+        <span class="oh-card__title oh-card__title--sm fw-bold" style="font-size:18px;">{{allowance}}</span>
+
+        <div class="oh-timeoff-modal__stats-container mb-1">
+          <div class="oh-timeoff-modal__stat mt-2">
+              <span class="oh-timeoff-modal__stat-title fw-bold text-dark">{% trans "Taxable" %}</span>
+              <span class="oh-timeoff-modal__stat-title fw-bold">{{allowance.is_taxable|yesno|capfirst}}</span>
+          </div>
+          <div class="oh-timeoff-modal__stat mt-2" style="margin-left: 20px;">
+            <span class="oh-timeoff-modal__stat-title fw-bold text-dark">{% trans "Amount" %}</span>
+            {% if allowance.is_fixed %}
+                <span class="oh-timeoff-modal__stat-title fw-bold">{{allowance.amount}}</span>
+            {% else %}
+                {% if allowance.based_on == "basic_pay" %}
+                    <span class="oh-timeoff-modal__stat-title fw-bold">{{allowance.rate}}% of {{allowance.get_based_on_display}}</span>
+                {% endif %}
+                {% if allowance.based_on == "attendance" %}
+                    <span class="oh-timeoff-modal__stat-title fw-bold">{{allowance.per_attendance_fixed_amount}} {{currency}} {% trans "Amount Per Attendance" %}</span>
+                {% endif %}
+                {% if allowance.based_on == "shift_id" %}
+                    <span class="oh-timeoff-modal__stat-title fw-bold">{{allowance.shift_per_attendance_amount}} {{currency}} {% trans "Amount Per" %} {{allowance.shift_id}}</span>
+                {% endif %}
+                {% if allowance.based_on == "work_type_id" %}
+                    <span class="oh-timeoff-modal__stat-title fw-bold">{{allowance.work_type_per_attendance_amount}} {{currency}} {% trans "Amount Per" %} {{allowance.work_type_id}}</span>
+                {% endif %}
+                {% if allowance.based_on == "overtime" %}
+                    <span class="oh-timeoff-modal__stat-title fw-bold">{{allowance.amount_per_one_hr}} {{currency}} {% trans "Amount Per One Hour" %}</span>
+                {% endif %}
+            {% endif %}
+          </div>
+        </div>
+
+        <span class="oh-timeoff-modal__stat-title fw-bold text-dark">{% trans "One Time Allowance" %}</span>
+        {% if allowance.one_time_date %}
+          <span class="oh-timeoff-modal__stat-title fw-bold">{% trans "On" %}</span> <span class="oh-timeoff-modal__stat-count dateformat_changer"> {{allowance.one_time_date}}</span>
+        {% else %}
+          <span class="oh-timeoff-modal__stat-title fw-bold">{% trans "No" %}</span>
+        {% endif %}
+
         </div>
         <div class="oh-kanban-card__dots">
         <div class="oh-dropdown" x-data="{show: false}" onclick="event.stopPropagation()">

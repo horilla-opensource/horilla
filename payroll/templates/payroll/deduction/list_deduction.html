@@ -26,9 +26,7 @@
               hx-get="{% url 'filter-deduction' %}?{{pd}}&sortby=title" 
               hx-target="#payroll-deduction-container"
             >
-              <div class="d-flex">
-                  {% trans "Deduction" %}
-              </div>
+              {% trans "Deduction" %}
             </div>
             <div data-cell-index="1" data-cell-title='{% trans "Specific Employees" %}' class="oh-sticky-table__th">{% trans "Specific Employees" %}</div>
             <div data-cell-index="2" data-cell-title='{% trans "Excluded Employees" %}' class="oh-sticky-table__th">{% trans "Excluded Employees" %}</div>

@@ -37,9 +37,7 @@
               hx-get="{% url 'filter-allowance' %}?{{pd}}&sortby=title" 
               hx-target="#payroll-allowance-container"
             >
-              <div class="d-flex">
                   {% trans "Allowance" %}
-              </div>  
             </div>
             <div data-cell-index="1" data-cell-title="{% trans 'Specific Employees' %}" class="oh-sticky-table__th">{% trans "Specific Employees" %}</div>
             <div data-cell-index="2" data-cell-title="{% trans 'Excluded Employees' %}" class="oh-sticky-table__th">{% trans "Excluded Employees" %}</div>
