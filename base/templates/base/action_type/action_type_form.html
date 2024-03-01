@@ -10,16 +10,8 @@
   <button
     class="oh-modal__close--custom"
     aria-label="Close"
-	{% if dynamic %}
-		onclick="$('#dynamicCreateModal').removeClass('oh-modal--show')"
-    {% else %}
-		{% if act_id %}
-			onclick="$('#ticketEditModal').removeClass('oh-modal--show')"
-		{% else %}
-			onclick="$('#ticketModal').removeClass('oh-modal--show')"
-		{% endif %}
-    {% endif %}
-  >
+    onclick="$(this).parents().closest('.oh-modal--show').toggleClass('oh-modal--show')"
+    >
     <ion-icon name="close-outline"></ion-icon>
   </button>
 </div>
@@ -30,19 +22,21 @@
     {% else %}
     	hx-post="{% url 'action-type-create' %}?dynamic={{dynamic}}&{{hx_vals}}"
     {% endif %}
-	{% if dynamic %}
-		hx-target="#createannouncementForm"
-	{% else %}
-		hx-target="#ticketForm"
-	{% endif %}
-  >
+	  {% if dynamic %}
+		  hx-target="#actionCreateForm"
+	  {% else %}
+		  hx-target="#ticketForm"
+	  {% endif %}
+    >
     {% csrf_token %} {{form.non_field_errors}} {{form.as_p}}
+    <div class="d-flex flex-row-reverse">
     <button
       type="submit"
       class="oh-btn oh-btn--secondary mt-2 mr-0 oh-btn--w-100-resp"
-    >
+      
+      >
       {% trans "Save" %}
     </button>
-    <div class="oh-inner-sidebar-content__footer"></div>
+    </div>
   </form>
 </div>
