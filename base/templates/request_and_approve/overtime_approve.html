@@ -73,8 +73,8 @@
                     class="oh-sticky-table__tr"
                     draggable="false"
                     data-toggle="oh-modal-toggle"
-                    data-target="#bigModal"
-                    hx-target="#bigModalTarget"
+                    data-target="#detailAttendance"
+                    hx-target="#detailAttendanceModalBody"
                     hx-get="{% url 'user-request-one-view' attendance.id %}?ot=true&instances_ids={{ot_attendances_ids}}&dashboard=true"
                 >
                     <div class="oh-sticky-table__sd">
