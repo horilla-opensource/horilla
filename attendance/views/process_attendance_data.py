@@ -110,7 +110,7 @@ def process_attendance_data(attendance_dicts):
                 attendance_data["Error13"] = f"{exception} of minimum hours"
                 save = False
 
-            if employee is None:
+            if employee is None or not employee.is_active:
                 attendance_data["Error1"] = f"Invalid Badge ID given {badge_id}"
                 save = False
 
