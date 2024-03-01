@@ -9,9 +9,15 @@
   {% endfor %}
 </div>
 <script>
-  setTimeout(function () {
-    $(".oh-modal__close").click();
-  }, 1000);
+  {% if dynamic %}
+    setTimeout(function () {
+      $('#dynamicCreateModal').removeClass('oh-modal--show');
+    }, 1000);
+  {% else %}
+    setTimeout(function () {
+      $('.oh-modal__close').click();
+    }, 1000);
+  {% endif %}
 </script>
 {% endif %}
 <div class="oh-modal__dialog-header">
@@ -23,7 +29,7 @@
     aria-label="Close"
     hx-get="{% url 'disciplinary-filter-view' %}"
     hx-target="#actionContainer"
-  >
+    >
     <ion-icon name="close-outline"></ion-icon>
   </button>
 </div>
@@ -34,7 +40,7 @@
     method="post"
     hx-encoding="multipart/form-data"
     id="disciplinaryActionForm"
-  >
+    >
     {% csrf_token %} {{form.as_p}}
   </form>
 </div>

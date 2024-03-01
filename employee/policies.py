@@ -264,6 +264,11 @@ def create_actions(request):
     """
     form = DisciplinaryActionForm()
     employees = []
+    dynamic = (
+        request.GET.get("dynamic") if request.GET.get("dynamic") != "None" else None
+    )
+    if request.GET:
+        form = DisciplinaryActionForm(request.GET)
 
     if request.method == "POST":
         form = DisciplinaryActionForm(request.POST, request.FILES)
@@ -311,7 +316,9 @@ def create_actions(request):
                 icon="chatbox-ellipses",
             )
 
-    return render(request, "disciplinary_actions/form.html", {"form": form})
+    return render(
+        request, "disciplinary_actions/form.html", {"form": form, "dynamic": dynamic}
+    )
 
 
 @login_required
