@@ -292,10 +292,10 @@
                       onchange="changeView(this)"
                       style="width: 150px; padding: 3px; color: #5e5c5c"
                     >
-                      <option value="day">Day</option>
-                      <option value="weekly">Weekly</option>
-                      <option value="monthly">Monthly</option>
-                      <option value="date_range">Date range</option>
+                      <option value="day">{% trans "Day" %}</option>
+                      <option value="weekly">{% trans "Weekly" %}</option>
+                      <option value="monthly">{% trans "Monthly" %}</option>
+                      <option value="date_range">{% trans "Date range" %}</option>
                     </select>
                     <span id="day_input">
                       <input
@@ -1145,6 +1145,7 @@
   >
   <div class="oh-modal__dialog" id="workTypeRequestSingleViewTarget"> </div>
 </div>
+
 <div
   class="oh-modal" style="z-index: 60;"
   id="shiftRequestDetailModal"
@@ -1153,6 +1154,16 @@
   aria-hidden="true"
   >
   <div class="oh-modal__dialog" id="shiftRequestDetailTarget"></div>
+</div>
+
+<div
+  class="oh-modal"
+  id="detailAttendance"
+  role="dialog"
+  aria-labelledby="detailAttendance"
+  aria-hidden="true"
+  >
+    <div class="oh-modal__dialog w-25" id="detailAttendanceModalBody"></div>
 </div>
 
 {% include "quick_access.html" %}
