@@ -13,12 +13,12 @@
 </div>
 <div class="oh-modal__dialog-body oh-modal__dialog-relative" >
 <div class="oh-modal__dialog oh-modal__dialog--navigation m-0 p-0">
-    <button hx-get="{% url "user-request-one-view" previous_instance %}?instances_ids={{instance_ids_json}}&validate={{request.GET.validate}}&ot={{request.GET.ot}}&all_attendance={{request.GET.all_attendance}}&my_attendance={{request.GET.my_attendance}}&dashboard={{dashboard}}" hx-target="#detailAttendanceModalBody" class="oh-modal__diaglog-nav oh-modal__nav-prev">
+    <button hx-get="{% url "user-request-one-view" previous_instance %}?instances_ids={{instance_ids_json}}&validate={{request.GET.validate}}&ot={{request.GET.ot}}&all_attendance={{request.GET.all_attendance}}&my_attendance={{request.GET.my_attendance}}&dashboard={{dashboard}}" hx-target="#objectDetailsModalW25Target" class="oh-modal__diaglog-nav oh-modal__nav-prev">
         <ion-icon name="chevron-back-outline" class="md hydrated" role="img"
         aria-label="chevron back outline"></ion-icon>
     </button>
 
-    <button hx-get="{% url "user-request-one-view" next_instance %}?instances_ids={{instance_ids_json}}&validate={{request.GET.validate}}&ot={{request.GET.ot}}&all_attendance={{request.GET.all_attendance}}&my_attendance={{request.GET.my_attendance}}&dashboard={{dashboard}}" hx-target="#detailAttendanceModalBody" class="oh-modal__diaglog-nav oh-modal__nav-next">
+    <button hx-get="{% url "user-request-one-view" next_instance %}?instances_ids={{instance_ids_json}}&validate={{request.GET.validate}}&ot={{request.GET.ot}}&all_attendance={{request.GET.all_attendance}}&my_attendance={{request.GET.my_attendance}}&dashboard={{dashboard}}" hx-target="#objectDetailsModalW25Target" class="oh-modal__diaglog-nav oh-modal__nav-next">
         <ion-icon name="chevron-forward-outline" class="md hydrated" role="img"
         aria-label="chevron forward outline"></ion-icon>
     </button>
