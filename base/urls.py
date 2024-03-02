@@ -210,7 +210,7 @@ urlpatterns = [
         },
     ),
     path(
-        "employee/rotating-work-type-assign",
+        "employee/rotating-work-type-assign/",
         views.rotating_work_type_assign,
         name="rotating-work-type-assign",
     ),
@@ -375,7 +375,7 @@ urlpatterns = [
         name="candidate-reject-reasons",
     ),
     path(
-        "employee/rotating-shift-assign",
+        "employee/rotating-shift-assign/",
         views.rotating_shift_assign,
         name="rotating-shift-assign",
     ),
@@ -441,7 +441,7 @@ urlpatterns = [
         },
     ),
     path(
-        "employee/work-type-request-view",
+        "employee/work-type-request-view/",
         views.work_type_request_view,
         name="work-type-request-view",
     ),
@@ -517,7 +517,7 @@ urlpatterns = [
         name="update-employee-allocation",
     ),
     path(
-        "employee/shift-request-view",
+        "employee/shift-request-view/",
         views.shift_request_view,
         name="shift-request-view",
     ),
