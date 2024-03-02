@@ -3,7 +3,7 @@
 <section class="oh-wrapper oh-main__topbar" x-data="{searchShow: false}">
 	<div class="oh-main__titlebar oh-main__titlebar--left">
 		<a
-			href='{% url "shift-request-view" %}'
+			href="{% url 'document-request-view' %}"
 			class="oh-main__titlebar-title fw-bold mb-0 text-dark"
 			style="text-decoration: none"
 			>{% trans "Document Requests" %}
@@ -292,11 +292,8 @@
 			<form id="bulk-reject-form"> 
 				<textarea name="rejection_reason" cols="40" rows="2" class="oh-input w-100" placeholder="Rejection reason" id="bulk_rejection_reason"></textarea>
 				
-				<div class="d-flex flex-row-reverse">
-					<button
-						type="submit"
-						class="oh-btn oh-btn--secondary mt-2 mr-0 oh-btn--w-100-resp"
-						>
+				<div class="d-flex justify-content-between w-100 align-items-center mt-4">
+					<button type="button" class="oh-btn oh-btn--secondary oh-btn--shadow bulk_reject">
 						{% trans "Save" %}
 					</button>
 				</div>

@@ -256,7 +256,7 @@ urlpatterns = [
         not_in_out_dashboard.get_template,
         name="get-template-employee",
     ),
-    path("view-policies", policies.view_policies, name="view-policies"),
+    path("view-policies/", policies.view_policies, name="view-policies"),
     path("search-policies", policies.search_policies, name="search-policies"),
     path("create-policy", policies.create_policy, name="create-policy"),
     path("view-policy", policies.view_policy, name="view-policy"),
