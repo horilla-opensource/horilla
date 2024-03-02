@@ -669,8 +669,26 @@
         <div id="tripple-loader-contaner" class="d-flex justify-content-center align-items-center  tripple-loader-contaner--visible" style="height:90vh;"><div class="triple-spinner"></div></div>
         <div id="main-section-data" style="display: none;" data-lang="{{LANGUAGE_CODE}}">
           {% block content %}
-          {% include 'dashboard.html' %}
+            {% include 'dashboard.html' %}
           {% endblock content %}
+          <div
+            class="oh-modal" style="z-index: 60;"
+            id="objectDetailsModal"
+            role="dialog"
+            aria-labelledby="objectDetailsModalLabel"
+            aria-hidden="true"
+            >
+            <div class="oh-modal__dialog" id="objectDetailsModalTarget"> </div>
+          </div>
+          <div
+            class="oh-modal" style="z-index: 60;"
+            id="objectDetailsModalW25"
+            role="dialog"
+            aria-labelledby="objectDetailsModalW25Label"
+            aria-hidden="true"
+            >
+            <div class="oh-modal__dialog w-25" id="objectDetailsModalW25Target"> </div>
+          </div>
         </div>
       </div>
     </div>
