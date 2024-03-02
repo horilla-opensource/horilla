@@ -2366,6 +2366,7 @@ def work_info_import(request):
         error_lists = []
         success_lists = []
         total_count = 0
+        error_occured = False
         for work_info in work_info_dicts:
             error = False
             try:
@@ -2456,132 +2457,151 @@ def work_info_import(request):
                     success_lists.append(work_info)
 
             except Exception as e:
+                error_occured = True
                 logger.error(e)
 
         if create_work_info or not error_lists:
-            for work_info in success_lists:
-                email = work_info["Email"]
-                phone = work_info["Phone"]
-                first_name = convert_nan("First Name", work_info)
-                last_name = work_info["Last Name"]
-                badge_id = convert_nan("Badge id", work_info)
-                department = convert_nan("Department", work_info)
-                job_position = convert_nan("Job Position", work_info)
-                job_role = convert_nan("Job Role", work_info)
-                work_type = convert_nan("Work Type", work_info)
-                employee_type = convert_nan("Employee Type", work_info)
-                reporting_manager = convert_nan("Reporting Manager", work_info)
-                company = convert_nan("Company", work_info)
-                location = convert_nan("Location", work_info)
-                shift = convert_nan("Shift", work_info)
-                date_joining = work_info["Date joining"]
-                contract_end_date = work_info["Contract End Date"]
-                basic_salary = convert_nan("Basic Salary", work_info)
-                salary_hour = convert_nan("Salary Hour", work_info)
-                gender = work_info.get("Gender")
+            try:
+                for work_info in success_lists:
+                    email = work_info["Email"]
+                    phone = work_info["Phone"]
+                    first_name = convert_nan("First Name", work_info)
+                    last_name = work_info["Last Name"]
+                    badge_id = convert_nan("Badge id", work_info)
+                    department = convert_nan("Department", work_info)
+                    job_position = convert_nan("Job Position", work_info)
+                    job_role = convert_nan("Job Role", work_info)
+                    work_type = convert_nan("Work Type", work_info)
+                    employee_type = convert_nan("Employee Type", work_info)
+                    reporting_manager = convert_nan("Reporting Manager", work_info)
+                    company = convert_nan("Company", work_info)
+                    location = convert_nan("Location", work_info)
+                    shift = convert_nan("Shift", work_info)
+                    date_joining = work_info["Date joining"]
+                    contract_end_date = work_info["Contract End Date"]
+                    basic_salary = convert_nan("Basic Salary", work_info)
+                    salary_hour = convert_nan("Salary Hour", work_info)
+                    gender = work_info.get("Gender")
 
-                user = User.objects.create_user(
-                    username=email,
-                    email=email,
-                    password=str(phone).strip(),
-                    is_superuser=False,
-                )
+                    if User.objects.filter(username=email).first() :
+                        continue
 
-                employee_obj = Employee()
-                employee_obj.employee_user_id = user
-                employee_obj.badge_id = badge_id
-                employee_obj.employee_first_name = first_name
-                employee_obj.employee_last_name = last_name
-                employee_obj.email = email
-                employee_obj.phone = phone
-                employee_obj.gender = gender.lower()
-                employee_obj.save()
+                    user = User.objects.create_user(
+                        username=email,
+                        email=email,
+                        password=str(phone).strip(),
+                        is_superuser=False,
+                    )
 
-                department_obj = Department.objects.filter(
-                    department=department
-                ).first()
-                if department_obj is None and department is not None:
-                    department_obj = Department()
-                    department_obj.department = department
-                    department_obj.save()
+                    employee_obj = Employee()
+                    employee_obj.employee_user_id = user
+                    employee_obj.badge_id = badge_id
+                    employee_obj.employee_first_name = first_name
+                    employee_obj.employee_last_name = last_name
+                    employee_obj.email = email
+                    employee_obj.phone = phone
+                    employee_obj.gender = gender.lower()
+                    employee_obj.save()
 
-                job_position_obj = JobPosition.objects.filter(
-                    department_id=department_obj, job_position=job_position
-                ).first()
-                if job_position_obj is None and job_position is not None:
-                    job_position_obj = JobPosition()
-                    job_position_obj.department_id = department_obj
-                    job_position_obj.job_position = job_position
-                    job_position_obj.save()
+                    department_obj = Department.objects.filter(
+                        department=department
+                    ).first()
+                    if department_obj is None and department is not None:
+                        department_obj = Department()
+                        department_obj.department = department
+                        department_obj.save()
 
-                job_role_obj = JobRole.objects.filter(
-                    job_role=job_role, job_position_id=job_position_obj
-                ).first()
-                if job_role_obj is None and job_role is not None:
-                    job_role_obj = JobRole()
-                    job_role_obj.job_position_id = job_position_obj
-                    job_role_obj.job_role = job_role
-                    job_role_obj.save()
+                    job_position_obj = JobPosition.objects.filter(
+                        department_id=department_obj, job_position=job_position
+                    ).first()
+                    if job_position_obj is None and job_position is not None:
+                        job_position_obj = JobPosition()
+                        job_position_obj.department_id = department_obj
+                        job_position_obj.job_position = job_position
+                        job_position_obj.save()
 
-                work_type_obj = WorkType.objects.filter(work_type=work_type).first()
-                if work_type_obj is None and work_type is not None:
-                    work_type_obj = WorkType()
-                    work_type_obj.work_type = work_type
+                    job_role_obj = JobRole.objects.filter(
+                        job_role=job_role, job_position_id=job_position_obj
+                    ).first()
+                    if job_role_obj is None and job_role is not None:
+                        job_role_obj = JobRole()
+                        job_role_obj.job_position_id = job_position_obj
+                        job_role_obj.job_role = job_role
+                        job_role_obj.save()
 
-                shift_obj = EmployeeShift.objects.filter(employee_shift=shift).first()
-                if shift_obj is None and shift is not None:
-                    shift_obj = EmployeeShift()
-                    shift_obj.employee_shift = shift
-                    shift_obj.save()
+                    work_type_obj = WorkType.objects.filter(work_type=work_type).first()
+                    if work_type_obj is None and work_type is not None:
+                        work_type_obj = WorkType()
+                        work_type_obj.work_type = work_type
 
-                employee_type_obj = EmployeeType.objects.filter(
-                    employee_type=employee_type
-                ).first()
-                if employee_type_obj is None and employee_type is not None:
-                    employee_type_obj = EmployeeType()
-                    employee_type_obj.employee_type = employee_type
-                    employee_type_obj.save()
+                    shift_obj = EmployeeShift.objects.filter(employee_shift=shift).first()
+                    if shift_obj is None and shift is not None:
+                        shift_obj = EmployeeShift()
+                        shift_obj.employee_shift = shift
+                        shift_obj.save()
 
-                manager_fname, manager_lname = "", ""
-                if isinstance(reporting_manager, str) and " " in reporting_manager:
-                    manager_fname, manager_lname = reporting_manager.split(" ", 1)
-                reporting_manager_obj = Employee.objects.filter(
-                    employee_first_name=manager_fname,
-                    employee_last_name=manager_lname,
-                ).first()
-                company_obj = Company.objects.filter(company=company).first()
-                employee_work_info = EmployeeWorkInformation.objects.filter(
-                    employee_id=employee_obj
-                ).first()
-                if employee_work_info is None:
-                    employee_work_info = EmployeeWorkInformation()
-                employee_work_info.employee_id = employee_obj
-                employee_work_info.email = email
-                employee_work_info.department_id = department_obj
-                employee_work_info.job_position_id = job_position_obj
-                employee_work_info.job_role_id = job_role_obj
-                employee_work_info.employee_type_id = employee_type_obj
-                employee_work_info.reporting_manager_id = reporting_manager_obj
-                employee_work_info.company_id = company_obj
-                employee_work_info.shift_id = shift_obj
-                employee_work_info.location = location
-                employee_work_info.date_joining = (
-                    date_joining if date_joining == "nan" else datetime.today()
-                )
-                employee_work_info.contract_end_date = (
-                    contract_end_date if contract_end_date == "nan" else None
-                )
-                employee_work_info.basic_salary = (
-                    basic_salary if type(basic_salary) is int else 0
-                )
-                employee_work_info.salary_hour = (
-                    salary_hour if type(salary_hour) is int else 0
-                )
-                employee_work_info.save()
+                    employee_type_obj = EmployeeType.objects.filter(
+                        employee_type=employee_type
+                    ).first()
+                    if employee_type_obj is None and employee_type is not None:
+                        employee_type_obj = EmployeeType()
+                        employee_type_obj.employee_type = employee_type
+                        employee_type_obj.save()
 
-                total_count += 1
+                    manager_fname, manager_lname = "", ""
+                    if isinstance(reporting_manager, str) and " " in reporting_manager:
+                        manager_fname, manager_lname = reporting_manager.split(" ", 1)
+                    reporting_manager_obj = Employee.objects.filter(
+                        employee_first_name=manager_fname,
+                        employee_last_name=manager_lname,
+                    ).first()
+                    company_obj = Company.objects.filter(company=company).first()
+                    employee_work_info = EmployeeWorkInformation.objects.filter(
+                        employee_id=employee_obj
+                    ).first()
+                    if employee_work_info is None:
+                        employee_work_info = EmployeeWorkInformation()
+                    employee_work_info.employee_id = employee_obj
+                    employee_work_info.email = email
+                    employee_work_info.department_id = department_obj
+                    employee_work_info.job_position_id = job_position_obj
+                    employee_work_info.job_role_id = job_role_obj
+                    employee_work_info.employee_type_id = employee_type_obj
+                    employee_work_info.reporting_manager_id = reporting_manager_obj
+                    employee_work_info.company_id = company_obj
+                    employee_work_info.shift_id = shift_obj
+                    employee_work_info.location = location
+                    employee_work_info.date_joining = (
+                        date_joining if date_joining == "nan" else datetime.today()
+                    )
+                    employee_work_info.contract_end_date = (
+                        contract_end_date if contract_end_date == "nan" else None
+                    )
+                    employee_work_info.basic_salary = (
+                        basic_salary if type(basic_salary) is int else 0
+                    )
+                    employee_work_info.salary_hour = (
+                        salary_hour if type(salary_hour) is int else 0
+                    )
+                    employee_work_info.save()
 
-            # messages.success(request, _(f"{total_count} Employees Imported successfully..."))
+                    total_count += 1
+                
+            except Exception as e:
+                error_occured = True
+                logger.error(e)
+        
+        if error_occured:
+            messages.error(request, "something went wrong....")
+            data_frame = pd.DataFrame(["The provided titles don't match the default titles."], columns=["Title Error"])
+
+            error_count = len(error_lists)
+            # Create an HTTP response object with the Excel file
+            response = HttpResponse(content_type="application/ms-excel")
+            response["Content-Disposition"] = 'attachment; filename="ImportError.xlsx"'
+            data_frame.to_excel(response, index=False)
+            response["X-Error-Count"] = error_count
+            return response
 
         if error_lists:
             for item in error_lists:
