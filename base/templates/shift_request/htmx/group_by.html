@@ -55,9 +55,9 @@
 										<div class="oh-sticky-table__tr" 
 											draggable="true"
 											hx-get="{% url 'shift-request-details' shift_request.id %}?instances_ids={{requests_ids}}" 
-											hx-target="#shiftRequestDetailTarget" 
+											hx-target="#objectDetailsModalTarget" 
 											data-toggle='oh-modal-toggle' 
-											data-target = '#shiftRequestDetailModal' 
+											data-target = '#objectDetailsModal' 
 										>
 											<div class="oh-sticky-table__sd
 												{% if shift_request.approved %} row-status--yellow 
@@ -331,9 +331,9 @@
 										<div class="oh-sticky-table__tr" 
 											draggable="true"
 											hx-get="{% url 'shift-allocation-request-details' shift_request.id %}?instances_ids={{allocated_ids}}" 
-											hx-target="#shiftRequestDetailTarget" 
+											hx-target="#objectDetailsModalTarget" 
 											data-toggle='oh-modal-toggle' 
-											data-target = '#shiftRequestDetailModal' 
+											data-target = '#objectDetailsModal' 
 										>
 											<div class="oh-sticky-table__sd
 												{% if shift_request.approved %} row-status--yellow 

@@ -85,8 +85,8 @@ style="cursor: pointer; display: none;"
         <div class="oh-sticky-table__tbody">
           <div class="oh-sticky-table__tr" 
             hx-get="{% url 'work-type-request-single-view' work_type_request.id %}?instances_ids={{requests_ids}}" 
-            hx-target='#workTypeRequestSingleViewTarget' 
-            data-target='#workTypeRequestSingleViewModal' 
+            hx-target='#objectDetailsModalTarget' 
+            data-target='#objectDetailsModal' 
             data-toggle='oh-modal-toggle' 
             draggable="true"
           >

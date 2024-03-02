@@ -3,7 +3,7 @@
 <div class="oh-modal__dialog-header">
     <span
       class="oh-modal__dialog-title"
-      id="workTypeRequestSingleViewModalLabel"
+      id="shiftRequestSingleViewModalLabel"
     >
       {% trans "Details" %}
     </span>
@@ -17,7 +17,7 @@
     <div class="oh-modal__dialog oh-modal__dialog--navigation m-0 p-0">
         <button 
             hx-get="{% url 'shift-allocation-request-details' previous %}?instances_ids={{allocation_ids}}&dashboard={{dashboard}}" 
-            hx-target="{% if dashboard == 'true' %}#smallModalTarget{% else %}#shiftRequestDetailTarget {% endif %}"  
+            hx-target="#objectDetailsModalTarget"  
             class="oh-modal__diaglog-nav oh-modal__nav-prev">
             <ion-icon name="chevron-back-outline" class="md hydrated" role="img"
             aria-label="chevron back outline"></ion-icon>
@@ -25,7 +25,7 @@
 
         <button  
             hx-get="{% url 'shift-allocation-request-details' next %}?instances_ids={{allocation_ids}}&dashboard={{dashboard}}" 
-            hx-target="{% if dashboard == 'true' %}#smallModalTarget{% else %}#shiftRequestDetailTarget {% endif %}"  
+            hx-target="#objectDetailsModalTarget"  
             class="oh-modal__diaglog-nav oh-modal__nav-next">
             <ion-icon name="chevron-forward-outline" class="md hydrated" role="img"
             aria-label="chevron forward outline"></ion-icon>
