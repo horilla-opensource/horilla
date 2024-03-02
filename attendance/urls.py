@@ -357,7 +357,7 @@ urlpatterns = [
         views.delete_comment_file,
         name="delete-comment-file",
     ),
-    path("work-records", views.work_records, name="work-records"),
+    path("work-records/", views.work_records, name="work-records"),
     path(
         "work-records-change-month",
         views.work_records_change_month,
