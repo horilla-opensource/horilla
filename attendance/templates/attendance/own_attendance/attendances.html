@@ -196,8 +196,8 @@
           class="oh-sticky-table__tr"
           draggable="false"
           data-toggle="oh-modal-toggle"
-          data-target="#detailAttendance"
-          hx-target="#detailAttendanceModalBody"     
+          data-target="#objectDetailsModalW25"
+          hx-target="#objectDetailsModalW25Target"     
           hx-get="{% url 'user-request-one-view' attendance.id %}?my_attendance=true&instances_ids={{attendances_ids}}"
         >
           <div
@@ -307,15 +307,6 @@
       </ul>
     </nav>
   </div>
-</div>
-<div
-  class="oh-modal"
-  id="detailAttendance"
-  role="dialog"
-  aria-labelledby="detailAttendance"
-  aria-hidden="true"
-  >
-  <div class="oh-modal__dialog w-25" id="detailAttendanceModalBody"></div>
 </div>
 
 <script>
