@@ -14,18 +14,18 @@
 </div>
 {% endif %}
 
-<div class="oh-modal__section-head">{% trans "Asset Information" %}</div>
+<div class="oh-modal__section-head fw-bold">{% trans "Asset Information" %}</div>
 <div class="row">
   <div class="col-12 col-md-12 col-lg-12">
     <div class="oh-modal__group mt-2">
-      <label class="oh-modal__label oh-text--small">{% trans "Asset Name" %}</label>
-      <label class="oh-modal__value">{{asset.asset_name}}</label>
+      <label class="oh-timeoff-modal__stat-title">{% trans "Asset Name" %}</label>
+      <label class="oh-timeoff-modal__stat-count">{{asset.asset_name}}</label>
     </div>
   </div>
 
   <div class="col-12 col-md-12 col-lg-12 mt-3">
     <div class="oh-modal__group">
-      <label class="oh-modal__label oh-text--small">{% trans "Description" %}</label>
+      <label class="oh-timeoff-modal__stat-title">{% trans "Description" %}</label>
       <div class="oh-modal__description">
         {{asset.asset_description}}
       </div>
@@ -34,41 +34,40 @@
 
   <div class="col-12 col-md-12 col-lg-6 mt-3">
     <div class="oh-modal__group">
-      <label class="oh-modal__label oh-text--small">{% trans "Tracking Id" %}</label>
-      <label class="oh-modal__value">{{asset.asset_tracking_id}}</label>
+      <label class="oh-timeoff-modal__stat-title">{% trans "Tracking Id" %}</label>
+      <label class="oh-timeoff-modal__stat-count">{{asset.asset_tracking_id}}</label>
     </div>
   </div>
   <div class="col-12 col-md-12 col-lg-6 mt-3">
     <div class="oh-modal__group">
-      <label class="oh-modal__label oh-text--small">{% trans "Purchase Date" %}</label>
-      <label class="oh-modal__value dateformat_changer">{{asset.asset_purchase_date}}</label>
-    </div>
-  </div>
-
-  <div class="col-12 col-md-12 col-lg-6 mt-3">
-    <div class="oh-modal__group">
-      <label class="oh-modal__label oh-text--small">{% trans "Cost" %}</label>
-      <label class="oh-modal__value">{{asset.asset_purchase_cost}}</label>
+      <label class="oh-timeoff-modal__stat-title">{% trans "Purchase Date" %}</label>
+      <label class="oh-timeoff-modal__stat-count dateformat_changer">{{asset.asset_purchase_date}}</label>
     </div>
   </div>
 
   <div class="col-12 col-md-12 col-lg-6 mt-3">
     <div class="oh-modal__group">
-      <label class="oh-modal__label oh-text--small">{% trans "Status" %}</label>
-      <label class="oh-modal__value">{{asset.get_asset_status_display}}</label>
+      <label class="oh-timeoff-modal__stat-title">{% trans "Cost" %}</label>
+      <label class="oh-timeoff-modal__stat-count">{{asset.asset_purchase_cost}}</label>
     </div>
   </div>
 
   <div class="col-12 col-md-12 col-lg-6 mt-3">
     <div class="oh-modal__group">
-      <label class="oh-modal__label oh-text--small">{% trans "Batch No" %}</label>
-      <label class="oh-modal__value">{{asset.asset_lot_number_id}}</label>
+      <label class="oh-timeoff-modal__stat-title">{% trans "Status" %}</label>
+      <label class="oh-timeoff-modal__stat-count">{{asset.get_asset_status_display}} {% if asset.asset_status == "In use" %}{% trans "by " %} {% with assigned=asset.assetassignment_set.last %} {{assigned.assigned_to_employee_id.get_full_name}} {% endwith %}{% endif %} </label>
     </div>
   </div>
   <div class="col-12 col-md-12 col-lg-6 mt-3">
     <div class="oh-modal__group">
-      <label class="oh-modal__label oh-text--small">{% trans "Category" %}</label>
-      <label class="oh-modal__value">{{asset.asset_category_id}}</label>
+      <label class="oh-timeoff-modal__stat-title">{% trans "Batch No" %}</label>
+      <label class="oh-timeoff-modal__stat-count">{{asset.asset_lot_number_id}}</label>
+    </div>
+  </div>
+  <div class="col-12 col-md-12 col-lg-6 mt-3">
+    <div class="oh-modal__group">
+      <label class="oh-timeoff-modal__stat-title">{% trans "Category" %}</label>
+      <label class="oh-timeoff-modal__stat-count">{{asset.asset_category_id}}</label>
     </div>
   </div>
 
@@ -78,7 +77,7 @@
             class="mb-2" style="font-weight:600;"
             >{% trans "Reports" %}</span
         >
-        <button onclick="event.stopPropagation();$(this).siblings('.oh-kanban__card-content').toggleClass('oh-kanban__card-content--hide')" class="oh-kanban__card-body-collapse oh-kanban__card-collapse--down" aria-label="Toggle Options" title="{% trans 'Assignees' %}"></button>
+        <button onclick="event.stopPropagation();$(this).siblings('.oh-kanban__card-content').toggleClass('oh-kanban__card-content--hide')" class="oh-kanban__card-body-collapse oh-kanban__card-collapse--down" aria-label="Toggle Options" title="{% trans 'Reports' %}"></button>
         <div class="oh-kanban__card-content oh-kanban__card-content--hide mt-3">
           {% for report in asset.asset_report.all %}
             <li class="pt-2 ">                
