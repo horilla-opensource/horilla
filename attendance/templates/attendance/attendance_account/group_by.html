@@ -25,7 +25,7 @@
               <div class="oh-sticky-table__tr">
                 <div class="oh-sticky-table__th" style="width:10px;">
                   <div class="centered-div">
-                    <input type="checkbox" class="oh-input oh-input__checkbox all-hour-account" title="Select All" 
+                    <input type="checkbox" class="oh-input oh-input__checkbox all-hour-account" title="{% trans 'Select All' %}" 
                         id = "allHourAccount"/>
                   </div>
                 </div>
@@ -228,17 +228,10 @@ aria-hidden="true"
         $(".all-hour-account").prop("checked", false);
       }
       addingHourAccountsIds();
-      $("#unselectAllInstances").show();
-      $("#exportAccounts").show();
-      $("#selectedShow").show();
     });
 
     $(".all-hour-account").change(function () {
       addingHourAccountsIds();
-
-      $("#unselectAllInstances").show();
-      $("#exportAccounts").show();
-      $("#selectedShow").show();
     });
 
     $("#selectAllInstances").click(function () {

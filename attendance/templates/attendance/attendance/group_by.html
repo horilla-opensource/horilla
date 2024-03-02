@@ -64,6 +64,13 @@
             <div class="oh-sticky-table__table">
               <div class="oh-sticky-table__thead">
                 <div class="oh-sticky-table__tr">
+                  <div class="oh-sticky-table__th" style="width:10px;" onclick="event.stopPropagation()">
+                    <div class="centered-div">
+                      <input type="checkbox" class="oh-input oh-input__checkbox ot-attendances" 
+                        title="{% trans 'Select All' %}"
+                      />
+                    </div>
+                  </div>
                   <div class="oh-sticky-table__th">{% trans "Employee" %}</div>
                   <div class="oh-sticky-table__th">{% trans "Date" %}</div>
                   <div class="oh-sticky-table__th">{% trans "Day" %}</div>
@@ -87,11 +94,20 @@
                   class="oh-sticky-table__tr oh-multiple-table-sort__movable"
                   draggable="false"
                   data-toggle="oh-modal-toggle"
-                  data-target="#detailAttendance"
-                  hx-target="#detailAttendanceModalBody"
+                  data-target="#objectDetailsModalW25"
+                  hx-target="#objectDetailsModalW25Target"
                   hx-get="{% url 'user-request-one-view' attendance.id %}?ot=true&instances_ids={{ot_attendances_ids}}"
-                >
+                  > 
                   <div class="oh-sticky-table__sd">
+                    <input
+                      type="checkbox"
+                      id="{{attendance.id}}"
+                      onclick="event.stopPropagation()"
+                      onchange="highlightRow($(this))"
+                      class="oh-input attendance-checkbox oh-input__checkbox mt-2 mr-2 ot-attendance-row"
+                    />
+                  </div>
+                  <div class="oh-sticky-table__td">
                     <div class="oh-profile oh-profile--md">
                       <div class="oh-profile__avatar mr-1">
                         <img
@@ -333,6 +349,12 @@
             <div class="oh-sticky-table__table">
               <div class="oh-sticky-table__thead">
                 <div class="oh-sticky-table__tr">
+                  <div class="oh-sticky-table__th" style="width:10px;">
+                    <div class="centered-div">
+                      <input type="checkbox" class="oh-input oh-input__checkbox validate" title="{% trans 'Select All' %}" 
+                        />
+                    </div>
+                  </div>
                   <div class="oh-sticky-table__th">{% trans "Employee" %}</div>
                   <div class="oh-sticky-table__th">{% trans "Date" %}</div>
                   <div class="oh-sticky-table__th">{% trans "Day" %}</div>
@@ -356,11 +378,20 @@
                   class="oh-sticky-table__tr oh-multiple-table-sort__movable"
                   draggable="false"
                   data-toggle="oh-modal-toggle"
-                  data-target="#detailAttendance"
-                  hx-target="#detailAttendanceModalBody"
+                  data-target="#objectDetailsModalW25"
+                  hx-target="#objectDetailsModalW25Target"
                   hx-get="{% url 'user-request-one-view' attendance.id %}?validate=true&instances_ids={{validate_attendances_ids}}"
                 >
                   <div class="oh-sticky-table__sd">
+                    <input
+                      type="checkbox"
+                      id="{{attendance.id}}"
+                      onclick="event.stopPropagation()"
+                      onchange="highlightRow($(this))"
+                      class="oh-input attendance-checkbox oh-input__checkbox mt-2 mr-2 validate-row"
+                    />
+                  </div>
+                  <div class="oh-sticky-table__td">
                     <div class="oh-profile oh-profile--md">
                       <div class="oh-profile__avatar mr-1">
                         <img
@@ -596,6 +627,11 @@
             <div class="oh-sticky-table__table">
               <div class="oh-sticky-table__thead">
                 <div class="oh-sticky-table__tr">
+                  <div class="oh-sticky-table__th" style="width:10px;">
+                    <div class="centered-div">
+                      <input type="checkbox" class="oh-input oh-input__checkbox all-attendances" title="{% trans 'Select All' %}" />
+                    </div>
+                  </div>
                   <div class="oh-sticky-table__th">{% trans "Employee" %}</div>
                   <div class="oh-sticky-table__th">{% trans "Date" %}</div>
                   <div class="oh-sticky-table__th">{% trans "Day" %}</div>
@@ -618,11 +654,21 @@
                   class="oh-sticky-table__tr oh-multiple-table-sort__movable"
                   draggable="false"
                   data-toggle="oh-modal-toggle"
-                  data-target="#detailAttendance"
-                  hx-target="#detailAttendanceModalBody"
+                  data-target="#objectDetailsModalW25"
+                  hx-target="#objectDetailsModalW25Target"
                   hx-get="{% url 'user-request-one-view' attendance.id %}?instances_ids={{attendances_ids}}"
                 >
-                  <div class="oh-sticky-table__sd">
+                  <div class="oh-sticky-table__sd" onclick="event.stopPropagation();">
+                    <div class="centered-div">
+                      <input
+                      type="checkbox"
+                      onchange="highlightRow($(this))"
+                      id="{{attendance.id}}"
+                      class="form-check-input all-attendance-row"
+                      />
+                    </div>
+							    </div>
+                  <div class="oh-sticky-table__td">
                     <div class="oh-profile oh-profile--md">
                       <div class="oh-profile__avatar mr-1">
                         <img
@@ -822,16 +868,6 @@
       </nav>
     </div>
   </div>
-</div>
-
-<div
-  class="oh-modal"
-  id="detailAttendance"
-  role="dialog"
-  aria-labelledby="detailAttendance"
-  aria-hidden="true"
-  >
-    <div class="oh-modal__dialog" id="detailAttendanceModalBody"></div>
 </div>
 
 <script>

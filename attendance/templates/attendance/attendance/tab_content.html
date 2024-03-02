@@ -116,8 +116,8 @@
                           class="oh-sticky-table__tr"
                           draggable="false"
                           data-toggle="oh-modal-toggle"
-                          data-target="#detailAttendance"
-                          hx-target="#detailAttendanceModalBody"
+                          data-target="#objectDetailsModalW25"
+                          hx-target="#objectDetailsModalW25Target"
                           hx-get="{% url 'user-request-one-view' attendance.id %}?instances_ids={{attendances_ids}}"
                           >
                             <div class="oh-sticky-table__sd" onclick="event.stopPropagation();">
@@ -125,6 +125,7 @@
                                 type="checkbox"
                                 id="{{attendance.id}}"
                                 class="oh-input attendance-checkbox oh-input__checkbox mt-2 mr-2 all-attendance-row"
+                                onchange="highlightRow($(this))"
                               />
                             </div>
                             <div class="oh-sticky-table__td">
@@ -380,8 +381,8 @@
                           class="oh-sticky-table__tr"
                           draggable="false"
                           data-toggle="oh-modal-toggle"
-                          data-target="#detailAttendance"
-                          hx-target="#detailAttendanceModalBody"
+                          data-target="#objectDetailsModalW25"
+                          hx-target="#objectDetailsModalW25Target"
                           hx-get="{% url 'user-request-one-view' attendance.id %}?validate=true&instances_ids={{validate_attendances_ids}}"
                           >
                             <div class="oh-sticky-table__sd">
@@ -390,6 +391,7 @@
                                 id="{{attendance.id}}"
                                 onclick="event.stopPropagation()"
                                 class="oh-input attendance-checkbox oh-input__checkbox mt-2 mr-2 validate-row"
+                                onchange="highlightRow($(this))"
                               />
                             </div>
                             <div class="oh-sticky-table__td">
@@ -590,7 +592,7 @@
                         <div class="oh-sticky-table__th" style="width: 20px">
                             <input
                               type="checkbox"
-                              title='{% trans "Select All" %}'
+                              title="{% trans 'Select All' %}"
                               onclick="event.stopPropagation()"
                               class="oh-input oh-input__checkbox mt-1 mr-2 ot-attendances"
                               style="margin-left: -5px"
@@ -659,8 +661,8 @@
                           class="oh-sticky-table__tr"
                           draggable="false"
                           data-toggle="oh-modal-toggle"
-                          data-target="#detailAttendance"
-                          hx-target="#detailAttendanceModalBody"
+                          data-target="#objectDetailsModalW25"
+                          hx-target="#objectDetailsModalW25Target"
                           hx-get="{% url 'user-request-one-view' attendance.id %}?ot=true&instances_ids={{ot_attendances_ids}}"
                           >
                             <div class="oh-sticky-table__sd">
@@ -669,6 +671,7 @@
                                   id="{{attendance.id}}"
                                   onclick="event.stopPropagation()"
                                   class="oh-input attendance-checkbox oh-input__checkbox mt-2 mr-2 ot-attendance-row"
+                                  onchange="highlightRow($(this))"
                                 />
                             </div>
                             <div class="oh-sticky-table__td">
@@ -848,18 +851,6 @@
   </div>
 </div>
 <!-- start of Overtime attendance -->
-
-
-
-<div
-  class="oh-modal"
-  id="detailAttendance"
-  role="dialog"
-  aria-labelledby="detailAttendance"
-  aria-hidden="true"
-  >
-    <div class="oh-modal__dialog" id="detailAttendanceModalBody"></div>
-</div>
 
 {% if perms.attendance.change_attendance or request.user|is_reportingmanager %}
 <div

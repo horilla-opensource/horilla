@@ -103,11 +103,30 @@ function getCurrentLanguageCode(callback) {
 
 $(".validate").change(function (e) {
   var is_checked = $(this).is(":checked");
+  var closest = $(this)
+    .closest(".oh-sticky-table__thead")
+    .siblings(".oh-sticky-table__tbody");
   if (is_checked) {
-    $(".validate-row").prop("checked", true);
+    $(closest)
+      .children()
+      .find(".validate-row")
+      .prop("checked", true)
+      .closest(".oh-sticky-table__tr")
+      .addClass("highlight-selected");
   } else {
-    $(".validate-row").prop("checked", false);
+    $(closest)
+      .children()
+      .find(".validate-row")
+      .prop("checked", false)
+      .closest(".oh-sticky-table__tr")
+      .removeClass("highlight-selected");
   }
+});
+
+$(".validate-row").change(function () {
+  var allChecked =
+    $(".validate-row").length === $(".validate-row:checked").length;
+  $(".validate").prop("checked", allChecked);
 });
 
 $(".all-hour-account").change(function (e) {
@@ -375,20 +394,58 @@ function unselectAllHourAcconts() {
 
 $(".all-attendances").change(function (e) {
   var is_checked = $(this).is(":checked");
+  var closest = $(this)
+    .closest(".oh-sticky-table__thead")
+    .siblings(".oh-sticky-table__tbody");
   if (is_checked) {
-    $(".all-attendance-row").prop("checked", true);
+    $(closest)
+      .children()
+      .find(".all-attendance-row")
+      .prop("checked", true)
+      .closest(".oh-sticky-table__tr")
+      .addClass("highlight-selected");
   } else {
-    $(".all-attendance-row").prop("checked", false);
+    $(closest)
+      .children()
+      .find(".all-attendance-row")
+      .prop("checked", false)
+      .closest(".oh-sticky-table__tr")
+      .removeClass("highlight-selected");
   }
+});
+
+$(".all-attendance-row").change(function () {
+  var allChecked =
+    $(".all-attendance-row").length === $(".all-attendance-row:checked").length;
+  $(".all-attendances").prop("checked", allChecked);
 });
 
 $(".ot-attendances").change(function (e) {
   var is_checked = $(this).is(":checked");
+  var closest = $(this)
+    .closest(".oh-sticky-table__thead")
+    .siblings(".oh-sticky-table__tbody");
   if (is_checked) {
-    $(".ot-attendance-row").prop("checked", true);
+    $(closest)
+      .children()
+      .find(".ot-attendance-row")
+      .prop("checked", true)
+      .closest(".oh-sticky-table__tr")
+      .addClass("highlight-selected");
   } else {
-    $(".ot-attendance-row").prop("checked", false);
+    $(closest)
+      .children()
+      .find(".ot-attendance-row")
+      .prop("checked", false)
+      .closest(".oh-sticky-table__tr")
+      .removeClass("highlight-selected");
   }
+});
+
+$(".ot-attendance-row").change(function () {
+  var allChecked =
+    $(".ot-attendance-row").length === $(".ot-attendance-row:checked").length;
+  $(".ot-attendances").prop("checked", allChecked);
 });
 
 function getCookie(name) {
@@ -776,16 +833,25 @@ $(".all-latecome").change(function () {
   }
 });
 
-$(".all-attendance-activity").change(function () {
-  $(".all-attendance-activity-row")
-    .prop("checked", false)
-    .closest(".oh-sticky-table__tr")
-    .removeClass("highlight-selected");
-  if ($(this).is(":checked")) {
-    $(".all-attendance-activity-row")
+$(".all-attendance-activity").change(function (e) {
+  var is_checked = $(this).is(":checked");
+  var closest = $(this)
+    .closest(".oh-sticky-table__thead")
+    .siblings(".oh-sticky-table__tbody");
+  if (is_checked) {
+    $(closest)
+      .children()
+      .find(".all-attendance-activity-row")
       .prop("checked", true)
       .closest(".oh-sticky-table__tr")
       .addClass("highlight-selected");
+  } else {
+    $(closest)
+      .children()
+      .find(".all-attendance-activity-row")
+      .prop("checked", false)
+      .closest(".oh-sticky-table__tr")
+      .removeClass("highlight-selected");
   }
 });
 
