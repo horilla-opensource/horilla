@@ -124,7 +124,7 @@ urlpatterns = [
     ),
     # path("user-leave", views.user_leave_view, name="user-leave"),
     path("user-leave-filter", views.user_leave_filter, name="user-leave-filter"),
-    path("user-request-view", views.user_request_view, name="user-request-view"),
+    path("user-request-view/", views.user_request_view, name="user-request-view"),
     path(
         "user-request-update/<int:id>",
         views.user_request_update,
