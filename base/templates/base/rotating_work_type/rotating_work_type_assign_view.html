@@ -71,7 +71,7 @@
         </div>
         <div class="oh-sticky-table__tbody">
           {% for rwork_type in rwork_type_assign %}
-          <div class="oh-sticky-table__tr" hx-get="{% url "rwork-individual-view" rwork_type.id %}?instances_ids={{assign_ids}}" data-toggle="oh-modal-toggle" data-target="#rotatingWorkTypeDetailModal" hx-target="#rotatingWorkTypeAssignDetail" draggable="true">
+          <div class="oh-sticky-table__tr" hx-get="{% url "rwork-individual-view" rwork_type.id %}?instances_ids={{assign_ids}}" data-toggle="oh-modal-toggle" data-target="#objectDetailsModal" hx-target="#objectDetailsModalTarget" draggable="true">
             <div class="oh-sticky-table__sd" onclick="event.stopPropagation();">
               <div class="centered-div">
                 <input

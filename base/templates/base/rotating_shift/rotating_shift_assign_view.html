@@ -73,7 +73,7 @@
         </div>
         <div class="oh-sticky-table__tbody">
           {% for rshift in rshift_assign %}
-          <div class="oh-sticky-table__tr" draggable="true" hx-get="{% url "rshift-individual-view" rshift.id %}?instances_ids={{assign_ids}}" hx-target="#rotatingShiftAssignDetail" data-toggle="oh-modal-toggle" data-target="#rotatingShiftAssignDetailModal">
+          <div class="oh-sticky-table__tr" draggable="true" hx-get="{% url "rshift-individual-view" rshift.id %}?instances_ids={{assign_ids}}" hx-target="#objectDetailsModalTarget" data-toggle="oh-modal-toggle" data-target="#objectDetailsModal">
             <div class="oh-sticky-table__sd" onclick="event.stopPropagation();">
               <div class="centered-div">
                 <input
