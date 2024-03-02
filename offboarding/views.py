@@ -111,7 +111,6 @@ def pipeline(request):
     """
     Offboarding pipleine view
     """
-    employees = []
     offboardings = PipelineFilter().qs
     groups = pipeline_grouper({}, offboardings)
     for item in groups:
@@ -354,6 +353,7 @@ def change_stage(request):
             "offboarding": groups[0],
             "stage_forms": stage_forms,
             "response_message": _("stage changed successfully."),
+            "today":datetime.today().date()
         },
     )
 
@@ -551,11 +551,17 @@ def task_assign(request):
     task_id = request.GET["task_id"]
     employees = OffboardingEmployee.objects.filter(id__in=employee_ids)
     task = OffboardingTask.objects.get(id=task_id)
+    print("==============================")
+    print(employees)
+    print("==============================")
     for employee in employees:
-        assinged_task = EmployeeTask()
-        assinged_task.employee_id = employee
-        assinged_task.task_id = task
-        assinged_task.save()
+        try:
+            assinged_task = EmployeeTask()
+            assinged_task.employee_id = employee
+            assinged_task.task_id = task
+            assinged_task.save()
+        except:
+            pass
     offboarding = employees.first().stage_id.offboarding_id
     stage_forms = {}
     stage_forms[str(offboarding.id)] = StageSelectForm(offboarding=offboarding)
@@ -569,6 +575,7 @@ def task_assign(request):
             "offboarding": groups[0],
             "stage_forms": stage_forms,
             "response_message": _("Task Assigned"),
+            "today":datetime.today().date(),
         },
     )
 
