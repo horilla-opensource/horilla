@@ -13,7 +13,7 @@
           {% trans "Feedback Answer" %}
         </h1>
       </div>
-      <div class="oh-card mb-5 ">
+      <div class="oh-card mb-3 ">
         {% for q in questions %}
           {% if q.question_type == '1' %}  <!--  question type Text-->
             <div class="d-block">
@@ -172,7 +172,6 @@
         </div>
         <div class="oh-modal__dialog-footer mb-3 ">
           <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow ">
-            <ion-icon name="bookmark-sharp"></ion-icon>
             {% trans "Save" %}
           </button>
         </div>
