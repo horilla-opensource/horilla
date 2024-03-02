@@ -66,9 +66,9 @@
                   <div class="oh-sticky-table__tr" 
                       draggable="true"
                       hx-get="{% url 'shift-request-details' shift_request.id %}?instances_ids={{requests_ids}}" 
-                      hx-target="#shiftRequestDetailTarget" 
+                      hx-target="#objectDetailsModalTarget" 
                       data-toggle='oh-modal-toggle' 
-                      data-target = '#shiftRequestDetailModal' 
+                      data-target = '#objectDetailsModal' 
                   >
                     <div class="oh-sticky-table__sd
                       {% if shift_request.approved %} row-status--yellow 
@@ -308,9 +308,9 @@
                   <div class="oh-sticky-table__tr" 
                       draggable="true"
                       hx-get="{% url 'shift-allocation-request-details' shift_request.id %}?instances_ids={{allocated_ids}}" 
-                      hx-target="#shiftRequestDetailTarget" 
+                      hx-target="#objectDetailsModalTarget" 
                       data-toggle='oh-modal-toggle' 
-                      data-target = '#shiftRequestDetailModal' 
+                      data-target = '#objectDetailsModal' 
                   >
                     <div class="oh-sticky-table__sd
                       {% if shift_request.approved %} row-status--yellow 
@@ -505,7 +505,7 @@
                 class="oh-pagination__link">{% trans "Previous" %}</a>
             </li>
             {% endif %}
-            {% if data.has_next %}
+            {% if allocated_data.has_next %}
             <li class="oh-pagination__item oh-pagination__item--wide">
               <a hx-target='#view-container'
                 hx-get="{% url 'shift-request-search' %}?{{pd}}&page={{ allocated_data.next_page_number }}"

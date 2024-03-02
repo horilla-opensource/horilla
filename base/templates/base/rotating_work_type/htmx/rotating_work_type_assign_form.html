@@ -2,12 +2,11 @@
 <form method="post" hx-post="{% url 'rotating-work-type-assign-add' %}" hx-target="#rotatingWorkTypeAssignModalBody" id="rotating-work-type-assign-update-form" >
     {% csrf_token %}
     <div class="oh-inner-sidebar-content__header"></div>
-    {{form}}
-    <button
-      type="submit"
-      class="oh-btn oh-btn--secondary mt-2 mr-0 oh-btn--w-100-resp"
-    >
-      {% trans "Save Changes" %}
-    </button>
+    {{form}}    
+    <div class="d-flex flex-row-reverse w-100 align-items-right mt-4">
+      <button type="submit" class="oh-btn oh-btn--secondary pl-5 pr-5">
+        {% trans "Save" %}
+      </button>
+    </div>
     <div class="oh-inner-sidebar-content__footer"></div>
 </form>
