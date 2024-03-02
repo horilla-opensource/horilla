@@ -555,15 +555,6 @@ class SurveyTemplate(models.Model):
         return self.title
 
 
-try:
-    first = SurveyTemplate.objects.first()
-    if not first:
-        first = SurveyTemplate.objects.create(
-            title="General Questions", is_general_template=True
-        )
-except Exception as e:
-    logger.error(e)
-    logger.error("Restart the server after the migrations")
 
 
 class RecruitmentSurvey(models.Model):
