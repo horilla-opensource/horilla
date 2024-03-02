@@ -277,11 +277,13 @@
       var hxVals = JSON.stringify(pd)
       $("#requestCreateCard").attr('hx-vals',`{"pd":${hxVals}}`);
       $("#requestCreateButton").attr('hx-vals',`{"pd":${hxVals}}`);
+      
       tickUserrequestsCheckboxes();
       $(".all-user-requests-row").change(function () {
-        if ($('.all-user-requests').is(":checked")) {
-            $(".all-user-requests").prop("checked", false);
-        }
+        var allChecked =
+          $(".all-user-requests-row").length ===
+          $(".all-user-requests-row:checked").length;
+        $(".all-user-requests").prop("checked", allChecked);
         addingUserrequestsIds();
       });
   

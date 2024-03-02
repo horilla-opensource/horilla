@@ -337,9 +337,10 @@
       $("#requestCreateButton").attr('hx-vals',`{"pd":${hxVals}}`);
       tickLeaverequestsCheckboxes();
       $(".all-leave-requests-row").change(function () {
-        if ($('.all-leave-requests').is(":checked")) {
-          $(".all-leave-requests").prop("checked", false);
-        }
+        var allChecked =
+          $(".all-leave-requests-row").length ===
+          $(".all-leave-requests-row:checked").length;
+        $(".all-leave-requests").prop("checked", allChecked);
         addingLeaverequestsIds();
       });
   

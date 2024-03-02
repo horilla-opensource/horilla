@@ -51,7 +51,7 @@
             data-toggle="oh-modal-toggle" data-target="#leaveAssignModal"
             hx-target="#leaveAssignModalTarget"
             hx-get="{% url 'available-leave-single-view' available_leave.id %}?{{pd}}&instances_ids={{available_leave_ids}}">
-            <div class="oh-sticky-table__sd">
+            <div class="oh-sticky-table__sd" onclick="event.stopPropagation();">
                 <div class="centered-div">
                     <input type="checkbox" id="{{available_leave.id}}" onchange="highlightRow($(this))"
                     class="oh-input assigned-leaves-checkbox oh-input__checkbox all-assigned-leaves-row" />
@@ -139,12 +139,12 @@ $(document).ready(function () {
     tickLeaveCheckboxes();
 	toggleColumns("overtime-table","fieldContainerTable")
 
-
     $(".all-assigned-leaves-row").change(function () {
-    if ($('.all-assigned-leaves').is(":checked")) {
-        $(".all-assigned-leaves").prop("checked", false);
-    }    
-    addingAssignedLeaveIds();
+        var allChecked =
+          $(".all-assigned-leaves-row").length ===
+          $(".all-assigned-leaves-row:checked").length;
+        $(".all-assigned-leaves").prop("checked", allChecked);
+        addingAssignedLeaveIds();
     });
 
     $(".all-assigned-leaves").change(function () {
